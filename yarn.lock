@@ -1634,7 +1634,7 @@
     core-js-pure "^3.20.2"
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.14.5", "@babel/runtime@^7.15.4", "@babel/runtime@^7.18.6", "@babel/runtime@^7.18.9":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.14.5", "@babel/runtime@^7.15.4", "@babel/runtime@^7.18.6", "@babel/runtime@^7.18.9", "@babel/runtime@^7.9.2":
   version "7.18.9"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.18.9.tgz#b4fcfce55db3d2e5e080d2490f608a3b9f407f4a"
   dependencies:
@@ -1945,6 +1945,13 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
+"@graphql-codegen/add@^3.2.1":
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/add/-/add-3.2.1.tgz#f1109f36f194f88a6abcc51703abee43ebbb50a2"
+  dependencies:
+    "@graphql-codegen/plugin-helpers" "^2.6.2"
+    tslib "~2.4.0"
+
 "@graphql-codegen/cli@2.11.6":
   version "2.11.6"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/cli/-/cli-2.11.6.tgz#3acfd7cd3bac40999ba1262063d84ca7c96172dc"
@@ -1998,6 +2005,17 @@
     "@graphql-codegen/visitor-plugin-common" "^2.12.1"
     tslib "~2.4.0"
 
+"@graphql-codegen/near-operation-file-preset@^2.4.1":
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/near-operation-file-preset/-/near-operation-file-preset-2.4.1.tgz#38277816239506335c2f843c92cd70b403a0a3ad"
+  dependencies:
+    "@graphql-codegen/add" "^3.2.1"
+    "@graphql-codegen/plugin-helpers" "^2.6.2"
+    "@graphql-codegen/visitor-plugin-common" "2.12.1"
+    "@graphql-tools/utils" "^8.8.0"
+    parse-filepath "^1.0.2"
+    tslib "~2.4.0"
+
 "@graphql-codegen/plugin-helpers@^2.6.2":
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/plugin-helpers/-/plugin-helpers-2.6.2.tgz#3c65d89fc9b61914235fc7cb14f1d48492d27944"
@@ -2027,9 +2045,9 @@
     auto-bind "~4.0.0"
     tslib "~2.4.0"
 
-"@graphql-codegen/typescript-react-apollo@3.3.3":
-  version "3.3.3"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript-react-apollo/-/typescript-react-apollo-3.3.3.tgz#93cb189904a9eacc61bb18b9e69b3d0efded2726"
+"@graphql-codegen/typescript-rtk-query@^2.3.3":
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript-rtk-query/-/typescript-rtk-query-2.3.3.tgz#78726d6d4154cbc2e1d11f382bb54debcaeb6650"
   dependencies:
     "@graphql-codegen/plugin-helpers" "^2.6.2"
     "@graphql-codegen/visitor-plugin-common" "2.12.1"
@@ -2733,6 +2751,15 @@
   version "2.11.6"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.6.tgz#cee20bd55e68a1720bdab363ecf0c821ded4cd45"
 
+"@reduxjs/toolkit@^1.8.5":
+  version "1.8.5"
+  resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-1.8.5.tgz#c14bece03ee08be88467f22dc0ecf9cf875527cd"
+  dependencies:
+    immer "^9.0.7"
+    redux "^4.1.2"
+    redux-thunk "^2.4.1"
+    reselect "^4.1.5"
+
 "@rollup/plugin-babel@^5.2.0":
   version "5.3.1"
   resolved "https://registry.npmjs.org/@rollup/plugin-babel/-/plugin-babel-5.3.1.tgz"
@@ -2765,6 +2792,12 @@
     "@types/estree" "0.0.39"
     estree-walker "^1.0.1"
     picomatch "^2.2.2"
+
+"@rtk-query/graphql-request-base-query@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@rtk-query/graphql-request-base-query/-/graphql-request-base-query-2.2.0.tgz#e1e5e44793a234ea4c180619e469ed0e1890b2aa"
+  dependencies:
+    graphql-request "^4.0.0"
 
 "@rushstack/eslint-patch@^1.1.0":
   version "1.1.0"
@@ -7749,24 +7782,6 @@ mkdirp@~0.5.1:
   dependencies:
     minimist "^1.2.6"
 
-mobx-react-lite@^3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/mobx-react-lite/-/mobx-react-lite-3.4.0.tgz#d59156a96889cdadad751e5e4dab95f28926dfff"
-
-mobx-react@^7.5.2:
-  version "7.5.2"
-  resolved "https://registry.yarnpkg.com/mobx-react/-/mobx-react-7.5.2.tgz#362d6dc7271698caf3b56229c3c68fb0b30e682e"
-  dependencies:
-    mobx-react-lite "^3.4.0"
-
-mobx-state-tree@^5.1.6:
-  version "5.1.6"
-  resolved "https://registry.yarnpkg.com/mobx-state-tree/-/mobx-state-tree-5.1.6.tgz#b4c444d1c385ae736440739a93c8e6e1169eecee"
-
-mobx@^6.6.1:
-  version "6.6.1"
-  resolved "https://registry.yarnpkg.com/mobx/-/mobx-6.6.1.tgz#70ee6aa82f25aeb7e7d522bd621207434e509318"
-
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz"
@@ -9160,6 +9175,20 @@ recursive-readdir@^2.2.2:
   dependencies:
     minimatch "3.0.4"
 
+redux-persist@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/redux-persist/-/redux-persist-6.0.0.tgz#b4d2972f9859597c130d40d4b146fecdab51b3a8"
+
+redux-thunk@^2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/redux-thunk/-/redux-thunk-2.4.1.tgz#0dd8042cf47868f4b29699941de03c9301a75714"
+
+redux@^4.1.2:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/redux/-/redux-4.2.0.tgz#46f10d6e29b6666df758780437651eeb2b969f13"
+  dependencies:
+    "@babel/runtime" "^7.9.2"
+
 regenerate-unicode-properties@^10.0.1:
   version "10.0.1"
   resolved "https://registry.npmjs.org/regenerate-unicode-properties/-/regenerate-unicode-properties-10.0.1.tgz"
@@ -9283,6 +9312,10 @@ require-main-filename@^2.0.0:
 requires-port@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/requires-port/-/requires-port-1.0.0.tgz"
+
+reselect@^4.1.5:
+  version "4.1.6"
+  resolved "https://registry.yarnpkg.com/reselect/-/reselect-4.1.6.tgz#19ca2d3d0b35373a74dc1c98692cdaffb6602656"
 
 resolve-cwd@^3.0.0:
   version "3.0.0"

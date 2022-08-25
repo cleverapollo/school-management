@@ -6,16 +6,6 @@ import { isValidToken, setSession } from '../utils/jwt';
 // @types
 import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
 import {AUTH_CONFIG} from "../config";
-import {
-  MyAuthDetailsDocument,
-  MyAuthDetailsQuery,
-  MyAuthDetailsQueryVariables,
-  useMyAuthDetailsQuery
-} from "../generated/graphql";
-import {apolloClient} from "../index";
-import * as Apollo from "@apollo/client";
-
-
 
 export const webAuth = new auth0.WebAuth({
   domain: AUTH_CONFIG.domain,
@@ -208,20 +198,20 @@ function AuthProvider({ children }: AuthProviderProps) {
           setSession(authResult?.accessToken || null);
         localStorage.setItem('accessToken', authResult?.accessToken || "");
         //var result = await
-        apolloClient.query({query : MyAuthDetailsDocument})
-          .then(result => {
-            console.log('--------------------')
-           console.log(result)
-            dispatch({
-              type: Types.Login,
-              payload: {
-                user: {myAuthDetails: result.data.myUSerDetails, accessToken: authResult?.accessToken},
-              },
-            });
-
-          }, error => {
-            console.log(error)
-          });
+        // apolloClient.query({query : MyAuthDetailsDocument})
+        //   .then(result => {
+        //     console.log('--------------------')
+        //    console.log(result)
+        //     dispatch({
+        //       type: Types.Login,
+        //       payload: {
+        //         user: {myAuthDetails: result.data.myUSerDetails, accessToken: authResult?.accessToken},
+        //       },
+        //     });
+        //
+        //   }, error => {
+        //     console.log(error)
+        //   });
         // const {data, error, loading} = useMyAuthDetailsQuery()
 
 

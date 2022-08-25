@@ -1,11 +1,11 @@
 overwrite: true
 schema: "http://localhost:8082/api/graphql"
-documents: "src/**/*.ts"
+documents: "src/**/*.graphql"
 generates:
-  src/generated/graphql.tsx:
+  ./src/app/api/generated.ts:
     plugins:
-      - "typescript"
-      - "typescript-operations"
-      - "typescript-react-apollo"
-    config:
-      withHooks: true
+      - typescript
+      - typescript-operations
+      - typescript-rtk-query:
+          importBaseApiFrom: 'src/app/api/baseApi'
+          exportHooks: true

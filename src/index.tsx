@@ -11,7 +11,7 @@ import 'react-image-lightbox/style.css';
 import 'react-quill/dist/quill.snow.css';
 
 //graphql
-import {ApolloClient, ApolloProvider, createHttpLink, InMemoryCache} from '@apollo/client';
+import { api } from './app/api/baseApi'
 
 // lazy image
 import 'react-lazy-load-image-component/src/effects/blur.css';
@@ -42,6 +42,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {setContext} from "@apollo/client/link/context";
 import useAuth from "./hooks/useAuth";
+import {ApiProvider} from "@reduxjs/toolkit/dist/query/react";
 
 // ----------------------------------------------------------------------
 
@@ -59,28 +60,10 @@ const authLink = setContext((_, { headers }) => {
     }
   }
 })
-// HTTP connection to the API
-const httpLink = createHttpLink({
-  // You should use an absolute URL here
-  uri: 'http://localhost:8082/api/graphql',
-  // uri: 'https://boru.app/api/graphql',
-
-})
-
-// Cache implementation
-const cache = new InMemoryCache()
-
-// Create the apollo client
-export const apolloClient = new ApolloClient({
-  link:  authLink.concat(httpLink),
-  cache,
-  defaultOptions: {
-  }
-})
 
 root.render(
   <AuthProvider>
-    <ApolloProvider client={apolloClient}>
+    <ApiProvider api={api}>
     <HelmetProvider>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <SettingsProvider>
@@ -92,7 +75,7 @@ root.render(
             </SettingsProvider>
           </LocalizationProvider>
     </HelmetProvider>
-    </ApolloProvider>
+    </ApiProvider>
   </AuthProvider>
 );
 
