@@ -6,12 +6,11 @@ import 'simplebar/src/simplebar.css';
 
 // lightbox
 import 'react-image-lightbox/style.css';
+import { Provider as ReduxProvider } from 'react-redux';
 
 // editor
 import 'react-quill/dist/quill.snow.css';
 
-//graphql
-import { api } from './app/api/baseApi'
 
 // lazy image
 import 'react-lazy-load-image-component/src/effects/blur.css';
@@ -43,6 +42,7 @@ import reportWebVitals from './reportWebVitals';
 import {setContext} from "@apollo/client/link/context";
 import useAuth from "./hooks/useAuth";
 import {ApiProvider} from "@reduxjs/toolkit/dist/query/react";
+import {store} from "./store/store";
 
 // ----------------------------------------------------------------------
 
@@ -63,7 +63,7 @@ const authLink = setContext((_, { headers }) => {
 
 root.render(
   <AuthProvider>
-    <ApiProvider api={api}>
+    <ReduxProvider store={store}>
     <HelmetProvider>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <SettingsProvider>
@@ -75,7 +75,7 @@ root.render(
             </SettingsProvider>
           </LocalizationProvider>
     </HelmetProvider>
-    </ApiProvider>
+    </ReduxProvider>
   </AuthProvider>
 );
 

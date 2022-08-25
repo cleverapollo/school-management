@@ -6,9 +6,8 @@ import { Box, Divider, Typography, Stack, MenuItem, Avatar } from '@mui/material
 import MenuPopover from '../../../components/MenuPopover';
 import { IconButtonAnimate } from '../../../components/animate';
 import {selectActiveProfile} from "../../../store/slices/auth";
-import { useSelector } from "react-redux";
-import {useTypedSelector} from "../../../store/store";
 import {useMyAuthDetailsQuery} from "../../../app/api/generated";
+import {useTypedSelector} from "../../../store/store";
 
 // ----------------------------------------------------------------------
 
@@ -31,12 +30,8 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const globalPolling = useTypedSelector(selectActiveProfile);
-  console.log('++++++++')
-  console.log(globalPolling)
-
-  const { data, isLoading, isFetching } = useMyAuthDetailsQuery()
   console.log('--+++++++---+-+-+-+-+-')
-  console.log(data)
+  console.log(globalPolling)
   const [open, setOpen] = useState<HTMLElement | null>(null);
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
