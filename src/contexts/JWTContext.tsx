@@ -197,6 +197,13 @@ function AuthProvider({ children }: AuthProviderProps) {
         console.log(authResult)
           setSession(authResult?.accessToken || null);
         localStorage.setItem('accessToken', authResult?.accessToken || "");
+
+        dispatch({
+          type: Types.Login,
+          payload: {
+            user: {token:  authResult?.accessToken},
+          },
+        });
         //var result = await
         // apolloClient.query({query : MyAuthDetailsDocument})
         //   .then(result => {

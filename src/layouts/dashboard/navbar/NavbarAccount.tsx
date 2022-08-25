@@ -22,6 +22,8 @@ type Props = {
 };
 
 export default function NavbarAccount({ isCollapse }: Props) {
+
+
   return (
     <Link underline="none" color="inherit">
       <RootStyle
@@ -33,7 +35,7 @@ export default function NavbarAccount({ isCollapse }: Props) {
       >
         <Avatar
           src="https://minimal-assets-api-dev.vercel.app/assets/images/avatars/avatar_5.jpg"
-          alt="Rayan Moran"
+          alt="Rayan Moran2"
         />
 
         <Box
@@ -50,7 +52,7 @@ export default function NavbarAccount({ isCollapse }: Props) {
           }}
         >
           <Typography variant="subtitle2" noWrap>
-            Rayan Moran
+            Rayan Moran 2
           </Typography>
           <Typography variant="body2" noWrap sx={{ color: 'text.secondary' }}>
             user

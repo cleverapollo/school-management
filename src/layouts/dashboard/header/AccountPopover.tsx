@@ -5,6 +5,10 @@ import { Box, Divider, Typography, Stack, MenuItem, Avatar } from '@mui/material
 // components
 import MenuPopover from '../../../components/MenuPopover';
 import { IconButtonAnimate } from '../../../components/animate';
+import {selectActiveProfile} from "../../../store/slices/auth";
+import { useSelector } from "react-redux";
+import {useTypedSelector} from "../../../store/store";
+import {useMyAuthDetailsQuery} from "../../../app/api/generated";
 
 // ----------------------------------------------------------------------
 
@@ -26,6 +30,13 @@ const MENU_OPTIONS = [
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
+  const globalPolling = useTypedSelector(selectActiveProfile);
+  console.log('++++++++')
+  console.log(globalPolling)
+
+  const { data, isLoading, isFetching } = useMyAuthDetailsQuery()
+  console.log('--+++++++---+-+-+-+-+-')
+  console.log(data)
   const [open, setOpen] = useState<HTMLElement | null>(null);
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -77,7 +88,7 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle2" noWrap>
-            Rayan Moran
+            Rayan Moran 2
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
             rayan.moran@gmail.com
