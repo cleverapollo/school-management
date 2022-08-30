@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "src",
     "target": "es5",
     "lib": [
       "es6",
@@ -25,6 +25,7 @@
     "forceConsistentCasingInFileNames": true,
   },
   "include": [
+    "src",
     "src/**/*.ts",
     "src/**/*.tsx",
   ],

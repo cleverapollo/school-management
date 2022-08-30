@@ -7,6 +7,8 @@ import useAuth from '../hooks/useAuth';
 import { MotionContainer, varBounce } from '../components/animate';
 // assets
 import { ForbiddenIllustration } from '../assets';
+import {useTypedSelector} from "../store/store";
+import {intersection} from "lodash";
 
 // ----------------------------------------------------------------------
 
@@ -18,12 +20,10 @@ type RoleBasedGuardProp = {
 
 export default function RoleBasedGuard({ hasContent, roles, children }: RoleBasedGuardProp) {
   // Logic here to get current user role
-  const { user } = useAuth();
+  const permissions =useTypedSelector((state) => state.auth.permissions);
 
   // const currentRole = 'user';
-  const currentRole = user?.role; // admin;
-
-  if (typeof roles !== 'undefined' && !roles.includes(currentRole)) {
+  if (typeof roles !== 'undefined' && intersection(roles ?? [], permissions).length == 0 ) {
     return hasContent ? (
       <Container component={MotionContainer} sx={{ textAlign: 'center' }}>
         <m.div variants={varBounce().in}>

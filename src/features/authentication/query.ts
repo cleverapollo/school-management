@@ -18,6 +18,11 @@ export const QUERY_LAUNCH_LIST = gql`
           name,
           imgUrl
         }
+        profileType  {
+          name,
+          description
+
+  }
 
         permissionIds
 

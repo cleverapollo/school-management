@@ -5,9 +5,13 @@ import { Box, Divider, Typography, Stack, MenuItem, Avatar } from '@mui/material
 // components
 import MenuPopover from '../../../components/MenuPopover';
 import { IconButtonAnimate } from '../../../components/animate';
-import {selectActiveProfile} from "../../../store/slices/auth";
 import {useMyAuthDetailsQuery} from "../../../app/api/generated";
 import {useTypedSelector} from "../../../store/store";
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import useAuth from "../../../hooks/useAuth";
+import {PATH_AUTH} from "../../../routes/paths";
+import useIsMountedRef from "../../../hooks/useIsMountedRef";
+import {useSnackbar} from "notistack";
 
 // ----------------------------------------------------------------------
 
@@ -17,21 +21,21 @@ const MENU_OPTIONS = [
     linkTo: '/',
   },
   {
-    label: 'Profile',
-    linkTo: '/',
-  },
-  {
     label: 'Settings',
-    linkTo: '/',
+    linkTo: '/user/settings',
   },
 ];
 
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
-  const globalPolling = useTypedSelector(selectActiveProfile);
-  console.log('--+++++++---+-+-+-+-+-')
-  console.log(globalPolling)
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const isMountedRef = useIsMountedRef();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const activeProfile =useTypedSelector((state) => state.auth.activeProfile);
+  const user =useTypedSelector((state) => state.auth.user);
   const [open, setOpen] = useState<HTMLElement | null>(null);
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -40,6 +44,20 @@ export default function AccountPopover() {
 
   const handleClose = () => {
     setOpen(null);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate(PATH_AUTH.login, { replace: true });
+
+      if (isMountedRef.current) {
+        handleClose();
+      }
+    } catch (error) {
+      console.error(error);
+      enqueueSnackbar('Unable to logout!', { variant: 'error' });
+    }
   };
 
   return (
@@ -83,10 +101,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle2" noWrap>
-            Rayan Moran 2
+            {activeProfile?.nickName}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            rayan.moran@gmail.com
+            {user?.email}
           </Typography>
         </Box>
 
@@ -94,15 +112,19 @@ export default function AccountPopover() {
 
         <Stack sx={{ p: 1 }}>
           {MENU_OPTIONS.map((option) => (
-            <MenuItem key={option.label} onClick={handleClose}>
+            <MenuItem
+              key={option.label}
+              to={option.linkTo}
+              component={RouterLink}
+              onClick={handleClose}
+            >
               {option.label}
             </MenuItem>
           ))}
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
-
-        <MenuItem sx={{ m: 1 }}>Logout</MenuItem>
+        <MenuItem  onClick={handleLogout}  sx={{ m: 1 }}>Logout</MenuItem>
       </MenuPopover>
     </>
   );

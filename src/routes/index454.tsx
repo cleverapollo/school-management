@@ -22,7 +22,7 @@ const Loadable = (Component: ElementType) => (props: any) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { isAuthenticated } = useAuth();
 
-  const isDashboard = pathname.includes('/dashboard') && isAuthenticated;
+  const isDashboard = !pathname.includes('/login') && isAuthenticated;
 
   return (
     <Suspense fallback={<LoadingScreen isDashboard={isDashboard} />}>

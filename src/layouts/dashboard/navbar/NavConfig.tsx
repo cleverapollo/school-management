@@ -18,28 +18,31 @@ const navConfig = [
   // GENERAL
   // ----------------------------------------------------------------------
   {
-    subheader: 'general v3.5.0',
+    id: 'general',
+    subheader: '',
     items: [
-      { title: 'One', path: '/dashboard/one', icon: ICONS.dashboard },
-      { title: 'Two', path: '/dashboard/two', icon: ICONS.ecommerce },
-      { title: 'Three', path: '/dashboard/three', icon: ICONS.analytics },
+      { title: 'Timetable', path: '/one', icon: ICONS.dashboard , roles: ["ui:view:timetable"]},
     ],
   },
 
   // MANAGEMENT
   // ----------------------------------------------------------------------
   {
+    id: 'management',
     subheader: 'management',
+    roles: ['ui:view:admin'],
+    items: [
+      { title: 'Class List Manager', path: '/two', icon: ICONS.ecommerce },
+    ],
+  },
+  {
+    id: 'bottom',
+    subheader: '',
     items: [
       {
-        title: 'user',
-        path: '/dashboard/user',
+        title: 'Account',
+        path: '/user/account',
         icon: ICONS.user,
-        children: [
-          { title: 'Four', path: '/dashboard/user/four' },
-          { title: 'Five', path: '/dashboard/user/five' },
-          { title: 'Six', path: '/dashboard/user/six' },
-        ],
       },
     ],
   },

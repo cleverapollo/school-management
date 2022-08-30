@@ -6,6 +6,11 @@ import { isValidToken, setSession } from '../utils/jwt';
 // @types
 import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
 import {AUTH_CONFIG} from "../config";
+import {apolloClient} from "../app/api/apollo";
+import {GlobalUser, MyAuthDetailsDocument, MyAuthDetailsQuery} from "../app/api/generated";
+import {dispatch as storeDispatch} from "../store/store";
+import {authDetailsSuccess} from "../store/slices/auth";
+
 
 export const webAuth = new auth0.WebAuth({
   domain: AUTH_CONFIG.domain,
@@ -95,22 +100,6 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
-//curl 'https://auth.implement.io/co/authenticate' \
-//   -H 'authority: auth.implement.io' \
-//   -H 'auth0-client: eyJuYW1lIjoiYXV0aDAuanMiLCJ2ZXJzaW9uIjoiOS4xNC4wIn0=' \
-//   -H 'content-type: application/json' \
-//   -H 'sec-ch-ua-mobile: ?0' \
-//   -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36 Edg/98.0.1108.62' \
-//   -H 'sec-ch-ua-platform: "macOS"' \
-//   -H 'accept: */*' \
-//   -H 'origin: https://app.implement.io' \
-//   -H 'sec-fetch-site: same-site' \
-//   -H 'sec-fetch-mode: cors' \
-//   -H 'sec-fetch-dest: empty' \
-//   -H 'referer: https://app.implement.io/' \
-//   -H 'accept-language: en-GB,en;q=0.9,en-US;q=0.8' \
-//   --data-raw '{"client_id":"B6eesDHZUIvadoN3zc68YxQEGA9p5xrI","username":"tenant1045@implement.io","password":"ImplementersForLife123","realm":"Username-Password-Authentication","credential_type":"http://auth0.com/oauth/grant-type/password-realm"}' \
-//   --compressed
 function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(JWTReducer, initialState);
 
@@ -198,12 +187,22 @@ function AuthProvider({ children }: AuthProviderProps) {
           setSession(authResult?.accessToken || null);
         localStorage.setItem('accessToken', authResult?.accessToken || "");
 
-        dispatch({
-          type: Types.Login,
-          payload: {
-            user: {token:  authResult?.accessToken},
-          },
-        });
+        apolloClient.query<MyAuthDetailsQuery>({query : MyAuthDetailsDocument})
+          .then(result => {
+            console.log('-=-=-=---=-=-=-')
+            console.log(result);
+            storeDispatch(authDetailsSuccess( result.data.myAuthDetails as GlobalUser));
+            dispatch({
+              type: Types.Login,
+              payload: {
+                user: {token:  authResult?.accessToken},
+              },
+            });
+          })
+
+
+
+
         //var result = await
         // apolloClient.query({query : MyAuthDetailsDocument})
         //   .then(result => {

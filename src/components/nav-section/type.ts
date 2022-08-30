@@ -25,6 +25,8 @@ export type NavItemProps = {
 export interface NavSectionProps extends BoxProps {
   isCollapse?: boolean;
   navConfig: {
+    id: string;
+    roles?: string[];
     subheader: string;
     items: NavListProps[];
   }[];

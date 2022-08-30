@@ -17,7 +17,7 @@ const Loadable = (Component: ElementType) => (props: any) => {
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { isAuthenticated } = useAuth();
-  const isDashboard = pathname.includes('/dashboard') && isAuthenticated;
+  const isDashboard = !pathname.includes('/login') && isAuthenticated;
 
   return (
     <Suspense fallback={<LoadingScreen isDashboard={isDashboard} />}>
@@ -61,27 +61,21 @@ export default function Router() {
     },
     {
       path: '/',
-      element: <Navigate to="/dashboard/one" replace />,
-    },
-    {
-      path: '/dashboard',
       element: (
         <AuthGuard>
           <DashboardLayout />
         </AuthGuard>
       ),
       children: [
-        { element: <Navigate to="/dashboard/one" replace />, index: true },
+        { element: <Navigate to="/one" replace />, index: true },
         { path: 'one', element: <PageOne /> },
         { path: 'two', element: <PageTwo /> },
         { path: 'three', element: <PageThree /> },
         {
           path: 'user',
           children: [
-            { element: <Navigate to="/dashboard/user/four" replace />, index: true },
-            { path: 'four', element: <PageFour /> },
-            { path: 'five', element: <PageFive /> },
-            { path: 'six', element: <PageSix /> },
+            { element: <Navigate to="/user/profile" replace />, index: true },
+            { path: 'account', element: <UserAccount /> },
           ],
         },
       ],
@@ -103,6 +97,7 @@ export default function Router() {
 const Login = Loadable(lazy(() => import('../features/authentication/Login')));
 const Callback = Loadable(lazy(() => import('../features/authentication/components/callback/Callback')));
 const Register = Loadable(lazy(() =>import('../features/authentication/Register')));
+const UserAccount = Loadable(lazy(() => import('../features/userAccount/UserAccount')));
 
 // Dashboard
 const PageOne = Loadable(lazy(() => import('../pages/PageOne')));

@@ -1,6 +1,7 @@
 // @mui
 import { styled } from '@mui/material/styles';
 import { Box, Link, Typography, Avatar } from '@mui/material';
+import {useTypedSelector} from "../../../store/store";
 
 // ----------------------------------------------------------------------
 
@@ -22,6 +23,7 @@ type Props = {
 };
 
 export default function NavbarAccount({ isCollapse }: Props) {
+  const activeProfile =useTypedSelector((state) => state.auth.activeProfile);
 
 
   return (
@@ -34,8 +36,8 @@ export default function NavbarAccount({ isCollapse }: Props) {
         }}
       >
         <Avatar
-          src="https://minimal-assets-api-dev.vercel.app/assets/images/avatars/avatar_5.jpg"
-          alt="Rayan Moran2"
+          src={activeProfile?.tenant.imgUrl}
+          alt="{activeProfile?.tenant.name}"
         />
 
         <Box
@@ -52,10 +54,10 @@ export default function NavbarAccount({ isCollapse }: Props) {
           }}
         >
           <Typography variant="subtitle2" noWrap>
-            Rayan Moran 2
+            {activeProfile?.tenant.name}
           </Typography>
           <Typography variant="body2" noWrap sx={{ color: 'text.secondary' }}>
-            user
+            {activeProfile?.nickName} : {activeProfile?.profileType?.name}
           </Typography>
         </Box>
       </RootStyle>

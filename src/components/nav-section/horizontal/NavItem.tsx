@@ -1,6 +1,10 @@
 import { forwardRef } from 'react';
 // @mui
 import { Box, Tooltip, ListItemButtonProps, ListItemText, ListItemIcon } from '@mui/material';
+// hooks
+import useLocales from 'hooks/useLocales';
+// guards
+import RoleBasedGuard from '../../../guards/RoleBasedGuard';
 // config
 import { ICON } from '../../../config';
 //
@@ -14,7 +18,9 @@ type Props = NavItemProps & ListItemButtonProps;
 
 const NavItem = forwardRef<HTMLDivElement & HTMLAnchorElement, Props>(
   ({ item, depth, active, open, ...other }, ref) => {
-    const { title, icon, info, children, disabled, caption } = item;
+    const { translate } = useLocales();
+
+    const { title, icon, info, children, disabled, caption, roles } = item;
 
     const renderContent = (
       <ListItemStyle
@@ -39,7 +45,7 @@ const NavItem = forwardRef<HTMLDivElement & HTMLAnchorElement, Props>(
         )}
 
         <ListItemText
-          primary={title}
+          primary={translate(title)}
           primaryTypographyProps={{
             noWrap: true,
             variant: active ? 'subtitle2' : 'body2',
@@ -47,7 +53,7 @@ const NavItem = forwardRef<HTMLDivElement & HTMLAnchorElement, Props>(
         />
 
         {caption && (
-          <Tooltip title={caption} arrow>
+          <Tooltip title={translate(caption)} arrow>
             <Box component="span" sx={{ ml: 0.5, lineHeight: 0 }}>
               <Iconify
                 icon="eva:info-outline"
@@ -80,7 +86,7 @@ const NavItem = forwardRef<HTMLDivElement & HTMLAnchorElement, Props>(
       </ListItemStyle>
     );
 
-    return renderContent;
+    return <RoleBasedGuard roles={roles}>{renderContent}</RoleBasedGuard>;
   }
 );
 

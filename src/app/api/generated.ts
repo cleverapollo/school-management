@@ -459,7 +459,7 @@ export type _Service = {
 export type MyAuthDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MyAuthDetailsQuery = { __typename?: 'Query', myAuthDetails?: { __typename?: 'GlobalUser', id: number, email?: string | null, name?: string | null, defaultProfileId?: number | null, activeProfileId?: number | null, profiles?: Array<{ __typename?: 'Profile', id: number, nickName?: string | null, permissionIds?: Array<string | null> | null, tenant: { __typename?: 'Tenant', tenant: number, name: string, imgUrl: string } } | null> | null } | null };
+export type MyAuthDetailsQuery = { __typename?: 'Query', myAuthDetails?: { __typename?: 'GlobalUser', id: number, email?: string | null, name?: string | null, defaultProfileId?: number | null, activeProfileId?: number | null, profiles?: Array<{ __typename?: 'Profile', id: number, nickName?: string | null, permissionIds?: Array<string | null> | null, tenant: { __typename?: 'Tenant', tenant: number, name: string, imgUrl: string }, profileType?: { __typename?: 'ProfileType', name: string, description: string } | null } | null> | null } | null };
 
 
 export const MyAuthDetailsDocument = gql`
@@ -477,6 +477,10 @@ export const MyAuthDetailsDocument = gql`
         tenant
         name
         imgUrl
+      }
+      profileType {
+        name
+        description
       }
       permissionIds
     }
