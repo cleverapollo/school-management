@@ -10,7 +10,7 @@ export type NavListProps = {
   info?: ReactElement;
   caption?: string;
   disabled?: boolean;
-  roles?: string[];
+  permissions?: string[];
   children?: any;
 };
 
@@ -26,7 +26,7 @@ export interface NavSectionProps extends BoxProps {
   isCollapse?: boolean;
   navConfig: {
     id: string;
-    roles?: string[];
+    permissions?: string[];
     subheader: string;
     items: NavListProps[];
   }[];

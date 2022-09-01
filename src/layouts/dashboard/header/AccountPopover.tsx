@@ -109,7 +109,6 @@ export default function AccountPopover() {
         </Box>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
-
         <Stack sx={{ p: 1 }}>
           {MENU_OPTIONS.map((option) => (
             <MenuItem
@@ -122,7 +121,6 @@ export default function AccountPopover() {
             </MenuItem>
           ))}
         </Stack>
-
         <Divider sx={{ borderStyle: 'dashed' }} />
         <MenuItem  onClick={handleLogout}  sx={{ m: 1 }}>Logout</MenuItem>
       </MenuPopover>

@@ -21,7 +21,7 @@ const navConfig = [
     id: 'general',
     subheader: '',
     items: [
-      { title: 'Timetable', path: '/one', icon: ICONS.dashboard , roles: ["ui:view:timetable"]},
+      { title: 'Timetable', path: '/one', icon: ICONS.dashboard , permissions: ["ui:view:timetable"]},
     ],
   },
 
@@ -30,7 +30,7 @@ const navConfig = [
   {
     id: 'management',
     subheader: 'management',
-    roles: ['ui:view:admin'],
+    permissions: ['ui:view:admin'],
     items: [
       { title: 'Class List Manager', path: '/two', icon: ICONS.ecommerce },
     ],

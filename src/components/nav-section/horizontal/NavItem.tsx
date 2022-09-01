@@ -4,7 +4,7 @@ import { Box, Tooltip, ListItemButtonProps, ListItemText, ListItemIcon } from '@
 // hooks
 import useLocales from 'hooks/useLocales';
 // guards
-import RoleBasedGuard from '../../../guards/RoleBasedGuard';
+import PermissionBasedGuard from '../../../guards/PermissionBasedGuard';
 // config
 import { ICON } from '../../../config';
 //
@@ -20,7 +20,7 @@ const NavItem = forwardRef<HTMLDivElement & HTMLAnchorElement, Props>(
   ({ item, depth, active, open, ...other }, ref) => {
     const { translate } = useLocales();
 
-    const { title, icon, info, children, disabled, caption, roles } = item;
+    const { title, icon, info, children, disabled, caption, permissions } = item;
 
     const renderContent = (
       <ListItemStyle
@@ -86,7 +86,7 @@ const NavItem = forwardRef<HTMLDivElement & HTMLAnchorElement, Props>(
       </ListItemStyle>
     );
 
-    return <RoleBasedGuard roles={roles}>{renderContent}</RoleBasedGuard>;
+    return <PermissionBasedGuard permissions={permissions}>{renderContent}</PermissionBasedGuard>;
   }
 );
 

@@ -3,7 +3,7 @@ import { Box, Tooltip, ListItemButtonProps } from '@mui/material';
 // hooks
 import useLocales from 'hooks/useLocales';
 // guards
-import RoleBasedGuard from '../../../guards/RoleBasedGuard';
+import PermissionBasedGuard from '../../../guards/PermissionBasedGuard';
 //
 import Iconify from '../../Iconify';
 //
@@ -17,7 +17,7 @@ type Props = NavItemProps & ListItemButtonProps;
 export default function NavItem({ item, depth, active, open, isCollapse, ...other }: Props) {
   const { translate } = useLocales();
 
-  const { title, icon, info, children, disabled, caption, roles } = item;
+  const { title, icon, info, children, disabled, caption, permissions } = item;
 
   const renderContent = (
     <ListItemStyle depth={depth} active={active} disabled={disabled} {...other}>
@@ -64,7 +64,7 @@ export default function NavItem({ item, depth, active, open, isCollapse, ...othe
     </ListItemStyle>
   );
 
-  return <RoleBasedGuard roles={roles}>{renderContent}</RoleBasedGuard>;
+  return <PermissionBasedGuard permissions={permissions}>{renderContent}</PermissionBasedGuard>;
 }
 
 // ----------------------------------------------------------------------

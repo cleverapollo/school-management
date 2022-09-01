@@ -12,18 +12,18 @@ import {intersection} from "lodash";
 
 // ----------------------------------------------------------------------
 
-type RoleBasedGuardProp = {
+type PermissionBasedGuardProp = {
   hasContent?: boolean;
-  roles?: string[];
+  permissions?: string[];
   children: React.ReactNode;
 };
 
-export default function RoleBasedGuard({ hasContent, roles, children }: RoleBasedGuardProp) {
+export default function PermissionBasedGuard({ hasContent, permissions, children }: PermissionBasedGuardProp) {
   // Logic here to get current user role
-  const permissions =useTypedSelector((state) => state.auth.permissions);
+  const hasPermissions =useTypedSelector((state) => state.auth.permissions);
 
   // const currentRole = 'user';
-  if (typeof roles !== 'undefined' && intersection(roles ?? [], permissions).length == 0 ) {
+  if (typeof permissions !== 'undefined' && intersection(permissions ?? [], hasPermissions).length == 0 ) {
     return hasContent ? (
       <Container component={MotionContainer} sx={{ textAlign: 'center' }}>
         <m.div variants={varBounce().in}>

@@ -6,7 +6,7 @@ import useLocales from 'hooks/useLocales';
 import {NavSectionProps} from '../type';
 import {ListSubheaderStyle} from './style';
 import NavList from './NavList';
-import RoleBasedGuard from "../../../guards/RoleBasedGuard";
+import PermissionBasedGuard from "../../../guards/PermissionBasedGuard";
 
 // ----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ export default function NavSectionVertical({navConfig, isCollapse, ...other}: Na
   return (
     <Box {...other}>
       {navConfig.map((group) => (
-        <RoleBasedGuard roles={group.roles}  key={group.id}>
+        <PermissionBasedGuard permissions={group.permissions} key={group.id}>
           <List disablePadding sx={{px: 2}}>
             <ListSubheaderStyle
               sx={{
@@ -38,7 +38,7 @@ export default function NavSectionVertical({navConfig, isCollapse, ...other}: Na
               />
             ))}
           </List>
-        </RoleBasedGuard>
+        </PermissionBasedGuard>
       ))}
     </Box>
   );
