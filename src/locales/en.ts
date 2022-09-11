@@ -15,6 +15,7 @@ const en = {
     description: `Need help? \n Please check our docs.`,
     documentation: `documentation`,
   },
+  logout: 'logout',
   app: `app`,
   user: `user`,
   list: `list`,
@@ -56,6 +57,8 @@ const en = {
   other_cases: `other cases`,
   item_by_roles: `item by roles`,
   only_admin_can_see_this_item: `Only admin can see this item`,
+  font: `font`,
+  normal: `normal`
 };
 
 export default en;

@@ -3,6 +3,7 @@ import { Quill } from 'react-quill';
 import Iconify from '../Iconify';
 //
 import EditorToolbarStyle from './EditorToolbarStyle';
+import useLocales from "../../hooks/useLocales";
 
 // ----------------------------------------------------------------------
 
@@ -75,13 +76,16 @@ type EditorToolbarProps = {
 };
 
 export default function EditorToolbar({ id, isSimple, ...other }: EditorToolbarProps) {
+
+  const { t } = useLocales();
+
   return (
     <EditorToolbarStyle {...other}>
       <div id={id}>
         <div className="ql-formats">
           {!isSimple && (
             <select className="ql-font" defaultValue="">
-              <option value="">Font</option>
+              <option value="">{t`font`}</option>
               {FONT_FAMILY.map((font) => (
                 <option key={font} value={font}>
                   {font}
@@ -106,7 +110,7 @@ export default function EditorToolbar({ id, isSimple, ...other }: EditorToolbarP
                 {heading}
               </option>
             ))}
-            <option value="">Normal</option>
+            <option value="">{t`normal`}</option>
           </select>
         </div>
 

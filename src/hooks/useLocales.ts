@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next';
 import useSettings from './useSettings';
 // config
 import { allLangs, defaultLang } from '../config';
-
 // ----------------------------------------------------------------------
 
 export default function useLocales() {
@@ -22,6 +21,7 @@ export default function useLocales() {
   return {
     onChangeLang: handleChangeLanguage,
     translate: (text: any, options?: any) => translate(text, options),
+    t: (text: any, options?: any) => translate(text, options),
     currentLang,
     allLangs,
   };

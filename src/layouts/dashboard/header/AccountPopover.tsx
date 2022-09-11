@@ -5,13 +5,13 @@ import { Box, Divider, Typography, Stack, MenuItem, Avatar } from '@mui/material
 // components
 import MenuPopover from '../../../components/MenuPopover';
 import { IconButtonAnimate } from '../../../components/animate';
-import {useMyAuthDetailsQuery} from "../../../app/api/generated";
 import {useTypedSelector} from "../../../store/store";
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import useAuth from "../../../hooks/useAuth";
 import {PATH_AUTH} from "../../../routes/paths";
 import useIsMountedRef from "../../../hooks/useIsMountedRef";
 import {useSnackbar} from "notistack";
+import useLocales from "../../../hooks/useLocales";
 
 // ----------------------------------------------------------------------
 
@@ -33,6 +33,7 @@ export default function AccountPopover() {
   const navigate = useNavigate();
   const isMountedRef = useIsMountedRef();
   const { enqueueSnackbar } = useSnackbar();
+  const { translate } = useLocales();
 
   const activeProfile =useTypedSelector((state) => state.auth.activeProfile);
   const user =useTypedSelector((state) => state.auth.user);
@@ -122,7 +123,7 @@ export default function AccountPopover() {
           ))}
         </Stack>
         <Divider sx={{ borderStyle: 'dashed' }} />
-        <MenuItem  onClick={handleLogout}  sx={{ m: 1 }}>Logout</MenuItem>
+        <MenuItem  onClick={handleLogout}  sx={{ m: 1 }}>{translate('logout')}</MenuItem>
       </MenuPopover>
     </>
   );
