@@ -14,6 +14,7 @@ import Logo from '../../components/Logo';
 import Image from '../../components/Image';
 // sections
 import { LoginForm } from './components/login';
+import useLocales from "../../hooks/useLocales";
 
 // ----------------------------------------------------------------------
 
@@ -62,6 +63,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 export default function Login() {
   const { method } = useAuth();
+  const { t } = useLocales();
 
   const smUp = useResponsive('up', 'sm');
 
@@ -74,7 +76,7 @@ export default function Login() {
           <Logo />
           {smUp && (
             <Typography variant="body2" sx={{ mt: { md: -2 } }}>
-              Don’t have an account? {''}
+              {t`Don’t have an account?`}
               <Link variant="subtitle2" component={RouterLink} to={PATH_AUTH.register}>
                 Get started
               </Link>

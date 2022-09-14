@@ -1,4 +1,3 @@
-export * from './RHFUpload';
 export * from './RHFCheckbox';
 
 export { default as RHFSwitch } from './RHFSwitch';

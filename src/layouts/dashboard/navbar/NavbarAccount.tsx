@@ -37,7 +37,7 @@ export default function NavbarAccount({ isCollapse }: Props) {
       >
         <Avatar
           src={activeProfile?.tenant.imgUrl}
-          alt="{activeProfile?.tenant.name}"
+          alt={activeProfile?.tenant.name}
         />
 
         <Box

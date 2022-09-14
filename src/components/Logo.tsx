@@ -35,6 +35,20 @@ export default function Logo({ disabledLink = false, sx }: Props) {
     <Box sx={{ width: 40, height: 40, ...sx }}>
       <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"x="0px" y="0px"
            viewBox="0 0 25.531 25.531" >
+        <defs>
+          <linearGradient id="BG1" x1="100%" x2="50%" y1="9.946%" y2="50%">
+            <stop offset="0%" stopColor={PRIMARY_DARK} />
+            <stop offset="100%" stopColor={PRIMARY_MAIN} />
+          </linearGradient>
+          <linearGradient id="BG2" x1="50%" x2="50%" y1="0%" y2="100%">
+            <stop offset="0%" stopColor={PRIMARY_LIGHT} />
+            <stop offset="100%" stopColor={PRIMARY_MAIN} />
+          </linearGradient>
+          <linearGradient id="BG3" x1="50%" x2="50%" y1="0%" y2="100%">
+            <stop offset="0%" stopColor={PRIMARY_LIGHT} />
+            <stop offset="100%" stopColor={PRIMARY_MAIN} />
+          </linearGradient>
+        </defs>
 <g>
 	<g id="c179_text">
 		<path d="M25.198,6.273c-0.014,0.23-0.045,0.389-0.087,0.467c-0.045,0.084-0.176,0.145-0.392,0.183

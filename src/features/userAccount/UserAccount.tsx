@@ -14,7 +14,6 @@ import Iconify from '../../components/Iconify';
 import HeaderBreadcrumbs from 'components/HeaderBreadcrumbs';
 // sections
 import {
-  AccountGeneral,
   AccountProfiles,
   AccountNotifications,
   AccountChangePassword,
@@ -28,11 +27,6 @@ export default function UserAccount() {
   const { currentTab, onChangeTab } = useTabs('general');
 
   const ACCOUNT_TABS = [
-    {
-      value: 'general',
-      icon: <Iconify icon={'ic:round-account-box'} width={20} height={20} />,
-      component: <AccountGeneral />,
-    },
     {
       value: 'profile',
       icon: <Iconify icon={'ic:round-account-box'} width={20} height={20} />,
