@@ -16,8 +16,8 @@ const authLink = setContext((_, { headers }) => {
 // HTTP connection to the API
 const httpLink = createHttpLink({
   // You should use an absolute URL here
-  uri: 'http://localhost:8082/api/graphql',
-  // uri: 'https://boru.app/api/graphql',
+  // uri: 'http://localhost:8082/api/graphql',
+  uri: 'https://tyro-api-uat.azurewebsites.net/api/graphql',
 
 })
 const defaultOptions: DefaultOptions = {

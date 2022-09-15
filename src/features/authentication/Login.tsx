@@ -63,7 +63,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 export default function Login() {
   const { method } = useAuth();
-  const { t } = useLocales();
+  const { translate } = useLocales();
 
   const smUp = useResponsive('up', 'sm');
 
@@ -76,7 +76,7 @@ export default function Login() {
           <Logo />
           {smUp && (
             <Typography variant="body2" sx={{ mt: { md: -2 } }}>
-              {t`Don’t have an account?`}
+              {translate`Don’t have an account?`}
               <Link variant="subtitle2" component={RouterLink} to={PATH_AUTH.register}>
                 Get started
               </Link>
