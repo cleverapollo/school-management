@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 // @mui
 import { Box, Tooltip, ListItemButtonProps, ListItemText, ListItemIcon } from '@mui/material';
 // hooks
-import useLocales from 'hooks/useLocales';
+import useLocales from '../../../hooks/useLocales';
 // guards
 import PermissionBasedGuard from '../../../guards/PermissionBasedGuard';
 // config

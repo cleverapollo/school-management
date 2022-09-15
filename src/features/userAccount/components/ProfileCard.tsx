@@ -2,11 +2,11 @@
 import { styled } from '@mui/material/styles';
 import {Box, Card, Avatar, Divider, Typography, Stack, Button} from '@mui/material';
 // utils
-import cssStyles from 'utils/cssStyles';
+import cssStyles from '../../../utils/cssStyles';
 // @types
 // components
-import Image from 'components/Image';
-import SvgIconStyle from 'components/SvgIconStyle';
+import Image from '../../../components/Image';
+import SvgIconStyle from '../../../components/SvgIconStyle';
 import {GlobalUser, Profile} from "../../../app/api/generated";
 import {dispatch as storeDispatch} from "../../../store/store";
 import {authDetailsSuccess, setActiveProfile} from "../../../store/slices/auth";

@@ -7,7 +7,7 @@ import ThemeSettings from './components/settings';
 import ScrollToTop from './components/ScrollToTop';
 import { ProgressBarStyle } from './components/ProgressBar';
 import MotionLazyContainer from './components/animate/MotionLazyContainer';
-import NotistackProvider from 'components/NotistackProvider';
+import NotistackProvider from './components/NotistackProvider';
 
 // ----------------------------------------------------------------------
 

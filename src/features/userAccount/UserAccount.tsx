@@ -4,14 +4,14 @@ import { Container, Tab, Box, Tabs } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '../../routes/paths';
 // hooks
-import useTabs from 'hooks/useTabs';
-import useSettings from 'hooks/useSettings';
+import useTabs from '../../hooks/useTabs';
+import useSettings from '../../hooks/useSettings';
 // _mock_
 import { _userPayment, _userAddressBook, _userInvoices, _userAbout } from '../../_mock';
 // components
 import Page from '../../components/Page';
 import Iconify from '../../components/Iconify';
-import HeaderBreadcrumbs from 'components/HeaderBreadcrumbs';
+import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // sections
 import {
   AccountProfiles,

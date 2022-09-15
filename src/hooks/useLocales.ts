@@ -5,6 +5,7 @@ import { allLangs, defaultLang } from '../config';
 // ----------------------------------------------------------------------
 
 export default function useLocales() {
+  
   const { i18n, t: translate } = useTranslation();
 
   const { onChangeDirectionByLang } = useSettings();
@@ -21,6 +22,7 @@ export default function useLocales() {
   return {
     onChangeLang: handleChangeLanguage,
     translate: (text: any, options?: any) => translate(text, options),
+    t: translate,
     currentLang,
     allLangs,
   };
