@@ -17,7 +17,7 @@ import { LoginForm } from './components/login';
 import useLocales from "../../hooks/useLocales";
 
 // ----------------------------------------------------------------------
-
+import { useTranslation } from 'react-i18next';
 const RootStyle = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     display: 'flex',
@@ -64,7 +64,6 @@ const ContentStyle = styled('div')(({ theme }) => ({
 export default function Login() {
   const { method } = useAuth();
   const { t } = useLocales();
-
   const smUp = useResponsive('up', 'sm');
 
   const mdUp = useResponsive('up', 'md');
@@ -76,7 +75,7 @@ export default function Login() {
           <Logo />
           {smUp && (
             <Typography variant="body2" sx={{ mt: { md: -2 } }}>
-              {t`Don’t have an account?`}
+              {t('docs.no_account')}
               <Link variant="subtitle2" component={RouterLink} to={PATH_AUTH.register}>
                 Get started
               </Link>
@@ -114,7 +113,7 @@ export default function Login() {
 
             {!smUp && (
               <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-                Don’t have an account?{' '}
+                {t('docs.no_account')}{' '}
                 <Link variant="subtitle2" component={RouterLink} to={PATH_AUTH.register}>
                   Get started
                 </Link>

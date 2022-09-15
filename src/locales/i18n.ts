@@ -10,19 +10,20 @@ import vnLocales from './vn';
 import cnLocales from './cn';
 import arLocales from './ar';
 
+const resources = {
+  en: { translations: enLocales },
+  fr: { translations: frLocales },
+  vn: { translations: vnLocales },
+  cn: { translations: cnLocales },
+  ar: { translations: arLocales },
+}
 // ----------------------------------------------------------------------
-
+export const availableLanguages = Object.keys(resources)
 i18n
-  .use(LanguageDetector)
   .use(initReactI18next)
+  .use(LanguageDetector)
   .init({
-    resources: {
-      en: { translations: enLocales },
-      fr: { translations: frLocales },
-      vn: { translations: vnLocales },
-      cn: { translations: cnLocales },
-      ar: { translations: arLocales },
-    },
+    resources,
     lng: localStorage.getItem('i18nextLng') || defaultLang.value,
     fallbackLng: defaultLang.value,
     debug: false,
