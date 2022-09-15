@@ -38,8 +38,8 @@ export default function LoginForm() {
   });
 
   const defaultValues = {
-    email: 'test@noreilly.com',
-    password: '1ctl02iwas7UH3MwqDvOn7Vuiz0638kf',
+    email: '',
+    password: '',
     remember: true,
   };
 

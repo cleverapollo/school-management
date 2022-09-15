@@ -77,7 +77,7 @@ type EditorToolbarProps = {
 
 export default function EditorToolbar({ id, isSimple, ...other }: EditorToolbarProps) {
 
-  const { t } = useLocales();
+  const { translate } = useLocales();
 
   return (
     <EditorToolbarStyle {...other}>
@@ -85,7 +85,7 @@ export default function EditorToolbar({ id, isSimple, ...other }: EditorToolbarP
         <div className="ql-formats">
           {!isSimple && (
             <select className="ql-font" defaultValue="">
-              <option value="">{t`font`}</option>
+              <option value="">{translate`font`}</option>
               {FONT_FAMILY.map((font) => (
                 <option key={font} value={font}>
                   {font}
@@ -110,7 +110,7 @@ export default function EditorToolbar({ id, isSimple, ...other }: EditorToolbarP
                 {heading}
               </option>
             ))}
-            <option value="">{t`normal`}</option>
+            <option value="">{translate`normal`}</option>
           </select>
         </div>
 
