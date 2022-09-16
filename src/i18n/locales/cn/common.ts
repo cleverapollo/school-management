@@ -1,11 +1,4 @@
-// ----------------------------------------------------------------------
-
-// IF THIS TRANSLATION IS INCORRECT PLEASE IGNORE THIS AS THIS TRANSLATION IS FOR DEMO PURPOSES ONLY
-// We are happy if you can help improve the translation by sending an email to support@minimals.cc.
-
-// ----------------------------------------------------------------------
-
-const cn = {
+const common = {
   demo: {
     title: `Chinese`,
     introduction: `Lorem Ipsum 只是印刷和排版行业的虚拟文本。 自 1500 年代以来，Lorem Ipsum 一直是行业的标准虚拟文本，当时一位不知名的印刷商采用了一种类型的厨房并将其加扰以制作类型样本书。 它不仅经历了五个世纪，而且经历了电子排版的飞跃，基本保持不变。 它在 1960 年代随着包含 Lorem Ipsum 段落的 Letraset 表的发布而流行起来，最近还随着 Aldus PageMaker 等桌面出版软件（包括 Lorem Ipsum 的版本）而普及.`,
@@ -58,4 +51,4 @@ const cn = {
   only_admin_can_see_this_item: `只有管理员可以看到这个项目`,
 };
 
-export default cn;
+export default common;

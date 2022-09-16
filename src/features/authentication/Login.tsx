@@ -1,12 +1,10 @@
-import { capitalCase } from 'change-case';
 import { Link as RouterLink } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Box, Card, Stack, Link, Alert, Tooltip, Container, Typography } from '@mui/material';
+import { Box, Card, Stack, Link, Container, Typography } from '@mui/material';
 // routes
 import { PATH_AUTH } from '../../routes/paths';
 // hooks
-import useAuth from '../../hooks/useAuth';
 import useResponsive from '../../hooks/useResponsive';
 // components
 import Page from '../../components/Page';
@@ -17,7 +15,7 @@ import { LoginForm } from './components/login';
 import useLocales from "../../hooks/useLocales";
 
 // ----------------------------------------------------------------------
-import { useTranslation } from 'react-i18next';
+
 const RootStyle = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     display: 'flex',
@@ -62,10 +60,8 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function Login() {
-  const { method } = useAuth();
-  const { t } = useLocales();
+  const { trans } = useLocales();
   const smUp = useResponsive('up', 'sm');
-
   const mdUp = useResponsive('up', 'md');
 
   return (
@@ -75,9 +71,9 @@ export default function Login() {
           <Logo />
           {smUp && (
             <Typography variant="body2" sx={{ mt: { md: -2 } }}>
-              {t('docs.no_account')}
+              {trans('common:docs.no_account')}
               <Link variant="subtitle2" component={RouterLink} to={PATH_AUTH.register}>
-                Get started
+                {`Get started`}
               </Link>
             </Typography>
           )}
@@ -86,7 +82,7 @@ export default function Login() {
         {mdUp && (
           <SectionStyle>
             <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-              Hi, Welcome Back
+              {`Hi, Welcome Back`}
             </Typography>
             <Image
               visibleByDefault
@@ -102,9 +98,9 @@ export default function Login() {
             <Stack direction="row" alignItems="center" sx={{ mb: 5 }}>
               <Box sx={{ flexGrow: 1 }}>
                 <Typography variant="h4" gutterBottom>
-                  Sign in to Tyro
+                  {`Sign in to Tyro`}
                 </Typography>
-                <Typography sx={{ color: 'text.secondary' }}>Enter your details below.</Typography>
+                <Typography sx={{ color: 'text.secondary' }}>{`Enter your details below.`}</Typography>
               </Box>
 
             </Stack>
@@ -113,9 +109,9 @@ export default function Login() {
 
             {!smUp && (
               <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-                {t('docs.no_account')}{' '}
+                {trans('common:docs.no_account')}
                 <Link variant="subtitle2" component={RouterLink} to={PATH_AUTH.register}>
-                  Get started
+                  {`Get started`}
                 </Link>
               </Typography>
             )}
