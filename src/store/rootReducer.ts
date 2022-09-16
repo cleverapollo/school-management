@@ -10,7 +10,7 @@ const rootPersistConfig = {
   key: 'root',
   storage,
   keyPrefix: 'redux-',
-  whitelist: [],
+  whitelist: ['auth'],
 };
 
 const productPersistConfig = {
