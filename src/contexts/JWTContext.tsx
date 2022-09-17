@@ -11,7 +11,6 @@ import {GlobalUser, MyAuthDetailsDocument, MyAuthDetailsQuery} from "../app/api/
 import {dispatch as storeDispatch} from "../store/store";
 import {authDetailsSuccess} from "../store/slices/auth";
 
-
 export const webAuth = new auth0.WebAuth({
   domain: AUTH_CONFIG.domain,
   redirectUri: `${window.location.origin}/callback`,
@@ -54,6 +53,7 @@ export type JWTActions = ActionMap<JWTAuthPayload>[keyof ActionMap<JWTAuthPayloa
 
 
 const initialState: AuthState = {
+  // isAuthenticated: (localStorage.getItem('accessToken') && isValidToken(localStorage.getItem('accessToken') as string)) ? true : false,
   isAuthenticated: false,
   isInitialized: false,
   user: null,
@@ -107,12 +107,10 @@ function AuthProvider({ children }: AuthProviderProps) {
     const initialize = async () => {
       try {
         const accessToken = localStorage.getItem('accessToken');
-
         if (accessToken && isValidToken(accessToken)) {
           setSession(accessToken);
-
-          const response = await axios.get('/api/account/my-account');
-          const { user } = response.data;
+          
+          const { user } = state;
 
           dispatch({
             type: Types.Initial,
@@ -131,7 +129,6 @@ function AuthProvider({ children }: AuthProviderProps) {
           });
         }
       } catch (err) {
-        console.error(err);
         dispatch({
           type: Types.Initial,
           payload: {
@@ -155,10 +152,10 @@ function AuthProvider({ children }: AuthProviderProps) {
       redirectUri: callbackUrl,
       password: password,
     }, (err) => {
-
+      console.log(err)
     });
     //
-    // console.log(result)
+    //console.log(result)
     //
     // const response = {data: {accessToken: "", user: null}}
     // // const response = await axios.post('https://noreilly-test.eu.auth0.com/co/authenticate',{"client_id":"kOBEdeaHabGFemGsvJlwQEoqGCnFZJoP","username":email,"password":password,"realm":"Username-Password-Authentication","credential_type":"http://auth0.com/oauth/grant-type/password-realm"},{
