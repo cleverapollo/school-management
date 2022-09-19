@@ -23,6 +23,9 @@ import { HelmetProvider } from 'react-helmet-async';
 // @mui
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
+// @msal
+import { PublicClientApplication } from "@azure/msal-browser";
+import { msalConfig } from "./config";
 // redux
 // contexts
 import { SettingsProvider } from './contexts/SettingsContext';
@@ -44,6 +47,11 @@ import useAuth from "./hooks/useAuth";
 import {ApiProvider} from "@reduxjs/toolkit/dist/query/react";
 import {store} from "./store/store";
 
+/**
+ * MSAL should be instantiated outside of the component tree to prevent it from being re-instantiated on re-renders. 
+ * For more, visit: https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-react/docs/getting-started.md
+ */
+ export const msalInstance = new PublicClientApplication(msalConfig);
 // ----------------------------------------------------------------------
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
@@ -69,7 +77,7 @@ root.render(
             <SettingsProvider>
               <CollapseDrawerProvider>
                 <BrowserRouter>
-                  <App />
+                  <App msalInstance={msalInstance}/>
                 </BrowserRouter>
               </CollapseDrawerProvider>
             </SettingsProvider>

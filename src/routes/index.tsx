@@ -1,5 +1,7 @@
 import { Suspense, lazy, ElementType } from 'react';
 import { Navigate, useRoutes, useLocation } from 'react-router-dom';
+
+import { MsalProvider, AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from "@azure/msal-react";
 // layouts
 import DashboardLayout from '../layouts/dashboard';
 import LogoOnlyLayout from '../layouts/LogoOnlyLayout';
@@ -62,9 +64,18 @@ export default function Router() {
     {
       path: '/',
       element: (
-        <AuthGuard>
-          <DashboardLayout />
-        </AuthGuard>
+        <>
+          <AuthenticatedTemplate>
+            <AuthGuard>
+              <DashboardLayout />
+            </AuthGuard>
+          </AuthenticatedTemplate>
+          <UnauthenticatedTemplate>
+            <GuestGuard>
+              <Navigate to="/auth/login" replace />
+            </GuestGuard>
+          </UnauthenticatedTemplate>
+        </>
       ),
       children: [
         { element: <Navigate to="/one" replace />, index: true },
@@ -96,7 +107,7 @@ export default function Router() {
 // AUTHENTICATION
 const Login = Loadable(lazy(() => import('../features/authentication/Login')));
 const Callback = Loadable(lazy(() => import('../features/authentication/components/callback/Callback')));
-const Register = Loadable(lazy(() =>import('../features/authentication/Register')));
+const Register = Loadable(lazy(() => import('../features/authentication/Register')));
 const UserAccount = Loadable(lazy(() => import('../features/userAccount/UserAccount')));
 
 // Dashboard
