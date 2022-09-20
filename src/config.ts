@@ -133,10 +133,10 @@ export const b2cPolicies = {
 */
 export const msalConfig = {
   auth: {
-    clientId: "2fdd06f3-7b34-49a3-a78b-0cf1dd87878e", // This is the ONLY mandatory field that you need to supply.
+    clientId: "41d6f2c2-f88f-4b59-b49b-2bb7caee7ccb", // This is the ONLY mandatory field that you need to supply.
     authority: b2cPolicies.authorities.signUpSignIn.authority, // Use a sign-up/sign-in user-flow as a default authority
     knownAuthorities: [b2cPolicies.authorityDomain], // Mark your B2C tenant's domain as trusted.
-    redirectUri: "/", // Points to window.location.origin. You must register this URI on Azure Portal/App Registration.
+    redirectUri: `${window.location.origin}/auth/callback`, // Points to window.location.origin. You must register this URI on Azure Portal/App Registration.
     postLogoutRedirectUri: "/", // Indicates the page to navigate after logout.
     navigateToLoginRequestUrl: false, // If "true", will navigate back to the original request location before processing the auth code response.
   },

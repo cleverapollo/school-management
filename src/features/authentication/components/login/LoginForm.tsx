@@ -26,7 +26,7 @@ type FormValuesProps = {
 };
 
 export default function LoginForm() {
-  const { login } = useAuth();
+  const { login, msalLogin } = useAuth();
 
   const isMountedRef = useIsMountedRef();
 
@@ -57,8 +57,8 @@ export default function LoginForm() {
 
   const onSubmit = async (data: FormValuesProps) => {
     try {
-     await login(data.email, data.password);
-      // await login();
+    //  await login(data.email, data.password);
+      await msalLogin();
     } catch (error) {
       console.error(error);
 
@@ -75,12 +75,16 @@ export default function LoginForm() {
       <Stack spacing={3}>
         {!!errors.afterSubmit && <Alert severity="error">{errors.afterSubmit.message}</Alert>}
 
-        <RHFTextField name="email" label="Email address" />
+        <RHFTextField name="email" label="Email address" required={false}/>
+        {
+          // TODO:temporary disabled required :  I think those two textfield would be removed in the future version.
+        }
 
         <RHFTextField
           name="password"
           label="Password"
           type={showPassword ? 'text' : 'password'}
+          required={false}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -105,9 +109,19 @@ export default function LoginForm() {
         size="large"
         type="submit"
         variant="contained"
+        disabled
         loading={isSubmitting}
       >
         Login
+      </LoadingButton>
+      <LoadingButton
+        fullWidth
+        size="large"
+        type="submit"
+        variant="contained"
+        loading={isSubmitting}
+      >
+        Login with MSAL
       </LoadingButton>
     </FormProvider>
   );

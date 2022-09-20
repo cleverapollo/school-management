@@ -1,7 +1,5 @@
 import { Suspense, lazy, ElementType } from 'react';
 import { Navigate, useRoutes, useLocation } from 'react-router-dom';
-
-import { MsalProvider, AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from "@azure/msal-react";
 // layouts
 import DashboardLayout from '../layouts/dashboard';
 import LogoOnlyLayout from '../layouts/LogoOnlyLayout';
@@ -28,7 +26,7 @@ const Loadable = (Component: ElementType) => (props: any) => {
   );
 };
 
-export default function Router() {
+export default function Router() {  
   return useRoutes([
     {
       path: 'auth',
@@ -64,18 +62,9 @@ export default function Router() {
     {
       path: '/',
       element: (
-        <>
-          <AuthenticatedTemplate>
-            <AuthGuard>
-              <DashboardLayout />
-            </AuthGuard>
-          </AuthenticatedTemplate>
-          <UnauthenticatedTemplate>
-            <GuestGuard>
-              <Navigate to="/auth/login" replace />
-            </GuestGuard>
-          </UnauthenticatedTemplate>
-        </>
+        <AuthGuard>
+          <DashboardLayout />
+        </AuthGuard>
       ),
       children: [
         { element: <Navigate to="/one" replace />, index: true },

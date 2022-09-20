@@ -42,23 +42,22 @@ import { AuthProvider } from './contexts/JWTContext';
 //
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import {setContext} from "@apollo/client/link/context";
-import useAuth from "./hooks/useAuth";
-import {ApiProvider} from "@reduxjs/toolkit/dist/query/react";
-import {store} from "./store/store";
+import { setContext } from "@apollo/client/link/context";
+import { ApiProvider } from "@reduxjs/toolkit/dist/query/react";
+import { store } from "./store/store";
 
 /**
  * MSAL should be instantiated outside of the component tree to prevent it from being re-instantiated on re-renders. 
  * For more, visit: https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-react/docs/getting-started.md
  */
- export const msalInstance = new PublicClientApplication(msalConfig);
+export const msalInstance = new PublicClientApplication(msalConfig);
 // ----------------------------------------------------------------------
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from ApplicationSettings if it exists
-  const token =  localStorage.getItem('accessToken');
+  const token = localStorage.getItem('accessToken');
 
   // return the headers to the context so HTTP link can read them
   return {
@@ -70,21 +69,21 @@ const authLink = setContext((_, { headers }) => {
 })
 
 root.render(
-  <AuthProvider>
-    <ReduxProvider store={store}>
+  // <AuthProvider>
+  <ReduxProvider store={store}>
     <HelmetProvider>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <SettingsProvider>
-              <CollapseDrawerProvider>
-                <BrowserRouter>
-                  <App msalInstance={msalInstance}/>
-                </BrowserRouter>
-              </CollapseDrawerProvider>
-            </SettingsProvider>
-          </LocalizationProvider>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <SettingsProvider>
+          <CollapseDrawerProvider>
+            <BrowserRouter>
+              <App msalInstance={msalInstance} />
+            </BrowserRouter>
+          </CollapseDrawerProvider>
+        </SettingsProvider>
+      </LocalizationProvider>
     </HelmetProvider>
-    </ReduxProvider>
-  </AuthProvider>
+  </ReduxProvider>
+  // </AuthProvider>
 );
 
 reportWebVitals();
