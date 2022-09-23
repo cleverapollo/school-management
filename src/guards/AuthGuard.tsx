@@ -28,7 +28,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
     if (pathname !== requestedLocation) {
       setRequestedLocation(pathname);
     }
-    return <Login />;
+    return <Navigate to={`auth/login`} />;
   }
 
   if (requestedLocation && pathname !== requestedLocation) {

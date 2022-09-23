@@ -107,9 +107,9 @@ export const defaultLang = allLangs[0]; // English
  */
 export const b2cPolicies = {
   names: {
-    signUpSignIn: "b2c_1_susi",
-    forgotPassword: "b2c_1_reset",
-    editProfile: "b2c_1_edit_profile"
+    signUpSignIn: "B2C_1_spa_login",
+    forgotPassword: "B2C_1_spa_password_reset",
+    editProfile: "B2C_1_edit_profile_v2"
   },
   authorities: {
     signUpSignIn: {
@@ -117,10 +117,9 @@ export const b2cPolicies = {
     },
     forgotPassword: {
       authority: "https://tyrouat.b2clogin.com/tyrouat.onmicrosoft.com/B2C_1_spa_password_reset",
-      scopes: [] as string[]
     },
     editProfile: {
-      authority: "https://fabrikamb2c.b2clogin.com/fabrikamb2c.onmicrosoft.com/b2c_1_edit_profile"
+      authority: "https://tyrouat.b2clogin.com/tyrouat.onmicrosoft.com/b2c_1_edit_profile"
     }
   },
   authorityDomain: "tyrouat.b2clogin.com"
@@ -133,12 +132,12 @@ export const b2cPolicies = {
 */
 export const msalConfig = {
   auth: {
-    clientId: "41d6f2c2-f88f-4b59-b49b-2bb7caee7ccb", // This is the ONLY mandatory field that you need to supply.
+    clientId: "4dcc7808-8282-4b56-9518-ff8f306db255", // This is the ONLY mandatory field that you need to supply.
     authority: b2cPolicies.authorities.signUpSignIn.authority, // Use a sign-up/sign-in user-flow as a default authority
     knownAuthorities: [b2cPolicies.authorityDomain], // Mark your B2C tenant's domain as trusted.
-    redirectUri: `${window.location.origin}/auth/callback`, // Points to window.location.origin. You must register this URI on Azure Portal/App Registration.
+    redirectUri: `${window.location.origin}`, // Points to window.location.origin. You must register this URI on Azure Portal/App Registration.
     postLogoutRedirectUri: "/", // Indicates the page to navigate after logout.
-    navigateToLoginRequestUrl: false, // If "true", will navigate back to the original request location before processing the auth code response.
+    navigateToLoginRequestUrl: true, // If "true", will navigate back to the original request location before processing the auth code response.
   },
   cache: {
     cacheLocation: "sessionStorage", // Configures cache location. "sessionStorage" is more secure, but "localStorage" gives you SSO between tabs.
@@ -152,16 +151,16 @@ export const msalConfig = {
         }
         switch (level) {
           case LogLevel.Error:
-            console.error(message);
+            // console.error(message);
             return;
           case LogLevel.Info:
-            console.info(message);
+            // console.info(message);
             return;
           case LogLevel.Verbose:
-            console.debug(message);
+            // console.debug(message);
             return;
           case LogLevel.Warning:
-            console.warn(message);
+            // console.warn(message);
             return;
         }
       }
@@ -176,7 +175,7 @@ export const msalConfig = {
 * https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#openid-connect-scopes
 */
 export const loginRequest = {
-  scopes: []
+  scopes: ['openid', 'profile', 'https://tyrouat.onmicrosoft.com/tyro-api/graphql.use']
 };
 
 /**

@@ -105,7 +105,7 @@ export default function AccountPopover() {
             {activeProfile?.nickName}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {user?.email}
+            {user?.username}
           </Typography>
         </Box>
 
