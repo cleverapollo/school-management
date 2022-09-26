@@ -1,9 +1,12 @@
 import { createContext, ReactNode, useEffect, useReducer } from 'react';
 import { useMsal, useIsAuthenticated, useAccount } from "@azure/msal-react";
-import { EventType, InteractionType, RedirectRequest } from "@azure/msal-browser";
+import { AccountInfo, EventType, InteractionType, RedirectRequest } from "@azure/msal-browser";
 import { loginRequest, b2cPolicies } from '../config';
 // utils
-import { isValidToken } from '../utils/jwt';
+import { isValidToken, setSession } from '../utils/jwt';
+import { AUTH_CONFIG } from "../config";
+import { apolloClient } from "../app/api/apollo";
+import { GlobalUser, MyAuthDetailsDocument, MyAuthDetailsQuery } from "../app/api/generated";
 // @types
 import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
 import { dispatch as storeDispatch } from "../store/store";
@@ -145,6 +148,23 @@ function AuthProvider({ children }: AuthProviderProps) {
             },
           });
           storeDispatch(authDetailsSuccess(account));
+          setSession(response?.accessToken || null);
+          localStorage.setItem('accessToken', response?.accessToken || "");
+
+          apolloClient.query<MyAuthDetailsQuery>({ query: MyAuthDetailsDocument })
+            .then(result => {
+              console.log('-=-=-=---=-=-=-')
+              console.log(result);
+              // storeDispatch(authDetailsSuccess( result.data.myAuthDetails as AccountInfo));
+              dispatch({
+                type: Types.Login,
+                payload: {
+                  user: { token: response?.accessToken },
+                },
+              });
+            }).catch((err: any) => {
+              console.log(err);
+            })
         }
       });
     }
