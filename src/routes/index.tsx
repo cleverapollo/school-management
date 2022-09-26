@@ -26,7 +26,7 @@ const Loadable = (Component: ElementType) => (props: any) => {
   );
 };
 
-export default function Router() {
+export default function Router() {  
   return useRoutes([
     {
       path: 'auth',
@@ -96,7 +96,7 @@ export default function Router() {
 // AUTHENTICATION
 const Login = Loadable(lazy(() => import('../features/authentication/Login')));
 const Callback = Loadable(lazy(() => import('../features/authentication/components/callback/Callback')));
-const Register = Loadable(lazy(() =>import('../features/authentication/Register')));
+const Register = Loadable(lazy(() => import('../features/authentication/Register')));
 const UserAccount = Loadable(lazy(() => import('../features/userAccount/UserAccount')));
 
 // Dashboard

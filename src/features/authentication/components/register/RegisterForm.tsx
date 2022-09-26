@@ -24,7 +24,6 @@ type FormValuesProps = {
 };
 
 export default function RegisterForm() {
-  const { register } = useAuth();
 
   const isMountedRef = useIsMountedRef();
 
@@ -57,15 +56,7 @@ export default function RegisterForm() {
   } = methods;
 
   const onSubmit = async (data: FormValuesProps) => {
-    try {
-      await register(data.email, data.password, data.firstName, data.lastName);
-    } catch (error) {
-      console.error(error);
-      reset();
-      if (isMountedRef.current) {
-        setError('afterSubmit', { ...error, message: error.message });
-      }
-    }
+   
   };
 
   return (

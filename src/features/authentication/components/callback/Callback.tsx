@@ -11,10 +11,6 @@ import {useEffect} from "react";
 
 export default function Callback() {
   const navigate = useNavigate();
-
-  const { postAuthCallback } = useAuth();
-  postAuthCallback()
-
   const globalPolling = useTypedSelector((state) => state.auth);
   useEffect(() => {
     if(globalPolling.activeProfile !== null){

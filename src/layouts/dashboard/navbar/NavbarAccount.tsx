@@ -1,7 +1,7 @@
 // @mui
 import { styled } from '@mui/material/styles';
 import { Box, Link, Typography, Avatar } from '@mui/material';
-import {useTypedSelector} from "../../../store/store";
+import { useTypedSelector } from "../../../store/store";
 
 // ----------------------------------------------------------------------
 
@@ -23,8 +23,8 @@ type Props = {
 };
 
 export default function NavbarAccount({ isCollapse }: Props) {
-  const activeProfile =useTypedSelector((state) => state.auth.activeProfile);
-
+  const activeProfile = useTypedSelector((state) => state.auth.activeProfile);
+  const { user } = useTypedSelector((state) => state.auth)
 
   return (
     <Link underline="none" color="inherit">
@@ -54,7 +54,7 @@ export default function NavbarAccount({ isCollapse }: Props) {
           }}
         >
           <Typography variant="subtitle2" noWrap>
-            {activeProfile?.tenant.name}
+            {user?.username}
           </Typography>
           <Typography variant="body2" noWrap sx={{ color: 'text.secondary' }}>
             {activeProfile?.nickName} : {activeProfile?.profileType?.name}

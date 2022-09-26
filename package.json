@@ -7,7 +7,8 @@
   "scripts": {
     "lint": "eslint --ext .ts,.tsx ./src",
     "lint:fix": "eslint --fix --ext .ts,.tsx ./src",
-    "start": "set PORT=8080 && react-scripts start",
+    "start": "set PORT=6420 && react-scripts start",
+    "start:mac": "export PORT=6420 && react-scripts start",
     "build": "react-scripts build",
     "eject": "react-scripts eject",
     "clear-all": "rm -rf build node_modules",
@@ -40,6 +41,8 @@
   "dependencies": {
     "@apollo/client": "^3.6.9",
     "@auth0/auth0-spa-js": "^1.22.2",
+    "@azure/msal-browser": "^2.28.3",
+    "@azure/msal-react": "^1.4.7",
     "@emotion/cache": "^11.9.3",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",

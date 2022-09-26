@@ -463,29 +463,29 @@ export type MyAuthDetailsQuery = { __typename?: 'Query', myAuthDetails?: { __typ
 
 
 export const MyAuthDetailsDocument = gql`
-    query myAuthDetails {
-  myAuthDetails {
-    id
-    email
-    name
-    defaultProfileId
-    activeProfileId
-    profiles {
+  query myAuthDetails {
+    myAuthDetails {
       id
-      nickName
-      tenant {
-        tenant
-        name
-        imgUrl
+      email
+      name
+      defaultProfileId
+      activeProfileId
+      profiles {
+        id
+        nickName
+        tenant {
+          tenant
+          name
+          imgUrl
+        }
+        profileType {
+          name
+          description
+        }
+        permissionIds
       }
-      profileType {
-        name
-        description
-      }
-      permissionIds
     }
   }
-}
     `;
 
 /**
@@ -504,13 +504,13 @@ export const MyAuthDetailsDocument = gql`
  * });
  */
 export function useMyAuthDetailsQuery(baseOptions?: Apollo.QueryHookOptions<MyAuthDetailsQuery, MyAuthDetailsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<MyAuthDetailsQuery, MyAuthDetailsQueryVariables>(MyAuthDetailsDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<MyAuthDetailsQuery, MyAuthDetailsQueryVariables>(MyAuthDetailsDocument, options);
+}
 export function useMyAuthDetailsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MyAuthDetailsQuery, MyAuthDetailsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<MyAuthDetailsQuery, MyAuthDetailsQueryVariables>(MyAuthDetailsDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<MyAuthDetailsQuery, MyAuthDetailsQueryVariables>(MyAuthDetailsDocument, options);
+}
 export type MyAuthDetailsQueryHookResult = ReturnType<typeof useMyAuthDetailsQuery>;
 export type MyAuthDetailsLazyQueryHookResult = ReturnType<typeof useMyAuthDetailsLazyQuery>;
 export type MyAuthDetailsQueryResult = Apollo.QueryResult<MyAuthDetailsQuery, MyAuthDetailsQueryVariables>;
