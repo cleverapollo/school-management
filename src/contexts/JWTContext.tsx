@@ -9,8 +9,9 @@ import { apolloClient } from "../app/api/apollo";
 import { GlobalUser, MyAuthDetailsDocument, MyAuthDetailsQuery } from "../app/api/generated";
 // @types
 import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
-import { dispatch as storeDispatch } from "../store/store";
+import { dispatch as storeDispatch, useTypedSelector } from "../store/store";
 import { authDetailsSuccess, logout as clearState } from "../store/slices/auth";
+import { useNavigate } from 'react-router';
 
 // ----------------------------------------------------------------------
 
@@ -92,6 +93,8 @@ function AuthProvider({ children }: AuthProviderProps) {
   const { instance, accounts } = useMsal();
   const account = useAccount(accounts[0] || {});
   const isAuthenticated = useIsAuthenticated();
+  const { user, isUserAuthenticated } = useTypedSelector((state) => state.auth)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const callbackId = instance.addEventCallback(async (event: any) => {
@@ -140,22 +143,12 @@ function AuthProvider({ children }: AuthProviderProps) {
         account: account
       }).then((response) => {
         if (response) {
-          localStorage.setItem('accessToken', response.accessToken);
-          dispatch({
-            type: Types.Login,
-            payload: {
-              user: account,
-            },
-          });
-          storeDispatch(authDetailsSuccess(account));
           setSession(response?.accessToken || null);
           localStorage.setItem('accessToken', response?.accessToken || "");
-
           apolloClient.query<MyAuthDetailsQuery>({ query: MyAuthDetailsDocument })
             .then(result => {
-              console.log('-=-=-=---=-=-=-')
               console.log(result);
-              // storeDispatch(authDetailsSuccess( result.data.myAuthDetails as AccountInfo));
+              storeDispatch(authDetailsSuccess(result.data.myAuthDetails as GlobalUser));
               dispatch({
                 type: Types.Login,
                 payload: {
@@ -164,6 +157,7 @@ function AuthProvider({ children }: AuthProviderProps) {
               });
             }).catch((err: any) => {
               console.log(err);
+              navigate('/auth/unauthorized', { replace : true});
             })
         }
       });
@@ -174,8 +168,9 @@ function AuthProvider({ children }: AuthProviderProps) {
     const initialize = async () => {
       try {
         const accessToken = localStorage.getItem('accessToken');
-        if (isAuthenticated && accessToken && isValidToken(accessToken)) {
-          const { user } = state;
+        if (isAuthenticated && isUserAuthenticated && accessToken && isValidToken(accessToken)) {
+          console.log(`user : ${JSON.stringify(user)}`)
+          // if ()
           dispatch({
             type: Types.Initial,
             payload: {

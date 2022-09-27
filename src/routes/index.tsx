@@ -8,6 +8,7 @@ import GuestGuard from '../guards/GuestGuard';
 import AuthGuard from '../guards/AuthGuard';
 import LoadingScreen from '../components/LoadingScreen';
 import useAuth from "../hooks/useAuth";
+import PageUnauthorized from '../pages/PageUnauthorized';
 
 // ----------------------------------------------------------------------
 
@@ -26,7 +27,7 @@ const Loadable = (Component: ElementType) => (props: any) => {
   );
 };
 
-export default function Router() {  
+export default function Router() {
   return useRoutes([
     {
       path: 'auth',
@@ -57,6 +58,14 @@ export default function Router() {
         },
         { path: 'login-unprotected', element: <Login /> },
         { path: 'register-unprotected', element: <Register /> },
+        {
+          path: 'unauthorized',
+          element: (
+            <GuestGuard>
+              <PageUnauthorized />
+            </GuestGuard>
+          )
+        }
       ],
     },
     {

@@ -51,7 +51,8 @@ const common = {
   item_by_roles: `item by roles`,
   only_admin_can_see_this_item: `Only admin can see this item`,
   font: `font`,
-  normal: `normal`
+  normal: `normal`,
+  unauthorized_user_msg: 'We are waiting on your school to configure profiles.'
 };
 
 export default common;
