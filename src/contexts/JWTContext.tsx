@@ -137,6 +137,17 @@ function AuthProvider({ children }: AuthProviderProps) {
 
       if (event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS || event.eventType === EventType.LOGIN_SUCCESS) {
       }
+
+      if (event.eventType === EventType.LOGOUT_SUCCESS) {
+        localStorage.removeItem('accessToken');
+        storeDispatch(clearState());
+        dispatch({
+          type: Types.Loading,
+          payload: {
+            isLoading: false
+          }
+        })
+      }
     });
 
     return () => {
@@ -212,7 +223,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     };
 
     initialize();
-  }, [isUserAuthenticated, isAuthenticated,user]);
+  }, []);
 
   const logout = async () => {
     dispatch({
@@ -221,26 +232,15 @@ function AuthProvider({ children }: AuthProviderProps) {
         isLoading: true,
       }
     });
-    instance.logoutPopup().then(() => {
-      setTimeout(() => {
-        localStorage.removeItem('accessToken');
-        storeDispatch(clearState());
-        dispatch({
-          type: Types.Loading,
-          payload: {
-            isLoading: false
-          }
-        })
-      }, 1000); 
-    }).catch(err => {
+    instance.logout().catch(err => {
       console.log(err);
     })
-    
+
   };
 
   const msalLogin = async () => {
 
-    await instance.loginPopup(loginRequest)
+    await instance.loginRedirect(loginRequest);
   };
 
   return (
