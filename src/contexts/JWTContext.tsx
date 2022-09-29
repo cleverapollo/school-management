@@ -1,10 +1,9 @@
 import { createContext, ReactNode, useEffect, useReducer } from 'react';
 import { useMsal, useIsAuthenticated, useAccount } from "@azure/msal-react";
-import { AccountInfo, EventType, InteractionType, RedirectRequest } from "@azure/msal-browser";
+import { EventType, InteractionType, RedirectRequest } from "@azure/msal-browser";
 import { loginRequest, b2cPolicies } from '../config';
 // utils
 import { isValidToken, setSession } from '../utils/jwt';
-import { AUTH_CONFIG } from "../config";
 import { apolloClient } from "../app/api/apollo";
 import { GlobalUser, MyAuthDetailsDocument, MyAuthDetailsQuery } from "../app/api/generated";
 // @types
@@ -16,6 +15,7 @@ import { useNavigate } from 'react-router';
 // ----------------------------------------------------------------------
 
 enum Types {
+  Loading = 'LOADING',
   Initial = 'INITIALIZE',
   Login = 'LOGIN',
   Logout = 'LOGOUT',
@@ -37,11 +37,15 @@ type JWTAuthPayload = {
   [Types.Register]: {
     user: AuthUser;
   };
+  [Types.Loading]: {
+    isLoading: boolean;
+  };
 };
 
 export type JWTActions = ActionMap<JWTAuthPayload>[keyof ActionMap<JWTAuthPayload>];
 
 const initialState: AuthState = {
+  isLoading: false,
   isAuthenticated: false,
   isInitialized: false,
   user: null,
@@ -49,8 +53,14 @@ const initialState: AuthState = {
 
 const JWTReducer = (state: AuthState, action: JWTActions) => {
   switch (action.type) {
+    case 'LOADING':
+      return {
+        ...state,
+        isLoading: action.payload.isLoading,
+      };
     case 'INITIALIZE':
       return {
+        ...state,
         isAuthenticated: action.payload.isAuthenticated,
         isInitialized: true,
         user: action.payload.user,
@@ -138,6 +148,12 @@ function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     if (account) {
+      dispatch({
+        type: Types.Loading,
+        payload: {
+          isLoading: true
+        }
+      });
       instance.acquireTokenSilent({
         ...loginRequest,
         account: account
@@ -147,7 +163,6 @@ function AuthProvider({ children }: AuthProviderProps) {
           localStorage.setItem('accessToken', response?.accessToken || "");
           apolloClient.query<MyAuthDetailsQuery>({ query: MyAuthDetailsDocument })
             .then(result => {
-              console.log(result);
               storeDispatch(authDetailsSuccess(result.data.myAuthDetails as GlobalUser));
               dispatch({
                 type: Types.Login,
@@ -157,7 +172,7 @@ function AuthProvider({ children }: AuthProviderProps) {
               });
             }).catch((err: any) => {
               console.log(err);
-              navigate('/auth/unauthorized', { replace : true});
+              navigate('/auth/unauthorized', { replace: true });
             })
         }
       });
@@ -169,8 +184,6 @@ function AuthProvider({ children }: AuthProviderProps) {
       try {
         const accessToken = localStorage.getItem('accessToken');
         if (isAuthenticated && isUserAuthenticated && accessToken && isValidToken(accessToken)) {
-          console.log(`user : ${JSON.stringify(user)}`)
-          // if ()
           dispatch({
             type: Types.Initial,
             payload: {
@@ -199,16 +212,35 @@ function AuthProvider({ children }: AuthProviderProps) {
     };
 
     initialize();
-  }, []);
+  }, [isUserAuthenticated, isAuthenticated,user]);
 
   const logout = async () => {
-    localStorage.removeItem('accessToken');
-    storeDispatch(clearState());
-    instance.logout();
+    dispatch({
+      type: Types.Loading,
+      payload: {
+        isLoading: true,
+      }
+    });
+    instance.logoutPopup().then(() => {
+      setTimeout(() => {
+        localStorage.removeItem('accessToken');
+        storeDispatch(clearState());
+        dispatch({
+          type: Types.Loading,
+          payload: {
+            isLoading: false
+          }
+        })
+      }, 1000); 
+    }).catch(err => {
+      console.log(err);
+    })
+    
   };
 
   const msalLogin = async () => {
-    await instance.loginRedirect(loginRequest)
+
+    await instance.loginPopup(loginRequest)
   };
 
   return (

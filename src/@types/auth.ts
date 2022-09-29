@@ -15,6 +15,7 @@ export type ActionMap<M extends { [index: string]: any }> = {
 export type AuthUser = null | Record<string, any>;
 
 export type AuthState = {
+  isLoading: boolean;
   isAuthenticated: boolean;
   isInitialized: boolean;
   user: AuthUser;
@@ -23,6 +24,7 @@ export type AuthState = {
 export type JWTContextType = {
   isAuthenticated: boolean;
   isInitialized: boolean;
+  isLoading: boolean;
   user: AuthUser;
   method: 'jwt';
   logout: () => Promise<void>;
