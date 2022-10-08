@@ -71,10 +71,10 @@ export default function Login() {
           <Logo />
           {smUp && (
             <Typography variant="body2" sx={{ mt: { md: -2 } }}>
-              {trans('common:docs.no_account')}
-              <Link variant="subtitle2" component={RouterLink} to={PATH_AUTH.register}>
+              {/* {trans('common:docs.no_account')} */}
+              {/* <Link variant="subtitle2" component={RouterLink} to={PATH_AUTH.register}>
                 {`Get started`}
-              </Link>
+              </Link> */}
             </Typography>
           )}
         </HeaderStyle>
@@ -109,10 +109,10 @@ export default function Login() {
 
             {!smUp && (
               <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-                {trans('common:docs.no_account')}
+                {/* {trans('common:docs.no_account')}
                 <Link variant="subtitle2" component={RouterLink} to={PATH_AUTH.register}>
                   {`Get started`}
-                </Link>
+                </Link> */}
               </Typography>
             )}
           </ContentStyle>

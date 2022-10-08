@@ -15,13 +15,13 @@ type GuestGuardProps = {
 
 export default function GuestGuard({ children }: GuestGuardProps) {
   
-  const { isAuthenticated, isInitialized } = useAuth();
+  const { isAuthenticated, isInitialized, isLoading } = useAuth();
 
   if (isAuthenticated) {
     return <Navigate to={PATH_DASHBOARD.root} />;
   }
 
-  if (!isInitialized) {
+  if (isLoading || !isInitialized) {
     return <LoadingScreen />;
   }
 

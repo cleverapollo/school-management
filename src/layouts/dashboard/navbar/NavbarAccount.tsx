@@ -54,7 +54,7 @@ export default function NavbarAccount({ isCollapse }: Props) {
           }}
         >
           <Typography variant="subtitle2" noWrap>
-            {user?.username}
+            {activeProfile?.tenant.name}
           </Typography>
           <Typography variant="body2" noWrap sx={{ color: 'text.secondary' }}>
             {activeProfile?.nickName} : {activeProfile?.profileType?.name}

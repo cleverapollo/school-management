@@ -3,15 +3,19 @@ import { useMsal, useIsAuthenticated, useAccount } from "@azure/msal-react";
 import { EventType, InteractionType, RedirectRequest } from "@azure/msal-browser";
 import { loginRequest, b2cPolicies } from '../config';
 // utils
-import { isValidToken } from '../utils/jwt';
+import { isValidToken, setSession } from '../utils/jwt';
+import { apolloClient } from "../app/api/apollo";
+import { GlobalUser, MyAuthDetailsDocument, MyAuthDetailsQuery } from "../app/api/generated";
 // @types
 import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
-import { dispatch as storeDispatch } from "../store/store";
+import { dispatch as storeDispatch, useTypedSelector } from "../store/store";
 import { authDetailsSuccess, logout as clearState } from "../store/slices/auth";
+import { useNavigate } from 'react-router';
 
 // ----------------------------------------------------------------------
 
 enum Types {
+  Loading = 'LOADING',
   Initial = 'INITIALIZE',
   Login = 'LOGIN',
   Logout = 'LOGOUT',
@@ -33,11 +37,15 @@ type JWTAuthPayload = {
   [Types.Register]: {
     user: AuthUser;
   };
+  [Types.Loading]: {
+    isLoading: boolean;
+  };
 };
 
 export type JWTActions = ActionMap<JWTAuthPayload>[keyof ActionMap<JWTAuthPayload>];
 
 const initialState: AuthState = {
+  isLoading: false,
   isAuthenticated: false,
   isInitialized: false,
   user: null,
@@ -45,8 +53,14 @@ const initialState: AuthState = {
 
 const JWTReducer = (state: AuthState, action: JWTActions) => {
   switch (action.type) {
+    case 'LOADING':
+      return {
+        ...state,
+        isLoading: action.payload.isLoading,
+      };
     case 'INITIALIZE':
       return {
+        ...state,
         isAuthenticated: action.payload.isAuthenticated,
         isInitialized: true,
         user: action.payload.user,
@@ -89,6 +103,8 @@ function AuthProvider({ children }: AuthProviderProps) {
   const { instance, accounts } = useMsal();
   const account = useAccount(accounts[0] || {});
   const isAuthenticated = useIsAuthenticated();
+  const { user, isUserAuthenticated } = useTypedSelector((state) => state.auth)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const callbackId = instance.addEventCallback(async (event: any) => {
@@ -121,6 +137,17 @@ function AuthProvider({ children }: AuthProviderProps) {
 
       if (event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS || event.eventType === EventType.LOGIN_SUCCESS) {
       }
+
+      if (event.eventType === EventType.LOGOUT_SUCCESS) {
+        localStorage.removeItem('accessToken');
+        storeDispatch(clearState());
+        dispatch({
+          type: Types.Loading,
+          payload: {
+            isLoading: false
+          }
+        })
+      }
     });
 
     return () => {
@@ -132,19 +159,32 @@ function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     if (account) {
+      dispatch({
+        type: Types.Loading,
+        payload: {
+          isLoading: true
+        }
+      });
       instance.acquireTokenSilent({
         ...loginRequest,
         account: account
       }).then((response) => {
         if (response) {
-          localStorage.setItem('accessToken', response.accessToken);
-          dispatch({
-            type: Types.Login,
-            payload: {
-              user: account,
-            },
-          });
-          storeDispatch(authDetailsSuccess(account));
+          setSession(response?.accessToken || null);
+          localStorage.setItem('accessToken', response?.accessToken || "");
+          apolloClient.query<MyAuthDetailsQuery>({ query: MyAuthDetailsDocument })
+            .then(result => {
+              storeDispatch(authDetailsSuccess(result.data.myAuthDetails as GlobalUser));
+              dispatch({
+                type: Types.Login,
+                payload: {
+                  user: { token: response?.accessToken },
+                },
+              });
+            }).catch((err: any) => {
+              console.log(err);
+              navigate('/auth/unauthorized', { replace: true });
+            })
         }
       });
     }
@@ -154,8 +194,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     const initialize = async () => {
       try {
         const accessToken = localStorage.getItem('accessToken');
-        if (isAuthenticated && accessToken && isValidToken(accessToken)) {
-          const { user } = state;
+        if (isAuthenticated && isUserAuthenticated && accessToken && isValidToken(accessToken)) {
           dispatch({
             type: Types.Initial,
             payload: {
@@ -187,13 +226,21 @@ function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const logout = async () => {
-    localStorage.removeItem('accessToken');
-    storeDispatch(clearState());
-    instance.logout();
+    dispatch({
+      type: Types.Loading,
+      payload: {
+        isLoading: true,
+      }
+    });
+    instance.logout().catch(err => {
+      console.log(err);
+    })
+
   };
 
   const msalLogin = async () => {
-    await instance.loginRedirect(loginRequest)
+
+    await instance.loginRedirect(loginRequest);
   };
 
   return (
