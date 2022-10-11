@@ -25,7 +25,7 @@ const slice = createSlice({
   reducers: {
     logout: () => initialState,
     authDetailsSuccess: (state: AuthSliceState, action: PayloadAction<GlobalUser>) => {
-      let activeProfileId = action.payload.activeProfileId
+      let {activeProfileId} = action.payload
       state.isUserAuthenticated = true;
       state.user = action.payload;
       state.user.profiles = state.user?.profiles?.map(p => p as Profile)
