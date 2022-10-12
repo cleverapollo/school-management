@@ -13,7 +13,6 @@ export interface TableColumn<TData> {
   config?: Config;
   permissionsRequired?: string[];
   profileType?: string[];
-  valueIdentifier?: (data: TData) => string;
   component: (value: string) => ReactNode;
   fieldName: DeepKeys<TData> | AccessorFn<TData>;
 }

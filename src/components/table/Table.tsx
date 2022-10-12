@@ -28,11 +28,8 @@ const Table = <TData,>(props: ITableProps<TData>) => {
 
   const columnsWithPermission = calculateColumnsWithPermissions<TData>(columns, permissions, profileType);
 
-  //const columnHeaders = columnsWithPermission.map(column => column.columnDisplayName);
-  //const cellComponents = columnsWithPermission.map(column => column.component);
-  //const rows = data.map(item => columnsWithPermission.map(column => column.valueIdentifier(item)));
   const tableTitle = createTitleForProfileTypes(profileType, titleOverride, title);
-  
+
   const columnHelper = createColumnHelper<TData>();
   const calculateReactTableColumns = (columnsWithPermission: TableColumn<TData>[]): ColumnDef<TData, unknown>[] => 
     columnsWithPermission.map(column => columnHelper.accessor(column.fieldName, { header: column.columnDisplayName }));
@@ -55,8 +52,6 @@ const Table = <TData,>(props: ITableProps<TData>) => {
     <TableContainer>
       <TableToolbar title={tableTitle} />
       <MuiTable>
-        {/* <TableHeader columnHeaders={columnHeaders} />
-        <TableBody rows={rows} components={cellComponents} /> */}
         <TableHeader table={table} />
         <TableBody table={table} />
       </MuiTable>

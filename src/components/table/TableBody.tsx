@@ -6,33 +6,12 @@ import {
 } from '@mui/material';
 import { flexRender } from '@tanstack/react-table';
 import { Table } from '@tanstack/table-core';
-import { FC, Fragment, ReactNode } from 'react';
-import { v4 as uuid } from 'uuid';
+import { Fragment } from 'react';
 
 interface ITableBodyProps<TData> {
   table: Table<TData>;
 }
 
-// interface ITableBodyProps {
-//   rows: string[][];
-//   components: ((value: string) => ReactNode)[];
-// }
-
-// const TableBody: FC<ITableBodyProps> = ({ rows, components }) => (
-//     <MuiTableBody>
-//       {rows.map((arr) => (
-//         <TableRow key={uuid()}>
-//           {arr.map((value, index) => components[index](value) ?
-//               (components[index](value)) :
-//               (<TableCell key={uuid()}>
-//                 <Typography>
-//                   {value}
-//                 </Typography>
-//               </TableCell>))}
-//         </TableRow>
-//       ))}
-//     </MuiTableBody>
-//   );
 const TableBody = <TData,>({ table }: ITableBodyProps<TData>) => {
   const rowModel = table.getRowModel();
 

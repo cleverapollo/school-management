@@ -18,43 +18,14 @@ const createData = (value: IExampleData): IExampleData[] => {
   return result;
 }
 
-const exampleData: IExampleData = //[] = [
+const exampleData: IExampleData = 
   {
     dessert: 'Frozen yoghurt',
     calories: '159',
     fat: '6',
     carbs: '24',
     protein: '4',
-  }/*,
-  {
-    dessert: 'Ice cream sandwich',
-    calories: '159',
-    fat: '6',
-    carbs: '24',
-    protein: '4',
-  },
-  {
-    dessert: 'Eclair',
-    calories: '159',
-    fat: '6',
-    carbs: '24',
-    protein: '4',
-  },
-  {
-    dessert: 'Cupcake',
-    calories: '159',
-    fat: '6',
-    carbs: '24',
-    protein: '4',
-  },
-  {
-    dessert: 'Gingerbread',
-    calories: '159',
-    fat: '6',
-    carbs: '24',
-    protein: '4',
-  },
-];*/
+  };
 
 const ExampleTable = () => {
 
@@ -62,13 +33,11 @@ const ExampleTable = () => {
     {
       columnDisplayName: 'Dessert(100g serving)',
       component: () => null,
-      //valueIdentifier: (item: IExampleData) => item.dessert,
       fieldName: 'dessert',
     },
     {
       columnDisplayName: 'Calories',
       component: () => null,
-      //valueIdentifier: (item: IExampleData) => item.calories,
       fieldName: 'calories',
     },
     {
@@ -76,7 +45,6 @@ const ExampleTable = () => {
       component: () => null,
       //Uncomment this if you need to check columns visibility by permission
       //permissionsRequired: ['ui:view:admin'],
-      //valueIdentifier: (item: IExampleData) => item.fat,
       fieldName: 'fat',
     },
     {
@@ -90,7 +58,6 @@ const ExampleTable = () => {
       //     </a>
       //   </div>
       // ),
-      //valueIdentifier: (item: IExampleData) => item.carbs,
       fieldName: 'carbs',
     },
     {
@@ -98,7 +65,6 @@ const ExampleTable = () => {
       component: () => null,
       //Uncomment this if you need to check columns visibility by profileTypes
       //profileType: ['Principal'],
-      //valueIdentifier: (item: IExampleData) => item.protein,
       fieldName: 'protein',
     },
   ];
