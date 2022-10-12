@@ -1,3 +1,4 @@
+import { AccessorFn, DeepKeys } from "@tanstack/table-core";
 import { ReactNode } from "react";
 
 export interface Config {
@@ -12,8 +13,9 @@ export interface TableColumn<TData> {
   config?: Config;
   permissionsRequired?: string[];
   profileType?: string[];
-  valueIdentifier: (data: TData) => string;
+  valueIdentifier?: (data: TData) => string;
   component: (value: string) => ReactNode;
+  fieldName: DeepKeys<TData> | AccessorFn<TData>;
 }
 
 export interface ITableProps<TData> {
