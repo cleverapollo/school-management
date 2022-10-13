@@ -4,6 +4,7 @@ import { Container, Typography } from '@mui/material';
 import useSettings from '../hooks/useSettings';
 // components
 import Page from '../components/Page';
+import ExampleTable from '../features/exampleTable/ExampleTable';
 
 // ----------------------------------------------------------------------
 
@@ -13,6 +14,7 @@ export default function PageOne() {
   return (
     <Page title="Page One">
       <Container maxWidth={themeStretch ? false : 'xl'}>
+        <ExampleTable />
         <Typography variant="h3" component="h1" paragraph>
           Page One
         </Typography>

@@ -82,8 +82,7 @@ export default function ProfileCard({ profile }: Props) {
         {profile.profileType?.name}
       </Typography>
 
-      <Stack alignItems="center">
-      </Stack>
+      <Stack alignItems="center" />
 
       <Divider sx={{ borderStyle: 'dashed' }} />
 
