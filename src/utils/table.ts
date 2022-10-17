@@ -33,3 +33,11 @@ export const createTitleForProfileTypes = (
   }
   return titleOverride.find((item) => Object.keys(item).includes(profileType))?.[profileType] || generalTitle;
 }
+
+export const createFormattedStringForDayjs = (value: string): string => {
+  const arr = value.split('.');
+  if(arr.length !== 3) {
+    return value;
+  }
+  return `${arr[1]}.${arr[0]}.${arr[2]}`;
+}
