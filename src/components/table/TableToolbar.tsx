@@ -19,9 +19,9 @@ const TableToolbar = <TData,>({ table, title, columnsWithPermissions, globalFilt
 
   const [showFilters, setShowFilters] = useState<boolean>(false);
 
-  return (<Box sx={{ paddingY: '10px' }}>
+  return (<Box sx={{ paddingX: '10px' }}>
     <Typography variant="h4">{title}</Typography>
-    <Box sx={{ display: 'flex', justifyContent: 'space-between', marginX: '30px', paddingY: '24px' }}>
+    <Box sx={{ display: 'flex', justifyContent: 'space-between', marginY: '30px', paddingX: '14px' }}>
       <TextField
         value={globalFilter ?? ''}
         onChange={e => setGlobalFilter(e.target.value)}
@@ -40,10 +40,10 @@ const TableToolbar = <TData,>({ table, title, columnsWithPermissions, globalFilt
       </Box>
     </Box>
     {showFilters && table.getHeaderGroups().map((headerGroup) => (
-      <Box key={headerGroup.id} sx={{ display: 'flex', flexWrap: 'wrap', padding: '0 14px 0 24px' }}>
+      <Box key={headerGroup.id} sx={{ display: 'flex', flexWrap: 'wrap', paddingX: '14px' }}>
         {headerGroup.headers.map((header) => (
           <Box key={header.id} sx={{ margin: '0 20px 20px 0' }}>
-            <Filter 
+            <Filter
               column={header.column} 
               type={columnsWithPermissions.find((item) => 
                 item.columnDisplayName === header.column.columnDef.header?.toString())?.filter} 

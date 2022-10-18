@@ -19,19 +19,16 @@ import {
   flexRender,
   FilterFns,
 } from '@tanstack/react-table';
-import {
-  RankingInfo,
-  rankItem,
-  compareItems,
-} from '@tanstack/match-sorter-utils';
 import { ColumnDef, createColumnHelper } from '@tanstack/table-core';
 import { useState } from 'react';
-import { ITableProps, TableColumn, TitleOverride } from "./types";
+import { ITableProps, TableColumn } from "./types";
 import { Table as MuiTable, TableContainer } from "@mui/material";
 import TableHeader from "./TableHeader";
 import TableToolbar from "./TableToolbar";
 import TableBody from './TableBody';
+import TablePagination from './TablePagination';
 import { calculateColumnsWithPermissions, createTitleForProfileTypes, fuzzyFilter, fuzzySort } from "../../utils/table";
+import { DEFAULT_PAGINATION_SIZE } from './constants';
 
 const Table = <TData,>(props: ITableProps<TData>) => {
   const { data, title, titleOverride, columns } = props;
@@ -62,6 +59,11 @@ const Table = <TData,>(props: ITableProps<TData>) => {
     filterFns: {
       fuzzy: fuzzyFilter,
     },
+    initialState: {
+      pagination: {
+        pageSize: DEFAULT_PAGINATION_SIZE,
+      },
+    },
     state: {
       columnFilters,
       globalFilter,
@@ -87,6 +89,7 @@ const Table = <TData,>(props: ITableProps<TData>) => {
       <MuiTable>
         <TableHeader table={table} />
         <TableBody table={table} />
+        <TablePagination table={table} />
       </MuiTable>
     </TableContainer>
   </>);
