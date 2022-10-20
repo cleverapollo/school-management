@@ -7,7 +7,7 @@ import { Autocomplete, TextField } from "@mui/material";
 import { Box } from '@mui/system';
 import { FilterVariant } from "./types";
 import { createFormattedStringForDayjs } from "../../utils/table";
-import { defaultDateFormat, displayedDateFormat, formattedErrorText } from "./constants";
+import { DEFAULT_DATE_FORMAT, DISPLAYED_DATE_FORMAT, FORMATTED_ERROR_TEXT } from "./constants";
 
 interface FilterProps {
   column: Column<any, unknown>;
@@ -17,11 +17,9 @@ interface FilterProps {
 const Filter: FC<FilterProps> = ({ column, type }) => {
   const columnFilterValue = column.getFilterValue();
   const initialValue = useMemo(() => (
-    dayjs(columnFilterValue as string).format(defaultDateFormat) != formattedErrorText && columnFilterValue) ? 
+    dayjs(columnFilterValue as string).format(DEFAULT_DATE_FORMAT) != FORMATTED_ERROR_TEXT && columnFilterValue) ? 
       dayjs(createFormattedStringForDayjs(columnFilterValue as string)) 
-      : null
-    , []
-  );
+      : null, []);
   const [value, setValue] = useState<Dayjs | null>(initialValue);
   
   const sortedUniqueValues = Array.from(column.getFacetedUniqueValues().keys()).sort();
@@ -30,12 +28,12 @@ const Filter: FC<FilterProps> = ({ column, type }) => {
     case 'date': return (<Box>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
-          inputFormat={displayedDateFormat}
+          inputFormat={DISPLAYED_DATE_FORMAT}
           label={column.columnDef.header?.toString()}
           value={value}
           onChange={(newValue) => {        
-            if(newValue?.format(defaultDateFormat) != formattedErrorText && newValue) {
-              column.setFilterValue(newValue?.format(defaultDateFormat) || '');
+            if(newValue?.format(DEFAULT_DATE_FORMAT) != FORMATTED_ERROR_TEXT && newValue) {
+              column.setFilterValue(newValue?.format(DEFAULT_DATE_FORMAT) || '');
             } 
             if(!newValue) { 
               column.setFilterValue(''); 
