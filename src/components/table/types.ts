@@ -16,6 +16,7 @@ export interface TableColumn<TData> {
   component: (value: string) => ReactNode;
   fieldName: DeepKeys<TData> | AccessorFn<TData>;
   filter?: FilterVariant;
+  isMandatory?: boolean;
 }
 
 export interface ITableProps<TData> {

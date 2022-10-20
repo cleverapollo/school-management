@@ -9,6 +9,7 @@ interface IExampleData {
   carbs: string;
   protein: string;
   created: string;
+  tech: string;
 }
 
 const createData = (arr: IExampleData[]): IExampleData[] => {
@@ -29,6 +30,7 @@ const exampleData: IExampleData[] = [
     carbs: '24',
     protein: '4',
     created: '10.10.2022',
+    tech: '',
   },
   {
     dessert: 'Ice cream sandwich',
@@ -37,6 +39,7 @@ const exampleData: IExampleData[] = [
     carbs: '241',
     protein: '41',
     created: '11.10.2022',
+    tech: '',
   },
   {
     dessert: 'Eclair',
@@ -45,6 +48,7 @@ const exampleData: IExampleData[] = [
     carbs: '242',
     protein: '42',
     created: '10.11.2022',
+    tech: '',
   },
   {
     dessert: 'Cupcake',
@@ -53,6 +57,7 @@ const exampleData: IExampleData[] = [
     carbs: '243',
     protein: '43',
     created: '10.01.2022',
+    tech: '',
   },
   {
     dessert: 'Gingerbread',
@@ -61,6 +66,7 @@ const exampleData: IExampleData[] = [
     carbs: '244',
     protein: '44',
     created: '01.10.2022',
+    tech: '',
   },
 ];
 
@@ -72,12 +78,14 @@ const ExampleTable = () => {
       component: () => null,
       fieldName: 'dessert',
       filter: 'suggest',
+      isMandatory: true,
     },
     {
       columnDisplayName: 'Calories',
       component: () => null,
       fieldName: 'calories',
       filter: 'suggest',
+      isMandatory: true,
     },
     {
       columnDisplayName: 'Fat(g)',
@@ -116,6 +124,13 @@ const ExampleTable = () => {
       //profileType: ['Principal'],
       fieldName: 'created',
       filter: 'date',
+    },
+    {
+      columnDisplayName: 'Tech Options',
+      component: () => null,
+      //Uncomment this if you need to check columns visibility by profileTypes
+      //profileType: ['Principal'],
+      fieldName: 'tech',
     },
   ];
 
