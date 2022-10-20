@@ -12,7 +12,6 @@ interface ITableHeaderProps<TData> {
 }
 
 const TableHeader = <TData,>({ table }: ITableHeaderProps<TData>) => {
-  const rowModel = table.getRowModel();
 
   return (
     <TableHead>

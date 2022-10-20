@@ -15,6 +15,7 @@ export interface TableColumn<TData> {
   profileType?: string[];
   component: (value: string) => ReactNode;
   fieldName: DeepKeys<TData> | AccessorFn<TData>;
+  filter?: FilterVariant;
 }
 
 export interface ITableProps<TData> {
@@ -23,3 +24,5 @@ export interface ITableProps<TData> {
   titleOverride?: TitleOverride[];
   columns: TableColumn<TData>[];
 }
+
+export type FilterVariant = 'suggest' | 'date';

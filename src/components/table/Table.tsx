@@ -9,7 +9,21 @@ import {
   SortingState,
   Row,
   getPaginationRowModel,
+  Column,
+  ColumnFiltersState,
+  getFacetedRowModel,
+  getFacetedMinMaxValues,
+  sortingFns,
+  FilterFn,
+  SortingFn,
+  flexRender,
+  FilterFns,
 } from '@tanstack/react-table';
+import {
+  RankingInfo,
+  rankItem,
+  compareItems,
+} from '@tanstack/match-sorter-utils';
 import { ColumnDef, createColumnHelper } from '@tanstack/table-core';
 import { useState } from 'react';
 import { ITableProps, TableColumn, TitleOverride } from "./types";
@@ -17,10 +31,13 @@ import { Table as MuiTable, TableContainer } from "@mui/material";
 import TableHeader from "./TableHeader";
 import TableToolbar from "./TableToolbar";
 import TableBody from './TableBody';
-import { calculateColumnsWithPermissions, createTitleForProfileTypes } from "../../utils/table";
+import { calculateColumnsWithPermissions, createTitleForProfileTypes, fuzzyFilter, fuzzySort } from "../../utils/table";
 
 const Table = <TData,>(props: ITableProps<TData>) => {
   const { data, title, titleOverride, columns } = props;
+
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [globalFilter, setGlobalFilter] = useState<string>('');
 
   //ToDo: use TypedSelector for profileType and permissions
   const profileType = 'Teacher';
@@ -32,31 +49,47 @@ const Table = <TData,>(props: ITableProps<TData>) => {
 
   const columnHelper = createColumnHelper<TData>();
   const calculateReactTableColumns = (columnsWithPermission: TableColumn<TData>[]): ColumnDef<TData, unknown>[] => 
-    columnsWithPermission.map(column => columnHelper.accessor(column.fieldName, { header: column.columnDisplayName }));
+    columnsWithPermission.map(column => columnHelper.accessor(column.fieldName, 
+      { 
+        header: column.columnDisplayName,
+        filterFn: 'fuzzy',
+        sortingFn: fuzzySort,
+      }));
 
   const table = useReactTable<TData>({
-    enableFilters: false,
-    enableColumnFilters: false,
-    defaultColumn: {
-      enableSorting: true,
-      enableColumnFilter: false,
-      enableGlobalFilter: false,
-      maxSize: undefined,
-    },
-    getCoreRowModel: getCoreRowModel(),
     data,
     columns: calculateReactTableColumns(columnsWithPermission) as ColumnDef<TData, any>[],
+    filterFns: {
+      fuzzy: fuzzyFilter,
+    },
+    state: {
+      columnFilters,
+      globalFilter,
+    },
+    onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: fuzzyFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+    getFacetedMinMaxValues: getFacetedMinMaxValues(),
+    debugTable: true,
+    debugHeaders: true,
+    debugColumns: false,
   });
 
-  return(
+  return(<>
     <TableContainer>
-      <TableToolbar title={tableTitle} />
+      <TableToolbar table={table} title={tableTitle} columnsWithPermissions={columnsWithPermission} globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
       <MuiTable>
         <TableHeader table={table} />
         <TableBody table={table} />
       </MuiTable>
     </TableContainer>
-  );
+  </>);
 } 
 
 export default Table;
