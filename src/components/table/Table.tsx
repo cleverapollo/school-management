@@ -51,6 +51,7 @@ const Table = <TData,>(props: ITableProps<TData>) => {
         header: column.columnDisplayName,
         filterFn: 'fuzzy',
         sortingFn: fuzzySort,
+        enableHiding: !column.isMandatory,
       }));
 
   const table = useReactTable<TData>({
