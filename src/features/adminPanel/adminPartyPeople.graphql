@@ -1,0 +1,9 @@
+  query
+    admin_party_people($tenant: Int!){
+      admin_party_people(tenant: $tenant){
+        partyId
+        firstName
+        lastName
+        type
+      }
+    }

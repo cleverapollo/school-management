@@ -20,7 +20,7 @@ type PermissionBasedGuardProp = {
 
 export default function PermissionBasedGuard({ hasContent, permissions, children }: PermissionBasedGuardProp) {
   // Logic here to get current user role
-  const hasPermissions =useTypedSelector((state) => state.auth.permissions);
+  const hasPermissions = useTypedSelector((state) => state.auth.permissions);
 
   // const currentRole = 'user';
   if (typeof permissions !== 'undefined' && intersection(permissions ?? [], hasPermissions).length == 0 ) {

@@ -46,13 +46,18 @@ const Table = <TData,>(props: ITableProps<TData>) => {
 
   const columnHelper = createColumnHelper<TData>();
   const calculateReactTableColumns = (columnsWithPermission: TableColumn<TData>[]): ColumnDef<TData, unknown>[] => 
-    columnsWithPermission.map(column => columnHelper.accessor(column.fieldName, 
-      { 
-        header: column.columnDisplayName,
-        filterFn: 'fuzzy',
-        sortingFn: fuzzySort,
-        enableHiding: !column.isMandatory,
-      }));
+    columnsWithPermission.map(column => {
+      const cell = column.component && { cell: column.component };
+      return columnHelper.accessor(column.fieldName, 
+        { 
+          header: column.columnDisplayName,
+          filterFn: 'fuzzy',
+          sortingFn: fuzzySort,
+          enableHiding: !column.isMandatory,
+          ...cell,
+        })
+    }
+  );
 
   const table = useReactTable<TData>({
     data,

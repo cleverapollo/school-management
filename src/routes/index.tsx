@@ -9,6 +9,7 @@ import AuthGuard from '../guards/AuthGuard';
 import LoadingScreen from '../components/LoadingScreen';
 import useAuth from "../hooks/useAuth";
 import PageUnauthorized from '../pages/PageUnauthorized';
+import PermissionBasedGuard from '../guards/PermissionBasedGuard';
 
 // ----------------------------------------------------------------------
 
@@ -78,7 +79,13 @@ export default function Router() {
       children: [
         { element: <Navigate to="/one" replace />, index: true },
         { path: 'one', element: <PageOne /> },
-        { path: 'two', element: <PageTwo /> },
+        { path: 'two',
+          element: (
+            <PermissionBasedGuard permissions={['tyro_admin:access']} hasContent>
+              <PageTwo />
+            </PermissionBasedGuard> 
+          )
+        },
         { path: 'three', element: <PageThree /> },
         {
           path: 'user',
