@@ -1,6 +1,8 @@
 // @mui
 import { styled } from '@mui/material/styles';
-import { Box, Stack, AppBar, Toolbar } from '@mui/material';
+import { Box, Stack, AppBar, Toolbar, Button } from '@mui/material';
+
+import { useNavigate } from 'react-router';
 // hooks
 import useOffSetTop from '../../../hooks/useOffSetTop';
 import useResponsive from '../../../hooks/useResponsive';
@@ -18,6 +20,11 @@ import AccountPopover from './AccountPopover';
 import LanguagePopover from './LanguagePopover';
 import ContactsPopover from './ContactsPopover';
 import NotificationsPopover from './NotificationsPopover';
+import { GlobalUser, MyAuthDetailsDocument, MyAuthDetailsQuery } from '../../../app/api/generated';
+import { dispatch as storeDispatch } from "../../../store/store";
+import { apolloClient } from '../../../app/api/apollo';
+import { authDetailsSuccess } from '../../../store/slices/auth';
+import { useState } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -72,6 +79,9 @@ export default function DashboardHeader({
 
   const isDesktop = useResponsive('up', 'lg');
 
+  const navigate = useNavigate();
+  const [isUserEmulated, setIsUserEmulated] = useState<boolean>(!!localStorage.getItem('X-TENANT-ID') && !!localStorage.getItem('X-PARTY-ID'));
+
   return (
     <RootStyle isCollapse={isCollapse} isOffset={isOffset} verticalLayout={verticalLayout}>
       <Toolbar
@@ -89,6 +99,20 @@ export default function DashboardHeader({
         )}
 
         <Searchbar />
+        {isUserEmulated && <Button onClick={() => {
+          localStorage.removeItem('X-TENANT-ID');
+          localStorage.removeItem('X-PARTY-ID');
+          apolloClient.query<MyAuthDetailsQuery>({ query: MyAuthDetailsDocument })
+            .then(result => {
+              storeDispatch(authDetailsSuccess(result.data.myAuthDetails as GlobalUser));
+            }).catch((err: any) => {
+              console.log(err);
+              navigate('/auth/unauthorized', { replace: true });
+          })
+          setIsUserEmulated(false);
+        }}>
+          Stop emultation
+        </Button>}
         <Box sx={{ flexGrow: 1 }} />
 
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>

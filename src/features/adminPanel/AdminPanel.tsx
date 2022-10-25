@@ -1,12 +1,14 @@
 import { useEffect } from "react";
 import { useNavigate } from 'react-router';
+import { Avatar } from '@mui/material';
 import { apolloClient } from "../../app/api/apollo";
 import { dispatch as storeDispatch, useTypedSelector } from "../../store/store";
 import { adminPanelRequest, adminPartyPeopleSuccess, adminTenantsSuccess, adminPanelError } from "../../store/slices/adminPanel";
-import { MyAdminPartyPeopleDocument, MyAdminPartyPeopleQuery, MyAdminPartyPeopleQueryVariables, MyAdminTenantsDocument, MyAdminTenantsQuery, PartyPerson, Tenant } from "../../app/api/generated";
+import { GlobalUser, MyAdminPartyPeopleDocument, MyAdminPartyPeopleQuery, MyAdminPartyPeopleQueryVariables, MyAdminTenantsDocument, MyAdminTenantsQuery, MyAuthDetailsDocument, MyAuthDetailsQuery, PartyPerson, Tenant } from "../../app/api/generated";
 import Table from '../../components/table/Table';
 import { TableColumn, TitleOverride } from '../../components/table/types';
 import { Button } from "@mui/material";
+import { authDetailsSuccess } from "../../store/slices/auth";
 
 interface AdminPanelTenant extends Tenant {
   location: string;
@@ -22,6 +24,7 @@ interface AdminPanelPeople extends PartyPerson {
 }
 
 const AdminPanel = () => {
+  const navigate = useNavigate();
 
   const exampleSchoolColumns: TableColumn<AdminPanelTenant>[] = [
     {
@@ -29,6 +32,12 @@ const AdminPanel = () => {
       fieldName: 'name',
       filter: 'suggest',
       isMandatory: true,
+      component: (columnProps) => {
+        return (<div style={{ display: 'flex', alignItems: 'center' }}>
+          <Avatar srcSet={columnProps.row.original.imgUrl} alt={columnProps.row.original.name} style={{ marginRight: '10px' }}/>
+          {columnProps.row.original.name}
+        </div>)
+      },
     },
     {
       columnDisplayName: 'Location',
@@ -75,6 +84,12 @@ const AdminPanel = () => {
       fieldName: 'name',
       filter: 'suggest',
       isMandatory: true,
+      component: (columnProps) => {
+        return (<div style={{ display: 'flex', alignItems: 'center' }}>
+          <Avatar src="https://google.com" alt={columnProps.row.original.name} style={{ marginRight: '10px' }}/>
+          {columnProps.row.original.name}
+        </div>)
+      },
     },
     {
       columnDisplayName: 'Type',
@@ -94,7 +109,17 @@ const AdminPanel = () => {
       columnDisplayName: '',
       fieldName: 'firstButton',
       component: (columnProps) => {
-        return (<Button onClick={() => {}}>
+        return (<Button onClick={() => {
+          localStorage.setItem('X-TENANT-ID', String(columnProps.row.original.tenant));
+          localStorage.setItem('X-PARTY-ID', String(columnProps.row.original.partyId));
+          apolloClient.query<MyAuthDetailsQuery>({ query: MyAuthDetailsDocument })
+            .then(result => {
+              storeDispatch(authDetailsSuccess(result.data.myAuthDetails as GlobalUser));
+            }).catch((err: any) => {
+              console.log(err);
+              navigate('/auth/unauthorized', { replace: true });
+            })
+        }}>
           {columnProps.row.original.firstButton}
         </Button>)
       }
