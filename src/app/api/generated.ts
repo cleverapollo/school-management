@@ -447,6 +447,16 @@ export type Tenant = {
   tenant: Scalars['Int'];
 };
 
+export type PartyPerson = {
+  __typename?: 'PartyPerson';
+  partyId: number;
+  firstName: string;
+  lastName: string;
+  type: string;
+  tenant?: number;
+  name?: string; 
+}
+
 export type TenantsFilter = {
   tenants?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
@@ -514,3 +524,58 @@ export function useMyAuthDetailsLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type MyAuthDetailsQueryHookResult = ReturnType<typeof useMyAuthDetailsQuery>;
 export type MyAuthDetailsLazyQueryHookResult = ReturnType<typeof useMyAuthDetailsLazyQuery>;
 export type MyAuthDetailsQueryResult = Apollo.QueryResult<MyAuthDetailsQuery, MyAuthDetailsQueryVariables>;
+
+/////////////////////////////////////////////////////////////
+
+export type MyAdminTenantsQuery = { 
+  __typename?: 'Query',
+  admin__tenants: Array<{ 
+    __typename?: 'Tenant';
+    imgUrl: Scalars['String'];
+    name: Scalars['String'];
+    tenant: Scalars['Int'];
+  }>
+}
+
+export const MyAdminTenantsDocument = gql`
+  query admin__tenants{
+    admin__tenants{
+      tenant
+      name
+      imgUrl
+    }
+  }
+`;
+
+export type MyAdminPartyPeopleQuery = { 
+  __typename?: 'Query',
+  admin__party_people: Array<{ 
+    __typename?: 'Party Person';
+    partyId: Scalars['Int'];
+    firstName: Scalars['String'];
+    lastName: Scalars['String'];
+    type: Scalars['String'];
+  }>
+}
+
+export const MyAdminPartyPeopleDocument = gql`
+  query admin__party_people($tenant: Int!){
+    admin__party_people(tenant: $tenant){
+      partyId
+      firstName
+      lastName
+      type
+    }
+  }
+`;
+
+export type MyAdminTenantsQueryVariables = Exact<{ [key: string]: never; }>;
+export type MyAdminPartyPeopleQueryVariables = Exact<{ [key: string]: number; }>;
+
+export function useMyAdminTenantsQuery(baseOptions?: Apollo.QueryHookOptions<MyAdminTenantsQuery, MyAdminTenantsQueryVariables>) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<MyAdminTenantsQuery, MyAdminTenantsQueryVariables>(MyAdminTenantsDocument, options);
+}
+
+export type MyAdminTenantsQueryHookResult = ReturnType<typeof useMyAdminTenantsQuery>;
+export type useMyAdminTenantsQueryResult = Apollo.QueryResult<MyAdminTenantsQuery, MyAdminTenantsQueryVariables>;

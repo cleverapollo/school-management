@@ -1,0 +1,8 @@
+  query
+    admin_tenants{
+      admin_tenants{
+        tenant
+        name
+        imgUrl
+      }
+    }

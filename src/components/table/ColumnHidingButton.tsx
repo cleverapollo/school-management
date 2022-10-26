@@ -65,6 +65,7 @@ const ColumnHidingButton = <TData,>({ columns }: IColumnHidingButtonProps<TData>
         <List>
         {columns.map(column => {
           return column.columnDef.header?.toString() !== OPTIONS_COLUMN_NAME &&
+            column.columnDef.header?.toString() &&
             <ListItem key={`list-${column.id}`} disablePadding>
               <ListItemButton role={undefined} onClick={() => handleToggle(column)} dense>
                 <Checkbox

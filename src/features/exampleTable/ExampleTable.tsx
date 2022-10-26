@@ -75,21 +75,18 @@ const ExampleTable = () => {
   const exampleColumns: TableColumn<IExampleData>[] = [
     {
       columnDisplayName: 'Dessert(100g serving)',
-      component: () => null,
       fieldName: 'dessert',
       filter: 'suggest',
       isMandatory: true,
     },
     {
       columnDisplayName: 'Calories',
-      component: () => null,
       fieldName: 'calories',
       filter: 'suggest',
       isMandatory: true,
     },
     {
       columnDisplayName: 'Fat(g)',
-      component: () => null,
       //Uncomment this if you need to check columns visibility by permission
       //permissionsRequired: ['ui:view:admin'],
       fieldName: 'fat',
@@ -97,7 +94,6 @@ const ExampleTable = () => {
     },
     {
       columnDisplayName: 'Carbs(g)',
-      component: () => null,
       // Uncomment this if you need to check custom render of Cell 
       // component: (value) => (
       //   <div>
@@ -111,7 +107,6 @@ const ExampleTable = () => {
     },
     {
       columnDisplayName: 'Protein(g)',
-      component: () => null,
       //Uncomment this if you need to check columns visibility by profileTypes
       //profileType: ['Principal'],
       fieldName: 'protein',
@@ -119,7 +114,6 @@ const ExampleTable = () => {
     },
     {
       columnDisplayName: 'Date created',
-      component: () => null,
       //Uncomment this if you need to check columns visibility by profileTypes
       //profileType: ['Principal'],
       fieldName: 'created',
@@ -127,7 +121,6 @@ const ExampleTable = () => {
     },
     {
       columnDisplayName: 'Tech Options',
-      component: () => null,
       //Uncomment this if you need to check columns visibility by profileTypes
       //profileType: ['Principal'],
       fieldName: 'tech',
