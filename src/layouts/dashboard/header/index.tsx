@@ -2,6 +2,7 @@
 import { styled } from '@mui/material/styles';
 import { Box, Stack, AppBar, Toolbar, Button } from '@mui/material';
 
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 // hooks
 import useOffSetTop from '../../../hooks/useOffSetTop';
@@ -21,10 +22,10 @@ import LanguagePopover from './LanguagePopover';
 import ContactsPopover from './ContactsPopover';
 import NotificationsPopover from './NotificationsPopover';
 import { GlobalUser, MyAuthDetailsDocument, MyAuthDetailsQuery } from '../../../app/api/generated';
-import { dispatch as storeDispatch } from "../../../store/store";
+import { dispatch as storeDispatch, useTypedSelector } from "../../../store/store";
 import { apolloClient } from '../../../app/api/apollo';
 import { authDetailsSuccess } from '../../../store/slices/auth';
-import { useState } from 'react';
+import { checkIsUserEmulated, removeEmulationHeaders } from '../../../utils/emulateUser';
 
 // ----------------------------------------------------------------------
 
@@ -75,12 +76,29 @@ export default function DashboardHeader({
   isCollapse = false,
   verticalLayout = false,
 }: Props) {
+  const user = useTypedSelector(state => state.auth.user);
   const isOffset = useOffSetTop(HEADER.DASHBOARD_DESKTOP_HEIGHT) && !verticalLayout;
 
   const isDesktop = useResponsive('up', 'lg');
 
   const navigate = useNavigate();
-  const [isUserEmulated, setIsUserEmulated] = useState<boolean>(!!localStorage.getItem('X-TENANT-ID') && !!localStorage.getItem('X-PARTY-ID'));
+  const [isUserEmulated, setIsUserEmulated] = useState<boolean>(checkIsUserEmulated());
+
+  const unemulate = () => {
+    removeEmulationHeaders();
+    apolloClient.query<MyAuthDetailsQuery>({ query: MyAuthDetailsDocument })
+      .then(result => {
+        storeDispatch(authDetailsSuccess(result.data.myAuthDetails as GlobalUser));
+      }).catch((err: any) => {
+        console.log(err);
+        navigate('/auth/unauthorized', { replace: true });
+    })
+    setIsUserEmulated(false);
+  }
+
+  useEffect(() => {
+    setIsUserEmulated(checkIsUserEmulated());
+  }, [user]);
 
   return (
     <RootStyle isCollapse={isCollapse} isOffset={isOffset} verticalLayout={verticalLayout}>
@@ -99,18 +117,7 @@ export default function DashboardHeader({
         )}
 
         <Searchbar />
-        {isUserEmulated && <Button onClick={() => {
-          localStorage.removeItem('X-TENANT-ID');
-          localStorage.removeItem('X-PARTY-ID');
-          apolloClient.query<MyAuthDetailsQuery>({ query: MyAuthDetailsDocument })
-            .then(result => {
-              storeDispatch(authDetailsSuccess(result.data.myAuthDetails as GlobalUser));
-            }).catch((err: any) => {
-              console.log(err);
-              navigate('/auth/unauthorized', { replace: true });
-          })
-          setIsUserEmulated(false);
-        }}>
+        {isUserEmulated && <Button onClick={() => unemulate()}>
           Stop emultation
         </Button>}
         <Box sx={{ flexGrow: 1 }} />
