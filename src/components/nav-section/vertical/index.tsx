@@ -10,8 +10,8 @@ import PermissionBasedGuard from "../../../guards/PermissionBasedGuard";
 
 // ----------------------------------------------------------------------
 
-export default function NavSectionVertical({navConfig, isCollapse, ...other}: NavSectionProps) {
-  const {translate} = useLocales();
+export default function NavSectionVertical({ navConfig, isCollapse, profileTypeName, ...other }: NavSectionProps) {
+  const { translate } = useLocales();
 
   return (
     <Box {...other}>
