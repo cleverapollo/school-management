@@ -1,9 +1,9 @@
 export enum PROFILE_TYPE_NAMES {
   TURO_ADMIN = 'Super Tyro',
-  ADMIN = 'ADMIN',
-  TEACHER = 'TEACHER',
-  CONTACT = 'CONTACT',
-  STUDENT =  'STUDENT',
+  ADMIN = 'Admin',
+  TEACHER = 'Teacher',
+  CONTACT = 'Contact',
+  STUDENT =  'Student',
 }
 
 export enum HEADERS {
