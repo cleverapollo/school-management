@@ -54,7 +54,8 @@ const slice = createSlice({
     adminPanelError: (state: AdminPanelSliceState) => { 
       state.isLoading = false;
       state.isError = true;
-    }
+    },
+    resetAdminPanelState: () => initialState
   },
   extraReducers: (builder) => {
     builder.addCase(fetchTenants.fulfilled, (state, action) => {
@@ -70,5 +71,5 @@ const slice = createSlice({
   },
 })
 
-export const { adminPanelRequest, adminTenantsSuccess, adminPartyPeopleSuccess, adminPanelError } = slice.actions;
+export const { adminPanelRequest, adminTenantsSuccess, adminPartyPeopleSuccess, adminPanelError, resetAdminPanelState } = slice.actions;
 export default slice.reducer;

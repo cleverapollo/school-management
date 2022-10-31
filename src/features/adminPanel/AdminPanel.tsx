@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import { Avatar } from '@mui/material';
 import { apolloClient } from "../../app/api/apollo";
 import { dispatch as storeDispatch, useTypedSelector } from "../../store/store";
-import { adminPanelRequest, fetchTenants, fetchPartyPeople } from "../../store/slices/adminPanel";
+import { adminPanelRequest, fetchTenants, fetchPartyPeople, resetAdminPanelState } from "../../store/slices/adminPanel";
 import { GlobalUser, MyAdminPartyPeopleDocument, MyAdminPartyPeopleQuery, MyAdminPartyPeopleQueryVariables, MyAdminTenantsDocument, MyAdminTenantsQuery, MyAuthDetailsDocument, MyAuthDetailsQuery, PartyPerson, Tenant } from "../../app/api/generated";
 import Table from '../../components/table/Table';
 import { TableColumn, TitleOverride } from '../../components/table/types';
@@ -119,6 +119,7 @@ const AdminPanel = () => {
           apolloClient.query<MyAuthDetailsQuery>({ query: MyAuthDetailsDocument })
             .then(result => {
               storeDispatch(authDetailsSuccess(result.data.myAuthDetails as GlobalUser));
+              storeDispatch(resetAdminPanelState());
             }).catch((err: any) => {
               console.log(err);
             })
