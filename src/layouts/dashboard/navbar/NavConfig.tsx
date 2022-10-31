@@ -11,6 +11,7 @@ const getIcon = (name: string) => (
 );
 
 const ICONS = {
+  school: getIcon('school'),
   dashboard: getIcon('dashboard'),
   calendar: getIcon('calendar'),
   user: getIcon('user'),
@@ -44,7 +45,7 @@ const navConfig: NavConfig = [
     id: 'general',
     subheader: 'general',
     items: [
-      { title: 'schools', path: '/two', icon: ICONS.dashboard, availableFor: [ PROFILE_TYPE_NAMES.TURO_ADMIN ], },
+      { title: 'schools', path: '/two', icon: ICONS.school, availableFor: [ PROFILE_TYPE_NAMES.TURO_ADMIN ], },
       { title: 'dashboard', path: '/one', icon: ICONS.dashboard, availableFor: availableForAllUsers, },
       { title: 'calendar', path: '/p', icon: ICONS.calendar, availableFor: availableForAllUsers, },
       { title: 'groups', path: '/a', icon: ICONS.user, availableFor: availableForAllUsers, },
