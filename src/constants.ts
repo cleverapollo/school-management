@@ -5,3 +5,8 @@ export enum PROFILE_TYPE_NAMES {
   CONTACT = 'CONTACT',
   STUDENT =  'STUDENT',
 }
+
+export enum HEADERS {
+  TENANT = 'X-TENANT-ID',
+  PARTY_ID = 'X-PARTY-ID',
+}

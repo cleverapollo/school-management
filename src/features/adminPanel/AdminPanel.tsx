@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router';
 import { Avatar } from '@mui/material';
 import { apolloClient } from "../../app/api/apollo";
 import { dispatch as storeDispatch, useTypedSelector } from "../../store/store";
-import { adminPanelRequest, adminPartyPeopleSuccess, adminTenantsSuccess, adminPanelError } from "../../store/slices/adminPanel";
+import { adminPanelRequest, fetchTenants, fetchPartyPeople } from "../../store/slices/adminPanel";
 import { GlobalUser, MyAdminPartyPeopleDocument, MyAdminPartyPeopleQuery, MyAdminPartyPeopleQueryVariables, MyAdminTenantsDocument, MyAdminTenantsQuery, MyAuthDetailsDocument, MyAuthDetailsQuery, PartyPerson, Tenant } from "../../app/api/generated";
 import Table from '../../components/table/Table';
 import { TableColumn, TitleOverride } from '../../components/table/types';
 import { Button } from "@mui/material";
 import { authDetailsSuccess } from "../../store/slices/auth";
+import { addEmulationHeaders } from "../../utils/emulateUser";
 
 interface AdminPanelTenant extends Tenant {
   location: string;
@@ -59,9 +60,8 @@ const AdminPanel = () => {
       fieldName: 'firstButton',
       component: (columnProps) => {
         return (<Button onClick={() => {
-          apolloClient.query<MyAdminPartyPeopleQuery, MyAdminPartyPeopleQueryVariables>({ query: MyAdminPartyPeopleDocument, variables: { tenant: columnProps.row.original.tenant } })
-            .then(res => storeDispatch(adminPartyPeopleSuccess(res.data.admin__party_people.map(person => ({ ...person, tenant: columnProps.row.original.tenant, name: person.firstName + person.lastName })) as PartyPerson[])))
-            .catch(e => storeDispatch(adminPanelError()))
+          storeDispatch(adminPanelRequest());
+          storeDispatch(fetchPartyPeople(columnProps.row.original.tenant));
         }
         }>
           {columnProps.row.original.firstButton}
@@ -71,6 +71,11 @@ const AdminPanel = () => {
     {
       columnDisplayName: '',
       fieldName: 'secondButton',
+      component: (columnProps) => {
+        return (<Button onClick={() => {}}>
+          {columnProps.row.original.secondButton}
+        </Button>)
+      }
     },
     {
       columnDisplayName: 'Tech Options',
@@ -110,15 +115,14 @@ const AdminPanel = () => {
       fieldName: 'firstButton',
       component: (columnProps) => {
         return (<Button onClick={() => {
-          localStorage.setItem('X-TENANT-ID', String(columnProps.row.original.tenant));
-          localStorage.setItem('X-PARTY-ID', String(columnProps.row.original.partyId));
+          addEmulationHeaders(columnProps.row.original.tenant, columnProps.row.original.partyId);
           apolloClient.query<MyAuthDetailsQuery>({ query: MyAuthDetailsDocument })
             .then(result => {
               storeDispatch(authDetailsSuccess(result.data.myAuthDetails as GlobalUser));
             }).catch((err: any) => {
               console.log(err);
-              navigate('/auth/unauthorized', { replace: true });
             })
+          navigate('/', { replace: true });
         }}>
           {columnProps.row.original.firstButton}
         </Button>)
@@ -131,14 +135,18 @@ const AdminPanel = () => {
   ];
 
   const { tenants, partyPeople } = useTypedSelector((state) => state.adminPanel);
-  const schoolsData: AdminPanelTenant[] = tenants?.map(tenant => ({ ...tenant, location: 'Dublin', type: 'IE Secondary', firstButton: 'View People', secondButton: 'Emulate', tech: '' } as AdminPanelTenant )) || [];
+  const schoolsData: AdminPanelTenant[] = tenants?.map(tenant => (
+    { ...tenant, 
+      location: 'Dublin', 
+      type: 'IE Secondary', 
+      firstButton: 'View People', 
+      secondButton: 'Emulate', 
+      tech: '' } as AdminPanelTenant )) || [];
   const peopleData: AdminPanelPeople[] = partyPeople?.map(person => ({ ...person, firstButton: 'Emulate', tech: '' })) || [];
 
   useEffect(() => {
     storeDispatch(adminPanelRequest());
-    apolloClient.query<MyAdminTenantsQuery>({ query: MyAdminTenantsDocument })
-      .then(res => storeDispatch(adminTenantsSuccess(res.data.admin__tenants)))
-      .catch(e => storeDispatch(adminPanelError()))
+    storeDispatch(fetchTenants());
   }, []);
 
   return (
