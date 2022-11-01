@@ -6,8 +6,9 @@ import { PROFILE_TYPE_NAMES } from '../../../constants';
 
 // ----------------------------------------------------------------------
 
+//remove /tyro-web-ui when release, it's just for github pages
 const getIcon = (name: string) => (
-  <SvgIconStyle src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
+  <SvgIconStyle src={`/tyro-web-ui/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
 );
 
 const ICONS = {
