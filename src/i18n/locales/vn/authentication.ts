@@ -73,6 +73,16 @@ const authentication = {
     need_help: `Cần giúp đỡ, Clodagh?`,
     check_help: `Vui lòng kiểm tra hướng dẫn trợ giúp của chúng tôi`,
     help_guides: `Hướng dẫn trợ giúp`,
+    school: `Trường học`,
+    location: `Địa điểm`,
+    type: `Loại hình`,
+    tenant: `Người thuê nhà`,
+    name: `Tên`,
+    partyId: `Id Đảng`,
+    emulate: `Mô phỏng`,
+    viewPeople: `Xem mọi người`,
+    filters: `Bộ lọc`,
+    search: `Tìm kiếm`,
 };
 
 export default authentication;

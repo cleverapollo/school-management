@@ -73,6 +73,16 @@ const authentication = {
     need_help: `需要帮助吗，克洛达？`,
     check_help: `请查看我们的帮助指南`,
     help_guides: `帮助指南`,
+    school: `学校`,
+    location: `地点`,
+    type: `类型`,
+    tenant: `租户`,
+    name: `姓名`,
+    partyId: `派对编号`,
+    emulate: `仿真`,
+    viewPeople: `查看人员`,
+    filters: `过滤器`,
+    search: `搜索`,
 };
 
 export default authentication;

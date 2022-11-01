@@ -76,6 +76,16 @@ const authentication = {
     need_help: `Need help, Clodagh?`,
     check_help: `Please check our help guides`,
     help_guides: `Help Guides`,
+    school: `School`,
+    location: `Location`,
+    type: `Type`,
+    tenant: `Tenant`,
+    name: `Name`,
+    partyId: `Party Id`,
+    emulate: `Emulate`,
+    viewPeople: `View People`,
+    filters: `Filters`,
+    search: `Search`,
 };
 
 export default authentication;

@@ -73,6 +73,16 @@ const authentication = {
     need_help: `Besoin d'aide, Clodagh ?`,
     check_help: `Veuillez consulter nos guides d'aide`,
     help_guides: `Manuels d'aide`,
+    school: `École`,
+    location: `Emplacement`,
+    type: `Taper`,
+    tenant: `Locataire`,
+    name: `Nom`,
+    partyId: `ID de partie`,
+    emulate: `Imiter`,
+    viewPeople: `Voir les personnes`,
+    filters: `Filtres`,
+    search: `Chercher`,
 };
 
 export default authentication;

@@ -73,6 +73,16 @@ const authentication = {
     need_help: `بحاجة الى مساعدة ، كلوداغ؟`,
     check_help: `يرجى مراجعة أدلة المساعدة الخاصة بنا`,
     help_guides: `أدلة المساعدة`,
+    school: `المدرسة`,
+    location: `موقع`,
+    type: `يكتب`,
+    tenant: `مستأجر`,
+    name: `اسم`,
+    partyId: `معرف الحزب`,
+    emulate: `محاكاة`,
+    viewPeople: `عرض الناس`,
+    filters: `المرشحات`,
+    search: `يبحث`,
 };
 
 export default authentication;

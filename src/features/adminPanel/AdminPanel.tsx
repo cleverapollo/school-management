@@ -10,6 +10,7 @@ import { TableColumn, TitleOverride } from '../../components/table/types';
 import { Button } from "@mui/material";
 import { authDetailsSuccess } from "../../store/slices/auth";
 import { addEmulationHeaders } from "../../utils/emulateUser";
+import useLocales from "../../hooks/useLocales";
 
 interface AdminPanelTenant extends Tenant {
   location: string;
@@ -25,11 +26,12 @@ interface AdminPanelPeople extends PartyPerson {
 }
 
 const AdminPanel = () => {
+  const { translate } = useLocales();
   const navigate = useNavigate();
 
   const exampleSchoolColumns: TableColumn<AdminPanelTenant>[] = [
     {
-      columnDisplayName: 'School',
+      columnDisplayName: translate('school'),
       fieldName: 'name',
       filter: 'suggest',
       isMandatory: true,
@@ -41,17 +43,17 @@ const AdminPanel = () => {
       },
     },
     {
-      columnDisplayName: 'Location',
+      columnDisplayName: translate('location'),
       fieldName: 'location',
       filter: 'suggest',
     },
     {
-      columnDisplayName: 'Type',
+      columnDisplayName: translate('type'),
       fieldName: 'type',
       filter: 'suggest',
     },
     {
-      columnDisplayName: 'Tenant',
+      columnDisplayName: translate('tenant'),
       fieldName: 'tenant',
       filter: 'suggest',
     },
@@ -85,7 +87,7 @@ const AdminPanel = () => {
 
   const examplePeopleColumns: TableColumn<AdminPanelPeople>[] = [
     {
-      columnDisplayName: 'Name',
+      columnDisplayName: translate('name'),
       fieldName: 'name',
       filter: 'suggest',
       isMandatory: true,
@@ -97,17 +99,17 @@ const AdminPanel = () => {
       },
     },
     {
-      columnDisplayName: 'Type',
+      columnDisplayName: translate('type'),
       fieldName: 'type',
       filter: 'suggest',
     },
     {
-      columnDisplayName: 'Party Id',
+      columnDisplayName: translate('partyId'),
       fieldName: 'partyId',
       filter: 'suggest',
     },
     {
-      columnDisplayName: 'Tenant',
+      columnDisplayName: translate('tenant'),
       fieldName: 'tenant',
     },
     {
@@ -140,10 +142,10 @@ const AdminPanel = () => {
     { ...tenant, 
       location: 'Dublin', 
       type: 'IE Secondary', 
-      firstButton: 'View People', 
-      secondButton: 'Emulate', 
+      firstButton: translate('viewPeople'), 
+      secondButton: translate('emulate'), 
       tech: '' } as AdminPanelTenant )) || [];
-  const peopleData: AdminPanelPeople[] = partyPeople?.map(person => ({ ...person, firstButton: 'Emulate', tech: '' })) || [];
+  const peopleData: AdminPanelPeople[] = partyPeople?.map(person => ({ ...person, firstButton: translate('emulate'), tech: '' })) || [];
 
   useEffect(() => {
     storeDispatch(adminPanelRequest());
@@ -154,14 +156,14 @@ const AdminPanel = () => {
     !partyPeople ?
     (
     <Table
-      title="Schools"
+      title={translate('schools')}
       data={schoolsData}
       columns={exampleSchoolColumns}
     />
     ) :
     (
     <Table
-      title="People"
+      title={translate('people')}
       data={peopleData}
       columns={examplePeopleColumns}
     />
