@@ -91,7 +91,7 @@ export const allLangs = [
     icon: '/assets/icons/flags/ic_flag_cn.svg',
   },
   {
-    label: 'Arabic (Sudan)',
+    label: 'Arabic',
     value: 'ar',
     systemValue: arSD,
     icon: '/assets/icons/flags/ic_flag_sa.svg',

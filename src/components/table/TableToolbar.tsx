@@ -6,6 +6,8 @@ import FilterIcon from '@mui/icons-material/FilterList';
 import { Box } from '@mui/material';
 import { TableColumn } from './types';
 import Filter from './Filter';
+import { capitalize } from 'lodash';
+import useLocales from '../../hooks/useLocales';
 
 interface ITableToolbarProps<TData> {
   title: string;
@@ -17,15 +19,16 @@ interface ITableToolbarProps<TData> {
 
 const TableToolbar = <TData,>({ table, title, columnsWithPermissions, globalFilter, setGlobalFilter }: ITableToolbarProps<TData>) => {
 
+  const { translate } = useLocales();
   const [showFilters, setShowFilters] = useState<boolean>(false);
 
   return (<Box sx={{ paddingX: '10px' }}>
-    <Typography variant="h4">{title}</Typography>
+    <Typography variant="h4">{capitalize(title)}</Typography>
     <Box sx={{ display: 'flex', justifyContent: 'space-between', marginY: '30px', paddingX: '14px' }}>
       <TextField
         value={globalFilter ?? ''}
         onChange={e => setGlobalFilter(e.target.value)}
-        placeholder="Search..."
+        placeholder={translate('search') + '...'}
         variant="outlined"
         sx={{ width: '32%' }}
         InputProps={{
@@ -36,7 +39,7 @@ const TableToolbar = <TData,>({ table, title, columnsWithPermissions, globalFilt
       />
       <Box onClick={() => setShowFilters(!showFilters)} sx={{ display: 'flex', alignItems: 'center' }}>
         <SvgIcon component={FilterIcon} style={{ marginRight: '10px' }}/>
-        Filters
+          {translate('filters')}
       </Box>
     </Box>
     {showFilters && table.getHeaderGroups().map((headerGroup) => (

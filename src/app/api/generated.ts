@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
+import { PROFILE_TYPE_NAMES } from '../../constants';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -346,6 +347,12 @@ export type ProfileFilter = {
   ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
+export type UserProfileName = PROFILE_TYPE_NAMES.TURO_ADMIN |
+  PROFILE_TYPE_NAMES.ADMIN |
+  PROFILE_TYPE_NAMES.TEACHER |
+  PROFILE_TYPE_NAMES.CONTACT |
+  PROFILE_TYPE_NAMES.STUDENT;
+
 export type ProfileType = {
   __typename?: 'ProfileType';
   defaultRoleIds?: Maybe<Array<Maybe<Scalars['Int']>>>;
@@ -353,7 +360,7 @@ export type ProfileType = {
   description: Scalars['String'];
   descriptionTextId?: Maybe<Scalars['Int']>;
   id: Scalars['Int'];
-  name: Scalars['String'];
+  name: UserProfileName;
   nameTextId?: Maybe<Scalars['Int']>;
 };
 

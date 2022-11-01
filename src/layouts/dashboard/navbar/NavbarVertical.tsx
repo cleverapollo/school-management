@@ -13,12 +13,13 @@ import { NAVBAR } from '../../../config';
 // components
 import Logo from '../../../components/Logo';
 import Scrollbar from '../../../components/Scrollbar';
-import { NavSectionVertical } from '../../../components/nav-section';
+import { NavListProps, NavSectionVertical } from '../../../components/nav-section';
 //
 import navConfig from './NavConfig';
 import NavbarDocs from './NavbarDocs';
 import NavbarAccount from './NavbarAccount';
 import CollapseButton from './CollapseButton';
+import { useTypedSelector } from '../../../store/store';
 
 // ----------------------------------------------------------------------
 
@@ -39,6 +40,7 @@ type Props = {
 };
 
 export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props) {
+  const profileTypeName = useTypedSelector(state => state.auth.activeProfile?.profileType?.name);
   const theme = useTheme();
 
   const { pathname } = useLocation();
@@ -54,6 +56,16 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
+
+  const filteredNavConfig = navConfig.map(group => {
+    const filteredItems: NavListProps[] = [];
+    group.items.forEach(item => {
+      if (profileTypeName && item.availableFor?.includes(profileTypeName)) {
+        filteredItems.push(item);
+      }
+    })
+    return { ...group, items: filteredItems };
+  }).filter(group => group.items.length);
 
   const renderContent = (
     <Scrollbar
@@ -83,7 +95,7 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
         <NavbarAccount isCollapse={isCollapse} />
       </Stack>
 
-      <NavSectionVertical navConfig={navConfig} isCollapse={isCollapse} />
+      <NavSectionVertical navConfig={filteredNavConfig} isCollapse={isCollapse} profileTypeName={profileTypeName}/>
 
       <Box sx={{ flexGrow: 1 }} />
 

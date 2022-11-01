@@ -1,29 +1,30 @@
 // @mui
 import { Stack, Button, Typography } from '@mui/material';
+import { Box } from '@mui/system';
 // assets
 import { DocIllustration } from '../../../assets';
+import useLocales from '../../../hooks/useLocales';
 
 // ----------------------------------------------------------------------
 
 export default function NavbarDocs() {
+  const { translate } = useLocales();
   return (
     <Stack
       spacing={3}
-      sx={{ px: 5, pb: 5, mt: 10, width: 1, textAlign: 'center', display: 'block' }}
+      sx={{ pb: 5, mt: 10, width: 1, display: 'block' }}
     >
-      <DocIllustration sx={{ width: 1 }} />
 
-      <div>
-        <Typography gutterBottom variant="subtitle1">
-          Hi, Rayan Moran
+      <Box>
+        <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center' }}>
+          {translate('need_help')}
+          <br /> 
+          {translate('check_help')}
         </Typography>
-        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          Need help?
-          <br /> Please check our docs
-        </Typography>
-      </div>
-
-      <Button variant="contained">Documentation</Button>
+      </Box>
+      <Box sx={{ textAlign: 'center' }}>
+        <Button variant="contained" sx={{ margin: 'auto'}}>{translate('help_guides')}</Button>
+      </Box>
     </Stack>
   );
 }

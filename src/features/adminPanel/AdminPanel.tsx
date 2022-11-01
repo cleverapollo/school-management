@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router';
 import { Avatar } from '@mui/material';
 import { apolloClient } from "../../app/api/apollo";
 import { dispatch as storeDispatch, useTypedSelector } from "../../store/store";
-import { adminPanelRequest, fetchTenants, fetchPartyPeople } from "../../store/slices/adminPanel";
+import { adminPanelRequest, fetchTenants, fetchPartyPeople, resetAdminPanelState } from "../../store/slices/adminPanel";
 import { GlobalUser, MyAdminPartyPeopleDocument, MyAdminPartyPeopleQuery, MyAdminPartyPeopleQueryVariables, MyAdminTenantsDocument, MyAdminTenantsQuery, MyAuthDetailsDocument, MyAuthDetailsQuery, PartyPerson, Tenant } from "../../app/api/generated";
 import Table from '../../components/table/Table';
 import { TableColumn, TitleOverride } from '../../components/table/types';
 import { Button } from "@mui/material";
 import { authDetailsSuccess } from "../../store/slices/auth";
 import { addEmulationHeaders } from "../../utils/emulateUser";
+import useLocales from "../../hooks/useLocales";
 
 interface AdminPanelTenant extends Tenant {
   location: string;
@@ -25,11 +26,12 @@ interface AdminPanelPeople extends PartyPerson {
 }
 
 const AdminPanel = () => {
+  const { translate } = useLocales();
   const navigate = useNavigate();
 
   const exampleSchoolColumns: TableColumn<AdminPanelTenant>[] = [
     {
-      columnDisplayName: 'School',
+      columnDisplayName: translate('school'),
       fieldName: 'name',
       filter: 'suggest',
       isMandatory: true,
@@ -41,17 +43,17 @@ const AdminPanel = () => {
       },
     },
     {
-      columnDisplayName: 'Location',
+      columnDisplayName: translate('location'),
       fieldName: 'location',
       filter: 'suggest',
     },
     {
-      columnDisplayName: 'Type',
+      columnDisplayName: translate('type'),
       fieldName: 'type',
       filter: 'suggest',
     },
     {
-      columnDisplayName: 'Tenant',
+      columnDisplayName: translate('tenant'),
       fieldName: 'tenant',
       filter: 'suggest',
     },
@@ -85,7 +87,7 @@ const AdminPanel = () => {
 
   const examplePeopleColumns: TableColumn<AdminPanelPeople>[] = [
     {
-      columnDisplayName: 'Name',
+      columnDisplayName: translate('name'),
       fieldName: 'name',
       filter: 'suggest',
       isMandatory: true,
@@ -97,17 +99,17 @@ const AdminPanel = () => {
       },
     },
     {
-      columnDisplayName: 'Type',
+      columnDisplayName: translate('type'),
       fieldName: 'type',
       filter: 'suggest',
     },
     {
-      columnDisplayName: 'Party Id',
+      columnDisplayName: translate('partyId'),
       fieldName: 'partyId',
       filter: 'suggest',
     },
     {
-      columnDisplayName: 'Tenant',
+      columnDisplayName: translate('tenant'),
       fieldName: 'tenant',
     },
     {
@@ -119,6 +121,7 @@ const AdminPanel = () => {
           apolloClient.query<MyAuthDetailsQuery>({ query: MyAuthDetailsDocument })
             .then(result => {
               storeDispatch(authDetailsSuccess(result.data.myAuthDetails as GlobalUser));
+              storeDispatch(resetAdminPanelState());
             }).catch((err: any) => {
               console.log(err);
             })
@@ -139,10 +142,10 @@ const AdminPanel = () => {
     { ...tenant, 
       location: 'Dublin', 
       type: 'IE Secondary', 
-      firstButton: 'View People', 
-      secondButton: 'Emulate', 
+      firstButton: translate('viewPeople'), 
+      secondButton: translate('emulate'), 
       tech: '' } as AdminPanelTenant )) || [];
-  const peopleData: AdminPanelPeople[] = partyPeople?.map(person => ({ ...person, firstButton: 'Emulate', tech: '' })) || [];
+  const peopleData: AdminPanelPeople[] = partyPeople?.map(person => ({ ...person, firstButton: translate('emulate'), tech: '' })) || [];
 
   useEffect(() => {
     storeDispatch(adminPanelRequest());
@@ -153,14 +156,14 @@ const AdminPanel = () => {
     !partyPeople ?
     (
     <Table
-      title="Schools"
+      title={translate('schools')}
       data={schoolsData}
       columns={exampleSchoolColumns}
     />
     ) :
     (
     <Table
-      title="People"
+      title={translate('people')}
       data={peopleData}
       columns={examplePeopleColumns}
     />
