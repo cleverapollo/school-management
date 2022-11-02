@@ -75,8 +75,7 @@ root.render(
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <SettingsProvider>
           <CollapseDrawerProvider>
-            {/* Remove /tyro-web-ui when release, it's just for github pages */}
-            <BrowserRouter basename="/tyro-web-ui">
+            <BrowserRouter>
               <App msalInstance={msalInstance} />
             </BrowserRouter>
           </CollapseDrawerProvider>

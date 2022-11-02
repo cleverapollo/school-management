@@ -135,8 +135,7 @@ export const msalConfig = {
     clientId: "4dcc7808-8282-4b56-9518-ff8f306db255", // This is the ONLY mandatory field that you need to supply.
     authority: b2cPolicies.authorities.signUpSignIn.authority, // Use a sign-up/sign-in user-flow as a default authority
     knownAuthorities: [b2cPolicies.authorityDomain], // Mark your B2C tenant's domain as trusted.
-    //remove /tyro-web-ui when release, it's just for github pages
-    redirectUri: `${window.location.origin}/tyro-web-ui/auth/callback`, // Points to window.location.origin. You must register this URI on Azure Portal/App Registration.
+    redirectUri: `${window.location.origin}/auth/callback`, // Points to window.location.origin. You must register this URI on Azure Portal/App Registration.
     postLogoutRedirectUri: "/", // Indicates the page to navigate after logout.
     navigateToLoginRequestUrl: true, // If "true", will navigate back to the original request location before processing the auth code response.
   },
