@@ -5,7 +5,7 @@
   "homepage": "https://tyro-school.github.io/tyro-web-ui/",
   "description": "Simple React Scripts & Typescript",
   "engines": {
-    "node": "=16.17.1"
+    "node": "=16.13.2"
   },
   "private": true,
   "scripts": {
