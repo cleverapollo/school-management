@@ -20,6 +20,7 @@ import NavbarDocs from './NavbarDocs';
 import NavbarAccount from './NavbarAccount';
 import CollapseButton from './CollapseButton';
 import { useTypedSelector } from '../../../store/store';
+import { PROFILE_TYPE_NAMES } from '../../../constants';
 
 // ----------------------------------------------------------------------
 
@@ -40,7 +41,7 @@ type Props = {
 };
 
 export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props) {
-  const profileTypeName = useTypedSelector(state => state.auth.activeProfile?.profileType?.name);
+  const profileTypeName = PROFILE_TYPE_NAMES.TEACHER;//useTypedSelector(state => state.auth.activeProfile?.profileType?.name);
   const theme = useTheme();
 
   const { pathname } = useLocation();

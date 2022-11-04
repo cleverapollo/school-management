@@ -48,7 +48,7 @@ const navConfig: NavConfig = [
       { title: 'schools', path: '/two', icon: ICONS.school, availableFor: [ PROFILE_TYPE_NAMES.TURO_ADMIN ], },
       { title: 'dashboard', path: '/one', icon: ICONS.dashboard, availableFor: availableForAllUsers, },
       { title: 'calendar', path: '/p', icon: ICONS.calendar, availableFor: availableForAllUsers, },
-      { title: 'groups', path: '/a', icon: ICONS.user, availableFor: availableForAllUsers, },
+      { title: 'groups', path: '/three', icon: ICONS.user, availableFor: availableForAllUsers, },
       { title: 'attendance', path: '/b', icon: ICONS.attendance, availableFor: availableForAllUsers, },
       { title: 'assessment', path: '/c', icon: ICONS.assessment, availableFor: availableForAllUsers, },
       { title: 'wellbeing', path: '/d', icon: ICONS.wellbeing, availableFor: [PROFILE_TYPE_NAMES.TEACHER, PROFILE_TYPE_NAMES.ADMIN, PROFILE_TYPE_NAMES.CONTACT]},

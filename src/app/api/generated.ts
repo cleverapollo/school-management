@@ -586,3 +586,105 @@ export function useMyAdminTenantsQuery(baseOptions?: Apollo.QueryHookOptions<MyA
 
 export type MyAdminTenantsQueryHookResult = ReturnType<typeof useMyAdminTenantsQuery>;
 export type useMyAdminTenantsQueryResult = Apollo.QueryResult<MyAdminTenantsQuery, MyAdminTenantsQueryVariables>;
+
+/////////////////////////////////////////////////////
+
+
+export interface EnrolmentGroup {
+  name: string;
+  members: string;
+  year: string;
+  tutor: string;
+  yearhead: string;
+  programme: string;
+}
+
+export interface SubjectGroup {
+  name: string;
+  subject: string;
+  members: string;
+  level: string;
+  teacher?: string;
+  programme?: string;
+}
+
+export interface CustomGroup {
+  name: string;
+  members: string;
+  type: string;
+  created: string;
+}
+
+export type EnrolmentGroupQuery = { 
+  __typename?: 'Query',
+  generalGroups: Array<{ 
+    __typename?: 'GeneralGroups';
+    name: string;
+    members: string;
+    year: string;
+    tutor: string;
+    yearhead: string;
+    programme: string;
+  }>
+}
+
+export const EnrolmentGroupDocument = gql`
+  query generalGroups{
+    generalGroups{
+      name
+      members
+      year
+      tutor
+      yearhead
+      programme
+    }
+  }
+`;
+
+export type SubjectGroupQuery = { 
+  __typename?: 'Query',
+  subjectGroups: Array<{ 
+    __typename?: 'SubjectGroups';
+    name: string;
+    subject: string;
+    members: string;
+    level: string;
+    teacher: string;
+    programme: string;
+  }>
+}
+
+export const SubjectGroupDocument = gql`
+  query subjectGroups{
+    subjectGroups{
+      name
+      subject
+      members
+      level
+      teacher
+      programme
+    }
+  }
+`;
+
+export type CustomGroupQuery = { 
+  __typename?: 'Query',
+  customGroups: Array<{ 
+    __typename?: 'CustomGroups';
+    name: string;
+    members: string;
+    type: string;
+    created: string;
+  }>
+}
+
+export const CustomGroupDocument = gql`
+  query customGroups{
+    customGroups{
+      name
+      members
+      type
+      created
+    }
+  }
+`;
