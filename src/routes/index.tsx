@@ -10,6 +10,7 @@ import LoadingScreen from '../components/LoadingScreen';
 import useAuth from "../hooks/useAuth";
 import PageUnauthorized from '../pages/PageUnauthorized';
 import PermissionBasedGuard from '../guards/PermissionBasedGuard';
+import PageGraphiQL from '../pages/PageGraphiQL'
 
 // ----------------------------------------------------------------------
 
@@ -93,6 +94,14 @@ export default function Router() {
             { element: <Navigate to="/user/profile" replace />, index: true },
             { path: 'account', element: <UserAccount /> },
           ],
+        },
+        { 
+          path: 'graphiql', 
+          element: (
+            <PermissionBasedGuard permissions={['tyro_admin:access']} hasContent>
+              <PageGraphiQL />
+            </PermissionBasedGuard>
+          ),
         },
       ],
     },
