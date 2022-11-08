@@ -31,3 +31,9 @@ export interface ITableProps<TData> {
 }
 
 export type FilterVariant = 'suggest' | 'date';
+
+export interface Option {
+  text: string;
+  icon: string;
+  action: () => void;
+}

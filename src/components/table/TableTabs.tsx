@@ -11,10 +11,14 @@ interface ITableTabsProps {
 }
 
 const TableTabs: FC<ITableTabsProps> = ({ tabs, onChangeTab, tabValue }) => (
-  <Box sx={{ width: '100%', typography: 'body1', padding: '0 10px' }}>
+  <Box sx={{ width: '100%', typography: 'body1', padding: '5px 10px 0', background: '#F4F6F8' }}>
     <TabContext value={tabValue || '0'}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <TabList onChange={onChangeTab} aria-label="tab-list">
+        <TabList 
+          onChange={onChangeTab} 
+          aria-label="tab-list" 
+          TabIndicatorProps={{ style: { background: '#00AB55' }}}
+        >
           {tabs?.map((label, index) => <Tab key={label + index} label={label} value={index.toString()} />)}
         </TabList>
       </Box>

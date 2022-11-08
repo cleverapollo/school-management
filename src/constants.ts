@@ -10,3 +10,14 @@ export enum HEADERS {
   TENANT = 'X-TENANT-ID',
   PARTY_ID = 'X-PARTY-ID',
 }
+
+export enum SUBJECT_GROUP_LEVEL {
+  HIGHER = 'Higher',
+  ORDINARY = 'Ordinary',
+  COMMON = 'Common',
+}
+
+export enum CUSTOM_GROUP_TYPE {
+  DYNAMIC = 'Dynamic',
+  STATIC = 'Static',
+}

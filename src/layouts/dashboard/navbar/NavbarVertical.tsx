@@ -41,7 +41,7 @@ type Props = {
 };
 
 export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props) {
-  const profileTypeName = PROFILE_TYPE_NAMES.TEACHER;//useTypedSelector(state => state.auth.activeProfile?.profileType?.name);
+  const profileTypeName = useTypedSelector(state => state.auth.activeProfile?.profileType?.name);
   const theme = useTheme();
 
   const { pathname } = useLocation();

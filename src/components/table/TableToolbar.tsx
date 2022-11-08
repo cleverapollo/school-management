@@ -24,7 +24,7 @@ const TableToolbar = <TData,>({ table, title, columnsWithPermissions, globalFilt
 
   return (<Box sx={{ paddingX: '10px' }}>
     <Typography variant="h4">{capitalize(title)}</Typography>
-    <Box sx={{ display: 'flex', justifyContent: 'space-between', marginY: '30px', paddingX: '14px' }}>
+    <Box sx={{ display: 'flex', justifyContent: 'space-between', marginY: '30px', paddingRight: '14px' }}>
       <TextField
         value={globalFilter ?? ''}
         onChange={e => setGlobalFilter(e.target.value)}
@@ -43,7 +43,7 @@ const TableToolbar = <TData,>({ table, title, columnsWithPermissions, globalFilt
       </Box>
     </Box>
     {showFilters && table.getHeaderGroups().map((headerGroup) => (
-      <Box key={headerGroup.id} sx={{ display: 'flex', flexWrap: 'wrap', paddingX: '14px' }}>
+      <Box key={headerGroup.id} sx={{ display: 'flex', flexWrap: 'wrap', paddingRight: '14px' }}>
         {headerGroup.headers.map((header) => (
           <Box key={header.id} sx={{ margin: '0 20px 20px 0' }}>
             <Filter

@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
-import { PROFILE_TYPE_NAMES } from '../../constants';
+import { CUSTOM_GROUP_TYPE, PROFILE_TYPE_NAMES, SUBJECT_GROUP_LEVEL } from '../../constants';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -599,19 +599,23 @@ export interface EnrolmentGroup {
   programme: string;
 }
 
+export type SubjectGroupLevel = SUBJECT_GROUP_LEVEL.HIGHER | SUBJECT_GROUP_LEVEL.ORDINARY | SUBJECT_GROUP_LEVEL.COMMON;
+
 export interface SubjectGroup {
   name: string;
   subject: string;
   members: string;
-  level: string;
+  level: SubjectGroupLevel;
   teacher?: string;
   programme?: string;
 }
 
+export type TypeOfCustomGroup = CUSTOM_GROUP_TYPE.DYNAMIC | CUSTOM_GROUP_TYPE.STATIC;
+
 export interface CustomGroup {
   name: string;
   members: string;
-  type: string;
+  type: TypeOfCustomGroup;
   created: string;
 }
 
@@ -648,7 +652,7 @@ export type SubjectGroupQuery = {
     name: string;
     subject: string;
     members: string;
-    level: string;
+    level: SubjectGroupLevel;
     teacher: string;
     programme: string;
   }>
@@ -673,7 +677,7 @@ export type CustomGroupQuery = {
     __typename?: 'CustomGroups';
     name: string;
     members: string;
-    type: string;
+    type: TypeOfCustomGroup;
     created: string;
   }>
 }

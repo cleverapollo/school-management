@@ -1,18 +1,15 @@
 import { useEffect, useState, SyntheticEvent } from "react";
-import { useNavigate } from 'react-router';
-import { Avatar } from '@mui/material';
-import { apolloClient } from "../../app/api/apollo";
 import { dispatch as storeDispatch, useTypedSelector } from "../../store/store";
-import { adminPanelRequest, fetchTenants, fetchPartyPeople, resetAdminPanelState } from "../../store/slices/adminPanel";
-import { CustomGroup, EnrolmentGroup, GlobalUser, MyAdminPartyPeopleDocument, MyAdminPartyPeopleQuery, MyAdminPartyPeopleQueryVariables, MyAdminTenantsDocument, MyAdminTenantsQuery, MyAuthDetailsDocument, MyAuthDetailsQuery, PartyPerson, SubjectGroup, Tenant } from "../../app/api/generated";
+import { CustomGroup, EnrolmentGroup, SubjectGroup } from "../../app/api/generated";
 import Table from '../../components/table/Table';
-import { TableColumn, TitleOverride } from '../../components/table/types';
+import { TableColumn } from '../../components/table/types';
 import { Button } from "@mui/material";
-import { authDetailsSuccess } from "../../store/slices/auth";
-import { addEmulationHeaders } from "../../utils/emulateUser";
 import useLocales from "../../hooks/useLocales";
-import { PROFILE_TYPE_NAMES } from "../../constants";
+import { CUSTOM_GROUP_TYPE, PROFILE_TYPE_NAMES, SUBJECT_GROUP_LEVEL } from "../../constants";
 import { fetchEnrolmentGroups, fetchSubjectGroups, fetchCustomGroups } from "../../store/slices/groups";
+import OptionButton from "../../components/table/OptionButton";
+import ColoredBox from "./components/ColoredBox";
+import { adminOptions, teacherOptions } from "./contants";
 
 interface EnrolmentGroupData extends EnrolmentGroup {
   members: string;
@@ -50,7 +47,23 @@ const ExampleSubjectGroupData: SubjectGroupData[] = [
     name: '1 Math A',
     subject: 'Maths',
     members: '29',
-    level: 'Higher',
+    level: SUBJECT_GROUP_LEVEL.HIGHER,
+    teacher: 'Rachel Downing',
+    programme: 'Junior Cycle',
+  },
+  {
+    name: '2 History A',
+    subject: 'History',
+    members: '21',
+    level: SUBJECT_GROUP_LEVEL.COMMON,
+    teacher: 'Rachel Downing',
+    programme: 'Junior Cycle',
+  },
+  {
+    name: '3 Biology A',
+    subject: 'Biology',
+    members: '9',
+    level: SUBJECT_GROUP_LEVEL.ORDINARY,
     teacher: 'Rachel Downing',
     programme: 'Junior Cycle',
   }
@@ -60,9 +73,15 @@ const ExampleCustomGroupData: CustomGroupData[] = [
   {
     name: 'All students 2023',
     members: '965',
-    type: 'Dynamic',
+    type: CUSTOM_GROUP_TYPE.DYNAMIC,
     created: 'Rachel Downing',
-  }
+  },
+  {
+    name: 'My group',
+    members: '15',
+    type: CUSTOM_GROUP_TYPE.STATIC,
+    created: "Niall O'Reilly",
+  },
 ];
 
 const Groups = () => {
@@ -71,7 +90,8 @@ const Groups = () => {
   // const ExampleEnrolmentGroupData = useTypedSelector(state => state.groups.enrolmentGroups);
   // const ExampleSubjectGroupData = useTypedSelector(state => state.groups.subjectGroups);
   // const ExampleCustomGroupData = useTypedSelector(state => state.groups.customGroups);
-  const [tabValue, setTabValue] = useState('0');
+  const isTabsNeeded = profileTypeName === PROFILE_TYPE_NAMES.ADMIN || profileTypeName === PROFILE_TYPE_NAMES.TEACHER;
+  const [tabValue, setTabValue] = useState(isTabsNeeded ? '0': null);
 
   const handleChange = (event: SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
@@ -92,7 +112,7 @@ const Groups = () => {
   };
 
   useEffect(() => {
-    storeDispatch(fetchEnrolmentGroups());
+    tabValue ? storeDispatch(fetchEnrolmentGroups()) : storeDispatch(fetchCustomGroups());
   }, []);
 
   const enrolmentGroupColumns: TableColumn<EnrolmentGroupData>[] = [
@@ -141,6 +161,11 @@ const Groups = () => {
     {
       columnDisplayName: 'Tech Options',
       fieldName: 'tech',
+      component: (columnProps) => {
+        return profileTypeName === PROFILE_TYPE_NAMES.ADMIN && (
+          <OptionButton options={adminOptions} />
+        );
+      },
     },
   ];
 
@@ -167,6 +192,7 @@ const Groups = () => {
       columnDisplayName: 'Level',
       fieldName: 'level',
       filter: 'suggest',
+      component: (columnProps) => <ColoredBox content={columnProps.row.original.level} />
     },
     {
       columnDisplayName: profileTypeName === PROFILE_TYPE_NAMES.ADMIN ? 'Teacher' : 'Programme',
@@ -185,6 +211,11 @@ const Groups = () => {
     {
       columnDisplayName: 'Tech Options',
       fieldName: 'tech',
+      component: (columnProps) => {
+        return isTabsNeeded && (
+          <OptionButton options={profileTypeName === PROFILE_TYPE_NAMES.ADMIN ? adminOptions : teacherOptions} />
+        );
+      },
     },
   ];
 
@@ -206,6 +237,7 @@ const Groups = () => {
       fieldName: 'type',
       filter: 'suggest',
       isMandatory: true,
+      component: (columnProps) => <ColoredBox content={columnProps.row.original.type} />
     },
     {
       columnDisplayName: 'Created',
@@ -224,8 +256,42 @@ const Groups = () => {
     {
       columnDisplayName: 'Tech Options',
       fieldName: 'tech',
+      component: (columnProps) => {
+        return profileTypeName === PROFILE_TYPE_NAMES.ADMIN && (
+          <OptionButton options={adminOptions} />
+        );
+      },
     },
   ];
+
+  const studentsCustomGroupColumns: TableColumn<CustomGroupData>[] = [
+    {
+      columnDisplayName: 'Name',
+      fieldName: 'name',
+      filter: 'suggest',
+      isMandatory: true,
+    },
+    {
+      columnDisplayName: 'Teacher',
+      fieldName: 'created',
+      filter: 'suggest',
+      isMandatory: true,
+    },
+    {
+      columnDisplayName: '',
+      fieldName: 'firstButton',
+      component: (columnProps) => {
+        return (<Button onClick={() => {}}>
+          {columnProps.row.original.firstButton}
+        </Button>)
+      }
+    },
+    {
+      columnDisplayName: 'Tech Options',
+      fieldName: 'tech',
+    },
+  ];
+
 
   const enrolmentGroupData: EnrolmentGroupData[] = ExampleEnrolmentGroupData.map(group => (
     { ...group,
@@ -285,7 +351,13 @@ const Groups = () => {
         />
       );
     default: 
-      return null;
+      return (
+        <Table
+          title={translate('groups')}
+          data={customGroupData}
+          columns={studentsCustomGroupColumns}
+        />
+      );
   }
 }
 
