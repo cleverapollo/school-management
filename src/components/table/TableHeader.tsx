@@ -33,7 +33,8 @@ const TableHeader = <TData,>({ table }: ITableHeaderProps<TData>) => {
                     )}
                     </strong>
                   </Typography> : 
-                  <ColumnHidingButton columns={table.getAllLeafColumns()}/>
+                  <ColumnHidingButton columns={table.getAllLeafColumns()}
+                  />
                   }
                 </TableCell>
               ))}

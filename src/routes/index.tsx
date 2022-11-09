@@ -10,7 +10,6 @@ import LoadingScreen from '../components/LoadingScreen';
 import useAuth from "../hooks/useAuth";
 import PageUnauthorized from '../pages/PageUnauthorized';
 import PermissionBasedGuard from '../guards/PermissionBasedGuard';
-import PageGraphiQL from '../pages/PageGraphiQL'
 
 // ----------------------------------------------------------------------
 
@@ -80,14 +79,15 @@ export default function Router() {
       children: [
         { element: <Navigate to="/one" replace />, index: true },
         { path: 'one', element: <PageOne /> },
-        { path: 'two',
+        { path: 'adminPanel',
           element: (
             <PermissionBasedGuard permissions={['tyro_admin:access']} hasContent>
-              <PageTwo />
+              <AdminPanelPage />
             </PermissionBasedGuard> 
           )
         },
-        { path: 'three', element: <PageThree /> },
+        { path: 'groups', element: <GroupsPage /> },
+        { path: 'subjects', element: <SubjectsPage /> },
         {
           path: 'user',
           children: [
@@ -99,7 +99,7 @@ export default function Router() {
           path: 'graphiql', 
           element: (
             <PermissionBasedGuard permissions={['tyro_admin:access']} hasContent>
-              <PageGraphiQL />
+              <GraphiQLPage />
             </PermissionBasedGuard>
           ),
         },
@@ -126,9 +126,12 @@ const UserAccount = Loadable(lazy(() => import('../features/userAccount/UserAcco
 
 // Dashboard
 const PageOne = Loadable(lazy(() => import('../pages/PageOne')));
-const PageTwo = Loadable(lazy(() => import('../pages/PageTwo')));
-const PageThree = Loadable(lazy(() => import('../pages/PageThree')));
-const PageFour = Loadable(lazy(() => import('../pages/PageFour')));
+const GroupsPage = Loadable(lazy(() => import('../pages/GroupsPage')));
+const SubjectsPage = Loadable(lazy(() => import('../pages/SubjectsPage')));
 const PageFive = Loadable(lazy(() => import('../pages/PageFive')));
 const PageSix = Loadable(lazy(() => import('../pages/PageSix')));
 const NotFound = Loadable(lazy(() => import('../pages/Page404')));
+
+// Admin pages
+const AdminPanelPage = Loadable(lazy(() => import('../pages/AdminPanelPage')));
+const GraphiQLPage = Loadable(lazy(() => import('../pages/GraphiQLPage')));

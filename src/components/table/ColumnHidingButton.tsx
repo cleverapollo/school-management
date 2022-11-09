@@ -7,7 +7,7 @@ import {
   ListItemButton,
   ListItemText,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Column } from '@tanstack/table-core';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
@@ -43,6 +43,10 @@ const ColumnHidingButton = <TData,>({ columns }: IColumnHidingButtonProps<TData>
     setChecked(newChecked);
     column.toggleVisibility();
   };
+
+  useEffect(() => {
+    setChecked(columns.filter(column => column.id !== OPTIONS_COLUMN_NAME).map(column => column.id));
+  }, [columns]);
 
   return (
   <PopupState variant="popover" popupId="popup-popover">

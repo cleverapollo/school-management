@@ -4,20 +4,19 @@ import { Container, Typography } from '@mui/material';
 import useSettings from '../hooks/useSettings';
 // components
 import Page from '../components/Page';
-import Groups from '../features/groups/Groups';
-
+import Subjects from '../features/subjects/Subjects';
 // ----------------------------------------------------------------------
 
-export default function PageThree() {
+export default function SubjectsPage() {
   const { themeStretch } = useSettings();
 
   return (
-    <Page title="Page Three">
+    <Page title="Page Four">
       <Container maxWidth={themeStretch ? false : 'xl'}>
         <Typography variant="h3" component="h1" paragraph>
-          Page Three
+          Page Four
         </Typography>
-        <Groups />
+        <Subjects />
       </Container>
     </Page>
   );

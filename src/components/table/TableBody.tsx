@@ -18,7 +18,7 @@ const TableBody = <TData,>({ table }: ITableBodyProps<TData>) => {
   return (<MuiTableBody>
       {rowModel.rows.map((row) => (
         <Fragment key={row.id}>
-          <TableRow hover>
+          <TableRow hover sx={{ boxShadow: 'inset 0px -1px 0px rgba(145, 158, 171, 0.24)' }}>
             {row.getVisibleCells().map((cell) => (
               <TableCell
                 key={cell.id}

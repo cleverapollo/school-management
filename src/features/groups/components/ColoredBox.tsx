@@ -4,7 +4,7 @@ import { SubjectGroupLevel, TypeOfCustomGroup } from "../../../app/api/generated
 import { CUSTOM_GROUP_TYPE, SUBJECT_GROUP_LEVEL } from "../../../constants";
 
 interface IColoredBoxProps {
-  content: TypeOfCustomGroup | SubjectGroupLevel;
+  content: TypeOfCustomGroup | SubjectGroupLevel | undefined;
 }
 
 const ColoredBox: FC<IColoredBoxProps> = ({ content }) => {
