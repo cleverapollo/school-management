@@ -624,11 +624,16 @@ export type EnrolmentGroupQuery = {
   generalGroups: Array<{ 
     __typename?: 'GeneralGroups';
     name: string;
-    members: string;
-    year: string;
-    tutor: string;
-    yearhead: string;
-    programme: string;
+    // members: string;
+    // year: string;
+    // tutor: string;
+    // yearhead: string;
+    // programme: string;
+    programmeStages: {
+      programmeStage: {
+        name: string;
+      }
+    };
   }>
 }
 
@@ -636,11 +641,11 @@ export const EnrolmentGroupDocument = gql`
   query generalGroups{
     generalGroups{
       name
-      members
-      year
-      tutor
-      yearhead
-      programme
+      programmeStages {
+        programmeStage {
+          name
+        }
+      }
     }
   }
 `;

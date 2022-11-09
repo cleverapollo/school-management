@@ -3,7 +3,7 @@ import { apolloClient } from '../../app/api/apollo';
 import { CustomGroup, CustomGroupDocument, CustomGroupQuery, EnrolmentGroup, EnrolmentGroupDocument, EnrolmentGroupQuery, Maybe, MyAdminPartyPeopleDocument, MyAdminPartyPeopleQuery, MyAdminPartyPeopleQueryVariables, MyAdminTenantsDocument, MyAdminTenantsQuery, MyAuthDetailsDocument, MyAuthDetailsQuery, PartyPerson, SubjectGroup, SubjectGroupDocument, SubjectGroupQuery, Tenant } from "../../app/api/generated";
 
 interface GroupsSliceState {
-  enrolmentGroups: Maybe<EnrolmentGroup[]>;
+  enrolmentGroups: Maybe<Partial<EnrolmentGroup>[]>;
   subjectGroups: Maybe<SubjectGroup[]>;
   customGroups: Maybe<CustomGroup[]>;
   isLoading: boolean;

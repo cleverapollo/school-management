@@ -12,11 +12,6 @@ import ColoredBox from "./components/ColoredBox";
 import { adminOptions, teacherOptions } from "./contants";
 
 interface EnrolmentGroupData extends EnrolmentGroup {
-  members: string;
-  year: string;
-  tutor: string;
-  yearhead: string;
-  programme: string;
   firstButton?: string;
   tech?: string;
 }
