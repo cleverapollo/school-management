@@ -79,20 +79,29 @@ export default function Router() {
       children: [
         { element: <Navigate to="/one" replace />, index: true },
         { path: 'one', element: <PageOne /> },
-        { path: 'two',
+        { path: 'adminPanel',
           element: (
             <PermissionBasedGuard permissions={['tyro_admin:access']} hasContent>
-              <PageTwo />
+              <AdminPanelPage />
             </PermissionBasedGuard> 
           )
         },
-        { path: 'three', element: <PageThree /> },
+        { path: 'groups', element: <GroupsPage /> },
+        { path: 'subjects', element: <SubjectsPage /> },
         {
           path: 'user',
           children: [
             { element: <Navigate to="/user/profile" replace />, index: true },
             { path: 'account', element: <UserAccount /> },
           ],
+        },
+        { 
+          path: 'graphiql', 
+          element: (
+            <PermissionBasedGuard permissions={['tyro_admin:access']} hasContent>
+              <GraphiQLPage />
+            </PermissionBasedGuard>
+          ),
         },
       ],
     },
@@ -117,9 +126,12 @@ const UserAccount = Loadable(lazy(() => import('../features/userAccount/UserAcco
 
 // Dashboard
 const PageOne = Loadable(lazy(() => import('../pages/PageOne')));
-const PageTwo = Loadable(lazy(() => import('../pages/PageTwo')));
-const PageThree = Loadable(lazy(() => import('../pages/PageThree')));
-const PageFour = Loadable(lazy(() => import('../pages/PageFour')));
+const GroupsPage = Loadable(lazy(() => import('../pages/GroupsPage')));
+const SubjectsPage = Loadable(lazy(() => import('../pages/SubjectsPage')));
 const PageFive = Loadable(lazy(() => import('../pages/PageFive')));
 const PageSix = Loadable(lazy(() => import('../pages/PageSix')));
 const NotFound = Loadable(lazy(() => import('../pages/Page404')));
+
+// Admin pages
+const AdminPanelPage = Loadable(lazy(() => import('../pages/AdminPanelPage')));
+const GraphiQLPage = Loadable(lazy(() => import('../pages/GraphiQLPage')));

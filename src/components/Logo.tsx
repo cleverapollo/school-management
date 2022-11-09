@@ -34,7 +34,7 @@ export default function Logo({ disabledLink = false, sx }: Props) {
   const logo = (
     <Box sx={{ width: 80, height: 80, ...sx }}>
       <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-	      viewBox="0 0 400 400" enable-background="new 0 0 400 400"
+	      viewBox="0 0 400 400" enableBackground="new 0 0 400 400"
       >
         <rect fill="#FFFFFF" width="100%" height="100%"/>
         <g>

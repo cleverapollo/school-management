@@ -1,5 +1,6 @@
 import { AccessorFn, DeepKeys } from "@tanstack/table-core";
 import { CellContext } from '@tanstack/react-table';
+import { SyntheticEvent } from "react";
 
 export interface Config {
 }
@@ -24,6 +25,15 @@ export interface ITableProps<TData> {
   title: string;
   titleOverride?: TitleOverride[];
   columns: TableColumn<TData>[];
+  tabs?: string[];
+  onChangeTab?: (event: SyntheticEvent, newValue: string) => void;
+  tabValue?: string;
 }
 
 export type FilterVariant = 'suggest' | 'date';
+
+export interface Option {
+  text: string;
+  icon: string;
+  action: () => void;
+}

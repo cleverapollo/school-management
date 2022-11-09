@@ -20,6 +20,7 @@ import NavbarDocs from './NavbarDocs';
 import NavbarAccount from './NavbarAccount';
 import CollapseButton from './CollapseButton';
 import { useTypedSelector } from '../../../store/store';
+import { PROFILE_TYPE_NAMES } from '../../../constants';
 
 // ----------------------------------------------------------------------
 

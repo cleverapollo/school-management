@@ -21,6 +21,7 @@ import {
 } from '@tanstack/react-table';
 import { ColumnDef, createColumnHelper } from '@tanstack/table-core';
 import { useState } from 'react';
+import { isEmpty } from 'lodash';
 import { ITableProps, TableColumn } from "./types";
 import { Table as MuiTable, TableContainer } from "@mui/material";
 import TableHeader from "./TableHeader";
@@ -29,9 +30,10 @@ import TableBody from './TableBody';
 import TablePagination from './TablePagination';
 import { calculateColumnsWithPermissions, createTitleForProfileTypes, fuzzyFilter, fuzzySort } from "../../utils/table";
 import { DEFAULT_PAGINATION_SIZE } from './constants';
+import TableTabs from './TableTabs';
 
 const Table = <TData,>(props: ITableProps<TData>) => {
-  const { data, title, titleOverride, columns } = props;
+  const { data, title, titleOverride, columns, tabs, onChangeTab, tabValue } = props;
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState<string>('');
@@ -92,6 +94,7 @@ const Table = <TData,>(props: ITableProps<TData>) => {
   return(<>
     <TableContainer>
       <TableToolbar table={table} title={tableTitle} columnsWithPermissions={columnsWithPermission} globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
+      {!isEmpty(tabs) && <TableTabs tabs={tabs} onChangeTab={onChangeTab} tabValue={tabValue} />}
       <MuiTable>
         <TableHeader table={table} />
         <TableBody table={table} />

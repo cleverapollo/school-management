@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
-import { PROFILE_TYPE_NAMES } from '../../constants';
+import { CUSTOM_GROUP_TYPE, PROFILE_TYPE_NAMES, SUBJECT_GROUP_LEVEL } from '../../constants';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -586,3 +586,114 @@ export function useMyAdminTenantsQuery(baseOptions?: Apollo.QueryHookOptions<MyA
 
 export type MyAdminTenantsQueryHookResult = ReturnType<typeof useMyAdminTenantsQuery>;
 export type useMyAdminTenantsQueryResult = Apollo.QueryResult<MyAdminTenantsQuery, MyAdminTenantsQueryVariables>;
+
+/////////////////////////////////////////////////////
+
+
+export interface EnrolmentGroup {
+  name: string;
+  members: string;
+  year: string;
+  tutor: string;
+  yearhead: string;
+  programme: string;
+}
+
+export type SubjectGroupLevel = SUBJECT_GROUP_LEVEL.HIGHER | SUBJECT_GROUP_LEVEL.ORDINARY | SUBJECT_GROUP_LEVEL.COMMON;
+
+export interface SubjectGroup {
+  name: string;
+  subject: string;
+  members: string;
+  level: SubjectGroupLevel;
+  teacher?: string;
+  programme?: string;
+}
+
+export type TypeOfCustomGroup = CUSTOM_GROUP_TYPE.DYNAMIC | CUSTOM_GROUP_TYPE.STATIC;
+
+export interface CustomGroup {
+  name: string;
+  members: string;
+  type: TypeOfCustomGroup;
+  created: string;
+}
+
+export type EnrolmentGroupQuery = { 
+  __typename?: 'Query',
+  generalGroups: Array<{ 
+    __typename?: 'GeneralGroups';
+    name: string;
+    // members: string;
+    // year: string;
+    // tutor: string;
+    // yearhead: string;
+    // programme: string;
+    programmeStages: {
+      programmeStage: {
+        name: string;
+      }
+    };
+  }>
+}
+
+export const EnrolmentGroupDocument = gql`
+  query generalGroups{
+    generalGroups{
+      name
+      programmeStages {
+        programmeStage {
+          name
+        }
+      }
+    }
+  }
+`;
+
+export type SubjectGroupQuery = { 
+  __typename?: 'Query',
+  subjectGroups: Array<{ 
+    __typename?: 'SubjectGroups';
+    name: string;
+    subject: string;
+    members: string;
+    level: SubjectGroupLevel;
+    teacher: string;
+    programme: string;
+  }>
+}
+
+export const SubjectGroupDocument = gql`
+  query subjectGroups{
+    subjectGroups{
+      name
+      subject
+      members
+      level
+      teacher
+      programme
+    }
+  }
+`;
+
+export type CustomGroupQuery = { 
+  __typename?: 'Query',
+  customGroups: Array<{ 
+    __typename?: 'CustomGroups';
+    name: string;
+    members: string;
+    type: TypeOfCustomGroup;
+    created: string;
+  }>
+}
+
+export const CustomGroupDocument = gql`
+  query customGroups{
+    customGroups{
+      name
+      members
+      type
+      created
+    }
+  }
+`;

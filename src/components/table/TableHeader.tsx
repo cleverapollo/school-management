@@ -16,9 +16,9 @@ interface ITableHeaderProps<TData> {
 const TableHeader = <TData,>({ table }: ITableHeaderProps<TData>) => {
 
   return (
-    <TableHead>
+    <thead>
       {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id}>
+          <TableRow key={headerGroup.id} sx={{ boxShadow: 'inset 0px -1px 0px rgba(145, 158, 171, 0.24)' }}>
             {headerGroup.headers.map((header) => (
                 <TableCell
                   colSpan={header.colSpan}
@@ -26,18 +26,21 @@ const TableHeader = <TData,>({ table }: ITableHeaderProps<TData>) => {
                 >
                   {header.column.columnDef.header !== OPTIONS_COLUMN_NAME ? 
                   <Typography>
+                    <strong>
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext()
                     )}
+                    </strong>
                   </Typography> : 
-                  <ColumnHidingButton columns={table.getAllLeafColumns()}/>
+                  <ColumnHidingButton columns={table.getAllLeafColumns()}
+                  />
                   }
                 </TableCell>
               ))}
           </TableRow>
         ))}
-    </TableHead>
+    </thead>
   );
 }
 

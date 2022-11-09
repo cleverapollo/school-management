@@ -18,6 +18,7 @@ const ICONS = {
   attendance: getIcon('attendance'),
   assessment: getIcon('assessment'),
   wellbeing: getIcon('wellbeing'),
+  subjects: getIcon('subjects'),
 
   student: getIcon('student'),
   subjectOptions: getIcon('subjectOptions'),
@@ -45,13 +46,15 @@ const navConfig: NavConfig = [
     id: 'general',
     subheader: 'general',
     items: [
-      { title: 'schools', path: '/two', icon: ICONS.school, availableFor: [ PROFILE_TYPE_NAMES.TURO_ADMIN ], },
+      { title: 'schools', path: '/adminPanel', icon: ICONS.school, availableFor: [ PROFILE_TYPE_NAMES.TURO_ADMIN ], },
       { title: 'dashboard', path: '/one', icon: ICONS.dashboard, availableFor: availableForAllUsers, },
       { title: 'calendar', path: '/p', icon: ICONS.calendar, availableFor: availableForAllUsers, },
-      { title: 'groups', path: '/a', icon: ICONS.user, availableFor: availableForAllUsers, },
+      { title: 'groups', path: '/groups', icon: ICONS.user, availableFor: [ PROFILE_TYPE_NAMES.TEACHER, PROFILE_TYPE_NAMES.ADMIN ] },
+      { title: 'subjects', path: '/subjects', icon: ICONS.subjects, availableFor: [ PROFILE_TYPE_NAMES.CONTACT, PROFILE_TYPE_NAMES.STUDENT ]},
       { title: 'attendance', path: '/b', icon: ICONS.attendance, availableFor: availableForAllUsers, },
       { title: 'assessment', path: '/c', icon: ICONS.assessment, availableFor: availableForAllUsers, },
-      { title: 'wellbeing', path: '/d', icon: ICONS.wellbeing, availableFor: [PROFILE_TYPE_NAMES.TEACHER, PROFILE_TYPE_NAMES.ADMIN, PROFILE_TYPE_NAMES.CONTACT]},
+      { title: 'wellbeing', path: '/d', icon: ICONS.wellbeing, availableFor: [ PROFILE_TYPE_NAMES.TEACHER, PROFILE_TYPE_NAMES.ADMIN, PROFILE_TYPE_NAMES.CONTACT ]},
+      { title: 'groups', path: '/groups', icon: ICONS.people, availableFor: [ PROFILE_TYPE_NAMES.CONTACT, PROFILE_TYPE_NAMES.STUDENT ] },
     ],
   },
 
