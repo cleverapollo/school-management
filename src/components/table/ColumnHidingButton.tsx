@@ -45,7 +45,7 @@ const ColumnHidingButton = <TData,>({ columns }: IColumnHidingButtonProps<TData>
   };
 
   useEffect(() => {
-    setChecked(columns.filter(column => column.id !== OPTIONS_COLUMN_NAME).map(column => column.id));
+    setChecked(columns.filter(column => column.id !== OPTIONS_COLUMN_NAME && column.getIsVisible()).map(column => column.id));
   }, [columns]);
 
   return (
