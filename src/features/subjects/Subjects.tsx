@@ -43,19 +43,19 @@ const Subjects = () => {
 
   const subjectGroupColumns: TableColumn<SubjectsData>[] = [
     {
-      columnDisplayName: 'Subject',
+      columnDisplayName: translate('subject'),
       fieldName: 'subject',
       filter: 'suggest',
       isMandatory: true,
     },
     {
-      columnDisplayName: 'Level',
+      columnDisplayName: translate('level'),
       fieldName: 'level',
       filter: 'suggest',
       component: (columnProps) => <ColoredBox content={columnProps.row.original.level} />
     },
     {
-      columnDisplayName: 'Teacher',
+      columnDisplayName: translate('teacher'),
       fieldName: 'teacher',
       filter: 'suggest',
     },
@@ -76,14 +76,14 @@ const Subjects = () => {
 
   const subjectsData: SubjectsData[] = ExampleSubjectsData.map(group => {
     return { ...group,
-      firstButton: 'view', 
+      firstButton: translate('view'), 
       tech: ''
     } as SubjectsData || [] 
   });
 
   return (
     <Table
-      title={translate('groups')}
+      title={translate('subjects')}
       data={subjectsData}
       columns={subjectGroupColumns}
     />

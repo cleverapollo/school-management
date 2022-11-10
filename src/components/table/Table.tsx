@@ -25,12 +25,13 @@ import { isEmpty } from 'lodash';
 import { ITableProps, TableColumn } from "./types";
 import { Table as MuiTable, TableContainer } from "@mui/material";
 import TableHeader from "./TableHeader";
-import TableToolbar from "./TableToolbar";
+import TableFilters from "./TableFilters";
 import TableBody from './TableBody';
 import TablePagination from './TablePagination';
 import { calculateColumnsWithPermissions, createTitleForProfileTypes, fuzzyFilter, fuzzySort } from "../../utils/table";
 import { DEFAULT_PAGINATION_SIZE } from './constants';
 import TableTabs from './TableTabs';
+import TableToolbar from './TableToolbar';
 
 const Table = <TData,>(props: ITableProps<TData>) => {
   const { data, title, titleOverride, columns, tabs, onChangeTab, tabValue } = props;
@@ -92,8 +93,12 @@ const Table = <TData,>(props: ITableProps<TData>) => {
   });
 
   return(<>
-    <TableContainer>
-      <TableToolbar table={table} title={tableTitle} columnsWithPermissions={columnsWithPermission} globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
+    <TableToolbar title={tableTitle}/>
+    <TableContainer sx={{ 
+      boxShadow: '0px 0px 2px rgba(145, 158, 171, 0.2), 0px 12px 24px -4px rgba(145, 158, 171, 0.12)', 
+      borderRadius: '16px' }}
+    >
+      <TableFilters table={table} columnsWithPermissions={columnsWithPermission} globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
       {!isEmpty(tabs) && <TableTabs tabs={tabs} onChangeTab={onChangeTab} tabValue={tabValue} />}
       <MuiTable>
         <TableHeader table={table} />

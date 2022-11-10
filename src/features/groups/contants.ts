@@ -2,22 +2,22 @@ import { Option } from "../../components/table/types";
 
 export const adminOptions: Option[] = [
   {
-    text: 'Notify',
+    text: 'notify',
     icon: 'notify',
     action: () => {},
   },
   {
-    text: 'Edit',
+    text: 'edit',
     icon: 'edit',
     action: () => {},
   },
   {
-    text: 'Archive',
+    text: 'archive',
     icon: 'archive',
     action: () => {},
   },
   {
-    text: 'Delete',
+    text: 'delete',
     icon: 'delete',
     action: () => {},
   },
@@ -25,7 +25,7 @@ export const adminOptions: Option[] = [
 
 export const teacherOptions: Option[] = [
   {
-    text: 'Notify',
+    text: 'notify',
     icon: 'notify',
     action: () => {},
   },

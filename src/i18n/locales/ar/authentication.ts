@@ -83,6 +83,22 @@ const authentication = {
     viewPeople: `عرض الناس`,
     filters: `المرشحات`,
     search: `يبحث`,
+    enrolmentGroups: `مجموعات التسجيل`,
+    subjectGroups: `مجموعات الموضوعات`,
+    customGroups: `مجموعات مخصصة`,
+    view: `رأي`,
+    notify: `يخطر`,
+    archive: `أرشيف`,
+    delete: `حذف`,
+    members: `أعضاء`,
+    year: `سنة`,
+    tutor: `مدرس خاص`,
+    yearhead: `رأس السنة`,
+    programme: `برنامج`,
+    subject: `موضوعات`,
+    level: `مستوى`,
+    teacher: `معلم`,
+    created: `مخلوق`,
 };
 
 export default authentication;
