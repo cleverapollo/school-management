@@ -83,6 +83,22 @@ const authentication = {
     viewPeople: `查看人员`,
     filters: `过滤器`,
     search: `搜索`,
+    enrolmentGroups: `招生组`,
+    subjectGroups: `学科组`,
+    customGroups: `自定义组`,
+    view: `看法`,
+    notify: `通知`,
+    archive: `档案`,
+    delete: `删除`,
+    members: `成员`,
+    year: `年`,
+    tutor: `导师`,
+    yearhead: `年头`,
+    programme: `程序`,
+    subject: `主题`,
+    level: `等级`,
+    teacher: `老师`,
+    created: `已创建`,
 };
 
 export default authentication;

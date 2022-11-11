@@ -12,9 +12,9 @@ export enum HEADERS {
 }
 
 export enum SUBJECT_GROUP_LEVEL {
-  HIGHER = 'Higher',
-  ORDINARY = 'Ordinary',
-  COMMON = 'Common',
+  HIGHER = 'HIGHER',
+  ORDINARY = 'ORDINARY',
+  COMMON = 'COMMON',
 }
 
 export enum CUSTOM_GROUP_TYPE {

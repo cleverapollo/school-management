@@ -1,4 +1,5 @@
 import { Box } from "@mui/system";
+import { capitalize } from "lodash";
 import { FC } from "react";
 import { SubjectGroupLevel, TypeOfCustomGroup } from "../../../app/api/generated";
 import { CUSTOM_GROUP_TYPE, SUBJECT_GROUP_LEVEL } from "../../../constants";
@@ -31,7 +32,7 @@ const ColoredBox: FC<IColoredBoxProps> = ({ content }) => {
 
   return (
     <Box sx={{ padding: '1px 8px', borderRadius: '6px', background: backgroundColor, color: color, width: 'min-content' }}>
-      {content}
+      {capitalize(content)}
     </Box>
   );
 }

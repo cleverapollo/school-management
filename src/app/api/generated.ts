@@ -624,16 +624,17 @@ export type EnrolmentGroupQuery = {
   generalGroups: Array<{ 
     __typename?: 'GeneralGroups';
     name: string;
-    // members: string;
+    studentCount: Scalars['Int'];
     // year: string;
     // tutor: string;
     // yearhead: string;
-    // programme: string;
-    programmeStages: {
+    programmeStages: Array<{
       programmeStage: {
-        name: string;
+        programme: {
+          name: string;
+        }
       }
-    };
+    }>;
   }>
 }
 
@@ -641,9 +642,12 @@ export const EnrolmentGroupDocument = gql`
   query generalGroups{
     generalGroups{
       name
+      studentCount
       programmeStages {
         programmeStage {
-          name
+          programme {
+            name
+          }
         }
       }
     }
@@ -655,11 +659,21 @@ export type SubjectGroupQuery = {
   subjectGroups: Array<{ 
     __typename?: 'SubjectGroups';
     name: string;
-    subject: string;
-    members: string;
-    level: SubjectGroupLevel;
-    teacher: string;
-    programme: string;
+    subjects: Array<{
+      name: string;
+    }>;
+    studentCount: Scalars['Int'];
+    irePP: {
+      level: SubjectGroupLevel;
+    }
+    //teacher: string;
+    programmeStages: Array<{
+      programmeStage: {
+        programme: {
+          name: string;
+        }
+      }
+    }>;
   }>
 }
 
@@ -667,11 +681,20 @@ export const SubjectGroupDocument = gql`
   query subjectGroups{
     subjectGroups{
       name
-      subject
-      members
-      level
-      teacher
-      programme
+      subjects{
+        name
+      }
+      studentCount
+      irePP{
+        level
+      }
+      programmeStages {
+        programmeStage {
+          programme {
+            name
+          }
+        }
+      }
     }
   }
 `;

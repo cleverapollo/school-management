@@ -26,43 +26,43 @@ interface CustomGroupData extends CustomGroup {
   tech?: string;
 }
 
-const ExampleEnrolmentGroupData: EnrolmentGroupData[] = [
-  {
-    name: 'Pears',
-    members: '27',
-    year: '1',
-    tutor: 'Rachel Dowling',
-    yearhead: 'Rachel Dowling',
-    programme: 'Junior Cycle',
-  }
-];
+// const ExampleEnrolmentGroupData: EnrolmentGroupData[] = [
+//   {
+//     name: 'Pears',
+//     members: '27',
+//     year: '1',
+//     tutor: 'Rachel Dowling',
+//     yearhead: 'Rachel Dowling',
+//     programme: 'Junior Cycle',
+//   }
+// ];
 
-const ExampleSubjectGroupData: SubjectGroupData[] = [
-  {
-    name: '1 Math A',
-    subject: 'Maths',
-    members: '29',
-    level: SUBJECT_GROUP_LEVEL.HIGHER,
-    teacher: 'Rachel Downing',
-    programme: 'Junior Cycle',
-  },
-  {
-    name: '2 History A',
-    subject: 'History',
-    members: '21',
-    level: SUBJECT_GROUP_LEVEL.COMMON,
-    teacher: 'Rachel Downing',
-    programme: 'Junior Cycle',
-  },
-  {
-    name: '3 Biology A',
-    subject: 'Biology',
-    members: '9',
-    level: SUBJECT_GROUP_LEVEL.ORDINARY,
-    teacher: 'Rachel Downing',
-    programme: 'Junior Cycle',
-  }
-];
+// const ExampleSubjectGroupData: SubjectGroupData[] = [
+//   {
+//     name: '1 Math A',
+//     subject: 'Maths',
+//     members: '29',
+//     level: SUBJECT_GROUP_LEVEL.HIGHER,
+//     teacher: 'Rachel Downing',
+//     programme: 'Junior Cycle',
+//   },
+//   {
+//     name: '2 History A',
+//     subject: 'History',
+//     members: '21',
+//     level: SUBJECT_GROUP_LEVEL.COMMON,
+//     teacher: 'Rachel Downing',
+//     programme: 'Junior Cycle',
+//   },
+//   {
+//     name: '3 Biology A',
+//     subject: 'Biology',
+//     members: '9',
+//     level: SUBJECT_GROUP_LEVEL.ORDINARY,
+//     teacher: 'Rachel Downing',
+//     programme: 'Junior Cycle',
+//   }
+// ];
 
 const ExampleCustomGroupData: CustomGroupData[] = [
   {
@@ -82,65 +82,64 @@ const ExampleCustomGroupData: CustomGroupData[] = [
 const Groups = () => {
   const { translate } = useLocales();
   const profileTypeName = useTypedSelector(state => state.auth.activeProfile?.profileType?.name);
-  // const ExampleEnrolmentGroupData = useTypedSelector(state => state.groups.enrolmentGroups);
-  // const ExampleSubjectGroupData = useTypedSelector(state => state.groups.subjectGroups);
+  const ExampleEnrolmentGroupData = useTypedSelector(state => state.groups.enrolmentGroups);
+  const ExampleSubjectGroupData = useTypedSelector(state => state.groups.subjectGroups);
   // const ExampleCustomGroupData = useTypedSelector(state => state.groups.customGroups);
   const isTabsNeeded = profileTypeName === PROFILE_TYPE_NAMES.ADMIN || profileTypeName === PROFILE_TYPE_NAMES.TEACHER;
   const [tabValue, setTabValue] = useState(isTabsNeeded ? '0': null);
 
   const handleChange = (event: SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
-    // switch(newValue) {
-    //   case '0': 
-    //     storeDispatch(fetchEnrolmentGroups());
-    //     break;
-    //   case '1': 
-    //     storeDispatch(fetchSubjectGroups());
-    //     break;
+    switch(newValue) {
+      case '0': 
+        storeDispatch(fetchEnrolmentGroups());
+        break;
+      case '1': 
+        storeDispatch(fetchSubjectGroups());
+        break;
     //   case '2': 
     //     storeDispatch(fetchCustomGroups());
     //     break;
-    //   default: 
-    //     storeDispatch(fetchEnrolmentGroups());
-    //     break;
-    // }
+      default: break;
+    }
   };
 
   useEffect(() => {
-    tabValue ? storeDispatch(fetchEnrolmentGroups()) : storeDispatch(fetchCustomGroups());
+    storeDispatch(fetchEnrolmentGroups());
+    //tabValue ? storeDispatch(fetchEnrolmentGroups()) : storeDispatch(fetchCustomGroups());
   }, []);
 
   const enrolmentGroupColumns: TableColumn<EnrolmentGroupData>[] = [
     {
-      columnDisplayName: 'Name',
+      columnDisplayName: translate('name'),
       fieldName: 'name',
       filter: 'suggest',
       isMandatory: true,
     },
     {
-      columnDisplayName: 'Members',
+      columnDisplayName: translate('members'),
       fieldName: 'members',
       filter: 'suggest',
       isMandatory: true,
     },
     {
-      columnDisplayName: 'Year',
+      columnDisplayName: translate('year'),
       fieldName: 'year',
       filter: 'suggest',
       isMandatory: true,
     },
     {
-      columnDisplayName: 'Tutor',
+      columnDisplayName: translate('tutor'),
       fieldName: 'tutor',
       filter: 'suggest',
     },
     {
-      columnDisplayName: 'Yearhead',
+      columnDisplayName: translate('yearhead'),
       fieldName: 'yearhead',
       filter: 'suggest',
     },
     {
-      columnDisplayName: 'Programme',
+      columnDisplayName: translate('programme'),
       fieldName: 'programme',
       filter: 'suggest',
     },
@@ -166,31 +165,31 @@ const Groups = () => {
 
   const subjectGroupColumns: TableColumn<SubjectGroupData>[] = [
     {
-      columnDisplayName: 'Name',
+      columnDisplayName: translate('name'),
       fieldName: 'name',
       filter: 'suggest',
       isMandatory: true,
     },
     {
-      columnDisplayName: 'Subject',
+      columnDisplayName: translate('subject'),
       fieldName: 'subject',
       filter: 'suggest',
       isMandatory: true,
     },
     {
-      columnDisplayName: 'Members',
+      columnDisplayName: translate('members'),
       fieldName: 'members',
       filter: 'suggest',
       isMandatory: true,
     },
     {
-      columnDisplayName: 'Level',
+      columnDisplayName: translate('level'),
       fieldName: 'level',
       filter: 'suggest',
       component: (columnProps) => <ColoredBox content={columnProps.row.original.level} />
     },
     {
-      columnDisplayName: profileTypeName === PROFILE_TYPE_NAMES.ADMIN ? 'Teacher' : 'Programme',
+      columnDisplayName: profileTypeName === PROFILE_TYPE_NAMES.ADMIN ? translate('teacher') : translate('programme'),
       fieldName: profileTypeName === PROFILE_TYPE_NAMES.ADMIN ? 'teacher' : 'programme',
       filter: 'suggest',
     },
@@ -216,26 +215,26 @@ const Groups = () => {
 
   const customGroupColumns: TableColumn<CustomGroupData>[] = [
     {
-      columnDisplayName: 'Name',
+      columnDisplayName: translate('name'),
       fieldName: 'name',
       filter: 'suggest',
       isMandatory: true,
     },
     {
-      columnDisplayName: 'Members',
+      columnDisplayName: translate('members'),
       fieldName: 'members',
       filter: 'suggest',
       isMandatory: true,
     },
     {
-      columnDisplayName: 'Type',
+      columnDisplayName: translate('type'),
       fieldName: 'type',
       filter: 'suggest',
       isMandatory: true,
       component: (columnProps) => <ColoredBox content={columnProps.row.original.type} />
     },
     {
-      columnDisplayName: 'Created',
+      columnDisplayName: translate('created'),
       fieldName: 'created',
       filter: 'suggest',
     },
@@ -261,13 +260,13 @@ const Groups = () => {
 
   const studentsCustomGroupColumns: TableColumn<CustomGroupData>[] = [
     {
-      columnDisplayName: 'Name',
+      columnDisplayName: translate('name'),
       fieldName: 'name',
       filter: 'suggest',
       isMandatory: true,
     },
     {
-      columnDisplayName: 'Teacher',
+      columnDisplayName: translate('teacher'),
       fieldName: 'created',
       filter: 'suggest',
       isMandatory: true,
@@ -288,25 +287,25 @@ const Groups = () => {
   ];
 
 
-  const enrolmentGroupData: EnrolmentGroupData[] = ExampleEnrolmentGroupData.map(group => (
+  const enrolmentGroupData: EnrolmentGroupData[] = ExampleEnrolmentGroupData?.map(group => (
     { ...group,
-      firstButton: profileTypeName === PROFILE_TYPE_NAMES.ADMIN ? 'view' : 'notify', 
+      firstButton: profileTypeName === PROFILE_TYPE_NAMES.ADMIN ? translate('view') : translate('notify'), 
       tech: ''
     } as EnrolmentGroupData) || []
-  );
+  ) || [];
 
-  const subjectGroupData: SubjectGroupData[] = ExampleSubjectGroupData.map(group => {
+  const subjectGroupData: SubjectGroupData[] = ExampleSubjectGroupData?.map(group => {
     return { ...group,
       teacher: profileTypeName === PROFILE_TYPE_NAMES.ADMIN ? group.teacher : undefined,
       programme: profileTypeName === PROFILE_TYPE_NAMES.ADMIN ? undefined : group.programme,
-      firstButton: 'view', 
+      firstButton: translate('view'), 
       tech: ''
     } as SubjectGroupData || [] 
-  });
+  }) || [];
 
   const customGroupData: CustomGroupData[] = ExampleCustomGroupData.map(group => (
     { ...group,
-      firstButton: 'view', 
+      firstButton: translate('view'), 
       tech: ''
     } as CustomGroupData) || []
   );
@@ -318,7 +317,7 @@ const Groups = () => {
           title={translate('groups')}
           data={enrolmentGroupData}
           columns={enrolmentGroupColumns}
-          tabs={['Enrolment Groups', 'Subject Groups', 'Custom Groups']}
+          tabs={[translate('enrolmentGroups'), translate('subjectGroups'), translate('customGroups')]}
           onChangeTab={handleChange}
           tabValue={tabValue}
         />
@@ -329,7 +328,7 @@ const Groups = () => {
           title={translate('groups')}
           data={subjectGroupData}
           columns={subjectGroupColumns}
-          tabs={['Enrolment Groups', 'Subject Groups', 'Custom Groups']}
+          tabs={[translate('enrolmentGroups'), translate('subjectGroups'), translate('customGroups')]}
           onChangeTab={handleChange}
           tabValue={tabValue}
         />
@@ -340,7 +339,7 @@ const Groups = () => {
           title={translate('groups')}
           data={customGroupData}
           columns={customGroupColumns}
-          tabs={['Enrolment Groups', 'Subject Groups', 'Custom Groups']}
+          tabs={[translate('enrolmentGroups'), translate('subjectGroups'), translate('customGroups')]}
           onChangeTab={handleChange}
           tabValue={tabValue}
         />

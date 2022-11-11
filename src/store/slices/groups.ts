@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { apolloClient } from '../../app/api/apollo';
-import { CustomGroup, CustomGroupDocument, CustomGroupQuery, EnrolmentGroup, EnrolmentGroupDocument, EnrolmentGroupQuery, Maybe, MyAdminPartyPeopleDocument, MyAdminPartyPeopleQuery, MyAdminPartyPeopleQueryVariables, MyAdminTenantsDocument, MyAdminTenantsQuery, MyAuthDetailsDocument, MyAuthDetailsQuery, PartyPerson, SubjectGroup, SubjectGroupDocument, SubjectGroupQuery, Tenant } from "../../app/api/generated";
+import { CustomGroup, CustomGroupDocument, CustomGroupQuery, EnrolmentGroup, EnrolmentGroupDocument, EnrolmentGroupQuery, Maybe, MyAdminPartyPeopleDocument, MyAdminPartyPeopleQuery, MyAdminPartyPeopleQueryVariables, MyAdminTenantsDocument, MyAdminTenantsQuery, MyAuthDetailsDocument, MyAuthDetailsQuery, PartyPerson, SubjectGroup, SubjectGroupDocument, SubjectGroupLevel, SubjectGroupQuery, Tenant } from "../../app/api/generated";
 
 interface GroupsSliceState {
-  enrolmentGroups: Maybe<Partial<EnrolmentGroup>[]>;
+  enrolmentGroups: Maybe<EnrolmentGroup[]>;
   subjectGroups: Maybe<SubjectGroup[]>;
   customGroups: Maybe<CustomGroup[]>;
   isLoading: boolean;
@@ -22,15 +22,31 @@ export const fetchEnrolmentGroups = createAsyncThunk(
   'groups/fetchEnrolmentGroups',
   async () => {
     const response = await apolloClient.query<EnrolmentGroupQuery>({ query: EnrolmentGroupDocument })
-    return response.data.generalGroups;
+    return response.data.generalGroups.map(group => ({ 
+      name: group.name, 
+      members: group.studentCount.toString(), 
+      programme: group.programmeStages[0].programmeStage.programme.name,
+      //ToDo: change this mocks to data from backend when it will be implemented
+      year: '1',
+      tutor: 'Rachel',
+      yearhead: 'Rachel',
+    })) as EnrolmentGroup[];
   }
 );
 
 export const fetchSubjectGroups = createAsyncThunk(
   'groups/fetchSubjectGroups',
   async () => {
-    const response = await apolloClient.query<SubjectGroupQuery>({ query: SubjectGroupDocument })
-    return response.data.subjectGroups;
+    const response = await apolloClient.query<SubjectGroupQuery>({ query: SubjectGroupDocument });
+    return response.data.subjectGroups.map(group => ({
+      name: group.name,
+      subject: group.subjects[0].name,
+      members: group.studentCount.toString(),
+      level: group.irePP.level,
+      programme: group.programmeStages[0].programmeStage.programme.name,
+      //ToDo: change this mocks to data from backend when it will be implemented
+      teacher: 'Rachel',
+    })) as SubjectGroup[];
   }
 );
 

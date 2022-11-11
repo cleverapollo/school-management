@@ -12,6 +12,7 @@ import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import SvgIconStyle from '../SvgIconStyle';
 import { Option } from './types';
 import { ListItemIconStyle } from '../nav-section/vertical/style';
+import useLocales from '../../hooks/useLocales';
 
 
 const getOptionsIcon = (name: string) => (
@@ -23,6 +24,7 @@ interface IOptionButtonProps {
 }
 
 const OptionButton: FC<IOptionButtonProps> = ({ options }) => {
+  const { translate } = useLocales();
 
   return (
   <PopupState variant="popover" popupId="popup-popover">
@@ -48,7 +50,7 @@ const OptionButton: FC<IOptionButtonProps> = ({ options }) => {
             <ListItem key={`list-${index}`} disablePadding sx={{ padding: '8px' }}>
               <ListItemButton role={undefined} onClick={() => option.action()} dense>
                 <ListItemIconStyle>{getOptionsIcon(option.icon)}</ListItemIconStyle>
-                <ListItemText id={`lable-${index}`} primary={option.text} />
+                <ListItemText id={`lable-${index}`} primary={translate(option.text)} />
               </ListItemButton>
             </ListItem>
           )

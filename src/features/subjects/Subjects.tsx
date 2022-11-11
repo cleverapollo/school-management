@@ -14,28 +14,28 @@ interface SubjectsData extends Partial<SubjectGroup> {
   tech?: string;
 }
 
-const ExampleSubjectsData: SubjectsData[] = [
-  {
-    subject: 'Maths',
-    level: SUBJECT_GROUP_LEVEL.HIGHER,
-    teacher: 'Rachel Downing',
-  },
-  {
-    subject: 'History',
-    level: SUBJECT_GROUP_LEVEL.COMMON,
-    teacher: 'Rachel Downing',
-  },
-  {
-    subject: 'Biology',
-    level: SUBJECT_GROUP_LEVEL.ORDINARY,
-    teacher: 'Rachel Downing',
-  }
-];
+// const ExampleSubjectsData: SubjectsData[] = [
+//   {
+//     subject: 'Maths',
+//     level: SUBJECT_GROUP_LEVEL.HIGHER,
+//     teacher: 'Rachel Downing',
+//   },
+//   {
+//     subject: 'History',
+//     level: SUBJECT_GROUP_LEVEL.COMMON,
+//     teacher: 'Rachel Downing',
+//   },
+//   {
+//     subject: 'Biology',
+//     level: SUBJECT_GROUP_LEVEL.ORDINARY,
+//     teacher: 'Rachel Downing',
+//   }
+// ];
 
 const Subjects = () => {
   const { translate } = useLocales();
   const profileTypeName = useTypedSelector(state => state.auth.activeProfile?.profileType?.name);
-  // const ExampleSubjectGroupData = useTypedSelector(state => state.groups.subjectGroups);
+  const ExampleSubjectGroupData = useTypedSelector(state => state.groups.subjectGroups);
 
   useEffect(() => {
     storeDispatch(fetchSubjectGroups());
@@ -43,19 +43,19 @@ const Subjects = () => {
 
   const subjectGroupColumns: TableColumn<SubjectsData>[] = [
     {
-      columnDisplayName: 'Subject',
+      columnDisplayName: translate('subject'),
       fieldName: 'subject',
       filter: 'suggest',
       isMandatory: true,
     },
     {
-      columnDisplayName: 'Level',
+      columnDisplayName: translate('level'),
       fieldName: 'level',
       filter: 'suggest',
       component: (columnProps) => <ColoredBox content={columnProps.row.original.level} />
     },
     {
-      columnDisplayName: 'Teacher',
+      columnDisplayName: translate('teacher'),
       fieldName: 'teacher',
       filter: 'suggest',
     },
@@ -74,16 +74,16 @@ const Subjects = () => {
     },
   ];
 
-  const subjectsData: SubjectsData[] = ExampleSubjectsData.map(group => {
+  const subjectsData: SubjectsData[] = ExampleSubjectGroupData?.map(group => {
     return { ...group,
-      firstButton: 'view', 
+      firstButton: translate('view'), 
       tech: ''
     } as SubjectsData || [] 
-  });
+  }) || [];
 
   return (
     <Table
-      title={translate('groups')}
+      title={translate('subjects')}
       data={subjectsData}
       columns={subjectGroupColumns}
     />
