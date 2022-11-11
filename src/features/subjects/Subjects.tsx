@@ -14,28 +14,28 @@ interface SubjectsData extends Partial<SubjectGroup> {
   tech?: string;
 }
 
-const ExampleSubjectsData: SubjectsData[] = [
-  {
-    subject: 'Maths',
-    level: SUBJECT_GROUP_LEVEL.HIGHER,
-    teacher: 'Rachel Downing',
-  },
-  {
-    subject: 'History',
-    level: SUBJECT_GROUP_LEVEL.COMMON,
-    teacher: 'Rachel Downing',
-  },
-  {
-    subject: 'Biology',
-    level: SUBJECT_GROUP_LEVEL.ORDINARY,
-    teacher: 'Rachel Downing',
-  }
-];
+// const ExampleSubjectsData: SubjectsData[] = [
+//   {
+//     subject: 'Maths',
+//     level: SUBJECT_GROUP_LEVEL.HIGHER,
+//     teacher: 'Rachel Downing',
+//   },
+//   {
+//     subject: 'History',
+//     level: SUBJECT_GROUP_LEVEL.COMMON,
+//     teacher: 'Rachel Downing',
+//   },
+//   {
+//     subject: 'Biology',
+//     level: SUBJECT_GROUP_LEVEL.ORDINARY,
+//     teacher: 'Rachel Downing',
+//   }
+// ];
 
 const Subjects = () => {
   const { translate } = useLocales();
   const profileTypeName = useTypedSelector(state => state.auth.activeProfile?.profileType?.name);
-  // const ExampleSubjectGroupData = useTypedSelector(state => state.groups.subjectGroups);
+  const ExampleSubjectGroupData = useTypedSelector(state => state.groups.subjectGroups);
 
   useEffect(() => {
     storeDispatch(fetchSubjectGroups());
@@ -74,12 +74,12 @@ const Subjects = () => {
     },
   ];
 
-  const subjectsData: SubjectsData[] = ExampleSubjectsData.map(group => {
+  const subjectsData: SubjectsData[] = ExampleSubjectGroupData?.map(group => {
     return { ...group,
       firstButton: translate('view'), 
       tech: ''
     } as SubjectsData || [] 
-  });
+  }) || [];
 
   return (
     <Table

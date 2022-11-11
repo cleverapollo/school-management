@@ -26,43 +26,43 @@ interface CustomGroupData extends CustomGroup {
   tech?: string;
 }
 
-const ExampleEnrolmentGroupData: EnrolmentGroupData[] = [
-  {
-    name: 'Pears',
-    members: '27',
-    year: '1',
-    tutor: 'Rachel Dowling',
-    yearhead: 'Rachel Dowling',
-    programme: 'Junior Cycle',
-  }
-];
+// const ExampleEnrolmentGroupData: EnrolmentGroupData[] = [
+//   {
+//     name: 'Pears',
+//     members: '27',
+//     year: '1',
+//     tutor: 'Rachel Dowling',
+//     yearhead: 'Rachel Dowling',
+//     programme: 'Junior Cycle',
+//   }
+// ];
 
-const ExampleSubjectGroupData: SubjectGroupData[] = [
-  {
-    name: '1 Math A',
-    subject: 'Maths',
-    members: '29',
-    level: SUBJECT_GROUP_LEVEL.HIGHER,
-    teacher: 'Rachel Downing',
-    programme: 'Junior Cycle',
-  },
-  {
-    name: '2 History A',
-    subject: 'History',
-    members: '21',
-    level: SUBJECT_GROUP_LEVEL.COMMON,
-    teacher: 'Rachel Downing',
-    programme: 'Junior Cycle',
-  },
-  {
-    name: '3 Biology A',
-    subject: 'Biology',
-    members: '9',
-    level: SUBJECT_GROUP_LEVEL.ORDINARY,
-    teacher: 'Rachel Downing',
-    programme: 'Junior Cycle',
-  }
-];
+// const ExampleSubjectGroupData: SubjectGroupData[] = [
+//   {
+//     name: '1 Math A',
+//     subject: 'Maths',
+//     members: '29',
+//     level: SUBJECT_GROUP_LEVEL.HIGHER,
+//     teacher: 'Rachel Downing',
+//     programme: 'Junior Cycle',
+//   },
+//   {
+//     name: '2 History A',
+//     subject: 'History',
+//     members: '21',
+//     level: SUBJECT_GROUP_LEVEL.COMMON,
+//     teacher: 'Rachel Downing',
+//     programme: 'Junior Cycle',
+//   },
+//   {
+//     name: '3 Biology A',
+//     subject: 'Biology',
+//     members: '9',
+//     level: SUBJECT_GROUP_LEVEL.ORDINARY,
+//     teacher: 'Rachel Downing',
+//     programme: 'Junior Cycle',
+//   }
+// ];
 
 const ExampleCustomGroupData: CustomGroupData[] = [
   {
@@ -82,32 +82,31 @@ const ExampleCustomGroupData: CustomGroupData[] = [
 const Groups = () => {
   const { translate } = useLocales();
   const profileTypeName = useTypedSelector(state => state.auth.activeProfile?.profileType?.name);
-  // const ExampleEnrolmentGroupData = useTypedSelector(state => state.groups.enrolmentGroups);
-  // const ExampleSubjectGroupData = useTypedSelector(state => state.groups.subjectGroups);
+  const ExampleEnrolmentGroupData = useTypedSelector(state => state.groups.enrolmentGroups);
+  const ExampleSubjectGroupData = useTypedSelector(state => state.groups.subjectGroups);
   // const ExampleCustomGroupData = useTypedSelector(state => state.groups.customGroups);
   const isTabsNeeded = profileTypeName === PROFILE_TYPE_NAMES.ADMIN || profileTypeName === PROFILE_TYPE_NAMES.TEACHER;
   const [tabValue, setTabValue] = useState(isTabsNeeded ? '0': null);
 
   const handleChange = (event: SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
-    // switch(newValue) {
-    //   case '0': 
-    //     storeDispatch(fetchEnrolmentGroups());
-    //     break;
-    //   case '1': 
-    //     storeDispatch(fetchSubjectGroups());
-    //     break;
+    switch(newValue) {
+      case '0': 
+        storeDispatch(fetchEnrolmentGroups());
+        break;
+      case '1': 
+        storeDispatch(fetchSubjectGroups());
+        break;
     //   case '2': 
     //     storeDispatch(fetchCustomGroups());
     //     break;
-    //   default: 
-    //     storeDispatch(fetchEnrolmentGroups());
-    //     break;
-    // }
+      default: break;
+    }
   };
 
   useEffect(() => {
-    tabValue ? storeDispatch(fetchEnrolmentGroups()) : storeDispatch(fetchCustomGroups());
+    storeDispatch(fetchEnrolmentGroups());
+    //tabValue ? storeDispatch(fetchEnrolmentGroups()) : storeDispatch(fetchCustomGroups());
   }, []);
 
   const enrolmentGroupColumns: TableColumn<EnrolmentGroupData>[] = [
@@ -288,21 +287,21 @@ const Groups = () => {
   ];
 
 
-  const enrolmentGroupData: EnrolmentGroupData[] = ExampleEnrolmentGroupData.map(group => (
+  const enrolmentGroupData: EnrolmentGroupData[] = ExampleEnrolmentGroupData?.map(group => (
     { ...group,
       firstButton: profileTypeName === PROFILE_TYPE_NAMES.ADMIN ? translate('view') : translate('notify'), 
       tech: ''
     } as EnrolmentGroupData) || []
-  );
+  ) || [];
 
-  const subjectGroupData: SubjectGroupData[] = ExampleSubjectGroupData.map(group => {
+  const subjectGroupData: SubjectGroupData[] = ExampleSubjectGroupData?.map(group => {
     return { ...group,
       teacher: profileTypeName === PROFILE_TYPE_NAMES.ADMIN ? group.teacher : undefined,
       programme: profileTypeName === PROFILE_TYPE_NAMES.ADMIN ? undefined : group.programme,
       firstButton: translate('view'), 
       tech: ''
     } as SubjectGroupData || [] 
-  });
+  }) || [];
 
   const customGroupData: CustomGroupData[] = ExampleCustomGroupData.map(group => (
     { ...group,
