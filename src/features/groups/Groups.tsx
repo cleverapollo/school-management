@@ -10,6 +10,7 @@ import { fetchEnrolmentGroups, fetchSubjectGroups, fetchCustomGroups } from "../
 import OptionButton from "../../components/table/OptionButton";
 import ColoredBox from "./components/ColoredBox";
 import { adminOptions, teacherOptions } from "./contants";
+import { useNavigate } from "react-router";
 
 interface EnrolmentGroupData extends EnrolmentGroup {
   firstButton?: string;
@@ -26,16 +27,17 @@ interface CustomGroupData extends CustomGroup {
   tech?: string;
 }
 
-// const ExampleEnrolmentGroupData: EnrolmentGroupData[] = [
-//   {
-//     name: 'Pears',
-//     members: '27',
-//     year: '1',
-//     tutor: 'Rachel Dowling',
-//     yearhead: 'Rachel Dowling',
-//     programme: 'Junior Cycle',
-//   }
-// ];
+const ExampleEnrolmentGroupData: EnrolmentGroupData[] = [
+  {
+    id: '1',
+    name: 'Pears',
+    members: '27',
+    year: '1',
+    tutor: 'Rachel Dowling',
+    yearhead: 'Rachel Dowling',
+    programme: 'Junior Cycle',
+  }
+];
 
 // const ExampleSubjectGroupData: SubjectGroupData[] = [
 //   {
@@ -70,17 +72,20 @@ const ExampleCustomGroupData: CustomGroupData[] = [
     members: '965',
     type: CUSTOM_GROUP_TYPE.DYNAMIC,
     created: 'Rachel Downing',
+    id: '1',
   },
   {
     name: 'My group',
     members: '15',
     type: CUSTOM_GROUP_TYPE.STATIC,
     created: "Niall O'Reilly",
+    id: '2',
   },
 ];
 
 const Groups = () => {
   const { translate } = useLocales();
+  const navigate = useNavigate();
   const profileTypeName = useTypedSelector(state => state.auth.activeProfile?.profileType?.name);
   const ExampleEnrolmentGroupData = useTypedSelector(state => state.groups.enrolmentGroups);
   const ExampleSubjectGroupData = useTypedSelector(state => state.groups.subjectGroups);
@@ -110,6 +115,10 @@ const Groups = () => {
   }, []);
 
   const enrolmentGroupColumns: TableColumn<EnrolmentGroupData>[] = [
+    {
+      columnDisplayName: 'id',
+      fieldName: 'id',
+    },
     {
       columnDisplayName: translate('name'),
       fieldName: 'name',
@@ -165,6 +174,10 @@ const Groups = () => {
 
   const subjectGroupColumns: TableColumn<SubjectGroupData>[] = [
     {
+      columnDisplayName: 'id',
+      fieldName: 'id',
+    },
+    {
       columnDisplayName: translate('name'),
       fieldName: 'name',
       filter: 'suggest',
@@ -215,6 +228,10 @@ const Groups = () => {
 
   const customGroupColumns: TableColumn<CustomGroupData>[] = [
     {
+      columnDisplayName: 'id',
+      fieldName: 'id',
+    },
+    {
       columnDisplayName: translate('name'),
       fieldName: 'name',
       filter: 'suggest',
@@ -259,6 +276,10 @@ const Groups = () => {
   ];
 
   const studentsCustomGroupColumns: TableColumn<CustomGroupData>[] = [
+    {
+      columnDisplayName: 'id',
+      fieldName: 'id',
+    },
     {
       columnDisplayName: translate('name'),
       fieldName: 'name',
@@ -320,6 +341,7 @@ const Groups = () => {
           tabs={[translate('enrolmentGroups'), translate('subjectGroups'), translate('customGroups')]}
           onChangeTab={handleChange}
           tabValue={tabValue}
+          onClickRow={(id) => { navigate(`/group/${id}`); }}
         />
       );
     case '1':
@@ -331,6 +353,7 @@ const Groups = () => {
           tabs={[translate('enrolmentGroups'), translate('subjectGroups'), translate('customGroups')]}
           onChangeTab={handleChange}
           tabValue={tabValue}
+          onClickRow={(id) => { navigate(`/group/${id}`); }}
         />
       );
     case '2':
@@ -342,6 +365,7 @@ const Groups = () => {
           tabs={[translate('enrolmentGroups'), translate('subjectGroups'), translate('customGroups')]}
           onChangeTab={handleChange}
           tabValue={tabValue}
+          onClickRow={(id) => { navigate(`/group/${id}`); }}
         />
       );
     default: 
@@ -350,6 +374,7 @@ const Groups = () => {
           title={translate('groups')}
           data={customGroupData}
           columns={studentsCustomGroupColumns}
+          onClickRow={(id) => { navigate(`/group/${id}`); }}
         />
       );
   }

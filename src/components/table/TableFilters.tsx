@@ -43,6 +43,7 @@ const TableFilters = <TData,>({ table, columnsWithPermissions, globalFilter, set
     {showFilters && table.getHeaderGroups().map((headerGroup) => (
       <Box key={headerGroup.id} sx={{ display: 'flex', flexWrap: 'wrap', paddingRight: '14px' }}>
         {headerGroup.headers.map((header) => (
+          header.column.columnDef.header?.toString() !== 'id' && 
           <Box key={header.id} sx={{ margin: '0 20px 20px 0' }}>
             <Filter
               column={header.column} 

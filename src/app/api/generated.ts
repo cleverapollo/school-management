@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 import { CUSTOM_GROUP_TYPE, PROFILE_TYPE_NAMES, SUBJECT_GROUP_LEVEL } from '../../constants';
+import { GroupTypes } from '../../components/table/types';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -597,6 +598,7 @@ export interface EnrolmentGroup {
   tutor: string;
   yearhead: string;
   programme: string;
+  id: string;
 }
 
 export type SubjectGroupLevel = SUBJECT_GROUP_LEVEL.HIGHER | SUBJECT_GROUP_LEVEL.ORDINARY | SUBJECT_GROUP_LEVEL.COMMON;
@@ -608,6 +610,7 @@ export interface SubjectGroup {
   level: SubjectGroupLevel;
   teacher?: string;
   programme?: string;
+  id: string;
 }
 
 export type TypeOfCustomGroup = CUSTOM_GROUP_TYPE.DYNAMIC | CUSTOM_GROUP_TYPE.STATIC;
@@ -617,12 +620,14 @@ export interface CustomGroup {
   members: string;
   type: TypeOfCustomGroup;
   created: string;
+  id: string;
 }
 
 export type EnrolmentGroupQuery = { 
   __typename?: 'Query',
   generalGroups: Array<{ 
     __typename?: 'GeneralGroups';
+    partyId: Scalars['Int'];
     name: string;
     studentCount: Scalars['Int'];
     // year: string;
@@ -641,6 +646,7 @@ export type EnrolmentGroupQuery = {
 export const EnrolmentGroupDocument = gql`
   query generalGroups{
     generalGroups{
+      partyId
       name
       studentCount
       programmeStages {
@@ -658,6 +664,7 @@ export type SubjectGroupQuery = {
   __typename?: 'Query',
   subjectGroups: Array<{ 
     __typename?: 'SubjectGroups';
+    partyId: Scalars['Int'];
     name: string;
     subjects: Array<{
       name: string;
@@ -680,6 +687,7 @@ export type SubjectGroupQuery = {
 export const SubjectGroupDocument = gql`
   query subjectGroups{
     subjectGroups{
+      partyId
       name
       subjects{
         name
@@ -703,6 +711,7 @@ export type CustomGroupQuery = {
   __typename?: 'Query',
   customGroups: Array<{ 
     __typename?: 'CustomGroups';
+    partyId: Scalars['Int'];
     name: string;
     members: string;
     type: TypeOfCustomGroup;
@@ -713,6 +722,7 @@ export type CustomGroupQuery = {
 export const CustomGroupDocument = gql`
   query customGroups{
     customGroups{
+      partyId
       name
       members
       type
@@ -720,3 +730,41 @@ export const CustomGroupDocument = gql`
     }
   }
 `;
+
+
+/////////////////////////////////////////////////////
+
+
+export interface EnrolmentGroupListItem {
+  name: string;
+  avatarUrl: string;
+  currentActivity: string;
+  additionalInformation: string;
+}
+
+export interface SubjectGroupListItem {
+  name: string;
+  avatarUrl: string;
+  class: string;
+  level: SubjectGroupLevel;
+  additionalInformation: string;
+  examinable: string;
+  tutor: string;
+}
+
+export interface CustomGroupListItem {
+  name: string;
+  avatarUrl: string;
+  class: string;
+  year: string;
+  tutor: string;
+  yearhead: string;
+  programme: string;
+}
+
+interface ExactGroup {
+  name: string;
+  id: string;
+  type: GroupTypes;
+  list: EnrolmentGroupListItem[] | SubjectGroupListItem[] | CustomGroupListItem[];
+}

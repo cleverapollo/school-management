@@ -87,6 +87,7 @@ export default function Router() {
           )
         },
         { path: 'groups', element: <GroupsPage /> },
+        { path: 'group/:id', element: <GroupPage /> },
         { path: 'subjects', element: <SubjectsPage /> },
         {
           path: 'user',
@@ -128,7 +129,7 @@ const UserAccount = Loadable(lazy(() => import('../features/userAccount/UserAcco
 const PageOne = Loadable(lazy(() => import('../pages/PageOne')));
 const GroupsPage = Loadable(lazy(() => import('../pages/GroupsPage')));
 const SubjectsPage = Loadable(lazy(() => import('../pages/SubjectsPage')));
-const PageFive = Loadable(lazy(() => import('../pages/PageFive')));
+const GroupPage = Loadable(lazy(() => import('../pages/GroupPage')));
 const PageSix = Loadable(lazy(() => import('../pages/PageSix')));
 const NotFound = Loadable(lazy(() => import('../pages/Page404')));
 
