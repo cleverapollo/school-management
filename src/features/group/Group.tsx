@@ -24,6 +24,7 @@ interface CustomExactGroupData extends CustomGroupListItem {
   tech?: string;
 }
 
+//ToDo: change this mocks to data from the backend
 const ExampleEnrolmentGroupData: EnrolmentExactGroupData[] = [
   {
     name: 'Margaret Donelly',
@@ -137,12 +138,12 @@ const Group: FC<IProps> = ({ id }) => {
       },
     },
     {
-      columnDisplayName: 'Current activity',
+      columnDisplayName: translate('currentActivity'),
       fieldName: 'currentActivity',
       filter: 'suggest',
     },
     {
-      columnDisplayName: 'Additional Information',
+      columnDisplayName: translate('additionalInformation'),
       fieldName: 'additionalInformation',
       filter: 'suggest',
     },
@@ -170,7 +171,7 @@ const Group: FC<IProps> = ({ id }) => {
       },
     },
     {
-      columnDisplayName: 'Class',
+      columnDisplayName: translate('class'),
       fieldName: 'class',
       filter: 'suggest',
     },
@@ -181,12 +182,12 @@ const Group: FC<IProps> = ({ id }) => {
       component: (columnProps) => <ColoredBox content={columnProps.row.original.level} />
     },
     {
-      columnDisplayName: 'Additional Information',
+      columnDisplayName: translate('additionalInformation'),
       fieldName: 'additionalInformation',
       filter: 'suggest',
     },
     {
-      columnDisplayName: 'Examinable',
+      columnDisplayName: translate('examinable'),
       fieldName: 'examinable',
       filter: 'suggest',
     },
@@ -219,7 +220,7 @@ const Group: FC<IProps> = ({ id }) => {
       },
     },
     {
-      columnDisplayName: 'Class',
+      columnDisplayName: translate('class'),
       fieldName: 'class',
       filter: 'suggest',
     },
@@ -277,8 +278,8 @@ const Group: FC<IProps> = ({ id }) => {
     case GROUP_TYPES.ENROLMENT:
       return (
         <Table
-          title={`${ExampleGroupData.name} member list`}
-          story={[translate('enrolmentGroups'), ExampleGroupData.name, 'List']}
+          title={`${ExampleGroupData.name} ${translate('memberList')}`}
+          story={[translate('enrolmentGroups'), ExampleGroupData.name, translate('list')]}
           data={enrolmentGroupData}
           columns={enrolmentGroupColumns}
           isRowSelectionNeeded
@@ -287,8 +288,8 @@ const Group: FC<IProps> = ({ id }) => {
     case GROUP_TYPES.SUBJECT:
       return (
         <Table
-          title={`${ExampleGroupData.name} member list`}
-          story={[translate('subjectGroups'), ExampleGroupData.name, 'List']}
+          title={`${ExampleGroupData.name} ${translate('memberList')}`}
+          story={[translate('subjectGroups'), ExampleGroupData.name, translate('list')]}
           data={subjectGroupData}
           columns={subjectGroupColumns}
           isRowSelectionNeeded
@@ -297,8 +298,8 @@ const Group: FC<IProps> = ({ id }) => {
     case GROUP_TYPES.CUSTOM:
       return (
         <Table
-          title={`${ExampleGroupData.name} member list`}
-          story={[translate('customGroups'), ExampleGroupData.name, 'List']}
+          title={`${ExampleGroupData.name} ${translate('memberList')}`}
+          story={[translate('customGroups'), ExampleGroupData.name, translate('list')]}
           data={customGroupData}
           columns={customGroupColumns}
           isRowSelectionNeeded
@@ -307,8 +308,8 @@ const Group: FC<IProps> = ({ id }) => {
     default: 
       return (
         <Table
-          title={`${ExampleGroupData.name} member list`}
-          story={[translate('enrolmentGroups'), ExampleGroupData.name, 'List']}
+          title={`${ExampleGroupData.name} ${translate('memberList')}`}
+          story={[translate('enrolmentGroups'), ExampleGroupData.name, translate('list')]}
           data={enrolmentGroupData}
           columns={enrolmentGroupColumns}
           isRowSelectionNeeded

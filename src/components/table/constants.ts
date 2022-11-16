@@ -9,3 +9,4 @@ export enum GROUP_TYPES {
   SUBJECT = 'Subject',
   CUSTOM = 'Custom',
 };
+export const SYSTEM_HIDED_COLUMN_NAME = 'id';

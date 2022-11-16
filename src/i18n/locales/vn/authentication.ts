@@ -99,6 +99,11 @@ const authentication = {
     level: `Mức độ`,
     teacher: `Giáo viên`,
     created: `Tạo`,
+    memberList: `danh sách thành viên`,
+    class: `Lớp`,
+    examinable: `có thể kiểm tra`,
+    additionalInformation: `thông tin thêm`,
+    currentActivity: `Hoạt động hiện tại`,
 };
 
 export default authentication;

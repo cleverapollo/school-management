@@ -11,7 +11,7 @@ const authentication = {
     },
     app: `app`,
     user: `user`,
-    list: `list`,
+    list: `List`,
     edit: `Edit`,
     shop: `shop`,
     blog: `blog`,
@@ -102,6 +102,11 @@ const authentication = {
     level: `Level`,
     teacher: `Teacher`,
     created: `Created`,
+    memberList: `member list`,
+    class: `Class`,
+    examinable: `Examinable`,
+    additionalInformation: `Additional Information`,
+    currentActivity: `Current activity`,
 };
 
 export default authentication;

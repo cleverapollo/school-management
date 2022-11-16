@@ -99,6 +99,11 @@ const authentication = {
     level: `等级`,
     teacher: `老师`,
     created: `已创建`,
+    memberList: `会员名单`,
+    class: `班级`,
+    examinable: `可检查的`,
+    additionalInformation: `附加信息`,
+    currentActivity: `当前活动`,
 };
 
 export default authentication;

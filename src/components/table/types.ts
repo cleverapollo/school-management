@@ -40,7 +40,7 @@ export type FilterVariant = 'suggest' | 'date';
 export interface Option {
   text: string;
   icon: string;
-  action: () => void;
+  action: (e: any) => void;
 }
 
 export type GroupTypes = GROUP_TYPES.ENROLMENT | GROUP_TYPES.SUBJECT | GROUP_TYPES.CUSTOM;

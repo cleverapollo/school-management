@@ -4,17 +4,17 @@ export const enrolmentOptions: Option[] = [
   {
     text: 'notify',
     icon: 'notify',
-    action: () => {},
+    action: (e) => {e.stopPropagation()},
   },
   {
     text: 'view profile',
     icon: 'edit',
-    action: () => {},
+    action: (e) => {e.stopPropagation()},
   },
   {
     text: 'view timetable',
     icon: 'edit',
-    action: () => {},
+    action: (e) => {e.stopPropagation()},
   },
 ];
 
@@ -22,12 +22,12 @@ export const subjectOptions: Option[] = [
   {
     text: 'notify',
     icon: 'notify',
-    action: () => {},
+    action: (e) => {e.stopPropagation()},
   },
   {
     text: 'view',
     icon: 'edit',
-    action: () => {},
+    action: (e) => {e.stopPropagation()},
   },
 ];
 
@@ -35,16 +35,16 @@ export const customOptions: Option[] = [
   {
     text: 'notify',
     icon: 'notify',
-    action: () => {},
+    action: (e) => {e.stopPropagation()},
   },
   {
     text: 'view',
     icon: 'edit',
-    action: () => {},
+    action: (e) => {e.stopPropagation()},
   },
   {
     text: 'remove',
     icon: 'delete',
-    action: () => {},
+    action: (e) => {e.stopPropagation()},
   },
 ];

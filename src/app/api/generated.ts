@@ -363,6 +363,7 @@ export type ProfileType = {
   id: Scalars['Int'];
   name: UserProfileName;
   nameTextId?: Maybe<Scalars['Int']>;
+  //ToDO: add userType and refactor access to pages from profileType.name to profileType.userType
 };
 
 export type ProfileTypeFilter = {

@@ -99,6 +99,11 @@ const authentication = {
     level: `مستوى`,
     teacher: `معلم`,
     created: `مخلوق`,
+    memberList: `قائمة الأعضاء`,
+    class: `فصل`,
+    examinable: `قابل للفحص`,
+    additionalInformation: `معلومات إضافية`,
+    currentActivity: `النشاط الحالي`,
 };
 
 export default authentication;

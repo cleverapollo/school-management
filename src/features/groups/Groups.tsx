@@ -27,17 +27,17 @@ interface CustomGroupData extends CustomGroup {
   tech?: string;
 }
 
-const ExampleEnrolmentGroupData: EnrolmentGroupData[] = [
-  {
-    id: '1',
-    name: 'Pears',
-    members: '27',
-    year: '1',
-    tutor: 'Rachel Dowling',
-    yearhead: 'Rachel Dowling',
-    programme: 'Junior Cycle',
-  }
-];
+// const ExampleEnrolmentGroupData: EnrolmentGroupData[] = [
+//   {
+//     id: '1',
+//     name: 'Pears',
+//     members: '27',
+//     year: '1',
+//     tutor: 'Rachel Dowling',
+//     yearhead: 'Rachel Dowling',
+//     programme: 'Junior Cycle',
+//   }
+// ];
 
 // const ExampleSubjectGroupData: SubjectGroupData[] = [
 //   {
@@ -92,6 +92,7 @@ const Groups = () => {
   // const ExampleCustomGroupData = useTypedSelector(state => state.groups.customGroups);
   const isTabsNeeded = profileTypeName === PROFILE_TYPE_NAMES.ADMIN || profileTypeName === PROFILE_TYPE_NAMES.TEACHER;
   const [tabValue, setTabValue] = useState(isTabsNeeded ? '0': null);
+  const isAdminUserType = profileTypeName === PROFILE_TYPE_NAMES.ADMIN;
 
   const handleChange = (event: SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
@@ -156,7 +157,7 @@ const Groups = () => {
       columnDisplayName: '',
       fieldName: 'firstButton',
       component: (columnProps) => {
-        return (<Button onClick={() => {}}>
+        return (<Button onClick={(e) => {e.stopPropagation()}}>
           {columnProps.row.original.firstButton}
         </Button>)
       }
@@ -165,7 +166,7 @@ const Groups = () => {
       columnDisplayName: 'Tech Options',
       fieldName: 'tech',
       component: (columnProps) => {
-        return profileTypeName === PROFILE_TYPE_NAMES.ADMIN && (
+        return isAdminUserType && (
           <OptionButton options={adminOptions} />
         );
       },
@@ -202,15 +203,15 @@ const Groups = () => {
       component: (columnProps) => <ColoredBox content={columnProps.row.original.level} />
     },
     {
-      columnDisplayName: profileTypeName === PROFILE_TYPE_NAMES.ADMIN ? translate('teacher') : translate('programme'),
-      fieldName: profileTypeName === PROFILE_TYPE_NAMES.ADMIN ? 'teacher' : 'programme',
+      columnDisplayName: isAdminUserType ? translate('teacher') : translate('programme'),
+      fieldName: isAdminUserType ? 'teacher' : 'programme',
       filter: 'suggest',
     },
     {
       columnDisplayName: '',
       fieldName: 'firstButton',
       component: (columnProps) => {
-        return (<Button onClick={() => {}}>
+        return (<Button onClick={(e) => {e.stopPropagation()}}>
           {columnProps.row.original.firstButton}
         </Button>)
       }
@@ -220,7 +221,7 @@ const Groups = () => {
       fieldName: 'tech',
       component: (columnProps) => {
         return isTabsNeeded && (
-          <OptionButton options={profileTypeName === PROFILE_TYPE_NAMES.ADMIN ? adminOptions : teacherOptions} />
+          <OptionButton options={isAdminUserType ? adminOptions : teacherOptions} />
         );
       },
     },
@@ -259,7 +260,7 @@ const Groups = () => {
       columnDisplayName: '',
       fieldName: 'firstButton',
       component: (columnProps) => {
-        return (<Button onClick={() => {}}>
+        return (<Button onClick={(e) => {e.stopPropagation()}}>
           {columnProps.row.original.firstButton}
         </Button>)
       }
@@ -268,7 +269,7 @@ const Groups = () => {
       columnDisplayName: 'Tech Options',
       fieldName: 'tech',
       component: (columnProps) => {
-        return profileTypeName === PROFILE_TYPE_NAMES.ADMIN && (
+        return isAdminUserType && (
           <OptionButton options={adminOptions} />
         );
       },
@@ -296,7 +297,7 @@ const Groups = () => {
       columnDisplayName: '',
       fieldName: 'firstButton',
       component: (columnProps) => {
-        return (<Button onClick={() => {}}>
+        return (<Button onClick={(e) => {e.stopPropagation()}}>
           {columnProps.row.original.firstButton}
         </Button>)
       }
@@ -310,15 +311,15 @@ const Groups = () => {
 
   const enrolmentGroupData: EnrolmentGroupData[] = ExampleEnrolmentGroupData?.map(group => (
     { ...group,
-      firstButton: profileTypeName === PROFILE_TYPE_NAMES.ADMIN ? translate('view') : translate('notify'), 
+      firstButton: isAdminUserType ? translate('view') : translate('notify'), 
       tech: ''
     } as EnrolmentGroupData) || []
   ) || [];
 
   const subjectGroupData: SubjectGroupData[] = ExampleSubjectGroupData?.map(group => {
     return { ...group,
-      teacher: profileTypeName === PROFILE_TYPE_NAMES.ADMIN ? group.teacher : undefined,
-      programme: profileTypeName === PROFILE_TYPE_NAMES.ADMIN ? undefined : group.programme,
+      teacher: isAdminUserType ? group.teacher : undefined,
+      programme: isAdminUserType ? undefined : group.programme,
       firstButton: translate('view'), 
       tech: ''
     } as SubjectGroupData || [] 
@@ -341,6 +342,7 @@ const Groups = () => {
           tabs={[translate('enrolmentGroups'), translate('subjectGroups'), translate('customGroups')]}
           onChangeTab={handleChange}
           tabValue={tabValue}
+          //ToDO: change navigate url to new one after spliting exact group pages by type
           onClickRow={(id) => { navigate(`/group/${id}`); }}
         />
       );
@@ -353,6 +355,7 @@ const Groups = () => {
           tabs={[translate('enrolmentGroups'), translate('subjectGroups'), translate('customGroups')]}
           onChangeTab={handleChange}
           tabValue={tabValue}
+          //ToDO: change navigate url to new one after spliting exact group pages by type
           onClickRow={(id) => { navigate(`/group/${id}`); }}
         />
       );
@@ -365,6 +368,7 @@ const Groups = () => {
           tabs={[translate('enrolmentGroups'), translate('subjectGroups'), translate('customGroups')]}
           onChangeTab={handleChange}
           tabValue={tabValue}
+          //ToDO: change navigate url to new one after spliting exact group pages by type
           onClickRow={(id) => { navigate(`/group/${id}`); }}
         />
       );
@@ -374,6 +378,7 @@ const Groups = () => {
           title={translate('groups')}
           data={customGroupData}
           columns={studentsCustomGroupColumns}
+          //ToDO: change navigate url to new one after spliting exact group pages by type
           onClickRow={(id) => { navigate(`/group/${id}`); }}
         />
       );

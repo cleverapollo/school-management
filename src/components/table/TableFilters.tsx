@@ -1,4 +1,4 @@
-import { Typography, TextField, InputAdornment, SvgIcon } from '@mui/material';
+import { TextField, InputAdornment, SvgIcon } from '@mui/material';
 import { Table } from '@tanstack/table-core';
 import { Dispatch, SetStateAction, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
@@ -6,8 +6,8 @@ import FilterIcon from '@mui/icons-material/FilterList';
 import { Box } from '@mui/material';
 import { TableColumn } from './types';
 import Filter from './Filter';
-import { capitalize } from 'lodash';
 import useLocales from '../../hooks/useLocales';
+import { checkIsColumnRenderNeeded } from '../../utils/table';
 
 interface ITableToolbarProps<TData> {
   table: Table<TData>;
@@ -43,7 +43,7 @@ const TableFilters = <TData,>({ table, columnsWithPermissions, globalFilter, set
     {showFilters && table.getHeaderGroups().map((headerGroup) => (
       <Box key={headerGroup.id} sx={{ display: 'flex', flexWrap: 'wrap', paddingRight: '14px' }}>
         {headerGroup.headers.map((header) => (
-          header.column.columnDef.header?.toString() !== 'id' && 
+          checkIsColumnRenderNeeded(header.column.columnDef.header?.toString()) && 
           <Box key={header.id} sx={{ margin: '0 20px 20px 0' }}>
             <Filter
               column={header.column} 

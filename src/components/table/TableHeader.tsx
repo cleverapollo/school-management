@@ -1,7 +1,6 @@
 import {
   TableCell,
   TableRow,
-  TableHead,
   Typography,
   IconButton,
 } from '@mui/material';
@@ -9,7 +8,7 @@ import { flexRender } from '@tanstack/react-table';
 import { Table } from '@tanstack/table-core';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ColumnHidingButton from './ColumnHidingButton';
-import { OPTIONS_COLUMN_NAME } from './constants';
+import { checkIsColumnForTechnicalOptions, checkIsColumnRenderNeeded } from '../../utils/table';
 
 interface ITableHeaderProps<TData> {
   table: Table<TData>;
@@ -23,12 +22,12 @@ const TableHeader = <TData,>({ table, isRowSelectionNeeded }: ITableHeaderProps<
       {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id} sx={{ boxShadow: 'inset 0px -1px 0px rgba(145, 158, 171, 0.24)' }}>
             {headerGroup.headers.map((header, index) => (
-                header.column.columnDef.header !== 'id' && 
+                checkIsColumnRenderNeeded(header.column.columnDef.header?.toString()) && 
                 <TableCell
                   colSpan={header.colSpan}
                   key={header.id}
                 >
-                  {(header.column.columnDef.header !== OPTIONS_COLUMN_NAME) ? 
+                  {(!checkIsColumnForTechnicalOptions(header.column.columnDef.header?.toString())) ? 
                   <Typography>
                     {isRowSelectionNeeded && index === 0 && 
                       <input
