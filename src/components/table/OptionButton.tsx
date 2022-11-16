@@ -26,12 +26,13 @@ interface IOptionButtonProps {
 const OptionButton: FC<IOptionButtonProps> = ({ options }) => {
   const { translate } = useLocales();
 
+  //ToDO: refactor option button for avoiding propagation with rowSelection
   return (
   <PopupState variant="popover" popupId="popup-popover">
     {(popupState) => (
     <>
-      <IconButton {...bindTrigger(popupState)}>
-        <MoreVert />
+      <IconButton onClick={(e) => {e.stopPropagation()}}>
+        <MoreVert {...bindTrigger(popupState)}/>
       </IconButton>
       <Popover 
         {...bindPopover(popupState)}
@@ -48,7 +49,7 @@ const OptionButton: FC<IOptionButtonProps> = ({ options }) => {
         {options.map((option, index) => {
           return (
             <ListItem key={`list-${index}`} disablePadding sx={{ padding: '8px' }}>
-              <ListItemButton role={undefined} onClick={() => option.action()} dense>
+              <ListItemButton role={undefined} onClick={(e) => option.action(e)} dense>
                 <ListItemIconStyle>{getOptionsIcon(option.icon)}</ListItemIconStyle>
                 <ListItemText id={`lable-${index}`} primary={translate(option.text)} />
               </ListItemButton>
