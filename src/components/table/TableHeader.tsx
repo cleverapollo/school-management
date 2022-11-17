@@ -4,8 +4,7 @@ import {
   TableHead,
   Typography,
 } from '@mui/material';
-import { flexRender } from '@tanstack/react-table';
-import { Table } from '@tanstack/table-core';
+import { flexRender, Table } from '@tanstack/react-table';
 import ColumnHidingButton from './ColumnHidingButton';
 import { OPTIONS_COLUMN_NAME } from './constants';
 

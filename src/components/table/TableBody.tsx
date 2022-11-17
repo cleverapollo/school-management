@@ -4,8 +4,7 @@ import {
   TableBody as MuiTableBody,
   Typography,
 } from '@mui/material';
-import { flexRender } from '@tanstack/react-table';
-import { Table } from '@tanstack/table-core';
+import { flexRender, Table } from '@tanstack/react-table';
 import { Fragment } from 'react';
 
 interface ITableBodyProps<TData> {

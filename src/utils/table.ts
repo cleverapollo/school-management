@@ -44,7 +44,7 @@ export const createFormattedStringForDayjs = (value: string): string => {
   return `${arr[1]}.${arr[0]}.${arr[2]}`;
 }
 
-declare module '@tanstack/table-core' {
+declare module '@tanstack/react-table' {
   interface FilterFns {
     fuzzy: FilterFn<unknown>
   }

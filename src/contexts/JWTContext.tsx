@@ -106,6 +106,10 @@ function AuthProvider({ children }: AuthProviderProps) {
   const { user, isUserAuthenticated } = useTypedSelector((state) => state.auth)
   const navigate = useNavigate()
 
+  console.log({
+    isAuthenticated
+  });
+
   useEffect(() => {
     const callbackId = instance.addEventCallback(async (event: any) => {
       if (event.eventType === EventType.LOGIN_FAILURE) {
@@ -136,9 +140,11 @@ function AuthProvider({ children }: AuthProviderProps) {
       }
 
       if (event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS || event.eventType === EventType.LOGIN_SUCCESS) {
+        console.log('login success');
       }
 
       if (event.eventType === EventType.LOGOUT_SUCCESS) {
+        console.log('logout listen');
         localStorage.removeItem('accessToken');
         storeDispatch(clearState());
         dispatch({
@@ -158,6 +164,10 @@ function AuthProvider({ children }: AuthProviderProps) {
   }, [instance]);
 
   useEffect(() => {
+    console.log({
+      account,
+      instance,
+    });
     if (account) {
       dispatch({
         type: Types.Loading,
@@ -235,11 +245,10 @@ function AuthProvider({ children }: AuthProviderProps) {
     instance.logout().catch(err => {
       console.log(err);
     })
-
+    console.log('logout request');
   };
 
   const msalLogin = async () => {
-
     await instance.loginRedirect(loginRequest);
   };
 

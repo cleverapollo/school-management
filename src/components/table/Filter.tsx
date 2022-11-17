@@ -1,5 +1,5 @@
 import { FC, useMemo, useState } from "react";
-import { Column } from '@tanstack/table-core';
+import { Column } from '@tanstack/react-table';
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";

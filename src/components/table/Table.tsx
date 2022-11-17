@@ -19,7 +19,7 @@ import {
   flexRender,
   FilterFns,
 } from '@tanstack/react-table';
-import { ColumnDef, createColumnHelper } from '@tanstack/table-core';
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { useState } from 'react';
 import { isEmpty } from 'lodash';
 import { ITableProps, TableColumn } from "./types";

@@ -1,4 +1,4 @@
-import { AccessorFn, DeepKeys } from "@tanstack/table-core";
+import { AccessorFn, DeepKeys } from "@tanstack/react-table";
 import { CellContext } from '@tanstack/react-table';
 import { SyntheticEvent } from "react";
 
