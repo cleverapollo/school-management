@@ -1,5 +1,5 @@
 export enum PROFILE_TYPE_NAMES {
-  TURO_ADMIN = 'Super Tyro',
+  TYRO = 'Super Tyro',
   ADMIN = 'Admin',
   TEACHER = 'Teacher',
   CONTACT = 'Contact',

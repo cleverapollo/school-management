@@ -36,6 +36,8 @@ importers:
       '@rtk-query/graphql-request-base-query': ^2.2.0
       '@svgr/webpack': ^5.5.0
       '@tanstack/match-sorter-utils': ^8.5.14
+      '@tanstack/react-query': ^4.16.1
+      '@tanstack/react-query-devtools': ^4.16.1
       '@tanstack/react-table': ^8.5.15
       '@types/auth0-js': ^9.14.6
       '@types/axios': ^0.14.0
@@ -51,7 +53,6 @@ importers:
       '@typescript-eslint/eslint-plugin': ^5.30.3
       '@typescript-eslint/parser': ^5.30.3
       '@tyro/api': '*'
-      '@tyro/configs': '*'
       auth0-js: ^9.19.0
       axios: ^0.27.2
       babel-jest: ^27.4.2
@@ -175,10 +176,11 @@ importers:
       '@rtk-query/graphql-request-base-query': 2.2.0_sdomt6u5hyqxs5dcswt5nsv4ba
       '@svgr/webpack': 5.5.0
       '@tanstack/match-sorter-utils': 8.5.14
+      '@tanstack/react-query': 4.16.1_biqbaboplfbrettd7655fr4n2y
+      '@tanstack/react-query-devtools': 4.16.1_makdk7ivkz7rbnnozofqroz2qy
       '@tanstack/react-table': 8.5.30_biqbaboplfbrettd7655fr4n2y
       '@types/material-ui': 0.21.12
       '@tyro/api': link:packages/api
-      '@tyro/configs': link:packages/configs
       auth0-js: 9.19.2
       axios: 0.27.2
       babel-jest: 27.5.1_@babel+core@7.20.2
@@ -312,15 +314,17 @@ importers:
       graphql-request: ^5.0.0
       jwt-decode: ^3.1.2
       react: ^18.2.0
+      react-dom: ^18.2.0
       react-router: ^6.3.0
     dependencies:
       '@azure/msal-browser': 2.31.0
       '@azure/msal-react': 1.4.10_y7ymf4zryq2kwr7sdjwxqb257u
-      '@tanstack/react-query': 4.16.1_react@18.2.0
+      '@tanstack/react-query': 4.16.1_biqbaboplfbrettd7655fr4n2y
       graphql: 16.6.0
       graphql-request: 5.0.0_graphql@16.6.0
       jwt-decode: 3.1.2
       react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       react-router: 6.4.3_react@18.2.0
     devDependencies:
       '@graphql-typed-document-node/core': 3.1.1_graphql@16.6.0
@@ -4194,6 +4198,13 @@ packages:
       - supports-color
     dev: false
 
+  /@tanstack/match-sorter-utils/8.1.1:
+    resolution: {integrity: sha512-IdmEekEYxQsoLOR0XQyw3jD1GujBpRRYaGJYQUw1eOT1eUugWxdc7jomh1VQ1EKHcdwDLpLaCz/8y4KraU4T9A==}
+    engines: {node: '>=12'}
+    dependencies:
+      remove-accents: 0.4.2
+    dev: false
+
   /@tanstack/match-sorter-utils/8.5.14:
     resolution: {integrity: sha512-lVNhzTcOJ2bZ4IU+PeCPQ36vowBHvviJb2ZfdRFX5uhy7G0jM8N34zAMbmS5ZmVH8D2B7oU82OWo0e/5ZFzQrw==}
     engines: {node: '>=12'}
@@ -4205,7 +4216,22 @@ packages:
     resolution: {integrity: sha512-+UfqJsNbPIVo0a9ANW0ZxtjiMfGLaaoIaL9vZeVycvmBuWywJGtSi7fgPVMCPdZQFOzMsaXaOsDtSKQD5xLRVQ==}
     dev: false
 
-  /@tanstack/react-query/4.16.1_react@18.2.0:
+  /@tanstack/react-query-devtools/4.16.1_makdk7ivkz7rbnnozofqroz2qy:
+    resolution: {integrity: sha512-VrDYLmG+OOcvGSZL5avG4R8jhqeMFP7pzW2sh2BWEV9UfI+aocG+CW8y8ygacxuKy48m8Tyo/xfe8H1z9BGb+g==}
+    peerDependencies:
+      '@tanstack/react-query': 4.16.1
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      '@tanstack/match-sorter-utils': 8.1.1
+      '@tanstack/react-query': 4.16.1_biqbaboplfbrettd7655fr4n2y
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      superjson: 1.11.0
+      use-sync-external-store: 1.2.0_react@18.2.0
+    dev: false
+
+  /@tanstack/react-query/4.16.1_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-PDE9u49wSDykPazlCoLFevUpceLjQ0Mm8i6038HgtTEKb/aoVnUZdlUP7C392ds3Cd75+EGlHU7qpEX06R7d9Q==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -4219,6 +4245,7 @@ packages:
     dependencies:
       '@tanstack/query-core': 4.15.1
       react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
@@ -5994,6 +6021,13 @@ packages:
 
   /cookiejar/2.1.3:
     resolution: {integrity: sha512-JxbCBUdrfr6AQjOXrxoTvAMJO4HBTUIlBzslcJPAz+/KT8yk53fXun51u+RenNYvad/+Vc2DIz5o9UxlCDymFQ==}
+    dev: false
+
+  /copy-anything/3.0.2:
+    resolution: {integrity: sha512-CzATjGXzUQ0EvuvgOCI6A4BGOo2bcVx8B+eC2nF862iv9fopnPQwlrbACakNCHRIJbCSBj+J/9JeDf60k64MkA==}
+    engines: {node: '>=12.13'}
+    dependencies:
+      is-what: 4.1.7
     dev: false
 
   /copy-to-clipboard/3.3.3:
@@ -8722,6 +8756,11 @@ packages:
     resolution: {integrity: sha512-qctsuLZmIQ0+vSSMfoVvyFe2+GSEvnmZ2ezTup1SBse9+twCCeial6EEi3Nc2KFcf6+qz2FBPnjXsk8xhKSaPQ==}
     dependencies:
       call-bind: 1.0.2
+
+  /is-what/4.1.7:
+    resolution: {integrity: sha512-DBVOQNiPKnGMxRMLIYSwERAS5MVY1B7xYiGnpgctsOFvVDz9f9PFXXxMcTOHuoqYp4NK9qFYQaIC1NRRxLMpBQ==}
+    engines: {node: '>=12.13'}
+    dev: false
 
   /is-windows/1.0.2:
     resolution: {integrity: sha512-eXK1UInq2bPmjyX6e3VHIzMLobc4J94i4AWn+Hpq3OU5KkrRC96OAcR3PRJ/pGu6m8TRnBHP9dkXQVsT/COVIA==}
@@ -12730,6 +12769,13 @@ packages:
       semver: 7.3.8
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /superjson/1.11.0:
+    resolution: {integrity: sha512-6PfAg1FKhqkwWvPb2uXhH4MkMttdc17eJ91+Aoz4s1XUEDZFmLfFx/xVA3wgkPxAGy5dpozgGdK6V/n20Wj9yg==}
+    engines: {node: '>=10'}
+    dependencies:
+      copy-anything: 3.0.2
     dev: false
 
   /supports-color/5.5.0:

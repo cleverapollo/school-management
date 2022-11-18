@@ -7,9 +7,9 @@ import LogoOnlyLayout from '../layouts/LogoOnlyLayout';
 import GuestGuard from '../guards/GuestGuard';
 import AuthGuard from '../guards/AuthGuard';
 import LoadingScreen from '../components/LoadingScreen';
-import useAuth from "../hooks/useAuth";
 import PageUnauthorized from '../pages/PageUnauthorized';
 import PermissionBasedGuard from '../guards/PermissionBasedGuard';
+import { useAuth } from '@tyro/api';
 
 // ----------------------------------------------------------------------
 

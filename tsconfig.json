@@ -33,8 +33,6 @@
     "src",
     "src/**/*.ts",
     "src/**/*.tsx",
-    "packages/**/*.ts",
-    "packages/**/*.tsx",
     "./types"
   ],
   "exclude": [

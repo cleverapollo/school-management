@@ -1,4 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
+import { useNavigate } from 'react-router';
 import { gqlClient } from '../gql-client';
 
 import { graphql } from '../gql/gql';
@@ -31,11 +33,40 @@ const myAuthDetailsDocument = graphql(/* GraphQL */ `
 `);
 
 export function useUser() {
-  const { isTokenInitialized } = useAuth();
+  const { isTokenInitialized, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
-  return useQuery({
+  const {
+    data: user,
+    isLoading,
+    ...queryProps
+  } = useQuery({
     queryKey: ['user', 'details'],
     queryFn: async () => gqlClient.request(myAuthDetailsDocument),
     enabled: isTokenInitialized,
+    select: ({ myAuthDetails }) => ({
+      ...myAuthDetails,
+      profiles: myAuthDetails?.profiles?.map((profile) => ({
+        ...profile,
+        nickName: profile?.nickName ?? myAuthDetails?.name ?? null,
+      })),
+    }),
+    onError: () => {
+      navigate('/auth/unauthorized', { replace: true });
+    },
   });
+
+  return useMemo(
+    () => ({
+      user,
+      activeProfile: user?.profiles?.find(
+        (profile) => profile?.id === user.activeProfileId
+      ),
+      isLoading,
+      isInitialized: isTokenInitialized && Boolean(user),
+      isAuthenticated,
+      ...queryProps,
+    }),
+    [user, isLoading, isTokenInitialized, isAuthenticated, queryProps]
+  );
 }

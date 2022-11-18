@@ -347,7 +347,7 @@ export type ProfileFilter = {
   ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
-export type UserProfileName = PROFILE_TYPE_NAMES.TURO_ADMIN |
+export type UserProfileName = PROFILE_TYPE_NAMES.TYRO |
   PROFILE_TYPE_NAMES.ADMIN |
   PROFILE_TYPE_NAMES.TEACHER |
   PROFILE_TYPE_NAMES.CONTACT |

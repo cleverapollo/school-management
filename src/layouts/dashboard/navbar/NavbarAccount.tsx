@@ -1,7 +1,7 @@
 // @mui
 import { styled } from '@mui/material/styles';
 import { Box, Link, Typography, Avatar } from '@mui/material';
-import { useTypedSelector } from "../../../store/store";
+import { useUser } from '@tyro/api';
 
 // ----------------------------------------------------------------------
 
@@ -23,8 +23,7 @@ type Props = {
 };
 
 export default function NavbarAccount({ isCollapse }: Props) {
-  const activeProfile = useTypedSelector((state) => state.auth.activeProfile);
-  const { user } = useTypedSelector((state) => state.auth)
+  const { activeProfile } = useUser();
 
   return (
     <Link underline="none" color="inherit">
@@ -36,8 +35,8 @@ export default function NavbarAccount({ isCollapse }: Props) {
         }}
       >
         <Avatar
-          src={activeProfile?.tenant.imgUrl}
-          alt={activeProfile?.tenant.name}
+          src={activeProfile?.tenant?.imgUrl}
+          alt={activeProfile?.tenant?.name}
         />
 
         <Box

@@ -2,6 +2,11 @@ import React from 'react';
 // routes
 import Router from './routes';
 import { MsalProvider } from "@azure/msal-react";
+import {
+  QueryClientProvider,
+  QueryClient
+} from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 // theme
 import ThemeProvider from './theme';
@@ -11,9 +16,6 @@ import ScrollToTop from './components/ScrollToTop';
 import { ProgressBarStyle } from './components/ProgressBar';
 import MotionLazyContainer from './components/animate/MotionLazyContainer';
 import NotistackProvider from './components/NotistackProvider';
-import { AuthProvider } from './contexts/JWTContext';
-import { setContext } from "@apollo/client/link/context";
-import { ApiProvider } from "@reduxjs/toolkit/dist/query/react";
 import { store } from "./store/store";
 import { Provider as ReduxProvider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
@@ -25,9 +27,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 // contexts
 import { SettingsProvider } from './contexts/SettingsContext';
 import { CollapseDrawerProvider } from './contexts/CollapseDrawerContext';
-import { msalInstance } from '@tyro/api';
+import { msalInstance, AuthProvider } from '@tyro/api';
 
 // ----------------------------------------------------------------------
+
+export const queryClient = new QueryClient();
 
 export default function App() {
   /**
@@ -39,32 +43,35 @@ export default function App() {
    */
 
   return (
-    <ReduxProvider store={store}>
-      <HelmetProvider>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <SettingsProvider>
-            <CollapseDrawerProvider>
-              <BrowserRouter>
-                <MsalProvider instance={msalInstance}>
-                  <AuthProvider>
-                    <MotionLazyContainer>
-                      <ThemeProvider>
-                        <ThemeSettings>
-                          <NotistackProvider>
-                            <ProgressBarStyle />
-                            <ScrollToTop />
-                            <Router />
-                          </NotistackProvider>
-                        </ThemeSettings>
-                      </ThemeProvider>
-                    </MotionLazyContainer>
-                  </AuthProvider>
-                </MsalProvider>
-              </BrowserRouter>
-            </CollapseDrawerProvider>
-          </SettingsProvider>
-        </LocalizationProvider>
-      </HelmetProvider>
-    </ReduxProvider>
+    <QueryClientProvider client={queryClient}>
+      {/* <ReduxProvider store={store}> */}
+        <HelmetProvider>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <SettingsProvider>
+              <CollapseDrawerProvider>
+                <BrowserRouter>
+                  <MsalProvider instance={msalInstance}>
+                    <AuthProvider>
+                      <MotionLazyContainer>
+                        <ThemeProvider>
+                          <ThemeSettings>
+                            <NotistackProvider>
+                              <ProgressBarStyle />
+                              <ScrollToTop />
+                              <Router />
+                              <ReactQueryDevtools />
+                            </NotistackProvider>
+                          </ThemeSettings>
+                        </ThemeProvider>
+                      </MotionLazyContainer>
+                    </AuthProvider>
+                  </MsalProvider>
+                </BrowserRouter>
+              </CollapseDrawerProvider>
+            </SettingsProvider>
+          </LocalizationProvider>
+        </HelmetProvider>
+      {/* </ReduxProvider> */}
+    </QueryClientProvider>
   );
 }

@@ -1,7 +1,6 @@
 
 // ----------------------------------------------------------------------
 
-import useAuth from "../../../../hooks/useAuth";
 import LoadingScreen from "../../../../components/LoadingScreen";
 import {useMyAuthDetailsQuery} from "../../../../app/api/generated";
 import {useNavigate} from "react-router-dom";

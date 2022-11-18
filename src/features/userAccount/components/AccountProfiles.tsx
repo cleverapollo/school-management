@@ -1,11 +1,10 @@
-import { Card, Grid, MenuItem, Typography } from "@mui/material";
-import { useTypedSelector } from "../../../store/store";
-import { Link as RouterLink } from "react-router-dom";
+import { Grid} from "@mui/material";
 import ProfileCard from "./ProfileCard";
 import { Profile } from "../../../app/api/generated";
+import { useUser } from "@tyro/api";
 
 export default function AccountGeneral() {
-  const user = useTypedSelector((state) => state.auth.user);
+  const { user } = useUser();
 
   return (
     <Grid container spacing={3}>

@@ -34,7 +34,6 @@ interface SubjectsData extends Partial<SubjectGroup> {
 
 const Subjects = () => {
   const { translate } = useLocales();
-  const profileTypeName = useTypedSelector(state => state.auth.activeProfile?.profileType?.name);
   const ExampleSubjectGroupData = useTypedSelector(state => state.groups.subjectGroups);
 
   useEffect(() => {
