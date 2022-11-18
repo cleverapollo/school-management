@@ -30,6 +30,7 @@ export const fetchEnrolmentGroups = createAsyncThunk(
       year: '1',
       tutor: 'Rachel',
       yearhead: 'Rachel',
+      id: group.partyId.toString(),
     })) as EnrolmentGroup[];
   }
 );
@@ -46,6 +47,7 @@ export const fetchSubjectGroups = createAsyncThunk(
       programme: group.programmeStages[0].programmeStage.programme.name,
       //ToDo: change this mocks to data from backend when it will be implemented
       teacher: 'Rachel',
+      id: group.partyId.toString(),
     })) as SubjectGroup[];
   }
 );
@@ -95,11 +97,11 @@ const slice = createSlice({
       state.isLoading = false;
       state.isError = false;
     })
-    builder.addCase(fetchCustomGroups.fulfilled, (state, action) => {
-      state.customGroups = action.payload;
-      state.isLoading = false;
-      state.isError = false;
-    })
+    // builder.addCase(fetchCustomGroups.fulfilled, (state, action) => {
+    //   state.customGroups = action.payload;
+    //   state.isLoading = false;
+    //   state.isError = false;
+    // })
   },
 })
 

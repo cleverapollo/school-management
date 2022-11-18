@@ -34,10 +34,11 @@ import TableTabs from './TableTabs';
 import TableToolbar from './TableToolbar';
 
 const Table = <TData,>(props: ITableProps<TData>) => {
-  const { data, title, titleOverride, columns, tabs, onChangeTab, tabValue } = props;
+  const { data, title, titleOverride, columns, tabs, onChangeTab, tabValue, story, onClickRow, isRowSelectionNeeded } = props;
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState<string>('');
+  const [sorting, setSorting] = useState<SortingState>([])
 
   //ToDo: use TypedSelector for profileType and permissions
   const profileType = 'Teacher';
@@ -57,6 +58,7 @@ const Table = <TData,>(props: ITableProps<TData>) => {
           filterFn: 'fuzzy',
           sortingFn: fuzzySort,
           enableHiding: !column.isMandatory,
+          enableSorting: !!column.isSortNeeded,
           ...cell,
         })
     }
@@ -76,7 +78,9 @@ const Table = <TData,>(props: ITableProps<TData>) => {
     state: {
       columnFilters,
       globalFilter,
+      sorting,
     },
+    onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: fuzzyFilter,
@@ -93,7 +97,7 @@ const Table = <TData,>(props: ITableProps<TData>) => {
   });
 
   return(<>
-    <TableToolbar title={tableTitle}/>
+    <TableToolbar title={tableTitle} story={story}/>
     <TableContainer sx={{ 
       boxShadow: '0px 0px 2px rgba(145, 158, 171, 0.2), 0px 12px 24px -4px rgba(145, 158, 171, 0.12)', 
       borderRadius: '16px' }}
@@ -101,8 +105,8 @@ const Table = <TData,>(props: ITableProps<TData>) => {
       <TableFilters table={table} columnsWithPermissions={columnsWithPermission} globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
       {!isEmpty(tabs) && <TableTabs tabs={tabs} onChangeTab={onChangeTab} tabValue={tabValue} />}
       <MuiTable>
-        <TableHeader table={table} />
-        <TableBody table={table} />
+        <TableHeader table={table} isRowSelectionNeeded={isRowSelectionNeeded}/>
+        <TableBody table={table} onClickRow={onClickRow} isRowSelectionNeeded={isRowSelectionNeeded}/>
         <TablePagination table={table} />
       </MuiTable>
     </TableContainer>

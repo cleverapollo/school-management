@@ -1,5 +1,6 @@
 import { compareItems, RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { sortingFns, FilterFn, SortingFn } from '@tanstack/react-table';
+import { OPTIONS_COLUMN_NAME, SYSTEM_HIDED_COLUMN_NAME } from "../components/table/constants";
 import { TableColumn, TitleOverride } from "../components/table/types";
 
 export function calculateColumnsWithPermissions<TData> (
@@ -44,7 +45,11 @@ export const createFormattedStringForDayjs = (value: string): string => {
   return `${arr[1]}.${arr[0]}.${arr[2]}`;
 }
 
-declare module '@tanstack/react-table' {
+//ToDo: refactor if we need more than one column data for system information
+export const checkIsColumnRenderNeeded = (columnName?: string) => columnName !== SYSTEM_HIDED_COLUMN_NAME;
+export const checkIsColumnForTechnicalOptions = (columnName?: string) => columnName === OPTIONS_COLUMN_NAME;
+
+declare module '@tanstack/table-core' {
   interface FilterFns {
     fuzzy: FilterFn<unknown>
   }
