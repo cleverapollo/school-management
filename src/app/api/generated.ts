@@ -769,3 +769,89 @@ interface ExactGroup {
   type: GroupTypes;
   list: EnrolmentGroupListItem[] | SubjectGroupListItem[] | CustomGroupListItem[];
 }
+
+////////////////////
+
+
+export type CalendarEventType = 'GENERAL' | 'LESSON';
+export interface CalendarEventLessonRaw {
+  subjectGroupId: Scalars['Int'];
+  lessonId: Scalars['Int'];
+}
+export interface partyInfo{
+  partyId: number;
+  __typename?: 'SubjectGroup'; //
+  subjects: Array<{
+    name: string;
+  }>;
+}
+
+export type CalendarEventAttendeeType = 'ORGANISER' | 'ADDITIONAL' | 'ATTENDEE';
+export interface CalendarEventAttendee {
+  partyId: Scalars['Int'];
+  type: CalendarEventAttendeeType;
+  partyInfo: partyInfo;
+}
+
+export type CalendarEventQuery = { 
+  __typename?: 'Query',
+  calendar_calendarEvents: Array<{ 
+    __typename?: 'Calendar Event';
+    calendarIds: Scalars['Int'][];
+    startTime: string;
+    endTime: string;
+    type: CalendarEventType;
+    lessonInfo: CalendarEventLessonRaw;
+    attendees: CalendarEventAttendee[];
+    exclusions: CalendarEventAttendee[];
+  }>
+}
+
+export interface CalendarEventFilter {
+  startDate: string;
+  endDate: string;
+  partyIds: Scalars['Int'][];
+}
+
+export const CalendarEventDocument = gql`
+  query calendar_calendarEvents($filter: CalendarEventFilter!){
+    calendar_calendarEvents(filter: $filter){
+      calendarIds
+      startTime
+      endTime
+      type
+      lessonInfo{
+        subjectGroupId
+        lessonId
+      }
+      exclusions{
+        partyId
+        type
+      }
+      attendees{
+        partyId
+        type
+        partyInfo{
+          partyId
+          __typename
+          ... on GeneralGroup {
+            name
+            
+          }
+          ... on SubjectGroup {
+            name
+            subjects {
+              name
+            }
+          }
+          ... on Person {
+            firstName
+            lastName           
+          }
+        }
+      }
+    }
+  }
+`;
+
+export type CalendarEventQueryVariables = Exact<{ [key: string]: CalendarEventFilter; }>;

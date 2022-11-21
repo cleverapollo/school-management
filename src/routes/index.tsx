@@ -89,6 +89,7 @@ export default function Router() {
         { path: 'groups', element: <GroupsPage /> },
         { path: 'group/:id', element: <GroupPage /> },
         { path: 'subjects', element: <SubjectsPage /> },
+        { path: 'calendar', element: <CalendarPage /> },
         {
           path: 'user',
           children: [
@@ -130,7 +131,7 @@ const PageOne = Loadable(lazy(() => import('../pages/PageOne')));
 const GroupsPage = Loadable(lazy(() => import('../pages/GroupsPage')));
 const SubjectsPage = Loadable(lazy(() => import('../pages/SubjectsPage')));
 const GroupPage = Loadable(lazy(() => import('../pages/GroupPage')));
-const PageSix = Loadable(lazy(() => import('../pages/PageSix')));
+const CalendarPage = Loadable(lazy(() => import('../pages/CalendarPage')));
 const NotFound = Loadable(lazy(() => import('../pages/Page404')));
 
 // Admin pages
