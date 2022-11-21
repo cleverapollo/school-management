@@ -5,7 +5,8 @@ import { Container, Typography } from '@mui/material';
 import { MotionContainer, varBounce } from '../components/animate';
 // assets
 import { ForbiddenIllustration } from '../assets';
-import { usePermissions } from '@tyro/api';
+import { usePermissions, useUser } from '@tyro/api';
+import LoadingScreen from '../components/LoadingScreen';
 
 // ----------------------------------------------------------------------
 
@@ -17,9 +18,14 @@ type PermissionBasedGuardProp = {
 
 export default function PermissionBasedGuard({ hasContent, permissions, children }: PermissionBasedGuardProp) {
   // Logic here to get current user role
+  const { isInitialized } = useUser();
   const { hasAtLeastOnePermission } = usePermissions();
 
-  if (Array.isArray(permissions) && permissions.length > 0 && hasAtLeastOnePermission(permissions)) {
+  if (!isInitialized) {
+    return <LoadingScreen isDashboard />
+  }
+
+  if (Array.isArray(permissions) && permissions.length > 0 && !hasAtLeastOnePermission(permissions)) {
     return hasContent ? (
       <Container component={MotionContainer} sx={{ textAlign: 'center' }}>
         <m.div variants={varBounce().in}>

@@ -32,6 +32,14 @@ function AuthProvider({ children }: AuthProviderProps) {
   const isAuthenticated = useIsAuthenticated();
   const [isTokenInitialized, setIsTokenInitialized] = useState(false);
 
+  const logout = useCallback(() => {
+    instance.logout();
+  }, [instance]);
+
+  const login = useCallback(() => {
+    instance.loginRedirect(loginRequest);
+  }, [instance]);
+
   useEffect(() => {
     if (account) {
       instance
@@ -44,19 +52,16 @@ function AuthProvider({ children }: AuthProviderProps) {
             setToken(response?.accessToken || null);
           }
           setIsTokenInitialized(true);
+        })
+        .catch(({ name }: Error) => {
+          if (name === 'InteractionRequiredAuthError') {
+            logout();
+          }
         });
     } else {
       setIsTokenInitialized(true);
     }
   }, [account, instance]);
-
-  const logout = useCallback(() => {
-    instance.logout();
-  }, [instance]);
-
-  const login = useCallback(() => {
-    instance.loginRedirect(loginRequest);
-  }, [instance]);
 
   const value = useMemo(
     () => ({

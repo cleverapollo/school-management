@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import { gqlClient } from '../gql-client';
 
 import { graphql } from '../gql/gql';
+import { queryClient } from '../query-client';
 import { useAuth } from '../stores';
 
 const myAuthDetailsDocument = graphql(/* GraphQL */ `
@@ -32,6 +33,15 @@ const myAuthDetailsDocument = graphql(/* GraphQL */ `
   }
 `);
 
+const userQuery = {
+  queryKey: ['user', 'details'],
+  queryFn: async () => gqlClient.request(myAuthDetailsDocument),
+};
+
+export function getUser() {
+  return queryClient.fetchQuery(userQuery);
+}
+
 export function useUser() {
   const { isTokenInitialized, isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -41,8 +51,7 @@ export function useUser() {
     isLoading,
     ...queryProps
   } = useQuery({
-    queryKey: ['user', 'details'],
-    queryFn: async () => gqlClient.request(myAuthDetailsDocument),
+    ...userQuery,
     enabled: isTokenInitialized,
     select: ({ myAuthDetails }) => ({
       ...myAuthDetails,

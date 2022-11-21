@@ -1,4 +1,5 @@
 import { GraphQLClient } from 'graphql-request';
+import { Response } from 'graphql-request/dist/types';
 import { EmulateHeaders } from './utils/emulate';
 import { getToken } from './utils/jwt';
 
@@ -8,15 +9,8 @@ const getEndpoint = (isLocal?: boolean) =>
     : 'https://tyro-api-uat.azurewebsites.net/api/graphql';
 
 // Need to setup a response middleware to handle auth errors
-// function responseMiddleware(response: Response) {
-//   if (response.errors) {
-//     const traceId = response.headers.get('x-b3-traceid') || 'unknown';
-//     console.error(
-//       `[${traceId}] Request error:
-//         status ${response.status}
-//         details: ${response.errors}`
-//     );
-//   }
+// function responseMiddleware(response: Response<unknown> | Error) {
+//   console.log({ response });
 // }
 
 export const gqlClient = new GraphQLClient(getEndpoint(), {

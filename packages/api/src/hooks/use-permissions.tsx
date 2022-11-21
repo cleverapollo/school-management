@@ -27,6 +27,7 @@ export function usePermissions() {
   );
 
   return {
+    permissions: usersPermissions,
     hasPermission,
     hasAtLeastOnePermission,
     hasAllPermissions,

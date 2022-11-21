@@ -1,6 +1,5 @@
 import React from 'react';
 // routes
-import Router from './routes';
 import { MsalProvider } from "@azure/msal-react";
 import {
   QueryClientProvider,
@@ -27,11 +26,10 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 // contexts
 import { SettingsProvider } from './contexts/SettingsContext';
 import { CollapseDrawerProvider } from './contexts/CollapseDrawerContext';
-import { msalInstance, AuthProvider } from '@tyro/api';
+import { msalInstance, AuthProvider, queryClient } from '@tyro/api';
+import Router from './routes';
 
 // ----------------------------------------------------------------------
-
-export const queryClient = new QueryClient();
 
 export default function App() {
   /**
@@ -42,9 +40,11 @@ export default function App() {
    * For more, visit: https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-react/docs/events.md
    */
 
+  // Should delete redux router when endpoints migrated
+
   return (
     <QueryClientProvider client={queryClient}>
-      {/* <ReduxProvider store={store}> */}
+      <ReduxProvider store={store}>
         <HelmetProvider>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <SettingsProvider>
@@ -71,7 +71,7 @@ export default function App() {
             </SettingsProvider>
           </LocalizationProvider>
         </HelmetProvider>
-      {/* </ReduxProvider> */}
+      </ReduxProvider>
     </QueryClientProvider>
   );
 }

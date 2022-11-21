@@ -14,7 +14,7 @@
     "lint": "eslint --ext .ts,.tsx ./src",
     "lint:fix": "eslint --fix --ext .ts,.tsx ./src",
     "start": "set PORT=6420 && node scripts/start.js",
-    "start:mac": "export PORT=6420 && node scripts/start.js",
+    "start:mac": "PORT=6420 && node scripts/start.js",
     "build": "CI=false node scripts/build.js",
     "clear-all": "rm -rf build node_modules",
     "re-start": "rm -rf build node_modules && yarn install && yarn start",
@@ -62,7 +62,7 @@
     "@iconify/react": "^3.2.2",
     "@mui/icons-material": "^5.10.9",
     "@mui/lab": "^5.0.0-alpha.96",
-    "@mui/material": "^5.8.6",
+    "@mui/material": "^5.10.14",
     "@mui/system": "^5.10.14",
     "@mui/x-date-pickers": "^5.0.4",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
@@ -254,5 +254,6 @@
       "jest-watch-typeahead/testname"
     ],
     "resetMocks": true
-  }
+  },
+  "packageManager": "yarn@3.3.0"
 }

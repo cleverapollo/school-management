@@ -1,5 +1,6 @@
 module.exports = {
   extends: ["wesbos"],
+  plugins: ["@tanstack/query"],
   overrides: [
     {
       files: ['**/*.ts', '**/*.tsx'],
@@ -26,7 +27,8 @@ module.exports = {
     ],
     "react/jsx-no-literals": 1,
     'dot-notation': 'off',
-    "react-hooks/exhaustive-deps": "off"
+    "react-hooks/exhaustive-deps": "off",
+    "@tanstack/query/prefer-query-object-syntax": "error"
   },
   "settings": {
     "import/resolver": {
