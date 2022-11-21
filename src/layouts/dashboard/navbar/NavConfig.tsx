@@ -46,7 +46,7 @@ const navConfig: NavConfig = [
     id: 'general',
     subheader: 'general',
     items: [
-      { title: 'schools', path: '/adminPanel', icon: ICONS.school, availableFor: [ PROFILE_TYPE_NAMES.TURO_ADMIN ], },
+      { title: 'schools', path: '/admin/schools', icon: ICONS.school, availableFor: [ PROFILE_TYPE_NAMES.TYRO ], },
       { title: 'dashboard', path: '/one', icon: ICONS.dashboard, availableFor: availableForAllUsers, },
       { title: 'calendar', path: '/p', icon: ICONS.calendar, availableFor: availableForAllUsers, },
       { title: 'groups', path: '/groups', icon: ICONS.user, availableFor: [ PROFILE_TYPE_NAMES.TEACHER, PROFILE_TYPE_NAMES.ADMIN ] },

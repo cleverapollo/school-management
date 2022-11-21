@@ -6,7 +6,7 @@ export const addEmulationHeaders = (tenant: number | undefined, partyId: number 
 }
 
 export const removeEmulationHeaders = () => {
-  localStorage.removeItem(HEADERS.TENANT,);
+  localStorage.removeItem(HEADERS.TENANT);
   localStorage.removeItem(HEADERS.PARTY_ID);
 }
 

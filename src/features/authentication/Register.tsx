@@ -4,7 +4,6 @@ import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Box, Card, Link, Container, Typography, Tooltip } from '@mui/material';
 // hooks
-import useAuth from '../../hooks/useAuth';
 import useResponsive from '../../hooks/useResponsive';
 // routes
 import { PATH_AUTH } from '../../routes/paths';
@@ -61,7 +60,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function Register() {
-  const { method } = useAuth();
+  const method = 'jwt';
 
   const smUp = useResponsive('up', 'sm');
 

@@ -1,14 +1,12 @@
 import { m } from 'framer-motion';
 // @mui
 import { Container, Typography } from '@mui/material';
-// hooks
-import useAuth from '../hooks/useAuth';
 // components
 import { MotionContainer, varBounce } from '../components/animate';
 // assets
 import { ForbiddenIllustration } from '../assets';
-import {useTypedSelector} from "../store/store";
-import {intersection} from "lodash";
+import { usePermissions, useUser } from '@tyro/api';
+import LoadingScreen from '../components/LoadingScreen';
 
 // ----------------------------------------------------------------------
 
@@ -20,10 +18,14 @@ type PermissionBasedGuardProp = {
 
 export default function PermissionBasedGuard({ hasContent, permissions, children }: PermissionBasedGuardProp) {
   // Logic here to get current user role
-  const hasPermissions = useTypedSelector((state) => state.auth.permissions);
+  const { isInitialized } = useUser();
+  const { hasAtLeastOnePermission } = usePermissions();
 
-  // const currentRole = 'user';
-  if (typeof permissions !== 'undefined' && intersection(permissions ?? [], hasPermissions).length == 0 ) {
+  if (!isInitialized) {
+    return <LoadingScreen isDashboard />
+  }
+
+  if (Array.isArray(permissions) && permissions.length > 0 && !hasAtLeastOnePermission(permissions)) {
     return hasContent ? (
       <Container component={MotionContainer} sx={{ textAlign: 'center' }}>
         <m.div variants={varBounce().in}>

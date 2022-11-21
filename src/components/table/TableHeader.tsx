@@ -4,8 +4,7 @@ import {
   Typography,
   IconButton,
 } from '@mui/material';
-import { flexRender } from '@tanstack/react-table';
-import { Table } from '@tanstack/table-core';
+import { flexRender, Table } from '@tanstack/react-table';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ColumnHidingButton from './ColumnHidingButton';
 import { checkIsColumnForTechnicalOptions, checkIsColumnRenderNeeded } from '../../utils/table';

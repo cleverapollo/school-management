@@ -49,7 +49,7 @@ export const createFormattedStringForDayjs = (value: string): string => {
 export const checkIsColumnRenderNeeded = (columnName?: string) => columnName !== SYSTEM_HIDED_COLUMN_NAME;
 export const checkIsColumnForTechnicalOptions = (columnName?: string) => columnName === OPTIONS_COLUMN_NAME;
 
-declare module '@tanstack/table-core' {
+declare module '@tanstack/react-table' {
   interface FilterFns {
     fuzzy: FilterFn<unknown>
   }

@@ -136,6 +136,7 @@ function AuthProvider({ children }: AuthProviderProps) {
       }
 
       if (event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS || event.eventType === EventType.LOGIN_SUCCESS) {
+        
       }
 
       if (event.eventType === EventType.LOGOUT_SUCCESS) {
@@ -235,11 +236,9 @@ function AuthProvider({ children }: AuthProviderProps) {
     instance.logout().catch(err => {
       console.log(err);
     })
-
   };
 
   const msalLogin = async () => {
-
     await instance.loginRedirect(loginRequest);
   };
 

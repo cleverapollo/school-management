@@ -1,5 +1,5 @@
 import { TextField, InputAdornment, SvgIcon } from '@mui/material';
-import { Table } from '@tanstack/table-core';
+import { Table } from '@tanstack/react-table';
 import { Dispatch, SetStateAction, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterIcon from '@mui/icons-material/FilterList';

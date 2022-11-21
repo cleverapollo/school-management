@@ -1,23 +1,23 @@
 // @mui
 import { Container, Typography } from '@mui/material';
 // hooks
-import useSettings from '../hooks/useSettings';
+import useSettings from '../../../../hooks/useSettings';
 // components
-import Page from '../components/Page';
-import AdminPanel from '../features/adminPanel/AdminPanel';
+import Page from '../../../../components/Page';
+import { PeoplesTable } from '../../components/peoples-table';
 
 // ----------------------------------------------------------------------
 
-export default function AdminPanelPage() {
+export default function AdminPeoplesPage() {
   const { themeStretch } = useSettings();
 
   return (
-    <Page title="Page Two">
+    <Page title="People">
       <Container maxWidth={themeStretch ? false : 'xl'}>
         <Typography variant="h3" component="h1" paragraph>
-          Page Two
+          People
         </Typography>
-        <AdminPanel />
+        <PeoplesTable />
       </Container>
     </Page>
   );

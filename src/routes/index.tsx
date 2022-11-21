@@ -7,9 +7,10 @@ import LogoOnlyLayout from '../layouts/LogoOnlyLayout';
 import GuestGuard from '../guards/GuestGuard';
 import AuthGuard from '../guards/AuthGuard';
 import LoadingScreen from '../components/LoadingScreen';
-import useAuth from "../hooks/useAuth";
 import PageUnauthorized from '../pages/PageUnauthorized';
 import PermissionBasedGuard from '../guards/PermissionBasedGuard';
+import AdminRoutes from '../features/admin/routes';
+import { useAuth } from '@tyro/api';
 
 // ----------------------------------------------------------------------
 
@@ -79,13 +80,7 @@ export default function Router() {
       children: [
         { element: <Navigate to="/one" replace />, index: true },
         { path: 'one', element: <PageOne /> },
-        { path: 'adminPanel',
-          element: (
-            <PermissionBasedGuard permissions={['tyro_admin:access']} hasContent>
-              <AdminPanelPage />
-            </PermissionBasedGuard> 
-          )
-        },
+        AdminRoutes,
         { path: 'groups', element: <GroupsPage /> },
         { path: 'group/:id', element: <GroupPage /> },
         { path: 'subjects', element: <SubjectsPage /> },
@@ -134,5 +129,4 @@ const PageSix = Loadable(lazy(() => import('../pages/PageSix')));
 const NotFound = Loadable(lazy(() => import('../pages/Page404')));
 
 // Admin pages
-const AdminPanelPage = Loadable(lazy(() => import('../pages/AdminPanelPage')));
 const GraphiQLPage = Loadable(lazy(() => import('../pages/GraphiQLPage')));

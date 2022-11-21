@@ -3,10 +3,10 @@ import { useForm } from 'react-hook-form';
 // @mui
 import { LoadingButton } from '@mui/lab';
 // hooks
-import useAuth from '../../../../hooks/useAuth';
 import useIsMountedRef from '../../../../hooks/useIsMountedRef';
 // components
 import { FormProvider } from '../../../../components/hook-form';
+import { useAuth } from '@tyro/api';
 
 // ----------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ type FormValuesProps = {
 };
 
 export default function LoginForm() {
-  const { msalLogin } = useAuth();
+  const { login } = useAuth();
   const isMountedRef = useIsMountedRef();
   const defaultValues = {
     email: '',
@@ -39,7 +39,7 @@ export default function LoginForm() {
 
   const onSubmit = async (data: FormValuesProps) => {
     try {
-      await msalLogin();
+      await login();
     } catch (error) {
       console.error(error);
 
