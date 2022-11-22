@@ -1,4 +1,5 @@
-import { PublicClientApplication } from '@azure/msal-browser';
+import { AccountInfo, PublicClientApplication } from '@azure/msal-browser';
+import { setToken } from './jwt';
 
 /**
  * Enter here the user flows and custom policies for your B2C application
@@ -67,3 +68,28 @@ export const loginRequest = {
     'https://tyrouat.onmicrosoft.com/tyro-api/graphql.use',
   ],
 };
+
+interface AcquireMsalTokenProps {
+  instance?: PublicClientApplication;
+  account?: AccountInfo;
+}
+
+export async function acquireMsalToken(
+  { instance = msalInstance, account }: AcquireMsalTokenProps = {
+    instance: msalInstance,
+  }
+) {
+  const activeAccount = account ?? instance.getActiveAccount();
+
+  try {
+    const response = await instance.acquireTokenSilent({
+      ...loginRequest,
+      account,
+    });
+
+    instance.setActiveAccount(activeAccount);
+    setToken(response?.accessToken || null);
+  } catch (error) {
+    instance.logoutRedirect();
+  }
+}
