@@ -1,5 +1,5 @@
 import { TablePagination as MuiTablePagination } from '@mui/material';
-import { Table } from '@tanstack/table-core';
+import { Table } from '@tanstack/react-table';
 import { PAGINATION_ROWS_PER_PAGE_OPTIONS } from './constants';
 
 interface ITablePaginationProps<TData> {

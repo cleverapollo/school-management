@@ -25,7 +25,8 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "types": [
-      "node", "jest"
+      "node",
+      "jest"
     ]
   },
   "include": [
@@ -33,5 +34,8 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "./types"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }

@@ -1,7 +1,5 @@
 import { Suspense, lazy, ElementType } from 'react';
 import { Navigate, useRoutes, useLocation } from 'react-router-dom';
-// hooks
-import useAuth from '../hooks/useAuth';
 // layouts
 import DashboardLayout from '../layouts/dashboard';
 import LogoOnlyLayout from '../layouts/LogoOnlyLayout';
@@ -12,6 +10,7 @@ import AuthGuard from '../guards/AuthGuard';
 // config
 // components
 import LoadingScreen from '../components/LoadingScreen';
+import { useAuth } from '@tyro/api';
 
 // ----------------------------------------------------------------------
 

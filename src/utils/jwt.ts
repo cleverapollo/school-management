@@ -6,6 +6,8 @@ import axios from './axios';
 
 // ----------------------------------------------------------------------
 
+// TODO - Look at possibly removing axios and this instance. We don't really need it as we will use graphql-request instead
+
 const isValidToken = (accessToken: string) => {
   if (!accessToken) {
     return false;

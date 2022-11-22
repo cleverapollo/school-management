@@ -19,8 +19,8 @@ import navConfig from './NavConfig';
 import NavbarDocs from './NavbarDocs';
 import NavbarAccount from './NavbarAccount';
 import CollapseButton from './CollapseButton';
-import { useTypedSelector } from '../../../store/store';
-import { PROFILE_TYPE_NAMES } from '../../../constants';
+import { useUser } from '@tyro/api';
+import { UserProfileName } from '../../../app/api/generated';
 
 // ----------------------------------------------------------------------
 
@@ -41,7 +41,8 @@ type Props = {
 };
 
 export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props) {
-  const profileTypeName = useTypedSelector(state => state.auth.activeProfile?.profileType?.name);
+  const { activeProfile } = useUser();
+  const profileTypeName = activeProfile?.profileType?.name as UserProfileName;
   const theme = useTheme();
 
   const { pathname } = useLocation();

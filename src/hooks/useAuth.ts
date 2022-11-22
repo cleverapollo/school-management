@@ -6,7 +6,7 @@ import { AuthContext } from '../contexts/JWTContext';
 // import { AuthContext } from '../contexts/AwsCognitoContext';
 
 // ----------------------------------------------------------------------
-
+// Should be removed when we move to react query
 const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error('Auth context must be use inside AuthProvider');

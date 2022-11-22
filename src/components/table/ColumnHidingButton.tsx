@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { Column } from '@tanstack/table-core';
+import { Column } from '@tanstack/react-table';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import { OPTIONS_COLUMN_NAME } from './constants';
 
