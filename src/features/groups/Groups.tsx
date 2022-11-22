@@ -11,6 +11,7 @@ import OptionButton from "../../components/table/OptionButton";
 import ColoredBox from "./components/ColoredBox";
 import { adminOptions, teacherOptions } from "./contants";
 import { useNavigate } from "react-router";
+import { useUser } from '@tyro/api';
 
 interface EnrolmentGroupData extends EnrolmentGroup {
   firstButton?: string;
@@ -86,7 +87,8 @@ const ExampleCustomGroupData: CustomGroupData[] = [
 const Groups = () => {
   const { translate } = useLocales();
   const navigate = useNavigate();
-  const profileTypeName = useTypedSelector(state => state.auth.activeProfile?.profileType?.name);
+  const { activeProfile } = useUser();
+  const profileTypeName = activeProfile?.profileType?.name;
   const ExampleEnrolmentGroupData = useTypedSelector(state => state.groups.enrolmentGroups);
   const ExampleSubjectGroupData = useTypedSelector(state => state.groups.subjectGroups);
   // const ExampleCustomGroupData = useTypedSelector(state => state.groups.customGroups);

@@ -8,8 +8,7 @@ import {
   useState,
 } from 'react';
 import { useMsal, useIsAuthenticated, useAccount } from '@azure/msal-react';
-import { loginRequest } from '../utils/msal-configs';
-import { setToken } from '../utils/jwt';
+import { acquireMsalToken, loginRequest } from '../utils/msal-configs';
 
 export type AuthContextValue = {
   isAuthenticated: boolean;
@@ -42,22 +41,9 @@ function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     if (account) {
-      instance
-        .acquireTokenSilent({
-          ...loginRequest,
-          account,
-        })
-        .then((response) => {
-          if (response) {
-            setToken(response?.accessToken || null);
-          }
-          setIsTokenInitialized(true);
-        })
-        .catch(({ name }: Error) => {
-          if (name === 'InteractionRequiredAuthError') {
-            logout();
-          }
-        });
+      acquireMsalToken({ account }).then(() => {
+        setIsTokenInitialized(true);
+      });
     } else {
       setIsTokenInitialized(true);
     }
