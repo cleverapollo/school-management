@@ -49,15 +49,20 @@ export function useGetCalendarEvents(filter: CalendarEventFilter) {
   return useQuery({
     queryKey: ['calendar', 'calendarEvents', filter],
     queryFn: async () => gqlClient.request(events, { filter: filter }),
-    select: ({ calendarEvents }) => {
-      const newEvents = calendarEvents?.map((event, index) => ({
-        title: event.attendees.filter(attendee => attendee.type === "ATTENDEE")[0].partyInfo.subjects[0].name,
-        start: event.startTime,
-        end: event.endTime,
-        //ToDO: get this color from the backend in the future
-        backgroundColor: COLOR_OPTIONS[index] || '#00AB55',
-      }) as EventInput);
-      return [...newEvents || []];
+    select: ({ calendar_calendarEvents }) => {
+      const newEvents = calendar_calendarEvents?.map((event, index) => {
+        //ToDo: refactor this when we get full data from the backend
+        const filteredAttendees = event?.attendees?.filter(attendee => attendee?.type === "ATTENDEE")[0];
+        const subjects = filteredAttendees?.partyInfo?.__typename === 'SubjectGroup' ? filteredAttendees?.partyInfo?.subjects : [];
+        return {
+          title: subjects?.length ? subjects[0]?.name : '',
+          start: event?.startTime,
+          end: event?.endTime,
+          //ToDO: get this color from the backend in the future
+          backgroundColor: COLOR_OPTIONS[index] || '#00AB55',
+        } as EventInput
+      });
+      return newEvents;
     }
   });
 }

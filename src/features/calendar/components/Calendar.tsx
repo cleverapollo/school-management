@@ -5,13 +5,12 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import timelinePlugin from '@fullcalendar/timeline';
 import interactionPlugin, { EventResizeDoneArg } from '@fullcalendar/interaction';
 //
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Fragment } from 'react';
 // @mui
 import { Card, Button, Container, DialogTitle } from '@mui/material';
 // redux
 import { RootState, useDispatch, useTypedSelector } from '../../../store/store';
 import {
-  getEvents,
   openModal,
   closeModal,
   updateEvent,
@@ -32,16 +31,11 @@ import { DialogAnimate } from '../../../components/animate';
 import HeaderBreadcrumbs from '../../../components/HeaderBreadcrumbs';
 // sections
 import { CalendarForm, CalendarStyle, CalendarToolbar } from '.';
+import { useGetCalendarEvents } from '../api/getEvents';
+import { CalendarEventFilter } from '../../../../packages/api/src/gql/graphql';
 
 // ----------------------------------------------------------------------
 
-const selectedEventSelector = (state: RootState) => {
-  const { events, selectedEventId } = state.calendar;
-  if (selectedEventId) {
-    return events?.find((_event) => _event.id === selectedEventId);
-  }
-  return null;
-};
 
 export default function Calendar() {
   const { themeStretch } = useSettings();
@@ -56,13 +50,23 @@ export default function Calendar() {
 
   const [view, setView] = useState<CalendarView>(isDesktop ? 'dayGridMonth' : 'listWeek');
 
+  const { isOpenModal, selectedRange } = useTypedSelector((state) => state.calendar);
+
+  //ToDo: Change filter values, when create events will be done
+  const filter: CalendarEventFilter = {
+    "startDate": "2019-09-01",
+    "endDate": "2019-09-07",
+    "partyIds": [610],
+  };
+  const { data, isLoading } = useGetCalendarEvents(filter);
+  const selectedEventSelector = (state: RootState) => {
+    const { selectedEventId } = state.calendar;
+    if (selectedEventId) {
+      return data?.find((_event) => _event.id === selectedEventId);
+    }
+    return null;
+  };
   const selectedEvent = useTypedSelector(selectedEventSelector);
-
-  const { events, isOpenModal, selectedRange } = useTypedSelector((state) => state.calendar);
-
-  useEffect(() => {
-    dispatch(getEvents());
-  }, [dispatch]);
 
   useEffect(() => {
     const calendarEl = calendarRef.current;
@@ -159,6 +163,10 @@ export default function Calendar() {
     dispatch(closeModal());
   };
 
+  if (isLoading) {
+    return <Fragment />
+  }
+
   return (
     <Page title="Calendar">
       <Container maxWidth={themeStretch ? false : 'xl'}>
@@ -191,7 +199,7 @@ export default function Calendar() {
               editable
               droppable
               selectable
-              events={events}
+              events={data}
               ref={calendarRef}
               rerenderDelay={10}
               initialDate={date}

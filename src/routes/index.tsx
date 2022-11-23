@@ -10,6 +10,7 @@ import LoadingScreen from '../components/LoadingScreen';
 import PageUnauthorized from '../pages/PageUnauthorized';
 import PermissionBasedGuard from '../guards/PermissionBasedGuard';
 import AdminRoutes from '../features/admin/routes';
+import CalendarRoutes from '../features/calendar/routes'
 import { useAuth } from '@tyro/api';
 
 // ----------------------------------------------------------------------
@@ -84,7 +85,7 @@ export default function Router() {
         { path: 'groups', element: <GroupsPage /> },
         { path: 'group/:id', element: <GroupPage /> },
         { path: 'subjects', element: <SubjectsPage /> },
-        { path: 'calendar', element: <CalendarPage /> },
+        CalendarRoutes,
         {
           path: 'user',
           children: [
@@ -126,7 +127,6 @@ const PageOne = Loadable(lazy(() => import('../pages/PageOne')));
 const GroupsPage = Loadable(lazy(() => import('../pages/GroupsPage')));
 const SubjectsPage = Loadable(lazy(() => import('../pages/SubjectsPage')));
 const GroupPage = Loadable(lazy(() => import('../pages/GroupPage')));
-const CalendarPage = Loadable(lazy(() => import('../pages/CalendarPage')));
 const NotFound = Loadable(lazy(() => import('../pages/Page404')));
 
 // Admin pages
