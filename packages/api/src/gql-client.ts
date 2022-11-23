@@ -1,19 +1,37 @@
 import { GraphQLClient } from 'graphql-request';
 import { Response } from 'graphql-request/dist/types';
+import polly from 'polly-js';
 import { EmulateHeaders } from './utils/emulate';
 import { getToken } from './utils/jwt';
+import { acquireMsalToken } from './utils/msal-configs';
 
 const getEndpoint = (isLocal?: boolean) =>
   isLocal
     ? 'http://localhost:80/api/graphql'
     : 'https://tyro-api-uat.azurewebsites.net/api/graphql';
 
-// Need to setup a response middleware to handle auth errors
-// function responseMiddleware(response: Response<unknown> | Error) {
-//   console.log({ response });
-// }
+type FetchInstance = (
+  url: RequestInfo | URL,
+  init?: RequestInit | undefined
+) => Promise<any>;
+
+const fetchInstance: FetchInstance = (...args) =>
+  polly()
+    .handle((error: Response<unknown>) => error?.status === 401)
+    .retry(1)
+    .executeForPromise(async () => {
+      const response = await fetch(...args);
+
+      if (response?.status === 401) {
+        await acquireMsalToken();
+        return Promise.reject(response);
+      }
+
+      return response;
+    });
 
 export const gqlClient = new GraphQLClient(getEndpoint(), {
+  fetch: fetchInstance,
   headers: () => {
     const headers: HeadersInit = {};
 
