@@ -1,44 +1,20 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { EventInput } from '@fullcalendar/common';
 // @types
 import { CalendarState } from '../../features/calendar/types';
 //
 import { dispatch } from '../store';
-import { apolloClient } from '../../app/api/apollo';
-import { CalendarEventDocument, CalendarEventFilter, CalendarEventQuery, CalendarEventQueryVariables } from '../../app/api/generated';
-import { COLOR_OPTIONS } from '../../features/calendar/components/CalendarForm';
 
 // ----------------------------------------------------------------------
 
 const initialState: CalendarState = {
   isLoading: false,
-  error: null,
   events: [],
+  error: null,
   isOpenModal: false,
   selectedEventId: null,
   selectedRange: null,
 };
-
-export const getEvents = createAsyncThunk(
-  'calendar/getEvents',
-  async () => {
-    dispatch(slice.actions.startLoading());
-
-    //ToDo: Change filter values, when create events will be done
-    const filter: CalendarEventFilter = {
-      "startDate": "2019-09-01",
-      "endDate": "2019-09-07",
-      "partyIds": [610],
-    };
-    try {
-      const response = await apolloClient.query<CalendarEventQuery, CalendarEventQueryVariables>(
-        { query: CalendarEventDocument, variables: { filter } });
-      return response.data.calendar_calendarEvents;
-    } catch (error) {
-      dispatch(slice.actions.hasError(error));
-    }
-  }
-);
 
 const slice = createSlice({
   name: 'calendar',
@@ -54,12 +30,6 @@ const slice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
-
-    // GET EVENTS
-    // getEventsSuccess(state, action) {
-    //   state.isLoading = false;
-    //   state.events = action.payload;
-    // },
 
     // CREATE EVENT
     createEventSuccess(state, action) {
@@ -115,19 +85,6 @@ const slice = createSlice({
       state.selectedRange = null;
     },
   },
-  extraReducers: (builder) => {
-    builder.addCase(getEvents.fulfilled, (state, action) => {
-      const newEvents = action.payload?.map((event, index) => ({
-        title: event.attendees.filter(attendee => attendee.type === "ATTENDEE")[0].partyInfo.subjects[0].name,
-        start: event.startTime,
-        end: event.endTime,
-        //ToDO: get this color from the backend in the future
-        backgroundColor: COLOR_OPTIONS[index] || '#00AB55',
-      }) as EventInput);
-      state.events = [...newEvents || []];
-      state.isLoading = false;
-    })
-  }
 });
 
 // Reducer
@@ -135,7 +92,7 @@ export default slice.reducer;
 
 // Actions
 export const { openModal, closeModal, selectEvent } = slice.actions;
-//ToDo: move to createAsyncThunk when endpoints will be finished
+//ToDo: move to react-query when endpoints will be finished
 // ----------------------------------------------------------------------
 
 export function createEvent(newEvent: Omit<EventInput, 'id'>) {
