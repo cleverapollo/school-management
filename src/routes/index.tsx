@@ -9,10 +9,13 @@ import AuthGuard from '../guards/AuthGuard';
 import LoadingScreen from '../components/LoadingScreen';
 import PageUnauthorized from '../pages/PageUnauthorized';
 import PermissionBasedGuard from '../guards/PermissionBasedGuard';
-import AdminRoutes from '../features/admin/routes';
 import { useAuth } from '@tyro/api';
 
 // ----------------------------------------------------------------------
+import AdminRoutes from '../features/admin/routes';
+import Groups from '../features/groups/routes';
+import Subjects from '../features/subjects/routes';
+
 
 const Loadable = (Component: ElementType) => (props: any) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -81,9 +84,8 @@ export default function Router() {
         { element: <Navigate to="/one" replace />, index: true },
         { path: 'one', element: <PageOne /> },
         AdminRoutes,
-        { path: 'groups', element: <GroupsPage /> },
-        { path: 'group/:id', element: <GroupPage /> },
-        { path: 'subjects', element: <SubjectsPage /> },
+        Groups,
+        Subjects,
         {
           path: 'user',
           children: [
@@ -122,10 +124,6 @@ const UserAccount = Loadable(lazy(() => import('../features/userAccount/UserAcco
 
 // Dashboard
 const PageOne = Loadable(lazy(() => import('../pages/PageOne')));
-const GroupsPage = Loadable(lazy(() => import('../pages/GroupsPage')));
-const SubjectsPage = Loadable(lazy(() => import('../pages/SubjectsPage')));
-const GroupPage = Loadable(lazy(() => import('../pages/GroupPage')));
-const PageSix = Loadable(lazy(() => import('../pages/PageSix')));
 const NotFound = Loadable(lazy(() => import('../pages/Page404')));
 
 // Admin pages

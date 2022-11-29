@@ -1,7 +1,7 @@
 import { compareItems, RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import { sortingFns, FilterFn, SortingFn } from '@tanstack/react-table';
 import { OPTIONS_COLUMN_NAME, SYSTEM_HIDED_COLUMN_NAME } from "../components/table/constants";
-import { TableColumn, TitleOverride } from "../components/table/types";
+import { TableColumn } from "../components/table/types";
 
 export function calculateColumnsWithPermissions<TData> (
   columns: TableColumn<TData>[],
@@ -24,17 +24,6 @@ export function calculateColumnsWithPermissions<TData> (
     }
   });
   return result;
-}
-
-export const createTitleForProfileTypes = (
-  profileType: string,
-  titleOverride: TitleOverride[] | undefined,
-  generalTitle: string): string => 
-{
-  if (!titleOverride || !titleOverride.length) {
-    return generalTitle;
-  }
-  return titleOverride.find((item) => Object.keys(item).includes(profileType))?.[profileType] || generalTitle;
 }
 
 export const createFormattedStringForDayjs = (value: string): string => {

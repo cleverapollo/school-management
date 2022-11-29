@@ -71,7 +71,7 @@ export function PeoplesTable() {
   const { data, isLoading } = useAdminPartyPeopleByTenantId(Number(schoolId));
   const people = data as AdminPanelPeople[] | undefined;
 
-  const examplePeopleColumns = useMemo(() => getExamplePeopleColumns(translate, navigate), [translate])
+  const examplePeopleColumns = useMemo(() => getExamplePeopleColumns(translate, navigate), [translate, navigate])
 
   if (isLoading) {
     return <Fragment />
@@ -79,7 +79,6 @@ export function PeoplesTable() {
 
   return (
     <Table
-      title={translate('people')}
       data={people ?? []}
       columns={examplePeopleColumns}
     />

@@ -28,13 +28,12 @@ import TableHeader from "./TableHeader";
 import TableFilters from "./TableFilters";
 import TableBody from './TableBody';
 import TablePagination from './TablePagination';
-import { calculateColumnsWithPermissions, createTitleForProfileTypes, fuzzyFilter, fuzzySort } from "../../utils/table";
+import { calculateColumnsWithPermissions, fuzzyFilter, fuzzySort } from "../../utils/table";
 import { DEFAULT_PAGINATION_SIZE } from './constants';
 import TableTabs from './TableTabs';
-import TableToolbar from './TableToolbar';
 
 const Table = <TData,>(props: ITableProps<TData>) => {
-  const { data, title, titleOverride, columns, tabs, onChangeTab, tabValue, story, onClickRow, isRowSelectionNeeded } = props;
+  const { data, columns, tabs, onChangeTab, tabValue, onClickRow, isRowSelectionNeeded } = props;
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState<string>('');
@@ -46,7 +45,6 @@ const Table = <TData,>(props: ITableProps<TData>) => {
 
   const columnsWithPermission = calculateColumnsWithPermissions<TData>(columns, permissions, profileType);
 
-  const tableTitle = createTitleForProfileTypes(profileType, titleOverride, title);
 
   const columnHelper = createColumnHelper<TData>();
   const calculateReactTableColumns = (columnsWithPermission: TableColumn<TData>[]): ColumnDef<TData, unknown>[] => 
@@ -97,7 +95,6 @@ const Table = <TData,>(props: ITableProps<TData>) => {
   });
 
   return(<>
-    <TableToolbar title={tableTitle} story={story}/>
     <TableContainer sx={{ 
       boxShadow: '0px 0px 2px rgba(145, 158, 171, 0.2), 0px 12px 24px -4px rgba(145, 158, 171, 0.12)', 
       borderRadius: '16px' }}

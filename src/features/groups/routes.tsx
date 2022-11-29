@@ -1,16 +1,38 @@
 import { RouteObject } from "react-router";
-import AdminSchoolsPage from "./pages/school";
-import AdminPeoplesPage from "./pages/school/people";
+import CustomGroups from "./pages/custom";
+import ViewCustomGroupPage from "./pages/custom/view";
+import EnrolmentGroups from "./pages/enrolment";
+import ViewEnrolmentGroupPage from "./pages/enrolment/view";
+import SubjectGroups from "./pages/subject";
+import ViewSubjectGroupPage from "./pages/subject/view";
 
 const routes: RouteObject = {
   path: 'groups',
   children: [
-    { path: 'enrolment', element: <AdminSchoolsPage /> },
-    { path: 'subject', element: <AdminSchoolsPage /> },
-    { path: 'custom', element: <AdminSchoolsPage /> },
-    { path: 'enrolment/:groupId', element: <AdminSchoolsPage /> },
-    { path: 'subject/:groupId', element: <AdminSchoolsPage /> },
-    { path: 'custom/:groupId', element: <AdminSchoolsPage /> },
+    {
+      path: 'enrolment',
+      element: <EnrolmentGroups />,
+      children: [{
+        path: ':groupId/view',
+        element: <ViewEnrolmentGroupPage />,
+      }]
+    },
+    {
+      path: 'subject',
+      element: <SubjectGroups />,
+      children: [{
+        path: ':groupId/view',
+        element: <ViewSubjectGroupPage />
+      }]
+    },
+    {
+      path: 'custom',
+      element: <CustomGroups />,
+      children: [{
+        path: ':groupId/view',
+        element: <ViewCustomGroupPage />
+      }]
+    },
   ]
 };
 

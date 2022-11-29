@@ -6,9 +6,6 @@ import { GROUP_TYPES } from "./constants";
 export interface Config {
 }
 
-export interface TitleOverride {
-  [key: string]: string; //ToDo: change key to profileType type
-}
 
 export interface TableColumn<TData> {
   columnDisplayName: string;
@@ -24,9 +21,6 @@ export interface TableColumn<TData> {
 
 export interface ITableProps<TData> {
   data: TData[];
-  title: string;
-  titleOverride?: TitleOverride[];
-  story?: string[];
   columns: TableColumn<TData>[];
   tabs?: string[];
   onChangeTab?: (event: SyntheticEvent, newValue: string) => void;

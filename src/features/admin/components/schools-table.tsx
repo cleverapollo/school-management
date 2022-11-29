@@ -80,7 +80,7 @@ export function SchoolsTable() {
   const navigate = useNavigate();
   const tenants = data as AdminPanelTenant[] | undefined;
 
-  const exampleSchoolColumns = useMemo(() => getExampleSchoolColumns(translate, navigate), [translate])
+  const exampleSchoolColumns = useMemo(() => getExampleSchoolColumns(translate, navigate), [translate, navigate])
 
   if (isLoading) {
     return <Fragment />
@@ -88,7 +88,6 @@ export function SchoolsTable() {
 
   return (
     <Table
-      title={translate('schools')}
       data={tenants ?? []}
       columns={exampleSchoolColumns}
     />

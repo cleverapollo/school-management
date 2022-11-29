@@ -52,9 +52,9 @@ const navConfig: NavConfig = [
       {
         title: 'groups', path: '/groups', icon: ICONS.user, availableFor: [PROFILE_TYPE_NAMES.TEACHER, PROFILE_TYPE_NAMES.ADMIN],
         children: [
-          { title: 'Enrolment', path: '/enrolment' },
-          { title: 'Subject', path: '/subject' },
-          { title: 'Custom', path: '/custom' },
+          { title: 'Enrolment', path: '/groups/enrolment' },
+          { title: 'Subject', path: '/groups/subject' },
+          { title: 'Custom', path: '/groups/custom' },
         ]
       },
       { title: 'subjects', path: '/subjects', icon: ICONS.subjects, availableFor: [ PROFILE_TYPE_NAMES.CONTACT, PROFILE_TYPE_NAMES.STUDENT ]},
