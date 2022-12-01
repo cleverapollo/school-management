@@ -49,12 +49,18 @@ const navConfig: NavConfig = [
       { title: 'schools', path: '/admin/schools', icon: ICONS.school, availableFor: [ PROFILE_TYPE_NAMES.TYRO ], },
       { title: 'dashboard', path: '/one', icon: ICONS.dashboard, availableFor: availableForAllUsers, },
       { title: 'calendar', path: '/p', icon: ICONS.calendar, availableFor: availableForAllUsers, },
-      { title: 'groups', path: '/groups', icon: ICONS.user, availableFor: [ PROFILE_TYPE_NAMES.TEACHER, PROFILE_TYPE_NAMES.ADMIN ] },
+      {
+        title: 'groups', path: '/groups', icon: ICONS.user, availableFor: [PROFILE_TYPE_NAMES.TEACHER, PROFILE_TYPE_NAMES.ADMIN],
+        children: [
+          { title: 'Enrolment', path: '/groups/enrolment' },
+          { title: 'Subject', path: '/groups/subject' },
+          { title: 'Custom', path: '/groups/custom' },
+        ]
+      },
       { title: 'subjects', path: '/subjects', icon: ICONS.subjects, availableFor: [ PROFILE_TYPE_NAMES.CONTACT, PROFILE_TYPE_NAMES.STUDENT ]},
       { title: 'attendance', path: '/b', icon: ICONS.attendance, availableFor: availableForAllUsers, },
       { title: 'assessment', path: '/c', icon: ICONS.assessment, availableFor: availableForAllUsers, },
       { title: 'wellbeing', path: '/d', icon: ICONS.wellbeing, availableFor: [ PROFILE_TYPE_NAMES.TEACHER, PROFILE_TYPE_NAMES.ADMIN, PROFILE_TYPE_NAMES.CONTACT ]},
-      { title: 'groups', path: '/groups', icon: ICONS.people, availableFor: [ PROFILE_TYPE_NAMES.CONTACT, PROFILE_TYPE_NAMES.STUDENT ] },
     ],
   },
 

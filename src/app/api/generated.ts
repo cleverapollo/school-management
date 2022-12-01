@@ -2,6 +2,7 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 import { CUSTOM_GROUP_TYPE, PROFILE_TYPE_NAMES, SUBJECT_GROUP_LEVEL } from '../../constants';
 import { GroupTypes } from '../../components/table/types';
+import { GeneralGroupType, SubjectGroupLevelIrePp } from '@tyro/api';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -608,13 +609,13 @@ export interface SubjectGroup {
   name: string;
   subject: string;
   members: string;
-  level: SubjectGroupLevel;
+  level: SubjectGroupLevelIrePp | null | undefined;
   teacher?: string;
   programme?: string;
   id: string;
 }
 
-export type TypeOfCustomGroup = CUSTOM_GROUP_TYPE.DYNAMIC | CUSTOM_GROUP_TYPE.STATIC;
+export type TypeOfCustomGroup = GeneralGroupType.DynamicGroup | GeneralGroupType.StaticGroup;
 
 export interface CustomGroup {
   name: string;
