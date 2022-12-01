@@ -19,7 +19,7 @@ import navConfig from './NavConfig';
 import NavbarDocs from './NavbarDocs';
 import NavbarAccount from './NavbarAccount';
 import CollapseButton from './CollapseButton';
-import { useUser } from '@tyro/api';
+import {usePermissions, useUser} from '@tyro/api';
 import { UserProfileName } from '../../../app/api/generated';
 
 // ----------------------------------------------------------------------
@@ -41,8 +41,7 @@ type Props = {
 };
 
 export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props) {
-  const { activeProfile } = useUser();
-  const profileTypeName = activeProfile?.profileType?.name as UserProfileName;
+  const { userType } = usePermissions();
   const theme = useTheme();
 
   const { pathname } = useLocation();
@@ -62,7 +61,7 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
   const filteredNavConfig = navConfig.map(group => {
     const filteredItems: NavListProps[] = [];
     group.items.forEach(item => {
-      if (profileTypeName && item.availableFor?.includes(profileTypeName)) {
+      if (userType && item.availableFor?.includes(userType)) {
         filteredItems.push(item);
       }
     })
@@ -97,7 +96,7 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }: Props)
         <NavbarAccount isCollapse={isCollapse} />
       </Stack>
 
-      <NavSectionVertical navConfig={filteredNavConfig} isCollapse={isCollapse} profileTypeName={profileTypeName}/>
+      <NavSectionVertical navConfig={filteredNavConfig} isCollapse={isCollapse} profileTypeName={userType}/>
 
       <Box sx={{ flexGrow: 1 }} />
 

@@ -26,6 +26,7 @@ const myAuthDetailsDocument = graphql(/* GraphQL */ `
         profileType {
           name
           description
+          userType
         }
         permissionIds
       }
