@@ -56,7 +56,7 @@ const events = graphql(/* GraphQL */ `
   }
 `);
 
-export function useGetCalendarEvents(filter: CalendarEventFilter) {
+export function useCalendarEvents(filter: CalendarEventFilter) {
   return useQuery({
     queryKey: ['calendar', 'calendarEvents', filter],
     queryFn: async () => gqlClient.request(events, { filter: filter }),

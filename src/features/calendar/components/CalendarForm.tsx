@@ -146,16 +146,6 @@ export default function CalendarForm({ event, range, onCancel }: Props) {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [eventData, setEventData] = useState<Maybe<CreateCalendarEventsInput>>(null);
 
-  // const mutation = useCreateCalendarEvents(eventData ?? {} as CreateCalendarEventsInput);
-  // useEffect(() => {
-  //   if(eventData) {
-  //     mutation.mutate();
-  //     onCancel();
-  //     reset();
-  //   }
-  // }, [eventData]);
-
-
   const dispatch = useDispatch();
 
   const isCreating = Object.keys(event).length === 0;
@@ -163,16 +153,21 @@ export default function CalendarForm({ event, range, onCancel }: Props) {
   const EventSchema = Yup.object().shape({
     title: Yup.string().max(255).required('Title is required'),
     description: Yup.string().max(500),
+    start: Yup.date(),
+    end: Yup.date().when('start', (start) =>
+      start ?
+        Yup.date().min(start, 'End date must be later than start date') :
+        Yup.date()
+    ),
   });
 
-  const methods = useForm({
+  const methods = useForm<FormValuesProps>({
     resolver: yupResolver(EventSchema),
     defaultValues: getInitialValues(event, range),
   });
 
   const {
     reset,
-    watch,
     control,
     handleSubmit,
     formState: { isSubmitting },
@@ -220,8 +215,6 @@ export default function CalendarForm({ event, range, onCancel }: Props) {
         }
       ]};
 
-      console.log(dataEvent, event.id);
-
       if (event.id) {
         //ToDo: implement Update Event
         //dispatch(updateEvent(event.id, newEvent));
@@ -249,10 +242,6 @@ export default function CalendarForm({ event, range, onCancel }: Props) {
     }
   };
 
-  const values = watch();
-
-  const isDateError = isBefore(new Date(values.end), new Date(values.start));
-
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3} sx={{ p: 3 }}>
@@ -276,7 +265,7 @@ export default function CalendarForm({ event, range, onCancel }: Props) {
         <Controller
           name="end"
           control={control}
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <MobileDateTimePicker
               {...field}
               label="End date"
@@ -285,8 +274,8 @@ export default function CalendarForm({ event, range, onCancel }: Props) {
                 <TextField
                   {...params}
                   fullWidth
-                  error={!!isDateError}
-                  helperText={isDateError && 'End date must be later than start date'}
+                  error={!!error}
+                  helperText={error?.message}
                 />
               )}
             />

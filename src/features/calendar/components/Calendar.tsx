@@ -25,7 +25,7 @@ import { DialogAnimate } from '../../../components/animate';
 import HeaderBreadcrumbs from '../../../components/HeaderBreadcrumbs';
 // sections
 import { CalendarForm, CalendarStyle, CalendarToolbar } from '.';
-import { useGetCalendarEvents } from '../api/getEvents'; 
+import { ExtendedEventInput, useCalendarEvents } from '../api/getEvents'; 
 import { CalendarEventFilter, Maybe } from '@tyro/api/src/gql/graphql';
 import CalendarEventView from './CalendarEventView';
 import { useUser } from '@tyro/api';
@@ -41,7 +41,7 @@ interface Range{
 
 //ToDo: Change filter values, when create events will be done
 const filter: CalendarEventFilter = {
-  "startDate": "2019-01-01",
+  "startDate": "2022-01-01",
   "endDate": "2022-12-30",
   "partyIds": [610],
 };
@@ -69,10 +69,8 @@ export default function Calendar() {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [selectedRange, setSelectedRange] = useState<null | Range>(null);
 
-  const { data, isLoading } = useGetCalendarEvents(filter);
-  console.log(data);
+  const { data, isLoading } = useCalendarEvents(filter);
   const newData = useMemo(() => data?.map((event,index) => ({ ...event, id: index.toString() })), [data]);
-  console.log(newData);
 
   const [selectedEventId, setSelectedEventId] = useState<Maybe<string>>(null);
   const selectedEvent = useMemo(() => {
