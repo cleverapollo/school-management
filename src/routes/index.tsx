@@ -15,6 +15,7 @@ import { useAuth } from '@tyro/api';
 import AdminRoutes from '../features/admin/routes';
 import Groups from '../features/groups/routes';
 import Subjects from '../features/subjects/routes';
+import Rooms from '../features/generalSchoolSettings/routes';
 
 
 const Loadable = (Component: ElementType) => (props: any) => {
@@ -86,6 +87,7 @@ export default function Router() {
         AdminRoutes,
         Groups,
         Subjects,
+        Rooms,
         {
           path: 'user',
           children: [
@@ -93,8 +95,8 @@ export default function Router() {
             { path: 'account', element: <UserAccount /> },
           ],
         },
-        { 
-          path: 'graphiql', 
+        {
+          path: 'graphiql',
           element: (
             <PermissionBasedGuard permissions={['tyro_admin:access']} hasContent>
               <GraphiQLPage />

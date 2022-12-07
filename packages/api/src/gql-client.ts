@@ -8,7 +8,7 @@ import { acquireMsalToken } from './utils/msal-configs';
 const getEndpoint = (isLocal?: boolean) =>
   isLocal
     ? 'http://localhost:80/api/graphql'
-    : 'https://tyro-api-uat.azurewebsites.net/api/graphql';
+    : 'http://localhost:80/api/graphql';
 
 type FetchInstance = (
   url: RequestInfo | URL,
