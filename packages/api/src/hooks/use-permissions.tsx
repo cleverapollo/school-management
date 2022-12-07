@@ -31,5 +31,6 @@ export function usePermissions() {
     hasPermission,
     hasAtLeastOnePermission,
     hasAllPermissions,
+    userType: activeProfile?.profileType?.userType,
   };
 }

@@ -2,11 +2,10 @@ import Table from '../../../../components/table/Table';
 import { TableColumn } from '../../../../components/table/types';
 import { Button, Container, Typography } from "@mui/material";
 import useLocales from "../../../../hooks/useLocales";
-import { PROFILE_TYPE_NAMES } from "../../../../constants";
 import OptionButton from "../../../../components/table/OptionButton";
 import { adminOptions, teacherOptions } from "../../contants";
 import { useNavigate } from "react-router";
-import { useUser } from '@tyro/api';
+import {UserType, useUser} from '@tyro/api';
 import { useMemo } from 'react';
 import { CustomGroup } from '../../../../app/api/generated';
 import Page from '../../../../components/Page';
@@ -107,8 +106,8 @@ export default function CustomGroups() {
   const { activeProfile } = useUser();
   const { data, isLoading } = useCustomGroups();
   const profileTypeName = activeProfile?.profileType?.name;
-  const isAdminUserType = profileTypeName === PROFILE_TYPE_NAMES.ADMIN;
-  const isFacultyOrAdmin = profileTypeName === PROFILE_TYPE_NAMES.ADMIN || profileTypeName === PROFILE_TYPE_NAMES.TEACHER;
+  const isAdminUserType = profileTypeName === UserType.Admin;
+  const isFacultyOrAdmin = profileTypeName === UserType.Admin || profileTypeName === UserType.Teacher;
 
   const customGroupData: CustomGroupData[] = data?.map(group => (
     {

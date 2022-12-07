@@ -2,11 +2,10 @@ import Table from '../../../../components/table/Table';
 import { TableColumn } from '../../../../components/table/types';
 import { Button, Container, Typography } from "@mui/material";
 import useLocales from "../../../../hooks/useLocales";
-import { PROFILE_TYPE_NAMES } from "../../../../constants";
 import OptionButton from "../../../../components/table/OptionButton";
 import { adminOptions } from "../../contants";
 import { useNavigate } from "react-router";
-import { useUser } from '@tyro/api';
+import {UserType, useUser} from '@tyro/api';
 import { useEnrolmentGroups } from "../../api/general-groups";
 import { useMemo } from 'react';
 import { EnrolmentGroup } from '../../../../app/api/generated';
@@ -82,8 +81,8 @@ export default function EnrolmentGroups() {
   const navigate = useNavigate();
   const { activeProfile } = useUser();
   const { data, isLoading } = useEnrolmentGroups();
-  const profileTypeName = activeProfile?.profileType?.name;
-  const isAdminUserType = profileTypeName === PROFILE_TYPE_NAMES.ADMIN;
+  const profileTypeName = activeProfile?.profileType?.userType;
+  const isAdminUserType = profileTypeName === UserType.Admin;
 
   const enrolmentGroupColumns = useMemo(() => getEnrolmentGroupColumns(translate, isAdminUserType), [translate, isAdminUserType]);
 

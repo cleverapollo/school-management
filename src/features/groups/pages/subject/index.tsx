@@ -2,11 +2,10 @@ import Table from '../../../../components/table/Table';
 import { TableColumn } from '../../../../components/table/types';
 import { Button, Container, Typography } from "@mui/material";
 import useLocales from "../../../../hooks/useLocales";
-import { PROFILE_TYPE_NAMES } from "../../../../constants";
 import OptionButton from "../../../../components/table/OptionButton";
 import { adminOptions, teacherOptions } from "../../contants";
 import { useNavigate } from "react-router";
-import { useUser } from '@tyro/api';
+import {UserType, useUser} from '@tyro/api';
 import { useMemo } from 'react';
 import { SubjectGroup } from '../../../../app/api/generated';
 import Page from '../../../../components/Page';
@@ -79,9 +78,9 @@ export default function SubjectGroups() {
   const navigate = useNavigate();
   const { activeProfile } = useUser();
   const { data, isLoading } = useSubjectGroups();
-  const profileTypeName = activeProfile?.profileType?.name;
-  const isAdminUserType = profileTypeName === PROFILE_TYPE_NAMES.ADMIN;
-  const isTabsNeeded = profileTypeName === PROFILE_TYPE_NAMES.ADMIN || profileTypeName === PROFILE_TYPE_NAMES.TEACHER;
+  const profileTypeName = activeProfile?.profileType?.userType;
+  const isAdminUserType = profileTypeName === UserType.Admin;
+  const isTabsNeeded = profileTypeName === UserType.Admin || profileTypeName === UserType.Teacher;
 
   const subjectGroupData: SubjectGroupData[] = data?.map(group => {
     return {

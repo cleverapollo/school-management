@@ -2,7 +2,7 @@
 import { UserProfileName } from '../../../app/api/generated';
 import { NavConfig } from '../../../components/nav-section';
 import SvgIconStyle from '../../../components/SvgIconStyle';
-import { PROFILE_TYPE_NAMES } from '../../../constants';
+import {UserType} from "@tyro/api";
 
 // ----------------------------------------------------------------------
 
@@ -33,10 +33,10 @@ const ICONS = {
 };
 
 const availableForAllUsers: UserProfileName[] = [
-  PROFILE_TYPE_NAMES.ADMIN,
-  PROFILE_TYPE_NAMES.TEACHER,
-  PROFILE_TYPE_NAMES.CONTACT,
-  PROFILE_TYPE_NAMES.STUDENT
+  UserType.Admin,
+    UserType.Teacher,
+    UserType.Contact,
+    UserType.Student
 ];
 
 const navConfig: NavConfig = [
@@ -46,21 +46,21 @@ const navConfig: NavConfig = [
     id: 'general',
     subheader: 'general',
     items: [
-      { title: 'schools', path: '/admin/schools', icon: ICONS.school, availableFor: [ PROFILE_TYPE_NAMES.TYRO ], },
+      { title: 'schools', path: '/admin/schools', icon: ICONS.school, availableFor: [ UserType.Tyro ], },
       { title: 'dashboard', path: '/one', icon: ICONS.dashboard, availableFor: availableForAllUsers, },
       { title: 'calendar', path: '/p', icon: ICONS.calendar, availableFor: availableForAllUsers, },
       {
-        title: 'groups', path: '/groups', icon: ICONS.user, availableFor: [PROFILE_TYPE_NAMES.TEACHER, PROFILE_TYPE_NAMES.ADMIN],
+        title: 'groups', path: '/groups', icon: ICONS.user, availableFor: [UserType.Teacher, UserType.Admin],
         children: [
           { title: 'Enrolment', path: '/groups/enrolment' },
           { title: 'Subject', path: '/groups/subject' },
           { title: 'Custom', path: '/groups/custom' },
         ]
       },
-      { title: 'subjects', path: '/subjects', icon: ICONS.subjects, availableFor: [ PROFILE_TYPE_NAMES.CONTACT, PROFILE_TYPE_NAMES.STUDENT ]},
+      { title: 'subjects', path: '/subjects', icon: ICONS.subjects, availableFor: [ UserType.Contact, UserType.Student ]},
       { title: 'attendance', path: '/b', icon: ICONS.attendance, availableFor: availableForAllUsers, },
       { title: 'assessment', path: '/c', icon: ICONS.assessment, availableFor: availableForAllUsers, },
-      { title: 'wellbeing', path: '/d', icon: ICONS.wellbeing, availableFor: [ PROFILE_TYPE_NAMES.TEACHER, PROFILE_TYPE_NAMES.ADMIN, PROFILE_TYPE_NAMES.CONTACT ]},
+      { title: 'wellbeing', path: '/d', icon: ICONS.wellbeing, availableFor: [ UserType.Teacher, UserType.Admin, UserType.Contact ]},
     ],
   },
 
@@ -71,26 +71,26 @@ const navConfig: NavConfig = [
     subheader: 'management',
     //permissions: ['ui:view:admin'],
     items: [
-      { title: 'student', path: '/twofds', icon: ICONS.student, availableFor: [PROFILE_TYPE_NAMES.CONTACT] },
-      { title: 'subject options', path: '/twofdsfdf', icon: ICONS.subjectOptions, availableFor: [PROFILE_TYPE_NAMES.CONTACT, PROFILE_TYPE_NAMES.STUDENT] },
-      { title: 'people', path: '/twofdfsd', icon: ICONS.people, availableFor: [PROFILE_TYPE_NAMES.TEACHER, PROFILE_TYPE_NAMES.ADMIN] },
-      { title: 'substitution', path: '/twukhuj', icon: ICONS.substitution, availableFor: [PROFILE_TYPE_NAMES.TEACHER, PROFILE_TYPE_NAMES.ADMIN] },
-      { title: 'payments', path: '/twoh', icon: ICONS.payments, availableFor: [PROFILE_TYPE_NAMES.CONTACT, PROFILE_TYPE_NAMES.ADMIN] },
-      { title: 'reporting', path: '/twohgfhfg', icon: ICONS.reporting, availableFor: [PROFILE_TYPE_NAMES.ADMIN],
+      { title: 'student', path: '/twofds', icon: ICONS.student, availableFor: [UserType.Contact] },
+      { title: 'subject options', path: '/twofdsfdf', icon: ICONS.subjectOptions, availableFor: [UserType.Contact, UserType.Student] },
+      { title: 'people', path: '/twofdfsd', icon: ICONS.people, availableFor: [UserType.Teacher, UserType.Admin] },
+      { title: 'substitution', path: '/twukhuj', icon: ICONS.substitution, availableFor: [UserType.Teacher, UserType.Admin] },
+      { title: 'payments', path: '/twoh', icon: ICONS.payments, availableFor: [UserType.Contact, UserType.Admin] },
+      { title: 'reporting', path: '/twohgfhfg', icon: ICONS.reporting, availableFor: [UserType.Admin],
         children: [
           { title: 'user reports', path:'/gfdgfd' },
           { title: 'september returns', path:'/gfdgfdgf' },
           { title: 'tusla', path:'/gfdggfdfd' },
         ] },
-      { title: 'integrations', path: '/twohgfhf', icon: ICONS.integrations, availableFor: [PROFILE_TYPE_NAMES.ADMIN] },
-      { title: 'timetable', path: '/twohgfhfg', icon: ICONS.timetable, availableFor: [PROFILE_TYPE_NAMES.ADMIN],
+      { title: 'integrations', path: '/twohgfhf', icon: ICONS.integrations, availableFor: [UserType.Admin] },
+      { title: 'timetable', path: '/twohgfhfg', icon: ICONS.timetable, availableFor: [UserType.Admin],
         children: [
           { title: 'user reports', path:'/gfdggdfd' },
           { title: 'september returns', path:'/gfdggfdfdgf' },
           { title: 'tusla', path:'/gfdggfdgfdfd' },
         ]
       },
-      { title: 'access control', path: '/twohgfhfg', icon: ICONS.access, availableFor: [PROFILE_TYPE_NAMES.ADMIN],
+      { title: 'access control', path: '/twohgfhfg', icon: ICONS.access, availableFor: [UserType.Admin],
         children: [
           { title: 'user reports', path:'/gfdggdfd' },
           { title: 'september returns', path:'/gfdggfdfdgf' },
