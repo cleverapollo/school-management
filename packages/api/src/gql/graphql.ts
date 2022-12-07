@@ -85,6 +85,7 @@ export type CalendarEvent = {
   exclusions?: Maybe<Array<Maybe<CalendarEventAttendee>>>;
   lessonInfo?: Maybe<CalendarEventLessonRaw>;
   roomIds?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  rooms?: Maybe<Array<Maybe<Room>>>;
   startTime?: Maybe<Scalars['DateTime']>;
   type: CalendarEventType;
 };
@@ -122,6 +123,7 @@ export type CalendarEventRaw = {
   exclusions?: Maybe<Array<Maybe<CalendarEventRawExcludedAttendee>>>;
   lessonInfo?: Maybe<CalendarEventLessonRaw>;
   roomIds?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  rooms?: Maybe<Array<Maybe<Room>>>;
   schedule: Array<Maybe<CalendarEventRawSchedule>>;
   type: CalendarEventType;
 };
@@ -802,6 +804,7 @@ export type Mail = {
   canReply?: Maybe<Scalars['Boolean']>;
   id: Scalars['Long'];
   labels?: Maybe<Array<Maybe<Label>>>;
+  latestMessage?: Maybe<Scalars['DateTime']>;
   readOn?: Maybe<Scalars['DateTime']>;
   recipients?: Maybe<Array<Maybe<Recipient>>>;
   rootMailId: Scalars['Long'];
@@ -816,6 +819,7 @@ export type Mail = {
 export type MailFilter = {
   id?: InputMaybe<Scalars['Long']>;
   labelId?: InputMaybe<Scalars['Long']>;
+  pagination: Pagination;
   partyId?: InputMaybe<Scalars['Int']>;
 };
 
@@ -951,6 +955,12 @@ export type MutationUpsertStudentDayAttendanceArgs = {
 
 export type MyLabelsFilter = {
   personPartyId?: InputMaybe<Scalars['Int']>;
+};
+
+export type Pagination = {
+  lastId?: InputMaybe<Scalars['Long']>;
+  lastMessage?: InputMaybe<Scalars['DateTime']>;
+  limit: Scalars['Int'];
 };
 
 export type Party = {
@@ -1140,6 +1150,7 @@ export type Query = {
   profiles?: Maybe<Array<Maybe<ProfileType>>>;
   recipes?: Maybe<Array<Maybe<Recipe>>>;
   roles?: Maybe<Array<Maybe<SecurityRole>>>;
+  searchRecipient?: Maybe<Array<Maybe<SearchRecipient>>>;
   studentDayAttendance?: Maybe<Array<Maybe<StudentDayAttendance>>>;
   studentSupportFile?: Maybe<Array<Maybe<StudentSupportFile>>>;
   studentSupportPlan?: Maybe<Array<Maybe<StudentSupportPlan>>>;
@@ -1224,6 +1235,11 @@ export type QueryRolesArgs = {
 };
 
 
+export type QuerySearchRecipientArgs = {
+  filter?: InputMaybe<SearchFilter>;
+};
+
+
 export type QueryStudentDayAttendanceArgs = {
   filter?: InputMaybe<StudentDayAttendanceFilter>;
 };
@@ -1276,6 +1292,7 @@ export type RecipeItemInput = {
 export type Recipient = {
   __typename?: 'Recipient';
   id: Scalars['Long'];
+  name?: Maybe<Scalars['String']>;
   recipientPartyId?: Maybe<Scalars['Int']>;
   recipientType?: Maybe<RecipientType>;
 };
@@ -1406,6 +1423,35 @@ export type SaveStudentSupportPlanTargetInput = {
   status: TargetStatus;
   target: Scalars['String'];
 };
+
+export type SearchFilter = {
+  text?: InputMaybe<Scalars['String']>;
+};
+
+export type SearchRecipient = {
+  __typename?: 'SearchRecipient';
+  partyId: Scalars['Long'];
+  recipient: Scalars['String'];
+  recipientType: SearchRecipientType;
+};
+
+export enum SearchRecipientType {
+  ClassGroup = 'CLASS_GROUP',
+  Contact = 'CONTACT',
+  ContactsOfClassGroup = 'CONTACTS_OF_CLASS_GROUP',
+  ContactsOfDynamicGroup = 'CONTACTS_OF_DYNAMIC_GROUP',
+  ContactsOfGeneralGroup = 'CONTACTS_OF_GENERAL_GROUP',
+  ContactsOfSubjectGroup = 'CONTACTS_OF_SUBJECT_GROUP',
+  GeneralGroup = 'GENERAL_GROUP',
+  Staff = 'STAFF',
+  StaffDynamicGroup = 'STAFF_DYNAMIC_GROUP',
+  StaffOfGeneralGroup = 'STAFF_OF_GENERAL_GROUP',
+  Student = 'STUDENT',
+  StudentsOfGeneralGroup = 'STUDENTS_OF_GENERAL_GROUP',
+  StudentDynamicGroup = 'STUDENT_DYNAMIC_GROUP',
+  SubjectGroup = 'SUBJECT_GROUP',
+  TeachersOfLearner = 'TEACHERS_OF_LEARNER'
+}
 
 export type SecurityRole = {
   __typename?: 'SecurityRole';
@@ -1844,15 +1890,23 @@ export type Admin__TenantsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type Admin__TenantsQuery = { __typename?: 'Query', admin__tenants?: Array<{ __typename?: 'Tenant', tenant: number, name: string, imgUrl: string } | null> | null };
 
+export type Calendar_CreateCalendarEventsMutationVariables = Exact<{
+  input: CreateCalendarEventsInput;
+}>;
+
+
+export type Calendar_CreateCalendarEventsMutation = { __typename?: 'Mutation', calendar_createCalendarEvents?: Array<{ __typename?: 'CalendarEventRaw', eventId: number, calendarIds: Array<number | null>, type: CalendarEventType, roomIds?: Array<number | null> | null, schedule: Array<{ __typename?: 'CalendarEventRawSchedule', startTime: any, endTime: any, startDate: any, endDate?: any | null, recurrenceRule?: string | null } | null>, attendees?: Array<{ __typename?: 'CalendarEventRawAttendee', partyId: any, type: CalendarEventAttendeeType, startDate?: any | null, endDate?: any | null, recurrenceRule?: string | null } | null> | null, exclusions?: Array<{ __typename?: 'CalendarEventRawExcludedAttendee', partyId: any, startDate?: any | null, endDate?: any | null, recurrenceRule?: string | null } | null> | null, lessonInfo?: { __typename?: 'CalendarEventLessonRaw', subjectGroupId: any, lessonId?: number | null } | null } | null> | null };
+
 export type Calendar_CalendarEventsQueryVariables = Exact<{
   filter: CalendarEventFilter;
 }>;
 
 
-export type Calendar_CalendarEventsQuery = { __typename?: 'Query', calendar_calendarEvents?: Array<{ __typename?: 'CalendarEvent', calendarIds: Array<number | null>, startTime?: any | null, endTime?: any | null, type: CalendarEventType, lessonInfo?: { __typename?: 'CalendarEventLessonRaw', subjectGroupId: any, lessonId?: number | null } | null, exclusions?: Array<{ __typename?: 'CalendarEventAttendee', partyId: any, type: CalendarEventAttendeeType } | null> | null, attendees?: Array<{ __typename?: 'CalendarEventAttendee', partyId: any, type: CalendarEventAttendeeType, partyInfo?: { __typename: 'GeneralGroup', name: string, partyId: any } | { __typename: 'Person', firstName?: string | null, lastName?: string | null, partyId?: any | null } | { __typename: 'SubjectGroup', name: string, partyId: any, subjects?: Array<{ __typename?: 'Subject', name: string } | null> | null } | null } | null> | null } | null> | null };
+export type Calendar_CalendarEventsQuery = { __typename?: 'Query', calendar_calendarEvents?: Array<{ __typename?: 'CalendarEvent', calendarIds: Array<number | null>, startTime?: any | null, endTime?: any | null, type: CalendarEventType, lessonInfo?: { __typename?: 'CalendarEventLessonRaw', subjectGroupId: any, lessonId?: number | null } | null, exclusions?: Array<{ __typename?: 'CalendarEventAttendee', partyId: any, type: CalendarEventAttendeeType } | null> | null, attendees?: Array<{ __typename?: 'CalendarEventAttendee', partyId: any, type: CalendarEventAttendeeType, partyInfo?: { __typename: 'GeneralGroup', name: string, partyId: any } | { __typename: 'Person', firstName?: string | null, lastName?: string | null, partyId?: any | null } | { __typename: 'SubjectGroup', name: string, partyId: any, subjects?: Array<{ __typename?: 'Subject', name: string } | null> | null } | null } | null> | null, rooms?: Array<{ __typename?: 'Room', roomId: number, name: string } | null> | null } | null> | null };
 
 
 export const MyAuthDetailsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"myAuthDetails"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"myAuthDetails"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"defaultProfileId"}},{"kind":"Field","name":{"kind":"Name","value":"activeProfileId"}},{"kind":"Field","name":{"kind":"Name","value":"profiles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nickName"}},{"kind":"Field","name":{"kind":"Name","value":"tenant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"imgUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"profileType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}},{"kind":"Field","name":{"kind":"Name","value":"permissionIds"}}]}}]}}]}}]} as unknown as DocumentNode<MyAuthDetailsQuery, MyAuthDetailsQueryVariables>;
 export const Admin__Party_PeopleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"admin__party_people"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"admin__party_people"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"tenant"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]} as unknown as DocumentNode<Admin__Party_PeopleQuery, Admin__Party_PeopleQueryVariables>;
 export const Admin__TenantsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"admin__tenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"admin__tenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"imgUrl"}}]}}]}}]} as unknown as DocumentNode<Admin__TenantsQuery, Admin__TenantsQueryVariables>;
-export const Calendar_CalendarEventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"calendar_calendarEvents"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CalendarEventFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendar_calendarEvents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendarIds"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"lessonInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"lessonId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"exclusions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"partyInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"GeneralGroup"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SubjectGroup"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Person"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<Calendar_CalendarEventsQuery, Calendar_CalendarEventsQueryVariables>;
+export const Calendar_CreateCalendarEventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"calendar_createCalendarEvents"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateCalendarEventsInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendar_createCalendarEvents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventId"}},{"kind":"Field","name":{"kind":"Name","value":"calendarIds"}},{"kind":"Field","name":{"kind":"Name","value":"schedule"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"recurrenceRule"}}]}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"recurrenceRule"}}]}},{"kind":"Field","name":{"kind":"Name","value":"exclusions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"recurrenceRule"}}]}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"lessonInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"lessonId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"roomIds"}}]}}]}}]} as unknown as DocumentNode<Calendar_CreateCalendarEventsMutation, Calendar_CreateCalendarEventsMutationVariables>;
+export const Calendar_CalendarEventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"calendar_calendarEvents"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CalendarEventFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendar_calendarEvents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendarIds"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"lessonInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"lessonId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"exclusions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"partyInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"GeneralGroup"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SubjectGroup"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Person"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<Calendar_CalendarEventsQuery, Calendar_CalendarEventsQueryVariables>;

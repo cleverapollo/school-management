@@ -7,16 +7,21 @@ import { EventInput } from '@fullcalendar/common';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Box, Stack, Button, Tooltip, TextField, IconButton, DialogActions } from '@mui/material';
+import { Box, Stack, Button, Tooltip, TextField, IconButton, DialogActions, MenuItem } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { MobileDateTimePicker } from '@mui/x-date-pickers';
 // redux
 import { useDispatch } from '../../../store/store';
-import { createEvent, updateEvent, deleteEvent } from '../../../store/slices/calendar';
+import { updateEvent, deleteEvent } from '../../../store/slices/calendar';
 // components
 import Iconify from '../../../components/Iconify';
 import { ColorSinglePicker } from '../../../components/color-utils';
-import { FormProvider, RHFTextField, RHFSwitch } from '../../../components/hook-form';
+import { FormProvider, RHFTextField, RHFSwitch, RHFSelect } from '../../../components/hook-form';
+import { useCreateCalendarEvents } from '../api/createEvent';
+import { CalendarEventType, CreateCalendarEventsInput, CalendarEventAttendeeType, Maybe } from '@tyro/api/src/gql/graphql';
+import { localDateStringToCalendarDate } from '../../../utils/formatTime';
+import { useEffect, useMemo, useState } from 'react';
+import ParticipantInput from './ParticipantInput';
 
 // ----------------------------------------------------------------------
 
@@ -38,6 +43,9 @@ const getInitialValues = (event: EventInput, range: { start: Date; end: Date } |
     allDay: false,
     start: range ? new Date(range.start) : new Date(),
     end: range ? new Date(range.end) : new Date(),
+    location: '',
+    schedule: 'norepeat',
+    participants: [],
   };
 
   if (event || range) {
@@ -54,8 +62,16 @@ type FormValuesProps = {
   description: string;
   textColor: string;
   allDay: boolean;
+  location: string;
+  schedule: string;
   start: Date | null;
   end: Date | null;
+  participants: Array<{
+    id?: string;
+    name: string;
+    avatarUrl?: string;
+    email?: string;
+  }>;
 };
 
 type Props = {
@@ -67,8 +83,78 @@ type Props = {
   onCancel: VoidFunction;
 };
 
+//ToDo: add this options to the request
+const Options = [
+  {
+    name: 'norepeat',
+    label: "Doesn't repeat",
+  },
+  {
+    name: 'daily',
+    label: 'Daily',
+  },
+  {
+    name: 'weekly',
+    label: 'Weekly on Monday',
+  },
+  {
+    name: 'monthly',
+    label: 'Monthly on the first Monday',
+  },
+  {
+    name: 'annually',
+    label: 'Annually on November 7',
+  },
+  {
+    name: 'everyWeekday',
+    label: 'Every weekday(Monday to Friday)',
+  },
+  {
+    name: 'custom',
+    label: 'Custom...',
+  },
+];
+
+//ToDo: remove this, when search api for location will be implemented
+const LocationOptions = [
+  {
+    name: '1',
+    label: 'Room 1',
+  },
+  {
+    name: '2',
+    label: 'Room 2',
+  },
+  {
+    name: '3',
+    label: 'Room 3',
+  },
+];
+
+export interface Participant {
+  partyId: string;
+  type: CalendarEventAttendeeType;
+  partyInfo?: {
+    firstName?: string;
+    lastName?: string;
+    name?: string;
+  }
+}
+
 export default function CalendarForm({ event, range, onCancel }: Props) {
   const { enqueueSnackbar } = useSnackbar();
+  const [participants, setParticipants] = useState<Participant[]>([]);
+  const [eventData, setEventData] = useState<Maybe<CreateCalendarEventsInput>>(null);
+
+  // const mutation = useCreateCalendarEvents(eventData ?? {} as CreateCalendarEventsInput);
+  // useEffect(() => {
+  //   if(eventData) {
+  //     mutation.mutate();
+  //     onCancel();
+  //     reset();
+  //   }
+  // }, [eventData]);
+
 
   const dispatch = useDispatch();
 
@@ -76,7 +162,7 @@ export default function CalendarForm({ event, range, onCancel }: Props) {
 
   const EventSchema = Yup.object().shape({
     title: Yup.string().max(255).required('Title is required'),
-    description: Yup.string().max(5000),
+    description: Yup.string().max(500),
   });
 
   const methods = useForm({
@@ -92,31 +178,67 @@ export default function CalendarForm({ event, range, onCancel }: Props) {
     formState: { isSubmitting },
   } = methods;
 
+  const mutation = useCreateCalendarEvents(eventData ?? {} as CreateCalendarEventsInput);
+  useEffect(() => {
+    if (eventData) {
+      mutation.mutate();
+      onCancel();
+      reset();
+    }
+  }, [eventData]);
+
   const onSubmit = async (data: FormValuesProps) => {
     try {
-      const newEvent = {
-        title: data.title,
-        description: data.description,
-        textColor: data.textColor,
-        allDay: data.allDay,
-        start: data.start,
-        end: data.end,
-      };
+      //ToDo: after backend is finished, change mocks for real data
+      const dataEvent: CreateCalendarEventsInput = {
+        events: [{
+        startDate: localDateStringToCalendarDate(data.start?.toLocaleDateString() ?? ''),
+        startTime: data.allDay ? '00:00:00' : data.start?.toLocaleTimeString(),
+        endDate: localDateStringToCalendarDate(data.end?.toLocaleDateString() ?? ''),
+        endTime: data.allDay ? '23:59:00' : data.end?.toLocaleTimeString(),
+        rooms: [
+          { roomId: +data.location },
+        ],
+        //ToDo: fix fields below after backend will be ready
+        calendarIds: [1],
+        type: CalendarEventType.Lesson,
+        lessonInfo: {
+          lessonId: 1,
+          subjectGroupId: 2270,
+        },
+        attendees: [
+          {
+            partyId: "610",
+            type: CalendarEventAttendeeType.Organiser,
+          },
+          {
+            "partyId": "2270",
+            "type": CalendarEventAttendeeType.Attendee,
+          },
+          ...participants,
+        ],
+        }
+      ]};
+
+      console.log(dataEvent, event.id);
+
       if (event.id) {
-        dispatch(updateEvent(event.id, newEvent));
+        //ToDo: implement Update Event
+        //dispatch(updateEvent(event.id, newEvent));
         enqueueSnackbar('Update success!');
       } else {
         enqueueSnackbar('Create success!');
-        dispatch(createEvent(newEvent));
+        setEventData(dataEvent);
       }
-      onCancel();
-      reset();
+      // onCancel();
+      // reset();
     } catch (error) {
       console.error(error);
     }
   };
 
   const handleDelete = async () => {
+    //ToDo: implement Delete event
     if (!event.id) return;
     try {
       onCancel();
@@ -136,10 +258,7 @@ export default function CalendarForm({ event, range, onCancel }: Props) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <RHFTextField name="title" label="Title" />
 
-        <RHFTextField name="description" label="Description" multiline rows={4} />
-
-        <RHFSwitch name="allDay" label="All day" />
-
+        <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
         <Controller
           name="start"
           control={control}
@@ -152,6 +271,7 @@ export default function CalendarForm({ event, range, onCancel }: Props) {
             />
           )}
         />
+        <Box sx={{ width: '15%' }}/>
 
         <Controller
           name="end"
@@ -172,6 +292,23 @@ export default function CalendarForm({ event, range, onCancel }: Props) {
             />
           )}
         />
+        </Box>
+
+        <RHFSwitch name="allDay" label="All day" />
+
+        <Box sx={{ width: '40%' }}>
+          <RHFSelect name="schedule" label="Schedule">
+            {Options.map((option) => <MenuItem value={option.name}>{option.label}</MenuItem>)}
+          </RHFSelect>
+        </Box>
+
+        <ParticipantInput participants={participants} setParticipants={setParticipants}/>
+
+        <RHFSelect name="location" label="Location">
+          {LocationOptions.map((option) => <MenuItem value={option.name}>{option.label}</MenuItem>)}
+        </RHFSelect>
+
+        <RHFTextField name="description" label="Description" multiline rows={4} />
 
         <Controller
           name="textColor"

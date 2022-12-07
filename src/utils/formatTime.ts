@@ -23,3 +23,11 @@ export function fToNow(date: Date | string | number) {
     addSuffix: true,
   });
 }
+
+export const localDateStringToCalendarDate = (date: string) => {
+  const arr = date.split('.');
+  if (arr.length !== 3) {
+    return date;
+  }
+  return `${arr[2]}-${arr[1]}-${arr[0]}`;
+}

@@ -5,18 +5,12 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import timelinePlugin from '@fullcalendar/timeline';
 import interactionPlugin, { EventResizeDoneArg } from '@fullcalendar/interaction';
 //
-import { useState, useRef, useEffect, Fragment } from 'react';
+import { useState, useRef, useEffect, Fragment, useMemo } from 'react';
 // @mui
 import { Card, Button, Container, DialogTitle } from '@mui/material';
 // redux
 import { RootState, useDispatch, useTypedSelector } from '../../../store/store';
-import {
-  openModal,
-  closeModal,
-  updateEvent,
-  selectEvent,
-  selectRange,
-} from '../../../store/slices/calendar';
+import { updateEvent } from '../../../store/slices/calendar';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // hooks
@@ -31,14 +25,35 @@ import { DialogAnimate } from '../../../components/animate';
 import HeaderBreadcrumbs from '../../../components/HeaderBreadcrumbs';
 // sections
 import { CalendarForm, CalendarStyle, CalendarToolbar } from '.';
-import { useGetCalendarEvents } from '../api/getEvents';
-import { CalendarEventFilter } from '../../../../packages/api/src/gql/graphql';
+import { useGetCalendarEvents } from '../api/getEvents'; 
+import { CalendarEventFilter, Maybe } from '@tyro/api/src/gql/graphql';
+import CalendarEventView from './CalendarEventView';
+import { useUser } from '@tyro/api';
+import { PROFILE_TYPE_NAMES } from '../../../constants';
 
 // ----------------------------------------------------------------------
 
 
+interface Range{
+  start: Date;
+  end: Date;
+}
+
+//ToDo: Change filter values, when create events will be done
+const filter: CalendarEventFilter = {
+  "startDate": "2019-01-01",
+  "endDate": "2022-12-30",
+  "partyIds": [610],
+};
+
+
 export default function Calendar() {
   const { themeStretch } = useSettings();
+  const { activeProfile } = useUser();
+  const profileTypeName = activeProfile?.profileType?.name;
+
+  //ToDO: implement isEditable with permissions
+  const isEditable = profileTypeName === PROFILE_TYPE_NAMES.ADMIN || profileTypeName === PROFILE_TYPE_NAMES.TEACHER;
 
   const dispatch = useDispatch();
 
@@ -50,23 +65,22 @@ export default function Calendar() {
 
   const [view, setView] = useState<CalendarView>(isDesktop ? 'dayGridMonth' : 'listWeek');
 
-  const { isOpenModal, selectedRange } = useTypedSelector((state) => state.calendar);
+  //const { isOpenModal, selectedRange } = useTypedSelector((state) => state.calendar);
+  const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
+  const [selectedRange, setSelectedRange] = useState<null | Range>(null);
 
-  //ToDo: Change filter values, when create events will be done
-  const filter: CalendarEventFilter = {
-    "startDate": "2019-09-01",
-    "endDate": "2019-09-07",
-    "partyIds": [610],
-  };
   const { data, isLoading } = useGetCalendarEvents(filter);
-  const selectedEventSelector = (state: RootState) => {
-    const { selectedEventId } = state.calendar;
+  console.log(data);
+  const newData = useMemo(() => data?.map((event,index) => ({ ...event, id: index.toString() })), [data]);
+  console.log(newData);
+
+  const [selectedEventId, setSelectedEventId] = useState<Maybe<string>>(null);
+  const selectedEvent = useMemo(() => {
     if (selectedEventId) {
-      return data?.find((_event) => _event.id === selectedEventId);
+      return newData?.find((_event) => _event.id === selectedEventId);
     }
     return null;
-  };
-  const selectedEvent = useTypedSelector(selectedEventSelector);
+  }, [selectedEventId]);
 
   useEffect(() => {
     const calendarEl = calendarRef.current;
@@ -115,16 +129,19 @@ export default function Calendar() {
   };
 
   const handleSelectRange = (arg: DateSelectArg) => {
+    const { start, end } = arg;
     const calendarEl = calendarRef.current;
     if (calendarEl) {
       const calendarApi = calendarEl.getApi();
       calendarApi.unselect();
     }
-    dispatch(selectRange(arg.start, arg.end));
+    setSelectedRange({ start, end });
+    setIsOpenModal(true);
   };
 
   const handleSelectEvent = (arg: EventClickArg) => {
-    dispatch(selectEvent(arg.event.id));
+    setSelectedEventId(arg.event.id);
+    setIsOpenModal(true);
   };
 
   const handleResizeEvent = async ({ event }: EventResizeDoneArg) => {
@@ -156,11 +173,13 @@ export default function Calendar() {
   };
 
   const handleAddEvent = () => {
-    dispatch(openModal());
+    setIsOpenModal(true);
   };
 
   const handleCloseModal = () => {
-    dispatch(closeModal());
+    setIsOpenModal(false);
+    setSelectedRange(null);
+    setSelectedEventId(null);
   };
 
   if (isLoading) {
@@ -174,7 +193,7 @@ export default function Calendar() {
           heading="Calendar"
           links={[{ name: 'Dashboard', href: PATH_DASHBOARD.root }, { name: 'Calendar' }]}
           action={
-            <Button
+            isEditable && <Button
               variant="contained"
               startIcon={<Iconify icon={'eva:plus-fill'} width={20} height={20} />}
               onClick={handleAddEvent}
@@ -196,10 +215,10 @@ export default function Calendar() {
             />
             <FullCalendar
               weekends
-              editable
-              droppable
-              selectable
-              events={data}
+              editable={isEditable}
+              droppable={isEditable}
+              selectable={isEditable}
+              events={newData}
               ref={calendarRef}
               rerenderDelay={10}
               initialDate={date}
@@ -225,14 +244,23 @@ export default function Calendar() {
           </CalendarStyle>
         </Card>
 
-        <DialogAnimate open={isOpenModal} onClose={handleCloseModal}>
-          <DialogTitle>{selectedEvent ? 'Edit Event' : 'Add Event'}</DialogTitle>
+        <DialogAnimate open={isOpenModal} onClose={handleCloseModal} sx={{ maxWidth: '750px !important' }}>
+          { 
+          selectedEvent ? 
+          <>
+            <CalendarEventView event={selectedEvent} onCancel={handleCloseModal} isEditable={isEditable}/>
+          </>
+          : 
+          <>
+            <DialogTitle>{'Add Event'}</DialogTitle>
 
-          <CalendarForm
-            event={selectedEvent || {}}
-            range={selectedRange}
-            onCancel={handleCloseModal}
-          />
+            <CalendarForm
+              event={{}}
+              range={selectedRange}
+              onCancel={handleCloseModal}
+            />
+          </>
+          }
         </DialogAnimate>
       </Container>
     </Page>

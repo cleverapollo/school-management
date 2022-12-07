@@ -1,8 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql } from '@tyro/api';
-import { CalendarEventFilter } from '../../../../packages/api/src/gql/graphql';
-import { COLOR_OPTIONS } from '../components/CalendarForm';
+import { COLOR_OPTIONS, Participant } from '../components/CalendarForm';
 import { EventInput } from '@fullcalendar/common';
+import { CalendarEventFilter, CalendarEventType, CreateCalendarEventsInput, CalendarEventAttendeeType } from '@tyro/api/src/gql/graphql';
+
+export interface ExtendedEventInput extends EventInput {
+  teacherTitle: string;
+  participants: Participant[];
+  organizer: any;
+  room: string;
+}
 
 const events = graphql(/* GraphQL */ `
   query calendar_calendarEvents($filter: CalendarEventFilter!){
@@ -41,6 +48,10 @@ const events = graphql(/* GraphQL */ `
           }
         }
       }
+      rooms{
+        roomId
+        name
+      }
     }
   }
 `);
@@ -52,15 +63,22 @@ export function useGetCalendarEvents(filter: CalendarEventFilter) {
     select: ({ calendar_calendarEvents }) => {
       const newEvents = calendar_calendarEvents?.map((event, index) => {
         //ToDo: refactor this when we get full data from the backend
-        const filteredAttendees = event?.attendees?.filter(attendee => attendee?.type === "ATTENDEE")[0];
+        const filteredAttendees = event?.attendees?.filter(attendee => attendee?.type === CalendarEventAttendeeType.Attendee)[0];
         const subjects = filteredAttendees?.partyInfo?.__typename === 'SubjectGroup' ? filteredAttendees?.partyInfo?.subjects : [];
+        const teacherTitle = filteredAttendees?.partyInfo?.__typename === 'SubjectGroup' ? filteredAttendees?.partyInfo?.name : '';
+        const participants = event?.attendees?.filter(attendee => attendee?.type !== CalendarEventAttendeeType.Attendee);
+        const organizerInfo = event?.attendees?.filter(attendee => attendee?.type === CalendarEventAttendeeType.Organiser)[0];
         return {
           title: subjects?.length ? subjects[0]?.name : '',
+          teacherTitle,
+          participants,
           start: event?.startTime,
           end: event?.endTime,
           //ToDO: get this color from the backend in the future
           backgroundColor: COLOR_OPTIONS[index] || '#00AB55',
-        } as EventInput
+          organizer: organizerInfo?.partyInfo?.__typename === 'Person' ? organizerInfo.partyInfo.firstName + ' ' + organizerInfo.partyInfo.lastName : '',
+          room: event?.rooms?.length && event.rooms[0]?.name,
+        } as ExtendedEventInput
       });
       return newEvents;
     }

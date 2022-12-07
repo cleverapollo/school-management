@@ -6,6 +6,7 @@ const CalendarStyle = styled('div')(({ theme }) => ({
   width: 'calc(100% + 2px)',
   marginLeft: -1,
   marginBottom: -1,
+  'MuiPaper-root': { maxWidth: '752px'},
   '& .fc': {
     '--fc-list-event-dot-width': '8px',
     '--fc-border-color': theme.palette.divider,

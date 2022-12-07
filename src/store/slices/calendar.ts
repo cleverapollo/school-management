@@ -1,3 +1,5 @@
+//ToDo: remove this file after refactoring will be finished
+
 import { createSlice } from '@reduxjs/toolkit';
 import { EventInput } from '@fullcalendar/common';
 // @types
