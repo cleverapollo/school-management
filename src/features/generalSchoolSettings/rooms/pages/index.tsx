@@ -37,10 +37,10 @@ export function Rooms() {
         <Typography variant="h3" component="h1" paragraph>
           Rooms
         </Typography>
-        <Table
+          {rooms && <Table
           data={rooms}
           columns={subjectGroupColumns}
-        />
+        />}
       </Container>
     </Page>
   );
