@@ -8,7 +8,7 @@ import { acquireMsalToken } from './utils/msal-configs';
 const getEndpoint = (isLocal?: boolean) =>
   isLocal
     ? 'http://localhost:80/api/graphql'
-    : 'http://localhost:80/api/graphql';
+    : 'https://tyro-api-uat.azurewebsites.net/api/graphql';
 
 type FetchInstance = (
   url: RequestInfo | URL,
@@ -49,6 +49,12 @@ export const gqlClient = new GraphQLClient(getEndpoint(), {
       headers[EmulateHeaders.PARTY_ID] = partyId;
     }
 
+    const academicNamespaceId = localStorage.getItem(
+      EmulateHeaders.ACADEMIC_NAMESPACE_ID
+    );
+    if (typeof academicNamespaceId === 'string') {
+      headers[EmulateHeaders.ACADEMIC_NAMESPACE_ID] = academicNamespaceId;
+    }
     return headers;
   },
 });

@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql } from '@tyro/api';
+import {gqlClient, graphql, Room} from '@tyro/api';
+import {useLoaderData} from "react-router";
+import {loader} from "mini-css-extract-plugin";
 
 const coreRooms = graphql(/* GraphQL */ `
   query core_rooms{
@@ -10,7 +12,6 @@ const coreRooms = graphql(/* GraphQL */ `
     }
   }
 `);
-
 export function useCoreRooms() {
   return useQuery({
     queryKey: ['coreRooms'],

@@ -7,6 +7,7 @@ import useSettings from "../../../../hooks/useSettings";
 import {useCoreRooms} from "../api/rooms";
 import { useMemo } from 'react';
 import {Room} from "@tyro/api";
+import {useLoaderData} from "react-router";
 
 
 const getSubjectColumns = (translate: (text: any, options?: any) => never): TableColumn<Room>[] => ([
@@ -24,6 +25,7 @@ const getSubjectColumns = (translate: (text: any, options?: any) => never): Tabl
 ]);
 
 export function Rooms() {
+
   const { translate } = useLocales();
   const { themeStretch } = useSettings();
   const { data, isLoading } = useCoreRooms();
