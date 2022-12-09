@@ -7,7 +7,7 @@ if (!process.env.token) {
 const config: CodegenConfig = {
   schema: [
     {
-      'http://localhost:80/api/graphql': {
+        'https://tyro-api-uat.azurewebsites.net/api/graphql': {
         headers: {
           Authorization: `Bearer ${process.env.token}`,
         },

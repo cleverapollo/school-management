@@ -1,32 +1,29 @@
 import {useState} from 'react';
-// @mui
-import {MenuItem, Stack, Typography} from '@mui/material';
-// components
+import {Button, MenuItem, Stack, Typography} from '@mui/material';
 import MenuPopover from '../../../../components/MenuPopover';
-import {useSubjects} from "../../../subjects/api/subjects";
 import {useCoreAcademicNamespace} from "../api/academicNamespaces";
-import {SubjectGroup} from "../../../../app/api/generated";
-import {usePermissions} from "@tyro/api";
+import {AcademicNamespace, usePermissions} from "@tyro/api";
 import {HEADERS} from "../../../../constants";
+import {useTranslation} from "react-i18next";
+import useLocales from "../../../../hooks/useLocales";
 
-interface NamespacesDropdown  {
+interface NamespacesDropdown {
     year: string;
     id: number;
 }
+
 export default function AcademicNamespaceSessionSwitcher() {
     const [open, setOpen] = useState<HTMLElement | null>(null);
     const sessionNamespaceId = Number(localStorage.getItem(HEADERS.ACADEMIC_NAMESPACE_ID));
-    const { data, isLoading } = useCoreAcademicNamespace();
+    const {data, isLoading} = useCoreAcademicNamespace();
     const {hasPermission} = usePermissions()
     const [currentYear, setCurrentYear] = useState(sessionNamespaceId || 3);
+    const {translate} = useLocales()
 
-
-    const years = data?.map(ns => {
-        return {
-            year: ns?.name,
-            id: ns?.academicNamespaceId
-        } as NamespacesDropdown
-    }) || [];
+    const years = data as AcademicNamespace[]
+    if(years == null){
+        return <></>
+    }
     const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
         setOpen(event.currentTarget);
     };
@@ -36,21 +33,25 @@ export default function AcademicNamespaceSessionSwitcher() {
     };
 
     const onClickItem = (value: number) => {
-        setCurrentYear( value)
+        setCurrentYear(value)
         localStorage.setItem(HEADERS.ACADEMIC_NAMESPACE_ID, value.toString())
         handleClose();
     }
 
-    if(!hasPermission("api:users:read:academic_namespace_switch_session")){
+    if (!hasPermission("api:users:read:academic_namespace_switch_session")) {
         return (<></>)
     }
     return (
         <>
-            <div
+            <Button
                 onClick={handleOpen}
+                aria-label={`Change Academic Namespace. Currently set to ${currentYear}`}
             >
-                <Typography  variant="subtitle1" sx={{ flexGrow: 1, color:"black" }}>{years.find(a => a?.id === currentYear)?.year || ''}</Typography>
-            </div>
+                <Typography variant="subtitle1" sx={{
+                    flexGrow: 1,
+                    color: "black"
+                }}>{years.find(a => a.academicNamespaceId === currentYear)?.name || ''}</Typography>
+            </Button>
 
             <MenuPopover
                 open={Boolean(open)}
@@ -66,11 +67,11 @@ export default function AcademicNamespaceSessionSwitcher() {
                 <Stack spacing={0.75}>
                     {years.map((option) => (
                         <MenuItem
-                            key={option.id}
-                            selected={option.id === currentYear}
-                            onClick={() => onClickItem(option.id)}
+                            key={option.academicNamespaceId}
+                            selected={option.academicNamespaceId === currentYear}
+                            onClick={() => onClickItem(option.academicNamespaceId)}
                         >
-                            <p>{option.year}</p>
+                            {option.year}
                         </MenuItem>
                     ))}
                 </Stack>
