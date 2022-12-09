@@ -49,6 +49,12 @@ export const gqlClient = new GraphQLClient(getEndpoint(), {
       headers[EmulateHeaders.PARTY_ID] = partyId;
     }
 
+    const academicNamespaceId = localStorage.getItem(
+      EmulateHeaders.ACADEMIC_NAMESPACE_ID
+    );
+    if (typeof academicNamespaceId === 'string') {
+      headers[EmulateHeaders.ACADEMIC_NAMESPACE_ID] = academicNamespaceId;
+    }
     return headers;
   },
 });

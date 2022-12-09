@@ -5,6 +5,8 @@ node_modules
 /.pnp
 .pnp.js
 
+.idea/*
+
 out
 # testing
 /coverage
@@ -33,3 +35,4 @@ yarn-debug.log*
 yarn-error.log*
 
 .eslintcache
+/.yarn/

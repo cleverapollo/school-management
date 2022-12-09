@@ -85,6 +85,7 @@ export type CalendarEvent = {
   exclusions?: Maybe<Array<Maybe<CalendarEventAttendee>>>;
   lessonInfo?: Maybe<CalendarEventLessonRaw>;
   roomIds?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  rooms?: Maybe<Array<Maybe<Room>>>;
   startTime?: Maybe<Scalars['DateTime']>;
   type: CalendarEventType;
 };
@@ -122,6 +123,7 @@ export type CalendarEventRaw = {
   exclusions?: Maybe<Array<Maybe<CalendarEventRawExcludedAttendee>>>;
   lessonInfo?: Maybe<CalendarEventLessonRaw>;
   roomIds?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  rooms?: Maybe<Array<Maybe<Room>>>;
   schedule: Array<Maybe<CalendarEventRawSchedule>>;
   type: CalendarEventType;
 };
@@ -384,6 +386,7 @@ export type CreateSubjectInput = {
   name: Array<InputMaybe<TranslationInput>>;
   nationalCode: Scalars['String'];
   shortCode: Array<InputMaybe<TranslationInput>>;
+  subjectSource?: InputMaybe<SubjectSource>;
 };
 
 export type CreateTenantInput = {
@@ -769,6 +772,16 @@ export type GroupProgrammeStage = {
   programmeStageId?: Maybe<Scalars['Int']>;
 };
 
+export type ImportSubjectInput = {
+  description?: InputMaybe<Array<InputMaybe<TranslationInput>>>;
+  id?: InputMaybe<Scalars['Int']>;
+  name: Array<InputMaybe<TranslationInput>>;
+  nationalCode: Scalars['String'];
+  region: Scalars['Int'];
+  shortCode: Array<InputMaybe<TranslationInput>>;
+  subjectSource?: InputMaybe<SubjectSource>;
+};
+
 export type Label = {
   __typename?: 'Label';
   colour?: Maybe<Scalars['String']>;
@@ -1131,11 +1144,11 @@ export type ProgrammeStageFilter = {
 export type Query = {
   __typename?: 'Query';
   _service: _Service;
-  academicNamespaced?: Maybe<Array<Maybe<AcademicNamespace>>>;
   admin__party_people?: Maybe<Array<Maybe<Person>>>;
   admin__tenants?: Maybe<Array<Maybe<Tenant>>>;
   attendanceCodes?: Maybe<Array<Maybe<AttendanceCode>>>;
   calendar_calendarEvents?: Maybe<Array<Maybe<CalendarEvent>>>;
+  core_academicNamespaces?: Maybe<Array<Maybe<AcademicNamespace>>>;
   core_rooms?: Maybe<Array<Maybe<Room>>>;
   dayAttendances?: Maybe<Array<Maybe<DayAttendance>>>;
   eventAttendance?: Maybe<Array<Maybe<EventAttendance>>>;
@@ -1158,11 +1171,6 @@ export type Query = {
 };
 
 
-export type QueryAcademicNamespacedArgs = {
-  filter?: InputMaybe<AcademicNamespaceFilter>;
-};
-
-
 export type QueryAdmin__Party_PeopleArgs = {
   tenant: Scalars['Int'];
 };
@@ -1180,6 +1188,11 @@ export type QueryAttendanceCodesArgs = {
 
 export type QueryCalendar_CalendarEventsArgs = {
   filter?: InputMaybe<CalendarEventFilter>;
+};
+
+
+export type QueryCore_AcademicNamespacesArgs = {
+  filter?: InputMaybe<AcademicNamespaceFilter>;
 };
 
 
@@ -1756,6 +1769,7 @@ export type Subject = {
   nationalCode?: Maybe<Scalars['String']>;
   shortCode?: Maybe<Scalars['String']>;
   shortCodeTextId?: Maybe<Scalars['Int']>;
+  subjectSource?: Maybe<SubjectSource>;
 };
 
 export type SubjectFilter = {
@@ -1791,6 +1805,11 @@ export enum SubjectGroupLevelIrePp {
   Higher = 'HIGHER',
   NotApplicable = 'NOT_APPLICABLE',
   Ordinary = 'ORDINARY'
+}
+
+export enum SubjectSource {
+  Custom = 'CUSTOM',
+  National = 'NATIONAL'
 }
 
 export enum TargetStatus {
@@ -1888,6 +1907,16 @@ export type Admin__TenantsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type Admin__TenantsQuery = { __typename?: 'Query', admin__tenants?: Array<{ __typename?: 'Tenant', tenant: number, name: string, imgUrl: string } | null> | null };
 
+export type Core_AcademicNamespacesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type Core_AcademicNamespacesQuery = { __typename?: 'Query', core_academicNamespaces?: Array<{ __typename?: 'AcademicNamespace', academicNamespaceId: number, type: AcademicNamespaceType, name: string, year: number, description?: string | null } | null> | null };
+
+export type Core_RoomsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type Core_RoomsQuery = { __typename?: 'Query', core_rooms?: Array<{ __typename?: 'Room', roomId: number, name: string, capacity?: number | null } | null> | null };
+
 export type GeneralGroupsListQueryVariables = Exact<{
   filter: GeneralGroupFilter;
 }>;
@@ -1925,6 +1954,8 @@ export type SubjectGroupByIdQuery = { __typename?: 'Query', subjectGroups?: Arra
 export const MyAuthDetailsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"myAuthDetails"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"myAuthDetails"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"defaultProfileId"}},{"kind":"Field","name":{"kind":"Name","value":"activeProfileId"}},{"kind":"Field","name":{"kind":"Name","value":"profiles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nickName"}},{"kind":"Field","name":{"kind":"Name","value":"tenant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"imgUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"profileType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"userType"}}]}},{"kind":"Field","name":{"kind":"Name","value":"permissionIds"}}]}}]}}]}}]} as unknown as DocumentNode<MyAuthDetailsQuery, MyAuthDetailsQueryVariables>;
 export const Admin__Party_PeopleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"admin__party_people"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"admin__party_people"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"tenant"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]} as unknown as DocumentNode<Admin__Party_PeopleQuery, Admin__Party_PeopleQueryVariables>;
 export const Admin__TenantsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"admin__tenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"admin__tenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"imgUrl"}}]}}]}}]} as unknown as DocumentNode<Admin__TenantsQuery, Admin__TenantsQueryVariables>;
+export const Core_AcademicNamespacesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_academicNamespaces"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_academicNamespaces"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"academicNamespaceId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode<Core_AcademicNamespacesQuery, Core_AcademicNamespacesQueryVariables>;
+export const Core_RoomsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"capacity"}}]}}]}}]} as unknown as DocumentNode<Core_RoomsQuery, Core_RoomsQueryVariables>;
 export const GeneralGroupsListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"generalGroupsList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GeneralGroupFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"generalGroups"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"studentCount"}},{"kind":"Field","name":{"kind":"Name","value":"generalGroupType"}},{"kind":"Field","name":{"kind":"Name","value":"programmeStages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"programmeStage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"programme"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GeneralGroupsListQuery, GeneralGroupsListQueryVariables>;
 export const EnrolmentGroupsByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"enrolmentGroupsById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GeneralGroupFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"generalGroups"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"students"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}}]}}]} as unknown as DocumentNode<EnrolmentGroupsByIdQuery, EnrolmentGroupsByIdQueryVariables>;
 export const CustomGroupByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"customGroupById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GeneralGroupFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"generalGroups"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"students"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}}]}}]} as unknown as DocumentNode<CustomGroupByIdQuery, CustomGroupByIdQueryVariables>;

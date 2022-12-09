@@ -97,7 +97,11 @@ const navConfig: NavConfig = [
           { title: 'tusla', path:'/gfdggfdgfdfd' },
         ]
       },
-      { title: 'settings', path: '/twohgfgdrhf', icon: ICONS.settings, availableFor: availableForAllUsers, },
+      { title: 'settings', path: '/general-settings', icon: ICONS.settings, availableFor: [UserType.Admin],
+          children: [
+              { title: 'rooms', path:'general-settings/rooms' }
+          ]
+      },
     ],
   },
 ];
