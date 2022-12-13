@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage';
 // slices
 import authReducer from './slices/auth';
 import adminPanelReducer from './slices/adminPanel';
+import mailReducer from './slices/mail';
 
 // ----------------------------------------------------------------------
 
@@ -24,6 +25,7 @@ const productPersistConfig = {
 const rootReducer = combineReducers({
   auth: authReducer,
   adminPanel: adminPanelReducer,
+  mail: mailReducer,
 });
 
 export { rootPersistConfig, rootReducer };

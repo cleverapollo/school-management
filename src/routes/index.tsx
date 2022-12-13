@@ -15,6 +15,7 @@ import { useAuth } from '@tyro/api';
 import AdminRoutes from '../features/admin/routes';
 import Groups from '../features/groups/routes';
 import Subjects from '../features/subjects/routes';
+import Mail from '../features/mail/routes';
 
 
 const Loadable = (Component: ElementType) => (props: any) => {
@@ -86,6 +87,7 @@ export default function Router() {
         AdminRoutes,
         Groups,
         Subjects,
+        Mail,
         {
           path: 'user',
           children: [

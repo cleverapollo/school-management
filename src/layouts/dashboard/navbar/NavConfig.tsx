@@ -19,6 +19,7 @@ const ICONS = {
   assessment: getIcon('assessment'),
   wellbeing: getIcon('wellbeing'),
   subjects: getIcon('subjects'),
+  mail: getIcon('mail'),
 
   student: getIcon('student'),
   subjectOptions: getIcon('subjectOptions'),
@@ -61,6 +62,7 @@ const navConfig: NavConfig = [
       { title: 'attendance', path: '/b', icon: ICONS.attendance, availableFor: availableForAllUsers, },
       { title: 'assessment', path: '/c', icon: ICONS.assessment, availableFor: availableForAllUsers, },
       { title: 'wellbeing', path: '/d', icon: ICONS.wellbeing, availableFor: [ UserType.Teacher, UserType.Admin, UserType.Contact ]},
+      { title: 'mail', path: '/mail', icon: ICONS.mail, availableFor: availableForAllUsers, },
     ],
   },
 
