@@ -9,6 +9,7 @@ const coreAcademicNamespaces = graphql(/* GraphQL */ `
             name
             year
             description
+            isActiveDefaultNamespace
         }
     }
 `);
@@ -23,4 +24,3 @@ export function useCoreAcademicNamespace() {
         }
     });
 }
-

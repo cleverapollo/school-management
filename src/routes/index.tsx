@@ -15,7 +15,7 @@ import { useAuth } from '@tyro/api';
 import AdminRoutes from '../features/admin/routes';
 import Groups from '../features/groups/routes';
 import Subjects from '../features/subjects/routes';
-import Rooms from '../features/generalSchoolSettings/routes';
+import TenantSettings from '../features/generalSchoolSettings/routes';
 
 
 const Loadable = (Component: ElementType) => (props: any) => {
@@ -87,7 +87,7 @@ export default function Router() {
         AdminRoutes,
         Groups,
         Subjects,
-        Rooms,
+          ...TenantSettings,
         {
           path: 'user',
           children: [

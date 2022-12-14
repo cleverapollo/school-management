@@ -2,6 +2,7 @@ import { AccessorFn, DeepKeys } from "@tanstack/react-table";
 import { CellContext } from '@tanstack/react-table';
 import { SyntheticEvent } from "react";
 import { GROUP_TYPES } from "./constants";
+import {ConfirmationDialogProps} from "../dialog/ConfimationDialog";
 
 export interface Config {
 }
@@ -31,10 +32,11 @@ export interface ITableProps<TData> {
 
 export type FilterVariant = 'suggest' | 'date';
 
-export interface Option {
+export interface Option<Type> {
   text: string;
   icon: string;
-  action: (e: any) => void;
+  action: (e: any, row?: Type) => void;
+    confirmationDialog?:  (row: Type) => ConfirmationDialogProps
 }
 
 export type GroupTypes = GROUP_TYPES.ENROLMENT | GROUP_TYPES.SUBJECT | GROUP_TYPES.CUSTOM;

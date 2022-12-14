@@ -1,9 +1,8 @@
 import Table from '../../../../components/table/Table';
-import { TableColumn } from '../../../../components/table/types';
+import {Option, TableColumn} from '../../../../components/table/types';
 import { Button, Container, Typography } from "@mui/material";
 import useLocales from "../../../../hooks/useLocales";
 import OptionButton from "../../../../components/table/OptionButton";
-import { adminOptions } from "../../contants";
 import { useNavigate } from "react-router";
 import {UserType, useUser} from '@tyro/api';
 import { useEnrolmentGroups } from "../../api/general-groups";
@@ -16,6 +15,29 @@ interface EnrolmentGroupData extends EnrolmentGroup {
   firstButton?: string;
   tech?: string;
 }
+
+export const adminOptions: Option<EnrolmentGroupData>[] = [
+    {
+        text: 'notify',
+        icon: 'notify',
+        action: (e) => {e.stopPropagation()},
+    },
+    {
+        text: 'edit',
+        icon: 'edit',
+        action: (e) => {e.stopPropagation()},
+    },
+    {
+        text: 'archive',
+        icon: 'archive',
+        action: (e) => {e.stopPropagation()},
+    },
+    {
+        text: 'delete',
+        icon: 'delete',
+        action: (e) => {e.stopPropagation()},
+    },
+];
 
 const getEnrolmentGroupColumns = (translate: (text: any, options?: any) => never, isAdminUserType: boolean): TableColumn<EnrolmentGroupData>[] => ([
   {
