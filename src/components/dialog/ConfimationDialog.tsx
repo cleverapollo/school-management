@@ -15,7 +15,7 @@ export interface ConfirmationDialogProps {
     cancelText?: string
     open?: boolean
     setData? (d: boolean): void
-    confirmFunction: () => Promise<void>
+    confirmFunction: () => Promise<any>
     cancelFunction?: () => void
 }
 
