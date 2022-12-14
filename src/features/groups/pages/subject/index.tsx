@@ -1,9 +1,8 @@
 import Table from '../../../../components/table/Table';
-import { TableColumn } from '../../../../components/table/types';
+import {Option, TableColumn} from '../../../../components/table/types';
 import { Button, Container, Typography } from "@mui/material";
 import useLocales from "../../../../hooks/useLocales";
 import OptionButton from "../../../../components/table/OptionButton";
-import { adminOptions, teacherOptions } from "../../contants";
 import { useNavigate } from "react-router";
 import {UserType, useUser} from '@tyro/api';
 import { useMemo } from 'react';
@@ -17,6 +16,37 @@ interface SubjectGroupData extends SubjectGroup {
   firstButton?: string;
   tech?: string;
 }
+
+const teacherOptions: Option<SubjectGroupData>[] = [
+    {
+        text: 'notify',
+        icon: 'notify',
+        action: (e) => {e.stopPropagation()},
+    }
+    ]
+
+export const adminOptions: Option<SubjectGroupData>[] = [
+    {
+        text: 'notify',
+        icon: 'notify',
+        action: (e) => {e.stopPropagation()},
+    },
+    {
+        text: 'edit',
+        icon: 'edit',
+        action: (e) => {e.stopPropagation()},
+    },
+    {
+        text: 'archive',
+        icon: 'archive',
+        action: (e) => {e.stopPropagation()},
+    },
+    {
+        text: 'delete',
+        icon: 'delete',
+        action: (e) => {e.stopPropagation()},
+    },
+];
 
 const getSubjectGroupColumns = (translate: (text: any, options?: any) => never, isAdminUserType: boolean, isTabsNeeded: boolean): TableColumn<SubjectGroupData>[] => ([
   {

@@ -99,7 +99,8 @@ const navConfig: NavConfig = [
       },
       { title: 'settings', path: '/general-settings', icon: ICONS.settings, availableFor: [UserType.Admin],
           children: [
-              { title: 'rooms', path:'general-settings/rooms' }
+              { title: 'rooms', path:'general-settings/rooms' },
+              { title: 'namespaces', path: 'general-settings/academic-namespaces', }
           ]
       },
     ],
