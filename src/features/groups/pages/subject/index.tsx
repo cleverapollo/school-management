@@ -4,13 +4,13 @@ import { Button, Container, Typography } from "@mui/material";
 import useLocales from "../../../../hooks/useLocales";
 import OptionButton from "../../../../components/table/OptionButton";
 import { useNavigate } from "react-router";
-import {UserType, useUser} from '@tyro/api';
+import {Person, SubjectGroup, UserType, useUser} from '@tyro/api';
 import { useMemo } from 'react';
-import { SubjectGroup } from '../../../../app/api/generated';
 import Page from '../../../../components/Page';
 import useSettings from '../../../../hooks/useSettings';
 import { useSubjectGroups } from '../../api/subject-groups';
 import ColoredBox from '../../components/ColoredBox';
+import MultiPersonsAvatars from "../../components/MultiPersonsAvatars";
 
 interface SubjectGroupData extends SubjectGroup {
   firstButton?: string;
@@ -51,7 +51,7 @@ export const adminOptions: Option<SubjectGroupData>[] = [
 const getSubjectGroupColumns = (translate: (text: any, options?: any) => never, isAdminUserType: boolean, isTabsNeeded: boolean): TableColumn<SubjectGroupData>[] => ([
   {
     columnDisplayName: 'id',
-    fieldName: 'id',
+    fieldName: 'partyId',
   },
   {
     columnDisplayName: translate('name'),
@@ -61,26 +61,33 @@ const getSubjectGroupColumns = (translate: (text: any, options?: any) => never, 
   },
   {
     columnDisplayName: translate('subject'),
-    fieldName: 'subject',
+    fieldName: 'subjects',
     filter: 'suggest',
-    isMandatory: true,
+    component: ({ row }) => {
+      var subject = row.original.subjects?.find(() => true)
+      return subject?.name
+    }
   },
   {
     columnDisplayName: translate('members'),
-    fieldName: 'members',
+    fieldName: 'studentCount',
     filter: 'suggest',
-    isMandatory: true,
   },
   {
     columnDisplayName: translate('level'),
-    fieldName: 'level',
+    fieldName: 'irePP.level',
     filter: 'suggest',
-    component: ({ row }) => <ColoredBox content={row.original.level ?? undefined} />
+    component: ({ row }) => <ColoredBox content={row.original.irePP?.level ?? undefined} />
   },
   {
     columnDisplayName: isAdminUserType ? translate('teacher') : translate('programme'),
-    fieldName: isAdminUserType ? 'teacher' : 'programme',
+    fieldName: 'staff',
     filter: 'suggest',
+    component: ({ row }) => {
+      var teachers = row.original.staff?.map(a => a?.person) as [Person]
+
+      return <MultiPersonsAvatars person={teachers}/>
+    }
   },
   {
     columnDisplayName: '',
@@ -115,8 +122,6 @@ export default function SubjectGroups() {
   const subjectGroupData: SubjectGroupData[] = data?.map(group => {
     return {
       ...group,
-      teacher: isAdminUserType ? group.teacher : undefined,
-      programme: isAdminUserType ? undefined : group.programme,
       firstButton: translate('view'),
       tech: ''
     } as SubjectGroupData || []

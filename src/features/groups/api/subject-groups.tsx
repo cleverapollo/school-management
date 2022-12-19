@@ -15,6 +15,7 @@ const subjectGroups = graphql(/* GraphQL */ `
         person {
             firstName
             lastName    
+            pictureUrl
         }  
         
       }
@@ -54,16 +55,7 @@ export function useSubjectGroups() {
     queryFn: async () =>
       gqlClient.request(subjectGroups),
     select: ({ subjectGroups }) => {
-      return subjectGroups?.map(group => ({
-        name: group?.name,
-        subject: Array.isArray(group?.subjects) ? group?.subjects[0]?.name : null,
-        members: group?.studentCount?.toString(),
-        level: group?.irePP?.level,
-        programme: Array.isArray(group?.programmeStages) ? group?.programmeStages[0]?.programmeStage?.programme?.name : null,
-        //ToDo: change this mocks to data from backend when it will be implemented
-        teacher: group?.staff?.map(a => a?.person?.firstName || '' + a?.person?.lastName),
-        id: group?.partyId?.toString(),
-      }))
+      return subjectGroups
     }
   });
 }
