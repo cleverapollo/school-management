@@ -16,6 +16,7 @@ export interface ConfirmationDialogProps {
     open?: boolean
     confirmFunction: () => Promise<any>
     cancelFunction?: () => void
+    ariaLabelOverride?: string
 }
 
 export default function ConfirmationDialog(props: ConfirmationDialogProps) {
@@ -44,8 +45,8 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
             <Dialog
                 open={open}
                 onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
+                aria-labelledby={`${props.ariaLabelOverride || 'alert-dialog'} -title`}
+                aria-describedby={`${props.ariaLabelOverride || 'alert-dialog'} -description`}
             >
                 <DialogTitle id="alert-dialog-title">
                     {props.title}
