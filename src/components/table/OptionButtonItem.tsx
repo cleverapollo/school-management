@@ -37,7 +37,7 @@ const OptionButtonItem = <T extends unknown>({option, row, index, closeFunc}: IO
         }
 
         return (
-            <ListItemButton role={undefined} onClick={handleOnClick} dense>
+            <ListItemButton onClick={handleOnClick} dense>
                 <ListItemIconStyle>{getOptionsIcon(option.icon)}</ListItemIconStyle>
                 <ListItemText id={`lable-${index}`} primary={translate(option.text)} />
                 {confirmation.title !== '' && <ConfirmationDialog  open={modalShown}
@@ -50,7 +50,7 @@ const OptionButtonItem = <T extends unknown>({option, row, index, closeFunc}: IO
         );
     } else {
         return (
-            <ListItemButton role={undefined} dense>
+            <ListItemButton  dense>
                 <ListItemIconStyle>{getOptionsIcon(option.icon)}</ListItemIconStyle>
                 <ListItemText id={`lable-${index}`} primary={translate(option.text)} />
             </ListItemButton>
