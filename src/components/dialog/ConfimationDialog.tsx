@@ -41,7 +41,6 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
     }, [props.open])
 
     return (
-        <div>
             <Dialog
                 open={open}
                 onClose={handleClose}
@@ -63,6 +62,5 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
                     </LoadingButton>
                 </DialogActions>
             </Dialog>
-        </div>
     );
 }
