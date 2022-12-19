@@ -14,19 +14,14 @@ export interface ConfirmationDialogProps {
     confirmText?: string
     cancelText?: string
     open?: boolean
-    setData? (d: boolean): void
     confirmFunction: () => Promise<any>
     cancelFunction?: () => void
 }
 
 export default function ConfirmationDialog(props: ConfirmationDialogProps) {
-    useEffect( () => {
-        setOpen(props.open || false)
-    }, [props.open])
+
     const [open, setOpen] = React.useState(props.open || false);
     const [loading, setLoading] = React.useState( false);
-
-
 
     const handleClose = () => {
         props.cancelFunction ? props.cancelFunction() :
@@ -41,6 +36,9 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
         ;
     };
 
+    useEffect( () => {
+        setOpen(props.open || false)
+    }, [props.open])
 
     return (
         <div>
