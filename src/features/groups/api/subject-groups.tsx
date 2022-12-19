@@ -12,8 +12,11 @@ const subjectGroups = graphql(/* GraphQL */ `
       studentCount
       staff{
         partyId
-        firstName
-        lastName
+        person {
+            firstName
+            lastName    
+        }  
+        
       }
       irePP{
         level
@@ -36,8 +39,10 @@ const subjectGroupById = graphql(/* GraphQL */ `
       name
       students {
         partyId
-        firstName
-        lastName
+          person {
+              firstName
+              lastName
+          }
       }
     }
   }
@@ -56,7 +61,7 @@ export function useSubjectGroups() {
         level: group?.irePP?.level,
         programme: Array.isArray(group?.programmeStages) ? group?.programmeStages[0]?.programmeStage?.programme?.name : null,
         //ToDo: change this mocks to data from backend when it will be implemented
-        teacher: 'Rachel',
+        teacher: group?.staff?.map(a => a?.person?.firstName || '' + a?.person?.lastName),
         id: group?.partyId?.toString(),
       }))
     }

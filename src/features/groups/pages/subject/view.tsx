@@ -33,7 +33,7 @@ export const subjectOptions: Option<SubjectExactGroupData>[] = [
 const getSubjectGroupColumns = (translate: (text: any, options?: any) => never): TableColumn<SubjectExactGroupData>[] => [
   {
     columnDisplayName: translate('name'),
-    fieldName: 'firstName',
+    fieldName: 'person',
     filter: 'suggest',
     isMandatory: true,
     isSortNeeded: true,
@@ -41,7 +41,7 @@ const getSubjectGroupColumns = (translate: (text: any, options?: any) => never):
       return (<div style={{ display: 'flex', alignItems: 'center' }}>
         {/* Add Avatar back in when we add value to BE */}
         {/* <Avatar srcSet={columnProps.row.original.avatarUrl} alt={columnProps.row.original.name} style={{ marginRight: '10px' }} /> */}
-        {row.original.firstName} {row.original.lastName}
+        {row.original.person?.firstName} {row.original.person?.lastName}
       </div>)
     },
   },

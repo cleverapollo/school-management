@@ -10,11 +10,14 @@ const subjectGroups = graphql(/* GraphQL */ `
         name
       }
       studentCount
-      staff{
-        partyId
-        firstName
-        lastName
-      }
+        staff{
+            partyId
+            person {
+                firstName
+                lastName
+            }
+
+        }
       irePP{
         level
       }
