@@ -17,7 +17,7 @@ interface SubjectExactGroupData extends GroupMembership {
   tech: string;
 }
 
-export const subjectOptions: Option[] = [
+export const subjectOptions: Option<SubjectExactGroupData>[] = [
   {
     text: 'notify',
     icon: 'notify',

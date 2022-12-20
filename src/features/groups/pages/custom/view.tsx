@@ -16,7 +16,7 @@ interface CustomExactGroupData extends GeneralGroupMember {
   tech: string;
 }
 
-const customOptions: Option[] = [
+const customOptions: Option<CustomExactGroupData>[] = [
   {
     text: 'notify',
     icon: 'notify',

@@ -1,9 +1,8 @@
 import Table from '../../../../components/table/Table';
-import { TableColumn } from '../../../../components/table/types';
+import {Option, TableColumn} from '../../../../components/table/types';
 import { Button, Container, Typography } from "@mui/material";
 import useLocales from "../../../../hooks/useLocales";
 import OptionButton from "../../../../components/table/OptionButton";
-import { adminOptions, teacherOptions } from "../../contants";
 import { useNavigate } from "react-router";
 import {UserType, useUser} from '@tyro/api';
 import { useMemo } from 'react';
@@ -17,6 +16,29 @@ interface CustomGroupData extends CustomGroup {
   firstButton?: string;
   tech?: string;
 }
+
+export const adminOptions: Option<CustomGroupData>[] = [
+    {
+        text: 'notify',
+        icon: 'notify',
+        action: (e) => {e.stopPropagation()},
+    },
+    {
+        text: 'edit',
+        icon: 'edit',
+        action: (e) => {e.stopPropagation()},
+    },
+    {
+        text: 'archive',
+        icon: 'archive',
+        action: (e) => {e.stopPropagation()},
+    },
+    {
+        text: 'delete',
+        icon: 'delete',
+        action: (e) => {e.stopPropagation()},
+    },
+];
 
 const getCustomGroupColumns = (translate: (text: any, options?: any) => never, isAdminUserType: boolean): TableColumn<CustomGroupData>[] => ([
   {
