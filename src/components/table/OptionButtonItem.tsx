@@ -31,8 +31,8 @@ const OptionButtonItem = <T extends unknown>({option, row, index, closeFunc}: IO
     }
 
     if (option.confirmationDialog) {
-         var confirmation = option.confirmationDialog(row as T)
-        var combinedFunc = () => {
+        const confirmation = option.confirmationDialog(row as T)
+        const combinedFunc = () => {
             return confirmation.confirmFunction().then(() => closeFunc)
         }
 
