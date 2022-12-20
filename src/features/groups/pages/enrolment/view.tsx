@@ -16,7 +16,7 @@ interface EnrolmentExactGroupData extends GeneralGroupMember {
   tech: string;
 }
 
-export const enrolmentOptions: Option[] = [
+export const enrolmentOptions: Option<EnrolmentExactGroupData>[] = [
   {
     text: 'notify',
     icon: 'notify',

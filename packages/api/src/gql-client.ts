@@ -5,10 +5,9 @@ import { EmulateHeaders } from './utils/emulate';
 import { getToken } from './utils/jwt';
 import { acquireMsalToken } from './utils/msal-configs';
 
-const getEndpoint = (isLocal?: boolean) =>
-  isLocal
-    ? 'http://localhost:80/api/graphql'
-    : 'https://tyro-api-uat.azurewebsites.net/api/graphql';
+const getEndpoint = () =>
+  process.env.REACT_APP_GRAPHQL_API_URI ||
+  'https://tyro-api-uat.azurewebsites.net/api/graphql';
 
 type FetchInstance = (
   url: RequestInfo | URL,
