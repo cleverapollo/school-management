@@ -1,9 +1,7 @@
-import { useEffect } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 // @mui
-import { Box, List, Drawer, Button, Divider } from '@mui/material';
-// redux
-import { RootState, useTypedSelector } from '../../../store/store';
+import { Box, List, Drawer, Button, Divider, Typography, IconButton, DialogTitle, } from '@mui/material';
 // hooks
 import useResponsive from '../../../hooks/useResponsive';
 // config
@@ -15,7 +13,10 @@ import Scrollbar from '../../../components/Scrollbar';
 //
 import MailSidebarItem from './MailSidebarItem';
 // @types
-import { MailLabel } from '../types';
+import { Mails, MailLabel } from '../types';
+import { AddOutlined } from '@mui/icons-material';
+import { DialogAnimate } from '../../../components/animate';
+import LabelForm from './LabelForm';
 
 // ----------------------------------------------------------------------
 
@@ -24,9 +25,12 @@ type Props = {
   onOpenCompose: VoidFunction;
   onCloseSidebar: VoidFunction;
   labels: MailLabel[];
+  activeLabelName: string;
+  setActiveLabelName: Dispatch<SetStateAction<string>>;
+  setMails: Dispatch<SetStateAction<Mails>>;
 };
 
-export default function MailSidebar({ isOpenSidebar, onOpenCompose, onCloseSidebar, labels }: Props) {
+export default function MailSidebar({ isOpenSidebar, onOpenCompose, onCloseSidebar, labels, activeLabelName, setActiveLabelName, setMails }: Props) {
   const { pathname } = useLocation();
 
 //  const { labels } = useTypedSelector((state: RootState) => state.mail);
@@ -34,6 +38,8 @@ export default function MailSidebar({ isOpenSidebar, onOpenCompose, onCloseSideb
   const isDesktop = useResponsive('up', 'md');
 
   const loading = !labels.length;
+
+  const [isOpenDialog, setIsOpenDialog] = useState(false);
 
   useEffect(() => {
     if (isOpenSidebar) {
@@ -63,10 +69,31 @@ export default function MailSidebar({ isOpenSidebar, onOpenCompose, onCloseSideb
       <Divider />
 
       <List disablePadding>
-        {(loading ? [...Array(8)] : labels).map((label, index) =>
-           label && <MailSidebarItem key={label.id} label={label} />
-        )}
+        {(labels.map((label, index) =>
+           label && label.type !== 'custom' && <MailSidebarItem setActiveLabelName={setActiveLabelName} key={label.id} label={label} isActive={label.name === activeLabelName} setMails={setMails}/>
+        ))}
       </List>
+
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#637381', pl: '25px', mt: '10px'}}>
+        <Typography variant="body1">Labels</Typography>
+        <IconButton onClick={() => setIsOpenDialog(true)}>
+          <AddOutlined />
+        </IconButton>
+      </Box>
+
+      <List disablePadding>
+        {(labels.map((label, index) =>
+          label && label.type === 'custom' && <MailSidebarItem setActiveLabelName={setActiveLabelName} key={label.id} label={label} isActive={label.name === activeLabelName} setMails={setMails} />
+        ))}
+      </List>
+
+      <DialogAnimate open={isOpenDialog} onClose={() => setIsOpenDialog(false)}>
+        <DialogTitle>{ 'New Label'}</DialogTitle>
+
+        <LabelForm
+          onCancel={() => setIsOpenDialog(false)}
+        />
+      </DialogAnimate>
     </Scrollbar>
   );
 

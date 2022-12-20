@@ -12,7 +12,8 @@ import Scrollbar from '../../../components/Scrollbar';
 import MailDetailsToolbar from './MailDetailsToolbar';
 import MailDetailsReplyInput from './MailDetailsReplyInput';
 import MailDetailsAttachments from './MailDetailsAttachments';
-import { Mail } from '@tyro/api/src/gql/graphql';
+import { Mail, MailReadInput } from '@tyro/api/src/gql/graphql';
+import { useReadMail } from '../api/mails';
 
 // ----------------------------------------------------------------------
 
@@ -31,11 +32,12 @@ const MarkdownStyle = styled('div')(({ theme }) => ({
 
 interface IProps{
   mail: Mail | null;
+  activeLabelName: string;
 }
 
 // ----------------------------------------------------------------------
 
-export default function MailDetails({ mail }: IProps) {
+export default function MailDetails({ mail, activeLabelName }: IProps) {
   //const { mailId = '' } = useParams();
 
   const dispatch = useDispatch();
@@ -47,6 +49,19 @@ export default function MailDetails({ mail }: IProps) {
   // useEffect(() => {
   //   dispatch(getMail(mailId));
   // }, [dispatch, mailId]);
+
+  const readFilter: MailReadInput = {
+    mailId: mail?.id,
+    threadId: mail?.threadId,
+  }
+
+  const readMutation = useReadMail(readFilter);
+
+  useEffect(() => {
+    if (mail && !mail?.readOn && activeLabelName !== 'sent') {
+      readMutation.mutate();
+    }
+  }, [mail, activeLabelName]);
 
   if (!mail) {
     return null;

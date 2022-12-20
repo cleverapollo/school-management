@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, SetStateAction, Dispatch } from 'react';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Divider, Box } from '@mui/material';
@@ -15,6 +15,7 @@ import MailToolbar from './MailToolbar';
 //import { Mail, MailState } from '../types';
 import { useMails } from '../api/mails';
 import { MailLabel, Mails } from '../types';
+import { Mail as MailType } from '@tyro/api/src/gql/graphql';
 
 // ----------------------------------------------------------------------
 
@@ -30,20 +31,23 @@ const RootStyle = styled('div')({
 type Props = {
   onOpenSidebar: VoidFunction;
   labels?: MailLabel[];
+  mails: Mails;
+  activeLabelName: string;
+  //setMail: Dispatch<SetStateAction<MailType | null>>;
 };
 
-export default function MailList({ onOpenSidebar, labels }: Props) {
-  const params = useParams();
+export default function MailList({ onOpenSidebar, labels, mails, activeLabelName }: Props) {
+  const { labelId, labelName } = useParams();
   const dispatch = useDispatch();
   //const { mails } = useTypedSelector((state: RootState) => state.mail);
-  const { isLoading, data } = useMails();
-  console.log('data - ', data);
-  const [mails, setMails] = useState<Mails>({ byId: {}, allIds: [] });
+  //const { isLoading, data } = useMails();
+  //console.log('data - ', data);
+  //const [mails, setMails] = useState<Mails>({ byId: {}, allIds: [] });
   console.log('mails - ', mails);
 
-  useEffect(() => {
-    data && setMails({ byId: objFromArray(data), allIds: Object.keys(objFromArray(data)) });
-  }, [data]);
+  // useEffect(() => {
+  //   data && setMails({ byId: objFromArray(data), allIds: Object.keys(objFromArray(data)) });
+  // }, [data]);
 
   const [selectedMails, setSelectedMails] = useState<string[]>([]);
   const [dense, setDense] = useState(false);
@@ -79,6 +83,9 @@ export default function MailList({ onOpenSidebar, labels }: Props) {
     setSelectedMails((prevSelectedMails) => prevSelectedMails.filter((id) => id !== mailId));
   };
 
+  //mails.allIds.forEach((mailId) => console.log(mails.byId[mailId].labels?.filter(label => (activeLabelName && (label?.name.toLowerCase() === activeLabelName.toLowerCase() || (activeLabelName === 'sent' && label?.name === 'Outbox'))))));
+  //console.log(mails.allIds.map((mailId) => !!mails.byId[mailId].labels?.filter(label => (activeLabelName && label?.name.toLowerCase() === activeLabelName.toLowerCase()))).length);
+
   return (
     <RootStyle>
       <MailToolbar
@@ -95,7 +102,8 @@ export default function MailList({ onOpenSidebar, labels }: Props) {
       {!isEmpty ? (
         <Scrollbar>
           <Box sx={{ minWidth: { md: 800 } }}>
-            {mails.allIds.map((mailId) => (
+            {mails.allIds.map((mailId) => (!!mails.byId[mailId].labels?.filter(label => (activeLabelName && (label?.name.toLowerCase() === activeLabelName.toLowerCase() || (activeLabelName === 'sent' && label?.name === 'Outbox')))).length || (mails.byId[mailId].starred && activeLabelName === 'Starred')) && //!!mails.byId[mailId].labels?.filter(label => (labelId && label?.id === labelId) || (labelName && label?.name === labelName)).length &&
+            (
               <MailItem
                 key={mailId}
                 isDense={dense}

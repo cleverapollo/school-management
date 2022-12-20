@@ -14,7 +14,7 @@ import { PATH_DASHBOARD } from '../../../routes/paths';
 // @types
 import { //Mail, 
   MailLabel } from '../types';
-import { Label as LabelType, Mail, MailStarredInput } from '@tyro/api/src/gql/graphql';
+import { Label as LabelType, Mail, MailStarredInput, MailReadInput } from '@tyro/api/src/gql/graphql';
 // components
 import Label from '../../../components/Label';
 import Avatar from '../../../components/Avatar';
@@ -22,8 +22,9 @@ import Iconify from '../../../components/Iconify';
 //
 import MailItemAction from './MailItemAction';
 import { Maybe } from 'graphql/jsutils/Maybe';
-import { useStarMail } from '../api/mails';
-import { useEffect, useState } from 'react';
+import { useStarMail, useReadMail } from '../api/mails';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Mail as MailType } from '@tyro/api/src/gql/graphql';
 
 // ----------------------------------------------------------------------
 
@@ -55,6 +56,9 @@ const linkTo = (params: { systemLabel?: string; customLabel?: string }, mailId: 
   if (customLabel) {
     return `${baseUrl}/label/${customLabel}/${mailId}`;
   }
+  if (mailId) {
+    return `${baseUrl}?mailId=${mailId}`;
+  }
   return baseUrl;
 };
 
@@ -65,6 +69,7 @@ type Props = {
   onDeselect: VoidFunction;
   onSelect: VoidFunction;
   labels?: MailLabel[];
+  //setMail: Dispatch<SetStateAction<MailType | null>>;
 };
 
 export default function MailItem({
@@ -89,24 +94,33 @@ export default function MailItem({
 
   const handleChangeCheckbox = (checked: boolean) => (checked ? onSelect() : onDeselect());
 
-  const filter: MailStarredInput = {
+  const starFilter: MailStarredInput = {
     mailId: mail.id,
     threadId: mail.threadId,
     starred: !mail.starred,
   }
-  const mutation = useStarMail(filter);
+  const starMutation = useStarMail(starFilter);
 
   useEffect(() => {
     if(isStarred !== null){ 
-      mutation.mutate(); 
+      starMutation.mutate();
     }
   }, [isStarred]);
+
+  // const readFilter: MailReadInput = {
+  //   mailId: mail.id,
+  //   threadId: mail.threadId,
+  // }
+
+  // const readMutation = useReadMail(readFilter);
 
   return (
     <RootStyle
       sx={{
         ...(//!mail.isUnread && {
-          !!mail.readOn && {
+          //(
+            !!mail.readOn  //|| !!mail.labels?.filter(label => label?.id === 2).length) 
+            && {
           color: 'text.primary',
           backgroundColor: 'background.paper',
         }),
@@ -144,14 +158,15 @@ export default function MailItem({
         </Box>
       )}
 
-      <Box
+      {/* <Box
         component={RouterLink}
-        to={linkTo(params, mail.id)}
+        to={`/mail?maildId=${mail.id}`}//linkTo(params, mail.id)}
         sx={{
           color: 'inherit',
           textDecoration: 'none',
         }}
-      >
+      > */}
+      <RouterLink to={`/mail/${mail.id}`} style={{ color: 'inherit', textDecoration: 'none', }}>
         <Box
           sx={{
             py: 2,
@@ -264,7 +279,8 @@ export default function MailItem({
             </Typography>
           </Box>
         </Box>
-      </Box>
+      </RouterLink>
+      {/* </Box> */}
 
       <MailItemAction className="showActions" />
     </RootStyle>

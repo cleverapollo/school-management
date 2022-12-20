@@ -1,0 +1,128 @@
+import * as Yup from 'yup';
+import merge from 'lodash/merge';
+import { useSnackbar } from 'notistack';
+// form
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+// @mui
+import { Stack, Button, DialogActions } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+// components
+import { ColorSinglePicker } from '../../../components/color-utils';
+import { FormProvider, RHFTextField } from '../../../components/hook-form';
+
+// ----------------------------------------------------------------------
+
+const COLOR_OPTIONS = [
+  '#00AB55', // theme.palette.primary.main,
+  '#1890FF', // theme.palette.info.main,
+  '#54D62C', // theme.palette.success.main,
+  '#FFC107', // theme.palette.warning.main,
+  '#FF4842', // theme.palette.error.main
+  '#04297A', // theme.palette.info.darker
+  '#7A0C2E', // theme.palette.error.darker
+];
+
+// ----------------------------------------------------------------------
+
+interface FormValuesProps{
+  labelName: string;
+  color: string;
+};
+
+interface LabelInput extends FormValuesProps{
+  id?: number;
+}
+
+type IProps = {
+  labelInfo?: LabelInput;
+  onCancel: VoidFunction;
+};
+
+const getInitialValues = (labelInfo?: LabelInput) => {
+  const defaultLabelInfo: FormValuesProps = {
+    labelName: '',
+    color: COLOR_OPTIONS[0],
+  }
+
+  if(labelInfo) {
+    return merge({}, defaultLabelInfo, labelInfo);
+  }
+
+  return defaultLabelInfo;
+}
+
+export default function LabelForm({ labelInfo, onCancel }: IProps) {
+  const { enqueueSnackbar } = useSnackbar();
+
+
+  const EventSchema = Yup.object().shape({
+    labelName: Yup.string().required('Label name is required'),
+  });
+
+  const methods = useForm({
+    resolver: yupResolver(EventSchema),
+    defaultValues: getInitialValues(labelInfo),
+  });
+
+  const {
+    reset,
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods;
+
+  const onSubmit = async (data: FormValuesProps) => {
+    console.log(data);
+    try {
+      const newLabel = Object.assign({
+        name: data.labelName,
+        colour: data.color
+      }, labelInfo?.id ? { id: labelInfo.id } : {});
+
+      //console.log(newLabel);
+
+      //mutation.mutate(newLabel as LabelInput);
+      if (labelInfo?.id) {
+        enqueueSnackbar('Update success!');
+      } else {
+        enqueueSnackbar('Create success!');
+      }
+      onCancel();
+      reset();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+      <Stack spacing={3} sx={{ p: 3 }}>
+        <RHFTextField name="labelName" label="Label name" />
+
+        <Controller
+          name="color"
+          control={control}
+          render={({ field }) => (
+            <ColorSinglePicker
+              value={field.value}
+              onChange={field.onChange}
+              colors={COLOR_OPTIONS}
+            />
+          )}
+        />
+      </Stack>
+
+      <DialogActions>
+
+        <Button variant="outlined" color="inherit" onClick={onCancel}>
+          Cancel
+        </Button>
+
+        <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+          Add
+        </LoadingButton>
+      </DialogActions>
+    </FormProvider>
+  );
+}

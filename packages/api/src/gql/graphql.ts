@@ -26,6 +26,7 @@ export type AcademicNamespace = {
   __typename?: 'AcademicNamespace';
   academicNamespaceId: Scalars['Int'];
   description?: Maybe<Scalars['String']>;
+  isActiveDefaultNamespace: Scalars['Boolean'];
   name: Scalars['String'];
   type: AcademicNamespaceType;
   year: Scalars['Int'];
@@ -44,6 +45,81 @@ export enum AcademicNamespaceTypeasd {
   WaitingList = 'WAITING_LIST',
   Year = 'YEAR'
 }
+
+export type Assessment = {
+  __typename?: 'Assessment';
+  academicNamespaceId?: Maybe<Scalars['Int']>;
+  assessmentType?: Maybe<AssessmentType>;
+  captureHouseMasterComment?: Maybe<Scalars['Boolean']>;
+  capturePrincipalComment?: Maybe<Scalars['Boolean']>;
+  captureTarget?: Maybe<Scalars['Boolean']>;
+  captureTutorComment?: Maybe<Scalars['Boolean']>;
+  captureYearHeadComment?: Maybe<Scalars['Boolean']>;
+  commentBank?: Maybe<AssessmentCommentBank>;
+  commentType?: Maybe<CommentType>;
+  description?: Maybe<Scalars['String']>;
+  endDate?: Maybe<Scalars['Date']>;
+  gradeSets?: Maybe<Array<Maybe<AssessmentGradeSet>>>;
+  gradeType?: Maybe<GradeType>;
+  id?: Maybe<Scalars['Long']>;
+  name?: Maybe<Scalars['String']>;
+  passFailThreshold?: Maybe<Scalars['Int']>;
+  publish?: Maybe<Scalars['Boolean']>;
+  publishLearner?: Maybe<Scalars['Boolean']>;
+  startDate?: Maybe<Scalars['Date']>;
+  years?: Maybe<Array<Maybe<AssessmentYear>>>;
+};
+
+export type AssessmentComment = {
+  __typename?: 'AssessmentComment';
+  assessmentId?: Maybe<Scalars['Long']>;
+  comment?: Maybe<Scalars['String']>;
+  commentBankComment?: Maybe<Scalars['String']>;
+  commenterUserType?: Maybe<CommenterUserType>;
+  id?: Maybe<Scalars['Long']>;
+  studentPartyId?: Maybe<Scalars['Long']>;
+};
+
+export type AssessmentCommentBank = {
+  __typename?: 'AssessmentCommentBank';
+  commentBankId?: Maybe<Scalars['Long']>;
+  commentBankName?: Maybe<Scalars['String']>;
+};
+
+export type AssessmentFilter = {
+  id?: InputMaybe<Scalars['Long']>;
+};
+
+export type AssessmentGradeSet = {
+  __typename?: 'AssessmentGradeSet';
+  gradeSetId?: Maybe<Scalars['Long']>;
+  gradeSetName?: Maybe<Scalars['String']>;
+};
+
+export type AssessmentResult = {
+  __typename?: 'AssessmentResult';
+  assessmentId?: Maybe<Scalars['Long']>;
+  commentBankCommentId?: Maybe<Scalars['Long']>;
+  grade?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['Long']>;
+  result?: Maybe<Scalars['Int']>;
+  studentPartyId?: Maybe<Scalars['Long']>;
+  targetGrade?: Maybe<Scalars['String']>;
+  targetResult?: Maybe<Scalars['Int']>;
+};
+
+export enum AssessmentType {
+  InClass = 'IN_CLASS',
+  StateCba = 'STATE_CBA',
+  Term = 'TERM'
+}
+
+export type AssessmentYear = {
+  __typename?: 'AssessmentYear';
+  id?: Maybe<Scalars['Long']>;
+  name?: Maybe<Scalars['String']>;
+  year?: Maybe<Scalars['Int']>;
+};
 
 export type AssignLabelInput = {
   labelId: Scalars['Long'];
@@ -175,12 +251,87 @@ export type CalendarFilter = {
   calendarId?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
+export type Comment = {
+  __typename?: 'Comment';
+  active?: Maybe<Scalars['Boolean']>;
+  comment?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['Long']>;
+};
+
+export type CommentBank = {
+  __typename?: 'CommentBank';
+  active?: Maybe<Scalars['Boolean']>;
+  comments?: Maybe<Array<Maybe<Comment>>>;
+  description?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['Long']>;
+  name?: Maybe<Scalars['String']>;
+};
+
+export type CommentBankFilter = {
+  id?: InputMaybe<Scalars['Long']>;
+};
+
+export enum CommentType {
+  Both = 'BOTH',
+  CommentBank = 'COMMENT_BANK',
+  FreeForm = 'FREE_FORM',
+  None = 'NONE'
+}
+
+export enum CommenterUserType {
+  HouseMaster = 'HOUSE_MASTER',
+  Principal = 'PRINCIPAL',
+  Teacher = 'TEACHER',
+  Tutor = 'TUTOR',
+  YearHead = 'YEAR_HEAD'
+}
+
 /**    -------------- Inputs --------------- */
 export type CreateAcademicNamespaceInput = {
   description?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
   type?: InputMaybe<AcademicNamespaceType>;
   year: Scalars['Int'];
+};
+
+export type CreateAssessmentCommentInput = {
+  assessmentId?: InputMaybe<Scalars['Long']>;
+  comment?: InputMaybe<Scalars['String']>;
+  commentBankId?: InputMaybe<Scalars['Long']>;
+  commenterUserType?: InputMaybe<CommenterUserType>;
+  studentPartyId?: InputMaybe<Scalars['Long']>;
+};
+
+export type CreateAssessmentInput = {
+  academicNamespaceId?: InputMaybe<Scalars['Int']>;
+  assessmentType?: InputMaybe<AssessmentType>;
+  captureHouseMasterComment?: InputMaybe<Scalars['Boolean']>;
+  capturePrincipalComment?: InputMaybe<Scalars['Boolean']>;
+  captureTarget?: InputMaybe<Scalars['Boolean']>;
+  captureTutorComment?: InputMaybe<Scalars['Boolean']>;
+  captureYearHeadComment?: InputMaybe<Scalars['Boolean']>;
+  commentBankId?: InputMaybe<Scalars['Int']>;
+  commentType?: InputMaybe<CommentType>;
+  description?: InputMaybe<Scalars['String']>;
+  endDate?: InputMaybe<Scalars['Date']>;
+  gradeSetIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  gradeType?: InputMaybe<GradeType>;
+  name?: InputMaybe<Scalars['String']>;
+  passFailThreshold?: InputMaybe<Scalars['Int']>;
+  publish?: InputMaybe<Scalars['Boolean']>;
+  publishLearner?: InputMaybe<Scalars['Boolean']>;
+  startDate?: InputMaybe<Scalars['Date']>;
+  years?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
+export type CreateAssessmentResultInput = {
+  assessmentId?: InputMaybe<Scalars['Long']>;
+  commentBankCommentId?: InputMaybe<Scalars['Long']>;
+  gradeSetGradeId?: InputMaybe<Scalars['Long']>;
+  result?: InputMaybe<Scalars['Int']>;
+  studentPartyId?: InputMaybe<Scalars['Long']>;
+  targetGradeSetGradeId?: InputMaybe<Scalars['Long']>;
+  targetResult?: InputMaybe<Scalars['Int']>;
 };
 
 export type CreateAttendanceCodeInput = {
@@ -755,6 +906,51 @@ export type GlobalUser = {
   profiles?: Maybe<Array<Maybe<Profile>>>;
 };
 
+export type Grade = {
+  __typename?: 'Grade';
+  active?: Maybe<Scalars['Boolean']>;
+  end?: Maybe<Scalars['Int']>;
+  id?: Maybe<Scalars['Long']>;
+  name?: Maybe<Scalars['String']>;
+  nameTextId?: Maybe<Scalars['Int']>;
+  passFailThreshold?: Maybe<Scalars['Int']>;
+  start?: Maybe<Scalars['Int']>;
+  studyLevels?: Maybe<Array<Maybe<GradeSetStudyLevel>>>;
+};
+
+export type GradeSet = {
+  __typename?: 'GradeSet';
+  active?: Maybe<Scalars['Boolean']>;
+  customGradeSet?: Maybe<Scalars['Boolean']>;
+  description?: Maybe<Scalars['String']>;
+  descriptionTextId?: Maybe<Scalars['Int']>;
+  grades?: Maybe<Array<Maybe<Grade>>>;
+  id?: Maybe<Scalars['Long']>;
+  isCba?: Maybe<Scalars['Boolean']>;
+  name?: Maybe<Scalars['String']>;
+  nameTextId?: Maybe<Scalars['Int']>;
+  passFailThreshold?: Maybe<Scalars['Int']>;
+  years?: Maybe<Array<Maybe<Scalars['Int']>>>;
+};
+
+export type GradeSetFilter = {
+  id?: InputMaybe<Scalars['Long']>;
+};
+
+export enum GradeSetStudyLevel {
+  Common = 'COMMON',
+  Foundation = 'FOUNDATION',
+  Higher = 'HIGHER',
+  NotApplicable = 'NOT_APPLICABLE',
+  Ordinary = 'ORDINARY'
+}
+
+export enum GradeType {
+  Both = 'BOTH',
+  GradeSet = 'GRADE_SET',
+  Percentage = 'PERCENTAGE'
+}
+
 export type GroupMembership = {
   __typename?: 'GroupMembership';
   firstName?: Maybe<Scalars['String']>;
@@ -851,6 +1047,7 @@ export type Mutation = {
   addRecipe?: Maybe<Recipe>;
   assignLabel?: Maybe<Mail>;
   calendar_createCalendarEvents?: Maybe<Array<Maybe<CalendarEventRaw>>>;
+  core_setActiveActiveAcademicNamespace?: Maybe<AcademicNamespace>;
   createAttendanceCode?: Maybe<AttendanceCode>;
   createDayAttendance?: Maybe<DayAttendance>;
   createProfileForGlobalUser?: Maybe<Profile>;
@@ -858,12 +1055,15 @@ export type Mutation = {
   createSubjects?: Maybe<Array<Maybe<Subject>>>;
   label?: Maybe<Label>;
   read?: Maybe<Scalars['String']>;
+  saveAssessment?: Maybe<Assessment>;
+  saveAssessmentResults?: Maybe<Array<Maybe<AssessmentResult>>>;
+  saveCommentBank?: Maybe<CommentBank>;
+  saveGradeSet?: Maybe<GradeSet>;
   saveStudentSupportFile?: Maybe<StudentSupportFile>;
   saveStudentSupportPlan?: Maybe<StudentSupportPlan>;
   saveStudentSupportPlanReview?: Maybe<StudentSupportPlanReview>;
   sendMail?: Maybe<Mail>;
   starred?: Maybe<Scalars['String']>;
-  test?: Maybe<AcademicNamespace>;
   updateAttendanceCode?: Maybe<AttendanceCode>;
   updateDayAttendance?: Maybe<DayAttendance>;
   upsertEventAttendance?: Maybe<Array<Maybe<EventAttendance>>>;
@@ -883,6 +1083,11 @@ export type MutationAssignLabelArgs = {
 
 export type MutationCalendar_CreateCalendarEventsArgs = {
   input?: InputMaybe<CreateCalendarEventsInput>;
+};
+
+
+export type MutationCore_SetActiveActiveAcademicNamespaceArgs = {
+  input?: InputMaybe<SetActiveAcademicNamespace>;
 };
 
 
@@ -918,6 +1123,26 @@ export type MutationLabelArgs = {
 
 export type MutationReadArgs = {
   input?: InputMaybe<MailReadInput>;
+};
+
+
+export type MutationSaveAssessmentArgs = {
+  input?: InputMaybe<CreateAssessmentInput>;
+};
+
+
+export type MutationSaveAssessmentResultsArgs = {
+  input?: InputMaybe<Array<InputMaybe<CreateAssessmentResultInput>>>;
+};
+
+
+export type MutationSaveCommentBankArgs = {
+  input?: InputMaybe<SaveCommentBankInput>;
+};
+
+
+export type MutationSaveGradeSetArgs = {
+  input?: InputMaybe<SaveGradeSetInput>;
 };
 
 
@@ -1147,13 +1372,16 @@ export type Query = {
   _service: _Service;
   admin__party_people?: Maybe<Array<Maybe<Person>>>;
   admin__tenants?: Maybe<Array<Maybe<Tenant>>>;
+  assessment?: Maybe<Array<Maybe<Assessment>>>;
   attendanceCodes?: Maybe<Array<Maybe<AttendanceCode>>>;
   calendar_calendarEvents?: Maybe<Array<Maybe<CalendarEvent>>>;
+  commentBank?: Maybe<Array<Maybe<CommentBank>>>;
   core_academicNamespaces?: Maybe<Array<Maybe<AcademicNamespace>>>;
   core_rooms?: Maybe<Array<Maybe<Room>>>;
   dayAttendances?: Maybe<Array<Maybe<DayAttendance>>>;
   eventAttendance?: Maybe<Array<Maybe<EventAttendance>>>;
   generalGroups?: Maybe<Array<Maybe<GeneralGroup>>>;
+  gradeSet?: Maybe<Array<Maybe<GradeSet>>>;
   label?: Maybe<Array<Maybe<Label>>>;
   mail?: Maybe<Array<Maybe<Mail>>>;
   myAuthDetails?: Maybe<GlobalUser>;
@@ -1170,6 +1398,7 @@ export type Query = {
   subjectGroups?: Maybe<Array<Maybe<SubjectGroup>>>;
   subjects?: Maybe<Array<Maybe<Subject>>>;
   unreadCount?: Maybe<UnreadCount>;
+  years?: Maybe<Array<Maybe<Year>>>;
 };
 
 
@@ -1183,6 +1412,11 @@ export type QueryAdmin__TenantsArgs = {
 };
 
 
+export type QueryAssessmentArgs = {
+  filter?: InputMaybe<AssessmentFilter>;
+};
+
+
 export type QueryAttendanceCodesArgs = {
   filter?: InputMaybe<AttendanceCodeFilter>;
 };
@@ -1190,6 +1424,11 @@ export type QueryAttendanceCodesArgs = {
 
 export type QueryCalendar_CalendarEventsArgs = {
   filter?: InputMaybe<CalendarEventFilter>;
+};
+
+
+export type QueryCommentBankArgs = {
+  filter?: InputMaybe<CommentBankFilter>;
 };
 
 
@@ -1215,6 +1454,11 @@ export type QueryEventAttendanceArgs = {
 
 export type QueryGeneralGroupsArgs = {
   filter?: InputMaybe<GeneralGroupFilter>;
+};
+
+
+export type QueryGradeSetArgs = {
+  filter?: InputMaybe<GradeSetFilter>;
 };
 
 
@@ -1287,6 +1531,11 @@ export type QueryUnreadCountArgs = {
   filter?: InputMaybe<UnreadCountFilter>;
 };
 
+
+export type QueryYearsArgs = {
+  filter?: InputMaybe<YearFilter>;
+};
+
 export type Recipe = {
   __typename?: 'Recipe';
   items: Array<Maybe<RecipeItem>>;
@@ -1330,6 +1579,38 @@ export type Room = {
 
 export type RoomFilter = {
   roomIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
+export type SaveCommentBankInput = {
+  active?: InputMaybe<Scalars['Boolean']>;
+  comments?: InputMaybe<Array<InputMaybe<SaveCommentInput>>>;
+  description?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
+};
+
+export type SaveCommentInput = {
+  active?: InputMaybe<Scalars['Boolean']>;
+  comment?: InputMaybe<Scalars['String']>;
+};
+
+export type SaveGradeInput = {
+  active?: InputMaybe<Scalars['Boolean']>;
+  end?: InputMaybe<Scalars['Int']>;
+  name: Array<InputMaybe<TranslationInput>>;
+  passFailThreshold?: InputMaybe<Scalars['Int']>;
+  start?: InputMaybe<Scalars['Int']>;
+  studyLevels?: InputMaybe<Array<InputMaybe<GradeSetStudyLevel>>>;
+};
+
+export type SaveGradeSetInput = {
+  active?: InputMaybe<Scalars['Boolean']>;
+  customGradeSet?: InputMaybe<Scalars['Boolean']>;
+  description?: InputMaybe<Array<InputMaybe<TranslationInput>>>;
+  grades?: InputMaybe<Array<InputMaybe<SaveGradeInput>>>;
+  isCba?: InputMaybe<Scalars['Boolean']>;
+  name: Array<InputMaybe<TranslationInput>>;
+  passFailThreshold?: InputMaybe<Scalars['Int']>;
+  years?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 export type SaveStudentSupportFileInput = {
@@ -1497,6 +1778,10 @@ export type SendMailInput = {
 export type SendMailRecipientInput = {
   recipientPartyId: Scalars['Int'];
   recipientType: RecipientType;
+};
+
+export type SetActiveAcademicNamespace = {
+  academicNamespaceId: Scalars['Int'];
 };
 
 export type Staff = {
@@ -1901,6 +2186,19 @@ export enum UserType {
   Tyro = 'TYRO'
 }
 
+export type Year = {
+  __typename?: 'Year';
+  id?: Maybe<Scalars['Int']>;
+  name: Scalars['String'];
+  nameTextId?: Maybe<Scalars['Int']>;
+  programmeStageIds?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  year?: Maybe<Scalars['Int']>;
+};
+
+export type YearFilter = {
+  years?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
 export type _Service = {
   __typename?: '_Service';
   sdl: Scalars['String'];
@@ -1984,6 +2282,13 @@ export type StarredMutationVariables = Exact<{
 
 export type StarredMutation = { __typename?: 'Mutation', starred?: string | null };
 
+export type ReadMutationVariables = Exact<{
+  input?: InputMaybe<MailReadInput>;
+}>;
+
+
+export type ReadMutation = { __typename?: 'Mutation', read?: string | null };
+
 
 export const MyAuthDetailsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"myAuthDetails"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"myAuthDetails"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"defaultProfileId"}},{"kind":"Field","name":{"kind":"Name","value":"activeProfileId"}},{"kind":"Field","name":{"kind":"Name","value":"profiles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nickName"}},{"kind":"Field","name":{"kind":"Name","value":"tenant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"imgUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"profileType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"userType"}}]}},{"kind":"Field","name":{"kind":"Name","value":"permissionIds"}}]}}]}}]}}]} as unknown as DocumentNode<MyAuthDetailsQuery, MyAuthDetailsQueryVariables>;
 export const Admin__Party_PeopleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"admin__party_people"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"admin__party_people"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"tenant"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]} as unknown as DocumentNode<Admin__Party_PeopleQuery, Admin__Party_PeopleQueryVariables>;
@@ -1997,3 +2302,4 @@ export const LabelDocument = {"kind":"Document","definitions":[{"kind":"Operatio
 export const MailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"mail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"MailFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mail"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"rootMailId"}},{"kind":"Field","name":{"kind":"Name","value":"threadId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"senderPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"sentOn"}},{"kind":"Field","name":{"kind":"Name","value":"latestMessage"}},{"kind":"Field","name":{"kind":"Name","value":"canReply"}},{"kind":"Field","name":{"kind":"Name","value":"starred"}},{"kind":"Field","name":{"kind":"Name","value":"readOn"}},{"kind":"Field","name":{"kind":"Name","value":"recipients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"recipientPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}},{"kind":"Field","name":{"kind":"Name","value":"threads"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"rootMailId"}},{"kind":"Field","name":{"kind":"Name","value":"threadId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"senderPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"sentOn"}},{"kind":"Field","name":{"kind":"Name","value":"latestMessage"}},{"kind":"Field","name":{"kind":"Name","value":"canReply"}},{"kind":"Field","name":{"kind":"Name","value":"starred"}},{"kind":"Field","name":{"kind":"Name","value":"readOn"}},{"kind":"Field","name":{"kind":"Name","value":"recipients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"recipientPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}}]}}]}}]}}]} as unknown as DocumentNode<MailQuery, MailQueryVariables>;
 export const SendMailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"sendMail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SendMailInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sendMail"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"rootMailId"}},{"kind":"Field","name":{"kind":"Name","value":"threadId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"senderPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"sentOn"}},{"kind":"Field","name":{"kind":"Name","value":"latestMessage"}},{"kind":"Field","name":{"kind":"Name","value":"canReply"}},{"kind":"Field","name":{"kind":"Name","value":"starred"}},{"kind":"Field","name":{"kind":"Name","value":"readOn"}},{"kind":"Field","name":{"kind":"Name","value":"recipients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"recipientPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}},{"kind":"Field","name":{"kind":"Name","value":"threads"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"rootMailId"}},{"kind":"Field","name":{"kind":"Name","value":"threadId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"senderPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"sentOn"}},{"kind":"Field","name":{"kind":"Name","value":"latestMessage"}},{"kind":"Field","name":{"kind":"Name","value":"canReply"}},{"kind":"Field","name":{"kind":"Name","value":"starred"}},{"kind":"Field","name":{"kind":"Name","value":"readOn"}},{"kind":"Field","name":{"kind":"Name","value":"recipients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"recipientPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}}]}}]}}]}}]} as unknown as DocumentNode<SendMailMutation, SendMailMutationVariables>;
 export const StarredDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"starred"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"MailStarredInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"starred"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<StarredMutation, StarredMutationVariables>;
+export const ReadDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"read"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"MailReadInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"read"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<ReadMutation, ReadMutationVariables>;
