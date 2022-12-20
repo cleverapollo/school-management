@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect} from 'react';
+import {useEffect, useId} from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -16,13 +16,15 @@ export interface ConfirmationDialogProps {
     open?: boolean
     confirmFunction: () => Promise<any>
     cancelFunction?: () => void
-    ariaLabelOverride?: string
 }
 
 export default function ConfirmationDialog(props: ConfirmationDialogProps) {
 
     const [open, setOpen] = React.useState(props.open || false);
     const [loading, setLoading] = React.useState( false);
+    const arialId = useId()
+    const ariaTitle = `${arialId}-title`
+    const ariaDescription = `${arialId}-description`
 
     const handleClose = () => {
         props.cancelFunction ? props.cancelFunction() :
@@ -45,14 +47,14 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
             <Dialog
                 open={open}
                 onClose={handleClose}
-                aria-labelledby={`${props.ariaLabelOverride || 'alert-dialog'} -title`}
-                aria-describedby={`${props.ariaLabelOverride || 'alert-dialog'} -description`}
+                aria-labelledby={ariaTitle}
+                aria-describedby={ariaDescription}
             >
-                <DialogTitle id="alert-dialog-title">
+                <DialogTitle id={ariaTitle}>
                     {props.title}
                 </DialogTitle>
                 <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
+                    <DialogContentText id={ariaDescription}>
                         {props.description}
                     </DialogContentText>
                 </DialogContent>
