@@ -47,16 +47,16 @@ const Table = <TData,>(props: ITableProps<TData>) => {
 
 
   const columnHelper = createColumnHelper<TData>();
-  const calculateReactTableColumns = (columnsWithPermission: TableColumn<TData>[]): ColumnDef<TData, unknown>[] => 
+  const calculateReactTableColumns = (columnsWithPermission: TableColumn<TData>[]): ColumnDef<TData, unknown>[] =>
     columnsWithPermission.map(column => {
       const cell = column.component && { cell: column.component };
-      return columnHelper.accessor(column.fieldName, 
-        { 
+      return columnHelper.accessor(column.fieldName,
+        {
           header: column.columnDisplayName,
           filterFn: 'fuzzy',
           sortingFn: fuzzySort,
           enableHiding: !column.isMandatory,
-          enableSorting: !!column.isSortNeeded,
+          enableSorting: !column.isSortNeeded,
           ...cell,
         })
     }
@@ -95,8 +95,8 @@ const Table = <TData,>(props: ITableProps<TData>) => {
   });
 
   return(<>
-    <TableContainer sx={{ 
-      boxShadow: '0px 0px 2px rgba(145, 158, 171, 0.2), 0px 12px 24px -4px rgba(145, 158, 171, 0.12)', 
+    <TableContainer sx={{
+      boxShadow: '0px 0px 2px rgba(145, 158, 171, 0.2), 0px 12px 24px -4px rgba(145, 158, 171, 0.12)',
       borderRadius: '16px' }}
     >
       <TableFilters table={table} columnsWithPermissions={columnsWithPermission} globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
@@ -108,6 +108,6 @@ const Table = <TData,>(props: ITableProps<TData>) => {
       </MuiTable>
     </TableContainer>
   </>);
-} 
+}
 
 export default Table;

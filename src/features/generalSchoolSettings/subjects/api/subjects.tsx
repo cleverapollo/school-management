@@ -3,8 +3,8 @@ import {gqlClient, graphql, Room} from '@tyro/api';
 import {useLoaderData} from "react-router";
 import {loader} from "mini-css-extract-plugin";
 
-const catalogue_subjects = graphql(/* GraphQL */ `
-  query catalogue_subjects{
+const catalogueSubjects = graphql(/* GraphQL */ `
+  query catalogueSubjects{
       catalogue_subjects{
         id
         name
@@ -12,6 +12,8 @@ const catalogue_subjects = graphql(/* GraphQL */ `
         shortCode
         nationalCode
         subjectSource
+        colour
+        icon
     }
   }
 `);
@@ -19,9 +21,9 @@ export function useCatalogueSubjects() {
   return useQuery({
     queryKey: ['catalogue_subjects'],
     queryFn: async () =>
-      gqlClient.request(catalogue_subjects),
-    select: ({ core_rooms }) => {
-      return core_rooms
+      gqlClient.request(catalogueSubjects),
+    select: ({ catalogue_subjects }) => {
+      return catalogue_subjects
     }
   });
 }

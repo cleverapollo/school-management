@@ -6,11 +6,10 @@ import Page from "../../../../components/Page";
 import useSettings from "../../../../hooks/useSettings";
 import {useCatalogueSubjects} from "../api/subjects";
 import { useMemo } from 'react';
-import {Room} from "@tyro/api";
-import {useLoaderData} from "react-router";
+import {Subject} from "@tyro/api";
 
 
-const getSubjectColumns = (translate: (text: any, options?: any) => never): TableColumn<Room>[] => ([
+const getColumns = (translate: (text: any, options?: any) => never): TableColumn<Subject>[] => ([
   {
     columnDisplayName: translate('Name'),
     fieldName: 'name',
@@ -20,6 +19,16 @@ const getSubjectColumns = (translate: (text: any, options?: any) => never): Tabl
   {
     columnDisplayName: translate('Short Code'),
     fieldName: 'shortCode',
+    filter: 'suggest',
+  },
+  {
+    columnDisplayName: translate('Colour'),
+    fieldName: 'colour',
+    filter: 'suggest',
+  },
+  {
+    columnDisplayName: translate('Icon'),
+    fieldName: 'icon',
     filter: 'suggest',
   },
   {
@@ -34,34 +43,34 @@ const getSubjectColumns = (translate: (text: any, options?: any) => never): Tabl
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('In Use'),
+    columnDisplayName: translate('Subject Type'),
     fieldName: 'subjectSource',
     filter: 'suggest',
   },
 ]);
 
-export function Rooms() {
+export function Subjects() {
 
   const { translate } = useLocales();
   const { themeStretch } = useSettings();
   const { data, isLoading } = useCatalogueSubjects();
 
-  const subjectGroupColumns = useMemo(() => getSubjectColumns(translate), [translate]);
+  const columns = useMemo(() => getColumns(translate), [translate]);
 
-  const rooms : Room[] = data as Room[]
+  const subjects : Subject[] = data as Subject[]
   return (
     <Page title="Subject" isLoading={isLoading}>
       <Container maxWidth={themeStretch ? false : 'xl'}>
         <Typography variant="h3" component="h1" paragraph>
-          Rooms
+          Subjects
         </Typography>
-          {rooms && <Table
-          data={rooms}
-          columns={subjectGroupColumns}
+          {subjects && <Table
+          data={subjects}
+          columns={columns}
         />}
       </Container>
     </Page>
   );
 }
 
-export default Rooms;
+export default Subjects;
