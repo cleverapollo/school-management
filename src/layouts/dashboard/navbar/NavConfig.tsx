@@ -101,7 +101,7 @@ const navConfig: NavConfig = [
           children: [
               { title: 'rooms', path:'general-settings/rooms' },
               { title: 'namespaces', path: 'general-settings/academic-namespaces'},
-            {title: 'subjects', path: 'general-settings/subjects',}
+              {title: 'subjects', path: 'general-settings/subjects',}
 
           ]
       },

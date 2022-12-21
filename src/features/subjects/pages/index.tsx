@@ -3,11 +3,12 @@ import { TableColumn } from '../../../components/table/types';
 import { Button, Container, Typography } from "@mui/material";
 import useLocales from "../../../hooks/useLocales";
 import ColoredBox from "../../groups/components/ColoredBox";
-import { SubjectGroup } from '../../../app/api/generated';
 import Page from "../../../components/Page";
 import useSettings from "../../../hooks/useSettings";
 import { useSubjects } from "../api/subjects";
 import { useMemo } from 'react';
+import {Person, SubjectGroup} from '@tyro/api/src/gql/graphql';
+import MultiPersonsAvatars from "../../groups/components/MultiPersonsAvatars";
 
 interface SubjectsData extends SubjectGroup {
   firstButton?: string;
@@ -17,20 +18,28 @@ interface SubjectsData extends SubjectGroup {
 const getSubjectColumns = (translate: (text: any, options?: any) => never): TableColumn<SubjectsData>[] => ([
   {
     columnDisplayName: translate('subject'),
-    fieldName: 'subject',
+    fieldName: 'subjects',
     filter: 'suggest',
     isMandatory: true,
+    component: ({ row }) => {
+      var subject = row.original.subjects?.find(() => true)
+      return subject?.name
+    }
   },
   {
     columnDisplayName: translate('level'),
-    fieldName: 'level',
+    fieldName: 'irePP.level',
     filter: 'suggest',
-    component: (columnProps) => <ColoredBox content={columnProps.row.original.level ?? undefined} />
+    component: (columnProps) => <ColoredBox content={columnProps.row.original.irePP?.level ?? undefined} />
   },
   {
     columnDisplayName: translate('teacher'),
-    fieldName: 'teacher',
+    fieldName: 'staff',
     filter: 'suggest',
+    component: ({ row }) => {
+      var teachers = row.original.staff?.map(a => a?.person) as [Person]
+      return <MultiPersonsAvatars person={teachers}/>
+    }
   },
   {
     columnDisplayName: '',
