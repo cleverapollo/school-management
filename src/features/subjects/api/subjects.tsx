@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql } from '@tyro/api';
 
 const subjectGroups = graphql(/* GraphQL */ `
-  query subjectGroups{
+  query studentSubjectGroups{
     subjectGroups{
       partyId
       name
@@ -10,11 +10,15 @@ const subjectGroups = graphql(/* GraphQL */ `
         name
       }
       studentCount
-      staff{
-        partyId
-        firstName
-        lastName
-      }
+        staff{
+            partyId
+            person {
+                firstName
+                lastName
+                avatarUrl
+            }
+
+        }
       irePP{
         level
       }
@@ -35,16 +39,7 @@ export function useSubjects() {
     queryFn: async () =>
       gqlClient.request(subjectGroups),
     select: ({ subjectGroups }) => {
-      return subjectGroups?.map(group => ({
-        name: group?.name,
-        subject: Array.isArray(group?.subjects) ? group?.subjects[0]?.name : null,
-        members: group?.studentCount?.toString(),
-        level: group?.irePP?.level,
-        programme: Array.isArray(group?.programmeStages) ? group?.programmeStages[0]?.programmeStage?.programme?.name : null,
-        //ToDo: change this mocks to data from backend when it will be implemented
-        teacher: 'Rachel',
-        id: group?.partyId?.toString(),
-      }))
+      return subjectGroups
     }
   });
 }

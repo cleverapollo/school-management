@@ -606,15 +606,6 @@ export interface EnrolmentGroup {
 
 export type SubjectGroupLevel = SUBJECT_GROUP_LEVEL.HIGHER | SUBJECT_GROUP_LEVEL.ORDINARY | SUBJECT_GROUP_LEVEL.COMMON;
 
-export interface SubjectGroup {
-  name: string;
-  subject: string;
-  members: string;
-  level: SubjectGroupLevelIrePp | null | undefined;
-  teacher?: string;
-  programme?: string;
-  id: string;
-}
 
 export type TypeOfCustomGroup = GeneralGroupType.DynamicGroup | GeneralGroupType.StaticGroup;
 
