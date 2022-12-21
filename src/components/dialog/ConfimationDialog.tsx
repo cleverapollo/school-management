@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect} from 'react';
+import {useEffect, useId} from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -14,19 +14,17 @@ export interface ConfirmationDialogProps {
     confirmText?: string
     cancelText?: string
     open?: boolean
-    setData? (d: boolean): void
     confirmFunction: () => Promise<any>
     cancelFunction?: () => void
 }
 
 export default function ConfirmationDialog(props: ConfirmationDialogProps) {
-    useEffect( () => {
-        setOpen(props.open || false)
-    }, [props.open])
+
     const [open, setOpen] = React.useState(props.open || false);
     const [loading, setLoading] = React.useState( false);
-
-
+    const arialId = useId()
+    const ariaTitle = `${arialId}-title`
+    const ariaDescription = `${arialId}-description`
 
     const handleClose = () => {
         props.cancelFunction ? props.cancelFunction() :
@@ -41,20 +39,22 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
         ;
     };
 
+    useEffect( () => {
+        setOpen(props.open || false)
+    }, [props.open])
 
     return (
-        <div>
             <Dialog
                 open={open}
                 onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
+                aria-labelledby={ariaTitle}
+                aria-describedby={ariaDescription}
             >
-                <DialogTitle id="alert-dialog-title">
+                <DialogTitle id={ariaTitle}>
                     {props.title}
                 </DialogTitle>
                 <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
+                    <DialogContentText id={ariaDescription}>
                         {props.description}
                     </DialogContentText>
                 </DialogContent>
@@ -65,6 +65,5 @@ export default function ConfirmationDialog(props: ConfirmationDialogProps) {
                     </LoadingButton>
                 </DialogActions>
             </Dialog>
-        </div>
     );
 }

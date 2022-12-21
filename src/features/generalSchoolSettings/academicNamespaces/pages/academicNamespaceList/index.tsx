@@ -6,15 +6,21 @@ import Page from "../../../../../components/Page";
 import useSettings from "../../../../../hooks/useSettings";
 import {useCoreAcademicNamespace} from "../../api/academicNamespaces";
 import * as React from 'react';
-import {useEffect, useMemo, useState} from 'react';
-import {AcademicNamespace, Core_SetActiveActiveAcademicNamespaceMutation, SetActiveAcademicNamespace} from "@tyro/api";
+import {useMemo} from 'react';
+import {
+    AcademicNamespace,
+    Core_SetActiveActiveAcademicNamespaceMutation,
+    SetActiveAcademicNamespace
+} from "@tyro/api";
 import OptionButton from "../../../../../components/table/OptionButton";
-import {useCoreSetActiveActiveAcademicNamespace} from "../../api/changeActiveAcademicNamespace";
-import {QueryClient, UseMutationResult, useQueryClient} from "@tanstack/react-query";
+import {
+    CoreSetActiveActiveAcademicNamespaceWrapper,
+    useCoreSetActiveActiveAcademicNamespace
+} from "../../api/changeActiveAcademicNamespace";
+import {UseMutationResult} from "@tanstack/react-query";
 
 interface SetActiveAcademicYearMutationContext  {
-    mutation:  UseMutationResult<Core_SetActiveActiveAcademicNamespaceMutation, unknown, SetActiveAcademicNamespace, unknown>
-    queryClient: QueryClient
+    mutation:  UseMutationResult<Core_SetActiveActiveAcademicNamespaceMutation, unknown, CoreSetActiveActiveAcademicNamespaceWrapper, unknown>
 }
 const actions = (setActiveAcademicYear:  SetActiveAcademicYearMutationContext) =>  {
 
@@ -31,20 +37,14 @@ const actions = (setActiveAcademicYear:  SetActiveAcademicYearMutationContext) =
                 description: 'Doing this will change the year for everyone in the system. This is typically only done at the start on the new Academic Year',
                 confirmText: `Change Academic Namespace to ${row.year}`,
                 confirmFunction: () => {
-                    let value = {
-                        academicNamespaceId: row.academicNamespaceId
-                    } as SetActiveAcademicNamespace
-                    console.log(value)
-                    return setActiveAcademicYear.mutation.mutateAsync(value, {
-                        onSuccess: (a, b) => {
-                            console.log(`Successfully changed year to ${a.core_setActiveActiveAcademicNamespace?.year}`)
-                            setActiveAcademicYear.queryClient.clear()
-                        },
-                        onError: (a, b) => {
-                            console.log(`Failed changing year to ${row.year}`)
-                        }
-                    }
-                )
+                    let value =
+                        {
+                            mutationBody: {
+                                academicNamespaceId: row.academicNamespaceId
+                            } as SetActiveAcademicNamespace,
+                            displayChangeToYear: row.year
+                        } as CoreSetActiveActiveAcademicNamespaceWrapper
+                    return setActiveAcademicYear.mutation.mutateAsync(value)
                 }
             }
 
@@ -108,12 +108,9 @@ export function AcademicNamespaceList() {
     const {translate} = useLocales();
     const {themeStretch} = useSettings();
     const {data, isLoading} = useCoreAcademicNamespace();
-    const [switchActiveAcademicYear, setSwitchActiveAcademicYear] = useState<SetActiveAcademicNamespace | null>(null);
     const mutation = useCoreSetActiveActiveAcademicNamespace()
-    const queryClient = useQueryClient()
 
-    const columns = useMemo(() => getColumns(translate, {mutation, queryClient}), [translate]);
-
+    const columns = useMemo(() => getColumns(translate, {mutation}), [translate, mutation]);
 
     const ns: AcademicNamespace[] = data as AcademicNamespace[]
     if (ns == null) {
