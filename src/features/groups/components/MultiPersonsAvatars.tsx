@@ -27,7 +27,7 @@ export default function MultiPersonsAvatars({person}: Props) {
         >
           <AvatarGroup max={1} spacing={10}>
             {person?.map(p => {
-              return   <Avatar alt={displayName(p)} src={p.pictureUrl || ''}/>
+              return   <Avatar alt={displayName(p)} src={p.avatarUrl || ''}/>
 
             })}
           </AvatarGroup>

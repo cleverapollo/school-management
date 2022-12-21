@@ -15,7 +15,7 @@ const subjectGroups = graphql(/* GraphQL */ `
         person {
             firstName
             lastName    
-            pictureUrl
+            avatarUrl
         }  
         
       }

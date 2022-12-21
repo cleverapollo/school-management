@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -21,8 +21,8 @@ export interface ConfirmationDialogProps {
 
 export default function ConfirmationDialog(props: ConfirmationDialogProps) {
 
-    const [open, setOpen] = React.useState(props.open || false);
-    const [loading, setLoading] = React.useState( false);
+    const [open, setOpen] = useState(props.open || false);
+    const [loading, setLoading] = useState( false);
 
     const handleClose = () => {
         props.cancelFunction ? props.cancelFunction() :
