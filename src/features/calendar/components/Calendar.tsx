@@ -25,7 +25,7 @@ import { DialogAnimate } from '../../../components/animate';
 import HeaderBreadcrumbs from '../../../components/HeaderBreadcrumbs';
 // sections
 import { CalendarForm, CalendarStyle, CalendarToolbar } from '.';
-import { ExtendedEventInput, useCalendarEvents } from '../api/getEvents'; 
+import { useCalendarEvents } from '../api/events'; 
 import { CalendarEventFilter, Maybe } from '@tyro/api/src/gql/graphql';
 import CalendarEventView from './CalendarEventView';
 import { useUser } from '@tyro/api';
@@ -142,6 +142,7 @@ export default function Calendar() {
     setIsOpenModal(true);
   };
 
+  //ToDo: remove redux when update event will be implemented
   const handleResizeEvent = async ({ event }: EventResizeDoneArg) => {
     try {
       dispatch(
@@ -156,6 +157,7 @@ export default function Calendar() {
     }
   };
 
+  //ToDo: remove redux when update event will be implemented
   const handleDropEvent = async ({ event }: EventDropArg) => {
     try {
       dispatch(

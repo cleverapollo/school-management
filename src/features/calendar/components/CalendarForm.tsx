@@ -17,7 +17,7 @@ import { updateEvent, deleteEvent } from '../../../store/slices/calendar';
 import Iconify from '../../../components/Iconify';
 import { ColorSinglePicker } from '../../../components/color-utils';
 import { FormProvider, RHFTextField, RHFSwitch, RHFSelect } from '../../../components/hook-form';
-import { useCreateCalendarEvents } from '../api/createEvent';
+import { useCreateCalendarEvents } from '../api/events';
 import { CalendarEventType, CreateCalendarEventsInput, CalendarEventAttendeeType, Maybe } from '@tyro/api/src/gql/graphql';
 import { localDateStringToCalendarDate } from '../../../utils/formatTime';
 import { useEffect, useMemo, useState } from 'react';

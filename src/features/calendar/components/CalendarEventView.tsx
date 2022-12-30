@@ -1,7 +1,7 @@
 // @mui
 import { Avatar, Button, Paper, IconButton, Typography, Divider } from '@mui/material';
 import { Box } from '@mui/system';
-import { ExtendedEventInput } from '../api/getEvents';
+import { ExtendedEventInput } from '../api/events';
 import Close from '@mui/icons-material/Close';
 import { format } from 'date-fns';
 import { CheckOutlined, EmailOutlined, EventOutlined, GroupOutlined, LocationOnOutlined } from '@mui/icons-material';
