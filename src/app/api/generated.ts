@@ -1,7 +1,8 @@
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
-import { CUSTOM_GROUP_TYPE, PROFILE_TYPE_NAMES, SUBJECT_GROUP_LEVEL } from '../../constants';
+import { CUSTOM_GROUP_TYPE, SUBJECT_GROUP_LEVEL } from '../../constants';
 import { GroupTypes } from '../../components/table/types';
+import {GeneralGroupType, SubjectGroupLevelIrePp, UserType} from '@tyro/api';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -348,11 +349,11 @@ export type ProfileFilter = {
   ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
-export type UserProfileName = PROFILE_TYPE_NAMES.TYRO |
-  PROFILE_TYPE_NAMES.ADMIN |
-  PROFILE_TYPE_NAMES.TEACHER |
-  PROFILE_TYPE_NAMES.CONTACT |
-  PROFILE_TYPE_NAMES.STUDENT;
+export type UserProfileName = UserType.Tyro |
+    UserType.Admin |
+    UserType.Teacher |
+    UserType.Contact |
+    UserType.Student;
 
 export type ProfileType = {
   __typename?: 'ProfileType';
@@ -463,7 +464,7 @@ export type PartyPerson = {
   lastName: string;
   type: string;
   tenant?: number;
-  name?: string; 
+  name?: string;
 }
 
 export type TenantsFilter = {
@@ -500,6 +501,7 @@ export const MyAuthDetailsDocument = gql`
         profileType {
           name
           description
+          userType  
         }
         permissionIds
       }
@@ -536,9 +538,9 @@ export type MyAuthDetailsQueryResult = Apollo.QueryResult<MyAuthDetailsQuery, My
 
 /////////////////////////////////////////////////////////////
 
-export type MyAdminTenantsQuery = { 
+export type MyAdminTenantsQuery = {
   __typename?: 'Query',
-  admin__tenants: Array<{ 
+  admin__tenants: Array<{
     __typename?: 'Tenant';
     imgUrl: Scalars['String'];
     name: Scalars['String'];
@@ -556,9 +558,9 @@ export const MyAdminTenantsDocument = gql`
   }
 `;
 
-export type MyAdminPartyPeopleQuery = { 
+export type MyAdminPartyPeopleQuery = {
   __typename?: 'Query',
-  admin__party_people: Array<{ 
+  admin__party_people: Array<{
     __typename?: 'Party Person';
     partyId: Scalars['Int'];
     firstName: Scalars['String'];
@@ -604,17 +606,8 @@ export interface EnrolmentGroup {
 
 export type SubjectGroupLevel = SUBJECT_GROUP_LEVEL.HIGHER | SUBJECT_GROUP_LEVEL.ORDINARY | SUBJECT_GROUP_LEVEL.COMMON;
 
-export interface SubjectGroup {
-  name: string;
-  subject: string;
-  members: string;
-  level: SubjectGroupLevel;
-  teacher?: string;
-  programme?: string;
-  id: string;
-}
 
-export type TypeOfCustomGroup = CUSTOM_GROUP_TYPE.DYNAMIC | CUSTOM_GROUP_TYPE.STATIC;
+export type TypeOfCustomGroup = GeneralGroupType.DynamicGroup | GeneralGroupType.StaticGroup;
 
 export interface CustomGroup {
   name: string;
@@ -624,9 +617,9 @@ export interface CustomGroup {
   id: string;
 }
 
-export type EnrolmentGroupQuery = { 
+export type EnrolmentGroupQuery = {
   __typename?: 'Query',
-  generalGroups: Array<{ 
+  generalGroups: Array<{
     __typename?: 'GeneralGroups';
     partyId: Scalars['Int'];
     name: string;
@@ -661,9 +654,9 @@ export const EnrolmentGroupDocument = gql`
   }
 `;
 
-export type SubjectGroupQuery = { 
+export type SubjectGroupQuery = {
   __typename?: 'Query',
-  subjectGroups: Array<{ 
+  subjectGroups: Array<{
     __typename?: 'SubjectGroups';
     partyId: Scalars['Int'];
     name: string;
@@ -708,9 +701,9 @@ export const SubjectGroupDocument = gql`
   }
 `;
 
-export type CustomGroupQuery = { 
+export type CustomGroupQuery = {
   __typename?: 'Query',
-  customGroups: Array<{ 
+  customGroups: Array<{
     __typename?: 'CustomGroups';
     partyId: Scalars['Int'];
     name: string;

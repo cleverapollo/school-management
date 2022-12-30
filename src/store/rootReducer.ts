@@ -4,7 +4,6 @@ import storage from 'redux-persist/lib/storage';
 // slices
 import authReducer from './slices/auth';
 import adminPanelReducer from './slices/adminPanel';
-import groupsReducer from './slices/groups';
 import calendarReducer from './slices/calendar';
 
 // ----------------------------------------------------------------------
@@ -26,7 +25,6 @@ const productPersistConfig = {
 const rootReducer = combineReducers({
   auth: authReducer,
   adminPanel: adminPanelReducer,
-  groups: groupsReducer,
   calendar: calendarReducer,
 });
 

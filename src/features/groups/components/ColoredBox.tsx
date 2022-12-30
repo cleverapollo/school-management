@@ -1,11 +1,11 @@
 import { Box } from "@mui/system";
+import { GeneralGroupType, SubjectGroupLevelIrePp } from "@tyro/api";
 import { capitalize } from "lodash";
 import { FC } from "react";
-import { SubjectGroupLevel, TypeOfCustomGroup } from "../../../app/api/generated";
-import { CUSTOM_GROUP_TYPE, SUBJECT_GROUP_LEVEL } from "../../../constants";
+import { TypeOfCustomGroup } from "../../../app/api/generated";
 
 interface IColoredBoxProps {
-  content: TypeOfCustomGroup | SubjectGroupLevel | undefined;
+  content: TypeOfCustomGroup | SubjectGroupLevelIrePp | undefined;
 }
 
 const ColoredBox: FC<IColoredBoxProps> = ({ content }) => {
@@ -13,17 +13,17 @@ const ColoredBox: FC<IColoredBoxProps> = ({ content }) => {
   let color;
 
   switch(content){
-    case SUBJECT_GROUP_LEVEL.HIGHER:
-    case CUSTOM_GROUP_TYPE.DYNAMIC: 
+    case SubjectGroupLevelIrePp.Higher:
+    case GeneralGroupType.DynamicGroup: 
       backgroundColor = '#FFF1F2';
       color = '#BE123C';
       break;
-    case SUBJECT_GROUP_LEVEL.ORDINARY:
-    case CUSTOM_GROUP_TYPE.STATIC:
+    case SubjectGroupLevelIrePp.Ordinary:
+    case GeneralGroupType.StaticGroup:
       backgroundColor = '#ECFEFF';
       color = '#0891B2';
       break;
-    case SUBJECT_GROUP_LEVEL.COMMON:
+    case SubjectGroupLevelIrePp.Common:
       backgroundColor = 'rgba(255, 193, 7, 0.16)';
       color = '#B78103';
       break;

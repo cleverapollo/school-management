@@ -9,11 +9,15 @@ import AuthGuard from '../guards/AuthGuard';
 import LoadingScreen from '../components/LoadingScreen';
 import PageUnauthorized from '../pages/PageUnauthorized';
 import PermissionBasedGuard from '../guards/PermissionBasedGuard';
-import AdminRoutes from '../features/admin/routes';
 import CalendarRoutes from '../features/calendar/routes'
 import { useAuth } from '@tyro/api';
 
 // ----------------------------------------------------------------------
+import AdminRoutes from '../features/admin/routes';
+import Groups from '../features/groups/routes';
+import Subjects from '../features/subjects/routes';
+import TenantSettings from '../features/generalSchoolSettings/routes';
+
 
 const Loadable = (Component: ElementType) => (props: any) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -82,10 +86,10 @@ export default function Router() {
         { element: <Navigate to="/one" replace />, index: true },
         { path: 'one', element: <PageOne /> },
         AdminRoutes,
-        { path: 'groups', element: <GroupsPage /> },
-        { path: 'group/:id', element: <GroupPage /> },
-        { path: 'subjects', element: <SubjectsPage /> },
         CalendarRoutes,
+        Groups,
+        Subjects,
+          ...TenantSettings,
         {
           path: 'user',
           children: [
@@ -93,8 +97,8 @@ export default function Router() {
             { path: 'account', element: <UserAccount /> },
           ],
         },
-        { 
-          path: 'graphiql', 
+        {
+          path: 'graphiql',
           element: (
             <PermissionBasedGuard permissions={['tyro_admin:access']} hasContent>
               <GraphiQLPage />
@@ -124,9 +128,6 @@ const UserAccount = Loadable(lazy(() => import('../features/userAccount/UserAcco
 
 // Dashboard
 const PageOne = Loadable(lazy(() => import('../pages/PageOne')));
-const GroupsPage = Loadable(lazy(() => import('../pages/GroupsPage')));
-const SubjectsPage = Loadable(lazy(() => import('../pages/SubjectsPage')));
-const GroupPage = Loadable(lazy(() => import('../pages/GroupPage')));
 const NotFound = Loadable(lazy(() => import('../pages/Page404')));
 
 // Admin pages

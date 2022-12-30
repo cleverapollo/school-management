@@ -8,22 +8,24 @@ import {
 } from '@mui/material';
 import { FC } from 'react';
 import MoreVert from '@mui/icons-material/MoreVert';
-import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+import PopupState, {bindTrigger, bindPopover, bindMenu} from 'material-ui-popup-state';
 import SvgIconStyle from '../SvgIconStyle';
 import { Option } from './types';
 import { ListItemIconStyle } from '../nav-section/vertical/style';
 import useLocales from '../../hooks/useLocales';
+import OptionButtonItem from "./OptionButtonItem";
 
 
 const getOptionsIcon = (name: string) => (
   <SvgIconStyle src={`/assets/icons/options/${name}.svg`} sx={{ width: 1, height: 1 }} />
 );
 
-interface IOptionButtonProps {
-  options: Option[];
+interface IOptionButtonProps<Type> {
+  options: Option<Type>[];
+  row?: Type
 }
 
-const OptionButton: FC<IOptionButtonProps> = ({ options }) => {
+const OptionButton = <T extends unknown>({options, row}: IOptionButtonProps<T>) => {
   const { translate } = useLocales();
 
   //ToDO: refactor option button for avoiding propagation with rowSelection
@@ -34,7 +36,7 @@ const OptionButton: FC<IOptionButtonProps> = ({ options }) => {
       <IconButton onClick={(e) => {e.stopPropagation()}}>
         <MoreVert {...bindTrigger(popupState)}/>
       </IconButton>
-      <Popover 
+      <Popover
         {...bindPopover(popupState)}
         anchorOrigin={{
           vertical: 'bottom',
@@ -48,11 +50,8 @@ const OptionButton: FC<IOptionButtonProps> = ({ options }) => {
         <List>
         {options.map((option, index) => {
           return (
-            <ListItem key={`list-${index}`} disablePadding sx={{ padding: '8px' }}>
-              <ListItemButton role={undefined} onClick={(e) => option.action(e)} dense>
-                <ListItemIconStyle>{getOptionsIcon(option.icon)}</ListItemIconStyle>
-                <ListItemText id={`lable-${index}`} primary={translate(option.text)} />
-              </ListItemButton>
+            <ListItem key={`list-${index}`} disablePadding sx={{ padding: '8px' }}  {...bindMenu(popupState)}>
+                <OptionButtonItem option={option} index={index} row={row} closeFunc={popupState.close}/>
             </ListItem>
           )
           })}

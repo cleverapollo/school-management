@@ -2,13 +2,11 @@ import { AccessorFn, DeepKeys } from "@tanstack/react-table";
 import { CellContext } from '@tanstack/react-table';
 import { SyntheticEvent } from "react";
 import { GROUP_TYPES } from "./constants";
+import {ConfirmationDialogProps} from "../dialog/ConfimationDialog";
 
 export interface Config {
 }
 
-export interface TitleOverride {
-  [key: string]: string; //ToDo: change key to profileType type
-}
 
 export interface TableColumn<TData> {
   columnDisplayName: string;
@@ -24,9 +22,6 @@ export interface TableColumn<TData> {
 
 export interface ITableProps<TData> {
   data: TData[];
-  title: string;
-  titleOverride?: TitleOverride[];
-  story?: string[];
   columns: TableColumn<TData>[];
   tabs?: string[];
   onChangeTab?: (event: SyntheticEvent, newValue: string) => void;
@@ -37,10 +32,11 @@ export interface ITableProps<TData> {
 
 export type FilterVariant = 'suggest' | 'date';
 
-export interface Option {
+export interface Option<Type> {
   text: string;
   icon: string;
-  action: (e: any) => void;
+  action: (e: any, row?: Type) => void;
+    confirmationDialog?:  (row: Type) => ConfirmationDialogProps
 }
 
 export type GroupTypes = GROUP_TYPES.ENROLMENT | GROUP_TYPES.SUBJECT | GROUP_TYPES.CUSTOM;
