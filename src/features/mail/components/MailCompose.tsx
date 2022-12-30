@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 // @mui
 import { styled } from '@mui/material/styles';
 import {
@@ -61,6 +61,7 @@ export default function MailCompose({ isOpenCompose, onCloseCompose }: Props) {
   const filter = useMemo(() => ({
     body: message,
     canReply: true,
+    //ToDo: refactor recipients with user names
     recipients: recipientsString.split(',').map(recipient => ({
       recipientPartyId: +recipient,
       recipientType: RecipientType.To
@@ -69,15 +70,6 @@ export default function MailCompose({ isOpenCompose, onCloseCompose }: Props) {
   }), [message, recipientsString, subject]);
 
   const mutation = useSendMail(filter);
-  // const mutation = useSendMail({
-  //   body: message,
-  //   canReply: true,
-  //   recipients: recipientsString.split(',').map(recipient => ({
-  //     recipientPartyId: +recipient,
-  //     recipientType: RecipientType.To
-  //   })),
-  //   subject: subject,
-  // });
 
   const handleChangeMessage = (value: string) => {
     setMessage(value);

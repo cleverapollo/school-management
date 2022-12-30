@@ -1,5 +1,4 @@
 import * as Yup from 'yup';
-import merge from 'lodash/merge';
 import { useSnackbar } from 'notistack';
 // form
 import { useForm, Controller } from 'react-hook-form';
@@ -10,6 +9,9 @@ import { LoadingButton } from '@mui/lab';
 // components
 import { ColorSinglePicker } from '../../../components/color-utils';
 import { FormProvider, RHFTextField } from '../../../components/hook-form';
+import { LabelInput, Maybe } from '@tyro/api';
+import { useEffect, useState } from 'react';
+import { useCreateLabel } from '../api/labels';
 
 // ----------------------------------------------------------------------
 
@@ -30,23 +32,15 @@ interface FormValuesProps{
   color: string;
 };
 
-interface LabelInput extends FormValuesProps{
-  id?: number;
-}
-
 type IProps = {
-  labelInfo?: LabelInput;
+  labelInfo: Maybe<LabelInput>;
   onCancel: VoidFunction;
 };
 
-const getInitialValues = (labelInfo?: LabelInput) => {
+const getInitialValues = (labelInfo: Maybe<LabelInput>) => {
   const defaultLabelInfo: FormValuesProps = {
-    labelName: '',
-    color: COLOR_OPTIONS[0],
-  }
-
-  if(labelInfo) {
-    return merge({}, defaultLabelInfo, labelInfo);
+    labelName: labelInfo?.name ?? '',
+    color: labelInfo?.colour || COLOR_OPTIONS[0],
   }
 
   return defaultLabelInfo;
@@ -54,6 +48,8 @@ const getInitialValues = (labelInfo?: LabelInput) => {
 
 export default function LabelForm({ labelInfo, onCancel }: IProps) {
   const { enqueueSnackbar } = useSnackbar();
+
+  const [labelData, setLabeData] = useState<Maybe<LabelInput>>(null);
 
 
   const EventSchema = Yup.object().shape({
@@ -72,24 +68,31 @@ export default function LabelForm({ labelInfo, onCancel }: IProps) {
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmit = async (data: FormValuesProps) => {
-    console.log(data);
-    try {
-      const newLabel = Object.assign({
-        name: data.labelName,
-        colour: data.color
-      }, labelInfo?.id ? { id: labelInfo.id } : {});
-
-      //console.log(newLabel);
-
-      //mutation.mutate(newLabel as LabelInput);
-      if (labelInfo?.id) {
+  const mutation = useCreateLabel(labelData ?? {} as LabelInput);
+  useEffect(() => {
+    if (labelData) {
+      mutation.mutate();
+      if (labelData.id) {
         enqueueSnackbar('Update success!');
       } else {
         enqueueSnackbar('Create success!');
       }
       onCancel();
       reset();
+    }
+  }, [labelData]);
+
+  const onSubmit = async (data: FormValuesProps) => {
+    try {
+      const newLabel: LabelInput = Object.assign(
+        {
+          name: data.labelName,
+          colour: data.color
+        }, 
+        labelInfo?.id ? { id: labelInfo.id } : {}
+      );
+
+      setLabeData(newLabel);
     } catch (error) {
       console.error(error);
     }
@@ -120,7 +123,7 @@ export default function LabelForm({ labelInfo, onCancel }: IProps) {
         </Button>
 
         <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-          Add
+          {labelInfo?.id ? 'Save' : 'Add'}
         </LoadingButton>
       </DialogActions>
     </FormProvider>

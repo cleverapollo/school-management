@@ -45,7 +45,7 @@ const getEnrolmentGroupColumns = (translate: (text: any, options?: any) => never
       return (<div style={{ display: 'flex', alignItems: 'center' }}>
         {/* Add Avatar back in when we add value to BE */}
         {/* <Avatar srcSet={columnProps.row.original.avatarUrl} alt={columnProps.row.original.name} style={{ marginRight: '10px' }} /> */}
-        {row.original.firstName} {row.original.lastName}
+        {/* {row.original.firstName} {row.original.lastName} */}
       </div>)
     },
   },

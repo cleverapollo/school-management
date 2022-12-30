@@ -1,5 +1,5 @@
 // @mui
-import { Box, Tooltip, ListItemButtonProps } from '@mui/material';
+import { Box, Tooltip, ListItemButtonProps, Typography } from '@mui/material';
 // hooks
 import useLocales from '../../../hooks/useLocales';
 // guards
@@ -9,6 +9,8 @@ import Iconify from '../../Iconify';
 //
 import { NavItemProps } from '../type';
 import { ListItemStyle, ListItemTextStyle, ListItemIconStyle } from './style';
+import { UnreadCountFilter, useUser } from '@tyro/api';
+import { useUnreadCount } from '../../../features/mail/api/labels';
 
 // ----------------------------------------------------------------------
 
@@ -16,6 +18,19 @@ type Props = NavItemProps & ListItemButtonProps;
 
 export default function NavItem({ item, depth, active, open, isCollapse, ...other }: Props) {
   const { translate } = useLocales();
+  const { user } = useUser();
+  const filter: UnreadCountFilter = {
+    personPartyId: user?.profiles && user?.profiles[0].partyId,
+  }
+
+  const { data: unreadCountData } = useUnreadCount(filter);
+
+  let totalUnreadCount = 0;
+  unreadCountData?.forEach(item => {
+    if(item?.count && item.labelId === 1) { 
+      totalUnreadCount += item?.count 
+    }
+  });
 
   const { title, icon, info, children, disabled, caption, permissions } = item;
 
@@ -44,6 +59,8 @@ export default function NavItem({ item, depth, active, open, isCollapse, ...othe
           variant: 'caption',
         }}
       />
+
+      {title === 'mail' && totalUnreadCount > 0 && <Box sx={{ padding: '1px 8px', background: '#FFE7D9', color: '#B72136', borderRadius: '6px'}}>{totalUnreadCount}</Box>}
 
       {!isCollapse && (
         <>

@@ -12,8 +12,6 @@ const subjectGroups = graphql(/* GraphQL */ `
       studentCount
       staff{
         partyId
-        firstName
-        lastName
       }
       irePP{
         level

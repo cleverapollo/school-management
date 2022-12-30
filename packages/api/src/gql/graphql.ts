@@ -59,6 +59,7 @@ export type Assessment = {
   commentType?: Maybe<CommentType>;
   description?: Maybe<Scalars['String']>;
   endDate?: Maybe<Scalars['Date']>;
+  extraFields?: Maybe<Array<Maybe<AssessmentExtraField>>>;
   gradeSets?: Maybe<Array<Maybe<AssessmentGradeSet>>>;
   gradeType?: Maybe<GradeType>;
   id?: Maybe<Scalars['Long']>;
@@ -86,6 +87,17 @@ export type AssessmentCommentBank = {
   commentBankName?: Maybe<Scalars['String']>;
 };
 
+export type AssessmentExtraField = {
+  __typename?: 'AssessmentExtraField';
+  assessmentId?: Maybe<Scalars['Long']>;
+  commentBankId?: Maybe<Scalars['Long']>;
+  extraFieldType?: Maybe<ExtraFieldType>;
+  gradeSetId?: Maybe<Scalars['Long']>;
+  id?: Maybe<Scalars['Long']>;
+  name?: Maybe<Scalars['String']>;
+  selectOptions?: Maybe<Array<Maybe<Scalars['String']>>>;
+};
+
 export type AssessmentFilter = {
   id?: InputMaybe<Scalars['Long']>;
 };
@@ -99,13 +111,23 @@ export type AssessmentGradeSet = {
 export type AssessmentResult = {
   __typename?: 'AssessmentResult';
   assessmentId?: Maybe<Scalars['Long']>;
+  comment?: Maybe<Scalars['String']>;
   commentBankCommentId?: Maybe<Scalars['Long']>;
+  extraFields?: Maybe<Array<Maybe<ResultExtraField>>>;
   grade?: Maybe<Scalars['String']>;
+  gradeNameTextId?: Maybe<Scalars['Int']>;
   id?: Maybe<Scalars['Long']>;
   result?: Maybe<Scalars['Int']>;
   studentPartyId?: Maybe<Scalars['Long']>;
   targetGrade?: Maybe<Scalars['String']>;
+  targetGradeNameTextId?: Maybe<Scalars['Int']>;
   targetResult?: Maybe<Scalars['Int']>;
+};
+
+export type AssessmentResultFilter = {
+  assessmentId?: InputMaybe<Scalars['Long']>;
+  ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  studentPartyId?: InputMaybe<Scalars['Long']>;
 };
 
 export enum AssessmentType {
@@ -116,7 +138,6 @@ export enum AssessmentType {
 
 export type AssessmentYear = {
   __typename?: 'AssessmentYear';
-  id?: Maybe<Scalars['Long']>;
   name?: Maybe<Scalars['String']>;
   year?: Maybe<Scalars['Int']>;
 };
@@ -300,38 +321,6 @@ export type CreateAssessmentCommentInput = {
   commentBankId?: InputMaybe<Scalars['Long']>;
   commenterUserType?: InputMaybe<CommenterUserType>;
   studentPartyId?: InputMaybe<Scalars['Long']>;
-};
-
-export type CreateAssessmentInput = {
-  academicNamespaceId?: InputMaybe<Scalars['Int']>;
-  assessmentType?: InputMaybe<AssessmentType>;
-  captureHouseMasterComment?: InputMaybe<Scalars['Boolean']>;
-  capturePrincipalComment?: InputMaybe<Scalars['Boolean']>;
-  captureTarget?: InputMaybe<Scalars['Boolean']>;
-  captureTutorComment?: InputMaybe<Scalars['Boolean']>;
-  captureYearHeadComment?: InputMaybe<Scalars['Boolean']>;
-  commentBankId?: InputMaybe<Scalars['Int']>;
-  commentType?: InputMaybe<CommentType>;
-  description?: InputMaybe<Scalars['String']>;
-  endDate?: InputMaybe<Scalars['Date']>;
-  gradeSetIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-  gradeType?: InputMaybe<GradeType>;
-  name?: InputMaybe<Scalars['String']>;
-  passFailThreshold?: InputMaybe<Scalars['Int']>;
-  publish?: InputMaybe<Scalars['Boolean']>;
-  publishLearner?: InputMaybe<Scalars['Boolean']>;
-  startDate?: InputMaybe<Scalars['Date']>;
-  years?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-};
-
-export type CreateAssessmentResultInput = {
-  assessmentId?: InputMaybe<Scalars['Long']>;
-  commentBankCommentId?: InputMaybe<Scalars['Long']>;
-  gradeSetGradeId?: InputMaybe<Scalars['Long']>;
-  result?: InputMaybe<Scalars['Int']>;
-  studentPartyId?: InputMaybe<Scalars['Long']>;
-  targetGradeSetGradeId?: InputMaybe<Scalars['Long']>;
-  targetResult?: InputMaybe<Scalars['Int']>;
 };
 
 export type CreateAttendanceCodeInput = {
@@ -853,6 +842,13 @@ export enum ExternalSystemProvider {
   Vsware = 'VSWARE'
 }
 
+export enum ExtraFieldType {
+  CommentBank = 'COMMENT_BANK',
+  FreeForm = 'FREE_FORM',
+  GradeSet = 'GRADE_SET',
+  Select = 'SELECT'
+}
+
 export enum Gender {
   Female = 'FEMALE',
   Male = 'MALE',
@@ -953,12 +949,12 @@ export enum GradeType {
 
 export type GroupMembership = {
   __typename?: 'GroupMembership';
-  firstName?: Maybe<Scalars['String']>;
   fromDate?: Maybe<Scalars['Date']>;
-  lastName?: Maybe<Scalars['String']>;
   partyId?: Maybe<Scalars['Long']>;
+  /**     deep linked */
+  person?: Maybe<Person>;
+  roles?: Maybe<Array<Maybe<Scalars['String']>>>;
   toDate?: Maybe<Scalars['Date']>;
-  type?: Maybe<PartyPersonType>;
 };
 
 export type GroupProgrammeStage = {
@@ -984,12 +980,12 @@ export type Label = {
   custom?: Maybe<Scalars['Boolean']>;
   id: Scalars['Long'];
   name: Scalars['String'];
-  personPartyId?: Maybe<Scalars['Int']>;
+  personPartyId?: Maybe<Scalars['Long']>;
 };
 
 export type LabelFilter = {
   id?: InputMaybe<Scalars['Long']>;
-  personPartyId?: InputMaybe<Scalars['Int']>;
+  personPartyId?: InputMaybe<Scalars['Long']>;
 };
 
 export type LabelInput = {
@@ -1015,7 +1011,7 @@ export type Mail = {
   readOn?: Maybe<Scalars['DateTime']>;
   recipients?: Maybe<Array<Maybe<Recipient>>>;
   rootMailId: Scalars['Long'];
-  senderPartyId?: Maybe<Scalars['Int']>;
+  senderPartyId?: Maybe<Scalars['Long']>;
   sentOn?: Maybe<Scalars['DateTime']>;
   starred?: Maybe<Scalars['Boolean']>;
   subject?: Maybe<Scalars['String']>;
@@ -1027,7 +1023,7 @@ export type MailFilter = {
   id?: InputMaybe<Scalars['Long']>;
   labelId?: InputMaybe<Scalars['Long']>;
   pagination: Pagination;
-  partyId?: InputMaybe<Scalars['Int']>;
+  partyId?: InputMaybe<Scalars['Long']>;
   starred?: InputMaybe<Scalars['Boolean']>;
 };
 
@@ -1127,12 +1123,12 @@ export type MutationReadArgs = {
 
 
 export type MutationSaveAssessmentArgs = {
-  input?: InputMaybe<CreateAssessmentInput>;
+  input?: InputMaybe<SaveAssessmentInput>;
 };
 
 
 export type MutationSaveAssessmentResultsArgs = {
-  input?: InputMaybe<Array<InputMaybe<CreateAssessmentResultInput>>>;
+  input?: InputMaybe<Array<InputMaybe<SaveAssessmentResultInput>>>;
 };
 
 
@@ -1191,7 +1187,7 @@ export type MutationUpsertStudentDayAttendanceArgs = {
 };
 
 export type MyLabelsFilter = {
-  personPartyId?: InputMaybe<Scalars['Int']>;
+  personPartyId?: InputMaybe<Scalars['Long']>;
 };
 
 export type Pagination = {
@@ -1255,6 +1251,7 @@ export type PermissionsFilter = {
 
 export type Person = Party & {
   __typename?: 'Person';
+  avatarUrl?: Maybe<Scalars['String']>;
   firstName?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
   partyId?: Maybe<Scalars['Long']>;
@@ -1300,8 +1297,10 @@ export type PersonalInformationIreInput = {
 
 export type Profile = {
   __typename?: 'Profile';
+  avatarUrl?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
   nickName?: Maybe<Scalars['String']>;
+  partyId?: Maybe<Scalars['Long']>;
   permissionIds?: Maybe<Array<Maybe<Scalars['String']>>>;
   permissions?: Maybe<Array<Maybe<Permission>>>;
   profileType?: Maybe<ProfileType>;
@@ -1373,8 +1372,11 @@ export type Query = {
   admin__party_people?: Maybe<Array<Maybe<Person>>>;
   admin__tenants?: Maybe<Array<Maybe<Tenant>>>;
   assessment?: Maybe<Array<Maybe<Assessment>>>;
+  assessmentResult?: Maybe<Array<Maybe<AssessmentResult>>>;
   attendanceCodes?: Maybe<Array<Maybe<AttendanceCode>>>;
   calendar_calendarEvents?: Maybe<Array<Maybe<CalendarEvent>>>;
+  catalogue_subjects?: Maybe<Array<Maybe<Subject>>>;
+  commentBank?: Maybe<Array<Maybe<CommentBank>>>;
   core_academicNamespaces?: Maybe<Array<Maybe<AcademicNamespace>>>;
   core_rooms?: Maybe<Array<Maybe<Room>>>;
   dayAttendances?: Maybe<Array<Maybe<DayAttendance>>>;
@@ -1395,7 +1397,8 @@ export type Query = {
   studentSupportPlan?: Maybe<Array<Maybe<StudentSupportPlan>>>;
   studentSupportPlanReview?: Maybe<Array<Maybe<StudentSupportPlanReview>>>;
   subjectGroups?: Maybe<Array<Maybe<SubjectGroup>>>;
-  subjects?: Maybe<Array<Maybe<Subject>>>;
+  unreadCount?: Maybe<Array<Maybe<UnreadCount>>>;
+  years?: Maybe<Array<Maybe<Year>>>;
 };
 
 
@@ -1414,6 +1417,11 @@ export type QueryAssessmentArgs = {
 };
 
 
+export type QueryAssessmentResultArgs = {
+  filter?: InputMaybe<AssessmentResultFilter>;
+};
+
+
 export type QueryAttendanceCodesArgs = {
   filter?: InputMaybe<AttendanceCodeFilter>;
 };
@@ -1421,6 +1429,16 @@ export type QueryAttendanceCodesArgs = {
 
 export type QueryCalendar_CalendarEventsArgs = {
   filter?: InputMaybe<CalendarEventFilter>;
+};
+
+
+export type QueryCatalogue_SubjectsArgs = {
+  filter?: InputMaybe<SubjectFilter>;
+};
+
+
+export type QueryCommentBankArgs = {
+  filter?: InputMaybe<CommentBankFilter>;
 };
 
 
@@ -1514,11 +1532,6 @@ export type QuerySubjectGroupsArgs = {
 };
 
 
-export type QuerySubjectsArgs = {
-  filter?: InputMaybe<SubjectFilter>;
-};
-
-
 export type QueryUnreadCountArgs = {
   filter?: InputMaybe<UnreadCountFilter>;
 };
@@ -1552,7 +1565,7 @@ export type Recipient = {
   __typename?: 'Recipient';
   id: Scalars['Long'];
   name?: Maybe<Scalars['String']>;
-  recipientPartyId?: Maybe<Scalars['Int']>;
+  recipientPartyId?: Maybe<Scalars['Long']>;
   recipientType?: Maybe<RecipientType>;
 };
 
@@ -1561,6 +1574,18 @@ export enum RecipientType {
   Cc = 'CC',
   To = 'TO'
 }
+
+export type ResultExtraField = {
+  __typename?: 'ResultExtraField';
+  assessmentExtraFieldId?: Maybe<Scalars['Long']>;
+  assessmentResultId?: Maybe<Scalars['Long']>;
+  commentBankCommentId?: Maybe<Scalars['Long']>;
+  extraFieldType?: Maybe<ExtraFieldType>;
+  gradeNameTextId?: Maybe<Scalars['Int']>;
+  gradeSetGradeId?: Maybe<Scalars['Long']>;
+  id?: Maybe<Scalars['Long']>;
+  result?: Maybe<Scalars['String']>;
+};
 
 export type Room = {
   __typename?: 'Room';
@@ -1573,21 +1598,69 @@ export type RoomFilter = {
   roomIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
+export type SaveAssessmentInput = {
+  academicNamespaceId?: InputMaybe<Scalars['Int']>;
+  assessmentType?: InputMaybe<AssessmentType>;
+  captureHouseMasterComment?: InputMaybe<Scalars['Boolean']>;
+  capturePrincipalComment?: InputMaybe<Scalars['Boolean']>;
+  captureTarget?: InputMaybe<Scalars['Boolean']>;
+  captureTutorComment?: InputMaybe<Scalars['Boolean']>;
+  captureYearHeadComment?: InputMaybe<Scalars['Boolean']>;
+  commentBankId?: InputMaybe<Scalars['Int']>;
+  commentType?: InputMaybe<CommentType>;
+  description?: InputMaybe<Scalars['String']>;
+  endDate?: InputMaybe<Scalars['Date']>;
+  extraFields?: InputMaybe<Array<InputMaybe<SaveExtraFieldInput>>>;
+  gradeSetIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  gradeType?: InputMaybe<GradeType>;
+  id?: InputMaybe<Scalars['Long']>;
+  name?: InputMaybe<Scalars['String']>;
+  passFailThreshold?: InputMaybe<Scalars['Int']>;
+  publish?: InputMaybe<Scalars['Boolean']>;
+  publishLearner?: InputMaybe<Scalars['Boolean']>;
+  startDate?: InputMaybe<Scalars['Date']>;
+  years?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
+export type SaveAssessmentResultInput = {
+  assessmentId?: InputMaybe<Scalars['Long']>;
+  commentBankCommentId?: InputMaybe<Scalars['Long']>;
+  gradeSetGradeId?: InputMaybe<Scalars['Long']>;
+  id?: InputMaybe<Scalars['Long']>;
+  result?: InputMaybe<Scalars['Int']>;
+  resultExtraFields?: InputMaybe<Array<InputMaybe<SaveResultExtraFieldInput>>>;
+  studentPartyId?: InputMaybe<Scalars['Long']>;
+  targetGradeSetGradeId?: InputMaybe<Scalars['Long']>;
+  targetResult?: InputMaybe<Scalars['Int']>;
+};
+
 export type SaveCommentBankInput = {
   active?: InputMaybe<Scalars['Boolean']>;
   comments?: InputMaybe<Array<InputMaybe<SaveCommentInput>>>;
   description?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['Long']>;
   name?: InputMaybe<Scalars['String']>;
 };
 
 export type SaveCommentInput = {
   active?: InputMaybe<Scalars['Boolean']>;
   comment?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['Long']>;
+};
+
+export type SaveExtraFieldInput = {
+  commentBankId?: InputMaybe<Scalars['Long']>;
+  extraFieldType?: InputMaybe<ExtraFieldType>;
+  gradeSetId?: InputMaybe<Scalars['Long']>;
+  id?: InputMaybe<Scalars['Long']>;
+  name?: InputMaybe<Scalars['String']>;
+  selectOptions?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
 export type SaveGradeInput = {
   active?: InputMaybe<Scalars['Boolean']>;
   end?: InputMaybe<Scalars['Int']>;
+  id?: InputMaybe<Scalars['Long']>;
   name: Array<InputMaybe<TranslationInput>>;
   passFailThreshold?: InputMaybe<Scalars['Int']>;
   start?: InputMaybe<Scalars['Int']>;
@@ -1599,10 +1672,19 @@ export type SaveGradeSetInput = {
   customGradeSet?: InputMaybe<Scalars['Boolean']>;
   description?: InputMaybe<Array<InputMaybe<TranslationInput>>>;
   grades?: InputMaybe<Array<InputMaybe<SaveGradeInput>>>;
+  id?: InputMaybe<Scalars['Long']>;
   isCba?: InputMaybe<Scalars['Boolean']>;
   name: Array<InputMaybe<TranslationInput>>;
   passFailThreshold?: InputMaybe<Scalars['Int']>;
   years?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
+export type SaveResultExtraFieldInput = {
+  assessmentExtraFieldId?: InputMaybe<Scalars['Long']>;
+  commentBankCommentId?: InputMaybe<Scalars['Long']>;
+  gradeSetGradeId?: InputMaybe<Scalars['Long']>;
+  id?: InputMaybe<Scalars['Long']>;
+  result?: InputMaybe<Scalars['String']>;
 };
 
 export type SaveStudentSupportFileInput = {
@@ -1652,7 +1734,7 @@ export type SaveStudentSupportFileInput = {
   schoolEnvironmentAdapted?: InputMaybe<Scalars['Boolean']>;
   schoolEnvironmentAdaptedComments?: InputMaybe<Scalars['String']>;
   schoolEnvironmentAdaptedDate?: InputMaybe<Scalars['Date']>;
-  studentPartyId: Scalars['Int'];
+  studentPartyId: Scalars['Long'];
   subjects?: InputMaybe<Array<InputMaybe<SaveStudentSupportFileSubjectInput>>>;
   vision?: InputMaybe<Scalars['Boolean']>;
   visionComments?: InputMaybe<Scalars['String']>;
@@ -1684,7 +1766,7 @@ export type SaveStudentSupportPlanInput = {
 
 export type SaveStudentSupportPlanReviewAttendeeInput = {
   id?: InputMaybe<Scalars['Int']>;
-  personPartyId: Scalars['Int'];
+  personPartyId: Scalars['Long'];
 };
 
 export type SaveStudentSupportPlanReviewInput = {
@@ -1705,7 +1787,7 @@ export type SaveStudentSupportPlanReviewInput = {
 export type SaveStudentSupportPlanStaffInput = {
   id?: InputMaybe<Scalars['Int']>;
   lead?: InputMaybe<Scalars['Boolean']>;
-  staffPartyId: Scalars['Int'];
+  staffPartyId: Scalars['Long'];
 };
 
 export type SaveStudentSupportPlanTargetInput = {
@@ -1768,7 +1850,7 @@ export type SendMailInput = {
 };
 
 export type SendMailRecipientInput = {
-  recipientPartyId: Scalars['Int'];
+  recipientPartyId: Scalars['Long'];
   recipientType: RecipientType;
 };
 
@@ -1913,7 +1995,7 @@ export type StudentSupportFile = {
   classroomWorkDifferentiated?: Maybe<Scalars['Boolean']>;
   classroomWorkDifferentiatedComments?: Maybe<Scalars['String']>;
   classroomWorkDifferentiatedDate?: Maybe<Scalars['Date']>;
-  creatorPartyId: Scalars['Int'];
+  creatorPartyId: Scalars['Long'];
   dateClosed: Scalars['Date'];
   dateOpened: Scalars['Date'];
   guardiansConsulted?: Maybe<Scalars['Boolean']>;
@@ -1951,7 +2033,7 @@ export type StudentSupportFile = {
   schoolEnvironmentAdapted?: Maybe<Scalars['Boolean']>;
   schoolEnvironmentAdaptedComments?: Maybe<Scalars['String']>;
   schoolEnvironmentAdaptedDate?: Maybe<Scalars['Date']>;
-  studentPartyId: Scalars['Int'];
+  studentPartyId: Scalars['Long'];
   subjects?: Maybe<Array<Maybe<StudentSupportFileSubject>>>;
   vision?: Maybe<Scalars['Boolean']>;
   visionComments?: Maybe<Scalars['String']>;
@@ -1960,7 +2042,7 @@ export type StudentSupportFile = {
 
 export type StudentSupportFileFilter = {
   id?: InputMaybe<Scalars['Int']>;
-  studentPartyId?: InputMaybe<Scalars['Int']>;
+  studentPartyId?: InputMaybe<Scalars['Long']>;
 };
 
 export type StudentSupportFileSubject = {
@@ -2011,7 +2093,7 @@ export type StudentSupportPlanReview = {
 export type StudentSupportPlanReviewAttendee = {
   __typename?: 'StudentSupportPlanReviewAttendee';
   id: Scalars['Int'];
-  personPartyId: Scalars['Int'];
+  personPartyId: Scalars['Long'];
   studentSupportPlanReviewId: Scalars['Int'];
 };
 
@@ -2024,7 +2106,7 @@ export type StudentSupportPlanStaff = {
   __typename?: 'StudentSupportPlanStaff';
   id: Scalars['Int'];
   lead?: Maybe<Scalars['Boolean']>;
-  staffPartyId: Scalars['Int'];
+  staffPartyId: Scalars['Long'];
   studentSupportPlanId: Scalars['Int'];
 };
 
@@ -2045,18 +2127,24 @@ export enum StudentSupportPlanType {
 
 export type Subject = {
   __typename?: 'Subject';
+  active: Scalars['Boolean'];
+  colour?: Maybe<Scalars['Int']>;
   description?: Maybe<Scalars['String']>;
   descriptionTextId?: Maybe<Scalars['Int']>;
-  id?: Maybe<Scalars['Int']>;
+  icon?: Maybe<Scalars['String']>;
+  id: Scalars['Int'];
+  inUseHistorically: Scalars['Boolean'];
   name: Scalars['String'];
   nameTextId?: Maybe<Scalars['Int']>;
   nationalCode?: Maybe<Scalars['String']>;
-  shortCode?: Maybe<Scalars['String']>;
+  shortCode: Scalars['String'];
   shortCodeTextId?: Maybe<Scalars['Int']>;
-  subjectSource?: Maybe<SubjectSource>;
+  subjectSource: SubjectSource;
 };
 
 export type SubjectFilter = {
+  /**  Only show subject which are currently in use. default HISTORIC */
+  filterUsage?: InputMaybe<SubjectUsage>;
   ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
@@ -2072,6 +2160,7 @@ export type SubjectGroup = Party & {
   studentCount?: Maybe<Scalars['Int']>;
   students?: Maybe<Array<Maybe<GroupMembership>>>;
   subjectIds?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  /**     deep linked */
   subjects?: Maybe<Array<Maybe<Subject>>>;
 };
 
@@ -2094,6 +2183,12 @@ export enum SubjectGroupLevelIrePp {
 export enum SubjectSource {
   Custom = 'CUSTOM',
   National = 'NATIONAL'
+}
+
+export enum SubjectUsage {
+  Active = 'ACTIVE',
+  All = 'ALL',
+  Historic = 'HISTORIC'
 }
 
 export enum TargetStatus {
@@ -2124,10 +2219,11 @@ export type TranslationInput = {
 export type UnreadCount = {
   __typename?: 'UnreadCount';
   count: Scalars['Int'];
+  labelId: Scalars['Long'];
 };
 
 export type UnreadCountFilter = {
-  personPartyId: Scalars['Int'];
+  personPartyId: Scalars['Long'];
 };
 
 export type UpdateAttendanceCodeInput = {
@@ -2199,7 +2295,7 @@ export type _Service = {
 export type MyAuthDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MyAuthDetailsQuery = { __typename?: 'Query', myAuthDetails?: { __typename?: 'GlobalUser', id: number, email?: string | null, name?: string | null, defaultProfileId?: number | null, activeProfileId?: number | null, profiles?: Array<{ __typename?: 'Profile', id: number, nickName?: string | null, permissionIds?: Array<string | null> | null, tenant: { __typename?: 'Tenant', tenant: number, name: string, imgUrl: string }, profileType?: { __typename?: 'ProfileType', name: string, description: string, userType: UserType } | null } | null> | null } | null };
+export type MyAuthDetailsQuery = { __typename?: 'Query', myAuthDetails?: { __typename?: 'GlobalUser', id: number, email?: string | null, name?: string | null, defaultProfileId?: number | null, activeProfileId?: number | null, profiles?: Array<{ __typename?: 'Profile', id: number, nickName?: string | null, permissionIds?: Array<string | null> | null, partyId?: any | null, tenant: { __typename?: 'Tenant', tenant: number, name: string, imgUrl: string }, profileType?: { __typename?: 'ProfileType', name: string, description: string, userType: UserType } | null } | null> | null } | null };
 
 export type Admin__Party_PeopleQueryVariables = Exact<{
   tenant: Scalars['Int'];
@@ -2254,35 +2350,56 @@ export type CustomGroupByIdQuery = { __typename?: 'Query', generalGroups?: Array
 export type SubjectGroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SubjectGroupsQuery = { __typename?: 'Query', subjectGroups?: Array<{ __typename?: 'SubjectGroup', partyId: any, name: string, studentCount?: number | null, subjects?: Array<{ __typename?: 'Subject', name: string } | null> | null, staff?: Array<{ __typename?: 'GroupMembership', partyId?: any | null, firstName?: string | null, lastName?: string | null } | null> | null, irePP?: { __typename?: 'SubjectGroupIrePP', level?: SubjectGroupLevelIrePp | null } | null, programmeStages?: Array<{ __typename?: 'GroupProgrammeStage', programmeStage?: { __typename?: 'ProgrammeStage', programme?: { __typename?: 'Programme', name: string } | null } | null } | null> | null } | null> | null };
+export type SubjectGroupsQuery = { __typename?: 'Query', subjectGroups?: Array<{ __typename?: 'SubjectGroup', partyId: any, name: string, studentCount?: number | null, subjects?: Array<{ __typename?: 'Subject', name: string } | null> | null, staff?: Array<{ __typename?: 'GroupMembership', partyId?: any | null } | null> | null, irePP?: { __typename?: 'SubjectGroupIrePP', level?: SubjectGroupLevelIrePp | null } | null, programmeStages?: Array<{ __typename?: 'GroupProgrammeStage', programmeStage?: { __typename?: 'ProgrammeStage', programme?: { __typename?: 'Programme', name: string } | null } | null } | null> | null } | null> | null };
 
 export type SubjectGroupByIdQueryVariables = Exact<{
   filter: SubjectGroupFilter;
 }>;
 
 
-export type SubjectGroupByIdQuery = { __typename?: 'Query', subjectGroups?: Array<{ __typename?: 'SubjectGroup', partyId: any, name: string, students?: Array<{ __typename?: 'GroupMembership', partyId?: any | null, firstName?: string | null, lastName?: string | null } | null> | null } | null> | null };
+export type SubjectGroupByIdQuery = { __typename?: 'Query', subjectGroups?: Array<{ __typename?: 'SubjectGroup', partyId: any, name: string, students?: Array<{ __typename?: 'GroupMembership', partyId?: any | null } | null> | null } | null> | null };
 
 export type LabelQueryVariables = Exact<{
   filter?: InputMaybe<LabelFilter>;
 }>;
 
 
-export type LabelQuery = { __typename?: 'Query', label?: Array<{ __typename?: 'Label', id: any, name: string, personPartyId?: number | null, colour?: string | null, custom?: boolean | null } | null> | null };
+export type LabelQuery = { __typename?: 'Query', label?: Array<{ __typename?: 'Label', id: any, name: string, personPartyId?: any | null, colour?: string | null, custom?: boolean | null } | null> | null };
+
+export type LabelMutationMutationVariables = Exact<{
+  input?: InputMaybe<LabelInput>;
+}>;
+
+
+export type LabelMutationMutation = { __typename?: 'Mutation', label?: { __typename?: 'Label', id: any, name: string, personPartyId?: any | null, colour?: string | null, custom?: boolean | null } | null };
+
+export type UnreadCountQueryVariables = Exact<{
+  filter?: InputMaybe<UnreadCountFilter>;
+}>;
+
+
+export type UnreadCountQuery = { __typename?: 'Query', unreadCount?: Array<{ __typename?: 'UnreadCount', labelId: any, count: number } | null> | null };
+
+export type AssignLabelMutationVariables = Exact<{
+  input?: InputMaybe<AssignLabelInput>;
+}>;
+
+
+export type AssignLabelMutation = { __typename?: 'Mutation', assignLabel?: { __typename?: 'Mail', id: any, rootMailId: any, threadId: any, subject?: string | null, body?: string | null, senderPartyId?: any | null, sentOn?: any | null, latestMessage?: any | null, canReply?: boolean | null, starred?: boolean | null, readOn?: any | null, recipients?: Array<{ __typename?: 'Recipient', id: any, recipientPartyId?: any | null, recipientType?: RecipientType | null, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: any, name: string, personPartyId?: any | null, colour?: string | null, custom?: boolean | null } | null> | null, threads?: Array<{ __typename?: 'Mail', id: any, rootMailId: any, threadId: any, subject?: string | null, body?: string | null, senderPartyId?: any | null, sentOn?: any | null, latestMessage?: any | null, canReply?: boolean | null, starred?: boolean | null, readOn?: any | null, recipients?: Array<{ __typename?: 'Recipient', id: any, recipientPartyId?: any | null, recipientType?: RecipientType | null, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: any, name: string, personPartyId?: any | null, colour?: string | null, custom?: boolean | null } | null> | null } | null> | null } | null };
 
 export type MailQueryVariables = Exact<{
   filter?: InputMaybe<MailFilter>;
 }>;
 
 
-export type MailQuery = { __typename?: 'Query', mail?: Array<{ __typename?: 'Mail', id: any, rootMailId: any, threadId: any, subject?: string | null, body?: string | null, senderPartyId?: number | null, sentOn?: any | null, latestMessage?: any | null, canReply?: boolean | null, starred?: boolean | null, readOn?: any | null, recipients?: Array<{ __typename?: 'Recipient', id: any, recipientPartyId?: number | null, recipientType?: RecipientType | null, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: any, name: string, personPartyId?: number | null, colour?: string | null, custom?: boolean | null } | null> | null, threads?: Array<{ __typename?: 'Mail', id: any, rootMailId: any, threadId: any, subject?: string | null, body?: string | null, senderPartyId?: number | null, sentOn?: any | null, latestMessage?: any | null, canReply?: boolean | null, starred?: boolean | null, readOn?: any | null, recipients?: Array<{ __typename?: 'Recipient', id: any, recipientPartyId?: number | null, recipientType?: RecipientType | null, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: any, name: string, personPartyId?: number | null, colour?: string | null, custom?: boolean | null } | null> | null } | null> | null } | null> | null };
+export type MailQuery = { __typename?: 'Query', mail?: Array<{ __typename?: 'Mail', id: any, rootMailId: any, threadId: any, subject?: string | null, body?: string | null, senderPartyId?: any | null, sentOn?: any | null, latestMessage?: any | null, canReply?: boolean | null, starred?: boolean | null, readOn?: any | null, recipients?: Array<{ __typename?: 'Recipient', id: any, recipientPartyId?: any | null, recipientType?: RecipientType | null, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: any, name: string, personPartyId?: any | null, colour?: string | null, custom?: boolean | null } | null> | null, threads?: Array<{ __typename?: 'Mail', id: any, rootMailId: any, threadId: any, subject?: string | null, body?: string | null, senderPartyId?: any | null, sentOn?: any | null, latestMessage?: any | null, canReply?: boolean | null, starred?: boolean | null, readOn?: any | null, recipients?: Array<{ __typename?: 'Recipient', id: any, recipientPartyId?: any | null, recipientType?: RecipientType | null, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: any, name: string, personPartyId?: any | null, colour?: string | null, custom?: boolean | null } | null> | null } | null> | null } | null> | null };
 
 export type SendMailMutationVariables = Exact<{
   input?: InputMaybe<SendMailInput>;
 }>;
 
 
-export type SendMailMutation = { __typename?: 'Mutation', sendMail?: { __typename?: 'Mail', id: any, rootMailId: any, threadId: any, subject?: string | null, body?: string | null, senderPartyId?: number | null, sentOn?: any | null, latestMessage?: any | null, canReply?: boolean | null, starred?: boolean | null, readOn?: any | null, recipients?: Array<{ __typename?: 'Recipient', id: any, recipientPartyId?: number | null, recipientType?: RecipientType | null, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: any, name: string, personPartyId?: number | null, colour?: string | null, custom?: boolean | null } | null> | null, threads?: Array<{ __typename?: 'Mail', id: any, rootMailId: any, threadId: any, subject?: string | null, body?: string | null, senderPartyId?: number | null, sentOn?: any | null, latestMessage?: any | null, canReply?: boolean | null, starred?: boolean | null, readOn?: any | null, recipients?: Array<{ __typename?: 'Recipient', id: any, recipientPartyId?: number | null, recipientType?: RecipientType | null, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: any, name: string, personPartyId?: number | null, colour?: string | null, custom?: boolean | null } | null> | null } | null> | null } | null };
+export type SendMailMutation = { __typename?: 'Mutation', sendMail?: { __typename?: 'Mail', id: any, rootMailId: any, threadId: any, subject?: string | null, body?: string | null, senderPartyId?: any | null, sentOn?: any | null, latestMessage?: any | null, canReply?: boolean | null, starred?: boolean | null, readOn?: any | null, recipients?: Array<{ __typename?: 'Recipient', id: any, recipientPartyId?: any | null, recipientType?: RecipientType | null, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: any, name: string, personPartyId?: any | null, colour?: string | null, custom?: boolean | null } | null> | null, threads?: Array<{ __typename?: 'Mail', id: any, rootMailId: any, threadId: any, subject?: string | null, body?: string | null, senderPartyId?: any | null, sentOn?: any | null, latestMessage?: any | null, canReply?: boolean | null, starred?: boolean | null, readOn?: any | null, recipients?: Array<{ __typename?: 'Recipient', id: any, recipientPartyId?: any | null, recipientType?: RecipientType | null, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: any, name: string, personPartyId?: any | null, colour?: string | null, custom?: boolean | null } | null> | null } | null> | null } | null };
 
 export type StarredMutationVariables = Exact<{
   input?: InputMaybe<MailStarredInput>;
@@ -2299,7 +2416,7 @@ export type ReadMutationVariables = Exact<{
 export type ReadMutation = { __typename?: 'Mutation', read?: string | null };
 
 
-export const MyAuthDetailsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"myAuthDetails"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"myAuthDetails"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"defaultProfileId"}},{"kind":"Field","name":{"kind":"Name","value":"activeProfileId"}},{"kind":"Field","name":{"kind":"Name","value":"profiles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nickName"}},{"kind":"Field","name":{"kind":"Name","value":"tenant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"imgUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"profileType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"userType"}}]}},{"kind":"Field","name":{"kind":"Name","value":"permissionIds"}}]}}]}}]}}]} as unknown as DocumentNode<MyAuthDetailsQuery, MyAuthDetailsQueryVariables>;
+export const MyAuthDetailsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"myAuthDetails"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"myAuthDetails"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"defaultProfileId"}},{"kind":"Field","name":{"kind":"Name","value":"activeProfileId"}},{"kind":"Field","name":{"kind":"Name","value":"profiles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nickName"}},{"kind":"Field","name":{"kind":"Name","value":"tenant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"imgUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"profileType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"userType"}}]}},{"kind":"Field","name":{"kind":"Name","value":"permissionIds"}},{"kind":"Field","name":{"kind":"Name","value":"partyId"}}]}}]}}]}}]} as unknown as DocumentNode<MyAuthDetailsQuery, MyAuthDetailsQueryVariables>;
 export const Admin__Party_PeopleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"admin__party_people"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"admin__party_people"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"tenant"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]} as unknown as DocumentNode<Admin__Party_PeopleQuery, Admin__Party_PeopleQueryVariables>;
 export const Admin__TenantsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"admin__tenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"admin__tenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"imgUrl"}}]}}]}}]} as unknown as DocumentNode<Admin__TenantsQuery, Admin__TenantsQueryVariables>;
 export const Core_AcademicNamespacesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_academicNamespaces"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_academicNamespaces"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"academicNamespaceId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActiveDefaultNamespace"}}]}}]}}]} as unknown as DocumentNode<Core_AcademicNamespacesQuery, Core_AcademicNamespacesQueryVariables>;
@@ -2308,9 +2425,12 @@ export const Core_RoomsDocument = {"kind":"Document","definitions":[{"kind":"Ope
 export const GeneralGroupsListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"generalGroupsList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GeneralGroupFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"generalGroups"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"studentCount"}},{"kind":"Field","name":{"kind":"Name","value":"generalGroupType"}},{"kind":"Field","name":{"kind":"Name","value":"programmeStages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"programmeStage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"programme"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GeneralGroupsListQuery, GeneralGroupsListQueryVariables>;
 export const EnrolmentGroupsByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"enrolmentGroupsById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GeneralGroupFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"generalGroups"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"students"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}}]}}]} as unknown as DocumentNode<EnrolmentGroupsByIdQuery, EnrolmentGroupsByIdQueryVariables>;
 export const CustomGroupByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"customGroupById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GeneralGroupFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"generalGroups"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"students"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}}]}}]} as unknown as DocumentNode<CustomGroupByIdQuery, CustomGroupByIdQueryVariables>;
-export const SubjectGroupsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"subjectGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"studentCount"}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"irePP"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"level"}}]}},{"kind":"Field","name":{"kind":"Name","value":"programmeStages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"programmeStage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"programme"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SubjectGroupsQuery, SubjectGroupsQueryVariables>;
-export const SubjectGroupByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"subjectGroupById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SubjectGroupFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectGroups"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"students"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}}]}}]} as unknown as DocumentNode<SubjectGroupByIdQuery, SubjectGroupByIdQueryVariables>;
+export const SubjectGroupsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"subjectGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"studentCount"}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"irePP"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"level"}}]}},{"kind":"Field","name":{"kind":"Name","value":"programmeStages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"programmeStage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"programme"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SubjectGroupsQuery, SubjectGroupsQueryVariables>;
+export const SubjectGroupByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"subjectGroupById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SubjectGroupFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectGroups"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"students"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}}]}}]}}]}}]} as unknown as DocumentNode<SubjectGroupByIdQuery, SubjectGroupByIdQueryVariables>;
 export const LabelDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"label"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"LabelFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"label"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}}]}}]} as unknown as DocumentNode<LabelQuery, LabelQueryVariables>;
+export const LabelMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"labelMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"LabelInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"label"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}}]}}]} as unknown as DocumentNode<LabelMutationMutation, LabelMutationMutationVariables>;
+export const UnreadCountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"unreadCount"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"UnreadCountFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"unreadCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"labelId"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]} as unknown as DocumentNode<UnreadCountQuery, UnreadCountQueryVariables>;
+export const AssignLabelDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"assignLabel"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"AssignLabelInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assignLabel"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"rootMailId"}},{"kind":"Field","name":{"kind":"Name","value":"threadId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"senderPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"sentOn"}},{"kind":"Field","name":{"kind":"Name","value":"latestMessage"}},{"kind":"Field","name":{"kind":"Name","value":"canReply"}},{"kind":"Field","name":{"kind":"Name","value":"starred"}},{"kind":"Field","name":{"kind":"Name","value":"readOn"}},{"kind":"Field","name":{"kind":"Name","value":"recipients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"recipientPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}},{"kind":"Field","name":{"kind":"Name","value":"threads"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"rootMailId"}},{"kind":"Field","name":{"kind":"Name","value":"threadId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"senderPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"sentOn"}},{"kind":"Field","name":{"kind":"Name","value":"latestMessage"}},{"kind":"Field","name":{"kind":"Name","value":"canReply"}},{"kind":"Field","name":{"kind":"Name","value":"starred"}},{"kind":"Field","name":{"kind":"Name","value":"readOn"}},{"kind":"Field","name":{"kind":"Name","value":"recipients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"recipientPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}}]}}]}}]}}]} as unknown as DocumentNode<AssignLabelMutation, AssignLabelMutationVariables>;
 export const MailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"mail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"MailFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mail"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"rootMailId"}},{"kind":"Field","name":{"kind":"Name","value":"threadId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"senderPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"sentOn"}},{"kind":"Field","name":{"kind":"Name","value":"latestMessage"}},{"kind":"Field","name":{"kind":"Name","value":"canReply"}},{"kind":"Field","name":{"kind":"Name","value":"starred"}},{"kind":"Field","name":{"kind":"Name","value":"readOn"}},{"kind":"Field","name":{"kind":"Name","value":"recipients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"recipientPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}},{"kind":"Field","name":{"kind":"Name","value":"threads"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"rootMailId"}},{"kind":"Field","name":{"kind":"Name","value":"threadId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"senderPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"sentOn"}},{"kind":"Field","name":{"kind":"Name","value":"latestMessage"}},{"kind":"Field","name":{"kind":"Name","value":"canReply"}},{"kind":"Field","name":{"kind":"Name","value":"starred"}},{"kind":"Field","name":{"kind":"Name","value":"readOn"}},{"kind":"Field","name":{"kind":"Name","value":"recipients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"recipientPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}}]}}]}}]}}]} as unknown as DocumentNode<MailQuery, MailQueryVariables>;
 export const SendMailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"sendMail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SendMailInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sendMail"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"rootMailId"}},{"kind":"Field","name":{"kind":"Name","value":"threadId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"senderPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"sentOn"}},{"kind":"Field","name":{"kind":"Name","value":"latestMessage"}},{"kind":"Field","name":{"kind":"Name","value":"canReply"}},{"kind":"Field","name":{"kind":"Name","value":"starred"}},{"kind":"Field","name":{"kind":"Name","value":"readOn"}},{"kind":"Field","name":{"kind":"Name","value":"recipients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"recipientPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}},{"kind":"Field","name":{"kind":"Name","value":"threads"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"rootMailId"}},{"kind":"Field","name":{"kind":"Name","value":"threadId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"senderPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"sentOn"}},{"kind":"Field","name":{"kind":"Name","value":"latestMessage"}},{"kind":"Field","name":{"kind":"Name","value":"canReply"}},{"kind":"Field","name":{"kind":"Name","value":"starred"}},{"kind":"Field","name":{"kind":"Name","value":"readOn"}},{"kind":"Field","name":{"kind":"Name","value":"recipients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"recipientPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}}]}}]}}]}}]} as unknown as DocumentNode<SendMailMutation, SendMailMutationVariables>;
 export const StarredDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"starred"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"MailStarredInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"starred"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<StarredMutation, StarredMutationVariables>;

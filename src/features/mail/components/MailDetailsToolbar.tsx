@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Box, Link, Tooltip, Typography, IconButton } from '@mui/material';
+import { Box, Link, Tooltip, Typography, IconButton, DialogTitle } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // hooks
@@ -10,10 +10,17 @@ import useResponsive from '../../../hooks/useResponsive';
 import createAvatar from '../../../utils/createAvatar';
 import { fDateTimeSuffix } from '../../../utils/formatTime';
 // @types
-import { Mail } from '@tyro/api/src/gql/graphql';
+import { Mail, Label } from '@tyro/api/src/gql/graphql';
 // components
 import Avatar from '../../../components/Avatar';
 import Iconify from '../../../components/Iconify';
+import OptionButton from '../../../components/table/OptionButton';
+import { Option } from '../../../components/table/types';
+import { useState } from 'react';
+import { DialogAnimate } from '../../../components/animate';
+import { MailLabel, MailLabelId } from '../types';
+import ApplyLabelsForm from './ApplyLabelsForm';
+import { labelsMap, LABEL_TYPE } from '../constants';
 
 // ----------------------------------------------------------------------
 
@@ -30,26 +37,62 @@ const RootStyle = styled('div')(({ theme }) => ({
 
 type Props = {
   mail: Mail;
+  labels: MailLabel[];
+  activeLabelName: string;
 };
 
-export default function MailDetailsToolbar({ mail, ...other }: Props) {
+export default function MailDetailsToolbar({ mail, labels, activeLabelName, ...other }: Props) {
+  const [isOpenDialog, setIsOpenDialog] = useState(false);
+  const labelOptions: Option<any>[] = [
+    {
+      text: 'Reply',
+      icon: 'arrowLeft',
+      action: (e) => { e.stopPropagation(); },
+    },
+    {
+      text: 'Forward',
+      icon: 'arrow',
+      action: (e) => { e.stopPropagation(); },
+    },
+    {
+      text: 'Apply label',
+      icon: 'label',
+      action: (e) => { e.stopPropagation(); setIsOpenDialog(true);},
+    },
+    {
+      text: 'Mark as unread',
+      icon: 'mail',
+      action: (e) => { e.stopPropagation(); },
+    },
+    {
+      text: 'Delete this message',
+      icon: 'delete',
+      action: (e) => { e.stopPropagation(); },
+    },
+  ];
   const navigate = useNavigate();
 
-  const { systemLabel, customLabel } = useParams();
+  const { labelName } = useParams();
 
   const isDesktop = useResponsive('up', 'sm');
 
   const baseUrl = PATH_DASHBOARD.mail.root;
 
   const handleBack = () => {
-    if (systemLabel) {
-      return navigate(`${baseUrl}/${systemLabel}`);
+    if (!labelName) {
+      return navigate(`${baseUrl}/label/inbox`);
     }
-    if (customLabel) {
-      return navigate(`${baseUrl}/label/${customLabel}`);
+    if (Object.values(labelsMap).includes(activeLabelName.toLowerCase() as MailLabelId)) {
+      return navigate(`${baseUrl}/label/${labelName}`);
+    } else {
+      return navigate(`${baseUrl}/label/custom/${labelName}`);
     }
-    return navigate(`${baseUrl}/inbox`);
   };
+
+  const mailData = {
+    threadId: mail.threadId,
+    mailId: mail.id,
+  }
 
   return (
     <RootStyle {...other}>
@@ -100,10 +143,17 @@ export default function MailDetailsToolbar({ mail, ...other }: Props) {
         )}
 
         <Tooltip title="More options">
-          <IconButton>
-            <Iconify icon={'eva:more-vertical-fill'} width={20} height={20} />
-          </IconButton>
+          <OptionButton options={labelOptions} />
         </Tooltip>
+        <DialogAnimate open={isOpenDialog} onClose={() => setIsOpenDialog(false)}>
+          <DialogTitle>Apply label</DialogTitle>
+          <ApplyLabelsForm 
+            mailData={mailData} 
+            activeLabels={mail.labels?.filter(label => label?.custom) as Label[]} 
+            labels={labels?.filter(label => label.type === LABEL_TYPE.CUSTOM) as MailLabel[]} 
+            onCancel={() => setIsOpenDialog(false)}
+          />
+        </DialogAnimate>
       </Box>
     </RootStyle>
   );

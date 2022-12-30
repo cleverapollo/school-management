@@ -2,9 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 // @mui
 import { Container, Card } from '@mui/material';
-// redux
-import { useDispatch } from '../../../store/store';
-import { getLabels, objFromArray } from '../../../store/slices/mail';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // hooks
@@ -14,60 +11,52 @@ import Page from '../../../components/Page';
 import HeaderBreadcrumbs from '../../../components/HeaderBreadcrumbs';
 // sections
 import { MailList, MailDetails, MailSidebar, MailCompose } from '../components';
-import { labelsMap, useLabels } from '../api/labels';
-import { useMails } from '../api/mails';
+import { useLabels, useUnreadCount } from '../api/labels';
 import { MailLabel, Mails } from '../types';
-import { Mail as MailType } from '@tyro/api/src/gql/graphql';
+import { Mail as MailType, UnreadCountFilter } from '@tyro/api/src/gql/graphql';
+import { useUser } from '@tyro/api';
+import { LABEL_TYPE } from '../constants';
 
 // ----------------------------------------------------------------------
 
 export default function Mail() {
   const { themeStretch } = useSettings();
 
-  const { mailId, labelName } = useParams();
-  console.log('labelName - ', labelName);
-  //console.log(mailId);
+  const { mailId } = useParams();
   const [labels, setLabels] = useState<MailLabel[]>([]);
   const { isLoading: isLoadingLabels, data: labelsData } = useLabels();
   const [mail, setMail] = useState<MailType | null>(null);
   const [activeLabelName, setActiveLabelName] = useState<string>('');
-  //const { isLoading: isLoadingMails, data: mailsData } = useMails(activeLabelName);
   const [mails, setMails] = useState<Mails>({ byId: {}, allIds: [] });
-  console.log(activeLabelName);
+
+  const { user } = useUser();
+
+  const filter: UnreadCountFilter = useMemo(() => ({
+    personPartyId: user?.profiles && user.profiles[0].partyId,
+  }), [user?.profiles]);
+
+  const { data: unreadCountData } = useUnreadCount(filter);
 
   useEffect(() => {
     if (labelsData?.length) {
       setActiveLabelName(labelsData[0].name);
       const starredLabel: MailLabel = {
+        originalId: 0,
         id: 'starred',
         name: 'Starred',
-        type: 'system',
+        type: LABEL_TYPE.SYSTEM,
         unreadCount: 0,
       };
-      // if (mailsData && !labels.filter(label => label.id === 'starred').length) {
-      //   let starCount = 0;
-      //   mailsData.forEach(mail => {
-      //     if (mail?.starred) {
-      //       starCount++;
-      //     }
-      //   });
-      //   const starredLabel: MailLabel = {
-      //     id: 'starred',
-      //     name: 'Starred',
-      //     type: 'system',
-      //     unreadCount: starCount,
-      //   };
-      //   setLabels([...labels, starredLabel]);
-      // } else {
-        setLabels([...labels, ...labelsData, starredLabel]);
-      //}
+      const updatedLabelsData = labelsData.map(label => { 
+        if (unreadCountData?.filter(item => item?.labelId === label?.originalId).length) { 
+          return { ...label, 
+            unreadCount: unreadCountData?.filter(item => item?.labelId === label?.originalId)[0]?.count || label.unreadCount }
+          }; 
+        return label;
+      });
+      setLabels([...updatedLabelsData, starredLabel]);
     }
-  }, [labelsData//, mailsData
-  ]);
-
-  // useEffect(() => {
-  //   mailsData && setMails({ byId: objFromArray(mailsData), allIds: Object.keys(objFromArray(mailsData)) });
-  // }, [mailsData]);
+  }, [labelsData, unreadCountData]);
 
   useEffect(() => {
     if(mailId) {
@@ -104,13 +93,20 @@ export default function Mail() {
             isOpenSidebar={openSidebar}
             onCloseSidebar={() => setOpenSidebar(false)}
             onOpenCompose={() => setOpenCompose(true)}
-            //labels={labelsData ?? []}
             labels={labels}
             activeLabelName={activeLabelName}
             setActiveLabelName={setActiveLabelName}
             setMails={setMails}
           />
-          {mailId ? <MailDetails mail={mail} activeLabelName={activeLabelName}/> : <MailList mails={mails} labels={labelsData} onOpenSidebar={() => setOpenSidebar(true)} activeLabelName={activeLabelName}/>}
+          {mailId ? 
+            <MailDetails mail={mail} activeLabelName={activeLabelName} labels={labels}/> : 
+            <MailList 
+              mails={mails} 
+              labels={labelsData} 
+              onOpenSidebar={() => setOpenSidebar(true)} 
+              activeLabelName={activeLabelName}
+            />
+          }
           <MailCompose isOpenCompose={openCompose} onCloseCompose={() => setOpenCompose(false)} />
         </Card>
       </Container>

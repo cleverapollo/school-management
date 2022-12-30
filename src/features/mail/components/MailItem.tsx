@@ -1,9 +1,7 @@
-import { useParams, Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Box, Tooltip, Typography, Checkbox } from '@mui/material';
-// redux
-import { useTypedSelector } from '../../../store/store';
 // hooks
 import useResponsive from '../../../hooks/useResponsive';
 // utils
@@ -14,17 +12,16 @@ import { PATH_DASHBOARD } from '../../../routes/paths';
 // @types
 import { //Mail, 
   MailLabel } from '../types';
-import { Label as LabelType, Mail, MailStarredInput, MailReadInput } from '@tyro/api/src/gql/graphql';
+import { Label as LabelType, Mail, MailStarredInput } from '@tyro/api/src/gql/graphql';
 // components
 import Label from '../../../components/Label';
 import Avatar from '../../../components/Avatar';
 import Iconify from '../../../components/Iconify';
 //
 import MailItemAction from './MailItemAction';
-import { Maybe } from 'graphql/jsutils/Maybe';
-import { useStarMail, useReadMail } from '../api/mails';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { Mail as MailType } from '@tyro/api/src/gql/graphql';
+import { useStarMail } from '../api/mails';
+import { useEffect, useState } from 'react';
+import { useUser } from '@tyro/api';
 
 // ----------------------------------------------------------------------
 
@@ -45,23 +42,6 @@ const RootStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-const linkTo = (params: { systemLabel?: string; customLabel?: string }, mailId: string) => {
-  const { systemLabel, customLabel } = params;
-
-  const baseUrl = PATH_DASHBOARD.mail.root;
-
-  if (systemLabel) {
-    return `${baseUrl}/${systemLabel}/${mailId}`;
-  }
-  if (customLabel) {
-    return `${baseUrl}/label/${customLabel}/${mailId}`;
-  }
-  if (mailId) {
-    return `${baseUrl}?mailId=${mailId}`;
-  }
-  return baseUrl;
-};
-
 type Props = {
   mail: Mail;
   isDense: boolean;
@@ -69,7 +49,6 @@ type Props = {
   onDeselect: VoidFunction;
   onSelect: VoidFunction;
   labels?: MailLabel[];
-  //setMail: Dispatch<SetStateAction<MailType | null>>;
 };
 
 export default function MailItem({
@@ -81,16 +60,14 @@ export default function MailItem({
   labels,
   ...other
 }: Props) {
-  const params = useParams();
-  const [isStarred, toggleIsStarred] = useState<boolean | null>(null);
 
-//  const { labels } = useSelector((state) => state.mail);
-  console.log('mail - ', mail);
-  //const labels: MailLabel[] = [];
+  const [isStarred, toggleIsStarred] = useState<boolean | null>(null);
+  const { user } = useUser();
 
   const isDesktop = useResponsive('up', 'md');
 
-  const isAttached = false;//mail?.files?.length > 0;
+  //ToDO: refactor isAttached when attachments will be implemented
+  const isAttached = false;
 
   const handleChangeCheckbox = (checked: boolean) => (checked ? onSelect() : onDeselect());
 
@@ -107,24 +84,17 @@ export default function MailItem({
     }
   }, [isStarred]);
 
-  // const readFilter: MailReadInput = {
-  //   mailId: mail.id,
-  //   threadId: mail.threadId,
-  // }
-
-  // const readMutation = useReadMail(readFilter);
-
   return (
     <RootStyle
       sx={{
-        ...(//!mail.isUnread && {
-          //(
-            !!mail.readOn  //|| !!mail.labels?.filter(label => label?.id === 2).length) 
-            && {
-          color: 'text.primary',
-          backgroundColor: 'background.paper',
-        }),
-        ...(isSelected && { bgcolor: 'action.selected' }),
+        ...((!!mail.readOn || 
+            !!mail.labels?.filter(label => label?.id === 2).length || 
+            (user?.profiles && user.profiles[0].partyId === mail.senderPartyId))
+          && {
+            color: 'text.primary',
+            backgroundColor: 'background.paper',
+          }),
+          ...(isSelected && { bgcolor: 'action.selected' }),
       }}
       {...other}
     >
@@ -139,33 +109,15 @@ export default function MailItem({
           <Tooltip title="Starred">
             <Checkbox
               color="warning"
-              //defaultChecked={mail.isStarred}
               onChange={() => toggleIsStarred(!mail.starred)}
               defaultChecked={!!mail.starred}
               icon={<Iconify icon={'eva:star-outline'} />}
               checkedIcon={<Iconify icon={'eva:star-fill'} />}
             />
           </Tooltip>
-          <Tooltip title="Important">
-            <Checkbox
-              color="warning"
-              //defaultChecked={mail.isImportant}
-              defaultChecked={false}
-              checkedIcon={<Iconify icon={'ic:round-label-important'} />}
-              icon={<Iconify icon={'ic:round-label-important'} />}
-            />
-          </Tooltip>
         </Box>
       )}
 
-      {/* <Box
-        component={RouterLink}
-        to={`/mail?maildId=${mail.id}`}//linkTo(params, mail.id)}
-        sx={{
-          color: 'inherit',
-          textDecoration: 'none',
-        }}
-      > */}
       <RouterLink to={`/mail/${mail.id}`} style={{ color: 'inherit', textDecoration: 'none', }}>
         <Box
           sx={{
@@ -199,8 +151,10 @@ export default function MailItem({
               sx={{
                 pr: 2,
                 minWidth: 200,
-                ...(//!mail.isUnread 
-                  !!mail.readOn && { fontWeight: 'fontWeightBold' }),
+                ...((!!mail.readOn || 
+                  !!mail.labels?.filter(label => label?.id === 2).length || 
+                  (user?.profiles && user.profiles[0].partyId === mail.senderPartyId)) 
+                && { fontWeight: 'fontWeightBold' }),
               }}
             >
               {mail.senderPartyId}
@@ -215,7 +169,11 @@ export default function MailItem({
             >
               <Box
                 component="span"
-                sx={{ ...(!!mail.readOn && { fontWeight: 'fontWeightBold' }) }}
+                sx={{ ...((!!mail.readOn || 
+                    !!mail.labels?.filter(label => label?.id === 2).length || 
+                    (user?.profiles && user.profiles[0].partyId === mail.senderPartyId)) 
+                  && { fontWeight: 'fontWeightBold' }) 
+                }}
               >
                 {mail.subject}
               </Box>
@@ -223,7 +181,10 @@ export default function MailItem({
               <Box
                 component="span"
                 sx={{
-                  ...(!!mail.readOn && { color: 'text.secondary' }),
+                  ...((!!mail.readOn || 
+                    !!mail.labels?.filter(label => label?.id === 2).length || 
+                    (user?.profiles && user.profiles[0].partyId === mail.senderPartyId)) 
+                  && { color: 'text.secondary' }),
                 }}
               >
                 {mail.body}
@@ -266,13 +227,22 @@ export default function MailItem({
               </>
             )}
 
+            {mail?.labels?.map(label => label?.custom && 
+              <Box sx={{ bgcolor: label.colour, padding: '1px 8px', borderRadius: '6px' }}>
+                {label.name}
+              </Box>)
+            }
+
             <Typography
               variant="caption"
               sx={{
                 flexShrink: 0,
                 minWidth: 120,
                 textAlign: 'right',
-                ...(!!mail.readOn && { fontWeight: 'fontWeightBold' }),
+                ...((!!mail.readOn || 
+                  !!mail.labels?.filter(label => label?.id === 2).length || 
+                  (user?.profiles && user.profiles[0].partyId === mail.senderPartyId)) 
+                && { fontWeight: 'fontWeightBold' }),
               }}
             >
               {fDate(mail.sentOn)}
@@ -280,7 +250,6 @@ export default function MailItem({
           </Box>
         </Box>
       </RouterLink>
-      {/* </Box> */}
 
       <MailItemAction className="showActions" />
     </RootStyle>

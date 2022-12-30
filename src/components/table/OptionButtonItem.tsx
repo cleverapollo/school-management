@@ -5,7 +5,7 @@ import SvgIconStyle from '../SvgIconStyle';
 import {Option} from './types';
 import {ListItemIconStyle} from '../nav-section/vertical/style';
 import useLocales from '../../hooks/useLocales';
-import ConfirmationDialog, {ConfirmationDialogProps} from "../dialog/ConfimationDialog";
+import ConfirmationDialog, { ConfirmationDialogProps } from "../dialog/ConfimationDialog";
 
 
 const getOptionsIcon = (name: string) => (
@@ -50,7 +50,7 @@ const OptionButtonItem = <T extends unknown>({option, row, index, closeFunc}: IO
         );
     } else {
         return (
-            <ListItemButton  dense>
+            <ListItemButton onClick={(e) => {option.action(e); closeFunc();}}  dense>
                 <ListItemIconStyle>{getOptionsIcon(option.icon)}</ListItemIconStyle>
                 <ListItemText id={`lable-${index}`} primary={translate(option.text)} />
             </ListItemButton>

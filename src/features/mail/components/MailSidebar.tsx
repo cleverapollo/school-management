@@ -9,7 +9,6 @@ import { NAVBAR } from '../../../config';
 // components
 import Iconify from '../../../components/Iconify';
 import Scrollbar from '../../../components/Scrollbar';
-//import { SkeletonMailSidebarItem } from '../../../components/skeleton';
 //
 import MailSidebarItem from './MailSidebarItem';
 // @types
@@ -17,6 +16,7 @@ import { Mails, MailLabel } from '../types';
 import { AddOutlined } from '@mui/icons-material';
 import { DialogAnimate } from '../../../components/animate';
 import LabelForm from './LabelForm';
+import { LabelInput, Maybe } from '@tyro/api';
 
 // ----------------------------------------------------------------------
 
@@ -33,13 +33,16 @@ type Props = {
 export default function MailSidebar({ isOpenSidebar, onOpenCompose, onCloseSidebar, labels, activeLabelName, setActiveLabelName, setMails }: Props) {
   const { pathname } = useLocation();
 
-//  const { labels } = useTypedSelector((state: RootState) => state.mail);
-
   const isDesktop = useResponsive('up', 'md');
 
-  const loading = !labels.length;
-
   const [isOpenDialog, setIsOpenDialog] = useState(false);
+  const [labelInfo, setLabelInfo] = useState<Maybe<LabelInput>>(null);
+
+  useEffect(() => {
+    if (labelInfo) {
+      setIsOpenDialog(true);
+    }
+  }, [labelInfo]);
 
   useEffect(() => {
     if (isOpenSidebar) {
@@ -69,12 +72,29 @@ export default function MailSidebar({ isOpenSidebar, onOpenCompose, onCloseSideb
       <Divider />
 
       <List disablePadding>
-        {(labels.map((label, index) =>
-           label && label.type !== 'custom' && <MailSidebarItem setActiveLabelName={setActiveLabelName} key={label.id} label={label} isActive={label.name === activeLabelName} setMails={setMails}/>
+        {(labels.map((label) =>
+          label && 
+          label.type !== 'custom' && 
+          <MailSidebarItem 
+            setActiveLabelName={setActiveLabelName} 
+            key={label.id} 
+            label={label} 
+            isActive={label.name === activeLabelName} 
+            setMails={setMails} 
+            setLabelInfo={setLabelInfo}
+          />
         ))}
       </List>
 
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#637381', pl: '25px', mt: '10px'}}>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        color: '#637381', 
+        pl: '25px', 
+        mt: '10px', 
+        pr: '7px'
+      }}>
         <Typography variant="body1">Labels</Typography>
         <IconButton onClick={() => setIsOpenDialog(true)}>
           <AddOutlined />
@@ -82,16 +102,26 @@ export default function MailSidebar({ isOpenSidebar, onOpenCompose, onCloseSideb
       </Box>
 
       <List disablePadding>
-        {(labels.map((label, index) =>
-          label && label.type === 'custom' && <MailSidebarItem setActiveLabelName={setActiveLabelName} key={label.id} label={label} isActive={label.name === activeLabelName} setMails={setMails} />
+        {(labels.map((label) =>
+          label && 
+          label.type === 'custom' && 
+          <MailSidebarItem 
+            setActiveLabelName={setActiveLabelName} 
+            key={label.id || label.name} 
+            label={label} 
+            isActive={label.name === activeLabelName} 
+            setMails={setMails} 
+            setLabelInfo={setLabelInfo}
+          />
         ))}
       </List>
 
       <DialogAnimate open={isOpenDialog} onClose={() => setIsOpenDialog(false)}>
-        <DialogTitle>{ 'New Label'}</DialogTitle>
+        <DialogTitle>{labelInfo ? 'Edit label' : 'New label'}</DialogTitle>
 
         <LabelForm
           onCancel={() => setIsOpenDialog(false)}
+          labelInfo={labelInfo}
         />
       </DialogAnimate>
     </Scrollbar>

@@ -20,7 +20,8 @@ export type MailLabelId =
   | 'important';
 
 export type MailLabel = {
-  id: MailLabelId;
+  originalId?: number;
+  id?: MailLabelId;
   type: string;
   name: string;
   unreadCount: number;

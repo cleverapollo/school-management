@@ -12,8 +12,6 @@ const subjectGroups = graphql(/* GraphQL */ `
       studentCount
       staff{
         partyId
-        firstName
-        lastName
       }
       irePP{
         level
@@ -36,8 +34,6 @@ const subjectGroupById = graphql(/* GraphQL */ `
       name
       students {
         partyId
-        firstName
-        lastName
       }
     }
   }

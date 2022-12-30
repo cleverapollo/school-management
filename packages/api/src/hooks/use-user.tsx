@@ -29,6 +29,7 @@ const myAuthDetailsDocument = graphql(/* GraphQL */ `
           userType
         }
         permissionIds
+        partyId
       }
     }
   }

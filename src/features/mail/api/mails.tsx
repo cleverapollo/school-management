@@ -1,7 +1,7 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { gqlClient, graphql, Exact } from '@tyro/api';
-import { InputMaybe, MailFilter, MailStarredInput, SendMailInput, MailReadInput } from '@tyro/api/src/gql/graphql';
-import { labelsMap } from './labels';
+import { gqlClient, graphql } from '@tyro/api';
+import { InputMaybe, MailStarredInput, SendMailInput, MailReadInput } from '@tyro/api/src/gql/graphql';
+import { DEFAULT_PAGINATION_LIMIT } from '../constants';
 
 const mails = graphql(/* GraphQL */ `
   query mail($filter: MailFilter){
@@ -129,22 +129,16 @@ const readMail = graphql(`
   }
 `);
 
-export function useMails(labelName: string) {
-  let labelId: number = 1;
-  Object.values(labelsMap).forEach((label, index) => {
-    if(label.toLowerCase() === labelName.toLowerCase()){
-      labelId = index + 1;
-    }
-  });
-  const starredFilter = { filter: { pagination: { limit: 50} , partyId: 5, starred: true}};
+export function useMails(labelId: number, profileId?: number | null) {
+  const starredFilter = { filter: { pagination: { limit: DEFAULT_PAGINATION_LIMIT }, partyId: profileId, starred: true}};
   return useQuery({
     queryKey: ['mail'],
     queryFn: async () =>
-      gqlClient.request(mails, labelName === 'Starred' ? starredFilter : { filter: { pagination: { limit: 50 }, 
-        partyId: 5, labelId: labelId, 
-        //id: 1
-      } }
-      ),
+      gqlClient.request(mails, labelId === 0 ? starredFilter : {
+        filter: {
+          pagination: { limit: DEFAULT_PAGINATION_LIMIT },
+        partyId: profileId, labelId: labelId,
+      }}),
     select: ({ mail }) => {
       return mail;
     }

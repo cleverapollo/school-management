@@ -1,4 +1,5 @@
-import { NavLink as RouterLink, useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { LabelInput, Maybe, useUser, Mail } from '@tyro/api';
 // @mui
 import { Typography, ListItemText, ListItemButton } from '@mui/material';
 // @types
@@ -9,9 +10,13 @@ import { MailLabel, Mails } from '../types';
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // components
 import Iconify from '../../../components/Iconify';
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useMails } from '../api/mails';
 import { objFromArray } from '../../../store/slices/mail';
+import { Label as LabelIcon } from '@mui/icons-material';
+import OptionButton from '../../../components/table/OptionButton';
+import { Option } from '../../../components/table/types';
+import { LABEL_TYPE } from '../constants';
 
 // ----------------------------------------------------------------------
 
@@ -34,13 +39,9 @@ const linkTo = (label: MailLabel) => {
 
   if (label.type === 'system') {
     return `${baseUrl}/label/${label.name}`;
-    //console.log('path - ', `localhost:6420${baseUrl}/label/${label.name}`);
-    //return `localhost:6420${baseUrl}/label/${label.name}`;
   }
   if (label.type === 'custom') {
     return `${baseUrl}/label/custom/${label.name}`;
-    //console.log('path - ', `localhost:6420${baseUrl}/label/custom/${label.name}`);
-    //return `localhost:6420${baseUrl}/label/custom/${label.name}`;
   }
   return baseUrl;
 };
@@ -52,18 +53,66 @@ type Props = {
   isActive: boolean;
   setActiveLabelName: Dispatch<SetStateAction<string>>;
   setMails: Dispatch<SetStateAction<Mails>>;
+  setLabelInfo: Dispatch<SetStateAction<Maybe<LabelInput>>>;
 };
 
 
-export default function MailSidebarItem({ label, isActive, setActiveLabelName, setMails, ...other }: Props) {
-  const navigate = useNavigate();
-  //const location = useLocation();
-  const isUnread = label.unreadCount > 0;
+export default function MailSidebarItem({ label, isActive, setActiveLabelName, setMails, setLabelInfo, ...other }: Props) {
+  const labelOptions: Option<any>[] = [
+    {
+      text: 'edit',
+      icon: 'edit',
+      action: (e) => { 
+        e.stopPropagation(); 
+        setLabelInfo({ id: label.originalId, name: label.name, colour: label.color })
+      },
+    },
+    {
+      text: 'Remove label',
+      icon: 'delete',
+      action: (e) => { e.stopPropagation(); },
+    },
+  ];
 
-  const { isLoading: isLoadingMails, data: mailsData, refetch } = useMails(label.name);
+  const navigate = useNavigate();
+  const isUnread = label.unreadCount > 0;
+  const [hovered, setHovered] = useState(false);
+  const { user } = useUser();
+
+  const { isLoading: isLoadingMails, data: mailsData, refetch } = useMails(label.originalId ?? 1, user?.profiles && user.profiles[0].partyId);
   useEffect(() => {
-    mailsData && setMails({ byId: objFromArray(mailsData), allIds: Object.keys(objFromArray(mailsData)) });
+    if(isActive) {
+      const mailsDataWithThreads: Maybe<Mail>[] = [];
+      mailsData?.forEach(mail => {
+        mailsDataWithThreads.push(mail);
+        if(mail?.threads?.length){
+          mail.threads.forEach(threadMail => {
+            mailsDataWithThreads.push(threadMail);
+          });
+        }
+      });
+      mailsDataWithThreads && setMails(
+        { 
+          byId: objFromArray(mailsDataWithThreads), 
+          allIds: Object.keys(objFromArray(mailsDataWithThreads)) 
+        }
+      );
+    }
   }, [mailsData]);
+
+  useEffect(() => {
+    if (isActive && user?.profiles?.length) {
+      refetch();
+    }
+  }, [isActive, user?.profiles]);
+
+  const onClickListItem = () => {
+    if (!isActive) {
+      setActiveLabelName(label.name); 
+      refetch(); 
+      navigate(linkTo(label));
+    }
+  }
 
   return (
     <ListItemButton
@@ -72,29 +121,30 @@ export default function MailSidebarItem({ label, isActive, setActiveLabelName, s
         height: 48,
         typography: 'body2',
         color: !isActive ? 'text.secondary' : 'text.primary',
-        textTransform: 'capitalize',
+        textTransform: label.type !== 'custom' ? 'capitalize' : 'none',
         fontWeight: !isActive ? '' : 'fontWeightMedium',
         bgcolor: !isActive? '' : 'action.selected',
-        // '&.active': {
-        //   color: 'text.primary',
-        //   fontWeight: 'fontWeightMedium',
-        //   bgcolor: 'action.selected',
-        // },
       }}
-      onClick={() => {if(!isActive){setActiveLabelName(label.name); refetch();//navigate(linkTo(label));
-      }}}
+      onClick={onClickListItem}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       {...other}
     >
-      {/* <RouterLink to={linkTo(label)} style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%'}}> */}
+      {label.type !== LABEL_TYPE.CUSTOM ? 
         <Iconify
-          icon={LABEL_ICONS[label.id]}
+          icon={LABEL_ICONS[typeof(label.id) !== 'number' ? (label.id ?? 'inbox') : 'inbox']} //ToDo: remove inbox
           sx={{ mr: 2, width: ICON.NAVBAR_ITEM, height: ICON.NAVBAR_ITEM, color: label.color }}
-        />
+        /> :
+        <LabelIcon sx={{ mr: 2, width: ICON.NAVBAR_ITEM, height: ICON.NAVBAR_ITEM, color: label.color }}/>
+      }
 
-        <ListItemText disableTypography primary={label.name} />
+      <ListItemText disableTypography primary={label.name} />
 
-        {isUnread && <Typography variant="caption">{label.unreadCount}</Typography>}
-      {/* </RouterLink> */}
+      {isUnread && 
+        (!hovered || label.type !== LABEL_TYPE.CUSTOM) && 
+        <Typography variant="caption">{label.unreadCount}</Typography>
+      }
+      {hovered && label.type === LABEL_TYPE.CUSTOM && <OptionButton options={labelOptions}/>}
     </ListItemButton>
   );
 }

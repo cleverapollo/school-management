@@ -1,19 +1,16 @@
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Box, Divider, Typography } from '@mui/material';
-// redux
-import { RootState, useDispatch, useTypedSelector } from '../../../store/store';
-import { getMail } from '../../../store/slices/mail';
 //
 import Markdown from '../../../components/Markdown';
 import Scrollbar from '../../../components/Scrollbar';
 import MailDetailsToolbar from './MailDetailsToolbar';
 import MailDetailsReplyInput from './MailDetailsReplyInput';
-import MailDetailsAttachments from './MailDetailsAttachments';
 import { Mail, MailReadInput } from '@tyro/api/src/gql/graphql';
 import { useReadMail } from '../api/mails';
+import { MailLabel } from '../types';
+import { MailDetailsAttachments } from '.';
 
 // ----------------------------------------------------------------------
 
@@ -33,22 +30,12 @@ const MarkdownStyle = styled('div')(({ theme }) => ({
 interface IProps{
   mail: Mail | null;
   activeLabelName: string;
+  labels: MailLabel[];
 }
 
 // ----------------------------------------------------------------------
 
-export default function MailDetails({ mail, activeLabelName }: IProps) {
-  //const { mailId = '' } = useParams();
-
-  const dispatch = useDispatch();
-
-  //const mail = useTypedSelector((state: RootState) => state.mail.mails.byId[mailId]);
-
-  //const isAttached = mail && mail.files && mail.files.length > 0;
-
-  // useEffect(() => {
-  //   dispatch(getMail(mailId));
-  // }, [dispatch, mailId]);
+export default function MailDetails({ mail, activeLabelName, labels }: IProps) {
 
   const readFilter: MailReadInput = {
     mailId: mail?.id,
@@ -58,7 +45,7 @@ export default function MailDetails({ mail, activeLabelName }: IProps) {
   const readMutation = useReadMail(readFilter);
 
   useEffect(() => {
-    if (mail && !mail?.readOn && activeLabelName !== 'sent') {
+    if (mail && !mail?.readOn && !mail.labels?.filter(label => label?.id === 2).length) {
       readMutation.mutate();
     }
   }, [mail, activeLabelName]);
@@ -69,7 +56,7 @@ export default function MailDetails({ mail, activeLabelName }: IProps) {
 
   return (
     <RootStyle>
-      <MailDetailsToolbar mail={mail} />
+      <MailDetailsToolbar mail={mail} labels={labels} activeLabelName={activeLabelName}/>
 
       <Divider />
 
@@ -88,7 +75,7 @@ export default function MailDetails({ mail, activeLabelName }: IProps) {
 
       <Divider />
 
-      <MailDetailsReplyInput />
+      <MailDetailsReplyInput mail={mail}/>
     </RootStyle>
   );
 }

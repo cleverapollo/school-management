@@ -6,6 +6,7 @@ import useResponsive from '../../../hooks/useResponsive';
 // components
 import Iconify from '../../../components/Iconify';
 import InputStyle from '../../../components/InputStyle';
+import { Dispatch, SetStateAction } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -26,6 +27,8 @@ type Props = {
   onToggleDense: VoidFunction;
   onSelectAll: VoidFunction;
   onDeselectAll: VoidFunction;
+  filterValue: string;
+  setFilterValue: Dispatch<SetStateAction<string>>;
 };
 
 export default function MailToolbar({
@@ -35,6 +38,8 @@ export default function MailToolbar({
   onToggleDense,
   onSelectAll,
   onDeselectAll,
+  filterValue,
+  setFilterValue,
   ...other
 }: Props) {
   const smUp = useResponsive('up', 'sm');
@@ -65,7 +70,7 @@ export default function MailToolbar({
             }
           />
           <Tooltip title="Refresh">
-            <IconButton>
+            <IconButton onClick={() => window.location.reload()}>
               <Iconify icon={'eva:refresh-fill'} width={20} height={20} />
             </IconButton>
           </Tooltip>
@@ -73,12 +78,6 @@ export default function MailToolbar({
           <Tooltip title="Dense">
             <IconButton onClick={onToggleDense}>
               <Iconify icon={'eva:collapse-fill'} width={20} height={20} />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="More">
-            <IconButton>
-              <Iconify icon={'eva:more-vertical-fill'} width={20} height={20} />
             </IconButton>
           </Tooltip>
         </>
@@ -90,6 +89,8 @@ export default function MailToolbar({
         stretchStart={180}
         size="small"
         placeholder="Search mail…"
+        value={filterValue}
+        onChange={(e) => setFilterValue(e.target.value)}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -105,17 +106,18 @@ export default function MailToolbar({
       {smUp && (
         <Box sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
           <Typography variant="body2" sx={{ mx: 2, color: 'text.secondary' }}>
-            1 - {mails} of {mails}
+            {/** ToDO: Implement pagination */}
+            1 - {mails} of {mails > 50 ? 50 : mails}
           </Typography>
 
           <Tooltip title="Next page">
-            <IconButton>
+            <IconButton disabled={mails < 50}>
               <Iconify icon={'eva:arrow-ios-back-fill'} width={20} height={20} />
             </IconButton>
           </Tooltip>
 
           <Tooltip title="Previous page">
-            <IconButton>
+            <IconButton disabled={mails < 50}>
               <Iconify icon={'eva:arrow-ios-forward-fill'} width={20} height={20} />
             </IconButton>
           </Tooltip>
