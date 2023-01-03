@@ -9,25 +9,21 @@ const subjectGroups = graphql(/* GraphQL */ `
       subjects{
         name
       }
-      studentCount
+      studentMembers {
+          memberCount
+      }
       staff{
-        partyId
-        person {
-            firstName
-            lastName    
-            avatarUrl
-        }  
-        
+                firstName
+                lastName
+                avatarUrl    
       }
       irePP{
         level
       }
       programmeStages {
-        programmeStage {
           programme {
             name
           }
-        }
       }
     }
   }
@@ -38,13 +34,11 @@ const subjectGroupById = graphql(/* GraphQL */ `
     subjectGroups(filter: $filter) {
       partyId
       name
-      students {
-        partyId
-          person {
-              firstName
-              lastName
-          }
-      }
+        students{
+            firstName
+            lastName
+            avatarUrl
+        }
     }
   }
 `);
