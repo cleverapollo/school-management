@@ -37,7 +37,7 @@ const getSubjectColumns = (translate: (text: any, options?: any) => never): Tabl
     fieldName: 'staff',
     filter: 'suggest',
     component: ({ row }) => {
-      var teachers = row.original.staff?.map(a => a?.person) as [Person]
+      var teachers = row.original.staff as [Person]
       return <MultiPersonsAvatars person={teachers}/>
     }
   },
