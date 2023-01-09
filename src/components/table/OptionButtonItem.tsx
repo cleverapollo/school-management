@@ -39,6 +39,7 @@ const OptionButtonItem = <T extends unknown>({option, row, index, closeFunc}: IO
         return (
             <ListItemButton onClick={handleOnClick} dense>
                 <ListItemIconStyle>{getOptionsIcon(option.icon)}</ListItemIconStyle>
+                {/* @ts-ignore */}
                 <ListItemText id={`lable-${index}`} primary={t(option.text)} />
                 {confirmation.title !== '' && <ConfirmationDialog  open={modalShown}
                                                                    title={confirmation.title}
@@ -52,6 +53,7 @@ const OptionButtonItem = <T extends unknown>({option, row, index, closeFunc}: IO
         return (
             <ListItemButton  dense>
                 <ListItemIconStyle>{getOptionsIcon(option.icon)}</ListItemIconStyle>
+                {/* @ts-ignore */}
                 <ListItemText id={`lable-${index}`} primary={t(option.text)} />
             </ListItemButton>
         );

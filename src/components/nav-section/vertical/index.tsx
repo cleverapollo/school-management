@@ -25,6 +25,7 @@ export default function NavSectionVertical({ navConfig, isCollapse, profileTypeN
                 }),
               }}
             >
+              {/* @ts-ignore */}
               {t(group.subheader)}
             </ListSubheaderStyle>
 

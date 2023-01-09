@@ -45,6 +45,7 @@ const NavItem = forwardRef<HTMLDivElement & HTMLAnchorElement, Props>(
         )}
 
         <ListItemText
+          // @ts-ignore
           primary={t(`authentication:${title}`)}
           primaryTypographyProps={{
             noWrap: true,
@@ -53,6 +54,7 @@ const NavItem = forwardRef<HTMLDivElement & HTMLAnchorElement, Props>(
         />
 
         {caption && (
+          // @ts-ignore
           <Tooltip title={t(`authentication:${caption}`)} arrow>
             <Box component="span" sx={{ ml: 0.5, lineHeight: 0 }}>
               <Iconify

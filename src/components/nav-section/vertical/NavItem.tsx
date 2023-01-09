@@ -15,7 +15,7 @@ import { ListItemStyle, ListItemTextStyle, ListItemIconStyle } from './style';
 type Props = NavItemProps & ListItemButtonProps;
 
 export default function NavItem({ item, depth, active, open, isCollapse, ...other }: Props) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['authentication']);
 
   const { title, icon, info, children, disabled, caption, permissions } = item;
 
@@ -27,11 +27,14 @@ export default function NavItem({ item, depth, active, open, isCollapse, ...othe
 
       <ListItemTextStyle
         isCollapse={isCollapse}
-        primary={t(title)}
+        // @ts-ignore
+        primary={t(`authentication:${title}`)}
         secondary={
           caption && (
-            <Tooltip title={t(caption)} placement="top-start">
-              <span>{t(caption)}</span>
+            // @ts-ignore
+            <Tooltip title={t(`authentication:${caption}`)} placement="top-start">
+              {/* @ts-ignore */}
+              <span>{t(`authentication:${caption}`)}</span>
             </Tooltip>
           )
         }

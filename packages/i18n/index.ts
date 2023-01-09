@@ -7,6 +7,7 @@ import HttpBackend, { HttpBackendOptions } from 'i18next-http-backend';
 import { en, fr, vn, cn, ar } from '../../public/locales';
 
 export { useTranslation } from 'react-i18next';
+export type { TFunction } from 'i18next';
 
 export const defaultNS = 'common';
 export const resources = {

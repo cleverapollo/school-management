@@ -16,7 +16,7 @@ interface AdminPanelTenant extends Tenant {
   tech: string;
 }
 
-type GetExampleSchoolColumns = (translate: TFunction, navigate: NavigateFunction) => TableColumn<AdminPanelTenant>[];
+type GetExampleSchoolColumns = (translate: TFunction<"authentication"[], undefined, "authentication"[]>, navigate: NavigateFunction) => TableColumn<AdminPanelTenant>[];
 
 const getExampleSchoolColumns: GetExampleSchoolColumns = (translate, navigate) => ([
   {

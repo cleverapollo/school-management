@@ -5,9 +5,8 @@ import { Fragment, useMemo } from "react";
 import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
 import Table from '../../../components/table/Table';
 import { TableColumn } from '../../../components/table/types';
-import { useTranslation } from '@tyro/i18n';
+import { useTranslation, TFunction } from '@tyro/i18n';
 import { useAdminPartyPeopleByTenantId } from "../api/party-people";
-import { TFunction } from 'i18next';
 
 interface AdminPanelPeople extends Person {
   name: string;
@@ -16,11 +15,11 @@ interface AdminPanelPeople extends Person {
   tech: string;
 }
 
-type GetExamplePeopleColumns = (translate: TFunction, navigate: NavigateFunction) => TableColumn<AdminPanelPeople>[];
+type GetExamplePeopleColumns = (translate: TFunction<"authentication"[], undefined, "authentication"[]>, navigate: NavigateFunction) => TableColumn<AdminPanelPeople>[];
 
 const getExamplePeopleColumns: GetExamplePeopleColumns = (translate, navigate) => ([
   {
-    columnDisplayName: translate('common:name'),
+    columnDisplayName: translate('authentication:name'),
     fieldName: 'name',
     filter: 'suggest',
     isMandatory: true,
@@ -32,17 +31,17 @@ const getExamplePeopleColumns: GetExamplePeopleColumns = (translate, navigate) =
     },
   },
   {
-    columnDisplayName: translate('common:type'),
+    columnDisplayName: translate('authentication:type'),
     fieldName: 'type',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('common:partyId'),
+    columnDisplayName: translate('authentication:partyId'),
     fieldName: 'partyId',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('common:tenant'),
+    columnDisplayName: translate('authentication:tenant'),
     fieldName: 'tenant',
   },
   {
@@ -55,7 +54,7 @@ const getExamplePeopleColumns: GetExamplePeopleColumns = (translate, navigate) =
         await getUser();
         navigate('/', { replace: true });
       }}>
-        { translate('common:emulate') }
+        {translate('authentication:emulate') }
       </Button>)
     }
   },
@@ -67,7 +66,7 @@ const getExamplePeopleColumns: GetExamplePeopleColumns = (translate, navigate) =
 
 export function PeoplesTable() {
   const { schoolId } = useParams();
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['authentication']);
   const navigate = useNavigate();
   const { data, isLoading } = useAdminPartyPeopleByTenantId(Number(schoolId));
   const people = data as AdminPanelPeople[] | undefined;
