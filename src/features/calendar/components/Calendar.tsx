@@ -23,9 +23,8 @@ import HeaderBreadcrumbs from '../../../components/HeaderBreadcrumbs';
 // sections
 import { CalendarForm, CalendarStyle, CalendarToolbar } from '.';
 import { useCalendarEvents, useUpdateCalendarEvents } from '../api/events'; 
-import { CalendarEventFilter, Maybe } from '@tyro/api/src/gql/graphql';
 import CalendarEventView from './CalendarEventView';
-import { useUser } from '@tyro/api';
+import { useUser, Maybe, CalendarEventFilter } from '@tyro/api';
 import { PROFILE_TYPE_NAMES } from '../../../constants';
 
 // ----------------------------------------------------------------------

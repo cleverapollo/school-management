@@ -17,7 +17,7 @@ import { FormProvider, RHFTextField, RHFSwitch, RHFSelect } from '../../../compo
 import { useCreateCalendarEvents, useDeleteCalendarEvents } from '../api/events';
 import { CalendarEventType, CreateCalendarEventsInput, CalendarEventAttendeeType, Maybe } from '@tyro/api/src/gql/graphql';
 import { localDateStringToCalendarDate } from '../../../utils/formatTime';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ParticipantInput from './ParticipantInput';
 
 // ----------------------------------------------------------------------

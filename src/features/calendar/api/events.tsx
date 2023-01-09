@@ -1,8 +1,7 @@
-import { useMutation } from '@tanstack/react-query';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql } from '@tyro/api';
 import { EventInput } from '@fullcalendar/common';
-import { CalendarEventFilter, CreateCalendarEventsInput, CalendarEventAttendeeType } from '@tyro/api/src/gql/graphql';
+import { CalendarEventFilter, CreateCalendarEventsInput, CalendarEventAttendeeType } from '@tyro/api';
 import { COLOR_OPTIONS, Participant } from '../components/CalendarForm';
 
 export interface ExtendedEventInput extends EventInput {

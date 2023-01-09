@@ -3,7 +3,7 @@ import { Avatar, Button, MenuItem, Popover, IconButton, Typography } from '@mui/
 import { Participant } from './CalendarForm';
 import { Dispatch, SetStateAction, useRef, useState } from 'react';
 import { Box, Stack } from '@mui/system';
-import { CalendarEventAttendeeType } from '@tyro/api/src/gql/graphql';
+import { CalendarEventAttendeeType } from '@tyro/api';
 import Close from '@mui/icons-material/Close';
 
 // ----------------------------------------------------------------------
