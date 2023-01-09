@@ -10,14 +10,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Stack, Button, Tooltip, TextField, IconButton, DialogActions, MenuItem } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { MobileDateTimePicker } from '@mui/x-date-pickers';
-// redux
-import { useDispatch } from '../../../store/store';
-import { updateEvent, deleteEvent } from '../../../store/slices/calendar';
 // components
 import Iconify from '../../../components/Iconify';
 import { ColorSinglePicker } from '../../../components/color-utils';
 import { FormProvider, RHFTextField, RHFSwitch, RHFSelect } from '../../../components/hook-form';
-import { useCreateCalendarEvents } from '../api/events';
+import { useCreateCalendarEvents, useDeleteCalendarEvents } from '../api/events';
 import { CalendarEventType, CreateCalendarEventsInput, CalendarEventAttendeeType, Maybe } from '@tyro/api/src/gql/graphql';
 import { localDateStringToCalendarDate } from '../../../utils/formatTime';
 import { useEffect, useMemo, useState } from 'react';
@@ -145,8 +142,17 @@ export default function CalendarForm({ event, range, onCancel }: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [eventData, setEventData] = useState<Maybe<CreateCalendarEventsInput>>(null);
+  const [eventIdForDelete, setEventIdForDelete] = useState<Maybe<string>>(null);
+  const deleteMutation = useDeleteCalendarEvents(eventIdForDelete);
 
-  const dispatch = useDispatch();
+  //ToDo: uncomment this when deleteMutation will be implemented
+  // useEffect(() => {
+  //   if(eventIdForDelete) {
+  //     onCancel();
+  //     deleteMutation.mutate();
+  //     enqueueSnackbar('Delete success!');
+  //   }
+  // }, [eventIdForDelete]);
 
   const isCreating = Object.keys(event).length === 0;
 
@@ -215,28 +221,19 @@ export default function CalendarForm({ event, range, onCancel }: Props) {
         }
       ]};
 
-      if (event.id) {
-        //ToDo: implement Update Event
-        //dispatch(updateEvent(event.id, newEvent));
-        enqueueSnackbar('Update success!');
-      } else {
+      if (!event.id) {
         enqueueSnackbar('Create success!');
         setEventData(dataEvent);
       }
-      // onCancel();
-      // reset();
     } catch (error) {
       console.error(error);
     }
   };
 
   const handleDelete = async () => {
-    //ToDo: implement Delete event
     if (!event.id) return;
     try {
-      onCancel();
-      dispatch(deleteEvent(event.id));
-      enqueueSnackbar('Delete success!');
+      setEventIdForDelete(event.id);
     } catch (error) {
       console.error(error);
     }

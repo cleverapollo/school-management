@@ -127,3 +127,13 @@ export function useCreateCalendarEvents(input: CreateCalendarEventsInput) {
     mutationFn: async () => gqlClient.request(createEvents, { input: input }),
   });
 };
+
+//Refactor this hook after backend will be implemented
+export function useUpdateCalendarEvents(input: any) {
+  return {};
+};
+
+//Refactor this hook after backend will be implemented
+export function useDeleteCalendarEvents(input: any) {
+  return {};
+};

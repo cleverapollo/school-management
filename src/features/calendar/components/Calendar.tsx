@@ -8,9 +8,6 @@ import interactionPlugin, { EventResizeDoneArg } from '@fullcalendar/interaction
 import { useState, useRef, useEffect, Fragment, useMemo } from 'react';
 // @mui
 import { Card, Button, Container, DialogTitle } from '@mui/material';
-// redux
-import { RootState, useDispatch, useTypedSelector } from '../../../store/store';
-import { updateEvent } from '../../../store/slices/calendar';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // hooks
@@ -25,7 +22,7 @@ import { DialogAnimate } from '../../../components/animate';
 import HeaderBreadcrumbs from '../../../components/HeaderBreadcrumbs';
 // sections
 import { CalendarForm, CalendarStyle, CalendarToolbar } from '.';
-import { useCalendarEvents } from '../api/events'; 
+import { useCalendarEvents, useUpdateCalendarEvents } from '../api/events'; 
 import { CalendarEventFilter, Maybe } from '@tyro/api/src/gql/graphql';
 import CalendarEventView from './CalendarEventView';
 import { useUser } from '@tyro/api';
@@ -46,6 +43,13 @@ const filter: CalendarEventFilter = {
   "partyIds": [610],
 };
 
+interface UpdateEventData {
+  id: string;
+  allDay: boolean;
+  start: Date | null;
+  end: Date | null;
+}
+
 
 export default function Calendar() {
   const { themeStretch } = useSettings();
@@ -55,8 +59,6 @@ export default function Calendar() {
   //ToDO: implement isEditable with permissions
   const isEditable = profileTypeName === PROFILE_TYPE_NAMES.ADMIN || profileTypeName === PROFILE_TYPE_NAMES.TEACHER;
 
-  const dispatch = useDispatch();
-
   const isDesktop = useResponsive('up', 'sm');
 
   const calendarRef = useRef<FullCalendar>(null);
@@ -65,7 +67,6 @@ export default function Calendar() {
 
   const [view, setView] = useState<CalendarView>(isDesktop ? 'dayGridMonth' : 'listWeek');
 
-  //const { isOpenModal, selectedRange } = useTypedSelector((state) => state.calendar);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [selectedRange, setSelectedRange] = useState<null | Range>(null);
 
@@ -79,6 +80,16 @@ export default function Calendar() {
     }
     return null;
   }, [selectedEventId]);
+
+  const [updateEventData, setUpdateEventData] = useState<UpdateEventData | null>(null);
+  const mutation = useUpdateCalendarEvents(updateEventData);
+
+  //ToDo: Uncomment this when mutation will be implemented
+  // useEffect(() => {
+  //   if (updateEventData) {
+  //     mutation.mutate();
+  //   }
+  // }, [updateEventData]);
 
   useEffect(() => {
     const calendarEl = calendarRef.current;
@@ -142,31 +153,27 @@ export default function Calendar() {
     setIsOpenModal(true);
   };
 
-  //ToDo: remove redux when update event will be implemented
   const handleResizeEvent = async ({ event }: EventResizeDoneArg) => {
     try {
-      dispatch(
-        updateEvent(event.id, {
-          allDay: event.allDay,
-          start: event.start,
-          end: event.end,
-        })
-      );
+      setUpdateEventData({
+        id: event.id,
+        allDay: event.allDay,
+        start: event.start,
+        end: event.end,
+      });
     } catch (error) {
       console.error(error);
     }
   };
 
-  //ToDo: remove redux when update event will be implemented
   const handleDropEvent = async ({ event }: EventDropArg) => {
     try {
-      dispatch(
-        updateEvent(event.id, {
-          allDay: event.allDay,
-          start: event.start,
-          end: event.end,
-        })
-      );
+      setUpdateEventData({
+        id: event.id,
+        allDay: event.allDay,
+        start: event.start,
+        end: event.end,
+      });
     } catch (error) {
       console.error(error);
     }
