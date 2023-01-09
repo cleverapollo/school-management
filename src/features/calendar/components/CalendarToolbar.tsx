@@ -1,6 +1,6 @@
 // @mui
 import { styled } from '@mui/material/styles';
-import { Stack, Button, Tooltip, Typography, IconButton, ToggleButton } from '@mui/material';
+import { Stack, Button, Tooltip, Typography, IconButton, ToggleButton, Box } from '@mui/material';
 // utils
 import { fDate } from '../../../utils/formatTime';
 // hooks
@@ -19,7 +19,7 @@ const VIEW_OPTIONS = [
   { value: 'listWeek', label: 'Agenda', icon: 'ic:round-view-agenda' },
 ] as const;
 
-const RootStyle = styled('div')(({ theme }) => ({
+const RootStyle = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   flexDirection: 'column',
