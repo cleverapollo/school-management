@@ -9,7 +9,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {PATH_AUTH} from "../../../routes/paths";
 import useIsMountedRef from "../../../hooks/useIsMountedRef";
 import {useSnackbar} from "notistack";
-import useLocales from "../../../hooks/useLocales";
+import { useTranslation } from '@tyro/i18n';
 import { useAuth, useUser } from '@tyro/api';
 
 // ----------------------------------------------------------------------
@@ -32,7 +32,7 @@ export default function AccountPopover() {
   const navigate = useNavigate();
   const isMountedRef = useIsMountedRef();
   const { enqueueSnackbar } = useSnackbar();
-  const { translate } = useLocales();
+  const { t } = useTranslation(['authentication']);
 
   const { user, activeProfile } = useUser();
 
@@ -126,7 +126,7 @@ export default function AccountPopover() {
           onClick={handleLogout}
           sx={{ m: 1 }}
         >
-          {translate('logout')}
+          {t('authentication:logout')}
         </MenuItem>
       </MenuPopover>
     </>

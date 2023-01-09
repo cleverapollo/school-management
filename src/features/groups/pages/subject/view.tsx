@@ -6,11 +6,12 @@ import { useNavigate, useParams } from 'react-router';
 import { useCustomGroupById, useEnrolmentGroupById } from '../../api/general-groups';
 import Table from '../../../../components/table/Table';
 import Breadcrumbs from '../../../../components/Breadcrumbs';
-import useLocales from '../../../../hooks/useLocales';
+import { useTranslation } from '@tyro/i18n';
 import { TableColumn, Option } from '../../../../components/table/types';
 import OptionButton from '../../../../components/table/OptionButton';
 import { GroupMembership } from '@tyro/api';
 import { useSubjectGroupById, useSubjectGroups } from '../../api/subject-groups';
+import { TFunction } from 'i18next';
 
 
 interface SubjectExactGroupData extends GroupMembership {
@@ -30,7 +31,7 @@ export const subjectOptions: Option<SubjectExactGroupData>[] = [
   },
 ];
 
-const getSubjectGroupColumns = (translate: (text: any, options?: any) => never): TableColumn<SubjectExactGroupData>[] => [
+const getSubjectGroupColumns = (translate: TFunction): TableColumn<SubjectExactGroupData>[] => [
   {
     columnDisplayName: translate('name'),
     fieldName: 'person',
@@ -55,7 +56,7 @@ const getSubjectGroupColumns = (translate: (text: any, options?: any) => never):
 ];
 
 export default function ViewSubjectGroupPage() {
-  const { translate } = useLocales();
+  const { t } = useTranslation(['common']);
   const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { groupId } = useParams();
@@ -69,8 +70,8 @@ export default function ViewSubjectGroupPage() {
   const { data, isLoading } = useSubjectGroupById(groupId);
   const tableData = (data?.members ?? []).map(member => ({ ...member, tech: '' })) as SubjectExactGroupData[];
 
-  const subjectGroupColumns = useMemo(() => getSubjectGroupColumns(translate), [translate]);
-  const title = `${data?.name} ${translate('memberList')}`;
+  const subjectGroupColumns = useMemo(() => getSubjectGroupColumns(t), [t]);
+  const title = `${data?.name} ${t('common:memberList')}`;
 
   return (
     <Page title={title} isLoading={isLoading}>
@@ -80,7 +81,7 @@ export default function ViewSubjectGroupPage() {
         </Typography>
         <Breadcrumbs links={[
           {
-            name: translate('subjectGroups'),
+            name: t('common:subjectGroups'),
             href: './..'
           },
           {

@@ -1,7 +1,7 @@
 // @mui
 import { Box, Tooltip, ListItemButtonProps } from '@mui/material';
 // hooks
-import useLocales from '../../../hooks/useLocales';
+import { useTranslation } from '@tyro/i18n';
 // guards
 import PermissionBasedGuard from '../../../guards/PermissionBasedGuard';
 //
@@ -15,7 +15,7 @@ import { ListItemStyle, ListItemTextStyle, ListItemIconStyle } from './style';
 type Props = NavItemProps & ListItemButtonProps;
 
 export default function NavItem({ item, depth, active, open, isCollapse, ...other }: Props) {
-  const { translate } = useLocales();
+  const { t } = useTranslation();
 
   const { title, icon, info, children, disabled, caption, permissions } = item;
 
@@ -27,11 +27,11 @@ export default function NavItem({ item, depth, active, open, isCollapse, ...othe
 
       <ListItemTextStyle
         isCollapse={isCollapse}
-        primary={translate(title)}
+        primary={t(title)}
         secondary={
           caption && (
-            <Tooltip title={translate(caption)} placement="top-start">
-              <span>{translate(caption)}</span>
+            <Tooltip title={t(caption)} placement="top-start">
+              <span>{t(caption)}</span>
             </Tooltip>
           )
         }

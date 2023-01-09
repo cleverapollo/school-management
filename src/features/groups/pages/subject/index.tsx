@@ -1,7 +1,7 @@
 import Table from '../../../../components/table/Table';
 import {Option, TableColumn} from '../../../../components/table/types';
 import { Button, Container, Typography } from "@mui/material";
-import useLocales from "../../../../hooks/useLocales";
+import { useTranslation } from '@tyro/i18n';
 import OptionButton from "../../../../components/table/OptionButton";
 import { useNavigate } from "react-router";
 import {Person, SubjectGroup, UserType, useUser} from '@tyro/api';
@@ -11,6 +11,7 @@ import useSettings from '../../../../hooks/useSettings';
 import { useSubjectGroups } from '../../api/subject-groups';
 import ColoredBox from '../../components/ColoredBox';
 import MultiPersonsAvatars from "../../components/MultiPersonsAvatars";
+import { TFunction } from 'i18next';
 
 interface SubjectGroupData extends SubjectGroup {
   firstButton?: string;
@@ -48,7 +49,7 @@ export const adminOptions: Option<SubjectGroupData>[] = [
     },
 ];
 
-const getSubjectGroupColumns = (translate: (text: any, options?: any) => never, isAdminUserType: boolean, isTabsNeeded: boolean): TableColumn<SubjectGroupData>[] => ([
+const getSubjectGroupColumns = (translate: TFunction, isAdminUserType: boolean, isTabsNeeded: boolean): TableColumn<SubjectGroupData>[] => ([
   {
     columnDisplayName: 'id',
     fieldName: 'partyId',
@@ -110,7 +111,7 @@ const getSubjectGroupColumns = (translate: (text: any, options?: any) => never, 
 ]);
 
 export default function SubjectGroups() {
-  const { translate } = useLocales();
+  const { t } = useTranslation();
   const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { activeProfile } = useUser();
@@ -122,12 +123,12 @@ export default function SubjectGroups() {
   const subjectGroupData: SubjectGroupData[] = data?.map(group => {
     return {
       ...group,
-      firstButton: translate('view'),
+      firstButton: t('view'),
       tech: ''
     } as SubjectGroupData || []
   }) || [];
 
-  const subjectGroupColumns = useMemo(() => getSubjectGroupColumns(translate, isAdminUserType, isTabsNeeded), [translate, isAdminUserType, isTabsNeeded]);
+  const subjectGroupColumns = useMemo(() => getSubjectGroupColumns(t, isAdminUserType, isTabsNeeded), [t, isAdminUserType, isTabsNeeded]);
 
   return (
     <Page title="Subject groups" isLoading={isLoading}>

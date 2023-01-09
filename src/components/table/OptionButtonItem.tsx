@@ -4,7 +4,7 @@ import {useState} from 'react';
 import SvgIconStyle from '../SvgIconStyle';
 import {Option} from './types';
 import {ListItemIconStyle} from '../nav-section/vertical/style';
-import useLocales from '../../hooks/useLocales';
+import { useTranslation } from '@tyro/i18n';
 import ConfirmationDialog, {ConfirmationDialogProps} from "../dialog/ConfimationDialog";
 
 
@@ -20,7 +20,7 @@ interface IOptionButtonItemProps<Type> {
 }
 
 const OptionButtonItem = <T extends unknown>({option, row, index, closeFunc}: IOptionButtonItemProps<T>) => {
-  const { translate } = useLocales();
+  const { t } = useTranslation();
     const [modalShown, setModalShown] = useState(false);
 
     const handleOnClick = (e : any) =>{
@@ -39,7 +39,7 @@ const OptionButtonItem = <T extends unknown>({option, row, index, closeFunc}: IO
         return (
             <ListItemButton onClick={handleOnClick} dense>
                 <ListItemIconStyle>{getOptionsIcon(option.icon)}</ListItemIconStyle>
-                <ListItemText id={`lable-${index}`} primary={translate(option.text)} />
+                <ListItemText id={`lable-${index}`} primary={t(option.text)} />
                 {confirmation.title !== '' && <ConfirmationDialog  open={modalShown}
                                                                    title={confirmation.title}
                                                                    description={confirmation.description} confirmText={confirmation.confirmText}
@@ -52,7 +52,7 @@ const OptionButtonItem = <T extends unknown>({option, row, index, closeFunc}: IO
         return (
             <ListItemButton  dense>
                 <ListItemIconStyle>{getOptionsIcon(option.icon)}</ListItemIconStyle>
-                <ListItemText id={`lable-${index}`} primary={translate(option.text)} />
+                <ListItemText id={`lable-${index}`} primary={t(option.text)} />
             </ListItemButton>
         );
     }

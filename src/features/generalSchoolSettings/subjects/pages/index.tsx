@@ -1,15 +1,16 @@
 import Table from '../../../../components/table/Table';
 import { TableColumn } from '../../../../components/table/types';
 import {  Container, Typography } from "@mui/material";
-import useLocales from "../../../../hooks/useLocales";
+import { useTranslation } from '@tyro/i18n';
 import Page from "../../../../components/Page";
 import useSettings from "../../../../hooks/useSettings";
 import {useCatalogueSubjects} from "../api/subjects";
 import { useMemo } from 'react';
 import {Subject} from "@tyro/api";
+import { TFunction } from 'i18next';
 
 
-const getColumns = (translate: (text: any, options?: any) => never): TableColumn<Subject>[] => ([
+const getColumns = (translate: TFunction): TableColumn<Subject>[] => ([
   {
     columnDisplayName: translate('Name'),
     fieldName: 'name',
@@ -51,11 +52,11 @@ const getColumns = (translate: (text: any, options?: any) => never): TableColumn
 
 export function Subjects() {
 
-  const { translate } = useLocales();
+  const { t } = useTranslation();
   const { themeStretch } = useSettings();
   const { data, isLoading } = useCatalogueSubjects();
 
-  const columns = useMemo(() => getColumns(translate), [translate]);
+  const columns = useMemo(() => getColumns(t), [t]);
 
   const subjects : Subject[] = data as Subject[]
   return (

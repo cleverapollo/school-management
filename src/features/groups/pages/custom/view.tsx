@@ -1,15 +1,16 @@
 import { useEffect, useMemo } from 'react';
-import { Avatar, Container, Typography } from '@mui/material';
+import { Container, Typography } from '@mui/material';
 import useSettings from '../../../../hooks/useSettings';
 import Page from '../../../../components/Page';
 import { useNavigate, useParams } from 'react-router';
 import { useCustomGroupById } from '../../api/general-groups';
 import Table from '../../../../components/table/Table';
 import Breadcrumbs from '../../../../components/Breadcrumbs';
-import useLocales from '../../../../hooks/useLocales';
+import { useTranslation } from '@tyro/i18n';
 import { TableColumn, Option } from '../../../../components/table/types';
 import OptionButton from '../../../../components/table/OptionButton';
 import { GeneralGroupMember } from '@tyro/api';
+import { TFunction } from 'i18next';
 
 
 interface CustomExactGroupData extends GeneralGroupMember {
@@ -34,7 +35,7 @@ const customOptions: Option<CustomExactGroupData>[] = [
   },
 ];
 
-const getCustomGroupColumns = (translate: (text: any, options?: any) => never): TableColumn<CustomExactGroupData>[] => [
+const getCustomGroupColumns = (translate: TFunction): TableColumn<CustomExactGroupData>[] => [
   {
     columnDisplayName: translate('name'),
     fieldName: 'firstName',
@@ -59,7 +60,7 @@ const getCustomGroupColumns = (translate: (text: any, options?: any) => never): 
 ];
 
 export default function ViewCustomGroupPage() {
-  const { translate } = useLocales();
+  const { t } = useTranslation(['common']);
   const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { groupId } = useParams();
@@ -73,8 +74,8 @@ export default function ViewCustomGroupPage() {
   const { data, isLoading } = useCustomGroupById(groupId);
   const tableData = (data?.members ?? []).map(member => ({...member, tech: ''})) as CustomExactGroupData[];
 
-  const customGroupColumns = useMemo(() => getCustomGroupColumns(translate), [translate]);
-  const title = `${ data?.name } ${ translate('memberList') }`;
+  const customGroupColumns = useMemo(() => getCustomGroupColumns(t), [t]);
+  const title = `${ data?.name } ${ t('common:memberList') }`;
 
   return (
     <Page title={title} isLoading={isLoading}>
@@ -84,7 +85,7 @@ export default function ViewCustomGroupPage() {
         </Typography>
         <Breadcrumbs links={[
           {
-            name: translate('customGroups'),
+            name: t('common:customGroups'),
             href: './..'
           },
           {

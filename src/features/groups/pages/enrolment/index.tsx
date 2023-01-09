@@ -1,7 +1,7 @@
 import Table from '../../../../components/table/Table';
 import {Option, TableColumn} from '../../../../components/table/types';
 import { Button, Container, Typography } from "@mui/material";
-import useLocales from "../../../../hooks/useLocales";
+import { useTranslation } from '@tyro/i18n';
 import OptionButton from "../../../../components/table/OptionButton";
 import { useNavigate } from "react-router";
 import {UserType, useUser} from '@tyro/api';
@@ -10,6 +10,7 @@ import { useMemo } from 'react';
 import { EnrolmentGroup } from '../../../../app/api/generated';
 import Page from '../../../../components/Page';
 import useSettings from '../../../../hooks/useSettings';
+import { TFunction } from 'i18next';
 
 interface EnrolmentGroupData extends EnrolmentGroup {
   firstButton?: string;
@@ -39,7 +40,7 @@ export const adminOptions: Option<EnrolmentGroupData>[] = [
     },
 ];
 
-const getEnrolmentGroupColumns = (translate: (text: any, options?: any) => never, isAdminUserType: boolean): TableColumn<EnrolmentGroupData>[] => ([
+const getEnrolmentGroupColumns = (translate: TFunction, isAdminUserType: boolean): TableColumn<EnrolmentGroupData>[] => ([
   {
     columnDisplayName: 'id',
     fieldName: 'id',
@@ -98,7 +99,7 @@ const getEnrolmentGroupColumns = (translate: (text: any, options?: any) => never
 ]);
 
 export default function EnrolmentGroups() {
-  const { translate } = useLocales();
+  const { t } = useTranslation(['common']);
   const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { activeProfile } = useUser();
@@ -106,12 +107,12 @@ export default function EnrolmentGroups() {
   const profileTypeName = activeProfile?.profileType?.userType;
   const isAdminUserType = profileTypeName === UserType.Admin;
 
-  const enrolmentGroupColumns = useMemo(() => getEnrolmentGroupColumns(translate, isAdminUserType), [translate, isAdminUserType]);
+  const enrolmentGroupColumns = useMemo(() => getEnrolmentGroupColumns(t, isAdminUserType), [t, isAdminUserType]);
 
   const enrolmentGroupData: EnrolmentGroupData[] = data?.map(group => (
     {
       ...group,
-      firstButton: isAdminUserType ? translate('view') : translate('notify'),
+      firstButton: isAdminUserType ? t('common:view') : t('common:notify'),
       tech: ''
     } as EnrolmentGroupData) || []
   ) || [];

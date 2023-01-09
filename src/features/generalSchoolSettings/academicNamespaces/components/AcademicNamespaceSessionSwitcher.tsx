@@ -4,8 +4,6 @@ import MenuPopover from '../../../../components/MenuPopover';
 import {useCoreAcademicNamespace} from "../api/academicNamespaces";
 import {AcademicNamespace, usePermissions} from "@tyro/api";
 import {HEADERS} from "../../../../constants";
-import {useTranslation} from "react-i18next";
-import useLocales from "../../../../hooks/useLocales";
 
 interface NamespacesDropdown {
     year: string;
@@ -18,7 +16,6 @@ export default function AcademicNamespaceSessionSwitcher() {
     const {data, isLoading} = useCoreAcademicNamespace();
     const {hasPermission} = usePermissions()
     const [currentYear, setCurrentYear] = useState(sessionNamespaceId || 3);
-    const {translate} = useLocales()
 
     const years = data as AcademicNamespace[]
     if(years == null){

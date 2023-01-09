@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 // @mui
 import { Box, Tooltip, ListItemButtonProps, ListItemText, ListItemIcon } from '@mui/material';
 // hooks
-import useLocales from '../../../hooks/useLocales';
+import { useTranslation } from '@tyro/i18n';
 // guards
 import PermissionBasedGuard from '../../../guards/PermissionBasedGuard';
 // config
@@ -18,7 +18,7 @@ type Props = NavItemProps & ListItemButtonProps;
 
 const NavItem = forwardRef<HTMLDivElement & HTMLAnchorElement, Props>(
   ({ item, depth, active, open, ...other }, ref) => {
-    const { translate } = useLocales();
+    const { t } = useTranslation(['authentication']);
 
     const { title, icon, info, children, disabled, caption, permissions } = item;
 
@@ -45,7 +45,7 @@ const NavItem = forwardRef<HTMLDivElement & HTMLAnchorElement, Props>(
         )}
 
         <ListItemText
-          primary={translate(title)}
+          primary={t(`authentication:${title}`)}
           primaryTypographyProps={{
             noWrap: true,
             variant: active ? 'subtitle2' : 'body2',
@@ -53,7 +53,7 @@ const NavItem = forwardRef<HTMLDivElement & HTMLAnchorElement, Props>(
         />
 
         {caption && (
-          <Tooltip title={translate(caption)} arrow>
+          <Tooltip title={t(`authentication:${caption}`)} arrow>
             <Box component="span" sx={{ ml: 0.5, lineHeight: 0 }}>
               <Iconify
                 icon="eva:info-outline"

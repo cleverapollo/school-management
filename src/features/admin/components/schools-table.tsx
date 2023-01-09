@@ -4,8 +4,9 @@ import { Fragment, useMemo } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import Table from '../../../components/table/Table';
 import { TableColumn } from '../../../components/table/types';
-import useLocales from '../../../hooks/useLocales';
+import { useTranslation } from '@tyro/i18n';
 import { useAdminTenants } from '../api/tenants';
+import { TFunction } from 'i18next';
 
 interface AdminPanelTenant extends Tenant {
   location: string;
@@ -15,11 +16,11 @@ interface AdminPanelTenant extends Tenant {
   tech: string;
 }
 
-type GetExampleSchoolColumns = (translate: (text: any, options?: any) => never, navigate: NavigateFunction) => TableColumn<AdminPanelTenant>[];
+type GetExampleSchoolColumns = (translate: TFunction, navigate: NavigateFunction) => TableColumn<AdminPanelTenant>[];
 
 const getExampleSchoolColumns: GetExampleSchoolColumns = (translate, navigate) => ([
   {
-    columnDisplayName: translate('school'),
+    columnDisplayName: translate('authentication:school'),
     fieldName: 'name',
     filter: 'suggest',
     isMandatory: true,
@@ -33,17 +34,17 @@ const getExampleSchoolColumns: GetExampleSchoolColumns = (translate, navigate) =
     },
   },
   {
-    columnDisplayName: translate('location'),
+    columnDisplayName: translate('authentication:location'),
     fieldName: 'location',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('type'),
+    columnDisplayName: translate('authentication:type'),
     fieldName: 'type',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('tenant'),
+    columnDisplayName: translate('authentication:tenant'),
     fieldName: 'tenant',
     filter: 'suggest',
   },
@@ -55,7 +56,7 @@ const getExampleSchoolColumns: GetExampleSchoolColumns = (translate, navigate) =
         navigate(`./${row.original.tenant}/people`);
       }
       }>
-        {translate('viewPeople')}
+        {translate('authentication:viewPeople')}
       </Button>)
     }
   },
@@ -64,7 +65,7 @@ const getExampleSchoolColumns: GetExampleSchoolColumns = (translate, navigate) =
     fieldName: 'secondButton',
     component: () => {
       return (<Button onClick={() => { }}>
-        {translate('emulate')}
+        {translate('authentication:emulate')}
       </Button>)
     }
   },
@@ -75,12 +76,12 @@ const getExampleSchoolColumns: GetExampleSchoolColumns = (translate, navigate) =
 ]);
 
 export function SchoolsTable() {
-  const { translate } = useLocales();
+  const { t } = useTranslation(['authentication']);
   const { data, isLoading } = useAdminTenants();
   const navigate = useNavigate();
   const tenants = data as AdminPanelTenant[] | undefined;
 
-  const exampleSchoolColumns = useMemo(() => getExampleSchoolColumns(translate, navigate), [translate, navigate])
+  const exampleSchoolColumns = useMemo(() => getExampleSchoolColumns(t, navigate), [t, navigate])
 
   if (isLoading) {
     return <Fragment />

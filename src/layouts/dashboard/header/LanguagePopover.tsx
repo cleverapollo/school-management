@@ -1,19 +1,22 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 // @mui
-import { MenuItem, Stack } from '@mui/material';
+import { ListItemIcon, ListItemText, MenuItem, Stack } from '@mui/material';
 // components
 import Image from '../../../components/Image';
 import MenuPopover from '../../../components/MenuPopover';
 import { IconButtonAnimate } from '../../../components/animate';
 // config
 import { allLangs } from '../../../config';
-import useLocales from '../../../hooks/useLocales';
+import { useTranslation } from '@tyro/i18n';
 
 // ----------------------------------------------------------------------
 
 export default function LanguagePopover() {
-  const { onChangeLang, translate, currentLang } = useLocales();
+  const { t, i18n } = useTranslation(['authentication']);
   const [open, setOpen] = useState<HTMLElement | null>(null);
+  const currentLang = useMemo(() => {
+    return allLangs.find((lang) => lang.value === i18n.language) ?? allLangs[0];
+  }, [i18n.language]);
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     setOpen(event.currentTarget);
@@ -24,7 +27,7 @@ export default function LanguagePopover() {
   };
 
   const onClickItem = (value: string) => {
-    onChangeLang(value);
+    i18n.changeLanguage(value);
     handleClose();
   }
 
@@ -59,14 +62,15 @@ export default function LanguagePopover() {
               selected={option.value === currentLang.value}
               onClick={() => onClickItem(option.value)}
             >
-              <Image
-                disabledEffect
-                alt={option.label}
-                src={option.icon}
-                sx={{ width: 28, mr: 2 }}
-              />
-
-              {translate(option.label)}
+              <ListItemIcon>
+                <Image
+                  disabledEffect
+                  alt={option.label}
+                  src={option.icon}
+                  sx={{ width: 28, mr: 2 }}
+                />
+              </ListItemIcon>
+              <ListItemText>{t(`authentication:${option.label}`)}</ListItemText>
             </MenuItem>
           ))}
         </Stack>

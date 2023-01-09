@@ -1,7 +1,7 @@
 import Table from '../../../../../components/table/Table';
 import {Option, TableColumn} from '../../../../../components/table/types';
 import {Chip, Container, Typography} from "@mui/material";
-import useLocales from "../../../../../hooks/useLocales";
+import { useTranslation } from '@tyro/i18n';
 import Page from "../../../../../components/Page";
 import useSettings from "../../../../../hooks/useSettings";
 import {useCoreAcademicNamespace} from "../../api/academicNamespaces";
@@ -18,6 +18,7 @@ import {
     useCoreSetActiveActiveAcademicNamespace
 } from "../../api/changeActiveAcademicNamespace";
 import {UseMutationResult} from "@tanstack/react-query";
+import { TFunction } from 'i18next';
 
 interface SetActiveAcademicYearMutationContext  {
     mutation:  UseMutationResult<Core_SetActiveActiveAcademicNamespaceMutation, unknown, CoreSetActiveActiveAcademicNamespaceWrapper, unknown>
@@ -54,7 +55,7 @@ const actions = (setActiveAcademicYear:  SetActiveAcademicYearMutationContext) =
 };
 
 
-const getColumns = (translate: (text: any, options?: any) => never, setActiveAcademicYear: SetActiveAcademicYearMutationContext): TableColumn<AcademicNamespace>[] => ([
+const getColumns = (translate: TFunction, setActiveAcademicYear: SetActiveAcademicYearMutationContext): TableColumn<AcademicNamespace>[] => ([
     {
         columnDisplayName: translate('year'),
         fieldName: 'year',
@@ -105,12 +106,12 @@ const getColumns = (translate: (text: any, options?: any) => never, setActiveAca
 
 export function AcademicNamespaceList() {
 
-    const {translate} = useLocales();
+    const { t } = useTranslation();
     const {themeStretch} = useSettings();
     const {data, isLoading} = useCoreAcademicNamespace();
     const mutation = useCoreSetActiveActiveAcademicNamespace()
 
-    const columns = useMemo(() => getColumns(translate, {mutation}), [translate, mutation]);
+    const columns = useMemo(() => getColumns(t, {mutation}), [t, mutation]);
 
     const ns: AcademicNamespace[] = data as AcademicNamespace[]
     if (ns == null) {

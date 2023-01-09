@@ -1,7 +1,7 @@
 import Table from '../../../../components/table/Table';
 import {Option, TableColumn} from '../../../../components/table/types';
 import { Button, Container, Typography } from "@mui/material";
-import useLocales from "../../../../hooks/useLocales";
+import { useTranslation } from '@tyro/i18n';
 import OptionButton from "../../../../components/table/OptionButton";
 import { useNavigate } from "react-router";
 import {UserType, useUser} from '@tyro/api';
@@ -11,6 +11,7 @@ import Page from '../../../../components/Page';
 import useSettings from '../../../../hooks/useSettings';
 import ColoredBox from '../../components/ColoredBox';
 import { useCustomGroups } from '../../api/general-groups';
+import { TFunction } from 'i18next';
 
 interface CustomGroupData extends CustomGroup {
   firstButton?: string;
@@ -40,32 +41,32 @@ export const adminOptions: Option<CustomGroupData>[] = [
     },
 ];
 
-const getCustomGroupColumns = (translate: (text: any, options?: any) => never, isAdminUserType: boolean): TableColumn<CustomGroupData>[] => ([
+const getCustomGroupColumns = (translate: TFunction, isAdminUserType: boolean): TableColumn<CustomGroupData>[] => ([
   {
     columnDisplayName: 'id',
     fieldName: 'id',
   },
   {
-    columnDisplayName: translate('name'),
+    columnDisplayName: translate('common:name'),
     fieldName: 'name',
     filter: 'suggest',
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('members'),
+    columnDisplayName: translate('common:members'),
     fieldName: 'members',
     filter: 'suggest',
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('type'),
+    columnDisplayName: translate('common:type'),
     fieldName: 'type',
     filter: 'suggest',
     isMandatory: true,
     component: (columnProps) => <ColoredBox content={columnProps.row.original.type} />
   },
   {
-    columnDisplayName: translate('created'),
+    columnDisplayName: translate('common:created'),
     fieldName: 'created',
     filter: 'suggest',
   },
@@ -89,19 +90,19 @@ const getCustomGroupColumns = (translate: (text: any, options?: any) => never, i
   },
 ]);
 
-const getStudentsCustomGroupColumns = (translate: (text: any, options?: any) => never): TableColumn<CustomGroupData>[] => ([
+const getStudentsCustomGroupColumns = (translate: TFunction): TableColumn<CustomGroupData>[] => ([
   {
     columnDisplayName: 'id',
     fieldName: 'id',
   },
   {
-    columnDisplayName: translate('name'),
+    columnDisplayName: translate('common:name'),
     fieldName: 'name',
     filter: 'suggest',
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('teacher'),
+    columnDisplayName: translate('common:teacher'),
     fieldName: 'created',
     filter: 'suggest',
     isMandatory: true,
@@ -122,7 +123,7 @@ const getStudentsCustomGroupColumns = (translate: (text: any, options?: any) => 
 ]);
 
 export default function CustomGroups() {
-  const { translate } = useLocales();
+  const { t } = useTranslation(['common']);
   const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { activeProfile } = useUser();
@@ -134,15 +135,15 @@ export default function CustomGroups() {
   const customGroupData: CustomGroupData[] = data?.map(group => (
     {
       ...group,
-      firstButton: translate('view'),
+      firstButton: t('common:view'),
       tech: ''
     } as CustomGroupData)
   ) ?? [];
 
   const customGroupColumns = useMemo(() => isFacultyOrAdmin
-    ? getCustomGroupColumns(translate, isAdminUserType)
-    : getStudentsCustomGroupColumns(translate)
-    , [translate, isAdminUserType, isFacultyOrAdmin]);
+    ? getCustomGroupColumns(t, isAdminUserType)
+    : getStudentsCustomGroupColumns(t)
+    , [t, isAdminUserType, isFacultyOrAdmin]);
 
   return (
     <Page title="Custom groups" isLoading={isLoading}>
