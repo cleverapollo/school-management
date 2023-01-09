@@ -70,7 +70,7 @@ const getSubjectGroupColumns = (translate: (text: any, options?: any) => never, 
   },
   {
     columnDisplayName: translate('members'),
-    fieldName: 'studentCount',
+    fieldName: 'studentMembers.memberCount',
     filter: 'suggest',
   },
   {
@@ -84,7 +84,7 @@ const getSubjectGroupColumns = (translate: (text: any, options?: any) => never, 
     fieldName: 'staff',
     filter: 'suggest',
     component: ({ row }) => {
-      var teachers = row.original.staff?.map(a => a?.person) as [Person]
+      var teachers = row.original.staff as [Person]
 
       return <MultiPersonsAvatars person={teachers}/>
     }
