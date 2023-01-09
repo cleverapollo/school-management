@@ -6,11 +6,10 @@ import { useNavigate, useParams } from 'react-router';
 import { useCustomGroupById } from '../../api/general-groups';
 import Table from '../../../../components/table/Table';
 import Breadcrumbs from '../../../../components/Breadcrumbs';
-import { useTranslation } from '@tyro/i18n';
+import { useTranslation, TFunction } from '@tyro/i18n';
 import { TableColumn, Option } from '../../../../components/table/types';
 import OptionButton from '../../../../components/table/OptionButton';
 import { GeneralGroupMember } from '@tyro/api';
-import { TFunction } from 'i18next';
 
 
 interface CustomExactGroupData extends GeneralGroupMember {
@@ -60,7 +59,7 @@ const getCustomGroupColumns = (translate: TFunction): TableColumn<CustomExactGro
 ];
 
 export default function ViewCustomGroupPage() {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'authentication']);
   const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { groupId } = useParams();
@@ -75,7 +74,7 @@ export default function ViewCustomGroupPage() {
   const tableData = (data?.members ?? []).map(member => ({...member, tech: ''})) as CustomExactGroupData[];
 
   const customGroupColumns = useMemo(() => getCustomGroupColumns(t), [t]);
-  const title = `${ data?.name } ${ t('common:memberList') }`;
+  const title = `${data?.name} ${t('authentication:memberList') }`;
 
   return (
     <Page title={title} isLoading={isLoading}>
@@ -85,7 +84,7 @@ export default function ViewCustomGroupPage() {
         </Typography>
         <Breadcrumbs links={[
           {
-            name: t('common:customGroups'),
+            name: t('authentication:customGroups'),
             href: './..'
           },
           {

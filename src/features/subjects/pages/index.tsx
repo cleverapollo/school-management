@@ -1,7 +1,7 @@
 import Table from '../../../components/table/Table';
 import { TableColumn } from '../../../components/table/types';
 import { Button, Container, Typography } from "@mui/material";
-import { useTranslation } from '@tyro/i18n';
+import { useTranslation, TFunction } from '@tyro/i18n';
 import ColoredBox from "../../groups/components/ColoredBox";
 import Page from "../../../components/Page";
 import useSettings from "../../../hooks/useSettings";
@@ -9,16 +9,15 @@ import { useSubjects } from "../api/subjects";
 import { useMemo } from 'react';
 import {Person, SubjectGroup} from '@tyro/api/src/gql/graphql';
 import MultiPersonsAvatars from "../../groups/components/MultiPersonsAvatars";
-import { TFunction } from 'i18next';
 
 interface SubjectsData extends SubjectGroup {
   firstButton?: string;
   tech?: string;
 }
 
-const getSubjectColumns = (translate: TFunction): TableColumn<SubjectsData>[] => ([
+const getSubjectColumns = (translate: TFunction<("common" | "authentication")[], undefined, ("common" | "authentication")[]>): TableColumn<SubjectsData>[] => ([
   {
-    columnDisplayName: translate('subject'),
+    columnDisplayName: translate('authentication:subject'),
     fieldName: 'subjects',
     filter: 'suggest',
     isMandatory: true,
@@ -28,13 +27,13 @@ const getSubjectColumns = (translate: TFunction): TableColumn<SubjectsData>[] =>
     }
   },
   {
-    columnDisplayName: translate('level'),
+    columnDisplayName: translate('authentication:level'),
     fieldName: 'irePP.level',
     filter: 'suggest',
     component: (columnProps) => <ColoredBox content={columnProps.row.original.irePP?.level ?? undefined} />
   },
   {
-    columnDisplayName: translate('teacher'),
+    columnDisplayName: translate('common:teacher'),
     fieldName: 'staff',
     filter: 'suggest',
     component: ({ row }) => {
@@ -58,14 +57,14 @@ const getSubjectColumns = (translate: TFunction): TableColumn<SubjectsData>[] =>
 ]);
 
 export function Subjects() {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'authentication']);
   const { themeStretch } = useSettings();
   const { data, isLoading } = useSubjects();
 
   const subjectsData: SubjectsData[] = data?.map(group => {
     return {
       ...group,
-      firstButton: t('view'),
+      firstButton: t('common:actions.view'),
       tech: ''
     } as SubjectsData || []
   }) || [];

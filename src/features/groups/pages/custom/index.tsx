@@ -1,7 +1,7 @@
 import Table from '../../../../components/table/Table';
 import {Option, TableColumn} from '../../../../components/table/types';
 import { Button, Container, Typography } from "@mui/material";
-import { useTranslation } from '@tyro/i18n';
+import { useTranslation, TFunction } from '@tyro/i18n';
 import OptionButton from "../../../../components/table/OptionButton";
 import { useNavigate } from "react-router";
 import {UserType, useUser} from '@tyro/api';
@@ -11,7 +11,6 @@ import Page from '../../../../components/Page';
 import useSettings from '../../../../hooks/useSettings';
 import ColoredBox from '../../components/ColoredBox';
 import { useCustomGroups } from '../../api/general-groups';
-import { TFunction } from 'i18next';
 
 interface CustomGroupData extends CustomGroup {
   firstButton?: string;
@@ -41,7 +40,7 @@ export const adminOptions: Option<CustomGroupData>[] = [
     },
 ];
 
-const getCustomGroupColumns = (translate: TFunction, isAdminUserType: boolean): TableColumn<CustomGroupData>[] => ([
+const getCustomGroupColumns = (translate: TFunction<"common"[], undefined, "common"[]>, isAdminUserType: boolean): TableColumn<CustomGroupData>[] => ([
   {
     columnDisplayName: 'id',
     fieldName: 'id',
@@ -90,7 +89,7 @@ const getCustomGroupColumns = (translate: TFunction, isAdminUserType: boolean): 
   },
 ]);
 
-const getStudentsCustomGroupColumns = (translate: TFunction): TableColumn<CustomGroupData>[] => ([
+const getStudentsCustomGroupColumns = (translate: TFunction<"common"[], undefined, "common"[]>): TableColumn<CustomGroupData>[] => ([
   {
     columnDisplayName: 'id',
     fieldName: 'id',
@@ -135,7 +134,7 @@ export default function CustomGroups() {
   const customGroupData: CustomGroupData[] = data?.map(group => (
     {
       ...group,
-      firstButton: t('common:view'),
+      firstButton: t('common:actions.view'),
       tech: ''
     } as CustomGroupData)
   ) ?? [];

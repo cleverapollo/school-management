@@ -1,16 +1,15 @@
 import Table from '../../../../components/table/Table';
 import {Option, TableColumn} from '../../../../components/table/types';
 import { Button, Container, Typography } from "@mui/material";
-import { useTranslation } from '@tyro/i18n';
+import { useTranslation, TFunction } from '@tyro/i18n';
 import OptionButton from "../../../../components/table/OptionButton";
 import { useNavigate } from "react-router";
-import {UserType, useUser} from '@tyro/api';
+import { UserType, useUser } from '@tyro/api';
 import { useEnrolmentGroups } from "../../api/general-groups";
 import { useMemo } from 'react';
 import { EnrolmentGroup } from '../../../../app/api/generated';
 import Page from '../../../../components/Page';
 import useSettings from '../../../../hooks/useSettings';
-import { TFunction } from 'i18next';
 
 interface EnrolmentGroupData extends EnrolmentGroup {
   firstButton?: string;
@@ -40,41 +39,41 @@ export const adminOptions: Option<EnrolmentGroupData>[] = [
     },
 ];
 
-const getEnrolmentGroupColumns = (translate: TFunction, isAdminUserType: boolean): TableColumn<EnrolmentGroupData>[] => ([
+const getEnrolmentGroupColumns = (translate: TFunction<("common" | "authentication")[], undefined, ("common" | "authentication")[]>, isAdminUserType: boolean): TableColumn<EnrolmentGroupData>[] => ([
   {
     columnDisplayName: 'id',
     fieldName: 'id',
   },
   {
-    columnDisplayName: translate('name'),
+    columnDisplayName: translate('common:name'),
     fieldName: 'name',
     filter: 'suggest',
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('members'),
+    columnDisplayName: translate('common:members'),
     fieldName: 'members',
     filter: 'suggest',
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('year'),
+    columnDisplayName: translate('authentication:year'),
     fieldName: 'year',
     filter: 'suggest',
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('tutor'),
+    columnDisplayName: translate('authentication:tutor'),
     fieldName: 'tutor',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('yearhead'),
+    columnDisplayName: translate('authentication:yearhead'),
     fieldName: 'yearhead',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('programme'),
+    columnDisplayName: translate('authentication:programme'),
     fieldName: 'programme',
     filter: 'suggest',
   },
@@ -99,7 +98,7 @@ const getEnrolmentGroupColumns = (translate: TFunction, isAdminUserType: boolean
 ]);
 
 export default function EnrolmentGroups() {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'authentication']);
   const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { activeProfile } = useUser();
@@ -112,7 +111,7 @@ export default function EnrolmentGroups() {
   const enrolmentGroupData: EnrolmentGroupData[] = data?.map(group => (
     {
       ...group,
-      firstButton: isAdminUserType ? t('common:view') : t('common:notify'),
+      firstButton: isAdminUserType ? t('authentication:view') : t('authentication:notify'),
       tech: ''
     } as EnrolmentGroupData) || []
   ) || [];

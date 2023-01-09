@@ -1,17 +1,16 @@
 import Table from '../../../../components/table/Table';
-import {Option, TableColumn} from '../../../../components/table/types';
+import { Option, TableColumn } from '../../../../components/table/types';
 import { Button, Container, Typography } from "@mui/material";
-import { useTranslation } from '@tyro/i18n';
+import { useTranslation, TFunction } from '@tyro/i18n';
 import OptionButton from "../../../../components/table/OptionButton";
 import { useNavigate } from "react-router";
-import {Person, SubjectGroup, UserType, useUser} from '@tyro/api';
+import { Person, SubjectGroup, UserType, useUser } from '@tyro/api';
 import { useMemo } from 'react';
 import Page from '../../../../components/Page';
 import useSettings from '../../../../hooks/useSettings';
 import { useSubjectGroups } from '../../api/subject-groups';
 import ColoredBox from '../../components/ColoredBox';
 import MultiPersonsAvatars from "../../components/MultiPersonsAvatars";
-import { TFunction } from 'i18next';
 
 interface SubjectGroupData extends SubjectGroup {
   firstButton?: string;
@@ -49,19 +48,19 @@ export const adminOptions: Option<SubjectGroupData>[] = [
     },
 ];
 
-const getSubjectGroupColumns = (translate: TFunction, isAdminUserType: boolean, isTabsNeeded: boolean): TableColumn<SubjectGroupData>[] => ([
+const getSubjectGroupColumns = (translate: TFunction<("common" | "authentication")[], undefined, ("common" | "authentication")[]>, isAdminUserType: boolean, isTabsNeeded: boolean): TableColumn<SubjectGroupData>[] => ([
   {
     columnDisplayName: 'id',
     fieldName: 'partyId',
   },
   {
-    columnDisplayName: translate('name'),
+    columnDisplayName: translate('common:name'),
     fieldName: 'name',
     filter: 'suggest',
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('subject'),
+    columnDisplayName: translate('authentication:subject'),
     fieldName: 'subjects',
     filter: 'suggest',
     component: ({ row }) => {
@@ -70,18 +69,18 @@ const getSubjectGroupColumns = (translate: TFunction, isAdminUserType: boolean, 
     }
   },
   {
-    columnDisplayName: translate('members'),
+    columnDisplayName: translate('common:members'),
     fieldName: 'studentMembers.memberCount',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('level'),
+    columnDisplayName: translate('authentication:level'),
     fieldName: 'irePP.level',
     filter: 'suggest',
     component: ({ row }) => <ColoredBox content={row.original.irePP?.level ?? undefined} />
   },
   {
-    columnDisplayName: isAdminUserType ? translate('teacher') : translate('programme'),
+    columnDisplayName: isAdminUserType ? translate('common:teacher') : translate('authentication:programme'),
     fieldName: 'staff',
     filter: 'suggest',
     component: ({ row }) => {
@@ -111,7 +110,7 @@ const getSubjectGroupColumns = (translate: TFunction, isAdminUserType: boolean, 
 ]);
 
 export default function SubjectGroups() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'authentication']);
   const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { activeProfile } = useUser();
@@ -123,7 +122,7 @@ export default function SubjectGroups() {
   const subjectGroupData: SubjectGroupData[] = data?.map(group => {
     return {
       ...group,
-      firstButton: t('view'),
+      firstButton: t('common:actions.view'),
       tech: ''
     } as SubjectGroupData || []
   }) || [];

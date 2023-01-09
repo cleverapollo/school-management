@@ -4,9 +4,8 @@ import { Fragment, useMemo } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import Table from '../../../components/table/Table';
 import { TableColumn } from '../../../components/table/types';
-import { useTranslation } from '@tyro/i18n';
+import { useTranslation, TFunction } from '@tyro/i18n';
 import { useAdminTenants } from '../api/tenants';
-import { TFunction } from 'i18next';
 
 interface AdminPanelTenant extends Tenant {
   location: string;

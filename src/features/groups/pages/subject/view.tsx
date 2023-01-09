@@ -1,17 +1,16 @@
 import { useEffect, useMemo } from 'react';
-import { Avatar, Container, Typography } from '@mui/material';
+import { Container, Typography } from '@mui/material';
 import useSettings from '../../../../hooks/useSettings';
 import Page from '../../../../components/Page';
 import { useNavigate, useParams } from 'react-router';
 import { useCustomGroupById, useEnrolmentGroupById } from '../../api/general-groups';
 import Table from '../../../../components/table/Table';
 import Breadcrumbs from '../../../../components/Breadcrumbs';
-import { useTranslation } from '@tyro/i18n';
+import { useTranslation, TFunction } from '@tyro/i18n';
 import { TableColumn, Option } from '../../../../components/table/types';
 import OptionButton from '../../../../components/table/OptionButton';
 import { GroupMembership } from '@tyro/api';
 import { useSubjectGroupById, useSubjectGroups } from '../../api/subject-groups';
-import { TFunction } from 'i18next';
 
 
 interface SubjectExactGroupData extends GroupMembership {
@@ -31,9 +30,9 @@ export const subjectOptions: Option<SubjectExactGroupData>[] = [
   },
 ];
 
-const getSubjectGroupColumns = (translate: TFunction): TableColumn<SubjectExactGroupData>[] => [
+const getSubjectGroupColumns = (translate: TFunction<("common" | "authentication")[], undefined, ("common" | "authentication")[]>): TableColumn<SubjectExactGroupData>[] => [
   {
-    columnDisplayName: translate('name'),
+    columnDisplayName: translate('common:name'),
     fieldName: 'person',
     filter: 'suggest',
     isMandatory: true,
@@ -56,7 +55,7 @@ const getSubjectGroupColumns = (translate: TFunction): TableColumn<SubjectExactG
 ];
 
 export default function ViewSubjectGroupPage() {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'authentication']);
   const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { groupId } = useParams();
@@ -71,7 +70,7 @@ export default function ViewSubjectGroupPage() {
   const tableData = (data?.members ?? []).map(member => ({ ...member, tech: '' })) as SubjectExactGroupData[];
 
   const subjectGroupColumns = useMemo(() => getSubjectGroupColumns(t), [t]);
-  const title = `${data?.name} ${t('common:memberList')}`;
+  const title = `${data?.name} ${t('authentication:memberList')}`;
 
   return (
     <Page title={title} isLoading={isLoading}>
@@ -81,7 +80,7 @@ export default function ViewSubjectGroupPage() {
         </Typography>
         <Breadcrumbs links={[
           {
-            name: t('common:subjectGroups'),
+            name: t('authentication:subjectGroups'),
             href: './..'
           },
           {
