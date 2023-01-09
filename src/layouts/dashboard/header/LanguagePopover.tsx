@@ -70,6 +70,7 @@ export default function LanguagePopover() {
                   sx={{ width: 28, mr: 2 }}
                 />
               </ListItemIcon>
+              {/* @ts-ignore */}
               <ListItemText>{t(`authentication:${option.label}`)}</ListItemText>
             </MenuItem>
           ))}
