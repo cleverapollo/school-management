@@ -3,16 +3,16 @@ import { gqlClient, graphql, GeneralGroupType } from '@tyro/api';
 
 const generalGroupsList = graphql(/* GraphQL */ `
   query generalGroupsList($filter: GeneralGroupFilter!) {
-    generalGroups(filter: $filter){
+    generalGroups(filter: $filter) {
       partyId
       name
-      studentCount
+      studentMembers {
+        memberCount
+      }
       generalGroupType
       programmeStages {
-        programmeStage {
-          programme {
-            name
-          }
+        programme {
+          name
         }
       }
     }
@@ -21,9 +21,9 @@ const generalGroupsList = graphql(/* GraphQL */ `
 
 const enrolmentGroupById = graphql(/* GraphQL */ `
   query enrolmentGroupsById($filter: GeneralGroupFilter!) {
-    generalGroups(filter: $filter){
+    generalGroups(filter: $filter) {
       partyId
-      name,
+      name
       students {
         partyId
         firstName
@@ -35,9 +35,9 @@ const enrolmentGroupById = graphql(/* GraphQL */ `
 
 const customGroupById = graphql(/* GraphQL */ `
   query customGroupById($filter: GeneralGroupFilter!) {
-    generalGroups(filter: $filter){
+    generalGroups(filter: $filter) {
       partyId
-      name,
+      name
       students {
         partyId
         firstName
@@ -58,18 +58,20 @@ export function useCustomGroups() {
     queryFn: async () =>
       gqlClient.request(generalGroupsList, {
         filter: {
-          groupTypes: [GeneralGroupType.DynamicGroup, GeneralGroupType.StaticGroup]
-        }
+          groupTypes: [
+            GeneralGroupType.DynamicGroup,
+            GeneralGroupType.StaticGroup,
+          ],
+        },
       }),
-    select: ({ generalGroups }) => {
-      return generalGroups?.map(group => ({
+    select: ({ generalGroups }) =>
+      generalGroups?.map((group) => ({
         name: group?.name,
-        members: group?.studentCount?.toString(),
+        members: group?.studentMembers?.memberCount,
         type: group?.generalGroupType,
         created: 'Rachel',
-        id: group?.partyId.toString(),
-      }))
-    },
+        id: (group?.partyId as number).toString(),
+      })),
   });
 }
 
@@ -79,22 +81,19 @@ export function useCustomGroupById(id: string | undefined) {
     queryFn: async () =>
       gqlClient.request(customGroupById, {
         filter: {
-          partyIds: [id]
-        }
+          partyIds: [id],
+        },
       }),
     select: ({ generalGroups }) => {
       if (!generalGroups) return null;
       const group = generalGroups[0];
 
       return {
-        id: group?.partyId,
+        id: (group?.partyId as number).toString(),
         name: group?.name,
-        members: [
-          ...(group?.students ?? []),
-          ...(group?.staff ?? [])
-        ],
-      }
-    }
+        members: [...(group?.students ?? []), ...(group?.staff ?? [])],
+      };
+    },
   });
 }
 
@@ -104,21 +103,22 @@ export function useEnrolmentGroups() {
     queryFn: async () =>
       gqlClient.request(generalGroupsList, {
         filter: {
-          groupTypes: [GeneralGroupType.ClassGroup]
-        }
+          groupTypes: [GeneralGroupType.ClassGroup],
+        },
       }),
-    select: ({ generalGroups }) => {
-      return generalGroups?.map(group => ({
+    select: ({ generalGroups }) =>
+      generalGroups?.map((group) => ({
         name: group?.name,
-        members: group?.studentCount?.toString(),
-        programme: Array.isArray(group?.programmeStages) ? group?.programmeStages[0]?.programmeStage?.programme?.name : null,
-        //ToDo: change this mocks to data from backend when it will be implemented
+        members: group?.studentMembers?.memberCount,
+        programme: Array.isArray(group?.programmeStages)
+          ? group?.programmeStages[0]?.programme?.name
+          : null,
+        // ToDo: change this mocks to data from backend when it will be implemented
         year: '1',
         tutor: 'Rachel',
         yearhead: 'Rachel',
-        id: group?.partyId.toString(),
-      }))
-    }
+        id: (group?.partyId as number).toString(),
+      })),
   });
 }
 
@@ -128,18 +128,18 @@ export function useEnrolmentGroupById(id: string | undefined) {
     queryFn: async () =>
       gqlClient.request(enrolmentGroupById, {
         filter: {
-          partyIds: [id]
-        }
+          partyIds: [id],
+        },
       }),
     select: ({ generalGroups }) => {
       if (!generalGroups) return null;
       const group = generalGroups[0];
 
       return {
-        id: group?.partyId,
+        id: (group?.partyId as number).toString(),
         name: group?.name,
         members: group?.students ?? [],
-      }
-    }
+      };
+    },
   });
 }
