@@ -1,12 +1,11 @@
 // i18n
-import './i18n/i18n';
+import '@tyro/i18n';
 
 // scroll bar
 import 'simplebar/src/simplebar.css';
 
 // lightbox
 import 'react-image-lightbox/style.css';
-import { Provider as ReduxProvider } from 'react-redux';
 
 // editor
 import 'react-quill/dist/quill.snow.css';
@@ -26,7 +25,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 // @msal
 import { PublicClientApplication } from "@azure/msal-browser";
 import { msalConfig } from "./config";
-// redux
 // contexts
 import { SettingsProvider } from './contexts/SettingsContext';
 import { CollapseDrawerProvider } from './contexts/CollapseDrawerContext';

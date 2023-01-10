@@ -12,7 +12,6 @@ import Logo from '../../components/Logo';
 import Image from '../../components/Image';
 // sections
 import { LoginForm } from './components/login';
-import useLocales from "../../hooks/useLocales";
 
 // ----------------------------------------------------------------------
 
@@ -60,7 +59,6 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function Login() {
-  const { trans } = useLocales();
   const smUp = useResponsive('up', 'sm');
   const mdUp = useResponsive('up', 'md');
 

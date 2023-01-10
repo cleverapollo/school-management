@@ -6,7 +6,7 @@ import FilterIcon from '@mui/icons-material/FilterList';
 import { Box } from '@mui/material';
 import { TableColumn } from './types';
 import Filter from './Filter';
-import useLocales from '../../hooks/useLocales';
+import { useTranslation } from '@tyro/i18n';
 import { checkIsColumnRenderNeeded } from '../../utils/table';
 
 interface ITableToolbarProps<TData> {
@@ -18,7 +18,7 @@ interface ITableToolbarProps<TData> {
 
 const TableFilters = <TData,>({ table, columnsWithPermissions, globalFilter, setGlobalFilter }: ITableToolbarProps<TData>) => {
 
-  const { translate } = useLocales();
+  const { t } = useTranslation(['authentication']);
   const [showFilters, setShowFilters] = useState<boolean>(false);
 
   return (<Box sx={{ paddingX: '10px' }}>
@@ -26,7 +26,7 @@ const TableFilters = <TData,>({ table, columnsWithPermissions, globalFilter, set
       <TextField
         value={globalFilter ?? ''}
         onChange={e => setGlobalFilter(e.target.value)}
-        placeholder={translate('search') + '...'}
+        placeholder={t('authentication:search') + '...'}
         variant="outlined"
         sx={{ width: '32%' }}
         InputProps={{
@@ -37,7 +37,7 @@ const TableFilters = <TData,>({ table, columnsWithPermissions, globalFilter, set
       />
       <Box onClick={() => setShowFilters(!showFilters)} sx={{ display: 'flex', alignItems: 'center' }}>
         <SvgIcon component={FilterIcon} style={{ marginRight: '10px' }}/>
-          {translate('filters')}
+          {t('authentication:filters')}
       </Box>
     </Box>
     {showFilters && table.getHeaderGroups().map((headerGroup) => (
