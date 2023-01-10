@@ -1,5 +1,5 @@
 import { Avatar, Button } from "@mui/material";
-import { addEmulationHeaders, getUser, queryClient } from "@tyro/api";
+import { addEmulationHeaders, getUser } from "@tyro/api";
 import { Person } from "@tyro/api/src/gql/graphql";
 import { Fragment, useMemo } from "react";
 import { NavigateFunction, useNavigate, useParams } from "react-router-dom";

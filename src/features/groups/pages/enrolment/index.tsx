@@ -1,17 +1,23 @@
+import { useMemo } from 'react';
 import Table from '../../../../components/table/Table';
 import {Option, TableColumn} from '../../../../components/table/types';
 import { Button, Container, Typography } from "@mui/material";
 import useLocales from "../../../../hooks/useLocales";
 import OptionButton from "../../../../components/table/OptionButton";
 import { useNavigate } from "react-router";
-import {UserType, useUser} from '@tyro/api';
+import { GeneralGroup, UserType, useUser } from '@tyro/api';
 import { useEnrolmentGroups } from "../../api/general-groups";
-import { useMemo } from 'react';
-import { EnrolmentGroup } from '../../../../app/api/generated';
 import Page from '../../../../components/Page';
 import useSettings from '../../../../hooks/useSettings';
 
-interface EnrolmentGroupData extends EnrolmentGroup {
+interface EnrolmentGroupData {
+  name: GeneralGroup['name'],
+  members: GeneralGroup['studentCount'],
+  programme: string | null | undefined;
+  year: string,
+  tutor: string,
+  yearhead: string,
+  id: string,
   firstButton?: string;
   tech?: string;
 }

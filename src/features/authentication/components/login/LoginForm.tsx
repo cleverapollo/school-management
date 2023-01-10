@@ -34,7 +34,7 @@ export default function LoginForm() {
     reset,
     setError,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
   } = methods;
 
   const onSubmit = async (data: FormValuesProps) => {

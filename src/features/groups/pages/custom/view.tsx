@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { Avatar, Container, Typography } from '@mui/material';
+import { Container, Typography } from '@mui/material';
 import useSettings from '../../../../hooks/useSettings';
 import Page from '../../../../components/Page';
 import { useNavigate, useParams } from 'react-router';

@@ -4,15 +4,19 @@ import { Button, Container, Typography } from "@mui/material";
 import useLocales from "../../../../hooks/useLocales";
 import OptionButton from "../../../../components/table/OptionButton";
 import { useNavigate } from "react-router";
-import {UserType, useUser} from '@tyro/api';
+import { UserType, useUser, GeneralGroup, GeneralGroupType } from '@tyro/api';
 import { useMemo } from 'react';
-import { CustomGroup } from '../../../../app/api/generated';
 import Page from '../../../../components/Page';
 import useSettings from '../../../../hooks/useSettings';
 import ColoredBox from '../../components/ColoredBox';
 import { useCustomGroups } from '../../api/general-groups';
 
-interface CustomGroupData extends CustomGroup {
+interface CustomGroupData {
+  name: GeneralGroup['name'],
+  members: GeneralGroup['studentCount'],
+  type: GeneralGroupType.StaticGroup | GeneralGroupType.DynamicGroup | undefined,
+  created: string,
+  id: string,
   firstButton?: string;
   tech?: string;
 }

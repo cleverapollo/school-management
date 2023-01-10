@@ -2,7 +2,6 @@
 import { Stack, Button, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 // assets
-import { DocIllustration } from '../../../assets';
 import useLocales from '../../../hooks/useLocales';
 
 // ----------------------------------------------------------------------
