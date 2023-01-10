@@ -34,8 +34,13 @@ const myAuthDetailsDocument = graphql(/* GraphQL */ `
   }
 `);
 
+export const userKeys = {
+  all: ['user'] as const,
+  details: () => [...userKeys.all, 'details'] as const,
+};
+
 const userQuery = {
-  queryKey: ['user', 'details'],
+  queryKey: userKeys.details(),
   queryFn: async () => gqlClient.request(myAuthDetailsDocument),
 };
 

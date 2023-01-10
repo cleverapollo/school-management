@@ -1,15 +1,15 @@
 // @mui
 import { styled } from '@mui/material/styles';
 import {Box, Card, Avatar, Divider, Typography, Stack, Button} from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 // utils
 import cssStyles from '../../../utils/cssStyles';
 // @types
 // components
 import Image from '../../../components/Image';
 import SvgIconStyle from '../../../components/SvgIconStyle';
-import {GlobalUser, Profile} from "../../../app/api/generated";
-import {dispatch as storeDispatch} from "../../../store/store";
-import {authDetailsSuccess, setActiveProfile} from "../../../store/slices/auth";
+import { Profile } from '@tyro/api';
+import { useMutateActiveProfile } from '../api/active-profile';
 
 // ----------------------------------------------------------------------
 
@@ -30,11 +30,12 @@ type Props = {
 };
 
 export default function ProfileCard({ profile }: Props) {
+  const { mutateAsync, isLoading } = useMutateActiveProfile();
 
   const activateProfile = () => {
-    console.log(`Activating profile ${profile.id}`)
-    storeDispatch(setActiveProfile( profile.id));
+    mutateAsync(profile.id);
   }
+
   return (
     <Card sx={{ textAlign: 'center' }}>
       <Box sx={{ position: 'relative' }}>
@@ -87,11 +88,7 @@ export default function ProfileCard({ profile }: Props) {
       <Divider sx={{ borderStyle: 'dashed' }} />
 
       <Box sx={{ py: 3, display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)' }}>
-        <div>
-          <Button variant="contained" onClick={activateProfile}>Activate</Button>
-
-        </div>
-
+        <LoadingButton variant="contained" loading={isLoading} onClick={activateProfile}>Activate</LoadingButton>
       </Box>
     </Card>
   );

@@ -2,10 +2,9 @@ import { Box } from "@mui/system";
 import { GeneralGroupType, SubjectGroupLevelIrePp } from "@tyro/api";
 import { capitalize } from "lodash";
 import { FC } from "react";
-import { TypeOfCustomGroup } from "../../../app/api/generated";
 
 interface IColoredBoxProps {
-  content: TypeOfCustomGroup | SubjectGroupLevelIrePp | undefined;
+  content: GeneralGroupType.DynamicGroup | GeneralGroupType.StaticGroup | SubjectGroupLevelIrePp | undefined;
 }
 
 const ColoredBox: FC<IColoredBoxProps> = ({ content }) => {

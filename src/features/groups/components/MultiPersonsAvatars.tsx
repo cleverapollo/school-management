@@ -1,7 +1,6 @@
-import {Avatar, AvatarGroup, BreadcrumbsProps, Stack} from "@mui/material";
-import {PartyPerson} from "../../../app/api/generated";
-import {Person} from '@tyro/api/src/gql/graphql'
-import {displayName} from "../../../utils/nameUtils";
+import { Avatar, AvatarGroup, Stack } from "@mui/material";
+import { Person } from '@tyro/api'
+import { displayName } from "../../../utils/nameUtils";
 
 export interface Props  {
   person: Person | [Person] | undefined;

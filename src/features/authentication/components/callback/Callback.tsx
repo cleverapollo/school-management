@@ -2,20 +2,19 @@
 // ----------------------------------------------------------------------
 
 import LoadingScreen from "../../../../components/LoadingScreen";
-import {useMyAuthDetailsQuery} from "../../../../app/api/generated";
 import {useNavigate} from "react-router-dom";
-import {useDispatch, useTypedSelector} from "../../../../store/store";
-import {updateEvent} from "../../../../store/slices/auth";
 import {useEffect} from "react";
+import { useUser } from "@tyro/api";
 
 export default function Callback() {
   const navigate = useNavigate();
-  const globalPolling = useTypedSelector((state) => state.auth);
+  const { activeProfile } = useUser();
+
   useEffect(() => {
-    if(globalPolling.activeProfile !== null){
+    if(activeProfile !== null){
       navigate("/");
     }
-  }, [navigate, globalPolling]);
+  }, [navigate, activeProfile]);
 
   return (
     <LoadingScreen/>

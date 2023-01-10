@@ -1,8 +1,7 @@
 // components
-import { UserProfileName } from '../../../app/api/generated';
 import { NavConfig } from '../../../components/nav-section';
 import SvgIconStyle from '../../../components/SvgIconStyle';
-import {UserType} from "@tyro/api";
+import { UserType } from "@tyro/api";
 
 // ----------------------------------------------------------------------
 
@@ -32,7 +31,7 @@ const ICONS = {
   settings: getIcon('settings'),
 };
 
-const availableForAllUsers: UserProfileName[] = [
+const availableForAllUsers: UserType[] = [
   UserType.Admin,
     UserType.Teacher,
     UserType.Contact,

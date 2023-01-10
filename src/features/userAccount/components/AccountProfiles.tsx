@@ -1,7 +1,6 @@
 import { Grid} from "@mui/material";
 import ProfileCard from "./ProfileCard";
-import { Profile } from "../../../app/api/generated";
-import { useUser } from "@tyro/api";
+import { useUser, Profile } from "@tyro/api";
 
 export default function AccountGeneral() {
   const { user } = useUser();
