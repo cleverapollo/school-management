@@ -42,13 +42,6 @@ const filter: CalendarEventFilter = {
   "partyIds": [610],
 };
 
-interface UpdateEventData {
-  id: string;
-  allDay: boolean;
-  start: Date | null;
-  end: Date | null;
-}
-
 
 export default function Calendar() {
   const { themeStretch } = useSettings();
@@ -80,15 +73,7 @@ export default function Calendar() {
     return null;
   }, [selectedEventId]);
 
-  const [updateEventData, setUpdateEventData] = useState<UpdateEventData | null>(null);
-  const mutation = useUpdateCalendarEvents(updateEventData);
-
-  //ToDo: Uncomment this when mutation will be implemented
-  // useEffect(() => {
-  //   if (updateEventData) {
-  //     mutation.mutate();
-  //   }
-  // }, [updateEventData]);
+  const { mutate: updateCalendarEvent } = useUpdateCalendarEvents();
 
   useEffect(() => {
     const calendarEl = calendarRef.current;
@@ -154,7 +139,7 @@ export default function Calendar() {
 
   const handleResizeEvent = async ({ event }: EventResizeDoneArg) => {
     try {
-      setUpdateEventData({
+      updateCalendarEvent({
         id: event.id,
         allDay: event.allDay,
         start: event.start,
@@ -167,7 +152,7 @@ export default function Calendar() {
 
   const handleDropEvent = async ({ event }: EventDropArg) => {
     try {
-      setUpdateEventData({
+      updateCalendarEvent({
         id: event.id,
         allDay: event.allDay,
         start: event.start,
@@ -249,25 +234,8 @@ export default function Calendar() {
             />
           </CalendarStyle>
         </Card>
-
-        <DialogAnimate open={isOpenModal} onClose={handleCloseModal} sx={{ maxWidth: '750px !important' }}>
-          { 
-          selectedEvent ? 
-          <>
-            <CalendarEventView event={selectedEvent} onCancel={handleCloseModal} isEditable={isEditable}/>
-          </>
-          : 
-          <>
-            <DialogTitle>{'Add Event'}</DialogTitle>
-
-            <CalendarForm
-              event={{}}
-              range={selectedRange}
-              onCancel={handleCloseModal}
-            />
-          </>
-          }
-        </DialogAnimate>
+        <CalendarEventView event={selectedEvent} onCancel={handleCloseModal} isEditable={isEditable} />
+        <CalendarForm event={{}} range={selectedRange} onCancel={handleCloseModal} isOpenModal={isOpenModal}/>
       </Container>
     </Page>
   );

@@ -3,20 +3,23 @@ import { Avatar, Button, Paper, IconButton, Typography, Divider } from '@mui/mat
 import { Box } from '@mui/system';
 import { ExtendedEventInput } from '../api/events';
 import Close from '@mui/icons-material/Close';
-import { format } from 'date-fns';
 import { CheckOutlined, EmailOutlined, EventOutlined, GroupOutlined, LocationOnOutlined } from '@mui/icons-material';
+import { DialogAnimate } from '../../../components/animate';
+import { Maybe } from '@tyro/api';
+import dayjs from 'dayjs';
 
 // ----------------------------------------------------------------------
 
-type IProps = {
-  event: ExtendedEventInput;
+type CalendarEventViewProps = {
+  event?: Maybe<ExtendedEventInput>;
   onCancel: () => void;
   isEditable: boolean;
 };
 
-const CalendarEventView = ({ event, onCancel, isEditable }: IProps) => {
+const CalendarEventView = ({ event, onCancel, isEditable }: CalendarEventViewProps) => {
   return (
-    <Paper sx={{ padding: '30px' }}>
+  <DialogAnimate open={!!event} onClose={onCancel} sx={{ maxWidth: '750px !important' }}>
+    {!!event && <Paper sx={{ padding: '30px' }}>
       <Box sx={{ position: 'absolute', right: '10px', top: '10px' }}>
         <IconButton onClick={onCancel}>
           <Close />
@@ -27,7 +30,7 @@ const CalendarEventView = ({ event, onCancel, isEditable }: IProps) => {
         <Typography variant="h5" sx={{ marginLeft: '20px' }}>{isEditable ? event.teacherTitle : event.title}</Typography>
       </Box>
       <Box sx={{ paddingLeft: '44px', marginTop: '5px' }}>
-        {format(new Date(event.start as Date), 'EEEE, d LLLL K:mm') + format(new Date(event.end as Date), '- p')}
+        {dayjs(new Date(event.start as Date)).format('dddd, D MMMM h:mm ') + dayjs(new Date(event.end as Date)).format('- h:mm a')}
       </Box>
       <Box sx={{display: 'flex', alignItems: 'center', marginTop: '25px', marginBottom: '30px'}}>
         <LocationOnOutlined/>
@@ -48,7 +51,7 @@ const CalendarEventView = ({ event, onCancel, isEditable }: IProps) => {
         {event.participants.map((participant, index) => {
           return <Box sx={{ display: 'flex', alignItems: 'center', position: 'relative', marginBottom: '10px' }}>
             <Avatar src="google.com" alt={participant.partyInfo?.name || '' + participant.partyInfo?.firstName + ' ' + participant.partyInfo?.lastName} />
-            {isEditable && index === 0 && <div style={{width: '22px', height: '22px', background: 'lightsteelblue', position: 'absolute', borderRadius: '50px', color: 'green', top: '22px', left: '22px'}}><CheckOutlined /></div>}
+            {isEditable && index === 0 && <Box sx={{width: '22px', height: '22px', background: 'lightsteelblue', position: 'absolute', borderRadius: '50px', color: 'green', top: '22px', left: '22px'}}><CheckOutlined /></Box>}
             <Box sx={{ marginLeft: '10px' }}>{participant.partyInfo?.name || '' + participant.partyInfo?.firstName + ' ' + participant.partyInfo?.lastName}</Box>
           </Box>
         })}
@@ -71,7 +74,8 @@ const CalendarEventView = ({ event, onCancel, isEditable }: IProps) => {
           </Button>
         </Box>
       </>}
-    </Paper>
+    </Paper>}
+  </DialogAnimate>
   );
 }
 

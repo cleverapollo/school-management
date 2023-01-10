@@ -8,7 +8,7 @@ import Close from '@mui/icons-material/Close';
 
 // ----------------------------------------------------------------------
 
-type IProps = {
+type ParticipantInputProps = {
   participants: Participant[];
   setParticipants: Dispatch<SetStateAction<Participant[]>>;
 };
@@ -45,7 +45,7 @@ const MENU_OPTIONS: Participant[] = [
   },
 ];
 
-const ParticipantInput = ({ participants, setParticipants }: IProps) => {
+const ParticipantInput = ({ participants, setParticipants }: ParticipantInputProps) => {
 
   const [openSelect, setOpenSelect] = useState<boolean>(false);
   const [isOpenParticipantsModal, setIsOpenParticipantsModal] = useState<boolean>(false);

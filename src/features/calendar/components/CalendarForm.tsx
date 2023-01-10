@@ -1,13 +1,12 @@
 import * as Yup from 'yup';
 import merge from 'lodash/merge';
-import { isBefore } from 'date-fns';
 import { useSnackbar } from 'notistack';
 import { EventInput } from '@fullcalendar/common';
 // form
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Box, Stack, Button, Tooltip, TextField, IconButton, DialogActions, MenuItem } from '@mui/material';
+import { Box, Stack, Button, Tooltip, TextField, IconButton, DialogActions, MenuItem, DialogTitle } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { MobileDateTimePicker } from '@mui/x-date-pickers';
 // components
@@ -17,8 +16,9 @@ import { FormProvider, RHFTextField, RHFSwitch, RHFSelect } from '../../../compo
 import { useCreateCalendarEvents, useDeleteCalendarEvents } from '../api/events';
 import { CalendarEventType, CreateCalendarEventsInput, CalendarEventAttendeeType, Maybe } from '@tyro/api/src/gql/graphql';
 import { localDateStringToCalendarDate } from '../../../utils/formatTime';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import ParticipantInput from './ParticipantInput';
+import { DialogAnimate } from '../../../components/animate';
 
 // ----------------------------------------------------------------------
 
@@ -78,6 +78,7 @@ type Props = {
     end: Date;
   } | null;
   onCancel: VoidFunction;
+  isOpenModal: boolean;
 };
 
 //ToDo: add this options to the request
@@ -138,21 +139,10 @@ export interface Participant {
   }
 }
 
-export default function CalendarForm({ event, range, onCancel }: Props) {
+export default function CalendarForm({ event, range, onCancel, isOpenModal }: Props) {
   const { enqueueSnackbar } = useSnackbar();
   const [participants, setParticipants] = useState<Participant[]>([]);
-  const [eventData, setEventData] = useState<Maybe<CreateCalendarEventsInput>>(null);
-  const [eventIdForDelete, setEventIdForDelete] = useState<Maybe<string>>(null);
-  const deleteMutation = useDeleteCalendarEvents(eventIdForDelete);
-
-  //ToDo: uncomment this when deleteMutation will be implemented
-  // useEffect(() => {
-  //   if(eventIdForDelete) {
-  //     onCancel();
-  //     deleteMutation.mutate();
-  //     enqueueSnackbar('Delete success!');
-  //   }
-  // }, [eventIdForDelete]);
+  const { mutate: deleteCalendarEvent } = useDeleteCalendarEvents();
 
   const isCreating = Object.keys(event).length === 0;
 
@@ -167,26 +157,17 @@ export default function CalendarForm({ event, range, onCancel }: Props) {
     ),
   });
 
-  const methods = useForm<FormValuesProps>({
-    resolver: yupResolver(EventSchema),
-    defaultValues: getInitialValues(event, range),
-  });
-
   const {
     reset,
     control,
     handleSubmit,
     formState: { isSubmitting },
-  } = methods;
+  } = useForm<FormValuesProps>({
+    resolver: yupResolver(EventSchema),
+    defaultValues: getInitialValues(event, range),
+  });
 
-  const mutation = useCreateCalendarEvents(eventData ?? {} as CreateCalendarEventsInput);
-  useEffect(() => {
-    if (eventData) {
-      mutation.mutate();
-      onCancel();
-      reset();
-    }
-  }, [eventData]);
+  const { mutate: createCalendarEvent } = useCreateCalendarEvents();
 
   const onSubmit = async (data: FormValuesProps) => {
     try {
@@ -223,7 +204,9 @@ export default function CalendarForm({ event, range, onCancel }: Props) {
 
       if (!event.id) {
         enqueueSnackbar('Create success!');
-        setEventData(dataEvent);
+        createCalendarEvent(dataEvent);
+        onCancel();
+        reset();
       }
     } catch (error) {
       console.error(error);
@@ -233,16 +216,20 @@ export default function CalendarForm({ event, range, onCancel }: Props) {
   const handleDelete = async () => {
     if (!event.id) return;
     try {
-      setEventIdForDelete(event.id);
+      onCancel();
+      deleteCalendarEvent(event.id);
+      enqueueSnackbar('Delete success!');
     } catch (error) {
       console.error(error);
     }
   };
 
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+  <DialogAnimate open={isOpenModal} onClose={onCancel} sx={{ maxWidth: '750px !important' }}>
+    <DialogTitle>{'Add Event'}</DialogTitle>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3} sx={{ p: 3 }}>
-        <RHFTextField name="title" label="Title" />
+        <RHFTextField name="title" label="Title" customControl={control}/>
 
         <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
         <Controller
@@ -280,21 +267,21 @@ export default function CalendarForm({ event, range, onCancel }: Props) {
         />
         </Box>
 
-        <RHFSwitch name="allDay" label="All day" />
+        <RHFSwitch name="allDay" label="All day" customControl={control}/>
 
         <Box sx={{ width: '40%' }}>
-          <RHFSelect name="schedule" label="Schedule">
+          <RHFSelect name="schedule" label="Schedule" customControl={control}>
             {Options.map((option) => <MenuItem value={option.name}>{option.label}</MenuItem>)}
           </RHFSelect>
         </Box>
 
         <ParticipantInput participants={participants} setParticipants={setParticipants}/>
 
-        <RHFSelect name="location" label="Location">
+        <RHFSelect name="location" label="Location" customControl={control}>
           {LocationOptions.map((option) => <MenuItem value={option.name}>{option.label}</MenuItem>)}
         </RHFSelect>
 
-        <RHFTextField name="description" label="Description" multiline rows={4} />
+        <RHFTextField name="description" label="Description" multiline rows={4} customControl={control}/>
 
         <Controller
           name="textColor"
@@ -327,6 +314,7 @@ export default function CalendarForm({ event, range, onCancel }: Props) {
           Add
         </LoadingButton>
       </DialogActions>
-    </FormProvider>
+    </form>
+  </DialogAnimate>
   );
 }

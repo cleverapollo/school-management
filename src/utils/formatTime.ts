@@ -1,9 +1,10 @@
 import { format, getTime, formatDistanceToNow } from 'date-fns';
+import dayjs from 'dayjs';
 
 // ----------------------------------------------------------------------
 
 export function fDate(date: Date | string | number) {
-  return format(new Date(date), 'dd MMMM yyyy');
+  return dayjs(date).format('D MMMM YYYY');
 }
 
 export function fDateTime(date: Date | string | number) {
@@ -25,9 +26,5 @@ export function fToNow(date: Date | string | number) {
 }
 
 export const localDateStringToCalendarDate = (date: string) => {
-  const arr = date.split('.');
-  if (arr.length !== 3) {
-    return date;
-  }
-  return `${arr[2]}-${arr[1]}-${arr[0]}`;
+  return dayjs(date).format('YYYY-DD-MM');
 }

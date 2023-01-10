@@ -120,19 +120,19 @@ export function useCalendarEvents(filter: CalendarEventFilter) {
   });
 };
 
-export function useCreateCalendarEvents(input: CreateCalendarEventsInput) {
+export function useCreateCalendarEvents() {
   return useMutation({
-    mutationKey: ['calendar', 'createCalendarEvents', input],
-    mutationFn: async () => gqlClient.request(createEvents, { input: input }),
+    mutationKey: ['calendar', 'createCalendarEvents'],
+    mutationFn: async (input: CreateCalendarEventsInput) => gqlClient.request(createEvents, { input: input }),
   });
 };
 
 //Refactor this hook after backend will be implemented
-export function useUpdateCalendarEvents(input: any) {
-  return {};
+export function useUpdateCalendarEvents() {
+  return { mutate: (input: any) => {} };
 };
 
 //Refactor this hook after backend will be implemented
-export function useDeleteCalendarEvents(input: any) {
-  return {};
+export function useDeleteCalendarEvents() {
+  return { mutate: (input: any) => { } };
 };
