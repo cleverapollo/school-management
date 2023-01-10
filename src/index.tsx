@@ -1,5 +1,5 @@
 // i18n
-import './i18n/i18n';
+import '@tyro/i18n';
 
 // scroll bar
 import 'simplebar/src/simplebar.css';
@@ -17,6 +17,7 @@ import 'react-lazy-load-image-component/src/effects/opacity.css';
 import 'react-lazy-load-image-component/src/effects/black-and-white.css';
 
 import ReactDOM from 'react-dom/client';
+
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 

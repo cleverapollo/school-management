@@ -8,7 +8,7 @@ import Page from '../components/Page';
 import { MotionContainer, varBounce } from '../components/animate';
 // assets
 import { PageNotFoundIllustration } from '../assets';
-import useLocales from '../hooks/useLocales';
+import { useTranslation } from '@tyro/i18n';
 
 // ----------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function PageUnauthorized() {
-  const { trans } = useLocales();
+  const { t } = useTranslation(['common']);
   return (
     <Page title="Unauthorized">
       <Container component={MotionContainer}>
@@ -38,7 +38,7 @@ export default function PageUnauthorized() {
 
           <m.div variants={varBounce().in}>
             <Typography sx={{ color: 'text.secondary' }}>
-              {trans('common:unauthorized_user_msg')}
+              {t('common:unauthorized_user_msg')}
             </Typography>
           </m.div>
 

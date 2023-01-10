@@ -5,7 +5,7 @@ import { Fragment, useMemo } from "react";
 import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
 import Table from '../../../components/table/Table';
 import { TableColumn } from '../../../components/table/types';
-import useLocales from '../../../hooks/useLocales';
+import { useTranslation, TFunction } from '@tyro/i18n';
 import { useAdminPartyPeopleByTenantId } from "../api/party-people";
 
 interface AdminPanelPeople extends Person {
@@ -15,11 +15,11 @@ interface AdminPanelPeople extends Person {
   tech: string;
 }
 
-type GetExamplePeopleColumns = (translate: (text: any, options?: any) => never, navigate: NavigateFunction) => TableColumn<AdminPanelPeople>[];
+type GetExamplePeopleColumns = (translate: TFunction<"authentication"[], undefined, "authentication"[]>, navigate: NavigateFunction) => TableColumn<AdminPanelPeople>[];
 
 const getExamplePeopleColumns: GetExamplePeopleColumns = (translate, navigate) => ([
   {
-    columnDisplayName: translate('name'),
+    columnDisplayName: translate('authentication:name'),
     fieldName: 'name',
     filter: 'suggest',
     isMandatory: true,
@@ -31,17 +31,17 @@ const getExamplePeopleColumns: GetExamplePeopleColumns = (translate, navigate) =
     },
   },
   {
-    columnDisplayName: translate('type'),
+    columnDisplayName: translate('authentication:type'),
     fieldName: 'type',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('partyId'),
+    columnDisplayName: translate('authentication:partyId'),
     fieldName: 'partyId',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('tenant'),
+    columnDisplayName: translate('authentication:tenant'),
     fieldName: 'tenant',
   },
   {
@@ -54,7 +54,7 @@ const getExamplePeopleColumns: GetExamplePeopleColumns = (translate, navigate) =
         await getUser();
         navigate('/', { replace: true });
       }}>
-        { translate('emulate') }
+        {translate('authentication:emulate') }
       </Button>)
     }
   },
@@ -66,12 +66,12 @@ const getExamplePeopleColumns: GetExamplePeopleColumns = (translate, navigate) =
 
 export function PeoplesTable() {
   const { schoolId } = useParams();
-  const { translate } = useLocales();
+  const { t } = useTranslation(['authentication']);
   const navigate = useNavigate();
   const { data, isLoading } = useAdminPartyPeopleByTenantId(Number(schoolId));
   const people = data as AdminPanelPeople[] | undefined;
 
-  const examplePeopleColumns = useMemo(() => getExamplePeopleColumns(translate, navigate), [translate, navigate])
+  const examplePeopleColumns = useMemo(() => getExamplePeopleColumns(t, navigate), [t, navigate])
 
   if (isLoading) {
     return <Fragment />

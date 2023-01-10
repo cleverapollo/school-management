@@ -3,16 +3,12 @@ import {
   Popover,
   List,
   ListItem,
-  ListItemButton,
-  ListItemText,
 } from '@mui/material';
-import { FC } from 'react';
 import MoreVert from '@mui/icons-material/MoreVert';
 import PopupState, {bindTrigger, bindPopover, bindMenu} from 'material-ui-popup-state';
 import SvgIconStyle from '../SvgIconStyle';
 import { Option } from './types';
-import { ListItemIconStyle } from '../nav-section/vertical/style';
-import useLocales from '../../hooks/useLocales';
+import { useTranslation } from '@tyro/i18n';
 import OptionButtonItem from "./OptionButtonItem";
 
 
@@ -26,7 +22,7 @@ interface IOptionButtonProps<Type> {
 }
 
 const OptionButton = <T extends unknown>({options, row}: IOptionButtonProps<T>) => {
-  const { translate } = useLocales();
+  const { t } = useTranslation();
 
   //ToDO: refactor option button for avoiding propagation with rowSelection
   return (

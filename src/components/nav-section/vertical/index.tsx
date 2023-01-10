@@ -1,7 +1,7 @@
 // @mui
 import {List, Box} from '@mui/material';
 // hooks
-import useLocales from '../../../hooks/useLocales';
+import { useTranslation } from '@tyro/i18n';
 //
 import {NavSectionProps} from '../type';
 import {ListSubheaderStyle} from './style';
@@ -11,7 +11,7 @@ import PermissionBasedGuard from "../../../guards/PermissionBasedGuard";
 // ----------------------------------------------------------------------
 
 export default function NavSectionVertical({ navConfig, isCollapse, profileTypeName, ...other }: NavSectionProps) {
-  const { translate } = useLocales();
+  const { t } = useTranslation();
 
   return (
     <Box {...other}>
@@ -25,7 +25,8 @@ export default function NavSectionVertical({ navConfig, isCollapse, profileTypeN
                 }),
               }}
             >
-              {translate(group.subheader)}
+              {/* @ts-ignore */}
+              {t(group.subheader)}
             </ListSubheaderStyle>
 
             {group.items.map((list) => (
