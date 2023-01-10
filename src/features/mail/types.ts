@@ -1,4 +1,4 @@
-import { Mail as MailType } from '@tyro/api/src/gql/graphql';
+import { Mail as MailType } from '@tyro/api';
 
 // ----------------------------------------------------------------------
 

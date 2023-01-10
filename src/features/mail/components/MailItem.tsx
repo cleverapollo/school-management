@@ -12,7 +12,6 @@ import { PATH_DASHBOARD } from '../../../routes/paths';
 // @types
 import { //Mail, 
   MailLabel } from '../types';
-import { Label as LabelType, Mail, MailStarredInput } from '@tyro/api/src/gql/graphql';
 // components
 import Label from '../../../components/Label';
 import Avatar from '../../../components/Avatar';
@@ -21,7 +20,7 @@ import Iconify from '../../../components/Iconify';
 import MailItemAction from './MailItemAction';
 import { useStarMail } from '../api/mails';
 import { useEffect, useState } from 'react';
-import { useUser } from '@tyro/api';
+import { useUser, Label as LabelType, Mail, MailStarredInput } from '@tyro/api';
 
 // ----------------------------------------------------------------------
 

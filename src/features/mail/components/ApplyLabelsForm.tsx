@@ -18,7 +18,7 @@ interface FormValuesProps {
   [key: string]: boolean;
 };
 
-type IProps = {
+type ApplyLabelsFormProps = {
   activeLabels?: Maybe<Maybe<Label>[]>;
   labels: MailLabel[];
   onCancel: VoidFunction;
@@ -37,7 +37,7 @@ const getInitialValues = (labels: MailLabel[], activeLabels?: Maybe<Maybe<Label>
   return result.reduce((prev, next) => ({...prev, ...next}), {});
 }
 
-export default function ApplyLabelsForm({ mailData, activeLabels, labels, onCancel }: IProps) {
+export default function ApplyLabelsForm({ mailData, activeLabels, labels, onCancel }: ApplyLabelsFormProps) {
   const { enqueueSnackbar } = useSnackbar();
 
   const [assignLabelData, setAssignLabelData] = useState<AssignLabelInput | null>(null);

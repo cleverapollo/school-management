@@ -10,7 +10,7 @@ import useResponsive from '../../../hooks/useResponsive';
 import createAvatar from '../../../utils/createAvatar';
 import { fDateTimeSuffix } from '../../../utils/formatTime';
 // @types
-import { Mail, Label } from '@tyro/api/src/gql/graphql';
+import { Mail, Label } from '@tyro/api';
 // components
 import Avatar from '../../../components/Avatar';
 import Iconify from '../../../components/Iconify';

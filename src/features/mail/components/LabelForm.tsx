@@ -32,7 +32,7 @@ interface FormValuesProps{
   color: string;
 };
 
-type IProps = {
+type LabelFormProps = {
   labelInfo: Maybe<LabelInput>;
   onCancel: VoidFunction;
 };
@@ -46,7 +46,7 @@ const getInitialValues = (labelInfo: Maybe<LabelInput>) => {
   return defaultLabelInfo;
 }
 
-export default function LabelForm({ labelInfo, onCancel }: IProps) {
+export default function LabelForm({ labelInfo, onCancel }: LabelFormProps) {
   const { enqueueSnackbar } = useSnackbar();
 
   const [labelData, setLabeData] = useState<Maybe<LabelInput>>(null);

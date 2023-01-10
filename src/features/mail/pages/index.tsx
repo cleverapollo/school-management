@@ -13,8 +13,7 @@ import HeaderBreadcrumbs from '../../../components/HeaderBreadcrumbs';
 import { MailList, MailDetails, MailSidebar, MailCompose } from '../components';
 import { useLabels, useUnreadCount } from '../api/labels';
 import { MailLabel, Mails } from '../types';
-import { Mail as MailType, UnreadCountFilter } from '@tyro/api/src/gql/graphql';
-import { useUser } from '@tyro/api';
+import { Mail as MailType, UnreadCountFilter, useUser } from '@tyro/api';
 import { LABEL_TYPE } from '../constants';
 
 // ----------------------------------------------------------------------

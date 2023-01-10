@@ -1,6 +1,5 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { gqlClient, graphql } from '@tyro/api';
-import { InputMaybe, MailStarredInput, SendMailInput, MailReadInput } from '@tyro/api/src/gql/graphql';
+import { gqlClient, graphql, InputMaybe, MailStarredInput, SendMailInput, MailReadInput } from '@tyro/api';
 import { DEFAULT_PAGINATION_LIMIT } from '../constants';
 
 const mails = graphql(/* GraphQL */ `

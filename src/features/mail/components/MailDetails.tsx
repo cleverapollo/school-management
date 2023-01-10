@@ -7,7 +7,7 @@ import Markdown from '../../../components/Markdown';
 import Scrollbar from '../../../components/Scrollbar';
 import MailDetailsToolbar from './MailDetailsToolbar';
 import MailDetailsReplyInput from './MailDetailsReplyInput';
-import { Mail, MailReadInput } from '@tyro/api/src/gql/graphql';
+import { Mail, MailReadInput } from '@tyro/api';
 import { useReadMail } from '../api/mails';
 import { MailLabel } from '../types';
 import { MailDetailsAttachments } from '.';
@@ -27,7 +27,7 @@ const MarkdownStyle = styled('div')(({ theme }) => ({
   },
 }));
 
-interface IProps{
+interface MailDetailProps{
   mail: Mail | null;
   activeLabelName: string;
   labels: MailLabel[];
@@ -35,7 +35,7 @@ interface IProps{
 
 // ----------------------------------------------------------------------
 
-export default function MailDetails({ mail, activeLabelName, labels }: IProps) {
+export default function MailDetails({ mail, activeLabelName, labels }: MailDetailProps) {
 
   const readFilter: MailReadInput = {
     mailId: mail?.id,

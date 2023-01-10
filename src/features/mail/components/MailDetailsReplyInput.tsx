@@ -9,11 +9,11 @@ import { useSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
-interface IProps {
+interface MailDetailsReplyInputProps {
   mail: Mail | null;
 }
 
-export default function MailDetailsReplyInput({ mail }: IProps) {
+export default function MailDetailsReplyInput({ mail }: MailDetailsReplyInputProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useUser();

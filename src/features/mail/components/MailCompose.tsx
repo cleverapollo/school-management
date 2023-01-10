@@ -17,7 +17,7 @@ import useResponsive from '../../../hooks/useResponsive';
 import Iconify from '../../../components/Iconify';
 import Editor from '../../../components/editor';
 import { useSendMail } from '../api/mails';
-import { RecipientType } from '@tyro/api/src/gql/graphql';
+import { RecipientType } from '@tyro/api';
 
 // ----------------------------------------------------------------------
 
@@ -125,22 +125,23 @@ export default function MailCompose({ isOpenCompose, onCloseCompose }: Props) {
             height: 60,
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'space-between'
           }}
         >
           <Typography variant="h6">New Message</Typography>
-          <Box sx={{ flexGrow: 1 }} />
+          <Box>
+            <IconButton onClick={fullScreen ? handleExitFullScreen : handleEnterFullScreen}>
+              <Iconify
+                icon={fullScreen ? 'eva:collapse-fill' : 'eva:expand-fill'}
+                width={20}
+                height={20}
+              />
+            </IconButton>
 
-          <IconButton onClick={fullScreen ? handleExitFullScreen : handleEnterFullScreen}>
-            <Iconify
-              icon={fullScreen ? 'eva:collapse-fill' : 'eva:expand-fill'}
-              width={20}
-              height={20}
-            />
-          </IconButton>
-
-          <IconButton onClick={handleClose}>
-            <Iconify icon={'eva:close-fill'} width={20} height={20} />
-          </IconButton>
+            <IconButton onClick={handleClose}>
+              <Iconify icon={'eva:close-fill'} width={20} height={20} />
+            </IconButton>
+          </Box>
         </Box>
 
         <Divider />
