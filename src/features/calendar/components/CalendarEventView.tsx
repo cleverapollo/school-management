@@ -41,7 +41,7 @@ const CalendarEventView = ({ event, onCancel, isEditable }: CalendarEventViewPro
         <GroupOutlined />
         <Box sx={{ marginLeft: '20px' }}>
           <Typography>{event.participants.length + ' guests'}</Typography>
-          <Typography variant="body2">{'1 yes'}</Typography>
+          <Typography variant="body2">1 yes</Typography>
           <Typography variant="body2">{`${event.participants.length - 1} awaiting`}</Typography>
         </Box>
         </Box>

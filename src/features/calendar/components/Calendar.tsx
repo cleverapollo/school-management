@@ -59,7 +59,7 @@ export default function Calendar() {
 
   const [view, setView] = useState<CalendarView>(isDesktop ? 'dayGridMonth' : 'listWeek');
 
-  const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
+  const [isNewEventOpenModal, setIsNewEventOpenModal] = useState<boolean>(false);
   const [selectedRange, setSelectedRange] = useState<null | Range>(null);
 
   const { data, isLoading } = useCalendarEvents(filter);
@@ -129,12 +129,12 @@ export default function Calendar() {
       calendarApi.unselect();
     }
     setSelectedRange({ start, end });
-    setIsOpenModal(true);
+    setIsNewEventOpenModal(true);
   };
 
   const handleSelectEvent = (arg: EventClickArg) => {
     setSelectedEventId(arg.event.id);
-    setIsOpenModal(true);
+    setIsNewEventOpenModal(true);
   };
 
   const handleResizeEvent = async ({ event }: EventResizeDoneArg) => {
@@ -164,11 +164,11 @@ export default function Calendar() {
   };
 
   const handleAddEvent = () => {
-    setIsOpenModal(true);
+    setIsNewEventOpenModal(true);
   };
 
   const handleCloseModal = () => {
-    setIsOpenModal(false);
+    setIsNewEventOpenModal(false);
     setSelectedRange(null);
     setSelectedEventId(null);
   };
@@ -235,7 +235,7 @@ export default function Calendar() {
           </CalendarStyle>
         </Card>
         <CalendarEventView event={selectedEvent} onCancel={handleCloseModal} isEditable={isEditable} />
-        <CalendarForm event={{}} range={selectedRange} onCancel={handleCloseModal} isOpenModal={isOpenModal}/>
+        <CalendarForm event={{}} range={selectedRange} onCancel={handleCloseModal} isOpenModal={isNewEventOpenModal}/>
       </Container>
     </Page>
   );
