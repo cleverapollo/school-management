@@ -19,6 +19,11 @@ const config: CodegenConfig = {
     './packages/api/src/gql/': {
       preset: 'client',
       plugins: [],
+      config: {
+        scalars: {
+          Long: 'number',
+        },
+      },
     },
   },
 };

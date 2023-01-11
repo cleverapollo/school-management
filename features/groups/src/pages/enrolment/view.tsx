@@ -5,6 +5,7 @@ import { Container, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router';
 import { Person } from '@tyro/api';
 import { TFunction, useTranslation } from '@tyro/i18n';
+import { useNumber } from '@tyro/core';
 import useSettings from '../../../../../src/hooks/useSettings';
 import Page from '../../../../../src/components/Page';
 import { useEnrolmentGroupById } from '../../api/general-groups';
@@ -77,14 +78,15 @@ export default function ViewEnrolmentGroupPage() {
   const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { groupId } = useParams();
+  const groupIdAsNumber = useNumber(groupId);
 
   useEffect(() => {
-    if (!groupId) {
+    if (!groupIdAsNumber) {
       navigate('/404');
     }
-  });
+  }, [groupIdAsNumber]);
 
-  const { data, isLoading } = useEnrolmentGroupById(groupId);
+  const { data, isLoading } = useEnrolmentGroupById(groupIdAsNumber);
   const tableData = (data?.members ?? []).map((member) => ({
     ...member,
     tech: '',

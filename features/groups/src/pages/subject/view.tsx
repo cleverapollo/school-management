@@ -5,6 +5,7 @@ import { Container, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router';
 import { GroupMembership } from '@tyro/api';
 import { TFunction, useTranslation } from '@tyro/i18n';
+import { useNumber } from '@tyro/core';
 import useSettings from '../../../../../src/hooks/useSettings';
 import Page from '../../../../../src/components/Page';
 import Table from '../../../../../src/components/table/Table';
@@ -67,6 +68,7 @@ export default function ViewSubjectGroupPage() {
   const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { groupId } = useParams();
+  const groupIdAsNumber = useNumber(groupId);
 
   useEffect(() => {
     if (!groupId) {
@@ -74,7 +76,7 @@ export default function ViewSubjectGroupPage() {
     }
   });
 
-  const { data, isLoading } = useSubjectGroupById(groupId);
+  const { data, isLoading } = useSubjectGroupById(groupIdAsNumber);
   const tableData = (data?.members ?? []).map((member) => ({
     ...member,
     tech: '',
