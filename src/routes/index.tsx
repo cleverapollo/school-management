@@ -14,8 +14,7 @@ import { useAuth } from '@tyro/api';
 
 // ----------------------------------------------------------------------
 import AdminRoutes from '../features/admin/routes';
-import Groups from '../features/groups/routes';
-import Subjects from '../features/subjects/routes';
+import { routes as Groups } from '@tyro/groups';
 import TenantSettings from '../features/generalSchoolSettings/routes';
 
 
@@ -87,8 +86,7 @@ export default function Router() {
         { path: 'one', element: <PageOne /> },
         AdminRoutes,
         CalendarRoutes,
-        Groups,
-        Subjects,
+        ...Groups,
           ...TenantSettings,
         {
           path: 'user',

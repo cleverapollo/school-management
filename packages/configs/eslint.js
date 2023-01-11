@@ -7,7 +7,6 @@ module.exports = {
       extends: ["wesbos/typescript"],
       rules: {
         '@typescript-eslint/ban-ts-comment': 'off',
-        "react/jsx-no-literals": 1,
         'dot-notation': 'off',
         // note you must disable the base rule as it can report incorrect errors
         "no-shadow": "off",
@@ -25,7 +24,6 @@ module.exports = {
       "error",
       {"props": "never", "children": "never"}
     ],
-    "react/jsx-no-literals": 1,
     'dot-notation': 'off',
     "react-hooks/exhaustive-deps": "off",
     "@tanstack/query/prefer-query-object-syntax": "error"

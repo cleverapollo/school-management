@@ -33,7 +33,7 @@
     "src",
     "src/**/*.ts",
     "src/**/*.tsx",
-    "./types"
+    "@types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
