@@ -33,7 +33,7 @@
     "src",
     "src/**/*.ts",
     "src/**/*.tsx",
-    "packages/i18n/i18next.d.ts",
+    "@types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

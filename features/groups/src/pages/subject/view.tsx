@@ -1,17 +1,17 @@
+/* eslint-disable import/no-relative-packages */
+// TODO: remove above eslint when components are moved to @tyro/core
 import { useEffect, useMemo } from 'react';
 import { Container, Typography } from '@mui/material';
-import useSettings from '../../../../hooks/useSettings';
-import Page from '../../../../components/Page';
 import { useNavigate, useParams } from 'react-router';
-import { useCustomGroupById, useEnrolmentGroupById } from '../../api/general-groups';
-import Table from '../../../../components/table/Table';
-import Breadcrumbs from '../../../../components/Breadcrumbs';
-import { useTranslation, TFunction } from '@tyro/i18n';
-import { TableColumn, Option } from '../../../../components/table/types';
-import OptionButton from '../../../../components/table/OptionButton';
 import { GroupMembership } from '@tyro/api';
-import { useSubjectGroupById, useSubjectGroups } from '../../api/subject-groups';
-
+import { TFunction, useTranslation } from '@tyro/i18n';
+import useSettings from '../../../../../src/hooks/useSettings';
+import Page from '../../../../../src/components/Page';
+import Table from '../../../../../src/components/table/Table';
+import Breadcrumbs from '../../../../../src/components/Breadcrumbs';
+import { TableColumn, Option } from '../../../../../src/components/table/types';
+import OptionButton from '../../../../../src/components/table/OptionButton';
+import { useSubjectGroupById } from '../../api/subject-groups';
 
 interface SubjectExactGroupData extends GroupMembership {
   tech: string;
@@ -21,36 +21,44 @@ export const subjectOptions: Option<SubjectExactGroupData>[] = [
   {
     text: 'notify',
     icon: 'notify',
-    action: (e) => { e.stopPropagation() },
+    action: (e: MouseEvent) => {
+      e.stopPropagation();
+    },
   },
   {
     text: 'view',
     icon: 'edit',
-    action: (e) => { e.stopPropagation() },
+    action: (e: MouseEvent) => {
+      e.stopPropagation();
+    },
   },
 ];
 
-const getSubjectGroupColumns = (translate: TFunction<("common" | "authentication")[], undefined, ("common" | "authentication")[]>): TableColumn<SubjectExactGroupData>[] => [
+const getSubjectGroupColumns = (
+  translate: TFunction<
+    ('common' | 'authentication')[],
+    undefined,
+    ('common' | 'authentication')[]
+  >
+): TableColumn<SubjectExactGroupData>[] => [
   {
     columnDisplayName: translate('common:name'),
     fieldName: 'person',
     filter: 'suggest',
     isMandatory: true,
     isSortNeeded: true,
-    component: ({ row }) => {
-      return (<div style={{ display: 'flex', alignItems: 'center' }}>
+    component: ({ row }) => (
+      <div style={{ display: 'flex', alignItems: 'center' }}>
         {/* Add Avatar back in when we add value to BE */}
         {/* <Avatar srcSet={columnProps.row.original.avatarUrl} alt={columnProps.row.original.name} style={{ marginRight: '10px' }} /> */}
         {row.original.person?.firstName} {row.original.person?.lastName}
-      </div>)
-    },
+      </div>
+    ),
   },
   {
     columnDisplayName: 'Tech Options',
     fieldName: 'tech',
-    component: (columnProps) => (
-      <OptionButton options={subjectOptions} />
-    )
+    component: (columnProps) => <OptionButton options={subjectOptions} />,
   },
 ];
 
@@ -62,15 +70,20 @@ export default function ViewSubjectGroupPage() {
 
   useEffect(() => {
     if (!groupId) {
-      navigate('/404')
+      navigate('/404');
     }
   });
 
   const { data, isLoading } = useSubjectGroupById(groupId);
-  const tableData = (data?.members ?? []).map(member => ({ ...member, tech: '' })) as SubjectExactGroupData[];
+  const tableData = (data?.members ?? []).map((member) => ({
+    ...member,
+    tech: '',
+  })) as SubjectExactGroupData[];
 
   const subjectGroupColumns = useMemo(() => getSubjectGroupColumns(t), [t]);
-  const title = `${data?.name} ${t('authentication:memberList')}`;
+  const title = !data?.name
+    ? ''
+    : `${data?.name} ${t('authentication:memberList')}`;
 
   return (
     <Page title={title} isLoading={isLoading}>
@@ -78,15 +91,17 @@ export default function ViewSubjectGroupPage() {
         <Typography variant="h3" component="h1" paragraph>
           {title}
         </Typography>
-        <Breadcrumbs links={[
-          {
-            name: t('authentication:subjectGroups'),
-            href: './..'
-          },
-          {
-            name: data?.name ?? '',
-          },
-        ]} />
+        <Breadcrumbs
+          links={[
+            {
+              name: t('authentication:subjectGroups'),
+              href: './..',
+            },
+            {
+              name: data?.name ?? '',
+            },
+          ]}
+        />
         <Table
           data={tableData}
           columns={subjectGroupColumns}

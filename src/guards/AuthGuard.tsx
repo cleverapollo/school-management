@@ -1,9 +1,5 @@
 import { useState, ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-// hooks
-// import useAuth from '../hooks/useAuth';
-// pages
-import Login from '../features/authentication/Login';
 // components
 import LoadingScreen from '../components/LoadingScreen';
 import { useAuth } from '@tyro/api';

@@ -1,44 +1,44 @@
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql } from '@tyro/api';
 
-const subjectGroups = graphql(/* GraphQL */ `
-  query subjectGroups{
-    subjectGroups{
+const subjectGroupsList = graphql(/* GraphQL */ `
+  query subjectGroups {
+    subjectGroups {
       partyId
       name
-      subjects{
+      subjects {
         name
       }
       studentMembers {
-          memberCount
+        memberCount
       }
-      staff{
-                firstName
-                lastName
-                avatarUrl    
+      staff {
+        firstName
+        lastName
+        avatarUrl
       }
-      irePP{
+      irePP {
         level
       }
       programmeStages {
-          programme {
-            name
-          }
+        programme {
+          name
+        }
       }
     }
   }
 `);
 
 const subjectGroupById = graphql(/* GraphQL */ `
-  query subjectGroupById($filter: SubjectGroupFilter!){
+  query subjectGroupById($filter: SubjectGroupFilter!) {
     subjectGroups(filter: $filter) {
       partyId
       name
-        students{
-            firstName
-            lastName
-            avatarUrl
-        }
+      students {
+        firstName
+        lastName
+        avatarUrl
+      }
     }
   }
 `);
@@ -46,11 +46,8 @@ const subjectGroupById = graphql(/* GraphQL */ `
 export function useSubjectGroups() {
   return useQuery({
     queryKey: ['groups', 'subject'],
-    queryFn: async () =>
-      gqlClient.request(subjectGroups),
-    select: ({ subjectGroups }) => {
-      return subjectGroups
-    }
+    queryFn: async () => gqlClient.request(subjectGroupsList),
+    select: ({ subjectGroups }) => subjectGroups,
   });
 }
 
@@ -60,18 +57,18 @@ export function useSubjectGroupById(id: string | undefined) {
     queryFn: async () =>
       gqlClient.request(subjectGroupById, {
         filter: {
-          partyIds: [id]
-        }
+          partyIds: [id],
+        },
       }),
     select: ({ subjectGroups }) => {
       if (!subjectGroups) return null;
       const group = subjectGroups[0];
 
       return {
-        id: group?.partyId?.toString(),
+        id: (group?.partyId as number).toString(),
         name: group?.name,
-        members: group?.students
-      }
-    }
+        members: group?.students,
+      };
+    },
   });
 }

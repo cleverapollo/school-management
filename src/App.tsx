@@ -1,9 +1,7 @@
-import React from 'react';
 // routes
 import { MsalProvider } from "@azure/msal-react";
 import {
   QueryClientProvider,
-  QueryClient
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 

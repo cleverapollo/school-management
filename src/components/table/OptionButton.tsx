@@ -8,7 +8,6 @@ import MoreVert from '@mui/icons-material/MoreVert';
 import PopupState, {bindTrigger, bindPopover, bindMenu} from 'material-ui-popup-state';
 import SvgIconStyle from '../SvgIconStyle';
 import { Option } from './types';
-import { useTranslation } from '@tyro/i18n';
 import OptionButtonItem from "./OptionButtonItem";
 
 
@@ -22,8 +21,6 @@ interface IOptionButtonProps<Type> {
 }
 
 const OptionButton = <T extends unknown>({options, row}: IOptionButtonProps<T>) => {
-  const { t } = useTranslation();
-
   //ToDO: refactor option button for avoiding propagation with rowSelection
   return (
   <PopupState variant="popover" popupId="popup-popover">
