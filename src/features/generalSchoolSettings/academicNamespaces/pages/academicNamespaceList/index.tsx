@@ -1,12 +1,11 @@
 import Table from '../../../../../components/table/Table';
 import {Option, TableColumn} from '../../../../../components/table/types';
 import {Chip, Container, Typography} from "@mui/material";
-import useLocales from "../../../../../hooks/useLocales";
+import { useTranslation, TFunction } from '@tyro/i18n';
 import Page from "../../../../../components/Page";
 import useSettings from "../../../../../hooks/useSettings";
 import {useCoreAcademicNamespace} from "../../api/academicNamespaces";
-import * as React from 'react';
-import {useMemo} from 'react';
+import { useMemo } from 'react';
 import {
     AcademicNamespace,
     Core_SetActiveActiveAcademicNamespaceMutation,
@@ -54,31 +53,31 @@ const actions = (setActiveAcademicYear:  SetActiveAcademicYearMutationContext) =
 };
 
 
-const getColumns = (translate: (text: any, options?: any) => never, setActiveAcademicYear: SetActiveAcademicYearMutationContext): TableColumn<AcademicNamespace>[] => ([
+const getColumns = (translate: TFunction<"authentication"[], undefined, "authentication"[]>, setActiveAcademicYear: SetActiveAcademicYearMutationContext): TableColumn<AcademicNamespace>[] => ([
     {
-        columnDisplayName: translate('year'),
+        columnDisplayName: translate('authentication:year'),
         fieldName: 'year',
         filter: 'suggest',
         isMandatory: true,
     },
     {
-        columnDisplayName: translate('name'),
+        columnDisplayName: translate('authentication:name'),
         fieldName: 'name',
         filter: 'suggest',
     },
     {
-        columnDisplayName: translate('type'),
+        columnDisplayName: translate('authentication:type'),
         fieldName: 'type',
         filter: 'suggest',
     },
 
     {
-        columnDisplayName: translate('description'),
+        columnDisplayName: translate('authentication:description'),
         fieldName: 'description',
         filter: 'suggest',
     },
     {
-        columnDisplayName: translate(''),
+        columnDisplayName: '',
         fieldName: 'isActiveDefaultNamespace',
         filter: 'suggest',
         component: (columnProps) => {
@@ -105,12 +104,12 @@ const getColumns = (translate: (text: any, options?: any) => never, setActiveAca
 
 export function AcademicNamespaceList() {
 
-    const {translate} = useLocales();
+    const { t } = useTranslation(['authentication']);
     const {themeStretch} = useSettings();
     const {data, isLoading} = useCoreAcademicNamespace();
     const mutation = useCoreSetActiveActiveAcademicNamespace()
 
-    const columns = useMemo(() => getColumns(translate, {mutation}), [translate, mutation]);
+    const columns = useMemo(() => getColumns(t, {mutation}), [t, mutation]);
 
     const ns: AcademicNamespace[] = data as AcademicNamespace[]
     if (ns == null) {

@@ -4,9 +4,9 @@ import { Button, Container, Typography } from '@mui/material';
 import { useNavigate } from 'react-router';
 import { Person, SubjectGroup, UserType, useUser } from '@tyro/api';
 import { useMemo } from 'react';
+import { TFunction, useTranslation } from '@tyro/i18n';
 import Table from '../../../../../src/components/table/Table';
 import { Option, TableColumn } from '../../../../../src/components/table/types';
-import useLocales from '../../../../../src/hooks/useLocales';
 import OptionButton from '../../../../../src/components/table/OptionButton';
 import Page from '../../../../../src/components/Page';
 import useSettings from '../../../../../src/hooks/useSettings';
@@ -61,7 +61,11 @@ export const adminOptions: Option<SubjectGroupData>[] = [
 ];
 
 const getSubjectGroupColumns = (
-  translate: (text: any, options?: any) => string,
+  translate: TFunction<
+    ('common' | 'authentication')[],
+    undefined,
+    ('common' | 'authentication')[]
+  >,
   isAdminUserType: boolean,
   isTabsNeeded: boolean
 ): TableColumn<SubjectGroupData>[] => [
@@ -70,13 +74,13 @@ const getSubjectGroupColumns = (
     fieldName: 'partyId',
   },
   {
-    columnDisplayName: translate('name'),
+    columnDisplayName: translate('common:name'),
     fieldName: 'name',
     filter: 'suggest',
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('subject'),
+    columnDisplayName: translate('authentication:subject'),
     fieldName: 'subjects',
     filter: 'suggest',
     component: ({ row }) => {
@@ -85,12 +89,12 @@ const getSubjectGroupColumns = (
     },
   },
   {
-    columnDisplayName: translate('members'),
+    columnDisplayName: translate('common:members'),
     fieldName: 'studentMembers.memberCount',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('level'),
+    columnDisplayName: translate('authentication:level'),
     fieldName: 'irePP.level',
     filter: 'suggest',
     component: ({ row }) => (
@@ -99,8 +103,8 @@ const getSubjectGroupColumns = (
   },
   {
     columnDisplayName: isAdminUserType
-      ? translate('teacher')
-      : translate('programme'),
+      ? translate('common:teacher')
+      : translate('authentication:programme'),
     fieldName: 'staff',
     filter: 'suggest',
     component: ({ row }) => {
@@ -135,7 +139,7 @@ const getSubjectGroupColumns = (
 ];
 
 export default function SubjectGroups() {
-  const { translate } = useLocales();
+  const { t } = useTranslation(['common', 'authentication']);
   const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { activeProfile } = useUser();
@@ -150,14 +154,14 @@ export default function SubjectGroups() {
       (group) =>
         (({
           ...group,
-          firstButton: translate('view'),
+          firstButton: t('common:actions.view'),
           tech: '',
         } as SubjectGroupData) || [])
     ) || [];
 
   const subjectGroupColumns = useMemo(
-    () => getSubjectGroupColumns(translate, isAdminUserType, isTabsNeeded),
-    [translate, isAdminUserType, isTabsNeeded]
+    () => getSubjectGroupColumns(t, isAdminUserType, isTabsNeeded),
+    [t, isAdminUserType, isTabsNeeded]
   );
 
   return (

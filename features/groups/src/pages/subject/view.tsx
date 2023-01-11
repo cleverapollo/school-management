@@ -4,11 +4,11 @@ import { useEffect, useMemo } from 'react';
 import { Container, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router';
 import { GroupMembership } from '@tyro/api';
+import { TFunction, useTranslation } from '@tyro/i18n';
 import useSettings from '../../../../../src/hooks/useSettings';
 import Page from '../../../../../src/components/Page';
 import Table from '../../../../../src/components/table/Table';
 import Breadcrumbs from '../../../../../src/components/Breadcrumbs';
-import useLocales from '../../../../../src/hooks/useLocales';
 import { TableColumn, Option } from '../../../../../src/components/table/types';
 import OptionButton from '../../../../../src/components/table/OptionButton';
 import { useSubjectGroupById } from '../../api/subject-groups';
@@ -35,10 +35,14 @@ export const subjectOptions: Option<SubjectExactGroupData>[] = [
 ];
 
 const getSubjectGroupColumns = (
-  translate: (text: any, options?: any) => string
+  translate: TFunction<
+    ('common' | 'authentication')[],
+    undefined,
+    ('common' | 'authentication')[]
+  >
 ): TableColumn<SubjectExactGroupData>[] => [
   {
-    columnDisplayName: translate('name'),
+    columnDisplayName: translate('common:name'),
     fieldName: 'person',
     filter: 'suggest',
     isMandatory: true,
@@ -59,7 +63,7 @@ const getSubjectGroupColumns = (
 ];
 
 export default function ViewSubjectGroupPage() {
-  const { translate } = useLocales();
+  const { t } = useTranslation(['common', 'authentication']);
   const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { groupId } = useParams();
@@ -76,11 +80,10 @@ export default function ViewSubjectGroupPage() {
     tech: '',
   })) as SubjectExactGroupData[];
 
-  const subjectGroupColumns = useMemo(
-    () => getSubjectGroupColumns(translate),
-    [translate]
-  );
-  const title = !data?.name ? '' : `${data?.name} ${translate('memberList')}`;
+  const subjectGroupColumns = useMemo(() => getSubjectGroupColumns(t), [t]);
+  const title = !data?.name
+    ? ''
+    : `${data?.name} ${t('authentication:memberList')}`;
 
   return (
     <Page title={title} isLoading={isLoading}>
@@ -91,7 +94,7 @@ export default function ViewSubjectGroupPage() {
         <Breadcrumbs
           links={[
             {
-              name: translate('subjectGroups'),
+              name: t('authentication:subjectGroups'),
               href: './..',
             },
             {

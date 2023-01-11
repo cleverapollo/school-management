@@ -2,20 +2,32 @@
 // TODO: remove above eslint when components are moved to @tyro/core
 import { Button, Container, Typography } from '@mui/material';
 import { useNavigate } from 'react-router';
-import { UserType, useUser } from '@tyro/api';
+import {
+  GeneralGroup,
+  GeneralGroupType,
+  Group,
+  UserType,
+  useUser,
+} from '@tyro/api';
 import { useMemo } from 'react';
+import { TFunction, useTranslation } from '@tyro/i18n';
 import Table from '../../../../../src/components/table/Table';
 import { Option, TableColumn } from '../../../../../src/components/table/types';
-import useLocales from '../../../../../src/hooks/useLocales';
 import OptionButton from '../../../../../src/components/table/OptionButton';
-import { CustomGroup } from '../../../../../src/app/api/generated';
 import Page from '../../../../../src/components/Page';
 import useSettings from '../../../../../src/hooks/useSettings';
 import { ColoredBox } from '../../components/ColoredBox';
 import { useCustomGroups } from '../../api/general-groups';
 
-interface CustomGroupData extends Omit<CustomGroup, 'members'> {
-  members: number;
+interface CustomGroupData {
+  name: GeneralGroup['name'];
+  members: Group['memberCount'];
+  type:
+    | GeneralGroupType.StaticGroup
+    | GeneralGroupType.DynamicGroup
+    | undefined;
+  created: string;
+  id: string;
   firstButton?: string;
   tech?: string;
 }
@@ -52,7 +64,7 @@ export const adminOptions: Option<CustomGroupData>[] = [
 ];
 
 const getCustomGroupColumns = (
-  translate: (text: any, options?: any) => string,
+  translate: TFunction<'common'[], undefined, 'common'[]>,
   isAdminUserType: boolean
 ): TableColumn<CustomGroupData>[] => [
   {
@@ -145,7 +157,7 @@ const getStudentsCustomGroupColumns = (
 ];
 
 export default function CustomGroups() {
-  const { translate } = useLocales();
+  const { t } = useTranslation(['common']);
   const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { activeProfile } = useUser();
@@ -160,7 +172,7 @@ export default function CustomGroups() {
       (group) =>
         ({
           ...group,
-          firstButton: translate('view'),
+          firstButton: t('common:actions.view'),
           tech: '',
         } as CustomGroupData)
     ) ?? [];
@@ -168,9 +180,9 @@ export default function CustomGroups() {
   const customGroupColumns = useMemo(
     () =>
       isFacultyOrAdmin
-        ? getCustomGroupColumns(translate, isAdminUserType)
-        : getStudentsCustomGroupColumns(translate),
-    [translate, isAdminUserType, isFacultyOrAdmin]
+        ? getCustomGroupColumns(t, isAdminUserType)
+        : getStudentsCustomGroupColumns(t),
+    [t, isAdminUserType, isFacultyOrAdmin]
   );
 
   return (

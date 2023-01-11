@@ -13,14 +13,11 @@ import ScrollToTop from './components/ScrollToTop';
 import { ProgressBarStyle } from './components/ProgressBar';
 import MotionLazyContainer from './components/animate/MotionLazyContainer';
 import NotistackProvider from './components/NotistackProvider';
-import { store } from "./store/store";
-import { Provider as ReduxProvider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 // @mui
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
-// redux
 // contexts
 import { SettingsProvider } from './contexts/SettingsContext';
 import { CollapseDrawerProvider } from './contexts/CollapseDrawerContext';
@@ -42,34 +39,32 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ReduxProvider store={store}>
-        <HelmetProvider>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <SettingsProvider>
-              <CollapseDrawerProvider>
-                <BrowserRouter>
-                  <MsalProvider instance={msalInstance}>
-                    <AuthProvider>
-                      <MotionLazyContainer>
-                        <ThemeProvider>
-                          <ThemeSettings>
-                            <NotistackProvider>
-                              <ProgressBarStyle />
-                              <ScrollToTop />
-                              <Router />
-                              <ReactQueryDevtools />
-                            </NotistackProvider>
-                          </ThemeSettings>
-                        </ThemeProvider>
-                      </MotionLazyContainer>
-                    </AuthProvider>
-                  </MsalProvider>
-                </BrowserRouter>
-              </CollapseDrawerProvider>
-            </SettingsProvider>
-          </LocalizationProvider>
-        </HelmetProvider>
-      </ReduxProvider>
+      <HelmetProvider>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <SettingsProvider>
+            <CollapseDrawerProvider>
+              <BrowserRouter>
+                <MsalProvider instance={msalInstance}>
+                  <AuthProvider>
+                    <MotionLazyContainer>
+                      <ThemeProvider>
+                        <ThemeSettings>
+                          <NotistackProvider>
+                            <ProgressBarStyle />
+                            <ScrollToTop />
+                            <Router />
+                            <ReactQueryDevtools />
+                          </NotistackProvider>
+                        </ThemeSettings>
+                      </ThemeProvider>
+                    </MotionLazyContainer>
+                  </AuthProvider>
+                </MsalProvider>
+              </BrowserRouter>
+            </CollapseDrawerProvider>
+          </SettingsProvider>
+        </LocalizationProvider>
+      </HelmetProvider>
     </QueryClientProvider>
   );
 }

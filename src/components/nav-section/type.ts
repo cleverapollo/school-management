@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 import { BoxProps } from '@mui/material';
-import { UserProfileName } from '../../app/api/generated';
+import { UserType } from '@tyro/api';
 
 // ----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ export type NavListProps = {
   disabled?: boolean;
   permissions?: string[];
   children?: any;
-  availableFor?: UserProfileName[];
+  availableFor?: UserType[];
 };
 
 export type NavItemProps = {
@@ -36,5 +36,5 @@ export type NavConfig = Array<{
 export interface NavSectionProps extends BoxProps {
   isCollapse?: boolean;
   navConfig: NavConfig;
-  profileTypeName?: UserProfileName;
+  profileTypeName?: UserType;
 }

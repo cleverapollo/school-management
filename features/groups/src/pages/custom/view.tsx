@@ -4,12 +4,12 @@ import { useEffect, useMemo } from 'react';
 import { Container, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router';
 import { Person } from '@tyro/api';
+import { TFunction, useTranslation } from '@tyro/i18n';
 import useSettings from '../../../../../src/hooks/useSettings';
 import Page from '../../../../../src/components/Page';
 import { useCustomGroupById } from '../../api/general-groups';
 import Table from '../../../../../src/components/table/Table';
 import Breadcrumbs from '../../../../../src/components/Breadcrumbs';
-import useLocales from '../../../../../src/hooks/useLocales';
 import { TableColumn, Option } from '../../../../../src/components/table/types';
 import OptionButton from '../../../../../src/components/table/OptionButton';
 
@@ -45,10 +45,14 @@ const customOptions: Option<CustomExactGroupData>[] = [
 ];
 
 const getCustomGroupColumns = (
-  translate: (text: any, options?: any) => string
+  translate: TFunction<
+    ('common' | 'authentication')[],
+    undefined,
+    ('common' | 'authentication')[]
+  >
 ): TableColumn<CustomExactGroupData>[] => [
   {
-    columnDisplayName: translate('name'),
+    columnDisplayName: translate('common:name'),
     fieldName: 'name',
     filter: 'suggest',
     isMandatory: true,
@@ -69,7 +73,7 @@ const getCustomGroupColumns = (
 ];
 
 export default function ViewCustomGroupPage() {
-  const { translate } = useLocales();
+  const { t } = useTranslation(['common', 'authentication']);
   const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { groupId } = useParams();
@@ -86,11 +90,10 @@ export default function ViewCustomGroupPage() {
     tech: '',
   })) as CustomExactGroupData[];
 
-  const customGroupColumns = useMemo(
-    () => getCustomGroupColumns(translate),
-    [translate]
-  );
-  const title = !data?.name ? '' : `${data?.name} ${translate('memberList')}`;
+  const customGroupColumns = useMemo(() => getCustomGroupColumns(t), [t]);
+  const title = !data?.name
+    ? ''
+    : `${data?.name} ${t('authentication:memberList')}`;
 
   return (
     <Page title={title} isLoading={isLoading}>
@@ -101,7 +104,7 @@ export default function ViewCustomGroupPage() {
         <Breadcrumbs
           links={[
             {
-              name: translate('customGroups'),
+              name: t('authentication:customGroups'),
               href: './..',
             },
             {

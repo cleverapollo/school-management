@@ -8,6 +8,7 @@
     "@mui/system": "^5.10.14",
     "@tanstack/react-query": "^4.16.1",
     "@tyro/api": "*",
+    "@tyro/i18n": "*",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

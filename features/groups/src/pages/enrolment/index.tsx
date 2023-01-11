@@ -2,19 +2,24 @@
 // TODO: remove above eslint when components are moved to @tyro/core
 import { Button, Container, Typography } from '@mui/material';
 import { useNavigate } from 'react-router';
-import { UserType, useUser } from '@tyro/api';
+import { GeneralGroup, Group, UserType, useUser } from '@tyro/api';
 import { useMemo } from 'react';
+import { TFunction, useTranslation } from '@tyro/i18n';
 import Table from '../../../../../src/components/table/Table';
 import { Option, TableColumn } from '../../../../../src/components/table/types';
-import useLocales from '../../../../../src/hooks/useLocales';
 import OptionButton from '../../../../../src/components/table/OptionButton';
 import { useEnrolmentGroups } from '../../api/general-groups';
-import { EnrolmentGroup } from '../../../../../src/app/api/generated';
 import Page from '../../../../../src/components/Page';
 import useSettings from '../../../../../src/hooks/useSettings';
 
-interface EnrolmentGroupData extends Omit<EnrolmentGroup, 'members'> {
-  members: number | undefined;
+interface EnrolmentGroupData {
+  name: GeneralGroup['name'];
+  members: Group['memberCount'];
+  programme: string | null | undefined;
+  year: string;
+  tutor: string;
+  yearhead: string;
+  id: string;
   firstButton?: string;
   tech?: string;
 }
@@ -51,7 +56,11 @@ export const adminOptions: Option<EnrolmentGroupData>[] = [
 ];
 
 const getEnrolmentGroupColumns = (
-  translate: (text: any, options?: any) => string,
+  translate: TFunction<
+    ('common' | 'authentication')[],
+    undefined,
+    ('common' | 'authentication')[]
+  >,
   isAdminUserType: boolean
 ): TableColumn<EnrolmentGroupData>[] => [
   {
@@ -59,35 +68,35 @@ const getEnrolmentGroupColumns = (
     fieldName: 'id',
   },
   {
-    columnDisplayName: translate('name'),
+    columnDisplayName: translate('common:name'),
     fieldName: 'name',
     filter: 'suggest',
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('members'),
+    columnDisplayName: translate('common:members'),
     fieldName: 'members',
     filter: 'suggest',
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('year'),
+    columnDisplayName: translate('authentication:year'),
     fieldName: 'year',
     filter: 'suggest',
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('tutor'),
+    columnDisplayName: translate('authentication:tutor'),
     fieldName: 'tutor',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('yearhead'),
+    columnDisplayName: translate('authentication:yearhead'),
     fieldName: 'yearhead',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('programme'),
+    columnDisplayName: translate('authentication:programme'),
     fieldName: 'programme',
     filter: 'suggest',
   },
@@ -113,7 +122,7 @@ const getEnrolmentGroupColumns = (
 ];
 
 export default function EnrolmentGroups() {
-  const { translate } = useLocales();
+  const { t } = useTranslation(['common', 'authentication']);
   const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { activeProfile } = useUser();
@@ -122,8 +131,8 @@ export default function EnrolmentGroups() {
   const isAdminUserType = profileTypeName === UserType.Admin;
 
   const enrolmentGroupColumns = useMemo(
-    () => getEnrolmentGroupColumns(translate, isAdminUserType),
-    [translate, isAdminUserType]
+    () => getEnrolmentGroupColumns(t, isAdminUserType),
+    [t, isAdminUserType]
   );
 
   const enrolmentGroupData: EnrolmentGroupData[] =
@@ -132,8 +141,8 @@ export default function EnrolmentGroups() {
         (({
           ...group,
           firstButton: isAdminUserType
-            ? translate('view')
-            : translate('notify'),
+            ? t('authentication:view')
+            : t('authentication:notify'),
           tech: '',
         } as EnrolmentGroupData) || [])
     ) || [];

@@ -3,10 +3,13 @@
 import { Box } from '@mui/system';
 import { GeneralGroupType, SubjectGroupLevelIrePp } from '@tyro/api';
 import { capitalize } from 'lodash';
-import { TypeOfCustomGroup } from '../../../../src/app/api/generated';
 
 interface ColoredBoxProps {
-  content: TypeOfCustomGroup | SubjectGroupLevelIrePp | undefined;
+  content:
+    | GeneralGroupType.DynamicGroup
+    | GeneralGroupType.StaticGroup
+    | SubjectGroupLevelIrePp
+    | undefined;
 }
 
 export function ColoredBox({ content }: ColoredBoxProps) {

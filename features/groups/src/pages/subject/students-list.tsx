@@ -3,9 +3,9 @@
 import { Button, Container, Typography } from '@mui/material';
 import { useMemo } from 'react';
 import { Person, SubjectGroup } from '@tyro/api';
+import { useTranslation, TFunction } from '@tyro/i18n';
 import Table from '../../../../../src/components/table/Table';
 import { TableColumn } from '../../../../../src/components/table/types';
-import useLocales from '../../../../../src/hooks/useLocales';
 import { ColoredBox } from '../../components/ColoredBox';
 import Page from '../../../../../src/components/Page';
 import useSettings from '../../../../../src/hooks/useSettings';
@@ -18,10 +18,14 @@ interface SubjectsData extends SubjectGroup {
 }
 
 const getSubjectColumns = (
-  translate: (text: any, options?: any) => string
+  translate: TFunction<
+    ('common' | 'authentication')[],
+    undefined,
+    ('common' | 'authentication')[]
+  >
 ): TableColumn<SubjectsData>[] => [
   {
-    columnDisplayName: translate('subject'),
+    columnDisplayName: translate('authentication:subject'),
     fieldName: 'subjects',
     filter: 'suggest',
     isMandatory: true,
@@ -31,7 +35,7 @@ const getSubjectColumns = (
     },
   },
   {
-    columnDisplayName: translate('level'),
+    columnDisplayName: translate('authentication:level'),
     fieldName: 'irePP.level',
     filter: 'suggest',
     component: (columnProps) => (
@@ -41,7 +45,7 @@ const getSubjectColumns = (
     ),
   },
   {
-    columnDisplayName: translate('teacher'),
+    columnDisplayName: translate('common:teacher'),
     fieldName: 'staff',
     filter: 'suggest',
     component: ({ row }) => {
@@ -63,7 +67,7 @@ const getSubjectColumns = (
 ];
 
 export default function Subjects() {
-  const { translate } = useLocales();
+  const { t } = useTranslation(['common', 'authentication']);
   const { themeStretch } = useSettings();
   const { data, isLoading } = useStudentSubjects();
 
@@ -72,15 +76,12 @@ export default function Subjects() {
       (group) =>
         (({
           ...group,
-          firstButton: translate('view'),
+          firstButton: t('common:actions.view'),
           tech: '',
         } as SubjectsData) || [])
     ) || [];
 
-  const subjectGroupColumns = useMemo(
-    () => getSubjectColumns(translate),
-    [translate]
-  );
+  const subjectGroupColumns = useMemo(() => getSubjectColumns(t), [t]);
 
   return (
     <Page title="Subject" isLoading={isLoading}>
