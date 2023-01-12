@@ -47,7 +47,7 @@ const navConfig: NavConfig = [
     items: [
       { title: 'schools', path: '/admin/schools', icon: ICONS.school, availableFor: [ UserType.Tyro ], },
       { title: 'dashboard', path: '/one', icon: ICONS.dashboard, availableFor: availableForAllUsers, },
-      { title: 'calendar', path: '/p', icon: ICONS.calendar, availableFor: availableForAllUsers, },
+      { title: 'calendar', path: '/calendar', icon: ICONS.calendar, availableFor: availableForAllUsers, },
       {
         title: 'groups', path: '/groups', icon: ICONS.user, availableFor: [UserType.Teacher, UserType.Admin],
         children: [

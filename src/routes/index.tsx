@@ -7,6 +7,7 @@ import LogoOnlyLayout from '../layouts/LogoOnlyLayout';
 import AuthGuard from '../guards/AuthGuard';
 import LoadingScreen from '../components/LoadingScreen';
 import { useAuth } from '@tyro/api';
+import CalendarRoutes from '../features/calendar/routes';
 
 // ----------------------------------------------------------------------
 import { routes as AuthRoutes } from '@tyro/authentication';
@@ -44,6 +45,7 @@ export default function Router() {
         { element: <Navigate to="/one" replace />, index: true },
         { path: 'one', element: <PageOne /> },
         AdminRoutes,
+        CalendarRoutes,
         ...Groups,
         Settings,
         {
