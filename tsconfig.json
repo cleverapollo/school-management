@@ -34,7 +34,7 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "@types/**/*.ts"
-  ],
+, "features/tyro-admin/src/pages/graphiql.tsx", "packages/core/src/hooks/useNumber.ts", "features/tyro-admin/settings", "features/authentication"  ],
   "exclude": [
     "node_modules"
   ]

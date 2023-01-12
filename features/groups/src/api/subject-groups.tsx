@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql } from '@tyro/api';
+import { gqlClient, graphql, InputMaybe } from '@tyro/api';
 
 const subjectGroupsList = graphql(/* GraphQL */ `
   query subjectGroups {
@@ -51,7 +51,7 @@ export function useSubjectGroups() {
   });
 }
 
-export function useSubjectGroupById(id: string | undefined) {
+export function useSubjectGroupById(id: InputMaybe<number>) {
   return useQuery({
     queryKey: ['groups', 'subject', id],
     queryFn: async () =>

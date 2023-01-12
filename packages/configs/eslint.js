@@ -15,7 +15,8 @@ module.exports = {
           "error",
           {"props": "never", "children": "never"}
         ],
-        "react-hooks/exhaustive-deps": "off"
+        "react-hooks/exhaustive-deps": "off",
+        'camelcase': 'off',
       }
     },
   ],
@@ -26,7 +27,8 @@ module.exports = {
     ],
     'dot-notation': 'off',
     "react-hooks/exhaustive-deps": "off",
-    "@tanstack/query/prefer-query-object-syntax": "error"
+    "@tanstack/query/prefer-query-object-syntax": "error",
+    'camelcase': 'off',
   },
   "settings": {
     "import/resolver": {

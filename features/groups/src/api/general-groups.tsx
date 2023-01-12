@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, GeneralGroupType } from '@tyro/api';
+import { gqlClient, graphql, GeneralGroupType, InputMaybe } from '@tyro/api';
 
 const generalGroupsList = graphql(/* GraphQL */ `
   query generalGroupsList($filter: GeneralGroupFilter!) {
@@ -75,7 +75,7 @@ export function useCustomGroups() {
   });
 }
 
-export function useCustomGroupById(id: string | undefined) {
+export function useCustomGroupById(id: InputMaybe<number>) {
   return useQuery({
     queryKey: ['groups', 'custom', id],
     queryFn: async () =>
@@ -122,7 +122,7 @@ export function useEnrolmentGroups() {
   });
 }
 
-export function useEnrolmentGroupById(id: string | undefined) {
+export function useEnrolmentGroupById(id: InputMaybe<number>) {
   return useQuery({
     queryKey: ['groups', 'enrolment', id],
     queryFn: async () =>

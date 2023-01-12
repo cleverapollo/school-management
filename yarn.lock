@@ -2152,31 +2152,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphiql/react@npm:^0.13.7":
-  version: 0.13.7
-  resolution: "@graphiql/react@npm:0.13.7"
-  dependencies:
-    "@graphiql/toolkit": ^0.8.0
-    "@reach/combobox": ^0.17.0
-    "@reach/dialog": ^0.17.0
-    "@reach/listbox": ^0.17.0
-    "@reach/menu-button": ^0.17.0
-    "@reach/tooltip": ^0.17.0
-    "@reach/visually-hidden": ^0.17.0
-    codemirror: ^5.65.3
-    codemirror-graphql: ^2.0.2
-    copy-to-clipboard: ^3.2.0
-    graphql-language-service: ^5.1.0
-    markdown-it: ^12.2.0
-    set-value: ^4.1.0
-  peerDependencies:
-    graphql: ^15.5.0 || ^16.0.0
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 78f93336862510bfd6c8c735a62aebd6827ce3b3d029e5c10a42052ec6a40a6511ee0485d3119681eb64a81b04d8932113180371b38f727127398a88925fcc46
-  languageName: node
-  linkType: hard
-
 "@graphiql/react@npm:^0.15.0":
   version: 0.15.0
   resolution: "@graphiql/react@npm:0.15.0"
@@ -5233,6 +5208,27 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@tyro/authentication@workspace:features/authentication":
+  version: 0.0.0-use.local
+  resolution: "@tyro/authentication@workspace:features/authentication"
+  dependencies:
+    "@mui/lab": ^5.0.0-alpha.96
+    "@mui/material": ^5.11.4
+    "@mui/system": ^5.10.14
+    "@tanstack/react-query": ^4.16.1
+    "@tyro/api": "*"
+    "@tyro/configs": "*"
+    "@tyro/core": "*"
+    "@tyro/i18n": "*"
+    framer-motion: ^6.3.16
+    lodash: ^4.17.21
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    react-router: ^6.6.2
+    react-router-dom: ^6.6.2
+  languageName: unknown
+  linkType: soft
+
 "@tyro/configs@*, @tyro/configs@workspace:packages/configs":
   version: 0.0.0-use.local
   resolution: "@tyro/configs@workspace:packages/configs"
@@ -5261,6 +5257,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@tyro/core@*, @tyro/core@workspace:packages/core":
+  version: 0.0.0-use.local
+  resolution: "@tyro/core@workspace:packages/core"
+  dependencies:
+    "@tyro/configs": "*"
+    react: ^18.2.0
+    react-dom: ^18.2.0
+  languageName: unknown
+  linkType: soft
+
 "@tyro/groups@*, @tyro/groups@workspace:features/groups":
   version: 0.0.0-use.local
   resolution: "@tyro/groups@workspace:features/groups"
@@ -5270,6 +5276,7 @@ __metadata:
     "@tanstack/react-query": ^4.16.1
     "@tyro/api": "*"
     "@tyro/configs": "*"
+    "@tyro/core": "*"
     "@tyro/i18n": "*"
     lodash: ^4.17.21
     react: ^18.2.0
@@ -5287,6 +5294,43 @@ __metadata:
     i18next-browser-languagedetector: ^7.0.1
     i18next-http-backend: ^2.1.1
     react-i18next: ^12.1.4
+  languageName: unknown
+  linkType: soft
+
+"@tyro/settings@workspace:features/settings":
+  version: 0.0.0-use.local
+  resolution: "@tyro/settings@workspace:features/settings"
+  dependencies:
+    "@mui/material": ^5.11.4
+    "@mui/system": ^5.10.14
+    "@tanstack/react-query": ^4.16.1
+    "@tyro/api": "*"
+    "@tyro/configs": "*"
+    "@tyro/core": "*"
+    "@tyro/i18n": "*"
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    react-router: ^6.3.0
+  languageName: unknown
+  linkType: soft
+
+"@tyro/tyro-admin@workspace:features/tyro-admin":
+  version: 0.0.0-use.local
+  resolution: "@tyro/tyro-admin@workspace:features/tyro-admin"
+  dependencies:
+    "@graphiql/react": ^0.15.0
+    "@graphiql/toolkit": ^0.8.0
+    "@mui/material": ^5.11.4
+    "@tanstack/react-query": ^4.16.1
+    "@tyro/api": "*"
+    "@tyro/configs": "*"
+    "@tyro/core": "*"
+    "@tyro/i18n": "*"
+    graphiql: ^2.2.0
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    react-router: ^6.3.0
+    react-router-dom: ^6.3.0
   languageName: unknown
   linkType: soft
 
@@ -9826,7 +9870,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphiql@npm:^2.0.13":
+"graphiql@npm:^2.2.0":
   version: 2.2.0
   resolution: "graphiql@npm:2.2.0"
   dependencies:
@@ -14778,7 +14822,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-dom@npm:^6.3.0":
+"react-router-dom@npm:^6.3.0, react-router-dom@npm:^6.6.2":
   version: 6.6.2
   resolution: "react-router-dom@npm:6.6.2"
   dependencies:
@@ -14791,7 +14835,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:6.6.2, react-router@npm:^6.3.0":
+"react-router@npm:6.6.2, react-router@npm:^6.3.0, react-router@npm:^6.6.2":
   version: 6.6.2
   resolution: "react-router@npm:6.6.2"
   dependencies:
@@ -16910,7 +16954,6 @@ __metadata:
     framer-motion: ^6.3.16
     fs-extra: ^10.0.0
     gh-pages: ^4.0.0
-    graphiql: ^2.0.13
     graphql: ^16.6.0
     graphql-request: ^4.3.0
     history: ^5.3.0

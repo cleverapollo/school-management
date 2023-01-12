@@ -21,8 +21,7 @@ import LanguagePopover from './LanguagePopover';
 import ContactsPopover from './ContactsPopover';
 import NotificationsPopover from './NotificationsPopover';
 import {checkIsUserEmulated, removeEmulationHeaders, useUser} from '@tyro/api';
-import AcademicNamespaceSessionSwitcher
-    from "../../../features/generalSchoolSettings/academicNamespaces/components/AcademicNamespaceSessionSwitcher";
+import {AcademicNamespaceSessionSwitcher} from "@tyro/settings";
 
 // ----------------------------------------------------------------------
 
