@@ -130,7 +130,7 @@ const LocationOptions = [
 ];
 
 export interface Participant {
-  partyId: string;
+  partyId: number;
   type: CalendarEventAttendeeType;
   partyInfo?: {
     firstName?: string;
@@ -190,11 +190,11 @@ export default function CalendarForm({ event, range, onCancel, isOpenModal }: Pr
         },
         attendees: [
           {
-            partyId: "610",
+            partyId: 610,
             type: CalendarEventAttendeeType.Organiser,
           },
           {
-            "partyId": "2270",
+            "partyId": 2270,
             "type": CalendarEventAttendeeType.Attendee,
           },
           ...participants,
