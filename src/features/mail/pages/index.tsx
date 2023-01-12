@@ -28,11 +28,11 @@ export default function Mail() {
   const [activeLabelName, setActiveLabelName] = useState<string>('');
   const [mails, setMails] = useState<Mails>({ byId: {}, allIds: [] });
 
-  const { user } = useUser();
+  const { activeProfile } = useUser();
 
   const filter: UnreadCountFilter = useMemo(() => ({
-    personPartyId: user?.profiles && user.profiles[0].partyId,
-  }), [user?.profiles]);
+    personPartyId: activeProfile?.partyId
+  }), [activeProfile]);
 
   const { data: unreadCountData } = useUnreadCount(filter);
 
@@ -47,9 +47,9 @@ export default function Mail() {
         unreadCount: 0,
       };
       const updatedLabelsData = labelsData.map(label => { 
-        if (unreadCountData?.filter(item => item?.labelId === label?.originalId).length) { 
+        if (unreadCountData?.unreadCount?.filter(item => item?.labelId === label?.originalId).length) { 
           return { ...label, 
-            unreadCount: unreadCountData?.filter(item => item?.labelId === label?.originalId)[0]?.count || label.unreadCount }
+            unreadCount: unreadCountData?.unreadCount?.filter(item => item?.labelId === label?.originalId)[0]?.count || label.unreadCount }
           }; 
         return label;
       });

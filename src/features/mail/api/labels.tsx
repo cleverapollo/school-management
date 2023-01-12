@@ -115,14 +115,20 @@ export function useUnreadCount(filter: InputMaybe<UnreadCountFilter>) {
     queryKey: ['unreadCount', filter],
     queryFn: async () => gqlClient.request(unreadCount, { filter: filter }),
     select: ({ unreadCount }) => {
-      return unreadCount;
+      let totalUnreadCount = 0;
+      unreadCount?.forEach(item => {
+        if (item?.count && item.labelId === 1) {
+          totalUnreadCount += item?.count
+        }
+      });
+      return { unreadCount, totalUnreadCount };
     }});
 };
 
-export function useCreateLabel(input: InputMaybe<LabelInput>) {
+export function useCreateLabel(){//input: InputMaybe<LabelInput>) {
   return useMutation({
-    mutationKey: ['label', input],
-    mutationFn: async () => gqlClient.request(label, { input: input }),
+    mutationKey: ['label'],//, input],
+    mutationFn: async (input: InputMaybe<LabelInput>) => gqlClient.request(label, { input: input }),
   });
 };
 

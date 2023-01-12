@@ -4,7 +4,7 @@ import { useSnackbar } from 'notistack';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { Stack, Button, DialogActions } from '@mui/material';
+import { Stack, Button, DialogActions, TextField, Box } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import { ColorSinglePicker } from '../../../components/color-utils';
@@ -49,38 +49,17 @@ const getInitialValues = (labelInfo: Maybe<LabelInput>) => {
 export default function LabelForm({ labelInfo, onCancel }: LabelFormProps) {
   const { enqueueSnackbar } = useSnackbar();
 
-  const [labelData, setLabeData] = useState<Maybe<LabelInput>>(null);
-
-
-  const EventSchema = Yup.object().shape({
-    labelName: Yup.string().required('Label name is required'),
-  });
-
-  const methods = useForm({
-    resolver: yupResolver(EventSchema),
-    defaultValues: getInitialValues(labelInfo),
-  });
-
   const {
     reset,
     control,
     handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
+    register,
+    formState: { isSubmitting, errors },
+  } = useForm<FormValuesProps>({
+    defaultValues: getInitialValues(labelInfo),
+  });
 
-  const mutation = useCreateLabel(labelData ?? {} as LabelInput);
-  useEffect(() => {
-    if (labelData) {
-      mutation.mutate();
-      if (labelData.id) {
-        enqueueSnackbar('Update success!');
-      } else {
-        enqueueSnackbar('Create success!');
-      }
-      onCancel();
-      reset();
-    }
-  }, [labelData]);
+  const { mutate: createLabel } = useCreateLabel();
 
   const onSubmit = async (data: FormValuesProps) => {
     try {
@@ -92,16 +71,28 @@ export default function LabelForm({ labelInfo, onCancel }: LabelFormProps) {
         labelInfo?.id ? { id: labelInfo.id } : {}
       );
 
-      setLabeData(newLabel);
+      createLabel(newLabel);
+      if (labelInfo?.id) {
+        enqueueSnackbar('Update success!');
+      } else {
+        enqueueSnackbar('Create success!');
+      }
+      onCancel();
+      reset();
+
     } catch (error) {
       console.error(error);
     }
   };
 
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3} sx={{ p: 3 }}>
-        <RHFTextField name="labelName" label="Label name" />
+        <TextField
+          {...register("labelName", { required: true })}
+          error={!!errors.labelName}
+        />
+        {errors.labelName?.type === 'required' && <Box role="alert" sx={{ color: 'red' }}>First name is required</Box>}
 
         <Controller
           name="color"
@@ -126,6 +117,6 @@ export default function LabelForm({ labelInfo, onCancel }: LabelFormProps) {
           {labelInfo?.id ? 'Save' : 'Add'}
         </LoadingButton>
       </DialogActions>
-    </FormProvider>
+    </form>
   );
 }
