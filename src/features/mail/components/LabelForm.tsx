@@ -1,16 +1,12 @@
-import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
 // form
 import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Stack, Button, DialogActions, TextField, Box } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import { ColorSinglePicker } from '../../../components/color-utils';
-import { FormProvider, RHFTextField } from '../../../components/hook-form';
 import { LabelInput, Maybe } from '@tyro/api';
-import { useEffect, useState } from 'react';
 import { useCreateLabel } from '../api/labels';
 
 // ----------------------------------------------------------------------
@@ -92,7 +88,7 @@ export default function LabelForm({ labelInfo, onCancel }: LabelFormProps) {
           {...register("labelName", { required: true })}
           error={!!errors.labelName}
         />
-        {errors.labelName?.type === 'required' && <Box role="alert" sx={{ color: 'red' }}>First name is required</Box>}
+        {errors.labelName?.type === 'required' && <Box role="alert" sx={{ color: 'red' }}>Label name is required</Box>}
 
         <Controller
           name="color"

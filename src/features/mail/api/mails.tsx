@@ -151,10 +151,10 @@ export function useSendMail(input: InputMaybe<SendMailInput>) {
   });
 }
 
-export function useStarMail(input: InputMaybe<MailStarredInput>) {
+export function useStarMail() {
   return useMutation({
-    mutationKey: ['starMail', input],
-    mutationFn: async () => gqlClient.request(starMail, { input: input }),
+    mutationKey: ['starMail'],
+    mutationFn: async (input: InputMaybe<MailStarredInput>) => gqlClient.request(starMail, { input: input }),
   });
 }
 

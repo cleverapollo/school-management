@@ -1,15 +1,11 @@
-import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
 // form
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Button, DialogActions, List, ListItem } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
-import { FormProvider, RHFCheckbox } from '../../../components/hook-form';
-import { AssignLabelInput, Label, Maybe } from '@tyro/api';
-import { useEffect, useState } from 'react';
+import { RHFCheckbox } from '../../../components/hook-form';
 import { useAssignLabel } from '../api/labels';
 import { MailLabel } from '../types';
 // ----------------------------------------------------------------------
@@ -19,7 +15,6 @@ interface FormValuesProps {
 };
 
 type ApplyLabelsFormProps = {
-  activeLabels?: Maybe<Maybe<Label>[]>;
   labels: MailLabel[];
   onCancel: VoidFunction;
   mailData: {
@@ -28,64 +23,51 @@ type ApplyLabelsFormProps = {
   }
 };
 
-const getInitialValues = (labels: MailLabel[], activeLabels?: Maybe<Maybe<Label>[]>) => {
+const getInitialValues = (labels: MailLabel[]) => {
   const result = labels.map(label => { 
     return {
-      [`${label?.originalId}`]: !!activeLabels?.filter(activeLabel => activeLabel?.id === label.originalId).length ?? false 
+      [`${label?.originalId}`]: false,
     };
   });
   return result.reduce((prev, next) => ({...prev, ...next}), {});
 }
 
-export default function ApplyLabelsForm({ mailData, activeLabels, labels, onCancel }: ApplyLabelsFormProps) {
+export default function ApplyLabelsForm({ mailData, labels, onCancel }: ApplyLabelsFormProps) {
   const { enqueueSnackbar } = useSnackbar();
-
-  const [assignLabelData, setAssignLabelData] = useState<AssignLabelInput | null>(null);
-
-  const EventSchema = Yup.object().shape({
-    activeLabelIds: Yup.array().min(1, 'You should add minimum 1 label'),
-  });
-
-  const methods = useForm<FormValuesProps>({
-    resolver: yupResolver(EventSchema),
-    defaultValues: getInitialValues(labels, activeLabels),
-  });
 
   const {
     reset,
+    control,
     handleSubmit,
     formState: { isSubmitting },
-  } = methods;
+  } = useForm<FormValuesProps>({
+    defaultValues: getInitialValues(labels)
+  });
 
-  const mutation = useAssignLabel(assignLabelData ?? {} as AssignLabelInput);
-  useEffect(() => {
-    if (assignLabelData) {
-      mutation.mutate();
-      enqueueSnackbar('Label was assigned!');
-      onCancel();
-      reset();
-    }
-  }, [assignLabelData]);
+  const { mutate: assignLabel } = useAssignLabel();
 
   const onSubmit = async (data: FormValuesProps) => {
     try {
-      setAssignLabelData({ 
-        ...mailData,
-        labelId: +Object.entries(data).filter(item => item.includes(true))[0][0]
+      Object.entries(data).filter(item => item.includes(true)).forEach(async (label) => {
+        assignLabel({...mailData, labelId: +label[0]});
       });
+      enqueueSnackbar('Label was assigned!');
+      onCancel();
+      reset();
     } catch (error) {
       console.error(error);
     }
   };
 
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <List>
         {labels.map(label => {
           return <ListItem key={`list-${label.id}`}>
             <RHFCheckbox
               name={label.originalId?.toString() || ''}
               label={label.name.toString()}
+              customControl={control}
             />
           </ListItem>
         })}
@@ -101,6 +83,6 @@ export default function ApplyLabelsForm({ mailData, activeLabels, labels, onCanc
           Apply
         </LoadingButton>
       </DialogActions>
-    </FormProvider>
+    </form>
   );
 }

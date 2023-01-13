@@ -10,13 +10,13 @@ import useResponsive from '../../../hooks/useResponsive';
 import createAvatar from '../../../utils/createAvatar';
 import { fDateTimeSuffix } from '../../../utils/formatTime';
 // @types
-import { Mail, Label } from '@tyro/api';
+import { Mail } from '@tyro/api';
 // components
 import Avatar from '../../../components/Avatar';
 import Iconify from '../../../components/Iconify';
 import OptionButton from '../../../components/table/OptionButton';
 import { Option } from '../../../components/table/types';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { DialogAnimate } from '../../../components/animate';
 import { MailLabel, MailLabelId } from '../types';
 import ApplyLabelsForm from './ApplyLabelsForm';
@@ -24,7 +24,7 @@ import { labelsMap, LABEL_TYPE } from '../constants';
 
 // ----------------------------------------------------------------------
 
-const RootStyle = styled('div')(({ theme }) => ({
+const RootStyle = styled(Box)(({ theme }) => ({
   height: 84,
   flexShrink: 0,
   display: 'flex',
@@ -94,6 +94,10 @@ export default function MailDetailsToolbar({ mail, labels, activeLabelName, ...o
     mailId: mail.id,
   }
 
+  const labelsForApplying = useMemo(() => labels?.filter(label => label.type === LABEL_TYPE.CUSTOM && 
+    !mail.labels?.filter(activeLabel => activeLabel?.id === label.originalId).length) as MailLabel[], 
+  [labels, mail?.labels]);
+
   return (
     <RootStyle {...other}>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -149,8 +153,7 @@ export default function MailDetailsToolbar({ mail, labels, activeLabelName, ...o
           <DialogTitle>Apply label</DialogTitle>
           <ApplyLabelsForm 
             mailData={mailData} 
-            activeLabels={mail.labels?.filter(label => label?.custom) as Label[]} 
-            labels={labels?.filter(label => label.type === LABEL_TYPE.CUSTOM) as MailLabel[]} 
+            labels={labelsForApplying}
             onCancel={() => setIsOpenDialog(false)}
           />
         </DialogAnimate>

@@ -125,16 +125,16 @@ export function useUnreadCount(filter: InputMaybe<UnreadCountFilter>) {
     }});
 };
 
-export function useCreateLabel(){//input: InputMaybe<LabelInput>) {
+export function useCreateLabel(){
   return useMutation({
-    mutationKey: ['label'],//, input],
+    mutationKey: ['label'],
     mutationFn: async (input: InputMaybe<LabelInput>) => gqlClient.request(label, { input: input }),
   });
 };
 
-export function useAssignLabel(input: InputMaybe<AssignLabelInput>) {
+export function useAssignLabel(){
   return useMutation({
-    mutationKey: ['assignLabel', input],
-    mutationFn: async () => gqlClient.request(assignLabels, { input: input }),
+    mutationKey: ['assignLabel'],
+    mutationFn: async (input: InputMaybe<AssignLabelInput>) => gqlClient.request(assignLabels, { input: input }),
   });
 };

@@ -7,8 +7,6 @@ import useResponsive from '../../../hooks/useResponsive';
 // utils
 import { fDate } from '../../../utils/formatTime';
 import createAvatar from '../../../utils/createAvatar';
-// routes
-import { PATH_DASHBOARD } from '../../../routes/paths';
 // @types
 import { //Mail, 
   MailLabel } from '../types';
@@ -19,12 +17,11 @@ import Iconify from '../../../components/Iconify';
 //
 import MailItemAction from './MailItemAction';
 import { useStarMail } from '../api/mails';
-import { useEffect, useState } from 'react';
-import { useUser, Label as LabelType, Mail, MailStarredInput } from '@tyro/api';
+import { useUser, Mail } from '@tyro/api';
 
 // ----------------------------------------------------------------------
 
-const RootStyle = styled('div')(({ theme }) => ({
+const RootStyle = styled(Box)(({ theme }) => ({
   position: 'relative',
   padding: theme.spacing(0, 2),
   color: theme.palette.text.secondary,
@@ -60,7 +57,6 @@ export default function MailItem({
   ...other
 }: Props) {
 
-  const [isStarred, toggleIsStarred] = useState<boolean | null>(null);
   const { user } = useUser();
 
   const isDesktop = useResponsive('up', 'md');
@@ -70,18 +66,14 @@ export default function MailItem({
 
   const handleChangeCheckbox = (checked: boolean) => (checked ? onSelect() : onDeselect());
 
-  const starFilter: MailStarredInput = {
-    mailId: mail.id,
-    threadId: mail.threadId,
-    starred: !mail.starred,
+  const { mutate: starMail } = useStarMail();
+  const onStarMail = () => {
+    starMail({
+      mailId: mail.id,
+      threadId: mail.threadId,
+      starred: !mail.starred,
+    });
   }
-  const starMutation = useStarMail(starFilter);
-
-  useEffect(() => {
-    if(isStarred !== null){ 
-      starMutation.mutate();
-    }
-  }, [isStarred]);
 
   return (
     <RootStyle
@@ -108,7 +100,7 @@ export default function MailItem({
           <Tooltip title="Starred">
             <Checkbox
               color="warning"
-              onChange={() => toggleIsStarred(!mail.starred)}
+              onChange={onStarMail}
               defaultChecked={!!mail.starred}
               icon={<Iconify icon={'eva:star-outline'} />}
               checkedIcon={<Iconify icon={'eva:star-fill'} />}
