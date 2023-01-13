@@ -1,7 +1,7 @@
 // @mui
-import { Box, Tooltip, ListItemButtonProps, Typography, styled } from '@mui/material';
+import { Box, Tooltip, ListItemButtonProps, styled } from '@mui/material';
 // hooks
-import useLocales from '../../../hooks/useLocales';
+import { useTranslation } from '@tyro/i18n';
 // guards
 import PermissionBasedGuard from '../../../guards/PermissionBasedGuard';
 //
@@ -24,10 +24,11 @@ const UnreadCountBox = styled(Box)(({ theme }) => ({
 type Props = NavItemProps & ListItemButtonProps;
 
 export default function NavItem({ item, depth, active, open, isCollapse, ...other }: Props) {
-  const { translate } = useLocales();
+  const { t } = useTranslation(['authentication']);
+
   const { activeProfile } = useUser();
   const filter: UnreadCountFilter = {
-    personPartyId: activeProfile?.partyId,
+    personPartyId: activeProfile?.partyId ?? 0,
   }
 
   const { data: unreadCountData } = useUnreadCount(filter);
@@ -42,11 +43,14 @@ export default function NavItem({ item, depth, active, open, isCollapse, ...othe
 
       <ListItemTextStyle
         isCollapse={isCollapse}
-        primary={translate(title)}
+        // @ts-ignore
+        primary={t(`authentication:${title}`)}
         secondary={
           caption && (
-            <Tooltip title={translate(caption)} placement="top-start">
-              <span>{translate(caption)}</span>
+            // @ts-ignore
+            <Tooltip title={t(`authentication:${caption}`)} placement="top-start">
+              {/* @ts-ignore */}
+              <span>{t(`authentication:${caption}`)}</span>
             </Tooltip>
           )
         }

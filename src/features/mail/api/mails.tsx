@@ -158,9 +158,9 @@ export function useStarMail() {
   });
 }
 
-export function useReadMail(input: InputMaybe<MailReadInput>) {
+export function useReadMail() {
   return useMutation({
-    mutationKey: ['readMail', input],
-    mutationFn: async () => gqlClient.request(readMail, { input: input }),
+    mutationKey: ['readMail'],
+    mutationFn: async (input: InputMaybe<MailReadInput>) => gqlClient.request(readMail, { input: input }),
   });
 }

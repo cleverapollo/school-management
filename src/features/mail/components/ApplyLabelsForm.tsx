@@ -18,8 +18,8 @@ type ApplyLabelsFormProps = {
   labels: MailLabel[];
   onCancel: VoidFunction;
   mailData: {
-    threadId: string;
-    mailId: string;
+    threadId: number;
+    mailId: number;
   }
 };
 

@@ -12,7 +12,7 @@ import { PATH_DASHBOARD } from '../../../routes/paths';
 import Iconify from '../../../components/Iconify';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useMails } from '../api/mails';
-import { objFromArray } from '../../../store/slices/mail';
+import { objFromArray } from '../helpers';
 import { Label as LabelIcon } from '@mui/icons-material';
 import OptionButton from '../../../components/table/OptionButton';
 import { Option } from '../../../components/table/types';
@@ -84,10 +84,10 @@ export default function MailSidebarItem({ label, isActive, setActiveLabelName, s
     if(isActive) {
       const mailsDataWithThreads: Maybe<Mail>[] = [];
       mailsData?.forEach(mail => {
-        mailsDataWithThreads.push(mail);
+        mailsDataWithThreads.push(mail as Mail);
         if(mail?.threads?.length){
           mail.threads.forEach(threadMail => {
-            mailsDataWithThreads.push(threadMail);
+            mailsDataWithThreads.push(threadMail as Mail);
           });
         }
       });

@@ -100,7 +100,7 @@ export function useLabels() {
     select: ({ label }) => {
       return label?.map(item => ({
         originalId: item?.id,
-        id: item?.id < 5 ? labelsMap[item?.id] : undefined,
+        id: (item?.id && item?.id < 5) ? labelsMap[item?.id] : undefined,
         type: !item?.custom ? LABEL_TYPE.SYSTEM : LABEL_TYPE.CUSTOM,
         name: (item?.name === 'Outbox' ? 'sent' : !item?.custom ? item?.name.toLowerCase() : item?.name) ?? '',
         unreadCount: 0,

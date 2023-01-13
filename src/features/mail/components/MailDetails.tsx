@@ -37,16 +37,15 @@ interface MailDetailProps{
 
 export default function MailDetails({ mail, activeLabelName, labels }: MailDetailProps) {
 
-  const readFilter: MailReadInput = {
-    mailId: mail?.id,
-    threadId: mail?.threadId,
-  }
-
-  const readMutation = useReadMail(readFilter);
+  const { mutate: readMail } = useReadMail();
 
   useEffect(() => {
     if (mail && !mail?.readOn && !mail.labels?.filter(label => label?.id === 2).length) {
-      readMutation.mutate();
+      const readInput: MailReadInput = {
+        mailId: mail.id,
+        threadId: mail.threadId,
+      }
+      readMail(readInput);
     }
   }, [mail, activeLabelName]);
 

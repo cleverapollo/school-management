@@ -1,9 +1,9 @@
 import { Quill } from 'react-quill';
+import { useTranslation } from '@tyro/i18n';
 // components
 import Iconify from '../Iconify';
 //
 import EditorToolbarStyle from './EditorToolbarStyle';
-import useLocales from "../../hooks/useLocales";
 
 // ----------------------------------------------------------------------
 
@@ -76,8 +76,7 @@ type EditorToolbarProps = {
 };
 
 export default function EditorToolbar({ id, isSimple, ...other }: EditorToolbarProps) {
-
-  const { translate } = useLocales();
+  const { t } = useTranslation(['common']);
 
   return (
     <EditorToolbarStyle {...other}>
@@ -85,7 +84,7 @@ export default function EditorToolbar({ id, isSimple, ...other }: EditorToolbarP
         <div className="ql-formats">
           {!isSimple && (
             <select className="ql-font" defaultValue="">
-              <option value="">{translate`font`}</option>
+              <option value="">{t('common:font')}</option>
               {FONT_FAMILY.map((font) => (
                 <option key={font} value={font}>
                   {font}
@@ -110,7 +109,7 @@ export default function EditorToolbar({ id, isSimple, ...other }: EditorToolbarP
                 {heading}
               </option>
             ))}
-            <option value="">{translate`normal`}</option>
+            <option value="">{t('common:normal')}</option>
           </select>
         </div>
 

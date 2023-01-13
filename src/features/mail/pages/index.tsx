@@ -31,7 +31,7 @@ export default function Mail() {
   const { activeProfile } = useUser();
 
   const filter: UnreadCountFilter = useMemo(() => ({
-    personPartyId: activeProfile?.partyId
+    personPartyId: activeProfile?.partyId ?? 0,
   }), [activeProfile]);
 
   const { data: unreadCountData } = useUnreadCount(filter);
