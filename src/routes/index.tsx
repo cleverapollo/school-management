@@ -8,6 +8,7 @@ import AuthGuard from '../guards/AuthGuard';
 import LoadingScreen from '../components/LoadingScreen';
 import { useAuth } from '@tyro/api';
 import CalendarRoutes from '../features/calendar/routes';
+import Mail from '../features/mail/routes';
 
 // ----------------------------------------------------------------------
 import { routes as AuthRoutes } from '@tyro/authentication';
@@ -46,6 +47,7 @@ export default function Router() {
         { path: 'one', element: <PageOne /> },
         AdminRoutes,
         CalendarRoutes,
+        Mail,
         ...Groups,
         Settings,
         {

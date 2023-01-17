@@ -27,5 +27,8 @@ export const PATH_DASHBOARD = {
     root: path(ROOTS_DASHBOARD, '/user'),
     account: path(ROOTS_DASHBOARD, '/user/account'),
   },
+  mail : {
+    root: path(ROOTS_DASHBOARD, 'mail'),
+  },
 };
 

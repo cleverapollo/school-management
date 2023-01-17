@@ -19,7 +19,7 @@ import navConfig from './NavConfig';
 import NavbarDocs from './NavbarDocs';
 import NavbarAccount from './NavbarAccount';
 import CollapseButton from './CollapseButton';
-import {usePermissions} from '@tyro/api';
+import { usePermissions } from '@tyro/api';
 
 // ----------------------------------------------------------------------
 

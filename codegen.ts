@@ -7,14 +7,22 @@ if (!process.env.token) {
 const config: CodegenConfig = {
   schema: [
     {
-        'https://tyro-api-uat.azurewebsites.net/api/graphql': {
+      'https://tyro-api-uat.azurewebsites.net/api/graphql': {
         headers: {
           Authorization: `Bearer ${process.env.token}`,
         },
       },
     },
   ],
-  documents: ['packages/**/*.tsx', 'features/**/*.tsx', 'src/**/*.tsx', '!gql/**/*', '!node_modules/**/*'],
+  documents: [
+    'packages/**/*.tsx',
+    'features/**/*.tsx',
+    'src/**/*.tsx',
+    '!gql/**/*',
+    '!node_modules/**/*',
+    '!features/**/node_modules/**/*',
+    '!packages/**/node_modules/**/*',
+  ],
   generates: {
     './packages/api/src/gql/': {
       preset: 'client',

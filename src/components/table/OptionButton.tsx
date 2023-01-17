@@ -44,7 +44,7 @@ const OptionButton = <T extends unknown>({options, row}: IOptionButtonProps<T>) 
         {options.map((option, index) => {
           return (
             <ListItem key={`list-${index}`} disablePadding sx={{ padding: '8px' }}  {...bindMenu(popupState)}>
-                <OptionButtonItem option={option} index={index} row={row} closeFunc={popupState.close}/>
+              <OptionButtonItem option={option} index={index} row={row} closeFunc={popupState.close}/>
             </ListItem>
           )
           })}

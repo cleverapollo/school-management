@@ -51,7 +51,7 @@ const OptionButtonItem = <T extends unknown>({option, row, index, closeFunc}: IO
         );
     } else {
         return (
-            <ListItemButton  dense>
+            <ListItemButton onClick={(e) => {option.action(e); closeFunc();}}  dense>
                 <ListItemIconStyle>{getOptionsIcon(option.icon)}</ListItemIconStyle>
                 {/* @ts-ignore */}
                 <ListItemText id={`lable-${index}`} primary={t(option.text)} />

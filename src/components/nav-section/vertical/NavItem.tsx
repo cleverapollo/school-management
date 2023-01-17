@@ -1,5 +1,5 @@
 // @mui
-import { Box, Tooltip, ListItemButtonProps } from '@mui/material';
+import { Box, Tooltip, ListItemButtonProps, styled } from '@mui/material';
 // hooks
 import { useTranslation } from '@tyro/i18n';
 // guards
@@ -9,6 +9,15 @@ import Iconify from '../../Iconify';
 //
 import { NavItemProps } from '../type';
 import { ListItemStyle, ListItemTextStyle, ListItemIconStyle } from './style';
+import { UnreadCountFilter, useUser } from '@tyro/api';
+import { useUnreadCount } from '../../../features/mail/api/labels';
+
+const UnreadCountBox = styled(Box)(({ theme }) => ({
+  background: theme.palette.error.lighter,
+  color: theme.palette.error.dark,
+  padding: theme.spacing(0, 1),
+  borderRadius: '6px',
+}));
 
 // ----------------------------------------------------------------------
 
@@ -16,6 +25,13 @@ type Props = NavItemProps & ListItemButtonProps;
 
 export default function NavItem({ item, depth, active, open, isCollapse, ...other }: Props) {
   const { t } = useTranslation(['authentication']);
+
+  const { activeProfile } = useUser();
+  const filter: UnreadCountFilter = {
+    personPartyId: activeProfile?.partyId ?? 0,
+  }
+
+  const { data: unreadCountData } = useUnreadCount(filter);
 
   const { title, icon, info, children, disabled, caption, permissions } = item;
 
@@ -47,6 +63,10 @@ export default function NavItem({ item, depth, active, open, isCollapse, ...othe
           variant: 'caption',
         }}
       />
+
+      {title === 'mail' && Number(unreadCountData?.totalUnreadCount) > 0 && 
+        <UnreadCountBox>{unreadCountData?.totalUnreadCount}</UnreadCountBox>
+      }
 
       {!isCollapse && (
         <>

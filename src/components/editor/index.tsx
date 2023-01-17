@@ -65,7 +65,6 @@ export default function Editor({
       maxStack: 100,
       userOnly: true,
     },
-    syntax: true,
     clipboard: {
       matchVisual: false,
     },
