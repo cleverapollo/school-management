@@ -73,6 +73,7 @@ export default function ApplyLabelsForm({
             <RHFCheckbox
               name={label.originalId?.toString() || ''}
               label={label.name.toString()}
+              // @ts-ignore
               customControl={control}
             />
           </ListItem>
