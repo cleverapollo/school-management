@@ -7,8 +7,6 @@ import {
   ThemeProvider as MUIThemeProvider,
   StyledEngineProvider,
 } from '@mui/material/styles';
-// hooks
-import useSettings from '../hooks/useSettings';
 //
 import palette from './palette';
 import typography from './typography';
@@ -23,9 +21,9 @@ type Props = {
 };
 
 export default function ThemeProvider({ children }: Props) {
-  const { themeMode, themeDirection } = useSettings();
-
-  const isLight = themeMode === 'light';
+  // Todo: setup new way to set theme mode
+  // const isLight = themeMode === 'light';
+  const isLight = true;
 
   const themeOptions: ThemeOptions = useMemo(
     () => ({
@@ -33,11 +31,10 @@ export default function ThemeProvider({ children }: Props) {
       typography,
       breakpoints,
       shape: { borderRadius: 8 },
-      direction: themeDirection,
       shadows: isLight ? shadows.light : shadows.dark,
       customShadows: isLight ? customShadows.light : customShadows.dark,
     }),
-    [isLight, themeDirection]
+    [isLight]
   );
 
   const theme = createTheme(themeOptions);

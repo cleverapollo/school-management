@@ -4,7 +4,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpBackend, { HttpBackendOptions } from 'i18next-http-backend';
 
 // eslint-disable-next-line import/no-relative-packages
-import { en, fr, vn, cn, ar } from '../../public/locales';
+import { en, ga } from '../../public/locales';
 
 export { useTranslation } from 'react-i18next';
 export type { TFunction } from 'i18next';
@@ -12,14 +12,13 @@ export type { TFunction } from 'i18next';
 export const defaultNS = 'common';
 export const resources = {
   en,
-  fr,
-  vn,
-  cn,
-  ar,
+  ga,
 } as const;
 export const namespaces = ['authentication', 'common', 'userAccounts'];
 
-export const availableLanguages = Object.keys(resources);
+export const availableLanguages = Object.keys(
+  resources
+) as (keyof typeof resources)[];
 
 export default i18n
   .use(LanguageDetector)

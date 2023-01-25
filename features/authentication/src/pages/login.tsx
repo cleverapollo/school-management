@@ -4,8 +4,7 @@ import { styled } from '@mui/material/styles';
 import { Box, Card, Stack, Container, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { useAuth } from '@tyro/api';
-import useResponsive from '../../../../src/hooks/useResponsive';
-import Page from '../../../../src/components/Page';
+import { Page, useResponsive } from '@tyro/core';
 import Logo from '../../../../src/components/Logo';
 import Image from '../../../../src/components/Image';
 

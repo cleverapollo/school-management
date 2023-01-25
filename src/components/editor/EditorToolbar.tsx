@@ -1,7 +1,7 @@
 import { Quill } from 'react-quill';
 import { useTranslation } from '@tyro/i18n';
 // components
-import Iconify from '../Iconify';
+import { Iconify } from '../iconify';
 //
 import EditorToolbarStyle from './EditorToolbarStyle';
 

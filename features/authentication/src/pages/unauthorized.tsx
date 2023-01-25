@@ -5,7 +5,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Button, Typography, Container } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import Page from '../../../../src/components/Page';
+import { Page } from '@tyro/core';
 import { MotionContainer, varBounce } from '../../../../src/components/animate';
 import { PageNotFoundIllustration } from '../../../../src/assets';
 
@@ -44,7 +44,7 @@ export default function PageUnauthorized() {
           </m.div>
 
           <Button
-            to="/auth/login"
+            to="/login"
             size="large"
             variant="contained"
             component={RouterLink}

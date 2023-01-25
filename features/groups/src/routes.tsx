@@ -1,8 +1,13 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
-import { RouteObject } from 'react-router';
-import { lazy, Suspense } from 'react';
-import LoadingScreen from '../../../src/components/LoadingScreen';
+import {
+  getNumber,
+  NavObjectFunction,
+  NavObjectType,
+  LazyLoader,
+} from '@tyro/core';
+import { lazy } from 'react';
+import { BookOpenIcon, UserProfileCardIcon } from '@tyro/icons';
+import { UserType } from '@tyro/api';
+import { getSubjectGroups, getSubjectGroupsById } from './api/subject-groups';
 
 const CustomGroups = lazy(() => import('./pages/custom'));
 const ViewCustomGroupPage = lazy(() => import('./pages/custom/view'));
@@ -12,76 +17,102 @@ const SubjectGroups = lazy(() => import('./pages/subject'));
 const ViewSubjectGroupPage = lazy(() => import('./pages/subject/view'));
 const Subjects = lazy(() => import('./pages/subject/students-list'));
 
-function Loadable({ children }: { children: React.ReactNode }) {
-  return <Suspense fallback={<LoadingScreen />}>{children}</Suspense>;
-}
-
-export const routes: RouteObject[] = [
+export const getRoutes: NavObjectFunction = (t) => [
   {
-    path: 'groups',
+    type: NavObjectType.Category,
+    title: t('navigation:general.title'),
     children: [
       {
-        path: 'enrolment',
-        element: (
-          <Loadable>
-            <EnrolmentGroups />
-          </Loadable>
-        ),
+        type: NavObjectType.RootGroup,
+        path: 'groups',
+        icon: <UserProfileCardIcon />,
+        hasAccess: ({ userType }) =>
+          !!userType && [UserType.Admin, UserType.Teacher].includes(userType),
+        title: t('navigation:general.groups.title'),
         children: [
           {
-            path: ':groupId/view',
+            type: NavObjectType.MenuLink,
+            path: 'enrolment',
+            title: t('navigation:general.groups.enrolment'),
             element: (
-              <Loadable>
-                <ViewEnrolmentGroupPage />
-              </Loadable>
+              <LazyLoader>
+                <EnrolmentGroups />
+              </LazyLoader>
             ),
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                path: ':groupId/view',
+                element: (
+                  <LazyLoader>
+                    <ViewEnrolmentGroupPage />
+                  </LazyLoader>
+                ),
+              },
+            ],
+          },
+          {
+            type: NavObjectType.MenuLink,
+            path: 'subject',
+            title: t('navigation:general.groups.subject'),
+            loader: () => getSubjectGroups(),
+            element: (
+              <LazyLoader>
+                <SubjectGroups />
+              </LazyLoader>
+            ),
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                path: ':groupId/view',
+                loader: ({ params }) => {
+                  const groupId = getNumber(params?.groupId);
+                  getSubjectGroupsById(groupId);
+                },
+                element: (
+                  <LazyLoader>
+                    <ViewSubjectGroupPage />
+                  </LazyLoader>
+                ),
+              },
+            ],
+          },
+          {
+            type: NavObjectType.MenuLink,
+            path: 'custom',
+            title: t('navigation:general.groups.custom'),
+            element: (
+              <LazyLoader>
+                <CustomGroups />
+              </LazyLoader>
+            ),
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                path: ':groupId/view',
+                element: (
+                  <LazyLoader>
+                    <ViewCustomGroupPage />
+                  </LazyLoader>
+                ),
+              },
+            ],
           },
         ],
       },
       {
-        path: 'subject',
+        type: NavObjectType.RootLink,
+        path: 'subjects',
+        title: t('navigation:general.subjects'),
+        hasAccess: ({ userType }) =>
+          !!userType && [UserType.Admin, UserType.Teacher].includes(userType),
+        icon: <BookOpenIcon />,
         element: (
-          <Loadable>
-            <SubjectGroups />
-          </Loadable>
+          <LazyLoader>
+            <Subjects />
+          </LazyLoader>
         ),
-        children: [
-          {
-            path: ':groupId/view',
-            element: (
-              <Loadable>
-                <ViewSubjectGroupPage />
-              </Loadable>
-            ),
-          },
-        ],
-      },
-      {
-        path: 'custom',
-        element: (
-          <Loadable>
-            <CustomGroups />
-          </Loadable>
-        ),
-        children: [
-          {
-            path: ':groupId/view',
-            element: (
-              <Loadable>
-                <ViewCustomGroupPage />
-              </Loadable>
-            ),
-          },
-        ],
       },
     ],
-  },
-  {
-    path: 'subjects',
-    element: (
-      <Loadable>
-        <Subjects />
-      </Loadable>
-    ),
   },
 ];

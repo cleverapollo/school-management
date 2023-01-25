@@ -1,9 +1,9 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
-import { RouteObject } from 'react-router';
+import { msalInstance, clearUsersData } from '@tyro/api';
 import { lazy, Suspense } from 'react';
+import { RouteObject, redirect } from 'react-router-dom';
 import LoadingScreen from '../../../src/components/LoadingScreen';
-import GuestGuard from '../../../src/guards/GuestGuard';
 
 const Login = lazy(() => import('./pages/login'));
 const Callback = lazy(() => import('./pages/callback'));
@@ -13,38 +13,49 @@ function Loadable({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={<LoadingScreen />}>{children}</Suspense>;
 }
 
-export const routes: RouteObject = {
-  path: 'auth',
-  children: [
-    {
-      path: 'login',
-      element: (
-        <GuestGuard>
+export const routes: RouteObject[] = [
+  {
+    loader: () => {
+      const activeAccount = msalInstance.getActiveAccount();
+      return activeAccount ? redirect('/dashboard') : null;
+    },
+    errorElement: (
+      <Loadable>
+        <Unauthorized />
+      </Loadable>
+    ),
+    children: [
+      {
+        path: '/login',
+        element: (
           <Loadable>
             <Login />
           </Loadable>
-        </GuestGuard>
-      ),
-    },
-    {
-      path: 'callback',
-      element: (
-        <GuestGuard>
-          <Loadable>
-            <Callback />
-          </Loadable>
-        </GuestGuard>
-      ),
-    },
-    {
-      path: 'unauthorized',
-      element: (
-        <GuestGuard>
+        ),
+      },
+      {
+        path: '/unauthorized',
+        element: (
           <Loadable>
             <Unauthorized />
           </Loadable>
-        </GuestGuard>
-      ),
+        ),
+      },
+    ],
+  },
+  {
+    path: '/auth/callback',
+    element: (
+      <Loadable>
+        <Callback />
+      </Loadable>
+    ),
+  },
+  {
+    path: '/logout',
+    loader: () => {
+      clearUsersData();
+      return redirect('/login');
     },
-  ],
-};
+  },
+];

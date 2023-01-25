@@ -381,6 +381,7 @@ module.exports = function (webpackEnv) {
                 {
                   loader: require.resolve('@svgr/webpack'),
                   options: {
+                    typescript: true,
                     prettier: false,
                     svgo: false,
                     svgoConfig: {

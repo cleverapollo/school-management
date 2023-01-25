@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, InputMaybe } from '@tyro/api';
+import { gqlClient, graphql, queryClient } from '@tyro/api';
 
 const subjectGroupsList = graphql(/* GraphQL */ `
   query subjectGroups {
@@ -43,23 +43,46 @@ const subjectGroupById = graphql(/* GraphQL */ `
   }
 `);
 
+export const subjectGroupsKeys = {
+  list: ['groups', 'subject'] as const,
+  details: (id: number | undefined) => [...subjectGroupsKeys.list, id] as const,
+};
+
+const subjectGroupsQuery = {
+  queryKey: subjectGroupsKeys.list,
+  queryFn: async () => gqlClient.request(subjectGroupsList),
+  staleTime: 1000 * 60 * 5,
+};
+
+export function getSubjectGroups() {
+  return queryClient.fetchQuery(subjectGroupsQuery);
+}
+
 export function useSubjectGroups() {
   return useQuery({
-    queryKey: ['groups', 'subject'],
-    queryFn: async () => gqlClient.request(subjectGroupsList),
+    ...subjectGroupsQuery,
     select: ({ subjectGroups }) => subjectGroups,
   });
 }
 
-export function useSubjectGroupById(id: InputMaybe<number>) {
+const subjectGroupsByIdQuery = (id: number | undefined) => ({
+  queryKey: subjectGroupsKeys.details(id),
+  queryFn: async () =>
+    gqlClient.request(subjectGroupById, {
+      filter: {
+        partyIds: [id ?? 0],
+      },
+    }),
+  staleTime: 1000 * 60 * 5,
+});
+
+export function getSubjectGroupsById(id: number | undefined) {
+  return queryClient.fetchQuery(subjectGroupsByIdQuery(id));
+}
+
+export function useSubjectGroupById(id: number | undefined) {
   return useQuery({
-    queryKey: ['groups', 'subject', id],
-    queryFn: async () =>
-      gqlClient.request(subjectGroupById, {
-        filter: {
-          partyIds: [id],
-        },
-      }),
+    ...subjectGroupsByIdQuery(id),
     select: ({ subjectGroups }) => {
       if (!subjectGroups) return null;
       const group = subjectGroups[0];

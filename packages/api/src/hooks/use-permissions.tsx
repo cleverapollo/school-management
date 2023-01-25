@@ -1,32 +1,60 @@
-import { useCallback } from 'react';
-import { useUser } from './use-user';
+import { useMemo } from 'react';
+import { UserType } from '../gql/graphql';
+import { findActiveProfile, getUser, useUser } from './use-user';
 
-export function usePermissions() {
-  const { activeProfile } = useUser();
-  const usersPermissions = activeProfile?.permissionIds ?? [];
+export interface PermissionUtils {
+  permissions: (string | null)[];
+  hasPermission: (permission: string) => boolean;
+  hasAtLeastOnePermission: (permissions: Array<string>) => boolean;
+  hasAllPermissions: (permissions: Array<string>) => boolean;
+  userType: UserType | undefined;
+}
 
-  const hasPermission = useCallback(
-    (permission: string) => usersPermissions.includes(permission),
-    [usersPermissions]
-  );
+export interface UsePermissionsReturn extends PermissionUtils {
+  isLoading: boolean;
+}
 
-  const hasAtLeastOnePermission = useCallback(
-    (permissions: Array<string>) =>
+function getPermissionFunctions(usersPermissions: (string | null)[]) {
+  return {
+    hasPermission: (permission: string) =>
+      usersPermissions.includes(permission),
+    hasAtLeastOnePermission: (permissions: Array<string>) =>
       permissions.some((permission) =>
         usersPermissions.includes(permission ?? '')
       ),
-    [usersPermissions]
-  );
-
-  const hasAllPermissions = useCallback(
-    (permissions: Array<string>) =>
+    hasAllPermissions: (permissions: Array<string>) =>
       permissions.every((permission) =>
         usersPermissions.includes(permission ?? '')
       ),
+  };
+}
+
+export async function getPermissionUtils(): Promise<PermissionUtils> {
+  const { myAuthDetails } = await getUser();
+
+  if (!myAuthDetails) throw new Error('USER_NOT_FOUND');
+
+  const activeProfile = findActiveProfile(myAuthDetails);
+  const usersPermissions = activeProfile?.permissionIds ?? [];
+
+  return {
+    permissions: usersPermissions,
+    ...getPermissionFunctions(usersPermissions),
+    userType: activeProfile?.profileType?.userType,
+  };
+}
+
+export function usePermissions(): UsePermissionsReturn {
+  const { activeProfile, isLoading } = useUser();
+  const usersPermissions = activeProfile?.permissionIds ?? [];
+
+  const { hasPermission, hasAtLeastOnePermission, hasAllPermissions } = useMemo(
+    () => getPermissionFunctions(usersPermissions),
     [usersPermissions]
   );
 
   return {
+    isLoading,
     permissions: usersPermissions,
     hasPermission,
     hasAtLeastOnePermission,

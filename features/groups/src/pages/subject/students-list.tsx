@@ -4,11 +4,10 @@ import { Button, Container, Typography } from '@mui/material';
 import { useMemo } from 'react';
 import { Person, SubjectGroup } from '@tyro/api';
 import { useTranslation, TFunction } from '@tyro/i18n';
+import { Page } from '@tyro/core';
 import Table from '../../../../../src/components/table/Table';
 import { TableColumn } from '../../../../../src/components/table/types';
 import { ColoredBox } from '../../components/ColoredBox';
-import Page from '../../../../../src/components/Page';
-import useSettings from '../../../../../src/hooks/useSettings';
 import { MultiPersonsAvatars } from '../../components/MultiPersonsAvatars';
 import { useStudentSubjects } from '../../api/student-subjects';
 
@@ -68,7 +67,6 @@ const getSubjectColumns = (
 
 export default function Subjects() {
   const { t } = useTranslation(['common', 'authentication']);
-  const { themeStretch } = useSettings();
   const { data, isLoading } = useStudentSubjects();
 
   const subjectsData: SubjectsData[] =
@@ -85,7 +83,7 @@ export default function Subjects() {
 
   return (
     <Page title="Subject" isLoading={isLoading}>
-      <Container maxWidth={themeStretch ? false : 'xl'}>
+      <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
           Subject
         </Typography>

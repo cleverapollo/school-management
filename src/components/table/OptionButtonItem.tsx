@@ -1,12 +1,21 @@
-import {ListItemButton, ListItemText,} from '@mui/material';
-import * as React from 'react';
+import { ListItemButton, ListItemText, ListItemIcon } from '@mui/material';
 import {useState} from 'react';
+import { styled } from '@mui/material/styles'
 import SvgIconStyle from '../SvgIconStyle';
 import {Option} from './types';
-import {ListItemIconStyle} from '../nav-section/vertical/style';
 import { useTranslation } from '@tyro/i18n';
 import ConfirmationDialog, {ConfirmationDialogProps} from "../dialog/ConfimationDialog";
 
+const NavItemSize = 24;
+
+export const ListItemIconStyle = styled(ListItemIcon)({
+    width: NavItemSize,
+    height: NavItemSize,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    '& svg': { width: '100%', height: '100%' },
+});
 
 const getOptionsIcon = (name: string) => (
   <SvgIconStyle src={`/assets/icons/options/${name}.svg`} sx={{ width: 1, height: 1 }} />
