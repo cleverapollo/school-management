@@ -5,9 +5,7 @@ import { Container, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router';
 import { Person } from '@tyro/api';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { useNumber } from '@tyro/core';
-import useSettings from '../../../../../src/hooks/useSettings';
-import Page from '../../../../../src/components/Page';
+import { useNumber, Page } from '@tyro/core';
 import { useCustomGroupById } from '../../api/general-groups';
 import Table from '../../../../../src/components/table/Table';
 import Breadcrumbs from '../../../../../src/components/Breadcrumbs';
@@ -75,7 +73,6 @@ const getCustomGroupColumns = (
 
 export default function ViewCustomGroupPage() {
   const { t } = useTranslation(['common', 'authentication']);
-  const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { groupId } = useParams();
   const groupIdAsNumber = useNumber(groupId);
@@ -99,7 +96,7 @@ export default function ViewCustomGroupPage() {
 
   return (
     <Page title={title} isLoading={isLoading}>
-      <Container maxWidth={themeStretch ? false : 'xl'}>
+      <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
           {title}
         </Typography>

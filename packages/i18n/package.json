@@ -3,9 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "main": "index.ts",
-  "files": [
-    "@types/i18next.d.ts"
-  ],
   "dependencies": {
     "i18next": "^22.4.9",
     "i18next-browser-languagedetector": "^7.0.1",

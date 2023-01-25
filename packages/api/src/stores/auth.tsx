@@ -7,8 +7,17 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { useMsal, useIsAuthenticated, useAccount } from '@azure/msal-react';
-import { acquireMsalToken, loginRequest } from '../utils/msal-configs';
+import {
+  useMsal,
+  useIsAuthenticated,
+  useAccount,
+  MsalProvider,
+} from '@azure/msal-react';
+import {
+  acquireMsalToken,
+  loginRequest,
+  msalInstance,
+} from '../utils/msal-configs';
 
 export type AuthContextValue = {
   isAuthenticated: boolean;
@@ -25,8 +34,8 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
-function AuthProvider({ children }: AuthProviderProps) {
-  const { instance, accounts } = useMsal();
+function InnerAuthProvider({ children }: AuthProviderProps) {
+  const { instance, accounts, inProgress } = useMsal();
   const account = useAccount(accounts[0] || {});
   const isAuthenticated = useIsAuthenticated();
   const [isTokenInitialized, setIsTokenInitialized] = useState(false);
@@ -44,10 +53,10 @@ function AuthProvider({ children }: AuthProviderProps) {
       acquireMsalToken({ account }).then(() => {
         setIsTokenInitialized(true);
       });
-    } else {
+    } else if (inProgress === 'none') {
       setIsTokenInitialized(true);
     }
-  }, [account, instance]);
+  }, [account, instance, inProgress]);
 
   const value = useMemo(
     () => ({
@@ -60,6 +69,14 @@ function AuthProvider({ children }: AuthProviderProps) {
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+function AuthProvider({ children }: AuthProviderProps) {
+  return (
+    <MsalProvider instance={msalInstance}>
+      <InnerAuthProvider>{children}</InnerAuthProvider>
+    </MsalProvider>
+  );
 }
 
 function useAuth() {

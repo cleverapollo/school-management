@@ -1,9 +1,6 @@
 // i18n
 import '@tyro/i18n';
 
-// scroll bar
-import 'simplebar/src/simplebar.css';
-
 // lightbox
 import 'react-image-lightbox/style.css';
 

@@ -11,11 +11,10 @@ import {
 } from '@tyro/api';
 import { useMemo } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
+import { Page } from '@tyro/core';
 import Table from '../../../../../src/components/table/Table';
 import { Option, TableColumn } from '../../../../../src/components/table/types';
 import OptionButton from '../../../../../src/components/table/OptionButton';
-import Page from '../../../../../src/components/Page';
-import useSettings from '../../../../../src/hooks/useSettings';
 import { ColoredBox } from '../../components/ColoredBox';
 import { useCustomGroups } from '../../api/general-groups';
 
@@ -158,7 +157,6 @@ const getStudentsCustomGroupColumns = (
 
 export default function CustomGroups() {
   const { t } = useTranslation(['common']);
-  const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { activeProfile } = useUser();
   const { data, isLoading } = useCustomGroups();
@@ -187,7 +185,7 @@ export default function CustomGroups() {
 
   return (
     <Page title="Custom groups" isLoading={isLoading}>
-      <Container maxWidth={themeStretch ? false : 'xl'}>
+      <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
           Custom groups
         </Typography>

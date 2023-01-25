@@ -7,11 +7,6 @@ import MenuPopover from '../../../../../src/components/MenuPopover';
 import { HEADERS } from '../../../../../src/constants';
 import { useCoreAcademicNamespace } from '../../api/academic-namespaces/academic-namespaces';
 
-interface NamespacesDropdown {
-  year: string;
-  id: number;
-}
-
 export function AcademicNamespaceSessionSwitcher() {
   const [open, setOpen] = useState<HTMLElement | null>(null);
   const sessionNamespaceId = Number(
@@ -39,9 +34,13 @@ export function AcademicNamespaceSessionSwitcher() {
     handleClose();
   };
 
-  if (!hasPermission('api:users:read:academic_namespace_switch_session')) {
+  if (
+    isLoading ||
+    !hasPermission('api:users:read:academic_namespace_switch_session')
+  ) {
     return null;
   }
+
   return (
     <>
       <Button

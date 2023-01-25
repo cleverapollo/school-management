@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import { gqlClient } from '../gql-client';
 
 import { graphql } from '../gql/gql';
+import { GlobalUser, MyAuthDetailsQuery } from '../gql/graphql';
 import { queryClient } from '../query-client';
 import { useAuth } from '../stores';
 
@@ -18,6 +19,7 @@ const myAuthDetailsDocument = graphql(/* GraphQL */ `
       profiles {
         id
         nickName
+        avatarUrl
         tenant {
           tenant
           name
@@ -43,10 +45,17 @@ export const userKeys = {
 const userQuery = {
   queryKey: userKeys.details(),
   queryFn: async () => gqlClient.request(myAuthDetailsDocument),
+  staleTime: 1000 * 60 * 10,
 };
 
 export function getUser() {
   return queryClient.fetchQuery(userQuery);
+}
+
+export function findActiveProfile(user: MyAuthDetailsQuery['myAuthDetails']) {
+  return user?.profiles?.find(
+    (profile) => profile?.id === user.activeProfileId
+  );
 }
 
 export function useUser() {
@@ -68,16 +77,14 @@ export function useUser() {
       })),
     }),
     onError: () => {
-      navigate('/auth/unauthorized', { replace: true });
+      navigate('/unauthorized', { replace: true });
     },
   });
 
   return useMemo(
     () => ({
       user,
-      activeProfile: user?.profiles?.find(
-        (profile) => profile?.id === user.activeProfileId
-      ),
+      activeProfile: findActiveProfile(user as GlobalUser),
       isLoading,
       isInitialized: isTokenInitialized && Boolean(user),
       isAuthenticated,

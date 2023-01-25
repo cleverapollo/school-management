@@ -5,12 +5,11 @@ import { useNavigate } from 'react-router';
 import { GeneralGroup, Group, UserType, useUser } from '@tyro/api';
 import { useMemo } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
+import { Page } from '@tyro/core';
 import Table from '../../../../../src/components/table/Table';
 import { Option, TableColumn } from '../../../../../src/components/table/types';
 import OptionButton from '../../../../../src/components/table/OptionButton';
 import { useEnrolmentGroups } from '../../api/general-groups';
-import Page from '../../../../../src/components/Page';
-import useSettings from '../../../../../src/hooks/useSettings';
 
 interface EnrolmentGroupData {
   name: GeneralGroup['name'];
@@ -123,7 +122,6 @@ const getEnrolmentGroupColumns = (
 
 export default function EnrolmentGroups() {
   const { t } = useTranslation(['common', 'authentication']);
-  const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { activeProfile } = useUser();
   const { data, isLoading } = useEnrolmentGroups();
@@ -149,7 +147,7 @@ export default function EnrolmentGroups() {
 
   return (
     <Page title="Enrolment groups" isLoading={isLoading}>
-      <Container maxWidth={themeStretch ? false : 'xl'}>
+      <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
           Enrolment groups
         </Typography>

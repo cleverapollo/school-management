@@ -6,7 +6,7 @@ import palette from './palette';
 
 // ----------------------------------------------------------------------
 
-interface CustomShadowOptions {
+export interface CustomShadowOptions {
   z1: string;
   z8: string;
   z12: string;
@@ -35,7 +35,7 @@ declare module '@mui/material/styles' {
   }
 }
 
-const LIGHT_MODE = palette.light.grey[500];
+const LIGHT_MODE = palette.light.slate[500];
 const DARK_MODE = '#000000';
 
 const createShadow = (color: string): Shadows => {

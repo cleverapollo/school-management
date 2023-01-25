@@ -33,11 +33,11 @@ import Timeline from './Timeline';
 import TreeView from './TreeView';
 import Checkbox from './Checkbox';
 import Accordion from './Accordion';
+import DatePicker from './DatePicker';
 import Typography from './Typography';
 import Pagination from './Pagination';
 import Breadcrumbs from './Breadcrumbs';
 import ButtonGroup from './ButtonGroup';
-import CssBaseline from './CssBaseline';
 import Autocomplete from './Autocomplete';
 import ToggleButton from './ToggleButton';
 import ControlLabel from './ControlLabel';
@@ -80,11 +80,11 @@ export default function ComponentsOverrides(theme: Theme) {
     Backdrop(theme),
     Progress(theme),
     Accordion(theme),
+    DatePicker(theme),
     Typography(theme),
     Pagination(theme),
     ButtonGroup(theme),
     Breadcrumbs(theme),
-    CssBaseline(theme),
     Autocomplete(theme),
     ControlLabel(theme),
     ToggleButton(theme),

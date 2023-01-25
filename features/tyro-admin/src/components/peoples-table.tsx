@@ -1,7 +1,7 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
 import { Avatar, Button } from '@mui/material';
-import { addEmulationHeaders, getUser } from '@tyro/api';
+import { addEmulationHeaders, getUser, queryClient } from '@tyro/api';
 import { Person } from '@tyro/api/src/gql/graphql';
 import { useMemo } from 'react';
 import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
@@ -65,6 +65,7 @@ const getExamplePeopleColumns: GetExamplePeopleColumns = (
         onClick={async () => {
           const { tenant, partyId } = row.original;
           addEmulationHeaders(tenant, partyId);
+          queryClient.invalidateQueries();
           await getUser();
           navigate('/', { replace: true });
         }}

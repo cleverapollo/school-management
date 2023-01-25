@@ -8,7 +8,7 @@ import { TextField, TextFieldProps } from '@mui/material';
 type IProps = {
   name: string;
   children: React.ReactNode;
-  customControl?: Control<any, any>;
+  customControl?: Control;
 };
 
 type Props = IProps & TextFieldProps;

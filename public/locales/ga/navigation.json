@@ -1,0 +1,12 @@
+{
+  "general": {
+    "title": "General",
+    "subjects": "Subjects",
+    "groups": {
+      "title": "Groups",
+      "enrolment": "Enrolment",
+      "subject": "Subject",
+      "custom": "Custom"
+    }
+  }
+}

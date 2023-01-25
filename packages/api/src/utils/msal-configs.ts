@@ -40,8 +40,8 @@ export const msalConfig = {
     authority: b2cPolicies.authorities.signUpSignIn.authority, // Use a sign-up/sign-in user-flow as a default authority
     knownAuthorities: [b2cPolicies.authorityDomain], // Mark your B2C tenant's domain as trusted.
     redirectUri: `${window.location.origin}/auth/callback`, // Points to window.location.origin. You must register this URI on Azure Portal/App Registration.
-    postLogoutRedirectUri: '/', // Indicates the page to navigate after logout.
-    navigateToLoginRequestUrl: true, // If "true", will navigate back to the original request location before processing the auth code response.
+    postLogoutRedirectUri: '/logout', // Indicates the page to navigate after logout.
+    navigateToLoginRequestUrl: false, // If "true", will navigate back to the original request location before processing the auth code response.
   },
   cache: {
     cacheLocation: 'sessionStorage', // Configures cache location. "sessionStorage" is more secure, but "localStorage" gives you SSO between tabs.
@@ -84,11 +84,13 @@ export async function acquireMsalToken(
   try {
     const response = await instance.acquireTokenSilent({
       ...loginRequest,
-      account,
+      account: activeAccount ?? undefined,
     });
 
     instance.setActiveAccount(activeAccount);
-    setToken(response?.accessToken || null);
+    const token = response?.accessToken || null;
+    setToken(token);
+    return token;
   } catch (error) {
     instance.logoutRedirect();
   }

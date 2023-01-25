@@ -5,11 +5,10 @@ import { useNavigate } from 'react-router';
 import { Person, SubjectGroup, UserType, useUser } from '@tyro/api';
 import { useMemo } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
+import { Page } from '@tyro/core';
 import Table from '../../../../../src/components/table/Table';
 import { Option, TableColumn } from '../../../../../src/components/table/types';
 import OptionButton from '../../../../../src/components/table/OptionButton';
-import Page from '../../../../../src/components/Page';
-import useSettings from '../../../../../src/hooks/useSettings';
 import { useSubjectGroups } from '../../api/subject-groups';
 import { ColoredBox } from '../../components/ColoredBox';
 import { MultiPersonsAvatars } from '../../components/MultiPersonsAvatars';
@@ -140,10 +139,9 @@ const getSubjectGroupColumns = (
 
 export default function SubjectGroups() {
   const { t } = useTranslation(['common', 'authentication']);
-  const { themeStretch } = useSettings();
   const navigate = useNavigate();
   const { activeProfile } = useUser();
-  const { data, isLoading } = useSubjectGroups();
+  const { data } = useSubjectGroups();
   const profileTypeName = activeProfile?.profileType?.userType;
   const isAdminUserType = profileTypeName === UserType.Admin;
   const isTabsNeeded =
@@ -165,8 +163,8 @@ export default function SubjectGroups() {
   );
 
   return (
-    <Page title="Subject groups" isLoading={isLoading}>
-      <Container maxWidth={themeStretch ? false : 'xl'}>
+    <Page title="Subject groups">
+      <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
           Subject groups
         </Typography>

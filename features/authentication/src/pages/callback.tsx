@@ -7,13 +7,13 @@ import LoadingScreen from '../../../../src/components/LoadingScreen';
 
 export default function Callback() {
   const navigate = useNavigate();
-  const { activeProfile } = useUser();
+  const { activeProfile, isLoading } = useUser();
 
   useEffect(() => {
-    if (activeProfile !== null) {
-      navigate('/');
+    if (!isLoading) {
+      navigate(activeProfile ? '/dashboard' : '/login');
     }
-  }, [navigate, activeProfile]);
+  }, [navigate, activeProfile, isLoading]);
 
   return <LoadingScreen />;
 }

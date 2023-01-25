@@ -9,11 +9,10 @@ import {
   SetActiveAcademicNamespace,
 } from '@tyro/api';
 import { UseMutationResult } from '@tanstack/react-query';
+import { Page } from '@tyro/core';
 import OptionButton from '../../../../src/components/table/OptionButton';
-import useSettings from '../../../../src/hooks/useSettings';
 import { Option, TableColumn } from '../../../../src/components/table/types';
 import Table from '../../../../src/components/table/Table';
-import Page from '../../../../src/components/Page';
 import { useCoreAcademicNamespace } from '../api/academic-namespaces/academic-namespaces';
 import {
   CoreSetActiveActiveAcademicNamespaceWrapper,
@@ -103,7 +102,6 @@ const getColumns = (
 
 export default function AcademicNamespaceList() {
   const { t } = useTranslation(['authentication']);
-  const { themeStretch } = useSettings();
   const { data, isLoading } = useCoreAcademicNamespace();
   const mutation = useCoreSetActiveActiveAcademicNamespace();
 
@@ -121,7 +119,7 @@ export default function AcademicNamespaceList() {
   });
   return (
     <Page title="Subject" isLoading={isLoading}>
-      <Container maxWidth={themeStretch ? false : 'xl'}>
+      <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
           Namespaces
         </Typography>

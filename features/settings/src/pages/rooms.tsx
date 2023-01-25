@@ -4,10 +4,9 @@ import { Container, Typography } from '@mui/material';
 import { useTranslation, TFunction } from '@tyro/i18n';
 import { useMemo } from 'react';
 import { Room } from '@tyro/api';
+import { Page } from '@tyro/core';
 import Table from '../../../../src/components/table/Table';
 import { TableColumn } from '../../../../src/components/table/types';
-import Page from '../../../../src/components/Page';
-import useSettings from '../../../../src/hooks/useSettings';
 import { useCoreRooms } from '../api/rooms';
 
 const getSubjectColumns = (
@@ -32,7 +31,6 @@ const getSubjectColumns = (
 
 export default function Rooms() {
   const { t } = useTranslation(['common', 'authentication']);
-  const { themeStretch } = useSettings();
   const { data, isLoading } = useCoreRooms();
 
   const subjectGroupColumns = useMemo(() => getSubjectColumns(t), [t]);
@@ -40,7 +38,7 @@ export default function Rooms() {
   const rooms: Room[] = data as Room[];
   return (
     <Page title="Subject" isLoading={isLoading}>
-      <Container maxWidth={themeStretch ? false : 'xl'}>
+      <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
           Rooms
         </Typography>
