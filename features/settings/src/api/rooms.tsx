@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql } from '@tyro/api';
+import { gqlClient, graphql, queryClient } from '@tyro/api';
 
 const coreRooms = graphql(/* GraphQL */ `
   query core_rooms {
@@ -10,10 +10,24 @@ const coreRooms = graphql(/* GraphQL */ `
     }
   }
 `);
+
+export const roomsKeys = {
+  all: ['coreRooms'] as const,
+};
+
+const coreRoomsQuery = {
+  queryKey: roomsKeys.all,
+  queryFn: async () => gqlClient.request(coreRooms),
+  staleTime: 1000 * 60 * 2,
+};
+
+export function getCoreRooms() {
+  return queryClient.fetchQuery(coreRoomsQuery);
+}
+
 export function useCoreRooms() {
   return useQuery({
-    queryKey: ['coreRooms'],
-    queryFn: async () => gqlClient.request(coreRooms),
+    ...coreRoomsQuery,
     select: ({ core_rooms }) => core_rooms,
   });
 }

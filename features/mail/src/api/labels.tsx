@@ -6,6 +6,7 @@ import {
   InputMaybe,
   LabelInput,
   UnreadCountFilter,
+  queryClient,
 } from '@tyro/api';
 import { labelsMap, LabelType } from '../constants';
 import { MailLabel } from '../types';
@@ -100,10 +101,23 @@ const assignLabels = graphql(/* GraphQl */ `
   }
 `);
 
+export const labelsKeys = {
+  all: ['label'] as const,
+};
+
+const calendarEventsQuery = {
+  queryKey: labelsKeys.all,
+  queryFn: async () => gqlClient.request(labels, {}),
+  staleTime: 1000 * 60 * 2,
+};
+
+export function getLabels() {
+  return queryClient.fetchQuery(calendarEventsQuery);
+}
+
 export function useLabels() {
   return useQuery({
-    queryKey: ['label'],
-    queryFn: async () => gqlClient.request(labels, {}),
+    ...calendarEventsQuery,
     select: ({ label }) =>
       label?.map(
         (item) =>

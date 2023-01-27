@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, GeneralGroupType } from '@tyro/api';
+import { gqlClient, graphql, GeneralGroupType, queryClient } from '@tyro/api';
 
 const generalGroupsList = graphql(/* GraphQL */ `
   query generalGroupsList($filter: GeneralGroupFilter!) {
@@ -52,18 +52,31 @@ const customGroupById = graphql(/* GraphQL */ `
   }
 `);
 
+export const customGroupsKeys = {
+  list: ['groups', 'custom'] as const,
+  details: (id: number | undefined) => [...customGroupsKeys.list, id] as const,
+};
+
+const customGroupsQuery = {
+  queryKey: customGroupsKeys.list,
+  queryFn: async () => gqlClient.request(generalGroupsList, {
+    filter: {
+      groupTypes: [
+        GeneralGroupType.DynamicGroup,
+        GeneralGroupType.StaticGroup,
+      ],
+    },
+  }),
+  staleTime: 1000 * 60 * 5,
+};
+
+export function getCustomGroups() {
+  return queryClient.fetchQuery(customGroupsQuery);
+}
+
 export function useCustomGroups() {
   return useQuery({
-    queryKey: ['groups', 'custom'],
-    queryFn: async () =>
-      gqlClient.request(generalGroupsList, {
-        filter: {
-          groupTypes: [
-            GeneralGroupType.DynamicGroup,
-            GeneralGroupType.StaticGroup,
-          ],
-        },
-      }),
+    ...customGroupsQuery,
     select: ({ generalGroups }) =>
       generalGroups?.map((group) => ({
         name: group?.name,
@@ -75,15 +88,24 @@ export function useCustomGroups() {
   });
 }
 
+const customGroupsByIdQuery = (id: number | undefined) => ({
+  queryKey: customGroupsKeys.details(id),
+  queryFn: async () =>
+    gqlClient.request(customGroupById, {
+      filter: {
+        partyIds: [id ?? 0],
+      },
+    }),
+  staleTime: 1000 * 60 * 5,
+});
+
+export function getCustomGroupsById(id: number | undefined) {
+  return queryClient.fetchQuery(customGroupsByIdQuery(id));
+}
+
 export function useCustomGroupById(id: number | undefined) {
   return useQuery({
-    queryKey: ['groups', 'custom', id],
-    queryFn: async () =>
-      gqlClient.request(customGroupById, {
-        filter: {
-          partyIds: [id ?? 0],
-        },
-      }),
+    ...customGroupsByIdQuery(id),
     select: ({ generalGroups }) => {
       if (!generalGroups) return null;
       const group = generalGroups[0];
@@ -97,15 +119,28 @@ export function useCustomGroupById(id: number | undefined) {
   });
 }
 
+export const enrolmentGroupsKeys = {
+  list: ['groups', 'enrolment'] as const,
+  details: (id: number | undefined) => [...enrolmentGroupsKeys.list, id] as const,
+};
+
+const enrolmentGroupsQuery = {
+  queryKey: enrolmentGroupsKeys.list,
+  queryFn: async () => gqlClient.request(generalGroupsList, {
+    filter: {
+      groupTypes: [GeneralGroupType.ClassGroup],
+    },
+  }),
+  staleTime: 1000 * 60 * 5,
+};
+
+export function getEnrolmentGroups() {
+  return queryClient.fetchQuery(enrolmentGroupsQuery);
+}
+
 export function useEnrolmentGroups() {
   return useQuery({
-    queryKey: ['groups', 'enrolment'],
-    queryFn: async () =>
-      gqlClient.request(generalGroupsList, {
-        filter: {
-          groupTypes: [GeneralGroupType.ClassGroup],
-        },
-      }),
+    ...enrolmentGroupsQuery,
     select: ({ generalGroups }) =>
       generalGroups?.map((group) => ({
         name: group?.name,
@@ -122,15 +157,24 @@ export function useEnrolmentGroups() {
   });
 }
 
+const enrolmentGroupsByIdQuery = (id: number | undefined) => ({
+  queryKey: enrolmentGroupsKeys.details(id),
+  queryFn: async () =>
+    gqlClient.request(enrolmentGroupById, {
+      filter: {
+        partyIds: [id ?? 0],
+      },
+    }),
+  staleTime: 1000 * 60 * 5,
+});
+
+export function getEnrolmentGroupsById(id: number | undefined) {
+  return queryClient.fetchQuery(enrolmentGroupsByIdQuery(id));
+}
+
 export function useEnrolmentGroupById(id: number | undefined) {
   return useQuery({
-    queryKey: ['groups', 'enrolment', id],
-    queryFn: async () =>
-      gqlClient.request(enrolmentGroupById, {
-        filter: {
-          partyIds: [id ?? 0],
-        },
-      }),
+    ...enrolmentGroupsByIdQuery(id),
     select: ({ generalGroups }) => {
       if (!generalGroups) return null;
       const group = generalGroups[0];
