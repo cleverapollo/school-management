@@ -42,7 +42,7 @@ interface Range {
 }
 
 // ToDo: Change filter values, when create events will be done
-const filter: CalendarEventFilter = {
+export const filter: CalendarEventFilter = {
   startDate: '2022-01-01',
   endDate: '2022-12-30',
   partyIds: [610],

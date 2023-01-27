@@ -5,6 +5,7 @@ import {
   CalendarEventFilter,
   CreateCalendarEventsInput,
   CalendarEventAttendeeType,
+  queryClient,
 } from '@tyro/api';
 import { EventInput } from '@fullcalendar/common';
 import { COLOR_OPTIONS, Participant } from '../components/CalendarForm';
@@ -95,10 +96,23 @@ const events = graphql(/* GraphQL */ `
   }
 `);
 
+export const calendarEventsKeys = {
+  all: (filter: CalendarEventFilter) => ['calendar', 'calendarEvents', filter] as const,
+};
+
+const calendarEventsQuery = (filter: CalendarEventFilter) => ({
+  queryKey: calendarEventsKeys.all(filter),
+  queryFn: async () => gqlClient.request(events, { filter }),
+  staleTime: 1000 * 60 * 2,
+});
+
+export function getCalendarEvents(filter: CalendarEventFilter) {
+  return queryClient.fetchQuery(calendarEventsQuery(filter));
+}
+
 export function useCalendarEvents(filter: CalendarEventFilter) {
   return useQuery({
-    queryKey: ['calendar', 'calendarEvents', filter],
-    queryFn: async () => gqlClient.request(events, { filter }),
+    ...calendarEventsQuery(filter),
     select: ({ calendar_calendarEvents }) => {
       const newEvents = calendar_calendarEvents?.map((event, index) => {
         // ToDo: refactor this when we get full data from the backend

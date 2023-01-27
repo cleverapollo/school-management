@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql } from '@tyro/api';
+import { gqlClient, graphql, queryClient } from '@tyro/api';
 
 const coreAcademicNamespaces = graphql(/* GraphQL */ `
   query core_academicNamespaces {
@@ -14,10 +14,23 @@ const coreAcademicNamespaces = graphql(/* GraphQL */ `
   }
 `);
 
+export const coreAcademicNamespaceKeys = {
+  all: ['coreAcademicNamespace'] as const,
+};
+
+const coreAcademicNamespaceQuery = {
+  queryKey: coreAcademicNamespaceKeys.all,
+  queryFn: async () => gqlClient.request(coreAcademicNamespaces),
+  staleTime: 1000 * 60 * 2,
+};
+
+export function getCoreAcademicNamespace() {
+  return queryClient.fetchQuery(coreAcademicNamespaceQuery);
+}
+
 export function useCoreAcademicNamespace() {
   return useQuery({
-    queryKey: ['coreAcademicNamespace'],
-    queryFn: async () => gqlClient.request(coreAcademicNamespaces),
+    ...coreAcademicNamespaceQuery,
     select: ({ core_academicNamespaces }) => core_academicNamespaces,
   });
 }

@@ -1,9 +1,11 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
 import { lazy } from 'react';
-import { LazyLoader, NavObjectFunction, NavObjectType } from '@tyro/core';
+import { LazyLoader, NavObjectFunction, NavObjectType, getNumber } from '@tyro/core';
 import { PersonGearIcon } from '@tyro/icons';
 import { UserType } from '@tyro/api';
+import { getTenants } from './api/tenants';
+import { getAdminPartyPeople } from './api/party-people';
 
 const AdminSchoolsPage = lazy(() => import('./pages/school'));
 const AdminPeoplesPage = lazy(() => import('./pages/school/people'));
@@ -25,6 +27,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             title: t('navigation:general.admin.schools'),
             path: 'schools',
+            loader: () => getTenants(),
             element: (
               <LazyLoader>
                 <AdminSchoolsPage />
@@ -34,6 +37,11 @@ export const getRoutes: NavObjectFunction = (t) => [
           {
             type: NavObjectType.NonMenuLink,
             path: 'schools/:schoolId/people',
+            //ToDo: uncomment this when bug with params will be resolved
+            // loader: ({ params }) => {
+            //   const schoolId = getNumber(params?.schoolId) as number;
+            //   getAdminPartyPeople(schoolId);
+            // },
             element: (
               <LazyLoader>
                 <AdminPeoplesPage />
