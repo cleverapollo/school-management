@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql } from '@tyro/api';
+import { gqlClient, graphql, queryClient } from '@tyro/api';
 
 const catalogueSubjects = graphql(/* GraphQL */ `
   query catalogueSubjects {
@@ -15,10 +15,24 @@ const catalogueSubjects = graphql(/* GraphQL */ `
     }
   }
 `);
+
+export const catalogueSubjectsKeys = {
+  all: ['catalogue_subjects'] as const,
+};
+
+const catalogueSubjectsQuery = {
+  queryKey: catalogueSubjectsKeys.all,
+  queryFn: async () => gqlClient.request(catalogueSubjects),
+  staleTime: 1000 * 60 * 2,
+};
+
+export function getCatalogueSubjects() {
+  return queryClient.fetchQuery(catalogueSubjectsQuery);
+}
+
 export function useCatalogueSubjects() {
   return useQuery({
-    queryKey: ['catalogue_subjects'],
-    queryFn: async () => gqlClient.request(catalogueSubjects),
+    ...catalogueSubjectsQuery,
     select: ({ catalogue_subjects }) => catalogue_subjects,
   });
 }

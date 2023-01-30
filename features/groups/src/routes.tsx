@@ -8,6 +8,8 @@ import { lazy } from 'react';
 import { BookOpenIcon, UserProfileCardIcon } from '@tyro/icons';
 import { UserType } from '@tyro/api';
 import { getSubjectGroups, getSubjectGroupsById } from './api/subject-groups';
+import { getStudentSubjects } from './api/student-subjects';
+import { getCustomGroups, getCustomGroupsById, getEnrolmentGroups, getEnrolmentGroupsById } from './api/general-groups';
 
 const CustomGroups = lazy(() => import('./pages/custom'));
 const ViewCustomGroupPage = lazy(() => import('./pages/custom/view'));
@@ -34,6 +36,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'enrolment',
             title: t('navigation:general.groups.enrolment'),
+            loader: () => getEnrolmentGroups(),
             element: (
               <LazyLoader>
                 <EnrolmentGroups />
@@ -43,6 +46,10 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: ':groupId/view',
+                loader: ({ params }) => {
+                  const groupId = getNumber(params?.groupId);
+                  getEnrolmentGroupsById(groupId);
+                },
                 element: (
                   <LazyLoader>
                     <ViewEnrolmentGroupPage />
@@ -81,6 +88,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'custom',
             title: t('navigation:general.groups.custom'),
+            loader: () => getCustomGroups(),
             element: (
               <LazyLoader>
                 <CustomGroups />
@@ -90,6 +98,10 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: ':groupId/view',
+                loader: ({ params }) => {
+                  const groupId = getNumber(params?.groupId);
+                  getCustomGroupsById(groupId);
+                },
                 element: (
                   <LazyLoader>
                     <ViewCustomGroupPage />
@@ -107,6 +119,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         hasAccess: ({ userType }) =>
           !!userType && [UserType.Admin, UserType.Teacher].includes(userType),
         icon: <BookOpenIcon />,
+        loader: () => getStudentSubjects(),
         element: (
           <LazyLoader>
             <Subjects />

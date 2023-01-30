@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql } from '@tyro/api';
+import { gqlClient, graphql, queryClient } from '@tyro/api';
 
 const adminTenants = graphql(/* GraphQL */ `
   query admin__tenants {
@@ -11,10 +11,23 @@ const adminTenants = graphql(/* GraphQL */ `
   }
 `);
 
+export const adminTenantsKeys = {
+  all: ['admin', 'tenants'] as const,
+};
+
+const adminTenantsQuery = {
+  queryKey: adminTenantsKeys.all,
+  queryFn: async () => gqlClient.request(adminTenants),
+  staleTime: 1000 * 60 * 2,
+};
+
+export function getTenants() {
+  return queryClient.fetchQuery(adminTenantsQuery);
+}
+
 export function useAdminTenants() {
   return useQuery({
-    queryKey: ['admin', 'tenants'],
-    queryFn: async () => gqlClient.request(adminTenants),
+    ...adminTenantsQuery,
     select: ({ admin__tenants }) =>
       admin__tenants?.map((tenant) => ({
         ...tenant,
