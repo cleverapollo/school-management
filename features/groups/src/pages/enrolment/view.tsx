@@ -5,10 +5,9 @@ import { Container, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router';
 import { Person } from '@tyro/api';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { useNumber, Page } from '@tyro/core';
+import { useNumber, Page, Breadcrumbs } from '@tyro/core';
 import { useEnrolmentGroupById } from '../../api/general-groups';
 import Table from '../../../../../src/components/table/Table';
-import Breadcrumbs from '../../../../../src/components/Breadcrumbs';
 import { TableColumn, Option } from '../../../../../src/components/table/types';
 import OptionButton from '../../../../../src/components/table/OptionButton';
 

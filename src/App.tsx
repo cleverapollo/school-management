@@ -7,7 +7,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import ThemeProvider from './theme';
 import { ProgressBarStyle } from './components/ProgressBar';
 import MotionLazyContainer from './components/animate/MotionLazyContainer';
-import NotistackProvider from './components/NotistackProvider';
 // @mui
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -30,18 +29,16 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <AuthProvider>
-          <MotionLazyContainer>
-            <ThemeProvider>
-              <NotistackProvider>
-                <ProgressBarStyle />
-                <AppShell />
-                <ReactQueryDevtools />
-              </NotistackProvider>
-            </ThemeProvider>
-          </MotionLazyContainer>
-        </AuthProvider>
+        <MotionLazyContainer>
+          <ThemeProvider>
+            <AuthProvider>
+              <ProgressBarStyle />
+              <AppShell />
+              <ReactQueryDevtools />
+            </AuthProvider>
+          </ThemeProvider>
+        </MotionLazyContainer>
       </LocalizationProvider>
-    </QueryClientProvider>
+    </QueryClientProvider >
   );
 }

@@ -48,6 +48,10 @@ const getStudentColumns = (
   {
     columnDisplayName: translate('common:classGroup'),
     fieldName: 'classGroup.name',
+    component: ({ row }) => {
+      const { classGroup } = row.original;
+      return classGroup?.name ?? '';
+    },
     filter: 'suggest',
   },
   {

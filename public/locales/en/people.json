@@ -1,0 +1,17 @@
+{
+  "students": "Students",
+  "usersProfile": "{{name}}'s Profile",
+  "currentLocation": "Current Location",
+  "currentLesson": "Current Lesson",
+  "currentTeacher": "Current Teacher",
+  "attendance": "Attendance",
+  "year": "Year",
+  "class": "Class",
+  "yearHead": "Year Head",
+  "tutor": "Tutor",
+  "tyroId": "Tyro ID",
+  "tyroIdClickToCopy": "Tyro ID is {{id}}. Click to copy.",
+  "tyroIdCopied": "Tyro ID copied to clipboard.",
+  "issueCopyingTyroId": "Issue copying ID to clipboard.",
+  "studentClickableAvatarAria": "{{name}}'s Avatar. Click to view their support plan and priority note."
+}
