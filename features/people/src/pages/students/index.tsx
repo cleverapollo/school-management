@@ -1,11 +1,11 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
 import { useMemo } from 'react';
-import { Avatar, Box, Button, Container, Typography } from '@mui/material';
+import { Box, Button, Container, Typography } from '@mui/material';
+import { Avatar, Page } from '@tyro/core';
 import { useNavigate, NavigateFunction } from 'react-router-dom';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { Student } from '@tyro/api';
-import { Page } from '@tyro/core';
 import { useStudents } from '../../api/students';
 import { TableColumn } from '../../../../../src/components/table/types';
 import Table from '../../../../../src/components/table/Table';
@@ -35,7 +35,7 @@ const getStudentColumns = (
         <Box display="flex" alignItems="center">
           <Avatar
             src={person?.avatarUrl ?? undefined}
-            alt={name}
+            name={name}
             sx={{
               mr: 1.5,
             }}

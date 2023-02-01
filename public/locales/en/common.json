@@ -25,6 +25,8 @@
   "type": "Type",
   "created": "Created",
   "members": "Members",
+  "siblings": "Siblings",
+  "noSiblingsRegisteredAtThisSchool": "No siblings registered at this school",
   "list": "list",
   "edit": "edit",
   "shop": "shop",

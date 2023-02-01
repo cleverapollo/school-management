@@ -1,15 +1,13 @@
 import {
   Card,
-  Avatar,
   Stack,
   Typography,
   Badge,
   IconButton,
-  Grid,
   Divider,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { useDisclosure } from '@tyro/core';
+import { useDisclosure, Avatar } from '@tyro/core';
 import { useStudent } from '../../../api/students';
 import { SupportPlanRing } from '../support-plan-ring';
 import { AdditionalInfo } from './additional-info';
@@ -29,14 +27,10 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
     data?.person?.lastName ?? ''
   }`;
 
-  console.log({
-    data,
-  });
-
   return (
     <>
       <Card variant="outlined" sx={{ p: 1.25, flex: 1, my: 2 }}>
-        <Stack direction="row" alignItems="center">
+        <Stack direction="row" alignItems="center" sx={{ flexWrap: 'wrap' }}>
           <IconButton
             disabled={
               !data?.status?.priorityStudent && !data?.status?.activeSupportPlan
@@ -60,7 +54,10 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
               badgeContent={data?.status?.priorityStudent ? 1 : 0}
             >
               <SupportPlanRing hasSupportPlan>
-                <Avatar src={data?.person?.avatarUrl ?? undefined} alt={name} />
+                <Avatar
+                  src={data?.person?.avatarUrl ?? undefined}
+                  name={name}
+                />
               </SupportPlanRing>
             </Badge>
           </IconButton>

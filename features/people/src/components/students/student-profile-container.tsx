@@ -1,19 +1,19 @@
 import { Box, Container, Typography } from '@mui/material';
 import { Outlet, useParams, useMatches } from 'react-router-dom';
 import { Page, useNumber, Tabs, LinkTab } from '@tyro/core';
-import { useTranslation } from '@tyro/i18n';
+import { TFunction, useTranslation } from '@tyro/i18n';
 import { Breadcrumbs } from '@tyro/core/src/components';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useStudent } from '../../api/students';
 import { StudentOverviewBar } from './student-overview-bar';
 
-const studentTabs = [
+const getStudentTabs = (t: TFunction<'people'[]>) => [
   {
     label: 'Overview',
     value: 'overview',
   },
   {
-    label: 'Personal',
+    label: t('people:personal.title'),
     value: 'personal',
   },
   {
@@ -50,8 +50,12 @@ const studentTabs = [
   },
 ];
 
-function getInitialTabValue(matches: ReturnType<typeof useMatches>) {
+function getInitialTabValue(
+  matches: ReturnType<typeof useMatches>,
+  studentTabs: ReturnType<typeof getStudentTabs>
+) {
   const lastUrl = matches[matches.length - 1].pathname;
+
   const matchedPathname = studentTabs.find(({ value }) =>
     lastUrl.endsWith(value)
   );
@@ -60,14 +64,21 @@ function getInitialTabValue(matches: ReturnType<typeof useMatches>) {
 
 export default function StudentProfileContainer() {
   const matches = useMatches();
-  const [value, setValue] = useState<string>(getInitialTabValue(matches));
+  const { t } = useTranslation(['navigation', 'people']);
+  const studentTabs = getStudentTabs(t);
+  const [value, setValue] = useState<string>(
+    getInitialTabValue(matches, studentTabs)
+  );
   const { id } = useParams();
   const idNumber = useNumber(id);
-  const { t } = useTranslation(['navigation', 'people']);
-  const { data, isLoading } = useStudent(idNumber);
+  const { data } = useStudent(idNumber);
   const name = `${data?.person?.firstName ?? ''} ${
     data?.person?.lastName ?? ''
   }`;
+
+  useEffect(() => {
+    setValue(getInitialTabValue(matches, studentTabs));
+  }, [matches, studentTabs]);
 
   return (
     <Page

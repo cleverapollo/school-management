@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { CodeType, gqlClient, graphql, queryClient, Student } from '@tyro/api';
+import { CodeType, gqlClient, graphql, queryClient } from '@tyro/api';
 
 const students = graphql(/* GraphQL */ `
   query core_students {
@@ -46,7 +46,10 @@ const studentById = graphql(/* GraphQL */ `
           }
           lesson
           teacher
-          currentAttendance
+          currentAttendance {
+            attendanceCodeName
+            codeType
+          }
         }
         priorityStudent
         activeSupportPlan

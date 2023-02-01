@@ -48,7 +48,7 @@ const getSubjectGroupColumns = (
     component: ({ row }) => (
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {/* Add Avatar back in when we add value to BE */}
-        {/* <Avatar srcSet={columnProps.row.original.avatarUrl} alt={columnProps.row.original.name} style={{ marginRight: '10px' }} /> */}
+        {/* <Avatar srcSet={columnProps.row.original.avatarUrl} name={columnProps.row.original.name} style={{ marginRight: '10px' }} /> */}
         {row.original.person?.firstName} {row.original.person?.lastName}
       </div>
     ),

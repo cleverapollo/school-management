@@ -108,9 +108,7 @@ const mockTFunction = ((key: string) => key) as TFunction<
   'navigation'[]
 >;
 
-export const getNavCategories = (
-  t: TFunction<'navigation'[], undefined, 'navigation'[]>
-) => [
+export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getShellRoutes(t),
   ...getCalendarRoutes(t),
   ...getGroupRoutes(t),

@@ -21,5 +21,6 @@ export * from './person-gear';
 export * from './pie-chart';
 export * from './search';
 export * from './user-group';
+export * from './user-group-two';
 export * from './user-profile-card';
 export * from './warning';

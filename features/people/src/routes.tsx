@@ -4,6 +4,7 @@ import { UserGroupIcon } from '@tyro/icons';
 import { UserType } from '@tyro/api';
 import { redirect } from 'react-router-dom';
 import { getStudent, getStudents } from './api/students';
+import { getStudentPersonal } from './api/personal';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
 // Student profile pages
@@ -83,6 +84,10 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'personal',
+                loader: ({ params }) => {
+                  const studentId = getNumber(params.id);
+                  return getStudentPersonal(studentId);
+                },
                 element: <StudentProfilePersonalPage />,
               },
               {

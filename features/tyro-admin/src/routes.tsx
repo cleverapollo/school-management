@@ -1,7 +1,12 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
 import { lazy } from 'react';
-import { LazyLoader, NavObjectFunction, NavObjectType, getNumber } from '@tyro/core';
+import {
+  LazyLoader,
+  NavObjectFunction,
+  NavObjectType,
+  getNumber,
+} from '@tyro/core';
 import { PersonGearIcon } from '@tyro/icons';
 import { UserType } from '@tyro/api';
 import { getTenants } from './api/tenants';
@@ -14,19 +19,20 @@ const GraphiQLPage = lazy(() => import('./pages/graphiql'));
 export const getRoutes: NavObjectFunction = (t) => [
   {
     type: NavObjectType.Category,
-    title: t('navigation:general.title'),
+    title: t('navigation:management.title'),
     children: [
       {
         type: NavObjectType.RootGroup,
         path: 'admin',
         icon: <PersonGearIcon />,
-        hasAccess: ({ userType }) => !!userType && userType === UserType.Tyro,
         title: t('navigation:general.admin.title'),
         children: [
           {
             type: NavObjectType.MenuLink,
             title: t('navigation:general.admin.schools'),
             path: 'schools',
+            hasAccess: ({ userType }) =>
+              !!userType && userType === UserType.Tyro,
             loader: () => getTenants(),
             element: (
               <LazyLoader>
@@ -37,11 +43,12 @@ export const getRoutes: NavObjectFunction = (t) => [
           {
             type: NavObjectType.NonMenuLink,
             path: 'schools/:schoolId/people',
-            //ToDo: uncomment this when bug with params will be resolved
-            // loader: ({ params }) => {
-            //   const schoolId = getNumber(params?.schoolId) as number;
-            //   getAdminPartyPeople(schoolId);
-            // },
+            hasAccess: ({ userType }) =>
+              !!userType && userType === UserType.Tyro,
+            loader: ({ params }) => {
+              const schoolId = getNumber(params?.schoolId);
+              return getAdminPartyPeople(schoolId);
+            },
             element: (
               <LazyLoader>
                 <AdminPeoplesPage />
@@ -52,6 +59,9 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             title: t('navigation:general.admin.graphiql'),
             path: 'graphiql',
+            hasAccess: ({ userType }) =>
+              process.env.NODE_ENV !== 'production' ||
+              (!!userType && userType === UserType.Tyro),
             element: (
               <LazyLoader>
                 <GraphiQLPage />
