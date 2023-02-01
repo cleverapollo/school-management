@@ -27,7 +27,7 @@ export default function PageUnauthorized() {
         <ContentStyle sx={{ textAlign: 'center', alignItems: 'center' }}>
           <m.div variants={varBounce().in}>
             <Typography variant="h3" paragraph>
-              Sorry!
+              {t('common:sorry')}!
             </Typography>
           </m.div>
 
@@ -49,7 +49,7 @@ export default function PageUnauthorized() {
             variant="contained"
             component={RouterLink}
           >
-            Go to Login
+            {t('common:go_to_login')}
           </Button>
         </ContentStyle>
       </Container>

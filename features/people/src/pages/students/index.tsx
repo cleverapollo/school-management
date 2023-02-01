@@ -16,9 +16,9 @@ interface TableData extends Student {
 
 const getStudentColumns = (
   translate: TFunction<
-    ('authentication' | 'common')[],
+    ('common' | 'people')[],
     undefined,
-    ('authentication' | 'common')[]
+    ('common' | 'people')[]
   >,
   navigate: NavigateFunction
 ): TableColumn<TableData>[] => [
@@ -46,7 +46,7 @@ const getStudentColumns = (
     },
   },
   {
-    columnDisplayName: translate('common:classGroup'),
+    columnDisplayName: translate('people:classGroup'),
     fieldName: 'classGroup.name',
     filter: 'suggest',
   },
@@ -66,7 +66,7 @@ const getStudentColumns = (
 ];
 
 export default function StudentsListPage() {
-  const { t } = useTranslation(['authentication']);
+  const { t } = useTranslation(['common', 'people']);
   const navigate = useNavigate();
   const { data, isLoading } = useStudents();
   const students = data as TableData[];
@@ -81,10 +81,10 @@ export default function StudentsListPage() {
   }
 
   return (
-    <Page title="People">
+    <Page title={t('people:people')}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
-          Students
+          {t('people:students')}
         </Typography>
         <Table data={students ?? []} columns={studentColumns} />
       </Container>

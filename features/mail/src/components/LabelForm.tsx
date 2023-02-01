@@ -8,6 +8,7 @@ import { Stack, Button, DialogActions, TextField, Box } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import { LabelInput, Maybe } from '@tyro/api';
+import { useTranslation } from '@tyro/i18n';
 import { ColorSinglePicker } from '../../../../src/components/color-utils';
 import { useCreateLabel } from '../api/labels';
 
@@ -45,6 +46,7 @@ const getInitialValues = (labelInfo: Maybe<LabelInput>) => {
 };
 
 export default function LabelForm({ labelInfo, onCancel }: LabelFormProps) {
+  const { t } = useTranslation(['mail', 'common']);
   const { enqueueSnackbar } = useSnackbar();
 
   const {
@@ -69,9 +71,9 @@ export default function LabelForm({ labelInfo, onCancel }: LabelFormProps) {
 
       createLabel(newLabel);
       if (labelInfo?.id) {
-        enqueueSnackbar('Update success!');
+        enqueueSnackbar(t('common:snackbarMessages.updateSuccess'));
       } else {
-        enqueueSnackbar('Create success!');
+        enqueueSnackbar(t('common:snackbarMessages.createSuccess'));
       }
       onCancel();
       reset();
@@ -89,7 +91,7 @@ export default function LabelForm({ labelInfo, onCancel }: LabelFormProps) {
         />
         {errors.labelName?.type === 'required' && (
           <Box role="alert" sx={{ color: 'red' }}>
-            Label name is required
+            {t('mail:errorMessages.labelRequired')}
           </Box>
         )}
 
@@ -108,11 +110,11 @@ export default function LabelForm({ labelInfo, onCancel }: LabelFormProps) {
 
       <DialogActions>
         <Button variant="outlined" color="inherit" onClick={onCancel}>
-          Cancel
+          {t('common:actions.cancel')}
         </Button>
 
         <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-          {labelInfo?.id ? 'Save' : 'Add'}
+          {labelInfo?.id ? t('common:actions.save') : t('common:actions.add')}
         </LoadingButton>
       </DialogActions>
     </form>

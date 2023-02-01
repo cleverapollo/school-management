@@ -12,6 +12,7 @@ import {
   useUser,
 } from '@tyro/api';
 import { useSnackbar } from 'notistack';
+import { useTranslation } from '@tyro/i18n';
 import { Iconify } from '../../../../src/components/iconify';
 import { useSendMail } from '../api/mails';
 
@@ -24,6 +25,7 @@ interface MailDetailsReplyInputProps {
 export default function MailDetailsReplyInput({
   mail,
 }: MailDetailsReplyInputProps) {
+  const { t } = useTranslation(['common', 'mail']);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { enqueueSnackbar } = useSnackbar();
   const { user } = useUser();
@@ -67,7 +69,7 @@ export default function MailDetailsReplyInput({
   const onReplyClick = () => {
     mutation.mutate();
     setMessage('');
-    enqueueSnackbar('Mail was sent');
+    enqueueSnackbar(t('common:snackbarMessages.mailWasSent'));
   };
 
   return (
@@ -78,7 +80,7 @@ export default function MailDetailsReplyInput({
         minRows={2}
         maxRows={8}
         value={message}
-        placeholder="Type a message"
+        placeholder={t('mail:placeholders.typeMessage')}
         onChange={handleChangeMessage}
         sx={{ '& fieldset': { border: 'none !important' } }}
       />

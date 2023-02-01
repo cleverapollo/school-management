@@ -18,7 +18,7 @@ interface AdminPanelTenant extends Tenant {
 }
 
 type GetExampleSchoolColumns = (
-  translate: TFunction<'authentication'[], undefined, 'authentication'[]>,
+  translate: TFunction<('common' | 'admin')[], undefined, ('common' | 'admin')[]>,
   navigate: NavigateFunction
 ) => TableColumn<AdminPanelTenant>[];
 
@@ -27,7 +27,7 @@ const getExampleSchoolColumns: GetExampleSchoolColumns = (
   navigate
 ) => [
   {
-    columnDisplayName: translate('authentication:school'),
+    columnDisplayName: translate('admin:school'),
     fieldName: 'name',
     filter: 'suggest',
     isMandatory: true,
@@ -43,17 +43,17 @@ const getExampleSchoolColumns: GetExampleSchoolColumns = (
     ),
   },
   {
-    columnDisplayName: translate('authentication:location'),
+    columnDisplayName: translate('admin:location'),
     fieldName: 'location',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('authentication:type'),
+    columnDisplayName: translate('common:type'),
     fieldName: 'type',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('authentication:tenant'),
+    columnDisplayName: translate('admin:tenant'),
     fieldName: 'tenant',
     filter: 'suggest',
   },
@@ -66,7 +66,7 @@ const getExampleSchoolColumns: GetExampleSchoolColumns = (
           navigate(`./${row.original.tenant}/people`);
         }}
       >
-        {translate('authentication:viewPeople')}
+        {translate('admin:viewPeople')}
       </Button>
     ),
   },
@@ -74,7 +74,7 @@ const getExampleSchoolColumns: GetExampleSchoolColumns = (
     columnDisplayName: '',
     fieldName: 'secondButton',
     component: () => (
-      <Button onClick={() => {}}>{translate('authentication:emulate')}</Button>
+      <Button onClick={() => { }}>{translate('admin:emulate')}</Button>
     ),
   },
   {
@@ -84,7 +84,7 @@ const getExampleSchoolColumns: GetExampleSchoolColumns = (
 ];
 
 export function SchoolsTable() {
-  const { t } = useTranslation(['authentication']);
+  const { t } = useTranslation(['common', 'admin']);
   const { data, isLoading } = useAdminTenants();
   const navigate = useNavigate();
   const tenants = data as AdminPanelTenant[] | undefined;

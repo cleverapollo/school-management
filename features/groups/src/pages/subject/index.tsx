@@ -61,9 +61,9 @@ export const adminOptions: Option<SubjectGroupData>[] = [
 
 const getSubjectGroupColumns = (
   translate: TFunction<
-    ('common' | 'authentication')[],
+    ('common' | 'groups')[],
     undefined,
-    ('common' | 'authentication')[]
+    ('common' | 'groups')[]
   >,
   isAdminUserType: boolean,
   isTabsNeeded: boolean
@@ -79,7 +79,7 @@ const getSubjectGroupColumns = (
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('authentication:subject'),
+    columnDisplayName: translate('groups:subject'),
     fieldName: 'subjects',
     filter: 'suggest',
     component: ({ row }) => {
@@ -88,12 +88,12 @@ const getSubjectGroupColumns = (
     },
   },
   {
-    columnDisplayName: translate('common:members'),
+    columnDisplayName: translate('groups:members'),
     fieldName: 'studentMembers.memberCount',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('authentication:level'),
+    columnDisplayName: translate('groups:level'),
     fieldName: 'irePP.level',
     filter: 'suggest',
     component: ({ row }) => (
@@ -102,8 +102,8 @@ const getSubjectGroupColumns = (
   },
   {
     columnDisplayName: isAdminUserType
-      ? translate('common:teacher')
-      : translate('authentication:programme'),
+      ? translate('groups:teacher')
+      : translate('groups:programme'),
     fieldName: 'staff',
     filter: 'suggest',
     component: ({ row }) => {
@@ -138,7 +138,7 @@ const getSubjectGroupColumns = (
 ];
 
 export default function SubjectGroups() {
-  const { t } = useTranslation(['common', 'authentication']);
+  const { t } = useTranslation(['common', 'groups']);
   const navigate = useNavigate();
   const { activeProfile } = useUser();
   const { data } = useSubjectGroups();
@@ -163,10 +163,10 @@ export default function SubjectGroups() {
   );
 
   return (
-    <Page title="Subject groups">
+    <Page title={t('groups:subjectGroups')}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
-          Subject groups
+          {t('groups:subjectGroups')}
         </Typography>
         <Table
           data={subjectGroupData}

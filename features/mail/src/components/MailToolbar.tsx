@@ -12,6 +12,7 @@ import {
 // hooks
 import { Dispatch, SetStateAction } from 'react';
 import { useResponsive } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 // components
 import { Iconify } from '../../../../src/components/iconify';
 import InputStyle from '../../../../src/components/InputStyle';
@@ -50,6 +51,7 @@ export default function MailToolbar({
   setFilterValue,
   ...other
 }: Props) {
+  const { t } = useTranslation(['mail']);
   const smUp = useResponsive('up', 'sm');
 
   const mdUp = useResponsive('up', 'md');
@@ -78,13 +80,13 @@ export default function MailToolbar({
               handleSelectChange(event.target.checked)
             }
           />
-          <Tooltip title="Refresh">
+          <Tooltip title={t('mail:tooltipTitles.refresh')}>
             <IconButton onClick={() => window.location.reload()}>
               <Iconify icon="eva:refresh-fill" width={20} height={20} />
             </IconButton>
           </Tooltip>
 
-          <Tooltip title="Dense">
+          <Tooltip title={t('mail:tooltipTitles.dense')}>
             <IconButton onClick={onToggleDense}>
               <Iconify icon="eva:collapse-fill" width={20} height={20} />
             </IconButton>
@@ -97,7 +99,7 @@ export default function MailToolbar({
       <InputStyle
         stretchStart={180}
         size="small"
-        placeholder="Search mail…"
+        placeholder={t('mail:placeholders.searchMail')}
         value={filterValue}
         onChange={(e) => setFilterValue(e.target.value)}
         InputProps={{
@@ -119,13 +121,13 @@ export default function MailToolbar({
             {mails > 50 ? 50 : mails}
           </Typography>
 
-          <Tooltip title="Next page">
+          <Tooltip title={t('mail:tooltipTitles.nextPage')}>
             <IconButton disabled={mails < 50}>
               <Iconify icon="eva:arrow-ios-back-fill" width={20} height={20} />
             </IconButton>
           </Tooltip>
 
-          <Tooltip title="Previous page">
+          <Tooltip title={t('mail:tooltipTitles.previousPage')}>
             <IconButton disabled={mails < 50}>
               <Iconify
                 icon="eva:arrow-ios-forward-fill"

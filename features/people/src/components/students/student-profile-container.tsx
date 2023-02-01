@@ -3,11 +3,13 @@
 import { Box, Container, Typography } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 import { Page } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 
 export default function StudentProfileContainer() {
+  const { t } = useTranslation(['people']);
   return (
     <Page
-      title="Subject"
+      title={t('people:subject')}
       sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}
     >
       <Container
@@ -17,7 +19,7 @@ export default function StudentProfileContainer() {
         }}
       >
         <Typography variant="h4" component="h1">
-          Student Profile
+          {t('people:studentProfile')}
         </Typography>
       </Container>
 

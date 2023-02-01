@@ -54,28 +54,28 @@ const actions = (setActiveAcademicYear: SetActiveAcademicYearMutationContext) =>
   ] as Option<AcademicNamespace>[];
 
 const getColumns = (
-  translate: TFunction<'authentication'[], undefined, 'authentication'[]>,
+  translate: TFunction<('common' | 'academicNamespaces')[], undefined, ('common' | 'academicNamespaces')[]>,
   setActiveAcademicYear: SetActiveAcademicYearMutationContext
 ): TableColumn<AcademicNamespace>[] => [
   {
-    columnDisplayName: translate('authentication:year'),
+    columnDisplayName: translate('common:year'),
     fieldName: 'year',
     filter: 'suggest',
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('authentication:name'),
+    columnDisplayName: translate('common:name'),
     fieldName: 'name',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('authentication:type'),
+    columnDisplayName: translate('common:type'),
     fieldName: 'type',
     filter: 'suggest',
   },
 
   {
-    columnDisplayName: translate('authentication:description'),
+    columnDisplayName: translate('common:description'),
     fieldName: 'description',
     filter: 'suggest',
   },
@@ -85,7 +85,7 @@ const getColumns = (
     filter: 'suggest',
     component: (columnProps) =>
       columnProps.row.original.isActiveDefaultNamespace && (
-        <Chip label="Active" />
+        <Chip label={translate('academicNamespaces:active')} />
       ),
   },
   {
@@ -101,7 +101,7 @@ const getColumns = (
 ];
 
 export default function AcademicNamespaceList() {
-  const { t } = useTranslation(['authentication']);
+  const { t } = useTranslation(['common', 'academicNamespaces', 'subjects']);
   const { data, isLoading } = useCoreAcademicNamespace();
   const mutation = useCoreSetActiveActiveAcademicNamespace();
 
@@ -118,10 +118,10 @@ export default function AcademicNamespaceList() {
     return a.year - b.year;
   });
   return (
-    <Page title="Subject" isLoading={isLoading}>
+    <Page title={t('subjects:subject')} isLoading={isLoading}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
-          Namespaces
+          {t('academicNamespaces:namespaces')}
         </Typography>
         <Table data={ns} columns={columns} />
       </Container>

@@ -56,9 +56,9 @@ export const adminOptions: Option<EnrolmentGroupData>[] = [
 
 const getEnrolmentGroupColumns = (
   translate: TFunction<
-    ('common' | 'authentication')[],
+    ('common' | 'groups')[],
     undefined,
-    ('common' | 'authentication')[]
+    ('common' | 'groups')[]
   >,
   isAdminUserType: boolean
 ): TableColumn<EnrolmentGroupData>[] => [
@@ -73,29 +73,29 @@ const getEnrolmentGroupColumns = (
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('common:members'),
+    columnDisplayName: translate('groups:members'),
     fieldName: 'members',
     filter: 'suggest',
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('authentication:year'),
+    columnDisplayName: translate('groups:year'),
     fieldName: 'year',
     filter: 'suggest',
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('authentication:tutor'),
+    columnDisplayName: translate('groups:tutor'),
     fieldName: 'tutor',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('authentication:yearhead'),
+    columnDisplayName: translate('groups:yearhead'),
     fieldName: 'yearhead',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('authentication:programme'),
+    columnDisplayName: translate('groups:programme'),
     fieldName: 'programme',
     filter: 'suggest',
   },
@@ -121,7 +121,7 @@ const getEnrolmentGroupColumns = (
 ];
 
 export default function EnrolmentGroups() {
-  const { t } = useTranslation(['common', 'authentication']);
+  const { t } = useTranslation(['common', 'groups']);
   const navigate = useNavigate();
   const { activeProfile } = useUser();
   const { data, isLoading } = useEnrolmentGroups();
@@ -139,17 +139,17 @@ export default function EnrolmentGroups() {
         (({
           ...group,
           firstButton: isAdminUserType
-            ? t('authentication:view')
-            : t('authentication:notify'),
+            ? t('common:actions.view')
+            : t('common:actions.notify'),
           tech: '',
         } as EnrolmentGroupData) || [])
     ) || [];
 
   return (
-    <Page title="Enrolment groups" isLoading={isLoading}>
+    <Page title={t('groups:enrolmentGroups')} isLoading={isLoading}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
-          Enrolment groups
+          {t('groups:enrolmentGroups')}
         </Typography>
         <Table
           data={enrolmentGroupData}

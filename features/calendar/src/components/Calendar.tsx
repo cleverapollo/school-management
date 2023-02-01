@@ -24,6 +24,7 @@ import {
   UserType,
 } from '@tyro/api';
 import { useResponsive, Page } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 // @types
 import { CalendarView } from '../types';
 // components
@@ -50,6 +51,7 @@ export const filter: CalendarEventFilter = {
 
 export default function Calendar() {
   const { userType } = usePermissions();
+  const { t } = useTranslation(['calendar', 'common']);
 
   // ToDO: implement isEditable with permissions
   const isEditable =
@@ -188,13 +190,13 @@ export default function Calendar() {
   }
 
   return (
-    <Page title="Calendar">
+    <Page title={t('calendar:calendar')}>
       <Container maxWidth="xl">
         <HeaderBreadcrumbs
-          heading="Calendar"
+          heading={t('calendar:calendar')}
           links={[
-            { name: 'Dashboard', href: '/dashboard' },
-            { name: 'Calendar' },
+            { name: `${t('common:dashboard')}`, href: '/dashboard' },
+            { name: `${t('calendar:calendar')}` },
           ]}
           action={
             isEditable && (
@@ -205,7 +207,7 @@ export default function Calendar() {
                 }
                 onClick={handleAddEvent}
               >
-                New Event
+                {t('common:actions.newEvent')}
               </Button>
             )
           }

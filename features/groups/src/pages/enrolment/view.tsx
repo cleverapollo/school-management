@@ -28,14 +28,14 @@ export const enrolmentOptions: Option<EnrolmentExactGroupData>[] = [
     },
   },
   {
-    text: 'view profile',
+    text: 'viewProfile',
     icon: 'edit',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'view timetable',
+    text: 'viewTimetable',
     icon: 'edit',
     action: (e: MouseEvent) => {
       e.stopPropagation();
@@ -45,9 +45,9 @@ export const enrolmentOptions: Option<EnrolmentExactGroupData>[] = [
 
 const getEnrolmentGroupColumns = (
   translate: TFunction<
-    ('common' | 'authentication')[],
+    ('common' | 'groups')[],
     undefined,
-    ('common' | 'authentication')[]
+    ('common' | 'groups')[]
   >
 ): TableColumn<EnrolmentExactGroupData>[] => [
   {
@@ -72,7 +72,7 @@ const getEnrolmentGroupColumns = (
 ];
 
 export default function ViewEnrolmentGroupPage() {
-  const { t } = useTranslation(['common', 'authentication']);
+  const { t } = useTranslation(['common', 'groups']);
   const navigate = useNavigate();
   const { groupId } = useParams();
   const groupIdAsNumber = useNumber(groupId);
@@ -92,7 +92,7 @@ export default function ViewEnrolmentGroupPage() {
   const enrolmentGroupColumns = useMemo(() => getEnrolmentGroupColumns(t), [t]);
   const title = !data?.name
     ? ''
-    : `${data?.name} ${t('authentication:memberList')}`;
+    : `${data?.name} ${t('groups:memberList')}`;
 
   return (
     <Page title={title} isLoading={isLoading}>
@@ -103,7 +103,7 @@ export default function ViewEnrolmentGroupPage() {
         <Breadcrumbs
           links={[
             {
-              name: t('authentication:enrolmentGroups'),
+              name: t('groups:enrolmentGroups'),
               href: './..',
             },
             {

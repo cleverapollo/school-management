@@ -35,9 +35,9 @@ export const subjectOptions: Option<SubjectExactGroupData>[] = [
 
 const getSubjectGroupColumns = (
   translate: TFunction<
-    ('common' | 'authentication')[],
+    ('common' | 'groups')[],
     undefined,
-    ('common' | 'authentication')[]
+    ('common' | 'groups')[]
   >
 ): TableColumn<SubjectExactGroupData>[] => [
   {
@@ -62,7 +62,7 @@ const getSubjectGroupColumns = (
 ];
 
 export default function ViewSubjectGroupPage() {
-  const { t } = useTranslation(['common', 'authentication']);
+  const { t } = useTranslation(['common', 'groups']);
   const navigate = useNavigate();
   const { groupId } = useParams();
   const groupIdAsNumber = useNumber(groupId);
@@ -82,7 +82,7 @@ export default function ViewSubjectGroupPage() {
   const subjectGroupColumns = useMemo(() => getSubjectGroupColumns(t), [t]);
   const title = !data?.name
     ? ''
-    : `${data?.name} ${t('authentication:memberList')}`;
+    : `${data?.name} ${t('groups:memberList')}`;
 
   return (
     <Page title={title} isLoading={isLoading}>
@@ -93,7 +93,7 @@ export default function ViewSubjectGroupPage() {
         <Breadcrumbs
           links={[
             {
-              name: t('authentication:subjectGroups'),
+              name: t('groups:subjectGroups'),
               href: './..',
             },
             {

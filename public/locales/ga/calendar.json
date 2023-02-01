@@ -1,0 +1,25 @@
+{
+  "calendar": "Calendar",
+  "participants": "participants",
+  "youHaveInvited": "You have invited",
+  "addMore": "Add More",
+  "today": "Today",
+  "guests": "guests",
+  "yes": "yes",
+  "awaiting": "awaiting",
+  "academicCalendar": "Academic Calendar",
+  "attendance": "Attendance",
+  "errorMessages": {
+    "title": "Title is required",
+    "date": "End date must be later than start date"
+  },
+  "inputLabels": {
+    "title": "Title",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "allDay": "All day",
+    "schedule": "Schedule",
+    "location": "Location",
+    "description": "Description"
+  }
+}

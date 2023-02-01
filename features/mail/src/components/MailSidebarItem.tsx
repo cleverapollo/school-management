@@ -78,7 +78,7 @@ export default function MailSidebarItem({
       },
     },
     {
-      text: 'Remove label',
+      text: 'removeLabel',
       icon: 'delete',
       action: (e: MouseEvent) => {
         e.stopPropagation();
