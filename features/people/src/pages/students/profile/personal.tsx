@@ -10,6 +10,7 @@ import {
 import { useNumber } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { MinusIcon, UserGroupTwoIcon } from '@tyro/icons';
+import { Fragment } from 'react';
 import { useParams } from 'react-router-dom';
 import { useStudentPersonal } from '../../../api/personal';
 
@@ -47,6 +48,37 @@ const getAboutDataWithLabels = (
   };
 };
 
+const getEnrolmentDataWithLabels = (
+  data: ReturnType<typeof useStudentPersonal>['data'],
+  t: TFunction<('people' | 'common')[]>
+) => {
+  const i18nPrefix = 'people:personal.enrolmentHistory';
+  return {
+    [t('common:academicYear')]: '-',
+    [t(`${i18nPrefix}.enrolmentDate`)]: '-',
+    [t(`${i18nPrefix}.programme`)]: '-',
+    [t(`${i18nPrefix}.programmeYear`)]: '-',
+    [t(`${i18nPrefix}.classGroup`)]: '-',
+    [t(`${i18nPrefix}.classTutor`)]: '-',
+    [t(`${i18nPrefix}.yearHead`)]: '-',
+    [t(`${i18nPrefix}.lockerNumber`)]: '-',
+    [t(`${i18nPrefix}.examNumber`)]: '-',
+    [t(`${i18nPrefix}.examEntrant`)]: '-',
+    [t(`${i18nPrefix}.repeatOfYearIndicator`)]: '-',
+    [t(`${i18nPrefix}.boarderIndicator`)]: '-',
+    [t(`${i18nPrefix}.boarderDays`)]: '-',
+    [t(`${i18nPrefix}.shortTermPupil`)]: '-',
+    [t(`${i18nPrefix}.numberOfWeeks`)]: '-',
+    [t(`${i18nPrefix}.pupilSource`)]: '-',
+    [t(`${i18nPrefix}.repeatLeavingCertificateFeesPayable`)]: '-',
+    [t(`${i18nPrefix}.previousSchoolName`)]: '-',
+    [t(`${i18nPrefix}.previousSchoolType`)]: '-',
+    [t(`${i18nPrefix}.previousSchoolRollNumber`)]: '-',
+    [t(`${i18nPrefix}.leftEarly`)]: '-',
+    [t(`${i18nPrefix}.dateOfLeaving`)]: '-',
+  };
+};
+
 export default function StudentProfilePersonalPage() {
   const { id } = useParams();
   const idNumber = useNumber(id);
@@ -54,6 +86,10 @@ export default function StudentProfilePersonalPage() {
   const { data } = useStudentPersonal(idNumber);
 
   const aboutDataWithLabels = getAboutDataWithLabels(data ?? null, t);
+  const enrolmentDataWithLabels = getEnrolmentDataWithLabels(data ?? null, t);
+
+  const { primaryEmail, primaryPhoneNumber, primaryAddress } =
+    data?.personalInformation ?? {};
 
   console.log({ data });
 
@@ -65,7 +101,7 @@ export default function StudentProfilePersonalPage() {
           component="dl"
           sx={{
             p: 3,
-            mb: 0,
+            m: 0,
             display: 'grid',
             gridRowGap: '2rem',
             gridColumnGap: '4rem',
@@ -105,19 +141,83 @@ export default function StudentProfilePersonalPage() {
       <Stack direction={{ sm: 'column', md: 'row' }} spacing={3}>
         <Card variant="outlined" sx={{ flex: 1 }}>
           <CardHeader title="Student's contact details" />
-          {/* <Grid component="dl" container spacing={2} sx={{ p: 3, mb: 0 }}>
-              <Grid item xs={12} sm={6} md={4} lg={3}>
+          <Box
+            component="dl"
+            sx={{
+              p: 3,
+              m: 0,
+              display: 'grid',
+              gridRowGap: '2rem',
+              gridColumnGap: '4rem',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+            }}
+          >
+            <Box>
+              <Typography component="dt" variant="subtitle1">
+                {t('common:address')}
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {primaryAddress
+                  ? [
+                      primaryAddress?.line1,
+                      primaryAddress?.line2,
+                      primaryAddress?.line3,
+                      primaryAddress?.city,
+                      primaryAddress?.country,
+                      primaryAddress?.postCode,
+                    ]
+                      .filter((line) => line)
+                      .map((value, index) => (
+                        <Fragment key={index}>
+                          {index !== 0 && <br />}
+                          {value}
+                        </Fragment>
+                      ))
+                  : '-'}
+              </Typography>
+            </Box>
+            <Box>
+              <Typography component="dt" variant="subtitle1">
+                {t('common:phone')}
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {primaryPhoneNumber?.number ?? '-'}
+              </Typography>
+            </Box>
+            <Box>
+              <Typography component="dt" variant="subtitle1">
+                {t('common:email')}
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {primaryEmail?.email ?? '-'}
+              </Typography>
+            </Box>
+          </Box>
+        </Card>
+        <Card variant="outlined" sx={{ flex: 1 }}>
+          <CardHeader title={t('people:personal.enrolmentHistory.title')} />
+          <Box
+            component="dl"
+            sx={{
+              p: 3,
+              m: 0,
+              display: 'grid',
+              gridRowGap: '2rem',
+              gridColumnGap: '4rem',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+            }}
+          >
+            {Object.entries(enrolmentDataWithLabels).map(([label, value]) => (
+              <Box key={label}>
                 <Typography component="dt" variant="subtitle1">
                   {label}
                 </Typography>
                 <Typography component="dd" variant="body1">
                   {value}
                 </Typography>
-              </Grid>
-          </Grid> */}
-        </Card>
-        <Card variant="outlined" sx={{ flex: 1 }}>
-          <CardHeader title="Enrolment history" />
+              </Box>
+            ))}
+          </Box>
         </Card>
       </Stack>
     </Stack>

@@ -38,6 +38,30 @@
       "mothersMaidenName": "Mother's Maiden Name",
       "motherTongue": "Mother Tongue",
       "ethnicityAndCulturalBackground": "Ethnicity and cultural background"
+    },
+    "enrolmentHistory": {
+      "title": "Enrolment history",
+      "enrolmentDate": "Enrolment date",
+      "programme": "Programme",
+      "programmeYear": "Programme year",
+      "classGroup": "Class group",
+      "classTutor": "Class tutor",
+      "yearHead": "Year head",
+      "lockerNumber": "Locker number",
+      "examNumber": "Exam number",
+      "examEntrant": "Exam entrant",
+      "repeatOfYearIndicator": "Repeat of year indicator",
+      "boarderIndicator": "Boarder indicator",
+      "boarderDays": "Boarder days",
+      "shortTermPupil": "Short term pupil",
+      "numberOfWeeks": "Number of weeks",
+      "pupilSource": "Pupil source",
+      "repeatLeavingCertificateFeesPayable": "Repeat leaving certificate fees payable",
+      "previousSchoolName": "Previous school name",
+      "previousSchoolType": "Previous school type",
+      "previousSchoolRollNumber": "Previous school roll number",
+      "leftEarly": "Left early",
+      "dateOfLeaving": "Date of leaving"
     }
   }
 }

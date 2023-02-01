@@ -114,19 +114,20 @@ export default function StudentProfileContainer() {
             ]}
           />
           <StudentOverviewBar studentId={idNumber} />
-          <Tabs
-            value={value}
-            onChange={(event, newValue: string) => {
-              setValue(newValue);
-            }}
-          >
-            {studentTabs.map((tab) => (
-              <LinkTab key={tab.value} {...tab} to={`./${tab.value}`} />
-            ))}
-          </Tabs>
+          <Box sx={{ maxWidth: '100%' }}>
+            <Tabs
+              value={value}
+              onChange={(event, newValue: string) => {
+                setValue(newValue);
+              }}
+            >
+              {studentTabs.map((tab) => (
+                <LinkTab key={tab.value} {...tab} to={`./${tab.value}`} />
+              ))}
+            </Tabs>
+          </Box>
         </Container>
       </Box>
-
       <Box
         sx={{
           backgroundColor: 'slate.100',
