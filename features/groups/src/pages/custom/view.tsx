@@ -18,35 +18,37 @@ interface CustomExactGroupData {
   tech: string;
 }
 
-const customOptions: Option<CustomExactGroupData>[] = [
+export const getCustomOptions = (
+  translate: TFunction<('common')[], undefined, ('common')[]>,
+): Option<CustomExactGroupData>[] => ([
   {
-    text: 'notify',
+    text: translate('common:actions.notify'),
     icon: 'notify',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'view',
+    text: translate('common:actions.view'),
     icon: 'edit',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'remove',
+    text: translate('common:actions.remove'),
     icon: 'delete',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
-];
+]);
 
 const getCustomGroupColumns = (
   translate: TFunction<
-    ('common' | 'authentication')[],
+    ('common' | 'groups')[],
     undefined,
-    ('common' | 'authentication')[]
+    ('common' | 'groups')[]
   >
 ): TableColumn<CustomExactGroupData>[] => [
   {
@@ -66,12 +68,12 @@ const getCustomGroupColumns = (
   {
     columnDisplayName: 'Tech Options',
     fieldName: 'tech',
-    component: (columnProps) => <OptionButton options={customOptions} />,
+    component: (columnProps) => <OptionButton options={getCustomOptions(translate)} />,
   },
 ];
 
 export default function ViewCustomGroupPage() {
-  const { t } = useTranslation(['common', 'authentication']);
+  const { t } = useTranslation(['common', 'groups']);
   const navigate = useNavigate();
   const { groupId } = useParams();
   const groupIdAsNumber = useNumber(groupId);
@@ -91,7 +93,7 @@ export default function ViewCustomGroupPage() {
   const customGroupColumns = useMemo(() => getCustomGroupColumns(t), [t]);
   const title = !data?.name
     ? ''
-    : `${data?.name} ${t('authentication:memberList')}`;
+    : `${data?.name} ${t('groups:memberList')}`;
 
   return (
     <Page title={title} isLoading={isLoading}>
@@ -102,7 +104,7 @@ export default function ViewCustomGroupPage() {
         <Breadcrumbs
           links={[
             {
-              name: t('authentication:customGroups'),
+              name: t('groups:customGroups'),
               href: './..',
             },
             {

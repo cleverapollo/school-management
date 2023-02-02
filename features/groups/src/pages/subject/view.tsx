@@ -15,28 +15,30 @@ interface SubjectExactGroupData extends GroupMembership {
   tech: string;
 }
 
-export const subjectOptions: Option<SubjectExactGroupData>[] = [
+export const getSubjectOptions = (
+  translate: TFunction<('common')[], undefined, ('common')[]>,
+): Option<SubjectExactGroupData>[] => ([
   {
-    text: 'notify',
+    text: translate('common:actions.notify'),
     icon: 'notify',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'view',
+    text: translate('common:actions.view'),
     icon: 'edit',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
-];
+]);
 
 const getSubjectGroupColumns = (
   translate: TFunction<
-    ('common' | 'authentication')[],
+    ('common' | 'groups')[],
     undefined,
-    ('common' | 'authentication')[]
+    ('common' | 'groups')[]
   >
 ): TableColumn<SubjectExactGroupData>[] => [
   {
@@ -56,12 +58,12 @@ const getSubjectGroupColumns = (
   {
     columnDisplayName: 'Tech Options',
     fieldName: 'tech',
-    component: (columnProps) => <OptionButton options={subjectOptions} />,
+    component: (columnProps) => <OptionButton options={getSubjectOptions(translate)} />,
   },
 ];
 
 export default function ViewSubjectGroupPage() {
-  const { t } = useTranslation(['common', 'authentication']);
+  const { t } = useTranslation(['common', 'groups']);
   const navigate = useNavigate();
   const { groupId } = useParams();
   const groupIdAsNumber = useNumber(groupId);
@@ -81,7 +83,7 @@ export default function ViewSubjectGroupPage() {
   const subjectGroupColumns = useMemo(() => getSubjectGroupColumns(t), [t]);
   const title = !data?.name
     ? ''
-    : `${data?.name} ${t('authentication:memberList')}`;
+    : `${data?.name} ${t('groups:memberList')}`;
 
   return (
     <Page title={title} isLoading={isLoading}>
@@ -92,7 +94,7 @@ export default function ViewSubjectGroupPage() {
         <Breadcrumbs
           links={[
             {
-              name: t('authentication:subjectGroups'),
+              name: t('groups:subjectGroups'),
               href: './..',
             },
             {

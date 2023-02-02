@@ -18,7 +18,7 @@ interface ITableToolbarProps<TData> {
 
 const TableFilters = <TData,>({ table, columnsWithPermissions, globalFilter, setGlobalFilter }: ITableToolbarProps<TData>) => {
 
-  const { t } = useTranslation(['authentication']);
+  const { t } = useTranslation(['common']);
   const [showFilters, setShowFilters] = useState<boolean>(false);
 
   return (<Box sx={{ paddingX: '10px' }}>
@@ -26,7 +26,7 @@ const TableFilters = <TData,>({ table, columnsWithPermissions, globalFilter, set
       <TextField
         value={globalFilter ?? ''}
         onChange={e => setGlobalFilter(e.target.value)}
-        placeholder={t('authentication:search') + '...'}
+        placeholder={t('common:search') + '...'}
         variant="outlined"
         sx={{ width: '32%' }}
         InputProps={{
@@ -37,7 +37,7 @@ const TableFilters = <TData,>({ table, columnsWithPermissions, globalFilter, set
       />
       <Box onClick={() => setShowFilters(!showFilters)} sx={{ display: 'flex', alignItems: 'center' }}>
         <SvgIcon component={FilterIcon} style={{ marginRight: '10px' }}/>
-          {t('authentication:filters')}
+          {t('common:filters')}
       </Box>
     </Box>
     {showFilters && table.getHeaderGroups().map((headerGroup) => (

@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 // utils
 import { useResponsive } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 import { fDate } from '../../../../src/utils/formatTime';
 // hooks
 // @types
@@ -59,6 +60,7 @@ export default function CalendarToolbar({
   onChangeView,
 }: Props) {
   const isDesktop = useResponsive('up', 'sm');
+  const { t } = useTranslation(['calendar']);
 
   return (
     <RootStyle>
@@ -98,7 +100,7 @@ export default function CalendarToolbar({
           variant="contained"
           onClick={onToday}
         >
-          Today
+          {t('calendar:today')}
         </Button>
       )}
     </RootStyle>

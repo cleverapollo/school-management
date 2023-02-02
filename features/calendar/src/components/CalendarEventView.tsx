@@ -18,6 +18,7 @@ import {
   LocationOnOutlined,
 } from '@mui/icons-material';
 import { Maybe } from '@tyro/api';
+import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import { DialogAnimate } from '../../../../src/components/animate';
 import { ExtendedEventInput } from '../api/events';
@@ -34,7 +35,10 @@ const CalendarEventView = ({
   event,
   onCancel,
   isEditable,
-}: CalendarEventViewProps) => (
+}: CalendarEventViewProps) => {
+  const { t } = useTranslation(['calendar', 'common']);
+
+  return (
   <DialogAnimate
     open={!!event}
     onClose={onCancel}
@@ -93,11 +97,11 @@ const CalendarEventView = ({
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <GroupOutlined />
               <Box sx={{ marginLeft: '20px' }}>
-                <Typography>{`${event.participants.length} guests`}</Typography>
-                <Typography variant="body2">1 yes</Typography>
+                <Typography>{`${event.participants.length} ${t('calendar:guests')}`}</Typography>
+                <Typography variant="body2">{`1 ${t('calendar:yes')}`}</Typography>
                 <Typography variant="body2">{`${
                   event.participants.length - 1
-                } awaiting`}</Typography>
+                    } ${t('calendar:awaiting')}`}</Typography>
               </Box>
             </Box>
             <EmailOutlined />
@@ -158,7 +162,7 @@ const CalendarEventView = ({
           <EventOutlined />
           <Box sx={{ marginLeft: '25px' }}>
             {isEditable && <Typography>{event.organizer}</Typography>}
-            <Typography variant="body2">Academic Calendar</Typography>
+            <Typography variant="body2">{t('calendar:academicCalendar')}</Typography>
           </Box>
         </Box>
         {isEditable && (
@@ -171,17 +175,17 @@ const CalendarEventView = ({
                 onClick={() => {}}
                 sx={{ marginRight: '16px' }}
               >
-                View
+                {t('common:actions.view')}
               </Button>
               <Button variant="contained" color="success" onClick={() => {}}>
-                <strong style={{ color: 'white' }}>Attendance</strong>
+                  <strong style={{ color: 'white' }}>{t('calendar:attendance')}</strong>
               </Button>
             </Box>
           </>
         )}
       </Paper>
     )}
-  </DialogAnimate>
-);
+  </DialogAnimate>)
+}
 
 export default CalendarEventView;

@@ -20,20 +20,20 @@ const ContentStyle = styled('div')(({ theme }) => ({
 }));
 
 export default function PageUnauthorized() {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'authentication']);
   return (
-    <Page title="Unauthorized">
+    <Page title={t('authentication:titles.unauthorized')}>
       <Container component={MotionContainer}>
         <ContentStyle sx={{ textAlign: 'center', alignItems: 'center' }}>
           <m.div variants={varBounce().in}>
             <Typography variant="h3" paragraph>
-              Sorry!
+              {t('common:sorry')}!
             </Typography>
           </m.div>
 
           <m.div variants={varBounce().in}>
             <Typography sx={{ color: 'text.secondary' }}>
-              {t('common:unauthorized_user_msg')}
+              {t('authentication:unauthorized_user_msg')}
             </Typography>
           </m.div>
 
@@ -49,7 +49,7 @@ export default function PageUnauthorized() {
             variant="contained"
             component={RouterLink}
           >
-            Go to Login
+            {t('authentication:go_to_login')}
           </Button>
         </ContentStyle>
       </Container>
