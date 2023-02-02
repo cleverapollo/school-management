@@ -51,7 +51,7 @@ export const filter: CalendarEventFilter = {
 
 export default function Calendar() {
   const { userType } = usePermissions();
-  const { t } = useTranslation(['calendar', 'common']);
+  const { t } = useTranslation(['calendar', 'common', 'navigation']);
 
   // ToDO: implement isEditable with permissions
   const isEditable =
@@ -195,7 +195,7 @@ export default function Calendar() {
         <HeaderBreadcrumbs
           heading={t('calendar:calendar')}
           links={[
-            { name: `${t('common:dashboard')}`, href: '/dashboard' },
+            { name: `${t('navigation:general.dashboard')}`, href: '/dashboard' },
             { name: `${t('calendar:calendar')}` },
           ]}
           action={

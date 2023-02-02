@@ -20,11 +20,10 @@ export const namespaces = [
   'groups',
   'people',
   'admin',
-  'academicNamespaces',
-  'rooms',
-  'subjects',
+  'settings',
   'mail',
   'calendar',
+  'navigation',
 ];
 
 export const availableLanguages = Object.keys(

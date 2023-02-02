@@ -18,7 +18,7 @@ import { LabelType } from '../constants';
 // ----------------------------------------------------------------------
 
 export default function Mail() {
-  const { t } = useTranslation(['mail', 'common']);
+  const { t } = useTranslation(['mail', 'navigation']);
   const { mailId } = useParams();
   const [labels, setLabels] = useState<MailLabel[]>([]);
   const { isLoading: isLoadingLabels, data: labelsData } = useLabels();
@@ -83,7 +83,7 @@ export default function Mail() {
           heading={t('mail:mail')}
           links={[
             {
-              name: `${t('common:dashboard')}`,
+              name: `${t('navigation:general.dashboard')}`,
               href: '/dashboard',
             },
             { name: `${t('mail:mail')}` },

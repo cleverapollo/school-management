@@ -3,13 +3,13 @@ import { Page } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 
 export default function Dashboard() {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['navigation']);
 
   return (
-    <Page title={t('common:dashboard')}>
+    <Page title={t('navigation:general.dashboard')}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
-          {t('common:dashboard')}
+          {t('navigation:general.dashboard')}
         </Typography>
       </Container>
     </Page>
