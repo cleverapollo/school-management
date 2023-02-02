@@ -108,7 +108,6 @@ export const labelsKeys = {
 const calendarEventsQuery = {
   queryKey: labelsKeys.all,
   queryFn: async () => gqlClient.request(labels, {}),
-  staleTime: 1000 * 60 * 2,
 };
 
 export function getLabels() {

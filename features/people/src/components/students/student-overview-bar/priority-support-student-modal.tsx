@@ -20,8 +20,6 @@ export function PrioritySupportStudentModal({
   studentId,
   studentName,
 }: PrioritySupportStudentModalProps) {
-  console.log({ open });
-
   return (
     <Dialog
       open={open}

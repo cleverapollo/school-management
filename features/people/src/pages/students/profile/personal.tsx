@@ -9,10 +9,10 @@ import {
 } from '@mui/material';
 import { useNumber } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { MinusIcon, UserGroupTwoIcon } from '@tyro/icons';
-import { Fragment } from 'react';
+import { UserGroupTwoIcon } from '@tyro/icons';
 import { useParams } from 'react-router-dom';
-import { useStudentPersonal } from '../../../api/personal';
+import { joinAddress } from '../../../utils/join-address';
+import { useStudentPersonal } from '../../../api/student/personal';
 
 const getAboutDataWithLabels = (
   data: ReturnType<typeof useStudentPersonal>['data'],
@@ -157,23 +157,7 @@ export default function StudentProfilePersonalPage() {
                 {t('common:address')}
               </Typography>
               <Typography component="dd" variant="body1">
-                {primaryAddress
-                  ? [
-                      primaryAddress?.line1,
-                      primaryAddress?.line2,
-                      primaryAddress?.line3,
-                      primaryAddress?.city,
-                      primaryAddress?.country,
-                      primaryAddress?.postCode,
-                    ]
-                      .filter((line) => line)
-                      .map((value, index) => (
-                        <Fragment key={index}>
-                          {index !== 0 && <br />}
-                          {value}
-                        </Fragment>
-                      ))
-                  : '-'}
+                {joinAddress(primaryAddress, { separator: <br /> })}
               </Typography>
             </Box>
             <Box>

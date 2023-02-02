@@ -13,6 +13,7 @@
   "tyroIdClickToCopy": "Tyro ID is {{id}}. Click to copy.",
   "tyroIdCopied": "Tyro ID copied to clipboard.",
   "issueCopyingTyroId": "Issue copying ID to clipboard.",
+  "nextContact": "Next Contact",
   "studentClickableAvatarAria": "{{name}}'s Avatar. Click to view their support plan and priority note.",
   "personal": {
     "title": "Personal",

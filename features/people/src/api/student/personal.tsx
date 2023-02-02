@@ -21,32 +21,20 @@ const studentsPersonalById = graphql(/* GraphQL */ `
         nationality
         mothersMaidenName
         primaryAddress {
-          partyId
-          id
           line1
           line2
           line3
           city
           country
           postCode
-          active
-          primaryAddress
         }
         primaryPhoneNumber {
-          partyId
-          phoneNumberId
           number
           areaCode
           countryCode
-          active
-          primaryPhoneNumber
         }
         primaryEmail {
-          partyId
-          emailId
           email
-          active
-          primaryEmail
         }
       }
       studentIrePP {
@@ -57,32 +45,9 @@ const studentsPersonalById = graphql(/* GraphQL */ `
         examNumber
         previousSchoolRollNumber
       }
-      contacts {
-        partyId
-        person {
-          firstName
-          lastName
-          avatarUrl
-          type
-        }
-      }
     }
   }
 `);
-
-// contacts {
-//   partyId
-//         person {
-//     firstName
-//     lastName
-//     avatarUrl
-//     type
-//   }
-//         relationships {
-//     relationshipType
-//     allowedToContact
-//   }
-// }
 
 export const personalKeys = {
   all: ['people', 'student', 'personal'] as const,
@@ -96,7 +61,7 @@ const studentPersonalQuery = (studentId: number | undefined) => ({
     gqlClient.request(studentsPersonalById, {
       filter: { partyIds: [studentId ?? 0] },
     }),
-  staleTime: 1000 * 60 * 2,
+  staleTime: 1000 * 60 * 5,
 });
 
 export function getStudentPersonal(studentId: number | undefined) {
