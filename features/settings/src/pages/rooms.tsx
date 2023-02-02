@@ -11,9 +11,9 @@ import { useCoreRooms } from '../api/rooms';
 
 const getSubjectColumns = (
   translate: TFunction<
-    ('common' | 'rooms')[],
+    ('common' | 'settings')[],
     undefined,
-    ('common' | 'rooms')[]
+    ('common' | 'settings')[]
   >
 ): TableColumn<Room>[] => [
   {
@@ -23,24 +23,24 @@ const getSubjectColumns = (
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('rooms:capacity'),
+    columnDisplayName: translate('settings:capacity'),
     fieldName: 'capacity',
     filter: 'suggest',
   },
 ];
 
 export default function Rooms() {
-  const { t } = useTranslation(['common', 'subjects', 'rooms']);
+  const { t } = useTranslation(['common', 'settings']);
   const { data, isLoading } = useCoreRooms();
 
   const subjectGroupColumns = useMemo(() => getSubjectColumns(t), [t]);
 
   const rooms: Room[] = data as Room[];
   return (
-    <Page title={t('subjects:subject')} isLoading={isLoading}>
+    <Page title={t('settings:subject')} isLoading={isLoading}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
-          {t('rooms:rooms')}
+          {t('settings:rooms')}
         </Typography>
         {rooms && <Table data={rooms} columns={subjectGroupColumns} />}
       </Container>

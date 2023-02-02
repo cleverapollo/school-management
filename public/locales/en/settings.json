@@ -2,5 +2,14 @@
   "language": {
     "en": "English",
     "ga": "Irish"
-  }
+  },
+  "subject": "Subject",
+  "subjects": "Subjects",
+  "shortCode": "Short code",
+  "nationalCode": "National code",
+  "subjectType": "Subject type",
+  "rooms": "Rooms",
+  "capacity": "Capacity",
+  "namespaces": "Namespaces",
+  "active": "Active"
 }

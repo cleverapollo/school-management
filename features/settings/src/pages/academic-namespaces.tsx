@@ -54,7 +54,7 @@ const actions = (setActiveAcademicYear: SetActiveAcademicYearMutationContext) =>
   ] as Option<AcademicNamespace>[];
 
 const getColumns = (
-  translate: TFunction<('common' | 'academicNamespaces')[], undefined, ('common' | 'academicNamespaces')[]>,
+  translate: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>,
   setActiveAcademicYear: SetActiveAcademicYearMutationContext
 ): TableColumn<AcademicNamespace>[] => [
   {
@@ -85,7 +85,7 @@ const getColumns = (
     filter: 'suggest',
     component: (columnProps) =>
       columnProps.row.original.isActiveDefaultNamespace && (
-        <Chip label={translate('academicNamespaces:active')} />
+        <Chip label={translate('settings:active')} />
       ),
   },
   {
@@ -101,7 +101,7 @@ const getColumns = (
 ];
 
 export default function AcademicNamespaceList() {
-  const { t } = useTranslation(['common', 'academicNamespaces', 'subjects']);
+  const { t } = useTranslation(['common', 'settings']);
   const { data, isLoading } = useCoreAcademicNamespace();
   const mutation = useCoreSetActiveActiveAcademicNamespace();
 
@@ -118,10 +118,10 @@ export default function AcademicNamespaceList() {
     return a.year - b.year;
   });
   return (
-    <Page title={t('subjects:subject')} isLoading={isLoading}>
+    <Page title={t('settings:subject')} isLoading={isLoading}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
-          {t('academicNamespaces:namespaces')}
+          {t('settings:namespaces')}
         </Typography>
         <Table data={ns} columns={columns} />
       </Container>

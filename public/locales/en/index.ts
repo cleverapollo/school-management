@@ -5,9 +5,6 @@ import userAccounts from './userAccounts.json';
 import groups from './groups.json';
 import people from './people.json';
 import admin from './admin.json';
-import academicNamespaces from './academicNamespaces.json';
-import rooms from './rooms.json';
-import subjects from './subjects.json';
 import calendar from './calendar.json';
 import mail from './mail.json';
 
@@ -19,9 +16,6 @@ export const en = {
   groups,
   people,
   admin,
-  academicNamespaces,
-  rooms,
-  subjects,
   calendar,
   mail,
 };
