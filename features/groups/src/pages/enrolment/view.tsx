@@ -45,30 +45,6 @@ export const getEnrolmentOptions = (
   },
 ]);
 
-// export const enrolmentOptions: Option<EnrolmentExactGroupData>[] = [
-//   {
-//     text: 'notify',
-//     icon: 'notify',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-//   {
-//     text: 'viewProfile',
-//     icon: 'edit',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-//   {
-//     text: 'viewTimetable',
-//     icon: 'edit',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-// ];
-
 const getEnrolmentGroupColumns = (
   translate: TFunction<
     ('common' | 'groups')[],

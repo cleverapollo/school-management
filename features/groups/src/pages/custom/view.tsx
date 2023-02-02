@@ -45,30 +45,6 @@ export const getCustomOptions = (
   },
 ]);
 
-// const customOptions: Option<CustomExactGroupData>[] = [
-//   {
-//     text: 'notify',
-//     icon: 'notify',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-//   {
-//     text: 'view',
-//     icon: 'edit',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-//   {
-//     text: 'remove',
-//     icon: 'delete',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-// ];
-
 const getCustomGroupColumns = (
   translate: TFunction<
     ('common' | 'groups')[],

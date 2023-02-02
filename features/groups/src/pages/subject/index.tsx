@@ -63,47 +63,6 @@ export const getTeacherOptions = (
   },
 ]);
 
-// const teacherOptions: Option<SubjectGroupData>[] = [
-//   {
-//     text: 'notify',
-//     icon: 'notify',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-// ];
-
-// export const adminOptions: Option<SubjectGroupData>[] = [
-//   {
-//     text: 'notify',
-//     icon: 'notify',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-//   {
-//     text: 'edit',
-//     icon: 'edit',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-//   {
-//     text: 'archive',
-//     icon: 'archive',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-//   {
-//     text: 'delete',
-//     icon: 'delete',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-// ];
-
 const getSubjectGroupColumns = (
   translate: TFunction<
     ('common' | 'groups')[],

@@ -56,37 +56,6 @@ export const getAdminOptions = (
   },
 ]);
 
-// export const adminOptions: Option<EnrolmentGroupData>[] = [
-//   {
-//     text: 'notify',
-//     icon: 'notify',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-//   {
-//     text: 'edit',
-//     icon: 'edit',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-//   {
-//     text: 'archive',
-//     icon: 'archive',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-//   {
-//     text: 'delete',
-//     icon: 'delete',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-// ];
-
 const getEnrolmentGroupColumns = (
   translate: TFunction<
     ('common' | 'groups')[],

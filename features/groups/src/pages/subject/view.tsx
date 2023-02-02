@@ -35,23 +35,6 @@ export const getSubjectOptions = (
   },
 ]);
 
-// export const subjectOptions: Option<SubjectExactGroupData>[] = [
-//   {
-//     text: 'notify',
-//     icon: 'notify',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-//   {
-//     text: 'view',
-//     icon: 'edit',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-// ];
-
 const getSubjectGroupColumns = (
   translate: TFunction<
     ('common' | 'groups')[],

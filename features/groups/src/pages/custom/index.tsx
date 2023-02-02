@@ -64,37 +64,6 @@ export const getAdminOptions = (
     },
   ]);
 
-// export const adminOptions: Option<CustomGroupData>[] = [
-//   {
-//     text: 'notify',
-//     icon: 'notify',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-//   {
-//     text: 'edit',
-//     icon: 'edit',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-//   {
-//     text: 'archive',
-//     icon: 'archive',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-//   {
-//     text: 'delete',
-//     icon: 'delete',
-//     action: (e: MouseEvent) => {
-//       e.stopPropagation();
-//     },
-//   },
-// ];
-
 const getCustomGroupColumns = (
   translate: TFunction<('common' | 'groups')[], undefined, ('common' | 'groups')[]>,
   isAdminUserType: boolean
