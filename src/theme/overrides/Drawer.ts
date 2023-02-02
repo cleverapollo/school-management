@@ -13,7 +13,7 @@ export default function Drawer(theme: Theme) {
           ...(ownerState.variant === 'temporary' && {
             '& .MuiDrawer-paper': {
               boxShadow: `-40px 40px 80px -8px ${alpha(
-                isLight ? theme.palette.grey[500] : theme.palette.common.black,
+                isLight ? theme.palette.slate[500] : theme.palette.common.black,
                 0.24
               )}`,
             },

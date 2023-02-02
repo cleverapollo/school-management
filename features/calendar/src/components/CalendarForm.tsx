@@ -2,7 +2,7 @@
 // TODO: remove above eslint when components are moved to @tyro/core
 import * as Yup from 'yup';
 import merge from 'lodash/merge';
-import { useSnackbar } from 'notistack';
+import { useToast } from '@tyro/core';
 import { EventInput } from '@fullcalendar/common';
 // form
 import { useForm, Controller } from 'react-hook-form';
@@ -171,7 +171,7 @@ export default function CalendarForm({
   onCancel,
   isOpenModal,
 }: Props) {
-  const { enqueueSnackbar } = useSnackbar();
+  const { toast } = useToast();
   const [participants, setParticipants] = useState<Participant[]>([]);
   const { mutate: deleteCalendarEvent } = useDeleteCalendarEvents();
 
@@ -240,7 +240,7 @@ export default function CalendarForm({
       };
 
       if (!event.id) {
-        enqueueSnackbar('Create success!');
+        toast('Create success!');
         createCalendarEvent(dataEvent);
         onCancel();
         reset();
@@ -255,7 +255,7 @@ export default function CalendarForm({
     try {
       onCancel();
       deleteCalendarEvent(event.id);
-      enqueueSnackbar('Delete success!');
+      toast('Delete success!');
     } catch (error) {
       console.error(error);
     }

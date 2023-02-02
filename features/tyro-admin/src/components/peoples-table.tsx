@@ -1,12 +1,12 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
-import { Avatar, Button } from '@mui/material';
+import { Button } from '@mui/material';
 import { addEmulationHeaders, getUser, queryClient } from '@tyro/api';
 import { Person } from '@tyro/api/src/gql/graphql';
 import { useMemo } from 'react';
 import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation, TFunction } from '@tyro/i18n';
-import { useNumber } from '@tyro/core';
+import { Avatar, useNumber } from '@tyro/core';
 import Table from '../../../../src/components/table/Table';
 import { TableColumn } from '../../../../src/components/table/types';
 import { useAdminPartyPeopleByTenantId } from '../api/party-people';
@@ -36,7 +36,7 @@ const getExamplePeopleColumns: GetExamplePeopleColumns = (
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <Avatar
           src="https://google.com"
-          alt={columnProps.row.original.name}
+          name={columnProps.row.original.name}
           style={{ marginRight: '10px' }}
         />
         {columnProps.row.original.name}

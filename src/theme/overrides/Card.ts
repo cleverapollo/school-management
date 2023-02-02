@@ -13,6 +13,15 @@ export default function Card(theme: Theme) {
           zIndex: 0, // Fix Safari overflow: hidden with border radius
         },
       },
+      variants: [
+        {
+          props: { variant: 'outlined' },
+          style: {
+            border: `solid 1px ${theme.palette.divider}`,
+            boxShadow: 'none',
+          },
+        },
+      ],
     },
     MuiCardHeader: {
       defaultProps: {

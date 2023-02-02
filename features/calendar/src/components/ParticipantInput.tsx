@@ -1,12 +1,12 @@
 // @mui
 import {
-  Avatar,
   Button,
   MenuItem,
   Popover,
   IconButton,
   Typography,
 } from '@mui/material';
+import { Avatar } from '@tyro/core';
 import { Dispatch, SetStateAction, useRef, useState } from 'react';
 import { Box, Stack } from '@mui/system';
 import { CalendarEventAttendeeType } from '@tyro/api';
@@ -131,7 +131,7 @@ const ParticipantInput = ({
             >
               <Avatar
                 src="google.com"
-                alt={
+                name={
                   participants.includes(option) ? 'V' : String(option.partyId)
                 }
                 sx={{ marginRight: '20px' }}
@@ -161,7 +161,7 @@ const ParticipantInput = ({
             >
               <Avatar
                 src="google.com"
-                alt={String(option.partyId)}
+                name={String(option.partyId)}
                 sx={{ marginRight: '20px' }}
               />
               {option.partyId}

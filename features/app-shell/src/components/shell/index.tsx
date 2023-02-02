@@ -30,8 +30,7 @@ export function Shell({ children }: ShellProps) {
 
       <Box
         sx={{
-          display: { lg: 'flex' },
-          minHeight: { lg: 1 },
+          display: 'flex',
         }}
       >
         {isDesktop && !isExpanded ? (
@@ -51,10 +50,9 @@ export function Shell({ children }: ShellProps) {
             flexGrow: 1,
             backgroundColor: 'background.neutral',
             minHeight: '100vh',
-            py: `${HEADERCONFIG.H_MOBILE + 8}px`,
+            pt: `${HEADERCONFIG.H_MOBILE + 8}px`,
             ...(isDesktop && {
-              px: 2,
-              py: `${HEADERCONFIG.H_DASHBOARD_DESKTOP + 8}px`,
+              pt: `${HEADERCONFIG.H_DASHBOARD_DESKTOP + 8}px`,
               width: `calc(100% - ${NAV.W_DASHBOARD}px)`,
               ...(!isOpen && {
                 width: `calc(100% - ${NAV.W_DASHBOARD_MINI}px)`,
