@@ -5,6 +5,7 @@ import {
   CardHeader,
   IconButton,
   Stack,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { AnimatePresence, m } from 'framer-motion';
@@ -31,11 +32,13 @@ export function StudentContactsWidget({
   studentId,
 }: StudentContactsWidgetProps) {
   const [contactIndex, setContactIndex] = useState(0);
-  const { t } = useTranslation(['common', 'people']);
+  const { t } = useTranslation(['common', 'people', 'mail']);
   const { data, isLoading } = useStudentsContacts(studentId);
 
   const numberOfContacts = data?.contacts?.length ?? 0;
   const contact = data?.contacts?.[contactIndex];
+  const contactsRelationshipType =
+    contact?.relationships?.[0]?.relationshipType;
 
   const nextContact = () => {
     const nextContactIndex =
@@ -56,7 +59,10 @@ export function StudentContactsWidget({
           pb: 1.25,
         }}
       >
-        <CardHeader title="Guardian Contact Information" sx={{ p: 0 }} />
+        <CardHeader
+          title={t('people:guardianContactInformation')}
+          sx={{ p: 0 }}
+        />
         {contact?.partyId && (
           <IconButton
             component={Link}
@@ -87,19 +93,29 @@ export function StudentContactsWidget({
             </Box>
           </>
         </Typography>
-        <Button
-          disabled={isLoading || numberOfContacts <= 1}
-          onClick={nextContact}
-          endIcon={<ChevronRightIcon />}
+        <Tooltip
+          title={
+            isLoading || numberOfContacts <= 1
+              ? t('people:nextContactDisabled', { count: numberOfContacts })
+              : ''
+          }
         >
-          {t('people:nextContact')}
-        </Button>
+          <span>
+            <Button
+              disabled={isLoading || numberOfContacts <= 1}
+              onClick={nextContact}
+              endIcon={<ChevronRightIcon />}
+            >
+              {t('people:nextContact')}
+            </Button>
+          </span>
+        </Tooltip>
       </Stack>
 
       <AnimatePresence initial={false}>
         <Box
           component={m.div}
-          key={contactIndex}
+          key={contact?.partyId}
           initial={{ x: '100%', position: 'absolute' }}
           animate={{ x: '0%', position: 'relative' }}
           exit={{ x: '-100%', position: 'absolute' }}
@@ -137,7 +153,9 @@ export function StudentContactsWidget({
                     {t('common:relationship')}
                   </Box>
                   <Box component="dd" sx={{ m: 0 }}>
-                    {contact?.relationships?.[0]?.relationshipType ?? '-'}
+                    {contactsRelationshipType
+                      ? t(`common:relationshipType.${contactsRelationshipType}`)
+                      : '-'}
                   </Box>
                   <Box component="dt" sx={{ color: 'slate.600' }}>
                     {t('common:language')}
@@ -161,7 +179,7 @@ export function StudentContactsWidget({
                 sx={{ flex: 1 }}
                 onClick={() => console.log('open send mail popup')}
               >
-                Send mail
+                {t('mail:sendMail')}
               </Button>
             </Stack>
             <Box
@@ -216,7 +234,7 @@ export function StudentContactsWidget({
                     sx={{ color: 'slate.400', width: 20, height: 20 }}
                   />
                   <Box component="dt" sx={{ color: 'slate.600' }}>
-                    Address Location
+                    {t('people:addressLocation')}
                   </Box>
                 </Stack>
                 <Box component="dd" sx={{ m: 0 }}>

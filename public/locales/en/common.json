@@ -35,6 +35,17 @@
     "mailWasSent": "Mail was sent",
     "labelWasAssigned": "Label was assigned!"
   },
+  "relationshipType": {
+    "FATHER": "Father",
+    "MOTHER": "Mother",
+    "SIBLING": "Sibling",
+    "AUNTY": "Aunty",
+    "UNCLE": "Uncle",
+    "GRAND_FATHER": "Grandfather",
+    "GRAND_MOTHER": "Grandmother",
+    "FAMILY_FRIEND": "Family friend",
+    "NEIGHBOUR": "Neighbour"
+  },
   "name": "Name",
   "colour": "Colour",
   "icon": "Icon",
@@ -96,7 +107,7 @@
   "unauthorized_user_msg": "We are waiting on your school to configure profiles.",
   "sorry": "Sorry",
   "dashboard": "dashboard",
-  "groups": "groups",
+  "groups": "Groups",
   "attendance": "attendance",
   "assessment": "assessment",
   "wellbeing": "wellbeing",

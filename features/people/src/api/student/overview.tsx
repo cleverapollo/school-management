@@ -65,14 +65,7 @@ export function useStudentsContacts(studentId: number | undefined) {
     ...studentsContactsQuery(studentId),
     select: ({ core_students }) =>
       Array.isArray(core_students) && core_students.length > 0
-        ? {
-            ...core_students[0],
-            contacts: [
-              ...(core_students[0]?.contacts ?? []),
-              ...(core_students[0]?.contacts ?? []),
-              ...(core_students[0]?.contacts ?? []),
-            ],
-          }
+        ? core_students[0]
         : null,
   });
 }

@@ -8,7 +8,7 @@
     "@tyro/api": "*",
     "@tyro/i18n": "*",
     "@tyro/icons": "*",
-    "framer-motion": "8.5.2",
+    "framer-motion": "^9.0.1",
     "notistack": "^2.0.5",
     "nprogress": "^0.2.0",
     "react": "^18.2.0",
