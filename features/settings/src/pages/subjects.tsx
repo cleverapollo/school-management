@@ -10,7 +10,7 @@ import { TableColumn } from '../../../../src/components/table/types';
 import { useCatalogueSubjects } from '../api/subjects';
 
 const getColumns = (
-  translate: TFunction<'common'[], undefined, 'common'[]>
+  translate: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>
 ): TableColumn<Subject>[] => [
   {
     columnDisplayName: translate('common:name'),
@@ -19,7 +19,7 @@ const getColumns = (
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('common:shortCode'),
+    columnDisplayName: translate('settings:shortCode'),
     fieldName: 'shortCode',
     filter: 'suggest',
   },
@@ -34,7 +34,7 @@ const getColumns = (
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('common:nationalCode'),
+    columnDisplayName: translate('settings:nationalCode'),
     fieldName: 'nationalCode',
     filter: 'suggest',
     isMandatory: true,
@@ -45,24 +45,24 @@ const getColumns = (
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('common:subjectType'),
+    columnDisplayName: translate('settings:subjectType'),
     fieldName: 'subjectSource',
     filter: 'suggest',
   },
 ];
 
 export default function Subjects() {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'settings']);
   const { data, isLoading } = useCatalogueSubjects();
 
   const columns = useMemo(() => getColumns(t), [t]);
 
   const subjects: Subject[] = data as Subject[];
   return (
-    <Page title="Subject" isLoading={isLoading}>
+    <Page title={t('settings:subject')} isLoading={isLoading}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
-          Subjects
+          {t('settings:subjects')}
         </Typography>
         {subjects && <Table data={subjects} columns={columns} />}
       </Container>

@@ -18,35 +18,37 @@ interface EnrolmentExactGroupData {
   tech: string;
 }
 
-export const enrolmentOptions: Option<EnrolmentExactGroupData>[] = [
+export const getEnrolmentOptions = (
+  translate: TFunction<('common')[], undefined, ('common')[]>,
+): Option<EnrolmentExactGroupData>[] => ([
   {
-    text: 'notify',
+    text: translate('common:actions.notify'),
     icon: 'notify',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'view profile',
+    text: translate('common:actions.viewProfile'),
     icon: 'edit',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'view timetable',
+    text: translate('common:actions.viewTimetable'),
     icon: 'edit',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
-];
+]);
 
 const getEnrolmentGroupColumns = (
   translate: TFunction<
-    ('common' | 'authentication')[],
+    ('common' | 'groups')[],
     undefined,
-    ('common' | 'authentication')[]
+    ('common' | 'groups')[]
   >
 ): TableColumn<EnrolmentExactGroupData>[] => [
   {
@@ -66,12 +68,12 @@ const getEnrolmentGroupColumns = (
   {
     columnDisplayName: 'Tech Options',
     fieldName: 'tech',
-    component: (columnProps) => <OptionButton options={enrolmentOptions} />,
+    component: (columnProps) => <OptionButton options={getEnrolmentOptions(translate)} />,
   },
 ];
 
 export default function ViewEnrolmentGroupPage() {
-  const { t } = useTranslation(['common', 'authentication']);
+  const { t } = useTranslation(['common', 'groups']);
   const navigate = useNavigate();
   const { groupId } = useParams();
   const groupIdAsNumber = useNumber(groupId);
@@ -91,7 +93,7 @@ export default function ViewEnrolmentGroupPage() {
   const enrolmentGroupColumns = useMemo(() => getEnrolmentGroupColumns(t), [t]);
   const title = !data?.name
     ? ''
-    : `${data?.name} ${t('authentication:memberList')}`;
+    : `${data?.name} ${t('groups:memberList')}`;
 
   return (
     <Page title={title} isLoading={isLoading}>
@@ -102,7 +104,7 @@ export default function ViewEnrolmentGroupPage() {
         <Breadcrumbs
           links={[
             {
-              name: t('authentication:enrolmentGroups'),
+              name: t('groups:enrolmentGroups'),
               href: './..',
             },
             {

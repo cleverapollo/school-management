@@ -7,6 +7,7 @@ import { Typography, ListItemText, ListItemButton } from '@mui/material';
 // @types
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Label as LabelIcon } from '@mui/icons-material';
+import { useTranslation } from '@tyro/i18n';
 import { MailLabel, Mails } from '../types';
 // components
 import { Iconify } from '../../../../src/components/iconify';
@@ -64,9 +65,10 @@ export default function MailSidebarItem({
   setLabelInfo,
   ...other
 }: Props) {
+  const { t } = useTranslation(['mail', 'common']);
   const labelOptions: Option<any>[] = [
     {
-      text: 'edit',
+      text: t('common:actions.edit'),
       icon: 'edit',
       action: (e: MouseEvent) => {
         e.stopPropagation();
@@ -78,7 +80,7 @@ export default function MailSidebarItem({
       },
     },
     {
-      text: 'Remove label',
+      text: t('mail:actions.removeLabel'),
       icon: 'delete',
       action: (e: MouseEvent) => {
         e.stopPropagation();

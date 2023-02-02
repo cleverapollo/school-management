@@ -18,13 +18,13 @@ interface SubjectsData extends SubjectGroup {
 
 const getSubjectColumns = (
   translate: TFunction<
-    ('common' | 'authentication')[],
+    ('common' | 'groups')[],
     undefined,
-    ('common' | 'authentication')[]
+    ('common' | 'groups')[]
   >
 ): TableColumn<SubjectsData>[] => [
   {
-    columnDisplayName: translate('authentication:subject'),
+    columnDisplayName: translate('groups:subject'),
     fieldName: 'subjects',
     filter: 'suggest',
     isMandatory: true,
@@ -34,7 +34,7 @@ const getSubjectColumns = (
     },
   },
   {
-    columnDisplayName: translate('authentication:level'),
+    columnDisplayName: translate('groups:level'),
     fieldName: 'irePP.level',
     filter: 'suggest',
     component: (columnProps) => (
@@ -44,7 +44,7 @@ const getSubjectColumns = (
     ),
   },
   {
-    columnDisplayName: translate('common:teacher'),
+    columnDisplayName: translate('groups:teacher'),
     fieldName: 'staff',
     filter: 'suggest',
     component: ({ row }) => {
@@ -66,7 +66,7 @@ const getSubjectColumns = (
 ];
 
 export default function Subjects() {
-  const { t } = useTranslation(['common', 'authentication']);
+  const { t } = useTranslation(['common', 'groups']);
   const { data, isLoading } = useStudentSubjects();
 
   const subjectsData: SubjectsData[] =
@@ -82,10 +82,10 @@ export default function Subjects() {
   const subjectGroupColumns = useMemo(() => getSubjectColumns(t), [t]);
 
   return (
-    <Page title="Subject" isLoading={isLoading}>
+    <Page title={t('groups:subject')} isLoading={isLoading}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
-          Subject
+          {t('groups:subject')}
         </Typography>
         <Table data={subjectsData} columns={subjectGroupColumns} />
       </Container>

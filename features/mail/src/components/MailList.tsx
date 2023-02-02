@@ -7,6 +7,7 @@ import { Divider, Box } from '@mui/material';
 // components
 import { Scrollbar } from '@tyro/core';
 import { useUser } from '@tyro/api';
+import { useTranslation } from '@tyro/i18n';
 import EmptyContent from '../../../../src/components/EmptyContent';
 //
 import MailItem from './MailItem';
@@ -38,6 +39,7 @@ export default function MailList({
   mails,
   activeLabelName,
 }: Props) {
+  const { t } = useTranslation(['mail']);
   const { user } = useUser();
   const [filterValue, setFilterValue] = useState<string>('');
   const filteredMailsIds = useMemo(
@@ -130,7 +132,7 @@ export default function MailList({
         </Scrollbar>
       ) : (
         <EmptyContent
-          title="There is no conversation"
+          title={t('mail:emptyContentTitle')}
           img="/assets/illustrations/illustration_empty_mail.svg"
           sx={{ flexGrow: 1, height: 'auto' }}
         />

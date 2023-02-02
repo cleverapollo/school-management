@@ -2,6 +2,7 @@
 // TODO: remove above eslint when components are moved to @tyro/core
 import { styled } from '@mui/material/styles';
 import { Tooltip, IconButton } from '@mui/material';
+import { useTranslation } from '@tyro/i18n';
 // components
 import { Iconify } from '../../../../src/components/iconify';
 
@@ -43,24 +44,25 @@ export default function MailItemAction({
   handleHidden,
   ...other
 }: Props) {
+  const { t } = useTranslation(['common']);
   const MAIL_ACTIONS = [
     {
-      name: 'Archive',
+      name: t('common:actions.archive'),
       icon: 'eva:archive-fill',
       action: handleArchive,
     },
     {
-      name: 'Delete',
+      name: t('common:actions.delete'),
       icon: 'eva:trash-2-outline',
       action: handleDelete,
     },
     {
-      name: 'Mark Email Read',
+      name: t('common:actions.markEmail'),
       icon: 'ic:round-mark-email-read',
       action: handleMarkRead,
     },
     {
-      name: 'Hidden Email',
+      name: t('common:actions.hideEmail'),
       icon: 'eva:eye-off-fill',
       action: handleHidden,
     },

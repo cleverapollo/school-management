@@ -2,5 +2,22 @@
   "language": {
     "en": "English",
     "ga": "Irish"
+  },
+  "subject": "Subject",
+  "subjects": "Subjects",
+  "shortCode": "Short code",
+  "nationalCode": "National code",
+  "subjectType": "Subject type",
+  "rooms": "Rooms",
+  "capacity": "Capacity",
+  "namespaces": "Namespaces",
+  "active": "Active",
+  "actions": {
+    "makeActive": "Make Active Primary Namespace"
+  },
+  "namespacesDialog": {
+    "title": "Change Academic Namespace to",
+    "description": "Doing this will change the year for everyone in the system. This is typically only done at the start on the new Academic Year",
+    "confirmation": "Change Academic Namespace to"
   }
 }

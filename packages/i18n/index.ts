@@ -14,7 +14,19 @@ export const resources = {
   en,
   ga,
 } as const;
-export const namespaces = ['authentication', 'common', 'userAccounts'];
+export const namespaces = [
+  'common',
+  'authentication',
+  'userAccounts',
+  'groups',
+  'people',
+  'admin',
+  'settings',
+  'mail',
+  'calendar',
+  'navigation',
+  'attendance',
+];
 
 export const availableLanguages = Object.keys(
   resources

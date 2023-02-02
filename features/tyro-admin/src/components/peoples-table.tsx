@@ -19,7 +19,7 @@ interface AdminPanelPeople extends Person {
 }
 
 type GetExamplePeopleColumns = (
-  translate: TFunction<'authentication'[], undefined, 'authentication'[]>,
+  translate: TFunction<('common' | 'admin')[], undefined, ('common' | 'admin')[]>,
   navigate: NavigateFunction
 ) => TableColumn<AdminPanelPeople>[];
 
@@ -28,7 +28,7 @@ const getExamplePeopleColumns: GetExamplePeopleColumns = (
   navigate
 ) => [
   {
-    columnDisplayName: translate('authentication:name'),
+    columnDisplayName: translate('common:name'),
     fieldName: 'name',
     filter: 'suggest',
     isMandatory: true,
@@ -44,17 +44,17 @@ const getExamplePeopleColumns: GetExamplePeopleColumns = (
     ),
   },
   {
-    columnDisplayName: translate('authentication:type'),
+    columnDisplayName: translate('common:type'),
     fieldName: 'type',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('authentication:partyId'),
+    columnDisplayName: translate('admin:partyId'),
     fieldName: 'partyId',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('authentication:tenant'),
+    columnDisplayName: translate('admin:tenant'),
     fieldName: 'tenant',
   },
   {
@@ -70,7 +70,7 @@ const getExamplePeopleColumns: GetExamplePeopleColumns = (
           navigate('/', { replace: true });
         }}
       >
-        {translate('authentication:emulate')}
+        {translate('admin:emulate')}
       </Button>
     ),
   },
@@ -83,7 +83,7 @@ const getExamplePeopleColumns: GetExamplePeopleColumns = (
 export function PeoplesTable() {
   const { schoolId } = useParams();
   const schoolIdAsNumber = useNumber(schoolId);
-  const { t } = useTranslation(['authentication']);
+  const { t } = useTranslation(['common', 'admin']);
   const navigate = useNavigate();
   const { data, isLoading } = useAdminPartyPeopleByTenantId(
     schoolIdAsNumber ?? 0

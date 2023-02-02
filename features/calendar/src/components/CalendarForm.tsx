@@ -28,6 +28,7 @@ import {
   CalendarEventAttendeeType,
 } from '@tyro/api';
 import { useState } from 'react';
+import { useTranslation } from '@tyro/i18n';
 import { Iconify } from '../../../../src/components/iconify';
 import { ColorSinglePicker } from '../../../../src/components/color-utils';
 import {
@@ -171,6 +172,7 @@ export default function CalendarForm({
   onCancel,
   isOpenModal,
 }: Props) {
+  const { t } = useTranslation(['calendar', 'common']);
   const { toast } = useToast();
   const [participants, setParticipants] = useState<Participant[]>([]);
   const { mutate: deleteCalendarEvent } = useDeleteCalendarEvents();
@@ -178,12 +180,12 @@ export default function CalendarForm({
   const isCreating = Object.keys(event).length === 0;
 
   const EventSchema = Yup.object().shape({
-    title: Yup.string().max(255).required('Title is required'),
+    title: Yup.string().max(255).required(t('calendar:errorMessages.title')),
     description: Yup.string().max(500),
     start: Yup.date(),
     end: Yup.date().when('start', (start) =>
       start
-        ? Yup.date().min(start, 'End date must be later than start date')
+        ? Yup.date().min(start, t('calendar:errorMessages.date'))
         : Yup.date()
     ),
   });
@@ -240,7 +242,7 @@ export default function CalendarForm({
       };
 
       if (!event.id) {
-        toast('Create success!');
+        toast(t('common:snackbarMessages.createSuccess'));
         createCalendarEvent(dataEvent);
         onCancel();
         reset();
@@ -255,7 +257,7 @@ export default function CalendarForm({
     try {
       onCancel();
       deleteCalendarEvent(event.id);
-      toast('Delete success!');
+      toast(t('common:snackbarMessages.deleteSuccess'));
     } catch (error) {
       console.error(error);
     }
@@ -271,7 +273,7 @@ export default function CalendarForm({
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={3} sx={{ p: 3 }}>
           {/* @ts-ignore */}
-          <RHFTextField name="title" label="Title" customControl={control} />
+          <RHFTextField name="title" label={t('calendar:inputLabels.title')} customControl={control} />
 
           <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
             <Controller
@@ -280,7 +282,7 @@ export default function CalendarForm({
               render={({ field }) => (
                 <MobileDateTimePicker
                   {...field}
-                  label="Start date"
+                  label={t('calendar:inputLabels.startDate')}
                   inputFormat="dd/MM/yyyy hh:mm a"
                   // @ts-ignore
                   renderInput={(params) => <TextField {...params} fullWidth />}
@@ -295,7 +297,7 @@ export default function CalendarForm({
               render={({ field, fieldState: { error } }) => (
                 <MobileDateTimePicker
                   {...field}
-                  label="End date"
+                  label={t('calendar:inputLabels.endDate')}
                   inputFormat="dd/MM/yyyy hh:mm a"
                   renderInput={(params) => (
                     // @ts-ignore
@@ -312,11 +314,11 @@ export default function CalendarForm({
           </Box>
 
           {/* @ts-ignore */}
-          <RHFSwitch name="allDay" label="All day" customControl={control} />
+          <RHFSwitch name="allDay" label={t('calendar:inputLabels.allDay')} customControl={control} />
 
           <Box sx={{ width: '40%' }}>
             {/* @ts-ignore */}
-            <RHFSelect name="schedule" label="Schedule" customControl={control}>
+            <RHFSelect name="schedule" label={t('calendar:inputLabels.schedule')} customControl={control}>
               {Options.map((option) => (
                 <MenuItem value={option.name}>{option.label}</MenuItem>
               ))}
@@ -329,7 +331,7 @@ export default function CalendarForm({
           />
 
           {/* @ts-ignore */}
-          <RHFSelect name="location" label="Location" customControl={control}>
+          <RHFSelect name="location" label={t('calendar:inputLabels.location')} customControl={control}>
             {LocationOptions.map((option) => (
               <MenuItem value={option.name}>{option.label}</MenuItem>
             ))}
@@ -337,7 +339,7 @@ export default function CalendarForm({
 
           <RHFTextField
             name="description"
-            label="Description"
+            label={t('calendar:inputLabels.description')}
             multiline
             rows={4}
             // @ts-ignore
@@ -368,7 +370,7 @@ export default function CalendarForm({
           <Box sx={{ flexGrow: 1 }} />
 
           <Button variant="outlined" color="inherit" onClick={onCancel}>
-            Cancel
+            {t('common:actions.cancel')}
           </Button>
 
           <LoadingButton
@@ -376,7 +378,7 @@ export default function CalendarForm({
             variant="contained"
             loading={isSubmitting}
           >
-            Add
+            {t('common:actions.add')}
           </LoadingButton>
         </DialogActions>
       </form>

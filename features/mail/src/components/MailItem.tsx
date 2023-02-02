@@ -6,6 +6,7 @@ import { styled } from '@mui/material/styles';
 import { Box, Tooltip, Typography, Checkbox } from '@mui/material';
 // hooks
 import { useUser, Mail } from '@tyro/api';
+import { useTranslation } from '@tyro/i18n';
 import { useResponsive, Avatar } from '@tyro/core';
 // utils
 import { fDate } from '../../../../src/utils/formatTime';
@@ -58,6 +59,7 @@ export default function MailItem({
   labels,
   ...other
 }: Props) {
+  const { t } = useTranslation(['mail']);
   const { user } = useUser();
 
   const isDesktop = useResponsive('up', 'md');
@@ -99,7 +101,7 @@ export default function MailItem({
               handleChangeCheckbox(event.target.checked)
             }
           />
-          <Tooltip title="Starred">
+          <Tooltip title={t('mail:tooltipTitles.starred')}>
             <Checkbox
               color="warning"
               onChange={onStarMail}
