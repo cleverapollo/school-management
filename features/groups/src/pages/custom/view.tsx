@@ -19,29 +19,55 @@ interface CustomExactGroupData {
   tech: string;
 }
 
-const customOptions: Option<CustomExactGroupData>[] = [
+export const getCustomOptions = (
+  translate: TFunction<('common')[], undefined, ('common')[]>,
+): Option<CustomExactGroupData>[] => ([
   {
-    text: 'notify',
+    text: translate('common:actions.notify'),
     icon: 'notify',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'view',
+    text: translate('common:actions.view'),
     icon: 'edit',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'remove',
+    text: translate('common:actions.remove'),
     icon: 'delete',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
-];
+]);
+
+// const customOptions: Option<CustomExactGroupData>[] = [
+//   {
+//     text: 'notify',
+//     icon: 'notify',
+//     action: (e: MouseEvent) => {
+//       e.stopPropagation();
+//     },
+//   },
+//   {
+//     text: 'view',
+//     icon: 'edit',
+//     action: (e: MouseEvent) => {
+//       e.stopPropagation();
+//     },
+//   },
+//   {
+//     text: 'remove',
+//     icon: 'delete',
+//     action: (e: MouseEvent) => {
+//       e.stopPropagation();
+//     },
+//   },
+// ];
 
 const getCustomGroupColumns = (
   translate: TFunction<
@@ -67,7 +93,7 @@ const getCustomGroupColumns = (
   {
     columnDisplayName: 'Tech Options',
     fieldName: 'tech',
-    component: (columnProps) => <OptionButton options={customOptions} />,
+    component: (columnProps) => <OptionButton options={getCustomOptions(translate)} />,
   },
 ];
 

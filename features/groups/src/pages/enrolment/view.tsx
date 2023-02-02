@@ -19,29 +19,55 @@ interface EnrolmentExactGroupData {
   tech: string;
 }
 
-export const enrolmentOptions: Option<EnrolmentExactGroupData>[] = [
+export const getEnrolmentOptions = (
+  translate: TFunction<('common')[], undefined, ('common')[]>,
+): Option<EnrolmentExactGroupData>[] => ([
   {
-    text: 'notify',
+    text: translate('common:actions.notify'),
     icon: 'notify',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'viewProfile',
+    text: translate('common:actions.viewProfile'),
     icon: 'edit',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'viewTimetable',
+    text: translate('common:actions.viewTimetable'),
     icon: 'edit',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
-];
+]);
+
+// export const enrolmentOptions: Option<EnrolmentExactGroupData>[] = [
+//   {
+//     text: 'notify',
+//     icon: 'notify',
+//     action: (e: MouseEvent) => {
+//       e.stopPropagation();
+//     },
+//   },
+//   {
+//     text: 'viewProfile',
+//     icon: 'edit',
+//     action: (e: MouseEvent) => {
+//       e.stopPropagation();
+//     },
+//   },
+//   {
+//     text: 'viewTimetable',
+//     icon: 'edit',
+//     action: (e: MouseEvent) => {
+//       e.stopPropagation();
+//     },
+//   },
+// ];
 
 const getEnrolmentGroupColumns = (
   translate: TFunction<
@@ -67,7 +93,7 @@ const getEnrolmentGroupColumns = (
   {
     columnDisplayName: 'Tech Options',
     fieldName: 'tech',
-    component: (columnProps) => <OptionButton options={enrolmentOptions} />,
+    component: (columnProps) => <OptionButton options={getEnrolmentOptions(translate)} />,
   },
 ];
 

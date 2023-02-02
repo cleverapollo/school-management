@@ -16,22 +16,41 @@ interface SubjectExactGroupData extends GroupMembership {
   tech: string;
 }
 
-export const subjectOptions: Option<SubjectExactGroupData>[] = [
+export const getSubjectOptions = (
+  translate: TFunction<('common')[], undefined, ('common')[]>,
+): Option<SubjectExactGroupData>[] => ([
   {
-    text: 'notify',
+    text: translate('common:actions.notify'),
     icon: 'notify',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'view',
+    text: translate('common:actions.view'),
     icon: 'edit',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
-];
+]);
+
+// export const subjectOptions: Option<SubjectExactGroupData>[] = [
+//   {
+//     text: 'notify',
+//     icon: 'notify',
+//     action: (e: MouseEvent) => {
+//       e.stopPropagation();
+//     },
+//   },
+//   {
+//     text: 'view',
+//     icon: 'edit',
+//     action: (e: MouseEvent) => {
+//       e.stopPropagation();
+//     },
+//   },
+// ];
 
 const getSubjectGroupColumns = (
   translate: TFunction<
@@ -57,7 +76,7 @@ const getSubjectGroupColumns = (
   {
     columnDisplayName: 'Tech Options',
     fieldName: 'tech',
-    component: (columnProps) => <OptionButton options={subjectOptions} />,
+    component: (columnProps) => <OptionButton options={getSubjectOptions(translate)} />,
   },
 ];
 

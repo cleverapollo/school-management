@@ -31,36 +31,69 @@ interface CustomGroupData {
   tech?: string;
 }
 
-export const adminOptions: Option<CustomGroupData>[] = [
-  {
-    text: 'notify',
-    icon: 'notify',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
+export const getAdminOptions = (
+  translate: TFunction<('common')[], undefined, ('common')[]>,
+): Option<CustomGroupData>[] => ([
+    {
+      text: translate('common:actions.notify'),
+      icon: 'notify',
+      action: (e: MouseEvent) => {
+        e.stopPropagation();
+      },
     },
-  },
-  {
-    text: 'edit',
-    icon: 'edit',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
+    {
+      text: translate('common:actions.edit'),
+      icon: 'edit',
+      action: (e: MouseEvent) => {
+        e.stopPropagation();
+      },
     },
-  },
-  {
-    text: 'archive',
-    icon: 'archive',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
+    {
+      text: translate('common:actions.archive'),
+      icon: 'archive',
+      action: (e: MouseEvent) => {
+        e.stopPropagation();
+      },
     },
-  },
-  {
-    text: 'delete',
-    icon: 'delete',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
+    {
+      text: translate('common:actions.delete'),
+      icon: 'delete',
+      action: (e: MouseEvent) => {
+        e.stopPropagation();
+      },
     },
-  },
-];
+  ]);
+
+// export const adminOptions: Option<CustomGroupData>[] = [
+//   {
+//     text: 'notify',
+//     icon: 'notify',
+//     action: (e: MouseEvent) => {
+//       e.stopPropagation();
+//     },
+//   },
+//   {
+//     text: 'edit',
+//     icon: 'edit',
+//     action: (e: MouseEvent) => {
+//       e.stopPropagation();
+//     },
+//   },
+//   {
+//     text: 'archive',
+//     icon: 'archive',
+//     action: (e: MouseEvent) => {
+//       e.stopPropagation();
+//     },
+//   },
+//   {
+//     text: 'delete',
+//     icon: 'delete',
+//     action: (e: MouseEvent) => {
+//       e.stopPropagation();
+//     },
+//   },
+// ];
 
 const getCustomGroupColumns = (
   translate: TFunction<('common' | 'groups')[], undefined, ('common' | 'groups')[]>,
@@ -113,7 +146,7 @@ const getCustomGroupColumns = (
     columnDisplayName: 'Tech Options',
     fieldName: 'tech',
     component: (columnProps) =>
-      isAdminUserType && <OptionButton options={adminOptions} />,
+      isAdminUserType && <OptionButton options={getAdminOptions(translate)} />,
   },
 ];
 

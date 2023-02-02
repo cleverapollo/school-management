@@ -18,46 +18,91 @@ interface SubjectGroupData extends SubjectGroup {
   tech?: string;
 }
 
-const teacherOptions: Option<SubjectGroupData>[] = [
+export const getAdminOptions = (
+  translate: TFunction<('common')[], undefined, ('common')[]>,
+): Option<SubjectGroupData>[] => ([
   {
-    text: 'notify',
-    icon: 'notify',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
-    },
-  },
-];
-
-export const adminOptions: Option<SubjectGroupData>[] = [
-  {
-    text: 'notify',
+    text: translate('common:actions.notify'),
     icon: 'notify',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'edit',
+    text: translate('common:actions.edit'),
     icon: 'edit',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'archive',
+    text: translate('common:actions.archive'),
     icon: 'archive',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'delete',
+    text: translate('common:actions.delete'),
     icon: 'delete',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
-];
+]);
+
+export const getTeacherOptions = (
+  translate: TFunction<('common')[], undefined, ('common')[]>,
+): Option<SubjectGroupData>[] => ([
+  {
+    text: translate('common:actions.notify'),
+    icon: 'notify',
+    action: (e: MouseEvent) => {
+      e.stopPropagation();
+    },
+  },
+]);
+
+// const teacherOptions: Option<SubjectGroupData>[] = [
+//   {
+//     text: 'notify',
+//     icon: 'notify',
+//     action: (e: MouseEvent) => {
+//       e.stopPropagation();
+//     },
+//   },
+// ];
+
+// export const adminOptions: Option<SubjectGroupData>[] = [
+//   {
+//     text: 'notify',
+//     icon: 'notify',
+//     action: (e: MouseEvent) => {
+//       e.stopPropagation();
+//     },
+//   },
+//   {
+//     text: 'edit',
+//     icon: 'edit',
+//     action: (e: MouseEvent) => {
+//       e.stopPropagation();
+//     },
+//   },
+//   {
+//     text: 'archive',
+//     icon: 'archive',
+//     action: (e: MouseEvent) => {
+//       e.stopPropagation();
+//     },
+//   },
+//   {
+//     text: 'delete',
+//     icon: 'delete',
+//     action: (e: MouseEvent) => {
+//       e.stopPropagation();
+//     },
+//   },
+// ];
 
 const getSubjectGroupColumns = (
   translate: TFunction<
@@ -131,7 +176,7 @@ const getSubjectGroupColumns = (
     component: () =>
       isTabsNeeded && (
         <OptionButton
-          options={isAdminUserType ? adminOptions : teacherOptions}
+          options={isAdminUserType ? getAdminOptions(translate) : getTeacherOptions(translate)}
         />
       ),
   },

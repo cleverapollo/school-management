@@ -63,7 +63,7 @@ const OptionButtonItem = <T extends unknown>({option, row, index, closeFunc}: IO
             <ListItemButton onClick={(e) => {option.action(e); closeFunc();}}  dense>
                 <ListItemIconStyle>{getOptionsIcon(option.icon)}</ListItemIconStyle>
                 {/* @ts-ignore */}
-                <ListItemText id={`lable-${index}`} primary={t(`common:actions.${option.text}`)} />
+                <ListItemText id={`lable-${index}`} primary={option.text} />
             </ListItemButton>
         );
     }

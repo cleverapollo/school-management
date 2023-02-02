@@ -24,5 +24,13 @@
   "newLabel": "New label",
   "emptyContentTitle": "There is no conversation",
   "applyLabel": "Apply label",
-  "newMessage": "New Message"
+  "newMessage": "New Message",
+  "actions": {
+    "reply": "Reply",
+    "forward": "Forward",
+    "applyLabel": "Apply label",
+    "markAsUnread": "Mark as unread",
+    "deleteThisMessage": "Delete this message",
+    "removeLabel": "Remove label"
+  }
 }

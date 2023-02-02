@@ -60,21 +60,21 @@ export default function MailDetailsToolbar({
   const [isOpenDialog, setIsOpenDialog] = useState(false);
   const labelOptions: Option<any>[] = [
     {
-      text: 'reply',
+      text: t('mail:actions.reply'),
       icon: 'arrowLeft',
       action: (e: MouseEvent) => {
         e.stopPropagation();
       },
     },
     {
-      text: 'forward',
+      text: t('mail:actions.forward'),
       icon: 'arrow',
       action: (e: MouseEvent) => {
         e.stopPropagation();
       },
     },
     {
-      text: 'applyLabel',
+      text: t('mail:actions.applyLabel'),
       icon: 'label',
       action: (e: MouseEvent) => {
         e.stopPropagation();
@@ -82,14 +82,14 @@ export default function MailDetailsToolbar({
       },
     },
     {
-      text: 'markAsUnread',
+      text: t('mail:actions.markAsUnread'),
       icon: 'mail',
       action: (e: MouseEvent) => {
         e.stopPropagation();
       },
     },
     {
-      text: 'deleteThisMessage',
+      text: t('mail:actions.deleteThisMessage'),
       icon: 'delete',
       action: (e: MouseEvent) => {
         e.stopPropagation();

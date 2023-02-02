@@ -27,18 +27,20 @@ interface SetActiveAcademicYearMutationContext {
     unknown
   >;
 }
-const actions = (setActiveAcademicYear: SetActiveAcademicYearMutationContext) =>
+const actions = (
+  translate: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>,
+  setActiveAcademicYear: SetActiveAcademicYearMutationContext
+) =>
   [
     {
-      text: 'Make Active Primary Namespace',
+      text: translate('settings:actions.makeActive'),
       icon: 'edit',
       action: (e, row) => {},
       confirmationDialog(row) {
         return {
-          title: `Change Academic Namespace to ${row.year}?`,
-          description:
-            'Doing this will change the year for everyone in the system. This is typically only done at the start on the new Academic Year',
-          confirmText: `Change Academic Namespace to ${row.year}`,
+          title: `${translate('settings:namespacesDialog.title')} ${row.year}?`,
+          description: translate('settings:namespacesDialog.description'),
+          confirmText: `${translate('settings:namespacesDialog.confirmation')} ${row.year}`,
           confirmFunction: () => {
             const value = {
               mutationBody: {
@@ -93,7 +95,7 @@ const getColumns = (
     fieldName: () => 'tech',
     component: (columnProps) => (
       <OptionButton
-        options={actions(setActiveAcademicYear)}
+        options={actions(translate, setActiveAcademicYear)}
         row={columnProps.row.original}
       />
     ),
