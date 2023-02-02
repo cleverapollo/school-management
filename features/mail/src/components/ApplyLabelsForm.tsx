@@ -1,6 +1,6 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
-import { useSnackbar } from 'notistack';
+import { useToast } from '@tyro/core';
 // form
 import { useForm } from 'react-hook-form';
 // @mui
@@ -39,7 +39,7 @@ export default function ApplyLabelsForm({
   onCancel,
 }: ApplyLabelsFormProps) {
   const { t } = useTranslation(['common']);
-  const { enqueueSnackbar } = useSnackbar();
+  const { toast } = useToast();
 
   const {
     reset,
@@ -59,7 +59,7 @@ export default function ApplyLabelsForm({
         .forEach((label) => {
           assignLabel({ ...mailData, labelId: +label[0] });
         });
-      enqueueSnackbar(t('common:snackbarMessages.labelWasAssigned'));
+      toast(t('common:snackbarMessages.labelWasAssigned'));
       onCancel();
       reset();
     } catch (error) {

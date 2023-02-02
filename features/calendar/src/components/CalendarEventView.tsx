@@ -1,14 +1,14 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
 import {
-  Avatar,
+  Box,
   Button,
   Paper,
   IconButton,
   Typography,
   Divider,
 } from '@mui/material';
-import { Box } from '@mui/system';
+import { Avatar } from '@tyro/core';
 import {
   Close,
   CheckOutlined,
@@ -119,7 +119,7 @@ const CalendarEventView = ({
             >
               <Avatar
                 src="google.com"
-                alt={
+                name={
                   participant.partyInfo?.name ||
                   `${participant.partyInfo?.firstName ?? ''} ${
                     participant.partyInfo?.lastName ?? ''

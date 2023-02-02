@@ -5,10 +5,9 @@ import { Container, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router';
 import { Person } from '@tyro/api';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { useNumber, Page } from '@tyro/core';
+import { useNumber, Page, Breadcrumbs } from '@tyro/core';
 import { useCustomGroupById } from '../../api/general-groups';
 import Table from '../../../../../src/components/table/Table';
-import Breadcrumbs from '../../../../../src/components/Breadcrumbs';
 import { TableColumn, Option } from '../../../../../src/components/table/types';
 import OptionButton from '../../../../../src/components/table/OptionButton';
 
@@ -61,7 +60,7 @@ const getCustomGroupColumns = (
     component: ({ row }) => (
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {/* Add Avatar back in when we add value to BE */}
-        {/* <Avatar srcSet={columnProps.row.original.avatarUrl} alt={columnProps.row.original.name} style={{ marginRight: '10px' }} /> */}
+        {/* <Avatar srcSet={columnProps.row.original.avatarUrl} name={columnProps.row.original.name} style={{ marginRight: '10px' }} /> */}
         {row.original.name}
       </div>
     ),

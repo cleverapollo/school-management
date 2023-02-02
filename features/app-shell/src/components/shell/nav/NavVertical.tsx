@@ -83,7 +83,6 @@ export default function NavVertical({
           PaperProps={{
             sx: {
               width: NAV.W_DASHBOARD,
-              bgcolor: 'transparent',
               borderRightStyle: 'solid',
             },
           }}

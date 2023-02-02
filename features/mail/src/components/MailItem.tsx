@@ -6,11 +6,10 @@ import { styled } from '@mui/material/styles';
 import { Box, Tooltip, Typography, Checkbox } from '@mui/material';
 // hooks
 import { useUser, Mail } from '@tyro/api';
-import { useResponsive } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
+import { useResponsive, Avatar } from '@tyro/core';
 // utils
 import { fDate } from '../../../../src/utils/formatTime';
-import createAvatar from '../../../../src/utils/createAvatar';
 // @types
 import {
   // Mail,
@@ -18,7 +17,6 @@ import {
 } from '../types';
 // components
 import Label from '../../../../src/components/Label';
-import Avatar from '../../../../src/components/Avatar';
 import { Iconify } from '../../../../src/components/iconify';
 //
 import MailItemAction from './MailItemAction';
@@ -129,13 +127,9 @@ export default function MailItem({
           }}
         >
           <Avatar
-            alt={mail.senderPartyId?.toString()}
-            src=""
-            color={createAvatar(mail.senderPartyId?.toString() ?? '').color}
+            name={mail.senderPartyId?.toString()}
             sx={{ width: 32, height: 32 }}
-          >
-            {createAvatar(mail.senderPartyId?.toString() ?? '').name}
-          </Avatar>
+          />
 
           <Box
             sx={{

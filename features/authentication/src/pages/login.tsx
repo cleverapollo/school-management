@@ -56,10 +56,10 @@ export default function Login() {
   const smUp = useResponsive('up', 'sm');
   const mdUp = useResponsive('up', 'md');
   const { login } = useAuth();
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'authentication']);
 
   return (
-    <Page title="Login">
+    <Page title={t('authentication:titles.login')}>
       <RootStyle>
         <HeaderStyle>
           <Logo />
@@ -76,7 +76,7 @@ export default function Login() {
         {mdUp && (
           <SectionStyle>
             <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-              {t('common:hi_welcome_back')}
+              {t('authentication:hi_welcome_back')}
             </Typography>
             <Image
               visibleByDefault
@@ -92,10 +92,10 @@ export default function Login() {
             <Stack direction="row" alignItems="center" sx={{ mb: 5 }}>
               <Box sx={{ flexGrow: 1 }}>
                 <Typography variant="h4" gutterBottom>
-                  {t('common:sign_in_to_tyro')}
+                  {t('authentication:sign_in_to_tyro')}
                 </Typography>
                 <Typography sx={{ color: 'text.secondary' }}>
-                  {t('common:enter_your_details_below')}.
+                  {t('authentication:enter_your_details_below')}.
                 </Typography>
               </Box>
             </Stack>
@@ -107,7 +107,7 @@ export default function Login() {
               variant="contained"
               onClick={() => login()}
             >
-              {t('common:login_with_msal')}
+              {t('authentication:login_with_msal')}
             </LoadingButton>
 
             {!smUp && (

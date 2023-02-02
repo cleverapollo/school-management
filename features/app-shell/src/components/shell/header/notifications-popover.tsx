@@ -7,7 +7,6 @@ import {
   List,
   Badge,
   Button,
-  Avatar,
   Tooltip,
   Divider,
   IconButton,
@@ -19,7 +18,7 @@ import {
 } from '@mui/material';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { Scrollbar } from '@tyro/core';
+import { Scrollbar, Avatar } from '@tyro/core';
 import { BellIcon, DoubleCheckmarkIcon, ClockIcon } from '@tyro/icons';
 import { _notifications } from '../../../../../../src/_mock/arrays';
 import MenuPopover from '../../../../../../src/components/menu-popover';

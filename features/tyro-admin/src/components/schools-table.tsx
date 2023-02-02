@@ -1,6 +1,7 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
-import { Avatar, Button } from '@mui/material';
+import { Button } from '@mui/material';
+import { Avatar } from '@tyro/core';
 import { Tenant } from '@tyro/api/src/gql/graphql';
 import { useMemo } from 'react';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
@@ -34,8 +35,8 @@ const getExampleSchoolColumns: GetExampleSchoolColumns = (
     component: (columnProps) => (
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <Avatar
-          srcSet={columnProps.row.original.imgUrl}
-          alt={columnProps.row.original.name}
+          src={columnProps.row.original.imgUrl ?? undefined}
+          name={columnProps.row.original.name}
           style={{ marginRight: '10px' }}
         />
         {columnProps.row.original.name}

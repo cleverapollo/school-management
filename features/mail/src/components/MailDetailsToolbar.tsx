@@ -1,7 +1,6 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
 import { useNavigate, useParams } from 'react-router-dom';
-// @mui
 import { styled } from '@mui/material/styles';
 import {
   Box,
@@ -11,18 +10,11 @@ import {
   IconButton,
   DialogTitle,
 } from '@mui/material';
-// routes
 import { Mail } from '@tyro/api';
 import { useMemo, useState } from 'react';
-import { useResponsive } from '@tyro/core';
+import { useResponsive, Avatar } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-// hooks
-// utils
-import createAvatar from '../../../../src/utils/createAvatar';
 import { fDateTimeSuffix } from '../../../../src/utils/formatTime';
-// @types
-// components
-import Avatar from '../../../../src/components/Avatar';
 import { Iconify } from '../../../../src/components/iconify';
 import OptionButton from '../../../../src/components/table/OptionButton';
 import { Option } from '../../../../src/components/table/types';
@@ -143,13 +135,7 @@ export default function MailDetailsToolbar({
             <Iconify icon="eva:arrow-ios-back-fill" width={20} height={20} />
           </IconButton>
         </Tooltip>
-        <Avatar
-          alt={mail.senderPartyId?.toString()}
-          src="google.com"
-          color={createAvatar(mail.senderPartyId?.toString() ?? '').color}
-        >
-          {createAvatar(mail.senderPartyId?.toString() ?? '').name}
-        </Avatar>
+        <Avatar src="google.com" name={mail.senderPartyId?.toString()} />
 
         <Box sx={{ ml: 2 }}>
           <Typography display="inline" variant="subtitle2">

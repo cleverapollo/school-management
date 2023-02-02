@@ -30,6 +30,7 @@ const config: CodegenConfig = {
       config: {
         scalars: {
           Long: 'number',
+          Date: 'string',
         },
       },
     },

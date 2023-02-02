@@ -7,8 +7,7 @@ import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem } from '@mui/material';
 // routes
 import { useAuth, useUser } from '@tyro/api';
-// components
-import { CustomAvatar } from '../../../../../../src/components/custom-avatar';
+import { Avatar } from '@tyro/core';
 import MenuPopover from '../../../../../../src/components/menu-popover';
 import { IconButtonAnimate } from '../../../../../../src/components/animate';
 
@@ -70,9 +69,8 @@ export default function AccountPopover() {
           }),
         }}
       >
-        <CustomAvatar
+        <Avatar
           src={activeProfile?.avatarUrl ?? undefined}
-          alt={activeProfile?.nickName ?? undefined}
           name={activeProfile?.nickName ?? undefined}
         />
       </IconButtonAnimate>

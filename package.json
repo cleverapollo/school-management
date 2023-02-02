@@ -111,7 +111,6 @@
     "material-ui-popup-state": "^4.1.0",
     "mini-css-extract-plugin": "^2.4.5",
     "mst-gql": "^0.17.1",
-    "notistack": "^2.0.5",
     "nprogress": "^0.2.0",
     "numeral": "^2.0.6",
     "postcss": "^8.4.4",
