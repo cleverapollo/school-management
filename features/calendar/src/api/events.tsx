@@ -97,13 +97,13 @@ const events = graphql(/* GraphQL */ `
 `);
 
 export const calendarEventsKeys = {
-  all: (filter: CalendarEventFilter) => ['calendar', 'calendarEvents', filter] as const,
+  all: (filter: CalendarEventFilter) =>
+    ['calendar', 'calendarEvents', filter] as const,
 };
 
 const calendarEventsQuery = (filter: CalendarEventFilter) => ({
   queryKey: calendarEventsKeys.all(filter),
   queryFn: async () => gqlClient.request(events, { filter }),
-  staleTime: 1000 * 60 * 2,
 });
 
 export function getCalendarEvents(filter: CalendarEventFilter) {

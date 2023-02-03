@@ -18,7 +18,6 @@ export const adminTenantsKeys = {
 const adminTenantsQuery = {
   queryKey: adminTenantsKeys.all,
   queryFn: async () => gqlClient.request(adminTenants),
-  staleTime: 1000 * 60 * 2,
 };
 
 export function getTenants() {

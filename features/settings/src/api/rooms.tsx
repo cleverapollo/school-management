@@ -18,7 +18,6 @@ export const roomsKeys = {
 const coreRoomsQuery = {
   queryKey: roomsKeys.all,
   queryFn: async () => gqlClient.request(coreRooms),
-  staleTime: 1000 * 60 * 2,
 };
 
 export function getCoreRooms() {

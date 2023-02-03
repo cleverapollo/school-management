@@ -1,9 +1,15 @@
+import { Stack } from '@mui/material';
+import { getNumber } from '@tyro/core';
 import { useParams } from 'react-router-dom';
-import { useTranslation } from '@tyro/i18n';
+import { StudentContactsWidget } from '../../../components/students/student-contacts-widget';
 
 export default function StudentProfileOverviewPage() {
-  const { t } = useTranslation(['people']);
   const { id } = useParams();
+  const studentId = getNumber(id);
 
-  return <div>{t('people:studentProfileOverview')} {id}</div>;
+  return (
+    <Stack my={3} spacing={3}>
+      <StudentContactsWidget studentId={studentId} />
+    </Stack>
+  );
 }

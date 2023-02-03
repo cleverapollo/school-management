@@ -21,7 +21,6 @@ export const coreAcademicNamespaceKeys = {
 const coreAcademicNamespaceQuery = {
   queryKey: coreAcademicNamespaceKeys.all,
   queryFn: async () => gqlClient.request(coreAcademicNamespaces),
-  staleTime: 1000 * 60 * 2,
 };
 
 export function getCoreAcademicNamespace() {

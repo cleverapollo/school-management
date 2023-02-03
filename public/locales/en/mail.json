@@ -25,6 +25,7 @@
   "emptyContentTitle": "There is no conversation",
   "applyLabel": "Apply label",
   "newMessage": "New Message",
+  "sendMail": "Send mail",
   "actions": {
     "reply": "Reply",
     "forward": "Forward",

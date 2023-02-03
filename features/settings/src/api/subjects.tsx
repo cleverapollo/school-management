@@ -23,7 +23,6 @@ export const catalogueSubjectsKeys = {
 const catalogueSubjectsQuery = {
   queryKey: catalogueSubjectsKeys.all,
   queryFn: async () => gqlClient.request(catalogueSubjects),
-  staleTime: 1000 * 60 * 2,
 };
 
 export function getCatalogueSubjects() {

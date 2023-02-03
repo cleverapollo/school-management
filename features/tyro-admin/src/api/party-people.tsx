@@ -20,7 +20,6 @@ const adminPartyPeopleQuery = (tenantId: number) => ({
   queryKey: adminPartyPeopleKeys.all(tenantId),
   queryFn: async () =>
     gqlClient.request(adminPartyPeopleByTenantId, { tenant: tenantId }),
-  staleTime: 1000 * 60 * 2,
 });
 
 export function getAdminPartyPeople(tenantId: number | undefined) {

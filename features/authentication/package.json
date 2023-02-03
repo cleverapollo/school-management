@@ -11,7 +11,7 @@
     "@tyro/api": "*",
     "@tyro/core": "*",
     "@tyro/i18n": "*",
-    "framer-motion": "^8.5.2",
+    "framer-motion": "^9.0.1",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

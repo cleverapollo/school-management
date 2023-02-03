@@ -67,7 +67,6 @@ export const studentKeys = {
 const studentsQuery = {
   queryKey: studentKeys.all,
   queryFn: async () => gqlClient.request(students),
-  staleTime: 1000 * 60 * 2,
 };
 
 export function getStudents() {

@@ -59,14 +59,15 @@ export const customGroupsKeys = {
 
 const customGroupsQuery = {
   queryKey: customGroupsKeys.list,
-  queryFn: async () => gqlClient.request(generalGroupsList, {
-    filter: {
-      groupTypes: [
-        GeneralGroupType.DynamicGroup,
-        GeneralGroupType.StaticGroup,
-      ],
-    },
-  }),
+  queryFn: async () =>
+    gqlClient.request(generalGroupsList, {
+      filter: {
+        groupTypes: [
+          GeneralGroupType.DynamicGroup,
+          GeneralGroupType.StaticGroup,
+        ],
+      },
+    }),
   staleTime: 1000 * 60 * 5,
 };
 
@@ -121,16 +122,18 @@ export function useCustomGroupById(id: number | undefined) {
 
 export const enrolmentGroupsKeys = {
   list: ['groups', 'enrolment'] as const,
-  details: (id: number | undefined) => [...enrolmentGroupsKeys.list, id] as const,
+  details: (id: number | undefined) =>
+    [...enrolmentGroupsKeys.list, id] as const,
 };
 
 const enrolmentGroupsQuery = {
   queryKey: enrolmentGroupsKeys.list,
-  queryFn: async () => gqlClient.request(generalGroupsList, {
-    filter: {
-      groupTypes: [GeneralGroupType.ClassGroup],
-    },
-  }),
+  queryFn: async () =>
+    gqlClient.request(generalGroupsList, {
+      filter: {
+        groupTypes: [GeneralGroupType.ClassGroup],
+      },
+    }),
   staleTime: 1000 * 60 * 5,
 };
 
