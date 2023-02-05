@@ -5415,6 +5415,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@tyro/assessment@*, @tyro/assessment@workspace:features/assessment":
+  version: 0.0.0-use.local
+  resolution: "@tyro/assessment@workspace:features/assessment"
+  dependencies:
+    "@mui/material": ^5.11.4
+    "@mui/system": ^5.10.14
+    "@tanstack/react-query": ^4.16.1
+    "@tyro/api": "*"
+    "@tyro/configs": "*"
+    "@tyro/core": "*"
+    "@tyro/i18n": "*"
+    framer-motion: ^9.0.1
+    lodash: ^4.17.21
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    react-router: ^6.6.2
+    react-router-dom: ^6.6.2
+  languageName: unknown
+  linkType: soft
+
 "@tyro/authentication@*, @tyro/authentication@workspace:features/authentication":
   version: 0.0.0-use.local
   resolution: "@tyro/authentication@workspace:features/authentication"
@@ -5589,6 +5609,7 @@ __metadata:
     "@mui/system": ^5.10.14
     "@tanstack/react-query": ^4.16.1
     "@tyro/api": "*"
+    "@tyro/assessment": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
     "@tyro/i18n": "*"

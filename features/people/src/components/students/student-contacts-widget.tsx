@@ -47,7 +47,7 @@ export function StudentContactsWidget({
   };
 
   return (
-    <Card sx={{ maxWidth: 380 }}>
+    <Card sx={{ maxWidth: 380, flex: 1 }}>
       <Stack
         direction="row"
         sx={{
@@ -60,15 +60,16 @@ export function StudentContactsWidget({
         }}
       >
         <CardHeader
+          component="h3"
           title={t('people:guardianContactInformation')}
-          sx={{ p: 0 }}
+          sx={{ p: 0, m: 0 }}
         />
         {contact?.partyId && (
           <IconButton
             component={Link}
             to={`/people/contacts/${contact?.partyId}`}
           >
-            <ExternalLinkIcon />
+            <ExternalLinkIcon sx={{ width: 20, height: 20 }} />
           </IconButton>
         )}
       </Stack>
@@ -79,7 +80,7 @@ export function StudentContactsWidget({
           justifyContent: 'space-between',
           pl: 3,
           pr: 2.25,
-          py: 1,
+          py: 1.5,
           borderWidth: '1px 0',
           borderStyle: 'solid',
           borderColor: 'divider',
@@ -105,6 +106,7 @@ export function StudentContactsWidget({
               disabled={isLoading || numberOfContacts <= 1}
               onClick={nextContact}
               endIcon={<ChevronRightIcon />}
+              size="small"
             >
               {t('people:nextContact')}
             </Button>
