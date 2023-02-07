@@ -458,7 +458,7 @@ const COMMON = {
   action: {
     hover: SLATE[500_8],
     selected: SLATE[500_16],
-    disabled: SLATE[500_80],
+    disabled: SLATE[500_48],
     disabledBackground: SLATE[500_24],
     focus: SLATE[500_24],
     hoverOpacity: 0.08,

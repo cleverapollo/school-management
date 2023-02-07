@@ -22,9 +22,13 @@ interface ChartPaletteOptions {
 declare module '@mui/material/styles' {
   interface Theme {
     customShadows: CustomShadowOptions;
+    isDark: boolean;
+    isLight: boolean;
   }
   interface ThemeOptions {
     customShadows: CustomShadowOptions;
+    isDark: boolean;
+    isLight: boolean;
   }
   interface TypeBackground {
     neutral: string;

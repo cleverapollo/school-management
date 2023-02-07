@@ -1,4 +1,4 @@
-import { Box, Container, Typography } from '@mui/material';
+import { alpha, Box, Container, Typography } from '@mui/material';
 import { Outlet, useParams, useMatches } from 'react-router-dom';
 import { Page, useNumber, Tabs, LinkTab } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -129,13 +129,16 @@ export default function StudentProfileContainer() {
         </Container>
       </Box>
       <Box
-        sx={{
-          backgroundColor: 'slate.100',
+        sx={({ isLight, palette }) => ({
+          backgroundColor: alpha(
+            isLight ? palette.slate[100] : palette.slate[800],
+            0.6
+          ),
           borderTopLeftRadius: '20px',
           borderTopRightRadius: '20px',
           flex: 1,
           px: 2,
-        }}
+        })}
       >
         <Container maxWidth="xl">
           <Outlet />

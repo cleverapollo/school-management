@@ -36,5 +36,6 @@ export function useStudentDashboardAssessments(studentId: number | undefined) {
   return useQuery({
     ...studentDashboardAssessmentsQuery(studentId),
     enabled: !!studentId,
+    select: ({ dashboardAssessment }) => dashboardAssessment,
   });
 }

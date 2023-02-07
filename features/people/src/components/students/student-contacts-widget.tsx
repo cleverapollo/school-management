@@ -47,14 +47,14 @@ export function StudentContactsWidget({
   };
 
   return (
-    <Card sx={{ maxWidth: 380, flex: 1 }}>
+    <Card variant="outlined" sx={{ maxWidth: 380, flex: 1 }}>
       <Stack
         direction="row"
         sx={{
           alignItems: 'center',
           justifyContent: 'space-between',
           pl: 3,
-          pr: 2.25,
+          pr: 2,
           pt: 2.25,
           pb: 1.25,
         }}
@@ -79,7 +79,7 @@ export function StudentContactsWidget({
           alignItems: 'center',
           justifyContent: 'space-between',
           pl: 3,
-          pr: 2.25,
+          pr: 2,
           py: 1.5,
           borderWidth: '1px 0',
           borderStyle: 'solid',
