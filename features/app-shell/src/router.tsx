@@ -28,6 +28,7 @@ import { getRoutes as getCalendarRoutes } from '@tyro/calendar';
 import { getRoutes as getGroupRoutes } from '@tyro/groups';
 import { getRoutes as getMailRoutes } from '@tyro/mail';
 import { getRoutes as getPeopleRoutes } from '@tyro/people';
+import { getRoutes as getReportingRoutes } from '@tyro/reporting';
 import { getRoutes as getSettingsRoutes } from '@tyro/settings';
 import { getRoutes as getAdminRoutes } from '@tyro/tyro-admin';
 
@@ -116,6 +117,7 @@ export const getNavCategories = (
   ...getGroupRoutes(t),
   ...getMailRoutes(t),
   ...getPeopleRoutes(t),
+  ...getReportingRoutes(t),
   ...getSettingsRoutes(t),
   ...getAdminRoutes(t),
 ];
