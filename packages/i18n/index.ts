@@ -3,42 +3,21 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpBackend, { HttpBackendOptions } from 'i18next-http-backend';
 
-// eslint-disable-next-line import/no-relative-packages
-import { en, ga } from '../../public/locales';
-
 export { useTranslation } from 'react-i18next';
 export type { TFunction } from 'i18next';
 
 export const defaultNS = 'common';
-export const resources = {
-  en,
-  ga,
-} as const;
-export const namespaces = [
-  'common',
-  'authentication',
-  'userAccounts',
-  'groups',
-  'people',
-  'admin',
-  'settings',
-  'mail',
-  'calendar',
-  'navigation',
-  'attendance',
-];
 
-export const availableLanguages = Object.keys(
-  resources
-) as (keyof typeof resources)[];
+export const availableLanguages = ['en', 'ga'] as const;
 
 export default i18n
-  .use(LanguageDetector)
   .use(HttpBackend)
+  .use(LanguageDetector)
   .use(initReactI18next)
   .init<HttpBackendOptions>({
     lng: 'en',
-    ns: namespaces,
+    load: 'languageOnly',
+    ns: [defaultNS],
     debug: process.env.NODE_ENV !== 'production',
     defaultNS,
     fallbackLng: 'en',
