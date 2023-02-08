@@ -21,7 +21,6 @@ import {
 import omit from 'lodash/omit';
 
 import { TFunction } from '@tyro/i18n';
-import { Typography } from '@mui/material';
 // Extenal routers
 import { routes as authRoutes } from '@tyro/authentication';
 import { getRoutes as getCalendarRoutes } from '@tyro/calendar';
@@ -31,6 +30,7 @@ import { getRoutes as getPeopleRoutes } from '@tyro/people';
 import { getRoutes as getSettingsRoutes } from '@tyro/settings';
 import { getRoutes as getAdminRoutes } from '@tyro/tyro-admin';
 
+import { Box, CircularProgress } from '@mui/material';
 import { ErrorElement } from './components/error-element';
 import { Shell } from './components/shell';
 import { getShellRoutes } from './routes';
@@ -131,13 +131,24 @@ function useAppRouter() {
         return getUser();
       },
       element: (
-        <LazyLoader>
-          <Shell>
-            <LazyLoader>
-              <Outlet />
-            </LazyLoader>
-          </Shell>
-        </LazyLoader>
+        <Shell>
+          <LazyLoader
+            fallback={
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  minHeight: '100vh',
+                }}
+              >
+                <CircularProgress />
+              </Box>
+            }
+          >
+            <Outlet />
+          </LazyLoader>
+        </Shell>
       ),
       errorElement: (
         <LazyLoader>

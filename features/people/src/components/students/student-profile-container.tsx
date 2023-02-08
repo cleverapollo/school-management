@@ -1,8 +1,20 @@
-import { alpha, Box, Container, Typography } from '@mui/material';
+import {
+  alpha,
+  Box,
+  CircularProgress,
+  Container,
+  Typography,
+} from '@mui/material';
 import { Outlet, useParams, useMatches } from 'react-router-dom';
-import { Page, useNumber, Tabs, LinkTab } from '@tyro/core';
+import {
+  Page,
+  useNumber,
+  Tabs,
+  LinkTab,
+  Breadcrumbs,
+  LazyLoader,
+} from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { Breadcrumbs } from '@tyro/core/src/components';
 import { useEffect, useState } from 'react';
 import { useStudent } from '../../api/students';
 import { StudentOverviewBar } from './student-overview-bar';
@@ -138,10 +150,30 @@ export default function StudentProfileContainer() {
           borderTopRightRadius: '20px',
           flex: 1,
           px: 2,
+          position: 'relative',
         })}
       >
         <Container maxWidth="xl">
-          <Outlet />
+          <LazyLoader
+            fallback={
+              <Box
+                sx={{
+                  display: 'flex',
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  left: 0,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <CircularProgress />
+              </Box>
+            }
+          >
+            <Outlet />
+          </LazyLoader>
         </Container>
       </Box>
     </Page>
