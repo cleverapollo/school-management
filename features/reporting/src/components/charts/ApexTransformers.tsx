@@ -26,7 +26,7 @@ const twoDimentionTimeBased = (
   // eslint-disable-next-line @typescript-eslint/no-for-in-array,guard-for-in,no-restricted-syntax
   // eslint-disable-next-line vars-on-top,no-plusplus,no-var
   for (var i = 0; i < resultSet.chartPivot().length; i++) {
-    // console.log(resultSet.chartPivot()[i]);
+    //
     const row = resultSet.chartPivot()[i];
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return,no-loop-func,no-plusplus
@@ -58,12 +58,11 @@ const twoDimensionNonTimeBased = (
 
   const categories = [] as string[];
 
-  console.log(dimensions);
   const chartData = resultSet.chartPivot({
     y: [dimensions[0]],
   });
   const allKeys = new Set<string>([]);
-  console.log(chartData);
+
   const seriesMap = new Map<string, number[]>();
   for (const row of chartData) {
     const foundKeys = Object.keys(row).filter(
@@ -82,8 +81,6 @@ const twoDimensionNonTimeBased = (
     name: k.split(',')[0],
     data: seriesMap.get(k),
   }));
-  console.log(series);
-  console.log(categories);
 
   return {
     series,

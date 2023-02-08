@@ -3,9 +3,8 @@ import { DrillDownLocator, ResultSet } from '@cubejs-client/core';
 import ReactApexChart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { merge } from 'lodash';
-import { ChartRendererInternalProps } from './CartesianChart';
 import { BaseOptionChart } from './BaseOptionChart';
-import { ChartDefinition } from './ChartRenderer';
+import { ChartDefinition, ChartRendererInternalProps } from './ChartRenderer';
 
 const colors = ['#7DB3FF', '#49457B', '#FF7C78'];
 

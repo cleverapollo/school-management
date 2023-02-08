@@ -10,8 +10,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { Filter, Query, ResultSet } from '@cubejs-client/core';
-import { ChartRendererInternalProps } from './CartesianChart';
+import { Query, ResultSet } from '@cubejs-client/core';
 
 export interface ChartDefinition {
   component: (props: ChartRendererInternalProps) => JSX.Element;
@@ -21,6 +20,14 @@ export interface ChartDefinition {
     e2: any,
     e3: any
   ) => Query | null;
+}
+
+export interface ChartRendererInternalProps {
+  resultSet: ResultSet;
+  children: any;
+  ChartComponent: any;
+  height: number;
+  onclickEvent?: (a: any, b: any, c: any) => void;
 }
 
 export interface ChartRendererPassThroughProps {
@@ -49,9 +56,14 @@ const renderChart =
 export interface ChartRendererProps {
   chartDefinition: ChartDefinition;
   query: Query;
+  drillDownDisplayColumns?: string[];
 }
 
-const ChartRenderer = ({ chartDefinition, query }: ChartRendererProps) => {
+const ChartRenderer = ({
+  chartDefinition,
+  query,
+  drillDownDisplayColumns,
+}: ChartRendererProps) => {
   // @ts-ignore
   const component = chartDefinition;
 
@@ -106,16 +118,28 @@ const ChartRenderer = ({ chartDefinition, query }: ChartRendererProps) => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    {Object.keys(drillDownData()[0] || []).map((key) => (
-                      <TableCell key={key}>{key}</TableCell>
-                    ))}
+                    {Object.keys(drillDownData()[0] || [])
+                      .filter(
+                        (key) =>
+                          drillDownDisplayColumns == null ||
+                          drillDownDisplayColumns?.includes(key)
+                      )
+                      .map((key) => (
+                        <TableCell key={key}>{key}</TableCell>
+                      ))}
                   </TableRow>
                 </TableHead>
                 {drillDownData().map((row) => (
                   <TableRow>
-                    {Object.keys(row).map((key) => (
-                      <TableCell key={key}> {row[key]} </TableCell>
-                    ))}
+                    {Object.keys(row)
+                      .filter(
+                        (key) =>
+                          drillDownDisplayColumns == null ||
+                          drillDownDisplayColumns?.includes(key)
+                      )
+                      .map((key) => (
+                        <TableCell key={key}> {row[key]} </TableCell>
+                      ))}
                   </TableRow>
                 ))}
               </Table>

@@ -3,10 +3,9 @@ import { DrillDownLocator, ResultSet } from '@cubejs-client/core';
 import ReactApexChart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { merge } from 'lodash';
-import { ChartRendererInternalProps } from './CartesianChart';
 import { BaseOptionChart } from './BaseOptionChart';
 import { DataLayoutType, transformData } from './ApexTransformers';
-import { ChartDefinition } from './ChartRenderer';
+import { ChartDefinition, ChartRendererInternalProps } from './ChartRenderer';
 
 const colors = ['#7DB3FF', '#49457B', '#FF7C78'];
 
@@ -67,7 +66,7 @@ const drilldownLocationFunction = (
     const foundKeys = Object.keys(resultSet.chartPivot()[0]).filter(
       (k) => k !== 'x' && k !== 'xValues'
     );
-    console.log(foundKeys);
+
     const measures = resultSet.query().measures || [];
     const yFilters = foundKeys[seriesIndex]
       .split(',')
@@ -89,7 +88,7 @@ const drilldownLocationFunction = (
   //
   //
   //
-  console.log(c);
+
   const datapointIndex = c.dataPointIndex as number;
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   const seriesIndex = c.seriesIndex as number;
@@ -101,7 +100,7 @@ const drilldownLocationFunction = (
   const foundKeys = Object.keys(chartData[0]).filter(
     (k) => k !== 'x' && k !== 'xValues'
   );
-  console.log(chartData);
+
   const measures = resultSet.query().measures || [];
   const maindatapoint = foundKeys[seriesIndex]
     .split(',')
@@ -109,7 +108,7 @@ const drilldownLocationFunction = (
   const xfilterValues = chartData[datapointIndex].xValues;
   // todo are indexs always the same here??
   const xValues = maindatapoint.concat(xfilterValues);
-  console.log(xValues);
+
   const locator = {
     xValues,
     yValues: [],
