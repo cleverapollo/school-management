@@ -5426,6 +5426,7 @@ __metadata:
     "@tyro/configs": "*"
     "@tyro/core": "*"
     "@tyro/i18n": "*"
+    "@tyro/icons": "*"
     framer-motion: ^9.0.1
     lodash: ^4.17.21
     react: ^18.2.0
