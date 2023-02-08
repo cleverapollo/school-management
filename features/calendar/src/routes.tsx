@@ -1,4 +1,4 @@
-import { LazyLoader, NavObjectFunction, NavObjectType } from '@tyro/core';
+import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { Calendar31Icon } from '@tyro/icons';
 import { UserType } from '@tyro/api';
 import { lazy } from 'react';
@@ -19,11 +19,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         hasAccess: ({ userType }) => !!userType && userType !== UserType.Tyro,
         title: t('navigation:general.calendar'),
         loader: () => getCalendarEvents(filter),
-        element: (
-          <LazyLoader>
-            <CalendarPage />
-          </LazyLoader>
-        ),
+        element: <CalendarPage />,
       },
     ],
   },

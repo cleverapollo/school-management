@@ -1,15 +1,15 @@
-import {
-  getNumber,
-  NavObjectFunction,
-  NavObjectType,
-  LazyLoader,
-} from '@tyro/core';
+import { getNumber, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { lazy } from 'react';
 import { BookOpenIcon, UserProfileCardIcon } from '@tyro/icons';
 import { UserType } from '@tyro/api';
 import { getSubjectGroups, getSubjectGroupsById } from './api/subject-groups';
 import { getStudentSubjects } from './api/student-subjects';
-import { getCustomGroups, getCustomGroupsById, getEnrolmentGroups, getEnrolmentGroupsById } from './api/general-groups';
+import {
+  getCustomGroups,
+  getCustomGroupsById,
+  getEnrolmentGroups,
+  getEnrolmentGroupsById,
+} from './api/general-groups';
 
 const CustomGroups = lazy(() => import('./pages/custom'));
 const ViewCustomGroupPage = lazy(() => import('./pages/custom/view'));
@@ -37,11 +37,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'enrolment',
             title: t('navigation:general.groups.enrolment'),
             loader: () => getEnrolmentGroups(),
-            element: (
-              <LazyLoader>
-                <EnrolmentGroups />
-              </LazyLoader>
-            ),
+            element: <EnrolmentGroups />,
             children: [
               {
                 type: NavObjectType.NonMenuLink,
@@ -50,11 +46,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                   const groupId = getNumber(params?.groupId);
                   getEnrolmentGroupsById(groupId);
                 },
-                element: (
-                  <LazyLoader>
-                    <ViewEnrolmentGroupPage />
-                  </LazyLoader>
-                ),
+                element: <ViewEnrolmentGroupPage />,
               },
             ],
           },
@@ -63,11 +55,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'subject',
             title: t('navigation:general.groups.subject'),
             loader: () => getSubjectGroups(),
-            element: (
-              <LazyLoader>
-                <SubjectGroups />
-              </LazyLoader>
-            ),
+            element: <SubjectGroups />,
             children: [
               {
                 type: NavObjectType.NonMenuLink,
@@ -76,11 +64,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                   const groupId = getNumber(params?.groupId);
                   getSubjectGroupsById(groupId);
                 },
-                element: (
-                  <LazyLoader>
-                    <ViewSubjectGroupPage />
-                  </LazyLoader>
-                ),
+                element: <ViewSubjectGroupPage />,
               },
             ],
           },
@@ -89,11 +73,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'custom',
             title: t('navigation:general.groups.custom'),
             loader: () => getCustomGroups(),
-            element: (
-              <LazyLoader>
-                <CustomGroups />
-              </LazyLoader>
-            ),
+            element: <CustomGroups />,
             children: [
               {
                 type: NavObjectType.NonMenuLink,
@@ -102,11 +82,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                   const groupId = getNumber(params?.groupId);
                   getCustomGroupsById(groupId);
                 },
-                element: (
-                  <LazyLoader>
-                    <ViewCustomGroupPage />
-                  </LazyLoader>
-                ),
+                element: <ViewCustomGroupPage />,
               },
             ],
           },
@@ -120,11 +96,7 @@ export const getRoutes: NavObjectFunction = (t) => [
           !!userType && [UserType.Admin, UserType.Teacher].includes(userType),
         icon: <BookOpenIcon />,
         loader: () => getStudentSubjects(),
-        element: (
-          <LazyLoader>
-            <Subjects />
-          </LazyLoader>
-        ),
+        element: <Subjects />,
       },
     ],
   },

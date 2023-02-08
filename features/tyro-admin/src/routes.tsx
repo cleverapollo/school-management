@@ -1,12 +1,7 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
 import { lazy } from 'react';
-import {
-  LazyLoader,
-  NavObjectFunction,
-  NavObjectType,
-  getNumber,
-} from '@tyro/core';
+import { NavObjectFunction, NavObjectType, getNumber } from '@tyro/core';
 import { PersonGearIcon } from '@tyro/icons';
 import { UserType } from '@tyro/api';
 import { getTenants } from './api/tenants';
@@ -34,11 +29,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             hasAccess: ({ userType }) =>
               !!userType && userType === UserType.Tyro,
             loader: () => getTenants(),
-            element: (
-              <LazyLoader>
-                <AdminSchoolsPage />
-              </LazyLoader>
-            ),
+            element: <AdminSchoolsPage />,
           },
           {
             type: NavObjectType.NonMenuLink,
@@ -49,11 +40,7 @@ export const getRoutes: NavObjectFunction = (t) => [
               const schoolId = getNumber(params?.schoolId);
               return getAdminPartyPeople(schoolId);
             },
-            element: (
-              <LazyLoader>
-                <AdminPeoplesPage />
-              </LazyLoader>
-            ),
+            element: <AdminPeoplesPage />,
           },
           {
             type: NavObjectType.MenuLink,
@@ -62,11 +49,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             hasAccess: ({ userType }) =>
               process.env.NODE_ENV !== 'production' ||
               (!!userType && userType === UserType.Tyro),
-            element: (
-              <LazyLoader>
-                <GraphiQLPage />
-              </LazyLoader>
-            ),
+            element: <GraphiQLPage />,
           },
         ],
       },
