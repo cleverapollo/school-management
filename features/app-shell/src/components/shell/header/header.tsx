@@ -2,7 +2,14 @@
 // TODO: remove above eslint when components are moved to @tyro/core
 import { useMemo } from 'react';
 import { useTheme } from '@mui/material/styles';
-import { Stack, AppBar, Toolbar, IconButton, Button } from '@mui/material';
+import {
+  Stack,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Button,
+  alpha,
+} from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 // hooks
 import { HamburgerMenuIcon } from '@tyro/icons';
@@ -29,7 +36,6 @@ type Props = {
 };
 
 export function Header({ isNavExpanded, onOpenNav }: Props) {
-  const theme = useTheme();
   const { activeProfile } = useUser();
   const queryClient = useQueryClient();
   const { userType } = usePermissions();
@@ -83,12 +89,14 @@ export function Header({ isNavExpanded, onOpenNav }: Props) {
 
   return (
     <AppBar
-      sx={{
+      sx={(theme) => ({
         boxShadow: 'none',
         height: HEADER.H_MOBILE,
         zIndex: theme.zIndex.appBar + 1,
-        backgroundColor: 'transparent',
-        backdropFilter: 'blur(6px)',
+        backgroundColor: theme.isLight
+          ? alpha(theme.palette.background.neutral, 0.72)
+          : theme.palette.background.neutral,
+        backdropFilter: 'blur(10px)',
         transition: theme.transitions.create(['height'], {
           duration: theme.transitions.duration.shorter,
         }),
@@ -102,7 +110,7 @@ export function Header({ isNavExpanded, onOpenNav }: Props) {
             width: `calc(100% - ${NAV.W_DASHBOARD_MINI + 1}px)`,
           }),
         }),
-      }}
+      })}
     >
       <Toolbar
         sx={{

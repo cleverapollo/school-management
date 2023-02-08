@@ -1,5 +1,5 @@
 import { lazy } from 'react';
-import { LazyLoader, NavObjectFunction, NavObjectType } from '@tyro/core';
+import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { GearIcon } from '@tyro/icons';
 import { UserType } from '@tyro/api';
 import { getCoreRooms } from './api/rooms';
@@ -28,33 +28,21 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.settings.rooms'),
             path: 'rooms',
             loader: () => getCoreRooms(),
-            element: (
-              <LazyLoader>
-                <Rooms />
-              </LazyLoader>
-            ),
+            element: <Rooms />,
           },
           {
             type: NavObjectType.MenuLink,
             title: t('navigation:management.settings.academicNamespaces'),
             path: 'academic-namespaces',
             loader: () => getCoreAcademicNamespace(),
-            element: (
-              <LazyLoader>
-                <AcademicNamespaceList />
-              </LazyLoader>
-            ),
+            element: <AcademicNamespaceList />,
           },
           {
             type: NavObjectType.MenuLink,
             title: t('navigation:management.settings.subjects'),
             path: 'subjects',
             loader: () => getCatalogueSubjects(),
-            element: (
-              <LazyLoader>
-                <Subjects />
-              </LazyLoader>
-            ),
+            element: <Subjects />,
           },
         ],
       },

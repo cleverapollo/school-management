@@ -1,8 +1,9 @@
-import { resources, defaultNS } from '@tyro/i18n';
+import { defaultNS } from '@tyro/i18n';
+import { en } from '../public/locales';
 
 declare module 'i18next' {
   interface CustomTypeOptions {
     defaultNS: typeof defaultNS;
-    resources: (typeof resources)['en'];
+    resources: typeof en;
   }
 }

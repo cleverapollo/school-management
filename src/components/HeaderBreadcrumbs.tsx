@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 // @mui
 import { Box, Typography, Link } from '@mui/material';
 //
-import Breadcrumbs, { Props as BreadcrumbsProps } from './Breadcrumbs';
+import { Breadcrumbs, BreadcrumbsProps } from '@tyro/core';
 
 // ----------------------------------------------------------------------
 

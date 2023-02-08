@@ -16,6 +16,11 @@ export default function Tabs(theme: Theme) {
           width: 48,
           borderRadius: '50%',
         },
+        root: {
+          '& .MuiTabs-indicator': {
+            borderRadius: 1,
+          },
+        }
       },
     },
     MuiTab: {

@@ -5504,12 +5504,33 @@ __metadata:
     "@tyro/settings": "*"
     "@tyro/tyro-admin": "*"
     dayjs: ^1.11.7
-    framer-motion: ^8.5.2
+    framer-motion: ^9.0.1
     lodash: ^4.17.21
     react: ^18.2.0
     react-dom: ^18.2.0
     react-router: ^6.3.0
     react-router-dom: ^6.3.0
+  languageName: unknown
+  linkType: soft
+
+"@tyro/assessment@*, @tyro/assessment@workspace:features/assessment":
+  version: 0.0.0-use.local
+  resolution: "@tyro/assessment@workspace:features/assessment"
+  dependencies:
+    "@mui/material": ^5.11.4
+    "@mui/system": ^5.10.14
+    "@tanstack/react-query": ^4.16.1
+    "@tyro/api": "*"
+    "@tyro/configs": "*"
+    "@tyro/core": "*"
+    "@tyro/i18n": "*"
+    "@tyro/icons": "*"
+    framer-motion: ^9.0.1
+    lodash: ^4.17.21
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    react-router: ^6.6.2
+    react-router-dom: ^6.6.2
   languageName: unknown
   linkType: soft
 
@@ -5525,7 +5546,7 @@ __metadata:
     "@tyro/configs": "*"
     "@tyro/core": "*"
     "@tyro/i18n": "*"
-    framer-motion: ^8.5.2
+    framer-motion: ^9.0.1
     lodash: ^4.17.21
     react: ^18.2.0
     react-dom: ^18.2.0
@@ -5558,7 +5579,6 @@ __metadata:
     "@tyro/icons": "*"
     dayjs: ^1.11.7
     lodash: ^4.17.21
-    notistack: ^2.0.5
     react: ^18.2.0
     react-hook-form: ^7.42.1
     react-router: ^6.3.0
@@ -5602,7 +5622,9 @@ __metadata:
     "@tyro/api": "*"
     "@tyro/configs": "*"
     "@tyro/i18n": "*"
-    framer-motion: 8.5.2
+    "@tyro/icons": "*"
+    framer-motion: ^9.0.1
+    notistack: ^2.0.5
     nprogress: ^0.2.0
     react: ^18.2.0
     react-dom: ^18.2.0
@@ -5670,7 +5692,6 @@ __metadata:
     "@tyro/core": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
-    notistack: ^2.0.5
     react: ^18.2.0
     react-dom: ^18.2.0
     react-hook-form: ^7.42.1
@@ -5687,14 +5708,18 @@ __metadata:
     "@mui/system": ^5.10.14
     "@tanstack/react-query": ^4.16.1
     "@tyro/api": "*"
+    "@tyro/assessment": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    dayjs: ^1.11.7
+    framer-motion: ^9.0.1
     react: ^18.2.0
     react-dom: ^18.2.0
     react-router: ^6.6.2
     react-router-dom: ^6.6.2
+    react-use: ^17.4.0
   languageName: unknown
   linkType: soft
 
@@ -10091,9 +10116,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:8.5.2, framer-motion@npm:^8.5.2":
-  version: 8.5.2
-  resolution: "framer-motion@npm:8.5.2"
+"framer-motion@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "framer-motion@npm:9.0.1"
   dependencies:
     "@emotion/is-prop-valid": ^0.8.2
     "@motionone/dom": ^10.15.3
@@ -10105,7 +10130,7 @@ __metadata:
   dependenciesMeta:
     "@emotion/is-prop-valid":
       optional: true
-  checksum: d58eabc825cf534aefdbf99e8806d483867f643d9081f8d7a6d3dac2c3a7157ccec67b78439898569e64bf9f3530aacb099429180169428cf7b1d639a59831f3
+  checksum: e4e47bad607ad9882c515223dab2357203812039bb47f2787a29b9e951299cb6b94d18a46989bb6fc6a5a31a417a58c3cf210e2e6867d2ab85190550767465de
   languageName: node
   linkType: hard
 
@@ -18408,7 +18433,7 @@ __metadata:
     eslint-plugin-react-hooks: ^4.6.0
     eslint-webpack-plugin: ^3.1.1
     file-loader: ^6.2.0
-    framer-motion: ^8.5.2
+    framer-motion: ^9.0.1
     fs-extra: ^10.0.0
     gh-pages: ^4.0.0
     graphql: ^16.6.0
@@ -18424,7 +18449,6 @@ __metadata:
     material-ui-popup-state: ^4.1.0
     mini-css-extract-plugin: ^2.4.5
     mst-gql: ^0.17.1
-    notistack: ^2.0.5
     nprogress: ^0.2.0
     numeral: ^2.0.6
     postcss: ^8.4.4

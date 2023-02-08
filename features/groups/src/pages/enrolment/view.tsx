@@ -5,10 +5,9 @@ import { Container, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router';
 import { Person } from '@tyro/api';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { useNumber, Page } from '@tyro/core';
+import { useNumber, Page, Breadcrumbs } from '@tyro/core';
 import { useEnrolmentGroupById } from '../../api/general-groups';
 import Table from '../../../../../src/components/table/Table';
-import Breadcrumbs from '../../../../../src/components/Breadcrumbs';
 import { TableColumn, Option } from '../../../../../src/components/table/types';
 import OptionButton from '../../../../../src/components/table/OptionButton';
 
@@ -19,35 +18,37 @@ interface EnrolmentExactGroupData {
   tech: string;
 }
 
-export const enrolmentOptions: Option<EnrolmentExactGroupData>[] = [
+export const getEnrolmentOptions = (
+  translate: TFunction<('common')[], undefined, ('common')[]>,
+): Option<EnrolmentExactGroupData>[] => ([
   {
-    text: 'notify',
+    text: translate('common:actions.notify'),
     icon: 'notify',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'view profile',
+    text: translate('common:actions.viewProfile'),
     icon: 'edit',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'view timetable',
+    text: translate('common:actions.viewTimetable'),
     icon: 'edit',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
-];
+]);
 
 const getEnrolmentGroupColumns = (
   translate: TFunction<
-    ('common' | 'authentication')[],
+    ('common' | 'groups')[],
     undefined,
-    ('common' | 'authentication')[]
+    ('common' | 'groups')[]
   >
 ): TableColumn<EnrolmentExactGroupData>[] => [
   {
@@ -59,7 +60,7 @@ const getEnrolmentGroupColumns = (
     component: ({ row }) => (
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {/* Add Avatar back in when we add value to BE */}
-        {/* <Avatar srcSet={columnProps.row.original.avatarUrl} alt={columnProps.row.original.name} style={{ marginRight: '10px' }} /> */}
+        {/* <Avatar srcSet={columnProps.row.original.avatarUrl} name={columnProps.row.original.name} style={{ marginRight: '10px' }} /> */}
         {row.original.name}
       </div>
     ),
@@ -67,12 +68,12 @@ const getEnrolmentGroupColumns = (
   {
     columnDisplayName: 'Tech Options',
     fieldName: 'tech',
-    component: (columnProps) => <OptionButton options={enrolmentOptions} />,
+    component: (columnProps) => <OptionButton options={getEnrolmentOptions(translate)} />,
   },
 ];
 
 export default function ViewEnrolmentGroupPage() {
-  const { t } = useTranslation(['common', 'authentication']);
+  const { t } = useTranslation(['common', 'groups']);
   const navigate = useNavigate();
   const { groupId } = useParams();
   const groupIdAsNumber = useNumber(groupId);
@@ -92,7 +93,7 @@ export default function ViewEnrolmentGroupPage() {
   const enrolmentGroupColumns = useMemo(() => getEnrolmentGroupColumns(t), [t]);
   const title = !data?.name
     ? ''
-    : `${data?.name} ${t('authentication:memberList')}`;
+    : `${data?.name} ${t('groups:memberList')}`;
 
   return (
     <Page title={title} isLoading={isLoading}>
@@ -103,7 +104,7 @@ export default function ViewEnrolmentGroupPage() {
         <Breadcrumbs
           links={[
             {
-              name: t('authentication:enrolmentGroups'),
+              name: t('groups:enrolmentGroups'),
               href: './..',
             },
             {

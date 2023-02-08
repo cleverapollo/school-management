@@ -27,18 +27,20 @@ interface SetActiveAcademicYearMutationContext {
     unknown
   >;
 }
-const actions = (setActiveAcademicYear: SetActiveAcademicYearMutationContext) =>
+const actions = (
+  translate: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>,
+  setActiveAcademicYear: SetActiveAcademicYearMutationContext
+) =>
   [
     {
-      text: 'Make Active Primary Namespace',
+      text: translate('settings:actions.makeActive'),
       icon: 'edit',
       action: (e, row) => {},
       confirmationDialog(row) {
         return {
-          title: `Change Academic Namespace to ${row.year}?`,
-          description:
-            'Doing this will change the year for everyone in the system. This is typically only done at the start on the new Academic Year',
-          confirmText: `Change Academic Namespace to ${row.year}`,
+          title: `${translate('settings:namespacesDialog.title')} ${row.year}?`,
+          description: translate('settings:namespacesDialog.description'),
+          confirmText: `${translate('settings:namespacesDialog.confirmation')} ${row.year}`,
           confirmFunction: () => {
             const value = {
               mutationBody: {
@@ -54,28 +56,28 @@ const actions = (setActiveAcademicYear: SetActiveAcademicYearMutationContext) =>
   ] as Option<AcademicNamespace>[];
 
 const getColumns = (
-  translate: TFunction<'authentication'[], undefined, 'authentication'[]>,
+  translate: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>,
   setActiveAcademicYear: SetActiveAcademicYearMutationContext
 ): TableColumn<AcademicNamespace>[] => [
   {
-    columnDisplayName: translate('authentication:year'),
+    columnDisplayName: translate('common:year'),
     fieldName: 'year',
     filter: 'suggest',
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('authentication:name'),
+    columnDisplayName: translate('common:name'),
     fieldName: 'name',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('authentication:type'),
+    columnDisplayName: translate('common:type'),
     fieldName: 'type',
     filter: 'suggest',
   },
 
   {
-    columnDisplayName: translate('authentication:description'),
+    columnDisplayName: translate('common:description'),
     fieldName: 'description',
     filter: 'suggest',
   },
@@ -85,7 +87,7 @@ const getColumns = (
     filter: 'suggest',
     component: (columnProps) =>
       columnProps.row.original.isActiveDefaultNamespace && (
-        <Chip label="Active" />
+        <Chip label={translate('settings:active')} />
       ),
   },
   {
@@ -93,7 +95,7 @@ const getColumns = (
     fieldName: () => 'tech',
     component: (columnProps) => (
       <OptionButton
-        options={actions(setActiveAcademicYear)}
+        options={actions(translate, setActiveAcademicYear)}
         row={columnProps.row.original}
       />
     ),
@@ -101,7 +103,7 @@ const getColumns = (
 ];
 
 export default function AcademicNamespaceList() {
-  const { t } = useTranslation(['authentication']);
+  const { t } = useTranslation(['common', 'settings']);
   const { data, isLoading } = useCoreAcademicNamespace();
   const mutation = useCoreSetActiveActiveAcademicNamespace();
 
@@ -118,10 +120,10 @@ export default function AcademicNamespaceList() {
     return a.year - b.year;
   });
   return (
-    <Page title="Subject" isLoading={isLoading}>
+    <Page title={t('settings:subject')} isLoading={isLoading}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
-          Namespaces
+          {t('settings:namespaces')}
         </Typography>
         <Table data={ns} columns={columns} />
       </Container>

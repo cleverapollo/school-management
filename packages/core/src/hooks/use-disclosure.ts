@@ -1,3 +1,4 @@
+import { ButtonProps, DialogProps } from '@mui/material';
 import React, { useCallback, useState, useId } from 'react';
 import { useCallbackRef } from './use-callback-ref';
 
@@ -8,8 +9,6 @@ export interface UseDisclosureProps {
   onOpen?: () => void;
   id?: string;
 }
-
-type HTMLProps = React.HTMLAttributes<HTMLElement>;
 
 /**
  * `useDisclosure` is a custom hook used to help handle common open, close, or toggle scenarios.
@@ -57,7 +56,7 @@ export function useDisclosure(props: UseDisclosureProps = {}) {
     }
   }, [isOpen, onOpen, onClose]);
 
-  function getButtonProps(additionalProps: HTMLProps = {}): HTMLProps {
+  function getButtonProps(additionalProps: ButtonProps = {}): ButtonProps {
     return {
       ...additionalProps,
       'aria-expanded': isOpen,
@@ -69,15 +68,17 @@ export function useDisclosure(props: UseDisclosureProps = {}) {
     };
   }
 
-  function getDisclosureProps(additionalProps: HTMLProps = {}): HTMLProps {
+  function getDisclosureProps(additionalProps: Omit<DialogProps, 'open'> = {}) {
     return {
       ...additionalProps,
-      hidden: !isOpen,
+      open: isOpen,
+      onClose,
       id,
     };
   }
 
   return {
+    id,
     isOpen,
     onOpen,
     onClose,

@@ -1,7 +1,6 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
 import { useNavigate, useParams } from 'react-router-dom';
-// @mui
 import { styled } from '@mui/material/styles';
 import {
   Box,
@@ -11,17 +10,11 @@ import {
   IconButton,
   DialogTitle,
 } from '@mui/material';
-// routes
 import { Mail } from '@tyro/api';
 import { useMemo, useState } from 'react';
-import { useResponsive } from '@tyro/core';
-// hooks
-// utils
-import createAvatar from '../../../../src/utils/createAvatar';
+import { useResponsive, Avatar } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 import { fDateTimeSuffix } from '../../../../src/utils/formatTime';
-// @types
-// components
-import Avatar from '../../../../src/components/Avatar';
 import { Iconify } from '../../../../src/components/iconify';
 import OptionButton from '../../../../src/components/table/OptionButton';
 import { Option } from '../../../../src/components/table/types';
@@ -55,24 +48,25 @@ export default function MailDetailsToolbar({
   activeLabelName,
   ...other
 }: Props) {
+  const { t } = useTranslation(['mail']);
   const [isOpenDialog, setIsOpenDialog] = useState(false);
   const labelOptions: Option<any>[] = [
     {
-      text: 'Reply',
+      text: t('mail:actions.reply'),
       icon: 'arrowLeft',
       action: (e: MouseEvent) => {
         e.stopPropagation();
       },
     },
     {
-      text: 'Forward',
+      text: t('mail:actions.forward'),
       icon: 'arrow',
       action: (e: MouseEvent) => {
         e.stopPropagation();
       },
     },
     {
-      text: 'Apply label',
+      text: t('mail:actions.applyLabel'),
       icon: 'label',
       action: (e: MouseEvent) => {
         e.stopPropagation();
@@ -80,14 +74,14 @@ export default function MailDetailsToolbar({
       },
     },
     {
-      text: 'Mark as unread',
+      text: t('mail:actions.markAsUnread'),
       icon: 'mail',
       action: (e: MouseEvent) => {
         e.stopPropagation();
       },
     },
     {
-      text: 'Delete this message',
+      text: t('mail:actions.deleteThisMessage'),
       icon: 'delete',
       action: (e: MouseEvent) => {
         e.stopPropagation();
@@ -136,18 +130,12 @@ export default function MailDetailsToolbar({
   return (
     <RootStyle {...other}>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Tooltip title="Back">
+        <Tooltip title={t('mail:tooltipTitles.back')}>
           <IconButton onClick={handleBack}>
             <Iconify icon="eva:arrow-ios-back-fill" width={20} height={20} />
           </IconButton>
         </Tooltip>
-        <Avatar
-          alt={mail.senderPartyId?.toString()}
-          src="google.com"
-          color={createAvatar(mail.senderPartyId?.toString() ?? '').color}
-        >
-          {createAvatar(mail.senderPartyId?.toString() ?? '').name}
-        </Avatar>
+        <Avatar src="google.com" name={mail.senderPartyId?.toString()} />
 
         <Box sx={{ ml: 2 }}>
           <Typography display="inline" variant="subtitle2">
@@ -176,7 +164,7 @@ export default function MailDetailsToolbar({
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
               {fDateTimeSuffix(mail.sentOn)}
             </Typography>
-            <Tooltip title="Reply">
+            <Tooltip title={t('mail:tooltipTitles.reply')}>
               <IconButton>
                 <Iconify icon="ic:round-reply" width={20} height={20} />
               </IconButton>
@@ -184,14 +172,14 @@ export default function MailDetailsToolbar({
           </>
         )}
 
-        <Tooltip title="More options">
+        <Tooltip title={t('mail:tooltipTitles.moreOptions')}>
           <OptionButton options={labelOptions} />
         </Tooltip>
         <DialogAnimate
           open={isOpenDialog}
           onClose={() => setIsOpenDialog(false)}
         >
-          <DialogTitle>Apply label</DialogTitle>
+          <DialogTitle>{t('mail:applyLabel')}</DialogTitle>
           <ApplyLabelsForm
             mailData={mailData}
             labels={labelsForApplying}

@@ -1,11 +1,12 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
-import { useSnackbar } from 'notistack';
+import { useToast } from '@tyro/core';
 // form
 import { useForm } from 'react-hook-form';
 // @mui
 import { Button, DialogActions, List, ListItem } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import { useTranslation } from '@tyro/i18n';
 // components
 import { RHFCheckbox } from '../../../../src/components/hook-form';
 import { useAssignLabel } from '../api/labels';
@@ -37,7 +38,8 @@ export default function ApplyLabelsForm({
   labels,
   onCancel,
 }: ApplyLabelsFormProps) {
-  const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation(['common']);
+  const { toast } = useToast();
 
   const {
     reset,
@@ -57,7 +59,7 @@ export default function ApplyLabelsForm({
         .forEach((label) => {
           assignLabel({ ...mailData, labelId: +label[0] });
         });
-      enqueueSnackbar('Label was assigned!');
+      toast(t('common:snackbarMessages.labelWasAssigned'));
       onCancel();
       reset();
     } catch (error) {
@@ -82,11 +84,11 @@ export default function ApplyLabelsForm({
 
       <DialogActions>
         <Button variant="outlined" color="inherit" onClick={onCancel}>
-          Cancel
+          {t('common:actions.cancel')}
         </Button>
 
         <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-          Apply
+          {t('common:actions.apply')}
         </LoadingButton>
       </DialogActions>
     </form>

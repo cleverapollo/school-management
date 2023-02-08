@@ -7,6 +7,7 @@ import { Container, Card } from '@mui/material';
 // components
 import { Page } from '@tyro/core';
 import { Mail as MailType, UnreadCountFilter, useUser } from '@tyro/api';
+import { useTranslation } from '@tyro/i18n';
 import HeaderBreadcrumbs from '../../../../src/components/HeaderBreadcrumbs';
 // sections
 import { MailList, MailDetails, MailSidebar, MailCompose } from '../components';
@@ -17,6 +18,7 @@ import { LabelType } from '../constants';
 // ----------------------------------------------------------------------
 
 export default function Mail() {
+  const { t } = useTranslation(['mail', 'navigation']);
   const { mailId } = useParams();
   const [labels, setLabels] = useState<MailLabel[]>([]);
   const { isLoading: isLoadingLabels, data: labelsData } = useLabels();
@@ -75,16 +77,16 @@ export default function Mail() {
   const [openCompose, setOpenCompose] = useState(false);
 
   return (
-    <Page title="Mail">
+    <Page title={t('mail:mail')}>
       <Container maxWidth="xl">
         <HeaderBreadcrumbs
-          heading="Mail"
+          heading={t('mail:mail')}
           links={[
             {
-              name: 'Dashboard',
+              name: `${t('navigation:general.dashboard')}`,
               href: '/dashboard',
             },
-            { name: 'Mail' },
+            { name: `${t('mail:mail')}` },
           ]}
         />
         <Card

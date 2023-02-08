@@ -31,39 +31,41 @@ interface CustomGroupData {
   tech?: string;
 }
 
-export const adminOptions: Option<CustomGroupData>[] = [
-  {
-    text: 'notify',
-    icon: 'notify',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
+export const getAdminOptions = (
+  translate: TFunction<('common')[], undefined, ('common')[]>,
+): Option<CustomGroupData>[] => ([
+    {
+      text: translate('common:actions.notify'),
+      icon: 'notify',
+      action: (e: MouseEvent) => {
+        e.stopPropagation();
+      },
     },
-  },
-  {
-    text: 'edit',
-    icon: 'edit',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
+    {
+      text: translate('common:actions.edit'),
+      icon: 'edit',
+      action: (e: MouseEvent) => {
+        e.stopPropagation();
+      },
     },
-  },
-  {
-    text: 'archive',
-    icon: 'archive',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
+    {
+      text: translate('common:actions.archive'),
+      icon: 'archive',
+      action: (e: MouseEvent) => {
+        e.stopPropagation();
+      },
     },
-  },
-  {
-    text: 'delete',
-    icon: 'delete',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
+    {
+      text: translate('common:actions.delete'),
+      icon: 'delete',
+      action: (e: MouseEvent) => {
+        e.stopPropagation();
+      },
     },
-  },
-];
+  ]);
 
 const getCustomGroupColumns = (
-  translate: TFunction<'common'[], undefined, 'common'[]>,
+  translate: TFunction<('common' | 'groups')[], undefined, ('common' | 'groups')[]>,
   isAdminUserType: boolean
 ): TableColumn<CustomGroupData>[] => [
   {
@@ -71,19 +73,19 @@ const getCustomGroupColumns = (
     fieldName: 'id',
   },
   {
-    columnDisplayName: translate('name'),
+    columnDisplayName: translate('common:name'),
     fieldName: 'name',
     filter: 'suggest',
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('members'),
+    columnDisplayName: translate('groups:members'),
     fieldName: 'members',
     filter: 'suggest',
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('type'),
+    columnDisplayName: translate('common:type'),
     fieldName: 'type',
     filter: 'suggest',
     isMandatory: true,
@@ -92,7 +94,7 @@ const getCustomGroupColumns = (
     ),
   },
   {
-    columnDisplayName: translate('created'),
+    columnDisplayName: translate('groups:created'),
     fieldName: 'created',
     filter: 'suggest',
   },
@@ -113,7 +115,7 @@ const getCustomGroupColumns = (
     columnDisplayName: 'Tech Options',
     fieldName: 'tech',
     component: (columnProps) =>
-      isAdminUserType && <OptionButton options={adminOptions} />,
+      isAdminUserType && <OptionButton options={getAdminOptions(translate)} />,
   },
 ];
 
@@ -156,7 +158,7 @@ const getStudentsCustomGroupColumns = (
 ];
 
 export default function CustomGroups() {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'groups']);
   const navigate = useNavigate();
   const { activeProfile } = useUser();
   const { data, isLoading } = useCustomGroups();
@@ -184,10 +186,10 @@ export default function CustomGroups() {
   );
 
   return (
-    <Page title="Custom groups" isLoading={isLoading}>
+    <Page title={t('groups:customGroups')} isLoading={isLoading}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
-          Custom groups
+          {t('groups:customGroups')}
         </Typography>
         <Table
           data={customGroupData}

@@ -21,7 +21,6 @@ import {
 import omit from 'lodash/omit';
 
 import { TFunction } from '@tyro/i18n';
-import { Typography } from '@mui/material';
 // Extenal routers
 import { routes as authRoutes } from '@tyro/authentication';
 import { getRoutes as getCalendarRoutes } from '@tyro/calendar';
@@ -32,6 +31,7 @@ import { getRoutes as getReportingRoutes } from '@tyro/reporting';
 import { getRoutes as getSettingsRoutes } from '@tyro/settings';
 import { getRoutes as getAdminRoutes } from '@tyro/tyro-admin';
 
+import { Box, CircularProgress } from '@mui/material';
 import { ErrorElement } from './components/error-element';
 import { Shell } from './components/shell';
 import { getShellRoutes } from './routes';
@@ -109,9 +109,7 @@ const mockTFunction = ((key: string) => key) as TFunction<
   'navigation'[]
 >;
 
-export const getNavCategories = (
-  t: TFunction<'navigation'[], undefined, 'navigation'[]>
-) => [
+export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getShellRoutes(t),
   ...getCalendarRoutes(t),
   ...getGroupRoutes(t),
@@ -135,13 +133,24 @@ function useAppRouter() {
         return getUser();
       },
       element: (
-        <LazyLoader>
-          <Shell>
-            <LazyLoader>
-              <Outlet />
-            </LazyLoader>
-          </Shell>
-        </LazyLoader>
+        <Shell>
+          <LazyLoader
+            fallback={
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  minHeight: '100vh',
+                }}
+              >
+                <CircularProgress />
+              </Box>
+            }
+          >
+            <Outlet />
+          </LazyLoader>
+        </Shell>
       ),
       errorElement: (
         <LazyLoader>

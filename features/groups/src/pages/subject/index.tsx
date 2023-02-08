@@ -18,52 +18,56 @@ interface SubjectGroupData extends SubjectGroup {
   tech?: string;
 }
 
-const teacherOptions: Option<SubjectGroupData>[] = [
+export const getAdminOptions = (
+  translate: TFunction<('common')[], undefined, ('common')[]>,
+): Option<SubjectGroupData>[] => ([
   {
-    text: 'notify',
-    icon: 'notify',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
-    },
-  },
-];
-
-export const adminOptions: Option<SubjectGroupData>[] = [
-  {
-    text: 'notify',
+    text: translate('common:actions.notify'),
     icon: 'notify',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'edit',
+    text: translate('common:actions.edit'),
     icon: 'edit',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'archive',
+    text: translate('common:actions.archive'),
     icon: 'archive',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'delete',
+    text: translate('common:actions.delete'),
     icon: 'delete',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
-];
+]);
+
+export const getTeacherOptions = (
+  translate: TFunction<('common')[], undefined, ('common')[]>,
+): Option<SubjectGroupData>[] => ([
+  {
+    text: translate('common:actions.notify'),
+    icon: 'notify',
+    action: (e: MouseEvent) => {
+      e.stopPropagation();
+    },
+  },
+]);
 
 const getSubjectGroupColumns = (
   translate: TFunction<
-    ('common' | 'authentication')[],
+    ('common' | 'groups')[],
     undefined,
-    ('common' | 'authentication')[]
+    ('common' | 'groups')[]
   >,
   isAdminUserType: boolean,
   isTabsNeeded: boolean
@@ -79,7 +83,7 @@ const getSubjectGroupColumns = (
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('authentication:subject'),
+    columnDisplayName: translate('groups:subject'),
     fieldName: 'subjects',
     filter: 'suggest',
     component: ({ row }) => {
@@ -88,12 +92,12 @@ const getSubjectGroupColumns = (
     },
   },
   {
-    columnDisplayName: translate('common:members'),
+    columnDisplayName: translate('groups:members'),
     fieldName: 'studentMembers.memberCount',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('authentication:level'),
+    columnDisplayName: translate('groups:level'),
     fieldName: 'irePP.level',
     filter: 'suggest',
     component: ({ row }) => (
@@ -102,8 +106,8 @@ const getSubjectGroupColumns = (
   },
   {
     columnDisplayName: isAdminUserType
-      ? translate('common:teacher')
-      : translate('authentication:programme'),
+      ? translate('groups:teacher')
+      : translate('groups:programme'),
     fieldName: 'staff',
     filter: 'suggest',
     component: ({ row }) => {
@@ -131,14 +135,14 @@ const getSubjectGroupColumns = (
     component: () =>
       isTabsNeeded && (
         <OptionButton
-          options={isAdminUserType ? adminOptions : teacherOptions}
+          options={isAdminUserType ? getAdminOptions(translate) : getTeacherOptions(translate)}
         />
       ),
   },
 ];
 
 export default function SubjectGroups() {
-  const { t } = useTranslation(['common', 'authentication']);
+  const { t } = useTranslation(['common', 'groups']);
   const navigate = useNavigate();
   const { activeProfile } = useUser();
   const { data } = useSubjectGroups();
@@ -163,10 +167,10 @@ export default function SubjectGroups() {
   );
 
   return (
-    <Page title="Subject groups">
+    <Page title={t('groups:subjectGroups')}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
-          Subject groups
+          {t('groups:subjectGroups')}
         </Typography>
         <Table
           data={subjectGroupData}

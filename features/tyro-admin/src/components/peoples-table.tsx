@@ -1,12 +1,12 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
-import { Avatar, Button } from '@mui/material';
+import { Button } from '@mui/material';
 import { addEmulationHeaders, getUser, queryClient } from '@tyro/api';
 import { Person } from '@tyro/api/src/gql/graphql';
 import { useMemo } from 'react';
 import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation, TFunction } from '@tyro/i18n';
-import { useNumber } from '@tyro/core';
+import { Avatar, useNumber } from '@tyro/core';
 import Table from '../../../../src/components/table/Table';
 import { TableColumn } from '../../../../src/components/table/types';
 import { useAdminPartyPeopleByTenantId } from '../api/party-people';
@@ -19,7 +19,7 @@ interface AdminPanelPeople extends Person {
 }
 
 type GetExamplePeopleColumns = (
-  translate: TFunction<'authentication'[], undefined, 'authentication'[]>,
+  translate: TFunction<('common' | 'admin')[], undefined, ('common' | 'admin')[]>,
   navigate: NavigateFunction
 ) => TableColumn<AdminPanelPeople>[];
 
@@ -28,7 +28,7 @@ const getExamplePeopleColumns: GetExamplePeopleColumns = (
   navigate
 ) => [
   {
-    columnDisplayName: translate('authentication:name'),
+    columnDisplayName: translate('common:name'),
     fieldName: 'name',
     filter: 'suggest',
     isMandatory: true,
@@ -36,7 +36,7 @@ const getExamplePeopleColumns: GetExamplePeopleColumns = (
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <Avatar
           src="https://google.com"
-          alt={columnProps.row.original.name}
+          name={columnProps.row.original.name}
           style={{ marginRight: '10px' }}
         />
         {columnProps.row.original.name}
@@ -44,17 +44,17 @@ const getExamplePeopleColumns: GetExamplePeopleColumns = (
     ),
   },
   {
-    columnDisplayName: translate('authentication:type'),
+    columnDisplayName: translate('common:type'),
     fieldName: 'type',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('authentication:partyId'),
+    columnDisplayName: translate('admin:partyId'),
     fieldName: 'partyId',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('authentication:tenant'),
+    columnDisplayName: translate('admin:tenant'),
     fieldName: 'tenant',
   },
   {
@@ -70,7 +70,7 @@ const getExamplePeopleColumns: GetExamplePeopleColumns = (
           navigate('/', { replace: true });
         }}
       >
-        {translate('authentication:emulate')}
+        {translate('admin:emulate')}
       </Button>
     ),
   },
@@ -83,7 +83,7 @@ const getExamplePeopleColumns: GetExamplePeopleColumns = (
 export function PeoplesTable() {
   const { schoolId } = useParams();
   const schoolIdAsNumber = useNumber(schoolId);
-  const { t } = useTranslation(['authentication']);
+  const { t } = useTranslation(['common', 'admin']);
   const navigate = useNavigate();
   const { data, isLoading } = useAdminPartyPeopleByTenantId(
     schoolIdAsNumber ?? 0

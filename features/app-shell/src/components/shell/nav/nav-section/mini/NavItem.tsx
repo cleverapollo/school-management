@@ -86,6 +86,8 @@ const NavItem = forwardRef<HTMLDivElement, NavItemProps>(
           </Link>
         );
 
+      if (children) return renderContent;
+
       // Default
       return (
         <Link component={RouterLink} to={path ?? ''} underline="none">

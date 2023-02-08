@@ -16,6 +16,7 @@ import {
 // hooks
 import { RecipientType } from '@tyro/api';
 import { useResponsive } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 // components
 import { Iconify } from '../../../../src/components/iconify';
 import Editor from '../../../../src/components/editor';
@@ -52,6 +53,7 @@ type Props = {
 };
 
 export default function MailCompose({ isOpenCompose, onCloseCompose }: Props) {
+  const { t } = useTranslation(['mail', 'common']);
   const [fullScreen, setFullScreen] = useState(false);
 
   const [message, setMessage] = useState('');
@@ -133,7 +135,7 @@ export default function MailCompose({ isOpenCompose, onCloseCompose }: Props) {
             justifyContent: 'space-between',
           }}
         >
-          <Typography variant="h6">New Message</Typography>
+          <Typography variant="h6">{t('mail:newMessage')}</Typography>
           <Box>
             <IconButton
               onClick={
@@ -157,14 +159,14 @@ export default function MailCompose({ isOpenCompose, onCloseCompose }: Props) {
 
         <InputStyle
           disableUnderline
-          placeholder="To"
+          placeholder={t('mail:placeholders.to')}
           value={recipientsString}
           onChange={({ target: { value } }) => setRecipientsString(value)}
         />
 
         <InputStyle
           disableUnderline
-          placeholder="Subject"
+          placeholder={t('mail:placeholders.subject')}
           value={subject}
           onChange={({ target: { value } }) => setSubject(value)}
         />
@@ -174,7 +176,7 @@ export default function MailCompose({ isOpenCompose, onCloseCompose }: Props) {
           id="compose-mail"
           value={message}
           onChange={handleChangeMessage}
-          placeholder="Type a message"
+          placeholder={t('mail:placeholders.typeMessage')}
           sx={{
             borderColor: 'transparent',
             flexGrow: 1,
@@ -185,7 +187,7 @@ export default function MailCompose({ isOpenCompose, onCloseCompose }: Props) {
 
         <Box sx={{ py: 2, px: 3, display: 'flex', alignItems: 'center' }}>
           <Button variant="contained" onClick={onSend}>
-            Send
+            {t('common:actions.send')}
           </Button>
 
           <IconButton size="small" sx={{ ml: 2, mr: 1 }}>

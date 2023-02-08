@@ -9,7 +9,6 @@ import { CubeProvider } from "@cubejs-client/react";
 import ThemeProvider from './theme';
 import { ProgressBarStyle } from './components/ProgressBar';
 import MotionLazyContainer from './components/animate/MotionLazyContainer';
-import NotistackProvider from './components/NotistackProvider';
 // @mui
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -40,19 +39,17 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <AuthProvider>
-            <CubeProvider cubejsApi={cubejsApi}>
-              <MotionLazyContainer>
+          <MotionLazyContainer>
+              <CubeProvider cubejsApi={cubejsApi}>
                 <ThemeProvider>
-                  <NotistackProvider>
                     <ProgressBarStyle />
                     <AppShell />
                     <ReactQueryDevtools />
-                  </NotistackProvider>
                 </ThemeProvider>
-              </MotionLazyContainer>
-            </CubeProvider>
+              </CubeProvider>
+          </MotionLazyContainer>
         </AuthProvider>
       </LocalizationProvider>
-    </QueryClientProvider>
+    </QueryClientProvider >
   );
 }

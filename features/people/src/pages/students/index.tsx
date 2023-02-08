@@ -1,11 +1,11 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
 import { useMemo } from 'react';
-import { Avatar, Box, Button, Container, Typography } from '@mui/material';
+import { Box, Button, Container, Typography } from '@mui/material';
+import { Avatar, Page } from '@tyro/core';
 import { useNavigate, NavigateFunction } from 'react-router-dom';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { Student } from '@tyro/api';
-import { Page } from '@tyro/core';
 import { useStudents } from '../../api/students';
 import { TableColumn } from '../../../../../src/components/table/types';
 import Table from '../../../../../src/components/table/Table';
@@ -16,9 +16,9 @@ interface TableData extends Student {
 
 const getStudentColumns = (
   translate: TFunction<
-    ('authentication' | 'common')[],
+    ('common' | 'people')[],
     undefined,
-    ('authentication' | 'common')[]
+    ('common' | 'people')[]
   >,
   navigate: NavigateFunction
 ): TableColumn<TableData>[] => [
@@ -35,7 +35,7 @@ const getStudentColumns = (
         <Box display="flex" alignItems="center">
           <Avatar
             src={person?.avatarUrl ?? undefined}
-            alt={name}
+            name={name}
             sx={{
               mr: 1.5,
             }}
@@ -46,8 +46,12 @@ const getStudentColumns = (
     },
   },
   {
-    columnDisplayName: translate('common:classGroup'),
+    columnDisplayName: translate('people:classGroup'),
     fieldName: 'classGroup.name',
+    component: ({ row }) => {
+      const { classGroup } = row.original;
+      return classGroup?.name ?? '';
+    },
     filter: 'suggest',
   },
   {
@@ -66,7 +70,7 @@ const getStudentColumns = (
 ];
 
 export default function StudentsListPage() {
-  const { t } = useTranslation(['authentication']);
+  const { t } = useTranslation(['common', 'people']);
   const navigate = useNavigate();
   const { data, isLoading } = useStudents();
   const students = data as TableData[];
@@ -81,10 +85,10 @@ export default function StudentsListPage() {
   }
 
   return (
-    <Page title="People">
+    <Page title={t('people:people')}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
-          Students
+          {t('people:students')}
         </Typography>
         <Table data={students ?? []} columns={studentColumns} />
       </Container>

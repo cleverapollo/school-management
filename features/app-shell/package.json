@@ -19,7 +19,7 @@
     "@tyro/settings": "*",
     "@tyro/tyro-admin": "*",
     "dayjs": "^1.11.7",
-    "framer-motion": "^8.5.2",
+    "framer-motion": "^9.0.1",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

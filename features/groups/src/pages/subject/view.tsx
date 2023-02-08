@@ -5,9 +5,8 @@ import { Container, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router';
 import { GroupMembership } from '@tyro/api';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { useNumber, Page } from '@tyro/core';
+import { useNumber, Page, Breadcrumbs } from '@tyro/core';
 import Table from '../../../../../src/components/table/Table';
-import Breadcrumbs from '../../../../../src/components/Breadcrumbs';
 import { TableColumn, Option } from '../../../../../src/components/table/types';
 import OptionButton from '../../../../../src/components/table/OptionButton';
 import { useSubjectGroupById } from '../../api/subject-groups';
@@ -16,28 +15,30 @@ interface SubjectExactGroupData extends GroupMembership {
   tech: string;
 }
 
-export const subjectOptions: Option<SubjectExactGroupData>[] = [
+export const getSubjectOptions = (
+  translate: TFunction<('common')[], undefined, ('common')[]>,
+): Option<SubjectExactGroupData>[] => ([
   {
-    text: 'notify',
+    text: translate('common:actions.notify'),
     icon: 'notify',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
   {
-    text: 'view',
+    text: translate('common:actions.view'),
     icon: 'edit',
     action: (e: MouseEvent) => {
       e.stopPropagation();
     },
   },
-];
+]);
 
 const getSubjectGroupColumns = (
   translate: TFunction<
-    ('common' | 'authentication')[],
+    ('common' | 'groups')[],
     undefined,
-    ('common' | 'authentication')[]
+    ('common' | 'groups')[]
   >
 ): TableColumn<SubjectExactGroupData>[] => [
   {
@@ -49,7 +50,7 @@ const getSubjectGroupColumns = (
     component: ({ row }) => (
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {/* Add Avatar back in when we add value to BE */}
-        {/* <Avatar srcSet={columnProps.row.original.avatarUrl} alt={columnProps.row.original.name} style={{ marginRight: '10px' }} /> */}
+        {/* <Avatar srcSet={columnProps.row.original.avatarUrl} name={columnProps.row.original.name} style={{ marginRight: '10px' }} /> */}
         {row.original.person?.firstName} {row.original.person?.lastName}
       </div>
     ),
@@ -57,12 +58,12 @@ const getSubjectGroupColumns = (
   {
     columnDisplayName: 'Tech Options',
     fieldName: 'tech',
-    component: (columnProps) => <OptionButton options={subjectOptions} />,
+    component: (columnProps) => <OptionButton options={getSubjectOptions(translate)} />,
   },
 ];
 
 export default function ViewSubjectGroupPage() {
-  const { t } = useTranslation(['common', 'authentication']);
+  const { t } = useTranslation(['common', 'groups']);
   const navigate = useNavigate();
   const { groupId } = useParams();
   const groupIdAsNumber = useNumber(groupId);
@@ -82,7 +83,7 @@ export default function ViewSubjectGroupPage() {
   const subjectGroupColumns = useMemo(() => getSubjectGroupColumns(t), [t]);
   const title = !data?.name
     ? ''
-    : `${data?.name} ${t('authentication:memberList')}`;
+    : `${data?.name} ${t('groups:memberList')}`;
 
   return (
     <Page title={title} isLoading={isLoading}>
@@ -93,7 +94,7 @@ export default function ViewSubjectGroupPage() {
         <Breadcrumbs
           links={[
             {
-              name: t('authentication:subjectGroups'),
+              name: t('groups:subjectGroups'),
               href: './..',
             },
             {

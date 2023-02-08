@@ -7,7 +7,7 @@ import {
   ThemeProvider as MUIThemeProvider,
   StyledEngineProvider,
 } from '@mui/material/styles';
-//
+import { ToastProvider } from '@tyro/core';
 import palette from './palette';
 import typography from './typography';
 import breakpoints from './breakpoints';
@@ -27,6 +27,8 @@ export default function ThemeProvider({ children }: Props) {
 
   const themeOptions: ThemeOptions = useMemo(
     () => ({
+      isDark: !isLight,
+      isLight,
       palette: isLight ? palette.light : palette.dark,
       typography,
       breakpoints,
@@ -44,8 +46,10 @@ export default function ThemeProvider({ children }: Props) {
   return (
     <StyledEngineProvider injectFirst>
       <MUIThemeProvider theme={theme}>
-        <CssBaseline />
-        {children}
+        <ToastProvider>
+          <CssBaseline />
+          {children}
+        </ToastProvider>
       </MUIThemeProvider>
     </StyledEngineProvider>
   );

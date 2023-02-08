@@ -1,6 +1,7 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
-import { Avatar, Button } from '@mui/material';
+import { Button } from '@mui/material';
+import { Avatar } from '@tyro/core';
 import { Tenant } from '@tyro/api/src/gql/graphql';
 import { useMemo } from 'react';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
@@ -18,7 +19,7 @@ interface AdminPanelTenant extends Tenant {
 }
 
 type GetExampleSchoolColumns = (
-  translate: TFunction<'authentication'[], undefined, 'authentication'[]>,
+  translate: TFunction<('common' | 'admin')[], undefined, ('common' | 'admin')[]>,
   navigate: NavigateFunction
 ) => TableColumn<AdminPanelTenant>[];
 
@@ -27,15 +28,15 @@ const getExampleSchoolColumns: GetExampleSchoolColumns = (
   navigate
 ) => [
   {
-    columnDisplayName: translate('authentication:school'),
+    columnDisplayName: translate('admin:school'),
     fieldName: 'name',
     filter: 'suggest',
     isMandatory: true,
     component: (columnProps) => (
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <Avatar
-          srcSet={columnProps.row.original.imgUrl}
-          alt={columnProps.row.original.name}
+          src={columnProps.row.original.imgUrl ?? undefined}
+          name={columnProps.row.original.name}
           style={{ marginRight: '10px' }}
         />
         {columnProps.row.original.name}
@@ -43,17 +44,17 @@ const getExampleSchoolColumns: GetExampleSchoolColumns = (
     ),
   },
   {
-    columnDisplayName: translate('authentication:location'),
+    columnDisplayName: translate('admin:location'),
     fieldName: 'location',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('authentication:type'),
+    columnDisplayName: translate('common:type'),
     fieldName: 'type',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('authentication:tenant'),
+    columnDisplayName: translate('admin:tenant'),
     fieldName: 'tenant',
     filter: 'suggest',
   },
@@ -66,7 +67,7 @@ const getExampleSchoolColumns: GetExampleSchoolColumns = (
           navigate(`./${row.original.tenant}/people`);
         }}
       >
-        {translate('authentication:viewPeople')}
+        {translate('admin:viewPeople')}
       </Button>
     ),
   },
@@ -74,7 +75,7 @@ const getExampleSchoolColumns: GetExampleSchoolColumns = (
     columnDisplayName: '',
     fieldName: 'secondButton',
     component: () => (
-      <Button onClick={() => {}}>{translate('authentication:emulate')}</Button>
+      <Button onClick={() => { }}>{translate('admin:emulate')}</Button>
     ),
   },
   {
@@ -84,7 +85,7 @@ const getExampleSchoolColumns: GetExampleSchoolColumns = (
 ];
 
 export function SchoolsTable() {
-  const { t } = useTranslation(['authentication']);
+  const { t } = useTranslation(['common', 'admin']);
   const { data, isLoading } = useAdminTenants();
   const navigate = useNavigate();
   const tenants = data as AdminPanelTenant[] | undefined;

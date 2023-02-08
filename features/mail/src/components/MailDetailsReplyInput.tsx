@@ -11,7 +11,8 @@ import {
   SendMailRecipientInput,
   useUser,
 } from '@tyro/api';
-import { useSnackbar } from 'notistack';
+import { useTranslation } from '@tyro/i18n';
+import { useToast } from '@tyro/core';
 import { Iconify } from '../../../../src/components/iconify';
 import { useSendMail } from '../api/mails';
 
@@ -24,8 +25,9 @@ interface MailDetailsReplyInputProps {
 export default function MailDetailsReplyInput({
   mail,
 }: MailDetailsReplyInputProps) {
+  const { t } = useTranslation(['common', 'mail']);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { enqueueSnackbar } = useSnackbar();
+  const { toast } = useToast();
   const { user } = useUser();
 
   const [message, setMessage] = useState('');
@@ -67,7 +69,7 @@ export default function MailDetailsReplyInput({
   const onReplyClick = () => {
     mutation.mutate();
     setMessage('');
-    enqueueSnackbar('Mail was sent');
+    toast(t('common:snackbarMessages.mailWasSent'));
   };
 
   return (
@@ -78,7 +80,7 @@ export default function MailDetailsReplyInput({
         minRows={2}
         maxRows={8}
         value={message}
-        placeholder="Type a message"
+        placeholder={t('mail:placeholders.typeMessage')}
         onChange={handleChangeMessage}
         sx={{ '& fieldset': { border: 'none !important' } }}
       />
