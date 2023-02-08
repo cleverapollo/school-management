@@ -3,6 +3,7 @@ import { NavObjectFunction, NavObjectType, getNumber } from '@tyro/core';
 import { UserGroupIcon } from '@tyro/icons';
 import { UserType } from '@tyro/api';
 import { redirect } from 'react-router-dom';
+import { getStudentDashboardAssessments } from '@tyro/assessment';
 import { getStudent, getStudents } from './api/students';
 import { getStudentPersonal } from './api/student/personal';
 import { getStudentsContacts } from './api/student/overview';
@@ -82,7 +83,10 @@ export const getRoutes: NavObjectFunction = (t) => [
                 path: 'overview',
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
-                  return getStudentsContacts(studentId);
+                  return Promise.all([
+                    getStudentsContacts(studentId),
+                    getStudentDashboardAssessments(studentId),
+                  ]);
                 },
                 element: <StudentProfileOverviewPage />,
               },

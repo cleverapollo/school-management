@@ -86,7 +86,6 @@ const studentQuery = (studentId: number | undefined) => ({
     gqlClient.request(studentById, {
       filter: { partyIds: [studentId ?? 0] },
     }),
-  staleTime: 1000 * 60 * 1,
 });
 
 export function getStudent(studentId: number | undefined) {

@@ -27,6 +27,8 @@ export default function ThemeProvider({ children }: Props) {
 
   const themeOptions: ThemeOptions = useMemo(
     () => ({
+      isDark: !isLight,
+      isLight,
       palette: isLight ? palette.light : palette.dark,
       typography,
       breakpoints,

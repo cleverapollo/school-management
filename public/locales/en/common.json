@@ -46,6 +46,8 @@
     "FAMILY_FRIEND": "Family friend",
     "NEIGHBOUR": "Neighbour"
   },
+  "grade": "Grade",
+  "result": "Result",
   "name": "Name",
   "colour": "Colour",
   "icon": "Icon",
