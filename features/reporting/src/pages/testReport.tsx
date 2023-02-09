@@ -129,9 +129,6 @@ export default function StudentsListPage() {
         <Typography variant="h3" component="h1" paragraph>
           test report
         </Typography>
-        <Typography variant="h3" component="h1" paragraph>
-          test report
-        </Typography>
         <div>Awol</div>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>

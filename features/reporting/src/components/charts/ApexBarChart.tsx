@@ -2,7 +2,7 @@ import React from 'react';
 import { DrillDownLocator, ResultSet } from '@cubejs-client/core';
 import ReactApexChart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
-import { merge } from 'lodash';
+import merge from 'lodash/merge';
 import { BaseOptionChart } from './BaseOptionChart';
 import { DataLayoutType, transformData } from './ApexTransformers';
 import { ChartDefinition, ChartRendererInternalProps } from './ChartRenderer';
