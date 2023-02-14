@@ -5,6 +5,7 @@ import {
   SetStateAction,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -22,6 +23,7 @@ interface SearchFocusContextValue {
 
 interface SearchFocusProps {
   children: ReactNode;
+  data: any;
 }
 
 const SearchFocusContext = createContext<SearchFocusContextValue | undefined>(
@@ -56,7 +58,7 @@ function focusToOption(id: string | null) {
   }
 }
 
-export function SearchProvider({ children }: SearchFocusProps) {
+export function SearchProvider({ children, data }: SearchFocusProps) {
   const [focusedOptionId, setFocusedOptionId] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -104,6 +106,12 @@ export function SearchProvider({ children }: SearchFocusProps) {
   const removeOptionRef = useCallback((id: string) => {
     optionRefs.delete(id);
   }, []);
+
+  useEffect(() => {
+    if (data) {
+      setFocusedOptionId(null);
+    }
+  }, [data, setFocusedOptionId]);
 
   const value = useMemo(
     () => ({

@@ -11,6 +11,7 @@ import {
 // utils
 import { SearchIcon } from '@tyro/icons';
 import { useLocation } from 'react-router-dom';
+import { useDebouncedValue } from '@tyro/core';
 import { PagesSection } from './sections/pages-section';
 import { SearchProvider } from './provider';
 import { SearchInput } from './input';
@@ -19,10 +20,14 @@ import { PeopleSection } from './sections/people-section';
 
 function Searchbar() {
   const [open, setOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const {
+    value: searchQuery,
+    debouncedValue: debouncedSearchQuery,
+    setValue: setSearchQuery,
+  } = useDebouncedValue<string>({ defaultValue: '' });
   const location = useLocation();
 
-  const { data } = useOmniSearch(searchQuery);
+  const { data, isLoading } = useOmniSearch(debouncedSearchQuery);
   const { hasResults, pages, people } = data || { hasResults: false };
 
   useEffect(() => {
@@ -55,7 +60,7 @@ function Searchbar() {
   });
 
   return (
-    <SearchProvider>
+    <SearchProvider data={data}>
       <Box>
         <IconButton onClick={() => setOpen(true)}>
           <SearchIcon />
@@ -81,7 +86,7 @@ function Searchbar() {
           <DialogTitle component="div" sx={{ p: 0 }}>
             <SearchInput value={searchQuery} onChange={setSearchQuery} />
           </DialogTitle>
-          {searchQuery && (
+          {searchQuery && !isLoading && (
             <>
               <Divider />
               <DialogContent dividers sx={{ px: 2 }}>

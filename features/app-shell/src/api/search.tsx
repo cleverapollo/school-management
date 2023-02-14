@@ -13,15 +13,17 @@ const omniSearch = graphql(/* GraphQL */ `
 `);
 
 export function useOmniSearch(query: string) {
-  const pages = useSearchFeatures(query);
+  const trimmedQuery = query.trim();
+  const pages = useSearchFeatures(trimmedQuery);
 
   return useQuery({
     queryKey: ['omni-search', query],
     queryFn: async () =>
       gqlClient.request(omniSearch, {
-        filter: { text: query },
+        filter: { text: trimmedQuery },
       }),
-    enabled: query.length > 0,
+    enabled: trimmedQuery.length > 0,
+    keepPreviousData: true,
     select: ({ search_search }) => ({
       hasResults:
         (Array.isArray(search_search) && search_search?.length > 0) ||
