@@ -2,15 +2,17 @@ import { alpha, Theme } from '@mui/material/styles';
 
 // ----------------------------------------------------------------------
 
-export default function Backdrop(theme: Theme) {
+export default function Backdrop({ isLight, palette }: Theme) {
   return {
     MuiBackdrop: {
       styleOverrides: {
         root: {
-          backgroundColor: alpha(theme.palette.grey[800], 0.8),
+          backgroundColor: alpha(isLight ? palette.slate[900] : palette.slate[50], 0.1),
+          backdropFilter: 'blur(8px)',
         },
         invisible: {
           background: 'transparent',
+          backdropFilter: 'none',
         },
       },
     },

@@ -628,6 +628,25 @@ export type DashboardAssessmentResult = {
   subjectGroupId?: Maybe<Scalars['Long']>;
 };
 
+export type Discount = {
+  __typename?: 'Discount';
+  description?: Maybe<Scalars['String']>;
+  discountType: DiscountType;
+  id: Scalars['Int'];
+  name: Scalars['String'];
+  validFor: ValidFor;
+  value: Scalars['Float'];
+};
+
+export type DiscountFilter = {
+  ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
+export enum DiscountType {
+  Fixed = 'FIXED',
+  Percentage = 'PERCENTAGE'
+}
+
 export type Email = {
   __typename?: 'Email';
   active?: Maybe<Scalars['Boolean']>;
@@ -948,15 +967,22 @@ export enum ExtraFieldType {
 
 export type Fee = {
   __typename?: 'Fee';
-  id: Scalars['Long'];
+  amount: Scalars['Float'];
+  description?: Maybe<Scalars['String']>;
+  discounts?: Maybe<Array<Maybe<Discount>>>;
+  dueDate: Scalars['Date'];
+  feeType: FeeType;
+  id: Scalars['Int'];
+  name: Scalars['String'];
 };
 
 export type FeeFilter = {
-  id?: InputMaybe<Scalars['Long']>;
+  ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 export enum FeeType {
-  Test = 'TEST'
+  Standard = 'STANDARD',
+  Voluntary = 'VOLUNTARY'
 }
 
 export enum Gender {
@@ -1169,13 +1195,16 @@ export type Mutation = {
   createProfileForGlobalUser?: Maybe<Profile>;
   createRole?: Maybe<SecurityRole>;
   createSubjects?: Maybe<Array<Maybe<Subject>>>;
+  fees_deleteDiscount?: Maybe<Scalars['String']>;
+  fees_deleteFee?: Maybe<Scalars['String']>;
+  fees_saveDiscount?: Maybe<Discount>;
+  fees_saveFee?: Maybe<Fee>;
   label?: Maybe<Label>;
   read?: Maybe<Scalars['String']>;
   saveAssessment?: Maybe<Assessment>;
   saveAssessmentComments?: Maybe<Array<Maybe<AssessmentComment>>>;
   saveAssessmentResults?: Maybe<Array<Maybe<AssessmentResult>>>;
   saveCommentBank?: Maybe<CommentBank>;
-  saveFee?: Maybe<Fee>;
   saveGradeSet?: Maybe<GradeSet>;
   sendMail?: Maybe<Mail>;
   starred?: Maybe<Scalars['String']>;
@@ -1246,6 +1275,26 @@ export type MutationCreateSubjectsArgs = {
 };
 
 
+export type MutationFees_DeleteDiscountArgs = {
+  discountId?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type MutationFees_DeleteFeeArgs = {
+  feeId?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type MutationFees_SaveDiscountArgs = {
+  input?: InputMaybe<SaveDiscountInput>;
+};
+
+
+export type MutationFees_SaveFeeArgs = {
+  input?: InputMaybe<SaveFeeInput>;
+};
+
+
 export type MutationLabelArgs = {
   input?: InputMaybe<LabelInput>;
 };
@@ -1273,11 +1322,6 @@ export type MutationSaveAssessmentResultsArgs = {
 
 export type MutationSaveCommentBankArgs = {
   input?: InputMaybe<SaveCommentBankInput>;
-};
-
-
-export type MutationSaveFeeArgs = {
-  input?: InputMaybe<SaveFeeInput>;
 };
 
 
@@ -1567,7 +1611,8 @@ export type Query = {
   core_studentContacts?: Maybe<Array<Maybe<StudentContact>>>;
   core_students?: Maybe<Array<Maybe<Student>>>;
   dashboardAssessment?: Maybe<Array<Maybe<DashboardAssessment>>>;
-  fees?: Maybe<Array<Maybe<Fee>>>;
+  fees_discounts?: Maybe<Array<Maybe<Discount>>>;
+  fees_fees?: Maybe<Array<Maybe<Fee>>>;
   generalGroups?: Maybe<Array<Maybe<GeneralGroup>>>;
   gradeSet?: Maybe<Array<Maybe<GradeSet>>>;
   label?: Maybe<Array<Maybe<Label>>>;
@@ -1577,7 +1622,7 @@ export type Query = {
   profileTypes?: Maybe<Array<Maybe<ProfileType>>>;
   profiles?: Maybe<Array<Maybe<ProfileType>>>;
   roles?: Maybe<Array<Maybe<SecurityRole>>>;
-  searchRecipient?: Maybe<Array<Maybe<SearchRecipient>>>;
+  search_search?: Maybe<Array<Maybe<Search>>>;
   subjectGroups?: Maybe<Array<Maybe<SubjectGroup>>>;
   unreadCount?: Maybe<Array<Maybe<UnreadCount>>>;
   wellbeing_activeSupportPlan?: Maybe<Array<Maybe<ActivePlan>>>;
@@ -1679,7 +1724,12 @@ export type QueryDashboardAssessmentArgs = {
 };
 
 
-export type QueryFeesArgs = {
+export type QueryFees_DiscountsArgs = {
+  filter?: InputMaybe<DiscountFilter>;
+};
+
+
+export type QueryFees_FeesArgs = {
   filter?: InputMaybe<FeeFilter>;
 };
 
@@ -1719,7 +1769,7 @@ export type QueryRolesArgs = {
 };
 
 
-export type QuerySearchRecipientArgs = {
+export type QuerySearch_SearchArgs = {
   filter?: InputMaybe<SearchFilter>;
 };
 
@@ -1861,6 +1911,15 @@ export type SaveCommentInput = {
   id?: InputMaybe<Scalars['Long']>;
 };
 
+export type SaveDiscountInput = {
+  description?: InputMaybe<Scalars['String']>;
+  discountType?: InputMaybe<DiscountType>;
+  id?: InputMaybe<Scalars['Int']>;
+  name?: InputMaybe<Scalars['String']>;
+  validFor?: InputMaybe<ValidFor>;
+  value?: InputMaybe<Scalars['Float']>;
+};
+
 export type SaveEventAttendanceInput = {
   attendanceCodeId: Scalars['Int'];
   date: Scalars['Date'];
@@ -1879,7 +1938,13 @@ export type SaveExtraFieldInput = {
 };
 
 export type SaveFeeInput = {
-  id?: InputMaybe<Scalars['Long']>;
+  amount?: InputMaybe<Scalars['Float']>;
+  description?: InputMaybe<Scalars['String']>;
+  discountIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  dueDate?: InputMaybe<Scalars['Date']>;
+  feeType?: InputMaybe<FeeType>;
+  id?: InputMaybe<Scalars['Int']>;
+  name?: InputMaybe<Scalars['String']>;
 };
 
 export type SaveGradeInput = {
@@ -2038,18 +2103,18 @@ export type SaveStudentSupportPlanTargetInput = {
   target: Scalars['String'];
 };
 
+export type Search = {
+  __typename?: 'Search';
+  partyId: Scalars['Long'];
+  text: Scalars['String'];
+  type: SearchType;
+};
+
 export type SearchFilter = {
   text?: InputMaybe<Scalars['String']>;
 };
 
-export type SearchRecipient = {
-  __typename?: 'SearchRecipient';
-  partyId: Scalars['Long'];
-  recipient: Scalars['String'];
-  recipientType: SearchRecipientType;
-};
-
-export enum SearchRecipientType {
+export enum SearchType {
   ClassGroup = 'CLASS_GROUP',
   Contact = 'CONTACT',
   ContactsOfClassGroup = 'CONTACTS_OF_CLASS_GROUP',
@@ -2556,6 +2621,11 @@ export enum UserType {
   Tyro = 'TYRO'
 }
 
+export enum ValidFor {
+  All = 'ALL',
+  Sibling = 'SIBLING'
+}
+
 export type Year = {
   __typename?: 'Year';
   id: Scalars['Int'];
@@ -2577,6 +2647,13 @@ export type _Service = {
 export enum Sdsd {
   Term = 'TERM'
 }
+
+export type SearchQueryQueryVariables = Exact<{
+  filter?: InputMaybe<SearchFilter>;
+}>;
+
+
+export type SearchQueryQuery = { __typename?: 'Query', search_search?: Array<{ __typename?: 'Search', partyId: number, type: SearchType, text: string } | null> | null };
 
 export type DashboardAssessmentQueryVariables = Exact<{
   filter?: InputMaybe<DashboardAssessmentFilter>;
@@ -2754,6 +2831,7 @@ export type MyAuthDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 export type MyAuthDetailsQuery = { __typename?: 'Query', myAuthDetails?: { __typename?: 'GlobalUser', id: number, email?: string | null, name?: string | null, defaultProfileId?: number | null, activeProfileId?: number | null, profiles?: Array<{ __typename?: 'Profile', id: number, nickName?: string | null, avatarUrl?: string | null, permissionIds?: Array<string | null> | null, partyId?: number | null, tenant: { __typename?: 'Tenant', tenant: number, name: string, imgUrl?: string | null }, profileType?: { __typename?: 'ProfileType', name: string, description: string, userType: UserType } | null } | null> | null } | null };
 
 
+export const SearchQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"searchQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SearchFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"search_search"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"text"}}]}}]}}]} as unknown as DocumentNode<SearchQueryQuery, SearchQueryQueryVariables>;
 export const DashboardAssessmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"dashboardAssessment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DashboardAssessmentFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dashboardAssessment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"assessmentType"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"results"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"subject"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"grade"}}]}}]}}]}}]} as unknown as DocumentNode<DashboardAssessmentQuery, DashboardAssessmentQueryVariables>;
 export const Calendar_CreateCalendarEventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"calendar_createCalendarEvents"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateCalendarEventsInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendar_createCalendarEvents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventId"}},{"kind":"Field","name":{"kind":"Name","value":"calendarIds"}},{"kind":"Field","name":{"kind":"Name","value":"schedule"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"recurrenceRule"}}]}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"recurrenceRule"}}]}},{"kind":"Field","name":{"kind":"Name","value":"exclusions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"recurrenceRule"}}]}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"lessonInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"lessonId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"roomIds"}}]}}]}}]} as unknown as DocumentNode<Calendar_CreateCalendarEventsMutation, Calendar_CreateCalendarEventsMutationVariables>;
 export const Calendar_CalendarEventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"calendar_calendarEvents"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CalendarEventFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendar_calendarEvents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendarIds"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"lessonInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"lessonId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"exclusions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"partyInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"GeneralGroup"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SubjectGroup"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Person"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<Calendar_CalendarEventsQuery, Calendar_CalendarEventsQueryVariables>;

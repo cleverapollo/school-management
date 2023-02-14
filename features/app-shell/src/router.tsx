@@ -131,24 +131,26 @@ function useAppRouter() {
         return getUser();
       },
       element: (
-        <Shell>
-          <LazyLoader
-            fallback={
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  minHeight: '100vh',
-                }}
-              >
-                <CircularProgress />
-              </Box>
-            }
-          >
-            <Outlet />
-          </LazyLoader>
-        </Shell>
+        <LazyLoader>
+          <Shell>
+            <LazyLoader
+              fallback={
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: '100vh',
+                  }}
+                >
+                  <CircularProgress />
+                </Box>
+              }
+            >
+              <Outlet />
+            </LazyLoader>
+          </Shell>
+        </LazyLoader>
       ),
       errorElement: (
         <LazyLoader>
