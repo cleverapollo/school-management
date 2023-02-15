@@ -8,13 +8,16 @@ const omniSearch = graphql(/* GraphQL */ `
       partyId
       type
       text
+      meta {
+        studentPartyId
+      }
     }
   }
 `);
 
 export function useOmniSearch(query: string) {
   const trimmedQuery = query.trim();
-  const pages = useSearchFeatures(trimmedQuery);
+  const { results } = useSearchFeatures(trimmedQuery);
 
   return useQuery({
     queryKey: ['omni-search', query],
@@ -27,9 +30,18 @@ export function useOmniSearch(query: string) {
     select: ({ search_search }) => ({
       hasResults:
         (Array.isArray(search_search) && search_search?.length > 0) ||
-        pages?.length > 0,
+        results?.length > 0,
       people: search_search,
-      pages,
+      pages: results.map(({ item: { path, icon, title, breadcrumbs } }) => ({
+        partyId: path,
+        type: 'PAGE' as const,
+        text: title,
+        meta: {
+          path,
+          icon,
+          breadcrumbs,
+        },
+      })),
     }),
   });
 }

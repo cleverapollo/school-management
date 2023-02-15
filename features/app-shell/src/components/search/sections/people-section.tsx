@@ -1,17 +1,11 @@
-import { Stack, Typography } from '@mui/material';
-import { SearchType } from '@tyro/api';
+import { Box, Stack, Typography } from '@mui/material';
+import { Search, SearchType } from '@tyro/api';
 import { SearchOption } from '../option';
+import { SearchOptionData } from '../provider';
 import { SectionContainer } from '../section-container';
 
 interface PeopleSectionProps {
-  people:
-    | Array<{
-        partyId: number;
-        type: SearchType;
-        text: string;
-      }>
-    | undefined
-    | null;
+  people: Search[];
 }
 
 function getPersonPath(partyId: number, type: SearchType) {
@@ -27,24 +21,45 @@ function getPersonPath(partyId: number, type: SearchType) {
   }
 }
 
+export function PersonOption({
+  option,
+  endIcon,
+}: {
+  option: SearchOptionData;
+  endIcon?: JSX.Element;
+}) {
+  const { partyId, type, text } =
+    option as PeopleSectionProps['people'][number];
+
+  return (
+    <SearchOption path={getPersonPath(partyId, type)} optionData={option}>
+      <Stack
+        direction="row"
+        spacing={1}
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <Stack>
+          <Typography component="span" variant="body2">
+            {text}
+          </Typography>
+        </Stack>
+        {endIcon && <Box alignSelf="flex-end">{endIcon}</Box>}
+      </Stack>
+    </SearchOption>
+  );
+}
+
 export function PeopleSection({ people }: PeopleSectionProps) {
   if (!people) return null;
 
   return (
     <SectionContainer heading="People">
-      {people?.map(({ partyId, type, text }) => (
-        <SearchOption
-          key={`${partyId}-${text}`}
-          path={getPersonPath(partyId, type)}
-        >
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Stack>
-              <Typography component="span" variant="body2">
-                {text}
-              </Typography>
-            </Stack>
-          </Stack>
-        </SearchOption>
+      {people?.map((option) => (
+        <PersonOption
+          key={`${option.partyId}-${option.text}`}
+          option={option}
+        />
       ))}
     </SectionContainer>
   );

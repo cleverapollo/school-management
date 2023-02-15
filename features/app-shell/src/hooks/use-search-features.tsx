@@ -66,22 +66,26 @@ function getFeaturePagesForSearch(
 export function useSearchFeatures(searchQuery: string | undefined) {
   const navConfig = useNavigationConfig();
 
-  const searchInstance = useMemo(() => {
+  const { searchInstance, options } = useMemo(() => {
     const searchFeatures = getFeaturePagesForSearch(navConfig);
 
-    return new Fuse(searchFeatures, {
-      keys: [
-        'title',
-        {
-          name: 'breadcrumbs',
-          weight: 0.5,
-        },
-      ],
-      threshold: 0.3,
-    });
+    return {
+      searchInstance: new Fuse(searchFeatures, {
+        keys: [
+          'title',
+          {
+            name: 'breadcrumbs',
+            weight: 0.5,
+          },
+        ],
+        threshold: 0.3,
+      }),
+      options: searchFeatures,
+    };
   }, [navConfig]);
 
-  if (!searchQuery) return [];
-
-  return searchInstance.search(searchQuery);
+  return {
+    results: !searchQuery ? [] : searchInstance.search(searchQuery),
+    options,
+  };
 }

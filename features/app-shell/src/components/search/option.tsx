@@ -1,24 +1,38 @@
 import { Box, BoxProps } from '@mui/material';
-import { useId, Ref, useRef, useEffect } from 'react';
+import { useId } from 'react';
 import { Link } from 'react-router-dom';
-import { useSearchProvider } from './provider';
+import { SearchOptionData, useSearchProvider } from './provider';
 
 interface SearchOptionProps extends BoxProps {
   path: string;
+  optionData: SearchOptionData;
   innerLinkSx?: BoxProps['sx'];
 }
 
-export function SearchOption({ path, children, ...props }: SearchOptionProps) {
+export function SearchOption({
+  path,
+  children,
+  optionData,
+  ...props
+}: SearchOptionProps) {
   const id = useId();
-  const { focusedOptionId, setFocusedOptionId, addOptionRef, removeOptionRef } =
-    useSearchProvider();
+  const {
+    focusedOptionId,
+    setFocusedOptionId,
+    addOptionRef,
+    removeOptionRef,
+    navigateToSelectedOption,
+  } = useSearchProvider();
   const isFocused = focusedOptionId === id;
 
   return (
     <Box
       ref={(node: HTMLLIElement | null) => {
         if (node) {
-          addOptionRef(id, node);
+          addOptionRef(id, {
+            node,
+            data: optionData,
+          });
         } else {
           removeOptionRef(id);
         }
@@ -34,6 +48,10 @@ export function SearchOption({ path, children, ...props }: SearchOptionProps) {
       <Box
         component={Link}
         to={path}
+        onClick={(event) => {
+          event.preventDefault();
+          navigateToSelectedOption();
+        }}
         sx={({ palette }) => ({
           display: 'block',
           px: 1,

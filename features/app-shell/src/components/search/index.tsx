@@ -17,6 +17,8 @@ import { SearchProvider } from './provider';
 import { SearchInput } from './input';
 import { useOmniSearch } from '../../api/search';
 import { PeopleSection } from './sections/people-section';
+import { RecentSearchSection } from './sections/recent-search-section';
+import { SearchListboxContainer } from './listbox-container';
 
 function Searchbar() {
   const [open, setOpen] = useState(false);
@@ -53,12 +55,6 @@ function Searchbar() {
     }
   }, [open]);
 
-  console.log({
-    searchQuery,
-    pages,
-    people,
-  });
-
   return (
     <SearchProvider data={data}>
       <Box>
@@ -86,26 +82,16 @@ function Searchbar() {
           <DialogTitle component="div" sx={{ p: 0 }}>
             <SearchInput value={searchQuery} onChange={setSearchQuery} />
           </DialogTitle>
+          {(!searchQuery || isLoading) && <RecentSearchSection />}
           {searchQuery && !isLoading && (
             <>
               <Divider />
               <DialogContent dividers sx={{ px: 2 }}>
                 {hasResults ? (
-                  <Box
-                    component="ul"
-                    role="listbox"
-                    sx={{
-                      p: 0,
-                      my: 0,
-                      '&, & ul': {
-                        listStyle: 'none',
-                        px: 0,
-                      },
-                    }}
-                  >
+                  <SearchListboxContainer>
                     <PeopleSection people={people} />
                     <PagesSection pages={pages} />
-                  </Box>
+                  </SearchListboxContainer>
                 ) : (
                   <Typography variant="body2" sx={{ mt: 2 }}>
                     No results found
