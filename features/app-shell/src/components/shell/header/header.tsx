@@ -26,7 +26,7 @@ import { MailLinkWithCount } from '@tyro/mail';
 import useOffSetTop from '../../../../../../src/hooks/useOffSetTop';
 // config
 import { HEADER, NAV } from '../nav/config';
-import Searchbar from './Searchbar';
+import Searchbar from '../../search';
 import AccountPopover from './account-popover';
 import NotificationsPopover from './notifications-popover';
 

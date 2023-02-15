@@ -20,6 +20,7 @@
     "@tyro/tyro-admin": "*",
     "dayjs": "^1.11.7",
     "framer-motion": "^9.0.1",
+    "fuse.js": "^6.6.2",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
