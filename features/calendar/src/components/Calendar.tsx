@@ -44,9 +44,9 @@ interface Range {
 
 // ToDo: Change filter values, when create events will be done
 export const filter: CalendarEventFilter = {
-  startDate: '2022-01-01',
-  endDate: '2022-12-30',
-  partyIds: [610],
+  startDate: '2022-09-05',
+  endDate: '2023-03-07',
+  partyIds: [1780],
 };
 
 export default function Calendar() {
@@ -195,7 +195,10 @@ export default function Calendar() {
         <HeaderBreadcrumbs
           heading={t('calendar:calendar')}
           links={[
-            { name: `${t('navigation:general.dashboard')}`, href: '/dashboard' },
+            {
+              name: `${t('navigation:general.dashboard')}`,
+              href: '/dashboard',
+            },
             { name: `${t('calendar:calendar')}` },
           ]}
           action={

@@ -5,7 +5,9 @@ import 'graphiql/graphiql.css';
 import { checkIsUserEmulated, EmulateHeaders } from '@tyro/api';
 
 const fetcher = createGraphiQLFetcher({
-  url: 'https://tyro-api-uat.azurewebsites.net/api/graphql',
+  url:
+    process.env.REACT_APP_GRAPHQL_API_URI ||
+    'https://tyro-api-uat.azurewebsites.net/api/graphql',
   headers: {
     authorization: `Bearer ${localStorage.getItem('accessToken') as string}`,
     ...(checkIsUserEmulated() && {

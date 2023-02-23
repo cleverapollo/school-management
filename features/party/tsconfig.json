@@ -1,0 +1,14 @@
+{
+  "extends": "@tyro/configs/react.json",
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "../../@types/**/*.ts",
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "compilerOptions": {
+    "baseUrl": "../..",
+  }
+}
