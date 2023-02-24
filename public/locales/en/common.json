@@ -146,7 +146,7 @@
   "delete": "Delete",
   "year": "Year",
   "tutor": "Tutor",
-  "yearhead": "Yearhead",
+  "yearhead": "Year head",
   "programme": "Programme",
   "subject": "Subject",
   "level": "Level",
@@ -157,5 +157,10 @@
   "additionalInformation": "Additional Information",
   "currentActivity": "Current activity",
   "school": "School",
-  "schools": "Schools"
+  "schools": "Schools",
+  "saving": "Saving",
+  "saved": "Saved",
+  "preferredFirstName": "Preferred first name",
+  "unsavedChanges_one": "{{count}} unsaved change",
+  "unsavedChanges_other": "{{count}} unsaved changes"
 }
