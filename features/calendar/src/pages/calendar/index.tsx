@@ -13,7 +13,7 @@ export default function CalendarPage() {
   return (
     <Page title={t('calendar:calendar')}>
       <PartyAutocomplete
-        // @ts-ignore
+        // @ts-expect-error
         onChange={(
           event: React.SyntheticEvent,
           newValue: PartyOption | null
