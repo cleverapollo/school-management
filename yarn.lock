@@ -5577,7 +5577,9 @@ __metadata:
     "@tyro/api": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
+    "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    "@tyro/party": "*"
     dayjs: ^1.11.7
     lodash: ^4.17.21
     react: ^18.2.0
@@ -5701,7 +5703,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@tyro/party@workspace:features/party":
+"@tyro/party@*, @tyro/party@workspace:features/party":
   version: 0.0.0-use.local
   resolution: "@tyro/party@workspace:features/party"
   dependencies:
