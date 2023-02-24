@@ -1,96 +1,162 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
 import { useMemo } from 'react';
-import { Box, Button, Container, Typography } from '@mui/material';
-import { Avatar, Page } from '@tyro/core';
-import { useNavigate, NavigateFunction } from 'react-router-dom';
+import { Container, Typography } from '@mui/material';
+import { GridOptions, ICellRendererParams, Page, Table } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { Student } from '@tyro/api';
-import { useStudents } from '../../api/students';
-import { TableColumn } from '../../../../../src/components/table/types';
-import Table from '../../../../../src/components/table/Table';
+import set from 'lodash/set';
+import { useBulkUpdateCoreStudent, useStudents } from '../../api/students';
+import { TableAvatar } from '../../components/common/table-avatar';
 
-interface TableData extends Student {
-  firstButton: string;
-}
+type ReturnTypeFromUseStudents = NonNullable<
+  ReturnType<typeof useStudents>['data']
+>[number];
 
 const getStudentColumns = (
   translate: TFunction<
     ('common' | 'people')[],
     undefined,
     ('common' | 'people')[]
-  >,
-  navigate: NavigateFunction
-): TableColumn<TableData>[] => [
+  >
+): GridOptions<ReturnTypeFromUseStudents>['columnDefs'] => [
   {
-    columnDisplayName: translate('common:name'),
-    fieldName: 'person.firstName',
-    filter: 'suggest',
-    isMandatory: true,
-    component: (columnProps) => {
-      const { person } = columnProps.row.original;
+    field: 'person',
+    headerName: translate('common:name'),
+    valueGetter: ({ data }) =>
+      `${data?.person?.firstName ?? ''} ${data?.person?.lastName ?? ''}`,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseStudents, any>) => {
+      const person = data?.person;
       const name = `${person?.firstName ?? ''} ${person?.lastName ?? ''}`;
 
       return (
-        <Box display="flex" alignItems="center">
-          <Avatar
-            src={person?.avatarUrl ?? undefined}
-            name={name}
-            sx={{
-              mr: 1.5,
-            }}
-          />
-          {name}
-        </Box>
+        <TableAvatar
+          name={name}
+          avatarUrl={person?.avatarUrl}
+          to={`./${data?.partyId ?? ''}`}
+        />
       );
     },
+    headerCheckboxSelection: true,
+    headerCheckboxSelectionFilteredOnly: true,
+    checkboxSelection: true,
+    lockVisible: true,
   },
   {
-    columnDisplayName: translate('people:classGroup'),
-    fieldName: 'classGroup.name',
-    component: ({ row }) => {
-      const { classGroup } = row.original;
-      return classGroup?.name ?? '';
+    field: 'classGroup.name',
+    headerName: translate('people:class'),
+  },
+  {
+    field: 'yearGroups',
+    headerName: translate('common:year'),
+    valueGetter: ({ data }) => {
+      if (data && data.yearGroups.length > 0) {
+        return data.yearGroups[0].name;
+      }
     },
-    filter: 'suggest',
   },
   {
-    columnDisplayName: '',
-    fieldName: 'firstButton',
-    component: ({ row }) => (
-      <Button
-        onClick={() => {
-          navigate(`./${row.original.partyId ?? ''}`);
-        }}
-      >
-        {translate('common:actions.view')}
-      </Button>
-    ),
+    field: 'tutors',
+    headerName: translate('common:tutor'),
+    valueGetter: ({ data }) => {
+      if (data && data.tutors.length > 0) {
+        return data.tutors
+          .map((tutor) => `${tutor?.firstName ?? ''} ${tutor?.lastName ?? ''}`)
+          .join(', ');
+      }
+    },
+  },
+  {
+    field: 'yearGroupLeads',
+    headerName: translate('common:yearhead'),
+    valueGetter: ({ data }) => {
+      if (data && data.yearGroupLeads.length > 0) {
+        return data.yearGroupLeads
+          .map(
+            (yearGroupLead) =>
+              `${yearGroupLead?.firstName ?? ''} ${
+                yearGroupLead?.lastName ?? ''
+              }`
+          )
+          .join(', ');
+      }
+    },
+  },
+  {
+    field: 'programmeStage',
+    headerName: translate('common:programme'),
+    valueGetter: ({ data }) => {
+      if (data?.programmeStages && data.programmeStages.length > 0) {
+        return data.programmeStages[0]?.programme?.name;
+      }
+    },
+  },
+  {
+    field: 'studentIrePP.examNumber',
+    headerName: translate('people:personal.enrolmentHistory.examNumber'),
+    editable: true,
+    hide: true,
+  },
+  {
+    field: 'personalInformation.preferredFirstName',
+    headerName: translate('common:preferredFirstName'),
+    editable: true,
+    hide: true,
+  },
+  {
+    field: 'personalInformation.primaryPhoneNumber.number',
+    headerName: translate('common:phone'),
+    editable: true,
+    hide: true,
+    cellEditor: 'agNumericCellEditor',
+    valueSetter: ({ data, newValue }) => {
+      set(
+        data ?? {},
+        'personalInformation.primaryPhoneNumber.number',
+        newValue
+      );
+      return true;
+    },
+  },
+  {
+    field: 'personalInformation.primaryEmail.email',
+    headerName: translate('common:email'),
+    editable: true,
+    hide: true,
+    cellEditor: 'agEmailCellEditor',
+    valueSetter: ({ data, newValue }) => {
+      set(data ?? {}, 'personalInformation.primaryEmail.email', newValue);
+      return true;
+    },
   },
 ];
 
 export default function StudentsListPage() {
   const { t } = useTranslation(['common', 'people']);
-  const navigate = useNavigate();
-  const { data, isLoading } = useStudents();
-  const students = data as TableData[];
+  const { data: students, isLoading } = useStudents();
+  const { mutateAsync: bulkSaveStudents } = useBulkUpdateCoreStudent();
 
-  const studentColumns = useMemo(
-    () => getStudentColumns(t, navigate),
-    [t, navigate]
-  );
+  const studentColumns = useMemo(() => getStudentColumns(t), [t]);
 
   if (isLoading) {
     return null;
   }
 
   return (
-    <Page title={t('people:people')}>
+    <Page title={t('people:students')}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
           {t('people:students')}
         </Typography>
-        <Table data={students ?? []} columns={studentColumns} />
+        <Table
+          rowData={students ?? []}
+          columnDefs={studentColumns}
+          rowSelection="multiple"
+          rowHeight={56}
+          getRowId={({ data }) => String(data?.partyId)}
+          onBulkSave={bulkSaveStudents}
+        />
       </Container>
     </Page>
   );
