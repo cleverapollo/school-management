@@ -52,7 +52,7 @@ export function PartyAutocomplete({
     return null;
   }
   const groupBy =
-    filterPartyTypes == null || filterPartyTypes.length === 1
+    filterPartyTypes != null && filterPartyTypes.length === 1
       ? undefined
       : (option: PartyOption) => option.partyType;
   return (
@@ -63,16 +63,21 @@ export function PartyAutocomplete({
       isOptionEqualToValue={(o, v) => o.id === v.id}
       options={data as PartyOption[]}
       filterOptions={(x) => x}
+      renderOption={(props, option) => (
+        <li {...props} key={option.id}>
+          {option.label}
+        </li>
+      )}
       onInputChange={(event, newInputValue) => {
         setValue(newInputValue);
       }}
       sx={{ width: 300, ...sx }}
       renderInput={(params) => <TextField {...params} label={label} />}
       renderGroup={(params) => (
-        <li key={params.key}>
+        <div key={params.key}>
           <div>{params.group}</div>
           <div>{params.children}</div>
-        </li>
+        </div>
       )}
       {...props}
     />

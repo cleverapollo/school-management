@@ -4,6 +4,7 @@ import { useTranslation } from '@tyro/i18n';
 import { PartyAutocomplete } from '@tyro/party';
 import { PartyType } from '@tyro/api';
 import { PartyOption } from '@tyro/party/src/api/search';
+import * as React from 'react';
 import Calendar from '../../components/Calendar';
 
 export default function CalendarPage() {
@@ -12,11 +13,13 @@ export default function CalendarPage() {
   return (
     <Page title={t('calendar:calendar')}>
       <PartyAutocomplete
-        filterPartyTypes={[PartyType.Student]}
         // @ts-ignore
-        onChange={(event: any, newValue: PartyOption | null) => {
+        onChange={(
+          event: React.SyntheticEvent,
+          newValue: PartyOption | null
+        ) => {
           console.log(event);
-          console.log(newValue);
+          console.log(newValue?.id);
         }}
         label="Find Timetables"
       />
