@@ -93,6 +93,18 @@ export default function Button(theme: Theme) {
       },
     };
 
+    const loadingState = COLORS.map((color) => ({
+      ...(ownerState.color === color && {
+        // CONTAINED
+        ...(containedVariant && {
+          '&.MuiLoadingButton-loading': {
+            color: theme.palette[color][isLight ? 'dark' : 'light'],
+            backgroundColor: alpha(theme.palette[color].main, 0.16),
+          },
+        }),
+      }),
+    }));
+
     const size = {
       ...(smallSize && {
         height: 30,
@@ -110,7 +122,7 @@ export default function Button(theme: Theme) {
       }),
     };
 
-    return [...colorStyle, defaultStyle, disabledState, size];
+    return [...colorStyle, defaultStyle, disabledState, loadingState, size];
   };
 
   return {

@@ -133,7 +133,7 @@ export function StudentContactsWidget({
                   contact?.person?.lastName ?? ''
                 }`}
                 src={contact?.person?.avatarUrl ?? undefined}
-                sx={{ width: 62, height: 62 }}
+                sx={{ width: 62, height: 62, fontSize: 20 }}
               />
 
               <Stack>

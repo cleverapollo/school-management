@@ -1,5 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
-import { CodeType, gqlClient, graphql, queryClient } from '@tyro/api';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  CodeType,
+  gqlClient,
+  graphql,
+  queryClient,
+  UpdateStudentInput,
+} from '@tyro/api';
+import { BulkEditedRows } from '@tyro/core';
 
 const students = graphql(/* GraphQL */ `
   query core_students {
@@ -12,6 +19,43 @@ const students = graphql(/* GraphQL */ `
       }
       classGroup {
         name
+        staff {
+          firstName
+          lastName
+        }
+      }
+      personalInformation {
+        preferredFirstName
+        primaryPhoneNumber {
+          number
+        }
+        primaryEmail {
+          email
+        }
+      }
+      studentIrePP {
+        examNumber
+      }
+      tutors {
+        partyId
+        firstName
+        lastName
+        avatarUrl
+      }
+      yearGroupLeads {
+        partyId
+        firstName
+        lastName
+        avatarUrl
+      }
+      yearGroups {
+        name
+      }
+      programmeStages {
+        name
+        programme {
+          name
+        }
       }
     }
   }
@@ -55,6 +99,12 @@ const studentById = graphql(/* GraphQL */ `
         activeSupportPlan
       }
     }
+  }
+`);
+
+const bulkUpdateCoreStudent = graphql(/* GraphQL */ `
+  mutation updateCoreStudents($input: [UpdateStudentInput]!) {
+    core_updateStudents(input: $input)
   }
 `);
 
@@ -139,4 +189,43 @@ export function useStudent(studentId: number | undefined) {
     },
     enabled: !!studentId,
   });
+}
+
+const studentBulkUpdateMapping = {
+  'personalInformation.preferredFirstName': 'preferredName',
+  'personalInformation.primaryPhoneNumber.number': 'primaryPhoneNumber',
+  'personalInformation.primaryEmail.email': 'primaryEmail',
+  'studentIrePP.examNumber': 'examNumber',
+} as const;
+
+export function useBulkUpdateCoreStudent() {
+  return useMutation(
+    (input: BulkEditedRows) => {
+      const mappedInput = Object.entries(input).map(([partyId, changes]) =>
+        Object.entries(changes).reduce<UpdateStudentInput>(
+          (acc, [key, { newValue }]) => {
+            const mappedKey =
+              studentBulkUpdateMapping[
+                key as keyof typeof studentBulkUpdateMapping
+              ];
+
+            if (mappedKey) {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              acc[mappedKey] = newValue;
+            }
+
+            return acc;
+          },
+          { studentPartyId: Number(partyId) }
+        )
+      );
+
+      return gqlClient.request(bulkUpdateCoreStudent, { input: mappedInput });
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(studentKeys.all);
+      },
+    }
+  );
 }

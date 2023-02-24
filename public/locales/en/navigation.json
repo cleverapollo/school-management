@@ -22,7 +22,8 @@
     "people": {
       "title": "People",
       "students": "Students",
-      "teachers": "Teachers"
+      "staff": "Staff",
+      "contacts": "Contacts"
     },
     "settings": {
       "title": "Settings",

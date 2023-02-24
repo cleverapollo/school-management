@@ -54,3 +54,9 @@ declare module '@mui/material/styles' {
     chart: ChartPaletteOptions;
   }
 }
+
+declare module '@mui/material/Button' {
+  interface ButtonPropsVariantOverrides {
+    soft: true;
+  }
+}
