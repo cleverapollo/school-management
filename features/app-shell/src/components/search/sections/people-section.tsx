@@ -1,5 +1,7 @@
 import { Box, Stack, Typography } from '@mui/material';
 import { Search, SearchType } from '@tyro/api';
+import { Avatar } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 import { SearchOption } from '../option';
 import { SearchOptionData } from '../provider';
 import { SectionContainer } from '../section-container';
@@ -28,8 +30,9 @@ export function PersonOption({
   option: SearchOptionData;
   endIcon?: JSX.Element;
 }) {
-  const { partyId, type, text } =
+  const { partyId, type, text, avatarUrl } =
     option as PeopleSectionProps['people'][number];
+  const [t] = useTranslation(['people']);
 
   return (
     <SearchOption path={getPersonPath(partyId, type)} optionData={option}>
@@ -39,10 +42,30 @@ export function PersonOption({
         alignItems="center"
         justifyContent="space-between"
       >
-        <Stack>
-          <Typography component="span" variant="body2">
-            {text}
-          </Typography>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Box
+            sx={{
+              width: 40,
+              height: 40,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Avatar
+              sx={{ width: 32, height: 32, fontSize: 14 }}
+              name={text}
+              src={avatarUrl ?? undefined}
+            />
+          </Box>
+          <Stack>
+            <Typography component="span" variant="body2">
+              {text}
+            </Typography>
+            <Typography component="span" variant="caption">
+              {t(`people:searchType.${type}`)}
+            </Typography>
+          </Stack>
         </Stack>
         {endIcon && <Box alignSelf="flex-end">{endIcon}</Box>}
       </Stack>

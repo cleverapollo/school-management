@@ -8,6 +8,7 @@ const omniSearch = graphql(/* GraphQL */ `
       partyId
       type
       text
+      avatarUrl
       meta {
         studentPartyId
       }
