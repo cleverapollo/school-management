@@ -1,1 +1,1 @@
-export { PartySearchBox } from './components/search/PartySearchBox';
+export { PartyAutocomplete } from './components/search/PartyAutocomplete';

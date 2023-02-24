@@ -49,8 +49,19 @@ export const filter: CalendarEventFilter = {
   partyIds: [1780],
 };
 
-export default function Calendar() {
+export interface CalendarProps {
+  partyId?: number;
+  startDate?: Date;
+  endDate?: Date;
+}
+
+export default function Calendar({
+  partyId,
+  startDate,
+  endDate,
+}: CalendarProps) {
   const { userType } = usePermissions();
+
   const { t } = useTranslation(['calendar', 'common', 'navigation']);
 
   // ToDO: implement isEditable with permissions

@@ -1,7 +1,7 @@
 import { Container } from '@mui/material';
 import { Page } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { PartySearchBox } from '@tyro/party';
+import { PartyAutocomplete } from '@tyro/party';
 import { PartyType } from '@tyro/api';
 import { PartyOption } from '@tyro/party/src/api/search';
 import Calendar from '../../components/Calendar';
@@ -11,7 +11,7 @@ export default function CalendarPage() {
 
   return (
     <Page title={t('calendar:calendar')}>
-      <PartySearchBox
+      <PartyAutocomplete
         filterPartyTypes={[PartyType.Student]}
         // @ts-ignore
         onChange={(event: any, newValue: PartyOption | null) => {

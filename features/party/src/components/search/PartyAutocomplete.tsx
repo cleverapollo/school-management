@@ -10,7 +10,6 @@ import { useEffect, useState } from 'react';
 import { PartyFilter, PartyType, StudentFilter } from '@tyro/api';
 import { useDebouncedValue } from '@tyro/core';
 import * as React from 'react';
-import { AutocompleteInputChangeReason } from '@mui/base/AutocompleteUnstyled/useAutocomplete';
 import { PartyOption, usePartySearch } from '../../api/search';
 
 type DefaultAutoCompleteProps = AutocompleteProps<
@@ -20,28 +19,33 @@ type DefaultAutoCompleteProps = AutocompleteProps<
   boolean
 >;
 
-interface PartySearchBoxProps {
+interface PartyAutocompleteProps {
   filterPartyTypes?: PartyType[];
   label: string;
   onPartySelected?: (party: PartyOption) => void;
+  partyIds?: [number];
+  limit?: number;
   sx?: DefaultAutoCompleteProps['sx'];
   onChange?: DefaultAutoCompleteProps['onChange'];
 }
 
-export function PartySearchBox({
+export function PartyAutocomplete({
   filterPartyTypes,
   sx,
   label,
   onPartySelected,
+  limit,
+  partyIds,
   ...props
-}: PartySearchBoxProps) {
+}: PartyAutocompleteProps) {
   const { setValue, value, debouncedValue } = useDebouncedValue({
     defaultValue: '',
   });
   const { data, isLoading } = usePartySearch({
-    partyIds: [],
+    partyIds: partyIds || [],
     nameFuzzySearch: debouncedValue,
     filterPartyTypes,
+    limit: limit || 50,
   } as PartyFilter);
 
   if (isLoading) {
