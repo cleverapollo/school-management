@@ -20,6 +20,7 @@ export default function NavMini({ onExpand, navConfig }: NavMiniProps) {
       sx={{
         flexShrink: { lg: 0 },
         width: { lg: NAV.W_DASHBOARD_MINI },
+        zIndex: 'drawer',
       }}
     >
       <ExpandButton isExpanded={false} onClick={onExpand} />

@@ -5,6 +5,7 @@
   "classGroup": "Class group",
   "people": "People",
   "students": "Students",
+  "contacts": "Contacts",
   "usersProfile": "{{name}}'s Profile",
   "currentLocation": "Current Location",
   "currentLesson": "Current Lesson",
@@ -24,6 +25,11 @@
   "guardianContactInformation": "Guardian Contact Information",
   "nextContactDisabled_zero": "This student has no guardians.",
   "nextContactDisabled_one": "This student only has one guardian.",
+  "searchType": {
+    "CONTACT": "Contact",
+    "STAFF": "Staff",
+    "STUDENT": "Student"
+  },
   "personal": {
     "title": "Personal",
     "about": {

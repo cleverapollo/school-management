@@ -5621,12 +5621,17 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@tyro/core@workspace:packages/core"
   dependencies:
+    "@mui/lab": ^5.0.0-alpha.96
     "@mui/material": ^5.10.14
     "@tyro/api": "*"
     "@tyro/configs": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    ag-grid-community: ~29.1.0
+    ag-grid-enterprise: ~29.1.0
+    ag-grid-react: ~29.1.0
     framer-motion: ^9.0.1
+    lodash: ^4.17.21
     notistack: ^2.0.5
     nprogress: ^0.2.0
     react: ^18.2.0
@@ -5741,6 +5746,7 @@ __metadata:
     "@tyro/icons": "*"
     dayjs: ^1.11.7
     framer-motion: ^9.0.1
+    lodash: ^4.17.21
     react: ^18.2.0
     react-dom: ^18.2.0
     react-router: ^6.6.2
@@ -6169,6 +6175,33 @@ __metadata:
     loader-utils: ^2.0.0
     regex-parser: ^2.2.11
   checksum: d524ae23582f41e2275af5d88faab7a9dc09770ed588244e0a76d3196d0d6a90bf02760c71bc6213dbfef3aef4a86232ac9521bfd629752c32b7af37bc74c660
+  languageName: node
+  linkType: hard
+
+"ag-grid-community@npm:~29.1.0":
+  version: 29.1.0
+  resolution: "ag-grid-community@npm:29.1.0"
+  checksum: d74c342152216bf3c8a56c1f1d8d6a864af7de6d77c1bc67fa5a6ff1c5d321d586b2c1d3901ab53a240480b277208e3743cf70d08215e5778ee60c0bafb01324
+  languageName: node
+  linkType: hard
+
+"ag-grid-enterprise@npm:~29.1.0":
+  version: 29.1.0
+  resolution: "ag-grid-enterprise@npm:29.1.0"
+  checksum: dcae4533ece0ec2c6be0644b18b2694a9ac007ec25b16d0ba154c969cbe40ac23e004efcfea93d19c1b2d11d389d22da871d682dd2c43bc3ed471c804947449e
+  languageName: node
+  linkType: hard
+
+"ag-grid-react@npm:~29.1.0":
+  version: 29.1.0
+  resolution: "ag-grid-react@npm:29.1.0"
+  dependencies:
+    prop-types: ^15.8.1
+  peerDependencies:
+    ag-grid-community: ~29.1.0
+    react: ^16.3.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.3.0 || ^17.0.0 || ^18.0.0
+  checksum: 1218bcf025819bd6540418c9ca2095e07a651150f47d2ce424647bf8f99063b7ef94185f22c7347be97969fd382325c18095d7f8c3685c323436808a3420d293
   languageName: node
   linkType: hard
 

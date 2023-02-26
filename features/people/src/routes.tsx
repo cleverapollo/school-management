@@ -7,6 +7,7 @@ import { getStudentDashboardAssessments } from '@tyro/assessment';
 import { getStudent, getStudents } from './api/students';
 import { getStudentPersonal } from './api/student/personal';
 import { getStudentsContacts } from './api/student/overview';
+import { getContacts } from './api/contacts';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
 // Student profile pages
@@ -43,6 +44,8 @@ const StudentProfileClassesPage = lazy(
 const StudentProfileSettingsPage = lazy(
   () => import('./pages/students/profile/settings')
 );
+
+const ContactsListPage = lazy(() => import('./pages/contacts'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -140,6 +143,13 @@ export const getRoutes: NavObjectFunction = (t) => [
                 element: <StudentProfileSettingsPage />,
               },
             ],
+          },
+          {
+            type: NavObjectType.MenuLink,
+            path: 'contacts',
+            title: t('navigation:management.people.contacts'),
+            loader: () => getContacts(),
+            element: <ContactsListPage />,
           },
         ],
       },

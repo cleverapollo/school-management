@@ -5,20 +5,20 @@ import { Container, Typography } from '@mui/material';
 import { GridOptions, ICellRendererParams, Page, Table } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
-import { useBulkUpdateCoreStudent, useStudents } from '../../api/students';
+import { useContacts } from '../../api/contacts';
 import { TableAvatar } from '../../components/common/table-avatar';
 
-type ReturnTypeFromUseStudents = NonNullable<
-  ReturnType<typeof useStudents>['data']
+type ReturnTypeFromUseContacts = NonNullable<
+  ReturnType<typeof useContacts>['data']
 >[number];
 
-const getStudentColumns = (
+const getContactColumns = (
   translate: TFunction<
     ('common' | 'people')[],
     undefined,
     ('common' | 'people')[]
   >
-): GridOptions<ReturnTypeFromUseStudents>['columnDefs'] => [
+): GridOptions<ReturnTypeFromUseContacts>['columnDefs'] => [
   {
     field: 'person',
     headerName: translate('common:name'),
@@ -26,7 +26,7 @@ const getStudentColumns = (
       `${data?.person?.firstName ?? ''} ${data?.person?.lastName ?? ''}`,
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseStudents, any>) => {
+    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => {
       const person = data?.person;
       const name = `${person?.firstName ?? ''} ${person?.lastName ?? ''}`;
 
@@ -42,61 +42,6 @@ const getStudentColumns = (
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: true,
     lockVisible: true,
-  },
-  {
-    field: 'classGroup.name',
-    headerName: translate('people:class'),
-  },
-  {
-    field: 'yearGroups',
-    headerName: translate('common:year'),
-    valueGetter: ({ data }) => {
-      if (data && data.yearGroups.length > 0) {
-        return data.yearGroups[0].name;
-      }
-    },
-  },
-  {
-    field: 'tutors',
-    headerName: translate('common:tutor'),
-    valueGetter: ({ data }) => {
-      if (data && data.tutors.length > 0) {
-        return data.tutors
-          .map((tutor) => `${tutor?.firstName ?? ''} ${tutor?.lastName ?? ''}`)
-          .join(', ');
-      }
-    },
-  },
-  {
-    field: 'yearGroupLeads',
-    headerName: translate('common:yearhead'),
-    valueGetter: ({ data }) => {
-      if (data && data.yearGroupLeads.length > 0) {
-        return data.yearGroupLeads
-          .map(
-            (yearGroupLead) =>
-              `${yearGroupLead?.firstName ?? ''} ${
-                yearGroupLead?.lastName ?? ''
-              }`
-          )
-          .join(', ');
-      }
-    },
-  },
-  {
-    field: 'programmeStage',
-    headerName: translate('common:programme'),
-    valueGetter: ({ data }) => {
-      if (data?.programmeStages && data.programmeStages.length > 0) {
-        return data.programmeStages[0]?.programme?.name;
-      }
-    },
-  },
-  {
-    field: 'studentIrePP.examNumber',
-    headerName: translate('people:personal.enrolmentHistory.examNumber'),
-    editable: true,
-    hide: true,
   },
   {
     field: 'personalInformation.preferredFirstName',
@@ -132,30 +77,28 @@ const getStudentColumns = (
   },
 ];
 
-export default function StudentsListPage() {
+export default function ContactsListPage() {
   const { t } = useTranslation(['common', 'people']);
-  const { data: students, isLoading } = useStudents();
-  const { mutateAsync: bulkSaveStudents } = useBulkUpdateCoreStudent();
+  const { data: contacts, isLoading } = useContacts();
 
-  const studentColumns = useMemo(() => getStudentColumns(t), [t]);
+  const contactColumns = useMemo(() => getContactColumns(t), [t]);
 
   if (isLoading) {
     return null;
   }
 
   return (
-    <Page title={t('people:students')}>
+    <Page title={t('people:contacts')}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
-          {t('people:students')}
+          {t('people:contacts')}
         </Typography>
         <Table
-          rowData={students ?? []}
-          columnDefs={studentColumns}
+          rowData={contacts ?? []}
+          columnDefs={contactColumns}
           rowSelection="multiple"
           rowHeight={56}
           getRowId={({ data }) => String(data?.partyId)}
-          onBulkSave={bulkSaveStudents}
         />
       </Container>
     </Page>
