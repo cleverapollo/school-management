@@ -1,7 +1,6 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
 import { useMemo } from 'react';
-import { useTheme } from '@mui/material/styles';
 import {
   Stack,
   AppBar,

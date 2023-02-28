@@ -29,6 +29,11 @@
   "nextContactDisabled_one": "This student only has one guardian.",
   "sendSms": "Send SMS",
   "makePrimaryContact": "Make primary contact",
+  "searchType": {
+    "CONTACT": "Contact",
+    "STAFF": "Staff",
+    "STUDENT": "Student"
+  },
   "personal": {
     "title": "Personal",
     "about": {
