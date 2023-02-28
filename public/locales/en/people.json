@@ -17,6 +17,8 @@
   "yearHead": "Year Head",
   "tutor": "Tutor",
   "tyroId": "Tyro ID",
+  "primaryContact": "Primary Contact",
+  "allowedToContact": "Allowed to contact",
   "tyroIdClickToCopy": "Tyro ID is {{id}}. Click to copy.",
   "tyroIdCopied": "Tyro ID copied to clipboard.",
   "issueCopyingTyroId": "Issue copying ID to clipboard.",
@@ -25,6 +27,8 @@
   "guardianContactInformation": "Guardian Contact Information",
   "nextContactDisabled_zero": "This student has no guardians.",
   "nextContactDisabled_one": "This student only has one guardian.",
+  "sendSms": "Send SMS",
+  "makePrimaryContact": "Make primary contact",
   "personal": {
     "title": "Personal",
     "about": {
@@ -74,5 +78,12 @@
       "leftEarly": "Left early",
       "dateOfLeaving": "Date of leaving"
     }
+  },
+  "actions": {
+    "allowUsersToContact": "Allow users to contact",
+    "disallowUsersToContact": "Disallow users to contact"
+  },
+  "feedback": {
+    "moreThanOneSelectedForPrimaryContact": "You must only select one contact to set as a primary contact."
   }
 }
