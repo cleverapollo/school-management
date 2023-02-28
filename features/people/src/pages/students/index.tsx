@@ -7,6 +7,7 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
 import { useBulkUpdateCoreStudent, useStudents } from '../../api/students';
 import { TableAvatar } from '../../components/common/table-avatar';
+import { displayName } from '../../../../../src/utils/nameUtils';
 
 type ReturnTypeFromUseStudents = NonNullable<
   ReturnType<typeof useStudents>['data']
@@ -22,13 +23,12 @@ const getStudentColumns = (
   {
     field: 'person',
     headerName: translate('common:name'),
-    valueGetter: ({ data }) =>
-      `${data?.person?.firstName ?? ''} ${data?.person?.lastName ?? ''}`,
+    valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseStudents, any>) => {
       const person = data?.person;
-      const name = `${person?.firstName ?? ''} ${person?.lastName ?? ''}`;
+      const name = displayName(person);
 
       return (
         <TableAvatar
@@ -61,9 +61,7 @@ const getStudentColumns = (
     headerName: translate('common:tutor'),
     valueGetter: ({ data }) => {
       if (data && data.tutors.length > 0) {
-        return data.tutors
-          .map((tutor) => `${tutor?.firstName ?? ''} ${tutor?.lastName ?? ''}`)
-          .join(', ');
+        return data.tutors.map((tutor) => displayName(tutor)).join(', ');
       }
     },
   },
@@ -73,12 +71,7 @@ const getStudentColumns = (
     valueGetter: ({ data }) => {
       if (data && data.yearGroupLeads.length > 0) {
         return data.yearGroupLeads
-          .map(
-            (yearGroupLead) =>
-              `${yearGroupLead?.firstName ?? ''} ${
-                yearGroupLead?.lastName ?? ''
-              }`
-          )
+          .map((yearGroupLead) => displayName(yearGroupLead))
           .join(', ');
       }
     },

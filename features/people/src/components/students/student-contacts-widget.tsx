@@ -1,3 +1,5 @@
+/* eslint-disable import/no-relative-packages */
+// TODO: remove above eslint when components are moved to @tyro/core
 import {
   Box,
   Button,
@@ -21,6 +23,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@tyro/i18n';
 import { Avatar } from '@tyro/core';
+import { displayName } from '../../../../../src/utils/nameUtils';
 import { useStudentsContacts } from '../../api/student/overview';
 import { joinAddress } from '../../utils/join-address';
 
@@ -129,16 +132,14 @@ export function StudentContactsWidget({
           <Box sx={{ px: 3, py: 2 }}>
             <Stack direction="row" spacing={2}>
               <Avatar
-                name={`${contact?.person?.firstName ?? ''} ${
-                  contact?.person?.lastName ?? ''
-                }`}
+                name={displayName(contact?.person)}
                 src={contact?.person?.avatarUrl ?? undefined}
                 sx={{ width: 62, height: 62, fontSize: 20 }}
               />
 
               <Stack>
                 <Typography variant="h6">
-                  {contact?.person?.firstName} {contact?.person?.lastName}
+                  {displayName(contact?.person)}
                 </Typography>
 
                 <Box

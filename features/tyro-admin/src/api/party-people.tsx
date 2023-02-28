@@ -1,5 +1,8 @@
+/* eslint-disable import/no-relative-packages */
+// TODO: remove above eslint when components are moved to @tyro/core
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, queryClient } from '@tyro/api';
+import { displayName } from '../../../../src/utils/nameUtils';
 
 const adminPartyPeopleByTenantId = graphql(/* GraphQL */ `
   query admin__party_people($tenant: Int!) {
@@ -33,7 +36,7 @@ export function useAdminPartyPeopleByTenantId(tenantId: number) {
       admin__party_people?.map((person) => ({
         ...person,
         tenant: tenantId,
-        name: `${person?.firstName ?? ''} ${person?.lastName ?? ''}`,
+        name: displayName(person ?? undefined),
       })),
   });
 }

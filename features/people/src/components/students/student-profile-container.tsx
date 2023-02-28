@@ -1,3 +1,5 @@
+/* eslint-disable import/no-relative-packages */
+// TODO: remove above eslint when components are moved to @tyro/core
 import {
   alpha,
   Box,
@@ -18,6 +20,7 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import { useEffect, useState } from 'react';
 import { useStudent } from '../../api/students';
 import { StudentOverviewBar } from './student-overview-bar';
+import { displayName } from '../../../../../src/utils/nameUtils';
 
 const getStudentTabs = (t: TFunction<'people'[]>) => [
   {
@@ -88,9 +91,7 @@ export default function StudentProfileContainer() {
   const { id } = useParams();
   const idNumber = useNumber(id);
   const { data } = useStudent(idNumber);
-  const name = `${data?.person?.firstName ?? ''} ${
-    data?.person?.lastName ?? ''
-  }`;
+  const name = displayName(data?.person);
 
   useEffect(() => {
     setValue(getInitialTabValue(matches, studentTabs));

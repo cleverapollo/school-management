@@ -1,3 +1,5 @@
+/* eslint-disable import/no-relative-packages */
+// TODO: remove above eslint when components are moved to @tyro/core
 import { useParams } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import {
@@ -20,6 +22,7 @@ import { Box, Fade } from '@mui/material';
 import { useStudentsContacts } from '../../../api/student/overview';
 import { TableAvatar } from '../../../components/common/table-avatar';
 import { joinAddress } from '../../../utils/join-address';
+import { displayName } from '../../../../../../src/utils/nameUtils';
 
 type ReturnTypeFromUseContacts = NonNullable<
   ReturnType<typeof useStudentsContacts>['data']
@@ -35,13 +38,12 @@ const getStudentContactColumns = (
   {
     field: 'person',
     headerName: translate('common:name'),
-    valueGetter: ({ data }) =>
-      `${data?.person?.firstName ?? ''} ${data?.person?.lastName ?? ''}`,
+    valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => {
       const person = data?.person;
-      const name = `${person?.firstName ?? ''} ${person?.lastName ?? ''}`;
+      const name = displayName(person);
 
       return (
         <TableAvatar
