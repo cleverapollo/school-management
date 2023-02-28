@@ -29,6 +29,10 @@ const getStudentTabs = (t: TFunction<'people'[]>) => [
     value: 'personal',
   },
   {
+    label: t('people:contacts'),
+    value: 'contacts',
+  },
+  {
     label: 'Attendance',
     value: 'attendance',
   },
@@ -102,7 +106,7 @@ export default function StudentProfileContainer() {
         minHeight: '100%',
       }}
     >
-      <Box sx={{ px: 2 }}>
+      <Box sx={{ maxWidth: '100vw', px: 2 }}>
         <Container
           maxWidth="xl"
           sx={{
@@ -126,7 +130,7 @@ export default function StudentProfileContainer() {
             ]}
           />
           <StudentOverviewBar studentId={idNumber} />
-          <Box sx={{ maxWidth: '100%' }}>
+          <Box sx={{ width: '100%' }}>
             <Tabs
               value={value}
               onChange={(event, newValue: string) => {
