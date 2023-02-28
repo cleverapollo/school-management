@@ -33,10 +33,10 @@ export function StudentContactsWidget({
 }: StudentContactsWidgetProps) {
   const [contactIndex, setContactIndex] = useState(0);
   const { t } = useTranslation(['common', 'people', 'mail']);
-  const { data, isLoading } = useStudentsContacts(studentId);
+  const { data: contacts, isLoading } = useStudentsContacts(studentId);
 
-  const numberOfContacts = data?.contacts?.length ?? 0;
-  const contact = data?.contacts?.[contactIndex];
+  const numberOfContacts = contacts?.length ?? 0;
+  const contact = contacts?.[contactIndex];
   const contactsRelationshipType =
     contact?.relationships?.[0]?.relationshipType;
 
@@ -90,7 +90,7 @@ export function StudentContactsWidget({
           <>
             {t('common:guardian')}{' '}
             <Box component="span" fontWeight={600}>
-              {contactIndex + 1}/{data?.contacts?.length}
+              {contactIndex + 1}/{contacts?.length}
             </Box>
           </>
         </Typography>
