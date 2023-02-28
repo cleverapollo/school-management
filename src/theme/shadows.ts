@@ -81,7 +81,7 @@ const createCustomShadow = (color: string) => {
     //
     card: `0 0 2px 0 ${alpha(color, 0.2)}, 0 12px 24px -4px ${alpha(color, 0.12)}`,
     dialog: `0 16px 70px ${alpha(palette.light.common.black, 0.2)}`,
-    dropdown: `0 0 2px 0 ${alpha(color, 0.24)}, -20px 20px 40px -4px ${alpha(color, 0.24)}`,
+    dropdown: `0 0 2px 0 ${alpha(color, 0.24)}, 0px 20px 40px -4px ${alpha(color, 0.24)}`,
   };
 };
 
