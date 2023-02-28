@@ -92,7 +92,7 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
               </Stack>
             )}
           </Stack>
-          <CurrentLocation currentLocation={data?.status?.currentLocation} />
+          <CurrentLocation studentPartyId={data?.partyId} />
           <Divider orientation="vertical" flexItem sx={{ ml: 2.5, mr: 1 }} />
           <AdditionalInfo
             year={data?.yearGroups}

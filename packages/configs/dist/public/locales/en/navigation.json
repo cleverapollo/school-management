@@ -1,0 +1,54 @@
+{
+    "general": {
+        "title": "General",
+        "dashboard": "Dashboard",
+        "calendar": "Calendar",
+        "subjects": "Subjects",
+        "mail": "Mail",
+        "groups": {
+            "title": "Groups",
+            "enrolment": "Enrolment",
+            "subject": "Subject",
+            "custom": "Custom"
+        },
+        "admin": {
+            "title": "Admin",
+            "schools": "Schools",
+            "graphiql": "GraphiQL"
+        }
+    },
+    "management": {
+        "title": "Management",
+        "people": {
+            "title": "People",
+            "students": "Students",
+            "staff": "Staff",
+            "contacts": "Contacts"
+        },
+        "settings": {
+            "title": "Settings",
+            "rooms": "Rooms",
+            "academicNamespaces": "Academic namespaces",
+            "subjects": "Subjects"
+        }
+    },
+    "errors": {
+        "404": {
+            "title": "Sorry, page not found!",
+            "description": "Sorry, we couldn't find the page you're looking for. Perhaps you've mistyped the URL? Be sure to check your spelling."
+        },
+        "403": {
+            "title": "No permission",
+            "description": "The page you're trying access has restricted access. Please refer to your system administrator."
+        },
+        "500": {
+            "title": "500 Internal Server Error",
+            "description": "There was an error, please try again later."
+        },
+        "unknown": {
+            "title": "Opps, something went wrong",
+            "description": "If this problem persists, please contact support."
+        },
+        "action": "Go to dashboard"
+    }
+}

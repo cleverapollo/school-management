@@ -22,12 +22,12 @@ export function AdditionalInfo({
   const { t } = useTranslation(['people']);
 
   const additionalInfoList = {
-    [t('people:year')]: year?.map((a) => a.shortName),
-    [t('people:class')]: classGroup?.name,
-    [t('people:yearHead')]: displayName(
-      yearGroupLead?.map((a) => a).find((a) => true)
-    ),
-    [t('people:tutor')]: displayName(tutor?.map((a) => a).find((a) => true)),
+    [t('people:year')]: year?.map((a) => a.shortName) || '-',
+    [t('people:class')]: classGroup?.name || '-',
+    [t('people:yearHead')]:
+      displayName(yearGroupLead?.map((a) => a).find((a) => true)) || '-',
+    [t('people:tutor')]:
+      displayName(tutor?.map((a) => a).find((a) => true)) || '-',
   };
 
   return (

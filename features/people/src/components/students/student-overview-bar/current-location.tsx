@@ -1,9 +1,10 @@
 import { Fragment, useMemo } from 'react';
 import { Box, Tooltip } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import { CodeType, CurrentStudentLocation, Maybe } from '@tyro/api';
+import { CodeType, CurrentStudentLocation } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { CheckmarkIcon, CloseIcon, MinusIcon } from '@tyro/icons';
+import { useStudentStatus } from '../../../api/status';
 
 interface CurrentAttendanceIconProps {
   name: string | undefined;
@@ -19,7 +20,7 @@ interface TempCustomCurrentLocation
 }
 
 interface CurrentLocationProps {
-  currentLocation: Maybe<TempCustomCurrentLocation> | undefined;
+  studentPartyId: number | undefined;
 }
 
 type AttendanceCodeIconSettings = {
@@ -89,30 +90,26 @@ function CurrentAttendanceIcon({ name, codeType }: CurrentAttendanceIconProps) {
   );
 }
 
-export function CurrentLocation({ currentLocation }: CurrentLocationProps) {
+export function CurrentLocation({ studentPartyId }: CurrentLocationProps) {
   const { t } = useTranslation(['people']);
-
+  const { data, isLoading } = useStudentStatus(studentPartyId);
   const currentLocationList = useMemo(() => {
-    const room =
-      currentLocation?.room?.length !== undefined &&
-      currentLocation?.room?.length > 0
-        ? currentLocation?.room[0]?.name
-        : '-';
+    const room = data?.currentLocation?.room
+      ?.map((a) => a?.name)
+      .find((a) => true);
+
+    // todo  back end for attendnce is not in place
+
+    const currentAttendance = (
+      <CurrentAttendanceIcon name="present" codeType={CodeType.Present} />
+    );
     return {
       [t('people:currentLocation')]: room,
-      [t('people:currentLesson')]: currentLocation?.lesson ?? '-',
-      [t('people:currentTeacher')]: currentLocation?.teacher ?? '-',
-      [t('people:attendance')]: (
-        <CurrentAttendanceIcon
-          {...(currentLocation?.currentAttendance ?? {
-            name: undefined,
-            codeType: undefined,
-          })}
-        />
-      ),
+      [t('people:currentLesson')]: data?.currentLocation?.lesson ?? '-',
+      [t('people:currentTeacher')]: data?.currentLocation?.teacher ?? '-',
+      [t('people:attendance')]: currentAttendance,
     };
-  }, [currentLocation, t]);
-
+  }, [data, t]);
   return (
     <Box
       component="dl"
