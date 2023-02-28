@@ -4,6 +4,7 @@ import {
   gqlClient,
   graphql,
   queryClient,
+  Student,
   UpdateStudentInput,
 } from '@tyro/api';
 import { BulkEditedRows } from '@tyro/core';
@@ -77,6 +78,21 @@ const studentById = graphql(/* GraphQL */ `
           lastName
         }
       }
+      yearGroupLeads {
+        firstName
+        lastName
+        avatarUrl
+      }
+      yearGroups {
+        shortName
+      }
+      tutors {
+        partyId
+        firstName
+        lastName
+        avatarUrl
+        type
+      }
       status {
         sessionAttendance {
           studentPartyId
@@ -142,6 +158,10 @@ export function getStudent(studentId: number | undefined) {
   return queryClient.fetchQuery(studentQuery(studentId));
 }
 
+export type ReturnTypeFromUseStudent = NonNullable<
+  ReturnType<typeof useStudent>['data']
+>;
+
 export function useStudent(studentId: number | undefined) {
   return useQuery({
     ...studentQuery(studentId),
@@ -150,7 +170,6 @@ export function useStudent(studentId: number | undefined) {
         Array.isArray(core_students) && core_students.length > 0
           ? core_students[0]
           : null;
-
       // Adding mock data for demo purposes
       return {
         ...student,

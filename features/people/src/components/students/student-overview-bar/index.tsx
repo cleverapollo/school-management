@@ -8,6 +8,8 @@ import {
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { useDisclosure, Avatar } from '@tyro/core';
+import { useLoaderData } from 'react-router';
+import { Student } from '@tyro/api';
 import { useStudent } from '../../../api/students';
 import { SupportPlanRing } from '../support-plan-ring';
 import { AdditionalInfo } from './additional-info';
@@ -26,7 +28,9 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
   const name = `${data?.person?.firstName ?? ''} ${
     data?.person?.lastName ?? ''
   }`;
-
+  if (data == null) {
+    return null;
+  }
   return (
     <>
       <Card variant="outlined" sx={{ p: 1.25, flex: 1, my: 2 }}>
@@ -90,7 +94,12 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
           </Stack>
           <CurrentLocation currentLocation={data?.status?.currentLocation} />
           <Divider orientation="vertical" flexItem sx={{ ml: 2.5, mr: 1 }} />
-          <AdditionalInfo />
+          <AdditionalInfo
+            year={data?.yearGroups}
+            classGroup={data?.classGroup}
+            tutor={data.tutors}
+            yearGroupLead={data?.yearGroupLeads}
+          />
           <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
           <TyroId id={data?.partyId ?? 0} />
         </Stack>
