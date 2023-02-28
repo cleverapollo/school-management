@@ -54,7 +54,7 @@ export function Shell({ children }: ShellProps) {
             ...(isDesktop && {
               pt: `${HEADERCONFIG.H_DASHBOARD_DESKTOP + 8}px`,
               width: `calc(100% - ${NAV.W_DASHBOARD}px)`,
-              ...(!isOpen && {
+              ...(!isExpanded && {
                 width: `calc(100% - ${NAV.W_DASHBOARD_MINI}px)`,
               }),
             }),
