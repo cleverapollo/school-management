@@ -32,16 +32,6 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
     data?.person?.lastName ?? ''
   }`;
 
-  const attendanceData =
-    statusData?.sessionAttendance?.length ?? 0 > 0
-      ? statusData?.sessionAttendance
-      : [
-          {
-            name: '',
-            status: '-',
-          },
-        ];
-  console.log(attendanceData);
   return (
     <>
       <Card variant="outlined" sx={{ p: 1.25, flex: 1, my: 2 }}>
@@ -81,9 +71,9 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
               {name}
             </Typography>
 
-            {Array.isArray(attendanceData) && (
+            {Array.isArray(statusData?.sessionAttendance) && (
               <Stack component="dl" sx={{ my: 0 }}>
-                {attendanceData?.map((session) => (
+                {statusData?.sessionAttendance?.map((session) => (
                   <Stack key={session?.name} direction="row" spacing={1}>
                     <Typography
                       component="dt"
