@@ -50,7 +50,7 @@ export const filter: CalendarEventFilter = {
 };
 
 export interface CalendarProps {
-  partyId?: number;
+  partyId: number | undefined;
   startDate?: Date;
   endDate?: Date;
 }
@@ -82,7 +82,11 @@ export default function Calendar({
     useState<boolean>(false);
   const [selectedRange, setSelectedRange] = useState<null | Range>(null);
 
-  const { data, isLoading } = useCalendarEvents(filter);
+  const { data, isLoading } = useCalendarEvents({
+    startDate: '2022-09-05',
+    endDate: '2023-03-07',
+    partyIds: [partyId || 1780],
+  });
   const newData = useMemo(
     () => data?.map((event, index) => ({ ...event, id: index.toString() })),
     [data]
