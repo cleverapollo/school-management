@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
-  CodeType,
+  AttendanceCodeType,
   gqlClient,
   graphql,
   queryClient,
@@ -93,27 +93,6 @@ const studentById = graphql(/* GraphQL */ `
         avatarUrl
         type
       }
-      status {
-        sessionAttendance {
-          studentPartyId
-          name
-          status
-        }
-        currentLocation {
-          room {
-            roomId
-            name
-          }
-          lesson
-          teacher
-          currentAttendance {
-            attendanceCodeName
-            codeType
-          }
-        }
-        priorityStudent
-        activeSupportPlan
-      }
     }
   }
 `);
@@ -173,37 +152,6 @@ export function useStudent(studentId: number | undefined) {
       // Adding mock data for demo purposes
       return {
         ...student,
-        status: {
-          studentPartyId: student?.partyId ?? 0,
-          sessionAttendance: [
-            {
-              studentPartyId: 0,
-              name: 'AM',
-              status: 'Present',
-            },
-            {
-              studentPartyId: 1,
-              name: 'PM',
-              status: 'Absent',
-            },
-          ],
-          currentLocation: {
-            room: [
-              {
-                roomId: 0,
-                name: 'Room 20B',
-              },
-            ],
-            lesson: 'English H2',
-            teacher: 'Mr. Smith',
-            currentAttendance: {
-              name: 'Present',
-              codeType: CodeType.Present,
-            },
-          },
-          priorityStudent: true,
-          activeSupportPlan: true,
-        },
       };
     },
     enabled: !!studentId,

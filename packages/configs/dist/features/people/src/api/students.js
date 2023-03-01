@@ -55,9 +55,9 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { CodeType, gqlClient, graphql, queryClient, } from '@tyro/api';
+import { gqlClient, graphql, queryClient, } from '@tyro/api';
 var students = graphql(/* GraphQL */ "\n  query core_students {\n    core_students {\n      partyId\n      person {\n        avatarUrl\n        firstName\n        lastName\n      }\n      classGroup {\n        name\n        staff {\n          firstName\n          lastName\n        }\n      }\n      personalInformation {\n        preferredFirstName\n        primaryPhoneNumber {\n          number\n        }\n        primaryEmail {\n          email\n        }\n      }\n      studentIrePP {\n        examNumber\n      }\n      tutors {\n        partyId\n        firstName\n        lastName\n        avatarUrl\n      }\n      yearGroupLeads {\n        partyId\n        firstName\n        lastName\n        avatarUrl\n      }\n      yearGroups {\n        name\n      }\n      programmeStages {\n        name\n        programme {\n          name\n        }\n      }\n    }\n  }\n");
-var studentById = graphql(/* GraphQL */ "\n  query core_student($filter: StudentFilter!) {\n    core_students(filter: $filter) {\n      partyId\n      person {\n        avatarUrl\n        firstName\n        lastName\n      }\n      classGroup {\n        name\n        staff {\n          firstName\n          lastName\n        }\n      }\n      yearGroupLeads {\n        firstName\n        lastName\n        avatarUrl\n      }\n      yearGroups {\n        shortName\n      }\n      tutors {\n        partyId\n        firstName\n        lastName\n        avatarUrl\n        type\n      }\n      status {\n        sessionAttendance {\n          studentPartyId\n          name\n          status\n        }\n        currentLocation {\n          room {\n            roomId\n            name\n          }\n          lesson\n          teacher\n          currentAttendance {\n            attendanceCodeName\n            codeType\n          }\n        }\n        priorityStudent\n        activeSupportPlan\n      }\n    }\n  }\n");
+var studentById = graphql(/* GraphQL */ "\n  query core_student($filter: StudentFilter!) {\n    core_students(filter: $filter) {\n      partyId\n      person {\n        avatarUrl\n        firstName\n        lastName\n      }\n      classGroup {\n        name\n        staff {\n          firstName\n          lastName\n        }\n      }\n      yearGroupLeads {\n        firstName\n        lastName\n        avatarUrl\n      }\n      yearGroups {\n        shortName\n      }\n      tutors {\n        partyId\n        firstName\n        lastName\n        avatarUrl\n        type\n      }\n    }\n  }\n");
 var bulkUpdateCoreStudent = graphql(/* GraphQL */ "\n  mutation updateCoreStudents($input: [UpdateStudentInput]!) {\n    core_updateStudents(input: $input)\n  }\n");
 export var studentKeys = {
     all: ['people', 'students'],
@@ -95,43 +95,12 @@ export function getStudent(studentId) {
 }
 export function useStudent(studentId) {
     return useQuery(__assign(__assign({}, studentQuery(studentId)), { select: function (_a) {
-            var _b;
             var core_students = _a.core_students;
             var student = Array.isArray(core_students) && core_students.length > 0
                 ? core_students[0]
                 : null;
             // Adding mock data for demo purposes
-            return __assign(__assign({}, student), { status: {
-                    studentPartyId: (_b = student === null || student === void 0 ? void 0 : student.partyId) !== null && _b !== void 0 ? _b : 0,
-                    sessionAttendance: [
-                        {
-                            studentPartyId: 0,
-                            name: 'AM',
-                            status: 'Present',
-                        },
-                        {
-                            studentPartyId: 1,
-                            name: 'PM',
-                            status: 'Absent',
-                        },
-                    ],
-                    currentLocation: {
-                        room: [
-                            {
-                                roomId: 0,
-                                name: 'Room 20B',
-                            },
-                        ],
-                        lesson: 'English H2',
-                        teacher: 'Mr. Smith',
-                        currentAttendance: {
-                            name: 'Present',
-                            codeType: CodeType.Present,
-                        },
-                    },
-                    priorityStudent: true,
-                    activeSupportPlan: true,
-                } });
+            return __assign({}, student);
         }, enabled: !!studentId }));
 }
 var studentBulkUpdateMapping = {

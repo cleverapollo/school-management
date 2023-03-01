@@ -8,6 +8,11 @@ export declare function useStudentStatus(studentId: number | undefined): import(
     studentPartyId: number;
     priorityStudent?: boolean | null | undefined;
     activeSupportPlan?: boolean | null | undefined;
+    sessionAttendance?: ({
+        __typename?: "SessionAttendanceStatus" | undefined;
+        name?: string | null | undefined;
+        status?: string | null | undefined;
+    } | null)[] | null | undefined;
     currentLocation?: {
         __typename?: "CurrentStudentLocation" | undefined;
         studentPartyId?: number | null | undefined;
@@ -23,7 +28,7 @@ export declare function useStudentStatus(studentId: number | undefined): import(
         currentAttendance?: {
             __typename?: "CurrentAttendance" | undefined;
             attendanceCodeName?: string | null | undefined;
-            codeType?: import("@tyro/api").CodeType | null | undefined;
+            codeType?: import("@tyro/api").AttendanceCodeType | null | undefined;
         } | null | undefined;
     } | null | undefined;
 }, unknown>;

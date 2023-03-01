@@ -1,4 +1,3 @@
-import { CodeType } from '@tyro/api';
 import { BulkEditedRows } from '@tyro/core';
 export declare const studentKeys: {
     all: readonly ["people", "students"];
@@ -69,28 +68,6 @@ export declare function useStudents(): import("@tanstack/react-query").UseQueryR
 export declare function getStudent(studentId: number | undefined): Promise<import("@tyro/api").Core_StudentQuery>;
 export type ReturnTypeFromUseStudent = NonNullable<ReturnType<typeof useStudent>['data']>;
 export declare function useStudent(studentId: number | undefined): import("@tanstack/react-query").UseQueryResult<{
-    status: {
-        studentPartyId: number;
-        sessionAttendance: {
-            studentPartyId: number;
-            name: string;
-            status: string;
-        }[];
-        currentLocation: {
-            room: {
-                roomId: number;
-                name: string;
-            }[];
-            lesson: string;
-            teacher: string;
-            currentAttendance: {
-                name: string;
-                codeType: CodeType;
-            };
-        };
-        priorityStudent: boolean;
-        activeSupportPlan: boolean;
-    };
     __typename?: "Student" | undefined;
     partyId?: number | undefined;
     person?: {

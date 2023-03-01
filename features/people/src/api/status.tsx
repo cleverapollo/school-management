@@ -6,10 +6,10 @@ const statusByStudentid = graphql(/* GraphQL */ `
   query q($filter: StudentStatusFilter) {
     composite_studentStatus(filter: $filter) {
       studentPartyId
-      #      currentAttendance {
-      #        attendanceCodeName
-      #        codeType
-      #      }
+      sessionAttendance {
+        name
+        status
+      }
       currentLocation {
         studentPartyId
         eventId

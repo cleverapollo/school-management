@@ -9,13 +9,14 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { useDisclosure, Avatar } from '@tyro/core';
 import { useLoaderData } from 'react-router';
-import { Student } from '@tyro/api';
+import { Maybe, Scalars, Student } from '@tyro/api';
 import { useStudent } from '../../../api/students';
 import { SupportPlanRing } from '../support-plan-ring';
 import { AdditionalInfo } from './additional-info';
 import { CurrentLocation } from './current-location';
 import { PrioritySupportStudentModal } from './priority-support-student-modal';
 import { TyroId } from './tyro-id';
+import { useStudentStatus } from '../../../api/status';
 
 interface StudentOverviewBarProps {
   studentId: number | undefined;
@@ -23,21 +24,31 @@ interface StudentOverviewBarProps {
 
 export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
   const { data, isLoading } = useStudent(studentId);
+  const { data: statusData, isLoading: statusIsLoading } =
+    useStudentStatus(studentId);
   const { getButtonProps, getDisclosureProps } = useDisclosure();
   const { t } = useTranslation(['people']);
   const name = `${data?.person?.firstName ?? ''} ${
     data?.person?.lastName ?? ''
   }`;
-  if (data == null) {
-    return null;
-  }
+
+  const attendanceData =
+    statusData?.sessionAttendance?.length ?? 0 > 0
+      ? statusData?.sessionAttendance
+      : [
+          {
+            name: '',
+            status: '-',
+          },
+        ];
+  console.log(attendanceData);
   return (
     <>
       <Card variant="outlined" sx={{ p: 1.25, flex: 1, my: 2 }}>
         <Stack direction="row" alignItems="center" sx={{ flexWrap: 'wrap' }}>
           <IconButton
             disabled={
-              !data?.status?.priorityStudent && !data?.status?.activeSupportPlan
+              !statusData?.priorityStudent && !statusData?.activeSupportPlan
             }
             aria-label={t('people:studentClickableAvatarAria', { name })}
             {...getButtonProps()}
@@ -55,7 +66,7 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
               })}
               overlap="circular"
               variant="dot"
-              badgeContent={data?.status?.priorityStudent ? 1 : 0}
+              badgeContent={statusData?.priorityStudent ? 1 : 0}
             >
               <SupportPlanRing hasSupportPlan>
                 <Avatar
@@ -70,9 +81,9 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
               {name}
             </Typography>
 
-            {Array.isArray(data?.status?.sessionAttendance) && (
+            {Array.isArray(attendanceData) && (
               <Stack component="dl" sx={{ my: 0 }}>
-                {data?.status?.sessionAttendance?.map((session) => (
+                {attendanceData?.map((session) => (
                   <Stack key={session?.name} direction="row" spacing={1}>
                     <Typography
                       component="dt"
@@ -97,7 +108,7 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
           <AdditionalInfo
             year={data?.yearGroups}
             classGroup={data?.classGroup}
-            tutor={data.tutors}
+            tutor={data?.tutors}
             yearGroupLead={data?.yearGroupLeads}
           />
           <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />

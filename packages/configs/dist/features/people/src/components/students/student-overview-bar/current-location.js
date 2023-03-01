@@ -13,7 +13,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Fragment, useMemo } from 'react';
 import { Box, Tooltip } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import { CodeType } from '@tyro/api';
+import { AttendanceCodeType } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { CheckmarkIcon, CloseIcon, MinusIcon } from '@tyro/icons';
 import { useStudentStatus } from '../../../api/status';
@@ -22,15 +22,15 @@ function CurrentAttendanceIcon(_a) {
     var t = useTranslation(['attendance']).t;
     var _b = useMemo(function () {
         switch (codeType) {
-            case CodeType.Present:
-            case CodeType.Late:
+            case AttendanceCodeType.Present:
+            case AttendanceCodeType.Late:
                 return {
                     icon: (_jsx(CheckmarkIcon, { sx: { color: 'white', width: 16, height: 16 } })),
                     color: 'green',
                     tooltip: name,
                 };
-            case CodeType.UnexplainedAbsence:
-            case CodeType.ExplainedAbsence:
+            case AttendanceCodeType.UnexplainedAbsence:
+            case AttendanceCodeType.ExplainedAbsence:
                 return {
                     icon: _jsx(CloseIcon, {}),
                     color: 'rose',
@@ -73,14 +73,8 @@ export function CurrentLocation(_a) {
         var _a;
         var _b, _c, _d, _e, _f, _g;
         var room = (_c = (_b = data === null || data === void 0 ? void 0 : data.currentLocation) === null || _b === void 0 ? void 0 : _b.room) === null || _c === void 0 ? void 0 : _c.map(function (a) { return a === null || a === void 0 ? void 0 : a.name; }).find(function (a) { return true; });
-        // todo  back end is not in place for this
-        // const attendanceName = data?.sessionAttendance
-        //   ?.map((a) => a?.name || undefined)
-        //   .find((a) => true);
-        // const attendanceCode = data?.sessionAttendance
-        //   ?.map((a) => a?.status || undefined)
-        //   .find((a) => true);
-        var currentAttendance = (_jsx(CurrentAttendanceIcon, { name: "present", codeType: CodeType.Present }));
+        // todo  back end for attendnce is not in place
+        var currentAttendance = (_jsx(CurrentAttendanceIcon, { name: "present", codeType: AttendanceCodeType.Present }));
         return _a = {},
             _a[t('people:currentLocation')] = room,
             _a[t('people:currentLesson')] = (_e = (_d = data === null || data === void 0 ? void 0 : data.currentLocation) === null || _d === void 0 ? void 0 : _d.lesson) !== null && _e !== void 0 ? _e : '-',

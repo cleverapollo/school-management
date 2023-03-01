@@ -1,21 +1,21 @@
 import { Fragment, useMemo } from 'react';
 import { Box, Tooltip } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import { CodeType, CurrentStudentLocation } from '@tyro/api';
+import { AttendanceCodeType, CurrentStudentLocation } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { CheckmarkIcon, CloseIcon, MinusIcon } from '@tyro/icons';
 import { useStudentStatus } from '../../../api/status';
 
 interface CurrentAttendanceIconProps {
   name: string | undefined;
-  codeType: CodeType | undefined;
+  codeType: AttendanceCodeType | undefined;
 }
 
 interface TempCustomCurrentLocation
   extends Omit<CurrentStudentLocation, 'currentAttendance'> {
   currentAttendance: {
     name: string;
-    codeType: CodeType;
+    codeType: AttendanceCodeType;
   };
 }
 
@@ -34,8 +34,8 @@ function CurrentAttendanceIcon({ name, codeType }: CurrentAttendanceIconProps) {
 
   const { icon, color, tooltip } = useMemo((): AttendanceCodeIconSettings => {
     switch (codeType) {
-      case CodeType.Present:
-      case CodeType.Late:
+      case AttendanceCodeType.Present:
+      case AttendanceCodeType.Late:
         return {
           icon: (
             <CheckmarkIcon sx={{ color: 'white', width: 16, height: 16 }} />
@@ -43,8 +43,8 @@ function CurrentAttendanceIcon({ name, codeType }: CurrentAttendanceIconProps) {
           color: 'green',
           tooltip: name,
         };
-      case CodeType.UnexplainedAbsence:
-      case CodeType.ExplainedAbsence:
+      case AttendanceCodeType.UnexplainedAbsence:
+      case AttendanceCodeType.ExplainedAbsence:
         return {
           icon: <CloseIcon />,
           color: 'rose',
@@ -101,10 +101,18 @@ export function CurrentLocation({ studentPartyId }: CurrentLocationProps) {
     // todo  back end for attendnce is not in place
 
     const currentAttendance = (
-      <CurrentAttendanceIcon name="present" codeType={CodeType.Present} />
+      <CurrentAttendanceIcon
+        name={
+          data?.currentLocation?.currentAttendance?.attendanceCodeName ??
+          undefined
+        }
+        codeType={
+          data?.currentLocation?.currentAttendance?.codeType ?? undefined
+        }
+      />
     );
     return {
-      [t('people:currentLocation')]: room,
+      [t('people:currentLocation')]: room ?? '-',
       [t('people:currentLesson')]: data?.currentLocation?.lesson ?? '-',
       [t('people:currentTeacher')]: data?.currentLocation?.teacher ?? '-',
       [t('people:attendance')]: currentAttendance,

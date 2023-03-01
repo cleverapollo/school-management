@@ -56,7 +56,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, queryClient } from '@tyro/api';
-var statusByStudentid = graphql(/* GraphQL */ "\n  query q($filter: StudentStatusFilter) {\n    composite_studentStatus(filter: $filter) {\n      studentPartyId\n      #      currentAttendance {\n      #        attendanceCodeName\n      #        codeType\n      #      }\n      currentLocation {\n        studentPartyId\n        eventId\n        room {\n          roomId\n          name\n          capacity\n        }\n        lesson\n        teacher\n        currentAttendance {\n          attendanceCodeName\n          codeType\n        }\n      }\n      priorityStudent\n      activeSupportPlan\n    }\n  }\n");
+var statusByStudentid = graphql(/* GraphQL */ "\n  query q($filter: StudentStatusFilter) {\n    composite_studentStatus(filter: $filter) {\n      studentPartyId\n      sessionAttendance {\n        name\n        status\n      }\n      currentLocation {\n        studentPartyId\n        eventId\n        room {\n          roomId\n          name\n          capacity\n        }\n        lesson\n        teacher\n        currentAttendance {\n          attendanceCodeName\n          codeType\n        }\n      }\n      priorityStudent\n      activeSupportPlan\n    }\n  }\n");
 export var studentKeys = {
     all: ['people', 'student', 'status'],
     details: function (studentId) {
