@@ -86,7 +86,7 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
                       {session?.name}
                     </Typography>
                     <Typography component="dd" sx={{ fontSize: 12 }}>
-                      {session?.status}
+                      {session?.status ?? '-'}
                     </Typography>
                   </Stack>
                 ))}
