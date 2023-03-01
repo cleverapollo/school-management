@@ -10,7 +10,12 @@ import {
   RootGroup,
   RootLink,
 } from '@tyro/core';
-import { getPermissionUtils, getUser, msalInstance } from '@tyro/api';
+import {
+  getPermissionUtils,
+  getUser,
+  msalInstance,
+  getCoreAcademicNamespace,
+} from '@tyro/api';
 import {
   createBrowserRouter,
   Outlet,
@@ -130,7 +135,7 @@ function useAppRouter() {
           return redirect('/login');
         }
 
-        return getUser();
+        return Promise.all([getUser(), getCoreAcademicNamespace()]);
       },
       element: (
         <LazyLoader>

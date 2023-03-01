@@ -77,7 +77,7 @@ export function BaseOptionChart(): ApexOptions {
 
     // Stroke
     stroke: {
-      width: 3,
+      width: 2,
       curve: 'smooth',
       lineCap: 'round',
     },

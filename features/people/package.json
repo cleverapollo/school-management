@@ -4,6 +4,8 @@
   "private": true,
   "main": "src/index.ts",
   "dependencies": {
+    "@cubejs-client/core": "^0.31.46",
+    "@cubejs-client/react": "^0.31.46",
     "@mui/material": "^5.11.4",
     "@mui/system": "^5.10.14",
     "@tanstack/react-query": "^4.16.1",
@@ -12,6 +14,7 @@
     "@tyro/core": "*",
     "@tyro/i18n": "*",
     "@tyro/icons": "*",
+    "@tyro/reporting": "*",
     "dayjs": "^1.11.7",
     "framer-motion": "^9.0.1",
     "lodash": "^4.17.21",

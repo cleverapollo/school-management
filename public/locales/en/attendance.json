@@ -1,3 +1,4 @@
 {
-  "attendanceNotTaken": "Attendance not taken"
+  "attendanceNotTaken": "Attendance not taken",
+  "sessionAttendanceYear": "Session attendance {{year}}"
 }

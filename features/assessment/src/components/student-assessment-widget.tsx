@@ -35,7 +35,7 @@ export function StudentAssessmentWidget({
   const selectedAssessment = data?.[assessmentIndex];
 
   return (
-    <Card variant="outlined" sx={{ maxWidth: 380, flex: 1 }}>
+    <Card variant="outlined" sx={{ height: '100%', flex: 1 }}>
       <Stack
         direction="row"
         sx={{

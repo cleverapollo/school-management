@@ -1,3 +1,4 @@
+export * from './api';
 export * from './gql';
 export * from './gql/graphql';
 export * from './gql-client';

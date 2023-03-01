@@ -1,8 +1,7 @@
-import React from 'react';
 import { DrillDownLocator, ResultSet } from '@cubejs-client/core';
 import ReactApexChart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
-import { merge } from 'lodash';
+import merge from 'lodash/merge';
 import { BaseOptionChart } from './BaseOptionChart';
 import { ChartDefinition, ChartRendererInternalProps } from './ChartRenderer';
 
@@ -23,8 +22,8 @@ const transformData = (
   }
   const measure = measures[0];
   const dimension = dimensions[0];
-  const series = [] as number[];
-  const categories = [] as string[];
+  const series: number[] = [];
+  const categories: string[] = [];
   // eslint-disable-next-line vars-on-top,no-plusplus,no-var
   for (var i = 0; i < resultSet.tablePivot().length; i++) {
     series.push(Number(resultSet.tablePivot()[i][measure]));
@@ -90,13 +89,23 @@ export const ApexPieChart = (options?: ApexOptions): ChartDefinition => ({
     if (transformed === undefined) {
       <div>error</div>;
     }
-    const userMergedOptions = merge(BaseOptionChart(), options);
-    const chartOptions: ApexOptions = merge(userMergedOptions, {
-      chart: {
-        events: {
-          dataPointSelection: onclickEvent,
+    const chartOptions: ApexOptions = merge(
+      BaseOptionChart(),
+      {
+        labels: transformed?.categories,
+        chart: {
+          events: {
+            dataPointSelection: onclickEvent,
+          },
         },
       },
+      options
+    );
+
+    console.log({
+      chartOptions,
+      series: transformed?.series,
+      categories: transformed?.categories,
     });
     return (
       <ReactApexChart
