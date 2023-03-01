@@ -1,6 +1,6 @@
 import { Person } from "@tyro/api";
 
-export const displayName  = (person: Person | undefined) => {
+export const displayName  = (person: Pick<Person, 'firstName' | 'lastName'> | undefined) => {
   if(person == null){
     return ""
   } else {

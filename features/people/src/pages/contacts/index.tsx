@@ -7,6 +7,7 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
 import { useContacts } from '../../api/contacts';
 import { TableAvatar } from '../../components/common/table-avatar';
+import { displayName } from '../../../../../src/utils/nameUtils';
 
 type ReturnTypeFromUseContacts = NonNullable<
   ReturnType<typeof useContacts>['data']
@@ -22,13 +23,12 @@ const getContactColumns = (
   {
     field: 'person',
     headerName: translate('common:name'),
-    valueGetter: ({ data }) =>
-      `${data?.person?.firstName ?? ''} ${data?.person?.lastName ?? ''}`,
+    valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => {
       const person = data?.person;
-      const name = `${person?.firstName ?? ''} ${person?.lastName ?? ''}`;
+      const name = displayName(person);
 
       return (
         <TableAvatar

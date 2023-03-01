@@ -4,7 +4,7 @@ import { Link as RouterLink } from 'react-router-dom';
 // @mui
 import { Box, Tooltip, Link, ListItemText } from '@mui/material';
 //
-import { Iconify } from '../../../../../../../../src/components/iconify';
+import { ChevronDownIcon, ChevronRightIcon } from '@tyro/icons';
 //
 import { NavItemProps } from '../types';
 import { StyledItem, StyledIcon, StyledDotIcon } from './styles';
@@ -60,15 +60,12 @@ export default function NavItem({
         </Box>
       )} */}
 
-      {!!children && (
-        <Iconify
-          width={16}
-          icon={
-            open ? 'eva:arrow-ios-downward-fill' : 'eva:arrow-ios-forward-fill'
-          }
-          sx={{ ml: 1, flexShrink: 0 }}
-        />
-      )}
+      {!!children &&
+        (open ? (
+          <ChevronDownIcon sx={{ ml: 1, flexShrink: 0 }} />
+        ) : (
+          <ChevronRightIcon sx={{ ml: 1, flexShrink: 0 }} />
+        ))}
     </StyledItem>
   );
 

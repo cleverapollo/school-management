@@ -5,7 +5,7 @@ import { Link as RouterLink } from 'react-router-dom';
 // @mui
 import { Tooltip, Link, ListItemText } from '@mui/material';
 
-import { Iconify } from '../../../../../../../../src/components/iconify';
+import { ChevronRightIcon } from '@tyro/icons';
 import { NavItemProps } from '../types';
 import { StyledItem, StyledIcon } from './styles';
 
@@ -64,12 +64,12 @@ const NavItem = forwardRef<HTMLDivElement, NavItemProps>(
         )} */}
 
         {!!children && (
-          <Iconify
-            width={16}
-            icon="eva:chevron-right-fill"
+          <ChevronRightIcon
             sx={{
-              top: 11,
-              right: 6,
+              width: 20,
+              height: 20,
+              top: 9,
+              right: 3,
               position: 'absolute',
             }}
           />

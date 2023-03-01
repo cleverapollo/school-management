@@ -20,6 +20,9 @@ const StudentProfileOverviewPage = lazy(
 const StudentProfilePersonalPage = lazy(
   () => import('./pages/students/profile/personal')
 );
+const StudentProfileContactsPage = lazy(
+  () => import('./pages/students/profile/contacts')
+);
 const StudentProfileAttendancePage = lazy(
   () => import('./pages/students/profile/attendance')
 );
@@ -101,6 +104,15 @@ export const getRoutes: NavObjectFunction = (t) => [
                   return getStudentPersonal(studentId);
                 },
                 element: <StudentProfilePersonalPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'contacts',
+                loader: ({ params }) => {
+                  const studentId = getNumber(params.id);
+                  return getStudentsContacts(studentId);
+                },
+                element: <StudentProfileContactsPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,

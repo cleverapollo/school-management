@@ -295,6 +295,14 @@ const INDIGO = {
   700: '#4338ca',
   800: '#3730a3',
   900: '#312e81',
+  500_8: alpha('#6366f1', 0.08),
+  500_12: alpha('#6366f1', 0.12),
+  500_16: alpha('#6366f1', 0.16),
+  500_24: alpha('#6366f1', 0.24),
+  500_32: alpha('#6366f1', 0.32),
+  500_48: alpha('#6366f1', 0.48),
+  500_56: alpha('#6366f1', 0.56),
+  500_80: alpha('#6366f1', 0.8),
 }
 
 const VIOLET = {
@@ -456,11 +464,11 @@ const COMMON = {
   gradients: GRADIENTS,
   chart: CHART_COLORS,
   action: {
-    hover: SLATE[500_8],
-    selected: SLATE[500_16],
+    hover: INDIGO[500_8],
+    selected: INDIGO[500_16],
     disabled: SLATE[500_48],
     disabledBackground: SLATE[500_24],
-    focus: SLATE[500_24],
+    focus: INDIGO[500_16],
     hoverOpacity: 0.08,
     disabledOpacity: 0.48,
   },
