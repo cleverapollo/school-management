@@ -1,5 +1,4 @@
 import { useParams } from 'react-router-dom';
-import * as React from 'react';
 import { Container } from '@mui/material';
 import { Calendar } from '@tyro/calendar';
 

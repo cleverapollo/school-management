@@ -1,15 +1,13 @@
 import {
+  Badge,
   Card,
+  Divider,
+  IconButton,
   Stack,
   Typography,
-  Badge,
-  IconButton,
-  Divider,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { useDisclosure, Avatar } from '@tyro/core';
-import { useLoaderData } from 'react-router';
-import { Maybe, Scalars, Student } from '@tyro/api';
+import { Avatar, useDisclosure } from '@tyro/core';
 import { useStudent } from '../../../api/students';
 import { SupportPlanRing } from '../support-plan-ring';
 import { AdditionalInfo } from './additional-info';
@@ -98,8 +96,8 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
           <AdditionalInfo
             year={data?.yearGroups}
             classGroup={data?.classGroup}
-            tutor={data?.tutors}
-            yearGroupLead={data?.yearGroupLeads}
+            tutors={data?.tutors}
+            yearGroupLeads={data?.yearGroupLeads}
           />
           <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
           <TyroId id={data?.partyId ?? 0} />

@@ -4,30 +4,28 @@ import { GeneralGroup, Person, Student, YearGroupEnrollment } from '@tyro/api';
 import { ReturnTypeFromUseStudent } from '../../../api/students';
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
-import { displayName } from '../../../../../../src/utils/nameUtils';
+import { displayNames } from '../../../../../../src/utils/nameUtils';
 
 export interface AdditionalInfoProps {
   year: ReturnTypeFromUseStudent['yearGroups'];
   classGroup: ReturnTypeFromUseStudent['classGroup'];
-  yearGroupLead: ReturnTypeFromUseStudent['yearGroupLeads'];
-  tutor: ReturnTypeFromUseStudent['tutors'];
+  yearGroupLeads: ReturnTypeFromUseStudent['yearGroupLeads'];
+  tutors: ReturnTypeFromUseStudent['tutors'];
 }
 
 export function AdditionalInfo({
   year,
   classGroup,
-  yearGroupLead,
-  tutor,
+  yearGroupLeads,
+  tutors,
 }: AdditionalInfoProps) {
   const { t } = useTranslation(['people']);
 
   const additionalInfoList = {
     [t('people:year')]: year?.map((a) => a.shortName) || '-',
     [t('people:class')]: classGroup?.name || '-',
-    [t('people:yearHead')]:
-      displayName(yearGroupLead?.map((a) => a).find((a) => true)) || '-',
-    [t('people:tutor')]:
-      displayName(tutor?.map((a) => a).find((a) => true)) || '-',
+    [t('people:yearHead')]: displayNames(yearGroupLeads) || '-',
+    [t('people:tutor')]: displayNames(tutors) || '-',
   };
 
   return (

@@ -8,3 +8,10 @@ export const displayName  = (person: Pick<Person, 'firstName' | 'lastName'> | un
   }
 };
 
+export const displayNames  = (persons: Pick<Person, 'firstName' | 'lastName'>[] | undefined): string => {
+    if(persons == null){
+        return ""
+    } else {
+        return persons.map(person => displayName(person))?.join(", ")
+    }
+};
