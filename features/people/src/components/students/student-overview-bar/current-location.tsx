@@ -100,17 +100,20 @@ export function CurrentLocation({ studentPartyId }: CurrentLocationProps) {
 
     // todo  back end for attendnce is not in place
 
-    const currentAttendance = (
-      <CurrentAttendanceIcon
-        name={
-          data?.currentLocation?.currentAttendance?.attendanceCodeName ??
-          undefined
-        }
-        codeType={
-          data?.currentLocation?.currentAttendance?.codeType ?? undefined
-        }
-      />
-    );
+    const currentAttendance =
+      data?.currentLocation?.eventId == null ? (
+        '-'
+      ) : (
+        <CurrentAttendanceIcon
+          name={
+            data?.currentLocation?.currentAttendance?.attendanceCodeName ??
+            undefined
+          }
+          codeType={
+            data?.currentLocation?.currentAttendance?.codeType ?? undefined
+          }
+        />
+      );
     return {
       [t('people:currentLocation')]: room ?? '-',
       [t('people:currentLesson')]: data?.currentLocation?.lesson ?? '-',
