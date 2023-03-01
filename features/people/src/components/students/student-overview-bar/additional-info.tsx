@@ -7,14 +7,14 @@ import { ReturnTypeFromUseStudent } from '../../../api/students';
 import { displayNames } from '../../../../../../src/utils/nameUtils';
 
 export interface AdditionalInfoProps {
-  year: ReturnTypeFromUseStudent['yearGroups'];
+  years: ReturnTypeFromUseStudent['yearGroups'];
   classGroup: ReturnTypeFromUseStudent['classGroup'];
   yearGroupLeads: ReturnTypeFromUseStudent['yearGroupLeads'];
   tutors: ReturnTypeFromUseStudent['tutors'];
 }
 
 export function AdditionalInfo({
-  year,
+  years,
   classGroup,
   yearGroupLeads,
   tutors,
@@ -22,7 +22,7 @@ export function AdditionalInfo({
   const { t } = useTranslation(['people']);
 
   const additionalInfoList = {
-    [t('people:year')]: year?.map((a) => a.shortName).join(', ') || '-',
+    [t('people:year')]: years?.map((a) => a.shortName).join(', ') || '-',
     [t('people:class')]: classGroup?.name || '-',
     [t('people:yearHead')]: displayNames(yearGroupLeads) || '-',
     [t('people:tutor')]: displayNames(tutors) || '-',
