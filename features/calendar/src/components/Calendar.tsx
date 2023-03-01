@@ -55,7 +55,7 @@ export interface CalendarProps {
   endDate?: Date;
 }
 
-export default function Calendar({
+export const Calendar = function Calendar({
   partyId,
   startDate,
   endDate,
@@ -285,4 +285,4 @@ export default function Calendar({
       </Container>
     </Page>
   );
-}
+};
