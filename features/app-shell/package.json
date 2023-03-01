@@ -16,6 +16,7 @@
     "@tyro/icons": "*",
     "@tyro/mail": "*",
     "@tyro/people": "*",
+    "@tyro/reporting": "*",
     "@tyro/settings": "*",
     "@tyro/tyro-admin": "*",
     "dayjs": "^1.11.7",

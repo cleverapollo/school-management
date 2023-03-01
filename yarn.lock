@@ -5501,6 +5501,7 @@ __metadata:
     "@tyro/icons": "*"
     "@tyro/mail": "*"
     "@tyro/people": "*"
+    "@tyro/reporting": "*"
     "@tyro/settings": "*"
     "@tyro/tyro-admin": "*"
     dayjs: ^1.11.7
@@ -5755,7 +5756,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@tyro/reporting@workspace:features/reporting":
+"@tyro/reporting@*, @tyro/reporting@workspace:features/reporting":
   version: 0.0.0-use.local
   resolution: "@tyro/reporting@workspace:features/reporting"
   dependencies:

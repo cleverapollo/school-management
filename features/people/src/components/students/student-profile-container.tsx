@@ -1,3 +1,5 @@
+/* eslint-disable import/no-relative-packages */
+// TODO: remove above eslint when components are moved to @tyro/core
 import {
   alpha,
   Box,
@@ -18,6 +20,7 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import { useEffect, useState } from 'react';
 import { useStudent } from '../../api/students';
 import { StudentOverviewBar } from './student-overview-bar';
+import { displayName } from '../../../../../src/utils/nameUtils';
 
 const getStudentTabs = (t: TFunction<'people'[]>) => [
   {
@@ -27,6 +30,10 @@ const getStudentTabs = (t: TFunction<'people'[]>) => [
   {
     label: t('people:personal.title'),
     value: 'personal',
+  },
+  {
+    label: t('people:contacts'),
+    value: 'contacts',
   },
   {
     label: 'Attendance',
@@ -84,9 +91,7 @@ export default function StudentProfileContainer() {
   const { id } = useParams();
   const idNumber = useNumber(id);
   const { data } = useStudent(idNumber);
-  const name = `${data?.person?.firstName ?? ''} ${
-    data?.person?.lastName ?? ''
-  }`;
+  const name = displayName(data?.person);
 
   useEffect(() => {
     setValue(getInitialTabValue(matches, studentTabs));
@@ -102,7 +107,7 @@ export default function StudentProfileContainer() {
         minHeight: '100%',
       }}
     >
-      <Box sx={{ px: 2 }}>
+      <Box sx={{ maxWidth: '100vw', px: 2 }}>
         <Container
           maxWidth="xl"
           sx={{
@@ -126,7 +131,7 @@ export default function StudentProfileContainer() {
             ]}
           />
           <StudentOverviewBar studentId={idNumber} />
-          <Box sx={{ maxWidth: '100%' }}>
+          <Box sx={{ width: '100%' }}>
             <Tabs
               value={value}
               onChange={(event, newValue: string) => {

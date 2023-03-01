@@ -29,6 +29,7 @@ export declare const en: {
             no_account: string;
         };
         actions: {
+            title: string;
             view: string;
             notify: string;
             archive: string;
@@ -179,6 +180,8 @@ export declare const en: {
         schools: string;
         saving: string;
         saved: string;
+        yes: string;
+        no: string;
         preferredFirstName: string;
         unsavedChanges_one: string;
         unsavedChanges_other: string;
@@ -256,6 +259,8 @@ export declare const en: {
         yearHead: string;
         tutor: string;
         tyroId: string;
+        primaryContact: string;
+        allowedToContact: string;
         tyroIdClickToCopy: string;
         tyroIdCopied: string;
         issueCopyingTyroId: string;
@@ -264,6 +269,8 @@ export declare const en: {
         guardianContactInformation: string;
         nextContactDisabled_zero: string;
         nextContactDisabled_one: string;
+        sendSms: string;
+        makePrimaryContact: string;
         searchType: {
             CONTACT: string;
             STAFF: string;
@@ -318,6 +325,13 @@ export declare const en: {
                 leftEarly: string;
                 dateOfLeaving: string;
             };
+        };
+        actions: {
+            allowUsersToContact: string;
+            disallowUsersToContact: string;
+        };
+        feedback: {
+            moreThanOneSelectedForPrimaryContact: string;
         };
     };
     settings: {

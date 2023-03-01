@@ -10,6 +10,7 @@
         "no_account": "Don't have an account?"
     },
     "actions": {
+        "title": "Actions",
         "view": "View",
         "notify": "Notify",
         "archive": "Archive",
@@ -160,6 +161,8 @@
     "schools": "Schools",
     "saving": "Saving",
     "saved": "Saved",
+    "yes": "Yes",
+    "no": "No",
     "preferredFirstName": "Preferred first name",
     "unsavedChanges_one": "{{count}} unsaved change",
     "unsavedChanges_other": "{{count}} unsaved changes"
