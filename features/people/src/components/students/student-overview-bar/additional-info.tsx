@@ -22,7 +22,7 @@ export function AdditionalInfo({
   const { t } = useTranslation(['people']);
 
   const additionalInfoList = {
-    [t('people:year')]: year?.map((a) => a.shortName) || '-',
+    [t('people:year')]: year?.map((a) => a.shortName).join(', ') || '-',
     [t('people:class')]: classGroup?.name || '-',
     [t('people:yearHead')]: displayNames(yearGroupLeads) || '-',
     [t('people:tutor')]: displayNames(tutors) || '-',
