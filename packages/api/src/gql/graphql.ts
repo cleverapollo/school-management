@@ -2224,6 +2224,7 @@ export type SendMailInput = {
 
 export type SendMailRecipientInput = {
   recipientPartyId: Scalars['Long'];
+  recipientPartyType: SearchType;
   recipientType: RecipientType;
 };
 
@@ -2245,6 +2246,7 @@ export type Session = {
 
 export type SessionAttendanceStatus = {
   __typename?: 'SessionAttendanceStatus';
+  codeType: AttendanceCodeType;
   name?: Maybe<Scalars['String']>;
   status?: Maybe<Scalars['String']>;
   studentPartyId: Scalars['Long'];
