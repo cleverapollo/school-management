@@ -45,6 +45,10 @@
       "title": "500 Internal Server Error",
       "description": "There was an error, please try again later."
     },
+    "503": {
+      "title": "503 Service Unavailable",
+      "description": "There seems to be an issue with connecting to Tyro, please try again later."
+    },
     "unknown": {
       "title": "Opps, something went wrong",
       "description": "If this problem persists, please contact support."
