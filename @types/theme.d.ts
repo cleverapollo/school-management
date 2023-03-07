@@ -60,3 +60,9 @@ declare module '@mui/material/Button' {
     soft: true;
   }
 }
+
+declare module '@mui/material/Chip' {
+  interface ChipPropsVariantOverrides {
+    soft: true;
+  }
+}
