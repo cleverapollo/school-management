@@ -1,54 +1,55 @@
-import React from 'react';
 import { DrillDownLocator, ResultSet } from '@cubejs-client/core';
 import ReactApexChart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
-import merge from 'lodash/merge';
-import { BaseOptionChart } from './BaseOptionChart';
-import { DataLayoutType, transformData } from './ApexTransformers';
-import { ChartDefinition, ChartRendererInternalProps } from './ChartRenderer';
+import { useChartOptions } from '../../hooks/use-chart-options';
+import { transformData } from './chart-transformer';
+import { ChartDefinition, ChartRendererInternalProps } from './chart-renderer';
 
-const colors = ['#7DB3FF', '#49457B', '#FF7C78'];
-
-interface ApexTransformedData {
-  series: any[];
-  categories: string[];
-}
-const displayComponent = ({
+const DisplayComponent = ({
   resultSet,
-  height,
-  onclickEvent,
-}: ChartRendererInternalProps) => {
-  const transformed = transformData(resultSet, DataLayoutType.TwoDimension);
+  height = 280,
+  onClick,
+  options,
+}: ChartRendererInternalProps & {
+  options: ApexOptions & { colorField?: string };
+}) => {
+  const { colorField, ...remainingOptions } = options;
+  const transformed = transformData(resultSet);
+  const chartOptions = useChartOptions(
+    'bar',
+    {
+      legend: { floating: true, horizontalAlign: 'center' },
+      dataLabels: { enabled: true, dropShadow: { enabled: false } },
+      labels: transformed?.categories,
+      tooltip: {
+        fillSeriesColor: false,
+      },
+      plotOptions: {
+        bar: {
+          horizontal: true,
+        },
+      },
+      chart: {
+        stacked: true,
+        stackType: '100%',
+        events: {
+          dataPointSelection: onClick,
+        },
+      },
+    },
+    remainingOptions
+  );
+
   if (transformed === undefined) {
     <div>error</div>;
   }
-  const chartOptions: ApexOptions = merge(BaseOptionChart(), {
-    legend: { floating: true, horizontalAlign: 'center' },
-    dataLabels: { enabled: true, dropShadow: { enabled: false } },
-    labels: transformed?.categories,
-    tooltip: {
-      fillSeriesColor: false,
-    },
-    plotOptions: {
-      bar: {
-        horizontal: true,
-      },
-    },
 
-    chart: {
-      stacked: true,
-      stackType: '100%',
-      events: {
-        dataPointSelection: onclickEvent,
-      },
-    },
-  });
   return (
     <ReactApexChart
       type="bar"
       series={transformed?.series}
       options={chartOptions}
-      height={400}
+      height={height}
     />
   );
 };
@@ -71,8 +72,6 @@ const drilldownLocationFunction = (
     const yFilters = foundKeys[seriesIndex]
       .split(',')
       .filter((k) => !measures.includes(k));
-    const xfilterValues = resultSet.chartPivot()[datapointIndex].xValues;
-    // todo are indexs always the same here??
 
     const locator = {
       xValues: resultSet.chartPivot()[datapointIndex].xValues,
@@ -80,14 +79,6 @@ const drilldownLocationFunction = (
     } as DrillDownLocator;
     return resultSet.drillDown(locator);
   }
-
-  //
-  //
-  //
-
-  //
-  //
-  //
 
   const datapointIndex = c.dataPointIndex as number;
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -115,10 +106,11 @@ const drilldownLocationFunction = (
   } as DrillDownLocator;
 
   return resultSet.drillDown(locator);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 };
 
-export const ApexBarChart = {
-  component: displayComponent,
+export const BarChart = (
+  options: ApexOptions & { colorField?: string } = {}
+): ChartDefinition => ({
+  component: (props) => <DisplayComponent {...props} options={options} />,
   drillDownQuery: drilldownLocationFunction,
-} as ChartDefinition;
+});

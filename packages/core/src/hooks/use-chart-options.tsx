@@ -1,15 +1,19 @@
+import { useMemo } from 'react';
+import { useTheme, Theme } from '@mui/material';
+import { TFunction, useTranslation } from '@tyro/i18n';
 import { ApexOptions } from 'apexcharts';
-// @mui
-import { useTheme } from '@mui/material/styles';
+import merge from 'lodash/merge';
 
-// ----------------------------------------------------------------------
+type ChartTypes = NonNullable<ApexOptions['chart']>['type'];
 
-export function BaseOptionChart(): ApexOptions {
-  const theme = useTheme();
-
+export function BaseOptionChart(
+  type: ChartTypes,
+  theme: Theme,
+  t: TFunction<'common'[], undefined, 'common'[]>
+): ApexOptions {
   const LABEL_TOTAL = {
     show: true,
-    label: 'Total',
+    label: t('common:total'),
     color: theme.palette.text.secondary,
     fontSize: theme.typography.subtitle2.fontSize as string,
     fontWeight: theme.typography.subtitle2.fontWeight,
@@ -28,11 +32,14 @@ export function BaseOptionChart(): ApexOptions {
     // Colors
     colors: [
       theme.palette.primary.main,
-      theme.palette.chart.yellow[0],
-      theme.palette.chart.blue[0],
-      theme.palette.chart.violet[0],
-      theme.palette.chart.green[0],
-      theme.palette.chart.red[0],
+      theme.palette.warning.main,
+      theme.palette.info.main,
+      theme.palette.error.main,
+      theme.palette.success.main,
+      theme.palette.warning.dark,
+      theme.palette.success.darker,
+      theme.palette.info.dark,
+      theme.palette.info.darker,
     ],
 
     // Chart
@@ -110,16 +117,23 @@ export function BaseOptionChart(): ApexOptions {
     // Legend
     legend: {
       show: true,
-      fontSize: String(13),
-      position: 'top',
-      horizontalAlign: 'right',
+      fontSize: '13',
+      ...(type === 'donut'
+        ? {
+            position: 'right',
+            verticalAlign: 'middle',
+          }
+        : {
+            position: 'top',
+            horizontalAlign: 'right',
+          }),
       markers: {
         radius: 12,
       },
       fontWeight: 500,
       itemMargin: { horizontal: 12 },
       labels: {
-        colors: theme.palette.text.primary,
+        colors: theme.palette.text.secondary,
       },
     },
 
@@ -133,12 +147,23 @@ export function BaseOptionChart(): ApexOptions {
       // Pie + Donut
       pie: {
         donut: {
+          size: '86%',
           labels: {
             show: true,
+            name: {
+              fontSize: '14px',
+              fontWeight: 600,
+              color: theme.palette.text.secondary,
+            },
+            value: {
+              fontSize: '22px',
+              fontWeight: 700,
+              color: theme.palette.text.primary,
+            },
             total: {
               show: true,
-              label: '',
-              formatter: () => 'Text you want',
+              label: t('common:total'),
+              color: theme.palette.text.secondary,
             },
           },
         },
@@ -191,4 +216,14 @@ export function BaseOptionChart(): ApexOptions {
       },
     ],
   };
+}
+
+export function useChartOptions(type: ChartTypes, ...options: ApexOptions[]) {
+  const theme = useTheme();
+  const { t } = useTranslation(['common']);
+
+  return useMemo(
+    () => merge(BaseOptionChart(type, theme, t), ...options) as ApexOptions,
+    options
+  );
 }

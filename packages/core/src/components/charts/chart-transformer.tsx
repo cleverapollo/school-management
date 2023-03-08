@@ -89,8 +89,7 @@ const twoDimensionNonTimeBased = (
 };
 
 export const transformData = (
-  resultSet: ResultSet,
-  layout: string
+  resultSet: ResultSet
 ): ApexTransformedData | undefined => {
   if ((resultSet.query().timeDimensions || []).length > 0) {
     return twoDimentionTimeBased(resultSet);
