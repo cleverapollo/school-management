@@ -16,8 +16,14 @@ import {
   ExternalLinkIcon,
 } from '@tyro/icons';
 import { Link } from 'react-router-dom';
-import { ChartRenderer, ApexPieChart } from '@tyro/reporting';
+import { ChartRenderer, ChartRendererProps, PieChart } from '@tyro/core';
 import { Query } from '@cubejs-client/core';
+import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import { SessionAttendanceTable } from './session-attendance-table';
+import { EmptyPieChart } from './empty-pie-chart';
+
+dayjs.extend(LocalizedFormat);
 
 interface StudentSessionAttendanceChartProps {
   studentId: number | undefined;
@@ -33,6 +39,7 @@ function getChartQuery(studentId: number, year: number) {
       'OutputSessionsAttendance.absenceType',
       'OutputSessionsAttendance.studentFullName',
       'OutputSessionsAttendance.studentPartyId',
+      'OutputSessionsAttendance.colourAbsenceType',
     ],
     filters: [
       {
@@ -59,7 +66,7 @@ function getYearString(year: number | undefined) {
 export function StudentSessionAttendanceChart({
   studentId,
 }: StudentSessionAttendanceChartProps) {
-  const [t] = useTranslation(['attendance']);
+  const [t] = useTranslation(['attendance', 'common']);
   const { activeAcademicNamespace, allNamespaces } = useAcademicNamespace();
   const [selectedYear, setSelectedYear] = useState(activeAcademicNamespace);
   const selectedYearIndex =
@@ -70,12 +77,23 @@ export function StudentSessionAttendanceChart({
     allNamespaces?.[selectedYearIndex + 1] ??
     allNamespaces?.[allNamespaces.length - 1];
 
-  console.log({
-    activeAcademicNamespace,
-    selectedYear,
-  });
-
   const chartQuery = getChartQuery(studentId ?? 0, selectedYear?.year ?? 0);
+  const chartDrilldownConfig: ChartRendererProps['drillDownConfig'] = {
+    columns: [
+      {
+        field: 'OutputSessionsAttendance.absenceType',
+        headerName: t('attendance:absenceType'),
+      },
+      {
+        field: 'OutputSessionsAttendance.date',
+        headerName: t('common:date'),
+        cellRenderer: (value) =>
+          typeof value === 'string' && dayjs(value).isValid()
+            ? dayjs(value).format('L')
+            : value,
+      },
+    ],
+  };
 
   const setPreviousYear = () => {
     if (previousYear) {
@@ -117,7 +135,7 @@ export function StudentSessionAttendanceChart({
           title={t('attendance:sessionAttendanceYear', {
             year: getYearString(selectedYear?.year),
           })}
-          sx={{ p: 0, m: 0 }}
+          sx={{ p: 0, m: 0, textAlign: 'center' }}
         />
 
         <Stack direction="row" alignItems="center" spacing={2}>
@@ -150,15 +168,36 @@ export function StudentSessionAttendanceChart({
           borderColor: 'divider',
         }}
       >
-        <ChartRenderer
-          query={chartQuery()}
-          chartDefinition={ApexPieChart()}
-          drillDownDisplayColumns={[
-            'OutputSessionsAttendance.subjectGroupName',
-            'OutputSessionsAttendance.absenceType',
-            'OutputSessionsAttendance.date',
-          ]}
-        />
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="center"
+          sx={{ py: 4, px: 2 }}
+          spacing={6}
+        >
+          <Box sx={{ maxWidth: 180, width: '100%' }}>
+            <ChartRenderer
+              query={chartQuery()}
+              chartDefinition={PieChart({
+                legend: { show: false },
+                colorField: 'OutputSessionsAttendance.colourAbsenceType',
+              })}
+              drillDownConfig={chartDrilldownConfig}
+              height={200}
+              emptyState={<EmptyPieChart />}
+            />
+          </Box>
+          <ChartRenderer
+            query={chartQuery()}
+            chartDefinition={SessionAttendanceTable()}
+            drillDownConfig={chartDrilldownConfig}
+            emptyState={
+              <Box component="span" sx={{ maxWidth: 336 }}>
+                {t('attendance:noSessionAttendanceForYear')}
+              </Box>
+            }
+          />
+        </Stack>
       </Box>
     </Card>
   );

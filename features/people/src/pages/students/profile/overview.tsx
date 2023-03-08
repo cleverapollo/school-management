@@ -17,6 +17,7 @@ export default function StudentProfileOverviewPage() {
         gridTemplateRows: 'repeat(2, auto)',
         gridTemplateColumns: 'repeat(6, 1fr)',
         gap: 3,
+        maxWidth: 'lg',
       }}
     >
       <Box
