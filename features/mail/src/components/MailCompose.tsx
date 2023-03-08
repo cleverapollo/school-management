@@ -14,7 +14,7 @@ import {
   Typography,
 } from '@mui/material';
 // hooks
-import { RecipientType } from '@tyro/api';
+import { RecipientType, SendMailInput } from '@tyro/api';
 import { useResponsive } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 // components
@@ -63,16 +63,17 @@ export default function MailCompose({ isOpenCompose, onCloseCompose }: Props) {
   const [recipientsString, setRecipientsString] = useState<string>('');
   const [subject, setSubject] = useState<string>('');
   const filter = useMemo(
-    () => ({
-      body: message,
-      canReply: true,
-      // ToDo: refactor recipients with user names
-      recipients: recipientsString.split(',').map((recipient) => ({
-        recipientPartyId: +recipient,
-        recipientType: RecipientType.To,
-      })),
-      subject,
-    }),
+    () =>
+      ({
+        body: message,
+        canReply: true,
+        // ToDo: refactor recipients with user names
+        recipients: recipientsString.split(',').map((recipient) => ({
+          recipientPartyId: +recipient,
+          recipientType: RecipientType.To,
+        })),
+        subject,
+      } as SendMailInput),
     [message, recipientsString, subject]
   );
 

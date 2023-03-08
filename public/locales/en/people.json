@@ -32,7 +32,15 @@
   "searchType": {
     "CONTACT": "Contact",
     "STAFF": "Staff",
-    "STUDENT": "Student"
+    "STUDENT": "Student",
+    "GENERAL_GROUP": "General group",
+    "GENERAL_GROUP_STUDENT": "Students from General group",
+    "GENERAL_GROUP_STAFF": "Staff from General group",
+    "GENERAL_GROUP_CONTACT": "Contacts of Students from General group",
+    "SUBJECT_GROUP": "Subject group",
+    "SUBJECT_GROUP_STUDENT": "Students from Subject group",
+    "SUBJECT_GROUP_STAFF": "Staff from Subject group",
+    "SUBJECT_GROUP_CONTACT": "Contacts of Students from Subject group"
   },
   "personal": {
     "title": "Personal",

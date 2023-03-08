@@ -8,6 +8,7 @@ import { getStudent, getStudents } from './api/students';
 import { getStudentPersonal } from './api/student/personal';
 import { getStudentsContacts } from './api/student/overview';
 import { getContacts } from './api/contacts';
+import { getStudentStatus } from './api/status';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
 // Student profile pages
@@ -76,7 +77,10 @@ export const getRoutes: NavObjectFunction = (t) => [
             element: <StudentProfileContainer />,
             loader: ({ params }) => {
               const studentId = getNumber(params.id);
-              return getStudent(studentId);
+              return Promise.all([
+                getStudent(studentId),
+                getStudentStatus(studentId),
+              ]);
             },
             children: [
               {
