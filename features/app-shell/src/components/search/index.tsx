@@ -17,6 +17,7 @@ import { SearchProvider } from './provider';
 import { SearchInput } from './input';
 import { useOmniSearch } from '../../api/search';
 import { PeopleSection } from './sections/people-section';
+import { GroupsSection } from './sections/groups-section';
 import { RecentSearchSection } from './sections/recent-search-section';
 import { SearchListboxContainer } from './listbox-container';
 
@@ -30,7 +31,7 @@ function Searchbar() {
   const location = useLocation();
 
   const { data, isLoading } = useOmniSearch(debouncedSearchQuery);
-  const { hasResults, pages, people } = data || { hasResults: false };
+  const { hasResults, pages, people, groups } = data || { hasResults: false };
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -90,6 +91,7 @@ function Searchbar() {
                 {hasResults ? (
                   <SearchListboxContainer>
                     <PeopleSection people={people} />
+                    <GroupsSection groups={groups} />
                     <PagesSection pages={pages} />
                   </SearchListboxContainer>
                 ) : (

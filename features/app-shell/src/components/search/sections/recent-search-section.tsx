@@ -1,10 +1,12 @@
 import { IconButton, DialogContent, Divider } from '@mui/material';
 import { CloseIcon } from '@tyro/icons';
+import { SearchType } from '@tyro/api';
 import { useMemo } from 'react';
 import { useSearchFeatures } from '../../../hooks/use-search-features';
 import { SearchListboxContainer } from '../listbox-container';
 import { useSearchProvider } from '../provider';
 import { SectionContainer } from '../section-container';
+import { GroupOption } from './groups-section';
 import { PageOption } from './pages-section';
 import { PersonOption } from './people-section';
 
@@ -58,14 +60,32 @@ export function RecentSearchSection() {
                 </IconButton>
               );
 
-              return option.type === 'PAGE' ? (
-                <PageOption
-                  key={option.partyId}
-                  option={option}
-                  endIcon={endIcon}
-                />
-              ) : (
-                <PersonOption
+              if (option.type === 'PAGE') {
+                return (
+                  <PageOption
+                    key={option.partyId}
+                    option={option}
+                    endIcon={endIcon}
+                  />
+                );
+              }
+
+              if (
+                option.type === SearchType.Contact ||
+                option.type === SearchType.Student ||
+                option.type === SearchType.Staff
+              ) {
+                return (
+                  <PersonOption
+                    key={option.partyId}
+                    option={option}
+                    endIcon={endIcon}
+                  />
+                );
+              }
+
+              return (
+                <GroupOption
                   key={option.partyId}
                   option={option}
                   endIcon={endIcon}
