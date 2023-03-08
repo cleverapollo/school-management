@@ -1,4 +1,7 @@
 {
   "attendanceNotTaken": "Attendance not taken",
-  "sessionAttendanceYear": "Session attendance {{year}}"
+  "sessionAttendanceYear": "Session attendance {{year}}",
+  "absenceType": "Absence type",
+  "totalDays": "Total days {{count}}",
+  "noSessionAttendanceForYear": "No session attendance data available for this year."
 }
