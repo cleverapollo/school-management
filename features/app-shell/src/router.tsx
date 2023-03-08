@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-throw-literal */
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
 import {
@@ -45,9 +46,7 @@ async function checkHasAccess(hasAccess: HasAccessFunction) {
   try {
     const permissionUtils = await getPermissionUtils();
     if (!hasAccess(permissionUtils)) {
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw new Response('Forbidden', { status: 403 });
-      // throw new Error('Forbidden');
     }
   } catch (error) {
     if (error === 'USER_NOT_FOUND') {
@@ -128,14 +127,22 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
 function useAppRouter() {
   return createBrowserRouter([
     {
-      loader: () => {
+      loader: async () => {
         const activeAccount = msalInstance.getActiveAccount();
 
         if (!activeAccount) {
           return redirect('/login');
         }
 
-        return Promise.all([getUser(), getCoreAcademicNamespace()]);
+        return Promise.all([getUser(), getCoreAcademicNamespace()]).catch(
+          (error: Error) => {
+            if (error?.message === 'Failed to fetch') {
+              throw new Response('Service Unavailable', { status: 503 });
+            }
+
+            throw error;
+          }
+        );
       },
       element: (
         <LazyLoader>
