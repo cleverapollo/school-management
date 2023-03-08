@@ -11,6 +11,7 @@
     "@tanstack/react-query": "^4.16.1",
     "@tyro/api": "*",
     "@tyro/assessment": "*",
+    "@tyro/calendar": "*",
     "@tyro/core": "*",
     "@tyro/i18n": "*",
     "@tyro/icons": "*",

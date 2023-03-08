@@ -11,5 +11,12 @@
   "created": "Created",
   "subject": "Subject",
   "level": "Level",
-  "teacher": "Teacher"
+  "teacher": "Teacher",
+  "subjectGroupLevel": {
+    "COMMON": "Common", 
+    "FOUNDATION": "Foundation",
+    "HIGHER": "Higher",
+    "NOT_APPLICABLE": "Not Applicable",
+    "ORDINARY": "Ordinary" 
+  }
 }

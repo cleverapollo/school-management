@@ -1,25 +1,26 @@
 import { Fragment, useMemo } from 'react';
 import { Box, Tooltip } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import { CodeType, CurrentStudentLocation, Maybe } from '@tyro/api';
+import { AttendanceCodeType, CurrentStudentLocation } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { CheckmarkIcon, CloseIcon, MinusIcon } from '@tyro/icons';
+import { useStudentStatus } from '../../../api/status';
 
 interface CurrentAttendanceIconProps {
   name: string | undefined;
-  codeType: CodeType | undefined;
+  codeType: AttendanceCodeType | undefined;
 }
 
 interface TempCustomCurrentLocation
   extends Omit<CurrentStudentLocation, 'currentAttendance'> {
   currentAttendance: {
     name: string;
-    codeType: CodeType;
+    codeType: AttendanceCodeType;
   };
 }
 
 interface CurrentLocationProps {
-  currentLocation: Maybe<TempCustomCurrentLocation> | undefined;
+  studentPartyId: number | undefined;
 }
 
 type AttendanceCodeIconSettings = {
@@ -33,8 +34,8 @@ function CurrentAttendanceIcon({ name, codeType }: CurrentAttendanceIconProps) {
 
   const { icon, color, tooltip } = useMemo((): AttendanceCodeIconSettings => {
     switch (codeType) {
-      case CodeType.Present:
-      case CodeType.Late:
+      case AttendanceCodeType.Present:
+      case AttendanceCodeType.Late:
         return {
           icon: (
             <CheckmarkIcon sx={{ color: 'white', width: 16, height: 16 }} />
@@ -42,8 +43,8 @@ function CurrentAttendanceIcon({ name, codeType }: CurrentAttendanceIconProps) {
           color: 'green',
           tooltip: name,
         };
-      case CodeType.UnexplainedAbsence:
-      case CodeType.ExplainedAbsence:
+      case AttendanceCodeType.UnexplainedAbsence:
+      case AttendanceCodeType.ExplainedAbsence:
         return {
           icon: <CloseIcon />,
           color: 'rose',
@@ -89,30 +90,37 @@ function CurrentAttendanceIcon({ name, codeType }: CurrentAttendanceIconProps) {
   );
 }
 
-export function CurrentLocation({ currentLocation }: CurrentLocationProps) {
+export function CurrentLocation({ studentPartyId }: CurrentLocationProps) {
   const { t } = useTranslation(['people']);
-
+  const { data, isLoading } = useStudentStatus(studentPartyId);
   const currentLocationList = useMemo(() => {
-    const room =
-      currentLocation?.room?.length !== undefined &&
-      currentLocation?.room?.length > 0
-        ? currentLocation?.room[0]?.name
-        : '-';
-    return {
-      [t('people:currentLocation')]: room,
-      [t('people:currentLesson')]: currentLocation?.lesson ?? '-',
-      [t('people:currentTeacher')]: currentLocation?.teacher ?? '-',
-      [t('people:attendance')]: (
-        <CurrentAttendanceIcon
-          {...(currentLocation?.currentAttendance ?? {
-            name: undefined,
-            codeType: undefined,
-          })}
-        />
-      ),
-    };
-  }, [currentLocation, t]);
+    const room = data?.currentLocation?.room
+      ?.map((a) => a?.name)
+      .find((a) => true);
 
+    // todo  back end for attendnce is not in place
+
+    const currentAttendance =
+      data?.currentLocation?.eventId == null ? (
+        '-'
+      ) : (
+        <CurrentAttendanceIcon
+          name={
+            data?.currentLocation?.currentAttendance?.attendanceCodeName ??
+            undefined
+          }
+          codeType={
+            data?.currentLocation?.currentAttendance?.codeType ?? undefined
+          }
+        />
+      );
+    return {
+      [t('people:currentLocation')]: room ?? '-',
+      [t('people:currentLesson')]: data?.currentLocation?.lesson ?? '-',
+      [t('people:currentTeacher')]: data?.currentLocation?.teacher ?? '-',
+      [t('people:attendance')]: currentAttendance,
+    };
+  }, [data, t]);
   return (
     <Box
       component="dl"

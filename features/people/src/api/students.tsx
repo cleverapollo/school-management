@@ -1,9 +1,10 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
-  CodeType,
+  AttendanceCodeType,
   gqlClient,
   graphql,
   queryClient,
+  Student,
   UpdateStudentInput,
 } from '@tyro/api';
 import { BulkEditedRows } from '@tyro/core';
@@ -77,26 +78,20 @@ const studentById = graphql(/* GraphQL */ `
           lastName
         }
       }
-      status {
-        sessionAttendance {
-          studentPartyId
-          name
-          status
-        }
-        currentLocation {
-          room {
-            roomId
-            name
-          }
-          lesson
-          teacher
-          currentAttendance {
-            attendanceCodeName
-            codeType
-          }
-        }
-        priorityStudent
-        activeSupportPlan
+      yearGroupLeads {
+        firstName
+        lastName
+        avatarUrl
+      }
+      yearGroups {
+        shortName
+      }
+      tutors {
+        partyId
+        firstName
+        lastName
+        avatarUrl
+        type
       }
     }
   }
@@ -142,6 +137,10 @@ export function getStudent(studentId: number | undefined) {
   return queryClient.fetchQuery(studentQuery(studentId));
 }
 
+export type ReturnTypeFromUseStudent = NonNullable<
+  ReturnType<typeof useStudent>['data']
+>;
+
 export function useStudent(studentId: number | undefined) {
   return useQuery({
     ...studentQuery(studentId),
@@ -150,41 +149,9 @@ export function useStudent(studentId: number | undefined) {
         Array.isArray(core_students) && core_students.length > 0
           ? core_students[0]
           : null;
-
       // Adding mock data for demo purposes
       return {
         ...student,
-        status: {
-          studentPartyId: student?.partyId ?? 0,
-          sessionAttendance: [
-            {
-              studentPartyId: 0,
-              name: 'AM',
-              status: 'Present',
-            },
-            {
-              studentPartyId: 1,
-              name: 'PM',
-              status: 'Absent',
-            },
-          ],
-          currentLocation: {
-            room: [
-              {
-                roomId: 0,
-                name: 'Room 20B',
-              },
-            ],
-            lesson: 'English H2',
-            teacher: 'Mr. Smith',
-            currentAttendance: {
-              name: 'Present',
-              codeType: CodeType.Present,
-            },
-          },
-          priorityStudent: true,
-          activeSupportPlan: true,
-        },
       };
     },
     enabled: !!studentId,

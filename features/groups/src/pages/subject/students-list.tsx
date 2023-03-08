@@ -7,9 +7,10 @@ import { useTranslation, TFunction } from '@tyro/i18n';
 import { Page } from '@tyro/core';
 import Table from '../../../../../src/components/table/Table';
 import { TableColumn } from '../../../../../src/components/table/types';
-import { ColoredBox } from '../../components/ColoredBox';
-import { MultiPersonsAvatars } from '../../components/MultiPersonsAvatars';
+
+import { displayName } from '../../../../../src/utils/nameUtils';
 import { useStudentSubjects } from '../../api/student-subjects';
+import { SubjectGroupLevelChip } from '../../components/subject-group-level-chip';
 
 interface SubjectsData extends SubjectGroup {
   firstButton?: string;
@@ -37,19 +38,20 @@ const getSubjectColumns = (
     columnDisplayName: translate('groups:level'),
     fieldName: 'irePP.level',
     filter: 'suggest',
-    component: (columnProps) => (
-      <ColoredBox
-        content={columnProps.row.original.irePP?.level ?? undefined}
-      />
-    ),
+    component: (columnProps) =>
+      columnProps.row.original.irePP?.level ? (
+        <SubjectGroupLevelChip level={columnProps.row.original.irePP.level} />
+      ) : null,
   },
   {
     columnDisplayName: translate('groups:teacher'),
     fieldName: 'staff',
     filter: 'suggest',
     component: ({ row }) => {
-      const teachers = row.original.staff as [Person];
-      return <MultiPersonsAvatars person={teachers} />;
+      const teachers = row.original.staff as Person[];
+      if (teachers.length === 0) return '-';
+
+      return teachers.map(displayName).join(',');
     },
   },
   {
@@ -64,6 +66,8 @@ const getSubjectColumns = (
     fieldName: 'tech',
   },
 ];
+
+// TODO: migrate to react-data-grid
 
 export default function Subjects() {
   const { t } = useTranslation(['common', 'groups']);
