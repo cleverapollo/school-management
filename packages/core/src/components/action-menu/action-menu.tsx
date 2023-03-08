@@ -5,7 +5,7 @@ import { useTranslation } from '@tyro/i18n';
 import { useDisclosure } from '../../hooks';
 import { getMenuItemList, MenuItemConfig } from './menu-item-list';
 
-interface ActionMenuProps {
+export interface ActionMenuProps {
   buttonLabel?: string;
   buttonIcon?: React.ReactNode;
   buttonProps?: ButtonProps;

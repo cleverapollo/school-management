@@ -1,3 +1,4 @@
+export * from './archive';
 export * from './bell';
 export * from './book-open';
 export * from './calendar-31';
@@ -34,6 +35,7 @@ export * from './save';
 export * from './search';
 export * from './send-mail';
 export * from './thumbs-up-clock';
+export * from './unarchive';
 export * from './undo';
 export * from './user-group';
 export * from './user-group-two';

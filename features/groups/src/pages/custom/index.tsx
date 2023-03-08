@@ -15,7 +15,6 @@ import { Page } from '@tyro/core';
 import Table from '../../../../../src/components/table/Table';
 import { Option, TableColumn } from '../../../../../src/components/table/types';
 import OptionButton from '../../../../../src/components/table/OptionButton';
-import { ColoredBox } from '../../components/ColoredBox';
 import { useCustomGroups } from '../../api/general-groups';
 
 interface CustomGroupData {
@@ -32,40 +31,44 @@ interface CustomGroupData {
 }
 
 export const getAdminOptions = (
-  translate: TFunction<('common')[], undefined, ('common')[]>,
-): Option<CustomGroupData>[] => ([
-    {
-      text: translate('common:actions.notify'),
-      icon: 'notify',
-      action: (e: MouseEvent) => {
-        e.stopPropagation();
-      },
+  translate: TFunction<'common'[], undefined, 'common'[]>
+): Option<CustomGroupData>[] => [
+  {
+    text: translate('common:actions.notify'),
+    icon: 'notify',
+    action: (e: MouseEvent) => {
+      e.stopPropagation();
     },
-    {
-      text: translate('common:actions.edit'),
-      icon: 'edit',
-      action: (e: MouseEvent) => {
-        e.stopPropagation();
-      },
+  },
+  {
+    text: translate('common:actions.edit'),
+    icon: 'edit',
+    action: (e: MouseEvent) => {
+      e.stopPropagation();
     },
-    {
-      text: translate('common:actions.archive'),
-      icon: 'archive',
-      action: (e: MouseEvent) => {
-        e.stopPropagation();
-      },
+  },
+  {
+    text: translate('common:actions.archive'),
+    icon: 'archive',
+    action: (e: MouseEvent) => {
+      e.stopPropagation();
     },
-    {
-      text: translate('common:actions.delete'),
-      icon: 'delete',
-      action: (e: MouseEvent) => {
-        e.stopPropagation();
-      },
+  },
+  {
+    text: translate('common:actions.delete'),
+    icon: 'delete',
+    action: (e: MouseEvent) => {
+      e.stopPropagation();
     },
-  ]);
+  },
+];
 
 const getCustomGroupColumns = (
-  translate: TFunction<('common' | 'groups')[], undefined, ('common' | 'groups')[]>,
+  translate: TFunction<
+    ('common' | 'groups')[],
+    undefined,
+    ('common' | 'groups')[]
+  >,
   isAdminUserType: boolean
 ): TableColumn<CustomGroupData>[] => [
   {
@@ -89,9 +92,6 @@ const getCustomGroupColumns = (
     fieldName: 'type',
     filter: 'suggest',
     isMandatory: true,
-    component: (columnProps) => (
-      <ColoredBox content={columnProps.row.original.type} />
-    ),
   },
   {
     columnDisplayName: translate('groups:created'),
@@ -156,6 +156,8 @@ const getStudentsCustomGroupColumns = (
     fieldName: 'tech',
   },
 ];
+
+// TODO: migrate to react-data-grid
 
 export default function CustomGroups() {
   const { t } = useTranslation(['common', 'groups']);
