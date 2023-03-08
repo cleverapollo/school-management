@@ -6,24 +6,25 @@ import { SearchOption } from '../option';
 import { SearchOptionData } from '../provider';
 import { SectionContainer } from '../section-container';
 
-interface PeopleSectionProps {
-  people: Search[];
+interface GroupsSectionProps {
+  groups: Search[];
 }
 
-function getPersonPath(partyId: number, type: SearchType) {
+function getGroupPath(partyId: number, type: SearchType) {
   switch (type) {
-    case SearchType.Student:
-      return `/people/students/${partyId}`;
-    case SearchType.Staff:
-      return `/people/staff/${partyId}`;
-    case SearchType.Contact:
-      return `/people/contact/${partyId}`;
+    case SearchType.SubjectGroup:
+      return `/groups/subject/${partyId}`;
+    case SearchType.GeneralGroup:
+      return `/groups/enrolment/${partyId}`;
+    // Need extra context through the meta to know if it's enrolment or custom
+    // case SearchType.GeneralGroup:
+    //   return `/people/custom/${partyId}`;
     default:
       return `/dashboard`;
   }
 }
 
-export function PersonOption({
+export function GroupOption({
   option,
   endIcon,
 }: {
@@ -31,11 +32,11 @@ export function PersonOption({
   endIcon?: JSX.Element;
 }) {
   const { partyId, type, text, avatarUrl } =
-    option as PeopleSectionProps['people'][number];
-  const [t] = useTranslation(['people']);
+    option as GroupsSectionProps['groups'][number];
+  const { t } = useTranslation(['people']);
 
   return (
-    <SearchOption path={getPersonPath(partyId, type)} optionData={option}>
+    <SearchOption path={getGroupPath(partyId, type)} optionData={option}>
       <Stack
         direction="row"
         spacing={1}
@@ -73,16 +74,13 @@ export function PersonOption({
   );
 }
 
-export function PeopleSection({ people }: PeopleSectionProps) {
-  if (people.length === 0) return null;
+export function GroupsSection({ groups }: GroupsSectionProps) {
+  if (groups.length === 0) return null;
 
   return (
-    <SectionContainer heading="People">
-      {people?.map((option) => (
-        <PersonOption
-          key={`${option.partyId}-${option.text}`}
-          option={option}
-        />
+    <SectionContainer heading="Groups">
+      {groups?.map((option) => (
+        <GroupOption key={`${option.partyId}-${option.text}`} option={option} />
       ))}
     </SectionContainer>
   );

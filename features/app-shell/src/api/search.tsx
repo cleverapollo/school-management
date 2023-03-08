@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql } from '@tyro/api';
+import { gqlClient, graphql, SearchType, Context } from '@tyro/api';
 import { useSearchFeatures } from '../hooks/use-search-features';
 
 const omniSearch = graphql(/* GraphQL */ `
@@ -24,7 +24,7 @@ export function useOmniSearch(query: string) {
     queryKey: ['omni-search', query],
     queryFn: async () =>
       gqlClient.request(omniSearch, {
-        filter: { text: trimmedQuery },
+        filter: { text: trimmedQuery, context: [Context.All] },
       }),
     enabled: trimmedQuery.length > 0,
     keepPreviousData: true,
@@ -32,7 +32,18 @@ export function useOmniSearch(query: string) {
       hasResults:
         (Array.isArray(search_search) && search_search?.length > 0) ||
         results?.length > 0,
-      people: search_search,
+      people: search_search.filter(
+        ({ type }) =>
+          type === SearchType.Contact ||
+          type === SearchType.Student ||
+          type === SearchType.Staff
+      ),
+      groups: search_search.filter(
+        ({ type }) =>
+          type !== SearchType.Contact &&
+          type !== SearchType.Student &&
+          type !== SearchType.Staff
+      ),
       pages: results.map(({ item: { path, icon, title, breadcrumbs } }) => ({
         partyId: path,
         type: 'PAGE' as const,
