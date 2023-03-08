@@ -74,7 +74,7 @@ export function PersonOption({
 }
 
 export function PeopleSection({ people }: PeopleSectionProps) {
-  if (!people || people.length === 0) return null;
+  if (people.length === 0) return null;
 
   return (
     <SectionContainer heading="People">

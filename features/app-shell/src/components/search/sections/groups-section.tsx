@@ -33,7 +33,7 @@ export function GroupOption({
 }) {
   const { partyId, type, text, avatarUrl } =
     option as GroupsSectionProps['groups'][number];
-  const [t] = useTranslation(['people']);
+  const { t } = useTranslation(['people']);
 
   return (
     <SearchOption path={getGroupPath(partyId, type)} optionData={option}>
@@ -75,7 +75,7 @@ export function GroupOption({
 }
 
 export function GroupsSection({ groups }: GroupsSectionProps) {
-  if (!groups || groups.length === 0) return null;
+  if (groups.length === 0) return null;
 
   return (
     <SectionContainer heading="Groups">
