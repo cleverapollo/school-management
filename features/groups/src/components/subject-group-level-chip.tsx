@@ -12,8 +12,7 @@ const subjectGroupMapColor: Record<SubjectGroupLevelIrePp, ChipProps['color']> =
     [SubjectGroupLevelIrePp.Higher]: 'error',
     [SubjectGroupLevelIrePp.Ordinary]: 'info',
     [SubjectGroupLevelIrePp.Common]: 'warning',
-    // TODO: uncomment it when grapqhl scheme gets updated
-    // [SubjectGroupLevelIrePp.Foundation]: 'success',
+    [SubjectGroupLevelIrePp.Foundation]: 'success',
   };
 
 export function SubjectGroupLevelChip({ level }: SubjectGroupLevelChipProps) {

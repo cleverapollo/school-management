@@ -202,6 +202,13 @@ export enum AttendanceCodeType {
   UnexplainedAbsence = 'UNEXPLAINED_ABSENCE'
 }
 
+export type AttendanceEventId = {
+  /**  the date for which this event is scheduled */
+  date?: InputMaybe<Scalars['Date']>;
+  /**  the calendar event id that this attendance event related to */
+  eventId?: InputMaybe<Scalars['Int']>;
+};
+
 export type Calendar = {
   __typename?: 'Calendar';
   academicNamespaceId: Scalars['Int'];
@@ -215,6 +222,8 @@ export type CalendarEvent = {
   attendees?: Maybe<Array<Maybe<CalendarEventAttendee>>>;
   calendarIds: Array<Maybe<Scalars['Int']>>;
   endTime?: Maybe<Scalars['DateTime']>;
+  /**  attendance for this event. The list is empty if no attendance has been taken */
+  eventAttendance?: Maybe<Array<Maybe<EventAttendance>>>;
   eventId: Scalars['Int'];
   exclusions?: Maybe<Array<Maybe<CalendarEventAttendee>>>;
   lessonInfo?: Maybe<CalendarEventLessonRaw>;
@@ -239,9 +248,17 @@ export enum CalendarEventAttendeeType {
 }
 
 export type CalendarEventFilter = {
+  calendarIds?: InputMaybe<Array<Scalars['Int']>>;
   endDate: Scalars['Date'];
   partyIds: Array<InputMaybe<Scalars['Long']>>;
   startDate: Scalars['Date'];
+};
+
+export type CalendarEventIteratorFilter = {
+  calendarIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  date?: InputMaybe<Scalars['Date']>;
+  iterator?: InputMaybe<Iterator>;
+  partyId: Scalars['Long'];
 };
 
 export type CalendarEventLessonRaw = {
@@ -937,7 +954,8 @@ export type EventAttendance = {
 };
 
 export type EventAttendanceFilter = {
-  ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  date?: InputMaybe<Scalars['Date']>;
+  eventIds?: InputMaybe<Array<AttendanceEventId>>;
   personPartyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
 
@@ -1006,7 +1024,7 @@ export enum Gender {
 
 export type GeneralGroup = Party & {
   __typename?: 'GeneralGroup';
-  academicNamespaceIds?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  avatarUrl?: Maybe<Scalars['String']>;
   /**     deep linked */
   contactMembers?: Maybe<Group>;
   /**     deep linked */
@@ -1134,6 +1152,12 @@ export type ImportSubjectInput = {
   shortCode: Array<InputMaybe<TranslationInput>>;
   subjectSource?: InputMaybe<SubjectSource>;
 };
+
+export enum Iterator {
+  Closest = 'CLOSEST',
+  Next = 'NEXT',
+  Previous = 'PREVIOUS'
+}
 
 export type Label = {
   __typename?: 'Label';
@@ -1634,6 +1658,7 @@ export type Query = {
   attendance_session?: Maybe<Array<Maybe<Session>>>;
   attendance_studentSessionAttendance?: Maybe<Array<Maybe<StudentSessionAttendance>>>;
   calendar_calendarEvents?: Maybe<Array<Maybe<CalendarEvent>>>;
+  calendar_calendarEventsIterator?: Maybe<CalendarEvent>;
   catalogue_personalTitles?: Maybe<Array<Maybe<PersonalTitle>>>;
   catalogue_subjects?: Maybe<Array<Maybe<Subject>>>;
   commentBank?: Maybe<Array<Maybe<CommentBank>>>;
@@ -1715,6 +1740,11 @@ export type QueryAttendance_StudentSessionAttendanceArgs = {
 
 export type QueryCalendar_CalendarEventsArgs = {
   filter?: InputMaybe<CalendarEventFilter>;
+};
+
+
+export type QueryCalendar_CalendarEventsIteratorArgs = {
+  filter?: InputMaybe<CalendarEventIteratorFilter>;
 };
 
 
@@ -1947,7 +1977,6 @@ export type SaveAttendanceCodeInput = {
   id?: InputMaybe<Scalars['Int']>;
   isActive?: InputMaybe<Scalars['Boolean']>;
   name: Array<InputMaybe<TranslationInput>>;
-  uniqueName: Scalars['String'];
   visibleForContact?: InputMaybe<Scalars['Boolean']>;
   visibleForTeacher?: InputMaybe<Scalars['Boolean']>;
 };
@@ -2045,7 +2074,6 @@ export type SaveSessionInput = {
   isActive?: InputMaybe<Scalars['Boolean']>;
   name: Array<InputMaybe<TranslationInput>>;
   time: Scalars['Time'];
-  uniqueName: Scalars['String'];
 };
 
 export type SaveStudentSessionAttendanceInput = {
@@ -2231,8 +2259,13 @@ export type SendMailRecipientInput = {
 export type SendSmsInput = {
   canReply: Scalars['Boolean'];
   mobileNumbers?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  recipients?: InputMaybe<Array<InputMaybe<SendSmsRecipientInput>>>;
   text: Scalars['String'];
+};
+
+export type SendSmsRecipientInput = {
+  recipientPartyId: Scalars['Long'];
+  recipientPartyType: SearchType;
 };
 
 export type Session = {
@@ -2606,6 +2639,7 @@ export type SubjectGroup = Party & {
   __typename?: 'SubjectGroup';
   academicNamespace?: Maybe<Scalars['Int']>;
   alsoInAcademicNamespaces?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  avatarUrl?: Maybe<Scalars['String']>;
   irePP?: Maybe<SubjectGroupIrePp>;
   name: Scalars['String'];
   partyId: Scalars['Long'];
@@ -2619,6 +2653,7 @@ export type SubjectGroup = Party & {
   subjectIds?: Maybe<Array<Maybe<Scalars['Int']>>>;
   /**     deep linked */
   subjects?: Maybe<Array<Maybe<Subject>>>;
+  yearGroups: Array<YearGroupEnrollment>;
 };
 
 export type SubjectGroupFilter = {
@@ -2632,6 +2667,7 @@ export type SubjectGroupIrePp = {
 
 export enum SubjectGroupLevelIrePp {
   Common = 'COMMON',
+  Foundation = 'FOUNDATION',
   Higher = 'HIGHER',
   NotApplicable = 'NOT_APPLICABLE',
   Ordinary = 'ORDINARY'
