@@ -40,6 +40,8 @@ export const gqlClient = new GraphQLClient(getEndpoint(), {
       headers.authorization = `Bearer ${token}`;
     }
 
+    // headers['X-THROW-HTTP-ERROR'] = '401';
+
     // add the emulate custom header to the headers
     const tenantId = localStorage.getItem(EmulateHeaders.TENANT);
     const partyId = localStorage.getItem(EmulateHeaders.PARTY_ID);
