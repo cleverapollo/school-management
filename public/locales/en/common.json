@@ -164,5 +164,8 @@
   "no": "No",
   "preferredFirstName": "Preferred first name",
   "unsavedChanges_one": "{{count}} unsaved change",
-  "unsavedChanges_other": "{{count}} unsaved changes"
+  "unsavedChanges_other": "{{count}} unsaved changes",
+  "tyroIdClickToCopy": "Tyro ID is {{id}}. Click to copy.",
+  "tyroIdCopied": "Tyro ID copied to clipboard.",
+  "issueCopyingTyroId": "Issue copying ID to clipboard."
 }
