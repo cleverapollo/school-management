@@ -1,7 +1,7 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
 import { Box, Fade, Container, Typography } from '@mui/material';
-import { Person, UserType, useUser } from '@tyro/api';
+import { Person, usePermissions, UserType } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -10,8 +10,8 @@ import {
   Table,
   ICellRendererParams,
   ActionMenu,
-  MenuItemConfig,
   RouterLink,
+  ActionMenuProps,
 } from '@tyro/core';
 
 import {
@@ -34,8 +34,7 @@ const getSubjectGroupsColumns = (
     ('common' | 'groups')[],
     undefined,
     ('common' | 'groups')[]
-  >,
-  isAdminUserType: boolean
+  >
 ): GridOptions<ReturnTypeFromUseSubjectGroups>['columnDefs'] => [
   {
     field: 'name',
@@ -81,9 +80,7 @@ const getSubjectGroupsColumns = (
   },
   {
     field: 'staff',
-    headerName: isAdminUserType
-      ? translate('groups:teacher')
-      : translate('groups:programme'),
+    headerName: translate('groups:teacher'),
     valueGetter: ({ data }) => {
       const teachers = data?.staff as Person[];
       if (teachers.length === 0) return '-';
@@ -96,24 +93,20 @@ const getSubjectGroupsColumns = (
 export default function SubjectGroups() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail']);
 
-  const { activeProfile } = useUser();
   const { data: subjectGroupsData } = useSubjectGroups();
+  const { userType } = usePermissions();
 
   const [selectedGroups, setSelectedGroups] = useState<
     ReturnTypeFromUseSubjectGroups[]
   >([]);
 
-  const profileTypeName = activeProfile?.profileType?.userType;
-  const isAdminUserType = profileTypeName === UserType.Admin;
-  const isTeacherUserType = profileTypeName === UserType.Teacher;
+  const isAdminUserType = userType === UserType.Admin;
+  const isTeacherUserType = userType === UserType.Teacher;
   const showActionMenu = isAdminUserType || isTeacherUserType;
 
-  const studentColumns = useMemo(
-    () => getSubjectGroupsColumns(t, isAdminUserType),
-    [t, isAdminUserType]
-  );
+  const studentColumns = useMemo(() => getSubjectGroupsColumns(t), [t]);
 
-  const actionMenuItems = useMemo<MenuItemConfig[][]>(() => {
+  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => {
     const commonActions = [
       {
         label: t('people:sendSms'),
@@ -147,10 +140,6 @@ export default function SubjectGroups() {
           },
     ];
 
-    if (isTeacherUserType) {
-      return [commonActions];
-    }
-
     if (isAdminUserType) {
       return [commonActions, archiveActions];
     }
@@ -170,25 +159,26 @@ export default function SubjectGroups() {
           rowSelection="multiple"
           getRowId={({ data }) => String(data?.partyId)}
           rightAdornment={
-            showActionMenu ? (
-              <Fade in={selectedGroups.length > 0}>
-                <Box>
-                  <ActionMenu
-                    menuProps={{
-                      anchorOrigin: {
-                        vertical: 'bottom',
-                        horizontal: 'right',
-                      },
-                      transformOrigin: {
-                        vertical: 'top',
-                        horizontal: 'right',
-                      },
-                    }}
-                    menuItems={actionMenuItems}
-                  />
-                </Box>
-              </Fade>
-            ) : undefined
+            <Fade
+              in={showActionMenu && selectedGroups.length > 0}
+              unmountOnExit
+            >
+              <Box>
+                <ActionMenu
+                  menuProps={{
+                    anchorOrigin: {
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                    },
+                    transformOrigin: {
+                      vertical: 'top',
+                      horizontal: 'right',
+                    },
+                  }}
+                  menuItems={actionMenuItems}
+                />
+              </Box>
+            </Fade>
           }
           onRowSelection={setSelectedGroups}
         />

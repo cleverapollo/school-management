@@ -1,6 +1,6 @@
 import { Chip, ChipProps } from '@mui/material';
 import { SubjectGroupLevelIrePp } from '@tyro/api';
-import { capitalize } from 'lodash';
+import { useTranslation } from '@tyro/i18n';
 
 interface SubjectGroupLevelChipProps {
   level: SubjectGroupLevelIrePp;
@@ -16,6 +16,8 @@ const subjectGroupMapColor: Record<SubjectGroupLevelIrePp, ChipProps['color']> =
   };
 
 export function SubjectGroupLevelChip({ level }: SubjectGroupLevelChipProps) {
+  const { t } = useTranslation(['groups']);
+
   if (level === SubjectGroupLevelIrePp.NotApplicable) {
     return <span>-</span>;
   }
@@ -23,7 +25,7 @@ export function SubjectGroupLevelChip({ level }: SubjectGroupLevelChipProps) {
   return (
     <Chip
       sx={{ pointerEvents: 'none' }}
-      label={capitalize(level)}
+      label={t(`groups:subjectGroupLevel.${level}`)}
       variant="soft"
       color={subjectGroupMapColor[level]}
     />
