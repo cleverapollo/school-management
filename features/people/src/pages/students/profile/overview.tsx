@@ -2,6 +2,7 @@ import { Box } from '@mui/material';
 import { getNumber } from '@tyro/core';
 import { StudentAssessmentWidget } from '@tyro/assessment';
 import { useParams } from 'react-router-dom';
+import { TimetableWidget } from '@tyro/calendar';
 import { StudentSessionAttendanceChart } from '../../../components/students/student-session-attendance-chart';
 import { StudentContactsWidget } from '../../../components/students/student-contacts-widget';
 
@@ -15,9 +16,9 @@ export default function StudentProfileOverviewPage() {
         my: 3,
         display: 'grid',
         gridTemplateRows: 'repeat(2, auto)',
-        gridTemplateColumns: 'repeat(6, 1fr)',
+        gridTemplateColumns: 'repeat(7, 1fr)',
         gap: 3,
-        maxWidth: 'lg',
+        maxWidth: 'xl',
       }}
     >
       <Box
@@ -38,10 +39,18 @@ export default function StudentProfileOverviewPage() {
       </Box>
       <Box
         sx={{
-          gridColumn: 'span 2',
+          gridColumn: 'span 3',
           gridRow: 'span 2',
         }}
-      />
+      >
+        <Box>
+          <TimetableWidget
+            partyId={studentId}
+            heading="Student's timetable"
+            to="../timetable"
+          />
+        </Box>
+      </Box>
       <Box
         sx={{
           gridColumn: 'span 4',
