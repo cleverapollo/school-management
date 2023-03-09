@@ -11,7 +11,12 @@ import {
   RootGroup,
   RootLink,
 } from '@tyro/core';
-import { getPermissionUtils, getUser, msalInstance } from '@tyro/api';
+import {
+  getPermissionUtils,
+  getUser,
+  msalInstance,
+  getCoreAcademicNamespace,
+} from '@tyro/api';
 import {
   createBrowserRouter,
   Outlet,
@@ -122,20 +127,22 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
 function useAppRouter() {
   return createBrowserRouter([
     {
-      loader: () => {
+      loader: async () => {
         const activeAccount = msalInstance.getActiveAccount();
 
         if (!activeAccount) {
           return redirect('/login');
         }
 
-        return getUser().catch((error: Error) => {
-          if (error?.message === 'Failed to fetch') {
-            throw new Response('Service Unavailable', { status: 503 });
-          }
+        return Promise.all([getUser(), getCoreAcademicNamespace()]).catch(
+          (error: Error) => {
+            if (error?.message === 'Failed to fetch') {
+              throw new Response('Service Unavailable', { status: 503 });
+            }
 
-          throw error;
-        });
+            throw error;
+          }
+        );
       },
       element: (
         <LazyLoader>

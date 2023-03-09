@@ -1,12 +1,8 @@
 // i18n
 import '@tyro/i18n';
 
-// lightbox
-import 'react-image-lightbox/style.css';
-
 // editor
 import 'react-quill/dist/quill.snow.css';
-
 
 // lazy image
 import 'react-lazy-load-image-component/src/effects/blur.css';

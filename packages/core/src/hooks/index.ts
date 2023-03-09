@@ -1,5 +1,6 @@
 export * from './use-breakpoint-value';
 export * from './use-callback-ref';
+export * from './use-chart-options';
 export * from './use-debounced-value';
 export * from './use-disclosure';
 export * from './use-number';

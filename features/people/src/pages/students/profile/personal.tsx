@@ -1,12 +1,4 @@
-import {
-  Box,
-  Card,
-  CardHeader,
-  Chip,
-  Grid,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Card, CardHeader, Chip, Stack, Typography } from '@mui/material';
 import { useNumber } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { UserGroupTwoIcon } from '@tyro/icons';
@@ -90,8 +82,6 @@ export default function StudentProfilePersonalPage() {
 
   const { primaryEmail, primaryPhoneNumber, primaryAddress } =
     data?.personalInformation ?? {};
-
-  console.log({ data });
 
   return (
     <Stack my={3} spacing={3}>

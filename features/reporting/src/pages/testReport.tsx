@@ -1,10 +1,6 @@
-import { Page } from '@tyro/core';
 import { Container, Grid, Typography } from '@mui/material';
-import React from 'react';
+import { Page, ChartRenderer, PieChart, BarChart } from '@tyro/core';
 import { Query } from '@cubejs-client/core';
-import ChartRenderer from '../components/charts/ChartRenderer';
-import { ApexPieChart } from '../components/charts/ApexPieChart';
-import { ApexBarChart } from '../components/charts/ApexBarChart';
 
 function absenceTypesForStudent(): Query {
   return {
@@ -134,24 +130,32 @@ export default function StudentsListPage() {
           <Grid item xs={12} sm={6} md={3}>
             <ChartRenderer
               query={absenceTypesForStudent()}
-              chartDefinition={ApexPieChart()}
-              drillDownDisplayColumns={[
-                'OutputSessionsAttendance.absenceType',
-                'OutputSessionsAttendance.date',
-              ]}
+              chartDefinition={PieChart()}
+              drillDownConfig={{
+                columns: [
+                  {
+                    field: 'OutputSessionsAttendance.absenceType',
+                    headerName: 'Absence Type',
+                  },
+                  {
+                    field: 'OutputSessionsAttendance.date',
+                    headerName: 'Date',
+                  },
+                ],
+              }}
             />
             <ChartRenderer
               query={absenceTypeByMonthForStudent()}
-              chartDefinition={ApexBarChart}
+              chartDefinition={BarChart()}
             />
 
             <ChartRenderer
               query={attendanceCodeBySubjectForStudent()}
-              chartDefinition={ApexBarChart}
+              chartDefinition={BarChart()}
             />
             <ChartRenderer
               query={attendedSubjectLessonsForStudent()}
-              chartDefinition={ApexBarChart}
+              chartDefinition={BarChart()}
             />
           </Grid>
         </Grid>
