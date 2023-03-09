@@ -89,7 +89,7 @@ export function StudentSessionAttendanceChart({
         headerName: t('common:date'),
         cellRenderer: (value) =>
           typeof value === 'string' && dayjs(value).isValid()
-            ? dayjs(value).format('L')
+            ? dayjs(value).format('l')
             : value,
       },
     ],
