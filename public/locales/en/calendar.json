@@ -4,11 +4,17 @@
   "youHaveInvited": "You have invited",
   "addMore": "Add More",
   "today": "Today",
+  "tomorrow": "Tomorrow",
+  "yesterday": "Yesterday",
+  "dayOfLastWeek": "Last {{day}}",
   "guests": "guests",
   "yes": "yes",
   "awaiting": "awaiting",
   "academicCalendar": "Academic Calendar",
   "attendance": "Attendance",
+  "room": "Room",
+  "lesson": "Lesson",
+  "time": "Time",
   "errorMessages": {
     "title": "Title is required",
     "date": "End date must be later than start date"
