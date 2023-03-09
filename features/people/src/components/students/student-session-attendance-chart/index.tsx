@@ -66,7 +66,7 @@ function getYearString(year: number | undefined) {
 export function StudentSessionAttendanceChart({
   studentId,
 }: StudentSessionAttendanceChartProps) {
-  const [t] = useTranslation(['attendance', 'common']);
+  const { t } = useTranslation(['attendance', 'common']);
   const { activeAcademicNamespace, allNamespaces } = useAcademicNamespace();
   const [selectedYear, setSelectedYear] = useState(activeAcademicNamespace);
   const selectedYearIndex =

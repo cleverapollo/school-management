@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { DrillDownLocator, ResultSet } from '@cubejs-client/core';
 import ReactApexChart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
@@ -14,7 +15,7 @@ const DisplayComponent = ({
   options: ApexOptions & { colorField?: string };
 }) => {
   const { colorField, ...remainingOptions } = options;
-  const transformed = transformData(resultSet);
+  const transformed = useMemo(() => transformData(resultSet), [resultSet]);
   const chartOptions = useChartOptions(
     'bar',
     {

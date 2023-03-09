@@ -53,7 +53,10 @@ const DisplayComponent = ({
 }) => {
   const { palette } = useTheme();
   const { colorField, ...remainingOptions } = options;
-  const transformed = transformData(resultSet, colorField);
+  const transformed = useMemo(
+    () => transformData(resultSet, colorField),
+    [resultSet, colorField]
+  );
   const colorsMappedToTheme = useMemo(() => {
     if (transformed?.colors) {
       const mappedColors = transformed.colors

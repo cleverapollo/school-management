@@ -6,6 +6,7 @@ import {
   ResultSet,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
+import { useMemo } from 'react';
 
 const transformData = (resultSet: ResultSet) => {
   const total = resultSet
@@ -35,8 +36,8 @@ const DisplayComponent = ({
   onClick,
   emptyState,
 }: ChartRendererInternalProps) => {
-  const [t] = useTranslation(['attendance']);
-  const transformed = transformData(resultSet);
+  const { t } = useTranslation(['attendance']);
+  const transformed = useMemo(() => transformData(resultSet), [resultSet]);
 
   if (emptyState && transformed?.total === 0) {
     return emptyState;
