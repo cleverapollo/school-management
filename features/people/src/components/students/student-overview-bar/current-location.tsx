@@ -25,7 +25,7 @@ interface CurrentLocationProps {
 
 type AttendanceCodeIconSettings = {
   icon: JSX.Element;
-  color: 'green' | 'rose' | 'sky';
+  color: 'green' | 'rose' | 'blue';
   tooltip: string | undefined;
 };
 
@@ -46,14 +46,14 @@ function CurrentAttendanceIcon({ name, codeType }: CurrentAttendanceIconProps) {
       case AttendanceCodeType.UnexplainedAbsence:
       case AttendanceCodeType.ExplainedAbsence:
         return {
-          icon: <CloseIcon />,
+          icon: <CloseIcon sx={{ color: 'white', width: 16, height: 16 }} />,
           color: 'rose',
           tooltip: name,
         };
       default:
         return {
-          icon: <MinusIcon />,
-          color: 'sky',
+          icon: <MinusIcon sx={{ color: 'white', width: 16, height: 16 }} />,
+          color: 'blue',
           tooltip: t('attendance:attendanceNotTaken'),
         };
     }
@@ -92,7 +92,7 @@ function CurrentAttendanceIcon({ name, codeType }: CurrentAttendanceIconProps) {
 
 export function CurrentLocation({ studentPartyId }: CurrentLocationProps) {
   const { t } = useTranslation(['people']);
-  const { data, isLoading } = useStudentStatus(studentPartyId);
+  const { data } = useStudentStatus(studentPartyId);
   const currentLocationList = useMemo(() => {
     const room = data?.currentLocation?.room
       ?.map((a) => a?.name)
