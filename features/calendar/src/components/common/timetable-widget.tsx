@@ -25,6 +25,7 @@ import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { CalendarEventAttendeeType } from '@tyro/api';
 import { usePreferredNameLayout } from '@tyro/core';
 import { usePartyTimetable } from '../../api/timetable';
+import { useTimetableInPeriods } from '../../hooks/use-timetable-in-periods';
 
 dayjs.extend(LocalizedFormat);
 dayjs.extend(calendar);
@@ -43,6 +44,7 @@ export function TimetableWidget({
   const { t } = useTranslation(['common', 'assessment', 'calendar']);
   const [date, setDate] = useState(dayjs());
   const { data } = usePartyTimetable({ partyId, date });
+  const dayInfo = useTimetableInPeriods(date, data);
   const { displayName } = usePreferredNameLayout();
 
   const formattedDate = date.calendar(null, {

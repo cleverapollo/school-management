@@ -4,6 +4,7 @@ import {
   graphql,
   gqlClient,
   queryClient,
+  CalendarDayInfoFilter,
 } from '@tyro/api';
 import dayjs from 'dayjs';
 import { useEffect } from 'react';
@@ -40,13 +41,31 @@ const timetable = graphql(/* GraphQL */ `
   }
 `);
 
+const timetableDayInfo = graphql(/* GraphQL */ `
+  query timetableDayInfo($filter: CalendarDayInfoFilter) {
+    calendar_dayInfo(filter: $filter) {
+      date
+      startTime
+      endTime
+      dayType
+      periods {
+        startTime
+        endTime
+        type
+      }
+    }
+  }
+`);
+
 export const timetableKeys = {
-  all: (filter: CalendarEventFilter) =>
+  timetable: (filter: CalendarEventFilter) =>
     ['calendar', 'timetable', filter] as const,
+  dayInfo: (filter: CalendarDayInfoFilter) =>
+    ['calendar', 'timetable', 'day-info', filter] as const,
 };
 
 const timetableQuery = (filter: CalendarEventFilter) => ({
-  queryKey: timetableKeys.all(filter),
+  queryKey: timetableKeys.timetable(filter),
   queryFn: async () => gqlClient.request(timetable, { filter }),
 });
 
@@ -85,5 +104,40 @@ export function usePartyTimetable({
       endDate: formattedDate,
     }),
     select: ({ calendar_calendarEvents }) => calendar_calendarEvents,
+  });
+}
+
+const timetableDayInfoQuery = (filter: CalendarDayInfoFilter) => ({
+  queryKey: timetableKeys.dayInfo(filter),
+  queryFn: async () => gqlClient.request(timetableDayInfo, { filter }),
+  staleTime: 1000 * 60 * 60 * 24,
+});
+
+export function getTimetableDayInfo(filter: CalendarDayInfoFilter) {
+  return queryClient.fetchQuery(timetableDayInfoQuery(filter));
+}
+
+export function useTimetableDayInfo(date: dayjs.Dayjs) {
+  const formattedDate = date.format('YYYY-MM-DD');
+
+  useEffect(() => {
+    const formattedDateBefore = date.subtract(1, 'day').format('YYYY-MM-DD');
+    const formattedDateAfter = date.add(1, 'day').format('YYYY-MM-DD');
+    getTimetableDayInfo({
+      fromDate: formattedDateBefore,
+      toDate: formattedDateBefore,
+    });
+    getTimetableDayInfo({
+      fromDate: formattedDateAfter,
+      toDate: formattedDateAfter,
+    });
+  }, [formattedDate]);
+
+  return useQuery({
+    ...timetableDayInfoQuery({
+      fromDate: formattedDate,
+      toDate: formattedDate,
+    }),
+    select: ({ calendar_dayInfo }) => calendar_dayInfo,
   });
 }

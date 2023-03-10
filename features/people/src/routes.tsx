@@ -4,7 +4,7 @@ import { UserGroupIcon } from '@tyro/icons';
 import { UserType } from '@tyro/api';
 import { redirect } from 'react-router-dom';
 import { getStudentDashboardAssessments } from '@tyro/assessment';
-import { getPartyTimetable } from '@tyro/calendar';
+import { getPartyTimetable, getTimetableDayInfo } from '@tyro/calendar';
 import dayjs from 'dayjs';
 import { getStudent, getStudents } from './api/students';
 import { getStudentPersonal } from './api/student/personal';
@@ -104,6 +104,10 @@ export const getRoutes: NavObjectFunction = (t) => [
                       partyIds: [studentId ?? 0],
                       startDate: formattedDate,
                       endDate: formattedDate,
+                    }),
+                    getTimetableDayInfo({
+                      fromDate: formattedDate,
+                      toDate: formattedDate,
                     }),
                   ]);
                 },
