@@ -20,6 +20,7 @@ import { ChartRenderer, ChartRendererProps, PieChart } from '@tyro/core';
 import { Query } from '@cubejs-client/core';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import { useMeasure } from 'react-use';
 import { SessionAttendanceTable } from './session-attendance-table';
 import { EmptyPieChart } from './empty-pie-chart';
 
@@ -68,6 +69,7 @@ export function StudentSessionAttendanceChart({
 }: StudentSessionAttendanceChartProps) {
   const { t } = useTranslation(['attendance', 'common']);
   const { activeAcademicNamespace, allNamespaces } = useAcademicNamespace();
+  const [chartContainerRef, { width }] = useMeasure();
   const [selectedYear, setSelectedYear] = useState(activeAcademicNamespace);
   const selectedYearIndex =
     allNamespaces?.findIndex((year) => year?.year === selectedYear?.year) ?? 0;
@@ -169,7 +171,8 @@ export function StudentSessionAttendanceChart({
         }}
       >
         <Stack
-          direction="row"
+          ref={chartContainerRef}
+          direction={width < 580 ? 'column' : 'row'}
           alignItems="center"
           justifyContent="center"
           sx={{ py: 4, px: 2 }}

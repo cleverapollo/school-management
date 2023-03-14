@@ -12,14 +12,22 @@ export default function StudentProfileOverviewPage() {
 
   return (
     <Box
-      sx={{
+      sx={(theme) => ({
         my: 3,
         display: 'grid',
-        gridTemplateRows: 'repeat(2, auto)',
-        gridTemplateColumns: 'repeat(7, 1fr)',
         gap: 3,
         maxWidth: 'xl',
-      }}
+        gridTemplateRows: 'repeat(4, auto)',
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        [theme.breakpoints.up('md')]: {
+          gridTemplateRows: 'repeat(3, auto)',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+        },
+        [theme.breakpoints.up('xl')]: {
+          gridTemplateRows: 'repeat(2, auto)',
+          gridTemplateColumns: 'repeat(7, 1fr)',
+        },
+      })}
     >
       <Box
         sx={{
@@ -38,10 +46,18 @@ export default function StudentProfileOverviewPage() {
         <StudentAssessmentWidget studentId={studentId} />
       </Box>
       <Box
-        sx={{
-          gridColumn: 'span 3',
-          gridRow: 'span 2',
-        }}
+        sx={(theme) => ({
+          gridColumn: 'span 2',
+          gridRow: 'span 1',
+          [theme.breakpoints.up('md')]: {
+            gridColumn: 'span 4',
+            gridRow: 'span 1',
+          },
+          [theme.breakpoints.up('xl')]: {
+            gridColumn: 'span 3',
+            gridRow: 'span 2',
+          },
+        })}
       >
         <Box>
           <TimetableWidget
@@ -52,10 +68,14 @@ export default function StudentProfileOverviewPage() {
         </Box>
       </Box>
       <Box
-        sx={{
-          gridColumn: 'span 4',
+        sx={(theme) => ({
+          gridColumn: 'span 2',
           gridRow: 'span 1',
-        }}
+          [theme.breakpoints.up('md')]: {
+            gridColumn: 'span 4',
+            gridRow: 'span 1',
+          },
+        })}
       >
         <StudentSessionAttendanceChart studentId={studentId} />
       </Box>
