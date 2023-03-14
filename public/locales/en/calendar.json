@@ -15,6 +15,8 @@
   "room": "Room",
   "lesson": "Lesson",
   "time": "Time",
+  "break": "Break",
+  "extraCurricular": "Extra curricular",
   "errorMessages": {
     "title": "Title is required",
     "date": "End date must be later than start date"
@@ -27,5 +29,9 @@
     "schedule": "Schedule",
     "location": "Location",
     "description": "Description"
+  },
+  "schoolDayType": {
+    "NON_SCHOOL_DAY": "No school as it's a non-school day.",
+    "PUBLIC_HOLIDAY": "No school as it's a public holiday."
   }
 }
