@@ -10,8 +10,8 @@ import {
 import { DEFAULT_PAGINATION_LIMIT } from '../constants';
 
 const mails = graphql(/* GraphQL */ `
-  query mail($filter: MailFilter) {
-    mail(filter: $filter) {
+  query communications_mail($filter: MailFilter) {
+    communications_mail(filter: $filter) {
       id
       rootMailId
       threadId
@@ -67,8 +67,8 @@ const mails = graphql(/* GraphQL */ `
 `);
 
 const sendMail = graphql(/* GraphQL */ `
-  mutation sendMail($input: SendMailInput) {
-    sendMail(input: $input) {
+  mutation communications_sendMail($input: SendMailInput) {
+    communications_sendMail(input: $input) {
       id
       rootMailId
       threadId
@@ -124,14 +124,14 @@ const sendMail = graphql(/* GraphQL */ `
 `);
 
 const starMail = graphql(/* GraphQL */ `
-  mutation starred($input: MailStarredInput) {
-    starred(input: $input)
+  mutation communications_starred($input: MailStarredInput) {
+    communications_starred(input: $input)
   }
 `);
 
 const readMail = graphql(`
-  mutation read($input: MailReadInput) {
-    read(input: $input)
+  mutation communications_read($input: MailReadInput) {
+    communications_read(input: $input)
   }
 `);
 
@@ -158,7 +158,7 @@ export function useMails(labelId: number, profileId?: number | null) {
               },
             }
       ),
-    select: ({ mail }) => mail,
+    select: ({ communications_mail: mail }) => mail,
   });
 }
 
