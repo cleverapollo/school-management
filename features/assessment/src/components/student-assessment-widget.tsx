@@ -141,7 +141,7 @@ export function StudentAssessmentWidget({
                 <TableCell>{result?.subject ?? '-'}</TableCell>
                 <TableCell>-</TableCell>
                 <TableCell>
-                  {typeof result?.result !== 'number'
+                  {typeof result?.result === 'number'
                     ? `${result?.result}%`
                     : '-'}
                 </TableCell>
