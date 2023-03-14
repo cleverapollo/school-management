@@ -1,5 +1,9 @@
 import dayjs from 'dayjs';
-import { UseQueryReturnType } from '@tyro/api';
+import {
+  CalendarGridPeriodInfo,
+  CalendarGridPeriodType,
+  UseQueryReturnType,
+} from '@tyro/api';
 import { usePartyTimetable, useTimetableDayInfo } from '../api/timetable';
 
 type TimetableData = UseQueryReturnType<typeof usePartyTimetable>;
@@ -10,29 +14,60 @@ export function useTimetableInPeriods(
 ) {
   const { data: timetableDayInfo } = useTimetableDayInfo(date);
 
-  const timetableDataAsObject = data?.reduce<
-    Record<string, TimetableData[number]>
-  >((acc, event) => {
-    if (event.startTime && event.endTime) {
-      const key = `${event.startTime}-${event.endTime}`;
-      acc[key] = event;
-    }
-    return acc;
-  }, {});
+  const periodsInSchoolTime = (timetableDayInfo?.periods ?? []).reduce<
+    (CalendarGridPeriodInfo & { event: TimetableData[number] | null })[]
+  >((acc, period) => {
+    const eventsAtPeriodStart = (data ?? [])
+      .filter((event) => event.startTime === period.startTime)
+      .map((event) => ({
+        ...period,
+        event,
+      }));
 
-  console.log({
-    timetableDayInfo,
-    data,
-  });
+    if (Array.isArray(eventsAtPeriodStart) && eventsAtPeriodStart.length > 0) {
+      acc.push(...eventsAtPeriodStart);
+    } else {
+      acc.push({
+        ...period,
+        event: null,
+      });
+    }
+
+    return acc;
+  }, []);
+
+  const eventsBeforeSchool = (data ?? [])
+    .filter((event) => {
+      const startTime = dayjs(event.startTime);
+      return startTime.isBefore(timetableDayInfo?.startTime);
+    })
+    .map((event) => ({
+      type: CalendarGridPeriodType.Class,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      event,
+    }));
+
+  const eventsAfterSchool = (data ?? [])
+    .filter((event) => {
+      const startTime = dayjs(event.startTime);
+      return startTime.isAfter(timetableDayInfo?.endTime);
+    })
+    .map((event) => ({
+      type: CalendarGridPeriodType.Class,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      event,
+    }));
 
   return {
     ...timetableDayInfo,
-    periods: timetableDayInfo?.periods?.map((period) => {
-      const key = `${period.startTime}-${period.endTime}`;
-      return {
-        ...period,
-        event: timetableDataAsObject?.[key],
-      };
-    }),
+    periods: [
+      ...eventsBeforeSchool,
+      ...periodsInSchoolTime,
+      ...eventsAfterSchool,
+    ],
+    numberOfEventsBeforeSchool: eventsBeforeSchool.length,
+    numberOfEventsAfterSchool: eventsAfterSchool.length,
   };
 }

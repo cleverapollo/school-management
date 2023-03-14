@@ -10,6 +10,8 @@ import {
   TableRow,
   TableBody,
   Typography,
+  TableContainer,
+  Divider,
 } from '@mui/material';
 import {
   ChevronLeftIcon,
@@ -22,8 +24,12 @@ import { useState } from 'react';
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { CalendarEventAttendeeType } from '@tyro/api';
-import { usePreferredNameLayout } from '@tyro/core';
+import {
+  CalendarEventAttendeeType,
+  CalendarGridPeriodType,
+  SchoolDayType,
+} from '@tyro/api';
+import { getClassesFromObject, usePreferredNameLayout } from '@tyro/core';
 import { usePartyTimetable } from '../../api/timetable';
 import { useTimetableInPeriods } from '../../hooks/use-timetable-in-periods';
 
@@ -34,6 +40,29 @@ interface TimetableWidgetProps {
   partyId: number | undefined;
   heading: string;
   to?: string;
+}
+
+function TimetableNonSchoolState({
+  schoolDayType,
+}: {
+  schoolDayType: SchoolDayType.NonSchoolDay | SchoolDayType.PublicHoliday;
+}) {
+  const { t } = useTranslation(['calendar']);
+
+  return (
+    <Box
+      sx={{
+        minHeight: 300,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Typography variant="h6" component="span">
+        {t(`calendar:schoolDayType.${schoolDayType}`)}
+      </Typography>
+    </Box>
+  );
 }
 
 export function TimetableWidget({
@@ -57,7 +86,7 @@ export function TimetableWidget({
   });
 
   return (
-    <Card variant="outlined" sx={{ height: '100%', flex: 1 }}>
+    <Card variant="outlined" sx={{ height: '100%', flex: 1, pb: 2 }}>
       <Stack
         direction="row"
         sx={{
@@ -117,95 +146,163 @@ export function TimetableWidget({
           <ChevronRightIcon />
         </IconButton>
       </Stack>
-      <Table
-        size="small"
-        sx={{
-          mt: 1,
-          px: 1.5,
-          borderCollapse: 'separate',
-          borderSpacing: 0,
-          '& td:first-of-type, & th:first-of-type': {
-            pl: 1.5,
-          },
-          '& td:last-of-type, & th:last-of-type': {
-            pr: 1.5,
-            textAlign: 'right',
-          },
-          '& th, & td:last-of-type': {
-            background: 'transparent',
-            color: 'text.primary',
-            fontWeight: 700,
-          },
-          '& th': {
-            py: 2,
-          },
-          '& td': {
-            color: 'text.secondary',
-          },
-          '& .current-period td': {
-            borderStyle: 'solid',
-            borderWidth: '1px 0',
-            borderColor: 'primary.main',
-          },
-          '& .current-period td:first-of-type': {
-            borderLeftWidth: 1,
-            borderTopLeftRadius: 17,
-            borderBottomLeftRadius: 17,
-          },
-          '& .current-period td:last-of-type': {
-            borderRightWidth: 1,
-            borderTopRightRadius: 17,
-            borderBottomRightRadius: 17,
-          },
-        }}
-      >
-        <TableHead>
-          <TableRow>
-            <TableCell>{t('calendar:time')}</TableCell>
-            <TableCell>{t('calendar:lesson')}</TableCell>
-            <TableCell>{t('common:teacher')}</TableCell>
-            <TableCell>{t('calendar:room')}</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data?.map((lesson) => {
-            const teacher = lesson?.attendees?.find(
-              (attendee) =>
-                attendee.type === CalendarEventAttendeeType.Organiser
-            );
-            const teacherName =
-              teacher?.partyInfo?.__typename === 'Staff'
-                ? displayName(teacher.partyInfo.person)
-                : '-';
-
-            const subject = lesson?.attendees?.find(
-              (attendee) => attendee?.partyInfo?.__typename === 'SubjectGroup'
-            );
-            const subjectName =
-              subject?.partyInfo?.__typename === 'SubjectGroup'
-                ? subject.partyInfo.name
-                : '-';
-
-            const roomNames =
-              lesson?.rooms?.map((room) => room?.name).join(', ') ?? '-';
-            const isCurrentClass =
-              dayjs().isBefore(lesson?.endTime) &&
-              dayjs().isAfter(lesson?.startTime);
-
-            return (
-              <TableRow
-                className={isCurrentClass ? 'current-period' : undefined}
-                key={lesson?.eventId}
-              >
-                <TableCell>{dayjs(lesson?.startTime).format('H:mm')}</TableCell>
-                <TableCell>{subjectName}</TableCell>
-                <TableCell>{teacherName}</TableCell>
-                <TableCell>{roomNames}</TableCell>
+      {dayInfo.dayType !== SchoolDayType.PublicHoliday &&
+      dayInfo.dayType !== SchoolDayType.NonSchoolDay ? (
+        <TableContainer>
+          <Table
+            size="small"
+            sx={{
+              mt: 1,
+              px: 1.5,
+              borderCollapse: 'separate',
+              borderSpacing: 0,
+              '& td:first-of-type, & th:first-of-type': {
+                pl: 1.5,
+              },
+              '& td:last-of-type, & th:last-of-type': {
+                pr: 1.5,
+                textAlign: 'right',
+              },
+              '& th, & td:last-of-type': {
+                background: 'transparent',
+                color: 'text.primary',
+                fontWeight: 700,
+              },
+              '& th': {
+                py: 2,
+              },
+              '& td': {
+                color: 'text.secondary',
+              },
+              '& .current-period td': {
+                borderStyle: 'solid',
+                borderWidth: '1px 0',
+                borderColor: 'primary.main',
+              },
+              '& .break td': {
+                backgroundColor: 'indigo.50',
+              },
+              '& .break td:nth-of-type(2)': {
+                color: 'text.primary',
+              },
+              '& .current-period td:first-of-type, & .break td:first-of-type': {
+                borderTopLeftRadius: 17,
+                borderBottomLeftRadius: 17,
+              },
+              '& .current-period td:last-of-type, & .break td:last-of-type': {
+                borderTopRightRadius: 17,
+                borderBottomRightRadius: 17,
+              },
+              '& .current-period td:first-of-type': {
+                borderLeftWidth: 1,
+              },
+              '& .current-period td:last-of-type': {
+                borderRightWidth: 1,
+              },
+              '& .before-school td, & .after-school td': {
+                color: 'indigo.500',
+              },
+            }}
+          >
+            <TableHead>
+              <TableRow>
+                <TableCell>{t('calendar:time')}</TableCell>
+                <TableCell>{t('calendar:lesson')}</TableCell>
+                <TableCell>{t('common:teacher')}</TableCell>
+                <TableCell>{t('calendar:room')}</TableCell>
               </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+            </TableHead>
+            <TableBody>
+              {dayInfo.periods?.map(
+                ({ startTime, endTime, type, event }, index) => {
+                  const isBreak = type === CalendarGridPeriodType.Break;
+                  const isBeforeSchoolStart = dayjs(startTime).isBefore(
+                    dayInfo.startTime
+                  );
+                  const isAfterSchoolEnd = dayjs(startTime).isAfter(
+                    dayInfo.endTime
+                  );
+                  const isLastEventBeforeSchoolStart =
+                    dayInfo.numberOfEventsBeforeSchool > 0 &&
+                    index === dayInfo.numberOfEventsBeforeSchool - 1;
+                  const isLastEventBeforeSchoolEnd =
+                    dayInfo.numberOfEventsAfterSchool > 0 &&
+                    index ===
+                      dayInfo.periods.length -
+                        dayInfo.numberOfEventsAfterSchool -
+                        1;
+                  const teacher = event?.attendees?.find(
+                    (attendee) =>
+                      attendee.type === CalendarEventAttendeeType.Organiser
+                  );
+                  const teacherName =
+                    teacher?.partyInfo?.__typename === 'Staff'
+                      ? displayName(teacher.partyInfo.person)
+                      : '-';
+
+                  const subject = event?.attendees?.find(
+                    (attendee) =>
+                      attendee?.partyInfo?.__typename === 'SubjectGroup'
+                  );
+                  const subjectName =
+                    subject?.partyInfo?.__typename === 'SubjectGroup'
+                      ? subject.partyInfo.name
+                      : '-';
+
+                  const roomNames =
+                    event?.rooms?.map((room) => room?.name).join(', ') ?? '-';
+                  const isCurrentClass =
+                    dayjs().isBefore(endTime) && dayjs().isAfter(startTime);
+
+                  return (
+                    <>
+                      <TableRow
+                        className={getClassesFromObject({
+                          'current-period': isCurrentClass,
+                          break: isBreak,
+                          'before-school': isBeforeSchoolStart,
+                          'after-school': isAfterSchoolEnd,
+                          last:
+                            isLastEventBeforeSchoolStart ||
+                            isLastEventBeforeSchoolEnd,
+                        })}
+                        key={`${startTime ?? ''}-${event?.eventId ?? ''}`}
+                      >
+                        <TableCell>{dayjs(startTime).format('H:mm')}</TableCell>
+                        <TableCell>
+                          {isBreak ? t('calendar:break') : subjectName}
+                        </TableCell>
+                        <TableCell>{teacherName}</TableCell>
+                        <TableCell>{roomNames}</TableCell>
+                      </TableRow>
+                      {(isLastEventBeforeSchoolEnd ||
+                        isLastEventBeforeSchoolStart) && (
+                        <TableRow
+                          key={`${startTime ?? ''}-${
+                            event?.eventId ?? ''
+                          }-divider`}
+                          aria-hidden
+                        >
+                          <TableCell colSpan={4}>
+                            <Divider
+                              sx={{
+                                borderStyle: 'dashed',
+                                borderColor: 'divider',
+                              }}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </>
+                  );
+                }
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      ) : (
+        <TimetableNonSchoolState schoolDayType={dayInfo.dayType} />
+      )}
     </Card>
   );
 }

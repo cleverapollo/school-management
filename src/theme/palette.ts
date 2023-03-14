@@ -481,7 +481,7 @@ const palette = {
     text: { primary: SLATE[800], secondary: SLATE[600], disabled: SLATE[500] },
     background: { paper: '#fff', default: '#fff', neutral: SLATE[50] },
     action: { active: SLATE[600], ...COMMON.action },
-    divider: SLATE[100],
+    divider: INDIGO[50],
   },
   dark: {
     ...COMMON,

@@ -138,6 +138,7 @@ export function useTimetableDayInfo(date: dayjs.Dayjs) {
       fromDate: formattedDate,
       toDate: formattedDate,
     }),
-    select: ({ calendar_dayInfo }) => calendar_dayInfo,
+    select: ({ calendar_dayInfo }) =>
+      calendar_dayInfo.length > 0 ? calendar_dayInfo[0] : undefined,
   });
 }
