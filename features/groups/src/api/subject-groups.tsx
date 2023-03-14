@@ -35,9 +35,11 @@ const subjectGroupById = graphql(/* GraphQL */ `
       partyId
       name
       students {
-        firstName
-        lastName
-        avatarUrl
+        person {
+          firstName
+          lastName
+          avatarUrl
+        }
       }
     }
   }

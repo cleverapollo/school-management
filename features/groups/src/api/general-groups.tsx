@@ -26,8 +26,10 @@ const enrolmentGroupById = graphql(/* GraphQL */ `
       name
       students {
         partyId
-        firstName
-        lastName
+        person {
+          firstName
+          lastName
+        }
       }
     }
   }
@@ -40,8 +42,10 @@ const customGroupById = graphql(/* GraphQL */ `
       name
       students {
         partyId
-        firstName
-        lastName
+        person {
+          firstName
+          lastName
+        }
       }
       staff {
         partyId

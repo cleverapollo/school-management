@@ -10,6 +10,7 @@ import {
   TableRow,
   TableBody,
   Typography,
+  TableContainer,
 } from '@mui/material';
 import {
   ChevronLeftIcon,
@@ -35,7 +36,7 @@ export function StudentAssessmentWidget({
   const selectedAssessment = data?.[assessmentIndex];
 
   return (
-    <Card variant="outlined" sx={{ height: '100%', flex: 1 }}>
+    <Card variant="outlined" sx={{ height: '100%', flex: 1, pb: 2 }}>
       <Stack
         direction="row"
         sx={{
@@ -99,53 +100,57 @@ export function StudentAssessmentWidget({
           <ChevronRightIcon />
         </IconButton>
       </Stack>
-      <Table
-        size="small"
-        sx={{
-          mt: 1,
-          '& td:first-of-type, & th:first-of-type': {
-            pl: 3,
-          },
-          '& td:last-of-type, & th:last-of-type': {
-            pr: 3,
-          },
-          '& td:nth-of-type(n + 3), & th:nth-of-type(n + 3)': {
-            textAlign: 'right',
-          },
-          '& th, & td:last-of-type': {
-            background: 'transparent',
-            color: 'text.primary',
-            fontWeight: 700,
-          },
-          '& th': {
-            py: 2,
-          },
-          '& td': {
-            color: 'text.secondary',
-          },
-        }}
-      >
-        <TableHead>
-          <TableRow>
-            <TableCell>{t('common:subject')}</TableCell>
-            <TableCell>{t('common:level')}</TableCell>
-            <TableCell>{t('common:grade')}</TableCell>
-            <TableCell>{t('common:result')}</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {selectedAssessment?.results?.map((result) => (
-            <TableRow key={result?.id}>
-              <TableCell>{result?.subject ?? '-'}</TableCell>
-              <TableCell>-</TableCell>
-              <TableCell>
-                {result?.result ? `${result?.result}%` : '-'}
-              </TableCell>
-              <TableCell>{result?.grade ?? '-'}</TableCell>
+      <TableContainer>
+        <Table
+          size="small"
+          sx={{
+            mt: 1,
+            '& td:first-of-type, & th:first-of-type': {
+              pl: 3,
+            },
+            '& td:last-of-type, & th:last-of-type': {
+              pr: 3,
+            },
+            '& td:nth-of-type(n + 3), & th:nth-of-type(n + 3)': {
+              textAlign: 'right',
+            },
+            '& th, & td:last-of-type': {
+              background: 'transparent',
+              color: 'text.primary',
+              fontWeight: 700,
+            },
+            '& th': {
+              py: 2,
+            },
+            '& td': {
+              color: 'text.secondary',
+            },
+          }}
+        >
+          <TableHead>
+            <TableRow>
+              <TableCell>{t('common:subject')}</TableCell>
+              <TableCell>{t('common:level')}</TableCell>
+              <TableCell>{t('common:grade')}</TableCell>
+              <TableCell>{t('common:result')}</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHead>
+          <TableBody>
+            {selectedAssessment?.results?.map((result) => (
+              <TableRow key={result?.id}>
+                <TableCell>{result?.subject ?? '-'}</TableCell>
+                <TableCell>-</TableCell>
+                <TableCell>
+                  {typeof result?.result === 'number'
+                    ? `${result?.result}%`
+                    : '-'}
+                </TableCell>
+                <TableCell>{result?.grade ?? '-'}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Card>
   );
 }

@@ -5,13 +5,12 @@ import { Container, Typography } from '@mui/material';
 import { GridOptions, ICellRendererParams, Page, Table } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
+import { UseQueryReturnType } from '@tyro/api';
 import { useBulkUpdateCoreStudent, useStudents } from '../../api/students';
 import { TableAvatar } from '../../components/common/table-avatar';
 import { displayName } from '../../../../../src/utils/nameUtils';
 
-type ReturnTypeFromUseStudents = NonNullable<
-  ReturnType<typeof useStudents>['data']
->[number];
+type ReturnTypeFromUseStudents = UseQueryReturnType<typeof useStudents>[number];
 
 const getStudentColumns = (
   translate: TFunction<
