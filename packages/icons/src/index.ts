@@ -36,7 +36,7 @@ export * from './save';
 export * from './school-building';
 export * from './search';
 export * from './send-mail';
-export * from './thumbs-up-clock';
+export * from './thumbs-up-checkmark';
 export * from './trash';
 export * from './unarchive';
 export * from './undo';
