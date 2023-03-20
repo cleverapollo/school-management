@@ -6,10 +6,13 @@ import { ToggleButtonProps } from '@mui/material';
 const COLORS = ['primary', 'secondary', 'info', 'success', 'warning', 'error'] as const;
 
 export default function ToggleButton(theme: Theme) {
+  const isLight = theme.palette.mode === 'light';
+
   const rootStyle = (ownerState: ToggleButtonProps) => {
     const standardColor = ownerState.color === 'standard';
 
     const defaultStyle = {
+      color: theme.palette.slate[400],
       ...(standardColor && {
         '&.Mui-selected': {
           borderColor: 'inherit',
@@ -25,6 +28,8 @@ export default function ToggleButton(theme: Theme) {
         },
         '&.Mui-selected': {
           borderColor: theme.palette[color].main,
+          color: theme.palette[color][isLight ? 'main' : 'light'],
+          backgroundColor: theme.palette[color][isLight ? 'lighter' : 'darker'],
         },
       }),
     }));
@@ -32,7 +37,6 @@ export default function ToggleButton(theme: Theme) {
     const disabledState = {
       '&.Mui-disabled': {
         '&.Mui-selected': {
-          color: theme.palette.action.disabled,
           backgroundColor: theme.palette.action.selected,
           borderColor: theme.palette.action.disabledBackground,
         },
