@@ -1,5 +1,6 @@
 {
   "attendanceNotTaken": "Attendance not taken",
+  "attendanceTaken": "Attendance taken",
   "sessionAttendanceYear": "Session attendance {{year}}",
   "absenceType": "Absence type",
   "totalDays": "Total days {{count}}",

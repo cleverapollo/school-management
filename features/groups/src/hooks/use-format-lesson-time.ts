@@ -23,7 +23,7 @@ export function useFormatLessonTime({
     lastWeek: `[${t('calendar:dayOfLastWeek', {
       day: dayjs(startTime).format('dddd, HH:mm'),
     })}]`,
-    sameElse: 'dddd DD/MM/YY, HH:mm',
+    sameElse: 'l, HH:mm',
   });
 
   const endHour = dayjs(endTime).format('HH:mm');

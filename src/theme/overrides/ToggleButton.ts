@@ -13,6 +13,7 @@ export default function ToggleButton(theme: Theme) {
 
     const defaultStyle = {
       color: theme.palette.slate[400],
+      padding: '4px 10px',
       ...(standardColor && {
         '&.Mui-selected': {
           borderColor: 'inherit',

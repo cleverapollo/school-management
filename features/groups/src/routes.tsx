@@ -1,8 +1,15 @@
 import { getNumber, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { lazy } from 'react';
 import { BookOpenIcon, UserProfileCardIcon } from '@tyro/icons';
-import { UserType } from '@tyro/api';
-import { getSubjectGroups, getSubjectGroupsById } from './api/subject-groups';
+import { Iterator, UserType } from '@tyro/api';
+import { redirect } from 'react-router-dom';
+import dayjs from 'dayjs';
+import {
+  getSubjectGroupAttendanceCode,
+  getSubjectGroupLessonByIteratorInfo,
+  getSubjectGroups,
+  getSubjectGroupsById,
+} from './api/subject-groups';
 import { getStudentSubjects } from './api/student-subjects';
 import {
   getCustomGroups,
@@ -16,8 +23,14 @@ const ViewCustomGroupPage = lazy(() => import('./pages/custom/view'));
 const EnrolmentGroups = lazy(() => import('./pages/enrolment'));
 const ViewEnrolmentGroupPage = lazy(() => import('./pages/enrolment/view'));
 const SubjectGroups = lazy(() => import('./pages/subject'));
-const ViewSubjectGroupPage = lazy(() => import('./pages/subject/view'));
 const Subjects = lazy(() => import('./pages/subject/students-list'));
+const SubjectGroupProfileAttendancePage = lazy(
+  () => import('./pages/subject/profile/attendance')
+);
+
+const SubjectGroupContainer = lazy(
+  () => import('./components/subject-group/subject-group-container')
+);
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -56,15 +69,44 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:general.groups.subject'),
             loader: () => getSubjectGroups(),
             element: <SubjectGroups />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: 'subject/:groupId',
+            element: <SubjectGroupContainer />,
+            loader: ({ params }) => {
+              const groupId = getNumber(params.groupId);
+
+              return getSubjectGroupsById(groupId);
+            },
             children: [
               {
                 type: NavObjectType.NonMenuLink,
-                path: ':groupId/view',
+                index: true,
+                loader: () => redirect('./attendance'),
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'attendance',
+                element: <SubjectGroupProfileAttendancePage />,
                 loader: ({ params }) => {
-                  const groupId = getNumber(params?.groupId);
-                  getSubjectGroupsById(groupId);
+                  const groupId = getNumber(params.groupId);
+
+                  return Promise.all([
+                    getSubjectGroupAttendanceCode({
+                      custom: true,
+                    }),
+                    getSubjectGroupLessonByIteratorInfo({
+                      partyId: groupId!,
+                      iterator: Iterator.Closest,
+                    }),
+                    getSubjectGroupLessonByIteratorInfo({
+                      partyId: groupId!,
+                      iterator: Iterator.Next,
+                      eventStartTime: dayjs().format('YYYY-MM-DDTHH:mm'),
+                    }),
+                  ]);
                 },
-                element: <ViewSubjectGroupPage />,
               },
             ],
           },
