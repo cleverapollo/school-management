@@ -3,7 +3,7 @@
 import * as Yup from 'yup';
 import merge from 'lodash/merge';
 import { useToast } from '@tyro/core';
-import { EventInput } from '@fullcalendar/common';
+import { EventInput } from '@fullcalendar/core';
 // form
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -20,7 +20,11 @@ import {
   DialogTitle,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { MobileDateTimePicker } from '@mui/x-date-pickers';
+import {
+  MobileDateTimePicker,
+  LocalizationProvider,
+} from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 // components
 import {
   CalendarEventType,
@@ -269,119 +273,139 @@ export default function CalendarForm({
       onClose={onCancel}
       sx={{ maxWidth: '750px !important' }}
     >
-      <DialogTitle>Add Event</DialogTitle>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack spacing={3} sx={{ p: 3 }}>
-          {/* @ts-ignore */}
-          <RHFTextField name="title" label={t('calendar:inputLabels.title')} customControl={control} />
-
-          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Controller
-              name="start"
-              control={control}
-              render={({ field }) => (
-                <MobileDateTimePicker
-                  {...field}
-                  label={t('calendar:inputLabels.startDate')}
-                  inputFormat="dd/MM/yyyy hh:mm a"
-                  // @ts-ignore
-                  renderInput={(params) => <TextField {...params} fullWidth />}
-                />
-              )}
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DialogTitle>Add Event</DialogTitle>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Stack spacing={3} sx={{ p: 3 }}>
+            <RHFTextField
+              name="title"
+              label={t('calendar:inputLabels.title')}
+              // @ts-expect-error
+              customControl={control}
             />
-            <Box sx={{ width: '15%' }} />
 
-            <Controller
-              name="end"
-              control={control}
-              render={({ field, fieldState: { error } }) => (
-                <MobileDateTimePicker
-                  {...field}
-                  label={t('calendar:inputLabels.endDate')}
-                  inputFormat="dd/MM/yyyy hh:mm a"
-                  renderInput={(params) => (
-                    // @ts-ignore
-                    <TextField
-                      {...params}
-                      fullWidth
-                      error={!!error}
-                      helperText={error?.message}
-                    />
-                  )}
-                />
-              )}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Controller
+                name="start"
+                control={control}
+                render={({ field }) => (
+                  <MobileDateTimePicker
+                    {...field}
+                    label={t('calendar:inputLabels.startDate')}
+                    inputFormat="dd/MM/yyyy hh:mm a"
+                    renderInput={(params) => (
+                      // @ts-ignore
+                      <TextField {...params} fullWidth />
+                    )}
+                  />
+                )}
+              />
+              <Box sx={{ width: '15%' }} />
+
+              <Controller
+                name="end"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <MobileDateTimePicker
+                    {...field}
+                    label={t('calendar:inputLabels.endDate')}
+                    inputFormat="dd/MM/yyyy hh:mm a"
+                    renderInput={(params) => (
+                      // @ts-ignore
+                      <TextField
+                        {...params}
+                        fullWidth
+                        error={!!error}
+                        helperText={error?.message}
+                      />
+                    )}
+                  />
+                )}
+              />
+            </Box>
+
+            <RHFSwitch
+              name="allDay"
+              label={t('calendar:inputLabels.allDay')}
+              // @ts-expect-error
+              customControl={control}
             />
-          </Box>
 
-          {/* @ts-ignore */}
-          <RHFSwitch name="allDay" label={t('calendar:inputLabels.allDay')} customControl={control} />
+            <Box sx={{ width: '40%' }}>
+              <RHFSelect
+                name="schedule"
+                label={t('calendar:inputLabels.schedule')}
+                // @ts-expect-error
+                customControl={control}
+              >
+                {Options.map((option) => (
+                  <MenuItem value={option.name}>{option.label}</MenuItem>
+                ))}
+              </RHFSelect>
+            </Box>
 
-          <Box sx={{ width: '40%' }}>
-            {/* @ts-ignore */}
-            <RHFSelect name="schedule" label={t('calendar:inputLabels.schedule')} customControl={control}>
-              {Options.map((option) => (
+            <ParticipantInput
+              participants={participants}
+              setParticipants={setParticipants}
+            />
+
+            <RHFSelect
+              name="location"
+              label={t('calendar:inputLabels.location')}
+              // @ts-expect-error
+              customControl={control}
+            >
+              {LocationOptions.map((option) => (
                 <MenuItem value={option.name}>{option.label}</MenuItem>
               ))}
             </RHFSelect>
-          </Box>
 
-          <ParticipantInput
-            participants={participants}
-            setParticipants={setParticipants}
-          />
+            <RHFTextField
+              name="description"
+              label={t('calendar:inputLabels.description')}
+              multiline
+              rows={4}
+              // @ts-ignore
+              customControl={control}
+            />
 
-          {/* @ts-ignore */}
-          <RHFSelect name="location" label={t('calendar:inputLabels.location')} customControl={control}>
-            {LocationOptions.map((option) => (
-              <MenuItem value={option.name}>{option.label}</MenuItem>
-            ))}
-          </RHFSelect>
+            <Controller
+              name="textColor"
+              control={control}
+              render={({ field }) => (
+                <ColorSinglePicker
+                  value={field.value}
+                  onChange={field.onChange}
+                  colors={COLOR_OPTIONS}
+                />
+              )}
+            />
+          </Stack>
 
-          <RHFTextField
-            name="description"
-            label={t('calendar:inputLabels.description')}
-            multiline
-            rows={4}
-            // @ts-ignore
-            customControl={control}
-          />
-
-          <Controller
-            name="textColor"
-            control={control}
-            render={({ field }) => (
-              <ColorSinglePicker
-                value={field.value}
-                onChange={field.onChange}
-                colors={COLOR_OPTIONS}
-              />
+          <DialogActions>
+            {!isCreating && (
+              <Tooltip title="Delete Event">
+                <IconButton onClick={handleDelete}>
+                  <Iconify icon="eva:trash-2-outline" width={20} height={20} />
+                </IconButton>
+              </Tooltip>
             )}
-          />
-        </Stack>
+            <Box sx={{ flexGrow: 1 }} />
 
-        <DialogActions>
-          {!isCreating && (
-            <Tooltip title="Delete Event">
-              <IconButton onClick={handleDelete}>
-                <Iconify icon="eva:trash-2-outline" width={20} height={20} />
-              </IconButton>
-            </Tooltip>
-          )}
-          <Box sx={{ flexGrow: 1 }} />
+            <Button variant="outlined" color="inherit" onClick={onCancel}>
+              {t('common:actions.cancel')}
+            </Button>
 
-          <Button variant="outlined" color="inherit" onClick={onCancel}>
-            {t('common:actions.cancel')}
-          </Button>
-
-          <LoadingButton
-            type="submit"
-            variant="contained"
-            loading={isSubmitting}
-          >
-            {t('common:actions.add')}
-          </LoadingButton>
-        </DialogActions>
-      </form>
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              loading={isSubmitting}
+            >
+              {t('common:actions.add')}
+            </LoadingButton>
+          </DialogActions>
+        </form>
+      </LocalizationProvider>
     </DialogAnimate>
   );
 }

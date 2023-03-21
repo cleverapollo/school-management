@@ -1,14 +1,12 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
-import FullCalendar, {
-  DateSelectArg,
-  EventClickArg,
-  EventDropArg,
-} from '@fullcalendar/react'; // => request placed at the top
+import FullCalendar from '@fullcalendar/react';
+import { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core';
 import listPlugin from '@fullcalendar/list';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import timelinePlugin from '@fullcalendar/timeline';
+import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import interactionPlugin, {
   EventResizeDoneArg,
 } from '@fullcalendar/interaction';
@@ -87,15 +85,11 @@ export const Calendar = function Calendar({
     endDate: '2023-03-07',
     partyIds: [partyId || 1780],
   });
-  const newData = useMemo(
-    () => data?.map((event, index) => ({ ...event, id: index.toString() })),
-    [data]
-  );
 
   const [selectedEventId, setSelectedEventId] = useState<Maybe<string>>(null);
   const selectedEvent = useMemo(() => {
     if (selectedEventId) {
-      return newData?.find((_event) => _event.id === selectedEventId);
+      return data?.find((_event) => _event.id === selectedEventId);
     }
     return null;
   }, [selectedEventId]);
@@ -246,7 +240,13 @@ export const Calendar = function Calendar({
               editable={isEditable}
               droppable={isEditable}
               selectable={isEditable}
-              events={newData}
+              events={data}
+              resources={[
+                {
+                  id: '0',
+                  title: 'All',
+                },
+              ]}
               ref={calendarRef}
               rerenderDelay={10}
               initialDate={date}
@@ -267,7 +267,9 @@ export const Calendar = function Calendar({
                 timelinePlugin,
                 timeGridPlugin,
                 interactionPlugin,
+                resourceTimelinePlugin,
               ]}
+              schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
             />
           </CalendarStyle>
         </Card>

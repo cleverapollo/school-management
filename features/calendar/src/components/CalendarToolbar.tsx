@@ -13,6 +13,12 @@ import {
 // utils
 import { useResponsive } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
+import {
+  Calendar22Icon,
+  CalendarDatesIcon,
+  CalendarMonthIcon,
+  CalendarScheduleIcon,
+} from '@tyro/icons';
 import { fDate } from '../../../../src/utils/formatTime';
 // hooks
 // @types
@@ -20,13 +26,16 @@ import { CalendarView } from '../types';
 // components
 import { Iconify } from '../../../../src/components/iconify';
 
-// ----------------------------------------------------------------------
-
 const VIEW_OPTIONS = [
-  { value: 'dayGridMonth', label: 'Month', icon: 'ic:round-view-module' },
-  { value: 'timeGridWeek', label: 'Week', icon: 'ic:round-view-week' },
-  { value: 'timeGridDay', label: 'Day', icon: 'ic:round-view-day' },
-  { value: 'listWeek', label: 'Agenda', icon: 'ic:round-view-agenda' },
+  { value: 'timeGridDay', label: 'Day', icon: Calendar22Icon },
+  { value: 'timeGridWeek', label: 'Week', icon: CalendarDatesIcon },
+  { value: 'dayGridMonth', label: 'Month', icon: CalendarMonthIcon },
+  { value: 'listWeek', label: 'Agenda', icon: CalendarScheduleIcon },
+  {
+    value: 'resourceTimelineDay',
+    label: 'Timeline',
+    icon: CalendarScheduleIcon,
+  },
 ] as const;
 
 const RootStyle = styled(Box)(({ theme }) => ({
@@ -65,16 +74,37 @@ export default function CalendarToolbar({
   return (
     <RootStyle>
       {isDesktop && (
-        <Stack direction="row" spacing={0.5}>
-          {VIEW_OPTIONS.map((viewOption) => (
-            <Tooltip key={viewOption.value} title={viewOption.label}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            button: {
+              borderStyle: 'solid',
+              borderWidth: 1,
+              borderColor: 'slate.100',
+              color: 'slate.500',
+
+              '&.Mui-selected': {
+                borderColor: 'indigo.200',
+                color: 'primary.main',
+                backgroundColor: 'indigo.50',
+
+                '&:hover': {
+                  backgroundColor: 'indigo.100',
+                },
+              },
+            },
+          }}
+        >
+          {VIEW_OPTIONS.map(({ value, label, icon: Icon }) => (
+            <Tooltip key={value} title={label}>
               <ToggleButton
                 value={view}
-                selected={viewOption.value === view}
-                onChange={() => onChangeView(viewOption.value)}
+                selected={value === view}
+                onChange={() => onChangeView(value)}
                 sx={{ width: 32, height: 32, padding: 0, border: 0 }}
               >
-                <Iconify icon={viewOption.icon} width={20} height={20} />
+                <Icon sx={{ width: 20, height: 20 }} />
               </ToggleButton>
             </Tooltip>
           ))}

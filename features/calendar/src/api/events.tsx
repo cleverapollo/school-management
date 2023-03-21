@@ -7,7 +7,7 @@ import {
   CalendarEventAttendeeType,
   queryClient,
 } from '@tyro/api';
-import { EventInput } from '@fullcalendar/common';
+import { EventInput } from '@fullcalendar/core';
 import { COLOR_OPTIONS, Participant } from '../components/CalendarForm';
 
 export interface ExtendedEventInput extends EventInput {
@@ -55,6 +55,7 @@ const createEvents = graphql(/* GraphQL */ `
 const events = graphql(/* GraphQL */ `
   query calendar_calendarEvents($filter: CalendarEventFilter!) {
     calendar_calendarEvents(filter: $filter) {
+      eventId
       calendarIds
       startTime
       endTime
@@ -113,8 +114,8 @@ export function getCalendarEvents(filter: CalendarEventFilter) {
 export function useCalendarEvents(filter: CalendarEventFilter) {
   return useQuery({
     ...calendarEventsQuery(filter),
-    select: ({ calendar_calendarEvents }) => {
-      const newEvents = calendar_calendarEvents?.map((event, index) => {
+    select: ({ calendar_calendarEvents }) =>
+      calendar_calendarEvents?.map((event, index) => {
         // ToDo: refactor this when we get full data from the backend
         const filteredAttendees = event?.attendees?.filter(
           (attendee) => attendee?.type === CalendarEventAttendeeType.Attendee
@@ -134,6 +135,10 @@ export function useCalendarEvents(filter: CalendarEventFilter) {
           (attendee) => attendee?.type === CalendarEventAttendeeType.Organiser
         )[0];
         return {
+          id: `${event?.eventId}-${event?.startTime ?? ''}-${
+            event?.endTime ?? ''
+          }`,
+          resourceId: '0',
           title: subjects?.length ? subjects[0]?.name : '',
           teacherTitle,
           participants,
@@ -147,9 +152,7 @@ export function useCalendarEvents(filter: CalendarEventFilter) {
               : '',
           room: event?.rooms?.length && event.rooms[0]?.name,
         } as ExtendedEventInput;
-      });
-      return newEvents;
-    },
+      }),
   });
 }
 
