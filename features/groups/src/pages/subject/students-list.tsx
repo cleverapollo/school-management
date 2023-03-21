@@ -10,7 +10,7 @@ import { TableColumn } from '../../../../../src/components/table/types';
 
 import { displayName } from '../../../../../src/utils/nameUtils';
 import { useStudentSubjects } from '../../api/student-subjects';
-import { SubjectGroupLevelChip } from '../../components/subject-group-level-chip';
+import { SubjectGroupLevelChip } from '../../components';
 
 interface SubjectsData extends SubjectGroup {
   firstButton?: string;

@@ -23,7 +23,7 @@ import {
 
 import { displayName } from '../../../../../src/utils/nameUtils';
 import { useSubjectGroups } from '../../api/subject-groups';
-import { SubjectGroupLevelChip } from '../../components/subject-group-level-chip';
+import { SubjectGroupLevelChip } from '../../components';
 
 type ReturnTypeFromUseSubjectGroups = NonNullable<
   ReturnType<typeof useSubjectGroups>['data']
@@ -46,10 +46,7 @@ const getSubjectGroupsColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseSubjectGroups>) => (
-      <RouterLink
-        sx={{ fontWeight: 600 }}
-        to={`${data?.partyId ?? ''}/students`}
-      >
+      <RouterLink sx={{ fontWeight: 600 }} to={`${data?.partyId ?? ''}`}>
         {data?.name}
       </RouterLink>
     ),
@@ -85,7 +82,7 @@ const getSubjectGroupsColumns = (
       const teachers = data?.staff as Person[];
       if (teachers.length === 0) return '-';
 
-      return teachers.map(displayName).join(',');
+      return teachers.map(displayName).join(', ');
     },
   },
 ];
