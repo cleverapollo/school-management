@@ -38,6 +38,7 @@ export default function ToggleButton(theme: Theme) {
     const disabledState = {
       '&.Mui-disabled': {
         '&.Mui-selected': {
+          color: theme.palette.action.disabled,
           backgroundColor: theme.palette.action.selected,
           borderColor: theme.palette.action.disabledBackground,
         },
