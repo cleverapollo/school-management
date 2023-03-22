@@ -24,10 +24,15 @@ export function SubjectGroupOverviewNextLesson({
 
   const { displayName } = usePreferredNameLayout();
 
+  const { data: closestLessonData } = useSubjectGroupLessonByIterator({
+    partyId: groupId,
+    iterator: Iterator.Closest,
+  });
+
   const { data: nextLessonData } = useSubjectGroupLessonByIterator({
     partyId: groupId,
     iterator: Iterator.Next,
-    eventStartTime: dayjs().format('YYYY-MM-DDTHH:mm'),
+    eventStartTime: closestLessonData?.startTime,
   });
 
   const {

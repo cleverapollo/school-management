@@ -90,19 +90,21 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'attendance',
                 element: <SubjectGroupProfileAttendancePage />,
-                loader: ({ params }) => {
+                loader: async ({ params }) => {
                   const groupId = getNumber(params.groupId);
+
+                  const { calendar_calendarEventsIterator: closestLessonData } =
+                    await getSubjectGroupLessonByIteratorInfo({
+                      partyId: groupId!,
+                      iterator: Iterator.Closest,
+                    });
 
                   return Promise.all([
                     getAttendanceCodes({ custom: false }),
                     getSubjectGroupLessonByIteratorInfo({
                       partyId: groupId!,
-                      iterator: Iterator.Closest,
-                    }),
-                    getSubjectGroupLessonByIteratorInfo({
-                      partyId: groupId!,
                       iterator: Iterator.Next,
-                      eventStartTime: dayjs().format('YYYY-MM-DDTHH:mm'),
+                      eventStartTime: closestLessonData?.startTime,
                     }),
                   ]);
                 },
