@@ -5466,20 +5466,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@tyro/attendance@workspace:features/attendance":
+"@tyro/attendance@*, @tyro/attendance@workspace:features/attendance":
   version: 0.0.0-use.local
   resolution: "@tyro/attendance@workspace:features/attendance"
   dependencies:
     "@mui/material": ^5.11.4
-    "@mui/system": ^5.10.14
     "@tanstack/react-query": ^4.16.1
     "@tyro/api": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
-    framer-motion: ^9.0.1
-    lodash: ^4.17.21
     react: ^18.2.0
     react-dom: ^18.2.0
     react-router: ^6.6.2
@@ -5611,6 +5608,7 @@ __metadata:
     "@mui/system": ^5.10.14
     "@tanstack/react-query": ^4.16.1
     "@tyro/api": "*"
+    "@tyro/attendance": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
     "@tyro/i18n": "*"
