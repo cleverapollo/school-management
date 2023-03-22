@@ -57,11 +57,11 @@ export function SubjectGroupStatusBar({
             </Typography>
             {[
               {
-                label: t('groups:subject'),
+                label: t('common:subject'),
                 value: subjectGroupData?.name,
               },
               {
-                label: t('groups:year'),
+                label: t('common:year'),
                 value: yearGroupsNames,
               },
             ].map(({ label, value }) => (
@@ -91,7 +91,7 @@ export function SubjectGroupStatusBar({
               mb: 0.5,
             }}
           >
-            {t('groups:teachers')}
+            {t('groups:teachersInGroup')}
           </Typography>
           <Typography
             component="dd"

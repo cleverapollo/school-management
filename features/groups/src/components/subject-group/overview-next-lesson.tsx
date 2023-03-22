@@ -19,7 +19,7 @@ interface SubjectGroupOverviewNextLessonProps {
 export function SubjectGroupOverviewNextLesson({
   groupId,
 }: SubjectGroupOverviewNextLessonProps) {
-  const { t } = useTranslation(['groups', 'attendance']);
+  const { t } = useTranslation(['groups', 'attendance', 'common']);
 
   const { displayName } = usePreferredNameLayout();
 
@@ -85,11 +85,11 @@ export function SubjectGroupOverviewNextLesson({
           value: roomsNames || '-',
         },
         {
-          label: t('groups:teacher'),
+          label: t('common:teacher'),
           value: nextLessonTeachers || '-',
         },
         {
-          label: t('groups:attendance'),
+          label: t('common:attendance'),
           value: eventId ? (
             <CurrentAttendanceIcon
               codeType={
@@ -113,6 +113,7 @@ export function SubjectGroupOverviewNextLesson({
             component="dt"
             gridColumn={(index % 4) + 1}
             gridRow={1}
+            textTransform="capitalize"
             sx={{
               ...labelStyle,
               display: 'flex',
