@@ -9,15 +9,13 @@ import {
 import { AttendanceCodeType } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { InfoCircleIcon, SchoolBuildingIcon } from '@tyro/icons';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAttendanceCodes } from '../api';
 
 type AttendanceToggleProps = {
   codeId?: number;
   onChange: (newCodeId: number) => void;
 };
-
-type AttendanceCodeMapId = Record<AttendanceCodeType, number>;
 
 export function AttendanceToggle({
   codeId: initialCodeId,
@@ -26,42 +24,30 @@ export function AttendanceToggle({
   const { t } = useTranslation(['attendance']);
 
   const absentToggleRef = useRef<HTMLButtonElement>(null);
-  const codeIdByTypeRef = useRef<AttendanceCodeMapId>();
 
-  const [isAbsentMenuOpen, setAbsentMenuOpen] = useState(false);
-  const [codeType, setAttendanceCodeType] = useState<AttendanceCodeType>();
+  const [isAbsentMenuOpen, setIsAbsentMenuOpen] = useState(false);
+  const [codeType, setCodeType] = useState<AttendanceCodeType>();
 
   const { data: codesData, isLoading } = useAttendanceCodes({ custom: false });
 
-  codeIdByTypeRef.current = useMemo(
-    () =>
-      (codesData || []).reduce((codesByType, code) => {
-        if (codesByType && code) {
-          codesByType[code.codeType] = code.id;
-        }
+  const handleAttendanceCodeChange = (code: AttendanceCodeType | number) => {
+    const currentCode = codesData?.find((attendanceCode) => {
+      if (typeof code === 'number') return attendanceCode?.id === code;
+      return attendanceCode?.codeType === code;
+    });
 
-        return codesByType;
-      }, {} as AttendanceCodeMapId),
-    [codesData]
-  );
-
-  useEffect(() => {
-    if (codesData?.length && codeIdByTypeRef.current) {
-      const currentCode = codesData.find((code) => code?.id === initialCodeId);
-      const newCodeType = currentCode?.codeType ?? AttendanceCodeType.Present;
-
-      setAttendanceCodeType(newCodeType);
-      onChange(codeIdByTypeRef.current[newCodeType]);
-    }
-  }, [codesData?.length, initialCodeId]);
-
-  const handleAttendanceCodeChange = (code: AttendanceCodeType) => {
-    if (codeIdByTypeRef.current) {
-      setAttendanceCodeType(code);
-      onChange(codeIdByTypeRef.current[code]);
-      setAbsentMenuOpen(false);
+    if (currentCode) {
+      setCodeType(currentCode.codeType);
+      onChange(currentCode.id);
+      setIsAbsentMenuOpen(false);
     }
   };
+
+  useEffect(() => {
+    if (codesData?.length) {
+      handleAttendanceCodeChange(initialCodeId ?? AttendanceCodeType.Present);
+    }
+  }, [codesData, initialCodeId]);
 
   const isAbsentCodeSelected =
     codeType === AttendanceCodeType.ExplainedAbsence ||
@@ -100,7 +86,7 @@ export function AttendanceToggle({
           color="error"
           value={{}}
           selected={isAbsentMenuOpen || isAbsentCodeSelected}
-          onClick={() => setAbsentMenuOpen(true)}
+          onClick={() => setIsAbsentMenuOpen(true)}
         >
           {t('attendance:absent')}
         </ToggleButton>
@@ -139,7 +125,7 @@ export function AttendanceToggle({
           horizontal: 'center',
           vertical: 'bottom',
         }}
-        onClose={() => setAbsentMenuOpen(false)}
+        onClose={() => setIsAbsentMenuOpen(false)}
       >
         <MenuItem
           dense
