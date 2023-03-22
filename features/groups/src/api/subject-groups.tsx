@@ -148,18 +148,9 @@ export function useSubjectGroupById(id: number | undefined) {
     select: ({ subjectGroups }) => {
       if (!subjectGroups) return null;
 
-      const [group] = subjectGroups;
-      const [firstSubject] = group?.subjects || [];
+      const [group] = subjectGroups || [];
 
-      return {
-        id: (group?.partyId as number).toString(),
-        name: group?.name,
-        students: group?.students,
-        avatarUrl: group?.avatarUrl,
-        subject: firstSubject,
-        yearGroups: group?.yearGroups,
-        teachers: group?.staff,
-      };
+      return group;
     },
   });
 }

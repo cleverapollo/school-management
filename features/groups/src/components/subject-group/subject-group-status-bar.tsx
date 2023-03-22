@@ -24,11 +24,11 @@ export function SubjectGroupStatusBar({
 
   const yearGroupsNames = subjectGroupData?.yearGroups
     ?.map(({ name }) => name)
-    .join(', ');
+    ?.join(', ');
 
-  const teachersNames = subjectGroupData?.teachers
+  const teachersNames = subjectGroupData?.staff
     ?.map((teacher) => displayName(teacher as Person))
-    .join(', ');
+    ?.join(', ');
 
   const labelStyle = {
     fontSize: '0.75rem',
@@ -58,7 +58,7 @@ export function SubjectGroupStatusBar({
             {[
               {
                 label: t('groups:subject'),
-                value: subjectGroupData?.subject?.name,
+                value: subjectGroupData?.name,
               },
               {
                 label: t('groups:year'),
