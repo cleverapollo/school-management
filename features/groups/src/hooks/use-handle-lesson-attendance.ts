@@ -13,10 +13,10 @@ import isEqual from 'lodash/isEqual';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import {
-  subjectGroupsKeys,
+  subjectGroupLessonKeys,
   useSubjectGroupById,
   useSubjectGroupLessonByIterator,
-} from '../api/subject-groups';
+} from '../api';
 import { useFormatLessonTime } from './use-format-lesson-time';
 
 type StudentAttendance = Record<
@@ -132,7 +132,7 @@ export function useHandleLessonAttendance({
       onSuccess: () => {
         queryClient.invalidateQueries({
           predicate: (query) => {
-            const lessonKey = subjectGroupsKeys.lessonDetails(filter)[3];
+            const lessonKey = subjectGroupLessonKeys.details(filter)[3];
             const queryKey = query.queryKey[3] as typeof lessonKey;
 
             return queryKey?.partyId === lessonKey.partyId;

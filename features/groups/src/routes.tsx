@@ -4,20 +4,17 @@ import { BookOpenIcon, UserProfileCardIcon } from '@tyro/icons';
 import { Iterator, UserType } from '@tyro/api';
 import { redirect } from 'react-router-dom';
 import { getAttendanceCodes } from '@tyro/attendance';
-import dayjs from 'dayjs';
 
 import {
   getSubjectGroupLessonByIteratorInfo,
   getSubjectGroups,
   getSubjectGroupsById,
-} from './api/subject-groups';
-import { getStudentSubjects } from './api/student-subjects';
-import {
+  getStudentSubjects,
   getCustomGroups,
   getCustomGroupsById,
   getEnrolmentGroups,
   getEnrolmentGroupsById,
-} from './api/general-groups';
+} from './api';
 
 const CustomGroups = lazy(() => import('./pages/custom'));
 const ViewCustomGroupPage = lazy(() => import('./pages/custom/view'));

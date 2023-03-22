@@ -6,11 +6,10 @@ import {
   Iterator,
   Staff,
 } from '@tyro/api';
-import dayjs from 'dayjs';
 
 import { usePreferredNameLayout, CurrentAttendanceIcon } from '@tyro/core';
 import { Fragment } from 'react';
-import { useSubjectGroupLessonByIterator } from '../../api/subject-groups';
+import { useSubjectGroupLessonByIterator } from '../../api';
 import { useFormatLessonTime } from '../../hooks';
 
 interface SubjectGroupOverviewNextLessonProps {
