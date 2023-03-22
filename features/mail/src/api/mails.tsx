@@ -158,7 +158,7 @@ export function useMails(labelId: number, profileId?: number | null) {
               },
             }
       ),
-    select: ({ communications_mail: mail }) => mail,
+    select: ({ communications_mail }) => communications_mail,
   });
 }
 

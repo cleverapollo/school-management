@@ -117,8 +117,8 @@ export function getLabels() {
 export function useLabels() {
   return useQuery({
     ...calendarEventsQuery,
-    select: ({ communications_label: label }) =>
-      label?.map(
+    select: ({ communications_label }) =>
+      communications_label?.map(
         (item) =>
           ({
             originalId: item?.id,
@@ -141,15 +141,15 @@ export function useUnreadCount(filter: InputMaybe<UnreadCountFilter>) {
   return useQuery({
     queryKey: ['unreadCount', filter],
     queryFn: async () => gqlClient.request(unreadCountQuery, { filter }),
-    select: ({ communications_unreadCount: unreadCount }) => {
-      const totalUnreadCount = unreadCount?.reduce(
+    select: ({ communications_unreadCount }) => {
+      const totalUnreadCount = communications_unreadCount?.reduce(
         (acc, item) =>
           Number.isInteger(item?.count) && item?.labelId === 1
             ? acc + item.count
             : acc,
         0
       );
-      return { unreadCount, totalUnreadCount };
+      return { unreadCount: communications_unreadCount, totalUnreadCount };
     },
     enabled: !!filter?.personPartyId,
   });
