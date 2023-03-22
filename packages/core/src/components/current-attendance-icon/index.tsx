@@ -1,57 +1,47 @@
-import { useMemo } from 'react';
 import { Box, Tooltip } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import { AttendanceCodeType } from '@tyro/api';
-import { useTranslation } from '@tyro/i18n';
 import { CheckmarkIcon, CloseIcon, MinusIcon } from '@tyro/icons';
 
 interface CurrentAttendanceIconProps {
-  name: string | undefined;
-  codeType: AttendanceCodeType | undefined;
+  tooltipText?: string;
+  codeType?: AttendanceCodeType;
 }
 
-type AttendanceCodeIconSettings = {
+function getCodeTypeIconSettings(codeType?: AttendanceCodeType): {
   icon: JSX.Element;
   color: 'green' | 'rose' | 'blue';
-  tooltip: string | undefined;
-};
+} {
+  switch (codeType) {
+    case AttendanceCodeType.Present:
+    case AttendanceCodeType.Late:
+      return {
+        icon: <CheckmarkIcon sx={{ color: 'white', width: 16, height: 16 }} />,
+        color: 'green',
+      };
+    case AttendanceCodeType.UnexplainedAbsence:
+    case AttendanceCodeType.ExplainedAbsence:
+      return {
+        icon: <CloseIcon sx={{ color: 'white', width: 16, height: 16 }} />,
+        color: 'rose',
+      };
+    case AttendanceCodeType.NotTaken:
+    default:
+      return {
+        icon: <MinusIcon sx={{ color: 'white', width: 16, height: 16 }} />,
+        color: 'blue',
+      };
+  }
+}
 
 export function CurrentAttendanceIcon({
-  name,
+  tooltipText,
   codeType,
 }: CurrentAttendanceIconProps) {
-  const { t } = useTranslation(['attendance']);
-
-  const { icon, color, tooltip } = useMemo<AttendanceCodeIconSettings>(() => {
-    switch (codeType) {
-      case AttendanceCodeType.Present:
-      case AttendanceCodeType.Late:
-        return {
-          icon: (
-            <CheckmarkIcon sx={{ color: 'white', width: 16, height: 16 }} />
-          ),
-          color: 'green',
-          tooltip: name,
-        };
-      case AttendanceCodeType.UnexplainedAbsence:
-      case AttendanceCodeType.ExplainedAbsence:
-        return {
-          icon: <CloseIcon sx={{ color: 'white', width: 16, height: 16 }} />,
-          color: 'rose',
-          tooltip: name,
-        };
-      case AttendanceCodeType.NotTaken:
-      default:
-        return {
-          icon: <MinusIcon sx={{ color: 'white', width: 16, height: 16 }} />,
-          color: 'blue',
-          tooltip: t('attendance:attendanceNotTaken'),
-        };
-    }
-  }, [codeType, name, t]);
+  const { icon, color } = getCodeTypeIconSettings(codeType);
 
   return (
-    <Tooltip title={tooltip}>
+    <Tooltip title={tooltipText}>
       <Box
         sx={({ palette }) => ({
           display: 'flex',

@@ -97,7 +97,7 @@ export function SubjectGroupOverviewNextLesson({
                   ? AttendanceCodeType.Present
                   : AttendanceCodeType.NotTaken
               }
-              name={
+              tooltipText={
                 hasTakenAttendance
                   ? t('attendance:attendanceTaken')
                   : t('attendance:attendanceNotTaken')

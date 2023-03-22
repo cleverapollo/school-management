@@ -2,6 +2,7 @@ import { Fragment, useMemo } from 'react';
 import { Box } from '@mui/material';
 import { CurrentAttendanceIcon } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
+import { AttendanceCodeType } from '@tyro/api';
 import { useStudentStatus } from '../../../api/status';
 
 interface CurrentLocationProps {
@@ -9,7 +10,7 @@ interface CurrentLocationProps {
 }
 
 export function CurrentLocation({ studentPartyId }: CurrentLocationProps) {
-  const { t } = useTranslation(['people']);
+  const { t } = useTranslation(['people', 'attendance']);
   const { data } = useStudentStatus(studentPartyId);
   const currentLocationList = useMemo(() => {
     const room = data?.currentLocation?.room
@@ -23,9 +24,12 @@ export function CurrentLocation({ studentPartyId }: CurrentLocationProps) {
         '-'
       ) : (
         <CurrentAttendanceIcon
-          name={
-            data?.currentLocation?.currentAttendance?.attendanceCodeName ??
-            undefined
+          tooltipText={
+            data?.currentLocation?.currentAttendance?.codeType ===
+            AttendanceCodeType.NotTaken
+              ? t('attendance:attendanceNotTaken')
+              : data?.currentLocation?.currentAttendance?.attendanceCodeName ??
+                undefined
           }
           codeType={
             data?.currentLocation?.currentAttendance?.codeType ?? undefined
