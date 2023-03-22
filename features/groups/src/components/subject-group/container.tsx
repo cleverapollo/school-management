@@ -2,7 +2,7 @@ import { Box, CircularProgress, Container, Typography } from '@mui/material';
 import { Outlet, useParams } from 'react-router-dom';
 import { Page, LazyLoader, useNumber, Breadcrumbs } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { SubjectGroupStatusBar } from './subject-group-status-bar';
+import { SubjectGroupStatusBar } from './status-bar';
 import { useSubjectGroupById } from '../../api/subject-groups';
 
 export default function SubjectGroupContainer() {

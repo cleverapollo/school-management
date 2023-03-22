@@ -8,7 +8,7 @@ import { useTranslation } from '@tyro/i18n';
 import { Person } from '@tyro/api';
 
 import { useSubjectGroupById } from '../../api/subject-groups';
-import { SubjectGroupOverviewNextLesson } from './subject-group-overview-next-lesson';
+import { SubjectGroupOverviewNextLesson } from './overview-next-lesson';
 
 interface SubjectGroupOverviewBarProps {
   groupId: number | undefined;

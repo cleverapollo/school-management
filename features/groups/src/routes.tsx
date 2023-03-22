@@ -27,7 +27,7 @@ const SubjectGroupProfileAttendancePage = lazy(
 );
 
 const SubjectGroupContainer = lazy(
-  () => import('./components/subject-group/subject-group-container')
+  () => import('./components/subject-group/container')
 );
 
 export const getRoutes: NavObjectFunction = (t) => [
