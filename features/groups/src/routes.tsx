@@ -3,9 +3,10 @@ import { lazy } from 'react';
 import { BookOpenIcon, UserProfileCardIcon } from '@tyro/icons';
 import { Iterator, UserType } from '@tyro/api';
 import { redirect } from 'react-router-dom';
+import { getAttendanceCodes } from '@tyro/attendance';
 import dayjs from 'dayjs';
+
 import {
-  getSubjectGroupAttendanceCode,
   getSubjectGroupLessonByIteratorInfo,
   getSubjectGroups,
   getSubjectGroupsById,
@@ -93,9 +94,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                   const groupId = getNumber(params.groupId);
 
                   return Promise.all([
-                    getSubjectGroupAttendanceCode({
-                      custom: true,
-                    }),
+                    getAttendanceCodes({ custom: false }),
                     getSubjectGroupLessonByIteratorInfo({
                       partyId: groupId!,
                       iterator: Iterator.Closest,

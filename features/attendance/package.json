@@ -1,23 +1,18 @@
 {
-  "name": "@tyro/groups",
+  "name": "@tyro/attendance",
   "version": "0.0.0",
   "private": true,
   "main": "src/index.ts",
   "dependencies": {
-    "@mui/lab": "^5.0.0-alpha.96",
     "@mui/material": "^5.11.4",
-    "@mui/system": "^5.10.14",
     "@tanstack/react-query": "^4.16.1",
     "@tyro/api": "*",
     "@tyro/core": "*",
-    "@tyro/attendance": "*",
     "@tyro/i18n": "*",
     "@tyro/icons": "*",
-    "dayjs": "^1.11.7",
-    "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router": "^6.3.0",
+    "react-router": "^6.6.2",
     "react-router-dom": "^6.6.2"
   },
   "devDependencies": {

@@ -10,20 +10,20 @@ import { AttendanceCodeType } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { InfoCircleIcon, SchoolBuildingIcon } from '@tyro/icons';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useSubjectGroupAttendanceCodes } from '../../api/subject-groups';
+import { useAttendanceCodes } from '../api';
 
-type SubjectGroupAttendanceToggleProps = {
+type AttendanceToggleProps = {
   codeId?: number;
   onChange: (newCodeId: number) => void;
 };
 
 type AttendanceCodeMapId = Record<AttendanceCodeType, number>;
 
-export function SubjectGroupAttendanceToggle({
+export function AttendanceToggle({
   codeId: initialCodeId,
   onChange,
-}: SubjectGroupAttendanceToggleProps) {
-  const { t } = useTranslation(['groups']);
+}: AttendanceToggleProps) {
+  const { t } = useTranslation(['attendance']);
 
   const absentToggleRef = useRef<HTMLButtonElement>(null);
   const codeIdByTypeRef = useRef<AttendanceCodeMapId>();
@@ -31,9 +31,7 @@ export function SubjectGroupAttendanceToggle({
   const [isAbsentMenuOpen, setAbsentMenuOpen] = useState(false);
   const [codeType, setAttendanceCodeType] = useState<AttendanceCodeType>();
 
-  const { data: codesData, isLoading } = useSubjectGroupAttendanceCodes({
-    custom: true,
-  });
+  const { data: codesData, isLoading } = useAttendanceCodes({ custom: false });
 
   codeIdByTypeRef.current = useMemo(
     () =>
@@ -88,14 +86,14 @@ export function SubjectGroupAttendanceToggle({
           color="success"
           onClick={() => handleAttendanceCodeChange(AttendanceCodeType.Present)}
         >
-          {t('groups:attendanceCodes.PRESENT')}
+          {t('attendance:nameByCodeType.PRESENT')}
         </ToggleButton>
         <ToggleButton
           value={AttendanceCodeType.Late}
           color="info"
           onClick={() => handleAttendanceCodeChange(AttendanceCodeType.Late)}
         >
-          {t('groups:attendanceCodes.LATE')}
+          {t('attendance:nameByCodeType.LATE')}
         </ToggleButton>
         <ToggleButton
           ref={absentToggleRef}
@@ -104,7 +102,7 @@ export function SubjectGroupAttendanceToggle({
           selected={isAbsentMenuOpen || isAbsentCodeSelected}
           onClick={() => setAbsentMenuOpen(true)}
         >
-          {t('groups:absent')}
+          {t('attendance:absent')}
         </ToggleButton>
       </ToggleButtonGroup>
       <Menu
@@ -151,7 +149,7 @@ export function SubjectGroupAttendanceToggle({
           }
         >
           <ListItemText>
-            {t('groups:attendanceCodes.EXPLAINED_ABSENCE')}
+            {t('attendance:nameByCodeType.EXPLAINED_ABSENCE')}
           </ListItemText>
           <ListItemIcon>
             <SchoolBuildingIcon />
@@ -165,7 +163,7 @@ export function SubjectGroupAttendanceToggle({
           }
         >
           <ListItemText>
-            {t('groups:attendanceCodes.UNEXPLAINED_ABSENCE')}
+            {t('attendance:nameByCodeType.UNEXPLAINED_ABSENCE')}
           </ListItemText>
           <ListItemIcon>
             <InfoCircleIcon />

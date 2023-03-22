@@ -6,13 +6,14 @@ import {
   queryClient,
 } from '@tyro/api';
 
+import { useSaveAttendance } from '@tyro/attendance';
+
 import isEqual from 'lodash/isEqual';
 
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import {
   subjectGroupsKeys,
-  useSaveSubjectGroupAttendance,
   useSubjectGroupById,
   useSubjectGroupLessonByIterator,
 } from '../api/subject-groups';
@@ -45,7 +46,7 @@ export function useHandleLessonAttendance({
   });
 
   const { mutate: saveAttendanceMutation, isLoading: isSaveAttendanceLoading } =
-    useSaveSubjectGroupAttendance();
+    useSaveAttendance();
 
   const {
     data: lessonData,

@@ -30,13 +30,6 @@
   "confirmAttendance": "Confirm attendance",
   "cancelEdits": "Cancel Edits",
   "saveAttendance": "Save Attendance",
-  "absent": "Absent",
-  "attendanceCodes": {
-    "PRESENT": "Present",
-    "LATE": "Late",
-    "EXPLAINED_ABSENCE": "In school",
-    "UNEXPLAINED_ABSENCE": "Unknown"
-  },
   "attendanceUpdated": "Attendance updates are saved!",
   "lessonAttendanceNotFound": "No lesson attendance data found"
 }

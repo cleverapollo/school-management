@@ -4,5 +4,12 @@
   "sessionAttendanceYear": "Session attendance {{year}}",
   "absenceType": "Absence type",
   "totalDays": "Total days {{count}}",
-  "noSessionAttendanceForYear": "No session attendance data available for this year."
+  "noSessionAttendanceForYear": "No session attendance data available for this year.",
+  "absent": "Absent",
+  "nameByCodeType": {
+    "PRESENT": "Present",
+    "LATE": "Late",
+    "EXPLAINED_ABSENCE": "In school",
+    "UNEXPLAINED_ABSENCE": "Unknown"
+  }
 }

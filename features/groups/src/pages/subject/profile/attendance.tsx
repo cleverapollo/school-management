@@ -20,6 +20,8 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import LoadingButton from '@mui/lab/LoadingButton';
 
+import { AttendanceToggle } from '@tyro/attendance';
+
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -34,7 +36,6 @@ import { useEffect, useState } from 'react';
 import { displayName } from '../../../../../../src/utils/nameUtils';
 import { useSubjectGroupById } from '../../../api/subject-groups';
 import { useHandleLessonAttendance } from '../../../hooks';
-import { SubjectGroupAttendanceToggle } from '../../../components';
 
 export default function SubjectGroupProfileAttendancePage() {
   const { t } = useTranslation(['groups', 'common']);
@@ -179,7 +180,7 @@ export default function SubjectGroupProfileAttendancePage() {
                     </Stack>
                   </TableCell>
                   <TableCell>
-                    <SubjectGroupAttendanceToggle
+                    <AttendanceToggle
                       codeId={getStudentAttendanceCode(student!.partyId)}
                       onChange={setStudentAttendanceCode(student!.partyId)}
                     />
