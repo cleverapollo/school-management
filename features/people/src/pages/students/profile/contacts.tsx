@@ -8,6 +8,7 @@ import {
   GridOptions,
   ICellRendererParams,
   Table,
+  TableAvatar,
   TableBooleanValue,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -20,7 +21,6 @@ import {
 } from '@tyro/icons';
 import { Box, Fade } from '@mui/material';
 import { useStudentsContacts } from '../../../api/student/overview';
-import { TableAvatar } from '../../../components/common/table-avatar';
 import { joinAddress } from '../../../utils/join-address';
 import { displayName } from '../../../../../../src/utils/nameUtils';
 
