@@ -6,6 +6,7 @@ import {
   Iterator,
   queryClient,
 } from '@tyro/api';
+import { useEffect } from 'react';
 
 // Query for getting closest/prev/next lesson for a subject group
 const subjectGroupLessonByIterator = graphql(/* GraphQL */ `
@@ -53,33 +54,8 @@ const subjectGroupLessonQuery = (filter: CalendarEventIteratorFilter) => ({
   queryFn: () => gqlClient.request(subjectGroupLessonByIterator, { filter }),
 });
 
-export async function fetchSubjectGroupLesson(
-  filter: CalendarEventIteratorFilter
-) {
-  const queryData = await queryClient.fetchQuery(
-    subjectGroupLessonQuery(filter)
-  );
-
-  if (!queryData.calendar_calendarEventsIterator) return null;
-
-  const eventStartTime = queryData.calendar_calendarEventsIterator.startTime;
-
-  return Promise.all([
-    queryClient.fetchQuery(
-      subjectGroupLessonQuery({
-        ...filter,
-        iterator: Iterator.Previous,
-        eventStartTime,
-      })
-    ),
-    queryClient.fetchQuery(
-      subjectGroupLessonQuery({
-        ...filter,
-        iterator: Iterator.Next,
-        eventStartTime,
-      })
-    ),
-  ]);
+export function getSubjectGroupLesson(filter: CalendarEventIteratorFilter) {
+  return queryClient.fetchQuery(subjectGroupLessonQuery(filter));
 }
 
 export function useNextSubjectGroupLesson(filter: CalendarEventIteratorFilter) {
@@ -103,11 +79,26 @@ export function useNextSubjectGroupLesson(filter: CalendarEventIteratorFilter) {
 export function useSubjectGroupLessonByIterator(
   filter: CalendarEventIteratorFilter
 ) {
-  fetchSubjectGroupLesson(filter);
-
-  return useQuery({
+  const queryData = useQuery({
     ...subjectGroupLessonQuery(filter),
     select: ({ calendar_calendarEventsIterator }) =>
       calendar_calendarEventsIterator,
   });
+
+  useEffect(() => {
+    if (queryData.data?.startTime) {
+      getSubjectGroupLesson({
+        partyId: filter.partyId,
+        iterator: Iterator.Previous,
+        eventStartTime: queryData.data.startTime,
+      });
+      getSubjectGroupLesson({
+        partyId: filter.partyId,
+        iterator: Iterator.Next,
+        eventStartTime: queryData.data.startTime,
+      });
+    }
+  }, [queryData.data?.startTime]);
+
+  return queryData;
 }

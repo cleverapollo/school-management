@@ -13,7 +13,7 @@ import {
   getCustomGroupsById,
   getEnrolmentGroups,
   getEnrolmentGroupsById,
-  fetchSubjectGroupLesson,
+  getSubjectGroupLesson,
 } from './api';
 
 const CustomGroups = lazy(() => import('./pages/custom'));
@@ -72,10 +72,27 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.NonMenuLink,
             path: 'subject/:groupId',
             element: <SubjectGroupContainer />,
-            loader: ({ params }) => {
+            loader: async ({ params }) => {
               const groupId = getNumber(params.groupId);
 
-              return getSubjectGroupsById(groupId);
+              const { calendar_calendarEventsIterator: closestLesson } =
+                await getSubjectGroupLesson({
+                  partyId: groupId!,
+                  iterator: Iterator.Closest,
+                });
+
+              return Promise.all([
+                getSubjectGroupsById(groupId),
+                ...(closestLesson
+                  ? [
+                      getSubjectGroupLesson({
+                        partyId: groupId!,
+                        eventStartTime: closestLesson.startTime,
+                        iterator: Iterator.Next,
+                      }),
+                    ]
+                  : []),
+              ]);
             },
             children: [
               {
@@ -92,7 +109,7 @@ export const getRoutes: NavObjectFunction = (t) => [
 
                   return Promise.all([
                     getAttendanceCodes({ custom: false }),
-                    fetchSubjectGroupLesson({
+                    getSubjectGroupLesson({
                       partyId: groupId!,
                       iterator: Iterator.Closest,
                     }),
