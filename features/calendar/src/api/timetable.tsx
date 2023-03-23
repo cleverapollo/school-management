@@ -12,30 +12,35 @@ import { useEffect } from 'react';
 const timetable = graphql(/* GraphQL */ `
   query calendar_partyTimetable($filter: CalendarEventFilter!) {
     calendar_calendarEvents(filter: $filter) {
-      eventId
-      startTime
-      endTime
-      type
-      attendees {
-        type
-        partyInfo {
-          __typename
-          partyId
-          ... on Staff {
-            person {
-              title
-              firstName
-              lastName
-              type
+      resources {
+        resourceId
+        events {
+          eventId
+          startTime
+          endTime
+          type
+          attendees {
+            type
+            partyInfo {
+              __typename
+              partyId
+              ... on Staff {
+                person {
+                  title
+                  firstName
+                  lastName
+                  type
+                }
+              }
+              ... on SubjectGroup {
+                name
+              }
             }
           }
-          ... on SubjectGroup {
+          rooms {
             name
           }
         }
-      }
-      rooms {
-        name
       }
     }
   }
@@ -103,7 +108,14 @@ export function usePartyTimetable({
       startDate: formattedDate,
       endDate: formattedDate,
     }),
-    select: ({ calendar_calendarEvents }) => calendar_calendarEvents,
+    select: ({ calendar_calendarEvents }) => {
+      const resource =
+        calendar_calendarEvents?.resources &&
+        calendar_calendarEvents.resources.length > 0
+          ? calendar_calendarEvents.resources[0]
+          : null;
+      return resource?.events ?? [];
+    },
   });
 }
 

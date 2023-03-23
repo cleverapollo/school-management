@@ -69,7 +69,7 @@ export function StudentSessionAttendanceChart({
 }: StudentSessionAttendanceChartProps) {
   const { t } = useTranslation(['attendance', 'common']);
   const { activeAcademicNamespace, allNamespaces } = useAcademicNamespace();
-  const [chartContainerRef, { width }] = useMeasure();
+  const [chartContainerRef, { width }] = useMeasure<HTMLDivElement>();
   const [selectedYear, setSelectedYear] = useState(activeAcademicNamespace);
   const selectedYearIndex =
     allNamespaces?.findIndex((year) => year?.year === selectedYear?.year) ?? 0;
