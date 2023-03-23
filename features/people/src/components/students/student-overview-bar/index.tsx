@@ -7,7 +7,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { Avatar, useDisclosure } from '@tyro/core';
+import { Avatar, useDisclosure, usePreferredNameLayout } from '@tyro/core';
 import { useStudent } from '../../../api/students';
 import { SupportPlanRing } from '../support-plan-ring';
 import { AdditionalInfo } from './additional-info';
@@ -21,18 +21,19 @@ interface StudentOverviewBarProps {
 }
 
 export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
-  const { data, isLoading } = useStudent(studentId);
-  const { data: statusData, isLoading: statusIsLoading } =
-    useStudentStatus(studentId);
-  const { getButtonProps, getDisclosureProps } = useDisclosure();
   const { t } = useTranslation(['people']);
-  const name = `${data?.person?.firstName ?? ''} ${
-    data?.person?.lastName ?? ''
-  }`;
+
+  const { getButtonProps, getDisclosureProps } = useDisclosure();
+  const { displayName } = usePreferredNameLayout();
+
+  const { data: studentData } = useStudent(studentId);
+  const { data: statusData } = useStudentStatus(studentId);
+
+  const name = displayName(studentData?.person);
 
   return (
     <>
-      <Card variant="outlined" sx={{ p: 1.25, flex: 1, my: 2 }}>
+      <Card variant="outlined" sx={{ py: 1.5, px: 2.5 }}>
         <Stack direction="row" alignItems="center" sx={{ flexWrap: 'wrap' }}>
           <IconButton
             disabled={
@@ -58,7 +59,7 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
             >
               <SupportPlanRing hasSupportPlan>
                 <Avatar
-                  src={data?.person?.avatarUrl ?? undefined}
+                  src={studentData?.person?.avatarUrl ?? undefined}
                   name={name}
                 />
               </SupportPlanRing>
@@ -91,20 +92,20 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
               </Stack>
             )}
           </Stack>
-          <CurrentLocation studentPartyId={data?.partyId} />
+          <CurrentLocation studentPartyId={studentData?.partyId} />
           <Divider orientation="vertical" flexItem sx={{ ml: 2.5, mr: 1 }} />
           <AdditionalInfo
-            years={data?.yearGroups}
-            classGroup={data?.classGroup}
-            tutors={data?.tutors}
-            yearGroupLeads={data?.yearGroupLeads}
+            years={studentData?.yearGroups}
+            classGroup={studentData?.classGroup}
+            tutors={studentData?.tutors}
+            yearGroupLeads={studentData?.yearGroupLeads}
           />
           <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-          <TyroId id={data?.partyId ?? 0} />
+          <TyroId id={studentData?.partyId ?? 0} />
         </Stack>
       </Card>
       <PrioritySupportStudentModal
-        studentId={data?.partyId ?? 0}
+        studentId={studentData?.partyId ?? 0}
         studentName={name}
         {...getDisclosureProps()}
       />
