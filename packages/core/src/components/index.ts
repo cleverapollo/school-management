@@ -7,6 +7,7 @@ export * from './copy-clipboard-button';
 export * from './current-attendance-icon';
 export * from './lazy-loader';
 export * from './page';
+export * from './page-container';
 export * from './router-link';
 export * from './scrollbar';
 export * from './table';
