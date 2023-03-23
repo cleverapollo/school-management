@@ -3,13 +3,12 @@ import { useTranslation } from '@tyro/i18n';
 import {
   AttendanceCodeType,
   CalendarEventAttendeeType,
-  Iterator,
   Staff,
 } from '@tyro/api';
 
 import { usePreferredNameLayout, CurrentAttendanceIcon } from '@tyro/core';
 import { Fragment } from 'react';
-import { useSubjectGroupLessonByIterator } from '../../api';
+import { useNextSubjectGroupLesson } from '../../api';
 import { useFormatLessonTime } from '../../hooks';
 
 interface SubjectGroupOverviewNextLessonProps {
@@ -23,15 +22,8 @@ export function SubjectGroupOverviewNextLesson({
 
   const { displayName } = usePreferredNameLayout();
 
-  const { data: closestLessonData } = useSubjectGroupLessonByIterator({
+  const { data: nextLessonData } = useNextSubjectGroupLesson({
     partyId: groupId,
-    iterator: Iterator.Closest,
-  });
-
-  const { data: nextLessonData } = useSubjectGroupLessonByIterator({
-    partyId: groupId,
-    iterator: Iterator.Next,
-    eventStartTime: closestLessonData?.startTime,
   });
 
   const {

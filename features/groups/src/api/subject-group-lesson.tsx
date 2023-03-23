@@ -6,7 +6,6 @@ import {
   Iterator,
   queryClient,
 } from '@tyro/api';
-import { useEffect } from 'react';
 
 // Query for getting closest/prev/next lesson for a subject group
 const subjectGroupLessonByIterator = graphql(/* GraphQL */ `
@@ -54,35 +53,61 @@ const subjectGroupLessonQuery = (filter: CalendarEventIteratorFilter) => ({
   queryFn: () => gqlClient.request(subjectGroupLessonByIterator, { filter }),
 });
 
-export function getSubjectGroupLessonByIteratorInfo(
+export async function fetchSubjectGroupLesson(
   filter: CalendarEventIteratorFilter
 ) {
-  return queryClient.fetchQuery(subjectGroupLessonQuery(filter));
+  const queryData = await queryClient.fetchQuery(
+    subjectGroupLessonQuery(filter)
+  );
+
+  if (!queryData.calendar_calendarEventsIterator) return null;
+
+  const eventStartTime = queryData.calendar_calendarEventsIterator.startTime;
+
+  return Promise.all([
+    queryClient.fetchQuery(
+      subjectGroupLessonQuery({
+        ...filter,
+        iterator: Iterator.Previous,
+        eventStartTime,
+      })
+    ),
+    queryClient.fetchQuery(
+      subjectGroupLessonQuery({
+        ...filter,
+        iterator: Iterator.Next,
+        eventStartTime,
+      })
+    ),
+  ]);
+}
+
+export function useNextSubjectGroupLesson(filter: CalendarEventIteratorFilter) {
+  const { data: closestLessonData } = useSubjectGroupLessonByIterator({
+    ...filter,
+    iterator: Iterator.Closest,
+  });
+
+  return useQuery({
+    ...subjectGroupLessonQuery({
+      ...filter,
+      iterator: Iterator.Next,
+      eventStartTime: closestLessonData?.startTime,
+    }),
+    enabled: !!closestLessonData?.eventId,
+    select: ({ calendar_calendarEventsIterator }) =>
+      calendar_calendarEventsIterator,
+  });
 }
 
 export function useSubjectGroupLessonByIterator(
   filter: CalendarEventIteratorFilter
 ) {
-  const queryData = useQuery({
+  fetchSubjectGroupLesson(filter);
+
+  return useQuery({
     ...subjectGroupLessonQuery(filter),
     select: ({ calendar_calendarEventsIterator }) =>
       calendar_calendarEventsIterator,
   });
-
-  useEffect(() => {
-    if (queryData.data?.startTime) {
-      getSubjectGroupLessonByIteratorInfo({
-        partyId: filter.partyId,
-        iterator: Iterator.Next,
-        eventStartTime: queryData.data.startTime,
-      });
-      getSubjectGroupLessonByIteratorInfo({
-        partyId: filter.partyId,
-        iterator: Iterator.Previous,
-        eventStartTime: queryData.data.startTime,
-      });
-    }
-  }, [queryData.data?.startTime]);
-
-  return queryData;
 }

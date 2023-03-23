@@ -6,7 +6,6 @@ import { redirect } from 'react-router-dom';
 import { getAttendanceCodes } from '@tyro/attendance';
 
 import {
-  getSubjectGroupLessonByIteratorInfo,
   getSubjectGroups,
   getSubjectGroupsById,
   getStudentSubjects,
@@ -14,6 +13,7 @@ import {
   getCustomGroupsById,
   getEnrolmentGroups,
   getEnrolmentGroupsById,
+  fetchSubjectGroupLesson,
 } from './api';
 
 const CustomGroups = lazy(() => import('./pages/custom'));
@@ -90,18 +90,11 @@ export const getRoutes: NavObjectFunction = (t) => [
                 loader: async ({ params }) => {
                   const groupId = getNumber(params.groupId);
 
-                  const { calendar_calendarEventsIterator: closestLessonData } =
-                    await getSubjectGroupLessonByIteratorInfo({
-                      partyId: groupId!,
-                      iterator: Iterator.Closest,
-                    });
-
                   return Promise.all([
                     getAttendanceCodes({ custom: false }),
-                    getSubjectGroupLessonByIteratorInfo({
+                    fetchSubjectGroupLesson({
                       partyId: groupId!,
-                      iterator: Iterator.Next,
-                      eventStartTime: closestLessonData?.startTime,
+                      iterator: Iterator.Closest,
                     }),
                   ]);
                 },
