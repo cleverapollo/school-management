@@ -169,5 +169,6 @@
   "tyroIdClickToCopy": "Tyro ID is {{id}}. Click to copy.",
   "tyroIdCopied": "Tyro ID copied to clipboard.",
   "issueCopyingTyroId": "Issue copying ID to clipboard.",
-  "success": "Success!"
+  "success": "Success!",
+  "classGroup": "Class group"
 }

@@ -1,6 +1,6 @@
 import { getNumber, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { lazy } from 'react';
-import { BookOpenIcon, UserProfileCardIcon } from '@tyro/icons';
+import { UserProfileCardIcon } from '@tyro/icons';
 import { Iterator, UserType } from '@tyro/api';
 import { redirect } from 'react-router-dom';
 import { getAttendanceCodes } from '@tyro/attendance';
@@ -8,7 +8,6 @@ import { getAttendanceCodes } from '@tyro/attendance';
 import {
   getSubjectGroups,
   getSubjectGroupsById,
-  getStudentSubjects,
   getCustomGroups,
   getCustomGroupsById,
   getEnrolmentGroups,
@@ -21,7 +20,11 @@ const ViewCustomGroupPage = lazy(() => import('./pages/custom/view'));
 const EnrolmentGroups = lazy(() => import('./pages/enrolment'));
 const ViewEnrolmentGroupPage = lazy(() => import('./pages/enrolment/view'));
 const SubjectGroups = lazy(() => import('./pages/subject'));
-const Subjects = lazy(() => import('./pages/subject/students-list'));
+
+const SubjectGroupProfileStudentsPage = lazy(
+  () => import('./pages/subject/profile/students')
+);
+
 const SubjectGroupProfileAttendancePage = lazy(
   () => import('./pages/subject/profile/attendance')
 );
@@ -98,7 +101,12 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 index: true,
-                loader: () => redirect('./attendance'),
+                loader: () => redirect('./students'),
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'students',
+                element: <SubjectGroupProfileStudentsPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,
@@ -137,16 +145,6 @@ export const getRoutes: NavObjectFunction = (t) => [
             ],
           },
         ],
-      },
-      {
-        type: NavObjectType.RootLink,
-        path: 'subjects',
-        title: t('navigation:general.subjects'),
-        hasAccess: ({ userType }) =>
-          !!userType && [UserType.Admin, UserType.Teacher].includes(userType),
-        icon: <BookOpenIcon />,
-        loader: () => getStudentSubjects(),
-        element: <Subjects />,
       },
     ],
   },
