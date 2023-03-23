@@ -10,7 +10,7 @@ import { useSaveAttendance } from '@tyro/attendance';
 
 import isEqual from 'lodash/isEqual';
 
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import {
   subjectGroupLessonKeys,
@@ -58,9 +58,8 @@ export function useHandleLessonAttendance({
   });
 
   const eventAttendance = lessonData?.eventAttendance || [];
-  const currentStudents = students || [];
 
-  initialAttendanceRef.current = useMemo<StudentAttendance>(() => {
+  useLayoutEffect(() => {
     if (lessonData) {
       const date = dayjs(lessonData.startTime).format('YYYY-MM-DD');
 
@@ -71,7 +70,7 @@ export function useHandleLessonAttendance({
         return acc;
       }, {} as StudentAttendance);
 
-      return currentStudents.reduce((acc, student) => {
+      initialAttendanceRef.current = (students || []).reduce((acc, student) => {
         if (student) {
           acc[student.partyId] = {
             ...studentAttendance[student.partyId],
@@ -82,16 +81,10 @@ export function useHandleLessonAttendance({
         }
         return acc;
       }, {} as StudentAttendance);
-    }
 
-    return {};
-  }, [students, lessonData]);
-
-  useLayoutEffect(() => {
-    if (lessonData?.eventId) {
       setNewAttendance(initialAttendanceRef.current);
     }
-  }, [lessonData]);
+  }, [lessonData, students]);
 
   const formattedLessonDate = useFormatLessonTime({
     startTime: lessonData?.startTime,
