@@ -17,16 +17,15 @@ const attendanceCodes = graphql(/* GraphQL */ `
   }
 `);
 
+const attendanceCodesKeys = {
+  list: ['attendance', 'codes'] as const,
+};
+
 const attendanceCodesQuery = (filter: AttendanceCodeFilter) => ({
   queryKey: attendanceCodesKeys.list,
   queryFn: () => gqlClient.request(attendanceCodes, { filter }),
   staleTime: 1000 * 60 * 20,
 });
-
-export const attendanceCodesKeys = {
-  list: ['attendance', 'codes'] as const,
-  details: (id: number) => [...attendanceCodesKeys.list, id] as const,
-};
 
 export function useAttendanceCodes(filter: AttendanceCodeFilter) {
   return useQuery({
