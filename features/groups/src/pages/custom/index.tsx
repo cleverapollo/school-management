@@ -82,7 +82,7 @@ const getCustomGroupColumns = (
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('groups:members'),
+    columnDisplayName: translate('common:members'),
     fieldName: 'members',
     filter: 'suggest',
     isMandatory: true,
@@ -94,7 +94,7 @@ const getCustomGroupColumns = (
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('groups:created'),
+    columnDisplayName: translate('common:created'),
     fieldName: 'created',
     filter: 'suggest',
   },

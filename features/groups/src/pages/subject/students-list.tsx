@@ -10,7 +10,7 @@ import { TableColumn } from '../../../../../src/components/table/types';
 
 import { displayName } from '../../../../../src/utils/nameUtils';
 import { useStudentSubjects } from '../../api/student-subjects';
-import { SubjectGroupLevelChip } from '../../components/subject-group-level-chip';
+import { SubjectGroupLevelChip } from '../../components';
 
 interface SubjectsData extends SubjectGroup {
   firstButton?: string;
@@ -25,7 +25,7 @@ const getSubjectColumns = (
   >
 ): TableColumn<SubjectsData>[] => [
   {
-    columnDisplayName: translate('groups:subject'),
+    columnDisplayName: translate('common:subject'),
     fieldName: 'subjects',
     filter: 'suggest',
     isMandatory: true,
@@ -35,7 +35,7 @@ const getSubjectColumns = (
     },
   },
   {
-    columnDisplayName: translate('groups:level'),
+    columnDisplayName: translate('common:level'),
     fieldName: 'irePP.level',
     filter: 'suggest',
     component: (columnProps) =>
@@ -44,7 +44,7 @@ const getSubjectColumns = (
       ) : null,
   },
   {
-    columnDisplayName: translate('groups:teacher'),
+    columnDisplayName: translate('common:teacher'),
     fieldName: 'staff',
     filter: 'suggest',
     component: ({ row }) => {
@@ -86,10 +86,10 @@ export default function Subjects() {
   const subjectGroupColumns = useMemo(() => getSubjectColumns(t), [t]);
 
   return (
-    <Page title={t('groups:subject')} isLoading={isLoading}>
+    <Page title={t('common:subject')} isLoading={isLoading}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
-          {t('groups:subject')}
+          {t('common:subject')}
         </Typography>
         <Table data={subjectsData} columns={subjectGroupColumns} />
       </Container>
