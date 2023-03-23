@@ -110,7 +110,7 @@
   "sorry": "Sorry",
   "dashboard": "dashboard",
   "groups": "Groups",
-  "attendance": "attendance",
+  "attendance": "Attendance",
   "assessment": "assessment",
   "wellbeing": "wellbeing",
   "student": "student",
@@ -170,5 +170,6 @@
   "tyroIdCopied": "Tyro ID copied to clipboard.",
   "issueCopyingTyroId": "Issue copying ID to clipboard.",
   "success": "Success!",
-  "classGroup": "Class group"
+  "classGroup": "Class group",
+  "students": "Students"
 }

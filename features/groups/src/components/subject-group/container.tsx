@@ -1,15 +1,15 @@
-import { Box, CircularProgress, Container, Typography } from '@mui/material';
 import { Outlet, useParams } from 'react-router-dom';
-import { Page, LazyLoader, useNumber, Breadcrumbs } from '@tyro/core';
+import { useNumber, PageContainer } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { SubjectGroupStatusBar } from './status-bar';
 import { useSubjectGroupById } from '../../api/subject-groups';
 
 export default function SubjectGroupContainer() {
-  const { t } = useTranslation(['groups']);
+  const { t } = useTranslation(['groups', 'common']);
 
   const { groupId } = useParams();
   const groupIdNumber = useNumber(groupId);
+
   const { data: subjectGroupData } = useSubjectGroupById(groupIdNumber);
 
   const subjectGroupName = t('groups:subjectGroupsProfile', {
@@ -17,54 +17,38 @@ export default function SubjectGroupContainer() {
   });
 
   return (
-    <Page title={subjectGroupName} sx={{ px: 0 }}>
-      <Box sx={{ px: 2 }}>
-        <Container maxWidth="xl">
-          <Typography variant="h4" component="h1">
-            {subjectGroupName}
-          </Typography>
-          <Breadcrumbs
-            links={[
-              {
-                name: t('groups:subjectGroups'),
-                href: './..',
-              },
-              {
-                name: subjectGroupName,
-              },
-            ]}
-          />
-          <SubjectGroupStatusBar groupId={groupIdNumber} />
-        </Container>
-      </Box>
-      <Box
-        sx={{
-          px: 2,
+    <PageContainer title={subjectGroupName}>
+      <PageContainer.Header
+        title={subjectGroupName}
+        breadcrumbs={{
+          links: [
+            {
+              name: t('groups:subjectGroups'),
+              href: './..',
+            },
+            {
+              name: subjectGroupName,
+            },
+          ],
         }}
       >
-        <Container maxWidth="xl">
-          <LazyLoader
-            fallback={
-              <Box
-                sx={{
-                  display: 'flex',
-                  position: 'absolute',
-                  top: 0,
-                  right: 0,
-                  bottom: 0,
-                  left: 0,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <CircularProgress />
-              </Box>
-            }
-          >
-            <Outlet />
-          </LazyLoader>
-        </Container>
-      </Box>
-    </Page>
+        <SubjectGroupStatusBar groupId={groupIdNumber} />
+        <PageContainer.TabNavigation
+          links={[
+            {
+              value: 'students',
+              label: t('common:students'),
+            },
+            {
+              value: 'attendance',
+              label: t('common:attendance'),
+            },
+          ]}
+        />
+      </PageContainer.Header>
+      <PageContainer.Content>
+        <Outlet />
+      </PageContainer.Content>
+    </PageContainer>
   );
 }
