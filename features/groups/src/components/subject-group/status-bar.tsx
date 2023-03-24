@@ -40,7 +40,7 @@ export function SubjectGroupStatusBar({
   };
 
   return (
-    <Card variant="outlined" sx={{ py: 1.5, px: 2.5 }}>
+    <Card variant="outlined" sx={{ p: 1.25, flex: 1 }}>
       <Stack
         direction="row"
         sx={{ flexWrap: 'wrap', gap: 2, alignItems: 'flex-start' }}
@@ -49,6 +49,7 @@ export function SubjectGroupStatusBar({
           <Avatar
             src={subjectGroupData?.avatarUrl ?? undefined}
             name={subjectGroupData?.name}
+            sx={{ ml: 1 }}
           />
 
           <Stack>

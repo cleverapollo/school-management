@@ -33,7 +33,7 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
 
   return (
     <>
-      <Card variant="outlined" sx={{ py: 1.5, px: 2.5 }}>
+      <Card variant="outlined" sx={{ p: 1.25, flex: 1 }}>
         <Stack direction="row" alignItems="center" sx={{ flexWrap: 'wrap' }}>
           <IconButton
             disabled={
