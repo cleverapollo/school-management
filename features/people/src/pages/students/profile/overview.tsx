@@ -13,7 +13,6 @@ export default function StudentProfileOverviewPage() {
   return (
     <Box
       sx={(theme) => ({
-        my: 3,
         display: 'grid',
         gap: 3,
         maxWidth: 'xl',

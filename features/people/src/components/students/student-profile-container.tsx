@@ -1,6 +1,13 @@
-import { Outlet, useParams } from 'react-router-dom';
-import { useNumber, usePreferredNameLayout, PageContainer } from '@tyro/core';
+import { useParams } from 'react-router-dom';
+import {
+  useNumber,
+  usePreferredNameLayout,
+  PageHeading,
+  Page,
+  TabPageContainer,
+} from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
+import { Container } from '@mui/material';
 import { useStudent } from '../../api/students';
 import { StudentOverviewBar } from './student-overview-bar';
 
@@ -18,23 +25,32 @@ export default function StudentProfileContainer() {
   });
 
   return (
-    <PageContainer title={userProfileName}>
-      <PageContainer.Header
-        title={userProfileName}
-        breadcrumbs={{
-          links: [
-            {
-              name: t('people:students'),
-              href: './..',
-            },
-            {
-              name: userProfileName,
-            },
-          ],
+    <Page title={userProfileName}>
+      <Container
+        maxWidth="xl"
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+          pb: 3,
         }}
       >
+        <PageHeading
+          title={userProfileName}
+          breadcrumbs={{
+            links: [
+              {
+                name: t('people:students'),
+                href: './..',
+              },
+              {
+                name: userProfileName,
+              },
+            ],
+          }}
+        />
         <StudentOverviewBar studentId={idNumber} />
-        <PageContainer.TabNavigation
+        <TabPageContainer
           links={[
             {
               label: 'Overview',
@@ -82,10 +98,7 @@ export default function StudentProfileContainer() {
             },
           ]}
         />
-      </PageContainer.Header>
-      <PageContainer.Content>
-        <Outlet />
-      </PageContainer.Content>
-    </PageContainer>
+      </Container>
+    </Page>
   );
 }

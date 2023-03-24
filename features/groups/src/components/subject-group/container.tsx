@@ -1,6 +1,7 @@
-import { Outlet, useParams } from 'react-router-dom';
-import { useNumber, PageContainer } from '@tyro/core';
+import { useParams } from 'react-router-dom';
+import { useNumber, Page, PageHeading, TabPageContainer } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
+import { Container } from '@mui/material';
 import { SubjectGroupStatusBar } from './status-bar';
 import { useSubjectGroupById } from '../../api/subject-groups';
 
@@ -17,23 +18,32 @@ export default function SubjectGroupContainer() {
   });
 
   return (
-    <PageContainer title={subjectGroupName}>
-      <PageContainer.Header
-        title={subjectGroupName}
-        breadcrumbs={{
-          links: [
-            {
-              name: t('groups:subjectGroups'),
-              href: './..',
-            },
-            {
-              name: subjectGroupName,
-            },
-          ],
+    <Page title={subjectGroupName}>
+      <Container
+        maxWidth="xl"
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+          pb: 3,
         }}
       >
+        <PageHeading
+          title={subjectGroupName}
+          breadcrumbs={{
+            links: [
+              {
+                name: t('groups:subjectGroups'),
+                href: './..',
+              },
+              {
+                name: subjectGroupName,
+              },
+            ],
+          }}
+        />
         <SubjectGroupStatusBar groupId={groupIdNumber} />
-        <PageContainer.TabNavigation
+        <TabPageContainer
           links={[
             {
               value: 'students',
@@ -45,10 +55,7 @@ export default function SubjectGroupContainer() {
             },
           ]}
         />
-      </PageContainer.Header>
-      <PageContainer.Content>
-        <Outlet />
-      </PageContainer.Content>
-    </PageContainer>
+      </Container>
+    </Page>
   );
 }

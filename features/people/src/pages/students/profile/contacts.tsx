@@ -174,7 +174,6 @@ export default function StudentProfileContactsPage() {
     <Table
       rowData={contacts ?? []}
       columnDefs={studentContactColumns}
-      sx={{ mt: 3 }}
       tableContainerSx={{ height: 300 }}
       rowSelection="multiple"
       rowHeight={56}
