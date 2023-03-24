@@ -25,6 +25,9 @@
       "staff": "Staff",
       "contacts": "Contacts"
     },
+    "substitution": {
+      "title": "Substitution"
+    },
     "settings": {
       "title": "Settings",
       "rooms": "Rooms",
