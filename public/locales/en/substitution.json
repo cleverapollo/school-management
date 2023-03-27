@@ -1,0 +1,11 @@
+{
+  "title": "Substitution",
+  "managementTitle": "Management",
+  "absentStaff": "Absent Staff",
+  "reason": "Reason",
+  "startDate": "Start date",
+  "endDate": "End date",
+  "substitute": "Substitute",
+  "payroll": "Payroll",
+  "createStaffAbsence": "Create Staff Absence",
+}

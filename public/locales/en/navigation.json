@@ -26,7 +26,8 @@
       "contacts": "Contacts"
     },
     "substitution": {
-      "title": "Substitution"
+      "title": "Substitution",
+      "management": "Management"
     },
     "settings": {
       "title": "Settings",
