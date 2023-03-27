@@ -84,7 +84,7 @@ export default function StudentProfilePersonalPage() {
     data?.personalInformation ?? {};
 
   return (
-    <Stack my={3} spacing={3}>
+    <Stack spacing={3}>
       <Card variant="outlined">
         <CardHeader title={t('people:personal.about.title')} />
         <Box

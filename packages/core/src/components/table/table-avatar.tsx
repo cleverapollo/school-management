@@ -1,11 +1,12 @@
 import { Box } from '@mui/material';
-import { Avatar, RouterLink } from '@tyro/core';
+import { Avatar } from '../avatar';
+import { RouterLink } from '../router-link';
 
-interface TableAvatarProps {
+type TableAvatarProps = {
   avatarUrl: string | null | undefined;
   name: string;
   to: string;
-}
+};
 
 export function TableAvatar({ avatarUrl, name, to }: TableAvatarProps) {
   return (

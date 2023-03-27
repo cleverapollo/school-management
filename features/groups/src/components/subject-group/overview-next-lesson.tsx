@@ -105,7 +105,6 @@ export function SubjectGroupOverviewNextLesson({
             component="dt"
             gridColumn={(index % 4) + 1}
             gridRow={1}
-            textTransform="capitalize"
             sx={{
               ...labelStyle,
               display: 'flex',

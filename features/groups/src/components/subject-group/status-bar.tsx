@@ -1,4 +1,4 @@
-import { Card, Stack, Typography, Divider } from '@mui/material';
+import { Card, Stack, Typography, Divider, Box } from '@mui/material';
 import {
   Avatar,
   CopyClipboardButton,
@@ -40,16 +40,18 @@ export function SubjectGroupStatusBar({
   };
 
   return (
-    <Card variant="outlined" sx={{ py: 1.5, px: 2.5, my: 2 }}>
+    <Card variant="outlined" sx={{ p: 1.25, flex: 1 }}>
       <Stack
         direction="row"
         sx={{ flexWrap: 'wrap', gap: 2, alignItems: 'flex-start' }}
       >
-        <Stack direction="row" alignItems="center" spacing={2}>
-          <Avatar
-            src={subjectGroupData?.avatarUrl ?? undefined}
-            name={subjectGroupData?.name}
-          />
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <Box p={1}>
+            <Avatar
+              src={subjectGroupData?.avatarUrl ?? undefined}
+              name={subjectGroupData?.name}
+            />
+          </Box>
 
           <Stack>
             <Typography variant="subtitle1" component="h2">
