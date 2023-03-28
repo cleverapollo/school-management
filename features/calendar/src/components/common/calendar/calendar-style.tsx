@@ -1,14 +1,13 @@
 import { styled, alpha } from '@mui/material/styles';
 
-// ----------------------------------------------------------------------
-
-const CalendarStyle = styled('div')(({ theme }) => ({
+export const CalendarStyle = styled('div')(({ theme }) => ({
   width: 'calc(100% + 2px)',
   marginLeft: -1,
   marginBottom: -1,
   'MuiPaper-root': { maxWidth: '752px' },
   '& .fc': {
     '--fc-list-event-dot-width': '8px',
+    '--fc-event-text-color': theme.palette.text.primary,
     '--fc-border-color': theme.palette.divider,
     '--fc-event-border-color': theme.palette.info.light,
     '--fc-now-indicator-color': theme.palette.error.main,
@@ -36,35 +35,13 @@ const CalendarStyle = styled('div')(({ theme }) => ({
   '& .fc .fc-event': {
     borderColor: 'transparent',
     backgroundColor: 'transparent',
+    borderWidth: 0,
   },
   '& .fc .fc-event .fc-event-main': {
-    padding: '2px 4px',
-    borderRadius: 4,
-    // backgroundColor: theme.palette.common.white,
+    padding: 0,
+    borderRadius: 5,
     transition: theme.transitions.create('filter'),
     '&:hover': { filter: 'brightness(0.92)' },
-    '&:before,&:after': {
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      content: "''",
-      borderRadius: 4,
-      position: 'absolute',
-      boxSizing: 'border-box',
-    },
-    '&:before': {
-      zIndex: 8,
-      opacity: 0.32,
-      border: 'solid 1px currentColor',
-      display: 'flex',
-      flexWrap: 'nowrap',
-    },
-    '&:after': {
-      zIndex: 7,
-      opacity: 0.24,
-      backgroundColor: 'currentColor',
-    },
   },
   '& .fc .fc-event .fc-event-main-frame': {
     fontSize: 13,
@@ -89,8 +66,6 @@ const CalendarStyle = styled('div')(({ theme }) => ({
   '& .fc .fc-popover': {
     border: 0,
     overflow: 'hidden',
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     boxShadow: theme.customShadows.z20,
     borderRadius: theme.shape.borderRadius,
     backgroundColor: theme.palette.background.paper,
@@ -98,8 +73,6 @@ const CalendarStyle = styled('div')(({ theme }) => ({
   '& .fc .fc-popover-header': {
     ...theme.typography.subtitle2,
     padding: theme.spacing(1),
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     backgroundColor: theme.palette.slate[500_12],
     borderBottom: `solid 1px ${theme.palette.divider}`,
   },
@@ -126,10 +99,22 @@ const CalendarStyle = styled('div')(({ theme }) => ({
   },
   '& .fc .fc-daygrid-day-number': {
     ...theme.typography.body2,
-    padding: theme.spacing(1, 1, 0),
+    margin: theme.spacing(0.5, 0.5, 0),
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    width: 28,
+    height: 28,
+    borderRadius: '50%',
+  },
+  '& .fc .fc-day-today .fc-daygrid-day-number': {
+    backgroundColor: theme.palette.primary.main,
+    color: 'white !important',
+    justifyContent: 'center',
   },
   '& .fc .fc-daygrid-event': {
     marginTop: 4,
+    backgroundColor: 'transparent !important',
   },
   '& .fc .fc-daygrid-event.fc-event-start, & .fc .fc-daygrid-event.fc-event-end':
     {
@@ -140,8 +125,21 @@ const CalendarStyle = styled('div')(({ theme }) => ({
     ...theme.typography.caption,
     color: theme.palette.text.secondary,
   },
+  '& .fc .fc-daygrid-day.fc-day-today': {
+    backgroundColor: 'transparent',
+  },
+  '& .fc .fc-daygrid-day-bottom': {
+    marginLeft: 4,
+    marginRight: 4,
+  },
 
   // Week & Day View
+  '& .fc .fc-timegrid-event, & .fc .fc-timeline-event': {
+    borderRadius: 5,
+  },
+  '& .fc .fc-timeline-event': {
+    padding: 0,
+  },
   '& .fc .fc-timegrid-axis-cushion': {
     ...theme.typography.body2,
     color: theme.palette.text.secondary,
@@ -167,5 +165,3 @@ const CalendarStyle = styled('div')(({ theme }) => ({
     },
   },
 }));
-
-export default CalendarStyle;

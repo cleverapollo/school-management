@@ -1,5 +1,4 @@
 import { GraphQLClient } from 'graphql-request';
-import { Response } from 'graphql-request/dist/types';
 import polly from 'polly-js';
 import { EmulateHeaders } from './utils/emulate';
 import { getToken } from './utils/jwt';
@@ -16,7 +15,7 @@ type FetchInstance = (
 
 const fetchInstance: FetchInstance = (...args) =>
   polly()
-    .handle((error: Response<unknown>) => error?.status === 401)
+    .handle((error: Response) => error?.status === 401)
     .retry(1)
     .executeForPromise(async () => {
       const response = await fetch(...args);

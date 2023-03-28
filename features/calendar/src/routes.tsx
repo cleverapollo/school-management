@@ -3,7 +3,7 @@ import { Calendar31Icon } from '@tyro/icons';
 import { UserType } from '@tyro/api';
 import { lazy } from 'react';
 import { getCalendarEvents } from './api/events';
-import { filter } from './components/Calendar';
+import { filter } from './components/common/calendar/calendar';
 
 const CalendarPage = lazy(() => import('./pages/calendar'));
 

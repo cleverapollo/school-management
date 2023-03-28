@@ -87,8 +87,8 @@ export function useHandleLessonAttendance({
   }, [lessonData, students]);
 
   const formattedLessonDate = useFormatLessonTime({
-    startTime: lessonData?.startTime,
-    endTime: lessonData?.endTime,
+    startTime: lessonData?.startTime ?? '',
+    endTime: lessonData?.endTime ?? '',
   });
 
   const nextLesson = () => {
