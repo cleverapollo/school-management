@@ -19,8 +19,6 @@ export default function CalendarPage() {
           newValue: PartyOption | null
         ) => {
           setPartyId(newValue?.id);
-          console.log(event);
-          console.log(newValue?.id);
         }}
         label="Find Timetables"
       />

@@ -18,6 +18,8 @@ export interface ExtendedEventInput extends EventInput {
   participants: Participant[];
   organizer: any;
   room: string;
+  start: string | Date;
+  end: string | Date;
 }
 
 const createEvents = graphql(/* GraphQL */ `
@@ -161,7 +163,6 @@ function getResourceName(
   >['resources'][number],
   getDisplayName: ReturnType<typeof usePreferredNameLayout>['displayName']
 ) {
-  console.log(resource);
   if (resource.__typename === 'PartyCalendarResource' && resource.partyInfo) {
     switch (resource.partyInfo.__typename) {
       case 'GeneralGroup':
@@ -253,8 +254,8 @@ export function useCalendarEvents(filter: CalendarEventFilter) {
                 title: subjects?.length ? subjects[0]?.name : '',
                 teacherTitle,
                 participants: [], // Figure out wtf is going on with above participants
-                start: event?.startTime ?? undefined,
-                end: event?.endTime ?? undefined,
+                start: event?.startTime,
+                end: event?.endTime,
                 backgroundColor: palette[eventColor][100],
                 borderColor: palette[eventColor][500],
                 organizer:

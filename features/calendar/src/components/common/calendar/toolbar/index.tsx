@@ -56,10 +56,6 @@ export function CalendarToolbar({
   const isDesktop = useResponsive('up', 'sm');
   const { t } = useTranslation(['calendar']);
 
-  console.log({
-    hasMultipleResources,
-  });
-
   return (
     <RootStyle>
       {isDesktop && (

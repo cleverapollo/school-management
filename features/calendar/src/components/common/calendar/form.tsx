@@ -271,7 +271,7 @@ export function CalendarForm({ event, range, onCancel, isOpenModal }: Props) {
       sx={{ maxWidth: '750px !important' }}
     >
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DialogTitle>Add Event</DialogTitle>
+        <DialogTitle>{t('calendar:addEvent')}</DialogTitle>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={3} sx={{ p: 3 }}>
             <RHFTextField

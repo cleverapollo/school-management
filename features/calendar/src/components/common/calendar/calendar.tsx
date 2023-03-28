@@ -190,10 +190,6 @@ export const Calendar = function Calendar({
     setSelectedEventId(null);
   };
 
-  console.log({
-    data,
-  });
-
   if (isLoading) {
     return null;
   }

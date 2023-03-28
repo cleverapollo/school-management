@@ -8,7 +8,7 @@ import {
   Typography,
   Divider,
 } from '@mui/material';
-import { Avatar } from '@tyro/core';
+import { Avatar, usePreferredNameLayout } from '@tyro/core';
 import {
   Close,
   CheckOutlined,
@@ -37,6 +37,7 @@ const CalendarEventView = ({
   isEditable,
 }: CalendarEventViewProps) => {
   const { t } = useTranslation(['calendar', 'common']);
+  const { displayName } = usePreferredNameLayout();
 
   return (
     <DialogAnimate
@@ -72,8 +73,8 @@ const CalendarEventView = ({
             </Typography>
           </Box>
           <Box sx={{ paddingLeft: '44px', marginTop: '5px' }}>
-            {dayjs(new Date(event.start as Date)).format('dddd, D MMMM h:mm ') +
-              dayjs(new Date(event.end as Date)).format('- h:mm a')}
+            {dayjs(event.start).format('dddd, D MMMM h:mm ') +
+              dayjs(event.end).format('- h:mm a')}
           </Box>
           <Box
             sx={{
@@ -114,6 +115,7 @@ const CalendarEventView = ({
           <Box sx={{ paddingLeft: '44px', marginTop: '10px' }}>
             {event.participants.map((participant, index) => (
               <Box
+                key={participant.partyId}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
@@ -123,12 +125,7 @@ const CalendarEventView = ({
               >
                 <Avatar
                   src="google.com"
-                  name={
-                    participant.partyInfo?.name ||
-                    `${participant.partyInfo?.firstName ?? ''} ${
-                      participant.partyInfo?.lastName ?? ''
-                    }`
-                  }
+                  name={displayName(participant.partyInfo)}
                 />
                 {isEditable && index === 0 && (
                   <Box
@@ -147,10 +144,7 @@ const CalendarEventView = ({
                   </Box>
                 )}
                 <Box sx={{ marginLeft: '10px' }}>
-                  {participant.partyInfo?.name ||
-                    `${participant.partyInfo?.firstName ?? ''} ${
-                      participant.partyInfo?.lastName ?? ''
-                    }`}
+                  {displayName(participant.partyInfo)}
                 </Box>
               </Box>
             ))}
