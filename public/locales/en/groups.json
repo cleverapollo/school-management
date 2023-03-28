@@ -3,20 +3,22 @@
   "enrolmentGroups": "Enrolment Groups",
   "subjectGroups": "Subject Groups",
   "customGroups": "Custom Groups",
-  "members": "Members",
-  "year": "Year",
-  "tutor": "Tutor",
-  "yearhead": "Yearhead",
-  "programme": "Programme",
-  "created": "Created",
-  "subject": "Subject",
-  "level": "Level",
-  "teacher": "Teacher",
   "subjectGroupLevel": {
     "COMMON": "Common", 
     "FOUNDATION": "Foundation",
     "HIGHER": "Higher",
     "NOT_APPLICABLE": "Not Applicable",
     "ORDINARY": "Ordinary" 
-  }
+  },
+  "subjectGroupsProfile": "{{name}}'s Profile",
+  "teachersInGroup": "Teachers in group",
+  "nextLesson": "Next Lesson",
+  "room": "Room",
+  "students": "Students",
+  "status": "Status",
+  "confirmAttendance": "Confirm attendance",
+  "cancelEdits": "Cancel Edits",
+  "saveAttendance": "Save Attendance",
+  "attendanceUpdated": "Attendance updates are saved!",
+  "lessonAttendanceNotFound": "No lesson attendance data found"
 }

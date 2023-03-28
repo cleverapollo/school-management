@@ -34,7 +34,22 @@ const subjectGroupById = graphql(/* GraphQL */ `
     subjectGroups(filter: $filter) {
       partyId
       name
+      avatarUrl
+      yearGroups {
+        name
+      }
+      subjects {
+        name
+      }
+      staff {
+        firstName
+        lastName
+      }
       students {
+        partyId
+        classGroup {
+          name
+        }
         person {
           firstName
           lastName
@@ -45,55 +60,49 @@ const subjectGroupById = graphql(/* GraphQL */ `
   }
 `);
 
-export const subjectGroupsKeys = {
+const subjectGroupsKeys = {
   list: ['groups', 'subject'] as const,
-  details: (id: number | undefined) => [...subjectGroupsKeys.list, id] as const,
+  details: (id?: number) => [...subjectGroupsKeys.list, id] as const,
 };
 
 const subjectGroupsQuery = {
-  queryKey: subjectGroupsKeys.list,
-  queryFn: async () => gqlClient.request(subjectGroupsList),
-  staleTime: 1000 * 60 * 5,
+  list: {
+    queryKey: subjectGroupsKeys.list,
+    queryFn: async () => gqlClient.request(subjectGroupsList),
+  },
+  details: (id?: number) => ({
+    queryKey: subjectGroupsKeys.details(id),
+    queryFn: () =>
+      gqlClient.request(subjectGroupById, {
+        filter: { partyIds: [id ?? 0] },
+      }),
+  }),
 };
 
 export function getSubjectGroups() {
-  return queryClient.fetchQuery(subjectGroupsQuery);
+  return queryClient.fetchQuery(subjectGroupsQuery.list);
+}
+
+export function getSubjectGroupsById(id?: number) {
+  return queryClient.fetchQuery(subjectGroupsQuery.details(id));
 }
 
 export function useSubjectGroups() {
   return useQuery({
-    ...subjectGroupsQuery,
+    ...subjectGroupsQuery.list,
     select: ({ subjectGroups }) => subjectGroups,
   });
 }
 
-const subjectGroupsByIdQuery = (id: number | undefined) => ({
-  queryKey: subjectGroupsKeys.details(id),
-  queryFn: async () =>
-    gqlClient.request(subjectGroupById, {
-      filter: {
-        partyIds: [id ?? 0],
-      },
-    }),
-  staleTime: 1000 * 60 * 5,
-});
-
-export function getSubjectGroupsById(id: number | undefined) {
-  return queryClient.fetchQuery(subjectGroupsByIdQuery(id));
-}
-
-export function useSubjectGroupById(id: number | undefined) {
+export function useSubjectGroupById(id?: number) {
   return useQuery({
-    ...subjectGroupsByIdQuery(id),
+    ...subjectGroupsQuery.details(id),
     select: ({ subjectGroups }) => {
       if (!subjectGroups) return null;
-      const group = subjectGroups[0];
 
-      return {
-        id: (group?.partyId as number).toString(),
-        name: group?.name,
-        members: group?.students,
-      };
+      const [group] = subjectGroups || [];
+
+      return group;
     },
   });
 }

@@ -2,12 +2,17 @@
 // TODO: remove above eslint when components are moved to @tyro/core
 import { useMemo } from 'react';
 import { Container, Typography } from '@mui/material';
-import { GridOptions, ICellRendererParams, Page, Table } from '@tyro/core';
+import {
+  GridOptions,
+  ICellRendererParams,
+  Page,
+  Table,
+  TableAvatar,
+} from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
 import { UseQueryReturnType } from '@tyro/api';
 import { useBulkUpdateCoreStudent, useStudents } from '../../api/students';
-import { TableAvatar } from '../../components/common/table-avatar';
 import { displayName } from '../../../../../src/utils/nameUtils';
 
 type ReturnTypeFromUseStudents = UseQueryReturnType<typeof useStudents>[number];

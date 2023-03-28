@@ -5384,6 +5384,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@tyro/attendance@*, @tyro/attendance@workspace:features/attendance":
+  version: 0.0.0-use.local
+  resolution: "@tyro/attendance@workspace:features/attendance"
+  dependencies:
+    "@mui/material": ^5.11.4
+    "@tanstack/react-query": ^4.16.1
+    "@tyro/api": "*"
+    "@tyro/configs": "*"
+    "@tyro/core": "*"
+    "@tyro/i18n": "*"
+    "@tyro/icons": "*"
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    react-router: ^6.6.2
+    react-router-dom: ^6.6.2
+  languageName: unknown
+  linkType: soft
+
 "@tyro/authentication@*, @tyro/authentication@workspace:features/authentication":
   version: 0.0.0-use.local
   resolution: "@tyro/authentication@workspace:features/authentication"
@@ -5506,18 +5524,22 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@tyro/groups@workspace:features/groups"
   dependencies:
+    "@mui/lab": ^5.0.0-alpha.96
     "@mui/material": ^5.11.4
     "@mui/system": ^5.10.14
     "@tanstack/react-query": ^4.16.1
     "@tyro/api": "*"
+    "@tyro/attendance": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    dayjs: ^1.11.7
     lodash: ^4.17.21
     react: ^18.2.0
     react-dom: ^18.2.0
     react-router: ^6.3.0
+    react-router-dom: ^6.6.2
   languageName: unknown
   linkType: soft
 

@@ -24,8 +24,8 @@ interface EnrolmentGroupData {
 }
 
 export const getAdminOptions = (
-  translate: TFunction<('common')[], undefined, ('common')[]>,
-): Option<EnrolmentGroupData>[] => ([
+  translate: TFunction<'common'[], undefined, 'common'[]>
+): Option<EnrolmentGroupData>[] => [
   {
     text: translate('common:actions.notify'),
     icon: 'notify',
@@ -54,7 +54,7 @@ export const getAdminOptions = (
       e.stopPropagation();
     },
   },
-]);
+];
 
 const getEnrolmentGroupColumns = (
   translate: TFunction<
@@ -75,29 +75,29 @@ const getEnrolmentGroupColumns = (
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('groups:members'),
+    columnDisplayName: translate('common:members'),
     fieldName: 'members',
     filter: 'suggest',
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('groups:year'),
+    columnDisplayName: translate('common:year'),
     fieldName: 'year',
     filter: 'suggest',
     isMandatory: true,
   },
   {
-    columnDisplayName: translate('groups:tutor'),
+    columnDisplayName: translate('common:tutor'),
     fieldName: 'tutor',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('groups:yearhead'),
+    columnDisplayName: translate('common:yearhead'),
     fieldName: 'yearhead',
     filter: 'suggest',
   },
   {
-    columnDisplayName: translate('groups:programme'),
+    columnDisplayName: translate('common:programme'),
     fieldName: 'programme',
     filter: 'suggest',
   },
