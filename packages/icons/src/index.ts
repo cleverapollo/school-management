@@ -1,3 +1,4 @@
+export * from './add';
 export * from './archive';
 export * from './bell';
 export * from './book-open';
@@ -17,6 +18,7 @@ export * from './clock';
 export * from './close';
 export * from './copy';
 export * from './double-checkmark';
+export * from './edit-calendar';
 export * from './error-circle';
 export * from './external-link';
 export * from './flags';

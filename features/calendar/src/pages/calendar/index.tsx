@@ -5,7 +5,7 @@ import { PartyAutocomplete } from '@tyro/party';
 import { PartyOption } from '@tyro/party/src/api/search';
 import * as React from 'react';
 import { useState } from 'react';
-import { Calendar } from '../../components/Calendar';
+import { Calendar } from '../../components/common/calendar/calendar';
 
 export default function CalendarPage() {
   const { t } = useTranslation(['calendar']);

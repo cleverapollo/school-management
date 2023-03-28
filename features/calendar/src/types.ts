@@ -7,7 +7,8 @@ export type CalendarView =
   | 'timeGridWeek'
   | 'timeGridDay'
   | 'listWeek'
-  | 'resourceTimelineDay';
+  | 'resourceTimelineDay'
+  | 'resourceTimeGridDay';
 
 export type CalendarState = {
   isLoading: boolean;

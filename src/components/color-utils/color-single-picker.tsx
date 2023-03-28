@@ -6,28 +6,20 @@ import { Iconify } from '../iconify';
 // ----------------------------------------------------------------------
 
 interface Props extends RadioGroupProps {
-  colors: string[];
+  colors: readonly ["red", "orange", "amber", "green", "emerald", "teal", "cyan", "sky", "blue", "violet", "fuchsia"];
 }
 
 export default function ColorSinglePicker({ colors, ...other }: Props) {
   return (
     <RadioGroup row {...other}>
       {colors.map((color) => {
-        const isWhite = color === '#FFFFFF' || color === 'white';
-
         return (
           <Radio
             key={color}
             value={color}
             color="default"
             icon={
-              <IconColor
-                sx={{
-                  ...(isWhite && {
-                    border: (theme) => `solid 1px ${theme.palette.divider}`,
-                  }),
-                }}
-              />
+              <IconColor />
             }
             checkedIcon={
               <IconColor
@@ -43,16 +35,11 @@ export default function ColorSinglePicker({ colors, ...other }: Props) {
                     boxShadow: '4px 4px 8px 0 currentColor',
                   },
                   '& svg': { width: 12, height: 12, color: 'common.white' },
-                  ...(isWhite && {
-                    border: (theme) => `solid 1px ${theme.palette.divider}`,
-                    boxShadow: (theme) => `4px 4px 8px 0 ${theme.palette.grey[500_24]}`,
-                    '& svg': { width: 12, height: 12, color: 'common.black' },
-                  }),
                 }}
               />
             }
             sx={{
-              color,
+              color: `${color}.500`,
               '&:hover': { opacity: 0.72 },
             }}
           />

@@ -7,13 +7,14 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import timelinePlugin from '@fullcalendar/timeline';
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
+import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
 import interactionPlugin, {
   EventResizeDoneArg,
 } from '@fullcalendar/interaction';
 //
 import { useState, useRef, useEffect, useMemo } from 'react';
 // @mui
-import { Card, Button, Container } from '@mui/material';
+import { Card, Container } from '@mui/material';
 // routes
 import {
   Maybe,
@@ -21,17 +22,20 @@ import {
   usePermissions,
   UserType,
 } from '@tyro/api';
-import { useResponsive, Page } from '@tyro/core';
+import { useResponsive, Page, useDisclosure } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 // @types
-import { CalendarView } from '../types';
+import { CalendarView } from '../../../types';
 // components
-import { Iconify } from '../../../../src/components/iconify';
-import HeaderBreadcrumbs from '../../../../src/components/HeaderBreadcrumbs';
+import HeaderBreadcrumbs from '../../../../../../src/components/HeaderBreadcrumbs';
 // sections
 import { CalendarForm, CalendarStyle, CalendarToolbar } from '.';
-import { useCalendarEvents, useUpdateCalendarEvents } from '../api/events';
-import CalendarEventView from './CalendarEventView';
+import {
+  useCalendarEvents,
+  useUpdateCalendarEvents,
+} from '../../../api/events';
+import CalendarEventView from './event-view';
+import { getCalendarContent } from './calendar-content';
 
 // ----------------------------------------------------------------------
 
@@ -59,23 +63,24 @@ export const Calendar = function Calendar({
   endDate,
 }: CalendarProps) {
   const { userType } = usePermissions();
-
   const { t } = useTranslation(['calendar', 'common', 'navigation']);
 
   // ToDO: implement isEditable with permissions
   const isEditable =
     userType === UserType.Admin || userType === UserType.Teacher;
-
-  const isDesktop = useResponsive('up', 'sm');
-
   const calendarRef = useRef<FullCalendar>(null);
-
   const [date, setDate] = useState(new Date());
 
+  const isDesktop = useResponsive('up', 'sm');
   const [view, setView] = useState<CalendarView>(
-    isDesktop ? 'dayGridMonth' : 'listWeek'
+    isDesktop ? 'timeGridWeek' : 'listWeek'
   );
 
+  const {
+    isOpen: isEditTableOpen,
+    onOpen: onOpenEditCalendar,
+    onClose: onCloseEditCalendar,
+  } = useDisclosure();
   const [isNewEventOpenModal, setIsNewEventOpenModal] =
     useState<boolean>(false);
   const [selectedRange, setSelectedRange] = useState<null | Range>(null);
@@ -83,13 +88,13 @@ export const Calendar = function Calendar({
   const { data, isLoading } = useCalendarEvents({
     startDate: '2022-09-05',
     endDate: '2023-03-07',
-    partyIds: [partyId || 1780],
+    partyIds: [1780, 1108, ...(partyId ? [partyId] : [])],
   });
 
   const [selectedEventId, setSelectedEventId] = useState<Maybe<string>>(null);
   const selectedEvent = useMemo(() => {
     if (selectedEventId) {
-      return data?.find((_event) => _event.id === selectedEventId);
+      return data?.events?.find((_event) => _event.id === selectedEventId);
     }
     return null;
   }, [selectedEventId]);
@@ -100,20 +105,11 @@ export const Calendar = function Calendar({
     const calendarEl = calendarRef.current;
     if (calendarEl) {
       const calendarApi = calendarEl.getApi();
-      const newView = isDesktop ? 'dayGridMonth' : 'listWeek';
+      const newView = isDesktop ? 'timeGridWeek' : 'listWeek';
       calendarApi.changeView(newView);
       setView(newView);
     }
   }, [isDesktop]);
-
-  const handleClickToday = () => {
-    const calendarEl = calendarRef.current;
-    if (calendarEl) {
-      const calendarApi = calendarEl.getApi();
-      calendarApi.today();
-      setDate(calendarApi.getDate());
-    }
-  };
 
   const handleChangeView = (newView: CalendarView) => {
     const calendarEl = calendarRef.current;
@@ -194,6 +190,10 @@ export const Calendar = function Calendar({
     setSelectedEventId(null);
   };
 
+  console.log({
+    data,
+  });
+
   if (isLoading) {
     return null;
   }
@@ -210,19 +210,6 @@ export const Calendar = function Calendar({
             },
             { name: `${t('calendar:calendar')}` },
           ]}
-          action={
-            isEditable && (
-              <Button
-                variant="contained"
-                startIcon={
-                  <Iconify icon="eva:plus-fill" width={20} height={20} />
-                }
-                onClick={handleAddEvent}
-              >
-                {t('common:actions.newEvent')}
-              </Button>
-            )
-          }
         />
 
         <Card>
@@ -232,7 +219,8 @@ export const Calendar = function Calendar({
               view={view}
               onNextDate={handleClickDateNext}
               onPrevDate={handleClickDatePrev}
-              onToday={handleClickToday}
+              onEditCalendar={onOpenEditCalendar}
+              onAddEvent={handleAddEvent}
               onChangeView={handleChangeView}
             />
             <FullCalendar
@@ -240,15 +228,11 @@ export const Calendar = function Calendar({
               editable={isEditable}
               droppable={isEditable}
               selectable={isEditable}
-              events={data}
-              resources={[
-                {
-                  id: '0',
-                  title: 'All',
-                },
-              ]}
+              events={data?.events || []}
+              resources={data?.resources || []}
               ref={calendarRef}
               rerenderDelay={10}
+              eventContent={getCalendarContent}
               initialDate={date}
               initialView={view}
               dayMaxEventRows={3}
@@ -268,6 +252,7 @@ export const Calendar = function Calendar({
                 timeGridPlugin,
                 interactionPlugin,
                 resourceTimelinePlugin,
+                resourceTimeGridPlugin,
               ]}
               schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
             />

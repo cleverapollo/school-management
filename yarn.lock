@@ -2136,6 +2136,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fullcalendar/resource-daygrid@npm:~6.1.5":
+  version: 6.1.5
+  resolution: "@fullcalendar/resource-daygrid@npm:6.1.5"
+  dependencies:
+    "@fullcalendar/daygrid": ~6.1.5
+    "@fullcalendar/premium-common": ~6.1.5
+  peerDependencies:
+    "@fullcalendar/core": ~6.1.5
+    "@fullcalendar/resource": ~6.1.5
+  checksum: f7c976814df7e49fadfaacfb60768f922eec800504c74a17ac40ccb4e5d7043a42af8be7ae8427a8a9446ba72c81291f055287d74c7b73632190f7475ee802e3
+  languageName: node
+  linkType: hard
+
+"@fullcalendar/resource-timegrid@npm:^6.1.4":
+  version: 6.1.5
+  resolution: "@fullcalendar/resource-timegrid@npm:6.1.5"
+  dependencies:
+    "@fullcalendar/premium-common": ~6.1.5
+    "@fullcalendar/resource-daygrid": ~6.1.5
+    "@fullcalendar/timegrid": ~6.1.5
+  peerDependencies:
+    "@fullcalendar/core": ~6.1.5
+    "@fullcalendar/resource": ~6.1.5
+  checksum: 7f5f19d6881179faaa70d9f531652c4b9119eaef4dd23d0d084b0c2f18ba843abc53e0ca2c79cec300946ccc8a977bd45be0f4b0b8a8f8c5b6513d28f2bf2c23
+  languageName: node
+  linkType: hard
+
 "@fullcalendar/resource-timeline@npm:^6.1.4":
   version: 6.1.5
   resolution: "@fullcalendar/resource-timeline@npm:6.1.5"
@@ -2172,7 +2199,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/timegrid@npm:^6.1.4":
+"@fullcalendar/timegrid@npm:^6.1.4, @fullcalendar/timegrid@npm:~6.1.5":
   version: 6.1.5
   resolution: "@fullcalendar/timegrid@npm:6.1.5"
   dependencies:
@@ -5388,6 +5415,7 @@ __metadata:
     "@fullcalendar/list": ^6.1.4
     "@fullcalendar/react": ^6.1.4
     "@fullcalendar/resource": ^6.1.4
+    "@fullcalendar/resource-timegrid": ^6.1.4
     "@fullcalendar/resource-timeline": ^6.1.4
     "@fullcalendar/timegrid": ^6.1.4
     "@fullcalendar/timeline": ^6.1.4

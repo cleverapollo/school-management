@@ -33,32 +33,34 @@ import {
 } from '@tyro/api';
 import { useState } from 'react';
 import { useTranslation } from '@tyro/i18n';
-import { Iconify } from '../../../../src/components/iconify';
-import { ColorSinglePicker } from '../../../../src/components/color-utils';
+import { Iconify } from '../../../../../../src/components/iconify';
+import { ColorSinglePicker } from '../../../../../../src/components/color-utils';
 import {
   RHFTextField,
   RHFSwitch,
   RHFSelect,
-} from '../../../../src/components/hook-form';
+} from '../../../../../../src/components/hook-form';
 import {
   useCreateCalendarEvents,
   useDeleteCalendarEvents,
-} from '../api/events';
-import { localDateStringToCalendarDate } from '../../../../src/utils/formatTime';
-import ParticipantInput from './ParticipantInput';
-import { DialogAnimate } from '../../../../src/components/animate';
-
-// ----------------------------------------------------------------------
+} from '../../../api/events';
+import { localDateStringToCalendarDate } from '../../../../../../src/utils/formatTime';
+import ParticipantInput from '../../participant-input';
+import { DialogAnimate } from '../../../../../../src/components/animate';
 
 export const COLOR_OPTIONS = [
-  '#00AB55', // theme.palette.primary.main,
-  '#1890FF', // theme.palette.info.main,
-  '#54D62C', // theme.palette.success.main,
-  '#FFC107', // theme.palette.warning.main,
-  '#FF4842', // theme.palette.error.main
-  '#04297A', // theme.palette.info.darker
-  '#7A0C2E', // theme.palette.error.darker
-];
+  'red',
+  'orange',
+  'amber',
+  'green',
+  'emerald',
+  'teal',
+  'cyan',
+  'sky',
+  'blue',
+  'violet',
+  'fuchsia',
+] as const;
 
 const getInitialValues = (
   event: EventInput,
@@ -170,12 +172,7 @@ export interface Participant {
   };
 }
 
-export default function CalendarForm({
-  event,
-  range,
-  onCancel,
-  isOpenModal,
-}: Props) {
+export function CalendarForm({ event, range, onCancel, isOpenModal }: Props) {
   const { t } = useTranslation(['calendar', 'common']);
   const { toast } = useToast();
   const [participants, setParticipants] = useState<Participant[]>([]);
@@ -280,7 +277,6 @@ export default function CalendarForm({
             <RHFTextField
               name="title"
               label={t('calendar:inputLabels.title')}
-              // @ts-expect-error
               customControl={control}
             />
 
@@ -294,7 +290,6 @@ export default function CalendarForm({
                     label={t('calendar:inputLabels.startDate')}
                     inputFormat="dd/MM/yyyy hh:mm a"
                     renderInput={(params) => (
-                      // @ts-ignore
                       <TextField {...params} fullWidth />
                     )}
                   />
@@ -311,7 +306,6 @@ export default function CalendarForm({
                     label={t('calendar:inputLabels.endDate')}
                     inputFormat="dd/MM/yyyy hh:mm a"
                     renderInput={(params) => (
-                      // @ts-ignore
                       <TextField
                         {...params}
                         fullWidth
@@ -327,7 +321,6 @@ export default function CalendarForm({
             <RHFSwitch
               name="allDay"
               label={t('calendar:inputLabels.allDay')}
-              // @ts-expect-error
               customControl={control}
             />
 

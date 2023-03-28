@@ -20,8 +20,8 @@ import {
 import { Maybe } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
-import { DialogAnimate } from '../../../../src/components/animate';
-import { ExtendedEventInput } from '../api/events';
+import { DialogAnimate } from '../../../../../../src/components/animate';
+import { ExtendedEventInput } from '../../../api/events';
 
 // ----------------------------------------------------------------------
 

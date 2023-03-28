@@ -12,8 +12,7 @@ import { Box, Stack } from '@mui/system';
 import { CalendarEventAttendeeType } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import Close from '@mui/icons-material/Close';
-import { Participant } from './CalendarForm';
-import { capitalize } from 'lodash';
+import { Participant } from './common/calendar/form';
 
 // ----------------------------------------------------------------------
 
@@ -152,8 +151,10 @@ const ParticipantInput = ({
         open={isOpenParticipantsModal}
       >
         <Box sx={{ padding: '20px 20px 0 ' }}>
-          <Typography variant="h4">{capitalize(t('calendar:participants'))}</Typography>
-          <Typography variant="body1">{`${t('calendar:youHaveInvited')} ${participants.length} ${t('calendar:participants')}`}</Typography>
+          <Typography variant="h4">{t('calendar:participants')}</Typography>
+          <Typography variant="body1">{`${t('calendar:youHaveInvited')} ${
+            participants.length
+          } ${t('calendar:participants')}`}</Typography>
         </Box>
         <Stack sx={{ p: 1, width: '280px', padding: '10px 0px' }}>
           {participants.map((option) => (
