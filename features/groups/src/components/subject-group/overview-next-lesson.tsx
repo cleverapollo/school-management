@@ -29,8 +29,8 @@ export function SubjectGroupOverviewNextLesson({
   const {
     eventId,
     rooms = [],
-    startTime,
-    endTime,
+    startTime = '',
+    endTime = '',
     attendees = [],
     eventAttendance = [],
   } = nextLessonData || {};
