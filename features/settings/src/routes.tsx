@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { GearIcon } from '@tyro/icons';
-import { UserType } from '@tyro/api';
+import { isStaffUser, UserType } from '@tyro/api';
 import { getCoreRooms } from './api/rooms';
 import { getCatalogueSubjects } from './api/subjects';
 import { getCoreAcademicNamespace } from './api/academic-namespaces/academic-namespaces';
@@ -20,8 +20,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         title: t('navigation:management.settings.title'),
         path: 'settings',
         icon: <GearIcon />,
-        hasAccess: ({ userType }) =>
-          !!userType && [UserType.Admin, UserType.Teacher].includes(userType),
+        hasAccess: (permissions) => isStaffUser(permissions),
         children: [
           {
             type: NavObjectType.MenuLink,

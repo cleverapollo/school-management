@@ -1,7 +1,7 @@
 import { getNumber, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { lazy } from 'react';
 import { BookOpenIcon, UserProfileCardIcon } from '@tyro/icons';
-import { UserType } from '@tyro/api';
+import { isStaffUser, UserType } from '@tyro/api';
 import { getSubjectGroups, getSubjectGroupsById } from './api/subject-groups';
 import { getStudentSubjects } from './api/student-subjects';
 import {
@@ -28,8 +28,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         type: NavObjectType.RootGroup,
         path: 'groups',
         icon: <UserProfileCardIcon />,
-        hasAccess: ({ userType }) =>
-          !!userType && [UserType.Admin, UserType.Teacher].includes(userType),
+        hasAccess: (permissions) => isStaffUser(permissions),
         title: t('navigation:general.groups.title'),
         children: [
           {
@@ -92,8 +91,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         type: NavObjectType.RootLink,
         path: 'subjects',
         title: t('navigation:general.subjects'),
-        hasAccess: ({ userType }) =>
-          !!userType && [UserType.Admin, UserType.Teacher].includes(userType),
+        hasAccess: (permissions) => isStaffUser(permissions),
         icon: <BookOpenIcon />,
         loader: () => getStudentSubjects(),
         element: <Subjects />,

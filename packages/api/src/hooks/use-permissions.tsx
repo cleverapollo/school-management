@@ -8,6 +8,7 @@ export interface PermissionUtils {
   hasAtLeastOnePermission: (permissions: Array<string>) => boolean;
   hasAllPermissions: (permissions: Array<string>) => boolean;
   userType: UserType | undefined;
+  tenant: number | undefined;
 }
 
 export interface UsePermissionsReturn extends PermissionUtils {
@@ -41,6 +42,7 @@ export async function getPermissionUtils(): Promise<PermissionUtils> {
     permissions: usersPermissions,
     ...getPermissionFunctions(usersPermissions),
     userType: activeProfile?.profileType?.userType,
+    tenant: activeProfile?.tenant?.tenant,
   };
 }
 
@@ -60,5 +62,6 @@ export function usePermissions(): UsePermissionsReturn {
     hasAtLeastOnePermission,
     hasAllPermissions,
     userType: activeProfile?.profileType?.userType,
+    tenant: activeProfile?.tenant?.tenant,
   };
 }

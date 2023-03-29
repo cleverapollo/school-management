@@ -13,10 +13,29 @@ export const addEmulationHeaders = (
   localStorage.removeItem(EmulateHeaders.ACADEMIC_NAMESPACE_ID);
 };
 
+export const addViewSchoolHeaders = (tenant: number | undefined) => {
+  localStorage.setItem(EmulateHeaders.TENANT, String(tenant));
+  localStorage.removeItem(EmulateHeaders.PARTY_ID);
+  localStorage.removeItem(EmulateHeaders.ACADEMIC_NAMESPACE_ID);
+};
+
 export const removeEmulationHeaders = () => {
   localStorage.removeItem(EmulateHeaders.TENANT);
   localStorage.removeItem(EmulateHeaders.PARTY_ID);
 };
 
-export const checkIsUserEmulated = () =>
-  !!localStorage.getItem('X-TENANT-ID') && !!localStorage.getItem('X-PARTY-ID');
+export const checkEmulationMode = () => {
+  if (localStorage.getItem(EmulateHeaders.TENANT)) {
+    if (localStorage.getItem(EmulateHeaders.PARTY_ID)) {
+      return EmulationMode.User;
+    }
+    return EmulationMode.Tenant;
+  }
+  return EmulationMode.None;
+};
+
+export enum EmulationMode {
+  None,
+  User,
+  Tenant,
+}

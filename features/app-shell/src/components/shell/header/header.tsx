@@ -15,7 +15,8 @@ import { HamburgerMenuIcon } from '@tyro/icons';
 import { AcademicNamespaceSessionSwitcher } from '@tyro/settings';
 import { useResponsive } from '@tyro/core';
 import {
-  checkIsUserEmulated,
+  checkEmulationMode,
+  EmulationMode,
   removeEmulationHeaders,
   usePermissions,
   UserType,
@@ -39,7 +40,7 @@ export function Header({ isNavExpanded, onOpenNav }: Props) {
   const queryClient = useQueryClient();
   const { userType } = usePermissions();
 
-  const isEmulating = useMemo(() => checkIsUserEmulated(), [activeProfile]);
+  const emulationMode = useMemo(() => checkEmulationMode(), [activeProfile]);
 
   const isDesktop = useResponsive('up', 'lg');
 
@@ -55,7 +56,7 @@ export function Header({ isNavExpanded, onOpenNav }: Props) {
 
       <Searchbar />
 
-      {isEmulating && (
+      {emulationMode !== EmulationMode.None && (
         <Button
           onClick={() => {
             removeEmulationHeaders();

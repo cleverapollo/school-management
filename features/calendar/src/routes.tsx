@@ -1,6 +1,6 @@
 import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { Calendar31Icon } from '@tyro/icons';
-import { UserType } from '@tyro/api';
+import { isTyroTenantAndUser } from '@tyro/api';
 import { lazy } from 'react';
 import { getCalendarEvents } from './api/events';
 import { filter } from './components/Calendar';
@@ -16,7 +16,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         type: NavObjectType.RootLink,
         path: 'calendar',
         icon: <Calendar31Icon />,
-        hasAccess: ({ userType }) => !!userType && userType !== UserType.Tyro,
+        hasAccess: (permissions) => isTyroTenantAndUser(permissions),
         title: t('navigation:general.calendar'),
         loader: () => getCalendarEvents(filter),
         element: <CalendarPage />,

@@ -1,7 +1,11 @@
 import { GraphQLClient } from 'graphql-request';
 import { Response } from 'graphql-request/dist/types';
 import polly from 'polly-js';
-import { EmulateHeaders } from './utils/emulate';
+import {
+  checkEmulationMode,
+  EmulateHeaders,
+  EmulationMode,
+} from './utils/emulate';
 import { getToken } from './utils/jwt';
 import { acquireMsalToken } from './utils/msal-configs';
 
@@ -33,6 +37,7 @@ export const gqlClient = new GraphQLClient(getEndpoint(), {
   fetch: fetchInstance,
   headers: () => {
     const headers: HeadersInit = {};
+    const emulationMode = checkEmulationMode();
 
     // get the authentication token from ApplicationSettings if it exists
     const token = getToken();
@@ -45,7 +50,18 @@ export const gqlClient = new GraphQLClient(getEndpoint(), {
     // add the emulate custom header to the headers
     const tenantId = localStorage.getItem(EmulateHeaders.TENANT);
     const partyId = localStorage.getItem(EmulateHeaders.PARTY_ID);
-    if (typeof tenantId === 'string' && typeof partyId === 'string') {
+    if (
+      emulationMode === EmulationMode.Tenant &&
+      typeof tenantId === 'string'
+    ) {
+      headers[EmulateHeaders.TENANT] = tenantId;
+    }
+
+    if (
+      emulationMode === EmulationMode.User &&
+      typeof tenantId === 'string' &&
+      typeof partyId === 'string'
+    ) {
       headers[EmulateHeaders.TENANT] = tenantId;
       headers[EmulateHeaders.PARTY_ID] = partyId;
     }
@@ -56,6 +72,9 @@ export const gqlClient = new GraphQLClient(getEndpoint(), {
     if (typeof academicNamespaceId === 'string') {
       headers[EmulateHeaders.ACADEMIC_NAMESPACE_ID] = academicNamespaceId;
     }
+
+    console.log('---------------------------------');
+    console.log(headers);
     return headers;
   },
 });

@@ -6,6 +6,7 @@ import { Tenant } from '@tyro/api/src/gql/graphql';
 import { useMemo } from 'react';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { useTranslation, TFunction } from '@tyro/i18n';
+import { addViewSchoolHeaders, getUser, queryClient } from '@tyro/api';
 import Table from '../../../../src/components/table/Table';
 import { TableColumn } from '../../../../src/components/table/types';
 import { useAdminTenants } from '../api/tenants';
@@ -19,7 +20,11 @@ interface AdminPanelTenant extends Tenant {
 }
 
 type GetExampleSchoolColumns = (
-  translate: TFunction<('common' | 'admin')[], undefined, ('common' | 'admin')[]>,
+  translate: TFunction<
+    ('common' | 'admin')[],
+    undefined,
+    ('common' | 'admin')[]
+  >,
   navigate: NavigateFunction
 ) => TableColumn<AdminPanelTenant>[];
 
@@ -74,8 +79,18 @@ const getExampleSchoolColumns: GetExampleSchoolColumns = (
   {
     columnDisplayName: '',
     fieldName: 'secondButton',
-    component: () => (
-      <Button onClick={() => { }}>{translate('admin:emulate')}</Button>
+    component: ({ row }) => (
+      <Button
+        onClick={async () => {
+          const { tenant } = row.original;
+          addViewSchoolHeaders(tenant);
+          queryClient.invalidateQueries();
+          await getUser();
+          navigate('/', { replace: true });
+        }}
+      >
+        {translate('admin:emulate')}
+      </Button>
     ),
   },
   {
