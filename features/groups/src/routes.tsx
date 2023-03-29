@@ -1,22 +1,10 @@
 import { getNumber, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { lazy } from 'react';
-import {
-  UserProfileCardIcon,
-  BookOpenIcon,
-  UserProfileCardIcon,
-} from '@tyro/icons';
-import {
-  isStaffUser,
-  Iterator,
-  UserType,
-  isStaffUser,
-  UserType,
-} from '@tyro/api';
+import { BookOpenIcon, UserProfileCardIcon } from '@tyro/icons';
+import { isStaffUser, Iterator, UserType } from '@tyro/api';
 import { redirect } from 'react-router-dom';
 import { getAttendanceCodes } from '@tyro/attendance';
 
-import { getSubjectGroups, getSubjectGroupsById } from './api/subject-groups';
-import { getStudentSubjects } from './api/student-subjects';
 import {
   getSubjectGroups,
   getSubjectGroupsById,
