@@ -63,6 +63,14 @@ export default function Button(theme: Theme) {
           },
         }),
       }),
+      '& .MuiButton-startIcon': {
+        marginRight: 4,
+        marginLeft: -6,
+      },
+      '& .MuiButton-endIcon': {
+        marginRight: -6,
+        marginLeft: 4,
+      },
     };
 
     const colorStyle = COLORS.map((color) => ({
@@ -112,6 +120,14 @@ export default function Button(theme: Theme) {
         ...(softVariant && {
           padding: '4px 10px',
         }),
+        '& .MuiButton-startIcon': {
+          marginRight: 4,
+          marginLeft: -4,
+        },
+        '& .MuiButton-endIcon': {
+          marginRight: -4,
+          marginLeft: 4,
+        },
       }),
       ...(largeSize && {
         height: 48,

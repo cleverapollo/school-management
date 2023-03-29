@@ -17,6 +17,9 @@
   "time": "Time",
   "break": "Break",
   "extraCurricular": "Extra curricular",
+  "changeCalendarView": "Change calendar view",
+  "addEvent": "Add event",
+  "editCalendar": "Edit calendar",
   "errorMessages": {
     "title": "Title is required",
     "date": "End date must be later than start date"

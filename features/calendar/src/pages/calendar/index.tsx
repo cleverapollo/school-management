@@ -2,11 +2,10 @@ import { Container } from '@mui/material';
 import { Page } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { PartyAutocomplete } from '@tyro/party';
-import { PartyType } from '@tyro/api';
 import { PartyOption } from '@tyro/party/src/api/search';
 import * as React from 'react';
 import { useState } from 'react';
-import { Calendar } from '../../components/Calendar';
+import { Calendar } from '../../components/common/calendar/calendar';
 
 export default function CalendarPage() {
   const { t } = useTranslation(['calendar']);
@@ -20,8 +19,6 @@ export default function CalendarPage() {
           newValue: PartyOption | null
         ) => {
           setPartyId(newValue?.id);
-          console.log(event);
-          console.log(newValue?.id);
         }}
         label="Find Timetables"
       />

@@ -12,8 +12,8 @@ import { labelsMap, LabelType } from '../constants';
 import { MailLabel } from '../types';
 
 const labels = graphql(/* GraphQL */ `
-  query label($filter: LabelFilter) {
-    label(filter: $filter) {
+  query communications_label($filter: LabelFilter) {
+    communications_label(filter: $filter) {
       id
       name
       personPartyId
@@ -24,8 +24,8 @@ const labels = graphql(/* GraphQL */ `
 `);
 
 const updateLabel = graphql(/* GraphQL */ `
-  mutation labelMutation($input: LabelInput) {
-    label(input: $input) {
+  mutation update_communications_label($input: LabelInput) {
+    communications_label(input: $input) {
       id
       name
       personPartyId
@@ -36,8 +36,8 @@ const updateLabel = graphql(/* GraphQL */ `
 `);
 
 const unreadCountQuery = graphql(/* GraphQL */ `
-  query unreadCount($filter: UnreadCountFilter) {
-    unreadCount(filter: $filter) {
+  query communications_unreadCount($filter: UnreadCountFilter) {
+    communications_unreadCount(filter: $filter) {
       labelId
       count
     }
@@ -45,8 +45,8 @@ const unreadCountQuery = graphql(/* GraphQL */ `
 `);
 
 const assignLabels = graphql(/* GraphQl */ `
-  mutation assignLabel($input: AssignLabelInput) {
-    assignLabel(input: $input) {
+  mutation communications_assignLabel($input: AssignLabelInput) {
+    communications_assignLabel(input: $input) {
       id
       rootMailId
       threadId
@@ -117,8 +117,8 @@ export function getLabels() {
 export function useLabels() {
   return useQuery({
     ...calendarEventsQuery,
-    select: ({ label }) =>
-      label?.map(
+    select: ({ communications_label }) =>
+      communications_label?.map(
         (item) =>
           ({
             originalId: item?.id,
@@ -141,15 +141,15 @@ export function useUnreadCount(filter: InputMaybe<UnreadCountFilter>) {
   return useQuery({
     queryKey: ['unreadCount', filter],
     queryFn: async () => gqlClient.request(unreadCountQuery, { filter }),
-    select: ({ unreadCount }) => {
-      const totalUnreadCount = unreadCount?.reduce(
+    select: ({ communications_unreadCount }) => {
+      const totalUnreadCount = communications_unreadCount?.reduce(
         (acc, item) =>
           Number.isInteger(item?.count) && item?.labelId === 1
             ? acc + item.count
             : acc,
         0
       );
-      return { unreadCount, totalUnreadCount };
+      return { unreadCount: communications_unreadCount, totalUnreadCount };
     },
     enabled: !!filter?.personPartyId,
   });

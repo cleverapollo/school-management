@@ -23,18 +23,14 @@ import {
 
 import { displayName } from '../../../../../src/utils/nameUtils';
 import { useSubjectGroups } from '../../api/subject-groups';
-import { SubjectGroupLevelChip } from '../../components/subject-group-level-chip';
+import { SubjectGroupLevelChip } from '../../components';
 
 type ReturnTypeFromUseSubjectGroups = NonNullable<
   ReturnType<typeof useSubjectGroups>['data']
 >[number];
 
 const getSubjectGroupsColumns = (
-  translate: TFunction<
-    ('common' | 'groups')[],
-    undefined,
-    ('common' | 'groups')[]
-  >
+  translate: TFunction<'common'[], undefined, 'common'[]>
 ): GridOptions<ReturnTypeFromUseSubjectGroups>['columnDefs'] => [
   {
     field: 'name',
@@ -46,17 +42,14 @@ const getSubjectGroupsColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseSubjectGroups>) => (
-      <RouterLink
-        sx={{ fontWeight: 600 }}
-        to={`${data?.partyId ?? ''}/students`}
-      >
+      <RouterLink sx={{ fontWeight: 600 }} to={`${data?.partyId ?? ''}`}>
         {data?.name}
       </RouterLink>
     ),
   },
   {
     field: 'subjects',
-    headerName: translate('groups:subject'),
+    headerName: translate('common:subject'),
     filter: true,
     valueGetter: ({ data }) => {
       const [firstSubject] = data?.subjects || [];
@@ -65,11 +58,11 @@ const getSubjectGroupsColumns = (
   },
   {
     field: 'studentMembers.memberCount',
-    headerName: translate('groups:members'),
+    headerName: translate('common:members'),
   },
   {
     field: 'irePP.level',
-    headerName: translate('groups:level'),
+    headerName: translate('common:level'),
     filter: true,
     cellRenderer: ({
       data,
@@ -80,12 +73,12 @@ const getSubjectGroupsColumns = (
   },
   {
     field: 'staff',
-    headerName: translate('groups:teacher'),
+    headerName: translate('common:teacher'),
     valueGetter: ({ data }) => {
       const teachers = data?.staff as Person[];
       if (teachers.length === 0) return '-';
 
-      return teachers.map(displayName).join(',');
+      return teachers.map(displayName).join(', ');
     },
   },
 ];

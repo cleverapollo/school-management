@@ -1,4 +1,4 @@
-import { EventInput } from '@fullcalendar/common';
+import { EventInput } from '@fullcalendar/core';
 
 // ----------------------------------------------------------------------
 
@@ -6,7 +6,9 @@ export type CalendarView =
   | 'dayGridMonth'
   | 'timeGridWeek'
   | 'timeGridDay'
-  | 'listWeek';
+  | 'listWeek'
+  | 'resourceTimelineDay'
+  | 'resourceTimeGridDay';
 
 export type CalendarState = {
   isLoading: boolean;
