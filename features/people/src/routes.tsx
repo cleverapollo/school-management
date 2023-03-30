@@ -1,7 +1,6 @@
 import { lazy } from 'react';
 import { NavObjectFunction, NavObjectType, getNumber } from '@tyro/core';
 import { UserGroupIcon } from '@tyro/icons';
-import { isStaffUser, UserType } from '@tyro/api';
 import { redirect } from 'react-router-dom';
 import { getStudentDashboardAssessments } from '@tyro/assessment';
 import { getPartyTimetable, getTimetableDayInfo } from '@tyro/calendar';
@@ -63,7 +62,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         path: 'people',
         title: t('navigation:management.people.title'),
         icon: <UserGroupIcon />,
-        hasAccess: (permissions) => isStaffUser(permissions),
+        hasAccess: (permissions) => permissions.isStaffUser,
         children: [
           {
             type: NavObjectType.MenuLink,

@@ -1,7 +1,7 @@
 import { getNumber, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { lazy } from 'react';
-import { BookOpenIcon, UserProfileCardIcon } from '@tyro/icons';
-import { isStaffUser, Iterator, UserType } from '@tyro/api';
+import { UserProfileCardIcon } from '@tyro/icons';
+import { Iterator } from '@tyro/api';
 import { redirect } from 'react-router-dom';
 import { getAttendanceCodes } from '@tyro/attendance';
 
@@ -42,7 +42,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         type: NavObjectType.RootGroup,
         path: 'groups',
         icon: <UserProfileCardIcon />,
-        hasAccess: (permissions) => isStaffUser(permissions),
+        hasAccess: (permissions) => permissions.isStaffUser,
         title: t('navigation:general.groups.title'),
         children: [
           {

@@ -10,7 +10,6 @@ const emulationHeaders = () => {
     authorization: `Bearer ${localStorage.getItem('accessToken') as string}`,
   };
   if (emulationMode === EmulationMode.Tenant) {
-    console.log(`-----------emulationMode: ${emulationMode}`);
     return {
       ...headers,
       [EmulateHeaders.TENANT]: localStorage.getItem(

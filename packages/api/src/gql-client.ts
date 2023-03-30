@@ -72,8 +72,6 @@ export const gqlClient = new GraphQLClient(getEndpoint(), {
       headers[EmulateHeaders.ACADEMIC_NAMESPACE_ID] = academicNamespaceId;
     }
 
-    console.log('---------------------------------');
-    console.log(headers);
     return headers;
   },
 });
