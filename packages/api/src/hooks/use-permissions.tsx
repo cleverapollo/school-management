@@ -1,5 +1,13 @@
 import { useMemo } from 'react';
 import { UserType } from '../gql/graphql';
+import {
+  getPermissionFunctions,
+  isContact,
+  isStaffUser,
+  isStudent,
+  isTyroTenantAndUser,
+  isTyroUser,
+} from '../utils/permission-utils';
 import { findActiveProfile, getUser, useUser } from './use-user';
 
 export interface PermissionUtils {
@@ -8,25 +16,16 @@ export interface PermissionUtils {
   hasAtLeastOnePermission: (permissions: Array<string>) => boolean;
   hasAllPermissions: (permissions: Array<string>) => boolean;
   userType: UserType | undefined;
+  tenant: number | undefined;
+  isStaffUser: boolean;
+  isTyroTenantAndUser: boolean;
+  isTyroUser: boolean;
+  isStudent: boolean;
+  isContact: boolean;
 }
 
 export interface UsePermissionsReturn extends PermissionUtils {
   isLoading: boolean;
-}
-
-function getPermissionFunctions(usersPermissions: (string | null)[]) {
-  return {
-    hasPermission: (permission: string) =>
-      usersPermissions.includes(permission),
-    hasAtLeastOnePermission: (permissions: Array<string>) =>
-      permissions.some((permission) =>
-        usersPermissions.includes(permission ?? '')
-      ),
-    hasAllPermissions: (permissions: Array<string>) =>
-      permissions.every((permission) =>
-        usersPermissions.includes(permission ?? '')
-      ),
-  };
 }
 
 export async function getPermissionUtils(): Promise<PermissionUtils> {
@@ -37,10 +36,19 @@ export async function getPermissionUtils(): Promise<PermissionUtils> {
   const activeProfile = findActiveProfile(myAuthDetails);
   const usersPermissions = activeProfile?.permissionIds ?? [];
 
+  const userType = activeProfile?.profileType?.userType;
+  const tenant = activeProfile?.tenant?.tenant;
+
   return {
     permissions: usersPermissions,
     ...getPermissionFunctions(usersPermissions),
     userType: activeProfile?.profileType?.userType,
+    tenant: activeProfile?.tenant?.tenant,
+    isStaffUser: isStaffUser({ userType, tenant }),
+    isTyroTenantAndUser: isTyroTenantAndUser({ userType, tenant }),
+    isTyroUser: isTyroUser({ userType }),
+    isStudent: isStudent({ userType }),
+    isContact: isContact({ userType }),
   };
 }
 
@@ -53,12 +61,21 @@ export function usePermissions(): UsePermissionsReturn {
     [usersPermissions]
   );
 
+  const userType = activeProfile?.profileType?.userType;
+  const tenant = activeProfile?.tenant?.tenant;
+
   return {
     isLoading,
     permissions: usersPermissions,
     hasPermission,
     hasAtLeastOnePermission,
     hasAllPermissions,
-    userType: activeProfile?.profileType?.userType,
+    userType,
+    tenant,
+    isStaffUser: isStaffUser({ userType, tenant }),
+    isTyroTenantAndUser: isTyroTenantAndUser({ userType, tenant }),
+    isTyroUser: isTyroUser({ userType }),
+    isStudent: isStudent({ userType }),
+    isContact: isContact({ userType }),
   };
 }

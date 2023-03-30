@@ -2,22 +2,41 @@ import { createGraphiQLFetcher } from '@graphiql/toolkit';
 import { GraphiQL } from 'graphiql';
 import '@graphiql/react/dist/style.css';
 import 'graphiql/graphiql.css';
-import { checkIsUserEmulated, EmulateHeaders } from '@tyro/api';
+import { checkEmulationMode, EmulateHeaders, EmulationMode } from '@tyro/api';
 
-const fetcher = createGraphiQLFetcher({
-  url:
-    process.env.REACT_APP_GRAPHQL_API_URI ||
-    'https://tyro-api-uat.azurewebsites.net/api/graphql',
-  headers: {
+const emulationHeaders = () => {
+  const emulationMode = checkEmulationMode();
+  const headers = {
     authorization: `Bearer ${localStorage.getItem('accessToken') as string}`,
-    ...(checkIsUserEmulated() && {
+  };
+  if (emulationMode === EmulationMode.Tenant) {
+    return {
+      ...headers,
+      [EmulateHeaders.TENANT]: localStorage.getItem(
+        EmulateHeaders.TENANT
+      ) as string,
+    };
+  }
+  if (emulationMode === EmulationMode.User) {
+    return {
+      ...headers,
       [EmulateHeaders.TENANT]: localStorage.getItem(
         EmulateHeaders.TENANT
       ) as string,
       [EmulateHeaders.PARTY_ID]: localStorage.getItem(
         EmulateHeaders.PARTY_ID
       ) as string,
-    }),
+    };
+  }
+  return headers;
+};
+
+const fetcher = createGraphiQLFetcher({
+  url:
+    process.env.REACT_APP_GRAPHQL_API_URI ||
+    'https://tyro-api-uat.azurewebsites.net/api/graphql',
+  headers: {
+    ...emulationHeaders(),
   },
 });
 

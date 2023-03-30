@@ -1,6 +1,5 @@
 import { lazy } from 'react';
 import { NavObjectFunction, NavObjectType } from '@tyro/core';
-import { UserType } from '@tyro/api';
 import { LetterIcon } from '@tyro/icons';
 import { getLabels } from './api/labels';
 
@@ -16,7 +15,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         path: 'mail',
         title: t('navigation:general.mail'),
         icon: <LetterIcon />,
-        hasAccess: ({ userType }) => !!userType && userType !== UserType.Tyro,
+        hasAccess: (permissions) => permissions.isTyroTenantAndUser,
         element: <Mail />,
         loader: () => getLabels(),
         children: [

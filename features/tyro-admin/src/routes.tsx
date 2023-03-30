@@ -26,16 +26,14 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             title: t('navigation:general.admin.schools'),
             path: 'schools',
-            hasAccess: ({ userType }) =>
-              !!userType && userType === UserType.Tyro,
+            hasAccess: (permissions) => permissions.isTyroTenantAndUser,
             loader: () => getTenants(),
             element: <AdminSchoolsPage />,
           },
           {
             type: NavObjectType.NonMenuLink,
             path: 'schools/:schoolId/people',
-            hasAccess: ({ userType }) =>
-              !!userType && userType === UserType.Tyro,
+            hasAccess: (permissions) => permissions.isTyroTenantAndUser,
             loader: ({ params }) => {
               const schoolId = getNumber(params?.schoolId);
               return getAdminPartyPeople(schoolId);
@@ -46,9 +44,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             title: t('navigation:general.admin.graphiql'),
             path: 'graphiql',
-            hasAccess: ({ userType }) =>
-              process.env.NODE_ENV !== 'production' ||
-              (!!userType && userType === UserType.Tyro),
+            hasAccess: (permissions) => permissions.isTyroUser,
             element: <GraphiQLPage />,
           },
         ],
