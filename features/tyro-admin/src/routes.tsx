@@ -44,7 +44,8 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             title: t('navigation:general.admin.graphiql'),
             path: 'graphiql',
-            hasAccess: (permissions) => permissions.isTyroUser,
+            hasAccess: (permissions) =>
+              permissions.isTyroUser || process.env.NODE_ENV !== 'production',
             element: <GraphiQLPage />,
           },
         ],

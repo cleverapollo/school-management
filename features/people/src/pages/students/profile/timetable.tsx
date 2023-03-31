@@ -1,14 +1,31 @@
+import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container } from '@mui/material';
 import { Calendar } from '@tyro/calendar';
-import { useNumber } from '@tyro/core';
+import { useNumber, usePreferredNameLayout } from '@tyro/core';
+import { SearchType } from '@tyro/api';
+import { useStudent } from '../../../api/students';
 
 export default function StudentProfileTimetablePage() {
   const { id } = useParams();
   const studentId = useNumber(id);
-  return (
-    <Container maxWidth="xl">
-      <Calendar partyId={studentId} />
-    </Container>
+  const { displayName } = usePreferredNameLayout();
+
+  const { data } = useStudent(studentId);
+
+  const defaultPartys = useMemo(
+    () =>
+      data?.partyId
+        ? [
+            {
+              partyId: data?.partyId,
+              text: displayName(data?.person),
+              type: SearchType.Student,
+              avatarUrl: data?.person?.avatarUrl,
+            },
+          ]
+        : [],
+    [data, displayName]
   );
+
+  return <Calendar defaultPartys={defaultPartys} />;
 }
