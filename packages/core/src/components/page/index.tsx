@@ -23,6 +23,7 @@ export const Page = forwardRef<HTMLDivElement, PageProps>(
         sx={{
           ...(isDesktop && {
             px: 2,
+            pb: 4,
           }),
           ...sx,
         }}
