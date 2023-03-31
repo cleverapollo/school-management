@@ -20,11 +20,10 @@ const getAboutDataWithLabels = (
     [t('people:personal.about.dateOfBirth')]: personalInformation?.dateOfBirth
       ? personalInformation?.dateOfBirth.format('DD/MM/YYYY')
       : '-',
-    [t('people:personal.about.ppsNumber')]:
-      personalInformation?.ire?.ppsNumber ?? '-',
+    [t('people:ppsNumber')]: personalInformation?.ire?.ppsNumber ?? '-',
     [t('people:personal.about.departmentId')]: '-',
-    [t('people:personal.about.gender.title')]: personalInformation?.gender
-      ? t(`people:personal.about.gender.${personalInformation?.gender}`)
+    [t('people:gender.title')]: personalInformation?.gender
+      ? t(`people:gender.${personalInformation?.gender}`)
       : '-',
     [t('people:personal.about.birthCertForename')]: '-',
     [t('people:personal.about.birthCertSurname')]: '-',

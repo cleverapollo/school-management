@@ -4,7 +4,6 @@
   "studentProfileOverview": "Student Profile Overview Page",
   "classGroup": "Class group",
   "people": "People",
-  "students": "Students",
   "contacts": "Contacts",
   "usersProfile": "{{name}}'s Profile",
   "currentLocation": "Current Location",
@@ -26,6 +25,24 @@
   "nextContactDisabled_one": "This student only has one guardian.",
   "sendSms": "Send SMS",
   "makePrimaryContact": "Make primary contact",
+  "position": "Position",
+  "carRegistation": "Car Registration",
+  "ppsNumber": "PPS number",
+  "teacherCouncilNumber": "Teacher Council number",
+  "gender": {
+    "title": "Gender",
+    "MALE": "Male",
+    "FEMALE": "Female",
+    "OTHER": "Other",
+    "UNKNOWN": "Unknown"
+  },
+  "employmentCapacity": {
+    "FULL_TIME": "Full time",
+    "PART_TIME": "Part time",
+    "AGENCY": "Agency",
+    "VOLUNTARY": "Voluntary",
+    "UNKNOWN": "Unknown"
+  },
   "personal": {
     "title": "Personal",
     "about": {
@@ -34,15 +51,7 @@
       "forename": "Forename",
       "surname": "Surname",
       "dateOfBirth": "Date of Birth",
-      "ppsNumber": "PPS number",
       "departmentId": "Department ID",
-      "gender": {
-        "title": "Gender",
-        "MALE": "Male",
-        "FEMALE": "Female",
-        "OTHER": "Other",
-        "UNKNOWN": "Unknown"
-      },
       "birthCertForename": "Birth Cert. Forename",
       "birthCertSurname": "Birth Cert. Surname",
       "countryOfBirth": "Country of birth",

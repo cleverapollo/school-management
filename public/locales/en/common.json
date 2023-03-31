@@ -62,6 +62,8 @@
   "phone": "Phone",
   "email": "Email",
   "academicYear": "Academic year",
+  "startDate": "Start date",
+  "endDate": "End date",
   "list": "list",
   "edit": "edit",
   "shop": "shop",
@@ -184,5 +186,6 @@
     "SUBJECT_GROUP_STUDENT": "Students from Subject group",
     "SUBJECT_GROUP_STAFF": "Staff from Subject group",
     "SUBJECT_GROUP_CONTACT": "Contacts of Students from Subject group"
-  }
+  },
+  "staff": "Staff"
 }

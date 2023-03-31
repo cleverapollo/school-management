@@ -39,7 +39,7 @@ export default function StudentProfileContainer() {
           breadcrumbs={{
             links: [
               {
-                name: t('people:students'),
+                name: t('common:students'),
                 href: './..',
               },
               {
