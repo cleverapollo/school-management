@@ -7,6 +7,8 @@ export * from './calendar-31';
 export * from './calendar-dates';
 export * from './calendar-month';
 export * from './calendar-schedule';
+export * from './calendar-timeline';
+export * from './calendar-vertical';
 export * from './checkmark';
 export * from './checkmark-circle';
 export * from './checkmark-circle-big';
