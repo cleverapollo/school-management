@@ -30,18 +30,12 @@ const getSubjectGroupsColumns = (
     valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseSubjectGroupById>) => {
-      const person = data?.person;
-      const name = displayName(person);
-
-      return (
-        <TableAvatar
-          name={name}
-          avatarUrl={person?.avatarUrl}
-          to={`/people/students/${data?.partyId ?? ''}`}
-        />
-      );
-    },
+    }: ICellRendererParams<ReturnTypeFromUseSubjectGroupById>) => (
+      <TableAvatar
+        person={data?.person}
+        to={`/people/students/${data?.partyId ?? ''}`}
+      />
+    ),
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: true,

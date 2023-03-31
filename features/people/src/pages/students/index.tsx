@@ -1,5 +1,3 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
 import { useMemo } from 'react';
 import { Container, Typography } from '@mui/material';
 import {
@@ -8,12 +6,12 @@ import {
   Page,
   Table,
   TableAvatar,
+  displayName,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
 import { UseQueryReturnType } from '@tyro/api';
 import { useBulkUpdateCoreStudent, useStudents } from '../../api/students';
-import { displayName } from '../../../../../src/utils/nameUtils';
 
 type ReturnTypeFromUseStudents = UseQueryReturnType<typeof useStudents>[number];
 
@@ -30,18 +28,9 @@ const getStudentColumns = (
     valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseStudents, any>) => {
-      const person = data?.person;
-      const name = displayName(person);
-
-      return (
-        <TableAvatar
-          name={name}
-          avatarUrl={person?.avatarUrl}
-          to={`./${data?.partyId ?? ''}`}
-        />
-      );
-    },
+    }: ICellRendererParams<ReturnTypeFromUseStudents, any>) => (
+      <TableAvatar person={data?.person} to={`./${data?.partyId ?? ''}`} />
+    ),
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: true,

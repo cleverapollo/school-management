@@ -1,5 +1,3 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
 import { useParams } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import {
@@ -10,6 +8,7 @@ import {
   Table,
   TableAvatar,
   TableBooleanValue,
+  displayName,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -22,7 +21,6 @@ import {
 import { Box, Fade } from '@mui/material';
 import { useStudentsContacts } from '../../../api/student/overview';
 import { joinAddress } from '../../../utils/join-address';
-import { displayName } from '../../../../../../src/utils/nameUtils';
 
 type ReturnTypeFromUseContacts = NonNullable<
   ReturnType<typeof useStudentsContacts>['data']
@@ -41,18 +39,12 @@ const getStudentContactColumns = (
     valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => {
-      const person = data?.person;
-      const name = displayName(person);
-
-      return (
-        <TableAvatar
-          name={name}
-          avatarUrl={person?.avatarUrl}
-          to={`/people/contacts/${data?.partyId ?? ''}`}
-        />
-      );
-    },
+    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
+      <TableAvatar
+        person={data?.person}
+        to={`/people/contacts/${data?.partyId ?? ''}`}
+      />
+    ),
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: true,

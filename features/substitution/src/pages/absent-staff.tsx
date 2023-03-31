@@ -27,22 +27,16 @@ const getColumnDefs = (
   {
     field: 'staff',
     headerName: translate('substitution:absentStaff'),
-    valueGetter: ({ data }) => data?.staff && displayName(data.staff),
+    valueGetter: ({ data }) => displayName(data?.staff ?? undefined),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseStaffWorkAbsences>) => {
-      const person = data?.staff;
-      const name = displayName(person!);
-
-      return (
-        <TableAvatar
-          name={name}
-          avatarUrl={person?.avatarUrl}
-          // TODO: add route to absence id
-          to={`./${data?.absenceId ?? ''}`}
-        />
-      );
-    },
+    }: ICellRendererParams<ReturnTypeFromUseStaffWorkAbsences>) => (
+      <TableAvatar
+        person={data?.staff ?? undefined}
+        // TODO: add route to absence id
+        to={`./${data?.absenceId ?? ''}`}
+      />
+    ),
   },
   {
     field: 'absenceTypeId',
