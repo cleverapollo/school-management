@@ -1,12 +1,13 @@
 // @mui
 import { Box, Radio, RadioGroup, BoxProps, RadioGroupProps } from '@mui/material';
+import { Colour } from '@tyro/api';
 // components
 import { Iconify } from '../iconify';
 
 // ----------------------------------------------------------------------
 
 interface Props extends RadioGroupProps {
-  colors: readonly ["red", "orange", "amber", "green", "emerald", "teal", "cyan", "sky", "blue", "violet", "fuchsia"];
+  colors: Colour[];
 }
 
 export default function ColorSinglePicker({ colors, ...other }: Props) {

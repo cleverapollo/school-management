@@ -7,28 +7,10 @@ import { useForm, Controller } from 'react-hook-form';
 import { Stack, Button, DialogActions, TextField, Box } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
-import { LabelInput, Maybe } from '@tyro/api';
+import { ColorOptions, LabelInput, Maybe } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { ColorSinglePicker } from '../../../../src/components/color-utils';
 import { useCreateLabel } from '../api/labels';
-
-// ----------------------------------------------------------------------
-
-export const COLOR_OPTIONS = [
-  'red',
-  'orange',
-  'amber',
-  'green',
-  'emerald',
-  'teal',
-  'cyan',
-  'sky',
-  'blue',
-  'violet',
-  'fuchsia',
-] as const;
-
-// ----------------------------------------------------------------------
 
 interface FormValuesProps {
   labelName: string;
@@ -43,7 +25,7 @@ type LabelFormProps = {
 const getInitialValues = (labelInfo: Maybe<LabelInput>) => {
   const defaultLabelInfo: FormValuesProps = {
     labelName: labelInfo?.name ?? '',
-    color: labelInfo?.colour || COLOR_OPTIONS[0],
+    color: labelInfo?.colour || ColorOptions[0],
   };
 
   return defaultLabelInfo;
@@ -106,7 +88,7 @@ export default function LabelForm({ labelInfo, onCancel }: LabelFormProps) {
             <ColorSinglePicker
               value={field.value}
               onChange={field.onChange}
-              colors={COLOR_OPTIONS}
+              colors={ColorOptions}
             />
           )}
         />
