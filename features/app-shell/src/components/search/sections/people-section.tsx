@@ -32,7 +32,7 @@ export function PersonOption({
 }) {
   const { partyId, type, text, avatarUrl } =
     option as PeopleSectionProps['people'][number];
-  const [t] = useTranslation(['people']);
+  const [t] = useTranslation(['common']);
 
   return (
     <SearchOption path={getPersonPath(partyId, type)} optionData={option}>
@@ -63,7 +63,7 @@ export function PersonOption({
               {text}
             </Typography>
             <Typography component="span" variant="caption">
-              {t(`people:searchType.${type}`)}
+              {t(`common:searchType.${type}`)}
             </Typography>
           </Stack>
         </Stack>

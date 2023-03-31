@@ -1,12 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import {
-  AttendanceCodeType,
-  gqlClient,
-  graphql,
-  queryClient,
-  Student,
-  UpdateStudentInput,
-} from '@tyro/api';
+import { gqlClient, graphql, queryClient, UpdateStudentInput } from '@tyro/api';
 import { BulkEditedRows } from '@tyro/core';
 
 const students = graphql(/* GraphQL */ `
@@ -166,8 +159,8 @@ const studentBulkUpdateMapping = {
 } as const;
 
 export function useBulkUpdateCoreStudent() {
-  return useMutation(
-    (input: BulkEditedRows) => {
+  return useMutation({
+    mutationFn: (input: BulkEditedRows) => {
       const mappedInput = Object.entries(input).map(([partyId, changes]) =>
         Object.entries(changes).reduce<UpdateStudentInput>(
           (acc, [key, { newValue }]) => {
@@ -189,10 +182,8 @@ export function useBulkUpdateCoreStudent() {
 
       return gqlClient.request(bulkUpdateCoreStudent, { input: mappedInput });
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(studentKeys.all);
-      },
-    }
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries(studentKeys.all);
+    },
+  });
 }

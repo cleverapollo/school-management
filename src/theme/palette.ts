@@ -71,6 +71,13 @@ const GRAY = {
   700: '#374151',
   800: '#1f2937',
   900: '#111827',
+  950: '#030712',
+  lighter: '#f3f4f6', // 100
+  light: '#d1d5db', // 300
+  main: '#6b7280', // 500
+  dark: '#374151', // 700
+  darker: '#111827', // 900
+  contrastText: '#fff',
   500_8: alpha('#6b7280', 0.08),
   500_12: alpha('#6b7280', 0.12),
   500_16: alpha('#6b7280', 0.16),
@@ -92,6 +99,13 @@ const SLATE = {
   700: '#334155',
   800: '#1e293b',
   900: '#0f172a',
+  950: '#020617',
+  lighter: '#f1f5f9', // 100
+  light: '#cbd5e1', // 300
+  main: '#64748b', // 500
+  dark: '#334155', // 700
+  darker: '#0f172a', // 900
+  contrastText: '#fff',
   500_8: alpha('#64748b', 0.08),
   500_12: alpha('#64748b', 0.12),
   500_16: alpha('#64748b', 0.16),
@@ -113,6 +127,13 @@ const ZINC = {
   700: '#3f3f46',
   800: '#27272a',
   900: '#18181b',
+  950: '#09090b',
+  lighter: '#f4f4f5', // 100
+  light: '#d4d4d8', // 300
+  main: '#71717a', // 500
+  dark: '#3f3f46', // 700
+  darker: '#18181b', // 900
+  contrastText: '#fff',
 }
 
 const NEUTRAL = {
@@ -126,6 +147,13 @@ const NEUTRAL = {
   700: '#404040',
   800: '#262626',
   900: '#171717',
+  950: '#0a0a0a',
+  lighter: '#f5f5f5', // 100
+  light: '#d4d4d4', // 300
+  main: '#737373', // 500
+  dark: '#404040', // 700
+  darker: '#171717', // 900
+  contrastText: '#fff',
 };
 
 const STONE = {
@@ -139,6 +167,13 @@ const STONE = {
   700: '#44403c',
   800: '#292524',
   900: '#1c1917',
+  950: '#0c0a09',
+  lighter: '#f5f5f4', // 100
+  light: '#d6d3d1', // 300
+  main: '#78716c', // 500
+  dark: '#44403c', // 700
+  darker: '#1c1917', // 900
+  contrastText: '#fff',
 }
 
 const RED = {
@@ -152,6 +187,13 @@ const RED = {
   700: '#b91c1c',
   800: '#991b1b',
   900: '#7f1d1d',
+  950: '#450a0a',
+  lighter: '#fee2e2', // 100
+  light: '#fca5a5', // 300
+  main: '#ef4444', // 500
+  dark: '#b91c1c', // 700
+  darker: '#7f1d1d', // 900
+  contrastText: '#fff',
 }
 
 const ORANGE = {
@@ -165,6 +207,13 @@ const ORANGE = {
   700: '#c2410c',
   800: '#9a3412',
   900: '#7c2d12',
+  950: '#431407',
+  lighter: '#ffedd5', // 100
+  light: '#fdba74', // 300
+  main: '#f97316', // 500
+  dark: '#c2410c', // 700
+  darker: '#7c2d12', // 900
+  contrastText: '#fff',
 }
 
 const AMBER = {
@@ -178,6 +227,13 @@ const AMBER = {
   700: '#b45309',
   800: '#92400e',
   900: '#78350f',
+  950: '#451a03',
+  lighter: '#fef3c7', // 100
+  light: '#fcd34d', // 300
+  main: '#f59e0b', // 500
+  dark: '#b45309', // 700
+  darker: '#78350f', // 900
+  contrastText: '#fff',
 }
 
 const YELLOW = {
@@ -191,6 +247,13 @@ const YELLOW = {
   700: '#a16207',
   800: '#854d0e',
   900: '#713f12',
+  950: '#422006',
+  lighter: '#fef9c3', // 100
+  light: '#fde047', // 300
+  main: '#eab308', // 500
+  dark: '#a16207', // 700
+  darker: '#713f12', // 900
+  contrastText: '#fff',
 }
 
 const LIME = {
@@ -204,6 +267,13 @@ const LIME = {
   700: '#4d7c0f',
   800: '#3f6212',
   900: '#365314',
+  950: '#1a2e05',
+  lighter: '#ecfccb', // 100
+  light: '#bef264', // 300
+  main: '#84cc16', // 500
+  dark: '#4d7c0f', // 700
+  darker: '#365314', // 900
+  contrastText: '#fff',
 }
 
 const GREEN = {
@@ -217,6 +287,13 @@ const GREEN = {
   700: '#15803d',
   800: '#166534',
   900: '#14532d',
+  950: '#052e16',
+  lighter: '#dcfce7', // 100
+  light: '#86efac', // 300
+  main: '#22c55e', // 500
+  dark: '#15803d', // 700
+  darker: '#14532d', // 900
+  contrastText: '#fff',
 }
 
 const EMERALD = {
@@ -230,6 +307,13 @@ const EMERALD = {
   700: '#047857',
   800: '#065f46',
   900: '#064e3b',
+  950: '#022c22',
+  lighter: '#d1fae5', // 100
+  light: '#6ee7b7', // 300
+  main: '#10b981', // 500
+  dark: '#047857', // 700
+  darker: '#064e3b', // 900
+  contrastText: '#fff',
 }
 
 const TEAL = {
@@ -243,6 +327,13 @@ const TEAL = {
   700: '#0f766e',
   800: '#115e59',
   900: '#134e4a',
+  950: '#042f2e',
+  lighter: '#ccfbf1', // 100
+  light: '#5eead4', // 300
+  main: '#14b8a6', // 500
+  dark: '#0f766e', // 700
+  darker: '#134e4a', // 900
+  contrastText: '#fff',
 }
 
 const CYAN = {
@@ -256,6 +347,13 @@ const CYAN = {
   700: '#0e7490',
   800: '#155e75',
   900: '#164e63',
+  950: '#083344',
+  lighter: '#cffafe', // 100
+  light: '#67e8f9', // 300
+  main: '#06b6d4', // 500
+  dark: '#0e7490', // 700
+  darker: '#164e63', // 900
+  contrastText: '#fff',
 }
 
 const SKY = {
@@ -269,6 +367,13 @@ const SKY = {
   700: '#0369a1',
   800: '#075985',
   900: '#0c4a6e',
+  950: '#082f49',
+  lighter: '#e0f2fe', // 100
+  light: '#7dd3fc', // 300
+  main: '#0ea5e9', // 500
+  dark: '#0369a1', // 700
+  darker: '#0c4a6e', // 900
+  contrastText: '#fff',
 }
 
 const BLUE = {
@@ -282,6 +387,13 @@ const BLUE = {
   700: '#1d4ed8',
   800: '#1e40af',
   900: '#1e3a8a',
+  950: '#172554',
+  lighter: '#dbeafe', // 100
+  light: '#93c5fd', // 300
+  main: '#3b82f6', // 500
+  dark: '#1d4ed8', // 700
+  darker: '#1e3a8a', // 900
+  contrastText: '#fff',
 }
 
 const INDIGO = {
@@ -295,6 +407,13 @@ const INDIGO = {
   700: '#4338ca',
   800: '#3730a3',
   900: '#312e81',
+  950: '#1e1b4b',
+  lighter: '#e0e7ff', // 100
+  light: '#a5b4fc', // 300
+  main: '#6366f1', // 500
+  dark: '#4338ca', // 700
+  darker: '#312e81', // 900
+  contrastText: '#fff',
   500_8: alpha('#6366f1', 0.08),
   500_12: alpha('#6366f1', 0.12),
   500_16: alpha('#6366f1', 0.16),
@@ -316,6 +435,13 @@ const VIOLET = {
   700: '#6d28d9',
   800: '#5b21b6',
   900: '#4c1d95',
+  950: '#2e1065',
+  lighter: '#ede9fe', // 100
+  light: '#c4b5fd', // 300
+  main: '#8b5cf6', // 500
+  dark: '#6d28d9', // 700
+  darker: '#4c1d95', // 900
+  contrastText: '#fff',
 }
 
 const PURPLE = {
@@ -329,6 +455,13 @@ const PURPLE = {
   700: '#7e22ce',
   800: '#6b21a8',
   900: '#581c87',
+  950: '#3c0764',
+  lighter: '#f3e8ff', // 100
+  light: '#d8b4fe', // 300
+  main: '#a855f7', // 500
+  dark: '#7e22ce', // 700
+  darker: '#581c87', // 900
+  contrastText: '#fff',
 }
 
 const FUCHSIA = {
@@ -342,6 +475,13 @@ const FUCHSIA = {
   700: '#a21caf',
   800: '#86198f',
   900: '#701a75',
+  950: '#4a044e',
+  lighter: '#fae8ff', // 100
+  light: '#f0abfc', // 300
+  main: '#d946ef', // 500
+  dark: '#a21caf', // 700
+  darker: '#701a75', // 900
+  contrastText: '#fff',
 }
 
 const PINK = {
@@ -355,6 +495,13 @@ const PINK = {
   700: '#be185d',
   800: '#9d174d',
   900: '#831843',
+  950: '#500724',
+  lighter: '#fce7f3', // 100
+  light: '#f9a8d4', // 300
+  main: '#ec4899', // 500
+  dark: '#be185d', // 700
+  darker: '#831843', // 900
+  contrastText: '#fff',
 }
 
 const ROSE = {
@@ -368,6 +515,13 @@ const ROSE = {
   700: '#be123c',
   800: '#9f1239',
   900: '#881337',
+  950: '#4c0519',
+  lighter: '#ffe4e6', // 100
+  light: '#fda4af', // 300
+  main: '#f43f5e', // 500
+  dark: '#be123c', // 700
+  darker: '#881337', // 900
+  contrastText: '#fff',
 }
 
 

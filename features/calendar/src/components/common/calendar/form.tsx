@@ -4,35 +4,31 @@ import * as Yup from 'yup';
 import merge from 'lodash/merge';
 import { useToast } from '@tyro/core';
 import { EventInput } from '@fullcalendar/core';
-// form
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-// @mui
 import {
   Box,
   Stack,
   Button,
   Tooltip,
-  TextField,
   IconButton,
   DialogActions,
   MenuItem,
   DialogTitle,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import {
-  MobileDateTimePicker,
-  LocalizationProvider,
-} from '@mui/x-date-pickers';
+import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 // components
 import {
   CalendarEventType,
   CreateCalendarEventsInput,
   CalendarEventAttendeeType,
+  ColorOptions,
 } from '@tyro/api';
 import { useState } from 'react';
 import { useTranslation } from '@tyro/i18n';
+import dayjs from 'dayjs';
 import { Iconify } from '../../../../../../src/components/iconify';
 import { ColorSinglePicker } from '../../../../../../src/components/color-utils';
 import {
@@ -48,20 +44,6 @@ import { localDateStringToCalendarDate } from '../../../../../../src/utils/forma
 import ParticipantInput from '../../participant-input';
 import { DialogAnimate } from '../../../../../../src/components/animate';
 
-export const COLOR_OPTIONS = [
-  'red',
-  'orange',
-  'amber',
-  'green',
-  'emerald',
-  'teal',
-  'cyan',
-  'sky',
-  'blue',
-  'violet',
-  'fuchsia',
-] as const;
-
 const getInitialValues = (
   event: EventInput,
   range: { start: Date; end: Date } | null
@@ -71,8 +53,8 @@ const getInitialValues = (
     description: '',
     textColor: '#1890FF',
     allDay: false,
-    start: range ? new Date(range.start) : new Date(),
-    end: range ? new Date(range.end) : new Date(),
+    start: range ? dayjs(range.start) : dayjs(),
+    end: range ? dayjs(range.end) : dayjs(),
     location: '',
     schedule: 'norepeat',
     participants: [],
@@ -85,8 +67,6 @@ const getInitialValues = (
   return eventObject;
 };
 
-// ----------------------------------------------------------------------
-
 type FormValuesProps = {
   title: string;
   description: string;
@@ -94,8 +74,8 @@ type FormValuesProps = {
   allDay: boolean;
   location: string;
   schedule: string;
-  start: Date | null;
-  end: Date | null;
+  start: dayjs.Dayjs | null;
+  end: dayjs.Dayjs | null;
   participants: Array<{
     id?: string;
     name: string;
@@ -210,15 +190,17 @@ export function CalendarForm({ event, range, onCancel, isOpenModal }: Props) {
         events: [
           {
             startDate: localDateStringToCalendarDate(
-              data.start?.toLocaleDateString() ?? ''
+              data.start?.toDate().toLocaleDateString() ?? ''
             ),
             startTime: data.allDay
               ? '00:00:00'
-              : data.start?.toLocaleTimeString(),
+              : data.start?.toDate().toLocaleTimeString(),
             endDate: localDateStringToCalendarDate(
-              data.end?.toLocaleDateString() ?? ''
+              data.end?.toDate().toLocaleDateString() ?? ''
             ),
-            endTime: data.allDay ? '23:59:00' : data.end?.toLocaleTimeString(),
+            endTime: data.allDay
+              ? '23:59:00'
+              : data.end?.toDate().toLocaleTimeString(),
             rooms: [{ roomId: +data.location }],
             // ToDo: fix fields below after backend will be ready
             calendarIds: [1],
@@ -285,13 +267,10 @@ export function CalendarForm({ event, range, onCancel, isOpenModal }: Props) {
                 name="start"
                 control={control}
                 render={({ field }) => (
-                  <MobileDateTimePicker
+                  <DateTimePicker
                     {...field}
                     label={t('calendar:inputLabels.startDate')}
-                    inputFormat="dd/MM/yyyy hh:mm a"
-                    renderInput={(params) => (
-                      <TextField {...params} fullWidth />
-                    )}
+                    format="dd/MM/yyyy hh:mm a"
                   />
                 )}
               />
@@ -301,18 +280,10 @@ export function CalendarForm({ event, range, onCancel, isOpenModal }: Props) {
                 name="end"
                 control={control}
                 render={({ field, fieldState: { error } }) => (
-                  <MobileDateTimePicker
+                  <DateTimePicker
                     {...field}
                     label={t('calendar:inputLabels.endDate')}
-                    inputFormat="dd/MM/yyyy hh:mm a"
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        fullWidth
-                        error={!!error}
-                        helperText={error?.message}
-                      />
-                    )}
+                    format="dd/MM/yyyy hh:mm a"
                   />
                 )}
               />
@@ -369,7 +340,7 @@ export function CalendarForm({ event, range, onCancel, isOpenModal }: Props) {
                 <ColorSinglePicker
                   value={field.value}
                   onChange={field.onChange}
-                  colors={COLOR_OPTIONS}
+                  colors={ColorOptions}
                 />
               )}
             />

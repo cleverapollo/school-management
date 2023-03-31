@@ -65,4 +65,22 @@ declare module '@mui/material/Chip' {
   interface ChipPropsVariantOverrides {
     soft: true;
   }
+  interface ChipPropsColorOverrides {
+    red: true;
+    orange: true;
+    amber: true;
+    yellow: true;
+    lime: true;
+    green: true;
+    emerald: true;
+    teal: true;
+    cyan: true;
+    sky: true;
+    blue: true;
+    violet: true;
+    purple: true;
+    fuchsia: true;
+    pink: true;
+    rose: true;
+  }
 }

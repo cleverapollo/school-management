@@ -48,8 +48,13 @@ const userQuery = {
   staleTime: 1000 * 60 * 10,
 };
 
-export function getUser() {
-  return queryClient.fetchQuery(userQuery);
+export async function getUser() {
+  const { myAuthDetails: user } = await queryClient.fetchQuery(userQuery);
+
+  return {
+    user,
+    activeProfile: findActiveProfile(user),
+  };
 }
 
 export function findActiveProfile(user: MyAuthDetailsQuery['myAuthDetails']) {

@@ -3,7 +3,11 @@ import { NavObjectFunction, NavObjectType, getNumber } from '@tyro/core';
 import { UserGroupIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
 import { getStudentDashboardAssessments } from '@tyro/assessment';
-import { getPartyTimetable, getTimetableDayInfo } from '@tyro/calendar';
+import {
+  getCalendarEvents,
+  getPartyTimetable,
+  getTimetableDayInfo,
+} from '@tyro/calendar';
 import dayjs from 'dayjs';
 import { getStudent, getStudents } from './api/students';
 import { getStudentPersonal } from './api/student/personal';
@@ -148,6 +152,16 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'timetable',
                 element: <StudentProfileTimetablePage />,
+                loader: ({ params }) => {
+                  const studentId = getNumber(params.id);
+
+                  return studentId
+                    ? getCalendarEvents({
+                        date: new Date(),
+                        partyIds: [studentId],
+                      })
+                    : null;
+                },
               },
               {
                 type: NavObjectType.NonMenuLink,

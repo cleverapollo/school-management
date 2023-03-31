@@ -5,6 +5,8 @@ import {
   CalendarDatesIcon,
   CalendarMonthIcon,
   CalendarScheduleIcon,
+  CalendarTimelineIcon,
+  CalendarVerticalIcon,
 } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
 
@@ -12,16 +14,16 @@ const VIEW_OPTIONS = [
   { value: 'timeGridDay', label: 'Day', icon: Calendar22Icon },
   { value: 'timeGridWeek', label: 'Week', icon: CalendarDatesIcon },
   { value: 'dayGridMonth', label: 'Month', icon: CalendarMonthIcon },
-  { value: 'listWeek', label: 'Agenda', icon: CalendarScheduleIcon },
+  { value: 'listWeek', label: 'Schedule', icon: CalendarScheduleIcon },
   {
     value: 'resourceTimelineDay',
     label: 'Horizontal Timeline',
-    icon: CalendarScheduleIcon,
+    icon: CalendarTimelineIcon,
   },
   {
     value: 'resourceTimeGridDay',
     label: 'Vertical Timeline',
-    icon: CalendarScheduleIcon,
+    icon: CalendarVerticalIcon,
   },
 ] as const;
 

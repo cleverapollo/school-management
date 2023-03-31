@@ -2,10 +2,11 @@ import { alpha, Theme } from '@mui/material/styles';
 import { ChipProps } from '@mui/material';
 //
 import { CloseIcon } from './CustomIcons';
+import { Colour } from '@tyro/api';
 
 // ----------------------------------------------------------------------
 
-const COLORS = ['primary', 'secondary', 'info', 'success', 'warning', 'error'] as const;
+const COLORS = ['primary', 'secondary', 'info', 'success', 'warning', 'error', 'red', ...Object.values(Colour)] as const;
 
 // NEW VARIANT
 declare module '@mui/material/Chip' {
@@ -56,9 +57,9 @@ export default function Chip(theme: Theme) {
         // FILLED
         ...(filledVariant && {
           '& .MuiChip-deleteIcon': {
-            color: alpha(theme.palette[color].contrastText, 0.56),
+            color: alpha(theme.palette[color].dark, 0.56),
             '&:hover': {
-              color: theme.palette[color].contrastText,
+              color: theme.palette[color].dark,
             },
           },
         }),

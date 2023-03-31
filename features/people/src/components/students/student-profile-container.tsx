@@ -32,7 +32,6 @@ export default function StudentProfileContainer() {
           display: 'flex',
           flexDirection: 'column',
           gap: 2,
-          pb: 3,
         }}
       >
         <PageHeading

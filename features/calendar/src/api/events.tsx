@@ -7,20 +7,14 @@ import {
   CalendarEventAttendeeType,
   queryClient,
   Calendar_CalendarEventsQuery,
+  getColorBasedOnIndex,
+  CalendarEventType,
 } from '@tyro/api';
 import { EventInput } from '@fullcalendar/core';
 import { useTheme } from '@mui/material';
 import { usePreferredNameLayout } from '@tyro/core';
-import { COLOR_OPTIONS, Participant } from '../components/common/calendar/form';
-
-export interface ExtendedEventInput extends EventInput {
-  teacherTitle: string;
-  participants: Participant[];
-  organizer: any;
-  room: string;
-  start: string | Date;
-  end: string | Date;
-}
+import dayjs from 'dayjs';
+import { IndividualAttendee, Participants } from '../@types/calendar';
 
 const createEvents = graphql(/* GraphQL */ `
   mutation calendar_createCalendarEvents($input: CreateCalendarEventsInput!) {
@@ -99,11 +93,13 @@ const events = graphql(/* GraphQL */ `
           }
         }
         events {
+          name
           eventId
           calendarIds
           startTime
           endTime
           type
+          colour
           lessonInfo {
             subjectGroupId
             lessonId
@@ -131,6 +127,26 @@ const events = graphql(/* GraphQL */ `
                 firstName
                 lastName
               }
+              ... on Staff {
+                person {
+                  type
+                  partyId
+                  firstName
+                  lastName
+                  avatarUrl
+                  title
+                }
+              }
+              ... on Student {
+                person {
+                  type
+                  partyId
+                  firstName
+                  lastName
+                  avatarUrl
+                  title
+                }
+              }
             }
           }
           rooms {
@@ -143,17 +159,41 @@ const events = graphql(/* GraphQL */ `
   }
 `);
 
+export interface ExtendedEventInput extends EventInput {
+  participants: Participants[];
+  organizer: any;
+  room: string;
+  start: string | Date;
+  end: string | Date;
+}
+
+interface CalendarFilter
+  extends Pick<CalendarEventFilter, 'calendarIds' | 'partyIds'> {
+  date: Date;
+}
+
 export const calendarEventsKeys = {
   all: (filter: CalendarEventFilter) =>
     ['calendar', 'calendarEvents', filter] as const,
 };
 
-const calendarEventsQuery = (filter: CalendarEventFilter) => ({
-  queryKey: calendarEventsKeys.all(filter),
-  queryFn: async () => gqlClient.request(events, { filter }),
-});
+const calendarEventsQuery = (filter: CalendarFilter) => {
+  const { date, ...rest } = filter;
+  const updatedFilter = {
+    startDate: dayjs(date)
+      .subtract(1, 'month')
+      .startOf('month')
+      .format('YYYY-MM-DD'),
+    endDate: dayjs(date).add(1, 'month').startOf('month').format('YYYY-MM-DD'),
+    ...rest,
+  };
+  return {
+    queryKey: calendarEventsKeys.all(updatedFilter),
+    queryFn: async () => gqlClient.request(events, { filter: updatedFilter }),
+  };
+};
 
-export function getCalendarEvents(filter: CalendarEventFilter) {
+export function getCalendarEvents(filter: CalendarFilter) {
   return queryClient.fetchQuery(calendarEventsQuery(filter));
 }
 
@@ -186,31 +226,25 @@ function getResourceName(
   return '';
 }
 
-export function useCalendarEvents(filter: CalendarEventFilter) {
+export function useCalendarEvents(
+  filter: CalendarFilter,
+  visableEventTypes: CalendarEventType[]
+) {
   const { displayName } = usePreferredNameLayout();
   const { palette } = useTheme();
 
   return useQuery({
     ...calendarEventsQuery(filter),
+    keepPreviousData: true,
     select: ({ calendar_calendarEvents }) => {
       const { resources } = calendar_calendarEvents ?? { resources: [] };
       const numberOfResources = resources.length;
 
-      const resourceList = resources.map((resource, index) => {
-        const indexColorShift =
-          index % 2 === 0
-            ? index
-            : index + Math.floor(COLOR_OPTIONS.length / 2);
-
-        return {
-          id: String(resource.resourceId),
-          title: getResourceName(resource, displayName),
-          color:
-            numberOfResources > 0
-              ? COLOR_OPTIONS[indexColorShift % COLOR_OPTIONS.length]
-              : null,
-        };
-      });
+      const resourceList = resources.map((resource, index) => ({
+        id: String(resource.resourceId),
+        title: getResourceName(resource, displayName),
+        color: numberOfResources > 1 ? getColorBasedOnIndex(index) : null,
+      }));
 
       return {
         numberOfResources,
@@ -223,44 +257,37 @@ export function useCalendarEvents(filter: CalendarEventFilter) {
               ) ?? { color: null };
 
             resource.events.forEach((event) => {
-              const filteredAttendees = event?.attendees?.filter(
-                (attendee) =>
-                  attendee?.type === CalendarEventAttendeeType.Attendee
-              )[0];
-              const subjects =
-                filteredAttendees?.partyInfo?.__typename === 'SubjectGroup'
-                  ? filteredAttendees?.partyInfo?.subjects
-                  : [];
-              const teacherTitle =
-                filteredAttendees?.partyInfo?.__typename === 'SubjectGroup'
-                  ? filteredAttendees?.partyInfo?.name
-                  : '';
-              const participants = event?.attendees?.filter(
-                (attendee) =>
-                  attendee?.type !== CalendarEventAttendeeType.Attendee
-              );
+              if (!visableEventTypes.includes(event.type)) return; // skip if event type is not visable
+
               const organizerInfo = event?.attendees?.filter(
                 (attendee) =>
                   attendee?.type === CalendarEventAttendeeType.Organiser
-              )[0];
+              )[0] as IndividualAttendee;
+              const additionalTeachers = event?.attendees?.filter(
+                (attendee) =>
+                  attendee?.type === CalendarEventAttendeeType.Additional
+              ) as IndividualAttendee[];
+              const participants = event?.attendees?.filter(
+                (attendee) => attendee?.partyInfo?.__typename === 'Student'
+              ) as Participants[];
 
-              const eventColor = resourceEventColor ?? 'slate'; // Update to get color from the backend when resourceEventColor is null
+              const eventColor = resourceEventColor ?? event.colour ?? 'slate';
 
               eventsList.push({
                 id: `${resourceId ?? ''}-${event?.eventId}-${
                   event?.startTime ?? ''
                 }-${event?.endTime ?? ''}`,
                 resourceId,
-                title: subjects?.length ? subjects[0]?.name : '',
-                teacherTitle,
-                participants: [], // Figure out wtf is going on with above participants
+                title: event?.name,
+                participants,
+                additionalTeachers,
                 start: event?.startTime,
                 end: event?.endTime,
                 backgroundColor: palette[eventColor][100],
                 borderColor: palette[eventColor][500],
                 organizer:
-                  organizerInfo?.partyInfo?.__typename === 'Person'
-                    ? displayName(organizerInfo?.partyInfo)
+                  organizerInfo?.partyInfo?.__typename === 'Staff'
+                    ? displayName(organizerInfo?.partyInfo?.person)
                     : '',
                 room: event?.rooms?.length ? event.rooms[0]?.name : '',
               });

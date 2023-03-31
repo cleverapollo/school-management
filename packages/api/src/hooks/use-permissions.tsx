@@ -29,11 +29,11 @@ export interface UsePermissionsReturn extends PermissionUtils {
 }
 
 export async function getPermissionUtils(): Promise<PermissionUtils> {
-  const { myAuthDetails } = await getUser();
+  const { user } = await getUser();
 
-  if (!myAuthDetails) throw new Error('USER_NOT_FOUND');
+  if (!user) throw new Error('USER_NOT_FOUND');
 
-  const activeProfile = findActiveProfile(myAuthDetails);
+  const activeProfile = findActiveProfile(user);
   const usersPermissions = activeProfile?.permissionIds ?? [];
 
   const userType = activeProfile?.profileType?.userType;
