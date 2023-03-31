@@ -6,7 +6,19 @@ export function getCalendarContent(eventInfo: EventContentArg) {
     case 'timeGridDay':
     case 'timeGridWeek':
     case 'resourceTimelineDay':
-    case 'resourceTimeGridDay':
+    case 'resourceTimeGridDay': {
+      const { room, organizer, additionalTeachers } =
+        eventInfo.event.extendedProps;
+      const numberOfAdditionalTeachers =
+        Array.isArray(additionalTeachers) && additionalTeachers?.length > 0
+          ? ` +${additionalTeachers?.length}`
+          : '';
+      const subtitleList = [
+        room ?? null,
+        typeof organizer === 'string'
+          ? `${organizer}${numberOfAdditionalTeachers}`
+          : null,
+      ];
       return (
         <Stack
           direction="row"
@@ -25,12 +37,12 @@ export function getCalendarContent(eventInfo: EventContentArg) {
               {eventInfo.event.title}
             </Typography>
             <Typography variant="caption" noWrap sx={{ fontWeight: 600 }}>
-              {eventInfo.event.extendedProps.room ?? '-'}
+              {subtitleList.filter(Boolean).join(', ')}
             </Typography>
           </Stack>
         </Stack>
       );
-
+    }
     case 'dayGridMonth':
       return (
         <Stack direction="row" alignItems="center" px={0.5}>

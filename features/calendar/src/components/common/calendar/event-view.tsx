@@ -125,7 +125,7 @@ const CalendarEventView = ({
               >
                 <Avatar
                   src="google.com"
-                  name={displayName(participant.partyInfo)}
+                  name={displayName(participant.partyInfo.person)}
                 />
                 {isEditable && index === 0 && (
                   <Box
@@ -144,7 +144,7 @@ const CalendarEventView = ({
                   </Box>
                 )}
                 <Box sx={{ marginLeft: '10px' }}>
-                  {displayName(participant.partyInfo)}
+                  {displayName(participant.partyInfo.person)}
                 </Box>
               </Box>
             ))}

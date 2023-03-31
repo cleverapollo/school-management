@@ -1,9 +1,10 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
+import { Dispatch, RefObject, SetStateAction, useRef } from 'react';
 import { styled } from '@mui/material/styles';
-import { Stack, Button, Typography, IconButton, Box } from '@mui/material';
-// utils
-import { useResponsive } from '@tyro/core';
+import { Stack, Button, IconButton, Box, Popover } from '@mui/material';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { useDisclosure, useResponsive } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import {
   ChevronLeftIcon,
@@ -13,11 +14,9 @@ import {
 } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-// hooks
-// @types
+import FullCalendar from '@fullcalendar/react';
 import { CalendarView } from '../../../../types';
 import { CalendarViewSwitcher } from './view-switcher';
-// components
 
 dayjs.extend(LocalizedFormat);
 
@@ -32,29 +31,59 @@ const RootStyle = styled(Box)(({ theme }) => ({
   },
 }));
 
-type Props = {
+interface CalendarToolbarProps {
+  calendarRef: RefObject<FullCalendar>;
   date: Date;
+  setDate: Dispatch<SetStateAction<Date>>;
   view: CalendarView;
   onEditCalendar: VoidFunction;
   onAddEvent: VoidFunction;
-  onNextDate: VoidFunction;
-  onPrevDate: VoidFunction;
   onChangeView: (newView: CalendarView) => void;
   hasMultipleResources?: boolean;
-};
+}
 
 export function CalendarToolbar({
+  calendarRef,
   date,
+  setDate,
   view,
   onEditCalendar,
   onAddEvent,
-  onNextDate,
-  onPrevDate,
   onChangeView,
   hasMultipleResources = true,
-}: Props) {
+}: CalendarToolbarProps) {
   const isDesktop = useResponsive('up', 'sm');
   const { t } = useTranslation(['calendar']);
+  const dateButtonRef = useRef<HTMLButtonElement>(null);
+  const { getButtonProps, getDisclosureProps } = useDisclosure();
+  const currentDate = dayjs(date);
+
+  const onPreviousDateClick = () => {
+    const calendarEl = calendarRef.current;
+    if (calendarEl) {
+      const calendarApi = calendarEl.getApi();
+      calendarApi.prev();
+      setDate(calendarApi.getDate());
+    }
+  };
+
+  const onNextDateClick = () => {
+    const calendarEl = calendarRef.current;
+    if (calendarEl) {
+      const calendarApi = calendarEl.getApi();
+      calendarApi.next();
+      setDate(calendarApi.getDate());
+    }
+  };
+
+  const onChangeDate = (newDate: dayjs.Dayjs) => {
+    const calendarEl = calendarRef.current;
+    if (calendarEl) {
+      const calendarApi = calendarEl.getApi();
+      calendarApi.gotoDate(newDate.toDate());
+      setDate(calendarApi.getDate());
+    }
+  };
 
   return (
     <RootStyle>
@@ -67,13 +96,44 @@ export function CalendarToolbar({
       )}
 
       <Stack direction="row" alignItems="center" spacing={2}>
-        <IconButton onClick={onPrevDate}>
+        <IconButton onClick={onPreviousDateClick}>
           <ChevronLeftIcon />
         </IconButton>
 
-        <Typography variant="body1">{dayjs(date).format('LL')}</Typography>
+        <Button
+          ref={dateButtonRef}
+          variant="text"
+          color="inherit"
+          sx={{ fontWeight: 600 }}
+          {...getButtonProps()}
+        >
+          {currentDate.format('LL')}
+        </Button>
+        <Popover
+          {...getDisclosureProps()}
+          anchorEl={dateButtonRef.current}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
+        >
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateCalendar
+              value={currentDate}
+              onChange={(newValue) => {
+                if (newValue) {
+                  onChangeDate(newValue);
+                }
+              }}
+            />
+          </LocalizationProvider>
+        </Popover>
 
-        <IconButton onClick={onNextDate}>
+        <IconButton onClick={onNextDateClick}>
           <ChevronRightIcon />
         </IconButton>
       </Stack>

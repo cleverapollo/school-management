@@ -1820,7 +1820,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@date-io/date-fns@npm:^2.15.0":
+"@date-io/date-fns-jalali@npm:^2.16.0":
+  version: 2.16.0
+  resolution: "@date-io/date-fns-jalali@npm:2.16.0"
+  dependencies:
+    "@date-io/core": ^2.16.0
+  peerDependencies:
+    date-fns-jalali: ^2.13.0-0
+  peerDependenciesMeta:
+    date-fns-jalali:
+      optional: true
+  checksum: 141ee217ee0599f2d593438903785e8b4ade87dd53b0fef986fd0b8545a22a7d2eaad59a3daba7a516d7426ea27b188a92f78bc0e72ae92f90c1dea269260a48
+  languageName: node
+  linkType: hard
+
+"@date-io/date-fns@npm:^2.15.0, @date-io/date-fns@npm:^2.16.0":
   version: 2.16.0
   resolution: "@date-io/date-fns@npm:2.16.0"
   dependencies:
@@ -1834,7 +1848,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@date-io/dayjs@npm:^2.15.0":
+"@date-io/dayjs@npm:^2.15.0, @date-io/dayjs@npm:^2.16.0":
   version: 2.16.0
   resolution: "@date-io/dayjs@npm:2.16.0"
   dependencies:
@@ -1848,7 +1862,35 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@date-io/luxon@npm:^2.15.0":
+"@date-io/hijri@npm:^2.16.1":
+  version: 2.16.1
+  resolution: "@date-io/hijri@npm:2.16.1"
+  dependencies:
+    "@date-io/moment": ^2.16.1
+  peerDependencies:
+    moment-hijri: ^2.1.2
+  peerDependenciesMeta:
+    moment-hijri:
+      optional: true
+  checksum: 21c5eb658f14c7a0deaa877565df305d01e9b6cf97d94ae5c7be4de47b8cf6e3b72a07142346c070d6c32da75a5c53638452c1ff0303de27c19757c03bc9d09a
+  languageName: node
+  linkType: hard
+
+"@date-io/jalaali@npm:^2.16.1":
+  version: 2.16.1
+  resolution: "@date-io/jalaali@npm:2.16.1"
+  dependencies:
+    "@date-io/moment": ^2.16.1
+  peerDependencies:
+    moment-jalaali: ^0.7.4 || ^0.8.0 || ^0.9.0
+  peerDependenciesMeta:
+    moment-jalaali:
+      optional: true
+  checksum: 3df4865145c38f20080804a2bb7650afeff2dd427e96f5c2fa4157ecb9ba6bdba56b25e791ecb2d5a13c8c04a87c42ab807f5be2485abc23c46281b6a5909f3a
+  languageName: node
+  linkType: hard
+
+"@date-io/luxon@npm:^2.15.0, @date-io/luxon@npm:^2.16.1":
   version: 2.16.1
   resolution: "@date-io/luxon@npm:2.16.1"
   dependencies:
@@ -1862,7 +1904,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@date-io/moment@npm:^2.15.0":
+"@date-io/moment@npm:^2.15.0, @date-io/moment@npm:^2.16.1":
   version: 2.16.1
   resolution: "@date-io/moment@npm:2.16.1"
   dependencies:
@@ -3794,6 +3836,61 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mui/x-date-pickers@npm:^6.0.4":
+  version: 6.0.4
+  resolution: "@mui/x-date-pickers@npm:6.0.4"
+  dependencies:
+    "@babel/runtime": ^7.21.0
+    "@date-io/core": ^2.16.0
+    "@date-io/date-fns": ^2.16.0
+    "@date-io/date-fns-jalali": ^2.16.0
+    "@date-io/dayjs": ^2.16.0
+    "@date-io/hijri": ^2.16.1
+    "@date-io/jalaali": ^2.16.1
+    "@date-io/luxon": ^2.16.1
+    "@date-io/moment": ^2.16.1
+    "@mui/utils": ^5.11.13
+    "@types/react-transition-group": ^4.4.5
+    clsx: ^1.2.1
+    prop-types: ^15.8.1
+    react-transition-group: ^4.4.5
+  peerDependencies:
+    "@emotion/react": ^11.9.0
+    "@emotion/styled": ^11.8.1
+    "@mui/material": ^5.4.1
+    "@mui/system": ^5.4.1
+    date-fns: ^2.25.0
+    date-fns-jalali: ^2.13.0-0
+    dayjs: ^1.10.7
+    luxon: ^3.0.2
+    moment: ^2.29.4
+    moment-hijri: ^2.1.2
+    moment-jalaali: ^0.7.4 || ^0.8.0 || ^0.9.0
+    react: ^17.0.2 || ^18.0.0
+    react-dom: ^17.0.2 || ^18.0.0
+  peerDependenciesMeta:
+    "@emotion/react":
+      optional: true
+    "@emotion/styled":
+      optional: true
+    date-fns:
+      optional: true
+    date-fns-jalali:
+      optional: true
+    dayjs:
+      optional: true
+    luxon:
+      optional: true
+    moment:
+      optional: true
+    moment-hijri:
+      optional: true
+    moment-jalaali:
+      optional: true
+  checksum: c1fd2663ce0dace598448f156507bc63ee95203554c36d98db82a85b19dde3aabec789fb554d522c0dc31701987c16383cfbc619ed7f3274836d23d707d87f3e
+  languageName: node
+  linkType: hard
+
 "@n1ru4l/push-pull-async-iterable-iterator@npm:^3.1.0":
   version: 3.2.0
   resolution: "@n1ru4l/push-pull-async-iterable-iterator@npm:3.2.0"
@@ -5442,7 +5539,7 @@ __metadata:
     "@mui/lab": ^5.0.0-alpha.57
     "@mui/material": ^5.11.6
     "@mui/system": ^5.11.5
-    "@mui/x-date-pickers": ^5.0.4
+    "@mui/x-date-pickers": ^6.0.4
     "@tanstack/react-query": ^4.16.1
     "@tyro/api": "*"
     "@tyro/configs": "*"

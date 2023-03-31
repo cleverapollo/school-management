@@ -14,20 +14,12 @@ import interactionPlugin, {
 //
 import { useState, useRef, useEffect, useMemo } from 'react';
 // @mui
-import { Card, Container } from '@mui/material';
+import { Box, Card, Fade, IconButton, Stack } from '@mui/material';
 // routes
-import {
-  Maybe,
-  CalendarEventFilter,
-  usePermissions,
-  UserType,
-} from '@tyro/api';
-import { useResponsive, Page, useDisclosure } from '@tyro/core';
-import { useTranslation } from '@tyro/i18n';
-// @types
+import { Maybe, usePermissions, UserType, CalendarEventType } from '@tyro/api';
+import { useResponsive, useDisclosure } from '@tyro/core';
+import { ChevronLeftIcon } from '@tyro/icons';
 import { CalendarView } from '../../../types';
-// components
-import HeaderBreadcrumbs from '../../../../../../src/components/HeaderBreadcrumbs';
 // sections
 import { CalendarForm, CalendarStyle, CalendarToolbar } from '.';
 import {
@@ -36,40 +28,33 @@ import {
 } from '../../../api/events';
 import CalendarEventView from './event-view';
 import { getCalendarContent } from './calendar-content';
-
-// ----------------------------------------------------------------------
+import { EditCalendarPanel, CalendarParty } from './edit-calendar-panel';
 
 interface Range {
   start: Date;
   end: Date;
 }
 
-// ToDo: Change filter values, when create events will be done
-export const filter: CalendarEventFilter = {
-  startDate: '2022-09-05',
-  endDate: '2023-03-07',
-  partyIds: [1780],
-};
-
 export interface CalendarProps {
-  partyId: number | undefined;
-  startDate?: Date;
-  endDate?: Date;
+  defaultPartys?: CalendarParty[];
+  defaultDate?: Date;
 }
 
 export const Calendar = function Calendar({
-  partyId,
-  startDate,
-  endDate,
+  defaultPartys = [],
+  defaultDate = new Date(),
 }: CalendarProps) {
   const { userType } = usePermissions();
-  const { t } = useTranslation(['calendar', 'common', 'navigation']);
+  const [selectedPartys, setSelectedPartys] = useState(defaultPartys);
+  const [visableEventTypes, setVisableEventTypes] = useState<
+    CalendarEventType[]
+  >(Object.values(CalendarEventType));
 
   // ToDO: implement isEditable with permissions
   const isEditable =
     userType === UserType.Admin || userType === UserType.Teacher;
   const calendarRef = useRef<FullCalendar>(null);
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(defaultDate);
 
   const isDesktop = useResponsive('up', 'sm');
   const [view, setView] = useState<CalendarView>(
@@ -77,21 +62,15 @@ export const Calendar = function Calendar({
   );
 
   const {
-    isOpen: isEditTableOpen,
-    onOpen: onOpenEditCalendar,
+    isOpen: isEditCalendarOpen,
     onClose: onCloseEditCalendar,
+    onToggle: onToggleEditCalendar,
   } = useDisclosure();
   const [isNewEventOpenModal, setIsNewEventOpenModal] =
     useState<boolean>(false);
   const [selectedRange, setSelectedRange] = useState<null | Range>(null);
-
-  const { data, isLoading } = useCalendarEvents({
-    startDate: '2022-09-05',
-    endDate: '2023-03-07',
-    partyIds: [1780, 1108, ...(partyId ? [partyId] : [])],
-  });
-
   const [selectedEventId, setSelectedEventId] = useState<Maybe<string>>(null);
+
   const selectedEvent = useMemo(() => {
     if (selectedEventId) {
       return data?.events?.find((_event) => _event.id === selectedEventId);
@@ -99,17 +78,15 @@ export const Calendar = function Calendar({
     return null;
   }, [selectedEventId]);
 
-  const { mutate: updateCalendarEvent } = useUpdateCalendarEvents();
+  const { data } = useCalendarEvents(
+    {
+      date,
+      partyIds: selectedPartys.map((party) => party.partyId),
+    },
+    visableEventTypes
+  );
 
-  useEffect(() => {
-    const calendarEl = calendarRef.current;
-    if (calendarEl) {
-      const calendarApi = calendarEl.getApi();
-      const newView = isDesktop ? 'timeGridWeek' : 'listWeek';
-      calendarApi.changeView(newView);
-      setView(newView);
-    }
-  }, [isDesktop]);
+  const { mutate: updateCalendarEvent } = useUpdateCalendarEvents();
 
   const handleChangeView = (newView: CalendarView) => {
     const calendarEl = calendarRef.current;
@@ -117,24 +94,6 @@ export const Calendar = function Calendar({
       const calendarApi = calendarEl.getApi();
       calendarApi.changeView(newView);
       setView(newView);
-    }
-  };
-
-  const handleClickDatePrev = () => {
-    const calendarEl = calendarRef.current;
-    if (calendarEl) {
-      const calendarApi = calendarEl.getApi();
-      calendarApi.prev();
-      setDate(calendarApi.getDate());
-    }
-  };
-
-  const handleClickDateNext = () => {
-    const calendarEl = calendarRef.current;
-    if (calendarEl) {
-      const calendarApi = calendarEl.getApi();
-      calendarApi.next();
-      setDate(calendarApi.getDate());
     }
   };
 
@@ -190,82 +149,118 @@ export const Calendar = function Calendar({
     setSelectedEventId(null);
   };
 
-  if (isLoading) {
-    return null;
-  }
+  useEffect(() => {
+    const calendarEl = calendarRef.current;
+    if (calendarEl) {
+      const calendarApi = calendarEl.getApi();
+      const newView = isDesktop ? 'timeGridWeek' : 'listWeek';
+      calendarApi.changeView(newView);
+      setView(newView);
+    }
+  }, [isDesktop]);
+
+  useEffect(() => {
+    const resizeTimeout = setTimeout(() => {
+      if (calendarRef.current) {
+        // @ts-expect-error
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+        calendarRef.current.calendar.updateSize();
+      }
+    }, 300);
+
+    return () => clearTimeout(resizeTimeout);
+  }, [isEditCalendarOpen]);
 
   return (
-    <Page title={t('calendar:calendar')}>
-      <Container maxWidth="xl">
-        <HeaderBreadcrumbs
-          heading={t('calendar:calendar')}
-          links={[
-            {
-              name: `${t('navigation:general.dashboard')}`,
-              href: '/dashboard',
-            },
-            { name: `${t('calendar:calendar')}` },
-          ]}
-        />
-
-        <Card>
-          <CalendarStyle>
-            <CalendarToolbar
-              date={date}
-              view={view}
-              onNextDate={handleClickDateNext}
-              onPrevDate={handleClickDatePrev}
-              onEditCalendar={onOpenEditCalendar}
-              onAddEvent={handleAddEvent}
-              onChangeView={handleChangeView}
+    <>
+      <Card>
+        <CalendarStyle>
+          <CalendarToolbar
+            calendarRef={calendarRef}
+            date={date}
+            setDate={setDate}
+            view={view}
+            onEditCalendar={onToggleEditCalendar}
+            onAddEvent={handleAddEvent}
+            onChangeView={handleChangeView}
+            hasMultipleResources={data && data.numberOfResources > 1}
+          />
+          <Stack direction="row" alignItems="stretch">
+            <EditCalendarPanel
+              isOpen={isEditCalendarOpen}
+              selectedPartys={selectedPartys}
+              onChangeSelectedPartys={setSelectedPartys}
+              visableEventTypes={visableEventTypes}
+              setVisableEventTypes={setVisableEventTypes}
             />
-            <FullCalendar
-              weekends
-              editable={isEditable}
-              droppable={isEditable}
-              selectable={isEditable}
-              events={data?.events || []}
-              resources={data?.resources || []}
-              ref={calendarRef}
-              rerenderDelay={10}
-              eventContent={getCalendarContent}
-              initialDate={date}
-              initialView={view}
-              dayMaxEventRows={3}
-              eventDisplay="block"
-              headerToolbar={false}
-              allDayMaintainDuration
-              eventResizableFromStart
-              select={handleSelectRange}
-              eventDrop={handleDropEvent}
-              eventClick={handleSelectEvent}
-              eventResize={handleResizeEvent}
-              height={isDesktop ? 720 : 'auto'}
-              plugins={[
-                listPlugin,
-                dayGridPlugin,
-                timelinePlugin,
-                timeGridPlugin,
-                interactionPlugin,
-                resourceTimelinePlugin,
-                resourceTimeGridPlugin,
-              ]}
-              schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
-            />
-          </CalendarStyle>
-        </Card>
-        <CalendarEventView
-          event={selectedEvent}
-          onCancel={handleCloseModal}
-          isEditable={isEditable}
-        />
-        <CalendarForm
-          event={{}}
-          range={selectedRange}
-          onCancel={handleCloseModal}
-          isOpenModal={isNewEventOpenModal}
-        />
-      </Container>
-    </Page>
+            <Box sx={{ flex: 1, position: 'relative' }}>
+              <FullCalendar
+                weekends={false} // Update this to come from school settings when available
+                editable={isEditable}
+                droppable={isEditable}
+                selectable={isEditable}
+                events={data?.events || []}
+                resources={data?.resources || []}
+                ref={calendarRef}
+                rerenderDelay={10}
+                eventContent={getCalendarContent}
+                initialDate={date}
+                initialView={view}
+                dayMaxEventRows={3}
+                eventDisplay="block"
+                headerToolbar={false}
+                allDayMaintainDuration
+                eventResizableFromStart
+                select={handleSelectRange}
+                eventDrop={handleDropEvent}
+                eventClick={handleSelectEvent}
+                eventResize={handleResizeEvent}
+                height={isDesktop ? 720 : 'auto'}
+                plugins={[
+                  listPlugin,
+                  dayGridPlugin,
+                  timelinePlugin,
+                  timeGridPlugin,
+                  interactionPlugin,
+                  resourceTimelinePlugin,
+                  resourceTimeGridPlugin,
+                ]}
+                resourceAreaWidth={200}
+                scrollTime="08:00:00"
+                schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
+              />
+              <Fade in={isEditCalendarOpen}>
+                <IconButton
+                  sx={{
+                    position: 'absolute',
+                    left: -13,
+                    top: 12,
+                    borderRadius: '50%',
+                    padding: 0,
+                    border: (theme) => `solid 1px ${theme.palette.divider}`,
+                    backdropFilter: 'blur(6px)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                  }}
+                  onClick={onCloseEditCalendar}
+                >
+                  <ChevronLeftIcon />
+                </IconButton>
+              </Fade>
+            </Box>
+          </Stack>
+        </CalendarStyle>
+      </Card>
+      <CalendarEventView
+        event={selectedEvent}
+        onCancel={handleCloseModal}
+        isEditable={isEditable}
+      />
+      <CalendarForm
+        event={{}}
+        range={selectedRange}
+        onCancel={handleCloseModal}
+        isOpenModal={isNewEventOpenModal}
+      />
+    </>
   );
 };
