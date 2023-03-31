@@ -33,7 +33,7 @@ export function GroupOption({
 }) {
   const { partyId, type, text, avatarUrl } =
     option as GroupsSectionProps['groups'][number];
-  const { t } = useTranslation(['people']);
+  const { t } = useTranslation(['common']);
 
   return (
     <SearchOption path={getGroupPath(partyId, type)} optionData={option}>
@@ -64,7 +64,7 @@ export function GroupOption({
               {text}
             </Typography>
             <Typography component="span" variant="caption">
-              {t(`people:searchType.${type}`)}
+              {t(`common:searchType.${type}`)}
             </Typography>
           </Stack>
         </Stack>

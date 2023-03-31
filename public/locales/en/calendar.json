@@ -36,5 +36,10 @@
   "schoolDayType": {
     "NON_SCHOOL_DAY": "No school as it's a non-school day.",
     "PUBLIC_HOLIDAY": "No school as it's a public holiday."
+  },
+  "eventTypes": "Event types",
+  "calendarEventTypes": {
+    "LESSON": "Lesson",
+    "GENERAL": "General"
   }
 }
