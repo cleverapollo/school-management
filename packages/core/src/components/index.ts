@@ -5,6 +5,7 @@ export * from './breadcrumbs';
 export * from './charts';
 export * from './copy-clipboard-button';
 export * from './current-attendance-icon';
+export * from './form';
 export * from './lazy-loader';
 export * from './page';
 export * from './page-heading';
