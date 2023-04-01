@@ -1,5 +1,4 @@
 import { GraphQLClient } from 'graphql-request';
-import polly from 'polly-js';
 import {
   checkEmulationMode,
   EmulateHeaders,
@@ -17,20 +16,25 @@ type FetchInstance = (
   init?: RequestInit | undefined
 ) => Promise<any>;
 
-const fetchInstance: FetchInstance = (...args) =>
-  polly()
-    .handle((error: Response) => error?.status === 401)
-    .retry(1)
-    .executeForPromise(async () => {
-      const response = await fetch(...args);
+const fetchInstance: FetchInstance = async (...args) => {
+  const response = await fetch(...args);
 
-      if (response?.status === 401) {
-        await acquireMsalToken();
-        return Promise.reject(response);
-      }
+  if (response?.status === 401) {
+    const newToken = await acquireMsalToken();
 
-      return response;
-    });
+    if (newToken) {
+      return fetch(args[0], {
+        ...args[1],
+        headers: {
+          ...args[1]?.headers,
+          authorization: `Bearer ${newToken}`,
+        },
+      });
+    }
+  }
+
+  return response;
+};
 
 export const gqlClient = new GraphQLClient(getEndpoint(), {
   fetch: fetchInstance,
