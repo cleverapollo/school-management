@@ -8,25 +8,26 @@ import {
   Page,
   Table,
   TableAvatar,
+  usePreferredNameLayout,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
 import { UseQueryReturnType } from '@tyro/api';
-import { useBulkUpdateCoreStudent, useStudents } from '../../api/students';
-import { displayName } from '../../../../../src/utils/nameUtils';
+import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import { useStaff } from '../../api/staff';
 
-type ReturnTypeFromUseStudents = UseQueryReturnType<typeof useStudents>[number];
+dayjs.extend(LocalizedFormat);
+
+type ReturnTypeFromUseStudents = UseQueryReturnType<typeof useStaff>[number];
 
 const getStudentColumns = (
-  translate: TFunction<
-    ('common' | 'people')[],
-    undefined,
-    ('common' | 'people')[]
-  >
+  t: TFunction<('common' | 'people')[], undefined, ('common' | 'people')[]>,
+  displayName: ReturnType<typeof usePreferredNameLayout>['displayName']
 ): GridOptions<ReturnTypeFromUseStudents>['columnDefs'] => [
   {
     field: 'person',
-    headerName: translate('common:name'),
+    headerName: t('common:name'),
     valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
@@ -48,62 +49,58 @@ const getStudentColumns = (
     lockVisible: true,
   },
   {
-    field: 'classGroup.name',
-    headerName: translate('people:class'),
+    field: 'staffIreTeacher.teachingPost',
+    headerName: t('people:position'),
   },
   {
-    field: 'yearGroups',
-    headerName: translate('common:year'),
-    valueGetter: ({ data }) => {
-      if (data && data.yearGroups.length > 0) {
-        return data.yearGroups[0].name;
-      }
-    },
+    field: 'employmentCapacity',
+    headerName: t('common:capacity'),
+    valueGetter: ({ data }) =>
+      data && data.employmentCapacity
+        ? t(`people:employmentCapacity.${data.employmentCapacity}`)
+        : t(`people:employmentCapacity.UNKNOWN`),
   },
   {
-    field: 'tutors',
-    headerName: translate('common:tutor'),
-    valueGetter: ({ data }) => {
-      if (data && data.tutors.length > 0) {
-        return data.tutors.map((tutor) => displayName(tutor)).join(', ');
-      }
-    },
+    field: 'carRegistrationNumber',
+    headerName: t('people:carRegistation'),
   },
   {
-    field: 'yearGroupLeads',
-    headerName: translate('common:yearhead'),
-    valueGetter: ({ data }) => {
-      if (data && data.yearGroupLeads.length > 0) {
-        return data.yearGroupLeads
-          .map((yearGroupLead) => displayName(yearGroupLead))
-          .join(', ');
-      }
-    },
+    field: 'startDate',
+    headerName: t('common:startDate'),
+    valueGetter: ({ data }) =>
+      data && data.startDate ? dayjs(data.startDate).format('ll') : '-',
   },
   {
-    field: 'programmeStage',
-    headerName: translate('common:programme'),
-    valueGetter: ({ data }) => {
-      if (data?.programmeStages && data.programmeStages.length > 0) {
-        return data.programmeStages[0]?.programme?.name;
-      }
-    },
+    field: 'endDate',
+    headerName: t('common:endDate'),
+    valueGetter: ({ data }) =>
+      data && data.endDate ? dayjs(data.endDate).format('ll') : '-',
   },
   {
-    field: 'studentIrePP.examNumber',
-    headerName: translate('people:personal.enrolmentHistory.examNumber'),
-    editable: true,
-    hide: true,
+    field: 'staffIre.pps',
+    headerName: t('people:ppsNumber'),
+  },
+  {
+    field: 'personalInformation.gender',
+    headerName: t('people:gender.title'),
+    valueGetter: ({ data }) =>
+      data?.personalInformation?.gender
+        ? t(`people:gender.${data?.personalInformation?.gender}`)
+        : t('people:gender.UNKNOWN'),
+  },
+  {
+    field: 'staffIreTeacher.teacherCouncilNumber',
+    headerName: t('people:teacherCouncilNumber'),
   },
   {
     field: 'personalInformation.preferredFirstName',
-    headerName: translate('common:preferredFirstName'),
+    headerName: t('common:preferredFirstName'),
     editable: true,
     hide: true,
   },
   {
     field: 'personalInformation.primaryPhoneNumber.number',
-    headerName: translate('common:phone'),
+    headerName: t('common:phone'),
     editable: true,
     hide: true,
     cellEditor: 'agNumericCellEditor',
@@ -118,7 +115,7 @@ const getStudentColumns = (
   },
   {
     field: 'personalInformation.primaryEmail.email',
-    headerName: translate('common:email'),
+    headerName: t('common:email'),
     editable: true,
     hide: true,
     cellEditor: 'agEmailCellEditor',
@@ -129,30 +126,33 @@ const getStudentColumns = (
   },
 ];
 
-export default function StudentsListPage() {
+export default function StaffListPage() {
   const { t } = useTranslation(['common', 'people']);
-  const { data: students, isLoading } = useStudents();
-  const { mutateAsync: bulkSaveStudents } = useBulkUpdateCoreStudent();
+  const { data: staff, isLoading } = useStaff({});
+  const { displayName } = usePreferredNameLayout();
 
-  const studentColumns = useMemo(() => getStudentColumns(t), [t]);
+  const staffColumns = useMemo(
+    () => getStudentColumns(t, displayName),
+    [t, displayName]
+  );
 
   if (isLoading) {
     return null;
   }
 
   return (
-    <Page title={t('common:students')}>
+    <Page title={t('common:staff')}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
-          {t('common:students')}
+          {t('common:staff')}
         </Typography>
         <Table
-          rowData={students ?? []}
-          columnDefs={studentColumns}
+          rowData={staff ?? []}
+          columnDefs={staffColumns}
           rowSelection="multiple"
           rowHeight={56}
           getRowId={({ data }) => String(data?.partyId)}
-          onBulkSave={bulkSaveStudents}
+          onBulkSave={async () => {}}
         />
       </Container>
     </Page>

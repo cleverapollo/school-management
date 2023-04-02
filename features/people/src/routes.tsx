@@ -14,6 +14,7 @@ import { getStudentPersonal } from './api/student/personal';
 import { getStudentsContacts } from './api/student/overview';
 import { getContacts } from './api/contacts';
 import { getStudentStatus } from './api/status';
+import { getStaff } from './api/staff';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
 // Student profile pages
@@ -55,6 +56,7 @@ const StudentProfileSettingsPage = lazy(
 );
 
 const ContactsListPage = lazy(() => import('./pages/contacts'));
+const StaffListPage = lazy(() => import('./pages/staff'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -191,6 +193,13 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.people.contacts'),
             loader: () => getContacts(),
             element: <ContactsListPage />,
+          },
+          {
+            type: NavObjectType.MenuLink,
+            path: 'staff',
+            title: t('navigation:management.people.staff'),
+            loader: () => getStaff({}),
+            element: <StaffListPage />,
           },
         ],
       },
