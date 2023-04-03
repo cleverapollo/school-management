@@ -188,5 +188,10 @@
     "SUBJECT_GROUP_CONTACT": "Contacts of Students from Subject group"
   },
   "staff": "Staff",
-  "overview": "Overview"
+  "overview": "Overview",
+  "errorMessages": {
+    "required": "This field is required",
+    "invalidDate": "This is not a valid date",
+    "beforeStartDate": "End date must be later than start date"
+  }
 }

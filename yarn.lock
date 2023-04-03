@@ -5593,6 +5593,7 @@ __metadata:
     "@cubejs-client/react": ^0.32.0
     "@mui/lab": ^5.0.0-alpha.96
     "@mui/material": ^5.10.14
+    "@mui/x-date-pickers": ^5.0.4
     "@tyro/api": "*"
     "@tyro/configs": "*"
     "@tyro/i18n": "*"
@@ -5609,6 +5610,7 @@ __metadata:
     react: ^18.2.0
     react-apexcharts: ^1.4.0
     react-dom: ^18.2.0
+    react-hook-form: ^7.34.2
     react-router: ^6.6.2
     react-router-dom: ^6.6.2
     react-use: ^17.4.0
@@ -5786,6 +5788,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@tyro/substitution@workspace:features/substitution"
   dependencies:
+    "@mui/lab": ^5.0.0-alpha.96
     "@mui/material": ^5.11.4
     "@tanstack/react-query": ^4.16.1
     "@tyro/api": "*"
@@ -5793,9 +5796,11 @@ __metadata:
     "@tyro/core": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    "@tyro/people": "*"
     dayjs: ^1.11.7
     react: ^18.2.0
     react-dom: ^18.2.0
+    react-hook-form: ^7.34.2
     react-router: ^6.6.2
     react-router-dom: ^6.6.2
   languageName: unknown

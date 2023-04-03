@@ -7,7 +7,6 @@ import {
   TableAvatar,
 } from '@tyro/core';
 import { Button, Typography } from '@mui/material';
-import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import dayjs from 'dayjs';
@@ -39,9 +38,10 @@ const getColumnDefs = (
     ),
   },
   {
-    field: 'absenceTypeId',
+    field: 'absenceType',
     // TODO: add reason text check if it can be added to the scheme
     headerName: translate('substitution:reason'),
+    valueGetter: ({ data }) => data?.absenceType.name,
   },
   {
     field: 'fromDate',
@@ -71,18 +71,18 @@ export default function AbsentStaffPage() {
   const navigate = useNavigate();
 
   const { data: absencesData } = useStaffWorkAbsences({});
-  const columnDefs = useMemo(() => getColumnDefs(t), [t]);
+  const columnDefs = getColumnDefs(t);
 
   return (
     <>
       <Typography variant="h3" component="h1">
-        {t('substitution:managementTitle')}
+        {t('substitution:management')}
       </Typography>
       <Table
         rowData={absencesData || []}
         columnDefs={columnDefs}
         rowSelection="multiple"
-        getRowId={({ data }) => String(data?.absenceId)}
+        getRowId={({ data }) => String(data.absenceId)}
         rightAdornment={
           <Button
             variant="contained"

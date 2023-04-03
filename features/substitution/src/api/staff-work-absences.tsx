@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import {
   gqlClient,
@@ -6,20 +6,33 @@ import {
   queryClient,
   StaffAbsence,
   StaffAbsenceFilter,
+  UpsertStaffAbsence,
 } from '@tyro/api';
 
 const staffWorkAbsences = graphql(/* GraphQL */ `
   query staff_work_absences($filter: StaffAbsenceFilter) {
     staffWork_absences(filter: $filter) {
       absenceId
-      staffPartyId
-      absenceTypeId
       staff {
         title
         firstName
         lastName
         avatarUrl
       }
+      absenceType {
+        name
+      }
+      fromDate
+      toDate
+    }
+  }
+`);
+
+const saveStaffAbsence = graphql(/* GraphQL */ `
+  mutation staffWork_upsertAbsence($input: [UpsertStaffAbsence!]!) {
+    staffWork_upsertAbsence(input: $input) {
+      staffPartyId
+      absenceTypeId
       fromDate
       toDate
       fromAbsenceRequestId
@@ -28,8 +41,8 @@ const staffWorkAbsences = graphql(/* GraphQL */ `
   }
 `);
 
-const staffWorkAbsencesKeys = {
-  list: ['staff-work', 'absences'] as const,
+export const staffWorkAbsencesKeys = {
+  list: ['staffWork', 'absences'] as const,
 };
 
 const staffWorkAbsencesQuery = (filter: StaffAbsenceFilter) => ({
@@ -45,9 +58,17 @@ export function useStaffWorkAbsences(filter: StaffAbsenceFilter) {
   return useQuery({
     ...staffWorkAbsencesQuery(filter),
     select: ({ staffWork_absences }) => {
-      if (!staffWork_absences) return null;
+      if (!Array.isArray(staffWork_absences)) return [];
 
       return staffWork_absences as StaffAbsence[];
     },
+  });
+}
+
+export function useSaveStaffAbsence() {
+  return useMutation({
+    mutationKey: ['staffWork', 'createAbsence'],
+    mutationFn: (input: UpsertStaffAbsence) =>
+      gqlClient.request(saveStaffAbsence, { input }),
   });
 }
