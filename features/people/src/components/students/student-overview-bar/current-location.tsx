@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { CurrentAttendanceIcon } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { AttendanceCodeType } from '@tyro/api';
-import { useStudentStatus } from '../../../api/status';
+import { useStudentStatus } from '../../../api';
 
 interface CurrentLocationProps {
   studentPartyId: number | undefined;

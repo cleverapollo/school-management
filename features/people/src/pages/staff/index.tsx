@@ -1,5 +1,3 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
 import { useMemo } from 'react';
 import { Container, Typography } from '@mui/material';
 import {
@@ -21,7 +19,7 @@ dayjs.extend(LocalizedFormat);
 
 type ReturnTypeFromUseStudents = UseQueryReturnType<typeof useStaff>[number];
 
-const getStudentColumns = (
+const getStaffColumns = (
   t: TFunction<('common' | 'people')[], undefined, ('common' | 'people')[]>,
   displayName: ReturnType<typeof usePreferredNameLayout>['displayName']
 ): GridOptions<ReturnTypeFromUseStudents>['columnDefs'] => [
@@ -31,18 +29,9 @@ const getStudentColumns = (
     valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseStudents, any>) => {
-      const person = data?.person;
-      const name = displayName(person);
-
-      return (
-        <TableAvatar
-          name={name}
-          avatarUrl={person?.avatarUrl}
-          to={`./${data?.partyId ?? ''}`}
-        />
-      );
-    },
+    }: ICellRendererParams<ReturnTypeFromUseStudents, any>) => (
+      <TableAvatar person={data?.person} to={`./${data?.partyId ?? ''}`} />
+    ),
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: true,
@@ -132,7 +121,7 @@ export default function StaffListPage() {
   const { displayName } = usePreferredNameLayout();
 
   const staffColumns = useMemo(
-    () => getStudentColumns(t, displayName),
+    () => getStaffColumns(t, displayName),
     [t, displayName]
   );
 

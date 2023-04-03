@@ -1,0 +1,25 @@
+{
+  "title": "Substitution",
+  "management": "Management",
+  "absentStaff": "Absent Staff",
+  "reason": "Reason",
+  "startDate": "Start date",
+  "endDate": "End date",
+  "substitute": "Substitute",
+  "payroll": "Payroll",
+  "createStaffAbsence": "Create Staff Absence",
+  "creatingStaffAbsence": "Creating a Staff Absence",
+  "details": "Details",
+  "durationOfAbsence": "Duration of Absence",
+  "reasonForAbsence": "Reason for Absence",
+  "internalNote": "Add an internal note (Admin viewing only)",
+  "saveStaffAbsence": "Save Staff Absence",
+  "labels": {
+    "staffName": "Staff Name",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "absenceType": "Absence Type",
+    "internalNote": "Type Note",
+    "requireSubstitution": "Require substitution for this absence"
+  }
+}

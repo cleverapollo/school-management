@@ -25,6 +25,11 @@
       "staff": "Staff",
       "contacts": "Contacts"
     },
+    "substitution": {
+      "title": "Substitution",
+      "overview": "Overview",
+      "management": "Management"
+    },
     "settings": {
       "title": "Settings",
       "rooms": "Rooms",

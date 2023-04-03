@@ -26,6 +26,7 @@ export * from './error-circle';
 export * from './external-link';
 export * from './flags';
 export * from './gear';
+export * from './graduate-hat-loading';
 export * from './hamburger-menu';
 export * from './house-location';
 export * from './info-circle';

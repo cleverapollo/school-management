@@ -35,6 +35,7 @@ import { getRoutes as getMailRoutes } from '@tyro/mail';
 import { getRoutes as getPeopleRoutes } from '@tyro/people';
 import { getRoutes as getReportingRoutes } from '@tyro/reporting';
 import { getRoutes as getSettingsRoutes } from '@tyro/settings';
+import { getRoutes as getSubstitutionRoutes } from '@tyro/substitution';
 import { getRoutes as getAdminRoutes } from '@tyro/tyro-admin';
 
 import { Box, CircularProgress } from '@mui/material';
@@ -121,6 +122,7 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getPeopleRoutes(t),
   ...getReportingRoutes(t),
   ...getSettingsRoutes(t),
+  ...getSubstitutionRoutes(t),
   ...getAdminRoutes(t),
 ];
 

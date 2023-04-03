@@ -10,6 +10,7 @@ import people from './people.json';
 import admin from './admin.json';
 import calendar from './calendar.json';
 import mail from './mail.json';
+import substitution from './substitution.json';
 
 export const en = {
   attendance,
@@ -24,4 +25,5 @@ export const en = {
   admin,
   calendar,
   mail,
+  substitution,
 };
