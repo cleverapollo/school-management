@@ -1,8 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, queryClient } from '@tyro/api';
-import { personalKeys } from './student/personal';
 
-const statusByStudentid = graphql(/* GraphQL */ `
+const statusByStudentId = graphql(/* GraphQL */ `
   query q($filter: StudentStatusFilter) {
     composite_studentStatus(filter: $filter) {
       studentPartyId
@@ -31,16 +30,16 @@ const statusByStudentid = graphql(/* GraphQL */ `
   }
 `);
 
-export const studentKeys = {
+export const statusKeys = {
   all: ['people', 'student', 'status'] as const,
   details: (studentId: number | undefined) =>
-    [...studentKeys.all, studentId] as const,
+    [...statusKeys.all, studentId] as const,
 };
 
 const statusQuery = (studentId: number | undefined) => ({
-  queryKey: studentKeys.details(studentId),
+  queryKey: statusKeys.details(studentId),
   queryFn: async () =>
-    gqlClient.request(statusByStudentid, {
+    gqlClient.request(statusByStudentId, {
       filter: { studentPartyId: studentId || 0 },
     }),
   staleTime: 1000 * 60 * 5,

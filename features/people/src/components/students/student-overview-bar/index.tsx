@@ -14,7 +14,7 @@ import { AdditionalInfo } from './additional-info';
 import { CurrentLocation } from './current-location';
 import { PrioritySupportStudentModal } from './priority-support-student-modal';
 import { TyroId } from './tyro-id';
-import { useStudentStatus } from '../../../api/status';
+import { useStudentStatus } from '../../../api';
 
 interface StudentOverviewBarProps {
   studentId: number | undefined;

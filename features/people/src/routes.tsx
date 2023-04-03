@@ -9,12 +9,15 @@ import {
   getTimetableDayInfo,
 } from '@tyro/calendar';
 import dayjs from 'dayjs';
-import { getStudent, getStudents } from './api/students';
-import { getStudentPersonal } from './api/student/personal';
-import { getStudentsContacts } from './api/student/overview';
-import { getContacts } from './api/contacts';
-import { getStudentStatus } from './api/status';
-import { getStaff } from './api/staff';
+import {
+  getStudent,
+  getStudents,
+  getStudentPersonal,
+  getStudentsContacts,
+  getContacts,
+  getStudentStatus,
+  getStaff,
+} from './api';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
 // Student profile pages
