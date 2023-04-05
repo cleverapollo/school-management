@@ -47,6 +47,7 @@ export const RHFAutocomplete = <
       {...(optionTextKey && {
         getOptionLabel: (option) => option[optionTextKey] as string,
       })}
+      popupIcon={null}
       {...autocompleteProps}
       onChange={(event, newValue, ...restParams) => {
         onChange(newValue);

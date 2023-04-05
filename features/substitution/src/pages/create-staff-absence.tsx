@@ -152,7 +152,6 @@ export default function ManagementPage() {
                 },
               }}
               autocompleteProps={{
-                popupIcon: null,
                 sx: textFieldStyle,
                 options: staffData,
                 getOptionLabel: ({ person }) => displayName(person),
@@ -269,7 +268,6 @@ export default function ManagementPage() {
                 },
               }}
               autocompleteProps={{
-                popupIcon: null,
                 sx: textFieldStyle,
                 options: absenceTypesData,
               }}
