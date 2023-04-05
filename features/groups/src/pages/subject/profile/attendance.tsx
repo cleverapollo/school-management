@@ -1,4 +1,3 @@
-/* eslint-disable import/no-relative-packages */
 import {
   Card,
   Fade,
@@ -29,11 +28,10 @@ import {
   ThumbsUpCheckmarkIcon,
   TrashIcon,
 } from '@tyro/icons';
-import { useNumber, Avatar } from '@tyro/core';
+import { useNumber, Avatar, usePreferredNameLayout } from '@tyro/core';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
-import { displayName } from '../../../../../../src/utils/nameUtils';
 import { useSubjectGroupById } from '../../../api/subject-groups';
 import { useHandleLessonAttendance } from '../../../hooks';
 
@@ -43,6 +41,8 @@ export default function SubjectGroupProfileAttendancePage() {
   const { groupId } = useParams();
   const groupIdNumber = useNumber(groupId);
   const { data: subjectGroupData } = useSubjectGroupById(groupIdNumber);
+
+  const { displayName } = usePreferredNameLayout();
 
   const {
     lessonId,
