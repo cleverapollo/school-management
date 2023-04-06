@@ -310,6 +310,10 @@
   min-height: 150px;
 }
 
+.ag-theme-tyro .ag-center-cols-container {
+  min-width: 100%;
+}
+
 .ag-theme-tyro .ag-overlay-no-rows-wrapper.ag-layout-auto-height {
   padding-top: 60px;
 }
@@ -339,3 +343,15 @@
 .ag-theme-tyro .ag-cell.ag-editable-cell:hover {
   border-color: var(--ag-range-selection-border-color)
 }
+
+@media (hover: hover) and (pointer: fine) {
+  .ag-theme-tyro .ag-show-on-row-interaction {
+    opacity: 0;
+    transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .ag-theme-tyro .ag-row:hover .ag-show-on-row-interaction, .ag-theme-tyro .ag-row:focus-within .ag-show-on-row-interaction {
+    opacity: 1;
+  }
+}
+

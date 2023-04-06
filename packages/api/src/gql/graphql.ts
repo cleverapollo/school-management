@@ -69,24 +69,25 @@ export type Assessment = {
   __typename?: 'Assessment';
   academicNamespaceId: Scalars['Int'];
   assessmentType: AssessmentType;
-  captureHouseMasterComment?: Maybe<Scalars['Boolean']>;
-  capturePrincipalComment?: Maybe<Scalars['Boolean']>;
-  captureTarget?: Maybe<Scalars['Boolean']>;
-  captureTutorComment?: Maybe<Scalars['Boolean']>;
-  captureYearHeadComment?: Maybe<Scalars['Boolean']>;
+  captureHouseMasterComment: Scalars['Boolean'];
+  capturePrincipalComment: Scalars['Boolean'];
+  captureTarget: Scalars['Boolean'];
+  captureTutorComment: Scalars['Boolean'];
+  captureYearHeadComment: Scalars['Boolean'];
   commentBank?: Maybe<AssessmentCommentBank>;
-  commentType?: Maybe<CommentType>;
+  commentLength?: Maybe<Scalars['Int']>;
+  commentType: CommentType;
   description?: Maybe<Scalars['String']>;
-  endDate?: Maybe<Scalars['Date']>;
+  endDate: Scalars['Date'];
   extraFields?: Maybe<Array<Maybe<AssessmentExtraField>>>;
   gradeSets?: Maybe<Array<Maybe<AssessmentGradeSet>>>;
   gradeType?: Maybe<GradeType>;
   id: Scalars['Long'];
   name: Scalars['String'];
   passFailThreshold?: Maybe<Scalars['Int']>;
-  publish?: Maybe<Scalars['Boolean']>;
-  publishLearner?: Maybe<Scalars['Boolean']>;
-  startDate?: Maybe<Scalars['Date']>;
+  publish: Scalars['Boolean'];
+  publishLearner: Scalars['Boolean'];
+  startDate: Scalars['Date'];
   years?: Maybe<Array<Maybe<AssessmentYear>>>;
 };
 
@@ -2206,48 +2207,48 @@ export type RoomFilter = {
 };
 
 export type SaveAssessmentCommentInput = {
-  assessmentId?: InputMaybe<Scalars['Long']>;
+  assessmentId: Scalars['Long'];
   comment?: InputMaybe<Scalars['String']>;
   commentBankCommentId?: InputMaybe<Scalars['Long']>;
   commenterPartyId?: InputMaybe<Scalars['Long']>;
   commenterUserType?: InputMaybe<CommenterUserType>;
   id?: InputMaybe<Scalars['Long']>;
-  studentPartyId?: InputMaybe<Scalars['Long']>;
-  subjectGroupPartyId?: InputMaybe<Scalars['Long']>;
+  studentPartyId: Scalars['Long'];
+  subjectGroupPartyId: Scalars['Long'];
 };
 
 export type SaveAssessmentInput = {
-  academicNamespaceId?: InputMaybe<Scalars['Int']>;
-  assessmentType?: InputMaybe<AssessmentType>;
+  assessmentType: AssessmentType;
   captureHouseMasterComment?: InputMaybe<Scalars['Boolean']>;
   capturePrincipalComment?: InputMaybe<Scalars['Boolean']>;
-  captureTarget?: InputMaybe<Scalars['Boolean']>;
+  captureTarget: Scalars['Boolean'];
   captureTutorComment?: InputMaybe<Scalars['Boolean']>;
   captureYearHeadComment?: InputMaybe<Scalars['Boolean']>;
   commentBankId?: InputMaybe<Scalars['Int']>;
-  commentType?: InputMaybe<CommentType>;
+  commentLength?: InputMaybe<Scalars['Int']>;
+  commentType: CommentType;
   description?: InputMaybe<Scalars['String']>;
-  endDate?: InputMaybe<Scalars['Date']>;
+  endDate: Scalars['Date'];
   extraFields?: InputMaybe<Array<InputMaybe<SaveExtraFieldInput>>>;
   gradeSetIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   gradeType?: InputMaybe<GradeType>;
   id?: InputMaybe<Scalars['Long']>;
-  name?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
   passFailThreshold?: InputMaybe<Scalars['Int']>;
   publish?: InputMaybe<Scalars['Boolean']>;
   publishLearner?: InputMaybe<Scalars['Boolean']>;
-  startDate?: InputMaybe<Scalars['Date']>;
+  startDate: Scalars['Date'];
   years?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 export type SaveAssessmentResultInput = {
-  assessmentId?: InputMaybe<Scalars['Long']>;
+  assessmentId: Scalars['Long'];
   gradeSetGradeId?: InputMaybe<Scalars['Long']>;
   id?: InputMaybe<Scalars['Long']>;
-  result?: InputMaybe<Scalars['Int']>;
+  result: Scalars['Int'];
   resultExtraFields?: InputMaybe<Array<InputMaybe<SaveResultExtraFieldInput>>>;
-  studentPartyId?: InputMaybe<Scalars['Long']>;
-  subjectGroupId?: InputMaybe<Scalars['Long']>;
+  studentPartyId: Scalars['Long'];
+  subjectGroupId: Scalars['Long'];
   targetGradeSetGradeId?: InputMaybe<Scalars['Long']>;
   targetResult?: InputMaybe<Scalars['Int']>;
 };
@@ -2264,10 +2265,10 @@ export type SaveAttendanceCodeInput = {
 
 export type SaveCommentBankInput = {
   active?: InputMaybe<Scalars['Boolean']>;
-  comments?: InputMaybe<Array<InputMaybe<SaveCommentInput>>>;
+  comments: Array<SaveCommentInput>;
   description?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Long']>;
-  name?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
 };
 
 export type SaveCommentInput = {
@@ -2295,10 +2296,10 @@ export type SaveEventAttendanceInput = {
 
 export type SaveExtraFieldInput = {
   commentBankId?: InputMaybe<Scalars['Long']>;
-  extraFieldType?: InputMaybe<ExtraFieldType>;
+  extraFieldType: ExtraFieldType;
   gradeSetId?: InputMaybe<Scalars['Long']>;
   id?: InputMaybe<Scalars['Long']>;
-  name?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
   selectOptions?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
@@ -2314,22 +2315,22 @@ export type SaveFeeInput = {
 
 export type SaveGradeInput = {
   active?: InputMaybe<Scalars['Boolean']>;
-  end?: InputMaybe<Scalars['Int']>;
+  end: Scalars['Int'];
   id?: InputMaybe<Scalars['Long']>;
-  name: Array<InputMaybe<TranslationInput>>;
+  name: Array<TranslationInput>;
   passFailThreshold?: InputMaybe<Scalars['Int']>;
-  start?: InputMaybe<Scalars['Int']>;
+  start: Scalars['Int'];
   studyLevels?: InputMaybe<Array<InputMaybe<GradeSetStudyLevel>>>;
 };
 
 export type SaveGradeSetInput = {
   active?: InputMaybe<Scalars['Boolean']>;
   customGradeSet?: InputMaybe<Scalars['Boolean']>;
-  description?: InputMaybe<Array<InputMaybe<TranslationInput>>>;
-  grades?: InputMaybe<Array<InputMaybe<SaveGradeInput>>>;
+  description: Array<TranslationInput>;
+  grades: Array<SaveGradeInput>;
   id?: InputMaybe<Scalars['Long']>;
   isCba?: InputMaybe<Scalars['Boolean']>;
-  name: Array<InputMaybe<TranslationInput>>;
+  name: Array<TranslationInput>;
   passFailThreshold?: InputMaybe<Scalars['Int']>;
   years?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
@@ -2343,7 +2344,7 @@ export type SavePriorityStudentInput = {
 };
 
 export type SaveResultExtraFieldInput = {
-  assessmentExtraFieldId?: InputMaybe<Scalars['Long']>;
+  assessmentExtraFieldId: Scalars['Long'];
   commentBankCommentId?: InputMaybe<Scalars['Long']>;
   gradeSetGradeId?: InputMaybe<Scalars['Long']>;
   id?: InputMaybe<Scalars['Long']>;
@@ -3521,7 +3522,7 @@ export type Admin__Party_PeopleQueryVariables = Exact<{
 }>;
 
 
-export type Admin__Party_PeopleQuery = { __typename?: 'Query', admin__party_people?: Array<{ __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, type?: PartyPersonType | null } | null> | null };
+export type Admin__Party_PeopleQuery = { __typename?: 'Query', admin__party_people?: Array<{ __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null } | null> | null };
 
 export type Admin__TenantsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3573,6 +3574,6 @@ export const CatalogueSubjectsDocument = {"kind":"Document","definitions":[{"kin
 export const StaffWork_AbsenceTypesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"staffWork_absenceTypes"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StaffAbsenceTypeFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staffWork_absenceTypes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"absenceTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"descriptionTextId"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"availableForRequests"}}]}}]}}]} as unknown as DocumentNode<StaffWork_AbsenceTypesQuery, StaffWork_AbsenceTypesQueryVariables>;
 export const Staff_Work_AbsencesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"staff_work_absences"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StaffAbsenceFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staffWork_absences"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"absenceId"}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"absenceType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fromDate"}},{"kind":"Field","name":{"kind":"Name","value":"toDate"}}]}}]}}]} as unknown as DocumentNode<Staff_Work_AbsencesQuery, Staff_Work_AbsencesQueryVariables>;
 export const StaffWork_UpsertAbsenceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"staffWork_upsertAbsence"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpsertStaffAbsence"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staffWork_upsertAbsence"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staffPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"absenceTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"fromDate"}},{"kind":"Field","name":{"kind":"Name","value":"toDate"}},{"kind":"Field","name":{"kind":"Name","value":"fromAbsenceRequestId"}},{"kind":"Field","name":{"kind":"Name","value":"absenceReasonText"}}]}}]}}]} as unknown as DocumentNode<StaffWork_UpsertAbsenceMutation, StaffWork_UpsertAbsenceMutationVariables>;
-export const Admin__Party_PeopleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"admin__party_people"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"admin__party_people"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"tenant"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]} as unknown as DocumentNode<Admin__Party_PeopleQuery, Admin__Party_PeopleQueryVariables>;
+export const Admin__Party_PeopleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"admin__party_people"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"admin__party_people"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"tenant"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]} as unknown as DocumentNode<Admin__Party_PeopleQuery, Admin__Party_PeopleQueryVariables>;
 export const Admin__TenantsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"admin__tenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"admin__tenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"imgUrl"}}]}}]}}]} as unknown as DocumentNode<Admin__TenantsQuery, Admin__TenantsQueryVariables>;
 export const MyAuthDetailsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"myAuthDetails"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"myAuthDetails"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"defaultProfileId"}},{"kind":"Field","name":{"kind":"Name","value":"activeProfileId"}},{"kind":"Field","name":{"kind":"Name","value":"profiles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nickName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"tenant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"imgUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"profileType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"userType"}}]}},{"kind":"Field","name":{"kind":"Name","value":"permissionIds"}},{"kind":"Field","name":{"kind":"Name","value":"partyId"}}]}}]}}]}}]} as unknown as DocumentNode<MyAuthDetailsQuery, MyAuthDetailsQueryVariables>;

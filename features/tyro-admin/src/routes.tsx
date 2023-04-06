@@ -32,7 +32,7 @@ export const getRoutes: NavObjectFunction = (t) => [
           },
           {
             type: NavObjectType.NonMenuLink,
-            path: 'schools/:schoolId/people',
+            path: 'schools/:schoolId',
             hasAccess: (permissions) => permissions.isTyroTenantAndUser,
             loader: ({ params }) => {
               const schoolId = getNumber(params?.schoolId);

@@ -1,7 +1,7 @@
+import { LicenseManager } from 'ag-grid-enterprise';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
 
 import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-enterprise';
 import { forwardRef, MutableRefObject, useCallback, useState } from 'react';
 import { Box, BoxProps, Card, CardProps, Stack } from '@mui/material';
 
@@ -16,6 +16,10 @@ import {
 import { BulkEditSaveBar } from './bulk-edit-save-bar';
 
 export type { GridOptions, ICellRendererParams } from 'ag-grid-community';
+
+if (process.env.AG_GRID_KEY) {
+  LicenseManager.setLicenseKey(process.env.AG_GRID_KEY);
+}
 
 export interface TableProps<T> extends AgGridReactProps<T> {
   rowData: T[];
@@ -48,6 +52,7 @@ function TableInner<T>(
     sx,
     onRowSelection,
     rightAdornment,
+    rowHeight = 56,
     ...props
   }: TableProps<T>,
   ref: React.Ref<AgGridReact<T>>
@@ -101,6 +106,7 @@ function TableInner<T>(
             enableFillHandle
             fillHandleDirection="y"
             onSelectionChanged={onSelectionChanged}
+            rowHeight={rowHeight}
             {...props}
             onCellValueChanged={onCellValueChanged}
             onFirstDataRendered={(params: FirstDataRenderedEvent<T>) => {
