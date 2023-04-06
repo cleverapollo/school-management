@@ -41,7 +41,7 @@ export function getMenuItemList({ menuItems, onClose }: MenuItemListProps) {
             fontSize: '0.875rem',
           }}
         >
-          <IconWrapper>{icon}</IconWrapper> {label}
+          {icon && <IconWrapper>{icon}</IconWrapper>} {label}
         </MenuItem>
       );
 
