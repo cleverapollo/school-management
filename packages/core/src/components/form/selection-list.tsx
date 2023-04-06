@@ -7,18 +7,24 @@ type CustomAutocompleteProps<TField extends FieldValues> = Omit<
   'multiple' | 'options' | 'freeSolo' | 'renderTags'
 >;
 
-type RHFInputChipProps<TField extends FieldValues> = Omit<
+type RHFSelectionListProps<TField extends FieldValues> = Omit<
   RHFAutocompleteProps<TField, string>,
   'autocompleteProps'
 > & {
   autocompleteProps?: CustomAutocompleteProps<TField>;
 };
 
-export const RHFInputChip = <TField extends FieldValues>({
+/**
+ * TODO: check if this is still needed
+ *
+ * For now, there is no a use case where this component can be used.
+ * */
+
+export const RHFSelectionList = <TField extends FieldValues>({
   autocompleteProps,
   inputProps,
   ...restProps
-}: RHFInputChipProps<TField>) => (
+}: RHFSelectionListProps<TField>) => (
   <RHFAutocomplete<TField, string>
     {...restProps}
     inputProps={inputProps}
