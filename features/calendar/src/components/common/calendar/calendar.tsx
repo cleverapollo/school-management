@@ -19,6 +19,7 @@ import { Box, Card, Fade, IconButton, Stack } from '@mui/material';
 import { Maybe, usePermissions, UserType, CalendarEventType } from '@tyro/api';
 import { useResponsive, useDisclosure } from '@tyro/core';
 import { ChevronLeftIcon } from '@tyro/icons';
+import dayjs from 'dayjs';
 import { CalendarView } from '../../../types';
 // sections
 import { CalendarForm, CalendarStyle, CalendarToolbar } from '.';
@@ -42,7 +43,7 @@ export interface CalendarProps {
 
 export const Calendar = function Calendar({
   defaultPartys = [],
-  defaultDate = new Date(),
+  defaultDate = dayjs().startOf('week').toDate(),
 }: CalendarProps) {
   const { userType } = usePermissions();
   const [selectedPartys, setSelectedPartys] = useState(defaultPartys);
@@ -202,6 +203,7 @@ export const Calendar = function Calendar({
                 events={data?.events || []}
                 resources={data?.resources || []}
                 ref={calendarRef}
+                firstDay={1}
                 rerenderDelay={10}
                 eventContent={getCalendarContent}
                 initialDate={date}
@@ -215,6 +217,8 @@ export const Calendar = function Calendar({
                 eventDrop={handleDropEvent}
                 eventClick={handleSelectEvent}
                 eventResize={handleResizeEvent}
+                eventMinHeight={48}
+                slotEventOverlap={false}
                 height={isDesktop ? 720 : 'auto'}
                 plugins={[
                   listPlugin,
@@ -225,6 +229,12 @@ export const Calendar = function Calendar({
                   resourceTimelinePlugin,
                   resourceTimeGridPlugin,
                 ]}
+                views={{
+                  timeGridWeek: {
+                    dayHeaderFormat: (dayDate) =>
+                      dayjs(dayDate.date.marker).format('ddd D'),
+                  },
+                }}
                 resourceAreaWidth={200}
                 scrollTime="08:00:00"
                 schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"

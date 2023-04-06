@@ -11,7 +11,7 @@ export const CalendarStyle = styled('div')(({ theme }) => ({
     '--fc-border-color': theme.palette.divider,
     '--fc-event-border-color': theme.palette.info.light,
     '--fc-now-indicator-color': theme.palette.error.main,
-    '--fc-today-bg-color': theme.palette.action.selected,
+    '--fc-today-bg-color': theme.palette.indigo[50],
     '--fc-page-bg-color': theme.palette.background.default,
     '--fc-neutral-bg-color': theme.palette.background.paper,
     '--fc-list-event-hover-bg-color': theme.palette.action.hover,
@@ -50,7 +50,7 @@ export const CalendarStyle = styled('div')(({ theme }) => ({
     flexWrap: 'nowrap',
     overflow: 'hidden',
   },
-  '.fc .fc-timegrid-slot': { height: '2em' },
+  '.fc .fc-timegrid-slot': { height: '3rem' },
   '& .fc .fc-daygrid-event .fc-event-title': {
     overflow: 'hidden',
     whiteSpace: 'nowrap',
@@ -146,6 +146,10 @@ export const CalendarStyle = styled('div')(({ theme }) => ({
   },
   '& .fc .fc-timegrid-slot-label-cushion': {
     ...theme.typography.body2,
+  },
+
+  '& .fc .fc-timegrid-slot-label': {
+    verticalAlign: 'top',
   },
 
   // Agenda View
