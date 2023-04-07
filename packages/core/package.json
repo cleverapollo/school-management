@@ -6,6 +6,7 @@
   "dependencies": {
     "@cubejs-client/core": "^0.32.0",
     "@cubejs-client/react": "^0.32.0",
+    "@hookform/resolvers": "^3.0.1",
     "@mui/lab": "^5.0.0-alpha.96",
     "@mui/material": "^5.10.14",
     "@mui/x-date-pickers": "^5.0.4",
