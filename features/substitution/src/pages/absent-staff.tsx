@@ -84,10 +84,7 @@ export default function AbsentStaffPage() {
         rowSelection="multiple"
         getRowId={({ data }) => String(data.absenceId)}
         rightAdornment={
-          <Button
-            variant="contained"
-            onClick={() => navigate('./create-staff-absence')}
-          >
+          <Button variant="contained" onClick={() => navigate('./create')}>
             {t('substitution:createStaffAbsence')}
           </Button>
         }

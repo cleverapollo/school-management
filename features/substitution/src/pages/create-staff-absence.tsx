@@ -17,6 +17,7 @@ import {
   Avatar,
   usePreferredNameLayout,
   useToast,
+  useFormValidator,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
@@ -63,7 +64,20 @@ export default function ManagementPage() {
     isLoading: isSaveStaffAbsenceLoading,
   } = useSaveStaffAbsence();
 
-  const { handleSubmit, control, getValues } = useForm<FormValues>();
+  const { resolver, rules } = useFormValidator<FormValues>();
+
+  const { handleSubmit, control } = useForm<FormValues>({
+    resolver: resolver({
+      staff: rules.required(),
+      absenceType: rules.required(),
+      fromDate: [rules.required(), rules.date()],
+      toDate: [
+        rules.required(),
+        rules.date(),
+        rules.afterStartDate('fromDate'),
+      ],
+    }),
+  });
 
   const onSubmit = ({
     staff,
@@ -147,9 +161,6 @@ export default function ManagementPage() {
               controlProps={{
                 name: 'staff',
                 control,
-                rules: {
-                  required: t('common:errorMessages.required'),
-                },
               }}
               autocompleteProps={{
                 sx: textFieldStyle,
@@ -215,14 +226,6 @@ export default function ManagementPage() {
                 controlProps={{
                   name: 'fromDate',
                   control,
-                  rules: {
-                    required: t('common:errorMessages.required'),
-                    validate: {
-                      invalid: (date) =>
-                        dayjs(date as Date).isValid() ||
-                        t('common:errorMessages.invalidDate'),
-                    },
-                  },
                 }}
                 inputProps={{
                   sx: textFieldStyle,
@@ -233,17 +236,6 @@ export default function ManagementPage() {
                 controlProps={{
                   name: 'toDate',
                   control,
-                  rules: {
-                    required: t('common:errorMessages.required'),
-                    validate: {
-                      invalid: (date) =>
-                        dayjs(date as Date).isValid() ||
-                        t('common:errorMessages.invalidDate'),
-                      beforeStartDate: (date) =>
-                        dayjs(date as Date).isAfter(getValues('fromDate')) ||
-                        t('common:errorMessages.beforeStartDate'),
-                    },
-                  },
                 }}
                 inputProps={{
                   sx: textFieldStyle,
@@ -263,9 +255,6 @@ export default function ManagementPage() {
               controlProps={{
                 name: 'absenceType',
                 control,
-                rules: {
-                  required: t('common:errorMessages.required'),
-                },
               }}
               autocompleteProps={{
                 sx: textFieldStyle,
