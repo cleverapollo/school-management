@@ -192,6 +192,8 @@
   "errorMessages": {
     "required": "This field is required",
     "invalidDate": "This is not a valid date",
-    "beforeStartDate": "End date must be later than start date"
+    "afterStartDate": "End date must be later than start date",
+    "minLength": "Minimum length {{length}}",
+    "maxLength": "Maximum length {{length}}"
   }
 }

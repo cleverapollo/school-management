@@ -4,6 +4,10 @@ import { redirect } from 'react-router-dom';
 import { SchoolExamACircleIcon } from '@tyro/icons';
 import { UserType } from '@tyro/api';
 
+const TermAssessmentsContainer = lazy(
+  () => import('./components/term-assessments-container')
+);
+
 const CreateTermAssessmentPage = lazy(
   () => import('./pages/create-term-assessment')
 );
@@ -31,6 +35,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'term-assessments',
             title: t('navigation:general.assessment.termAssessments'),
+            element: <TermAssessmentsContainer />,
             children: [
               {
                 type: NavObjectType.NonMenuLink,
