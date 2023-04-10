@@ -1338,6 +1338,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   attendance_saveAttendanceCode?: Maybe<AttendanceCode>;
   attendance_saveEventAttendance?: Maybe<Array<Maybe<EventAttendance>>>;
+  attendance_saveParentalAttendanceRequest?: Maybe<Array<Maybe<ParentalAttendanceRequest>>>;
   attendance_saveSession?: Maybe<Session>;
   attendance_saveStudentSessionAttendance?: Maybe<Array<Maybe<StudentSessionAttendance>>>;
   calendar_createCalendarEvents?: Maybe<Array<Maybe<CalendarEventRaw>>>;
@@ -1381,6 +1382,11 @@ export type MutationAttendance_SaveAttendanceCodeArgs = {
 
 export type MutationAttendance_SaveEventAttendanceArgs = {
   input?: InputMaybe<Array<InputMaybe<SaveEventAttendanceInput>>>;
+};
+
+
+export type MutationAttendance_SaveParentalAttendanceRequestArgs = {
+  input?: InputMaybe<Array<InputMaybe<SaveParentalAttendanceRequest>>>;
 };
 
 
@@ -1621,6 +1627,39 @@ export type Pagination = {
   lastMessage?: InputMaybe<Scalars['DateTime']>;
   limit: Scalars['Int'];
 };
+
+export type ParentalAttendanceRequest = {
+  __typename?: 'ParentalAttendanceRequest';
+  adminNote?: Maybe<Scalars['String']>;
+  attendanceCodeId: Scalars['Int'];
+  contactPartyId: Scalars['Long'];
+  from: Scalars['DateTime'];
+  id: Scalars['Long'];
+  parentNote: Scalars['String'];
+  requestType: ParentalAttendanceRequestType;
+  status: ParentalAttendanceRequestStatus;
+  studentPartyId: Scalars['Long'];
+  to: Scalars['DateTime'];
+};
+
+export type ParentalAttendanceRequestFilter = {
+  contactPartyId?: InputMaybe<Scalars['Long']>;
+  id?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  status?: InputMaybe<ParentalAttendanceRequestStatus>;
+  studentPartyId?: InputMaybe<Scalars['Long']>;
+};
+
+export enum ParentalAttendanceRequestStatus {
+  Approved = 'APPROVED',
+  Denied = 'DENIED',
+  Pending = 'PENDING'
+}
+
+export enum ParentalAttendanceRequestType {
+  MultiDay = 'MULTI_DAY',
+  PartialDay = 'PARTIAL_DAY',
+  SingleDay = 'SINGLE_DAY'
+}
 
 export type Party = {
   partyId: Scalars['Long'];
@@ -1875,6 +1914,7 @@ export type Query = {
   assessmentResult?: Maybe<Array<Maybe<AssessmentResult>>>;
   attendance_attendanceCodes?: Maybe<Array<Maybe<AttendanceCode>>>;
   attendance_eventAttendance?: Maybe<Array<Maybe<EventAttendance>>>;
+  attendance_parentalAttendanceRequests?: Maybe<Array<Maybe<ParentalAttendanceRequest>>>;
   attendance_session?: Maybe<Array<Maybe<Session>>>;
   attendance_studentSessionAttendance?: Maybe<Array<Maybe<StudentSessionAttendance>>>;
   calendar_calendarEvents?: Maybe<CalendarResource>;
@@ -1953,6 +1993,11 @@ export type QueryAttendance_AttendanceCodesArgs = {
 
 export type QueryAttendance_EventAttendanceArgs = {
   filter?: InputMaybe<EventAttendanceFilter>;
+};
+
+
+export type QueryAttendance_ParentalAttendanceRequestsArgs = {
+  filter?: InputMaybe<ParentalAttendanceRequestFilter>;
 };
 
 
@@ -2333,6 +2378,18 @@ export type SaveGradeSetInput = {
   name: Array<TranslationInput>;
   passFailThreshold?: InputMaybe<Scalars['Int']>;
   years?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
+export type SaveParentalAttendanceRequest = {
+  adminNote?: InputMaybe<Scalars['String']>;
+  attendanceCodeId: Scalars['Int'];
+  from: Scalars['DateTime'];
+  id?: InputMaybe<Scalars['Long']>;
+  parentNote: Scalars['String'];
+  requestType: ParentalAttendanceRequestType;
+  status: ParentalAttendanceRequestStatus;
+  studentPartyId: Scalars['Long'];
+  to: Scalars['DateTime'];
 };
 
 export type SavePriorityStudentInput = {
