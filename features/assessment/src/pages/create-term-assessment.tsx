@@ -7,12 +7,14 @@ import {
   RHFTextField,
   RHFSelect,
   useFormValidator,
+  useToast,
 } from '@tyro/core';
 import {
   SaveExtraFieldInput,
   CommentType,
   ExtraFieldType,
   AssessmentType,
+  useYearGroups,
 } from '@tyro/api';
 import {
   Card,
@@ -33,7 +35,6 @@ import { LoadingButton } from '@mui/lab';
 import dayjs from 'dayjs';
 import { CommentBankOption } from '../api/comment-bank';
 import { useSaveTermAssessment } from '../api/save-term-assessment';
-import { useYearGroups } from '../api/year-groups';
 import { CommentBankOptions } from '../components/term-assessment/comment-bank-options';
 import { CommentLengthField } from '../components/term-assessment/comment-length-field';
 
@@ -88,10 +89,11 @@ const COMMENT_LENGTH_MIN = 1;
 const COMMENT_LENGTH_MAX = 1000;
 
 export default function CreateTermAssessmentPage() {
+  const { toast } = useToast();
   const { t } = useTranslation(['assessment', 'common']);
-  const { mutate: saveTermAssessment } = useSaveTermAssessment();
 
   const { data: yearGroupsData = [] } = useYearGroups({});
+  const { mutate: saveTermAssessment, isLoading } = useSaveTermAssessment();
 
   const { resolver, rules } = useFormValidator<FormValues>();
 
@@ -136,31 +138,40 @@ export default function CreateTermAssessmentPage() {
     'extraFields',
   ]);
 
-  // TODO: this is waiting for backend changes
   const onSubmit = (data: FormValues) => {
-    saveTermAssessment({
-      assessmentType: AssessmentType.Term,
-      name: data.assessmentName,
-      years: data.years.map((year) => year.yearGroupId),
-      startDate: dayjs(data.startDate).format('YYYY-MM-DD'),
-      endDate: dayjs(data.endDate).format('YYYY-MM-DD'),
-      captureTarget: data.captureTarget,
-      commentType: data.includeTeacherComments
-        ? data.commentType
-        : CommentType.None,
-      commentBankId: data.commentBank?.id ?? null,
-      commentLength: data.commentLength ?? null,
-      capturePrincipalComment: !!data.capturePrincipalComment,
-      captureYearHeadComment: !!data.captureYearHeadComment,
-      captureTutorComment: !!data.captureTutorComment,
-      captureHouseMasterComment: !!data.captureHouseMasterComment,
-      extraFields: data.extraFields.map((field) => ({
-        name: field.name,
-        extraFieldType: field.extraFieldType,
-        commentBankId: field.commentBank?.id ?? null,
-        commentLength: field.commentLength ?? null,
-      })),
-    });
+    saveTermAssessment(
+      {
+        // TODO: check the following errors
+        // "java.lang.NullPointerException: Cannot invoke "java.util.List.size()" because the return value of "io.tyro.assessment_api.model.gen.SaveAssessmentInput.getGradeSetIds()" is null"
+        // "java.lang.NullPointerException: Cannot invoke "io.tyro.assessment_api.model.gen.GradeType.name()" because the return value of "io.tyro.assessment_api.model.gen.SaveAssessmentInput.getGradeType()" is null"
+        assessmentType: AssessmentType.Term,
+        name: data.assessmentName,
+        years: data.years.map((year) => year.yearGroupId),
+        startDate: dayjs(data.startDate).format('YYYY-MM-DD'),
+        endDate: dayjs(data.endDate).format('YYYY-MM-DD'),
+        captureTarget: !!data.captureTarget,
+        commentType: data.includeTeacherComments
+          ? data.commentType
+          : CommentType.None,
+        commentBankId: data.commentBank?.id ?? null,
+        commentLength: data.commentLength ?? null,
+        capturePrincipalComment: !!data.capturePrincipalComment,
+        captureYearHeadComment: !!data.captureYearHeadComment,
+        captureTutorComment: !!data.captureTutorComment,
+        captureHouseMasterComment: !!data.captureHouseMasterComment,
+        extraFields: data.extraFields.map((field) => ({
+          name: field.name,
+          extraFieldType: field.extraFieldType,
+          commentBankId: field.commentBank?.id ?? null,
+          commentLength: field.commentLength ?? null,
+        })),
+      },
+      {
+        onSuccess: () => {
+          toast(t('common:snackbarMessages.createSuccess'));
+        },
+      }
+    );
   };
 
   const labelStyle = {
@@ -320,6 +331,7 @@ export default function CreateTermAssessmentPage() {
               />
             ))}
           </Stack>
+          {/* TODO: move to its own component */}
           <Stack direction="column" gap={2.5}>
             <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
               {t('assessment:customFields')}
@@ -438,7 +450,12 @@ export default function CreateTermAssessmentPage() {
           </Stack>
 
           <Stack alignItems="flex-end">
-            <LoadingButton variant="contained" size="large" type="submit">
+            <LoadingButton
+              variant="contained"
+              size="large"
+              type="submit"
+              loading={isLoading}
+            >
               {t('assessment:createTermAssessment')}
             </LoadingButton>
           </Stack>
