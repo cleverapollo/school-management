@@ -3,7 +3,7 @@ import { gqlClient, graphql, SaveAssessmentInput } from '@tyro/api';
 
 const saveTermAssessment = graphql(/* GraphQL */ `
   mutation saveAssessment($input: SaveAssessmentInput) {
-    saveAssessment(input: $input) {
+    assessment_saveAssessment(input: $input) {
       name
       years {
         year

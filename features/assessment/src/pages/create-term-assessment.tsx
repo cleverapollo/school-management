@@ -31,14 +31,14 @@ import { AddIcon, TrashIcon } from '@tyro/icons';
 import { useForm, useFieldArray, Path } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import dayjs from 'dayjs';
-import { useCommentBank, useSaveTermAssessment, useYearGroups } from '../api';
+import { CommentBankOption } from '../api/comment-bank';
+import { useSaveTermAssessment } from '../api/save-term-assessment';
+import { useYearGroups } from '../api/year-groups';
+import { CommentBankOptions } from '../components/term-assessment/comment-bank-options';
+import { CommentLengthField } from '../components/term-assessment/comment-length-field';
 
 type YearGroupOption = NonNullable<
   NonNullable<ReturnType<typeof useYearGroups>['data']>[number]
->;
-
-type CommentBankOption = NonNullable<
-  NonNullable<ReturnType<typeof useCommentBank>['data']>[number]
 >;
 
 type CommentTypeOption = Exclude<CommentType, CommentType.None>;
@@ -92,7 +92,6 @@ export default function CreateTermAssessmentPage() {
   const { mutate: saveTermAssessment } = useSaveTermAssessment();
 
   const { data: yearGroupsData = [] } = useYearGroups({});
-  const { data: commentBankData = [] } = useCommentBank({});
 
   const { resolver, rules } = useFormValidator<FormValues>();
 
@@ -173,31 +172,6 @@ export default function CreateTermAssessmentPage() {
     maxWidth: 300,
     width: '100%',
   };
-
-  const renderCommentBankOptions = (name: Path<FormValues>) => (
-    <RHFAutocomplete<FormValues, CommentBankOption>
-      label={t('assessment:labels.commentBankOptions')}
-      optionIdKey="id"
-      optionTextKey="name"
-      controlProps={{ name, control }}
-      autocompleteProps={{
-        sx: textFieldStyle,
-        options: commentBankData as CommentBankOption[],
-      }}
-    />
-  );
-
-  const renderCommentLength = (name: Path<FormValues>) => (
-    <RHFTextField<FormValues>
-      label={t('assessment:labels.commentLength')}
-      textFieldProps={{
-        sx: textFieldStyle,
-        type: 'number',
-        inputProps: { maxLength: 3 },
-      }}
-      controlProps={{ name, control }}
-    />
-  );
 
   return (
     <>
@@ -302,12 +276,20 @@ export default function CreateTermAssessmentPage() {
                   textFieldProps={{ sx: textFieldStyle }}
                 />
                 {(commentType === CommentType.CommentBank ||
-                  commentType === CommentType.Both) &&
-                  renderCommentBankOptions('commentBank')}
+                  commentType === CommentType.Both) && (
+                  <CommentBankOptions<FormValues>
+                    name="commentBank"
+                    control={control}
+                  />
+                )}
 
                 {(commentType === CommentType.FreeForm ||
-                  commentType === CommentType.Both) &&
-                  renderCommentLength('commentLength')}
+                  commentType === CommentType.Both) && (
+                  <CommentLengthField<FormValues>
+                    name="commentLength"
+                    control={control}
+                  />
+                )}
               </Stack>
             )}
             {(
@@ -408,15 +390,19 @@ export default function CreateTermAssessmentPage() {
                       </TableCell>
                       <TableCell>
                         {extraFields[index].extraFieldType ===
-                          ExtraFieldType.FreeForm &&
-                          renderCommentLength(
-                            `extraFields.${index}.commentLength`
-                          )}
+                          ExtraFieldType.FreeForm && (
+                          <CommentLengthField<FormValues>
+                            name={`extraFields.${index}.commentLength`}
+                            control={control}
+                          />
+                        )}
                         {extraFields[index].extraFieldType ===
-                          ExtraFieldType.CommentBank &&
-                          renderCommentBankOptions(
-                            `extraFields.${index}.commentBank`
-                          )}
+                          ExtraFieldType.CommentBank && (
+                          <CommentBankOptions<FormValues>
+                            name={`extraFields.${index}.commentBank`}
+                            control={control}
+                          />
+                        )}
                       </TableCell>
                       <TableCell>
                         <IconButton

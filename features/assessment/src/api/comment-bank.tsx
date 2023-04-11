@@ -3,8 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, queryClient, CommentBankFilter } from '@tyro/api';
 
 const commentBank = graphql(/* GraphQL */ `
-  query commentBank($filter: CommentBankFilter) {
-    commentBank(filter: $filter) {
+  query commentBankAssessment($filter: CommentBankFilter) {
+    assessment_commentBank(filter: $filter) {
       id
       name
     }
@@ -12,7 +12,7 @@ const commentBank = graphql(/* GraphQL */ `
 `);
 
 export const commentBankKey = {
-  list: ['termAssessment', 'commentBank'] as const,
+  list: ['assessment', 'commentBank'] as const,
 };
 
 const commentBankQuery = (filter: CommentBankFilter) => ({
@@ -27,10 +27,14 @@ export function getCommentBank(filter: CommentBankFilter) {
 export function useCommentBank(filter: CommentBankFilter) {
   return useQuery({
     ...commentBankQuery(filter),
-    select: ({ commentBank: commentBankResponse }) => {
-      if (!Array.isArray(commentBankResponse)) return [];
+    select: ({ assessment_commentBank }) => {
+      if (!Array.isArray(assessment_commentBank)) return [];
 
-      return commentBankResponse;
+      return assessment_commentBank;
     },
   });
 }
+
+export type CommentBankOption = NonNullable<
+  NonNullable<ReturnType<typeof useCommentBank>['data']>[number]
+>;
