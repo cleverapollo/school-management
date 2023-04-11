@@ -141,6 +141,7 @@ export default function ManagementPage() {
         onSubmit={handleSubmit(onSubmit)}
       >
         <CardHeader
+          component="h2"
           title={t('substitution:creatingStaffAbsence')}
           sx={{
             p: 3,
@@ -152,7 +153,7 @@ export default function ManagementPage() {
         />
         <Stack direction="column" gap={3} p={3}>
           <Stack direction="column" gap={2.5}>
-            <Typography variant="body1" sx={{ ...labelStyle }}>
+            <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
               {t('substitution:details')}
             </Typography>
             <RHFAutocomplete<FormValues, StaffOption>
@@ -217,7 +218,7 @@ export default function ManagementPage() {
           </Stack>
 
           <Stack direction="column" gap={2.5}>
-            <Typography variant="body1" sx={{ ...labelStyle }}>
+            <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
               {t('substitution:durationOfAbsence')}
             </Typography>
             <Stack direction="row" spacing={2}>
@@ -245,7 +246,7 @@ export default function ManagementPage() {
           </Stack>
 
           <Stack direction="column" gap={2.5}>
-            <Typography variant="body1" sx={{ ...labelStyle }}>
+            <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
               {t('substitution:reasonForAbsence')}
             </Typography>
             <RHFAutocomplete<FormValues, AbsenceTypeOption>
@@ -264,7 +265,7 @@ export default function ManagementPage() {
           </Stack>
 
           <Stack direction="column" gap={2.5}>
-            <Typography variant="body1" sx={{ ...labelStyle }}>
+            <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
               {t('substitution:internalNote')}
             </Typography>
             <RHFTextField<FormValues>

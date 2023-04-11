@@ -222,6 +222,7 @@ export default function CreateTermAssessmentPage() {
         onSubmit={handleSubmit(onSubmit)}
       >
         <CardHeader
+          component="h2"
           title={t('assessment:termAssessmentCreation')}
           sx={{
             p: 3,
@@ -233,7 +234,7 @@ export default function CreateTermAssessmentPage() {
         />
         <Stack direction="column" gap={3} p={3}>
           <Stack direction="column" gap={2.5}>
-            <Typography variant="body1" sx={{ ...labelStyle }}>
+            <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
               {t('assessment:details')}
             </Typography>
             <Stack direction="row" gap={2}>
@@ -271,7 +272,7 @@ export default function CreateTermAssessmentPage() {
             </Stack>
           </Stack>
           <Stack direction="column" gap={2.5}>
-            <Typography variant="body1" sx={{ ...labelStyle }}>
+            <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
               {t('assessment:grades')}
             </Typography>
             <RHFSwitch<FormValues>
@@ -281,7 +282,7 @@ export default function CreateTermAssessmentPage() {
             />
           </Stack>
           <Stack direction="column" gap={2.5}>
-            <Typography variant="body1" sx={{ ...labelStyle }}>
+            <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
               {t('assessment:comments')}
             </Typography>
             <RHFSwitch<FormValues>
@@ -338,7 +339,7 @@ export default function CreateTermAssessmentPage() {
             ))}
           </Stack>
           <Stack direction="column" gap={2.5}>
-            <Typography variant="body1" sx={{ ...labelStyle }}>
+            <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
               {t('assessment:customFields')}
             </Typography>
             {fields.length > 0 && (
