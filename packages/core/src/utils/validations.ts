@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import { isNaN } from 'lodash';
 
 export type ValidationType = keyof typeof validations;
 
@@ -43,33 +42,49 @@ export const validations = {
 
     return date;
   },
-  minLength: <T extends string | number | Array<any>>(
+  min: <T extends string | number>(
     value: T,
     length: number,
     errorMessage?: string
   ): T | ValidationError => {
     const asNumber = Number(value);
 
-    if (
-      (!isNaN(asNumber) && asNumber < length) ||
-      (typeof value !== 'number' && value.length < length)
-    ) {
+    if (!Number.isNaN(asNumber) && asNumber < length) {
+      throw new ValidationError('min', errorMessage);
+    }
+
+    return value;
+  },
+  max: <T extends string | number>(
+    value: T,
+    length: number,
+    errorMessage?: string
+  ): T | ValidationError => {
+    const asNumber = Number(value);
+
+    if (!Number.isNaN(asNumber) && asNumber > length) {
+      throw new ValidationError('max', errorMessage);
+    }
+
+    return value;
+  },
+  minLength: <T extends string | Array<any>>(
+    value: T,
+    length: number,
+    errorMessage?: string
+  ): T | ValidationError => {
+    if (value.length < length) {
       throw new ValidationError('minLength', errorMessage);
     }
 
     return value;
   },
-  maxLength: <T extends string | number | Array<any>>(
+  maxLength: <T extends string | Array<any>>(
     value: T,
     length: number,
     errorMessage?: string
   ): T | ValidationError => {
-    const asNumber = Number(value);
-
-    if (
-      (!isNaN(asNumber) && asNumber > length) ||
-      (typeof value !== 'number' && value.length > length)
-    ) {
+    if (value.length > length) {
       throw new ValidationError('maxLength', errorMessage);
     }
 

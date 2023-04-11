@@ -1,4 +1,4 @@
-import { useTranslation } from '@tyro/i18n';
+import { TFunction, useTranslation } from '@tyro/i18n';
 
 import {
   FieldPath,
@@ -11,13 +11,17 @@ import {
 import { toNestError, validateFieldsNatively } from '@hookform/resolvers';
 import { ValidationError, ValidationType, validations } from '../utils';
 
-type ErrorMessages = Record<ValidationType, string>;
+type ErrorMessages = Partial<Record<ValidationType, string>>;
+type TranslateFn = TFunction<'common'[], undefined, 'common'[]>;
 
 class Rules<TField extends FieldValues> {
   private _errorMessages: ErrorMessages;
 
-  constructor(errorMessages: ErrorMessages) {
+  private _t: TranslateFn;
+
+  constructor(errorMessages: ErrorMessages, translate: TranslateFn) {
     this._errorMessages = errorMessages;
+    this._t = translate;
   }
 
   required(customMsg?: string) {
@@ -44,27 +48,51 @@ class Rules<TField extends FieldValues> {
     };
   }
 
-  minLength(minLength: number, customMsg?: string) {
-    const errorMessage = customMsg ?? this._errorMessages.minLength;
+  min(minNumber: number, customMsg?: string) {
+    const errorMessage =
+      customMsg ??
+      this._t('common:errorMessages.min', {
+        number: minNumber,
+      });
 
     return (value: FieldValue<TField>) => {
-      validations.minLength(
-        value,
-        minLength,
-        errorMessage.replace('[length]', String(minLength))
-      );
+      validations.min(value, minNumber, errorMessage);
+    };
+  }
+
+  max(maxNumber: number, customMsg?: string) {
+    const errorMessage =
+      customMsg ??
+      this._t('common:errorMessages.max', {
+        number: maxNumber,
+      });
+
+    return (value: FieldValue<TField>) => {
+      validations.max(value, maxNumber, errorMessage);
+    };
+  }
+
+  minLength(minLength: number, customMsg?: string) {
+    const errorMessage =
+      customMsg ??
+      this._t('common:errorMessages.minLength', {
+        count: minLength,
+      });
+
+    return (value: FieldValue<TField>) => {
+      validations.minLength(value, minLength, errorMessage);
     };
   }
 
   maxLength(maxLength: number, customMsg?: string) {
-    const errorMessage = customMsg ?? this._errorMessages.maxLength;
+    const errorMessage =
+      customMsg ??
+      this._t('common:errorMessages.maxLength', {
+        count: maxLength,
+      });
 
     return (value: FieldValue<TField>) => {
-      validations.maxLength(
-        value,
-        maxLength,
-        errorMessage.replace('[length]', String(maxLength))
-      );
+      validations.maxLength(value, maxLength, errorMessage);
     };
   }
 }
@@ -89,17 +117,14 @@ export const useFormValidator = <TField extends FieldValues>(): {
 } => {
   const { t } = useTranslation(['common']);
 
-  const rules = new Rules<TField>({
-    required: t('common:errorMessages.required'),
-    date: t('common:errorMessages.invalidDate'),
-    afterStartDate: t('common:errorMessages.afterStartDate'),
-    minLength: t('common:errorMessages.minLength', {
-      length: '[length]',
-    }),
-    maxLength: t('common:errorMessages.maxLength', {
-      length: '[length]',
-    }),
-  });
+  const rules = new Rules<TField>(
+    {
+      required: t('common:errorMessages.required'),
+      date: t('common:errorMessages.invalidDate'),
+      afterStartDate: t('common:errorMessages.afterStartDate'),
+    },
+    t
+  );
 
   return {
     rules,

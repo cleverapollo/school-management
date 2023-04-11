@@ -110,8 +110,8 @@ export default function CreateTermAssessmentPage() {
       commentBank: rules.required(),
       commentLength: [
         rules.required(),
-        rules.minLength(COMMENT_LENGTH_MIN),
-        rules.maxLength(COMMENT_LENGTH_MAX),
+        rules.min(COMMENT_LENGTH_MIN),
+        rules.max(COMMENT_LENGTH_MAX),
       ],
       extraFields: {
         name: rules.required(),
@@ -119,8 +119,8 @@ export default function CreateTermAssessmentPage() {
         commentBank: rules.required(),
         commentLength: [
           rules.required(),
-          rules.minLength(COMMENT_LENGTH_MIN),
-          rules.maxLength(COMMENT_LENGTH_MAX),
+          rules.min(COMMENT_LENGTH_MIN),
+          rules.max(COMMENT_LENGTH_MAX),
         ],
       },
     }),
