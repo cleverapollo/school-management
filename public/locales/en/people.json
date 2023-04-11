@@ -41,7 +41,12 @@
     "PART_TIME": "Part time",
     "AGENCY": "Agency",
     "VOLUNTARY": "Voluntary",
-    "UNKNOWN": "Unknown"
+    "UNKNOWN": "Unknown",
+    "PERMANENT": "Permanent",
+    "PRIVATE": "Private",
+    "REGULAR_PART_TIME": "Regular part time",
+    "TEMPORARY": "Temporary",
+    "CONTRACTS_OF_INDEFINITE_DURATION": "Contract of indefinite duration"
   },
   "personal": {
     "title": "Personal",
