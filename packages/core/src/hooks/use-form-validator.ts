@@ -141,10 +141,12 @@ export const useFormValidator = <TField extends FieldValues>(): {
           if (Array.isArray(field)) {
             return (field as ResolverOptions<TField>['fields'][]).flatMap(
               (itemField) =>
-                Object.keys(itemField).map((nestedKey) => ({
-                  ...itemField[nestedKey],
-                  ruleFn: (ruleFn as NestedRules<TField>)?.[nestedKey],
-                }))
+                Object.keys(itemField)
+                  .filter((nestedKey) => itemField[nestedKey]?.mount)
+                  .map((nestedKey) => ({
+                    ...itemField[nestedKey],
+                    ruleFn: (ruleFn as NestedRules<TField>)?.[nestedKey],
+                  }))
             );
           }
 
