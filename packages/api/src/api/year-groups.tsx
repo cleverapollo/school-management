@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-
-import { gqlClient, graphql, queryClient, YearGroupFilter } from '@tyro/api';
+import { graphql } from '../gql';
+import { gqlClient } from '../gql-client';
+import { queryClient } from '../query-client';
+import { YearGroupFilter } from '../gql/graphql';
 
 const yearGroups = graphql(/* GraphQL */ `
   query years($filter: YearGroupFilter) {
@@ -12,7 +14,7 @@ const yearGroups = graphql(/* GraphQL */ `
 `);
 
 export const yearGroupsKey = {
-  list: ['termAssessment', 'yearGroups'] as const,
+  list: ['yearGroups'] as const,
 };
 
 const yearGroupsQuery = (filter: YearGroupFilter) => ({
