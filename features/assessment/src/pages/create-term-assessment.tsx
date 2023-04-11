@@ -8,7 +8,12 @@ import {
   RHFSelect,
   useFormValidator,
 } from '@tyro/core';
-import { SaveExtraFieldInput, CommentType, ExtraFieldType } from '@tyro/api';
+import {
+  SaveExtraFieldInput,
+  CommentType,
+  ExtraFieldType,
+  AssessmentType,
+} from '@tyro/api';
 import {
   Card,
   Stack,
@@ -25,7 +30,8 @@ import {
 import { AddIcon, TrashIcon } from '@tyro/icons';
 import { useForm, useFieldArray, Path } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import { useCommentBank, useYearGroups } from '../api';
+import dayjs from 'dayjs';
+import { useCommentBank, useSaveTermAssessment, useYearGroups } from '../api';
 
 type YearGroupOption = NonNullable<
   NonNullable<ReturnType<typeof useYearGroups>['data']>[number]
@@ -60,7 +66,7 @@ type FormValues = {
   startDate: Date;
   endDate: Date;
   // Grades
-  includeTargetGrades: boolean;
+  captureTarget: boolean;
   // Comments
   includeTeacherComments: boolean;
   commentType: CommentTypeOption;
@@ -70,12 +76,12 @@ type FormValues = {
   captureYearHeadComment: boolean;
   captureHouseMasterComment: boolean;
   capturePrincipalComment: boolean;
-  extraFields: Partial<
-    SaveExtraFieldInput & {
-      commentLength: number;
-      commentBank: CommentBankOption;
+  extraFields: Array<
+    Pick<SaveExtraFieldInput, 'name' | 'extraFieldType'> & {
+      commentLength?: number;
+      commentBank?: CommentBankOption;
     }
-  >[];
+  >;
 };
 const EXTRA_FIELDS_MAX_LENGTH = 12;
 const COMMENT_LENGTH_MIN = 1;
@@ -83,6 +89,7 @@ const COMMENT_LENGTH_MAX = 1000;
 
 export default function CreateTermAssessmentPage() {
   const { t } = useTranslation(['assessment', 'common']);
+  const { mutate: saveTermAssessment } = useSaveTermAssessment();
 
   const { data: yearGroupsData = [] } = useYearGroups({});
   const { data: commentBankData = [] } = useCommentBank({});
@@ -130,7 +137,32 @@ export default function CreateTermAssessmentPage() {
     'extraFields',
   ]);
 
-  const onSubmit = (data: FormValues) => console.log(data);
+  // TODO: this is waiting for backend changes
+  const onSubmit = (data: FormValues) => {
+    saveTermAssessment({
+      assessmentType: AssessmentType.Term,
+      name: data.assessmentName,
+      years: data.years.map((year) => year.yearGroupId),
+      startDate: dayjs(data.startDate).format('YYYY-MM-DD'),
+      endDate: dayjs(data.endDate).format('YYYY-MM-DD'),
+      captureTarget: data.captureTarget,
+      commentType: data.includeTeacherComments
+        ? data.commentType
+        : CommentType.None,
+      commentBankId: data.commentBank?.id ?? null,
+      commentLength: data.commentLength ?? null,
+      capturePrincipalComment: !!data.capturePrincipalComment,
+      captureYearHeadComment: !!data.captureYearHeadComment,
+      captureTutorComment: !!data.captureTutorComment,
+      captureHouseMasterComment: !!data.captureHouseMasterComment,
+      extraFields: data.extraFields.map((field) => ({
+        name: field.name,
+        extraFieldType: field.extraFieldType,
+        commentBankId: field.commentBank?.id ?? null,
+        commentLength: field.commentLength ?? null,
+      })),
+    });
+  };
 
   const labelStyle = {
     color: 'slate.400',
@@ -245,7 +277,7 @@ export default function CreateTermAssessmentPage() {
             <RHFSwitch<FormValues>
               label={t('assessment:labels.includeTargetGrades')}
               switchProps={{ color: 'success' }}
-              controlProps={{ name: 'includeTargetGrades', control }}
+              controlProps={{ name: 'captureTarget', control }}
             />
           </Stack>
           <Stack direction="column" gap={2.5}>
