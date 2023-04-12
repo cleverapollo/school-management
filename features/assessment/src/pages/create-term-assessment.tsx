@@ -9,7 +9,12 @@ import {
   useFormValidator,
   useToast,
 } from '@tyro/core';
-import { CommentType, AssessmentType, useYearGroups } from '@tyro/api';
+import {
+  CommentType,
+  AssessmentType,
+  useYearGroups,
+  GradeType,
+} from '@tyro/api';
 import { Card, Stack, CardHeader, Typography } from '@mui/material';
 import { useForm, Path } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
@@ -105,6 +110,7 @@ export default function CreateTermAssessmentPage() {
     years,
     startDate,
     endDate,
+    includeTeacherComments,
     commentBank,
     commentType,
     extraFields,
@@ -112,16 +118,13 @@ export default function CreateTermAssessmentPage() {
   }: FormValues) => {
     saveTermAssessment(
       {
-        // TODO: check the following errors
-        // "java.lang.NullPointerException: Cannot invoke "java.util.List.size()" because the return value of "io.tyro.assessment_api.model.gen.SaveAssessmentInput.getGradeSetIds()" is null"
-        // "java.lang.NullPointerException: Cannot invoke "io.tyro.assessment_api.model.gen.GradeType.name()" because the return value of "io.tyro.assessment_api.model.gen.SaveAssessmentInput.getGradeType()" is null"
         ...restData,
         assessmentType: AssessmentType.Term,
-        gradeSetIds: [],
+        gradeType: GradeType.None,
         years: years.map(({ yearGroupId }) => yearGroupId),
         startDate: dayjs(startDate).format('YYYY-MM-DD'),
         endDate: dayjs(endDate).format('YYYY-MM-DD'),
-        commentType: commentType ?? CommentType.None,
+        commentType: includeTeacherComments ? commentType : CommentType.None,
         commentBankId: commentBank?.id ?? null,
         extraFields: extraFields.map((field) => ({
           name: field.name,
@@ -285,7 +288,7 @@ export default function CreateTermAssessmentPage() {
                 },
                 {
                   label: t('assessment:labels.includePrincipalComment'),
-                  name: 'includePrincipalComment',
+                  name: 'capturePrincipalComment',
                 },
               ] as Array<{ label: string; name: Path<FormValues> }>
             ).map(({ label, name }) => (
