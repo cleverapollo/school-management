@@ -66,7 +66,7 @@ function FormatedDateAndTime({
   if (start.isSame(end, 'day')) {
     return (
       <>
-        {start.format('LL')} ⋅ {start.format('LT')} {dash} {end.format('LT')}
+        {start.format('LL [⋅] LT')} {dash} {end.format('LT')}
       </>
     );
   }
