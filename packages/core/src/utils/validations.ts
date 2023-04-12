@@ -32,10 +32,10 @@ export const validations = {
     return date;
   },
   afterStartDate: (
-    date: Date,
-    startDate: Date,
+    date: Date | dayjs.Dayjs,
+    startDate: Date | dayjs.Dayjs,
     errorMessage?: string
-  ): Date | ValidationError => {
+  ): Date | dayjs.Dayjs | ValidationError => {
     if (!dayjs(date).isAfter(startDate)) {
       throw new ValidationError('afterStartDate', errorMessage);
     }
