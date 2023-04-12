@@ -25,7 +25,7 @@ const labels = graphql(/* GraphQL */ `
 
 const updateLabel = graphql(/* GraphQL */ `
   mutation update_communications_label($input: LabelInput) {
-    communications_label(input: $input) {
+    communications_saveLabel(input: $input) {
       id
       name
       personPartyId

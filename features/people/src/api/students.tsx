@@ -92,7 +92,9 @@ const studentById = graphql(/* GraphQL */ `
 
 const bulkUpdateCoreStudent = graphql(/* GraphQL */ `
   mutation updateCoreStudents($input: [UpdateStudentInput]!) {
-    core_updateStudents(input: $input)
+    core_updateStudents(input: $input) {
+      success
+    }
   }
 `);
 

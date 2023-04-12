@@ -3,7 +3,7 @@ import { gqlClient, graphql, queryClient } from '@tyro/api';
 
 const studentDashboardAssessments = graphql(/* GraphQL */ `
   query dashboardAssessment($filter: DashboardAssessmentFilter) {
-    dashboardAssessment(filter: $filter) {
+    assessment_dashboardAssessment(filter: $filter) {
       id
       name
       description
