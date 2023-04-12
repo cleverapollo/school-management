@@ -47,7 +47,7 @@ export const getRoutes: NavObjectFunction = (t) => [
               },
               {
                 type: NavObjectType.NonMenuLink,
-                path: 'create-staff-absence',
+                path: 'create',
                 element: <CreateStaffAbsencePage />,
                 loader: () =>
                   Promise.all([getStaffWorkAbsenceTypes({}), getStaff({})]),

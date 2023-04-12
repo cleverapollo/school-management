@@ -7,7 +7,7 @@ import {
   TableAvatar,
 } from '@tyro/core';
 import { Button, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
@@ -68,7 +68,6 @@ const getColumnDefs = (
 
 export default function AbsentStaffPage() {
   const { t } = useTranslation(['substitution']);
-  const navigate = useNavigate();
 
   const { data: absencesData } = useStaffWorkAbsences({});
   const columnDefs = getColumnDefs(t);
@@ -84,10 +83,7 @@ export default function AbsentStaffPage() {
         rowSelection="multiple"
         getRowId={({ data }) => String(data.absenceId)}
         rightAdornment={
-          <Button
-            variant="contained"
-            onClick={() => navigate('./create-staff-absence')}
-          >
+          <Button variant="contained" component={Link} to="./create">
             {t('substitution:createStaffAbsence')}
           </Button>
         }

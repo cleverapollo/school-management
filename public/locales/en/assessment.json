@@ -1,3 +1,45 @@
 {
-  "assessmentResults": "Assessment Results"
+  "title": "Assessment",
+  "assessmentResults": "Assessment Results",
+  "termAssessments": "Term Assessments",
+  "termAssessmentCreation": "Term Assessment Creation",
+  "details": "Details",
+  "grades": "Grades",
+  "comments": "Comments",
+  "customFields": "Custom Fields",
+  "addCustomField": "Add custom field",
+  "labels": {
+    "assessmentName": "Assessment Name",
+    "years": "Years",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "includeTargetGrades": "Include target grades for this assessment",
+    "includeTeacherComments": "Include teachers comments for this assessment",
+    "commentType": "Comment Type",
+    "commentTypes": {
+      "FREE_FORM": "Written Comment",
+      "COMMENT_BANK": "Comment Bank",
+      "BOTH": "Comment Bank or Written Comment"
+    },
+    "commentBankOptions": "Comment Bank",
+    "commentLength": "Max number of characters",
+    "includeClassTutorComment": "Include Class Tutor comment",
+    "includeYearHeadComment": "Include Year Head comment",
+    "includeHousemasterComment": "Include Housemaster comment",
+    "includePrincipalComment": "Include Principal comment",
+    "extraFieldTypes": {
+      "COMMENT_BANK": "Comment Bank",
+      "FREE_FORM": "Written Comment",
+      "SELECT": " Selection"
+    }
+  },
+  "placeholders": {
+    "extraFieldName": "Type a name",
+    "extraFieldValue": "Type a value"
+  },
+  "extraFieldNo": "No.",
+  "extraFieldName": "Field Name",
+  "extraFieldType": "Type",
+  "extraFieldValue": "Value",
+  "createTermAssessment": "Create Term Assessment"
 }

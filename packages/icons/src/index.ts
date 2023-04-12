@@ -43,6 +43,7 @@ export * from './phone';
 export * from './pie-chart';
 export * from './save';
 export * from './school-building';
+export * from './school-exam-a-circle';
 export * from './search';
 export * from './send-mail';
 export * from './thumbs-up-checkmark';

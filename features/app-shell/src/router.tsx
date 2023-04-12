@@ -32,6 +32,7 @@ import { routes as authRoutes } from '@tyro/authentication';
 import { getRoutes as getCalendarRoutes } from '@tyro/calendar';
 import { getRoutes as getGroupRoutes } from '@tyro/groups';
 import { getRoutes as getMailRoutes } from '@tyro/mail';
+import { getRoutes as getAssessmentRoutes } from '@tyro/assessment';
 import { getRoutes as getPeopleRoutes } from '@tyro/people';
 import { getRoutes as getReportingRoutes } from '@tyro/reporting';
 import { getRoutes as getSettingsRoutes } from '@tyro/settings';
@@ -119,6 +120,7 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getCalendarRoutes(t),
   ...getGroupRoutes(t),
   ...getMailRoutes(t),
+  ...getAssessmentRoutes(t),
   ...getPeopleRoutes(t),
   ...getReportingRoutes(t),
   ...getSettingsRoutes(t),
