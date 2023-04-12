@@ -9,34 +9,19 @@ import {
   useFormValidator,
   useToast,
 } from '@tyro/core';
-import {
-  SaveExtraFieldInput,
-  CommentType,
-  ExtraFieldType,
-  AssessmentType,
-  useYearGroups,
-} from '@tyro/api';
-import {
-  Card,
-  Stack,
-  CardHeader,
-  Typography,
-  Button,
-  TableHead,
-  Table,
-  TableRow,
-  TableCell,
-  TableBody,
-  IconButton,
-} from '@mui/material';
-import { AddIcon, TrashIcon } from '@tyro/icons';
-import { useForm, useFieldArray, Path } from 'react-hook-form';
+import { CommentType, AssessmentType, useYearGroups } from '@tyro/api';
+import { Card, Stack, CardHeader, Typography } from '@mui/material';
+import { useForm, Path } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import dayjs from 'dayjs';
 import { CommentBankOption } from '../api/comment-bank';
 import { useSaveTermAssessment } from '../api/save-term-assessment';
 import { CommentBankOptions } from '../components/term-assessment/comment-bank-options';
 import { CommentLengthField } from '../components/term-assessment/comment-length-field';
+import {
+  CustomFieldsTable,
+  FormCustomFieldsValues,
+} from '../components/term-assessment/custom-fields-table';
 
 type YearGroupOption = NonNullable<
   NonNullable<ReturnType<typeof useYearGroups>['data']>[number]
@@ -50,17 +35,7 @@ const commentTypeOptions: CommentTypeOption[] = [
   CommentType.Both,
 ];
 
-type ExtraFieldTypeOption = Exclude<
-  ExtraFieldType,
-  ExtraFieldType.GradeSet | ExtraFieldType.Select
->;
-
-const extraFieldTypeOptions: ExtraFieldTypeOption[] = [
-  ExtraFieldType.FreeForm,
-  ExtraFieldType.CommentBank,
-];
-
-type FormValues = {
+interface FormValues extends FormCustomFieldsValues {
   // Details
   assessmentName: string;
   years: YearGroupOption[];
@@ -77,14 +52,8 @@ type FormValues = {
   captureYearHeadComment: boolean;
   captureHouseMasterComment: boolean;
   capturePrincipalComment: boolean;
-  extraFields: Array<
-    Pick<SaveExtraFieldInput, 'name' | 'extraFieldType'> & {
-      commentLength?: number;
-      commentBank?: CommentBankOption;
-    }
-  >;
-};
-const EXTRA_FIELDS_MAX_LENGTH = 12;
+}
+
 const COMMENT_LENGTH_MIN = 1;
 const COMMENT_LENGTH_MAX = 1000;
 
@@ -127,15 +96,9 @@ export default function CreateTermAssessmentPage() {
     }),
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'extraFields',
-  });
-
-  const [includeTeacherComments, commentType, extraFields] = watch([
+  const [includeTeacherComments, commentType] = watch([
     'includeTeacherComments',
     'commentType',
-    'extraFields',
   ]);
 
   const onSubmit = (data: FormValues) => {
@@ -331,124 +294,7 @@ export default function CreateTermAssessmentPage() {
               />
             ))}
           </Stack>
-          {/* TODO: move to its own component */}
-          <Stack direction="column" gap={2.5}>
-            <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
-              {t('assessment:customFields')}
-            </Typography>
-            {fields.length > 0 && (
-              <Table
-                size="small"
-                sx={{
-                  '& th': {
-                    background: 'transparent',
-                    color: 'text.primary',
-                    fontWeight: 600,
-                    width: '33%',
-                  },
-                  '& th:first-of-type, & th:last-of-type': {
-                    width: 'auto',
-                  },
-                  '& tbody td': {
-                    verticalAlign: 'baseline',
-                  },
-                  '& tbody td:first-of-type, & tbody td:last-of-type': {
-                    verticalAlign: 'middle',
-                  },
-                }}
-              >
-                <TableHead>
-                  <TableRow>
-                    <TableCell>{t('assessment:extraFieldNo')}</TableCell>
-                    <TableCell>{t('assessment:extraFieldName')}</TableCell>
-                    <TableCell>{t('assessment:extraFieldType')}</TableCell>
-                    <TableCell>{t('assessment:extraFieldValue')}</TableCell>
-                    <TableCell />
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {fields.map((field, index) => (
-                    <TableRow key={field.id}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>
-                        <RHFTextField<FormValues>
-                          textFieldProps={{
-                            fullWidth: true,
-                            'aria-label': t(
-                              'assessment:placeholders.extraFieldName'
-                            ),
-                            placeholder: t(
-                              'assessment:placeholders.extraFieldName'
-                            ),
-                          }}
-                          controlProps={{
-                            name: `extraFields.${index}.name`,
-                            control,
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <RHFSelect<FormValues, ExtraFieldTypeOption>
-                          textFieldProps={{ fullWidth: true }}
-                          options={extraFieldTypeOptions}
-                          getOptionLabel={(option) =>
-                            t(`assessment:labels.extraFieldTypes.${option}`)
-                          }
-                          controlProps={{
-                            name: `extraFields.${index}.extraFieldType`,
-                            control,
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        {extraFields[index].extraFieldType ===
-                          ExtraFieldType.FreeForm && (
-                          <CommentLengthField<FormValues>
-                            name={`extraFields.${index}.commentLength`}
-                            control={control}
-                          />
-                        )}
-                        {extraFields[index].extraFieldType ===
-                          ExtraFieldType.CommentBank && (
-                          <CommentBankOptions<FormValues>
-                            name={`extraFields.${index}.commentBank`}
-                            control={control}
-                          />
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <IconButton
-                          color="primary"
-                          aria-label={t('common:delete')}
-                          onClick={() => remove(index)}
-                        >
-                          <TrashIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-            <Stack width="fit-content">
-              <Button
-                size="small"
-                color="primary"
-                variant="text"
-                disabled={fields.length === EXTRA_FIELDS_MAX_LENGTH}
-                onClick={() =>
-                  append({
-                    name: '',
-                    extraFieldType: ExtraFieldType.CommentBank,
-                  })
-                }
-                startIcon={<AddIcon sx={{ width: 24, height: 24 }} />}
-              >
-                {t('assessment:addCustomField')}
-              </Button>
-            </Stack>
-          </Stack>
-
+          <CustomFieldsTable control={control} />
           <Stack alignItems="flex-end">
             <LoadingButton
               variant="contained"
