@@ -37,7 +37,7 @@ const commentTypeOptions: CommentTypeOption[] = [
 
 interface FormValues extends FormCustomFieldsValues {
   // Details
-  assessmentName: string;
+  name: string;
   years: YearGroupOption[];
   startDate: Date;
   endDate: Date;
@@ -68,7 +68,7 @@ export default function CreateTermAssessmentPage() {
 
   const { control, handleSubmit, watch } = useForm<FormValues>({
     resolver: resolver({
-      assessmentName: rules.required(),
+      name: rules.required(),
       years: rules.required(),
       startDate: [rules.required(), rules.date()],
       endDate: [
@@ -96,33 +96,34 @@ export default function CreateTermAssessmentPage() {
     }),
   });
 
-  const [includeTeacherComments, commentType] = watch([
+  const [showTeacherComments, commentTypeValue] = watch([
     'includeTeacherComments',
     'commentType',
   ]);
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = ({
+    years,
+    startDate,
+    endDate,
+    commentBank,
+    commentType,
+    extraFields,
+    ...restData
+  }: FormValues) => {
     saveTermAssessment(
       {
         // TODO: check the following errors
         // "java.lang.NullPointerException: Cannot invoke "java.util.List.size()" because the return value of "io.tyro.assessment_api.model.gen.SaveAssessmentInput.getGradeSetIds()" is null"
         // "java.lang.NullPointerException: Cannot invoke "io.tyro.assessment_api.model.gen.GradeType.name()" because the return value of "io.tyro.assessment_api.model.gen.SaveAssessmentInput.getGradeType()" is null"
+        ...restData,
         assessmentType: AssessmentType.Term,
-        name: data.assessmentName,
-        years: data.years.map((year) => year.yearGroupId),
-        startDate: dayjs(data.startDate).format('YYYY-MM-DD'),
-        endDate: dayjs(data.endDate).format('YYYY-MM-DD'),
-        captureTarget: !!data.captureTarget,
-        commentType: data.includeTeacherComments
-          ? data.commentType
-          : CommentType.None,
-        commentBankId: data.commentBank?.id ?? null,
-        commentLength: data.commentLength ?? null,
-        capturePrincipalComment: !!data.capturePrincipalComment,
-        captureYearHeadComment: !!data.captureYearHeadComment,
-        captureTutorComment: !!data.captureTutorComment,
-        captureHouseMasterComment: !!data.captureHouseMasterComment,
-        extraFields: data.extraFields.map((field) => ({
+        gradeSetIds: [],
+        years: years.map(({ yearGroupId }) => yearGroupId),
+        startDate: dayjs(startDate).format('YYYY-MM-DD'),
+        endDate: dayjs(endDate).format('YYYY-MM-DD'),
+        commentType: commentType ?? CommentType.None,
+        commentBankId: commentBank?.id ?? null,
+        extraFields: extraFields.map((field) => ({
           name: field.name,
           extraFieldType: field.extraFieldType,
           commentBankId: field.commentBank?.id ?? null,
@@ -133,6 +134,7 @@ export default function CreateTermAssessmentPage() {
         onSuccess: () => {
           toast(t('common:snackbarMessages.createSuccess'));
         },
+        onError: console.error,
       }
     );
   };
@@ -190,7 +192,7 @@ export default function CreateTermAssessmentPage() {
                 label={t('assessment:labels.assessmentName')}
                 textFieldProps={{ sx: textFieldStyle }}
                 controlProps={{
-                  name: 'assessmentName',
+                  name: 'name',
                   control,
                 }}
               />
@@ -238,7 +240,7 @@ export default function CreateTermAssessmentPage() {
               switchProps={{ color: 'success' }}
               controlProps={{ name: 'includeTeacherComments', control }}
             />
-            {includeTeacherComments && (
+            {showTeacherComments && (
               <Stack direction="row" gap={2}>
                 <RHFSelect<FormValues, CommentTypeOption>
                   label={t('assessment:labels.commentType')}
@@ -249,16 +251,16 @@ export default function CreateTermAssessmentPage() {
                   }
                   textFieldProps={{ sx: textFieldStyle }}
                 />
-                {(commentType === CommentType.CommentBank ||
-                  commentType === CommentType.Both) && (
+                {(commentTypeValue === CommentType.CommentBank ||
+                  commentTypeValue === CommentType.Both) && (
                   <CommentBankOptions<FormValues>
                     name="commentBank"
                     control={control}
                   />
                 )}
 
-                {(commentType === CommentType.FreeForm ||
-                  commentType === CommentType.Both) && (
+                {(commentTypeValue === CommentType.FreeForm ||
+                  commentTypeValue === CommentType.Both) && (
                   <CommentLengthField<FormValues>
                     name="commentLength"
                     control={control}
