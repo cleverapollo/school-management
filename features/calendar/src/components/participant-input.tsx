@@ -12,9 +12,13 @@ import { Box, Stack } from '@mui/system';
 import { CalendarEventAttendeeType } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import Close from '@mui/icons-material/Close';
-import { Participant } from './common/calendar/form';
 
 // ----------------------------------------------------------------------
+
+interface Participant {
+  partyId: number;
+  type: CalendarEventAttendeeType;
+}
 
 type ParticipantInputProps = {
   participants: Participant[];

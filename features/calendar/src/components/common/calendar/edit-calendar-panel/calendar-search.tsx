@@ -51,6 +51,7 @@ export function CalendarSearch({
         onChange={(_, options) => onChangeSelectedPartys(options)}
         getOptionLabel={(option) => option.text}
         filterSelectedOptions
+        filterOptions={(x) => x}
         open={searchValue.length > 0}
         inputValue={searchValue}
         onInputChange={(_, newInputValue) => {
