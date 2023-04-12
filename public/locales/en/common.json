@@ -24,7 +24,8 @@
     "hideEmail": "Hidden Email",
     "send": "Send",
     "save": "Save",
-    "apply": "Apply"
+    "apply": "Apply",
+    "close": "Close"
   },
   "snackbarMessages": {
     "createSuccess": "Create success!",
