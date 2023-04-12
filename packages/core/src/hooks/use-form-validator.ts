@@ -95,6 +95,25 @@ class Rules<TField extends FieldValues> {
       validations.maxLength(value, maxLength, errorMessage);
     };
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  validate(
+    validateFn: <V extends FieldValue<TField>>(
+      value: V,
+      throwError: (errorMessage: string) => ValidationError,
+      formValues: TField
+    ) => void
+  ) {
+    return (value: FieldValue<TField>, formValues: TField) => {
+      validateFn(
+        value,
+        (errorMessage) => {
+          throw new ValidationError('validate', errorMessage);
+        },
+        formValues
+      );
+    };
+  }
 }
 
 type ValidationFn<TField extends FieldValues> =
