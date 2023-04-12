@@ -140,7 +140,7 @@ export default function CreateTermAssessmentPage() {
   };
 
   const labelStyle = {
-    color: 'slate.400',
+    color: 'text.secondary',
     fontWeight: 600,
   };
 
@@ -178,6 +178,7 @@ export default function CreateTermAssessmentPage() {
             p: 3,
             pt: 2.25,
             pb: 1.25,
+            m: 0,
             borderBottom: '1px solid',
             borderColor: 'divider',
           }}

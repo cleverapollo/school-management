@@ -56,7 +56,7 @@ export const CustomFieldsTable = <TField extends FormCustomFieldsValues>({
   const { extraFields = [] } = useWatch({ control });
 
   const labelStyle = {
-    color: 'slate.400',
+    color: 'text.secondary',
     fontWeight: 600,
   };
 
@@ -71,7 +71,7 @@ export const CustomFieldsTable = <TField extends FormCustomFieldsValues>({
           sx={{
             '& th': {
               background: 'transparent',
-              color: 'text.primary',
+              color: 'text.secondary',
               fontWeight: 600,
               width: '33%',
             },
