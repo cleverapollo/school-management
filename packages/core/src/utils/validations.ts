@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-export type ValidationType = keyof typeof validations;
+export type ValidationType = keyof typeof validations | 'validate';
 
 export class ValidationError extends Error {
   type: ValidationType;

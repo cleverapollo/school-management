@@ -10,19 +10,6 @@ const saveTermAssessment = graphql(/* GraphQL */ `
       }
       startDate
       endDate
-      captureTarget
-      commentType
-      commentBank {
-        commentBankId
-      }
-      commentLength
-      capturePrincipalComment
-      captureYearHeadComment
-      captureTutorComment
-      captureHouseMasterComment
-      extraFields {
-        id
-      }
     }
   }
 `);

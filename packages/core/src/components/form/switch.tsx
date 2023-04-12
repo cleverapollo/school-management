@@ -1,6 +1,8 @@
 import { FormControlLabel, Switch, SwitchProps } from '@mui/material';
 import {
   FieldValues,
+  Path,
+  PathValue,
   useController,
   UseControllerProps,
 } from 'react-hook-form';
@@ -16,7 +18,13 @@ export const RHFSwitch = <TField extends FieldValues>({
   switchProps,
   controlProps,
 }: RHFSwitchProps<TField>) => {
-  const { field } = useController(controlProps);
+  const { field } = useController({
+    ...controlProps,
+    defaultValue: !!controlProps.defaultValue as PathValue<
+      TField,
+      Path<TField>
+    >,
+  });
 
   return (
     <FormControlLabel

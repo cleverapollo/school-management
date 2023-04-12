@@ -95,6 +95,25 @@ class Rules<TField extends FieldValues> {
       validations.maxLength(value, maxLength, errorMessage);
     };
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  validate(
+    validateFn: <V extends FieldValue<TField>>(
+      value: V,
+      throwError: (errorMessage: string) => ValidationError,
+      formValues: TField
+    ) => void
+  ) {
+    return (value: FieldValue<TField>, formValues: TField) => {
+      validateFn(
+        value,
+        (errorMessage) => {
+          throw new ValidationError('validate', errorMessage);
+        },
+        formValues
+      );
+    };
+  }
 }
 
 type ValidationFn<TField extends FieldValues> =
@@ -130,29 +149,25 @@ export const useFormValidator = <TField extends FieldValues>(): {
     rules,
     resolver: (schema) => (fieldValues, _context, options) => {
       const keys = Object.keys(schema) as unknown as Array<keyof typeof schema>;
-      const mountedFields = keys
-        .filter((schemaKey) => options.fields[schemaKey])
-        .map((schemaKey) => ({ field: options.fields[schemaKey], schemaKey }));
 
-      const fieldsWithSchemaKey = mountedFields.flatMap(
-        ({ field, schemaKey }) => {
+      const fieldsWithSchemaKey = keys
+        .flatMap((schemaKey) => {
           const ruleFn = schema[schemaKey];
+          const field = options.fields[schemaKey];
 
           if (Array.isArray(field)) {
             return (field as ResolverOptions<TField>['fields'][]).flatMap(
               (itemField) =>
-                Object.keys(itemField)
-                  .filter((nestedKey) => itemField[nestedKey]?.mount)
-                  .map((nestedKey) => ({
-                    ...itemField[nestedKey],
-                    ruleFn: (ruleFn as NestedRules<TField>)?.[nestedKey],
-                  }))
+                Object.keys(itemField).map((nestedKey) => ({
+                  ...itemField[nestedKey],
+                  ruleFn: (ruleFn as NestedRules<TField>)?.[nestedKey],
+                }))
             );
           }
 
           return { ...field, ruleFn };
-        }
-      );
+        })
+        .filter(({ mount }) => mount);
 
       const errors = fieldsWithSchemaKey.reduce((fieldErrors, field) => {
         const [fieldName, index, itemField] = field.name.split('.');
