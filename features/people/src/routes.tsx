@@ -6,7 +6,7 @@ import { getStudentDashboardAssessments } from '@tyro/assessment';
 import {
   getCalendarEvents,
   getPartyTimetable,
-  getTimetableDayInfo,
+  getTimetableInfo,
 } from '@tyro/calendar';
 import dayjs from 'dayjs';
 import {
@@ -112,7 +112,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                       startDate: formattedDate,
                       endDate: formattedDate,
                     }),
-                    getTimetableDayInfo({
+                    getTimetableInfo({
                       fromDate: formattedDate,
                       toDate: formattedDate,
                     }),

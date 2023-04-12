@@ -1,6 +1,9 @@
 {
   "calendar": "Calendar",
-  "participants": "participants",
+  "participants": "Participants",
+  "numberOfParticipants_one": "{{count}} Participant",
+  "numberOfParticipants_other": "{{count}} Participants",
+  "goToSubjectGroup": "Go to subject group",
   "youHaveInvited": "You have invited",
   "addMore": "Add More",
   "today": "Today",
@@ -19,6 +22,7 @@
   "extraCurricular": "Extra curricular",
   "changeCalendarView": "Change calendar view",
   "addEvent": "Add event",
+  "editEvent": "Edit event",
   "editCalendar": "Edit calendar",
   "errorMessages": {
     "title": "Title is required",
@@ -31,7 +35,8 @@
     "allDay": "All day",
     "schedule": "Schedule",
     "location": "Location",
-    "description": "Description"
+    "description": "Description",
+    "eventColor": "Event color"
   },
   "schoolDayType": {
     "NON_SCHOOL_DAY": "No school as it's a non-school day.",
@@ -41,5 +46,12 @@
   "calendarEventTypes": {
     "LESSON": "Lesson",
     "GENERAL": "General"
+  },
+  "attendeeType": {
+    "GeneralGroup": "General group",
+    "SubjectGroup": "Subject group",
+    "Student": "Student",
+    "Staff": "Staff",
+    "Person": "Person"
   }
 }

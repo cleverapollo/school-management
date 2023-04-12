@@ -16,25 +16,25 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 // @mui
 import { Box, Card, Fade, IconButton, Stack } from '@mui/material';
 // routes
-import { Maybe, usePermissions, UserType, CalendarEventType } from '@tyro/api';
+import { usePermissions, UserType, CalendarEventType } from '@tyro/api';
 import { useResponsive, useDisclosure } from '@tyro/core';
 import { ChevronLeftIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import { CalendarView } from '../../../types';
 // sections
-import { CalendarForm, CalendarStyle, CalendarToolbar } from '.';
+import { CalendarStyle, CalendarToolbar } from '.';
 import {
   useCalendarEvents,
   useUpdateCalendarEvents,
 } from '../../../api/events';
-import CalendarEventView from './event-view';
+import {
+  CalendarEditEventDetailsModal,
+  CalendarEditEventFormState,
+} from './edit-event-details-modal';
 import { getCalendarContent } from './calendar-content';
 import { EditCalendarPanel, CalendarParty } from './edit-calendar-panel';
-
-interface Range {
-  start: Date;
-  end: Date;
-}
+import { CalendarDetailsPopover } from './details-popover';
+import { getDayHeaderContent } from './day-header-content';
 
 export interface CalendarProps {
   defaultPartys?: CalendarParty[];
@@ -67,17 +67,11 @@ export const Calendar = function Calendar({
     onClose: onCloseEditCalendar,
     onToggle: onToggleEditCalendar,
   } = useDisclosure();
-  const [isNewEventOpenModal, setIsNewEventOpenModal] =
-    useState<boolean>(false);
-  const [selectedRange, setSelectedRange] = useState<null | Range>(null);
-  const [selectedEventId, setSelectedEventId] = useState<Maybe<string>>(null);
-
-  const selectedEvent = useMemo(() => {
-    if (selectedEventId) {
-      return data?.events?.find((_event) => _event.id === selectedEventId);
-    }
-    return null;
-  }, [selectedEventId]);
+  const [editEventInitialState, setEditEventInitialState] =
+    useState<Partial<CalendarEditEventFormState> | null>(null);
+  const [selectedEventElement, setSelectedEventElement] =
+    useState<HTMLElement | null>(null);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
   const { data } = useCalendarEvents(
     {
@@ -86,6 +80,17 @@ export const Calendar = function Calendar({
     },
     visableEventTypes
   );
+
+  const businessHours = useMemo(() => {
+    const currentDate = dayjs(date).startOf('week').format('YYYY-MM-DD');
+    return data?.businessHours.get(currentDate);
+  }, [data?.businessHours, date]);
+
+  const selectedEvent = useMemo(() => {
+    if (selectedEventId) {
+      return data?.events?.find((_event) => _event.id === selectedEventId);
+    }
+  }, [selectedEventId]);
 
   const { mutate: updateCalendarEvent } = useUpdateCalendarEvents();
 
@@ -105,13 +110,15 @@ export const Calendar = function Calendar({
       const calendarApi = calendarEl.getApi();
       calendarApi.unselect();
     }
-    setSelectedRange({ start, end });
-    setIsNewEventOpenModal(true);
+    setEditEventInitialState({
+      start: dayjs(start),
+      end: dayjs(end),
+    });
   };
 
   const handleSelectEvent = (arg: EventClickArg) => {
+    setSelectedEventElement(arg.el);
     setSelectedEventId(arg.event.id);
-    setIsNewEventOpenModal(true);
   };
 
   const handleResizeEvent = ({ event }: EventResizeDoneArg) => {
@@ -141,13 +148,14 @@ export const Calendar = function Calendar({
   };
 
   const handleAddEvent = () => {
-    setIsNewEventOpenModal(true);
+    setEditEventInitialState({
+      start: dayjs(),
+      end: dayjs().add(30, 'minutes'),
+    });
   };
 
-  const handleCloseModal = () => {
-    setIsNewEventOpenModal(false);
-    setSelectedRange(null);
-    setSelectedEventId(null);
+  const handleCloseEditModal = () => {
+    setEditEventInitialState(null);
   };
 
   useEffect(() => {
@@ -161,6 +169,7 @@ export const Calendar = function Calendar({
   }, [isDesktop]);
 
   useEffect(() => {
+    // Needed to refresh the calendar after edit calendar panel is open/closed
     const resizeTimeout = setTimeout(() => {
       if (calendarRef.current) {
         // @ts-expect-error
@@ -220,6 +229,7 @@ export const Calendar = function Calendar({
                 eventMinHeight={48}
                 slotEventOverlap={false}
                 height={isDesktop ? 720 : 'auto'}
+                businessHours={businessHours}
                 plugins={[
                   listPlugin,
                   dayGridPlugin,
@@ -229,14 +239,13 @@ export const Calendar = function Calendar({
                   resourceTimelinePlugin,
                   resourceTimeGridPlugin,
                 ]}
-                views={{
-                  timeGridWeek: {
-                    dayHeaderFormat: (dayDate) =>
-                      dayjs(dayDate.date.marker).format('ddd D'),
-                  },
-                }}
+                dayHeaderContent={getDayHeaderContent}
                 resourceAreaWidth={200}
-                scrollTime="08:00:00"
+                scrollTime={
+                  Array.isArray(businessHours) && businessHours.length > 0
+                    ? businessHours[0].startTime
+                    : '08:00:00'
+                }
                 schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
               />
               <Fade in={isEditCalendarOpen}>
@@ -260,16 +269,19 @@ export const Calendar = function Calendar({
           </Stack>
         </CalendarStyle>
       </Card>
-      <CalendarEventView
+
+      <CalendarDetailsPopover
+        eventElementRef={selectedEventElement}
+        onClose={() => {
+          setSelectedEventElement(null);
+        }}
+        onEdit={() => console.log('edit')}
         event={selectedEvent}
-        onCancel={handleCloseModal}
-        isEditable={isEditable}
       />
-      <CalendarForm
-        event={{}}
-        range={selectedRange}
-        onCancel={handleCloseModal}
-        isOpenModal={isNewEventOpenModal}
+
+      <CalendarEditEventDetailsModal
+        initialEventState={editEventInitialState}
+        onCancel={handleCloseEditModal}
       />
     </>
   );

@@ -10,6 +10,14 @@ export default function Select(theme: Theme) {
       defaultProps: {
         IconComponent: InputSelectIcon,
       },
+      styleOverrides: {
+        icon: {
+          width: '1.2rem',
+          height: '1.2rem',
+          top: `calc(50 % - 0.6em)`,
+          right: 12,
+        }
+      },
     },
   };
 }
