@@ -6,7 +6,6 @@ import {
   CreateCalendarEventsInput,
   CalendarEventAttendeeType,
   queryClient,
-  Calendar_CalendarEventsQuery,
   getColorBasedOnIndex,
   CalendarEventType,
 } from '@tyro/api';
@@ -14,7 +13,9 @@ import { EventInput } from '@fullcalendar/core';
 import { useTheme } from '@mui/material';
 import { usePreferredNameLayout } from '@tyro/core';
 import dayjs from 'dayjs';
-import { IndividualAttendee, Participants } from '../@types/calendar';
+import { CalendarEvent, IndividualAttendee } from '../@types/calendar';
+import { getResourceName } from '../../utils/get-party-name';
+import { useTimetableInfo } from './timetable';
 
 const createEvents = graphql(/* GraphQL */ `
   mutation calendar_createCalendarEvents($input: CreateCalendarEventsInput!) {
@@ -116,16 +117,18 @@ const events = graphql(/* GraphQL */ `
               __typename
               ... on GeneralGroup {
                 name
+                avatarUrl
               }
               ... on SubjectGroup {
                 name
-                subjects {
-                  name
-                }
+                avatarUrl
               }
               ... on Person {
+                type
+                title
                 firstName
                 lastName
+                avatarUrl
               }
               ... on Staff {
                 person {
@@ -160,12 +163,18 @@ const events = graphql(/* GraphQL */ `
 `);
 
 export interface ExtendedEventInput extends EventInput {
-  participants: Participants[];
-  organizer: any;
+  organizer: string;
   room: string;
   start: string | Date;
   end: string | Date;
+  originalEvent: CalendarEvent;
 }
+
+type BussinessHoursInput = {
+  daysOfWeek: number[];
+  startTime: string;
+  endTime: string;
+};
 
 interface CalendarFilter
   extends Pick<CalendarEventFilter, 'calendarIds' | 'partyIds'> {
@@ -197,41 +206,16 @@ export function getCalendarEvents(filter: CalendarFilter) {
   return queryClient.fetchQuery(calendarEventsQuery(filter));
 }
 
-function getResourceName(
-  resource: NonNullable<
-    Calendar_CalendarEventsQuery['calendar_calendarEvents']
-  >['resources'][number],
-  getDisplayName: ReturnType<typeof usePreferredNameLayout>['displayName']
-) {
-  if (resource.__typename === 'PartyCalendarResource' && resource.partyInfo) {
-    switch (resource.partyInfo.__typename) {
-      case 'GeneralGroup':
-        return resource.partyInfo.name;
-      case 'Person':
-        return getDisplayName(resource.partyInfo);
-      case 'Staff':
-      case 'Student':
-        return getDisplayName(resource.partyInfo.person);
-      case 'SubjectGroup':
-        return resource.partyInfo.name;
-      default:
-        return '';
-    }
-  }
-
-  if (resource.__typename === 'RoomCalendarResource' && resource.room) {
-    return resource.room.name;
-  }
-
-  return '';
-}
-
 export function useCalendarEvents(
   filter: CalendarFilter,
   visableEventTypes: CalendarEventType[]
 ) {
   const { displayName } = usePreferredNameLayout();
   const { palette } = useTheme();
+  const { data } = useTimetableInfo(
+    dayjs(filter.date).subtract(1, 'month').startOf('month'),
+    dayjs(filter.date).add(1, 'month').startOf('month')
+  );
 
   return useQuery({
     ...calendarEventsQuery(filter),
@@ -246,9 +230,31 @@ export function useCalendarEvents(
         color: numberOfResources > 1 ? getColorBasedOnIndex(index) : null,
       }));
 
+      const businessHours =
+        data?.reduce((acc, day) => {
+          if (day.date && day.startTime && day.endTime) {
+            const date = dayjs(day.date);
+            const startOfWeekKey = date.startOf('week').format('YYYY-MM-DD');
+            const valueForWeek = acc.get(startOfWeekKey) ?? [];
+
+            acc.set(startOfWeekKey, [
+              ...valueForWeek,
+              {
+                daysOfWeek: [date.day()],
+                startTime: dayjs(day.startTime).format('HH:mm'),
+                endTime: dayjs(day.endTime).format('HH:mm'),
+              },
+            ]);
+          }
+
+          return acc;
+        }, new Map<string, BussinessHoursInput[]>()) ??
+        new Map<string, BussinessHoursInput[]>();
+
       return {
         numberOfResources,
         resources: resourceList,
+        businessHours,
         events: resources.reduce<ExtendedEventInput[]>(
           (eventsList, resource) => {
             const { id: resourceId, color: resourceEventColor } =
@@ -267,9 +273,6 @@ export function useCalendarEvents(
                 (attendee) =>
                   attendee?.type === CalendarEventAttendeeType.Additional
               ) as IndividualAttendee[];
-              const participants = event?.attendees?.filter(
-                (attendee) => attendee?.partyInfo?.__typename === 'Student'
-              ) as Participants[];
 
               const eventColor = resourceEventColor ?? event.colour ?? 'slate';
 
@@ -279,10 +282,10 @@ export function useCalendarEvents(
                 }-${event?.endTime ?? ''}`,
                 resourceId,
                 title: event?.name,
-                participants,
                 additionalTeachers,
                 start: event?.startTime,
                 end: event?.endTime,
+                color: eventColor,
                 backgroundColor: palette[eventColor][100],
                 borderColor: palette[eventColor][500],
                 organizer:
@@ -290,6 +293,8 @@ export function useCalendarEvents(
                     ? displayName(organizerInfo?.partyInfo?.person)
                     : '',
                 room: event?.rooms?.length ? event.rooms[0]?.name : '',
+                originalEvent: event,
+                editable: event.type !== CalendarEventType.Lesson,
               });
             });
 

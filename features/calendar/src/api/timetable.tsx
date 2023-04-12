@@ -46,8 +46,8 @@ const timetable = graphql(/* GraphQL */ `
   }
 `);
 
-const timetableDayInfo = graphql(/* GraphQL */ `
-  query timetableDayInfo($filter: CalendarDayInfoFilter) {
+const timetableInfo = graphql(/* GraphQL */ `
+  query timetableInfo($filter: CalendarDayInfoFilter) {
     calendar_dayInfo(filter: $filter) {
       date
       startTime
@@ -119,14 +119,24 @@ export function usePartyTimetable({
   });
 }
 
-const timetableDayInfoQuery = (filter: CalendarDayInfoFilter) => ({
+export const timetableInfoQuery = (filter: CalendarDayInfoFilter) => ({
   queryKey: timetableKeys.dayInfo(filter),
-  queryFn: async () => gqlClient.request(timetableDayInfo, { filter }),
+  queryFn: async () => gqlClient.request(timetableInfo, { filter }),
   staleTime: 1000 * 60 * 60 * 24,
 });
 
-export function getTimetableDayInfo(filter: CalendarDayInfoFilter) {
-  return queryClient.fetchQuery(timetableDayInfoQuery(filter));
+export function getTimetableInfo(filter: CalendarDayInfoFilter) {
+  return queryClient.fetchQuery(timetableInfoQuery(filter));
+}
+
+export function useTimetableInfo(fromDate: dayjs.Dayjs, toDate: dayjs.Dayjs) {
+  return useQuery({
+    ...timetableInfoQuery({
+      fromDate: fromDate.format('YYYY-MM-DD'),
+      toDate: toDate.format('YYYY-MM-DD'),
+    }),
+    select: ({ calendar_dayInfo }) => calendar_dayInfo,
+  });
 }
 
 export function useTimetableDayInfo(date: dayjs.Dayjs) {
@@ -135,18 +145,18 @@ export function useTimetableDayInfo(date: dayjs.Dayjs) {
   useEffect(() => {
     const formattedDateBefore = date.subtract(1, 'day').format('YYYY-MM-DD');
     const formattedDateAfter = date.add(1, 'day').format('YYYY-MM-DD');
-    getTimetableDayInfo({
+    getTimetableInfo({
       fromDate: formattedDateBefore,
       toDate: formattedDateBefore,
     });
-    getTimetableDayInfo({
+    getTimetableInfo({
       fromDate: formattedDateAfter,
       toDate: formattedDateAfter,
     });
   }, [formattedDate]);
 
   return useQuery({
-    ...timetableDayInfoQuery({
+    ...timetableInfoQuery({
       fromDate: formattedDate,
       toDate: formattedDate,
     }),
