@@ -14,12 +14,12 @@ export type Scalars = {
   Float: number;
   /** An RFC-3339 compliant Full Date Scalar */
   Date: string;
+  /** An RFC-3339 compliant DateTime Scalar */
   DateTime: string;
   /** A 64-bit signed integer */
   Long: number;
   /** 24-hour clock time value string in the format `hh:mm:ss` or `hh:mm:ss.sss`. */
   Time: any;
-  _FieldSet: any;
 };
 
 export type AcademicNamespace = {
@@ -238,6 +238,7 @@ export type CalendarDayInfoFilter = {
 export type CalendarEvent = {
   __typename?: 'CalendarEvent';
   attendees: Array<CalendarEventAttendee>;
+  calendarEventId: CalendarEventId;
   calendarIds: Array<Maybe<Scalars['Int']>>;
   colour?: Maybe<Colour>;
   description?: Maybe<Scalars['String']>;
@@ -274,6 +275,12 @@ export type CalendarEventFilter = {
   endDate: Scalars['Date'];
   partyIds: Array<InputMaybe<Scalars['Long']>>;
   startDate: Scalars['Date'];
+};
+
+export type CalendarEventId = {
+  __typename?: 'CalendarEventId';
+  date?: Maybe<Scalars['Date']>;
+  eventId: Scalars['Int'];
 };
 
 export type CalendarEventIteratorFilter = {
@@ -385,10 +392,6 @@ export type CalendarTag = {
   __typename?: 'CalendarTag';
   context?: Maybe<Scalars['String']>;
   label: Scalars['String'];
-};
-
-export type Calender = {
-  partyId: Scalars['Long'];
 };
 
 export type CalenderResourceType = {
@@ -532,12 +535,6 @@ export type CreateGroupMembershipInput = {
   fromDate?: InputMaybe<Scalars['Date']>;
   partyId?: InputMaybe<Scalars['Long']>;
   toDate?: InputMaybe<Scalars['Date']>;
-};
-
-export type CreateNotificationTemplateInput = {
-  name: Scalars['String'];
-  text: Scalars['String'];
-  title: Scalars['String'];
 };
 
 export type CreateProfileForGlobalUserInput = {
@@ -755,14 +752,22 @@ export type DashboardAssessmentResult = {
   subjectGroupId?: Maybe<Scalars['Long']>;
 };
 
+export type DeleteDiscountInput = {
+  id: Scalars['Int'];
+};
+
+export type DeleteFeeInput = {
+  id: Scalars['Int'];
+};
+
 export type DeviceRegistration = {
   __typename?: 'DeviceRegistration';
-  deviceId?: Maybe<Scalars['String']>;
-  deviceMake?: Maybe<Scalars['String']>;
-  deviceType?: Maybe<DeviceType>;
-  globalUserId?: Maybe<Scalars['Int']>;
-  id?: Maybe<Scalars['Long']>;
-  osVersion?: Maybe<Scalars['String']>;
+  deviceId: Scalars['String'];
+  deviceMake: Scalars['String'];
+  deviceType: DeviceType;
+  globalUserId: Scalars['Int'];
+  id: Scalars['Long'];
+  osVersion: Scalars['String'];
   personPartyId?: Maybe<Scalars['Long']>;
 };
 
@@ -829,245 +834,6 @@ export type EnrolmentHistoryFilter = {
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
 
-export enum ErrorDetail {
-  /**
-   * The deadline expired before the operation could complete.
-   *
-   * For operations that change the state of the system, this error
-   * may be returned even if the operation has completed successfully.
-   * For example, a successful response from a server could have been
-   * delayed long enough for the deadline to expire.
-   *
-   * HTTP Mapping: 504 Gateway Timeout
-   * Error Type: UNAVAILABLE
-   */
-  DeadlineExceeded = 'DEADLINE_EXCEEDED',
-  /**
-   * The server detected that the client is exhibiting a behavior that
-   * might be generating excessive load.
-   *
-   * HTTP Mapping: 429 Too Many Requests or 420 Enhance Your Calm
-   * Error Type: UNAVAILABLE
-   */
-  EnhanceYourCalm = 'ENHANCE_YOUR_CALM',
-  /**
-   * The requested field is not found in the schema.
-   *
-   * This differs from `NOT_FOUND` in that `NOT_FOUND` should be used when a
-   * query is valid, but is unable to return a result (if, for example, a
-   * specific video id doesn't exist). `FIELD_NOT_FOUND` is intended to be
-   * returned by the server to signify that the requested field is not known to exist.
-   * This may be returned in lieu of failing the entire query.
-   * See also `PERMISSION_DENIED` for cases where the
-   * requested field is invalid only for the given user or class of users.
-   *
-   * HTTP Mapping: 404 Not Found
-   * Error Type: BAD_REQUEST
-   */
-  FieldNotFound = 'FIELD_NOT_FOUND',
-  /**
-   * The client specified an invalid argument.
-   *
-   * Note that this differs from `FAILED_PRECONDITION`.
-   * `INVALID_ARGUMENT` indicates arguments that are problematic
-   * regardless of the state of the system (e.g., a malformed file name).
-   *
-   * HTTP Mapping: 400 Bad Request
-   * Error Type: BAD_REQUEST
-   */
-  InvalidArgument = 'INVALID_ARGUMENT',
-  /**
-   * The provided cursor is not valid.
-   *
-   * The most common usage for this error is when a client is paginating
-   * through a list that uses stateful cursors. In that case, the provided
-   * cursor may be expired.
-   *
-   * HTTP Mapping: 404 Not Found
-   * Error Type: NOT_FOUND
-   */
-  InvalidCursor = 'INVALID_CURSOR',
-  /**
-   * Unable to perform operation because a required resource is missing.
-   *
-   * Example: Client is attempting to refresh a list, but the specified
-   * list is expired. This requires an action by the client to get a new list.
-   *
-   * If the user is simply trying GET a resource that is not found,
-   * use the NOT_FOUND error type. FAILED_PRECONDITION.MISSING_RESOURCE
-   * is to be used particularly when the user is performing an operation
-   * that requires a particular resource to exist.
-   *
-   * HTTP Mapping: 400 Bad Request or 500 Internal Server Error
-   * Error Type: FAILED_PRECONDITION
-   */
-  MissingResource = 'MISSING_RESOURCE',
-  /**
-   * Service Error.
-   *
-   * There is a problem with an upstream service.
-   *
-   * This may be returned if a gateway receives an unknown error from a service
-   * or if a service is unreachable.
-   * If a request times out which waiting on a response from a service,
-   * `DEADLINE_EXCEEDED` may be returned instead.
-   * If a service returns a more specific error Type, the specific error Type may
-   * be returned instead.
-   *
-   * HTTP Mapping: 502 Bad Gateway
-   * Error Type: UNAVAILABLE
-   */
-  ServiceError = 'SERVICE_ERROR',
-  /**
-   * Request failed due to network errors.
-   *
-   * HTTP Mapping: 503 Unavailable
-   * Error Type: UNAVAILABLE
-   */
-  TcpFailure = 'TCP_FAILURE',
-  /**
-   * Request throttled based on server concurrency limits.
-   *
-   * HTTP Mapping: 503 Unavailable
-   * Error Type: UNAVAILABLE
-   */
-  ThrottledConcurrency = 'THROTTLED_CONCURRENCY',
-  /**
-   * Request throttled based on server CPU limits
-   *
-   * HTTP Mapping: 503 Unavailable.
-   * Error Type: UNAVAILABLE
-   */
-  ThrottledCpu = 'THROTTLED_CPU',
-  /**
-   * The operation is not implemented or is not currently supported/enabled.
-   *
-   * HTTP Mapping: 501 Not Implemented
-   * Error Type: BAD_REQUEST
-   */
-  Unimplemented = 'UNIMPLEMENTED',
-  /**
-   * Unknown error.
-   *
-   * This error should only be returned when no other error detail applies.
-   * If a client sees an unknown errorDetail, it will be interpreted as UNKNOWN.
-   *
-   * HTTP Mapping: 500 Internal Server Error
-   */
-  Unknown = 'UNKNOWN'
-}
-
-export enum ErrorType {
-  /**
-   * Bad Request.
-   *
-   * There is a problem with the request.
-   * Retrying the same request is not likely to succeed.
-   * An example would be a query or argument that cannot be deserialized.
-   *
-   * HTTP Mapping: 400 Bad Request
-   */
-  BadRequest = 'BAD_REQUEST',
-  /**
-   * The operation was rejected because the system is not in a state
-   * required for the operation's execution.  For example, the directory
-   * to be deleted is non-empty, an rmdir operation is applied to
-   * a non-directory, etc.
-   *
-   * Service implementers can use the following guidelines to decide
-   * between `FAILED_PRECONDITION` and `UNAVAILABLE`:
-   *
-   * - Use `UNAVAILABLE` if the client can retry just the failing call.
-   * - Use `FAILED_PRECONDITION` if the client should not retry until
-   * the system state has been explicitly fixed.  E.g., if an "rmdir"
-   *      fails because the directory is non-empty, `FAILED_PRECONDITION`
-   * should be returned since the client should not retry unless
-   * the files are deleted from the directory.
-   *
-   * HTTP Mapping: 400 Bad Request or 500 Internal Server Error
-   */
-  FailedPrecondition = 'FAILED_PRECONDITION',
-  /**
-   * Internal error.
-   *
-   * An unexpected internal error was encountered. This means that some
-   * invariants expected by the underlying system have been broken.
-   * This error code is reserved for serious errors.
-   *
-   * HTTP Mapping: 500 Internal Server Error
-   */
-  Internal = 'INTERNAL',
-  /**
-   * The requested entity was not found.
-   *
-   * This could apply to a resource that has never existed (e.g. bad resource id),
-   * or a resource that no longer exists (e.g. cache expired.)
-   *
-   * Note to server developers: if a request is denied for an entire class
-   * of users, such as gradual feature rollout or undocumented allowlist,
-   * `NOT_FOUND` may be used. If a request is denied for some users within
-   * a class of users, such as user-based access control, `PERMISSION_DENIED`
-   * must be used.
-   *
-   * HTTP Mapping: 404 Not Found
-   */
-  NotFound = 'NOT_FOUND',
-  /**
-   * The caller does not have permission to execute the specified
-   * operation.
-   *
-   * `PERMISSION_DENIED` must not be used for rejections
-   * caused by exhausting some resource or quota.
-   * `PERMISSION_DENIED` must not be used if the caller
-   * cannot be identified (use `UNAUTHENTICATED`
-   * instead for those errors).
-   *
-   * This error Type does not imply the
-   * request is valid or the requested entity exists or satisfies
-   * other pre-conditions.
-   *
-   * HTTP Mapping: 403 Forbidden
-   */
-  PermissionDenied = 'PERMISSION_DENIED',
-  /**
-   * The request does not have valid authentication credentials.
-   *
-   * This is intended to be returned only for routes that require
-   * authentication.
-   *
-   * HTTP Mapping: 401 Unauthorized
-   */
-  Unauthenticated = 'UNAUTHENTICATED',
-  /**
-   * Currently Unavailable.
-   *
-   * The service is currently unavailable.  This is most likely a
-   * transient condition, which can be corrected by retrying with
-   * a backoff.
-   *
-   * HTTP Mapping: 503 Unavailable
-   */
-  Unavailable = 'UNAVAILABLE',
-  /**
-   * Unknown error.
-   *
-   * For example, this error may be returned when
-   * an error code received from another address space belongs to
-   * an error space that is not known in this address space.  Also
-   * errors raised by APIs that do not return enough error information
-   * may be converted to this error.
-   *
-   * If a client sees an unknown errorType, it will be interpreted as UNKNOWN.
-   * Unknown errors MUST NOT trigger any special behavior. These MAY be treated
-   * by an implementation as being equivalent to INTERNAL.
-   *
-   * When possible, a more specific error should be provided.
-   *
-   * HTTP Mapping: 520 Unknown Error
-   */
-  Unknown = 'UNKNOWN'
-}
-
 export type EventAttendance = {
   __typename?: 'EventAttendance';
   attendanceCodeId: Scalars['Int'];
@@ -1081,6 +847,11 @@ export type EventAttendanceFilter = {
   date?: InputMaybe<Scalars['Date']>;
   eventIds?: InputMaybe<Array<AttendanceEventId>>;
   personPartyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+};
+
+export type ExampleObjectExtension = {
+  __typename?: 'ExampleObjectExtension';
+  value?: Maybe<Scalars['String']>;
 };
 
 export type ExpandedParties = {
@@ -1378,6 +1149,7 @@ export type MailStarredInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  asd?: Maybe<Scalars['String']>;
   assessment_saveAssessment?: Maybe<Assessment>;
   assessment_saveAssessmentComments?: Maybe<Array<Maybe<AssessmentComment>>>;
   assessment_saveAssessmentResults?: Maybe<Array<Maybe<AssessmentResult>>>;
@@ -1390,17 +1162,17 @@ export type Mutation = {
   attendance_saveStudentSessionAttendance?: Maybe<Array<Maybe<StudentSessionAttendance>>>;
   calendar_createCalendarEvents?: Maybe<Array<Maybe<CalendarEventRaw>>>;
   communications_assignLabel?: Maybe<Mail>;
-  communications_createNotificationTemplate?: Maybe<NotificationTemplate>;
-  communications_label?: Maybe<Label>;
   communications_read?: Maybe<Scalars['String']>;
   communications_registerDevice?: Maybe<DeviceRegistration>;
+  communications_saveLabel?: Maybe<Label>;
+  communications_saveNotificationTemplate?: Maybe<NotificationTemplate>;
   communications_sendMail?: Maybe<Mail>;
   communications_sendNotification?: Maybe<NotificationSentResponse>;
   communications_sendSms?: Maybe<Scalars['String']>;
   communications_smsTopUp?: Maybe<SmsTopUpResponse>;
   communications_starred?: Maybe<Scalars['String']>;
   core_setActiveActiveAcademicNamespace?: Maybe<AcademicNamespace>;
-  core_updateStudents?: Maybe<Scalars['Boolean']>;
+  core_updateStudents?: Maybe<Success>;
   createProfileForGlobalUser?: Maybe<Profile>;
   createRole?: Maybe<SecurityRole>;
   createSubjects?: Maybe<Array<Maybe<Subject>>>;
@@ -1477,16 +1249,6 @@ export type MutationCommunications_AssignLabelArgs = {
 };
 
 
-export type MutationCommunications_CreateNotificationTemplateArgs = {
-  input?: InputMaybe<CreateNotificationTemplateInput>;
-};
-
-
-export type MutationCommunications_LabelArgs = {
-  input?: InputMaybe<LabelInput>;
-};
-
-
 export type MutationCommunications_ReadArgs = {
   input?: InputMaybe<MailReadInput>;
 };
@@ -1494,6 +1256,16 @@ export type MutationCommunications_ReadArgs = {
 
 export type MutationCommunications_RegisterDeviceArgs = {
   input?: InputMaybe<RegisterDeviceInput>;
+};
+
+
+export type MutationCommunications_SaveLabelArgs = {
+  input?: InputMaybe<LabelInput>;
+};
+
+
+export type MutationCommunications_SaveNotificationTemplateArgs = {
+  input?: InputMaybe<SaveNotificationTemplateInput>;
 };
 
 
@@ -1548,12 +1320,12 @@ export type MutationCreateSubjectsArgs = {
 
 
 export type MutationFees_DeleteDiscountArgs = {
-  discountId?: InputMaybe<Scalars['Int']>;
+  input?: InputMaybe<DeleteDiscountInput>;
 };
 
 
 export type MutationFees_DeleteFeeArgs = {
-  feeId?: InputMaybe<Scalars['Int']>;
+  input?: InputMaybe<DeleteFeeInput>;
 };
 
 
@@ -1597,6 +1369,7 @@ export type MyLabelsFilter = {
 
 export type Notification = {
   __typename?: 'Notification';
+  id: Scalars['Long'];
   metaData?: Maybe<NotificationMetaData>;
   notificationType: NotificationType;
   readOn?: Maybe<Scalars['DateTime']>;
@@ -1614,8 +1387,8 @@ export type NotificationError = {
 };
 
 export type NotificationFilter = {
+  globalUserId?: InputMaybe<Scalars['Int']>;
   id?: InputMaybe<Scalars['Long']>;
-  personPartyId?: InputMaybe<Scalars['Long']>;
   status?: InputMaybe<NotificationStatus>;
 };
 
@@ -1948,9 +1721,9 @@ export type ProgrammeStageFilter = {
 
 export type Query = {
   __typename?: 'Query';
-  _service: _Service;
   admin__party_people?: Maybe<Array<Maybe<Person>>>;
   admin__tenants?: Maybe<Array<Maybe<Tenant>>>;
+  asd?: Maybe<Scalars['String']>;
   assessment_assessment?: Maybe<Array<Maybe<Assessment>>>;
   assessment_assessmentComment?: Maybe<Array<Maybe<AssessmentComment>>>;
   assessment_assessmentResult?: Maybe<Array<Maybe<AssessmentResult>>>;
@@ -2423,6 +2196,13 @@ export type SaveGradeSetInput = {
   years?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
+export type SaveNotificationTemplateInput = {
+  id?: InputMaybe<Scalars['Long']>;
+  name: Scalars['String'];
+  text: Scalars['String'];
+  title: Scalars['String'];
+};
+
 export type SaveParentalAttendanceRequest = {
   adminNote?: InputMaybe<Scalars['String']>;
   attendanceCodeId: Scalars['Int'];
@@ -2833,6 +2613,7 @@ export type Student = Party & {
   contacts?: Maybe<Array<Maybe<StudentContact>>>;
   /**  deep linked */
   enrolmentHistory?: Maybe<Array<Maybe<EnrollmentHistory>>>;
+  extensions?: Maybe<StudentGraphqlExtension>;
   partyId: Scalars['Long'];
   /**  deep linked */
   person: Person;
@@ -2840,7 +2621,6 @@ export type Student = Party & {
   personalInformation?: Maybe<PersonalInformation>;
   programmeStages?: Maybe<Array<Maybe<ProgrammeStage>>>;
   startDate?: Maybe<Scalars['Date']>;
-  status?: Maybe<StudentStatus>;
   studentIrePP?: Maybe<StudentIrePp>;
   /**  deep linked */
   tutors: Array<Person>;
@@ -2894,6 +2674,13 @@ export enum StudentContactType {
 
 export type StudentFilter = {
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+};
+
+export type StudentGraphqlExtension = {
+  __typename?: 'StudentGraphqlExtension';
+  doeNotUser?: Maybe<Scalars['String']>;
+  exampleExtension?: Maybe<Scalars['String']>;
+  objectExample?: Maybe<ExampleObjectExtension>;
 };
 
 export type StudentIre = {
@@ -3192,6 +2979,11 @@ export type SubstitutionsFilter = {
   calendarEventFilter?: InputMaybe<CalendarEventFilter>;
 };
 
+export type Success = {
+  __typename?: 'Success';
+  success?: Maybe<Scalars['Boolean']>;
+};
+
 export enum TargetStatus {
   Achieved = 'ACHIEVED',
   InProgress = 'IN_PROGRESS',
@@ -3347,11 +3139,6 @@ export type YearGroupFilter = {
   years?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
-export type _Service = {
-  __typename?: '_Service';
-  sdl: Scalars['String'];
-};
-
 export enum Sdsd {
   Term = 'TERM'
 }
@@ -3485,7 +3272,7 @@ export type Update_Communications_LabelMutationVariables = Exact<{
 }>;
 
 
-export type Update_Communications_LabelMutation = { __typename?: 'Mutation', communications_label?: { __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: string | null, custom?: boolean | null } | null };
+export type Update_Communications_LabelMutation = { __typename?: 'Mutation', communications_saveLabel?: { __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: string | null, custom?: boolean | null } | null };
 
 export type Communications_UnreadCountQueryVariables = Exact<{
   filter?: InputMaybe<UnreadCountFilter>;
@@ -3586,7 +3373,7 @@ export type UpdateCoreStudentsMutationVariables = Exact<{
 }>;
 
 
-export type UpdateCoreStudentsMutation = { __typename?: 'Mutation', core_updateStudents?: boolean | null };
+export type UpdateCoreStudentsMutation = { __typename?: 'Mutation', core_updateStudents?: { __typename?: 'Success', success?: boolean | null } | null };
 
 export type Core_AcademicNamespacesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3674,7 +3461,7 @@ export const Calendar_CalendarEventsIteratorDocument = {"kind":"Document","defin
 export const SubjectGroupsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"subjectGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"studentMembers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"memberCount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"irePP"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"level"}}]}},{"kind":"Field","name":{"kind":"Name","value":"programmeStages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"programme"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<SubjectGroupsQuery, SubjectGroupsQueryVariables>;
 export const SubjectGroupByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"subjectGroupById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SubjectGroupFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectGroups"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"yearGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"students"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"classGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}}]}}]}}]}}]} as unknown as DocumentNode<SubjectGroupByIdQuery, SubjectGroupByIdQueryVariables>;
 export const Communications_LabelDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_label"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"LabelFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_label"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}}]}}]} as unknown as DocumentNode<Communications_LabelQuery, Communications_LabelQueryVariables>;
-export const Update_Communications_LabelDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"update_communications_label"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"LabelInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_label"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}}]}}]} as unknown as DocumentNode<Update_Communications_LabelMutation, Update_Communications_LabelMutationVariables>;
+export const Update_Communications_LabelDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"update_communications_label"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"LabelInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_saveLabel"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}}]}}]} as unknown as DocumentNode<Update_Communications_LabelMutation, Update_Communications_LabelMutationVariables>;
 export const Communications_UnreadCountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_unreadCount"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"UnreadCountFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_unreadCount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"labelId"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]} as unknown as DocumentNode<Communications_UnreadCountQuery, Communications_UnreadCountQueryVariables>;
 export const Communications_AssignLabelDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"communications_assignLabel"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"AssignLabelInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_assignLabel"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"rootMailId"}},{"kind":"Field","name":{"kind":"Name","value":"threadId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"senderPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"sentOn"}},{"kind":"Field","name":{"kind":"Name","value":"latestMessage"}},{"kind":"Field","name":{"kind":"Name","value":"canReply"}},{"kind":"Field","name":{"kind":"Name","value":"starred"}},{"kind":"Field","name":{"kind":"Name","value":"readOn"}},{"kind":"Field","name":{"kind":"Name","value":"recipients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"recipientPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}},{"kind":"Field","name":{"kind":"Name","value":"threads"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"rootMailId"}},{"kind":"Field","name":{"kind":"Name","value":"threadId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"senderPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"sentOn"}},{"kind":"Field","name":{"kind":"Name","value":"latestMessage"}},{"kind":"Field","name":{"kind":"Name","value":"canReply"}},{"kind":"Field","name":{"kind":"Name","value":"starred"}},{"kind":"Field","name":{"kind":"Name","value":"readOn"}},{"kind":"Field","name":{"kind":"Name","value":"recipients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"recipientPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Communications_AssignLabelMutation, Communications_AssignLabelMutationVariables>;
 export const Communications_MailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_mail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"MailFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_mail"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"rootMailId"}},{"kind":"Field","name":{"kind":"Name","value":"threadId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"senderPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"sentOn"}},{"kind":"Field","name":{"kind":"Name","value":"latestMessage"}},{"kind":"Field","name":{"kind":"Name","value":"canReply"}},{"kind":"Field","name":{"kind":"Name","value":"starred"}},{"kind":"Field","name":{"kind":"Name","value":"readOn"}},{"kind":"Field","name":{"kind":"Name","value":"recipients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"recipientPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}},{"kind":"Field","name":{"kind":"Name","value":"threads"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"rootMailId"}},{"kind":"Field","name":{"kind":"Name","value":"threadId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"senderPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"sentOn"}},{"kind":"Field","name":{"kind":"Name","value":"latestMessage"}},{"kind":"Field","name":{"kind":"Name","value":"canReply"}},{"kind":"Field","name":{"kind":"Name","value":"starred"}},{"kind":"Field","name":{"kind":"Name","value":"readOn"}},{"kind":"Field","name":{"kind":"Name","value":"recipients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"recipientPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Communications_MailQuery, Communications_MailQueryVariables>;
@@ -3689,7 +3476,7 @@ export const Core_Student_PersonalDocument = {"kind":"Document","definitions":[{
 export const QDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"q"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StudentStatusFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"composite_studentStatus"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"sessionAttendance"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"Field","name":{"kind":"Name","value":"currentLocation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"eventId"}},{"kind":"Field","name":{"kind":"Name","value":"room"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"capacity"}}]}},{"kind":"Field","name":{"kind":"Name","value":"lesson"}},{"kind":"Field","name":{"kind":"Name","value":"teacher"}},{"kind":"Field","name":{"kind":"Name","value":"currentAttendance"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"attendanceCodeName"}},{"kind":"Field","name":{"kind":"Name","value":"codeType"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"priorityStudent"}},{"kind":"Field","name":{"kind":"Name","value":"activeSupportPlan"}}]}}]}}]} as unknown as DocumentNode<QQuery, QQueryVariables>;
 export const Core_StudentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_students"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_students"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"classGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"personalInformation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"preferredFirstName"}},{"kind":"Field","name":{"kind":"Name","value":"primaryPhoneNumber"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"number"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryEmail"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"studentIrePP"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"examNumber"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tutors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearGroupLeads"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"programmeStages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"programme"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Core_StudentsQuery, Core_StudentsQueryVariables>;
 export const Core_StudentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_student"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StudentFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_students"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"classGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearGroupLeads"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shortName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tutors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]} as unknown as DocumentNode<Core_StudentQuery, Core_StudentQueryVariables>;
-export const UpdateCoreStudentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateCoreStudents"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateStudentInput"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_updateStudents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<UpdateCoreStudentsMutation, UpdateCoreStudentsMutationVariables>;
+export const UpdateCoreStudentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateCoreStudents"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateStudentInput"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_updateStudents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<UpdateCoreStudentsMutation, UpdateCoreStudentsMutationVariables>;
 export const Core_AcademicNamespacesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_academicNamespaces"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_academicNamespaces"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"academicNamespaceId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActiveDefaultNamespace"}}]}}]}}]} as unknown as DocumentNode<Core_AcademicNamespacesQuery, Core_AcademicNamespacesQueryVariables>;
 export const Core_SetActiveActiveAcademicNamespaceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_setActiveActiveAcademicNamespace"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SetActiveAcademicNamespace"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_setActiveActiveAcademicNamespace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"academicNamespaceId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActiveDefaultNamespace"}}]}}]}}]} as unknown as DocumentNode<Core_SetActiveActiveAcademicNamespaceMutation, Core_SetActiveActiveAcademicNamespaceMutationVariables>;
 export const Core_RoomsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"capacity"}}]}}]}}]} as unknown as DocumentNode<Core_RoomsQuery, Core_RoomsQueryVariables>;

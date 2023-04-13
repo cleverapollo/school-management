@@ -37,9 +37,12 @@
     "UNKNOWN": "Unknown"
   },
   "employmentCapacity": {
-    "FULL_TIME": "Full time",
+    "PERMANENT": "Permanent",
+    "TEMPORARY": "Temporary",
+    "CONTRACTS_OF_INDEFINITE_DURATION": "Contracts of indefinite duration",
+    "REGULAR_PART_TIME": "Regular part time",
     "PART_TIME": "Part time",
-    "AGENCY": "Agency",
+    "PRIVATE": "Private",
     "VOLUNTARY": "Voluntary",
     "UNKNOWN": "Unknown",
     "PERMANENT": "Permanent",
