@@ -9,7 +9,7 @@ const config: CodegenConfig = {
   schema: [
     {
       // 'http://localhost:80/api/tyrogql': {
-      'https://tyro-api-uat.azurewebsites.net/api/graphql': {
+      'https://tyro-api-uat.azurewebsites.net/api/tyrogql': {
         headers: {
           Authorization: `Bearer ${process.env.token}`,
         },
