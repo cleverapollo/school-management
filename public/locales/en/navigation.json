@@ -17,8 +17,7 @@
       "graphiql": "GraphiQL"
     },
     "assessment": {
-      "title": "Assessment",
-      "overview": "Overview",
+      "title": "Assessments",
       "termAssessments": "Term Assessments"
     }
   },

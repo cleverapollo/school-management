@@ -3,11 +3,11 @@ import { useTranslation } from '@tyro/i18n';
 import { Container } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 
-export default function TermAssessmentsContainer() {
+export default function AssessmentsContainer() {
   const { t } = useTranslation(['assessment']);
 
   return (
-    <Page title={t('assessment:termAssessments')}>
+    <Page title={t('assessment:title')}>
       <Container
         maxWidth="xl"
         sx={{

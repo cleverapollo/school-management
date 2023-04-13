@@ -19,14 +19,14 @@ import { Card, Stack, CardHeader, Typography } from '@mui/material';
 import { useForm, Path } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import dayjs from 'dayjs';
-import { CommentBankOption } from '../api/comment-bank';
-import { useSaveTermAssessment } from '../api/save-term-assessment';
-import { CommentBankOptions } from '../components/term-assessment/comment-bank-options';
-import { CommentLengthField } from '../components/term-assessment/comment-length-field';
+import { CommentBankOption } from '../../api/comment-bank';
+import { useSaveTermAssessment } from '../../api/save-term-assessment';
+import { CommentBankOptions } from '../../components/term-assessment/comment-bank-options';
+import { CommentLengthField } from '../../components/term-assessment/comment-length-field';
 import {
   CustomFieldsTable,
   FormCustomFieldsValues,
-} from '../components/term-assessment/custom-fields-table';
+} from '../../components/term-assessment/custom-fields-table';
 
 type YearGroupOption = NonNullable<
   NonNullable<ReturnType<typeof useYearGroups>['data']>[number]
@@ -155,12 +155,12 @@ export default function CreateTermAssessmentPage() {
   return (
     <>
       <PageHeading
-        title={t('assessment:title')}
+        title={t('assessment:termAssessments')}
         breadcrumbs={{
           links: [
             {
-              name: t('assessment:termAssessments'),
-              href: './..',
+              name: t('assessment:title'),
+              href: './../..',
             },
             {
               name: t('assessment:termAssessmentCreation'),
