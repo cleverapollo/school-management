@@ -64,6 +64,7 @@ export function EditCalendarPanel({
           <FormGroup>
             {Object.values(CalendarEventType).map((type) => (
               <FormControlLabel
+                key={type}
                 control={
                   <Checkbox
                     checked={visableEventTypes.includes(type)}

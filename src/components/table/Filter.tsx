@@ -28,7 +28,7 @@ const Filter: FC<FilterProps> = ({ column, type }) => {
     case 'date': return (<Box>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
-          inputFormat={DISPLAYED_DATE_FORMAT}
+          format={DISPLAYED_DATE_FORMAT}
           label={column.columnDef.header?.toString()}
           value={value}
           onChange={(newValue) => {        
@@ -40,7 +40,9 @@ const Filter: FC<FilterProps> = ({ column, type }) => {
             }
             setValue(newValue); 
           }}
-          renderInput={(params) => <TextField sx={{ width: 210 }} {...params}/>}
+          slotProps={{
+            textField: { sx: { width: 210 } }
+          }}
         />
       </LocalizationProvider>
     </Box>);

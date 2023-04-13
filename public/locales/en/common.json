@@ -24,7 +24,8 @@
     "hideEmail": "Hidden Email",
     "send": "Send",
     "save": "Save",
-    "apply": "Apply"
+    "apply": "Apply",
+    "close": "Close"
   },
   "snackbarMessages": {
     "createSuccess": "Create success!",
@@ -192,6 +193,10 @@
   "errorMessages": {
     "required": "This field is required",
     "invalidDate": "This is not a valid date",
-    "beforeStartDate": "End date must be later than start date"
+    "afterStartDate": "End date must be later than start date",
+    "min": "You must enter a number greater or equal than {{number}}",
+    "max": "You must enter a number less or equal than {{number}}",
+    "minLength":"You must enter a minimum of {{count}} characters",
+    "maxLength": "You have exceeded the maximum character length of {{count}}"
   }
 }

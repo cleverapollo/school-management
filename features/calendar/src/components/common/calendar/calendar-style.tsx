@@ -11,11 +11,12 @@ export const CalendarStyle = styled('div')(({ theme }) => ({
     '--fc-border-color': theme.palette.divider,
     '--fc-event-border-color': theme.palette.info.light,
     '--fc-now-indicator-color': theme.palette.error.main,
-    '--fc-today-bg-color': theme.palette.indigo[50],
+    '--fc-today-bg-color': theme.palette.background.default,
     '--fc-page-bg-color': theme.palette.background.default,
     '--fc-neutral-bg-color': theme.palette.background.paper,
     '--fc-list-event-hover-bg-color': theme.palette.action.hover,
     '--fc-highlight-color': alpha(theme.palette.primary.main, 0.08),
+    '--fc-non-business-color': theme.palette.slate[50],
   },
 
   '& .fc .fc-license-message': { display: 'none' },
@@ -24,9 +25,17 @@ export const CalendarStyle = styled('div')(({ theme }) => ({
   // Table Head
   '& .fc .fc-col-header ': {
     boxShadow: `inset 0 -1px 0 ${theme.palette.divider}`,
-    '& th': { borderColor: 'transparent' },
+
+    '& a': {
+      color: theme.palette.text.secondary,
+      fontWeight: 700,
+      '& .today': {
+        color: theme.palette.text.primary,
+      },
+    },
     '& .fc-col-header-cell-cushion': {
       ...theme.typography.subtitle2,
+      fontWeight: 700,
       padding: '13px 0',
     },
   },

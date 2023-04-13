@@ -1,37 +1,40 @@
 import {
-  DatePicker,
-  DatePickerProps,
+  DateTimePickerProps,
+  DateTimePicker,
   LocalizationProvider,
 } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 
-import { TextField, TextFieldProps } from '@mui/material';
+import { TextFieldProps } from '@mui/material';
 import {
   FieldValues,
   useController,
   UseControllerProps,
 } from 'react-hook-form';
 
-type RHFDatePickerProps<TField extends FieldValues, TInputDate, TDate> = {
+dayjs.extend(LocalizedFormat);
+
+type RHFDatePickerProps<TField extends FieldValues, TInputDate> = {
   label?: string;
-  datePickerProps?: Omit<
-    DatePickerProps<TInputDate, TDate>,
+  dateTimePickerProps?: Omit<
+    DateTimePickerProps<TInputDate>,
     'onChange' | 'value' | 'renderInput'
   >;
   controlProps: UseControllerProps<TField>;
   inputProps?: TextFieldProps;
 };
 
-export const RHFDatePicker = <
+export const RHFDateTimePicker = <
   TField extends FieldValues,
-  TInputDate = Date,
-  TDate = TInputDate
+  TInputDate = Date
 >({
   label,
-  datePickerProps,
+  dateTimePickerProps,
   controlProps,
   inputProps,
-}: RHFDatePickerProps<TField, TInputDate, TDate>) => {
+}: RHFDatePickerProps<TField, TInputDate>) => {
   const {
     field: { ref, onBlur, name, value, onChange },
     fieldState: { error },
@@ -39,23 +42,22 @@ export const RHFDatePicker = <
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DatePicker
-        inputFormat="DD/MM/YYYY"
-        {...datePickerProps}
+      <DateTimePicker
+        format="DD/MM/YYYY HH:mm"
+        {...dateTimePickerProps}
         onChange={onChange}
         value={value ?? null}
         label={label}
         inputRef={ref}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            {...inputProps}
-            onBlur={onBlur}
-            name={name}
-            error={!!error}
-            helperText={error?.message}
-          />
-        )}
+        slotProps={{
+          textField: {
+            ...inputProps,
+            onBlur,
+            name,
+            error: !!error,
+            helperText: error?.message,
+          },
+        }}
       />
     </LocalizationProvider>
   );

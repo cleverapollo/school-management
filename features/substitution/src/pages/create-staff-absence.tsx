@@ -17,6 +17,7 @@ import {
   Avatar,
   usePreferredNameLayout,
   useToast,
+  useFormValidator,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
@@ -63,7 +64,20 @@ export default function ManagementPage() {
     isLoading: isSaveStaffAbsenceLoading,
   } = useSaveStaffAbsence();
 
-  const { handleSubmit, control, getValues } = useForm<FormValues>();
+  const { resolver, rules } = useFormValidator<FormValues>();
+
+  const { handleSubmit, control } = useForm<FormValues>({
+    resolver: resolver({
+      staff: rules.required(),
+      absenceType: rules.required(),
+      fromDate: [rules.required(), rules.date()],
+      toDate: [
+        rules.required(),
+        rules.date(),
+        rules.afterStartDate('fromDate'),
+      ],
+    }),
+  });
 
   const onSubmit = ({
     staff,
@@ -96,7 +110,7 @@ export default function ManagementPage() {
   };
 
   const labelStyle = {
-    color: 'slate.400',
+    color: 'text.secondary',
     fontWeight: 600,
   };
 
@@ -127,18 +141,20 @@ export default function ManagementPage() {
         onSubmit={handleSubmit(onSubmit)}
       >
         <CardHeader
+          component="h2"
           title={t('substitution:creatingStaffAbsence')}
           sx={{
             p: 3,
             pt: 2.25,
             pb: 1.25,
+            m: 0,
             borderBottom: '1px solid',
             borderColor: 'divider',
           }}
         />
         <Stack direction="column" gap={3} p={3}>
           <Stack direction="column" gap={2.5}>
-            <Typography variant="body1" sx={{ ...labelStyle }}>
+            <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
               {t('substitution:details')}
             </Typography>
             <RHFAutocomplete<FormValues, StaffOption>
@@ -147,12 +163,8 @@ export default function ManagementPage() {
               controlProps={{
                 name: 'staff',
                 control,
-                rules: {
-                  required: t('common:errorMessages.required'),
-                },
               }}
               autocompleteProps={{
-                popupIcon: null,
                 sx: textFieldStyle,
                 options: staffData,
                 getOptionLabel: ({ person }) => displayName(person),
@@ -207,7 +219,7 @@ export default function ManagementPage() {
           </Stack>
 
           <Stack direction="column" gap={2.5}>
-            <Typography variant="body1" sx={{ ...labelStyle }}>
+            <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
               {t('substitution:durationOfAbsence')}
             </Typography>
             <Stack direction="row" spacing={2}>
@@ -216,14 +228,6 @@ export default function ManagementPage() {
                 controlProps={{
                   name: 'fromDate',
                   control,
-                  rules: {
-                    required: t('common:errorMessages.required'),
-                    validate: {
-                      invalid: (date) =>
-                        dayjs(date as Date).isValid() ||
-                        t('common:errorMessages.invalidDate'),
-                    },
-                  },
                 }}
                 inputProps={{
                   sx: textFieldStyle,
@@ -234,17 +238,6 @@ export default function ManagementPage() {
                 controlProps={{
                   name: 'toDate',
                   control,
-                  rules: {
-                    required: t('common:errorMessages.required'),
-                    validate: {
-                      invalid: (date) =>
-                        dayjs(date as Date).isValid() ||
-                        t('common:errorMessages.invalidDate'),
-                      beforeStartDate: (date) =>
-                        dayjs(date as Date).isAfter(getValues('fromDate')) ||
-                        t('common:errorMessages.beforeStartDate'),
-                    },
-                  },
                 }}
                 inputProps={{
                   sx: textFieldStyle,
@@ -254,7 +247,7 @@ export default function ManagementPage() {
           </Stack>
 
           <Stack direction="column" gap={2.5}>
-            <Typography variant="body1" sx={{ ...labelStyle }}>
+            <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
               {t('substitution:reasonForAbsence')}
             </Typography>
             <RHFAutocomplete<FormValues, AbsenceTypeOption>
@@ -264,12 +257,8 @@ export default function ManagementPage() {
               controlProps={{
                 name: 'absenceType',
                 control,
-                rules: {
-                  required: t('common:errorMessages.required'),
-                },
               }}
               autocompleteProps={{
-                popupIcon: null,
                 sx: textFieldStyle,
                 options: absenceTypesData,
               }}
@@ -277,7 +266,7 @@ export default function ManagementPage() {
           </Stack>
 
           <Stack direction="column" gap={2.5}>
-            <Typography variant="body1" sx={{ ...labelStyle }}>
+            <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
               {t('substitution:internalNote')}
             </Typography>
             <RHFTextField<FormValues>
