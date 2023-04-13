@@ -34,7 +34,7 @@ const emulationHeaders = () => {
 const fetcher = createGraphiQLFetcher({
   url:
     process.env.REACT_APP_GRAPHQL_API_URI ||
-    'https://tyro-api-uat.azurewebsites.net/api/graphql',
+    'https://tyro-api-uat.azurewebsites.net/api/tyrogql',
   headers: {
     ...emulationHeaders(),
   },
