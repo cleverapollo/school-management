@@ -1009,6 +1009,7 @@ export enum GradeSetStudyLevel {
 export enum GradeType {
   Both = 'BOTH',
   GradeSet = 'GRADE_SET',
+  None = 'NONE',
   Percentage = 'PERCENTAGE'
 }
 
@@ -2083,7 +2084,7 @@ export type SaveAssessmentInput = {
   captureTarget: Scalars['Boolean'];
   captureTutorComment?: InputMaybe<Scalars['Boolean']>;
   captureYearHeadComment?: InputMaybe<Scalars['Boolean']>;
-  commentBankId?: InputMaybe<Scalars['Int']>;
+  commentBankId?: InputMaybe<Scalars['Long']>;
   commentLength?: InputMaybe<Scalars['Int']>;
   commentType: CommentType;
   description?: InputMaybe<Scalars['String']>;
