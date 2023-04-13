@@ -27,6 +27,7 @@ import {
   CustomFieldsTable,
   FormCustomFieldsValues,
 } from '../../components/term-assessment/custom-fields-table';
+import { PageContainer } from '../../components/page-container';
 
 type YearGroupOption = NonNullable<
   NonNullable<ReturnType<typeof useYearGroups>['data']>[number]
@@ -153,17 +154,17 @@ export default function CreateTermAssessmentPage() {
   };
 
   return (
-    <>
+    <PageContainer title={t('assessment:pageTitle.createTermAssessment')}>
       <PageHeading
-        title={t('assessment:termAssessments')}
+        title={t('assessment:pageHeading.termAssessments')}
         breadcrumbs={{
           links: [
             {
-              name: t('assessment:title'),
+              name: t('assessment:pageHeading.assessments'),
               href: './../..',
             },
             {
-              name: t('assessment:termAssessmentCreation'),
+              name: t('assessment:pageHeading.createTermAssessment'),
             },
           ],
         }}
@@ -176,7 +177,7 @@ export default function CreateTermAssessmentPage() {
       >
         <CardHeader
           component="h2"
-          title={t('assessment:termAssessmentCreation')}
+          title={t('assessment:pageHeading.createTermAssessment')}
           sx={{
             p: 3,
             pt: 2.25,
@@ -313,6 +314,6 @@ export default function CreateTermAssessmentPage() {
           </Stack>
         </Stack>
       </Card>
-    </>
+    </PageContainer>
   );
 }

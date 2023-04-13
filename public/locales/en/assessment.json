@@ -1,8 +1,14 @@
 {
-  "title": "Assessments",
+  "pageTitle": {
+    "assessments": "List of Assessments",
+    "createTermAssessment": "Create a new term assessment"
+  },
+  "pageHeading": {
+    "assessments": "Assessments",
+    "termAssessments": "Term Assessments",
+    "createTermAssessment": "Term Assessment Creation"
+  },
   "assessmentResults": "Assessment Results",
-  "termAssessments": "Term Assessments",
-  "termAssessmentCreation": "Term Assessment Creation",
   "details": "Details",
   "grades": "Grades",
   "comments": "Comments",
