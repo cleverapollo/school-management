@@ -29,11 +29,11 @@ export function getResourceName(
   >['resources'][number],
   getDisplayName: ReturnType<typeof usePreferredNameLayout>['displayName']
 ) {
-  if (resource.__typename === 'PartyCalendarResource' && resource.partyInfo) {
+  if (resource.__typename === 'PartyCalendar' && resource.partyInfo) {
     return getPartyName(resource.partyInfo, getDisplayName);
   }
 
-  if (resource.__typename === 'RoomCalendarResource' && resource.room) {
+  if (resource.__typename === 'RoomCalendar' && resource.room) {
     return resource.room.name;
   }
 

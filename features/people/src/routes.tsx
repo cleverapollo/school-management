@@ -108,7 +108,9 @@ export const getRoutes: NavObjectFunction = (t) => [
                     getStudentsContacts(studentId),
                     getStudentDashboardAssessments(studentId),
                     getPartyTimetable({
-                      partyIds: [studentId ?? 0],
+                      resources: {
+                        partyIds: [studentId ?? 0],
+                      },
                       startDate: formattedDate,
                       endDate: formattedDate,
                     }),
@@ -163,7 +165,9 @@ export const getRoutes: NavObjectFunction = (t) => [
                   return studentId
                     ? getCalendarEvents({
                         date: new Date(),
-                        partyIds: [studentId],
+                        resources: {
+                          partyIds: [studentId],
+                        },
                       })
                     : null;
                 },

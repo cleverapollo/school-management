@@ -1,5 +1,3 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
 import FullCalendar from '@fullcalendar/react';
 import { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core';
 import listPlugin from '@fullcalendar/list';
@@ -76,7 +74,9 @@ export const Calendar = function Calendar({
   const { data } = useCalendarEvents(
     {
       date,
-      partyIds: selectedPartys.map((party) => party.partyId),
+      resources: {
+        partyIds: selectedPartys.map((party) => party.partyId),
+      },
     },
     visableEventTypes
   );
