@@ -91,12 +91,16 @@ export function usePartyTimetable({
     const formattedDateBefore = date.subtract(1, 'day').format('YYYY-MM-DD');
     const formattedDateAfter = date.add(1, 'day').format('YYYY-MM-DD');
     getPartyTimetable({
-      partyIds: [partyId ?? 0],
+      resources: {
+        partyIds: [partyId ?? 0],
+      },
       startDate: formattedDateBefore,
       endDate: formattedDateBefore,
     });
     getPartyTimetable({
-      partyIds: [partyId ?? 0],
+      resources: {
+        partyIds: [partyId ?? 0],
+      },
       startDate: formattedDateAfter,
       endDate: formattedDateAfter,
     });
@@ -104,7 +108,9 @@ export function usePartyTimetable({
 
   return useQuery({
     ...timetableQuery({
-      partyIds: [partyId ?? 0],
+      resources: {
+        partyIds: [partyId ?? 0],
+      },
       startDate: formattedDate,
       endDate: formattedDate,
     }),

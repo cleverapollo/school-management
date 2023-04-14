@@ -57,7 +57,7 @@ const events = graphql(/* GraphQL */ `
     calendar_calendarEvents(filter: $filter) {
       resources {
         resourceId
-        ... on PartyCalendarResource {
+        ... on PartyCalendar {
           __typename
           partyInfo {
             __typename
@@ -88,7 +88,7 @@ const events = graphql(/* GraphQL */ `
             }
           }
         }
-        ... on RoomCalendarResource {
+        ... on RoomCalendar {
           room {
             name
           }
@@ -177,7 +177,7 @@ type BussinessHoursInput = {
 };
 
 interface CalendarFilter
-  extends Pick<CalendarEventFilter, 'calendarIds' | 'partyIds'> {
+  extends Pick<CalendarEventFilter, 'calendarIds' | 'resources'> {
   date: Date;
 }
 

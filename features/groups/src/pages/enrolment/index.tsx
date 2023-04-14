@@ -1,165 +1,164 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
-import { Button, Container, Typography } from '@mui/material';
-import { useNavigate } from 'react-router';
-import { GeneralGroup, Group, UserType, useUser } from '@tyro/api';
-import { useMemo } from 'react';
+import { Box, Container, Fade, Typography } from '@mui/material';
+import { usePermissions } from '@tyro/api';
+import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { Page } from '@tyro/core';
-import Table from '../../../../../src/components/table/Table';
-import { Option, TableColumn } from '../../../../../src/components/table/types';
-import OptionButton from '../../../../../src/components/table/OptionButton';
+import {
+  ActionMenu,
+  ActionMenuProps,
+  GridOptions,
+  ICellRendererParams,
+  Page,
+  RouterLink,
+  Table,
+} from '@tyro/core';
+import {
+  ArchiveIcon,
+  MobileIcon,
+  SendMailIcon,
+  UnarchiveIcon,
+} from '@tyro/icons';
 import { useEnrolmentGroups } from '../../api/general-groups';
 
-interface EnrolmentGroupData {
-  name: GeneralGroup['name'];
-  members: Group['memberCount'];
-  programme: string | null | undefined;
-  year: string;
-  tutor: string;
-  yearhead: string;
-  id: string;
-  firstButton?: string;
-  tech?: string;
-}
-
-export const getAdminOptions = (
-  translate: TFunction<'common'[], undefined, 'common'[]>
-): Option<EnrolmentGroupData>[] => [
-  {
-    text: translate('common:actions.notify'),
-    icon: 'notify',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
-    },
-  },
-  {
-    text: translate('common:actions.edit'),
-    icon: 'edit',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
-    },
-  },
-  {
-    text: translate('common:actions.archive'),
-    icon: 'archive',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
-    },
-  },
-  {
-    text: translate('common:actions.delete'),
-    icon: 'delete',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
-    },
-  },
-];
+type ReturnTypeFromUseEnrolmentGroups = NonNullable<
+  ReturnType<typeof useEnrolmentGroups>['data']
+>[number];
 
 const getEnrolmentGroupColumns = (
-  translate: TFunction<
-    ('common' | 'groups')[],
+  t: TFunction<
+    ('common' | 'groups' | 'people' | 'mail')[],
     undefined,
-    ('common' | 'groups')[]
+    ('common' | 'groups' | 'people' | 'mail')[]
   >,
-  isAdminUserType: boolean
-): TableColumn<EnrolmentGroupData>[] => [
+  isStaffUser: boolean
+): GridOptions<ReturnTypeFromUseEnrolmentGroups>['columnDefs'] => [
   {
-    columnDisplayName: 'id',
-    fieldName: 'id',
-  },
-  {
-    columnDisplayName: translate('common:name'),
-    fieldName: 'name',
-    filter: 'suggest',
-    isMandatory: true,
-  },
-  {
-    columnDisplayName: translate('common:members'),
-    fieldName: 'members',
-    filter: 'suggest',
-    isMandatory: true,
-  },
-  {
-    columnDisplayName: translate('common:year'),
-    fieldName: 'year',
-    filter: 'suggest',
-    isMandatory: true,
-  },
-  {
-    columnDisplayName: translate('common:tutor'),
-    fieldName: 'tutor',
-    filter: 'suggest',
-  },
-  {
-    columnDisplayName: translate('common:yearhead'),
-    fieldName: 'yearhead',
-    filter: 'suggest',
-  },
-  {
-    columnDisplayName: translate('common:programme'),
-    fieldName: 'programme',
-    filter: 'suggest',
-  },
-  {
-    columnDisplayName: '',
-    fieldName: 'firstButton',
-    component: (columnProps) => (
-      <Button
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-      >
-        {columnProps.row.original.firstButton}
-      </Button>
+    field: 'name',
+    headerName: t('common:name'),
+    headerCheckboxSelection: isStaffUser,
+    headerCheckboxSelectionFilteredOnly: isStaffUser,
+    checkboxSelection: isStaffUser,
+    lockVisible: true,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseEnrolmentGroups>) => (
+      <RouterLink sx={{ fontWeight: 600 }} to={`${data?.partyId ?? ''}`}>
+        {data?.name}
+      </RouterLink>
     ),
   },
   {
-    columnDisplayName: 'Tech Options',
-    fieldName: 'tech',
-    component: (columnProps) =>
-      isAdminUserType && <OptionButton options={getAdminOptions(translate)} />,
+    headerName: t('common:members'),
+    filter: true,
+    valueGetter: ({ data }) =>
+      (data?.studentMembers?.memberCount ?? 0) +
+      (data?.staffMembers?.memberCount ?? 0) +
+      (data?.contactMembers?.memberCount ?? 0),
+  },
+  {
+    headerName: t('common:year'),
+    field: 'year',
+  },
+  {
+    headerName: t('common:tutor'),
+    field: 'tutor',
+  },
+  {
+    headerName: t('common:yearhead'),
+    field: 'yearhead',
+  },
+  {
+    headerName: t('common:programme'),
+    field: 'programme',
+    valueGetter: ({ data }) =>
+      data?.programmeStages
+        ?.map((programmeStage) => programmeStage?.programme?.name)
+        ?.filter(Boolean)
+        .join(', '),
   },
 ];
 
 export default function EnrolmentGroups() {
-  const { t } = useTranslation(['common', 'groups']);
-  const navigate = useNavigate();
-  const { activeProfile } = useUser();
-  const { data, isLoading } = useEnrolmentGroups();
-  const profileTypeName = activeProfile?.profileType?.userType;
-  const isAdminUserType = profileTypeName === UserType.Admin;
+  const { t } = useTranslation(['common', 'groups', 'people', 'mail']);
+  const [selectedGroups, setSelectedGroups] = useState<
+    ReturnTypeFromUseEnrolmentGroups[]
+  >([]);
+  const { isStaffUser } = usePermissions();
+  const { data: enrolmentGroupData } = useEnrolmentGroups();
+  const showActionMenu = isStaffUser && selectedGroups.length > 0;
 
   const enrolmentGroupColumns = useMemo(
-    () => getEnrolmentGroupColumns(t, isAdminUserType),
-    [t, isAdminUserType]
+    () => getEnrolmentGroupColumns(t, isStaffUser),
+    [t, isStaffUser]
   );
 
-  const enrolmentGroupData: EnrolmentGroupData[] =
-    data?.map(
-      (group) =>
-        (({
-          ...group,
-          firstButton: isAdminUserType
-            ? t('common:actions.view')
-            : t('common:actions.notify'),
-          tech: '',
-        } as EnrolmentGroupData) || [])
-    ) || [];
+  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => {
+    const commonActions = [
+      {
+        label: t('people:sendSms'),
+        icon: <MobileIcon />,
+        // TODO: add action logic
+        onClick: () => {},
+      },
+      {
+        label: t('mail:sendMail'),
+        icon: <SendMailIcon />,
+        onClick: () => {},
+      },
+    ];
+
+    // TODO: add flag to check status
+    const isThereAtLeastOneUnarchived = true;
+
+    const archiveActions = [
+      isThereAtLeastOneUnarchived
+        ? {
+            label: t('common:actions.archive'),
+            icon: <ArchiveIcon />,
+            // TODO: add action logic
+            onClick: () => {},
+          }
+        : {
+            label: t('common:actions.unarchive'),
+            icon: <UnarchiveIcon />,
+            // TODO: add action logic
+            onClick: () => {},
+          },
+    ];
+
+    return [commonActions, archiveActions];
+  }, []);
 
   return (
-    <Page title={t('groups:enrolmentGroups')} isLoading={isLoading}>
+    <Page title={t('groups:enrolmentGroups')}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
           {t('groups:enrolmentGroups')}
         </Typography>
         <Table
-          data={enrolmentGroupData}
-          columns={enrolmentGroupColumns}
-          // ToDO: change navigate url to new one after spliting exact group pages by type
-          onClickRow={(id: string) => {
-            navigate(`./${id}/view`);
-          }}
+          rowData={enrolmentGroupData ?? []}
+          columnDefs={enrolmentGroupColumns}
+          rowSelection="multiple"
+          getRowId={({ data }) => String(data?.partyId)}
+          rightAdornment={
+            <Fade in={showActionMenu} unmountOnExit>
+              <Box>
+                <ActionMenu
+                  menuProps={{
+                    anchorOrigin: {
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                    },
+                    transformOrigin: {
+                      vertical: 'top',
+                      horizontal: 'right',
+                    },
+                  }}
+                  menuItems={actionMenuItems}
+                />
+              </Box>
+            </Fade>
+          }
+          onRowSelection={setSelectedGroups}
         />
       </Container>
     </Page>

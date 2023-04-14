@@ -16,6 +16,7 @@ module.exports = {
           {"props": "never", "children": "never"}
         ],
         "react-hooks/exhaustive-deps": "off",
+        "@typescript-eslint/no-throw-literal": "off",
         'camelcase': 'off',
       }
     },

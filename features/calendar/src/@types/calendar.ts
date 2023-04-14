@@ -4,7 +4,7 @@ export type PartyResource = Extract<
   NonNullable<
     Calendar_CalendarEventsQuery['calendar_calendarEvents']
   >['resources'][number],
-  { __typename: 'PartyCalendarResource' }
+  { __typename: 'PartyCalendar' }
 >;
 
 export type Attendee = PartyResource['events'][number]['attendees'][number];

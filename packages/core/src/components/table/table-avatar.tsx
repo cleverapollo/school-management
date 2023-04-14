@@ -5,7 +5,7 @@ import { Avatar } from '../avatar';
 import { RouterLink } from '../router-link';
 
 type TableAvatarProps = {
-  to: string;
+  to?: string | null;
   person: Partial<Person> | undefined;
 };
 
@@ -23,9 +23,13 @@ export function TableAvatar({ to, person }: TableAvatarProps) {
           mr: 1.5,
         }}
       />
-      <RouterLink sx={{ fontWeight: 600 }} to={to}>
-        {name}
-      </RouterLink>
+      {to ? (
+        <RouterLink sx={{ fontWeight: 600 }} to={to}>
+          {name}
+        </RouterLink>
+      ) : (
+        <Box component="span">{name}</Box>
+      )}
     </Box>
   );
 }

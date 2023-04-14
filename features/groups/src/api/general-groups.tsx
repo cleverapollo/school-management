@@ -9,6 +9,12 @@ const generalGroupsList = graphql(/* GraphQL */ `
       studentMembers {
         memberCount
       }
+      staffMembers {
+        memberCount
+      }
+      contactMembers {
+        memberCount
+      }
       generalGroupType
       programmeStages {
         programme {
@@ -25,10 +31,13 @@ const enrolmentGroupById = graphql(/* GraphQL */ `
       partyId
       name
       students {
-        partyId
         person {
+          partyId
+          title
           firstName
           lastName
+          avatarUrl
+          type
         }
       }
     }
@@ -41,16 +50,30 @@ const customGroupById = graphql(/* GraphQL */ `
       partyId
       name
       students {
-        partyId
         person {
+          partyId
+          title
           firstName
           lastName
+          avatarUrl
+          type
         }
       }
       staff {
         partyId
+        title
         firstName
         lastName
+        avatarUrl
+        type
+      }
+      contacts {
+        partyId
+        title
+        firstName
+        lastName
+        avatarUrl
+        type
       }
     }
   }
@@ -72,7 +95,6 @@ const customGroupsQuery = {
         ],
       },
     }),
-  staleTime: 1000 * 60 * 5,
 };
 
 export function getCustomGroups() {
@@ -82,14 +104,7 @@ export function getCustomGroups() {
 export function useCustomGroups() {
   return useQuery({
     ...customGroupsQuery,
-    select: ({ generalGroups }) =>
-      generalGroups?.map((group) => ({
-        name: group?.name,
-        members: group?.studentMembers?.memberCount,
-        type: group?.generalGroupType,
-        created: 'Rachel',
-        id: (group?.partyId as number).toString(),
-      })),
+    select: ({ generalGroups }) => generalGroups,
   });
 }
 
@@ -101,7 +116,6 @@ const customGroupsByIdQuery = (id: number | undefined) => ({
         partyIds: [id ?? 0],
       },
     }),
-  staleTime: 1000 * 60 * 5,
 });
 
 export function getCustomGroupsById(id: number | undefined) {
@@ -115,10 +129,17 @@ export function useCustomGroupById(id: number | undefined) {
       if (!generalGroups) return null;
       const group = generalGroups[0];
 
+      const students =
+        group?.students?.map((student) => student?.person).filter(Boolean) ??
+        [];
+
       return {
-        id: (group?.partyId as number).toString(),
         name: group?.name,
-        members: [...(group?.students ?? []), ...(group?.staff ?? [])],
+        members: [
+          ...students,
+          ...(group?.staff ?? []),
+          ...(group?.contacts ?? []),
+        ],
       };
     },
   });
@@ -138,7 +159,6 @@ const enrolmentGroupsQuery = {
         groupTypes: [GeneralGroupType.ClassGroup],
       },
     }),
-  staleTime: 1000 * 60 * 5,
 };
 
 export function getEnrolmentGroups() {
@@ -148,19 +168,7 @@ export function getEnrolmentGroups() {
 export function useEnrolmentGroups() {
   return useQuery({
     ...enrolmentGroupsQuery,
-    select: ({ generalGroups }) =>
-      generalGroups?.map((group) => ({
-        name: group?.name,
-        members: group?.studentMembers?.memberCount,
-        programme: Array.isArray(group?.programmeStages)
-          ? group?.programmeStages[0]?.programme?.name
-          : null,
-        // ToDo: change this mocks to data from backend when it will be implemented
-        year: '1',
-        tutor: 'Rachel',
-        yearhead: 'Rachel',
-        id: (group?.partyId as number).toString(),
-      })),
+    select: ({ generalGroups }) => generalGroups,
   });
 }
 
@@ -172,7 +180,6 @@ const enrolmentGroupsByIdQuery = (id: number | undefined) => ({
         partyIds: [id ?? 0],
       },
     }),
-  staleTime: 1000 * 60 * 5,
 });
 
 export function getEnrolmentGroupsById(id: number | undefined) {
@@ -187,7 +194,6 @@ export function useEnrolmentGroupById(id: number | undefined) {
       const group = generalGroups[0];
 
       return {
-        id: (group?.partyId as number).toString(),
         name: group?.name,
         members: group?.students ?? [],
       };

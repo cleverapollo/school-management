@@ -32,7 +32,9 @@ export const getRoutes: NavObjectFunction = (t) => [
           const getEventsPromise = activeProfile?.partyId
             ? getCalendarEvents({
                 date: new Date(),
-                partyIds: [activeProfile?.partyId],
+                resources: {
+                  partyIds: [activeProfile?.partyId],
+                },
               })
             : null;
 
