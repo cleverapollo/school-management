@@ -130,16 +130,8 @@ export function useCustomGroupById(id: number | undefined) {
       const group = generalGroups[0];
 
       const students =
-        group?.students?.reduce<
-          NonNullable<
-            NonNullable<(typeof group)['students']>[number]
-          >['person'][]
-        >((acc, student) => {
-          if (student?.person) {
-            acc.push(student.person);
-          }
-          return acc;
-        }, []) ?? [];
+        group?.students?.map((student) => student?.person).filter(Boolean) ??
+        [];
 
       return {
         name: group?.name,
@@ -188,7 +180,6 @@ const enrolmentGroupsByIdQuery = (id: number | undefined) => ({
         partyIds: [id ?? 0],
       },
     }),
-  staleTime: 1000 * 60 * 5,
 });
 
 export function getEnrolmentGroupsById(id: number | undefined) {

@@ -1,4 +1,4 @@
-import { Box, Button, Container, Fade, Typography } from '@mui/material';
+import { Box, Container, Fade, Typography } from '@mui/material';
 import { usePermissions } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -71,12 +71,8 @@ const getEnrolmentGroupColumns = (
     field: 'programme',
     valueGetter: ({ data }) =>
       data?.programmeStages
-        ?.reduce<string[]>((acc, programmeStage) => {
-          if (programmeStage?.programme?.name) {
-            acc.push(programmeStage.programme.name);
-          }
-          return acc;
-        }, [])
+        ?.map((programmeStage) => programmeStage?.programme?.name)
+        ?.filter(Boolean)
         .join(', '),
   },
 ];
