@@ -47,5 +47,22 @@
   "extraFieldName": "Field Name",
   "extraFieldType": "Type",
   "extraFieldValue": "Value",
-  "createTermAssessment": "Create Term Assessment"
+  "createTermAssessment": "Create Term Assessment",
+  "assessmentName": "Assessment name",
+  "assessmentType": "Assessment type",
+  "assessmentTypes": {
+    "TERM": "Term",
+    "STATE_CBA": "State CBA",
+    "IN_CLASS": "In Class"
+  },
+  "publishedOnline": "Published online",
+  "dateOfCreation": "Date of creation",
+  "createdBy": "Created by",
+  "actions": {
+    "edit": "Edit assessment",
+    "view": "View assessment",
+    "publish": "Publish online",
+    "unpublish": "Unpublish online"
+  },
+  "academicYear": "Academic Year"
 }
