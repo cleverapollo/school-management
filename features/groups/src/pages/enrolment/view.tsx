@@ -1,121 +1,136 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
-import { useEffect, useMemo } from 'react';
-import { Container, Typography } from '@mui/material';
-import { useNavigate, useParams } from 'react-router';
-import { Person } from '@tyro/api';
+import { useMemo, useState } from 'react';
+import { Box, Container, Fade } from '@mui/material';
+import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { useNumber, Page, Breadcrumbs } from '@tyro/core';
+import { MobileIcon, SendMailIcon } from '@tyro/icons';
+import {
+  useNumber,
+  Page,
+  Table,
+  GridOptions,
+  ActionMenu,
+  TableAvatar,
+  ICellRendererParams,
+  usePreferredNameLayout,
+  PageHeading,
+} from '@tyro/core';
 import { useEnrolmentGroupById } from '../../api/general-groups';
-import Table from '../../../../../src/components/table/Table';
-import { TableColumn, Option } from '../../../../../src/components/table/types';
-import OptionButton from '../../../../../src/components/table/OptionButton';
+import { getPersonProfileLink } from '../../utils/get-person-profile-link';
 
-interface EnrolmentExactGroupData {
-  id: string;
-  name: string;
-  members: Person[];
-  tech: string;
-}
-
-export const getEnrolmentOptions = (
-  translate: TFunction<('common')[], undefined, ('common')[]>,
-): Option<EnrolmentExactGroupData>[] => ([
-  {
-    text: translate('common:actions.notify'),
-    icon: 'notify',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
-    },
-  },
-  {
-    text: translate('common:actions.viewProfile'),
-    icon: 'edit',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
-    },
-  },
-  {
-    text: translate('common:actions.viewTimetable'),
-    icon: 'edit',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
-    },
-  },
-]);
+type MembersReturnTypeFromUseEnrolmentGroupById = NonNullable<
+  ReturnType<typeof useEnrolmentGroupById>['data']
+>['members'][number];
 
 const getEnrolmentGroupColumns = (
-  translate: TFunction<
-    ('common' | 'groups')[],
-    undefined,
-    ('common' | 'groups')[]
-  >
-): TableColumn<EnrolmentExactGroupData>[] => [
+  t: TFunction<('common' | 'groups')[], undefined, ('common' | 'groups')[]>,
+  displayName: ReturnType<typeof usePreferredNameLayout>['displayName']
+): GridOptions<MembersReturnTypeFromUseEnrolmentGroupById>['columnDefs'] => [
   {
-    columnDisplayName: translate('common:name'),
-    fieldName: 'name',
-    filter: 'suggest',
-    isMandatory: true,
-    isSortNeeded: true,
-    component: ({ row }) => (
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        {/* Add Avatar back in when we add value to BE */}
-        {/* <Avatar srcSet={columnProps.row.original.avatarUrl} name={columnProps.row.original.name} style={{ marginRight: '10px' }} /> */}
-        {row.original.name}
-      </div>
+    field: 'person',
+    headerName: t('common:name'),
+    valueGetter: ({ data }) => displayName(data?.person ?? undefined),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<
+      MembersReturnTypeFromUseEnrolmentGroupById,
+      any
+    >) => (
+      <TableAvatar
+        person={data?.person ?? undefined}
+        to={getPersonProfileLink(data?.person ?? undefined)}
+      />
     ),
-  },
-  {
-    columnDisplayName: 'Tech Options',
-    fieldName: 'tech',
-    component: (columnProps) => <OptionButton options={getEnrolmentOptions(translate)} />,
+    headerCheckboxSelection: true,
+    headerCheckboxSelectionFilteredOnly: true,
+    checkboxSelection: true,
+    lockVisible: true,
   },
 ];
 
 export default function ViewEnrolmentGroupPage() {
-  const { t } = useTranslation(['common', 'groups']);
-  const navigate = useNavigate();
+  const { t } = useTranslation(['common', 'groups', 'people', 'mail']);
   const { groupId } = useParams();
   const groupIdAsNumber = useNumber(groupId);
+  const { displayName } = usePreferredNameLayout();
+  const [selectedMembers, setSelectedMembers] = useState<
+    MembersReturnTypeFromUseEnrolmentGroupById[]
+  >([]);
 
-  useEffect(() => {
-    if (!groupIdAsNumber) {
-      navigate('/404');
-    }
-  }, [groupIdAsNumber]);
+  const actionMenuItems = [
+    {
+      label: t('people:sendSms'),
+      icon: <MobileIcon />,
+      // TODO: add action logic
+      onClick: () => {},
+    },
+    {
+      label: t('mail:sendMail'),
+      icon: <SendMailIcon />,
+      onClick: () => {},
+    },
+  ];
 
-  const { data, isLoading } = useEnrolmentGroupById(groupIdAsNumber);
-  const tableData = (data?.members ?? []).map((member) => ({
-    ...member,
-    tech: '',
-  })) as EnrolmentExactGroupData[];
+  const { data: groupData } = useEnrolmentGroupById(groupIdAsNumber);
 
-  const enrolmentGroupColumns = useMemo(() => getEnrolmentGroupColumns(t), [t]);
-  const title = !data?.name
-    ? ''
-    : `${data?.name} ${t('groups:memberList')}`;
+  const enrolmentGroupColumns = useMemo(
+    () => getEnrolmentGroupColumns(t, displayName),
+    [t, displayName]
+  );
+  const title = t('groups:namedMemberList', {
+    groupName: groupData?.name ?? '',
+  });
+  const showActionMenu = selectedMembers.length > 0;
 
   return (
-    <Page title={title} isLoading={isLoading}>
-      <Container maxWidth="xl">
-        <Typography variant="h3" component="h1" paragraph>
-          {title}
-        </Typography>
-        <Breadcrumbs
-          links={[
-            {
-              name: t('groups:enrolmentGroups'),
-              href: './..',
-            },
-            {
-              name: data?.name ?? '',
-            },
-          ]}
+    <Page title={title}>
+      <Container
+        maxWidth="xl"
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+          pb: 3,
+        }}
+      >
+        <PageHeading
+          title={title}
+          breadcrumbs={{
+            links: [
+              {
+                name: t('groups:enrolmentGroups'),
+                href: './..',
+              },
+              {
+                name: groupData?.name ?? '',
+              },
+            ],
+          }}
         />
         <Table
-          data={tableData}
-          columns={enrolmentGroupColumns}
-          isRowSelectionNeeded
+          rowData={groupData?.members ?? []}
+          columnDefs={enrolmentGroupColumns}
+          rowSelection="multiple"
+          getRowId={({ data }) => String(data?.person?.partyId)}
+          rightAdornment={
+            <Fade in={showActionMenu} unmountOnExit>
+              <Box>
+                <ActionMenu
+                  menuProps={{
+                    anchorOrigin: {
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                    },
+                    transformOrigin: {
+                      vertical: 'top',
+                      horizontal: 'right',
+                    },
+                  }}
+                  menuItems={actionMenuItems}
+                />
+              </Box>
+            </Fade>
+          }
+          onRowSelection={setSelectedMembers}
         />
       </Container>
     </Page>

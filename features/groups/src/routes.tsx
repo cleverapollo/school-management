@@ -1,4 +1,9 @@
-import { getNumber, NavObjectFunction, NavObjectType } from '@tyro/core';
+import {
+  getNumber,
+  NavObjectFunction,
+  NavObjectType,
+  throwRedirectError,
+} from '@tyro/core';
 import { lazy } from 'react';
 import { UserProfileCardIcon } from '@tyro/icons';
 import { Iterator } from '@tyro/api';
@@ -49,15 +54,19 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'enrolment',
             title: t('navigation:general.groups.enrolment'),
-            loader: () => getEnrolmentGroups(),
-            element: <EnrolmentGroups />,
             children: [
               {
                 type: NavObjectType.NonMenuLink,
-                path: ':groupId/view',
+                index: true,
+                loader: () => getEnrolmentGroups(),
+                element: <EnrolmentGroups />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: ':groupId',
                 loader: ({ params }) => {
                   const groupId = getNumber(params?.groupId);
-                  getEnrolmentGroupsById(groupId);
+                  return getEnrolmentGroupsById(groupId);
                 },
                 element: <ViewEnrolmentGroupPage />,
               },
@@ -68,60 +77,75 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'subject',
             title: t('navigation:general.groups.subject'),
             loader: () => getSubjectGroups(),
-            element: <SubjectGroups />,
-          },
-          {
-            type: NavObjectType.NonMenuLink,
-            path: 'subject/:groupId',
-            element: <SubjectGroupContainer />,
-            loader: async ({ params }) => {
-              const groupId = getNumber(params.groupId);
-
-              const { calendar_calendarEventsIterator: closestLesson } =
-                await getSubjectGroupLesson({
-                  partyId: groupId!,
-                  iterator: Iterator.Closest,
-                });
-
-              return Promise.all([
-                getSubjectGroupsById(groupId),
-                ...(closestLesson
-                  ? [
-                      getSubjectGroupLesson({
-                        partyId: groupId!,
-                        eventStartTime: closestLesson.startTime,
-                        iterator: Iterator.Next,
-                      }),
-                    ]
-                  : []),
-              ]);
-            },
             children: [
               {
                 type: NavObjectType.NonMenuLink,
                 index: true,
-                loader: () => redirect('./students'),
+                loader: () => getSubjectGroups(),
+                element: <SubjectGroups />,
               },
               {
                 type: NavObjectType.NonMenuLink,
-                path: 'students',
-                element: <SubjectGroupProfileStudentsPage />,
-              },
-              {
-                type: NavObjectType.NonMenuLink,
-                path: 'attendance',
-                element: <SubjectGroupProfileAttendancePage />,
+                path: ':groupId',
+                element: <SubjectGroupContainer />,
                 loader: async ({ params }) => {
                   const groupId = getNumber(params.groupId);
 
-                  return Promise.all([
-                    getAttendanceCodes({ custom: false }),
-                    getSubjectGroupLesson({
-                      partyId: groupId!,
+                  if (!groupId) {
+                    throwRedirectError();
+                  }
+
+                  const { calendar_calendarEventsIterator: closestLesson } =
+                    await getSubjectGroupLesson({
+                      partyId: groupId,
                       iterator: Iterator.Closest,
-                    }),
+                    });
+
+                  return Promise.all([
+                    getSubjectGroupsById(groupId),
+                    ...(closestLesson
+                      ? [
+                          getSubjectGroupLesson({
+                            partyId: groupId,
+                            eventStartTime: closestLesson.startTime,
+                            iterator: Iterator.Next,
+                          }),
+                        ]
+                      : []),
                   ]);
                 },
+                children: [
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    index: true,
+                    loader: () => redirect('./students'),
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'students',
+                    element: <SubjectGroupProfileStudentsPage />,
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'attendance',
+                    element: <SubjectGroupProfileAttendancePage />,
+                    loader: async ({ params }) => {
+                      const groupId = getNumber(params.groupId);
+
+                      if (!groupId) {
+                        throwRedirectError();
+                      }
+
+                      return Promise.all([
+                        getAttendanceCodes({ custom: false }),
+                        getSubjectGroupLesson({
+                          partyId: groupId,
+                          iterator: Iterator.Closest,
+                        }),
+                      ]);
+                    },
+                  },
+                ],
               },
             ],
           },
@@ -129,15 +153,23 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'custom',
             title: t('navigation:general.groups.custom'),
-            loader: () => getCustomGroups(),
-            element: <CustomGroups />,
             children: [
               {
                 type: NavObjectType.NonMenuLink,
-                path: ':groupId/view',
+                index: true,
+                loader: () => getCustomGroups(),
+                element: <CustomGroups />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: ':groupId',
                 loader: ({ params }) => {
                   const groupId = getNumber(params?.groupId);
-                  getCustomGroupsById(groupId);
+                  if (!groupId) {
+                    throwRedirectError();
+                  }
+
+                  return getCustomGroupsById(groupId);
                 },
                 element: <ViewCustomGroupPage />,
               },

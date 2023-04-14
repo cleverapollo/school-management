@@ -1,205 +1,151 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
-import { Button, Container, Typography } from '@mui/material';
-import { useNavigate } from 'react-router';
-import {
-  GeneralGroup,
-  GeneralGroupType,
-  Group,
-  UserType,
-  useUser,
-} from '@tyro/api';
-import { useMemo } from 'react';
+import { Box, Container, Fade, Typography } from '@mui/material';
+import { usePermissions } from '@tyro/api';
+import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { Page } from '@tyro/core';
-import Table from '../../../../../src/components/table/Table';
-import { Option, TableColumn } from '../../../../../src/components/table/types';
-import OptionButton from '../../../../../src/components/table/OptionButton';
+import {
+  ActionMenu,
+  ActionMenuProps,
+  GridOptions,
+  ICellRendererParams,
+  Page,
+  RouterLink,
+  Table,
+} from '@tyro/core';
+import {
+  ArchiveIcon,
+  MobileIcon,
+  SendMailIcon,
+  UnarchiveIcon,
+} from '@tyro/icons';
 import { useCustomGroups } from '../../api/general-groups';
 
-interface CustomGroupData {
-  name: GeneralGroup['name'];
-  members: Group['memberCount'];
-  type:
-    | GeneralGroupType.StaticGroup
-    | GeneralGroupType.DynamicGroup
-    | undefined;
-  created: string;
-  id: string;
-  firstButton?: string;
-  tech?: string;
-}
+type ReturnTypeFromUseCustomGroups = NonNullable<
+  ReturnType<typeof useCustomGroups>['data']
+>[number];
 
-export const getAdminOptions = (
-  translate: TFunction<'common'[], undefined, 'common'[]>
-): Option<CustomGroupData>[] => [
-  {
-    text: translate('common:actions.notify'),
-    icon: 'notify',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
-    },
-  },
-  {
-    text: translate('common:actions.edit'),
-    icon: 'edit',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
-    },
-  },
-  {
-    text: translate('common:actions.archive'),
-    icon: 'archive',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
-    },
-  },
-  {
-    text: translate('common:actions.delete'),
-    icon: 'delete',
-    action: (e: MouseEvent) => {
-      e.stopPropagation();
-    },
-  },
-];
-
-const getCustomGroupColumns = (
-  translate: TFunction<
-    ('common' | 'groups')[],
+const getCustomGroupsColumns = (
+  t: TFunction<
+    ('common' | 'groups' | 'people' | 'mail')[],
     undefined,
-    ('common' | 'groups')[]
+    ('common' | 'groups' | 'people' | 'mail')[]
   >,
-  isAdminUserType: boolean
-): TableColumn<CustomGroupData>[] => [
+  isStaffUser: boolean
+): GridOptions<ReturnTypeFromUseCustomGroups>['columnDefs'] => [
   {
-    columnDisplayName: 'id',
-    fieldName: 'id',
-  },
-  {
-    columnDisplayName: translate('common:name'),
-    fieldName: 'name',
-    filter: 'suggest',
-    isMandatory: true,
-  },
-  {
-    columnDisplayName: translate('common:members'),
-    fieldName: 'members',
-    filter: 'suggest',
-    isMandatory: true,
-  },
-  {
-    columnDisplayName: translate('common:type'),
-    fieldName: 'type',
-    filter: 'suggest',
-    isMandatory: true,
-  },
-  {
-    columnDisplayName: translate('common:created'),
-    fieldName: 'created',
-    filter: 'suggest',
-  },
-  {
-    columnDisplayName: '',
-    fieldName: 'firstButton',
-    component: (columnProps) => (
-      <Button
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-      >
-        {columnProps.row.original.firstButton}
-      </Button>
+    field: 'name',
+    headerName: t('common:name'),
+    headerCheckboxSelection: isStaffUser,
+    headerCheckboxSelectionFilteredOnly: isStaffUser,
+    checkboxSelection: isStaffUser,
+    lockVisible: true,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseCustomGroups>) => (
+      <RouterLink sx={{ fontWeight: 600 }} to={`${data?.partyId ?? ''}`}>
+        {data?.name}
+      </RouterLink>
     ),
   },
   {
-    columnDisplayName: 'Tech Options',
-    fieldName: 'tech',
-    component: (columnProps) =>
-      isAdminUserType && <OptionButton options={getAdminOptions(translate)} />,
+    headerName: t('common:members'),
+    filter: true,
+    valueGetter: ({ data }) =>
+      (data?.studentMembers?.memberCount ?? 0) +
+      (data?.staffMembers?.memberCount ?? 0) +
+      (data?.contactMembers?.memberCount ?? 0),
+  },
+  {
+    field: 'generalGroupType',
+    headerName: t('common:type'),
+    valueGetter: ({ data }) =>
+      data?.generalGroupType
+        ? t(`groups:generalGroupType.${data.generalGroupType}`)
+        : '',
   },
 ];
-
-const getStudentsCustomGroupColumns = (
-  translate: (text: any, options?: any) => string
-): TableColumn<CustomGroupData>[] => [
-  {
-    columnDisplayName: 'id',
-    fieldName: 'id',
-  },
-  {
-    columnDisplayName: translate('name'),
-    fieldName: 'name',
-    filter: 'suggest',
-    isMandatory: true,
-  },
-  {
-    columnDisplayName: translate('teacher'),
-    fieldName: 'created',
-    filter: 'suggest',
-    isMandatory: true,
-  },
-  {
-    columnDisplayName: '',
-    fieldName: 'firstButton',
-    component: (columnProps) => (
-      <Button
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-      >
-        {columnProps.row.original.firstButton}
-      </Button>
-    ),
-  },
-  {
-    columnDisplayName: 'Tech Options',
-    fieldName: 'tech',
-  },
-];
-
-// TODO: migrate to react-data-grid
 
 export default function CustomGroups() {
-  const { t } = useTranslation(['common', 'groups']);
-  const navigate = useNavigate();
-  const { activeProfile } = useUser();
-  const { data, isLoading } = useCustomGroups();
-  const profileTypeName = activeProfile?.profileType?.name;
-  const isAdminUserType = profileTypeName === UserType.Admin;
-  const isFacultyOrAdmin =
-    profileTypeName === UserType.Admin || profileTypeName === UserType.Teacher;
-
-  const customGroupData: CustomGroupData[] =
-    data?.map(
-      (group) =>
-        ({
-          ...group,
-          firstButton: t('common:actions.view'),
-          tech: '',
-        } as CustomGroupData)
-    ) ?? [];
+  const { t } = useTranslation(['common', 'groups', 'people', 'mail']);
+  const [selectedGroups, setSelectedGroups] = useState<
+    ReturnTypeFromUseCustomGroups[]
+  >([]);
+  const { isStaffUser } = usePermissions();
+  const { data: customGroupData } = useCustomGroups();
+  const showActionMenu = isStaffUser && selectedGroups.length > 0;
 
   const customGroupColumns = useMemo(
-    () =>
-      isFacultyOrAdmin
-        ? getCustomGroupColumns(t, isAdminUserType)
-        : getStudentsCustomGroupColumns(t),
-    [t, isAdminUserType, isFacultyOrAdmin]
+    () => getCustomGroupsColumns(t, isStaffUser),
+    [t, isStaffUser]
   );
 
+  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => {
+    const commonActions = [
+      {
+        label: t('people:sendSms'),
+        icon: <MobileIcon />,
+        // TODO: add action logic
+        onClick: () => {},
+      },
+      {
+        label: t('mail:sendMail'),
+        icon: <SendMailIcon />,
+        onClick: () => {},
+      },
+    ];
+
+    // TODO: add flag to check status
+    const isThereAtLeastOneUnarchived = true;
+
+    const archiveActions = [
+      isThereAtLeastOneUnarchived
+        ? {
+            label: t('common:actions.archive'),
+            icon: <ArchiveIcon />,
+            // TODO: add action logic
+            onClick: () => {},
+          }
+        : {
+            label: t('common:actions.unarchive'),
+            icon: <UnarchiveIcon />,
+            // TODO: add action logic
+            onClick: () => {},
+          },
+    ];
+
+    return [commonActions, archiveActions];
+  }, []);
+
   return (
-    <Page title={t('groups:customGroups')} isLoading={isLoading}>
+    <Page title={t('groups:customGroups')}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
           {t('groups:customGroups')}
         </Typography>
         <Table
-          data={customGroupData}
-          columns={customGroupColumns}
-          // ToDO: change navigate url to new one after spliting exact group pages by type
-          onClickRow={(id: string) => {
-            navigate(`./${id}/view`);
-          }}
+          rowData={customGroupData ?? []}
+          columnDefs={customGroupColumns}
+          rowSelection="multiple"
+          getRowId={({ data }) => String(data?.partyId)}
+          rightAdornment={
+            <Fade in={showActionMenu} unmountOnExit>
+              <Box>
+                <ActionMenu
+                  menuProps={{
+                    anchorOrigin: {
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                    },
+                    transformOrigin: {
+                      vertical: 'top',
+                      horizontal: 'right',
+                    },
+                  }}
+                  menuItems={actionMenuItems}
+                />
+              </Box>
+            </Fade>
+          }
+          onRowSelection={setSelectedGroups}
         />
       </Container>
     </Page>
