@@ -1,132 +1,161 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
-import { Chip, Container, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Collapse,
+  Container,
+  Fade,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { useTranslation, TFunction } from '@tyro/i18n';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
-  AcademicNamespace,
-  Core_SetActiveActiveAcademicNamespaceMutation,
-  SetActiveAcademicNamespace,
-} from '@tyro/api';
-import { UseMutationResult } from '@tanstack/react-query';
-import { Page } from '@tyro/core';
-import OptionButton from '../../../../src/components/table/OptionButton';
-import { Option, TableColumn } from '../../../../src/components/table/types';
-import Table from '../../../../src/components/table/Table';
-import { useCoreAcademicNamespace } from '../api/academic-namespaces/academic-namespaces';
-import {
-  CoreSetActiveActiveAcademicNamespaceWrapper,
-  useCoreSetActiveActiveAcademicNamespace,
-} from '../api/academic-namespaces/change-active-academic-namespace';
+  GridOptions,
+  ICellRendererParams,
+  Page,
+  TableBooleanValue,
+  Table,
+  ActionMenu,
+  ConfirmDialog,
+  useDisclosure,
+} from '@tyro/core';
+import { useCoreAcademicNamespace } from '@tyro/api';
+import { AddIcon } from '@tyro/icons';
+import { useCoreSetActiveActiveAcademicNamespace } from '../api/academic-namespaces/change-active-academic-namespace';
 
-interface SetActiveAcademicYearMutationContext {
-  mutation: UseMutationResult<
-    Core_SetActiveActiveAcademicNamespaceMutation,
-    unknown,
-    CoreSetActiveActiveAcademicNamespaceWrapper,
-    unknown
-  >;
-}
-const actions = (
-  translate: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>,
-  setActiveAcademicYear: SetActiveAcademicYearMutationContext
-) =>
-  [
-    {
-      text: translate('settings:actions.makeActive'),
-      icon: 'edit',
-      action: (e, row) => {},
-      confirmationDialog(row) {
-        return {
-          title: `${translate('settings:namespacesDialog.title')} ${row.year}?`,
-          description: translate('settings:namespacesDialog.description'),
-          confirmText: `${translate('settings:namespacesDialog.confirmation')} ${row.year}`,
-          confirmFunction: () => {
-            const value = {
-              mutationBody: {
-                academicNamespaceId: row.academicNamespaceId,
-              } as SetActiveAcademicNamespace,
-              displayChangeToYear: row.year,
-            } as CoreSetActiveActiveAcademicNamespaceWrapper;
-            return setActiveAcademicYear.mutation.mutateAsync(value);
-          },
-        };
-      },
-    },
-  ] as Option<AcademicNamespace>[];
+type ReturnTypeFromUseCoreAcademicNamespace = NonNullable<
+  ReturnType<typeof useCoreAcademicNamespace>['data']
+>[number];
 
 const getColumns = (
-  translate: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>,
-  setActiveAcademicYear: SetActiveAcademicYearMutationContext
-): TableColumn<AcademicNamespace>[] => [
+  t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>
+): GridOptions<ReturnTypeFromUseCoreAcademicNamespace>['columnDefs'] => [
   {
-    columnDisplayName: translate('common:year'),
-    fieldName: 'year',
-    filter: 'suggest',
-    isMandatory: true,
+    headerName: t('common:name'),
+    field: 'name',
+    checkboxSelection: true,
+    lockVisible: true,
+    editable: true,
+    sort: 'desc',
   },
   {
-    columnDisplayName: translate('common:name'),
-    fieldName: 'name',
-    filter: 'suggest',
+    headerName: t('common:year'),
+    field: 'year',
+    enableRowGroup: true,
   },
   {
-    columnDisplayName: translate('common:type'),
-    fieldName: 'type',
-    filter: 'suggest',
-  },
-
-  {
-    columnDisplayName: translate('common:description'),
-    fieldName: 'description',
-    filter: 'suggest',
+    headerName: t('common:type'),
+    field: 'type',
+    enableRowGroup: true,
+    valueGetter: ({ data }) =>
+      data ? t(`settings:academicNamespaceType.${data.type}`) : '-',
   },
   {
-    columnDisplayName: '',
-    fieldName: 'isActiveDefaultNamespace',
-    filter: 'suggest',
-    component: (columnProps) =>
-      columnProps.row.original.isActiveDefaultNamespace && (
-        <Chip label={translate('settings:active')} />
-      ),
+    headerName: t('common:description'),
+    editable: true,
+    field: 'description',
   },
   {
-    columnDisplayName: 'Tech Options',
-    fieldName: () => 'tech',
-    component: (columnProps) => (
-      <OptionButton
-        options={actions(translate, setActiveAcademicYear)}
-        row={columnProps.row.original}
-      />
+    headerName: t('settings:active'),
+    field: 'isActiveDefaultNamespace',
+    valueGetter: ({ data }) => (data?.isActiveDefaultNamespace ? 'Yes' : 'No'),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseCoreAcademicNamespace, any>) => (
+      <TableBooleanValue value={data?.isActiveDefaultNamespace ?? false} />
     ),
   },
 ];
 
 export default function AcademicNamespaceList() {
   const { t } = useTranslation(['common', 'settings']);
-  const { data, isLoading } = useCoreAcademicNamespace();
-  const mutation = useCoreSetActiveActiveAcademicNamespace();
+  const { data: namespaces } = useCoreAcademicNamespace();
+  const { mutateAsync: setActiveNamespace } =
+    useCoreSetActiveActiveAcademicNamespace();
+  const [selectedNamespace, setSelectedNamespace] =
+    useState<ReturnTypeFromUseCoreAcademicNamespace | null>(null);
+  const {
+    isOpen: isConfirmDialogOpen,
+    onClose: closeConfirmDialog,
+    onOpen: openConfirmDialog,
+  } = useDisclosure();
+  const showActionMenu = Boolean(selectedNamespace);
 
-  const columns = useMemo(() => getColumns(t, { mutation }), [t, mutation]);
+  const columns = useMemo(() => getColumns(t), [t]);
 
-  const ns: AcademicNamespace[] = data as AcademicNamespace[];
-  if (ns === null) {
-    return null;
-  }
-  ns.sort((a, b) => {
-    if (a.isActiveDefaultNamespace) {
-      return -1000;
-    }
-    return a.year - b.year;
-  });
+  const actionMenuItems = [
+    {
+      label: t('settings:actions.makeActive'),
+      onClick: openConfirmDialog,
+    },
+  ];
+
   return (
-    <Page title={t('settings:subject')} isLoading={isLoading}>
-      <Container maxWidth="xl">
-        <Typography variant="h3" component="h1" paragraph>
-          {t('settings:namespaces')}
-        </Typography>
-        <Table data={ns} columns={columns} />
-      </Container>
-    </Page>
+    <>
+      <Page title={t('settings:namespaces')}>
+        <Container maxWidth="xl">
+          <Typography variant="h3" component="h1" paragraph>
+            {t('settings:namespaces')}
+          </Typography>
+          <Table
+            rowData={namespaces ?? []}
+            columnDefs={columns}
+            getRowId={({ data }) => String(data?.academicNamespaceId)}
+            onRowSelection={(namespace) => {
+              const newValue =
+                namespace.length > 0 && namespace[0] ? namespace[0] : null;
+
+              setSelectedNamespace(newValue);
+            }}
+            rightAdornment={
+              <Stack direction="row" spacing={1}>
+                <Button variant="text" endIcon={<AddIcon />}>
+                  {t('settings:actions.addNewRoom')}
+                </Button>
+                <Collapse
+                  in={showActionMenu}
+                  orientation="horizontal"
+                  unmountOnExit
+                >
+                  <Fade in={showActionMenu}>
+                    <Box>
+                      <ActionMenu
+                        menuProps={{
+                          anchorOrigin: {
+                            vertical: 'bottom',
+                            horizontal: 'right',
+                          },
+                          transformOrigin: {
+                            vertical: 'top',
+                            horizontal: 'right',
+                          },
+                        }}
+                        menuItems={actionMenuItems}
+                      />
+                    </Box>
+                  </Fade>
+                </Collapse>
+              </Stack>
+            }
+          />
+        </Container>
+      </Page>
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        title={t('settings:namespacesDialog.title', {
+          year: selectedNamespace?.year,
+        })}
+        description={t('settings:namespacesDialog.description')}
+        confirmText={t('settings:namespacesDialog.confirmation', {
+          year: selectedNamespace?.year,
+        })}
+        onClose={closeConfirmDialog}
+        onConfirm={() => {
+          if (selectedNamespace) {
+            setActiveNamespace(selectedNamespace);
+          }
+        }}
+      />
+    </>
   );
 }

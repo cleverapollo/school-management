@@ -1,9 +1,9 @@
 import { lazy } from 'react';
 import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { GearIcon } from '@tyro/icons';
+import { getCoreAcademicNamespace } from '@tyro/api';
 import { getCoreRooms } from './api/rooms';
 import { getCatalogueSubjects } from './api/subjects';
-import { getCoreAcademicNamespace } from './api/academic-namespaces/academic-namespaces';
 
 const Rooms = lazy(() => import('./pages/rooms'));
 const AcademicNamespaceList = lazy(() => import('./pages/academic-namespaces'));
