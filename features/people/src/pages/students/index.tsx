@@ -31,6 +31,7 @@ const getStudentColumns = (
     }: ICellRendererParams<ReturnTypeFromUseStudents, any>) => (
       <TableAvatar person={data?.person} to={`./${data?.partyId ?? ''}`} />
     ),
+    sort: 'asc',
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: true,
@@ -39,10 +40,12 @@ const getStudentColumns = (
   {
     field: 'classGroup.name',
     headerName: translate('people:class'),
+    enableRowGroup: true,
   },
   {
     field: 'yearGroups',
     headerName: translate('common:year'),
+    enableRowGroup: true,
     valueGetter: ({ data }) => {
       if (data && data.yearGroups.length > 0) {
         return data.yearGroups[0].name;
@@ -52,6 +55,7 @@ const getStudentColumns = (
   {
     field: 'tutors',
     headerName: translate('common:tutor'),
+    enableRowGroup: true,
     valueGetter: ({ data }) => {
       if (data && data.tutors.length > 0) {
         return data.tutors.map((tutor) => displayName(tutor)).join(', ');
@@ -61,6 +65,7 @@ const getStudentColumns = (
   {
     field: 'yearGroupLeads',
     headerName: translate('common:yearhead'),
+    enableRowGroup: true,
     valueGetter: ({ data }) => {
       if (data && data.yearGroupLeads.length > 0) {
         return data.yearGroupLeads
@@ -72,6 +77,7 @@ const getStudentColumns = (
   {
     field: 'programmeStage',
     headerName: translate('common:programme'),
+    enableRowGroup: true,
     valueGetter: ({ data }) => {
       if (data?.programmeStages && data.programmeStages.length > 0) {
         return data.programmeStages[0]?.programme?.name;

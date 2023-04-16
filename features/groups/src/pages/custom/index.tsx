@@ -38,6 +38,7 @@ const getCustomGroupsColumns = (
     headerCheckboxSelectionFilteredOnly: isStaffUser,
     checkboxSelection: isStaffUser,
     lockVisible: true,
+    sort: 'asc',
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseCustomGroups>) => (
@@ -57,6 +58,7 @@ const getCustomGroupsColumns = (
   {
     field: 'generalGroupType',
     headerName: t('common:type'),
+    enableRowGroup: true,
     valueGetter: ({ data }) =>
       data?.generalGroupType
         ? t(`groups:generalGroupType.${data.generalGroupType}`)
