@@ -49,7 +49,7 @@ export function CalendarSearch({
         loading={isLoading}
         value={selectedPartys}
         onChange={(_, options) => onChangeSelectedPartys(options)}
-        getOptionLabel={(option) => option.text}
+        getOptionLabel={(option) => `${option.partyId}`}
         filterSelectedOptions
         filterOptions={(x) => x}
         open={searchValue.length > 0}
