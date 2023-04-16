@@ -12,12 +12,17 @@ import {
 } from '@mui/material';
 import { Mail } from '@tyro/api';
 import { useMemo, useState } from 'react';
-import { useResponsive, Avatar } from '@tyro/core';
+import { useResponsive, Avatar, ActionMenu } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
+import {
+  ForwardMailIcon,
+  LabelsIcon,
+  MailIcon,
+  ReplyIcon,
+  TrashIcon,
+} from '@tyro/icons';
 import { fDateTimeSuffix } from '../../../../src/utils/formatTime';
 import { Iconify } from '../../../../src/components/iconify';
-import OptionButton from '../../../../src/components/table/OptionButton';
-import { Option } from '../../../../src/components/table/types';
 import { DialogAnimate } from '../../../../src/components/animate';
 import { MailLabel, MailLabelId } from '../types';
 import ApplyLabelsForm from './ApplyLabelsForm';
@@ -50,42 +55,33 @@ export default function MailDetailsToolbar({
 }: Props) {
   const { t } = useTranslation(['mail']);
   const [isOpenDialog, setIsOpenDialog] = useState(false);
-  const labelOptions: Option<any>[] = [
+  const labelOptions = [
     {
-      text: t('mail:actions.reply'),
-      icon: 'arrowLeft',
-      action: (e: MouseEvent) => {
-        e.stopPropagation();
-      },
+      label: t('mail:actions.reply'),
+      icon: <ReplyIcon />,
+      onClick: () => {},
     },
     {
-      text: t('mail:actions.forward'),
-      icon: 'arrow',
-      action: (e: MouseEvent) => {
-        e.stopPropagation();
-      },
+      label: t('mail:actions.forward'),
+      icon: <ForwardMailIcon />,
+      onClick: () => {},
     },
     {
-      text: t('mail:actions.applyLabel'),
-      icon: 'label',
-      action: (e: MouseEvent) => {
-        e.stopPropagation();
+      label: t('mail:actions.applyLabel'),
+      icon: <LabelsIcon />,
+      onClick: () => {
         setIsOpenDialog(true);
       },
     },
     {
-      text: t('mail:actions.markAsUnread'),
-      icon: 'mail',
-      action: (e: MouseEvent) => {
-        e.stopPropagation();
-      },
+      label: t('mail:actions.markAsUnread'),
+      icon: <MailIcon />,
+      onClick: () => {},
     },
     {
-      text: t('mail:actions.deleteThisMessage'),
-      icon: 'delete',
-      action: (e: MouseEvent) => {
-        e.stopPropagation();
-      },
+      label: t('mail:actions.deleteThisMessage'),
+      icon: <TrashIcon />,
+      onClick: () => {},
     },
   ];
   const navigate = useNavigate();
@@ -173,7 +169,11 @@ export default function MailDetailsToolbar({
         )}
 
         <Tooltip title={t('mail:tooltipTitles.moreOptions')}>
-          <OptionButton options={labelOptions} />
+          <ActionMenu
+            iconOnly
+            buttonLabel={t('mail:actions.more')}
+            menuItems={labelOptions}
+          />
         </Tooltip>
         <DialogAnimate
           open={isOpenDialog}

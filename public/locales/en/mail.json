@@ -32,6 +32,7 @@
     "applyLabel": "Apply label",
     "markAsUnread": "Mark as unread",
     "deleteThisMessage": "Delete this message",
-    "removeLabel": "Remove label"
+    "removeLabel": "Remove label",
+    "more": "More"
   }
 }

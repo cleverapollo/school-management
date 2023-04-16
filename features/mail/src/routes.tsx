@@ -15,7 +15,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         path: 'mail',
         title: t('navigation:general.mail'),
         icon: <LetterIcon />,
-        hasAccess: (permissions) => permissions.isTyroTenantAndUser,
+        hasAccess: (permissions) => !permissions.isTyroUser,
         element: <Mail />,
         loader: () => getLabels(),
         children: [
