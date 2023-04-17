@@ -1,5 +1,13 @@
 import { useRef } from 'react';
-import { Button, ButtonProps, Divider, Menu, MenuProps } from '@mui/material';
+import {
+  Button,
+  ButtonProps,
+  Divider,
+  IconButton,
+  Menu,
+  MenuProps,
+  Tooltip,
+} from '@mui/material';
 import { ChevronDownIcon } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
 import { useDisclosure } from '../../hooks';
@@ -11,6 +19,7 @@ export interface ActionMenuProps {
   buttonProps?: ButtonProps;
   menuProps?: Partial<MenuProps>;
   menuItems: MenuItemConfig[] | MenuItemConfig[][];
+  iconOnly?: boolean;
 }
 
 export function ActionMenu({
@@ -19,6 +28,7 @@ export function ActionMenu({
   buttonProps,
   menuProps,
   menuItems,
+  iconOnly = false,
 }: ActionMenuProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [t] = useTranslation(['common']);
@@ -30,16 +40,31 @@ export function ActionMenu({
 
   return (
     <>
-      <Button
-        ref={buttonRef}
-        aria-haspopup="true"
-        variant="soft"
-        {...getButtonProps()}
-        endIcon={buttonIcon ?? <ChevronDownIcon />}
-        {...buttonProps}
-      >
-        {buttonLabel ?? t('common:actions.title')}
-      </Button>
+      {iconOnly ? (
+        <Tooltip title={buttonLabel ?? t('common:actions.title')}>
+          <IconButton
+            ref={buttonRef}
+            aria-haspopup="true"
+            variant="soft"
+            aria-label={buttonLabel ?? t('common:actions.title')}
+            {...getButtonProps()}
+            {...buttonProps}
+          >
+            {buttonIcon ?? <ChevronDownIcon />}
+          </IconButton>
+        </Tooltip>
+      ) : (
+        <Button
+          ref={buttonRef}
+          aria-haspopup="true"
+          variant="soft"
+          {...getButtonProps()}
+          endIcon={buttonIcon ?? <ChevronDownIcon />}
+          {...buttonProps}
+        >
+          {buttonLabel ?? t('common:actions.title')}
+        </Button>
+      )}
       <Menu
         anchorEl={buttonRef.current}
         sx={{ mt: 1 }}

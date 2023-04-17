@@ -25,7 +25,8 @@
     "send": "Send",
     "save": "Save",
     "apply": "Apply",
-    "close": "Close"
+    "close": "Close",
+    "confirm": "Confirm"
   },
   "snackbarMessages": {
     "createSuccess": "Create success!",

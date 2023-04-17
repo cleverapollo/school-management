@@ -46,6 +46,7 @@ const getSubjectGroupsColumns = (
         {data?.name}
       </RouterLink>
     ),
+    sort: 'asc',
   },
   {
     field: 'subjects',
@@ -55,6 +56,7 @@ const getSubjectGroupsColumns = (
       const [firstSubject] = data?.subjects || [];
       return firstSubject?.name;
     },
+    enableRowGroup: true,
   },
   {
     field: 'studentMembers.memberCount',
@@ -64,12 +66,14 @@ const getSubjectGroupsColumns = (
     field: 'irePP.level',
     headerName: translate('common:level'),
     filter: true,
+    valueGetter: ({ data }) => data?.irePP?.level,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseSubjectGroups, any>) =>
       data?.irePP?.level ? (
         <SubjectGroupLevelChip level={data.irePP.level} />
       ) : null,
+    enableRowGroup: true,
   },
   {
     field: 'staff',
@@ -80,6 +84,7 @@ const getSubjectGroupsColumns = (
 
       return teachers.map(displayName).join(', ');
     },
+    enableRowGroup: true,
   },
 ];
 

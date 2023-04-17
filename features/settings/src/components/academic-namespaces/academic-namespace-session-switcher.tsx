@@ -2,10 +2,13 @@
 // TODO: remove above eslint when components are moved to @tyro/core
 import { useState } from 'react';
 import { Button, MenuItem, Stack, Typography } from '@mui/material';
-import { AcademicNamespace, usePermissions } from '@tyro/api';
+import {
+  AcademicNamespace,
+  usePermissions,
+  useCoreAcademicNamespace,
+} from '@tyro/api';
 import MenuPopover from '../../../../../src/components/MenuPopover';
 import { HEADERS } from '../../../../../src/constants';
-import { useCoreAcademicNamespace } from '../../api/academic-namespaces/academic-namespaces';
 
 export function AcademicNamespaceSessionSwitcher() {
   const [open, setOpen] = useState<HTMLElement | null>(null);

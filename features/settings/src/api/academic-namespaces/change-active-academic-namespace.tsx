@@ -1,5 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { gqlClient, graphql, SetActiveAcademicNamespace } from '@tyro/api';
+import {
+  gqlClient,
+  graphql,
+  ReturnTypeFromUseCoreAcademicNamespace,
+} from '@tyro/api';
+import { useToast } from '@tyro/core';
 
 const coreSetActiveActiveAcademicNamespace = graphql(/* GraphQL */ `
   mutation core_setActiveActiveAcademicNamespace(
@@ -16,28 +21,33 @@ const coreSetActiveActiveAcademicNamespace = graphql(/* GraphQL */ `
   }
 `);
 
-export interface CoreSetActiveActiveAcademicNamespaceWrapper {
-  mutationBody: SetActiveAcademicNamespace;
-  displayChangeToYear: number;
-}
 export function useCoreSetActiveActiveAcademicNamespace() {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   return useMutation({
     mutationKey: [
       'coreAcademicNamespace',
       'core_setActiveActiveAcademicNamespace',
     ],
-    mutationFn: async (input: CoreSetActiveActiveAcademicNamespaceWrapper) =>
+    mutationFn: async (
+      namespace: NonNullable<ReturnTypeFromUseCoreAcademicNamespace>
+    ) =>
       gqlClient.request(coreSetActiveActiveAcademicNamespace, {
-        input: input.mutationBody,
+        input: {
+          academicNamespaceId: namespace.academicNamespaceId,
+        },
       }),
-    onSuccess: (a, b) => {
-      console.log(`Successfully changed year to ${b.displayChangeToYear}`);
+    onSuccess: (_, namespace) => {
+      toast(`Successfully changed year to ${namespace.year}`, {
+        variant: 'success',
+      });
       queryClient.clear();
     },
-    onError: (a, b) => {
-      console.log(`Failed changing year to ${b.displayChangeToYear}`);
+    onError: (_, namespace) => {
+      toast(`Failed changing year to ${namespace.year}`, {
+        variant: 'error',
+      });
     },
   });
 }

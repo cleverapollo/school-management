@@ -32,6 +32,7 @@ const getContactColumns = (
     }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
       <TableAvatar person={data?.person} to={`./${data?.partyId ?? ''}`} />
     ),
+    sort: 'asc',
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: true,

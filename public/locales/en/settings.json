@@ -3,7 +3,6 @@
     "en": "English",
     "ga": "Irish"
   },
-  "subject": "Subject",
   "subjects": "Subjects",
   "shortCode": "Short code",
   "nationalCode": "National code",
@@ -13,11 +12,20 @@
   "namespaces": "Namespaces",
   "active": "Active",
   "actions": {
-    "makeActive": "Make Active Primary Namespace"
+    "makeActive": "Make active primary namespace",
+    "addNewRoom": "Add new room"
   },
   "namespacesDialog": {
-    "title": "Change Academic Namespace to",
+    "title": "Change Academic Namespace to {{year}}?",
     "description": "Doing this will change the year for everyone in the system. This is typically only done at the start on the new Academic Year",
-    "confirmation": "Change Academic Namespace to"
+    "confirmation": "Change Academic Namespace to {{year}}"
+  },
+  "academicNamespaceType": {
+    "YEAR": "Year",
+    "WAITING_LIST": "Waiting list"
+  },
+  "subjectSource": {
+    "NATIONAL": "National",
+    "CUSTOM": "Custom"
   }
 }

@@ -47,6 +47,7 @@ const getEnrolmentGroupColumns = (
         {data?.name}
       </RouterLink>
     ),
+    sort: 'asc',
   },
   {
     headerName: t('common:members'),
@@ -59,6 +60,7 @@ const getEnrolmentGroupColumns = (
   {
     headerName: t('common:year'),
     field: 'year',
+    enableRowGroup: true,
     valueGetter: ({ data }) =>
       data?.yearGroups?.map((year) => year?.name).join(', '),
   },
@@ -70,6 +72,7 @@ const getEnrolmentGroupColumns = (
   {
     headerName: t('common:yearhead'),
     field: 'yearhead',
+    enableRowGroup: true,
     valueGetter: ({ data }) => displayNames(data?.yearGroupLeads),
   },
   {
@@ -80,6 +83,7 @@ const getEnrolmentGroupColumns = (
         ?.map((programmeStage) => programmeStage?.programme?.name)
         ?.filter(Boolean)
         .join(', '),
+    enableRowGroup: true,
   },
 ];
 

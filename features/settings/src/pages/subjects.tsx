@@ -1,70 +1,67 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
 import { Container, Typography } from '@mui/material';
 import { useTranslation, TFunction } from '@tyro/i18n';
 import { useMemo } from 'react';
-import { Subject } from '@tyro/api';
-import { Page } from '@tyro/core';
-import Table from '../../../../src/components/table/Table';
-import { TableColumn } from '../../../../src/components/table/types';
+import { GridOptions, Page, Table } from '@tyro/core';
 import { useCatalogueSubjects } from '../api/subjects';
 
+type ReturnTypeFromUseCatalogueSubjects = NonNullable<
+  ReturnType<typeof useCatalogueSubjects>['data']
+>[number];
+
 const getColumns = (
-  translate: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>
-): TableColumn<Subject>[] => [
+  t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>
+): GridOptions<ReturnTypeFromUseCatalogueSubjects>['columnDefs'] => [
   {
-    columnDisplayName: translate('common:name'),
-    fieldName: 'name',
-    filter: 'suggest',
-    isMandatory: true,
+    headerName: t('common:name'),
+    field: 'name',
+    lockVisible: true,
+    sort: 'asc',
   },
   {
-    columnDisplayName: translate('settings:shortCode'),
-    fieldName: 'shortCode',
-    filter: 'suggest',
+    headerName: t('settings:shortCode'),
+    field: 'shortCode',
   },
   {
-    columnDisplayName: translate('common:colour'),
-    fieldName: 'colour',
-    filter: 'suggest',
+    headerName: t('common:colour'),
+    field: 'colour',
   },
   {
-    columnDisplayName: translate('common:icon'),
-    fieldName: 'icon',
-    filter: 'suggest',
+    headerName: t('common:icon'),
+    field: 'icon',
   },
   {
-    columnDisplayName: translate('settings:nationalCode'),
-    fieldName: 'nationalCode',
-    filter: 'suggest',
-    isMandatory: true,
+    headerName: t('settings:nationalCode'),
+    field: 'nationalCode',
   },
   {
-    columnDisplayName: translate('common:description'),
-    fieldName: 'description',
-    filter: 'suggest',
+    headerName: t('common:description'),
+    field: 'description',
   },
   {
-    columnDisplayName: translate('settings:subjectType'),
-    fieldName: 'subjectSource',
-    filter: 'suggest',
+    headerName: t('settings:subjectType'),
+    field: 'subjectSource',
+    valueGetter: ({ data }) =>
+      data ? t(`settings:subjectSource.${data.subjectSource}`) : null,
   },
 ];
 
 export default function Subjects() {
   const { t } = useTranslation(['common', 'settings']);
-  const { data, isLoading } = useCatalogueSubjects();
+  const { data: subjects } = useCatalogueSubjects();
 
   const columns = useMemo(() => getColumns(t), [t]);
 
-  const subjects: Subject[] = data as Subject[];
   return (
-    <Page title={t('settings:subject')} isLoading={isLoading}>
+    <Page title={t('settings:subjects')}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
           {t('settings:subjects')}
         </Typography>
-        {subjects && <Table data={subjects} columns={columns} />}
+        <Table
+          rowData={subjects ?? []}
+          columnDefs={columns}
+          getRowId={({ data }) => String(data?.id)}
+        />
       </Container>
     </Page>
   );

@@ -8,13 +8,13 @@ import { Typography, ListItemText, ListItemButton } from '@mui/material';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Label as LabelIcon } from '@mui/icons-material';
 import { useTranslation } from '@tyro/i18n';
+import { EditIcon, TrashIcon } from '@tyro/icons';
+import { ActionMenu } from '@tyro/core';
 import { MailLabel, Mails } from '../types';
 // components
 import { Iconify } from '../../../../src/components/iconify';
 import { useMails } from '../api/mails';
 import { objFromArray } from '../helpers';
-import OptionButton from '../../../../src/components/table/OptionButton';
-import { Option } from '../../../../src/components/table/types';
 import { LabelType } from '../constants';
 
 // ----------------------------------------------------------------------
@@ -66,12 +66,11 @@ export default function MailSidebarItem({
   ...other
 }: Props) {
   const { t } = useTranslation(['mail', 'common']);
-  const labelOptions: Option<any>[] = [
+  const labelOptions = [
     {
-      text: t('common:actions.edit'),
-      icon: 'edit',
-      action: (e: MouseEvent) => {
-        e.stopPropagation();
+      label: t('common:actions.edit'),
+      icon: <EditIcon />,
+      onClick: () => {
         setLabelInfo({
           id: label.originalId,
           name: label.name,
@@ -80,11 +79,9 @@ export default function MailSidebarItem({
       },
     },
     {
-      text: t('mail:actions.removeLabel'),
-      icon: 'delete',
-      action: (e: MouseEvent) => {
-        e.stopPropagation();
-      },
+      label: t('mail:actions.removeLabel'),
+      icon: <TrashIcon />,
+      onClick: () => {},
     },
   ];
 
@@ -181,7 +178,7 @@ export default function MailSidebarItem({
         <Typography variant="caption">{label.unreadCount}</Typography>
       )}
       {hovered && label.type === LabelType.CUSTOM && (
-        <OptionButton options={labelOptions} />
+        <ActionMenu menuItems={labelOptions} />
       )}
     </ListItemButton>
   );
