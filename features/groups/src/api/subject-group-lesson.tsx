@@ -17,11 +17,6 @@ const subjectGroupLessonByIterator = graphql(/* GraphQL */ `
       startTime
       endTime
       type
-      eventAttendance {
-        eventId
-        attendanceCodeId
-        personPartyId
-      }
       attendees {
         partyId
         type
@@ -38,6 +33,13 @@ const subjectGroupLessonByIterator = graphql(/* GraphQL */ `
       }
       rooms {
         name
+      }
+      extensions {
+        eventAttendance {
+          eventId
+          attendanceCodeId
+          personPartyId
+        }
       }
     }
   }

@@ -32,8 +32,9 @@ export function SubjectGroupOverviewNextLesson({
     startTime = '',
     endTime = '',
     attendees = [],
-    eventAttendance = [],
+    extensions,
   } = nextLessonData || {};
+  const eventAttendance = extensions?.eventAttendance || [];
 
   const hasTakenAttendance = eventAttendance && eventAttendance?.length > 0;
 

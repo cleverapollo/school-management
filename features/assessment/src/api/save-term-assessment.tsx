@@ -6,7 +6,7 @@ const saveTermAssessment = graphql(/* GraphQL */ `
     assessment_saveAssessment(input: $input) {
       name
       years {
-        year
+        name
       }
       startDate
       endDate

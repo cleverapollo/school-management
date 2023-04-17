@@ -10,6 +10,7 @@ import {
   Page,
   RouterLink,
   Table,
+  usePreferredNameLayout,
 } from '@tyro/core';
 import {
   ArchiveIcon,
@@ -29,7 +30,8 @@ const getEnrolmentGroupColumns = (
     undefined,
     ('common' | 'groups' | 'people' | 'mail')[]
   >,
-  isStaffUser: boolean
+  isStaffUser: boolean,
+  displayNames: ReturnType<typeof usePreferredNameLayout>['displayNames']
 ): GridOptions<ReturnTypeFromUseEnrolmentGroups>['columnDefs'] => [
   {
     field: 'name',
@@ -59,15 +61,19 @@ const getEnrolmentGroupColumns = (
     headerName: t('common:year'),
     field: 'year',
     enableRowGroup: true,
+    valueGetter: ({ data }) =>
+      data?.yearGroups?.map((year) => year?.name).join(', '),
   },
   {
     headerName: t('common:tutor'),
     field: 'tutor',
+    valueGetter: ({ data }) => displayNames(data?.tutors),
   },
   {
     headerName: t('common:yearhead'),
     field: 'yearhead',
     enableRowGroup: true,
+    valueGetter: ({ data }) => displayNames(data?.yearGroupLeads),
   },
   {
     headerName: t('common:programme'),
@@ -86,12 +92,13 @@ export default function EnrolmentGroups() {
   const [selectedGroups, setSelectedGroups] = useState<
     ReturnTypeFromUseEnrolmentGroups[]
   >([]);
+  const { displayNames } = usePreferredNameLayout();
   const { isStaffUser } = usePermissions();
   const { data: enrolmentGroupData } = useEnrolmentGroups();
   const showActionMenu = isStaffUser && selectedGroups.length > 0;
 
   const enrolmentGroupColumns = useMemo(
-    () => getEnrolmentGroupColumns(t, isStaffUser),
+    () => getEnrolmentGroupColumns(t, isStaffUser, displayNames),
     [t, isStaffUser]
   );
 
