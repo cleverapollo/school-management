@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, GeneralGroupType, queryClient } from '@tyro/api';
 
-const generalGroupsList = graphql(/* GraphQL */ `
-  query generalGroupsList($filter: GeneralGroupFilter!) {
+const enrolmentGroupsList = graphql(/* GraphQL */ `
+  query enrolmentGroupsList($filter: GeneralGroupFilter!) {
     generalGroups(filter: $filter) {
       partyId
       name
@@ -21,6 +21,42 @@ const generalGroupsList = graphql(/* GraphQL */ `
           name
         }
       }
+      tutors {
+        partyId
+        title
+        firstName
+        lastName
+        type
+      }
+      yearGroupLeads {
+        partyId
+        title
+        firstName
+        lastName
+        type
+      }
+      yearGroups {
+        name
+      }
+    }
+  }
+`);
+
+const customGroupsList = graphql(/* GraphQL */ `
+  query customGroupsList($filter: GeneralGroupFilter!) {
+    generalGroups(filter: $filter) {
+      partyId
+      name
+      studentMembers {
+        memberCount
+      }
+      staffMembers {
+        memberCount
+      }
+      contactMembers {
+        memberCount
+      }
+      generalGroupType
     }
   }
 `);
@@ -87,7 +123,7 @@ export const customGroupsKeys = {
 const customGroupsQuery = {
   queryKey: customGroupsKeys.list,
   queryFn: async () =>
-    gqlClient.request(generalGroupsList, {
+    gqlClient.request(customGroupsList, {
       filter: {
         groupTypes: [
           GeneralGroupType.DynamicGroup,
@@ -154,7 +190,7 @@ export const enrolmentGroupsKeys = {
 const enrolmentGroupsQuery = {
   queryKey: enrolmentGroupsKeys.list,
   queryFn: async () =>
-    gqlClient.request(generalGroupsList, {
+    gqlClient.request(enrolmentGroupsList, {
       filter: {
         groupTypes: [GeneralGroupType.ClassGroup],
       },
