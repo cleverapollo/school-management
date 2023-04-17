@@ -36,7 +36,7 @@ const getCustomGroupsColumns = (
     headerName: t('common:name'),
     headerCheckboxSelection: isStaffUser,
     headerCheckboxSelectionFilteredOnly: isStaffUser,
-    checkboxSelection: isStaffUser,
+    checkboxSelection: ({ data }) => Boolean(data) && isStaffUser,
     lockVisible: true,
     sort: 'asc',
     cellRenderer: ({

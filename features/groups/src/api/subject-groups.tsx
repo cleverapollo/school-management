@@ -42,8 +42,10 @@ const subjectGroupById = graphql(/* GraphQL */ `
         name
       }
       staff {
+        title
         firstName
         lastName
+        type
       }
       students {
         partyId

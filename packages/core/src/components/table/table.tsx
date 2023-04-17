@@ -52,7 +52,9 @@ function TableInner<T>(
     sx,
     onRowSelection,
     rightAdornment,
+    autoGroupColumnDef,
     rowHeight = 56,
+    rowSelection,
     ...props
   }: TableProps<T>,
   ref: React.Ref<AgGridReact<T>>
@@ -79,6 +81,14 @@ function TableInner<T>(
       onRowSelection(selectedRows);
     }
   }, []);
+
+  const defaultAutoGroupColumnDef = rowSelection
+    ? {
+        cellRendererParams: {
+          checkbox: true,
+        },
+      }
+    : undefined;
 
   return (
     <>
@@ -107,6 +117,10 @@ function TableInner<T>(
             fillHandleDirection="y"
             onSelectionChanged={onSelectionChanged}
             rowHeight={rowHeight}
+            rowSelection={rowSelection}
+            autoGroupColumnDef={autoGroupColumnDef || defaultAutoGroupColumnDef}
+            groupSelectsChildren
+            groupSelectsFiltered
             {...props}
             onCellValueChanged={onCellValueChanged}
             onFirstDataRendered={(params: FirstDataRenderedEvent<T>) => {

@@ -32,13 +32,14 @@ const getStudentColumns = (
     valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseStudents, any>) => (
-      <TableAvatar person={data?.person} to={`./${data?.partyId ?? ''}`} />
-    ),
+    }: ICellRendererParams<ReturnTypeFromUseStudents, any>) =>
+      data ? (
+        <TableAvatar person={data?.person} to={`./${data?.partyId ?? ''}`} />
+      ) : null,
     sort: 'asc',
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
-    checkboxSelection: true,
+    checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
   },
   {
