@@ -1,6 +1,6 @@
 import { Person } from '@tyro/api';
 
-export const displayName = (
+const displayName = (
   person:
     | Pick<Person, 'title' | 'firstName' | 'lastName' | 'type'>
     | undefined
@@ -12,9 +12,9 @@ export const displayName = (
   return `${person.firstName ?? ''} ${person.lastName ?? ''}`;
 };
 
-export const displayNames = (
+const displayNames = (
   persons:
-    | Pick<Person, 'title' | 'firstName' | 'lastName' | 'type'>[]
+    | (Pick<Person, 'title' | 'firstName' | 'lastName' | 'type'> | null)[]
     | undefined
     | null
 ): string => {
@@ -33,3 +33,11 @@ export function usePreferredNameLayout() {
     displayNames,
   };
 }
+
+export type ReturnTypeDisplayName = ReturnType<
+  typeof usePreferredNameLayout
+>['displayName'];
+
+export type ReturnTypeDisplayNames = ReturnType<
+  typeof usePreferredNameLayout
+>['displayNames'];

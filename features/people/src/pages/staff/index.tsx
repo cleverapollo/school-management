@@ -5,6 +5,7 @@ import {
   ICellRendererParams,
   Page,
   Table,
+  ReturnTypeDisplayName,
   TableAvatar,
   usePreferredNameLayout,
 } from '@tyro/core';
@@ -21,7 +22,7 @@ type ReturnTypeFromUseStudents = UseQueryReturnType<typeof useStaff>[number];
 
 const getStaffColumns = (
   t: TFunction<('common' | 'people')[], undefined, ('common' | 'people')[]>,
-  displayName: ReturnType<typeof usePreferredNameLayout>['displayName']
+  displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseStudents>['columnDefs'] => [
   {
     field: 'person',

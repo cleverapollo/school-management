@@ -6,7 +6,9 @@ import {
   Page,
   Table,
   TableAvatar,
-  displayName,
+  usePreferredNameLayout,
+  ReturnTypeDisplayName,
+  ReturnTypeDisplayNames,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
@@ -20,7 +22,9 @@ const getStudentColumns = (
     ('common' | 'people')[],
     undefined,
     ('common' | 'people')[]
-  >
+  >,
+  displayName: ReturnTypeDisplayName,
+  displayNames: ReturnTypeDisplayNames
 ): GridOptions<ReturnTypeFromUseStudents>['columnDefs'] => [
   {
     field: 'person',
@@ -56,23 +60,13 @@ const getStudentColumns = (
     field: 'tutors',
     headerName: translate('common:tutor'),
     enableRowGroup: true,
-    valueGetter: ({ data }) => {
-      if (data && data.tutors.length > 0) {
-        return data.tutors.map((tutor) => displayName(tutor)).join(', ');
-      }
-    },
+    valueGetter: ({ data }) => displayNames(data?.tutors),
   },
   {
     field: 'yearGroupLeads',
     headerName: translate('common:yearhead'),
     enableRowGroup: true,
-    valueGetter: ({ data }) => {
-      if (data && data.yearGroupLeads.length > 0) {
-        return data.yearGroupLeads
-          .map((yearGroupLead) => displayName(yearGroupLead))
-          .join(', ');
-      }
-    },
+    valueGetter: ({ data }) => displayNames(data?.yearGroupLeads),
   },
   {
     field: 'programmeStage',
@@ -126,10 +120,15 @@ const getStudentColumns = (
 
 export default function StudentsListPage() {
   const { t } = useTranslation(['common', 'people']);
+  const { displayName, displayNames } = usePreferredNameLayout();
+
   const { data: students, isLoading } = useStudents();
   const { mutateAsync: bulkSaveStudents } = useBulkUpdateCoreStudent();
 
-  const studentColumns = useMemo(() => getStudentColumns(t), [t]);
+  const studentColumns = useMemo(
+    () => getStudentColumns(t, displayName, displayNames),
+    [t, displayName, displayNames]
+  );
 
   if (isLoading) {
     return null;

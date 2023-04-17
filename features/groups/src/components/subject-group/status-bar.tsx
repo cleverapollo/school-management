@@ -20,15 +20,13 @@ export function SubjectGroupStatusBar({
   const { t } = useTranslation(['common', 'groups']);
 
   const { data: subjectGroupData } = useSubjectGroupById(groupId);
-  const { displayName } = usePreferredNameLayout();
+  const { displayNames } = usePreferredNameLayout();
 
   const yearGroupsNames = subjectGroupData?.yearGroups
     ?.map(({ name }) => name)
     ?.join(', ');
 
-  const teachersNames = subjectGroupData?.staff
-    ?.map((teacher) => displayName(teacher as Person))
-    ?.join(', ');
+  const teachersNames = displayNames(subjectGroupData?.staff);
 
   const labelStyle = {
     fontSize: '0.75rem',

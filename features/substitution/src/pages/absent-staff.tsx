@@ -3,7 +3,8 @@ import {
   GridOptions,
   Table,
   ICellRendererParams,
-  displayName,
+  usePreferredNameLayout,
+  ReturnTypeDisplayName,
   TableAvatar,
 } from '@tyro/core';
 import { Button, Typography } from '@mui/material';
@@ -12,6 +13,7 @@ import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 
+import { useMemo } from 'react';
 import { useStaffWorkAbsences } from '../api';
 
 dayjs.extend(LocalizedFormat);
@@ -21,7 +23,8 @@ type ReturnTypeFromUseStaffWorkAbsences = NonNullable<
 >[number];
 
 const getColumnDefs = (
-  translate: TFunction<'substitution'[], undefined, 'substitution'[]>
+  translate: TFunction<'substitution'[], undefined, 'substitution'[]>,
+  displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseStaffWorkAbsences>['columnDefs'] => [
   {
     field: 'staff',
@@ -68,9 +71,14 @@ const getColumnDefs = (
 
 export default function AbsentStaffPage() {
   const { t } = useTranslation(['substitution']);
+  const { displayName } = usePreferredNameLayout();
 
   const { data: absencesData } = useStaffWorkAbsences({});
-  const columnDefs = getColumnDefs(t);
+
+  const columnDefs = useMemo(
+    () => getColumnDefs(t, displayName),
+    [t, displayName]
+  );
 
   return (
     <>

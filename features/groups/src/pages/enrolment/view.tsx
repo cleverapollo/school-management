@@ -12,6 +12,7 @@ import {
   TableAvatar,
   ICellRendererParams,
   usePreferredNameLayout,
+  ReturnTypeDisplayName,
   PageHeading,
 } from '@tyro/core';
 import { useEnrolmentGroupById } from '../../api/general-groups';
@@ -23,7 +24,7 @@ type MembersReturnTypeFromUseEnrolmentGroupById = NonNullable<
 
 const getEnrolmentGroupColumns = (
   t: TFunction<('common' | 'groups')[], undefined, ('common' | 'groups')[]>,
-  displayName: ReturnType<typeof usePreferredNameLayout>['displayName']
+  displayName: ReturnTypeDisplayName
 ): GridOptions<MembersReturnTypeFromUseEnrolmentGroupById>['columnDefs'] => [
   {
     field: 'person',

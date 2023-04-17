@@ -8,7 +8,8 @@ import {
   useNumber,
   TableAvatar,
   ActionMenu,
-  displayName,
+  ReturnTypeDisplayName,
+  usePreferredNameLayout,
 } from '@tyro/core';
 
 import { MobileIcon, SendMailIcon } from '@tyro/icons';
@@ -22,7 +23,8 @@ type ReturnTypeFromUseSubjectGroupById = NonNullable<
 >[number];
 
 const getSubjectGroupsColumns = (
-  translate: TFunction<'common'[], undefined, 'common'[]>
+  translate: TFunction<'common'[], undefined, 'common'[]>,
+  displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseSubjectGroupById>['columnDefs'] => [
   {
     field: 'name',
@@ -61,12 +63,16 @@ export default function SubjectGroupProfileStudentsPage() {
   >([]);
 
   const { userType } = usePermissions();
+  const { displayName } = usePreferredNameLayout();
 
   const isAdminUserType = userType === UserType.Admin;
   const isTeacherUserType = userType === UserType.Teacher;
   const showActionMenu = isAdminUserType || isTeacherUserType;
 
-  const studentColumns = useMemo(() => getSubjectGroupsColumns(t), [t]);
+  const studentColumns = useMemo(
+    () => getSubjectGroupsColumns(t, displayName),
+    [t]
+  );
 
   return (
     <Table
