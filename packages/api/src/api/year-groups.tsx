@@ -6,7 +6,7 @@ import { YearGroupFilter } from '../gql/graphql';
 
 const yearGroups = graphql(/* GraphQL */ `
   query years($filter: YearGroupFilter) {
-    years(filter: $filter) {
+    catalogue_years(filter: $filter) {
       yearGroupId
       name
     }
@@ -29,10 +29,10 @@ export function getYearGroups(filter: YearGroupFilter) {
 export function useYearGroups(filter: YearGroupFilter) {
   return useQuery({
     ...yearGroupsQuery(filter),
-    select: ({ years }) => {
-      if (!Array.isArray(years)) return [];
+    select: ({ catalogue_years }) => {
+      if (!Array.isArray(catalogue_years)) return [];
 
-      return years;
+      return catalogue_years;
     },
   });
 }
