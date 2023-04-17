@@ -32,7 +32,7 @@ const getColumns = (
   {
     headerName: t('common:name'),
     field: 'name',
-    checkboxSelection: true,
+    checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
     editable: true,
     sort: 'desc',
@@ -100,6 +100,7 @@ export default function AcademicNamespaceList() {
           <Table
             rowData={namespaces ?? []}
             columnDefs={columns}
+            rowSelection="single"
             getRowId={({ data }) => String(data?.academicNamespaceId)}
             onRowSelection={(namespace) => {
               const newValue =

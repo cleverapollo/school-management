@@ -37,7 +37,7 @@ const getSubjectGroupsColumns = (
     headerName: translate('common:name'),
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
-    checkboxSelection: true,
+    checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
     cellRenderer: ({
       data,

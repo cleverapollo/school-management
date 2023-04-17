@@ -31,13 +31,14 @@ const getContactColumns = (
     valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
-      <TableAvatar person={data?.person} to={`./${data?.partyId ?? ''}`} />
-    ),
+    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) =>
+      data ? (
+        <TableAvatar person={data?.person} to={`./${data?.partyId ?? ''}`} />
+      ) : null,
     sort: 'asc',
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
-    checkboxSelection: true,
+    checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
   },
   {

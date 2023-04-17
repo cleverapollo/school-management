@@ -1,11 +1,11 @@
 import { Person } from '@tyro/api';
 
-const displayName = (
-  person:
-    | Pick<Person, 'title' | 'firstName' | 'lastName' | 'type'>
-    | undefined
-    | null
-): string => {
+type DisplayNamePersonProps =
+  | Pick<Person, 'title' | 'firstName' | 'lastName' | 'type'>
+  | undefined
+  | null;
+
+const displayName = (person: DisplayNamePersonProps): string => {
   if (!person) {
     return '';
   }
@@ -13,10 +13,7 @@ const displayName = (
 };
 
 const displayNames = (
-  persons:
-    | (Pick<Person, 'title' | 'firstName' | 'lastName' | 'type'> | null)[]
-    | undefined
-    | null
+  persons: DisplayNamePersonProps[] | undefined | null
 ): string => {
   if (!persons) {
     return '';
