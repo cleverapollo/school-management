@@ -12,6 +12,7 @@ import {
   TableAvatar,
   ICellRendererParams,
   usePreferredNameLayout,
+  ReturnTypeDisplayName,
   PageHeading,
 } from '@tyro/core';
 import { useCustomGroupById } from '../../api/general-groups';
@@ -23,7 +24,7 @@ type MembersReturnTypeFromUseCustomGroupsById = NonNullable<
 
 const getCustomGroupColumns = (
   t: TFunction<('common' | 'groups')[], undefined, ('common' | 'groups')[]>,
-  displayName: ReturnType<typeof usePreferredNameLayout>['displayName']
+  displayName: ReturnTypeDisplayName
 ): GridOptions<MembersReturnTypeFromUseCustomGroupsById>['columnDefs'] => [
   {
     field: 'person',

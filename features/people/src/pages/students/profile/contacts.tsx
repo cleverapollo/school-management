@@ -8,7 +8,8 @@ import {
   Table,
   TableAvatar,
   TableBooleanValue,
-  displayName,
+  usePreferredNameLayout,
+  ReturnTypeDisplayName,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -31,7 +32,8 @@ const getStudentContactColumns = (
     ('common' | 'people')[],
     undefined,
     ('common' | 'people')[]
-  >
+  >,
+  displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseContacts>['columnDefs'] => [
   {
     field: 'person',
@@ -114,9 +116,13 @@ export default function StudentProfileContactsPage() {
     ReturnTypeFromUseContacts[]
   >([]);
   const { data: contacts } = useStudentsContacts(studentId);
-  const [t] = useTranslation(['common', 'people', 'mail']);
+  const { t } = useTranslation(['common', 'people', 'mail']);
+  const { displayName } = usePreferredNameLayout();
 
-  const studentContactColumns = useMemo(() => getStudentContactColumns(t), [t]);
+  const studentContactColumns = useMemo(
+    () => getStudentContactColumns(t, displayName),
+    [t, displayName]
+  );
 
   const actionMenuItems = useMemo(() => {
     const isThereAtLeastOneContactThatIsNotAllowedToContact =

@@ -1,10 +1,7 @@
 import { Box, Stack } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { GeneralGroup, Person, Student, YearGroupEnrollment } from '@tyro/api';
+import { usePreferredNameLayout } from '@tyro/core';
 import { ReturnTypeFromUseStudent } from '../../../api/students';
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
-import { displayNames } from '../../../../../../src/utils/nameUtils';
 
 export interface AdditionalInfoProps {
   years: ReturnTypeFromUseStudent['yearGroups'];
@@ -20,6 +17,7 @@ export function AdditionalInfo({
   tutors,
 }: AdditionalInfoProps) {
   const { t } = useTranslation(['people']);
+  const { displayNames } = usePreferredNameLayout();
 
   const additionalInfoList = {
     [t('people:year')]: years?.map((a) => a.shortName).join(', ') || '-',

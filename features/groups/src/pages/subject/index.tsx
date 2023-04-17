@@ -1,7 +1,5 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
 import { Box, Fade, Container, Typography } from '@mui/material';
-import { Person, usePermissions, UserType } from '@tyro/api';
+import { usePermissions, UserType } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -12,6 +10,8 @@ import {
   ActionMenu,
   RouterLink,
   ActionMenuProps,
+  usePreferredNameLayout,
+  ReturnTypeDisplayNames,
 } from '@tyro/core';
 
 import {
@@ -21,7 +21,6 @@ import {
   UnarchiveIcon,
 } from '@tyro/icons';
 
-import { displayName } from '../../../../../src/utils/nameUtils';
 import { useSubjectGroups } from '../../api/subject-groups';
 import { SubjectGroupLevelChip } from '../../components';
 
@@ -30,7 +29,8 @@ type ReturnTypeFromUseSubjectGroups = NonNullable<
 >[number];
 
 const getSubjectGroupsColumns = (
-  translate: TFunction<'common'[], undefined, 'common'[]>
+  translate: TFunction<'common'[], undefined, 'common'[]>,
+  displayNames: ReturnTypeDisplayNames
 ): GridOptions<ReturnTypeFromUseSubjectGroups>['columnDefs'] => [
   {
     field: 'name',
@@ -78,18 +78,14 @@ const getSubjectGroupsColumns = (
   {
     field: 'staff',
     headerName: translate('common:teacher'),
-    valueGetter: ({ data }) => {
-      const teachers = data?.staff as Person[];
-      if (teachers.length === 0) return '-';
-
-      return teachers.map(displayName).join(', ');
-    },
+    valueGetter: ({ data }) => displayNames(data?.staff),
     enableRowGroup: true,
   },
 ];
 
 export default function SubjectGroups() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail']);
+  const { displayNames } = usePreferredNameLayout();
 
   const { data: subjectGroupsData } = useSubjectGroups();
   const { userType } = usePermissions();
@@ -102,7 +98,10 @@ export default function SubjectGroups() {
   const isTeacherUserType = userType === UserType.Teacher;
   const showActionMenu = isAdminUserType || isTeacherUserType;
 
-  const studentColumns = useMemo(() => getSubjectGroupsColumns(t), [t]);
+  const studentColumns = useMemo(
+    () => getSubjectGroupsColumns(t, displayNames),
+    [t, displayNames]
+  );
 
   const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => {
     const commonActions = [

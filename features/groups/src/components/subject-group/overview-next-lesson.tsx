@@ -20,7 +20,7 @@ export function SubjectGroupOverviewNextLesson({
 }: SubjectGroupOverviewNextLessonProps) {
   const { t } = useTranslation(['groups', 'attendance', 'common']);
 
-  const { displayName } = usePreferredNameLayout();
+  const { displayNames } = usePreferredNameLayout();
 
   const { data: nextLessonData } = useNextSubjectGroupLesson({
     partyId: groupId,
@@ -40,10 +40,11 @@ export function SubjectGroupOverviewNextLesson({
 
   const roomsNames = rooms.map(({ name }) => name).join(', ');
 
-  const nextLessonTeachers = attendees
+  const organisers = attendees
     .filter(({ type }) => type === CalendarEventAttendeeType.Organiser)
-    .map(({ partyInfo }) => displayName((partyInfo as Staff).person))
-    .join(', ');
+    .map(({ partyInfo }) => (partyInfo as Staff)?.person);
+
+  const nextLessonTeachers = displayNames(organisers);
 
   const formattedDate = useFormatLessonTime({ startTime, endTime });
 

@@ -1,10 +1,10 @@
 import { Calendar_CalendarEventsQuery } from '@tyro/api';
-import { usePreferredNameLayout } from '@tyro/core';
+import { ReturnTypeDisplayName } from '@tyro/core';
 import { Attendee, PartyResource } from '../src/@types/calendar';
 
 export function getPartyName(
   partyInfo: Attendee['partyInfo'] | PartyResource['partyInfo'],
-  getDisplayName: ReturnType<typeof usePreferredNameLayout>['displayName']
+  getDisplayName: ReturnTypeDisplayName
 ) {
   if (!partyInfo) return '';
 
@@ -27,7 +27,7 @@ export function getResourceName(
   resource: NonNullable<
     Calendar_CalendarEventsQuery['calendar_calendarEvents']
   >['resources'][number],
-  getDisplayName: ReturnType<typeof usePreferredNameLayout>['displayName']
+  getDisplayName: ReturnTypeDisplayName
 ) {
   if (resource.__typename === 'PartyCalendar' && resource.partyInfo) {
     return getPartyName(resource.partyInfo, getDisplayName);

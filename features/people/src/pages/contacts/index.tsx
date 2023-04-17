@@ -6,7 +6,8 @@ import {
   Page,
   Table,
   TableAvatar,
-  displayName,
+  usePreferredNameLayout,
+  ReturnTypeDisplayName,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
@@ -21,7 +22,8 @@ const getContactColumns = (
     ('common' | 'people')[],
     undefined,
     ('common' | 'people')[]
-  >
+  >,
+  displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseContacts>['columnDefs'] => [
   {
     field: 'person',
@@ -74,9 +76,13 @@ const getContactColumns = (
 
 export default function ContactsListPage() {
   const { t } = useTranslation(['common', 'people']);
+  const { displayName } = usePreferredNameLayout();
   const { data: contacts, isLoading } = useContacts();
 
-  const contactColumns = useMemo(() => getContactColumns(t), [t]);
+  const contactColumns = useMemo(
+    () => getContactColumns(t, displayName),
+    [t, displayName]
+  );
 
   if (isLoading) {
     return null;
