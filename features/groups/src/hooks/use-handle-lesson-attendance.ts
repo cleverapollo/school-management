@@ -57,7 +57,7 @@ export function useHandleLessonAttendance({
     partyId,
   });
 
-  const eventAttendance = lessonData?.eventAttendance || [];
+  const eventAttendance = lessonData?.extensions?.eventAttendance || [];
 
   useLayoutEffect(() => {
     if (lessonData) {
