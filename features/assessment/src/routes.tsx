@@ -1,7 +1,8 @@
 import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { lazy } from 'react';
 import { SchoolExamACircleIcon } from '@tyro/icons';
-import { UserType } from '@tyro/api';
+import { UserType, getCoreAcademicNamespace } from '@tyro/api';
+import { getAssessments } from './api/assessments';
 
 const AssessmentsPage = lazy(() => import('./pages/assessments'));
 const CreateTermAssessmentPage = lazy(
@@ -24,6 +25,20 @@ export const getRoutes: NavObjectFunction = (t) => [
           {
             type: NavObjectType.NonMenuLink,
             index: true,
+            loader: async () => {
+              const data = await getCoreAcademicNamespace();
+
+              const activeAcademicNamespace =
+                data.core_academicNamespaces?.find(
+                  (academicNamespace) =>
+                    academicNamespace?.isActiveDefaultNamespace
+                );
+
+              return getAssessments({
+                academicNameSpaceId:
+                  activeAcademicNamespace?.academicNamespaceId ?? null,
+              });
+            },
             element: <AssessmentsPage />,
           },
           {

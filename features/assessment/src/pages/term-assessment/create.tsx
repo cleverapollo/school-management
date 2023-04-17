@@ -19,6 +19,7 @@ import { Card, Stack, CardHeader, Typography } from '@mui/material';
 import { useForm, Path } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import dayjs from 'dayjs';
+import { useNavigate } from 'react-router-dom';
 import { CommentBankOption } from '../../api/comment-bank';
 import { useSaveTermAssessment } from '../../api/save-term-assessment';
 import { CommentBankOptions } from '../../components/term-assessment/comment-bank-options';
@@ -62,9 +63,11 @@ interface FormValues extends FormCustomFieldsValues {
 
 const COMMENT_LENGTH_MIN = 1;
 const COMMENT_LENGTH_MAX = 1000;
+const RELATIVE_PATH_ASSESSMENTS_LIST = './../..';
 
 export default function CreateTermAssessmentPage() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const { t } = useTranslation(['assessment', 'common']);
 
   const { data: yearGroupsData = [] } = useYearGroups({});
@@ -137,6 +140,7 @@ export default function CreateTermAssessmentPage() {
       {
         onSuccess: () => {
           toast(t('common:snackbarMessages.createSuccess'));
+          navigate(RELATIVE_PATH_ASSESSMENTS_LIST);
         },
         onError: console.error,
       }
@@ -161,7 +165,7 @@ export default function CreateTermAssessmentPage() {
           links: [
             {
               name: t('assessment:pageHeading.assessments'),
-              href: './../..',
+              href: RELATIVE_PATH_ASSESSMENTS_LIST,
             },
             {
               name: t('assessment:pageHeading.createTermAssessment'),

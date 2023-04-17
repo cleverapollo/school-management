@@ -7,8 +7,9 @@ import {
   TableBooleanValue,
 } from '@tyro/core';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { AddIcon } from '@tyro/icons';
+import { useAcademicNamespace } from '@tyro/api';
 import { PageContainer } from '../components/page-container';
 import { useAssessments } from '../api/assessments';
 import { AssessmentActionMenu } from '../components/list-assessments/assessment-action-menu';
@@ -28,11 +29,12 @@ const getColumnDefs = (
   {
     field: 'name',
     headerName: translate('assessment:assessmentName'),
-    checkboxSelection: true,
+    checkboxSelection: ({ data }) => Boolean(data),
   },
   {
     field: 'assessmentType',
     headerName: translate('assessment:assessmentType'),
+    enableRowGroup: true,
     valueGetter: ({ data }) =>
       data?.assessmentType
         ? translate(`assessment:assessmentTypes.${data.assessmentType}`)
@@ -63,11 +65,20 @@ const getColumnDefs = (
 export default function AssessmentsPage() {
   const { t } = useTranslation(['assessment', 'common']);
 
+  const { activeAcademicNamespace } = useAcademicNamespace();
+
+  const [academicNameSpaceId, setAcademicNameSpaceId] = useState<number | null>(
+    activeAcademicNamespace?.academicNamespaceId ?? null
+  );
+
+  const { data: assessmentsData = [] } = useAssessments({
+    academicNameSpaceId,
+  });
+
   const [selectedAssessment, setSelectedAssessment] =
     useState<ReturnTypeFromUseAssessments>(null);
 
-  const { data: assessmentsData = [] } = useAssessments({});
-  const columnDefs = getColumnDefs(t);
+  const columnDefs = useMemo(() => getColumnDefs(t), [t]);
 
   return (
     <PageContainer title={t('assessment:pageTitle.assessments')}>
@@ -78,15 +89,17 @@ export default function AssessmentsPage() {
         rowData={assessmentsData || []}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.id)}
+        rowSelection="single"
         onRowSelection={([newValue]) => {
           setSelectedAssessment(newValue);
         }}
         topAdornment={
-          <AcademicYearDropdown
-            academicNamespaceId={assessmentsData[0]?.academicNamespaceId ?? 0}
-            // TODO: add ability to switch to previous academic years
-            onChangeAcademicNamespace={console.log}
-          />
+          academicNameSpaceId && (
+            <AcademicYearDropdown
+              academicNamespaceId={academicNameSpaceId}
+              onChangeAcademicNamespace={setAcademicNameSpaceId}
+            />
+          )
         }
         rightAdornment={
           <Stack direction="row" spacing={1}>

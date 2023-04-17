@@ -10,7 +10,7 @@ const assessmentsList = graphql(/* GraphQL */ `
       assessmentType
       academicNamespaceId
       years {
-        year
+        yearGroupId
         name
       }
       publish
@@ -19,11 +19,11 @@ const assessmentsList = graphql(/* GraphQL */ `
 `);
 
 export const assessmentsKeys = {
-  list: ['assessments'] as const,
+  list: (filter: AssessmentFilter) => ['assessments', filter] as const,
 };
 
 const assessmentsQuery = (filter: AssessmentFilter) => ({
-  queryKey: assessmentsKeys.list,
+  queryKey: assessmentsKeys.list(filter),
   queryFn: () => gqlClient.request(assessmentsList, { filter }),
 });
 
