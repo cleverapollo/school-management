@@ -1,5 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { gqlClient, graphql, useCoreAcademicNamespace } from '@tyro/api';
+import {
+  gqlClient,
+  graphql,
+  ReturnTypeFromUseCoreAcademicNamespace,
+} from '@tyro/api';
 import { useToast } from '@tyro/core';
 
 const coreSetActiveActiveAcademicNamespace = graphql(/* GraphQL */ `
@@ -17,10 +21,6 @@ const coreSetActiveActiveAcademicNamespace = graphql(/* GraphQL */ `
   }
 `);
 
-type ReturnTypeFromUseCoreAcademicNamespace = NonNullable<
-  NonNullable<ReturnType<typeof useCoreAcademicNamespace>['data']>[number]
->;
-
 export function useCoreSetActiveActiveAcademicNamespace() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -30,7 +30,9 @@ export function useCoreSetActiveActiveAcademicNamespace() {
       'coreAcademicNamespace',
       'core_setActiveActiveAcademicNamespace',
     ],
-    mutationFn: async (namespace: ReturnTypeFromUseCoreAcademicNamespace) =>
+    mutationFn: async (
+      namespace: NonNullable<ReturnTypeFromUseCoreAcademicNamespace>
+    ) =>
       gqlClient.request(coreSetActiveActiveAcademicNamespace, {
         input: {
           academicNamespaceId: namespace.academicNamespaceId,

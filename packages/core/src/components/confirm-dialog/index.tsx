@@ -47,7 +47,7 @@ export function ConfirmDialog({
       </DialogContent>
       <DialogActions>
         <Button autoFocus onClick={onClose}>
-          {cancelText ?? t('common:actions.cancel')}
+          {cancelText || t('common:actions.cancel')}
         </Button>
         <Button
           onClick={() => {

@@ -19,13 +19,12 @@ import {
   ConfirmDialog,
   useDisclosure,
 } from '@tyro/core';
-import { useCoreAcademicNamespace } from '@tyro/api';
+import {
+  useCoreAcademicNamespace,
+  ReturnTypeFromUseCoreAcademicNamespace,
+} from '@tyro/api';
 import { AddIcon } from '@tyro/icons';
 import { useCoreSetActiveActiveAcademicNamespace } from '../api/academic-namespaces/change-active-academic-namespace';
-
-type ReturnTypeFromUseCoreAcademicNamespace = NonNullable<
-  ReturnType<typeof useCoreAcademicNamespace>['data']
->[number];
 
 const getColumns = (
   t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>
@@ -58,7 +57,8 @@ const getColumns = (
   {
     headerName: t('settings:active'),
     field: 'isActiveDefaultNamespace',
-    valueGetter: ({ data }) => (data?.isActiveDefaultNamespace ? 'Yes' : 'No'),
+    valueGetter: ({ data }) =>
+      data?.isActiveDefaultNamespace ? t('common:yes') : t('common:no'),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseCoreAcademicNamespace, any>) => (
