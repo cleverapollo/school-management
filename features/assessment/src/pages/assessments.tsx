@@ -1,4 +1,4 @@
-import { Button, Typography } from '@mui/material';
+import { Box, Button, Collapse, Fade, Stack, Typography } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   GridOptions,
@@ -7,6 +7,8 @@ import {
   TableBooleanValue,
 } from '@tyro/core';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { AddIcon } from '@tyro/icons';
 import { PageContainer } from '../components/page-container';
 import { useAssessments } from '../api/assessments';
 import { AssessmentActionMenu } from '../components/list-assessments/assessment-action-menu';
@@ -26,6 +28,7 @@ const getColumnDefs = (
   {
     field: 'name',
     headerName: translate('assessment:assessmentName'),
+    checkboxSelection: true,
   },
   {
     field: 'assessmentType',
@@ -55,16 +58,13 @@ const getColumnDefs = (
       <TableBooleanValue value={!!data?.publish} />
     ),
   },
-  {
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseAssessments>) =>
-      data && <AssessmentActionMenu id={data.id} published={!!data.publish} />,
-  },
 ];
 
 export default function AssessmentsPage() {
   const { t } = useTranslation(['assessment', 'common']);
+
+  const [selectedAssessment, setSelectedAssessment] =
+    useState<ReturnTypeFromUseAssessments>(null);
 
   const { data: assessmentsData = [] } = useAssessments({});
   const columnDefs = getColumnDefs(t);
@@ -78,6 +78,9 @@ export default function AssessmentsPage() {
         rowData={assessmentsData || []}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.id)}
+        onRowSelection={([newValue]) => {
+          setSelectedAssessment(newValue);
+        }}
         topAdornment={
           <AcademicYearDropdown
             academicNamespaceId={assessmentsData[0]?.academicNamespaceId ?? 0}
@@ -86,14 +89,31 @@ export default function AssessmentsPage() {
           />
         }
         rightAdornment={
-          // TODO: add way to create any kind of assessments
-          <Button
-            variant="contained"
-            component={Link}
-            to="./term-assessments/create"
-          >
-            {t('assessment:createTermAssessment')}
-          </Button>
+          <Stack direction="row" spacing={1}>
+            <Button
+              // TODO: add way to create any kind of assessments
+              variant="text"
+              component={Link}
+              to="./term-assessments/create"
+              endIcon={<AddIcon />}
+            >
+              {t('assessment:createTermAssessment')}
+            </Button>
+            <Collapse
+              in={!!selectedAssessment}
+              orientation="horizontal"
+              unmountOnExit
+            >
+              <Fade in={!!selectedAssessment}>
+                <Box>
+                  <AssessmentActionMenu
+                    id={selectedAssessment?.id}
+                    published={!!selectedAssessment?.publish}
+                  />
+                </Box>
+              </Fade>
+            </Collapse>
+          </Stack>
         }
       />
     </PageContainer>

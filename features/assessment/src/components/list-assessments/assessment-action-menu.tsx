@@ -4,7 +4,7 @@ import { Assessment } from '@tyro/api';
 import { EyeIcon, EditIcon, StopIcon, CheckmarkCircleIcon } from '@tyro/icons';
 
 type AssessmentActionMenuProps = {
-  id: Assessment['id'];
+  id: Assessment['id'] | undefined;
   published: Assessment['publish'];
 };
 
