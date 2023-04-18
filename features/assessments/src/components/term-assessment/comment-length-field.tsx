@@ -11,11 +11,11 @@ export const CommentLengthField = <TField extends FieldValues>({
   name,
   control,
 }: CommentLengthFieldProps<TField>) => {
-  const { t } = useTranslation(['assessment']);
+  const { t } = useTranslation(['assessments']);
 
   return (
     <RHFTextField<TField>
-      label={t('assessment:labels.commentLength')}
+      label={t('assessments:labels.commentLength')}
       textFieldProps={{
         sx: {
           maxWidth: 300,

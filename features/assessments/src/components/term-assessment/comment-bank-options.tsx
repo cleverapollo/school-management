@@ -12,12 +12,12 @@ export const CommentBankOptions = <TField extends FieldValues>({
   name,
   control,
 }: CommentBankOptionsProps<TField>) => {
-  const { t } = useTranslation(['assessment']);
+  const { t } = useTranslation(['assessments']);
   const { data: commentBankData = [] } = useCommentBank({});
 
   return (
     <RHFAutocomplete<TField, CommentBankOption>
-      label={t('assessment:labels.commentBankOptions')}
+      label={t('assessments:labels.commentBankOptions')}
       optionIdKey="id"
       optionTextKey="name"
       controlProps={{ name, control }}

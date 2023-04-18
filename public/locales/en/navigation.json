@@ -16,7 +16,7 @@
       "schools": "Schools",
       "graphiql": "GraphiQL"
     },
-    "assessment": {
+    "assessments": {
       "title": "Assessments",
       "termAssessments": "Term Assessments"
     }

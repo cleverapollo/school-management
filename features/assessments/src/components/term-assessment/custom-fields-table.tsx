@@ -46,7 +46,7 @@ type CustomFieldsTableProps<TField extends FormCustomFieldsValues> = {
 export const CustomFieldsTable = <TField extends FormCustomFieldsValues>({
   control,
 }: CustomFieldsTableProps<TField>) => {
-  const { t } = useTranslation(['assessment', 'common']);
+  const { t } = useTranslation(['assessments', 'common']);
 
   const { fields, append, remove } = useFieldArray<FormCustomFieldsValues>({
     control: control as unknown as Control<FormCustomFieldsValues>,
@@ -63,7 +63,7 @@ export const CustomFieldsTable = <TField extends FormCustomFieldsValues>({
   return (
     <Stack direction="column" gap={2.5}>
       <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
-        {t('assessment:customFields')}
+        {t('assessments:customFields')}
       </Typography>
       {fields.length > 0 && (
         <Table
@@ -88,10 +88,10 @@ export const CustomFieldsTable = <TField extends FormCustomFieldsValues>({
         >
           <TableHead>
             <TableRow>
-              <TableCell>{t('assessment:extraFieldNo')}</TableCell>
-              <TableCell>{t('assessment:extraFieldName')}</TableCell>
-              <TableCell>{t('assessment:extraFieldType')}</TableCell>
-              <TableCell>{t('assessment:extraFieldValue')}</TableCell>
+              <TableCell>{t('assessments:extraFieldNo')}</TableCell>
+              <TableCell>{t('assessments:extraFieldName')}</TableCell>
+              <TableCell>{t('assessments:extraFieldType')}</TableCell>
+              <TableCell>{t('assessments:extraFieldValue')}</TableCell>
               <TableCell />
             </TableRow>
           </TableHead>
@@ -103,8 +103,10 @@ export const CustomFieldsTable = <TField extends FormCustomFieldsValues>({
                   <RHFTextField<TField>
                     textFieldProps={{
                       fullWidth: true,
-                      'aria-label': t('assessment:placeholders.extraFieldName'),
-                      placeholder: t('assessment:placeholders.extraFieldName'),
+                      'aria-label': t(
+                        'assessments:placeholders.extraFieldName'
+                      ),
+                      placeholder: t('assessments:placeholders.extraFieldName'),
                     }}
                     controlProps={{
                       name: `extraFields.${index}.name` as Path<TField>,
@@ -117,7 +119,7 @@ export const CustomFieldsTable = <TField extends FormCustomFieldsValues>({
                     fullWidth
                     options={extraFieldTypeOptions}
                     getOptionLabel={(option) =>
-                      t(`assessment:labels.extraFieldTypes.${option}`)
+                      t(`assessments:labels.extraFieldTypes.${option}`)
                     }
                     controlProps={{
                       name: `extraFields.${index}.extraFieldType` as Path<TField>,
@@ -171,7 +173,7 @@ export const CustomFieldsTable = <TField extends FormCustomFieldsValues>({
           }
           startIcon={<AddIcon sx={{ width: 24, height: 24 }} />}
         >
-          {t('assessment:addCustomField')}
+          {t('assessments:addCustomField')}
         </Button>
       </Stack>
     </Stack>

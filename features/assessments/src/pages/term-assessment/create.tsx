@@ -68,7 +68,7 @@ const ASSESSMENTS_LIST_PATH = '/assessments';
 export default function CreateTermAssessmentPage() {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { t } = useTranslation(['assessment', 'common']);
+  const { t } = useTranslation(['assessments', 'common']);
 
   const { data: yearGroupsData = [] } = useYearGroups({});
   const { mutate: saveTermAssessment, isLoading } = useSaveTermAssessment();
@@ -158,17 +158,17 @@ export default function CreateTermAssessmentPage() {
   };
 
   return (
-    <PageContainer title={t('assessment:pageTitle.createTermAssessment')}>
+    <PageContainer title={t('assessments:pageTitle.createTermAssessment')}>
       <PageHeading
-        title={t('assessment:pageHeading.termAssessments')}
+        title={t('assessments:pageHeading.termAssessments')}
         breadcrumbs={{
           links: [
             {
-              name: t('assessment:pageHeading.assessments'),
+              name: t('assessments:pageHeading.assessments'),
               href: ASSESSMENTS_LIST_PATH,
             },
             {
-              name: t('assessment:pageHeading.createTermAssessment'),
+              name: t('assessments:pageHeading.createTermAssessment'),
             },
           ],
         }}
@@ -181,7 +181,7 @@ export default function CreateTermAssessmentPage() {
       >
         <CardHeader
           component="h2"
-          title={t('assessment:pageHeading.createTermAssessment')}
+          title={t('assessments:pageHeading.createTermAssessment')}
           sx={{
             p: 3,
             pt: 2.25,
@@ -194,11 +194,11 @@ export default function CreateTermAssessmentPage() {
         <Stack direction="column" gap={3} p={3}>
           <Stack direction="column" gap={2.5}>
             <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
-              {t('assessment:details')}
+              {t('assessments:details')}
             </Typography>
             <Stack direction="row" gap={2}>
               <RHFTextField<FormValues>
-                label={t('assessment:labels.assessmentName')}
+                label={t('assessments:labels.assessmentName')}
                 textFieldProps={{ sx: textFieldStyle }}
                 controlProps={{
                   name: 'name',
@@ -206,7 +206,7 @@ export default function CreateTermAssessmentPage() {
                 }}
               />
               <RHFAutocomplete<FormValues, YearGroupOption>
-                label={t('assessment:labels.years')}
+                label={t('assessments:labels.years')}
                 optionIdKey="yearGroupId"
                 optionTextKey="name"
                 controlProps={{ name: 'years', control }}
@@ -219,12 +219,12 @@ export default function CreateTermAssessmentPage() {
             </Stack>
             <Stack direction="row" gap={2}>
               <RHFDatePicker<FormValues>
-                label={t('assessment:labels.startDate')}
+                label={t('assessments:labels.startDate')}
                 controlProps={{ name: 'startDate', control }}
                 inputProps={{ sx: textFieldStyle }}
               />
               <RHFDatePicker<FormValues>
-                label={t('assessment:labels.endDate')}
+                label={t('assessments:labels.endDate')}
                 controlProps={{ name: 'endDate', control }}
                 inputProps={{ sx: textFieldStyle }}
               />
@@ -232,31 +232,31 @@ export default function CreateTermAssessmentPage() {
           </Stack>
           <Stack direction="column" gap={2.5}>
             <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
-              {t('assessment:grades')}
+              {t('assessments:grades')}
             </Typography>
             <RHFSwitch<FormValues>
-              label={t('assessment:labels.includeTargetGrades')}
+              label={t('assessments:labels.includeTargetGrades')}
               switchProps={{ color: 'success' }}
               controlProps={{ name: 'captureTarget', control }}
             />
           </Stack>
           <Stack direction="column" gap={2.5}>
             <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
-              {t('assessment:comments')}
+              {t('assessments:comments')}
             </Typography>
             <RHFSwitch<FormValues>
-              label={t('assessment:labels.includeTeacherComments')}
+              label={t('assessments:labels.includeTeacherComments')}
               switchProps={{ color: 'success' }}
               controlProps={{ name: 'includeTeacherComments', control }}
             />
             {showTeacherComments && (
               <Stack direction="row" gap={2}>
                 <RHFSelect<FormValues, CommentTypeOption>
-                  label={t('assessment:labels.commentType')}
+                  label={t('assessments:labels.commentType')}
                   options={commentTypeOptions}
                   controlProps={{ name: 'commentType', control }}
                   getOptionLabel={(option) =>
-                    t(`assessment:labels.commentTypes.${option}`)
+                    t(`assessments:labels.commentTypes.${option}`)
                   }
                   sx={textFieldStyle}
                 />
@@ -280,19 +280,19 @@ export default function CreateTermAssessmentPage() {
             {(
               [
                 {
-                  label: t('assessment:labels.includeClassTutorComment'),
+                  label: t('assessments:labels.includeClassTutorComment'),
                   name: 'captureTutorComment',
                 },
                 {
-                  label: t('assessment:labels.includeYearHeadComment'),
+                  label: t('assessments:labels.includeYearHeadComment'),
                   name: 'captureYearHeadComment',
                 },
                 {
-                  label: t('assessment:labels.includeHousemasterComment'),
+                  label: t('assessments:labels.includeHousemasterComment'),
                   name: 'captureHouseMasterComment',
                 },
                 {
-                  label: t('assessment:labels.includePrincipalComment'),
+                  label: t('assessments:labels.includePrincipalComment'),
                   name: 'capturePrincipalComment',
                 },
               ] as Array<{ label: string; name: Path<FormValues> }>
@@ -313,7 +313,7 @@ export default function CreateTermAssessmentPage() {
               type="submit"
               loading={isLoading}
             >
-              {t('assessment:createTermAssessment')}
+              {t('assessments:createTermAssessment')}
             </LoadingButton>
           </Stack>
         </Stack>

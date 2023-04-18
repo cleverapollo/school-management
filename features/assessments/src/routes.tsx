@@ -20,7 +20,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         icon: <SchoolExamACircleIcon />,
         // TODO: check which permissions are needed
         hasAccess: ({ userType }) => userType === UserType.Admin,
-        title: t('navigation:general.assessment.title'),
+        title: t('navigation:general.assessments.title'),
         children: [
           {
             type: NavObjectType.NonMenuLink,

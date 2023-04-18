@@ -16,7 +16,7 @@ export const AcademicYearDropdown = ({
   academicNamespaceId,
   onChangeAcademicNamespace,
 }: AcademicYearDropdownProps) => {
-  const { t } = useTranslation(['assessment']);
+  const { t } = useTranslation(['assessments']);
 
   const { allNamespaces } = useAcademicNamespace();
 
@@ -33,7 +33,7 @@ export const AcademicYearDropdown = ({
 
   return (
     <Select
-      label={t('assessment:academicYear')}
+      label={t('assessments:academicYear')}
       value={academicNamespaceId}
       optionIdKey="id"
       options={options}

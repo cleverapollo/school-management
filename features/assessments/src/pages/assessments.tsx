@@ -21,37 +21,37 @@ type ReturnTypeFromUseAssessments = UseQueryReturnType<
 
 const getColumnDefs = (
   translate: TFunction<
-    ('assessment' | 'common')[],
+    ('assessments' | 'common')[],
     undefined,
-    ('assessment' | 'common')[]
+    ('assessments' | 'common')[]
   >
 ): GridOptions<ReturnTypeFromUseAssessments>['columnDefs'] => [
   {
     field: 'name',
-    headerName: translate('assessment:assessmentName'),
+    headerName: translate('assessments:assessmentName'),
     checkboxSelection: ({ data }) => Boolean(data),
   },
   {
     field: 'assessmentType',
-    headerName: translate('assessment:assessmentType'),
+    headerName: translate('assessments:assessmentType'),
     enableRowGroup: true,
     valueGetter: ({ data }) =>
       data?.assessmentType
-        ? translate(`assessment:assessmentTypes.${data.assessmentType}`)
+        ? translate(`assessments:assessmentTypes.${data.assessmentType}`)
         : '',
   },
   // TODO: waiting for these to be available
   {
     field: 'createdBy',
-    headerName: translate('assessment:createdBy'),
+    headerName: translate('assessments:createdBy'),
   },
   {
     field: 'dateOfCreation',
-    headerName: translate('assessment:dateOfCreation'),
+    headerName: translate('assessments:dateOfCreation'),
   },
   {
     field: 'publish',
-    headerName: translate('assessment:publishedOnline'),
+    headerName: translate('assessments:publishedOnline'),
     valueGetter: ({ data }) =>
       data?.publish ? translate('common:yes') : translate('common:no'),
     cellRenderer: ({
@@ -63,7 +63,7 @@ const getColumnDefs = (
 ];
 
 export default function AssessmentsPage() {
-  const { t } = useTranslation(['assessment', 'common']);
+  const { t } = useTranslation(['assessments', 'common']);
 
   const { activeAcademicNamespace } = useAcademicNamespace();
 
@@ -81,9 +81,9 @@ export default function AssessmentsPage() {
   const columnDefs = useMemo(() => getColumnDefs(t), [t]);
 
   return (
-    <PageContainer title={t('assessment:pageTitle.assessments')}>
+    <PageContainer title={t('assessments:pageTitle.assessments')}>
       <Typography variant="h3" component="h1">
-        {t('assessment:pageHeading.assessments')}
+        {t('assessments:pageHeading.assessments')}
       </Typography>
       {academicNameSpaceId && (
         <AcademicYearDropdown
@@ -106,7 +106,7 @@ export default function AssessmentsPage() {
               to="./term-assessments/create"
               endIcon={<AddIcon />}
             >
-              {t('assessment:createTermAssessment')}
+              {t('assessments:createTermAssessment')}
             </Button>
             <Collapse
               in={!!selectedAssessment}

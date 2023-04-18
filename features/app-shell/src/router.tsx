@@ -32,7 +32,7 @@ import { routes as authRoutes } from '@tyro/authentication';
 import { getRoutes as getCalendarRoutes } from '@tyro/calendar';
 import { getRoutes as getGroupRoutes } from '@tyro/groups';
 import { getRoutes as getMailRoutes } from '@tyro/mail';
-import { getRoutes as getAssessmentRoutes } from '@tyro/assessment';
+import { getRoutes as getAssessmentRoutes } from '@tyro/assessments';
 import { getRoutes as getPeopleRoutes } from '@tyro/people';
 import { getRoutes as getReportingRoutes } from '@tyro/reporting';
 import { getRoutes as getSettingsRoutes } from '@tyro/settings';

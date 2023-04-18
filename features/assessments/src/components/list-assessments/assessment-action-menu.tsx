@@ -12,7 +12,7 @@ export const AssessmentActionMenu = ({
   id,
   published,
 }: AssessmentActionMenuProps) => {
-  const { t } = useTranslation(['assessment']);
+  const { t } = useTranslation(['assessments']);
 
   return (
     <ActionMenu
@@ -28,23 +28,23 @@ export const AssessmentActionMenu = ({
       }}
       menuItems={[
         {
-          label: t('assessment:actions.view'),
+          label: t('assessments:actions.view'),
           icon: <EyeIcon />,
           onClick: () => console.log('view', id),
         },
         {
-          label: t('assessment:actions.edit'),
+          label: t('assessments:actions.edit'),
           icon: <EditIcon />,
           onClick: () => console.log('edit', id),
         },
         published
           ? {
-              label: t('assessment:actions.unpublish'),
+              label: t('assessments:actions.unpublish'),
               icon: <StopIcon />,
               onClick: () => console.log('unpublish', id),
             }
           : {
-              label: t('assessment:actions.publish'),
+              label: t('assessments:actions.publish'),
               icon: <CheckmarkCircleIcon />,
               onClick: () => console.log('publish', id),
             },
