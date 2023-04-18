@@ -29,25 +29,11 @@ const createEvents = graphql(/* GraphQL */ `
         endDate
         recurrenceRule
       }
-      attendees {
-        partyId
-        type
-        startDate
-        endDate
-        recurrenceRule
-      }
-      exclusions {
-        partyId
-        startDate
-        endDate
-        recurrenceRule
-      }
       type
       lessonInfo {
         subjectGroupId
         lessonId
       }
-      roomIds
     }
   }
 `);
