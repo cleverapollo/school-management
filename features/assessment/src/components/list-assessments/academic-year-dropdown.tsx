@@ -1,12 +1,16 @@
-import { MenuItem, TextField } from '@mui/material';
-import { useCoreAcademicNamespace } from '@tyro/api';
-import { useEffect, useState } from 'react';
+import { useAcademicNamespace } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
+import { Select } from '@tyro/core';
+import { useMemo } from 'react';
+import { createTheme } from '@mui/material';
 
 type AcademicYearDropdownProps = {
   academicNamespaceId: number;
   onChangeAcademicNamespace: (academicNamespaceId: number) => void;
 };
+
+const theme = createTheme();
+const MAX_WIDTH = theme.spacing(34);
 
 export const AcademicYearDropdown = ({
   academicNamespaceId,
@@ -14,47 +18,30 @@ export const AcademicYearDropdown = ({
 }: AcademicYearDropdownProps) => {
   const { t } = useTranslation(['assessment']);
 
-  const { data: academicNamespacesData } = useCoreAcademicNamespace();
-  const [academicYear, setAcademicYear] = useState<number>(academicNamespaceId);
+  const { allNamespaces } = useAcademicNamespace();
 
-  academicNamespacesData?.sort(
-    (prev, next) => (prev && next && next.year - prev.year) ?? 0
+  const options = useMemo(
+    () =>
+      allNamespaces
+        ?.sort((prev, next) => (prev && next && next.year - prev.year) ?? 0)
+        ?.map((namespace) => ({
+          id: namespace?.academicNamespaceId,
+          name: namespace?.name ?? '',
+        })) || [],
+    [allNamespaces]
   );
 
-  useEffect(() => {
-    setAcademicYear(academicNamespaceId);
-  }, [academicNamespaceId]);
-
   return (
-    <TextField
-      select
+    <Select
       label={t('assessment:academicYear')}
-      value={academicYear}
-      sx={{
-        maxWidth: '239px',
-      }}
-      SelectProps={{
-        MenuProps: {
-          sx: {
-            maxHeight: '350px',
-          },
-        },
-      }}
+      value={academicNamespaceId}
+      optionIdKey="id"
+      options={options}
+      getOptionLabel={(option) => option.name}
+      sx={{ maxWidth: MAX_WIDTH }}
       onChange={(ev) => {
-        const newAcademicYear = +ev.target.value;
-
-        setAcademicYear(newAcademicYear);
-        onChangeAcademicNamespace(newAcademicYear);
+        onChangeAcademicNamespace(Number(ev.target.value));
       }}
-    >
-      {academicNamespacesData?.map((namespace) => (
-        <MenuItem
-          key={namespace?.academicNamespaceId}
-          value={namespace?.academicNamespaceId}
-        >
-          {namespace?.name}
-        </MenuItem>
-      ))}
-    </TextField>
+    />
   );
 };
