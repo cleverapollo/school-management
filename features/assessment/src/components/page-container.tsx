@@ -1,20 +1,25 @@
 import { Page } from '@tyro/core';
-import { Container } from '@mui/material';
-import { PropsWithChildren } from 'react';
+import { Container, ContainerProps } from '@mui/material';
 
-type PageContainerProps = PropsWithChildren<{
+type PageContainerProps = ContainerProps & {
   title: string;
-}>;
+};
 
-export const PageContainer = ({ title, children }: PageContainerProps) => (
+export const PageContainer = ({
+  title,
+  children,
+  ...containerProps
+}: PageContainerProps) => (
   <Page title={title}>
     <Container
       maxWidth="xl"
+      {...containerProps}
       sx={{
         display: 'flex',
         flexDirection: 'column',
         gap: 2,
         pb: 3,
+        ...containerProps.sx,
       }}
     >
       {children}
