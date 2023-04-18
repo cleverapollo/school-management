@@ -1,61 +1,72 @@
-import {
-  MenuItem,
-  TextField,
-  TextFieldProps,
-  createTheme,
-} from '@mui/material';
+import { MenuItem, TextField, TextFieldProps, useTheme } from '@mui/material';
 
-type SelectObjectOption<TSelectOption> = {
-  optionIdKey: keyof TSelectOption;
+type SelectCustomVariant = Omit<TextFieldProps, 'variant'> & {
+  variant?: TextFieldProps['variant'] | 'white-filled';
 };
 
-type SelectSimpleOption = {
-  optionIdKey?: never;
-};
-
-export type SelectProps<TSelectOption> = TextFieldProps & {
+export type SelectProps<TSelectOption> = SelectCustomVariant & {
   options: TSelectOption[];
   getOptionLabel: (option: TSelectOption) => string;
   customSelectRef?: TextFieldProps['ref'];
-} & (TSelectOption extends string | number
-    ? SelectSimpleOption
-    : SelectObjectOption<TSelectOption>);
-
-const theme = createTheme();
-const DEFAULT_MAX_HEIGHT = theme.spacing(44);
+  optionIdKey?: TSelectOption extends string | number
+    ? never
+    : keyof TSelectOption;
+};
 
 export const Select = <TSelectOption extends string | number | object>({
   options,
   optionIdKey,
   customSelectRef,
   getOptionLabel,
+  variant,
+  sx,
+  SelectProps,
   ...textFieldProps
-}: SelectProps<TSelectOption>) => (
-  <TextField
-    {...textFieldProps}
-    ref={customSelectRef}
-    select
-    SelectProps={{
-      ...textFieldProps.SelectProps,
-      MenuProps: {
-        ...textFieldProps.SelectProps?.MenuProps,
-        sx: {
-          maxHeight: DEFAULT_MAX_HEIGHT,
-          ...textFieldProps.SelectProps?.MenuProps?.sx,
-        },
-      },
-    }}
-  >
-    {options.map((option) => {
-      const value = optionIdKey
-        ? (option[optionIdKey] as string)
-        : String(option);
+}: SelectProps<TSelectOption>) => {
+  const { spacing, palette } = useTheme();
 
-      return (
-        <MenuItem key={value} value={value}>
-          {getOptionLabel(option)}
-        </MenuItem>
-      );
-    })}
-  </TextField>
-);
+  const isWhiteFilledVariant = variant === 'white-filled';
+
+  return (
+    <TextField
+      {...textFieldProps}
+      variant={isWhiteFilledVariant ? 'filled' : variant}
+      ref={customSelectRef}
+      select
+      SelectProps={{
+        ...SelectProps,
+        MenuProps: {
+          ...SelectProps?.MenuProps,
+          sx: {
+            maxHeight: spacing(44),
+            ...SelectProps?.MenuProps?.sx,
+          },
+        },
+      }}
+      sx={{
+        ...sx,
+        ...(isWhiteFilledVariant && {
+          '& .MuiSelect-filled, & .MuiSelect-filled:focus': {
+            backgroundColor: palette.background.default,
+            borderRadius: spacing(1),
+          },
+          '& .MuiSelect-icon': {
+            color: palette.primary.main,
+          },
+        }),
+      }}
+    >
+      {options.map((option) => {
+        const value = optionIdKey
+          ? (option[optionIdKey] as string)
+          : String(option);
+
+        return (
+          <MenuItem key={value} value={value}>
+            {getOptionLabel(option)}
+          </MenuItem>
+        );
+      })}
+    </TextField>
+  );
+};
