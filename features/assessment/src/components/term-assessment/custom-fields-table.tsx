@@ -114,7 +114,7 @@ export const CustomFieldsTable = <TField extends FormCustomFieldsValues>({
                 </TableCell>
                 <TableCell>
                   <RHFSelect<TField, ExtraFieldTypeOption>
-                    textFieldProps={{ fullWidth: true }}
+                    fullWidth
                     options={extraFieldTypeOptions}
                     getOptionLabel={(option) =>
                       t(`assessment:labels.extraFieldTypes.${option}`)

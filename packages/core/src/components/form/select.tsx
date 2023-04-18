@@ -1,68 +1,34 @@
-import { MenuItem, TextField, TextFieldProps } from '@mui/material';
 import {
   FieldValues,
   useController,
   UseControllerProps,
 } from 'react-hook-form';
+import { Select, SelectProps } from '../select';
 
-type SelectObjectOption<TSelectOption> = {
-  optionIdKey: keyof TSelectOption;
-};
-
-type SelectSimpleOption = {
-  optionIdKey?: never;
-};
-
-type SelectBaseProps<TField extends FieldValues, TSelectOption> = {
-  label?: string;
-  textFieldProps?: TextFieldProps;
+type RHFSelectProps<TField extends FieldValues, TSelectOption> = {
   controlProps: UseControllerProps<TField>;
-  options: TSelectOption[];
-  getOptionLabel: (option: TSelectOption) => string;
-};
+} & SelectProps<TSelectOption>;
 
-type RHFSelectProps<
+export const RHFSelect = <
   TField extends FieldValues,
-  TSelectOption
-> = (TSelectOption extends string | number
-  ? SelectSimpleOption
-  : SelectObjectOption<TSelectOption>) &
-  SelectBaseProps<TField, TSelectOption>;
-
-export const RHFSelect = <TField extends FieldValues, TSelectOption>({
-  label,
-  options,
-  optionIdKey,
-  textFieldProps,
+  TSelectOption extends string | number | object
+>({
   controlProps,
-  getOptionLabel,
+  ...selectProps
 }: RHFSelectProps<TField, TSelectOption>) => {
   const {
-    field,
+    field: { ref, value, ...restFieldProps },
     fieldState: { error },
   } = useController(controlProps);
 
   return (
-    <TextField
-      {...textFieldProps}
-      {...field}
-      select
-      value={field.value ?? ''}
-      label={label}
+    <Select<TSelectOption>
+      {...restFieldProps}
+      {...selectProps}
+      customSelectRef={ref}
+      value={value ?? ''}
       error={!!error}
       helperText={error?.message}
-    >
-      {options.map((option) => {
-        const value = optionIdKey
-          ? (option[optionIdKey] as string)
-          : String(option);
-
-        return (
-          <MenuItem key={value} value={value}>
-            {getOptionLabel(option)}
-          </MenuItem>
-        );
-      })}
-    </TextField>
+    />
   );
 };
