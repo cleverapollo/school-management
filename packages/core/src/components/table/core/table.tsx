@@ -12,7 +12,7 @@ import { TableSearchInput } from './search-input';
 import {
   useEditableState,
   UseEditableStateProps,
-} from './hooks/use-editable-state';
+} from '../hooks/use-editable-state';
 import { BulkEditSaveBar } from './bulk-edit-save-bar';
 
 export type { GridOptions, ICellRendererParams } from 'ag-grid-community';
@@ -82,13 +82,14 @@ function TableInner<T>(
     }
   }, []);
 
-  const defaultAutoGroupColumnDef = rowSelection
-    ? {
-        cellRendererParams: {
-          checkbox: true,
-        },
-      }
-    : undefined;
+  const defaultAutoGroupColumnDef =
+    rowSelection === 'multiple'
+      ? {
+          cellRendererParams: {
+            checkbox: true,
+          },
+        }
+      : undefined;
 
   return (
     <>
@@ -119,8 +120,8 @@ function TableInner<T>(
             rowHeight={rowHeight}
             rowSelection={rowSelection}
             autoGroupColumnDef={autoGroupColumnDef || defaultAutoGroupColumnDef}
-            groupSelectsChildren
-            groupSelectsFiltered
+            groupSelectsChildren={rowSelection === 'multiple'}
+            groupSelectsFiltered={rowSelection === 'multiple'}
             {...props}
             onCellValueChanged={onCellValueChanged}
             onFirstDataRendered={(params: FirstDataRenderedEvent<T>) => {

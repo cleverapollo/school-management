@@ -2,7 +2,7 @@ import { Box, Button, Fade, Slide, Stack, Typography } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useTranslation } from '@tyro/i18n';
 import { SaveIcon, ThumbsUpCheckmarkIcon, UndoIcon } from '@tyro/icons';
-import { EditState } from './hooks/use-editable-state';
+import { EditState } from '../hooks/use-editable-state';
 
 interface BulkEditSaveBarProps {
   isEditing: boolean;
