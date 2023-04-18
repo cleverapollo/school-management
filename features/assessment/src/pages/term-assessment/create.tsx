@@ -63,7 +63,7 @@ interface FormValues extends FormCustomFieldsValues {
 
 const COMMENT_LENGTH_MIN = 1;
 const COMMENT_LENGTH_MAX = 1000;
-const RELATIVE_PATH_ASSESSMENTS_LIST = './../..';
+const ASSESSMENTS_LIST_PATH = '/assessments';
 
 export default function CreateTermAssessmentPage() {
   const { toast } = useToast();
@@ -140,7 +140,7 @@ export default function CreateTermAssessmentPage() {
       {
         onSuccess: () => {
           toast(t('common:snackbarMessages.createSuccess'));
-          navigate(RELATIVE_PATH_ASSESSMENTS_LIST);
+          navigate(ASSESSMENTS_LIST_PATH);
         },
         onError: console.error,
       }
@@ -165,7 +165,7 @@ export default function CreateTermAssessmentPage() {
           links: [
             {
               name: t('assessment:pageHeading.assessments'),
-              href: RELATIVE_PATH_ASSESSMENTS_LIST,
+              href: ASSESSMENTS_LIST_PATH,
             },
             {
               name: t('assessment:pageHeading.createTermAssessment'),
@@ -258,7 +258,7 @@ export default function CreateTermAssessmentPage() {
                   getOptionLabel={(option) =>
                     t(`assessment:labels.commentTypes.${option}`)
                   }
-                  textFieldProps={{ sx: textFieldStyle }}
+                  sx={textFieldStyle}
                 />
                 {(commentTypeValue === CommentType.CommentBank ||
                   commentTypeValue === CommentType.Both) && (
