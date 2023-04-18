@@ -28,26 +28,30 @@ const createEvents = graphql(/* GraphQL */ `
         startDate
         endDate
         recurrenceRule
+        attendees {
+          partyId
+          type
+          startDate
+          endDate
+          recurrenceRule
+        }
+        exclusions {
+          partyId
+          startDate
+          endDate
+          recurrenceRule
+        }
+
+        rooms {
+          roomId
+        }
       }
-      attendees {
-        partyId
-        type
-        startDate
-        endDate
-        recurrenceRule
-      }
-      exclusions {
-        partyId
-        startDate
-        endDate
-        recurrenceRule
-      }
+
       type
       lessonInfo {
         subjectGroupId
         lessonId
       }
-      roomIds
     }
   }
 `);
@@ -61,30 +65,16 @@ const events = graphql(/* GraphQL */ `
           __typename
           partyInfo {
             __typename
-            ... on GeneralGroup {
+            ... on PartyGroup {
               name
+              avatarUrl
             }
-            ... on Person {
-              title
-              firstName
-              lastName
-            }
-            ... on Staff {
+            ... on PartyPerson {
               person {
-                title
+                avatarUrl
                 firstName
                 lastName
               }
-            }
-            ... on Student {
-              person {
-                title
-                firstName
-                lastName
-              }
-            }
-            ... on SubjectGroup {
-              name
             }
           }
         }
@@ -115,39 +105,16 @@ const events = graphql(/* GraphQL */ `
             partyInfo {
               partyId
               __typename
-              ... on GeneralGroup {
+              ... on PartyGroup {
                 name
                 avatarUrl
               }
-              ... on SubjectGroup {
-                name
-                avatarUrl
-              }
-              ... on Person {
-                type
-                title
-                firstName
-                lastName
-                avatarUrl
-              }
-              ... on Staff {
+              ... on PartyPerson {
                 person {
-                  type
-                  partyId
+                  title
                   firstName
                   lastName
                   avatarUrl
-                  title
-                }
-              }
-              ... on Student {
-                person {
-                  type
-                  partyId
-                  firstName
-                  lastName
-                  avatarUrl
-                  title
                 }
               }
             }
