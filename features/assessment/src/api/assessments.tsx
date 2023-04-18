@@ -34,9 +34,10 @@ export function getAssessments(filter: AssessmentFilter) {
 export function useAssessments(filter: AssessmentFilter) {
   return useQuery({
     ...assessmentsQuery(filter),
-    select: ({ assessment_assessment }) =>
-      Array.isArray(assessment_assessment) && assessment_assessment.length > 0
-        ? assessment_assessment ?? []
-        : [],
+    select: ({ assessment_assessment }) => {
+      if (!Array.isArray(assessment_assessment)) return [];
+
+      return assessment_assessment;
+    },
   });
 }
