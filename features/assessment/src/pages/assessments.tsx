@@ -9,14 +9,14 @@ import {
 import { Link } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { AddIcon } from '@tyro/icons';
-import { useAcademicNamespace } from '@tyro/api';
+import { useAcademicNamespace, UseQueryReturnType } from '@tyro/api';
 import { PageContainer } from '../components/page-container';
 import { useAssessments } from '../api/assessments';
 import { AssessmentActionMenu } from '../components/list-assessments/assessment-action-menu';
 import { AcademicYearDropdown } from '../components/list-assessments/academic-year-dropdown';
 
-type ReturnTypeFromUseAssessments = NonNullable<
-  ReturnType<typeof useAssessments>['data']
+type ReturnTypeFromUseAssessments = UseQueryReturnType<
+  typeof useAssessments
 >[number];
 
 const getColumnDefs = (
@@ -85,22 +85,18 @@ export default function AssessmentsPage() {
       <Typography variant="h3" component="h1">
         {t('assessment:pageHeading.assessments')}
       </Typography>
+      {academicNameSpaceId && (
+        <AcademicYearDropdown
+          academicNamespaceId={academicNameSpaceId}
+          onChangeAcademicNamespace={setAcademicNameSpaceId}
+        />
+      )}
       <Table
         rowData={assessmentsData || []}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.id)}
         rowSelection="single"
-        onRowSelection={([newValue]) => {
-          setSelectedAssessment(newValue);
-        }}
-        topAdornment={
-          academicNameSpaceId && (
-            <AcademicYearDropdown
-              academicNamespaceId={academicNameSpaceId}
-              onChangeAcademicNamespace={setAcademicNameSpaceId}
-            />
-          )
-        }
+        onRowSelection={([newValue]) => setSelectedAssessment(newValue)}
         rightAdornment={
           <Stack direction="row" spacing={1}>
             <Button

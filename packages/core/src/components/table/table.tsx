@@ -29,7 +29,6 @@ export interface TableProps<T> extends AgGridReactProps<T> {
   sx?: CardProps['sx'];
   tableContainerSx?: BoxProps['sx'];
   rightAdornment?: React.ReactNode;
-  topAdornment?: React.ReactNode;
 }
 
 const defaultColDef: ColDef = {
@@ -52,7 +51,6 @@ function TableInner<T>(
     tableContainerSx,
     sx,
     onRowSelection,
-    topAdornment,
     rightAdornment,
     autoGroupColumnDef,
     rowHeight = 56,
@@ -95,11 +93,6 @@ function TableInner<T>(
   return (
     <>
       <Card sx={sx}>
-        {topAdornment && (
-          <Stack spacing={2} p={2}>
-            {topAdornment}
-          </Stack>
-        )}
         <Stack direction="row" justifyContent="space-between" spacing={2} p={2}>
           <TableSearchInput
             value={searchValue}
