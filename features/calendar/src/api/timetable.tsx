@@ -135,6 +135,22 @@ export function getTimetableInfo(filter: CalendarDayInfoFilter) {
   return queryClient.fetchQuery(timetableInfoQuery(filter));
 }
 
+export function getTimetableInfoForCalendar(date: Date) {
+  const dayInfoFromDate = dayjs(date)
+    .subtract(1, 'month')
+    .startOf('month')
+    .format('YYYY-MM-DD');
+  const dayInfoToDate = dayjs(date)
+    .add(1, 'month')
+    .startOf('month')
+    .format('YYYY-MM-DD');
+
+  return getTimetableInfo({
+    fromDate: dayInfoFromDate,
+    toDate: dayInfoToDate,
+  });
+}
+
 export function useTimetableInfo(fromDate: dayjs.Dayjs, toDate: dayjs.Dayjs) {
   return useQuery({
     ...timetableInfoQuery({

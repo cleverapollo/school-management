@@ -10,8 +10,7 @@ import { Iterator } from '@tyro/api';
 import { redirect } from 'react-router-dom';
 import { getAttendanceCodes } from '@tyro/attendance';
 
-import { getCalendarEvents, getTimetableInfo } from '@tyro/calendar';
-import dayjs from 'dayjs';
+import { getCalendarEvents, getTimetableInfoForCalendar } from '@tyro/calendar';
 import {
   getSubjectGroups,
   getSubjectGroupsById,
@@ -157,14 +156,6 @@ export const getRoutes: NavObjectFunction = (t) => [
                     element: <SubjectGroupProfileTimetablePage />,
                     loader: ({ params }) => {
                       const groupId = getNumber(params.groupId);
-                      const dayInfoFromDate = dayjs()
-                        .subtract(1, 'month')
-                        .startOf('month')
-                        .format('YYYY-MM-DD');
-                      const dayInfoToDate = dayjs()
-                        .add(1, 'month')
-                        .startOf('month')
-                        .format('YYYY-MM-DD');
 
                       const getEventsPromise = groupId
                         ? getCalendarEvents({
@@ -177,10 +168,7 @@ export const getRoutes: NavObjectFunction = (t) => [
 
                       return Promise.all([
                         getEventsPromise,
-                        getTimetableInfo({
-                          fromDate: dayInfoFromDate,
-                          toDate: dayInfoToDate,
-                        }),
+                        getTimetableInfoForCalendar(new Date()),
                       ]);
                     },
                   },
