@@ -14,6 +14,14 @@ const assessmentsList = graphql(/* GraphQL */ `
         name
       }
       publish
+      createdOn
+      createdBy {
+        type
+        title
+        firstName
+        lastName
+        avatarUrl
+      }
     }
   }
 `);
