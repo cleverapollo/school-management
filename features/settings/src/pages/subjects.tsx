@@ -69,6 +69,7 @@ const getColumns = (
   {
     headerName: t('settings:nationalCode'),
     field: 'nationalCode',
+    comparator: (valueA, valueB) => valueA - valueB,
   },
   {
     headerName: t('common:description'),
