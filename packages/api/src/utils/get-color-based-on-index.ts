@@ -4,6 +4,8 @@ export const ColorOptions = [
   Colour.Red,
   Colour.Orange,
   Colour.Amber,
+  Colour.Yellow,
+  Colour.Lime,
   Colour.Green,
   Colour.Emerald,
   Colour.Teal,
@@ -11,7 +13,10 @@ export const ColorOptions = [
   Colour.Sky,
   Colour.Blue,
   Colour.Violet,
+  Colour.Purple,
   Colour.Fuchsia,
+  Colour.Pink,
+  Colour.Rose,
 ];
 
 export function getColorBasedOnIndex(index: number) {

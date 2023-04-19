@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import { getNumber } from '@tyro/core';
-import { StudentAssessmentWidget } from '@tyro/assessment';
+import { StudentAssessmentWidget } from '@tyro/assessments';
 import { useParams } from 'react-router-dom';
 import { TimetableWidget } from '@tyro/calendar';
 import { StudentSessionAttendanceChart } from '../../../components/students/student-session-attendance-chart';

@@ -46,7 +46,6 @@ const createEvents = graphql(/* GraphQL */ `
           roomId
         }
       }
-
       type
       lessonInfo {
         subjectGroupId

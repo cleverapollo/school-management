@@ -29,7 +29,7 @@ interface StudentAssessmentWidgetProps {
 export function StudentAssessmentWidget({
   studentId,
 }: StudentAssessmentWidgetProps) {
-  const { t } = useTranslation(['common', 'assessment']);
+  const { t } = useTranslation(['common', 'assessments']);
   const [assessmentIndex, setAssessmentIndex] = useState(0);
   const { data } = useStudentDashboardAssessments(studentId);
 
@@ -50,7 +50,7 @@ export function StudentAssessmentWidget({
       >
         <CardHeader
           component="h3"
-          title={t('assessment:assessmentResults')}
+          title={t('assessments:assessmentResults')}
           sx={{ p: 0, m: 0 }}
         />
         <IconButton component={Link} to="../assessment">

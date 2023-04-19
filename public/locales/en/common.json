@@ -199,5 +199,23 @@
     "max": "You must enter a number less or equal than {{number}}",
     "minLength":"You must enter a minimum of {{count}} characters",
     "maxLength": "You have exceeded the maximum character length of {{count}}"
+  },
+  "colors": {
+    "amber": "Amber",
+    "blue": "Blue",
+    "cyan": "Cyan",
+    "emerald": "Emerald",
+    "fuchsia": "Fuchsia",
+    "green": "Green",
+    "lime": "Lime",
+    "orange": "Orange",
+    "pink": "Pink",
+    "purple": "Purple",
+    "red": "Red",
+    "rose": "Rose",
+    "sky": "Sky",
+    "teal": "Teal",
+    "violet": "Violet",
+    "yellow": "Yellow"
   }
 }

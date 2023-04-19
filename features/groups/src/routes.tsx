@@ -2,7 +2,7 @@ import {
   getNumber,
   NavObjectFunction,
   NavObjectType,
-  throwRedirectError,
+  throw404Error,
 } from '@tyro/core';
 import { lazy } from 'react';
 import { UserProfileCardIcon } from '@tyro/icons';
@@ -10,6 +10,7 @@ import { Iterator } from '@tyro/api';
 import { redirect } from 'react-router-dom';
 import { getAttendanceCodes } from '@tyro/attendance';
 
+import { getCalendarEvents, getTimetableInfoForCalendar } from '@tyro/calendar';
 import {
   getSubjectGroups,
   getSubjectGroupsById,
@@ -32,6 +33,10 @@ const SubjectGroupProfileStudentsPage = lazy(
 
 const SubjectGroupProfileAttendancePage = lazy(
   () => import('./pages/subject/profile/attendance')
+);
+
+const SubjectGroupProfileTimetablePage = lazy(
+  () => import('./pages/subject/profile/timetable')
 );
 
 const SubjectGroupContainer = lazy(
@@ -92,7 +97,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                   const groupId = getNumber(params.groupId);
 
                   if (!groupId) {
-                    throwRedirectError();
+                    throw404Error();
                   }
 
                   const { calendar_calendarEventsIterator: closestLesson } =
@@ -133,7 +138,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                       const groupId = getNumber(params.groupId);
 
                       if (!groupId) {
-                        throwRedirectError();
+                        throw404Error();
                       }
 
                       return Promise.all([
@@ -142,6 +147,28 @@ export const getRoutes: NavObjectFunction = (t) => [
                           partyId: groupId,
                           iterator: Iterator.Closest,
                         }),
+                      ]);
+                    },
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'timetable',
+                    element: <SubjectGroupProfileTimetablePage />,
+                    loader: ({ params }) => {
+                      const groupId = getNumber(params.groupId);
+
+                      const getEventsPromise = groupId
+                        ? getCalendarEvents({
+                            date: new Date(),
+                            resources: {
+                              partyIds: [groupId],
+                            },
+                          })
+                        : null;
+
+                      return Promise.all([
+                        getEventsPromise,
+                        getTimetableInfoForCalendar(new Date()),
                       ]);
                     },
                   },
@@ -166,7 +193,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                 loader: ({ params }) => {
                   const groupId = getNumber(params?.groupId);
                   if (!groupId) {
-                    throwRedirectError();
+                    throw404Error();
                   }
 
                   return getCustomGroupsById(groupId);

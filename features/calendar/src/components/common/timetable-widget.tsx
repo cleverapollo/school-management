@@ -70,7 +70,7 @@ export function TimetableWidget({
   heading,
   to,
 }: TimetableWidgetProps) {
-  const { t } = useTranslation(['common', 'assessment', 'calendar']);
+  const { t } = useTranslation(['common', 'assessments', 'calendar']);
   const [date, setDate] = useState(dayjs());
   const { data } = usePartyTimetable({ partyId, date });
   const dayInfo = useTimetableInPeriods(date, data);

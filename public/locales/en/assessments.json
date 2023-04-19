@@ -1,8 +1,14 @@
 {
-  "title": "Assessment",
+  "pageTitle": {
+    "assessments": "List of Assessments",
+    "createTermAssessment": "Create a new term assessment"
+  },
+  "pageHeading": {
+    "assessments": "Assessments",
+    "termAssessments": "Term Assessments",
+    "createTermAssessment": "Term Assessment Creation"
+  },
   "assessmentResults": "Assessment Results",
-  "termAssessments": "Term Assessments",
-  "termAssessmentCreation": "Term Assessment Creation",
   "details": "Details",
   "grades": "Grades",
   "comments": "Comments",
@@ -41,5 +47,22 @@
   "extraFieldName": "Field Name",
   "extraFieldType": "Type",
   "extraFieldValue": "Value",
-  "createTermAssessment": "Create Term Assessment"
+  "createTermAssessment": "Create Term Assessment",
+  "assessmentName": "Assessment name",
+  "assessmentType": "Assessment type",
+  "assessmentTypes": {
+    "TERM": "Term",
+    "STATE_CBA": "State CBA",
+    "IN_CLASS": "In Class"
+  },
+  "publishedOnline": "Published online",
+  "dateOfCreation": "Date of creation",
+  "createdBy": "Created by",
+  "actions": {
+    "edit": "Edit assessment",
+    "view": "View assessment",
+    "publish": "Publish online",
+    "unpublish": "Unpublish online"
+  },
+  "academicYear": "Academic Year"
 }

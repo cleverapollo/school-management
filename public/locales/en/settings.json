@@ -11,6 +11,8 @@
   "capacity": "Capacity",
   "namespaces": "Namespaces",
   "active": "Active",
+  "successfullyUpdatedSubjects": "Successfully updated subjects",
+  "updateToSubjectsUnsuccessful": "Your subject updates were unsuccessful",
   "actions": {
     "makeActive": "Make active primary namespace",
     "addNewRoom": "Add new room"

@@ -2,11 +2,12 @@ import { lazy } from 'react';
 import { NavObjectFunction, NavObjectType, getNumber } from '@tyro/core';
 import { UserGroupIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
-import { getStudentDashboardAssessments } from '@tyro/assessment';
+import { getStudentDashboardAssessments } from '@tyro/assessments';
 import {
   getCalendarEvents,
   getPartyTimetable,
   getTimetableInfo,
+  getTimetableInfoForCalendar,
 } from '@tyro/calendar';
 import dayjs from 'dayjs';
 import {
@@ -162,7 +163,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
 
-                  return studentId
+                  const getEventsPromise = studentId
                     ? getCalendarEvents({
                         date: new Date(),
                         resources: {
@@ -170,6 +171,11 @@ export const getRoutes: NavObjectFunction = (t) => [
                         },
                       })
                     : null;
+
+                  return Promise.all([
+                    getEventsPromise,
+                    getTimetableInfoForCalendar(new Date()),
+                  ]);
                 },
               },
               {

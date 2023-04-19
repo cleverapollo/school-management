@@ -53,6 +53,10 @@ export default function SubjectGroupContainer() {
               value: 'attendance',
               label: t('common:attendance'),
             },
+            {
+              value: 'timetable',
+              label: t('common:timetable'),
+            },
           ]}
         />
       </Container>

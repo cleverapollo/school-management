@@ -10,7 +10,7 @@ export const CalendarStyle = styled('div')(({ theme }) => ({
     '--fc-event-text-color': theme.palette.text.primary,
     '--fc-border-color': theme.palette.divider,
     '--fc-event-border-color': theme.palette.info.light,
-    '--fc-now-indicator-color': theme.palette.error.main,
+    '--fc-now-indicator-color': theme.palette.red.main,
     '--fc-today-bg-color': theme.palette.background.default,
     '--fc-page-bg-color': theme.palette.background.default,
     '--fc-neutral-bg-color': theme.palette.background.paper,
