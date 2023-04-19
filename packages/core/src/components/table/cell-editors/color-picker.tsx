@@ -27,7 +27,7 @@ export const TableColorPicker = forwardRef(
       if (!editing) {
         props.stopEditing(false);
       }
-    });
+    }, [editing]);
 
     useEffect(() => {
       window.setTimeout(() => {

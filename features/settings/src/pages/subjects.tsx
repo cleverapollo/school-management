@@ -89,7 +89,7 @@ export default function Subjects() {
 
   const { mutateAsync: saveSubjects } = useUpdateCatalogueSubjects();
 
-  const bulkSaveSubjects = async (data: BulkEditedRows) => {
+  const bulkSaveSubjects = (data: BulkEditedRows) => {
     const dataForEndpoint = Object.keys(data).map((id) => ({
       subjectId: Number(id),
       colour: data[id].colour.newValue as Colour,
