@@ -142,7 +142,7 @@ export function getTimetableInfoForCalendar(date: Date) {
     .format('YYYY-MM-DD');
   const dayInfoToDate = dayjs(date)
     .add(1, 'month')
-    .startOf('month')
+    .endOf('month')
     .format('YYYY-MM-DD');
 
   return getTimetableInfo({
