@@ -161,8 +161,16 @@ export const getRoutes: NavObjectFunction = (t) => [
                 element: <StudentProfileTimetablePage />,
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
+                  const dayInfoFromDate = dayjs()
+                    .subtract(1, 'month')
+                    .startOf('month')
+                    .format('YYYY-MM-DD');
+                  const dayInfoToDate = dayjs()
+                    .add(1, 'month')
+                    .startOf('month')
+                    .format('YYYY-MM-DD');
 
-                  return studentId
+                  const getEventsPromise = studentId
                     ? getCalendarEvents({
                         date: new Date(),
                         resources: {
@@ -170,6 +178,14 @@ export const getRoutes: NavObjectFunction = (t) => [
                         },
                       })
                     : null;
+
+                  return Promise.all([
+                    getEventsPromise,
+                    getTimetableInfo({
+                      fromDate: dayInfoFromDate,
+                      toDate: dayInfoToDate,
+                    }),
+                  ]);
                 },
               },
               {
