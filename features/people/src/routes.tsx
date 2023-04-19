@@ -7,6 +7,7 @@ import {
   getCalendarEvents,
   getPartyTimetable,
   getTimetableInfo,
+  getTimetableInfoForCalendar,
 } from '@tyro/calendar';
 import dayjs from 'dayjs';
 import {
@@ -162,7 +163,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
 
-                  return studentId
+                  const getEventsPromise = studentId
                     ? getCalendarEvents({
                         date: new Date(),
                         resources: {
@@ -170,6 +171,11 @@ export const getRoutes: NavObjectFunction = (t) => [
                         },
                       })
                     : null;
+
+                  return Promise.all([
+                    getEventsPromise,
+                    getTimetableInfoForCalendar(new Date()),
+                  ]);
                 },
               },
               {

@@ -230,6 +230,7 @@ export const Calendar = function Calendar({
                 slotEventOverlap={false}
                 height={isDesktop ? 720 : 'auto'}
                 businessHours={businessHours}
+                nowIndicator
                 plugins={[
                   listPlugin,
                   dayGridPlugin,
