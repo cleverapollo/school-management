@@ -5407,7 +5407,7 @@ __metadata:
     "@mui/system": ^5.10.14
     "@tanstack/react-query": ^4.16.1
     "@tyro/api": "*"
-    "@tyro/assessment": "*"
+    "@tyro/assessments": "*"
     "@tyro/authentication": "*"
     "@tyro/calendar": "*"
     "@tyro/configs": "*"
@@ -5432,9 +5432,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@tyro/assessment@*, @tyro/assessment@workspace:features/assessment":
+"@tyro/assessments@*, @tyro/assessments@workspace:features/assessments":
   version: 0.0.0-use.local
-  resolution: "@tyro/assessment@workspace:features/assessment"
+  resolution: "@tyro/assessments@workspace:features/assessments"
   dependencies:
     "@mui/lab": ^5.0.0-alpha.96
     "@mui/material": ^5.11.4
@@ -5672,7 +5672,7 @@ __metadata:
     "@mui/system": ^5.10.14
     "@tanstack/react-query": ^4.16.1
     "@tyro/api": "*"
-    "@tyro/assessment": "*"
+    "@tyro/assessments": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
     "@tyro/i18n": "*"
@@ -5697,7 +5697,7 @@ __metadata:
     "@mui/system": ^5.10.14
     "@tanstack/react-query": ^4.16.1
     "@tyro/api": "*"
-    "@tyro/assessment": "*"
+    "@tyro/assessments": "*"
     "@tyro/calendar": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"

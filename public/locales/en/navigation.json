@@ -16,9 +16,8 @@
       "schools": "Schools",
       "graphiql": "GraphiQL"
     },
-    "assessment": {
-      "title": "Assessment",
-      "overview": "Overview",
+    "assessments": {
+      "title": "Assessments",
       "termAssessments": "Term Assessments"
     }
   },

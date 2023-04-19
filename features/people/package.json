@@ -10,7 +10,7 @@
     "@mui/system": "^5.10.14",
     "@tanstack/react-query": "^4.16.1",
     "@tyro/api": "*",
-    "@tyro/assessment": "*",
+    "@tyro/assessments": "*",
     "@tyro/calendar": "*",
     "@tyro/core": "*",
     "@tyro/i18n": "*",

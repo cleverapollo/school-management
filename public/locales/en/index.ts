@@ -1,5 +1,5 @@
 import attendance from './attendance.json';
-import assessment from './assessment.json';
+import assessments from './assessments.json';
 import authentication from './authentication.json';
 import common from './common.json';
 import navigation from './navigation.json';
@@ -14,7 +14,7 @@ import substitution from './substitution.json';
 
 export const en = {
   attendance,
-  assessment,
+  assessments,
   authentication,
   common,
   navigation,

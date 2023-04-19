@@ -25,7 +25,7 @@ export default function Input(theme: Theme) {
       styleOverrides: {
         underline: {
           '&:before': {
-            borderBottomColor: alpha(theme.palette.grey[500], 0.56),
+            borderBottomColor: alpha(theme.palette.slate[400], 0.56),
           },
           '&:after': {
             borderBottomColor: theme.palette.text.primary,
@@ -46,12 +46,12 @@ export default function Input(theme: Theme) {
       styleOverrides: {
         root: {
           borderRadius: theme.shape.borderRadius,
-          backgroundColor: alpha(theme.palette.grey[500], 0.08),
+          backgroundColor: alpha(theme.palette.slate[400], 0.08),
           '&:hover': {
-            backgroundColor: alpha(theme.palette.grey[500], 0.16),
+            backgroundColor: alpha(theme.palette.slate[400], 0.16),
           },
           '&.Mui-focused': {
-            backgroundColor: alpha(theme.palette.grey[500], 0.16),
+            backgroundColor: alpha(theme.palette.slate[400], 0.16),
           },
           '&.Mui-disabled': {
             backgroundColor: theme.palette.action.disabledBackground,
@@ -68,7 +68,7 @@ export default function Input(theme: Theme) {
       styleOverrides: {
         root: {
           '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: alpha(theme.palette.grey[500], 0.32),
+            borderColor: alpha(theme.palette.slate[400], 0.32),
           },
           '&.Mui-focused': {
             '& .MuiOutlinedInput-notchedOutline': {
