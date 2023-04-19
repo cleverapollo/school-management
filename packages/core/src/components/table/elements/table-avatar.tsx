@@ -1,8 +1,8 @@
 import { Box } from '@mui/material';
 import { Person } from '@tyro/api';
-import { usePreferredNameLayout } from '../../hooks';
-import { Avatar } from '../avatar';
-import { RouterLink } from '../router-link';
+import { usePreferredNameLayout } from '../../../hooks';
+import { Avatar } from '../../avatar';
+import { RouterLink } from '../../router-link';
 
 type TableAvatarProps = {
   to?: string | null;

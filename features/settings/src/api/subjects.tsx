@@ -1,5 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient } from '@tyro/api';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { gqlClient, graphql, queryClient, UpsertSubject } from '@tyro/api';
+import { useToast } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 
 const catalogueSubjects = graphql(/* GraphQL */ `
   query catalogueSubjects {
@@ -12,6 +14,15 @@ const catalogueSubjects = graphql(/* GraphQL */ `
       subjectSource
       colour
       icon
+    }
+  }
+`);
+
+const updateCatalogueSubjects = graphql(/* GraphQL */ `
+  mutation catalogue_upsertSubjects($input: [UpsertSubject!]!) {
+    catalogue_upsertSubjects(input: $input) {
+      success
+      message
     }
   }
 `);
@@ -33,5 +44,26 @@ export function useCatalogueSubjects() {
   return useQuery({
     ...catalogueSubjectsQuery,
     select: ({ catalogue_subjects }) => catalogue_subjects,
+  });
+}
+
+export function useUpdateCatalogueSubjects() {
+  const { toast } = useToast();
+  const { t } = useTranslation(['settings']);
+
+  return useMutation({
+    mutationFn: (input: UpsertSubject[]) =>
+      gqlClient.request(updateCatalogueSubjects, { input }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(catalogueSubjectsKeys.all);
+      toast(t('settings:successfullyUpdatedSubjects'), {
+        variant: 'success',
+      });
+    },
+    onError: () => {
+      toast(t('settings:updateToSubjectsUnsuccessful'), {
+        variant: 'error',
+      });
+    },
   });
 }

@@ -1,8 +1,20 @@
 import { Container, Typography } from '@mui/material';
 import { useTranslation, TFunction } from '@tyro/i18n';
 import { useMemo } from 'react';
-import { GridOptions, Page, Table } from '@tyro/core';
-import { useCatalogueSubjects } from '../api/subjects';
+import {
+  BulkEditedRows,
+  GridOptions,
+  ICellRendererParams,
+  Page,
+  Table,
+  TableColorPicker,
+  TableSelectedColor,
+} from '@tyro/core';
+import { ColorOptions, Colour } from '@tyro/api';
+import {
+  useCatalogueSubjects,
+  useUpdateCatalogueSubjects,
+} from '../api/subjects';
 
 type ReturnTypeFromUseCatalogueSubjects = NonNullable<
   ReturnType<typeof useCatalogueSubjects>['data']
@@ -12,10 +24,15 @@ const getColumns = (
   t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>
 ): GridOptions<ReturnTypeFromUseCatalogueSubjects>['columnDefs'] => [
   {
+    headerName: t('settings:nationalCode'),
+    field: 'nationalCode',
+    sort: 'asc',
+    comparator: (valueA, valueB) => valueA - valueB,
+  },
+  {
     headerName: t('common:name'),
     field: 'name',
     lockVisible: true,
-    sort: 'asc',
   },
   {
     headerName: t('settings:shortCode'),
@@ -24,14 +41,35 @@ const getColumns = (
   {
     headerName: t('common:colour'),
     field: 'colour',
+    editable: true,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseCatalogueSubjects, any>) =>
+      data ? <TableSelectedColor value={data?.colour} /> : null,
+    cellEditorSelector: () => ({
+      component: TableColorPicker,
+      popup: true,
+      popupPosition: 'under',
+    }),
+    valueSetter: ({ newValue, data }) => {
+      const valueAsLowercase =
+        typeof newValue === 'string' ? newValue.toLowerCase() : null;
+
+      if (
+        data &&
+        valueAsLowercase &&
+        ColorOptions.includes(valueAsLowercase as Colour)
+      ) {
+        data.colour = valueAsLowercase as Colour;
+        return true;
+      }
+
+      return false;
+    },
   },
   {
     headerName: t('common:icon'),
     field: 'icon',
-  },
-  {
-    headerName: t('settings:nationalCode'),
-    field: 'nationalCode',
   },
   {
     headerName: t('common:description'),
@@ -49,6 +87,17 @@ export default function Subjects() {
   const { t } = useTranslation(['common', 'settings']);
   const { data: subjects } = useCatalogueSubjects();
 
+  const { mutateAsync: saveSubjects } = useUpdateCatalogueSubjects();
+
+  const bulkSaveSubjects = (data: BulkEditedRows) => {
+    const dataForEndpoint = Object.keys(data).map((id) => ({
+      subjectId: Number(id),
+      colour: data[id].colour.newValue as Colour,
+    }));
+
+    return saveSubjects(dataForEndpoint);
+  };
+
   const columns = useMemo(() => getColumns(t), [t]);
 
   return (
@@ -61,6 +110,7 @@ export default function Subjects() {
           rowData={subjects ?? []}
           columnDefs={columns}
           getRowId={({ data }) => String(data?.id)}
+          onBulkSave={bulkSaveSubjects}
         />
       </Container>
     </Page>

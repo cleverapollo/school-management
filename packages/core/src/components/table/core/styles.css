@@ -355,3 +355,7 @@
   }
 }
 
+.ag-theme-tyro .ag-popup-editor {
+  border-radius: 6px;
+}
+

@@ -1,7 +1,7 @@
 import { useId } from 'react';
 import { Box, FilledInput, FilledInputProps, FormLabel } from '@mui/material';
 import { SearchIcon } from '@tyro/icons';
-import { VisuallyHidden } from '../visually-hidden';
+import { VisuallyHidden } from '../../visually-hidden';
 
 export function TableSearchInput(props: FilledInputProps) {
   const id = useId();

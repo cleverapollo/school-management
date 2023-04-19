@@ -7,10 +7,12 @@ import {
   FormControl,
   FormLabel,
   FormHelperText,
+  Tooltip,
 } from '@mui/material';
 import { ColorOptions, Colour } from '@tyro/api';
 import { CheckmarkIcon } from '@tyro/icons';
 import { forwardRef, useId } from 'react';
+import { useTranslation } from '@tyro/i18n';
 
 export interface ColorPickerProps extends RadioGroupProps {
   colors?: Colour[];
@@ -23,7 +25,11 @@ interface IconColorProps extends BoxProps {
   isChecked?: boolean;
 }
 
-function IconColor({ isChecked, sx, ...other }: IconColorProps) {
+export function ColorPickerIconColor({
+  isChecked,
+  sx,
+  ...other
+}: IconColorProps) {
   return (
     <Box
       sx={{
@@ -71,13 +77,14 @@ function IconColor({ isChecked, sx, ...other }: IconColorProps) {
   );
 }
 
-export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
+export const ColorPicker = forwardRef<HTMLInputElement, ColorPickerProps>(
   ({ colors = ColorOptions, id, label, error, helperText, ...props }, ref) => {
     const autoId = useId();
     const pickerId = id ?? autoId;
+    const { t } = useTranslation(['common']);
 
     return (
-      <FormControl ref={ref} error={error}>
+      <FormControl error={error}>
         {label && <FormLabel id={pickerId}>{label}</FormLabel>}
         <RadioGroup
           row
@@ -86,24 +93,26 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
           {...props}
         >
           {colors.map((color) => (
-            <Radio
-              key={color}
-              value={color}
-              color="default"
-              icon={<IconColor />}
-              checkedIcon={<IconColor isChecked />}
-              sx={{
-                color: `${color}.500`,
-                '&:hover': { opacity: 0.72 },
-                '& svg': {
-                  width: 12,
-                  height: 12,
-                  '& path': {
-                    strokeWidth: 2,
+            <Tooltip key={color} title={t(`common:colors.${color}`)}>
+              <Radio
+                inputRef={props.value === color ? ref : undefined}
+                value={color}
+                color="default"
+                icon={<ColorPickerIconColor />}
+                checkedIcon={<ColorPickerIconColor isChecked />}
+                sx={{
+                  color: `${color}.500`,
+                  '&:hover': { opacity: 0.72 },
+                  '& svg': {
+                    width: 12,
+                    height: 12,
+                    '& path': {
+                      strokeWidth: 2,
+                    },
                   },
-                },
-              }}
-            />
+                }}
+              />
+            </Tooltip>
           ))}
         </RadioGroup>
         {helperText && (
