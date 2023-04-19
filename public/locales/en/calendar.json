@@ -51,7 +51,7 @@
     "GeneralGroup": "General group",
     "SubjectGroup": "Subject group",
     "Student": "Student",
-    "Staff": "Staff",
-    "Person": "Person"
+    "StudentContact": "Contact",
+    "Staff": "Staff"
   }
 }

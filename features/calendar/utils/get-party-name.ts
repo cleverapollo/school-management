@@ -11,9 +11,8 @@ export function getPartyName(
   switch (partyInfo.__typename) {
     case 'GeneralGroup':
       return partyInfo.name;
-    case 'Person':
-      return getDisplayName(partyInfo);
     case 'Staff':
+      return getDisplayName(partyInfo.person);
     case 'Student':
       return getDisplayName(partyInfo.person);
     case 'SubjectGroup':

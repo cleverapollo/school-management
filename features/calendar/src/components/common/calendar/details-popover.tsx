@@ -83,10 +83,10 @@ function getAttendeeAvatarSrc(partyInfo: Attendee['partyInfo']) {
 
   switch (partyInfo.__typename) {
     case 'GeneralGroup':
-    case 'Person':
     case 'SubjectGroup':
       return partyInfo.avatarUrl ?? undefined;
     case 'Staff':
+      return partyInfo.person.avatarUrl ?? undefined;
     case 'Student':
       return partyInfo.person.avatarUrl ?? undefined;
     default:
@@ -268,7 +268,7 @@ export function CalendarDetailsPopover({
                       </Typography>
                       {partyInfo?.__typename && (
                         <Typography variant="caption" color="text.secondary">
-                          {t(`calendar:attendeeType.${partyInfo?.__typename}`)}
+                          {t(`calendar:attendeeType.${partyInfo.__typename}`)}
                         </Typography>
                       )}
                     </Stack>
