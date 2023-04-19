@@ -13,19 +13,27 @@ export enum EditState {
   Error = 'ERROR',
 }
 
-export type BulkEditedRows = Record<
+type TypeWithGeneric<T> = T[];
+type ExtractGeneric<Type> = Type extends TypeWithGeneric<infer X> ? X : never;
+
+export type BulkEditedRows<
+  ObjectRow,
+  Keys extends keyof NonNullable<ObjectRow> = keyof ObjectRow
+> = Record<
   string,
   {
-    [key: string]: {
-      originalValue: any;
-      newValue: any;
+    [Key in Keys]: {
+      originalValue: ExtractGeneric<
+        TypeWithGeneric<NonNullable<ObjectRow>[Key]>
+      >;
+      newValue: ExtractGeneric<TypeWithGeneric<NonNullable<ObjectRow>[Key]>>;
     };
   }
 >;
 
 export interface UseEditableStateProps<T> {
   tableRef: MutableRefObject<AgGridReact<T>>;
-  onBulkSave: ((data: BulkEditedRows) => Promise<unknown>) | undefined;
+  onBulkSave: ((data: BulkEditedRows<T>) => Promise<unknown>) | undefined;
 }
 
 export function useEditableState<T extends object>({

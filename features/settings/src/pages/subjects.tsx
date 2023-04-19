@@ -10,14 +10,19 @@ import {
   TableColorPicker,
   TableSelectedColor,
 } from '@tyro/core';
-import { ColorOptions, Colour } from '@tyro/api';
+import {
+  ColorOptions,
+  Colour,
+  UpsertSubject,
+  UseQueryReturnType,
+} from '@tyro/api';
 import {
   useCatalogueSubjects,
   useUpdateCatalogueSubjects,
 } from '../api/subjects';
 
-type ReturnTypeFromUseCatalogueSubjects = NonNullable<
-  ReturnType<typeof useCatalogueSubjects>['data']
+type ReturnTypeFromUseCatalogueSubjects = UseQueryReturnType<
+  typeof useCatalogueSubjects
 >[number];
 
 const getColumns = (
@@ -89,10 +94,12 @@ export default function Subjects() {
 
   const { mutateAsync: saveSubjects } = useUpdateCatalogueSubjects();
 
-  const bulkSaveSubjects = (data: BulkEditedRows) => {
-    const dataForEndpoint = Object.keys(data).map((id) => ({
+  const bulkSaveSubjects = (
+    data: BulkEditedRows<ReturnTypeFromUseCatalogueSubjects, 'colour'>
+  ) => {
+    const dataForEndpoint = Object.keys(data).map<UpsertSubject>((id) => ({
       subjectId: Number(id),
-      colour: data[id].colour.newValue as Colour,
+      colour: data[id].colour?.newValue,
     }));
 
     return saveSubjects(dataForEndpoint);
