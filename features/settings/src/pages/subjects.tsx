@@ -24,10 +24,15 @@ const getColumns = (
   t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>
 ): GridOptions<ReturnTypeFromUseCatalogueSubjects>['columnDefs'] => [
   {
+    headerName: t('settings:nationalCode'),
+    field: 'nationalCode',
+    sort: 'asc',
+    comparator: (valueA, valueB) => valueA - valueB,
+  },
+  {
     headerName: t('common:name'),
     field: 'name',
     lockVisible: true,
-    sort: 'asc',
   },
   {
     headerName: t('settings:shortCode'),
@@ -65,11 +70,6 @@ const getColumns = (
   {
     headerName: t('common:icon'),
     field: 'icon',
-  },
-  {
-    headerName: t('settings:nationalCode'),
-    field: 'nationalCode',
-    comparator: (valueA, valueB) => valueA - valueB,
   },
   {
     headerName: t('common:description'),
