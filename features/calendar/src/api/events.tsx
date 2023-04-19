@@ -180,7 +180,7 @@ export function useCalendarEvents(
   const { palette } = useTheme();
   const { data } = useTimetableInfo(
     dayjs(filter.date).subtract(1, 'month').startOf('month'),
-    dayjs(filter.date).add(1, 'month').startOf('month')
+    dayjs(filter.date).add(1, 'month').endOf('month')
   );
 
   return useQuery({
