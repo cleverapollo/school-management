@@ -13,27 +13,46 @@ export enum EditState {
   Error = 'ERROR',
 }
 
-type TypeWithGeneric<T> = T[];
-type ExtractGeneric<Type> = Type extends TypeWithGeneric<infer X> ? X : never;
+type StringableKey<T> = T extends readonly unknown[]
+  ? number extends T['length']
+    ? number
+    : `${number}`
+  : string | number;
+
+type Path<T> = T extends object
+  ? {
+      [P in keyof T & StringableKey<T>]: `${P}` | `${P}.${Path<T[P]>}`;
+    }[keyof T & StringableKey<T>]
+  : never;
+
+type PropType<T, Key extends string> = string extends Key
+  ? unknown
+  : Key extends keyof T
+  ? T[Key]
+  : Key extends `${infer K}.${infer R}`
+  ? K extends keyof T
+    ? PropType<NonNullable<T[K]>, R>
+    : unknown
+  : unknown;
 
 export type BulkEditedRows<
   ObjectRow,
-  Keys extends keyof NonNullable<ObjectRow> = keyof ObjectRow
+  Keys extends Path<NonNullable<ObjectRow>>
 > = Record<
   string,
   {
-    [Key in Keys]: {
-      originalValue: ExtractGeneric<
-        TypeWithGeneric<NonNullable<ObjectRow>[Key]>
-      >;
-      newValue: ExtractGeneric<TypeWithGeneric<NonNullable<ObjectRow>[Key]>>;
+    [Key in Keys]?: {
+      originalValue: PropType<NonNullable<ObjectRow>, Key>;
+      newValue: PropType<NonNullable<ObjectRow>, Key>;
     };
   }
 >;
 
 export interface UseEditableStateProps<T> {
   tableRef: MutableRefObject<AgGridReact<T>>;
-  onBulkSave: ((data: BulkEditedRows<T>) => Promise<unknown>) | undefined;
+  onBulkSave:
+    | ((data: BulkEditedRows<T, Path<T>>) => Promise<unknown>)
+    | undefined;
 }
 
 export function useEditableState<T extends object>({
@@ -138,7 +157,7 @@ export function useEditableState<T extends object>({
     if (onBulkSave) {
       try {
         setState(EditState.Saving);
-        await onBulkSave(editedRows);
+        await onBulkSave(editedRows as BulkEditedRows<T, Path<T>>);
         setState(EditState.Saved);
         setEditedRows({});
       } catch (e) {

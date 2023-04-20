@@ -166,19 +166,23 @@ export function useBulkUpdateCoreStudent() {
     mutationFn: (
       input: BulkEditedRows<
         ReturnTypeFromUseStudents,
-        'personalInformation' | 'studentIrePP'
+        | 'personalInformation.preferredFirstName'
+        | 'personalInformation.primaryPhoneNumber.number'
+        | 'personalInformation.primaryEmail.email'
+        | 'studentIrePP.examNumber'
       >
     ) => {
       const dataForEndpoint = Object.keys(input).map<UpdateStudentInput>(
         (id) => ({
           studentPartyId: Number(id),
           preferredName:
-            input[id].personalInformation?.newValue?.preferredFirstName,
+            input[id]['personalInformation.preferredFirstName']?.newValue,
           primaryPhoneNumber:
-            input[id].personalInformation?.newValue?.primaryPhoneNumber?.number,
+            input[id]['personalInformation.primaryPhoneNumber.number']
+              ?.newValue,
           primaryEmail:
-            input[id].personalInformation?.newValue?.primaryEmail?.email,
-          examNumber: input[id].studentIrePP?.newValue?.examNumber,
+            input[id]['personalInformation.primaryEmail.email']?.newValue,
+          examNumber: input[id]['studentIrePP.examNumber']?.newValue,
         })
       );
 
