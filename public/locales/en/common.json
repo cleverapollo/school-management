@@ -217,5 +217,7 @@
     "teal": "Teal",
     "violet": "Violet",
     "yellow": "Yellow"
-  }
+  },
+  "createdBy": "Created by",
+  "dateOfCreation": "Date of creation"
 }
