@@ -1,44 +1,42 @@
 import { useTranslation } from '@tyro/i18n';
 import { ActionMenu } from '@tyro/core';
 import { Assessment } from '@tyro/api';
-import { EyeIcon, EditIcon, StopIcon, CheckmarkCircleIcon } from '@tyro/icons';
+import {
+  EyeIcon,
+  EditIcon,
+  StopIcon,
+  CheckmarkCircleIcon,
+  VerticalDotsIcon,
+} from '@tyro/icons';
 import { useNavigate } from 'react-router-dom';
 import { getAssessmentSubjectGroupsLink } from '../../utils/get-assessment-subject-groups-link';
 
 type AssessmentActionMenuProps = {
   id: Assessment['id'];
-  published: Assessment['publish'];
+  publish: Assessment['publish'];
   assessmentType: Assessment['assessmentType'];
-  academicNameSpaceId: number;
+  academicNamespaceId: number;
 };
 
 export const AssessmentActionMenu = ({
   id,
-  published,
+  publish,
   assessmentType,
-  academicNameSpaceId,
+  academicNamespaceId,
 }: AssessmentActionMenuProps) => {
-  const { t } = useTranslation(['assessments']);
+  const { t } = useTranslation(['assessments', 'common']);
   const navigate = useNavigate();
 
   const assessmentPath = getAssessmentSubjectGroupsLink(
     id,
     assessmentType,
-    academicNameSpaceId
+    academicNamespaceId
   );
 
   return (
     <ActionMenu
-      menuProps={{
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-        transformOrigin: {
-          vertical: 'top',
-          horizontal: 'right',
-        },
-      }}
+      iconOnly
+      buttonIcon={<VerticalDotsIcon />}
       menuItems={
         id && assessmentType
           ? [
@@ -52,7 +50,7 @@ export const AssessmentActionMenu = ({
                 icon: <EditIcon />,
                 onClick: () => navigate(`${assessmentPath}/edit`),
               },
-              published
+              publish
                 ? {
                     label: t('assessments:actions.unpublish'),
                     icon: <StopIcon />,

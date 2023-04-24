@@ -1,4 +1,4 @@
-import { Box, Button, Collapse, Fade, Stack } from '@mui/material';
+import { Button, Box } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 
 import {
@@ -20,6 +20,7 @@ import { PageContainer } from '../components/page-container';
 import { useAssessments } from '../api/assessments';
 import { AcademicYearDropdown } from '../components/list-assessments/academic-year-dropdown';
 import { getAssessmentSubjectGroupsLink } from '../utils/get-assessment-subject-groups-link';
+import { AssessmentActionMenu } from '../components/list-assessments/assessment-action-menu';
 
 type ReturnTypeFromUseAssessments = UseQueryReturnType<
   typeof useAssessments
@@ -31,8 +32,7 @@ const getColumnDefs = (
     undefined,
     ('assessments' | 'common')[]
   >,
-  displayName: ReturnTypeDisplayName,
-  academicNameSpaceId: number | null
+  displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseAssessments>['columnDefs'] => [
   {
     field: 'name',
@@ -45,7 +45,7 @@ const getColumnDefs = (
           to={getAssessmentSubjectGroupsLink(
             data.id,
             data.assessmentType,
-            academicNameSpaceId ?? 0
+            data.academicNamespaceId
           )}
         >
           {data.name}
@@ -59,18 +59,18 @@ const getColumnDefs = (
     valueGetter: ({ data }) =>
       data?.assessmentType
         ? translate(`assessments:assessmentTypes.${data.assessmentType}`)
-        : '',
+        : null,
   },
   {
     field: 'createdBy',
     headerName: translate('common:createdBy'),
-    valueGetter: ({ data }) => (data ? displayName(data.createdBy) : '-'),
+    valueGetter: ({ data }) => (data ? displayName(data.createdBy) : null),
   },
   {
     field: 'dateOfCreation',
     headerName: translate('common:dateOfCreation'),
     valueGetter: ({ data }) =>
-      data ? dayjs(data.createdOn).format('LL') : '-',
+      data ? dayjs(data.createdOn).format('LL') : null,
     sort: 'desc',
   },
   {
@@ -80,9 +80,17 @@ const getColumnDefs = (
       data?.publish ? translate('common:yes') : translate('common:no'),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseAssessments>) => (
-      <TableBooleanValue value={!!data?.publish} />
-    ),
+    }: ICellRendererParams<ReturnTypeFromUseAssessments>) =>
+      data && <TableBooleanValue value={!!data?.publish} />,
+  },
+  {
+    suppressColumnsToolPanel: true,
+    sortable: false,
+    cellClass: 'ag-show-on-row-interaction',
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAssessments>) =>
+      data && <AssessmentActionMenu {...data} />,
   },
 ];
 
@@ -101,7 +109,7 @@ export default function AssessmentsPage() {
   });
 
   const columnDefs = useMemo(
-    () => getColumnDefs(t, displayName, academicNameSpaceId),
+    () => getColumnDefs(t, displayName),
     [t, displayName]
   );
 
