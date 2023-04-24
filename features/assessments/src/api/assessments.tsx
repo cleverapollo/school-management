@@ -29,6 +29,24 @@ const assessmentsList = graphql(/* GraphQL */ `
         lastName
         avatarUrl
       }
+      startDate
+      endDate
+      captureTarget
+      commentType
+      commentLength
+      captureTutorComment
+      captureYearHeadComment
+      captureHouseMasterComment
+      capturePrincipalComment
+      commentBank {
+        commentBankId
+      }
+      extraFields {
+        name
+        extraFieldType
+        commentBankId
+        commentLength
+      }
     }
   }
 `);
@@ -132,6 +150,7 @@ export function useAssessments(filter: AssessmentListFilter) {
 
       return assessment_assessment;
     },
+    enabled: Boolean(filter.academicNameSpaceId || filter.ids),
   });
 }
 
