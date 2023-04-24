@@ -157,7 +157,6 @@ export type AssessmentResult = {
   student: Person;
   studentClassGroup: Scalars['String'];
   studentPartyId: Scalars['Long'];
-  studentProgramme?: Maybe<Programme>;
   studentStudyLevel?: Maybe<StudyLevel>;
   subjectGroup: SubjectGroup;
   targetGrade?: Maybe<Scalars['String']>;
@@ -3425,7 +3424,7 @@ export type AssessmentsListQueryVariables = Exact<{
 }>;
 
 
-export type AssessmentsListQuery = { __typename?: 'Query', assessment_assessment?: Array<{ __typename?: 'Assessment', id: number, name: string, assessmentType: AssessmentType, academicNamespaceId: number, publish: boolean, createdOn: string, years?: Array<{ __typename?: 'YearGroup', yearGroupId: number, name: string }> | null, createdBy: { __typename?: 'Person', type?: PartyPersonType | null, title?: string | null, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null } }> | null };
+export type AssessmentsListQuery = { __typename?: 'Query', assessment_assessment?: Array<{ __typename?: 'Assessment', id: number, name: string, assessmentType: AssessmentType, academicNamespaceId: number, publish: boolean, createdOn: string, startDate: string, endDate: string, captureTarget: boolean, commentType: CommentType, commentLength?: number | null, captureTutorComment: boolean, captureYearHeadComment: boolean, captureHouseMasterComment: boolean, capturePrincipalComment: boolean, years?: Array<{ __typename?: 'YearGroup', yearGroupId: number, name: string }> | null, createdBy: { __typename?: 'Person', type?: PartyPersonType | null, title?: string | null, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null }, commentBank?: { __typename?: 'AssessmentCommentBank', commentBankId: number } | null, extraFields?: Array<{ __typename?: 'AssessmentExtraField', name: string, extraFieldType: ExtraFieldType, commentBankId?: number | null, commentLength?: number | null }> | null }> | null };
 
 export type AssessmentQueryVariables = Exact<{
   filter?: InputMaybe<AssessmentFilter>;

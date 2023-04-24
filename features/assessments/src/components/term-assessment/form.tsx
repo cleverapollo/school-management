@@ -51,7 +51,7 @@ export interface FormValues extends FormCustomFieldsValues {
   // Comments
   includeTeacherComments: boolean;
   commentType?: CommentType;
-  commentBank?: CommentBankOption;
+  commentBank?: Partial<CommentBankOption>;
   commentLength?: number | null;
   captureTutorComment: boolean;
   captureYearHeadComment: boolean;
