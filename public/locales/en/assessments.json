@@ -2,7 +2,8 @@
   "pageTitle": {
     "assessments": "List of Assessments",
     "createTermAssessment": "Create a new term assessment",
-    "termAssessmentSubjectGroups": "List of subject groups"
+    "termAssessmentSubjectGroups": "List of subject groups",
+    "editTermAssessment": "Edit term assessment"
   },
   "pageHeading": {
     "assessments": "Assessments",
@@ -53,6 +54,7 @@
   "extraFieldType": "Type",
   "extraFieldValue": "Value",
   "createTermAssessment": "Create Term Assessment",
+  "editTermAssessment": "Edit Term Assessment",
   "createAssessment": "Create Assessment",
   "assessmentTypes": {
     "TERM": "Term",

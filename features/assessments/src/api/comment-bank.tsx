@@ -46,9 +46,9 @@ export function useCommentBank(filter: CommentBankFilter) {
   });
 }
 
-export type CommentBankOption = NonNullable<
-  NonNullable<ReturnType<typeof useCommentBank>['data']>[number]
->;
+export type CommentBankOption = UseQueryReturnType<
+  typeof useCommentBank
+>[number];
 
 const commentBanksWithCommentsQuery = (filter: CommentBankFilter) => ({
   queryKey: assessmentsKeys.commentBanksWithComments(filter),

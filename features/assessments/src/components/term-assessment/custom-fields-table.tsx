@@ -31,7 +31,7 @@ const extraFieldTypeOptions: ExtraFieldTypeOption[] = [
 const EXTRA_FIELDS_MAX_LENGTH = 12;
 
 type ExtraField = Pick<SaveExtraFieldInput, 'name' | 'extraFieldType'> & {
-  commentLength?: number;
+  commentLength?: number | null;
   commentBank?: CommentBankOption;
 };
 
