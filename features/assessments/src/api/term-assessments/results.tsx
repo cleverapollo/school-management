@@ -88,7 +88,20 @@ export function useAssessmentResults(filter: AssessmentResultFilter | null) {
   return useQuery({
     ...assessmentResultsQuery(filter ?? {}),
     enabled: !!filter,
-    select: ({ assessment_assessmentResult }) => assessment_assessmentResult,
+    select: ({ assessment_assessmentResult }) =>
+      assessment_assessmentResult?.map((result) => {
+        const extraFields =
+          result?.extraFields?.reduce((acc, extraField) => {
+            acc[extraField.assessmentExtraFieldId] = extraField;
+            return acc;
+          }, {} as Record<number, NonNullable<(typeof result)['extraFields']>[number]>) ??
+          {};
+
+        return {
+          ...result,
+          extraFields,
+        };
+      }),
   });
 }
 

@@ -48,7 +48,7 @@ function getExtraFields(
   commentBanks: ReturnTypeFromUseCommentBanksWithComments | undefined
 ): NonNullable<GridOptions<ReturnTypeFromUseAssessmentResults>['columnDefs']> {
   return (
-    extraFields?.map((extraField) => {
+    extraFields?.map((extraField, index) => {
       const matchedCommentBank = commentBanks?.find(
         (commentBank) => commentBank.id === extraField?.commentBankId
       );
@@ -62,7 +62,7 @@ function getExtraFields(
         case ExtraFieldType.CommentBank:
           return {
             ...commonFields,
-            field: `extraFields.${extraField.id}`,
+            field: `extraFields.${extraField.id}.commentBankCommentId`,
             valueFormatter: ({ value }) => {
               const matchedComment = matchedCommentBank?.comments?.find(
                 (comment) => comment.id === value
@@ -70,14 +70,21 @@ function getExtraFields(
 
               return matchedComment?.comment ?? (value as string);
             },
-            valueGetter: ({ data }) =>
-              data?.extraFields?.find((field) => field?.id === extraField?.id)
-                ?.commentBankCommentId,
+            valueGetter: ({ data }) => {
+              const extraFieldValues = data?.extraFields ?? {};
+              const matchedExtraField = extraFieldValues[extraField.id];
+              return matchedExtraField?.commentBankCommentId;
+            },
             valueSetter: ({ data, newValue }) => {
               set(
                 data ?? {},
                 `extraFields.${extraField.id}.commentBankCommentId`,
                 newValue
+              );
+              set(
+                data ?? {},
+                `extraFields.${extraField.id}.assessmentExtraFieldId`,
+                extraField.id
               );
               return true;
             },
@@ -98,23 +105,19 @@ function getExtraFields(
         default:
           return {
             ...commonFields,
-            field: `extraFields.${extraField.id}`,
-            valueGetter: ({ data }) =>
-              data?.extraFields?.find((field) => field?.id === extraField?.id),
-            valueFormatter: ({ value }) => value?.result ?? (value as string),
+            field: `extraFields.${extraField.id}.result`,
+            valueGetter: ({ data }) => {
+              const extraFieldValues = data?.extraFields ?? {};
+              const matchedExtraField = extraFieldValues[extraField.id];
+              return matchedExtraField?.result;
+            },
             valueSetter: ({ data, newValue }) => {
-              const matchedExtraField = data?.extraFields?.find(
-                (field) => field?.id === extraField?.id
+              set(data ?? {}, `extraFields.${extraField.id}.result`, newValue);
+              set(
+                data ?? {},
+                `extraFields.${extraField.id}.assessmentExtraFieldId`,
+                extraField.id
               );
-
-              if (matchedExtraField) {
-                matchedExtraField.result = newValue as string;
-              } else {
-                data?.extraFields?.push({
-                  assessmentExtraFieldId: extraField?.id,
-                  result: newValue as string,
-                });
-              }
               return true;
             },
             cellEditorSelector: () => ({
@@ -316,10 +319,27 @@ export default function EditTermAssessmentResults() {
           Object.entries(editedColumns).forEach(([key, { newValue }]) => {
             if (key.startsWith('extraFields')) {
               const splitKey = key.split('.');
-              const extraFieldIndex = Number(splitKey[1]);
-              const extraFieldProperty = splitKey[2];
+              const extraFieldId = Number(splitKey[1]);
+              const extraFieldProperty = splitKey[2] as
+                | 'commentBankCommentId'
+                | 'result';
 
-              const extraField = assessmentData?.extraFields?.[extraFieldIndex];
+              if (newResult.extraFields?.[extraFieldId]) {
+                set(
+                  newResult.extraFields[extraFieldId],
+                  extraFieldProperty,
+                  newValue ?? null
+                );
+              } else {
+                set(newResult.extraFields, extraFieldId, {
+                  assessmentExtraFieldId: extraFieldId,
+                  ...(extraFieldProperty === 'commentBankCommentId'
+                    ? {
+                        commentBankCommentId: (newValue as number) ?? null,
+                      }
+                    : { result: (newValue as string) ?? null }),
+                });
+              }
             } else {
               set(newResult, key, newValue ?? null);
             }
@@ -336,16 +356,17 @@ export default function EditTermAssessmentResults() {
             };
           }
 
-          acc.push(newResult);
+          acc.push({
+            ...newResult,
+            extraFields: Object.values(newResult.extraFields).map(
+              (value) => value
+            ),
+          });
         }
         return acc;
       },
       []
     );
-
-    console.log({
-      results,
-    });
 
     if (!results) return Promise.reject();
 
