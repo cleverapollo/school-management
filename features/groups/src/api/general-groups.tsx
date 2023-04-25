@@ -125,10 +125,7 @@ const customGroupsQuery = {
   queryFn: async () =>
     gqlClient.request(customGroupsList, {
       filter: {
-        groupTypes: [
-          GeneralGroupType.DynamicGroup,
-          GeneralGroupType.StaticGroup,
-        ],
+        groupTypes: [GeneralGroupType.CustomGroup],
       },
     }),
 };
