@@ -15,7 +15,7 @@ import {
   ReturnTypeDisplayName,
   PageHeading,
 } from '@tyro/core';
-import { useCustomGroupById } from '../../api/general-groups';
+import { useCustomGroupById } from '../../api/custom-groups';
 import { getPersonProfileLink } from '../../utils/get-person-profile-link';
 
 type MembersReturnTypeFromUseCustomGroupsById = NonNullable<

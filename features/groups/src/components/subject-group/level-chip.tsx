@@ -1,24 +1,23 @@
 import { Chip, ChipProps } from '@mui/material';
-import { SubjectGroupLevelIrePp } from '@tyro/api';
+import { StudyLevel } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 
 interface SubjectGroupLevelChipProps {
-  level: SubjectGroupLevelIrePp;
+  level: StudyLevel;
 }
 
-const subjectGroupMapColor: Record<SubjectGroupLevelIrePp, ChipProps['color']> =
-  {
-    [SubjectGroupLevelIrePp.NotApplicable]: 'default',
-    [SubjectGroupLevelIrePp.Higher]: 'error',
-    [SubjectGroupLevelIrePp.Ordinary]: 'info',
-    [SubjectGroupLevelIrePp.Common]: 'warning',
-    [SubjectGroupLevelIrePp.Foundation]: 'success',
-  };
+const subjectGroupMapColor: Record<StudyLevel, ChipProps['color']> = {
+  [StudyLevel.NotApplicable]: 'default',
+  [StudyLevel.Higher]: 'error',
+  [StudyLevel.Ordinary]: 'info',
+  [StudyLevel.Common]: 'warning',
+  [StudyLevel.Foundation]: 'success',
+};
 
 export function SubjectGroupLevelChip({ level }: SubjectGroupLevelChipProps) {
   const { t } = useTranslation(['groups']);
 
-  if (level === SubjectGroupLevelIrePp.NotApplicable) {
+  if (level === StudyLevel.NotApplicable) {
     return <span>-</span>;
   }
 

@@ -1,12 +1,8 @@
 import { Box, Typography } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import {
-  AttendanceCodeType,
-  CalendarEventAttendeeType,
-  Staff,
-} from '@tyro/api';
+import { CalendarEventAttendeeType, Staff } from '@tyro/api';
 
-import { usePreferredNameLayout, CurrentAttendanceIcon } from '@tyro/core';
+import { usePreferredNameLayout } from '@tyro/core';
 import { Fragment } from 'react';
 import { useNextSubjectGroupLesson } from '../../api';
 import { useFormatLessonTime } from '../../hooks';
@@ -27,16 +23,11 @@ export function SubjectGroupOverviewNextLesson({
   });
 
   const {
-    eventId,
     rooms = [],
     startTime = '',
     endTime = '',
     attendees = [],
-    extensions,
   } = nextLessonData || {};
-  const eventAttendance = extensions?.eventAttendance || [];
-
-  const hasTakenAttendance = eventAttendance && eventAttendance?.length > 0;
 
   const roomsNames = rooms.map(({ name }) => name).join(', ');
 
@@ -65,7 +56,6 @@ export function SubjectGroupOverviewNextLesson({
     <Box
       component="dl"
       display="grid"
-      gridTemplateColumns="repeat(4, auto)"
       gridTemplateRows="repeat(2, auto)"
       sx={{ m: 0 }}
     >
@@ -82,30 +72,10 @@ export function SubjectGroupOverviewNextLesson({
           label: t('common:teacher'),
           value: nextLessonTeachers || '-',
         },
-        {
-          label: t('common:attendance'),
-          value: eventId ? (
-            <CurrentAttendanceIcon
-              codeType={
-                hasTakenAttendance
-                  ? AttendanceCodeType.Present
-                  : AttendanceCodeType.NotTaken
-              }
-              tooltipText={
-                hasTakenAttendance
-                  ? t('attendance:attendanceTaken')
-                  : t('attendance:attendanceNotTaken')
-              }
-            />
-          ) : (
-            '-'
-          ),
-        },
-      ].map(({ label, value }, index) => (
+      ].map(({ label, value }) => (
         <Fragment key={label}>
           <Typography
             component="dt"
-            gridColumn={(index % 4) + 1}
             gridRow={1}
             sx={{
               ...labelStyle,
@@ -117,20 +87,18 @@ export function SubjectGroupOverviewNextLesson({
           </Typography>
           <Typography
             component="dd"
-            gridColumn={(index % 4) + 1}
             gridRow={2}
             sx={{
               ...textValueStyle,
               display: 'flex',
               alignItems: 'center',
               backgroundColor: 'blue.50',
-              ...(index === 0 && {
+              '&:first-of-type': {
                 borderRadius: '17px 0 0 17px',
-              }),
-              ...(index === 3 && {
+              },
+              '&:last-of-type': {
                 borderRadius: '0 17px 17px 0',
-                justifyContent: 'center',
-              }),
+              },
             }}
           >
             {value}

@@ -18,21 +18,16 @@ import {
   SendMailIcon,
   UnarchiveIcon,
 } from '@tyro/icons';
-import { useEnrolmentGroups } from '../../api/general-groups';
+import {
+  useClassGroups,
+  ReturnTypeFromUseClassGroups,
+} from '../../api/class-groups';
 
-type ReturnTypeFromUseEnrolmentGroups = NonNullable<
-  ReturnType<typeof useEnrolmentGroups>['data']
->[number];
-
-const getEnrolmentGroupColumns = (
-  t: TFunction<
-    ('common' | 'groups' | 'people' | 'mail')[],
-    undefined,
-    ('common' | 'groups' | 'people' | 'mail')[]
-  >,
+const getClassGroupColumns = (
+  t: TFunction<'common'[], undefined, 'common'[]>,
   isStaffUser: boolean,
   displayNames: ReturnType<typeof usePreferredNameLayout>['displayNames']
-): GridOptions<ReturnTypeFromUseEnrolmentGroups>['columnDefs'] => [
+): GridOptions<ReturnTypeFromUseClassGroups>['columnDefs'] => [
   {
     field: 'name',
     headerName: t('common:name'),
@@ -42,7 +37,7 @@ const getEnrolmentGroupColumns = (
     lockVisible: true,
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseEnrolmentGroups>) => (
+    }: ICellRendererParams<ReturnTypeFromUseClassGroups>) => (
       <RouterLink sx={{ fontWeight: 600 }} to={`${data?.partyId ?? ''}`}>
         {data?.name}
       </RouterLink>
@@ -51,11 +46,8 @@ const getEnrolmentGroupColumns = (
   },
   {
     headerName: t('common:members'),
-    filter: true,
     valueGetter: ({ data }) =>
-      (data?.studentMembers?.memberCount ?? 0) +
-      (data?.staffMembers?.memberCount ?? 0) +
-      (data?.contactMembers?.memberCount ?? 0),
+      data ? data.studentMembers?.memberCount ?? 0 : null,
   },
   {
     headerName: t('common:year'),
@@ -87,18 +79,18 @@ const getEnrolmentGroupColumns = (
   },
 ];
 
-export default function EnrolmentGroups() {
+export default function ClassGroupsPage() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail']);
   const [selectedGroups, setSelectedGroups] = useState<
-    ReturnTypeFromUseEnrolmentGroups[]
+    ReturnTypeFromUseClassGroups[]
   >([]);
   const { displayNames } = usePreferredNameLayout();
   const { isStaffUser } = usePermissions();
-  const { data: enrolmentGroupData } = useEnrolmentGroups();
+  const { data: classGroupData } = useClassGroups();
   const showActionMenu = isStaffUser && selectedGroups.length > 0;
 
-  const enrolmentGroupColumns = useMemo(
-    () => getEnrolmentGroupColumns(t, isStaffUser, displayNames),
+  const classGroupColumns = useMemo(
+    () => getClassGroupColumns(t, isStaffUser, displayNames),
     [t, isStaffUser]
   );
 
@@ -140,14 +132,14 @@ export default function EnrolmentGroups() {
   }, []);
 
   return (
-    <Page title={t('groups:enrolmentGroups')}>
+    <Page title={t('groups:classGroups')}>
       <Container maxWidth="xl">
         <Typography variant="h3" component="h1" paragraph>
-          {t('groups:enrolmentGroups')}
+          {t('groups:classGroups')}
         </Typography>
         <Table
-          rowData={enrolmentGroupData ?? []}
-          columnDefs={enrolmentGroupColumns}
+          rowData={classGroupData ?? []}
+          columnDefs={classGroupColumns}
           rowSelection="multiple"
           getRowId={({ data }) => String(data?.partyId)}
           rightAdornment={

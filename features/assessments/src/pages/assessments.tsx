@@ -96,7 +96,7 @@ export default function AssessmentsPage() {
   });
 
   const [selectedAssessment, setSelectedAssessment] =
-    useState<ReturnTypeFromUseAssessments>(null);
+    useState<ReturnTypeFromUseAssessments | null>(null);
 
   const columnDefs = useMemo(
     () => getColumnDefs(t, displayName),
