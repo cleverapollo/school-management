@@ -15,8 +15,8 @@ function getGroupPath(partyId: number, type: SearchType) {
     case SearchType.SubjectGroup:
       return `/groups/subject/${partyId}`;
     case SearchType.GeneralGroup:
-      return `/groups/enrolment/${partyId}`;
-    // Need extra context through the meta to know if it's enrolment or custom
+      return `/groups/class/${partyId}`;
+    // Need extra context through the meta to know if it's class or custom
     // case SearchType.GeneralGroup:
     //   return `/people/custom/${partyId}`;
     default:

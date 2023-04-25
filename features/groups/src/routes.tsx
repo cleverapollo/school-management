@@ -16,15 +16,15 @@ import {
   getSubjectGroupById,
   getCustomGroups,
   getCustomGroupsById,
-  getEnrolmentGroups,
-  getEnrolmentGroupsById,
+  getClassGroups,
+  getClassGroupsById,
   getSubjectGroupLesson,
 } from './api';
 
 const CustomGroups = lazy(() => import('./pages/custom'));
 const ViewCustomGroupPage = lazy(() => import('./pages/custom/view'));
-const EnrolmentGroups = lazy(() => import('./pages/enrolment'));
-const ViewEnrolmentGroupPage = lazy(() => import('./pages/enrolment/view'));
+const ClassGroups = lazy(() => import('./pages/class'));
+const ViewClassGroupPage = lazy(() => import('./pages/class/view'));
 const SubjectGroups = lazy(() => import('./pages/subject'));
 
 const SubjectGroupProfileStudentsPage = lazy(
@@ -57,23 +57,23 @@ export const getRoutes: NavObjectFunction = (t) => [
         children: [
           {
             type: NavObjectType.MenuLink,
-            path: 'enrolment',
-            title: t('navigation:general.groups.enrolment'),
+            path: 'class',
+            title: t('navigation:general.groups.class'),
             children: [
               {
                 type: NavObjectType.NonMenuLink,
                 index: true,
-                loader: () => getEnrolmentGroups(),
-                element: <EnrolmentGroups />,
+                loader: () => getClassGroups(),
+                element: <ClassGroups />,
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: ':groupId',
                 loader: ({ params }) => {
                   const groupId = getNumber(params?.groupId);
-                  return getEnrolmentGroupsById(groupId);
+                  return getClassGroupsById(groupId);
                 },
-                element: <ViewEnrolmentGroupPage />,
+                element: <ViewClassGroupPage />,
               },
             ],
           },

@@ -61,12 +61,13 @@ const getColumnDefs = (
   {
     field: 'createdBy',
     headerName: translate('common:createdBy'),
-    valueGetter: ({ data }) => displayName(data?.createdBy),
+    valueGetter: ({ data }) => (data ? displayName(data.createdBy) : '-'),
   },
   {
     field: 'dateOfCreation',
     headerName: translate('common:dateOfCreation'),
-    valueGetter: ({ data }) => dayjs(data?.createdOn).format('LL'),
+    valueGetter: ({ data }) =>
+      data ? dayjs(data.createdOn).format('LL') : '-',
   },
   {
     field: 'publish',
@@ -142,13 +143,7 @@ export default function AssessmentsPage() {
             >
               <Fade in={!!selectedAssessment}>
                 <Box>
-                  {selectedAssessment && (
-                    <AssessmentActionMenu
-                      id={selectedAssessment.id}
-                      assessmentType={selectedAssessment.assessmentType}
-                      published={!!selectedAssessment.publish}
-                    />
-                  )}
+                  <AssessmentActionMenu {...selectedAssessment} />
                 </Box>
               </Fade>
             </Collapse>

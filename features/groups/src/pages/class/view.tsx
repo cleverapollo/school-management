@@ -15,27 +15,24 @@ import {
   ReturnTypeDisplayName,
   PageHeading,
 } from '@tyro/core';
-import { useEnrolmentGroupById } from '../../api/general-groups';
+import { useClassGroupById } from '../../api/class-groups';
 import { getPersonProfileLink } from '../../utils/get-person-profile-link';
 
-type MembersReturnTypeFromUseEnrolmentGroupById = NonNullable<
-  ReturnType<typeof useEnrolmentGroupById>['data']
+type MembersReturnTypeFromUseClassGroupById = NonNullable<
+  ReturnType<typeof useClassGroupById>['data']
 >['members'][number];
 
-const getEnrolmentGroupColumns = (
+const getClassGroupColumns = (
   t: TFunction<('common' | 'groups')[], undefined, ('common' | 'groups')[]>,
   displayName: ReturnTypeDisplayName
-): GridOptions<MembersReturnTypeFromUseEnrolmentGroupById>['columnDefs'] => [
+): GridOptions<MembersReturnTypeFromUseClassGroupById>['columnDefs'] => [
   {
     field: 'person',
     headerName: t('common:name'),
     valueGetter: ({ data }) => displayName(data?.person ?? undefined),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<
-      MembersReturnTypeFromUseEnrolmentGroupById,
-      any
-    >) => (
+    }: ICellRendererParams<MembersReturnTypeFromUseClassGroupById, any>) => (
       <TableAvatar
         person={data?.person ?? undefined}
         to={getPersonProfileLink(data?.person ?? undefined)}
@@ -48,13 +45,13 @@ const getEnrolmentGroupColumns = (
   },
 ];
 
-export default function ViewEnrolmentGroupPage() {
+export default function ViewClassGroupPage() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail']);
   const { groupId } = useParams();
   const groupIdAsNumber = useNumber(groupId);
   const { displayName } = usePreferredNameLayout();
   const [selectedMembers, setSelectedMembers] = useState<
-    MembersReturnTypeFromUseEnrolmentGroupById[]
+    MembersReturnTypeFromUseClassGroupById[]
   >([]);
 
   const actionMenuItems = [
@@ -71,10 +68,10 @@ export default function ViewEnrolmentGroupPage() {
     },
   ];
 
-  const { data: groupData } = useEnrolmentGroupById(groupIdAsNumber);
+  const { data: groupData } = useClassGroupById(groupIdAsNumber);
 
-  const enrolmentGroupColumns = useMemo(
-    () => getEnrolmentGroupColumns(t, displayName),
+  const classGroupColumns = useMemo(
+    () => getClassGroupColumns(t, displayName),
     [t, displayName]
   );
   const title = t('groups:namedMemberList', {
@@ -98,7 +95,7 @@ export default function ViewEnrolmentGroupPage() {
           breadcrumbs={{
             links: [
               {
-                name: t('groups:enrolmentGroups'),
+                name: t('groups:classGroups'),
                 href: './..',
               },
               {
@@ -109,7 +106,7 @@ export default function ViewEnrolmentGroupPage() {
         />
         <Table
           rowData={groupData?.members ?? []}
-          columnDefs={enrolmentGroupColumns}
+          columnDefs={classGroupColumns}
           rowSelection="multiple"
           getRowId={({ data }) => String(data?.person?.partyId)}
           rightAdornment={
