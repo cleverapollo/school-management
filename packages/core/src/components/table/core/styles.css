@@ -352,9 +352,7 @@
   }
   
   .ag-theme-tyro .ag-row-hover .ag-show-on-row-interaction,
-  .ag-theme-tyro .ag-row-focus .ag-show-on-row-interaction,
-  .ag-theme-tyro .ag-row:hover .ag-show-on-row-interaction,
-  .ag-theme-tyro .ag-row:focus-within .ag-show-on-row-interaction {
+  .ag-theme-tyro .ag-row-focus .ag-show-on-row-interaction {
     opacity: 1;
   }
 }
