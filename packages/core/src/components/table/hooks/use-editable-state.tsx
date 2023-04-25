@@ -46,6 +46,10 @@ export function useEditableState<T extends object>({
     [editedRows]
   );
 
+  console.log({
+    editedRows,
+  });
+
   const onCellValueChanged = (params: CellValueChangedEvent<T>) => {
     const { node, colDef } = params ?? {};
 
