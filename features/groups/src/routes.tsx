@@ -13,7 +13,7 @@ import { getAttendanceCodes } from '@tyro/attendance';
 import { getCalendarEvents, getTimetableInfoForCalendar } from '@tyro/calendar';
 import {
   getSubjectGroups,
-  getSubjectGroupsById,
+  getSubjectGroupById,
   getCustomGroups,
   getCustomGroupsById,
   getEnrolmentGroups,
@@ -107,7 +107,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                     });
 
                   return Promise.all([
-                    getSubjectGroupsById(groupId),
+                    getSubjectGroupById(groupId),
                     ...(closestLesson
                       ? [
                           getSubjectGroupLesson({

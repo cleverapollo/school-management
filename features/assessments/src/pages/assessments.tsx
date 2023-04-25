@@ -1,9 +1,10 @@
-import { Box, Button, Collapse, Fade, Stack, Typography } from '@mui/material';
+import { Box, Button, Collapse, Fade, Stack } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 
 import {
   GridOptions,
   ICellRendererParams,
+  PageHeading,
   ReturnTypeDisplayName,
   RouterLink,
   Table,
@@ -12,7 +13,7 @@ import {
 } from '@tyro/core';
 import { Link } from 'react-router-dom';
 import { useMemo, useState } from 'react';
-import { AddIcon } from '@tyro/icons';
+import { AddDocIcon } from '@tyro/icons';
 import { useAcademicNamespace, UseQueryReturnType } from '@tyro/api';
 import dayjs from 'dayjs';
 import { PageContainer } from '../components/page-container';
@@ -95,7 +96,7 @@ export default function AssessmentsPage() {
   });
 
   const [selectedAssessment, setSelectedAssessment] =
-    useState<ReturnTypeFromUseAssessments>(null);
+    useState<ReturnTypeFromUseAssessments | null>(null);
 
   const columnDefs = useMemo(
     () => getColumnDefs(t, displayName),
@@ -104,9 +105,22 @@ export default function AssessmentsPage() {
 
   return (
     <PageContainer title={t('assessments:pageTitle.assessments')}>
-      <Typography variant="h3" component="h1">
-        {t('assessments:pageHeading.assessments')}
-      </Typography>
+      <PageHeading
+        title={t('assessments:pageHeading.assessments')}
+        titleProps={{ variant: 'h3' }}
+        rightAdornment={
+          <Box display="flex" alignItems="center">
+            <Button
+              variant="contained"
+              component={Link}
+              to="./term-assessments/create"
+              startIcon={<AddDocIcon />}
+            >
+              {t('assessments:createAssessment')}
+            </Button>
+          </Box>
+        }
+      />
       {academicNameSpaceId && (
         <AcademicYearDropdown
           academicNamespaceId={academicNameSpaceId}
@@ -121,15 +135,6 @@ export default function AssessmentsPage() {
         onRowSelection={([newValue]) => setSelectedAssessment(newValue)}
         rightAdornment={
           <Stack direction="row" spacing={1} alignItems="center">
-            <Button
-              // TODO: add way to create any kind of assessments
-              variant="text"
-              component={Link}
-              to="./term-assessments/create"
-              startIcon={<AddIcon />}
-            >
-              {t('assessments:createAssessment')}
-            </Button>
             <Collapse
               in={!!selectedAssessment}
               orientation="horizontal"

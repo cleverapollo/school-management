@@ -1,4 +1,5 @@
 export * from './add';
+export * from './add-doc';
 export * from './archive';
 export * from './bell';
 export * from './book-open';

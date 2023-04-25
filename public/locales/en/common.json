@@ -166,6 +166,7 @@
   "saved": "Saved",
   "yes": "Yes",
   "no": "No",
+  "comment": "Comment",
   "preferredFirstName": "Preferred first name",
   "unsavedChanges_one": "{{count}} unsaved change",
   "unsavedChanges_other": "{{count}} unsaved changes",
@@ -199,6 +200,13 @@
     "max": "You must enter a number less or equal than {{number}}",
     "minLength":"You must enter a minimum of {{count}} characters",
     "maxLength": "You have exceeded the maximum character length of {{count}}"
+  },
+  "studyLevel": {
+    "COMMON": "Common",
+    "FOUNDATION": "Foundation",
+    "HIGHER": "Higher",
+    "NOT_APPLICABLE": "Not Applicable",
+    "ORDINARY": "Ordinary"
   },
   "colors": {
     "amber": "Amber",

@@ -15,7 +15,12 @@ import {
 } from '../hooks/use-editable-state';
 import { BulkEditSaveBar } from './bulk-edit-save-bar';
 
-export type { GridOptions, ICellRendererParams } from 'ag-grid-community';
+export type {
+  GridOptions,
+  ICellRendererParams,
+  ValueSetterParams,
+  CellValueChangedEvent,
+} from 'ag-grid-community';
 
 if (process.env.AG_GRID_KEY) {
   LicenseManager.setLicenseKey(process.env.AG_GRID_KEY);
@@ -44,7 +49,7 @@ const defaultColDef: ColDef = {
   },
 };
 
-function TableInner<T>(
+function TableInner<T extends object>(
   {
     onFirstDataRendered,
     onBulkSave,
@@ -60,6 +65,7 @@ function TableInner<T>(
   ref: React.Ref<AgGridReact<T>>
 ) {
   const [searchValue, setSearchValue] = useState('');
+  const [isTableMounted, setIsTableMounted] = useState(false);
   const tableRef = useEnsuredForwardedRef(
     ref as MutableRefObject<AgGridReact<T>>
   );
@@ -72,6 +78,7 @@ function TableInner<T>(
     onCellValueChanged,
   } = useEditableState<T>({
     tableRef,
+    isTableMounted,
     onBulkSave,
   });
 
@@ -116,6 +123,7 @@ function TableInner<T>(
             enableRangeSelection
             enableFillHandle
             fillHandleDirection="y"
+            allowContextMenuWithControlKey
             onSelectionChanged={onSelectionChanged}
             rowHeight={rowHeight}
             rowSelection={rowSelection}
@@ -126,6 +134,7 @@ function TableInner<T>(
             onCellValueChanged={onCellValueChanged}
             onFirstDataRendered={(params: FirstDataRenderedEvent<T>) => {
               params?.columnApi?.autoSizeAllColumns(false);
+              setIsTableMounted(true);
 
               if (onFirstDataRendered) {
                 onFirstDataRendered(params);

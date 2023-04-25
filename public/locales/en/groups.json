@@ -3,18 +3,12 @@
   "enrolmentGroups": "Enrolment Groups",
   "subjectGroups": "Subject Groups",
   "customGroups": "Custom Groups",
-  "subjectGroupLevel": {
-    "COMMON": "Common", 
-    "FOUNDATION": "Foundation",
-    "HIGHER": "Higher",
-    "NOT_APPLICABLE": "Not Applicable",
-    "ORDINARY": "Ordinary" 
-  },
   "generalGroupType": {
     "CLASS_GROUP": "Class group",
     "DYNAMIC_GROUP": "Dynamic group",
     "GENERAL_GROUP": "General group",
-    "STATIC_GROUP": "Static group"
+    "STATIC_GROUP": "Static group",
+    "CUSTOM_GROUP": "Custom group"
   },
   "subjectGroupsProfile": "{{name}}'s Profile",
   "teachersInGroup": "Teachers in group",

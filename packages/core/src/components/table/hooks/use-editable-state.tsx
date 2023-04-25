@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { CellValueChangedEvent } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { MutableRefObject, useMemo, useState } from 'react';
+import { MutableRefObject, useEffect, useMemo, useRef, useState } from 'react';
 import set from 'lodash/set';
+import { useCacheWithExpiry } from '../../../hooks/use-cache-with-expiry';
 
 export enum EditState {
   Idle = 'IDLE',
@@ -23,14 +24,18 @@ export type BulkEditedRows = Record<
 
 export interface UseEditableStateProps<T> {
   tableRef: MutableRefObject<AgGridReact<T>>;
+  isTableMounted: boolean;
   onBulkSave: ((data: BulkEditedRows) => Promise<unknown>) | undefined;
 }
 
-export function useEditableState<T>({
+export function useEditableState<T extends object>({
   tableRef,
+  isTableMounted,
   onBulkSave,
 }: UseEditableStateProps<T>) {
-  const [editedRows, setEditedRows] = useState<BulkEditedRows>({});
+  const [editedRows, setEditedRows, isInitialized] =
+    useCacheWithExpiry<BulkEditedRows>('bulk-edit', {} as BulkEditedRows);
+  const hasSetEditsFromCacheRef = useRef(false);
   const [state, setState] = useState<EditState>(EditState.Idle);
   const numberOfEdits = useMemo(
     () =>
@@ -40,6 +45,10 @@ export function useEditableState<T>({
       ),
     [editedRows]
   );
+
+  console.log({
+    editedRows,
+  });
 
   const onCellValueChanged = (params: CellValueChangedEvent<T>) => {
     const { node, colDef } = params ?? {};
@@ -54,7 +63,7 @@ export function useEditableState<T>({
             [node.id]: {
               ...previousRowChanges,
               [colDef.field]: {
-                originalValue: params?.oldValue,
+                originalValue: params?.oldValue ?? null,
                 newValue: params?.newValue || null,
               },
             },
@@ -64,7 +73,8 @@ export function useEditableState<T>({
         previousRowChanges[colDef.field].newValue = params?.newValue;
 
         if (
-          previousRowChanges[colDef.field].originalValue === params?.newValue
+          previousRowChanges[colDef.field].originalValue ===
+          (params?.newValue ?? null)
         ) {
           delete previousRowChanges[colDef.field];
         }
@@ -81,6 +91,45 @@ export function useEditableState<T>({
       return previousEditedRows;
     });
   };
+
+  const applyUpdatesToTable = (changeType: 'originalValue' | 'newValue') => {
+    const rowsToUpdate = Object.entries(editedRows).reduce<T[]>(
+      (acc, [id, changesForRow]) => {
+        const rowWithCurrentValues = tableRef.current.api.getRowNode(id)?.data;
+
+        if (!rowWithCurrentValues) {
+          return acc;
+        }
+
+        Object.entries(changesForRow).forEach(([field, change]) => {
+          set(rowWithCurrentValues, field, change[changeType]);
+        });
+
+        acc.push(rowWithCurrentValues);
+        return acc;
+      },
+      []
+    );
+
+    tableRef.current.api.applyTransaction({
+      update: rowsToUpdate,
+    });
+  };
+
+  useEffect(() => {
+    if (
+      isInitialized &&
+      isTableMounted &&
+      tableRef.current?.api &&
+      !hasSetEditsFromCacheRef.current
+    ) {
+      hasSetEditsFromCacheRef.current = true;
+
+      if (editedRows) {
+        applyUpdatesToTable('newValue');
+      }
+    }
+  }, [isInitialized, isTableMounted]);
 
   const onSave = async () => {
     if (onBulkSave) {
@@ -101,27 +150,7 @@ export function useEditableState<T>({
   };
 
   const onCancel = () => {
-    const originalRows = Object.entries(editedRows).reduce<T[]>(
-      (acc, [id, row]) => {
-        const rowWithCurrentValues = tableRef.current.api.getRowNode(id)?.data;
-
-        if (!rowWithCurrentValues) {
-          return acc;
-        }
-
-        Object.entries(row).forEach(([field, { originalValue }]) => {
-          set(rowWithCurrentValues, field, originalValue);
-        });
-
-        acc.push(rowWithCurrentValues);
-        return acc;
-      },
-      []
-    );
-
-    tableRef.current.api.applyTransaction({
-      update: originalRows,
-    });
+    applyUpdatesToTable('originalValue');
     setEditedRows({});
   };
 

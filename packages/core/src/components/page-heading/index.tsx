@@ -1,20 +1,33 @@
-import { Stack, StackProps, Typography } from '@mui/material';
+import {
+  Box,
+  BoxProps,
+  Stack,
+  Typography,
+  TypographyProps,
+} from '@mui/material';
 import { Breadcrumbs, BreadcrumbsProps } from '../breadcrumbs';
 
-interface PageHeadingProps extends StackProps {
+interface PageHeadingProps extends BoxProps {
   title: string;
+  titleProps?: TypographyProps<'h1'>;
   breadcrumbs?: BreadcrumbsProps;
+  rightAdornment?: React.ReactNode;
 }
 
 export const PageHeading = ({
   title,
+  titleProps = {},
   breadcrumbs,
+  rightAdornment,
   ...props
 }: PageHeadingProps) => (
-  <Stack {...props}>
-    <Typography variant="h4" component="h1">
-      {title}
-    </Typography>
-    {breadcrumbs && <Breadcrumbs {...breadcrumbs} />}
-  </Stack>
+  <Box display="flex" justifyContent="space-between" flexWrap="wrap" {...props}>
+    <Stack>
+      <Typography variant="h4" component="h1" {...titleProps}>
+        {title}
+      </Typography>
+      {breadcrumbs && <Breadcrumbs {...breadcrumbs} />}
+    </Stack>
+    {rightAdornment}
+  </Box>
 );

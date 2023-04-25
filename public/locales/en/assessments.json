@@ -8,7 +8,8 @@
     "assessments": "Assessments",
     "termAssessments": "Term Assessments",
     "createTermAssessment": "Term Assessment Creation",
-    "termAssessmentSubjectGroups": "{{name}}'s Subject Groups"
+    "termAssessmentSubjectGroups": "{{name}}'s Subject Groups",
+    "editResultsFor": "Edit Results for {{name}}"
   },
   "assessmentResults": "Assessment Results",
   "details": "Details",
@@ -16,6 +17,8 @@
   "comments": "Comments",
   "customFields": "Custom Fields",
   "addCustomField": "Add custom field",
+  "targetGrade": "Target grade",
+  "targetResult": "Target result",
   "labels": {
     "assessmentName": "Assessment Name",
     "years": "Years",
@@ -61,7 +64,8 @@
     "edit": "Edit assessment",
     "view": "View assessment",
     "publish": "Publish online",
-    "unpublish": "Unpublish online"
+    "unpublish": "Unpublish online",
+    "editResults": "Edit results"
   },
   "academicYear": "Academic Year",
   "results": "Results"

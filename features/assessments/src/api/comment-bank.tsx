@@ -11,8 +11,24 @@ const commentBank = graphql(/* GraphQL */ `
   }
 `);
 
+const commentBanksWithComments = graphql(/* GraphQL */ `
+  query commentBanksWithComments($filter: CommentBankFilter) {
+    assessment_commentBank(filter: $filter) {
+      id
+      name
+      comments {
+        id
+        comment
+        active
+      }
+    }
+  }
+`);
+
 export const commentBankKey = {
   list: ['assessment', 'commentBank'] as const,
+  listWithComments: (filter: CommentBankFilter) =>
+    [...commentBankKey.list, filter] as const,
 };
 
 const commentBankQuery = (filter: CommentBankFilter) => ({
@@ -38,3 +54,19 @@ export function useCommentBank(filter: CommentBankFilter) {
 export type CommentBankOption = NonNullable<
   NonNullable<ReturnType<typeof useCommentBank>['data']>[number]
 >;
+
+const commentBanksWithCommentsQuery = (filter: CommentBankFilter) => ({
+  queryKey: commentBankKey.listWithComments(filter),
+  queryFn: () => gqlClient.request(commentBanksWithComments, { filter }),
+});
+
+export function getCommentBanksWithComments(filter: CommentBankFilter) {
+  return queryClient.fetchQuery(commentBanksWithCommentsQuery(filter));
+}
+
+export function useCommentBanksWithComments(filter: CommentBankFilter) {
+  return useQuery({
+    ...commentBanksWithCommentsQuery(filter),
+    select: ({ assessment_commentBank }) => assessment_commentBank ?? [],
+  });
+}

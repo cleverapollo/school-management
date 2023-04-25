@@ -26,13 +26,72 @@ const assessmentsList = graphql(/* GraphQL */ `
   }
 `);
 
+const assessment = graphql(/* GraphQL */ `
+  query assessment($filter: AssessmentFilter) {
+    assessment_assessment(filter: $filter) {
+      id
+      name
+      assessmentType
+      academicNamespaceId
+      years {
+        yearGroupId
+        name
+      }
+      publish
+      createdOn
+      gradeType
+      gradeSets {
+        gradeSetId
+        gradeSetName
+      }
+      passFailThreshold
+      captureTarget
+      commentType
+      commentLength
+      commentBank {
+        commentBankId
+        commentBankName
+      }
+      capturePrincipalComment
+      captureYearHeadComment
+      captureHouseMasterComment
+      publish
+      publishLearner
+      extraFields {
+        id
+        name
+        assessmentId
+        extraFieldType
+        gradeSetId
+        commentBankId
+        selectOptions
+        commentLength
+      }
+      createdBy {
+        type
+        title
+        firstName
+        lastName
+        avatarUrl
+      }
+    }
+  }
+`);
+
 export const assessmentsKeys = {
-  list: (filter: AssessmentFilter) => ['assessments', filter] as const,
+  all: ['assessments'] as const,
+  assessments: (filter: AssessmentFilter) =>
+    [...assessmentsKeys.all, filter] as const,
 };
 
 const assessmentsQuery = (filter: AssessmentFilter) => ({
-  queryKey: assessmentsKeys.list(filter),
+  queryKey: assessmentsKeys.assessments(filter),
   queryFn: () => gqlClient.request(assessmentsList, { filter }),
+});
+
+const assessmentByIdQuery = (filter: AssessmentFilter) => ({
+  queryKey: assessmentsKeys.assessments(filter),
+  queryFn: () => gqlClient.request(assessment, { filter }),
 });
 
 export function getAssessments(filter: AssessmentFilter) {
@@ -47,5 +106,22 @@ export function useAssessments(filter: AssessmentFilter) {
 
       return assessment_assessment;
     },
+  });
+}
+
+export function getAssessmentById(termAssessmentId: number) {
+  return queryClient.fetchQuery(
+    assessmentByIdQuery({ ids: [termAssessmentId] })
+  );
+}
+
+export function useAssessmentById(termAssessmentId: number) {
+  return useQuery({
+    ...assessmentByIdQuery({ ids: [termAssessmentId] }),
+    enabled: !!termAssessmentId,
+    select: ({ assessment_assessment }) =>
+      Array.isArray(assessment_assessment) && assessment_assessment.length > 0
+        ? assessment_assessment[0]
+        : null,
   });
 }

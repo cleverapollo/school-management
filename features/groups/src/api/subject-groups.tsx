@@ -85,7 +85,7 @@ export function getSubjectGroups() {
   return queryClient.fetchQuery(subjectGroupsQuery.list);
 }
 
-export function getSubjectGroupsById(id?: number) {
+export function getSubjectGroupById(id?: number) {
   return queryClient.fetchQuery(subjectGroupsQuery.details(id));
 }
 
