@@ -24,7 +24,7 @@ export const AssessmentActionMenu = ({
   assessmentType,
   academicNamespaceId,
 }: AssessmentActionMenuProps) => {
-  const { t } = useTranslation(['assessments', 'common']);
+  const { t } = useTranslation(['assessments']);
   const navigate = useNavigate();
 
   const assessmentPath = getAssessmentSubjectGroupsLink(
