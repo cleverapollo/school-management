@@ -46,11 +46,8 @@ const getClassGroupColumns = (
   },
   {
     headerName: t('common:members'),
-    filter: true,
     valueGetter: ({ data }) =>
-      (data?.studentMembers?.memberCount ?? 0) +
-      (data?.staffMembers?.memberCount ?? 0) +
-      (data?.contactMembers?.memberCount ?? 0),
+      data ? data.studentMembers?.memberCount ?? 0 : null,
   },
   {
     headerName: t('common:year'),

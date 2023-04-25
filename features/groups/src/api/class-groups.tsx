@@ -15,12 +15,6 @@ const classGroupsList = graphql(/* GraphQL */ `
       studentMembers {
         memberCount
       }
-      staffMembers {
-        memberCount
-      }
-      contactMembers {
-        memberCount
-      }
       generalGroupType
       programmeStages {
         programme {
