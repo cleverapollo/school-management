@@ -66,9 +66,7 @@ export default function EditTermAssessmentPage() {
         field?.extraFieldType && field.name
           ? [
               {
-                name: field.name,
-                extraFieldType: field.extraFieldType,
-                commentLength: field.commentLength,
+                ...field,
                 ...(field.commentBankId && {
                   commentBank: {
                     id: field.commentBankId,

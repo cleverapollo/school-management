@@ -42,6 +42,8 @@ const assessmentsList = graphql(/* GraphQL */ `
         commentBankId
       }
       extraFields {
+        id
+        assessmentId
         name
         extraFieldType
         commentBankId
