@@ -17,18 +17,13 @@ import {
   SendMailIcon,
   UnarchiveIcon,
 } from '@tyro/icons';
-import { useCustomGroups } from '../../api/general-groups';
-
-type ReturnTypeFromUseCustomGroups = NonNullable<
-  ReturnType<typeof useCustomGroups>['data']
->[number];
+import {
+  useCustomGroups,
+  ReturnTypeFromUseCustomGroups,
+} from '../../api/custom-groups';
 
 const getCustomGroupsColumns = (
-  t: TFunction<
-    ('common' | 'groups' | 'people' | 'mail')[],
-    undefined,
-    ('common' | 'groups' | 'people' | 'mail')[]
-  >,
+  t: TFunction<'common'[], undefined, 'common'[]>,
   isStaffUser: boolean
 ): GridOptions<ReturnTypeFromUseCustomGroups>['columnDefs'] => [
   {
@@ -54,15 +49,6 @@ const getCustomGroupsColumns = (
       (data?.studentMembers?.memberCount ?? 0) +
       (data?.staffMembers?.memberCount ?? 0) +
       (data?.contactMembers?.memberCount ?? 0),
-  },
-  {
-    field: 'generalGroupType',
-    headerName: t('common:type'),
-    enableRowGroup: true,
-    valueGetter: ({ data }) =>
-      data?.generalGroupType
-        ? t(`groups:generalGroupType.${data.generalGroupType}`)
-        : '',
   },
 ];
 
