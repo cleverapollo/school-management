@@ -1,8 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, GeneralGroupType, queryClient } from '@tyro/api';
+import {
+  gqlClient,
+  graphql,
+  GeneralGroupType,
+  queryClient,
+  UseQueryReturnType,
+} from '@tyro/api';
 
-const enrolmentGroupsList = graphql(/* GraphQL */ `
-  query enrolmentGroupsList($filter: GeneralGroupFilter!) {
+const classGroupsList = graphql(/* GraphQL */ `
+  query classGroupsList($filter: GeneralGroupFilter!) {
     generalGroups(filter: $filter) {
       partyId
       name
@@ -42,8 +48,8 @@ const enrolmentGroupsList = graphql(/* GraphQL */ `
   }
 `);
 
-const enrolmentGroupById = graphql(/* GraphQL */ `
-  query enrolmentGroupsById($filter: GeneralGroupFilter!) {
+const classGroupById = graphql(/* GraphQL */ `
+  query classGroupsById($filter: GeneralGroupFilter!) {
     generalGroups(filter: $filter) {
       partyId
       name
@@ -61,50 +67,49 @@ const enrolmentGroupById = graphql(/* GraphQL */ `
   }
 `);
 
-export const enrolmentGroupsKeys = {
-  list: ['groups', 'enrolment'] as const,
-  details: (id: number | undefined) =>
-    [...enrolmentGroupsKeys.list, id] as const,
+export const classGroupsKeys = {
+  list: ['groups', 'class'] as const,
+  details: (id: number | undefined) => [...classGroupsKeys.list, id] as const,
 };
 
-const enrolmentGroupsQuery = {
-  queryKey: enrolmentGroupsKeys.list,
+const classGroupsQuery = {
+  queryKey: classGroupsKeys.list,
   queryFn: async () =>
-    gqlClient.request(enrolmentGroupsList, {
+    gqlClient.request(classGroupsList, {
       filter: {
         groupTypes: [GeneralGroupType.ClassGroup],
       },
     }),
 };
 
-export function getEnrolmentGroups() {
-  return queryClient.fetchQuery(enrolmentGroupsQuery);
+export function getClassGroups() {
+  return queryClient.fetchQuery(classGroupsQuery);
 }
 
-export function useEnrolmentGroups() {
+export function useClassGroups() {
   return useQuery({
-    ...enrolmentGroupsQuery,
+    ...classGroupsQuery,
     select: ({ generalGroups }) => generalGroups,
   });
 }
 
-const enrolmentGroupsByIdQuery = (id: number | undefined) => ({
-  queryKey: enrolmentGroupsKeys.details(id),
+const classGroupsByIdQuery = (id: number | undefined) => ({
+  queryKey: classGroupsKeys.details(id),
   queryFn: async () =>
-    gqlClient.request(enrolmentGroupById, {
+    gqlClient.request(classGroupById, {
       filter: {
         partyIds: [id ?? 0],
       },
     }),
 });
 
-export function getEnrolmentGroupsById(id: number | undefined) {
-  return queryClient.fetchQuery(enrolmentGroupsByIdQuery(id));
+export function getClassGroupsById(id: number | undefined) {
+  return queryClient.fetchQuery(classGroupsByIdQuery(id));
 }
 
-export function useEnrolmentGroupById(id: number | undefined) {
+export function useClassGroupById(id: number | undefined) {
   return useQuery({
-    ...enrolmentGroupsByIdQuery(id),
+    ...classGroupsByIdQuery(id),
     select: ({ generalGroups }) => {
       if (!generalGroups) return null;
       const group = generalGroups[0];
@@ -116,3 +121,7 @@ export function useEnrolmentGroupById(id: number | undefined) {
     },
   });
 }
+
+export type ReturnTypeFromUseClassGroups = UseQueryReturnType<
+  typeof useClassGroups
+>[number];

@@ -1,4 +1,4 @@
 export * from './subject-groups';
 export * from './subject-group-lesson';
-export * from './general-groups';
+export * from './class-groups';
 export * from './custom-groups';
