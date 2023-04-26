@@ -258,12 +258,15 @@ export default function EditTermAssessmentResults() {
   const subjectGroupIdAsNumber = useNumber(subjectGroupId);
   const { t } = useTranslation(['assessments', 'common']);
   const { displayName } = usePreferredNameLayout();
-
-  const { data: assessmentData } = useAssessmentById(assessmentIdAsNumber ?? 0);
-  const { data: studentResults } = useAssessmentResults({
+  const assessmentResultsFilter = {
     assessmentId: assessmentIdAsNumber ?? 0,
     subjectGroupIds: [subjectGroupIdAsNumber ?? 0],
-  });
+  };
+
+  const { data: assessmentData } = useAssessmentById(assessmentIdAsNumber ?? 0);
+  const { data: studentResults } = useAssessmentResults(
+    assessmentResultsFilter
+  );
 
   const commentBanksRequired = useMemo(() => {
     if (!assessmentData) return [];
@@ -291,7 +294,9 @@ export default function EditTermAssessmentResults() {
     ids: commentBanksRequired,
   });
 
-  const { mutateAsync: updateAssessmentResult } = useUpdateAssessmentResult();
+  const { mutateAsync: updateAssessmentResult } = useUpdateAssessmentResult(
+    assessmentResultsFilter
+  );
 
   const subjectGroup =
     Array.isArray(studentResults) && studentResults.length > 0

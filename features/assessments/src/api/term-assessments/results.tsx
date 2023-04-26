@@ -7,6 +7,8 @@ import {
   SaveAssessmentResultInput,
   UseQueryReturnType,
 } from '@tyro/api';
+import { useToast } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 import { assessmentsKeys } from '../keys';
 
 const assessmentResults = graphql(/* GraphQL */ `
@@ -105,9 +107,20 @@ export type ReturnTypeFromUseAssessmentResults = UseQueryReturnType<
   typeof useAssessmentResults
 >[number];
 
-export function useUpdateAssessmentResult() {
+export function useUpdateAssessmentResult(
+  assessmentFilter: AssessmentResultFilter
+) {
+  const { toast } = useToast();
+  const { t } = useTranslation(['common']);
+
   return useMutation({
     mutationFn: (input: SaveAssessmentResultInput[]) =>
       gqlClient.request(updateAssessmentResult, { input }),
+    onSuccess: () => {
+      toast(t('common:snackbarMessages.updateSuccess'));
+      queryClient.invalidateQueries(
+        assessmentsKeys.resultsBySubjectGroup(assessmentFilter)
+      );
+    },
   });
 }
