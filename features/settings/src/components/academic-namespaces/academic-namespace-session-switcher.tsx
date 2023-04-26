@@ -1,28 +1,21 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, MenuItem, Stack, Typography } from '@mui/material';
 import {
-  AcademicNamespace,
   usePermissions,
-  useCoreAcademicNamespace,
+  useAcademicNamespace,
+  EmulateHeaders,
 } from '@tyro/api';
 import MenuPopover from '../../../../../src/components/MenuPopover';
-import { HEADERS } from '../../../../../src/constants';
 
 export function AcademicNamespaceSessionSwitcher() {
   const [open, setOpen] = useState<HTMLElement | null>(null);
-  const sessionNamespaceId = Number(
-    localStorage.getItem(HEADERS.ACADEMIC_NAMESPACE_ID)
-  );
-  const { data, isLoading } = useCoreAcademicNamespace();
+  const { allNamespaces, activeAcademicNamespace, isLoading } =
+    useAcademicNamespace();
   const { hasPermission } = usePermissions();
-  const [currentYear, setCurrentYear] = useState(sessionNamespaceId || 3);
+  const [currentYear, setCurrentYear] = useState(activeAcademicNamespace);
 
-  const years = data as AcademicNamespace[];
-  if (years === null) {
-    return null;
-  }
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     setOpen(event.currentTarget);
   };
@@ -31,11 +24,22 @@ export function AcademicNamespaceSessionSwitcher() {
     setOpen(null);
   };
 
-  const onClickItem = (value: number) => {
-    setCurrentYear(value);
-    localStorage.setItem(HEADERS.ACADEMIC_NAMESPACE_ID, value.toString());
+  const onSelect = (namespace: NonNullable<typeof allNamespaces>[number]) => {
+    if (!namespace) return;
+
+    setCurrentYear(namespace);
+    localStorage.setItem(
+      EmulateHeaders.ACADEMIC_NAMESPACE_ID,
+      namespace.academicNamespaceId.toString()
+    );
     handleClose();
   };
+
+  useEffect(() => {
+    if (activeAcademicNamespace) {
+      setCurrentYear(activeAcademicNamespace);
+    }
+  }, [activeAcademicNamespace]);
 
   if (
     isLoading ||
@@ -48,7 +52,9 @@ export function AcademicNamespaceSessionSwitcher() {
     <>
       <Button
         onClick={handleOpen}
-        aria-label={`Change Academic Namespace. Currently set to ${currentYear}`}
+        aria-label={`Change Academic Namespace. Currently set to ${
+          currentYear?.name ?? ''
+        }`}
       >
         <Typography
           variant="subtitle1"
@@ -57,7 +63,7 @@ export function AcademicNamespaceSessionSwitcher() {
             color: 'black',
           }}
         >
-          {years.find((a) => a.academicNamespaceId === currentYear)?.name || ''}
+          {activeAcademicNamespace?.name || ''}
         </Typography>
       </Button>
 
@@ -77,13 +83,15 @@ export function AcademicNamespaceSessionSwitcher() {
         }}
       >
         <Stack spacing={0.75}>
-          {years.map((option) => (
+          {allNamespaces?.map((option) => (
             <MenuItem
-              key={option.academicNamespaceId}
-              selected={option.academicNamespaceId === currentYear}
-              onClick={() => onClickItem(option.academicNamespaceId)}
+              key={option?.academicNamespaceId}
+              selected={
+                option?.academicNamespaceId === currentYear?.academicNamespaceId
+              }
+              onClick={() => onSelect(option)}
             >
-              {option.year}
+              {option?.year}
             </MenuItem>
           ))}
         </Stack>
