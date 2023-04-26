@@ -48,7 +48,7 @@ function getExtraFields(
   commentBanks: ReturnTypeFromUseCommentBanksWithComments | undefined
 ): NonNullable<GridOptions<ReturnTypeFromUseAssessmentResults>['columnDefs']> {
   return (
-    extraFields?.map((extraField, index) => {
+    extraFields?.map((extraField) => {
       const matchedCommentBank = commentBanks?.find(
         (commentBank) => commentBank.id === extraField?.commentBankId
       );

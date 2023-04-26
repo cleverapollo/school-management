@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import {
   AssessmentResultFilter,
   EmulateHeaders,
@@ -103,11 +104,14 @@ export function useAssessmentResults(
   academicNamespaceId: number,
   filter: AssessmentResultFilter | null
 ) {
-  return useQuery({
+  const { data, ...rest } = useQuery({
     ...assessmentResultsQuery(academicNamespaceId, filter ?? {}),
     enabled: !!filter,
-    select: ({ assessment_assessmentResult }) =>
-      assessment_assessmentResult?.map((result) => {
+  });
+
+  const mappedData = useMemo(
+    () =>
+      data?.assessment_assessmentResult?.map((result) => {
         const extraFields =
           result?.extraFields?.reduce((acc, extraField) => {
             acc[extraField.assessmentExtraFieldId] = extraField;
@@ -120,7 +124,13 @@ export function useAssessmentResults(
           extraFields,
         };
       }),
-  });
+    [data]
+  );
+
+  return {
+    data: mappedData,
+    ...rest,
+  };
 }
 
 export type ReturnTypeFromUseAssessmentResults = UseQueryReturnType<
