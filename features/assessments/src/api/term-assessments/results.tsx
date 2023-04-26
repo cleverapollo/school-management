@@ -157,10 +157,9 @@ export function useUpdateAssessmentResult(
     onSuccess: () => {
       toast(t('common:snackbarMessages.updateSuccess'));
       queryClient.invalidateQueries(
-        assessmentsKeys.resultsBySubjectGroup(
-          academicNamespaceId,
-          assessmentFilter
-        )
+        assessmentsKeys.resultsBySubjectGroup(academicNamespaceId, {
+          assessmentId: assessmentFilter.assessmentId,
+        })
       );
     },
   });
