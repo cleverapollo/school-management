@@ -60,12 +60,12 @@ function TableInner<T extends object>(
     autoGroupColumnDef,
     rowHeight = 56,
     rowSelection,
+    onColumnEverythingChanged,
     ...props
   }: TableProps<T>,
   ref: React.Ref<AgGridReact<T>>
 ) {
   const [searchValue, setSearchValue] = useState('');
-  const [isTableMounted, setIsTableMounted] = useState(false);
   const tableRef = useEnsuredForwardedRef(
     ref as MutableRefObject<AgGridReact<T>>
   );
@@ -76,9 +76,9 @@ function TableInner<T extends object>(
     onSave,
     onCancel,
     onCellValueChanged,
+    applyUpdatesToTable,
   } = useEditableState<T>({
     tableRef,
-    isTableMounted,
     onBulkSave,
   });
 
@@ -134,10 +134,17 @@ function TableInner<T extends object>(
             onCellValueChanged={onCellValueChanged}
             onFirstDataRendered={(params: FirstDataRenderedEvent<T>) => {
               params?.columnApi?.autoSizeAllColumns(false);
-              setIsTableMounted(true);
+              applyUpdatesToTable('newValue');
 
               if (onFirstDataRendered) {
                 onFirstDataRendered(params);
+              }
+            }}
+            onColumnEverythingChanged={(params) => {
+              applyUpdatesToTable('newValue');
+
+              if (onColumnEverythingChanged) {
+                onColumnEverythingChanged(params);
               }
             }}
           />
