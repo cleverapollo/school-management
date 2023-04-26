@@ -153,6 +153,7 @@ const getColumnDefs = (
     }: ICellRendererParams<ReturnTypeFromUseAssessmentResults>) =>
       data && <TableAvatar person={data.student} />,
     sort: 'asc',
+    pinned: 'left',
   },
   {
     field: 'studentClassGroup',
