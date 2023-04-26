@@ -2,15 +2,16 @@ import { Assessment, AssessmentType } from '@tyro/api';
 
 export function getAssessmentSubjectGroupsLink(
   assessmentId: Assessment['id'],
-  assessmentType: AssessmentType
+  assessmentType: AssessmentType,
+  academicNameSpaceId: number
 ) {
   switch (assessmentType) {
     case AssessmentType.Term:
-      return `./term-assessments/${assessmentId}`;
+      return `./${academicNameSpaceId}/term-assessments/${assessmentId}`;
     case AssessmentType.InClass:
-      return `./class-assessments/${assessmentId}`;
+      return `./${academicNameSpaceId}/class-assessments/${assessmentId}`;
     case AssessmentType.StateCba:
-      return `./state-cba-assessments/${assessmentId}`;
+      return `./${academicNameSpaceId}/state-cba-assessments/${assessmentId}`;
     default:
       return '';
   }

@@ -26,7 +26,7 @@
   --ag-background-color: #fff;
   --ag-header-background-color: #fff;
   --ag-tooltip-background-color: #fff;
-  --ag-subheader-background-color: #eee;
+  --ag-subheader-background-color: var(--ag-tyro-slate-100);
   --ag-subheader-toolbar-background-color: rgba(238, 238, 238, 0.5);
   --ag-header-cell-hover-background-color: var(--ag-tyro-slate-50);
   --ag-chip-background-color: var(--ag-tyro-slate-200);
@@ -71,7 +71,8 @@
   --ag-input-focus-border-color: var(--ag-tyro-primary-color);
   --ag-input-focus-box-shadow: 0 0 0 5px rgba(32, 33, 36, 0.122);
   --ag-card-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
-  --ag-card-radius: 2px;
+  --ag-popup-shadow: 0 0 2px 0 rgba(100, 116, 139, 0.24), 0px 20px 40px -4px rgba(100, 116, 139, 0.24);
+  --ag-card-radius: 8px;
   --ag-invalid-color: #e02525;
 }
 

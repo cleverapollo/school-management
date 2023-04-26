@@ -1,4 +1,5 @@
 export * from './use-breakpoint-value';
+export * from './use-cache-with-expiry';
 export * from './use-callback-ref';
 export * from './use-chart-options';
 export * from './use-debounced-value';

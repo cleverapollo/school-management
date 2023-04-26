@@ -1,6 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { AssessmentFilter, gqlClient, graphql, queryClient } from '@tyro/api';
+import {
+  AssessmentFilter,
+  EmulateHeaders,
+  gqlClient,
+  graphql,
+  queryClient,
+} from '@tyro/api';
+import { assessmentsKeys } from './keys';
 
 const assessmentsList = graphql(/* GraphQL */ `
   query assessmentsList($filter: AssessmentFilter) {
@@ -26,20 +33,98 @@ const assessmentsList = graphql(/* GraphQL */ `
   }
 `);
 
-export const assessmentsKeys = {
-  list: (filter: AssessmentFilter) => ['assessments', filter] as const,
-};
+const assessment = graphql(/* GraphQL */ `
+  query assessment($filter: AssessmentFilter) {
+    assessment_assessment(filter: $filter) {
+      id
+      name
+      assessmentType
+      academicNamespaceId
+      years {
+        yearGroupId
+        name
+      }
+      publish
+      createdOn
+      gradeType
+      gradeSets {
+        gradeSetId
+        gradeSetName
+      }
+      passFailThreshold
+      captureTarget
+      commentType
+      commentLength
+      commentBank {
+        commentBankId
+        commentBankName
+      }
+      capturePrincipalComment
+      captureYearHeadComment
+      captureHouseMasterComment
+      publish
+      publishLearner
+      extraFields {
+        id
+        name
+        assessmentId
+        extraFieldType
+        gradeSetId
+        commentBankId
+        selectOptions
+        commentLength
+      }
+      createdBy {
+        type
+        title
+        firstName
+        lastName
+        avatarUrl
+      }
+    }
+  }
+`);
 
-const assessmentsQuery = (filter: AssessmentFilter) => ({
-  queryKey: assessmentsKeys.list(filter),
-  queryFn: () => gqlClient.request(assessmentsList, { filter }),
+interface AssessmentListFilter extends AssessmentFilter {
+  academicNameSpaceId: number;
+}
+
+interface AssessmentByIdFilter extends AssessmentFilter {
+  academicNameSpaceId: number;
+  ids: number[];
+}
+
+const assessmentsQuery = (filter: AssessmentListFilter) => ({
+  queryKey: assessmentsKeys.assessments(filter),
+  queryFn: () =>
+    gqlClient.request(
+      assessmentsList,
+      { filter },
+      {
+        [EmulateHeaders.ACADEMIC_NAMESPACE_ID]:
+          filter.academicNameSpaceId.toString(),
+      }
+    ),
 });
 
-export function getAssessments(filter: AssessmentFilter) {
+const assessmentByIdQuery = (filter: AssessmentByIdFilter) => ({
+  queryKey: assessmentsKeys.assessments(filter),
+  queryFn: () =>
+    gqlClient.request(
+      assessment,
+      { filter },
+      {
+        [EmulateHeaders.ACADEMIC_NAMESPACE_ID]:
+          filter.academicNameSpaceId.toString(),
+      }
+    ),
+});
+
+export function getAssessments(filter: AssessmentListFilter) {
   return queryClient.fetchQuery(assessmentsQuery(filter));
 }
 
-export function useAssessments(filter: AssessmentFilter) {
+export function useAssessments(filter: AssessmentListFilter) {
   return useQuery({
     ...assessmentsQuery(filter),
     select: ({ assessment_assessment }) => {
@@ -47,5 +132,20 @@ export function useAssessments(filter: AssessmentFilter) {
 
       return assessment_assessment;
     },
+  });
+}
+
+export function getAssessmentById(filter: AssessmentByIdFilter) {
+  return queryClient.fetchQuery(assessmentByIdQuery(filter));
+}
+
+export function useAssessmentById(filter: AssessmentByIdFilter) {
+  return useQuery({
+    ...assessmentByIdQuery(filter),
+    enabled: !!filter,
+    select: ({ assessment_assessment }) =>
+      Array.isArray(assessment_assessment) && assessment_assessment.length > 0
+        ? assessment_assessment[0]
+        : null,
   });
 }

@@ -1,9 +1,10 @@
-import { Box, Button, Collapse, Fade, Stack, Typography } from '@mui/material';
+import { Box, Button, Collapse, Fade, Stack } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 
 import {
   GridOptions,
   ICellRendererParams,
+  PageHeading,
   ReturnTypeDisplayName,
   RouterLink,
   Table,
@@ -12,12 +13,11 @@ import {
 } from '@tyro/core';
 import { Link } from 'react-router-dom';
 import { useMemo, useState } from 'react';
-import { AddIcon } from '@tyro/icons';
+import { AddDocIcon } from '@tyro/icons';
 import { useAcademicNamespace, UseQueryReturnType } from '@tyro/api';
 import dayjs from 'dayjs';
 import { PageContainer } from '../components/page-container';
 import { useAssessments } from '../api/assessments';
-import { AssessmentActionMenu } from '../components/list-assessments/assessment-action-menu';
 import { AcademicYearDropdown } from '../components/list-assessments/academic-year-dropdown';
 import { getAssessmentSubjectGroupsLink } from '../utils/get-assessment-subject-groups-link';
 
@@ -31,18 +31,22 @@ const getColumnDefs = (
     undefined,
     ('assessments' | 'common')[]
   >,
-  displayName: ReturnTypeDisplayName
+  displayName: ReturnTypeDisplayName,
+  academicNameSpaceId: number | null
 ): GridOptions<ReturnTypeFromUseAssessments>['columnDefs'] => [
   {
     field: 'name',
     headerName: translate('common:name'),
-    checkboxSelection: ({ data }) => Boolean(data),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAssessments>) =>
       data && (
         <RouterLink
-          to={getAssessmentSubjectGroupsLink(data.id, data.assessmentType)}
+          to={getAssessmentSubjectGroupsLink(
+            data.id,
+            data.assessmentType,
+            academicNameSpaceId ?? 0
+          )}
         >
           {data.name}
         </RouterLink>
@@ -67,6 +71,7 @@ const getColumnDefs = (
     headerName: translate('common:dateOfCreation'),
     valueGetter: ({ data }) =>
       data ? dayjs(data.createdOn).format('LL') : '-',
+    sort: 'desc',
   },
   {
     field: 'publish',
@@ -92,22 +97,32 @@ export default function AssessmentsPage() {
   );
 
   const { data: assessmentsData = [] } = useAssessments({
-    academicNameSpaceId,
+    academicNameSpaceId: academicNameSpaceId ?? 0,
   });
 
-  const [selectedAssessment, setSelectedAssessment] =
-    useState<ReturnTypeFromUseAssessments | null>(null);
-
   const columnDefs = useMemo(
-    () => getColumnDefs(t, displayName),
+    () => getColumnDefs(t, displayName, academicNameSpaceId),
     [t, displayName]
   );
 
   return (
     <PageContainer title={t('assessments:pageTitle.assessments')}>
-      <Typography variant="h3" component="h1">
-        {t('assessments:pageHeading.assessments')}
-      </Typography>
+      <PageHeading
+        title={t('assessments:pageHeading.assessments')}
+        titleProps={{ variant: 'h3' }}
+        rightAdornment={
+          <Box display="flex" alignItems="center">
+            <Button
+              variant="contained"
+              component={Link}
+              to="./term-assessments/create"
+              startIcon={<AddDocIcon />}
+            >
+              {t('assessments:createAssessment')}
+            </Button>
+          </Box>
+        }
+      />
       {academicNameSpaceId && (
         <AcademicYearDropdown
           academicNamespaceId={academicNameSpaceId}
@@ -118,32 +133,6 @@ export default function AssessmentsPage() {
         rowData={assessmentsData || []}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.id)}
-        rowSelection="single"
-        onRowSelection={([newValue]) => setSelectedAssessment(newValue)}
-        rightAdornment={
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Button
-              // TODO: add way to create any kind of assessments
-              variant="text"
-              component={Link}
-              to="./term-assessments/create"
-              startIcon={<AddIcon />}
-            >
-              {t('assessments:createAssessment')}
-            </Button>
-            <Collapse
-              in={!!selectedAssessment}
-              orientation="horizontal"
-              unmountOnExit
-            >
-              <Fade in={!!selectedAssessment}>
-                <Box>
-                  <AssessmentActionMenu {...selectedAssessment} />
-                </Box>
-              </Fade>
-            </Collapse>
-          </Stack>
-        }
       />
     </PageContainer>
   );

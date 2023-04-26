@@ -2,11 +2,11 @@ import { Chip, ChipProps } from '@mui/material';
 import { StudyLevel } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 
-interface SubjectGroupLevelChipProps {
+interface TableStudyLevelChipProps {
   level: StudyLevel;
 }
 
-const subjectGroupMapColor: Record<StudyLevel, ChipProps['color']> = {
+const studyLevelColorMapping: Record<StudyLevel, ChipProps['color']> = {
   [StudyLevel.NotApplicable]: 'default',
   [StudyLevel.Higher]: 'error',
   [StudyLevel.Ordinary]: 'info',
@@ -14,8 +14,8 @@ const subjectGroupMapColor: Record<StudyLevel, ChipProps['color']> = {
   [StudyLevel.Foundation]: 'success',
 };
 
-export function SubjectGroupLevelChip({ level }: SubjectGroupLevelChipProps) {
-  const { t } = useTranslation(['groups']);
+export function TableStudyLevelChip({ level }: TableStudyLevelChipProps) {
+  const { t } = useTranslation(['common']);
 
   if (level === StudyLevel.NotApplicable) {
     return <span>-</span>;
@@ -24,9 +24,9 @@ export function SubjectGroupLevelChip({ level }: SubjectGroupLevelChipProps) {
   return (
     <Chip
       sx={{ pointerEvents: 'none' }}
-      label={t(`groups:subjectGroupLevel.${level}`)}
+      label={t(`common:studyLevel.${level}`)}
       variant="soft"
-      color={subjectGroupMapColor[level]}
+      color={studyLevelColorMapping[level]}
     />
   );
 }

@@ -3,13 +3,6 @@
   "classGroups": "Class Groups",
   "subjectGroups": "Subject Groups",
   "customGroups": "Custom Groups",
-  "subjectGroupLevel": {
-    "COMMON": "Common", 
-    "FOUNDATION": "Foundation",
-    "HIGHER": "Higher",
-    "NOT_APPLICABLE": "Not Applicable",
-    "ORDINARY": "Ordinary" 
-  },
   "subjectGroupsProfile": "{{name}}'s Profile",
   "teachersInGroup": "Teachers in group",
   "nextLesson": "Next Lesson",

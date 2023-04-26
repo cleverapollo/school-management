@@ -1,5 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
-import { gqlClient, graphql, SaveAssessmentInput } from '@tyro/api';
+import {
+  gqlClient,
+  graphql,
+  queryClient,
+  SaveAssessmentInput,
+} from '@tyro/api';
+import { assessmentsKeys } from './keys';
 
 const saveTermAssessment = graphql(/* GraphQL */ `
   mutation saveAssessment($input: SaveAssessmentInput) {
@@ -16,8 +22,10 @@ const saveTermAssessment = graphql(/* GraphQL */ `
 
 export function useSaveTermAssessment() {
   return useMutation({
-    mutationKey: ['termAssessment', 'createTermAssessment'],
     mutationFn: (input: SaveAssessmentInput) =>
       gqlClient.request(saveTermAssessment, { input }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(assessmentsKeys.all);
+    },
   });
 }

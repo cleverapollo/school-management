@@ -124,7 +124,7 @@ export default function CreateTermAssessmentPage() {
       {
         ...restData,
         assessmentType: AssessmentType.Term,
-        gradeType: GradeType.None,
+        gradeType: GradeType.Both,
         years: years.map(({ yearGroupId }) => yearGroupId),
         startDate: dayjs(startDate).format('YYYY-MM-DD'),
         endDate: dayjs(endDate).format('YYYY-MM-DD'),

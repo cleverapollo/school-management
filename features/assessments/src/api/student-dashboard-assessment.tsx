@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, queryClient } from '@tyro/api';
+import { assessmentsKeys } from './keys';
 
 const studentDashboardAssessments = graphql(/* GraphQL */ `
   query dashboardAssessment($filter: DashboardAssessmentFilter) {
@@ -21,7 +22,7 @@ const studentDashboardAssessments = graphql(/* GraphQL */ `
 `);
 
 const studentDashboardAssessmentsQuery = (studentId: number | undefined) => ({
-  queryKey: ['dashboard-assessment', studentId],
+  queryKey: assessmentsKeys.studentAssessments(studentId ?? 0),
   queryFn: async () =>
     gqlClient.request(studentDashboardAssessments, {
       filter: { studentPartyId: studentId ?? 0 },

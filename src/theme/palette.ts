@@ -548,11 +548,11 @@ const INFO = {
   darker: CYAN[900],
 };
 const SUCCESS = {
-  lighter: EMERALD[100],
-  light: EMERALD[300],
-  main: EMERALD[500],
-  dark: EMERALD[700],
-  darker: EMERALD[900],
+  lighter: GREEN[100],
+  light: GREEN[300],
+  main: GREEN[500],
+  dark: GREEN[700],
+  darker: GREEN[900],
 };
 const WARNING = {
   lighter: AMBER[100],

@@ -12,6 +12,7 @@ import {
   ActionMenuProps,
   usePreferredNameLayout,
   ReturnTypeDisplayNames,
+  TableStudyLevelChip,
 } from '@tyro/core';
 
 import {
@@ -22,7 +23,6 @@ import {
 } from '@tyro/icons';
 
 import { useSubjectGroups } from '../../api/subject-groups';
-import { SubjectGroupLevelChip } from '../../components';
 
 type ReturnTypeFromUseSubjectGroups = NonNullable<
   ReturnType<typeof useSubjectGroups>['data']
@@ -71,7 +71,7 @@ const getSubjectGroupsColumns = (
       data,
     }: ICellRendererParams<ReturnTypeFromUseSubjectGroups, any>) =>
       data?.irePP?.level ? (
-        <SubjectGroupLevelChip level={data.irePP.level} />
+        <TableStudyLevelChip level={data.irePP.level} />
       ) : null,
     enableRowGroup: true,
   },
