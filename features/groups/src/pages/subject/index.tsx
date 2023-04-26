@@ -1,5 +1,10 @@
 import { Box, Fade, Container, Typography } from '@mui/material';
-import { usePermissions, UserType } from '@tyro/api';
+import {
+  StudyLevel,
+  UpdateSubjectGroupInput,
+  usePermissions,
+  UserType,
+} from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -13,6 +18,8 @@ import {
   usePreferredNameLayout,
   ReturnTypeDisplayNames,
   TableStudyLevelChip,
+  StudyLevelSelectCellEditor,
+  BulkEditedRows,
 } from '@tyro/core';
 
 import {
@@ -22,19 +29,23 @@ import {
   UnarchiveIcon,
 } from '@tyro/icons';
 
-import { useSubjectGroups } from '../../api/subject-groups';
+import set from 'lodash/set';
+import {
+  useSaveSubjectGroupEdits,
+  useSubjectGroups,
+} from '../../api/subject-groups';
 
 type ReturnTypeFromUseSubjectGroups = NonNullable<
   ReturnType<typeof useSubjectGroups>['data']
 >[number];
 
 const getSubjectGroupsColumns = (
-  translate: TFunction<'common'[], undefined, 'common'[]>,
+  t: TFunction<'common'[], undefined, 'common'[]>,
   displayNames: ReturnTypeDisplayNames
 ): GridOptions<ReturnTypeFromUseSubjectGroups>['columnDefs'] => [
   {
     field: 'name',
-    headerName: translate('common:name'),
+    headerName: t('common:name'),
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: ({ data }) => Boolean(data),
@@ -50,7 +61,7 @@ const getSubjectGroupsColumns = (
   },
   {
     field: 'subjects',
-    headerName: translate('common:subject'),
+    headerName: t('common:subject'),
     filter: true,
     valueGetter: ({ data }) => {
       const [firstSubject] = data?.subjects || [];
@@ -60,24 +71,29 @@ const getSubjectGroupsColumns = (
   },
   {
     field: 'studentMembers.memberCount',
-    headerName: translate('common:members'),
+    headerName: t('common:members'),
   },
   {
     field: 'irePP.level',
-    headerName: translate('common:level'),
+    headerName: t('common:level'),
     filter: true,
-    valueGetter: ({ data }) => data?.irePP?.level,
+    editable: true,
+    valueSetter: (params) => {
+      set(params.data ?? {}, 'irePP.level', params.newValue);
+      return true;
+    },
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseSubjectGroups, any>) =>
       data?.irePP?.level ? (
         <TableStudyLevelChip level={data.irePP.level} />
       ) : null,
+    cellEditorSelector: StudyLevelSelectCellEditor(t),
     enableRowGroup: true,
   },
   {
     field: 'staff',
-    headerName: translate('common:teacher'),
+    headerName: t('common:teacher'),
     valueGetter: ({ data }) => displayNames(data?.staff),
     enableRowGroup: true,
   },
@@ -88,6 +104,7 @@ export default function SubjectGroups() {
   const { displayNames } = usePreferredNameLayout();
 
   const { data: subjectGroupsData } = useSubjectGroups();
+  const { mutateAsync: updateSubjectGroup } = useSaveSubjectGroupEdits();
   const { userType } = usePermissions();
 
   const [selectedGroups, setSelectedGroups] = useState<
@@ -144,6 +161,26 @@ export default function SubjectGroups() {
     return [commonActions];
   }, [isTeacherUserType, isAdminUserType]);
 
+  const handleBulkSave = (data: BulkEditedRows) => {
+    const updates = Object.entries(data).reduce<UpdateSubjectGroupInput[]>(
+      (acc, [partyId, changes]) => {
+        const level = changes['irePP.level'];
+
+        if (level) {
+          acc.push({
+            subjectGroupPartyId: Number(partyId),
+            irePP: { level: level.newValue as StudyLevel },
+          });
+        }
+
+        return acc;
+      },
+      []
+    );
+
+    return updateSubjectGroup(updates);
+  };
+
   return (
     <Page title={t('groups:subjectGroups')}>
       <Container maxWidth="xl">
@@ -155,6 +192,7 @@ export default function SubjectGroups() {
           columnDefs={studentColumns}
           rowSelection="multiple"
           getRowId={({ data }) => String(data?.partyId)}
+          onBulkSave={handleBulkSave}
           rightAdornment={
             <Fade
               in={showActionMenu && selectedGroups.length > 0}
