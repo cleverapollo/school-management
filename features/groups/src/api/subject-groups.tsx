@@ -1,5 +1,10 @@
-import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient } from '@tyro/api';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  gqlClient,
+  graphql,
+  queryClient,
+  UpdateSubjectGroupInput,
+} from '@tyro/api';
 
 const subjectGroupsList = graphql(/* GraphQL */ `
   query subjectGroups {
@@ -62,6 +67,14 @@ const subjectGroupById = graphql(/* GraphQL */ `
   }
 `);
 
+const updateSubjectGroups = graphql(/* GraphQL */ `
+  mutation core_updateSubjectGroups($input: [UpdateSubjectGroupInput!]) {
+    core_updateSubjectGroups(input: $input) {
+      success
+    }
+  }
+`);
+
 const subjectGroupsKeys = {
   list: ['groups', 'subject'] as const,
   details: (id?: number) => [...subjectGroupsKeys.list, id] as const,
@@ -105,6 +118,16 @@ export function useSubjectGroupById(id?: number) {
       const [group] = subjectGroups || [];
 
       return group;
+    },
+  });
+}
+
+export function useSaveSubjectGroupEdits() {
+  return useMutation({
+    mutationFn: (input: UpdateSubjectGroupInput[]) =>
+      gqlClient.request(updateSubjectGroups, { input }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(subjectGroupsKeys.list);
     },
   });
 }

@@ -10,6 +10,7 @@ import {
   TableStudyLevelChip,
   useNumber,
   usePreferredNameLayout,
+  StudyLevelSelectCellEditor,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { useParams } from 'react-router-dom';
@@ -32,7 +33,6 @@ import {
   useUpdateAssessmentResult,
 } from '../../../api/term-assessments/results';
 import { useCommentBanksWithComments } from '../../../api/comment-bank';
-import { StudyLevelSelectCellEditor } from '../../../components/common/study-level-cell-editor';
 import { checkAndSetGrades } from '../../../utils/check-and-set-grades';
 
 export type ReturnTypeFromUseAssessmentById = UseQueryReturnType<
