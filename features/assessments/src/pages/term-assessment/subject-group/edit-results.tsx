@@ -155,7 +155,7 @@ const getColumnDefs = (
   },
   {
     field: 'studentClassGroup',
-    headerName: t('common:classGroup'),
+    headerName: t('common:class'),
   },
   {
     field: 'studentStudyLevel',
