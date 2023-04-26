@@ -139,7 +139,11 @@ export function StudentAssessmentWidget({
             {selectedAssessment?.results?.map((result) => (
               <TableRow key={result?.id}>
                 <TableCell>{result?.subject ?? '-'}</TableCell>
-                <TableCell>-</TableCell>
+                <TableCell>
+                  {result?.studyLevel
+                    ? t(`common:studyLevel.${result?.studyLevel}`)
+                    : '-'}
+                </TableCell>
                 <TableCell>
                   {typeof result?.result === 'number'
                     ? `${result?.result}%`
