@@ -141,7 +141,8 @@ const getColumnDefs = (
   >,
   displayName: ReturnTypeDisplayName,
   assessmentData: ReturnTypeFromUseAssessmentById | null | undefined,
-  commentBanks: ReturnTypeFromUseCommentBanksWithComments | undefined
+  commentBanks: ReturnTypeFromUseCommentBanksWithComments | undefined,
+  academicNamespaceId: number
 ): GridOptions<ReturnTypeFromUseAssessmentResults>['columnDefs'] => [
   {
     field: 'subjectGroupName',
@@ -163,7 +164,7 @@ const getColumnDefs = (
     editable: true,
     valueSetter: (params) => {
       set(params.data ?? {}, 'studentStudyLevel', params.newValue);
-      checkAndSetGrades(params);
+      checkAndSetGrades(academicNamespaceId, params);
       return true;
     },
     cellRenderer: ({
@@ -190,7 +191,7 @@ const getColumnDefs = (
           : Math.max(0, Math.min(100, value))
       );
 
-      checkAndSetGrades(params);
+      checkAndSetGrades(academicNamespaceId, params);
       return true;
     },
   },
@@ -216,12 +217,12 @@ const getColumnDefs = (
           : Math.max(0, Math.min(100, value))
       );
 
-      checkAndSetGrades(params);
+      checkAndSetGrades(academicNamespaceId, params);
       return true;
     },
   },
   {
-    field: 'targetGrade',
+    field: 'targetGradeResult',
     headerName: t('assessments:targetGrade'),
     hide: !assessmentData?.captureTarget,
     suppressColumnsToolPanel: !assessmentData?.captureTarget,
@@ -252,8 +253,9 @@ const getColumnDefs = (
 ];
 
 export default function EditTermAssessmentResults() {
-  const { subjectGroupId, assessmentId } = useParams();
+  const { academicNamespaceId, subjectGroupId, assessmentId } = useParams();
   const { activeProfile } = useUser();
+  const academicNamespaceIdAsNumber = useNumber(academicNamespaceId);
   const assessmentIdAsNumber = useNumber(assessmentId);
   const subjectGroupIdAsNumber = useNumber(subjectGroupId);
   const { t } = useTranslation(['assessments', 'common']);
@@ -263,8 +265,12 @@ export default function EditTermAssessmentResults() {
     subjectGroupIds: [subjectGroupIdAsNumber ?? 0],
   };
 
-  const { data: assessmentData } = useAssessmentById(assessmentIdAsNumber ?? 0);
+  const { data: assessmentData } = useAssessmentById({
+    academicNameSpaceId: academicNamespaceIdAsNumber ?? 0,
+    ids: [assessmentIdAsNumber ?? 0],
+  });
   const { data: studentResults } = useAssessmentResults(
+    academicNamespaceIdAsNumber ?? 0,
     assessmentResultsFilter
   );
 
@@ -295,6 +301,7 @@ export default function EditTermAssessmentResults() {
   });
 
   const { mutateAsync: updateAssessmentResult } = useUpdateAssessmentResult(
+    academicNamespaceIdAsNumber ?? 0,
     assessmentResultsFilter
   );
 
@@ -306,8 +313,15 @@ export default function EditTermAssessmentResults() {
   const subjectGroupName = subjectGroup?.name ?? '';
 
   const columnDefs = useMemo(
-    () => getColumnDefs(t, displayName, assessmentData, commentBanks),
-    [t, displayName, assessmentData, commentBanks]
+    () =>
+      getColumnDefs(
+        t,
+        displayName,
+        assessmentData,
+        commentBanks,
+        academicNamespaceIdAsNumber ?? 0
+      ),
+    [t, displayName, assessmentData, commentBanks, academicNamespaceIdAsNumber]
   );
 
   const saveAssessmentResult = (data: BulkEditedRows) => {

@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import {
   CalculateGradeFilter,
+  EmulateHeaders,
   gqlClient,
   graphql,
   queryClient,
@@ -15,19 +16,35 @@ const calculateGrade = graphql(/* GraphQL */ `
   }
 `);
 
-const calculateGradeQuery = (filter: CalculateGradeFilter) => ({
-  queryKey: assessmentsKeys.calculateGrade(filter),
-  queryFn: () => gqlClient.request(calculateGrade, { filter }),
+const calculateGradeQuery = (
+  academicNamespaceId: number,
+  filter: CalculateGradeFilter
+) => ({
+  queryKey: assessmentsKeys.calculateGrade(academicNamespaceId, filter),
+  queryFn: () =>
+    gqlClient.request(
+      calculateGrade,
+      { filter },
+      { [EmulateHeaders.ACADEMIC_NAMESPACE_ID]: academicNamespaceId.toString() }
+    ),
   staleTime: Infinity,
 });
 
-export function getCalculateGrade(filter: CalculateGradeFilter) {
-  return queryClient.fetchQuery(calculateGradeQuery(filter));
+export function getCalculateGrade(
+  academicNamespaceId: number,
+  filter: CalculateGradeFilter
+) {
+  return queryClient.fetchQuery(
+    calculateGradeQuery(academicNamespaceId, filter)
+  );
 }
 
-export function useCalculateGrade(filter: CalculateGradeFilter) {
+export function useCalculateGrade(
+  academicNamespaceId: number,
+  filter: CalculateGradeFilter
+) {
   return useQuery({
-    ...calculateGradeQuery(filter),
+    ...calculateGradeQuery(academicNamespaceId, filter),
     enabled: !!filter,
     select: ({ assessment_calculateGrade }) => assessment_calculateGrade.grade,
   });

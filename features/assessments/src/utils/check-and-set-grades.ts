@@ -22,6 +22,7 @@ function mimicCellValueChanged(
 }
 
 export async function checkAndSetGrades(
+  academicNamespaceId: number,
   params: ValueSetterParams<ReturnTypeFromUseAssessmentResults>
 ) {
   const {
@@ -30,14 +31,14 @@ export async function checkAndSetGrades(
     result,
     gradeResult: oldGrade,
     targetResult,
-    targetGrade: oldTargetGrade,
+    targetGradeResult: oldTargetGrade,
   } = params.data;
   let gradePromise = null;
   let targetGradePromise = null;
 
   if (studentStudyLevel && studentProgramme?.shortName) {
     if (result) {
-      gradePromise = getCalculateGrade({
+      gradePromise = getCalculateGrade(academicNamespaceId, {
         studyLevel: studentStudyLevel,
         result,
         programmeShortName: studentProgramme.shortName,
@@ -45,7 +46,7 @@ export async function checkAndSetGrades(
     }
 
     if (targetResult) {
-      targetGradePromise = getCalculateGrade({
+      targetGradePromise = getCalculateGrade(academicNamespaceId, {
         studyLevel: studentStudyLevel,
         result: targetResult,
         programmeShortName: studentProgramme.shortName,
@@ -72,14 +73,14 @@ export async function checkAndSetGrades(
     if (oldTargetGrade !== targetGrade?.assessment_calculateGrade.grade) {
       set(
         params.data,
-        'targetGrade',
+        'targetGradeResult',
         targetGrade?.assessment_calculateGrade.grade
       );
       mimicCellValueChanged(
         params,
-        'targetGrade',
+        'targetGradeResult',
         oldTargetGrade,
-        params.data.targetGrade
+        params.data.targetGradeResult
       );
     }
 

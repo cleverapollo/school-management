@@ -9,10 +9,13 @@ export const assessmentsKeys = {
   all: ['assessments'] as const,
   assessments: (filter: AssessmentFilter) =>
     [...assessmentsKeys.all, filter] as const,
-  resultsBySubjectGroup: (filter: AssessmentResultFilter) =>
-    [...assessmentsKeys.all, 'results', filter] as const,
-  calculateGrade: (filter: CalculateGradeFilter) =>
-    [...assessmentsKeys.all, 'grade', filter] as const,
+  resultsBySubjectGroup: (
+    academicNamespaceId: number,
+    filter: AssessmentResultFilter
+  ) =>
+    [...assessmentsKeys.all, 'results', academicNamespaceId, filter] as const,
+  calculateGrade: (academicNamespaceId: number, filter: CalculateGradeFilter) =>
+    [...assessmentsKeys.all, 'grade', academicNamespaceId, filter] as const,
   commentBanks: () => [...assessmentsKeys.all, 'commentBanks'] as const,
   commentBanksWithComments: (filter: CommentBankFilter) =>
     [...assessmentsKeys.commentBanks(), filter] as const,

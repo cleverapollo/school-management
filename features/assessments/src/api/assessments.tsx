@@ -1,6 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { AssessmentFilter, gqlClient, graphql, queryClient } from '@tyro/api';
+import {
+  AssessmentFilter,
+  EmulateHeaders,
+  gqlClient,
+  graphql,
+  queryClient,
+} from '@tyro/api';
 import { assessmentsKeys } from './keys';
 
 const assessmentsList = graphql(/* GraphQL */ `
@@ -79,21 +85,46 @@ const assessment = graphql(/* GraphQL */ `
   }
 `);
 
-const assessmentsQuery = (filter: AssessmentFilter) => ({
+interface AssessmentListFilter extends AssessmentFilter {
+  academicNameSpaceId: number;
+}
+
+interface AssessmentByIdFilter extends AssessmentFilter {
+  academicNameSpaceId: number;
+  ids: number[];
+}
+
+const assessmentsQuery = (filter: AssessmentListFilter) => ({
   queryKey: assessmentsKeys.assessments(filter),
-  queryFn: () => gqlClient.request(assessmentsList, { filter }),
+  queryFn: () =>
+    gqlClient.request(
+      assessmentsList,
+      { filter },
+      {
+        [EmulateHeaders.ACADEMIC_NAMESPACE_ID]:
+          filter.academicNameSpaceId.toString(),
+      }
+    ),
 });
 
-const assessmentByIdQuery = (filter: AssessmentFilter) => ({
+const assessmentByIdQuery = (filter: AssessmentByIdFilter) => ({
   queryKey: assessmentsKeys.assessments(filter),
-  queryFn: () => gqlClient.request(assessment, { filter }),
+  queryFn: () =>
+    gqlClient.request(
+      assessment,
+      { filter },
+      {
+        [EmulateHeaders.ACADEMIC_NAMESPACE_ID]:
+          filter.academicNameSpaceId.toString(),
+      }
+    ),
 });
 
-export function getAssessments(filter: AssessmentFilter) {
+export function getAssessments(filter: AssessmentListFilter) {
   return queryClient.fetchQuery(assessmentsQuery(filter));
 }
 
-export function useAssessments(filter: AssessmentFilter) {
+export function useAssessments(filter: AssessmentListFilter) {
   return useQuery({
     ...assessmentsQuery(filter),
     select: ({ assessment_assessment }) => {
@@ -104,16 +135,14 @@ export function useAssessments(filter: AssessmentFilter) {
   });
 }
 
-export function getAssessmentById(termAssessmentId: number) {
-  return queryClient.fetchQuery(
-    assessmentByIdQuery({ ids: [termAssessmentId] })
-  );
+export function getAssessmentById(filter: AssessmentByIdFilter) {
+  return queryClient.fetchQuery(assessmentByIdQuery(filter));
 }
 
-export function useAssessmentById(termAssessmentId: number) {
+export function useAssessmentById(filter: AssessmentByIdFilter) {
   return useQuery({
-    ...assessmentByIdQuery({ ids: [termAssessmentId] }),
-    enabled: !!termAssessmentId,
+    ...assessmentByIdQuery(filter),
+    enabled: !!filter,
     select: ({ assessment_assessment }) =>
       Array.isArray(assessment_assessment) && assessment_assessment.length > 0
         ? assessment_assessment[0]

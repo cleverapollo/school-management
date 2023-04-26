@@ -6,15 +6,25 @@ import {
   gqlClient,
   graphql,
   queryClient,
+  EmulateHeaders,
 } from '@tyro/api';
 import { assessmentsKeys } from './keys';
 
 const assessmentSubjectGroupsList = graphql(/* GraphQL */ `
   query assessmentSubjectGroups($filter: AssessmentSubjectGroupsFilter) {
     assessment_assessmentSubjectGroups(filter: $filter) {
-      subjectGroupId
-      subject
-      subjectGroupName
+      subjectGroup {
+        partyId
+        name
+        subjects {
+          name
+        }
+        staff {
+          title
+          firstName
+          lastName
+        }
+      }
       resultsTotal
       resultsEntered
       commentsEntered
@@ -24,23 +34,33 @@ const assessmentSubjectGroupsList = graphql(/* GraphQL */ `
 `);
 
 const assessmentSubjectGroupsQuery = (
+  academicNamespaceId: number,
   filter: AssessmentSubjectGroupsFilter
 ) => ({
-  queryKey: assessmentsKeys.resultsBySubjectGroup(filter),
-  queryFn: () => gqlClient.request(assessmentSubjectGroupsList, { filter }),
+  queryKey: assessmentsKeys.resultsBySubjectGroup(academicNamespaceId, filter),
+  queryFn: () =>
+    gqlClient.request(
+      assessmentSubjectGroupsList,
+      { filter },
+      { [EmulateHeaders.ACADEMIC_NAMESPACE_ID]: academicNamespaceId.toString() }
+    ),
 });
 
 export function getAssessmentSubjectGroups(
+  academicNamespaceId: number,
   filter: AssessmentSubjectGroupsFilter
 ) {
-  return queryClient.fetchQuery(assessmentSubjectGroupsQuery(filter));
+  return queryClient.fetchQuery(
+    assessmentSubjectGroupsQuery(academicNamespaceId, filter)
+  );
 }
 
 export function useAssessmentSubjectGroups(
+  academicNamespaceId: number,
   filter: AssessmentSubjectGroupsFilter
 ) {
   return useQuery({
-    ...assessmentSubjectGroupsQuery(filter),
+    ...assessmentSubjectGroupsQuery(academicNamespaceId, filter),
     select: ({ assessment_assessmentSubjectGroups }) => {
       if (!Array.isArray(assessment_assessmentSubjectGroups)) return [];
 

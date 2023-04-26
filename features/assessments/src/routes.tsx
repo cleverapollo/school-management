@@ -6,7 +6,7 @@ import {
 } from '@tyro/core';
 import { lazy } from 'react';
 import { SchoolExamACircleIcon } from '@tyro/icons';
-import { UserType, getCoreAcademicNamespace } from '@tyro/api';
+import { getCoreAcademicNamespace } from '@tyro/api';
 import { redirect } from 'react-router-dom';
 import { getAssessmentById, getAssessments } from './api/assessments';
 import { getAssessmentSubjectGroups } from './api/assessment-subject-groups';
@@ -30,8 +30,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         type: NavObjectType.RootLink,
         path: 'assessments',
         icon: <SchoolExamACircleIcon />,
-        // TODO: check which permissions are needed
-        hasAccess: ({ userType }) => userType === UserType.Admin,
+        hasAccess: ({ isStaffUser }) => isStaffUser,
         title: t('navigation:general.assessments.title'),
         children: [
           {
@@ -46,16 +45,25 @@ export const getRoutes: NavObjectFunction = (t) => [
                     academicNamespace?.isActiveDefaultNamespace
                 );
 
+              if (!activeAcademicNamespace) {
+                return;
+              }
+
               return getAssessments({
                 academicNameSpaceId:
-                  activeAcademicNamespace?.academicNamespaceId ?? null,
+                  activeAcademicNamespace.academicNamespaceId,
               });
             },
             element: <AssessmentsPage />,
           },
           {
             type: NavObjectType.NonMenuLink,
-            path: 'term-assessments',
+            path: 'term-assessments/create',
+            element: <CreateTermAssessmentPage />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: ':academicNamespaceId/term-assessments',
             children: [
               {
                 type: NavObjectType.NonMenuLink,
@@ -64,29 +72,39 @@ export const getRoutes: NavObjectFunction = (t) => [
               },
               {
                 type: NavObjectType.NonMenuLink,
-                path: 'create',
-                element: <CreateTermAssessmentPage />,
-              },
-              {
-                type: NavObjectType.NonMenuLink,
                 path: ':assessmentId',
                 loader: ({ params }) => {
+                  const academicNameSpaceId = getNumber(
+                    params.academicNamespaceId
+                  );
                   const assessmentId = getNumber(params.assessmentId);
 
-                  if (!assessmentId) {
+                  if (!academicNameSpaceId || !assessmentId) {
                     throw404Error();
                   }
 
-                  return getAssessmentById(assessmentId);
+                  return getAssessmentById({
+                    academicNameSpaceId,
+                    ids: [assessmentId],
+                  });
                 },
                 children: [
                   {
                     type: NavObjectType.NonMenuLink,
                     index: true,
                     loader: ({ params }) => {
+                      const academicNameSpaceId = getNumber(
+                        params.academicNamespaceId
+                      );
                       const assessmentId = getNumber(params.assessmentId);
 
-                      return getAssessmentSubjectGroups({ assessmentId });
+                      if (!academicNameSpaceId || !assessmentId) {
+                        throw404Error();
+                      }
+
+                      return getAssessmentSubjectGroups(academicNameSpaceId, {
+                        assessmentId,
+                      });
                     },
                     element: <ViewTermAssessment />,
                   },
@@ -94,16 +112,26 @@ export const getRoutes: NavObjectFunction = (t) => [
                     type: NavObjectType.NonMenuLink,
                     path: 'subject-group/:subjectGroupId',
                     loader: ({ params }) => {
+                      const academicNameSpaceId = getNumber(
+                        params.academicNamespaceId
+                      );
                       const assessmentId = getNumber(params.assessmentId);
                       const subjectGroupId = getNumber(params.subjectGroupId);
 
-                      if (!assessmentId || !subjectGroupId) {
+                      if (
+                        !academicNameSpaceId ||
+                        !assessmentId ||
+                        !subjectGroupId
+                      ) {
                         throw404Error();
                       }
 
                       return Promise.all([
-                        getAssessmentById(assessmentId),
-                        getAssessmentResults({
+                        getAssessmentById({
+                          academicNameSpaceId,
+                          ids: [assessmentId],
+                        }),
+                        getAssessmentResults(academicNameSpaceId, {
                           assessmentId,
                           subjectGroupIds: [subjectGroupId],
                         }),

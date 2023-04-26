@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   AssessmentResultFilter,
+  EmulateHeaders,
   gqlClient,
   graphql,
   queryClient,
@@ -37,7 +38,7 @@ const assessmentResults = graphql(/* GraphQL */ `
       targetResult
       gradeResult
       gradeNameTextId
-      targetGrade
+      targetGradeResult
       targetGradeNameTextId
       teacherComment {
         id
@@ -73,18 +74,37 @@ const updateAssessmentResult = graphql(/* GraphQL */ `
   }
 `);
 
-const assessmentResultsQuery = (filter: AssessmentResultFilter) => ({
-  queryKey: assessmentsKeys.resultsBySubjectGroup(filter ?? {}),
-  queryFn: () => gqlClient.request(assessmentResults, { filter }),
+const assessmentResultsQuery = (
+  academicNamespaceId: number,
+  filter: AssessmentResultFilter
+) => ({
+  queryKey: assessmentsKeys.resultsBySubjectGroup(
+    academicNamespaceId,
+    filter ?? {}
+  ),
+  queryFn: () =>
+    gqlClient.request(
+      assessmentResults,
+      { filter },
+      { [EmulateHeaders.ACADEMIC_NAMESPACE_ID]: academicNamespaceId.toString() }
+    ),
 });
 
-export function getAssessmentResults(filter: AssessmentResultFilter) {
-  return queryClient.fetchQuery(assessmentResultsQuery(filter));
+export function getAssessmentResults(
+  academicNamespaceId: number,
+  filter: AssessmentResultFilter
+) {
+  return queryClient.fetchQuery(
+    assessmentResultsQuery(academicNamespaceId, filter)
+  );
 }
 
-export function useAssessmentResults(filter: AssessmentResultFilter | null) {
+export function useAssessmentResults(
+  academicNamespaceId: number,
+  filter: AssessmentResultFilter | null
+) {
   return useQuery({
-    ...assessmentResultsQuery(filter ?? {}),
+    ...assessmentResultsQuery(academicNamespaceId, filter ?? {}),
     enabled: !!filter,
     select: ({ assessment_assessmentResult }) =>
       assessment_assessmentResult?.map((result) => {
@@ -108,6 +128,7 @@ export type ReturnTypeFromUseAssessmentResults = UseQueryReturnType<
 >[number];
 
 export function useUpdateAssessmentResult(
+  academicNamespaceId: number,
   assessmentFilter: AssessmentResultFilter
 ) {
   const { toast } = useToast();
@@ -115,11 +136,21 @@ export function useUpdateAssessmentResult(
 
   return useMutation({
     mutationFn: (input: SaveAssessmentResultInput[]) =>
-      gqlClient.request(updateAssessmentResult, { input }),
+      gqlClient.request(
+        updateAssessmentResult,
+        { input },
+        {
+          [EmulateHeaders.ACADEMIC_NAMESPACE_ID]:
+            academicNamespaceId.toString(),
+        }
+      ),
     onSuccess: () => {
       toast(t('common:snackbarMessages.updateSuccess'));
       queryClient.invalidateQueries(
-        assessmentsKeys.resultsBySubjectGroup(assessmentFilter)
+        assessmentsKeys.resultsBySubjectGroup(
+          academicNamespaceId,
+          assessmentFilter
+        )
       );
     },
   });
