@@ -107,7 +107,7 @@ export const labelsKeys = {
 
 const calendarEventsQuery = {
   queryKey: labelsKeys.all,
-  queryFn: async () => gqlClient.request(labels, {}),
+  queryFn: async () => gqlClient.request(labels, { filter: {} }),
 };
 
 export function getLabels() {
