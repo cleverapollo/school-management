@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { CommentType } from '@tyro/api';
 import { PageContainer } from '../../components/page-container';
-import { useAssessments } from '../../api/assessments';
+import { useAssessmentById } from '../../api/assessments';
 import {
   TermAssessmentForm,
   FormValues,
@@ -14,17 +14,19 @@ import {
 export default function EditTermAssessmentPage() {
   const { toast } = useToast();
 
-  const { assessmentId: paramId } = useParams();
-  const assessmentId = useNumber(paramId);
+  const { academicNamespaceId, assessmentId } = useParams();
+  const academicNameSpaceIdAsNumber = useNumber(academicNamespaceId);
+  const assessmentIdAsNumber = useNumber(assessmentId);
 
   const { t } = useTranslation(['assessments', 'common']);
 
-  const { data: [termAssessmentData] = [] } = useAssessments({
-    ...(assessmentId && { ids: [assessmentId] }),
+  const { data: assessmentData } = useAssessmentById({
+    academicNameSpaceId: academicNameSpaceIdAsNumber ?? 0,
+    ids: [assessmentIdAsNumber ?? 0],
   });
 
   const formValues = useMemo<FormValues | null>(() => {
-    if (!termAssessmentData) return null;
+    if (!assessmentData) return null;
 
     const {
       id,
@@ -41,7 +43,7 @@ export default function EditTermAssessmentPage() {
       captureHouseMasterComment,
       capturePrincipalComment,
       extraFields,
-    } = termAssessmentData;
+    } = assessmentData;
 
     return {
       id,
@@ -77,10 +79,10 @@ export default function EditTermAssessmentPage() {
           : []
       ),
     };
-  }, [termAssessmentData]);
+  }, [assessmentData]);
 
   const titleName = t('assessments:pageHeading.editTermAssessment', {
-    name: termAssessmentData?.name,
+    name: assessmentData?.name,
   });
 
   return (

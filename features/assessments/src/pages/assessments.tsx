@@ -1,4 +1,4 @@
-import { Button, Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 
 import {

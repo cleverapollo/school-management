@@ -16,14 +16,6 @@ const saveTermAssessment = graphql(/* GraphQL */ `
       }
       startDate
       endDate
-      extraFields {
-        id
-        assessmentId
-        name
-        extraFieldType
-        commentBankId
-        commentLength
-      }
     }
   }
 `);

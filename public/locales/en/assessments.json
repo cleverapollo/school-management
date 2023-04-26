@@ -10,7 +10,8 @@
     "termAssessments": "Term Assessments",
     "createTermAssessment": "Term Assessment Creation",
     "termAssessmentSubjectGroups": "{{name}}'s Subject Groups",
-    "editResultsFor": "Edit Results for {{name}}"
+    "editResultsFor": "Edit Results for {{name}}",
+    "editTermAssessment": "Edit {{name}}'s term assessment"
   },
   "assessmentResults": "Assessment Results",
   "details": "Details",
