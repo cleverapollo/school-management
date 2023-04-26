@@ -16,6 +16,7 @@ const studentDashboardAssessments = graphql(/* GraphQL */ `
         subject
         result
         grade
+        studyLevel
       }
     }
   }
