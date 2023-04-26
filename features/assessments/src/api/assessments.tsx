@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { AssessmentFilter, gqlClient, graphql, queryClient } from '@tyro/api';
+import { assessmentsKeys } from './keys';
 
 const assessmentsList = graphql(/* GraphQL */ `
   query assessmentsList($filter: AssessmentFilter) {
@@ -77,12 +78,6 @@ const assessment = graphql(/* GraphQL */ `
     }
   }
 `);
-
-export const assessmentsKeys = {
-  all: ['assessments'] as const,
-  assessments: (filter: AssessmentFilter) =>
-    [...assessmentsKeys.all, filter] as const,
-};
 
 const assessmentsQuery = (filter: AssessmentFilter) => ({
   queryKey: assessmentsKeys.assessments(filter),

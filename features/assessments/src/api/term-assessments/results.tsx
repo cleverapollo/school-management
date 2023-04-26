@@ -7,6 +7,7 @@ import {
   SaveAssessmentResultInput,
   UseQueryReturnType,
 } from '@tyro/api';
+import { assessmentsKeys } from '../keys';
 
 const assessmentResults = graphql(/* GraphQL */ `
   query assessment_assessmentResult($filter: AssessmentResultFilter) {
@@ -70,13 +71,8 @@ const updateAssessmentResult = graphql(/* GraphQL */ `
   }
 `);
 
-export const assessmentResultKeys = {
-  list: (filter: AssessmentResultFilter) =>
-    ['assessments', 'results', filter] as const,
-};
-
 const assessmentResultsQuery = (filter: AssessmentResultFilter) => ({
-  queryKey: assessmentResultKeys.list(filter ?? {}),
+  queryKey: assessmentsKeys.resultsBySubjectGroup(filter ?? {}),
   queryFn: () => gqlClient.request(assessmentResults, { filter }),
 });
 

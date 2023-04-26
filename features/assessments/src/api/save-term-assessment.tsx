@@ -5,7 +5,7 @@ import {
   queryClient,
   SaveAssessmentInput,
 } from '@tyro/api';
-import { assessmentsKeys } from './assessments';
+import { assessmentsKeys } from './keys';
 
 const saveTermAssessment = graphql(/* GraphQL */ `
   mutation saveAssessment($input: SaveAssessmentInput) {
@@ -22,7 +22,6 @@ const saveTermAssessment = graphql(/* GraphQL */ `
 
 export function useSaveTermAssessment() {
   return useMutation({
-    mutationKey: ['termAssessment', 'createTermAssessment'],
     mutationFn: (input: SaveAssessmentInput) =>
       gqlClient.request(saveTermAssessment, { input }),
     onSuccess: () => {

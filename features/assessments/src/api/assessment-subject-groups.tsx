@@ -7,6 +7,7 @@ import {
   graphql,
   queryClient,
 } from '@tyro/api';
+import { assessmentsKeys } from './keys';
 
 const assessmentSubjectGroupsList = graphql(/* GraphQL */ `
   query assessmentSubjectGroups($filter: AssessmentSubjectGroupsFilter) {
@@ -22,15 +23,10 @@ const assessmentSubjectGroupsList = graphql(/* GraphQL */ `
   }
 `);
 
-export const assessmentSubjectGroupsKeys = {
-  list: (filter: AssessmentSubjectGroupsFilter) =>
-    ['assessments', 'subjectGroups', filter] as const,
-};
-
 const assessmentSubjectGroupsQuery = (
   filter: AssessmentSubjectGroupsFilter
 ) => ({
-  queryKey: assessmentSubjectGroupsKeys.list(filter),
+  queryKey: assessmentsKeys.resultsBySubjectGroup(filter),
   queryFn: () => gqlClient.request(assessmentSubjectGroupsList, { filter }),
 });
 

@@ -5,6 +5,7 @@ import {
   graphql,
   queryClient,
 } from '@tyro/api';
+import { assessmentsKeys } from '../keys';
 
 const calculateGrade = graphql(/* GraphQL */ `
   query assessment_calculateGrade($filter: CalculateGradeFilter) {
@@ -14,13 +15,8 @@ const calculateGrade = graphql(/* GraphQL */ `
   }
 `);
 
-export const assessmentGradeKeys = {
-  grade: (filter: CalculateGradeFilter) =>
-    ['assessments', 'grade', filter] as const,
-};
-
 const calculateGradeQuery = (filter: CalculateGradeFilter) => ({
-  queryKey: assessmentGradeKeys.grade(filter),
+  queryKey: assessmentsKeys.calculateGrade(filter),
   queryFn: () => gqlClient.request(calculateGrade, { filter }),
   staleTime: Infinity,
 });
