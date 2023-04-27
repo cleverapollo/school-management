@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import dayjs from 'dayjs';
 import {
   CalendarGridPeriodInfo,
@@ -14,60 +15,99 @@ export function useTimetableInPeriods(
 ) {
   const { data: timetableDayInfo } = useTimetableDayInfo(date);
 
-  const periodsInSchoolTime = (timetableDayInfo?.periods ?? []).reduce<
-    (CalendarGridPeriodInfo & { event: TimetableData[number] | null })[]
-  >((acc, period) => {
-    const eventsAtPeriodStart = (data ?? [])
-      .filter((event) => event.startTime === period.startTime)
+  return useMemo(() => {
+    const usedEventIds = new Set<number>();
+
+    const periodsInSchoolTime = (timetableDayInfo?.periods ?? []).reduce<
+      (CalendarGridPeriodInfo & { event: TimetableData[number] | null })[]
+    >((acc, period) => {
+      const eventsAtPeriodStart = (data ?? [])
+        .filter((event) => event.startTime === period.startTime)
+        .map((event) => {
+          usedEventIds.add(event.eventId);
+          return {
+            ...period,
+            event,
+          };
+        });
+
+      if (
+        Array.isArray(eventsAtPeriodStart) &&
+        eventsAtPeriodStart.length > 0
+      ) {
+        acc.push(...eventsAtPeriodStart);
+      } else {
+        acc.push({
+          ...period,
+          event: null,
+        });
+      }
+
+      return acc;
+    }, []);
+
+    const unusedEvents = data?.filter(
+      ({ eventId }) => !usedEventIds.has(eventId)
+    );
+    unusedEvents?.forEach((event) => {
+      const eventStartTime = dayjs(event.startTime);
+
+      if (
+        eventStartTime.isBefore(timetableDayInfo?.startTime) ||
+        eventStartTime.isAfter(timetableDayInfo?.endTime)
+      )
+        return;
+
+      const periodToPlaceEventBefore = periodsInSchoolTime.findIndex(
+        (period) => {
+          const periodStartTime = dayjs(period.startTime);
+          return eventStartTime.isBefore(periodStartTime);
+        }
+      );
+
+      if (periodToPlaceEventBefore !== -1) {
+        periodsInSchoolTime.splice(periodToPlaceEventBefore, 0, {
+          type: CalendarGridPeriodType.Class,
+          startTime: event.startTime,
+          endTime: event.endTime,
+          event,
+        });
+      }
+    });
+
+    const eventsBeforeSchool = (data ?? [])
+      .filter((event) => {
+        const startTime = dayjs(event.startTime);
+        return startTime.isBefore(timetableDayInfo?.startTime);
+      })
       .map((event) => ({
-        ...period,
+        type: CalendarGridPeriodType.Class,
+        startTime: event.startTime,
+        endTime: event.endTime,
         event,
       }));
 
-    if (Array.isArray(eventsAtPeriodStart) && eventsAtPeriodStart.length > 0) {
-      acc.push(...eventsAtPeriodStart);
-    } else {
-      acc.push({
-        ...period,
-        event: null,
-      });
-    }
+    const eventsAfterSchool = (data ?? [])
+      .filter((event) => {
+        const startTime = dayjs(event.startTime);
+        return startTime.isAfter(timetableDayInfo?.endTime);
+      })
+      .map((event) => ({
+        type: CalendarGridPeriodType.Class,
+        startTime: event.startTime,
+        endTime: event.endTime,
+        event,
+      }));
 
-    return acc;
-  }, []);
-
-  const eventsBeforeSchool = (data ?? [])
-    .filter((event) => {
-      const startTime = dayjs(event.startTime);
-      return startTime.isBefore(timetableDayInfo?.startTime);
-    })
-    .map((event) => ({
-      type: CalendarGridPeriodType.Class,
-      startTime: event.startTime,
-      endTime: event.endTime,
-      event,
-    }));
-
-  const eventsAfterSchool = (data ?? [])
-    .filter((event) => {
-      const startTime = dayjs(event.startTime);
-      return startTime.isAfter(timetableDayInfo?.endTime);
-    })
-    .map((event) => ({
-      type: CalendarGridPeriodType.Class,
-      startTime: event.startTime,
-      endTime: event.endTime,
-      event,
-    }));
-
-  return {
-    ...timetableDayInfo,
-    periods: [
-      ...eventsBeforeSchool,
-      ...periodsInSchoolTime,
-      ...eventsAfterSchool,
-    ],
-    numberOfEventsBeforeSchool: eventsBeforeSchool.length,
-    numberOfEventsAfterSchool: eventsAfterSchool.length,
-  };
+    return {
+      ...timetableDayInfo,
+      periods: [
+        ...eventsBeforeSchool,
+        ...periodsInSchoolTime,
+        ...eventsAfterSchool,
+      ],
+      numberOfEventsBeforeSchool: eventsBeforeSchool.length,
+      numberOfEventsAfterSchool: eventsAfterSchool.length,
+    };
+  }, [timetableDayInfo, data]);
 }

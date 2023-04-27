@@ -20,7 +20,7 @@ import {
 } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
@@ -255,7 +255,9 @@ export function TimetableWidget({
                     dayjs().isBefore(endTime) && dayjs().isAfter(startTime);
 
                   return (
-                    <>
+                    <Fragment
+                      key={`${startTime ?? ''}-${event?.eventId ?? ''}`}
+                    >
                       <TableRow
                         className={getClassesFromObject({
                           'current-period': isCurrentClass,
@@ -266,7 +268,6 @@ export function TimetableWidget({
                             isLastEventBeforeSchoolStart ||
                             isLastEventBeforeSchoolEnd,
                         })}
-                        key={`${startTime ?? ''}-${event?.eventId ?? ''}`}
                       >
                         <TableCell>{dayjs(startTime).format('H:mm')}</TableCell>
                         <TableCell>
@@ -293,7 +294,7 @@ export function TimetableWidget({
                           </TableCell>
                         </TableRow>
                       )}
-                    </>
+                    </Fragment>
                   );
                 }
               )}
