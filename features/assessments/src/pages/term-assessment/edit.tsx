@@ -29,29 +29,20 @@ export default function EditTermAssessmentPage() {
     if (!assessmentData) return null;
 
     const {
-      id,
-      name,
       years,
       startDate,
       endDate,
-      captureTarget,
       commentType,
       commentBank,
-      commentLength,
-      captureTutorComment,
-      captureYearHeadComment,
-      captureHouseMasterComment,
-      capturePrincipalComment,
       extraFields,
+      ...restData
     } = assessmentData;
 
     return {
-      id,
-      name,
+      ...restData,
       years: years ?? [],
       startDate: dayjs(startDate),
       endDate: dayjs(endDate),
-      captureTarget,
       includeTeacherComments: commentType !== CommentType.None,
       commentType: commentType === CommentType.None ? undefined : commentType,
       ...(commentBank && {
@@ -59,11 +50,6 @@ export default function EditTermAssessmentPage() {
           id: commentBank.commentBankId,
         },
       }),
-      commentLength,
-      captureTutorComment,
-      captureYearHeadComment,
-      captureHouseMasterComment,
-      capturePrincipalComment,
       extraFields: (extraFields ?? []).flatMap((field) =>
         field?.extraFieldType && field.name
           ? [

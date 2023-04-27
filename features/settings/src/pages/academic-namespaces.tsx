@@ -10,7 +10,6 @@ import {
   ActionMenu,
   ConfirmDialog,
   useDisclosure,
-  ActionMenuProps,
 } from '@tyro/core';
 import {
   useCoreAcademicNamespace,
@@ -21,7 +20,7 @@ import { useCoreSetActiveActiveAcademicNamespace } from '../api/academic-namespa
 
 const getColumns = (
   t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>,
-  actionMenuItems: ActionMenuProps['menuItems']
+  openConfirmDialog: () => void
 ): GridOptions<ReturnTypeFromUseCoreAcademicNamespace>['columnDefs'] => [
   {
     headerName: t('common:name'),
@@ -70,7 +69,12 @@ const getColumns = (
         <ActionMenu
           iconOnly
           buttonIcon={<VerticalDotsIcon />}
-          menuItems={actionMenuItems}
+          menuItems={[
+            {
+              label: t('settings:actions.makeActive'),
+              onClick: openConfirmDialog,
+            },
+          ]}
         />
       ),
   },
@@ -90,16 +94,9 @@ export default function AcademicNamespaceList() {
     onOpen: openConfirmDialog,
   } = useDisclosure();
 
-  const actionMenuItems = [
-    {
-      label: t('settings:actions.makeActive'),
-      onClick: openConfirmDialog,
-    },
-  ];
-
   const columns = useMemo(
-    () => getColumns(t, actionMenuItems),
-    [t, actionMenuItems]
+    () => getColumns(t, openConfirmDialog),
+    [t, openConfirmDialog]
   );
 
   return (
