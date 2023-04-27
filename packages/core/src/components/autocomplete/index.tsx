@@ -3,8 +3,14 @@ import {
   AutocompleteProps as MiAutocompleteProps,
   TextField,
   TextFieldProps,
+  Stack,
+  Typography,
+  Chip,
+  ChipProps,
 } from '@mui/material';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
+import { getColorBasedOnIndex } from '@tyro/api';
+import { Avatar, AvatarProps } from '../avatar';
 
 export type AutocompleteProps<T extends object | string> = Omit<
   MiAutocompleteProps<
@@ -20,6 +26,19 @@ export type AutocompleteProps<T extends object | string> = Omit<
   inputProps?: Omit<TextFieldProps, 'label' | 'placeholder'>;
   optionIdKey?: T extends object ? keyof T : never;
   optionTextKey?: T extends object ? keyof T : never;
+  renderAvatarOption?: (
+    option: T,
+    renderOption: (
+      avatarProps: AvatarProps & { caption?: string }
+    ) => React.ReactNode
+  ) => React.ReactNode;
+  renderAvatarTags?: (
+    tag: T,
+    renderTag: (
+      avatarProps: AvatarProps,
+      chipProps?: ChipProps
+    ) => React.ReactNode
+  ) => React.ReactNode;
 };
 
 export const Autocomplete = <T extends object | string>({
@@ -30,10 +49,12 @@ export const Autocomplete = <T extends object | string>({
   optionTextKey,
   options,
   inputProps,
+  renderAvatarOption,
+  renderAvatarTags,
   ...restAutocompleteProps
 }: AutocompleteProps<T>) => {
-  const selectedOption = useMemo<T | T[] | null>(() => {
-    if (!value) return null;
+  const selectedOption = useMemo<T | T[] | undefined>(() => {
+    if (!value) return undefined;
 
     // for multiple selection
     if (restAutocompleteProps.multiple && Array.isArray(value)) {
@@ -52,28 +73,26 @@ export const Autocomplete = <T extends object | string>({
             .includes(option[optionIdKey]);
         }
 
-        return null;
+        return undefined;
       });
     }
 
     // for one selection
     const valueAsObject = value as T;
 
-    return (
-      options.find((option) => {
-        // for enums
-        if (typeof option === 'string') {
-          return option === value;
-        }
+    return options.find((option) => {
+      // for enums
+      if (typeof option === 'string') {
+        return option === value;
+      }
 
-        // for objects
-        if (optionIdKey) {
-          return option[optionIdKey] === valueAsObject[optionIdKey];
-        }
+      // for objects
+      if (optionIdKey) {
+        return option[optionIdKey] === valueAsObject[optionIdKey];
+      }
 
-        return null;
-      }) ?? null
-    );
+      return undefined;
+    });
   }, [value, options]);
 
   return (
@@ -103,6 +122,39 @@ export const Autocomplete = <T extends object | string>({
           placeholder={placeholder}
         />
       )}
+      {...(renderAvatarOption && {
+        renderOption: (props, option) =>
+          renderAvatarOption(option, ({ caption, ...avatarProps }) => (
+            <Stack component="li" direction="row" spacing={1} {...props}>
+              <Avatar
+                sx={{ width: 32, height: 32, fontSize: '0.75rem' }}
+                {...avatarProps}
+              />
+              <Stack>
+                <Typography variant="subtitle2">{avatarProps.name}</Typography>
+                {caption && (
+                  <Typography variant="caption">{caption}</Typography>
+                )}
+              </Stack>
+            </Stack>
+          )),
+      })}
+      {...(renderAvatarTags && {
+        renderTags: (tags, getTagProps) =>
+          tags.map((tag, index) =>
+            renderAvatarTags(tag, (avatarProps, chipProps) => (
+              <Chip
+                size="small"
+                variant="soft"
+                color={getColorBasedOnIndex(index)}
+                avatar={<Avatar {...avatarProps} />}
+                label={avatarProps.name}
+                {...getTagProps({ index })}
+                {...chipProps}
+              />
+            ))
+          ),
+      })}
     />
   );
 };
