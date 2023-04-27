@@ -6,6 +6,7 @@ import {
   Dialog,
 } from '@mui/material';
 import {
+  RHFAutocomplete,
   RHFColorPicker,
   RHFDateTimePicker,
   RHFSelect,
@@ -18,6 +19,10 @@ import dayjs from 'dayjs';
 import { useForm } from 'react-hook-form';
 import { useEffect } from 'react';
 import { LoadingButton } from '@mui/lab';
+import {
+  CalendarParty,
+  useParticipantsSearchProps,
+} from '../../../../hooks/use-participants-search-props';
 
 export interface CalendarEditEventFormState {
   eventId?: string;
@@ -29,12 +34,7 @@ export interface CalendarEditEventFormState {
   schedule: string;
   start: dayjs.Dayjs | null;
   end: dayjs.Dayjs | null;
-  participants: Array<{
-    id?: string;
-    name: string;
-    avatarUrl?: string;
-    email?: string;
-  }>;
+  participants: CalendarParty[];
 }
 
 type CalendarEventViewProps = {
@@ -79,6 +79,7 @@ export const CalendarEditEventDetailsModal = ({
 }: CalendarEventViewProps) => {
   const { t } = useTranslation(['calendar', 'common']);
   const { resolver, rules } = useFormValidator<CalendarEditEventFormState>();
+  const participantsProps = useParticipantsSearchProps();
 
   const { reset, control, handleSubmit } = useForm<CalendarEditEventFormState>({
     resolver: resolver({
@@ -88,6 +89,7 @@ export const CalendarEditEventDetailsModal = ({
       allDay: rules.required(),
       location: rules.required(),
       schedule: rules.required(),
+      participants: rules.required(),
       start: rules.required(),
       end: [rules.required(), rules.afterStartDate('start')],
     }),
@@ -150,6 +152,13 @@ export const CalendarEditEventDetailsModal = ({
             getOptionLabel={(option) => option.label}
             controlProps={{
               name: 'schedule',
+              control,
+            }}
+          />
+          <RHFAutocomplete<CalendarEditEventFormState, CalendarParty>
+            {...participantsProps}
+            controlProps={{
+              name: 'participants',
               control,
             }}
           />

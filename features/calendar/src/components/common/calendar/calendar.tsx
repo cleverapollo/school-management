@@ -30,9 +30,10 @@ import {
   CalendarEditEventFormState,
 } from './edit-event-details-modal';
 import { getCalendarContent } from './calendar-content';
-import { EditCalendarPanel, CalendarParty } from './edit-calendar-panel';
+import { EditCalendarPanel } from './edit-calendar-panel';
 import { CalendarDetailsPopover } from './details-popover';
 import { getDayHeaderContent } from './day-header-content';
+import { CalendarParty } from '../../../hooks/use-participants-search-props';
 
 export interface CalendarProps {
   defaultPartys?: CalendarParty[];

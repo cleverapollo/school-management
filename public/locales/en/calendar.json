@@ -36,7 +36,11 @@
     "schedule": "Schedule",
     "location": "Location",
     "description": "Description",
-    "eventColor": "Event color"
+    "eventColor": "Event color",
+    "participants": "Participants"
+  },
+  "placeholders": {
+    "participants": "People, groups, rooms, etc"
   },
   "schoolDayType": {
     "NON_SCHOOL_DAY": "No school as it's a non-school day.",
