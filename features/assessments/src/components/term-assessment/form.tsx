@@ -130,6 +130,7 @@ export function TermAssessmentForm({
     commentType,
     extraFields,
     id: assessmentId,
+    commentLength,
     ...restData
   }: FormValues) => {
     saveTermAssessment(
@@ -141,11 +142,17 @@ export function TermAssessmentForm({
         years: years.flatMap((year) => (year ? [year.yearGroupId] : [])),
         startDate: startDate.format('YYYY-MM-DD'),
         endDate: endDate.format('YYYY-MM-DD'),
-        commentType:
-          includeTeacherComments && commentType
-            ? commentType
-            : CommentType.None,
-        commentBankId: commentBank?.id,
+        ...(includeTeacherComments
+          ? {
+              commentType: commentType ?? CommentType.None,
+              commentBankId: commentBank?.id,
+              commentLength,
+            }
+          : {
+              commentType: CommentType.None,
+              commentBankId: null,
+              commentLength: null,
+            }),
         extraFields: extraFields.map(
           ({ commentBank: fieldCommentBank, ...field }) => ({
             ...field,
