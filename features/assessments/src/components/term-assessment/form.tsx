@@ -29,7 +29,9 @@ import {
 } from './custom-fields-table';
 import { useSaveTermAssessment } from '../../api/save-term-assessment';
 
-type YearGroupOption = UseQueryReturnType<typeof useYearGroups>[number];
+type YearGroupOption = NonNullable<
+  UseQueryReturnType<typeof useYearGroups>[number]
+>;
 
 type CommentTypeOption = Exclude<CommentType, CommentType.None>;
 
@@ -214,11 +216,9 @@ export function TermAssessmentForm({
               optionIdKey="yearGroupId"
               optionTextKey="name"
               controlProps={{ name: 'years', control }}
-              autocompleteProps={{
-                multiple: true,
-                sx: textFieldStyle,
-                options: yearGroupsData,
-              }}
+              multiple
+              sx={textFieldStyle}
+              options={yearGroupsData as YearGroupOption[]}
             />
           </Stack>
           <Stack direction="row" gap={2}>

@@ -21,13 +21,11 @@ export const CommentBankOptions = <TField extends FieldValues>({
       optionIdKey="id"
       optionTextKey="name"
       controlProps={{ name, control }}
-      autocompleteProps={{
-        sx: {
-          maxWidth: 300,
-          width: '100%',
-        },
-        options: commentBankData,
+      sx={{
+        maxWidth: 300,
+        width: '100%',
       }}
+      options={commentBankData}
     />
   );
 };
