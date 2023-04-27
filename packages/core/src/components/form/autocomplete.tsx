@@ -46,6 +46,7 @@ export const RHFAutocomplete = <
         inputRef: ref,
         error: !!error,
         helperText: error?.message,
+        ...restAutocompleteProps.inputProps,
       }}
     />
   );

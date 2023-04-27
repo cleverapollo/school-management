@@ -116,10 +116,10 @@ export const Autocomplete = <T extends object | string>({
       {...restAutocompleteProps}
       renderInput={(params) => (
         <TextField
-          {...params}
-          {...inputProps}
           label={label}
           placeholder={placeholder}
+        {...params}
+        {...inputProps}
         />
       )}
       {...(renderAvatarOption && {
