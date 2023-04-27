@@ -46,17 +46,17 @@ export function useTimetableInPeriods(
       return acc;
     }, []);
 
-    const unusedEvents = data?.filter(
-      ({ eventId }) => !usedEventIds.has(eventId)
-    );
+    const unusedEvents = data?.filter(({ eventId, startTime }) => {
+      const eventStartTime = dayjs(startTime);
+
+      return (
+        !usedEventIds.has(eventId) &&
+        eventStartTime.isAfter(timetableDayInfo?.startTime) &&
+        eventStartTime.isBefore(timetableDayInfo?.endTime)
+      );
+    });
     unusedEvents?.forEach((event) => {
       const eventStartTime = dayjs(event.startTime);
-
-      if (
-        eventStartTime.isBefore(timetableDayInfo?.startTime) ||
-        eventStartTime.isAfter(timetableDayInfo?.endTime)
-      )
-        return;
 
       const periodToPlaceEventBefore = periodsInSchoolTime.findIndex(
         (period) => {
