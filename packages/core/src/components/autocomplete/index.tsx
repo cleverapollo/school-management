@@ -8,7 +8,7 @@ import {
   Chip,
   ChipProps,
 } from '@mui/material';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { getColorBasedOnIndex } from '@tyro/api';
 import { Avatar, AvatarProps } from '../avatar';
 
@@ -52,109 +52,61 @@ export const Autocomplete = <T extends object | string>({
   renderAvatarOption,
   renderAvatarTags,
   ...restAutocompleteProps
-}: AutocompleteProps<T>) => {
-  const selectedOption = useMemo<T | T[] | undefined>(() => {
-    if (!value) return undefined;
-
-    // for multiple selection
-    if (restAutocompleteProps.multiple && Array.isArray(value)) {
-      const valueAsArray = value as T[];
-
-      return options.filter((option) => {
-        // for enums
-        if (typeof option === 'string') {
-          return valueAsArray.includes(option);
-        }
-
-        if (optionIdKey) {
-          // for objects
-          return valueAsArray
-            .map((v) => v[optionIdKey])
-            .includes(option[optionIdKey]);
-        }
-
-        return undefined;
-      });
-    }
-
-    // for one selection
-    const valueAsObject = value as T;
-
-    return options.find((option) => {
-      // for enums
-      if (typeof option === 'string') {
-        return option === value;
-      }
-
-      // for objects
+}: AutocompleteProps<T>) => (
+  <MiAutocomplete
+    value={value}
+    isOptionEqualToValue={(option, newValue) => {
       if (optionIdKey) {
-        return option[optionIdKey] === valueAsObject[optionIdKey];
+        return option[optionIdKey] === newValue[optionIdKey];
       }
 
-      return undefined;
-    });
-  }, [value, options]);
-
-  return (
-    <MiAutocomplete
-      value={selectedOption}
-      isOptionEqualToValue={(option, newValue) => {
-        if (optionIdKey) {
-          return option[optionIdKey] === newValue[optionIdKey];
-        }
-
-        return option === newValue;
-      }}
-      options={options}
-      {...(optionTextKey && {
-        getOptionLabel: (option) =>
-          typeof option === 'string'
-            ? option
-            : (option[optionTextKey] as string),
-      })}
-      popupIcon={null}
-      {...restAutocompleteProps}
-      renderInput={(params) => (
-        <TextField
-          label={label}
-          placeholder={placeholder}
+      return option === newValue;
+    }}
+    options={options}
+    {...(optionTextKey && {
+      getOptionLabel: (option) =>
+        typeof option === 'string' ? option : (option[optionTextKey] as string),
+    })}
+    popupIcon={null}
+    {...restAutocompleteProps}
+    renderInput={(params) => (
+      <TextField
+        label={label}
+        placeholder={placeholder}
         {...params}
         {...inputProps}
-        />
-      )}
-      {...(renderAvatarOption && {
-        renderOption: (props, option) =>
-          renderAvatarOption(option, ({ caption, ...avatarProps }) => (
-            <Stack component="li" direction="row" spacing={1} {...props}>
-              <Avatar
-                sx={{ width: 32, height: 32, fontSize: '0.75rem' }}
-                {...avatarProps}
-              />
-              <Stack>
-                <Typography variant="subtitle2">{avatarProps.name}</Typography>
-                {caption && (
-                  <Typography variant="caption">{caption}</Typography>
-                )}
-              </Stack>
+      />
+    )}
+    {...(renderAvatarOption && {
+      renderOption: (props, option) =>
+        renderAvatarOption(option, ({ caption, ...avatarProps }) => (
+          <Stack component="li" direction="row" spacing={1} {...props}>
+            <Avatar
+              sx={{ width: 32, height: 32, fontSize: '0.75rem' }}
+              {...avatarProps}
+            />
+            <Stack>
+              <Typography variant="subtitle2">{avatarProps.name}</Typography>
+              {caption && <Typography variant="caption">{caption}</Typography>}
             </Stack>
-          )),
-      })}
-      {...(renderAvatarTags && {
-        renderTags: (tags, getTagProps) =>
-          tags.map((tag, index) =>
-            renderAvatarTags(tag, (avatarProps, chipProps) => (
-              <Chip
-                size="small"
-                variant="soft"
-                color={getColorBasedOnIndex(index)}
-                avatar={<Avatar {...avatarProps} />}
-                label={avatarProps.name}
-                {...getTagProps({ index })}
-                {...chipProps}
-              />
-            ))
-          ),
-      })}
-    />
-  );
-};
+          </Stack>
+        )),
+    })}
+    {...(renderAvatarTags && {
+      renderTags: (tags, getTagProps) =>
+        tags.map((tag, index) =>
+          renderAvatarTags(tag, (avatarProps, chipProps) => (
+            <Chip
+              size="small"
+              variant="soft"
+              color={getColorBasedOnIndex(index)}
+              avatar={<Avatar {...avatarProps} />}
+              label={avatarProps.name}
+              {...getTagProps({ index })}
+              {...chipProps}
+            />
+          ))
+        ),
+    })}
+  />
+);
