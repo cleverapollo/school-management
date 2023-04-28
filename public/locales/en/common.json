@@ -177,6 +177,7 @@
   "success": "Success!",
   "classGroup": "Class group",
   "students": "Students",
+  "loading": "Loading...",
   "searchType": {
     "CONTACT": "Contact",
     "STAFF": "Staff",

@@ -6,7 +6,6 @@ const staff = graphql(/* GraphQL */ `
     core_staff(filter: $filter) {
       partyId
       person {
-        firstName
         title
         firstName
         lastName
@@ -42,9 +41,25 @@ const staff = graphql(/* GraphQL */ `
   }
 `);
 
+const staffInfoForSelect = graphql(/* GraphQL */ `
+  query core_staffInfoForSelect($filter: StaffFilter) {
+    core_staff(filter: $filter) {
+      person {
+        partyId
+        title
+        firstName
+        lastName
+        avatarUrl
+        type
+      }
+    }
+  }
+`);
+
 export const staffKey = {
   all: ['people', 'staff'] as const,
   details: (filter: StaffFilter) => [...staffKey.all, filter] as const,
+  forSelect: () => [...staffKey.all, 'select'] as const,
 };
 
 const staffQuery = (filter: StaffFilter) => ({
@@ -60,5 +75,17 @@ export function useStaff(filter: StaffFilter) {
   return useQuery({
     ...staffQuery(filter),
     select: ({ core_staff }) => core_staff,
+  });
+}
+
+const staffForSelectQuery = (filter: StaffFilter) => ({
+  queryKey: staffKey.details(filter),
+  queryFn: async () => gqlClient.request(staffInfoForSelect, { filter }),
+});
+
+export function useStaffForSelect(filter: StaffFilter) {
+  return useQuery({
+    ...staffForSelectQuery(filter),
+    select: ({ core_staff }) => core_staff.map(({ person }) => person),
   });
 }

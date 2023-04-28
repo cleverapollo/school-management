@@ -1,14 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { CellValueChangedEvent } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import {
-  MutableRefObject,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { MutableRefObject, useCallback, useMemo, useState } from 'react';
 import set from 'lodash/set';
+import isEqual from 'lodash/isEqual';
 import { useCacheWithExpiry } from '../../../hooks/use-cache-with-expiry';
 
 export enum EditState {
@@ -60,6 +55,11 @@ export function useEditableState<T extends object>({
           const previousRowChanges = previousEditedRows[node.id] ?? {};
 
           if (!previousRowChanges[colDef.field]) {
+            // Don't update if the value hasn't changed. Needed for objects passed by reference
+            if (isEqual(params?.oldValue, params?.newValue)) {
+              return previousEditedRows;
+            }
+
             return {
               ...previousEditedRows,
               [node.id]: {
@@ -75,8 +75,10 @@ export function useEditableState<T extends object>({
           previousRowChanges[colDef.field].newValue = params?.newValue;
 
           if (
-            previousRowChanges[colDef.field].originalValue ===
-            (params?.newValue ?? null)
+            isEqual(
+              previousRowChanges[colDef.field].originalValue,
+              params?.newValue ?? null
+            )
           ) {
             delete previousRowChanges[colDef.field];
           }
