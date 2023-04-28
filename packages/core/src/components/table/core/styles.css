@@ -121,6 +121,14 @@
   border-color: var(--ag-border-color) !important;
 }
 
+.ag-cell-inline-editing.disable-cell-edit-style {
+  box-shadow: none;
+  border-radius: 0;
+  height: 100%;
+  background-color: var(--ag-background-color);
+  padding: 0;
+}
+
 .ag-theme-tyro .ag-has-focus .ag-cell-inline-editing {
   border-color: var(--ag-input-focus-border-color) !important;
 }
