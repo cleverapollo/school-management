@@ -72,6 +72,8 @@ const getColumnDefs = (
     valueGetter: ({ data }) =>
       data ? dayjs(data.createdOn).format('LL') : null,
     sort: 'desc',
+    comparator: (dateA: string, dateB: string) =>
+      dayjs(dateA).unix() - dayjs(dateB).unix(),
   },
   {
     field: 'publish',
