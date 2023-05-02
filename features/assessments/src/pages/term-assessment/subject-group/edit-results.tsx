@@ -5,7 +5,7 @@ import {
   PageHeading,
   ReturnTypeDisplayName,
   Table,
-  TableAvatar,
+  TablePersonAvatar,
   TableSelect,
   TableStudyLevelChip,
   useNumber,
@@ -151,7 +151,7 @@ const getColumnDefs = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAssessmentResults>) =>
-      data && <TableAvatar person={data.student} />,
+      data && <TablePersonAvatar person={data.student} />,
     sort: 'asc',
     pinned: 'left',
   },

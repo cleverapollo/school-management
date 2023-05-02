@@ -5,7 +5,7 @@ import {
   ICellRendererParams,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
-  TableAvatar,
+  TablePersonAvatar,
 } from '@tyro/core';
 import { Button, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
@@ -33,7 +33,7 @@ const getColumnDefs = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseStaffWorkAbsences>) => (
-      <TableAvatar
+      <TablePersonAvatar
         person={data?.staff ?? undefined}
         // TODO: add route to absence id
         to={`./${data?.absenceId ?? ''}`}

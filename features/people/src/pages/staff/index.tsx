@@ -6,7 +6,7 @@ import {
   Page,
   Table,
   ReturnTypeDisplayName,
-  TableAvatar,
+  TablePersonAvatar,
   usePreferredNameLayout,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -32,7 +32,10 @@ const getStaffColumns = (
       data,
     }: ICellRendererParams<ReturnTypeFromUseStudents, any>) =>
       data ? (
-        <TableAvatar person={data?.person} to={`./${data?.partyId ?? ''}`} />
+        <TablePersonAvatar
+          person={data?.person}
+          to={`./${data?.partyId ?? ''}`}
+        />
       ) : null,
     sort: 'asc',
     headerCheckboxSelection: true,

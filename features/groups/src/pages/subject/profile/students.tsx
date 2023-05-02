@@ -6,7 +6,7 @@ import {
   Table,
   ICellRendererParams,
   useNumber,
-  TableAvatar,
+  TablePersonAvatar,
   ActionMenu,
   ReturnTypeDisplayName,
   usePreferredNameLayout,
@@ -33,7 +33,7 @@ const getSubjectGroupsColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseSubjectGroupById>) => (
-      <TableAvatar
+      <TablePersonAvatar
         person={data?.person}
         to={`/people/students/${data?.partyId ?? ''}`}
       />
