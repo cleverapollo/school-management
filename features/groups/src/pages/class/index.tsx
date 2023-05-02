@@ -1,10 +1,11 @@
 import { Box, Container, Fade, Typography } from '@mui/material';
-import { usePermissions } from '@tyro/api';
+import { UpdateClassGroupGroupInput, usePermissions } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   ActionMenu,
   ActionMenuProps,
+  BulkEditedRows,
   GridOptions,
   ICellRendererParams,
   Page,
@@ -18,9 +19,12 @@ import {
   SendMailIcon,
   UnarchiveIcon,
 } from '@tyro/icons';
+import { TableStaffAutocomplete } from '@tyro/people';
+import set from 'lodash/set';
 import {
   useClassGroups,
   ReturnTypeFromUseClassGroups,
+  useSaveClassGroupEdits,
 } from '../../api/class-groups';
 
 const getClassGroupColumns = (
@@ -58,8 +62,17 @@ const getClassGroupColumns = (
   },
   {
     headerName: t('common:tutor'),
-    field: 'tutor',
-    valueGetter: ({ data }) => displayNames(data?.tutors),
+    field: 'tutors',
+    cellClass: 'disable-cell-edit-style',
+    valueFormatter: ({ data }) => displayNames(data?.tutors),
+    valueSetter: ({ data, newValue }) => {
+      set(data, 'tutors', newValue ?? []);
+      return true;
+    },
+    editable: true,
+    cellEditor: TableStaffAutocomplete,
+    suppressKeyboardEvent: ({ editing, event }) =>
+      editing && event.key === 'Enter',
   },
   {
     headerName: t('common:yearhead'),
@@ -87,6 +100,7 @@ export default function ClassGroupsPage() {
   const { displayNames } = usePreferredNameLayout();
   const { isStaffUser } = usePermissions();
   const { data: classGroupData } = useClassGroups();
+  const { mutateAsync: updateClassGroup } = useSaveClassGroupEdits();
   const showActionMenu = isStaffUser && selectedGroups.length > 0;
 
   const classGroupColumns = useMemo(
@@ -131,6 +145,29 @@ export default function ClassGroupsPage() {
     return [commonActions, archiveActions];
   }, []);
 
+  const handleBulkSave = (data: BulkEditedRows) => {
+    const updates = Object.entries(data).reduce<UpdateClassGroupGroupInput[]>(
+      (acc, [partyId, changes]) => {
+        const tutors = changes?.tutors
+          ?.newValue as ReturnTypeFromUseClassGroups['tutors'];
+        const tutor =
+          Array.isArray(tutors) && tutors.length > 0 ? tutors[0] : undefined;
+
+        if (tutor) {
+          acc.push({
+            classGroupPartyId: Number(partyId),
+            tutor: tutor?.partyId,
+          });
+        }
+
+        return acc;
+      },
+      []
+    );
+
+    return updateClassGroup(updates);
+  };
+
   return (
     <Page title={t('groups:classGroups')}>
       <Container maxWidth="xl">
@@ -142,6 +179,7 @@ export default function ClassGroupsPage() {
           columnDefs={classGroupColumns}
           rowSelection="multiple"
           getRowId={({ data }) => String(data?.partyId)}
+          onBulkSave={handleBulkSave}
           rightAdornment={
             <Fade in={showActionMenu} unmountOnExit>
               <Box>

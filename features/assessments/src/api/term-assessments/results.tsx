@@ -1,7 +1,8 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useCallback } from 'react';
 import {
   AssessmentResultFilter,
+  Assessment_AssessmentResultQuery,
   EmulateHeaders,
   gqlClient,
   graphql,
@@ -104,33 +105,27 @@ export function useAssessmentResults(
   academicNamespaceId: number,
   filter: AssessmentResultFilter | null
 ) {
-  const { data, ...rest } = useQuery({
+  return useQuery({
     ...assessmentResultsQuery(academicNamespaceId, filter ?? {}),
     enabled: !!filter,
+    select: useCallback(
+      ({ assessment_assessmentResult }: Assessment_AssessmentResultQuery) =>
+        assessment_assessmentResult?.map((result) => {
+          const extraFields =
+            result?.extraFields?.reduce((acc, extraField) => {
+              acc[extraField.assessmentExtraFieldId] = extraField;
+              return acc;
+            }, {} as Record<number, NonNullable<(typeof result)['extraFields']>[number]>) ??
+            {};
+
+          return {
+            ...result,
+            extraFields,
+          };
+        }),
+      []
+    ),
   });
-
-  const mappedData = useMemo(
-    () =>
-      data?.assessment_assessmentResult?.map((result) => {
-        const extraFields =
-          result?.extraFields?.reduce((acc, extraField) => {
-            acc[extraField.assessmentExtraFieldId] = extraField;
-            return acc;
-          }, {} as Record<number, NonNullable<(typeof result)['extraFields']>[number]>) ??
-          {};
-
-        return {
-          ...result,
-          extraFields,
-        };
-      }),
-    [data]
-  );
-
-  return {
-    data: mappedData,
-    ...rest,
-  };
 }
 
 export type ReturnTypeFromUseAssessmentResults = UseQueryReturnType<

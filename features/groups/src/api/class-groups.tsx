@@ -1,10 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
+import { useCallback } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   gqlClient,
   graphql,
   GeneralGroupType,
   queryClient,
   UseQueryReturnType,
+  UpdateClassGroupGroupInput,
+  ClassGroupsListQuery,
 } from '@tyro/api';
 
 const classGroupsList = graphql(/* GraphQL */ `
@@ -61,6 +64,14 @@ const classGroupById = graphql(/* GraphQL */ `
   }
 `);
 
+const updateClassGroups = graphql(/* GraphQL */ `
+  mutation core_updateClassGroups($input: [UpdateClassGroupGroupInput!]) {
+    core_updateClassGroups(input: $input) {
+      success
+    }
+  }
+`);
+
 export const classGroupsKeys = {
   list: ['groups', 'class'] as const,
   details: (id: number | undefined) => [...classGroupsKeys.list, id] as const,
@@ -83,7 +94,10 @@ export function getClassGroups() {
 export function useClassGroups() {
   return useQuery({
     ...classGroupsQuery,
-    select: ({ generalGroups }) => generalGroups,
+    select: useCallback(
+      ({ generalGroups }: ClassGroupsListQuery) => generalGroups,
+      []
+    ),
   });
 }
 
@@ -112,6 +126,16 @@ export function useClassGroupById(id: number | undefined) {
         name: group?.name,
         members: group?.students ?? [],
       };
+    },
+  });
+}
+
+export function useSaveClassGroupEdits() {
+  return useMutation({
+    mutationFn: (input: UpdateClassGroupGroupInput[]) =>
+      gqlClient.request(updateClassGroups, { input }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(classGroupsKeys.list);
     },
   });
 }

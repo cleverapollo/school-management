@@ -20,6 +20,7 @@ export type {
   ICellRendererParams,
   ValueSetterParams,
   CellValueChangedEvent,
+  ICellEditorParams,
 } from 'ag-grid-community';
 
 if (process.env.AG_GRID_KEY) {
@@ -130,6 +131,7 @@ function TableInner<T extends object>(
             autoGroupColumnDef={autoGroupColumnDef || defaultAutoGroupColumnDef}
             groupSelectsChildren={rowSelection === 'multiple'}
             groupSelectsFiltered={rowSelection === 'multiple'}
+            stopEditingWhenCellsLoseFocus
             {...props}
             onCellValueChanged={onCellValueChanged}
             onFirstDataRendered={(params: FirstDataRenderedEvent<T>) => {
