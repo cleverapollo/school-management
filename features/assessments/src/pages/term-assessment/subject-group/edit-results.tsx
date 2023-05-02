@@ -325,7 +325,17 @@ export default function EditTermAssessmentResults() {
     [t, displayName, assessmentData, commentBanks, academicNamespaceIdAsNumber]
   );
 
-  const saveAssessmentResult = (data: BulkEditedRows) => {
+  const saveAssessmentResult = (
+    data: BulkEditedRows<
+      ReturnTypeFromUseAssessmentResults,
+      | 'extraFields'
+      | 'result'
+      | 'gradeResult'
+      | 'targetResult'
+      | 'targetGradeResult'
+      | 'teacherComment.comment'
+    >
+  ) => {
     const results = studentResults?.reduce<SaveAssessmentResultInput[]>(
       (acc, result) => {
         const editedColumns = data[result.studentPartyId];
@@ -355,9 +365,9 @@ export default function EditTermAssessmentResults() {
                   assessmentExtraFieldId: extraFieldId,
                   ...(extraFieldProperty === 'commentBankCommentId'
                     ? {
-                        commentBankCommentId: (newValue as number) ?? null,
+                        commentBankCommentId: newValue ?? null,
                       }
-                    : { result: (newValue as string) ?? null }),
+                    : { result: newValue ?? null }),
                 });
               }
             } else {

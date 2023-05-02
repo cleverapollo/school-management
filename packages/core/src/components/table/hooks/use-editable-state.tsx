@@ -13,26 +13,64 @@ export enum EditState {
   Error = 'ERROR',
 }
 
-export type BulkEditedRows = Record<
+type StringableKey<T> = T extends readonly unknown[]
+  ? number extends T['length']
+    ? number
+    : `${number}`
+  : string | number;
+
+type Path<T> = T extends object
+  ? {
+      [P in keyof T & StringableKey<T>]: `${P}` | `${P}.${Path<T[P]>}`;
+    }[keyof T & StringableKey<T>]
+  : never;
+
+type PropType<T, Key extends string> = string extends Key
+  ? unknown
+  : Key extends keyof T
+  ? T[Key]
+  : Key extends `${infer K}.${infer R}`
+  ? K extends keyof T
+    ? PropType<NonNullable<T[K]>, R>
+    : unknown
+  : unknown;
+
+export type BulkEditedRows<
+  ObjectRow,
+  Keys extends Path<NonNullable<ObjectRow>>
+> = Record<
   string,
   {
-    [key: string]: {
-      originalValue: any;
-      newValue: any;
+    [Key in Keys]?: {
+      originalValue: PropType<NonNullable<ObjectRow>, Key>;
+      newValue: PropType<NonNullable<ObjectRow>, Key>;
     };
   }
 >;
 
 export interface UseEditableStateProps<T> {
   tableRef: MutableRefObject<AgGridReact<T>>;
-  onBulkSave: ((data: BulkEditedRows) => Promise<unknown>) | undefined;
+  onBulkSave:
+    | ((data: BulkEditedRows<T, Path<T>>) => Promise<unknown>)
+    | undefined;
 }
+
+type EditedRow<T> = Record<
+  string,
+  Record<
+    string,
+    {
+      originalValue: CellValueChangedEvent<T>['oldValue'];
+      newValue: CellValueChangedEvent<T>['newValue'];
+    }
+  >
+>;
 
 export function useEditableState<T extends object>({
   tableRef,
   onBulkSave,
 }: UseEditableStateProps<T>) {
-  const [editedRows, setEditedRows] = useCacheWithExpiry<BulkEditedRows>(
+  const [editedRows, setEditedRows] = useCacheWithExpiry<EditedRow<T>>(
     'bulk-edit',
     {}
   );
@@ -130,7 +168,7 @@ export function useEditableState<T extends object>({
     if (onBulkSave) {
       try {
         setState(EditState.Saving);
-        await onBulkSave(editedRows);
+        await onBulkSave(editedRows as BulkEditedRows<T, Path<T>>);
         setState(EditState.Saved);
         setEditedRows({});
       } catch (e) {

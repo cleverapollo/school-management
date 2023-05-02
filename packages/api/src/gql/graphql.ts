@@ -126,6 +126,7 @@ export type AssessmentExtraField = {
   __typename?: 'AssessmentExtraField';
   assessmentId: Scalars['Long'];
   commentBankId?: Maybe<Scalars['Long']>;
+  commentBankName?: Maybe<Scalars['String']>;
   commentLength?: Maybe<Scalars['Int']>;
   extraFieldType: ExtraFieldType;
   gradeSetId?: Maybe<Scalars['Long']>;

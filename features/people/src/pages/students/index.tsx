@@ -12,10 +12,11 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
-import { UseQueryReturnType } from '@tyro/api';
-import { useBulkUpdateCoreStudent, useStudents } from '../../api/students';
-
-type ReturnTypeFromUseStudents = UseQueryReturnType<typeof useStudents>[number];
+import {
+  useBulkUpdateCoreStudent,
+  ReturnTypeFromUseStudents,
+  useStudents,
+} from '../../api/students';
 
 const getStudentColumns = (
   translate: TFunction<

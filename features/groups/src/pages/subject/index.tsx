@@ -161,7 +161,9 @@ export default function SubjectGroups() {
     return [commonActions];
   }, [isTeacherUserType, isAdminUserType]);
 
-  const handleBulkSave = (data: BulkEditedRows) => {
+  const handleBulkSave = (
+    data: BulkEditedRows<ReturnTypeFromUseSubjectGroups, 'irePP.level'>
+  ) => {
     const updates = Object.entries(data).reduce<UpdateSubjectGroupInput[]>(
       (acc, [partyId, changes]) => {
         const level = changes['irePP.level'];
@@ -169,7 +171,7 @@ export default function SubjectGroups() {
         if (level) {
           acc.push({
             subjectGroupPartyId: Number(partyId),
-            irePP: { level: level.newValue as StudyLevel },
+            irePP: { level: level.newValue },
           });
         }
 
