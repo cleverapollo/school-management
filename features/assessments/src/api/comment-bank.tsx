@@ -1,6 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { gqlClient, graphql, queryClient, CommentBankFilter } from '@tyro/api';
+import {
+  gqlClient,
+  graphql,
+  queryClient,
+  CommentBankFilter,
+  UseQueryReturnType,
+} from '@tyro/api';
 import { assessmentsKeys } from './keys';
 
 const commentBank = graphql(/* GraphQL */ `
@@ -46,9 +52,9 @@ export function useCommentBank(filter: CommentBankFilter) {
   });
 }
 
-export type CommentBankOption = NonNullable<
-  NonNullable<ReturnType<typeof useCommentBank>['data']>[number]
->;
+export type CommentBankOption = UseQueryReturnType<
+  typeof useCommentBank
+>[number];
 
 const commentBanksWithCommentsQuery = (filter: CommentBankFilter) => ({
   queryKey: assessmentsKeys.commentBanksWithComments(filter),

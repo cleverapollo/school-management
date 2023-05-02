@@ -1,12 +1,4 @@
-import {
-  Box,
-  Button,
-  Collapse,
-  Container,
-  Fade,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Button, Container, Typography } from '@mui/material';
 import { useTranslation, TFunction } from '@tyro/i18n';
 import { useMemo, useState } from 'react';
 import {
@@ -23,16 +15,16 @@ import {
   useCoreAcademicNamespace,
   ReturnTypeFromUseCoreAcademicNamespace,
 } from '@tyro/api';
-import { AddIcon } from '@tyro/icons';
+import { AddIcon, VerticalDotsIcon } from '@tyro/icons';
 import { useCoreSetActiveActiveAcademicNamespace } from '../api/academic-namespaces/change-active-academic-namespace';
 
 const getColumns = (
-  t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>
+  t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>,
+  openConfirmDialog: () => void
 ): GridOptions<ReturnTypeFromUseCoreAcademicNamespace>['columnDefs'] => [
   {
     headerName: t('common:name'),
     field: 'name',
-    checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
     editable: true,
     sort: 'desc',
@@ -61,9 +53,30 @@ const getColumns = (
       data?.isActiveDefaultNamespace ? t('common:yes') : t('common:no'),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseCoreAcademicNamespace, any>) => (
-      <TableBooleanValue value={data?.isActiveDefaultNamespace ?? false} />
-    ),
+    }: ICellRendererParams<ReturnTypeFromUseCoreAcademicNamespace, any>) =>
+      data && (
+        <TableBooleanValue value={data?.isActiveDefaultNamespace ?? false} />
+      ),
+  },
+  {
+    suppressColumnsToolPanel: true,
+    sortable: false,
+    cellClass: 'ag-show-on-row-interaction',
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseCoreAcademicNamespace>) =>
+      data && (
+        <ActionMenu
+          iconOnly
+          buttonIcon={<VerticalDotsIcon />}
+          menuItems={[
+            {
+              label: t('settings:actions.makeActive'),
+              onClick: openConfirmDialog,
+            },
+          ]}
+        />
+      ),
   },
 ];
 
@@ -74,21 +87,17 @@ export default function AcademicNamespaceList() {
     useCoreSetActiveActiveAcademicNamespace();
   const [selectedNamespace, setSelectedNamespace] =
     useState<ReturnTypeFromUseCoreAcademicNamespace | null>(null);
+
   const {
     isOpen: isConfirmDialogOpen,
     onClose: closeConfirmDialog,
     onOpen: openConfirmDialog,
   } = useDisclosure();
-  const showActionMenu = Boolean(selectedNamespace);
 
-  const columns = useMemo(() => getColumns(t), [t]);
-
-  const actionMenuItems = [
-    {
-      label: t('settings:actions.makeActive'),
-      onClick: openConfirmDialog,
-    },
-  ];
+  const columns = useMemo(
+    () => getColumns(t, openConfirmDialog),
+    [t, openConfirmDialog]
+  );
 
   return (
     <>
@@ -109,34 +118,9 @@ export default function AcademicNamespaceList() {
               setSelectedNamespace(newValue);
             }}
             rightAdornment={
-              <Stack direction="row" spacing={1}>
-                <Button variant="text" endIcon={<AddIcon />}>
-                  {t('settings:actions.addNewRoom')}
-                </Button>
-                <Collapse
-                  in={showActionMenu}
-                  orientation="horizontal"
-                  unmountOnExit
-                >
-                  <Fade in={showActionMenu}>
-                    <Box>
-                      <ActionMenu
-                        menuProps={{
-                          anchorOrigin: {
-                            vertical: 'bottom',
-                            horizontal: 'right',
-                          },
-                          transformOrigin: {
-                            vertical: 'top',
-                            horizontal: 'right',
-                          },
-                        }}
-                        menuItems={actionMenuItems}
-                      />
-                    </Box>
-                  </Fade>
-                </Collapse>
-              </Stack>
+              <Button variant="text" startIcon={<AddIcon />}>
+                {t('settings:actions.addNewRoom')}
+              </Button>
             }
           />
         </Container>

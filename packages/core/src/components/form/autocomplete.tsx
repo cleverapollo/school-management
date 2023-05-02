@@ -4,6 +4,7 @@ import {
   TextField,
   TextFieldProps,
 } from '@mui/material';
+import { useMemo } from 'react';
 import {
   FieldValues,
   Path,
@@ -67,9 +68,55 @@ export const RHFAutocomplete = <
     >,
   });
 
+  const selectedOption = useMemo<
+    TAutocompleteOption | TAutocompleteOption[] | null
+  >(() => {
+    const { options } = autocompleteProps;
+
+    if (!value) return null;
+
+    // for multiple selection
+    if (Array.isArray(value)) {
+      const valueAsArray = value as TAutocompleteOption[];
+
+      return options.filter((option) => {
+        // for enums
+        if (typeof option === 'string') {
+          return valueAsArray.includes(option);
+        }
+
+        if (optionIdKey) {
+          // for objects
+          return valueAsArray
+            .map((v) => v[optionIdKey])
+            .includes(option[optionIdKey]);
+        }
+
+        return null;
+      });
+    }
+
+    // for one selection
+    return (
+      options.find((option) => {
+        // for enums
+        if (typeof option === 'string') {
+          return option === value;
+        }
+
+        // for objects
+        if (optionIdKey) {
+          return option[optionIdKey] === value[optionIdKey];
+        }
+
+        return null;
+      }) ?? null
+    );
+  }, [value, autocompleteProps.options]);
+
   return (
     <Autocomplete
-      value={value}
+      value={selectedOption}
       isOptionEqualToValue={(option, newValue) => {
         if (optionIdKey) {
           return option[optionIdKey] === newValue[optionIdKey];

@@ -24,7 +24,10 @@ export const validations = {
 
     return value;
   },
-  date: (date: Date, errorMessage?: string): Date | ValidationError => {
+  date: (
+    date: Date | dayjs.Dayjs,
+    errorMessage?: string
+  ): Date | dayjs.Dayjs | ValidationError => {
     if (!dayjs(date).isValid()) {
       throw new ValidationError('date', errorMessage);
     }

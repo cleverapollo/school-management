@@ -30,9 +30,12 @@ const extraFieldTypeOptions: ExtraFieldTypeOption[] = [
 
 const EXTRA_FIELDS_MAX_LENGTH = 12;
 
-type ExtraField = Pick<SaveExtraFieldInput, 'name' | 'extraFieldType'> & {
-  commentLength?: number;
-  commentBank?: CommentBankOption;
+type ExtraField = Pick<
+  SaveExtraFieldInput,
+  'id' | 'name' | 'extraFieldType'
+> & {
+  commentLength?: number | null;
+  commentBank?: Partial<CommentBankOption>;
 };
 
 export type FormCustomFieldsValues = {

@@ -26,7 +26,7 @@ export const CommentBankOptions = <TField extends FieldValues>({
           maxWidth: 300,
           width: '100%',
         },
-        options: commentBankData as CommentBankOption[],
+        options: commentBankData,
       }}
     />
   );

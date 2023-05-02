@@ -81,6 +81,9 @@ const assessment = graphql(/* GraphQL */ `
         lastName
         avatarUrl
       }
+      startDate
+      endDate
+      captureTutorComment
     }
   }
 `);

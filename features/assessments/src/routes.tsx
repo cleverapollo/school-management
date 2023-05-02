@@ -20,6 +20,9 @@ const CreateTermAssessmentPage = lazy(
 const EditTermAssessmentResults = lazy(
   () => import('./pages/term-assessment/subject-group/edit-results')
 );
+const EditTermAssessmentPage = lazy(
+  () => import('./pages/term-assessment/edit')
+);
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -107,6 +110,11 @@ export const getRoutes: NavObjectFunction = (t) => [
                       });
                     },
                     element: <ViewTermAssessment />,
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'edit',
+                    element: <EditTermAssessmentPage />,
                   },
                   {
                     type: NavObjectType.NonMenuLink,

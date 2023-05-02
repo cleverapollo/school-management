@@ -60,4 +60,5 @@ export * from './undo';
 export * from './user-group';
 export * from './user-group-two';
 export * from './user-profile-card';
+export * from './vertical-dots';
 export * from './warning';
