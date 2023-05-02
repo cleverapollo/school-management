@@ -55,11 +55,22 @@ export interface UseEditableStateProps<T> {
     | undefined;
 }
 
+type EditedRow<T> = Record<
+  string,
+  Record<
+    string,
+    {
+      originalValue: CellValueChangedEvent<T>['oldValue'];
+      newValue: CellValueChangedEvent<T>['newValue'];
+    }
+  >
+>;
+
 export function useEditableState<T extends object>({
   tableRef,
   onBulkSave,
 }: UseEditableStateProps<T>) {
-  const [editedRows, setEditedRows] = useCacheWithExpiry<BulkEditedRows>(
+  const [editedRows, setEditedRows] = useCacheWithExpiry<EditedRow<T>>(
     'bulk-edit',
     {}
   );

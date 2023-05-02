@@ -145,11 +145,12 @@ export default function ClassGroupsPage() {
     return [commonActions, archiveActions];
   }, []);
 
-  const handleBulkSave = (data: BulkEditedRows) => {
+  const handleBulkSave = (
+    data: BulkEditedRows<ReturnTypeFromUseClassGroups, 'tutors'>
+  ) => {
     const updates = Object.entries(data).reduce<UpdateClassGroupGroupInput[]>(
       (acc, [partyId, changes]) => {
-        const tutors = changes?.tutors
-          ?.newValue as ReturnTypeFromUseClassGroups['tutors'];
+        const tutors = changes?.tutors?.newValue;
         const tutor =
           Array.isArray(tutors) && tutors.length > 0 ? tutors[0] : undefined;
 
