@@ -62,7 +62,7 @@ export const TableStaffAutocomplete = forwardRef(
               >
                 <Avatar
                   name={name}
-                  src={option.avatarUrl ?? undefined}
+                  src={option.avatarUrl}
                   sx={{ width: 32, height: 32, fontSize: '0.75rem' }}
                 />
                 <Stack>

@@ -167,7 +167,7 @@ export default function SubjectGroupProfileAttendancePage() {
                     <Stack direction="row" spacing={2} alignItems="center">
                       <Avatar
                         name={displayName(student?.person)}
-                        src={student?.person?.avatarUrl ?? undefined}
+                        src={student?.person?.avatarUrl}
                       />
                       <Stack direction="column">
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>

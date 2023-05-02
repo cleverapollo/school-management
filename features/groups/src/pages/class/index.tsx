@@ -9,8 +9,8 @@ import {
   GridOptions,
   ICellRendererParams,
   Page,
-  RouterLink,
   Table,
+  TableAvatar,
   usePreferredNameLayout,
 } from '@tyro/core';
 import {
@@ -41,11 +41,19 @@ const getClassGroupColumns = (
     lockVisible: true,
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseClassGroups>) => (
-      <RouterLink sx={{ fontWeight: 600 }} to={`${data?.partyId ?? ''}`}>
-        {data?.name}
-      </RouterLink>
-    ),
+    }: ICellRendererParams<ReturnTypeFromUseClassGroups>) =>
+      data ? (
+        <TableAvatar
+          name={data?.name ?? ''}
+          to={`./${data?.partyId ?? ''}`}
+          avatarUrl={data?.avatarUrl}
+          AvatarProps={{
+            sx: {
+              borderRadius: 1,
+            },
+          }}
+        />
+      ) : null,
     sort: 'asc',
   },
   {

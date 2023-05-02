@@ -70,7 +70,7 @@ export default function AccountPopover() {
         }}
       >
         <Avatar
-          src={activeProfile?.avatarUrl ?? undefined}
+          src={activeProfile?.avatarUrl}
           name={activeProfile?.nickName ?? undefined}
         />
       </IconButtonAnimate>

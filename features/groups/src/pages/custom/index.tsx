@@ -8,8 +8,8 @@ import {
   GridOptions,
   ICellRendererParams,
   Page,
-  RouterLink,
   Table,
+  TableAvatar,
 } from '@tyro/core';
 import {
   ArchiveIcon,
@@ -36,11 +36,19 @@ const getCustomGroupsColumns = (
     sort: 'asc',
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseCustomGroups>) => (
-      <RouterLink sx={{ fontWeight: 600 }} to={`${data?.partyId ?? ''}`}>
-        {data?.name}
-      </RouterLink>
-    ),
+    }: ICellRendererParams<ReturnTypeFromUseCustomGroups>) =>
+      data ? (
+        <TableAvatar
+          name={data?.name ?? ''}
+          to={`./${data?.partyId ?? ''}`}
+          avatarUrl={data?.avatarUrl}
+          AvatarProps={{
+            sx: {
+              borderRadius: 1,
+            },
+          }}
+        />
+      ) : null,
   },
   {
     headerName: t('common:members'),

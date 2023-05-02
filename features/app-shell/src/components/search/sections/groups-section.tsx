@@ -56,7 +56,7 @@ export function GroupOption({
             <Avatar
               sx={{ width: 32, height: 32, fontSize: 14 }}
               name={text}
-              src={avatarUrl ?? undefined}
+              src={avatarUrl}
             />
           </Box>
           <Stack>

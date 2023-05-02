@@ -12,6 +12,7 @@ const customGroupsList = graphql(/* GraphQL */ `
     generalGroups(filter: $filter) {
       partyId
       name
+      avatarUrl
       studentMembers {
         memberCount
       }

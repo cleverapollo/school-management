@@ -6,7 +6,7 @@ import {
   GridOptions,
   ICellRendererParams,
   Table,
-  TableAvatar,
+  TablePersonAvatar,
   TableBooleanValue,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
@@ -42,7 +42,7 @@ const getStudentContactColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
-      <TableAvatar
+      <TablePersonAvatar
         person={data?.person}
         to={`/people/contacts/${data?.partyId ?? ''}`}
       />

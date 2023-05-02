@@ -58,10 +58,7 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
               badgeContent={statusData?.priorityStudent ? 1 : 0}
             >
               <SupportPlanRing hasSupportPlan>
-                <Avatar
-                  src={studentData?.person?.avatarUrl ?? undefined}
-                  name={name}
-                />
+                <Avatar src={studentData?.person?.avatarUrl} name={name} />
               </SupportPlanRing>
             </Badge>
           </IconButton>

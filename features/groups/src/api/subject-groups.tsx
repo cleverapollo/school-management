@@ -11,8 +11,10 @@ const subjectGroupsList = graphql(/* GraphQL */ `
     subjectGroups {
       partyId
       name
+      avatarUrl
       subjects {
         name
+        colour
       }
       studentMembers {
         memberCount
@@ -45,6 +47,7 @@ const subjectGroupById = graphql(/* GraphQL */ `
       }
       subjects {
         name
+        colour
       }
       staff {
         title

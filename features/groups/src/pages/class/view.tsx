@@ -9,7 +9,7 @@ import {
   Table,
   GridOptions,
   ActionMenu,
-  TableAvatar,
+  TablePersonAvatar,
   ICellRendererParams,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
@@ -33,7 +33,7 @@ const getClassGroupColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<MembersReturnTypeFromUseClassGroupById, any>) => (
-      <TableAvatar
+      <TablePersonAvatar
         person={data?.person ?? undefined}
         to={getPersonProfileLink(data?.person ?? undefined)}
       />

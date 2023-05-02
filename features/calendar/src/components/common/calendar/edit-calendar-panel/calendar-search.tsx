@@ -72,7 +72,7 @@ export function CalendarSearch({
           <Stack component="li" direction="row" spacing={1} {...props}>
             <Avatar
               name={option.text}
-              src={option.avatarUrl ?? undefined}
+              src={option.avatarUrl}
               sx={{ width: 32, height: 32, fontSize: '0.75rem' }}
             />
             <Stack>
@@ -86,12 +86,7 @@ export function CalendarSearch({
         renderTags={(value, getTagProps) =>
           value.map((option, index) => (
             <Chip
-              avatar={
-                <Avatar
-                  name={option.text}
-                  src={option.avatarUrl ?? undefined}
-                />
-              }
+              avatar={<Avatar name={option.text} src={option.avatarUrl} />}
               variant="soft"
               color={getColorBasedOnIndex(index)}
               label={option.text}

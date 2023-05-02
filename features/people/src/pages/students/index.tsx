@@ -5,7 +5,7 @@ import {
   ICellRendererParams,
   Page,
   Table,
-  TableAvatar,
+  TablePersonAvatar,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
   ReturnTypeDisplayNames,
@@ -35,7 +35,10 @@ const getStudentColumns = (
       data,
     }: ICellRendererParams<ReturnTypeFromUseStudents, any>) =>
       data ? (
-        <TableAvatar person={data?.person} to={`./${data?.partyId ?? ''}`} />
+        <TablePersonAvatar
+          person={data?.person}
+          to={`./${data?.partyId ?? ''}`}
+        />
       ) : null,
     sort: 'asc',
     headerCheckboxSelection: true,

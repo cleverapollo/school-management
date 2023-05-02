@@ -1,10 +1,5 @@
 import { Box, Fade, Container, Typography } from '@mui/material';
-import {
-  StudyLevel,
-  UpdateSubjectGroupInput,
-  usePermissions,
-  UserType,
-} from '@tyro/api';
+import { UpdateSubjectGroupInput, usePermissions, UserType } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -13,13 +8,13 @@ import {
   Table,
   ICellRendererParams,
   ActionMenu,
-  RouterLink,
   ActionMenuProps,
   usePreferredNameLayout,
   ReturnTypeDisplayNames,
   TableStudyLevelChip,
   StudyLevelSelectCellEditor,
   BulkEditedRows,
+  TableAvatar,
 } from '@tyro/core';
 
 import {
@@ -52,11 +47,27 @@ const getSubjectGroupsColumns = (
     lockVisible: true,
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseSubjectGroups>) => (
-      <RouterLink sx={{ fontWeight: 600 }} to={`${data?.partyId ?? ''}`}>
-        {data?.name}
-      </RouterLink>
-    ),
+    }: ICellRendererParams<ReturnTypeFromUseSubjectGroups>) => {
+      if (!data) return null;
+
+      const subject = data?.subjects?.[0] ?? null;
+      const bgColorStyle = subject?.colour
+        ? { bgcolor: `${subject.colour}.500` }
+        : {};
+      return (
+        <TableAvatar
+          name={data?.name ?? ''}
+          to={`./${data?.partyId ?? ''}`}
+          avatarUrl={data?.avatarUrl}
+          AvatarProps={{
+            sx: {
+              borderRadius: 1,
+              ...bgColorStyle,
+            },
+          }}
+        />
+      );
+    },
     sort: 'asc',
   },
   {

@@ -4,8 +4,9 @@ import {
 } from '@mui/material';
 import { forwardRef, useMemo } from 'react';
 
-export interface AvatarProps extends MuiAvatarProps {
+export interface AvatarProps extends Omit<MuiAvatarProps, 'src'> {
   name?: string;
+  src?: string | null | undefined;
 }
 
 const availableAvatarColors = [
@@ -98,7 +99,7 @@ function getInitials(name: string | undefined) {
 }
 
 export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
-  ({ name, sx, children, ...props }, ref) => {
+  ({ name, sx, children, src, ...props }, ref) => {
     const { initials, bgcolor } = useMemo(
       () => ({
         initials: getInitials(name),
@@ -115,6 +116,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
           ...sx,
         }}
         alt={name}
+        src={src ?? undefined}
         {...props}
       >
         {initials}
