@@ -31,7 +31,7 @@ export const TableStaffAutocomplete = forwardRef(
       getValue() {
         const value = autoCompleteRef?.current?.getValue();
 
-        return !value ? [] : [value];
+        return value ? [value] : [];
       },
     }));
 
