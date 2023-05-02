@@ -11,6 +11,7 @@ const subjectGroupsList = graphql(/* GraphQL */ `
     subjectGroups {
       partyId
       name
+      avatarUrl
       subjects {
         name
         colour

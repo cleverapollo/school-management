@@ -5,7 +5,6 @@ import {
   usePreferredNameLayout,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { Person } from '@tyro/api';
 
 import { useSubjectGroupById } from '../../api/subject-groups';
 import { SubjectGroupOverviewNextLesson } from './overview-next-lesson';
@@ -46,7 +45,7 @@ export function SubjectGroupStatusBar({
         <Stack direction="row" alignItems="center" spacing={1}>
           <Box p={1}>
             <Avatar
-              src={subjectGroupData?.avatarUrl ?? undefined}
+              src={subjectGroupData?.avatarUrl}
               name={subjectGroupData?.name}
             />
           </Box>

@@ -43,7 +43,7 @@ const getPeopleColumns = (
       return (
         <Box display="flex" alignItems="center">
           <Avatar
-            src={data?.avatarUrl ?? undefined}
+            src={data?.avatarUrl}
             name={name}
             sx={{
               my: 1,

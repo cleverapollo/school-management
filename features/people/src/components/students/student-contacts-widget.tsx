@@ -131,7 +131,7 @@ export function StudentContactsWidget({
             <Stack direction="row" spacing={2}>
               <Avatar
                 name={displayName(contact?.person)}
-                src={contact?.person?.avatarUrl ?? undefined}
+                src={contact?.person?.avatarUrl}
                 sx={{ width: 62, height: 62, fontSize: 20 }}
               />
 

@@ -58,6 +58,7 @@ const getSubjectGroupsColumns = (
         <TableAvatar
           name={data?.name ?? ''}
           to={`./${data?.partyId ?? ''}`}
+          avatarUrl={data?.avatarUrl}
           AvatarProps={{
             sx: {
               borderRadius: 1,

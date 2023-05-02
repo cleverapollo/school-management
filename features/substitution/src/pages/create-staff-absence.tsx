@@ -209,7 +209,7 @@ export default function ManagementPage() {
                         }) as SxProps),
                       }}
                       name={displayName(person)}
-                      src={person.avatarUrl ?? undefined}
+                      src={person.avatarUrl}
                     />
                     {displayName(person)}
                   </Box>

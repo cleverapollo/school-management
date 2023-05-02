@@ -35,7 +35,7 @@ const getAdminTenantColumns = (
     }: ICellRendererParams<ReturnTypeFromUseAdminTenants, any>) => (
       <Box display="flex" alignItems="center">
         <Avatar
-          src={data?.imgUrl ?? undefined}
+          src={data?.imgUrl}
           name={data?.name}
           sx={{
             my: 1,

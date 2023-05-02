@@ -5,7 +5,7 @@ import { RouterLink } from '../../router-link';
 type TableAvatarProps = {
   to?: string | null;
   name: string;
-  avatarUrl?: string | null;
+  avatarUrl?: string | null | undefined;
   AvatarProps?: CoreAvatarProps;
 };
 
@@ -18,7 +18,7 @@ export function TableAvatar({
   return (
     <Box display="flex" alignItems="center">
       <Avatar
-        src={avatarUrl ?? undefined}
+        src={avatarUrl}
         name={name}
         {...AvatarProps}
         sx={{
