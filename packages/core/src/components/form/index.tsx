@@ -6,3 +6,4 @@ export * from './select';
 export * from './selection-list';
 export * from './switch';
 export * from './text-field';
+export * from './time-picker';
