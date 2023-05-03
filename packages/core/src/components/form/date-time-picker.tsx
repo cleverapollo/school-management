@@ -28,7 +28,7 @@ type RHFDatePickerProps<TField extends FieldValues, TInputDate> = {
 
 export const RHFDateTimePicker = <
   TField extends FieldValues,
-  TInputDate = Date
+  TInputDate = dayjs.Dayjs
 >({
   label,
   dateTimePickerProps,
