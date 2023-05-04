@@ -38,9 +38,8 @@ const getSubjectGroupsColumns = (
   {
     field: 'name',
     headerName: t('common:name'),
-    headerCheckboxSelection: true,
-    headerCheckboxSelectionFilteredOnly: true,
-    checkboxSelection: ({ data }) => Boolean(data),
+    headerCheckboxSelection: false,
+    headerCheckboxSelectionFilteredOnly: false,
     lockVisible: true,
     cellRenderer: ({
       data,
@@ -110,61 +109,11 @@ export default function StudentProfileClassesPage() {
   const { displayNames } = usePreferredNameLayout();
 
   const { data: subjectGroupsData } = useStudentsSubjectGroups(studentId);
-  const { userType } = usePermissions();
-
-  const [selectedGroups, setSelectedGroups] = useState<
-    ReturnTypeFromUseStudentsSubjectGroups[]
-  >([]);
-
-  const isAdminUserType = userType === UserType.Admin;
-  const isTeacherUserType = userType === UserType.Teacher;
-  const showActionMenu = isAdminUserType || isTeacherUserType;
 
   const studentColumns = useMemo(
     () => getSubjectGroupsColumns(t, displayNames),
     [t, displayNames]
   );
-
-  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => {
-    const commonActions = [
-      {
-        label: t('people:sendSms'),
-        icon: <MobileIcon />,
-        // TODO: add action logic
-        onClick: () => {},
-      },
-      {
-        label: t('mail:sendMail'),
-        icon: <SendMailIcon />,
-        onClick: () => {},
-      },
-    ];
-
-    // TODO: add flag to check status
-    const isThereAtLeastOneUnarchived = true;
-
-    const archiveActions = [
-      isThereAtLeastOneUnarchived
-        ? {
-            label: t('common:actions.archive'),
-            icon: <ArchiveIcon />,
-            // TODO: add action logic
-            onClick: () => {},
-          }
-        : {
-            label: t('common:actions.unarchive'),
-            icon: <UnarchiveIcon />,
-            // TODO: add action logic
-            onClick: () => {},
-          },
-    ];
-
-    if (isAdminUserType) {
-      return [commonActions, archiveActions];
-    }
-
-    return [commonActions];
-  }, [isTeacherUserType, isAdminUserType]);
 
   return (
     <Table
@@ -172,26 +121,6 @@ export default function StudentProfileClassesPage() {
       columnDefs={studentColumns}
       rowSelection="multiple"
       getRowId={({ data }) => String(data?.partyId)}
-      rightAdornment={
-        <Fade in={showActionMenu && selectedGroups.length > 0} unmountOnExit>
-          <Box>
-            <ActionMenu
-              menuProps={{
-                anchorOrigin: {
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                },
-                transformOrigin: {
-                  vertical: 'top',
-                  horizontal: 'right',
-                },
-              }}
-              menuItems={actionMenuItems}
-            />
-          </Box>
-        </Fade>
-      }
-      onRowSelection={setSelectedGroups}
     />
   );
 }
