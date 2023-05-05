@@ -1,14 +1,10 @@
 import { useParams } from 'react-router-dom';
-import { Box, Fade } from '@mui/material';
-import { usePermissions, UserType } from '@tyro/api';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   GridOptions,
   Table,
   ICellRendererParams,
-  ActionMenu,
-  ActionMenuProps,
   usePreferredNameLayout,
   ReturnTypeDisplayNames,
   TableStudyLevelChip,
@@ -16,13 +12,6 @@ import {
   TableAvatar,
   getNumber,
 } from '@tyro/core';
-
-import {
-  MobileIcon,
-  SendMailIcon,
-  ArchiveIcon,
-  UnarchiveIcon,
-} from '@tyro/icons';
 
 import set from 'lodash/set';
 import { useStudentsSubjectGroups } from '../../../api/student';
@@ -38,8 +27,6 @@ const getSubjectGroupsColumns = (
   {
     field: 'name',
     headerName: t('common:name'),
-    headerCheckboxSelection: false,
-    headerCheckboxSelectionFilteredOnly: false,
     lockVisible: true,
     cellRenderer: ({
       data,
@@ -119,7 +106,6 @@ export default function StudentProfileClassesPage() {
     <Table
       rowData={subjectGroupsData ?? []}
       columnDefs={studentColumns}
-      rowSelection="multiple"
       getRowId={({ data }) => String(data?.partyId)}
     />
   );
