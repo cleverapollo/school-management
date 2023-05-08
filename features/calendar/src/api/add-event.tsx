@@ -7,6 +7,8 @@ import {
   queryClient,
   graphql,
 } from '@tyro/api';
+import { useTranslation } from '@tyro/i18n';
+import { useToast } from '@tyro/core';
 import { calendarKeys } from './keys';
 
 const roomLocation = graphql(/* GraphQL */ `
@@ -48,11 +50,15 @@ export function useGetRoomLocation(filter: FindFreeResourcesFilter) {
 }
 
 export function useCreateCalendarEvent() {
+  const { toast } = useToast();
+  const { t } = useTranslation(['common']);
+
   return useMutation({
     mutationKey: calendarKeys.createEvent(),
     mutationFn: async (input: CreateCalendarEventsInput) =>
       gqlClient.request(createEvents, { input }),
     onSuccess: () => {
+      toast(t('common:snackbarMessages.createSuccess'));
       queryClient.invalidateQueries(calendarKeys.all);
     },
   });
