@@ -35,16 +35,14 @@ export const RoomLocationOptions = <TField extends ScheduleEventFormState>({
     () =>
       freeLocationData
         ? [
-            ...freeLocationData.freeRooms.map(
-              (room) => ({
-                ...room,
-                type: t('calendar:inputLabels.freeLocation'),
-              }),
-              ...freeLocationData.clashingRooms.map(({ room }) => ({
-                ...room,
-                type: t('calendar:inputLabels.clashingLocation'),
-              }))
-            ),
+            ...freeLocationData.freeRooms.map((room) => ({
+              ...room,
+              type: t('calendar:inputLabels.freeLocation'),
+            })),
+            ...freeLocationData.clashingRooms.map(({ room }) => ({
+              ...room,
+              type: t('calendar:inputLabels.clashingLocation'),
+            })),
           ]
         : [],
     [freeLocationData]
