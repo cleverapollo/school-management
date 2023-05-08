@@ -10,19 +10,8 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import { RecurrenceEnum } from '@tyro/api';
-import {
-  Control,
-  Path,
-  PathValue,
-  UseFormSetValue,
-  useWatch,
-} from 'react-hook-form';
-import { useEffect } from 'react';
-import {
-  ALL_DAY_END_TIME,
-  ALL_DAY_START_TIME,
-  MINIMUM_EVENT_DURATION,
-} from './constants';
+import { Control, Path, useWatch } from 'react-hook-form';
+import { MINIMUM_EVENT_DURATION } from './constants';
 
 type EndsOption = {
   value: 'on' | 'after';
@@ -49,12 +38,10 @@ export type ScheduleEventFormState = {
 };
 
 type ScheduleEventProps<TField extends ScheduleEventFormState> = {
-  setValue: UseFormSetValue<TField>;
   control: Control<TField>;
 };
 
 export const ScheduleEvent = <TField extends ScheduleEventFormState>({
-  setValue,
   control,
 }: ScheduleEventProps<TField>) => {
   const { t } = useTranslation(['calendar']);
@@ -62,46 +49,6 @@ export const ScheduleEvent = <TField extends ScheduleEventFormState>({
   const { allDayEvent, startDate, startTime, recurrenceEnum, ends } = useWatch({
     control,
   });
-
-  useEffect(() => {
-    const startDateAsDayjs = dayjs(startDate as dayjs.Dayjs);
-
-    setValue(
-      'startTime' as Path<TField>,
-      (allDayEvent
-        ? startDateAsDayjs.set('hour', ALL_DAY_START_TIME).set('minutes', 0)
-        : startDateAsDayjs) as PathValue<TField, Path<TField>>
-    );
-    setValue(
-      'endTime' as Path<TField>,
-      (allDayEvent
-        ? startDateAsDayjs.set('hour', ALL_DAY_END_TIME).set('minutes', 0)
-        : startDateAsDayjs.add(MINIMUM_EVENT_DURATION, 'minutes')) as PathValue<
-        TField,
-        Path<TField>
-      >
-    );
-
-    const resetEndField = (endField: 'occurrences' | 'endDate') => {
-      setValue(
-        endField as Path<TField>,
-        null as PathValue<TField, Path<TField>>
-      );
-    };
-
-    if (recurrenceEnum === RecurrenceEnum.NoRecurrence) {
-      resetEndField('occurrences');
-      resetEndField('endDate');
-    }
-
-    if (ends === 'after') {
-      resetEndField('endDate');
-    }
-
-    if (ends === 'on') {
-      resetEndField('occurrences');
-    }
-  }, [allDayEvent, startDate, recurrenceEnum, ends]);
 
   return (
     <>
@@ -154,7 +101,7 @@ export const ScheduleEvent = <TField extends ScheduleEventFormState>({
         }}
       />
 
-      {recurrenceEnum !== RecurrenceEnum.NoRecurrence && (
+      {recurrenceEnum && recurrenceEnum !== RecurrenceEnum.NoRecurrence && (
         <RHFRadioGroup<TField, EndsOption>
           label={t('calendar:inputLabels.ends')}
           radioGroupProps={{ sx: { gap: 1 } }}

@@ -23,6 +23,7 @@ import {
   Colour,
   RecurrenceEnum,
 } from '@tyro/api';
+import { useEffect } from 'react';
 import {
   CalendarParty,
   useParticipantsSearchProps,
@@ -34,6 +35,7 @@ import {
 } from './room-location-options';
 import { useCreateCalendarEvent } from '../../../../api/add-event';
 import { MINIMUM_EVENT_DURATION } from './constants';
+import { useGetRecurrenceFilter } from './hooks/use-get-recurrence-filter';
 
 export interface CalendarEditEventFormState extends ScheduleEventFormState {
   eventId?: string;
@@ -55,16 +57,21 @@ export const CalendarEditEventDetailsModal = ({
 }: CalendarEventViewProps) => {
   const { t } = useTranslation(['calendar', 'common']);
 
-  const { mutate: createCalendarEventMutation, isLoading: isSubmitting } =
-    useCreateCalendarEvent();
+  const participantsProps = useParticipantsSearchProps();
+
+  const {
+    mutate: createCalendarEventMutation,
+    isLoading: isSubmitting,
+    isSuccess: isSubmitSuccessful,
+  } = useCreateCalendarEvent();
 
   const { resolver, rules } = useFormValidator<CalendarEditEventFormState>();
-  const { control, handleSubmit, setValue } =
+  const { control, handleSubmit, watch, reset } =
     useForm<CalendarEditEventFormState>({
       resolver: resolver({
         name: rules.required(),
         allDayEvent: rules.required(),
-        startDate: [rules.required(), rules.date()],
+        startDate: [rules.date(), rules.required()],
         startTime: [
           rules.required(),
           rules.date(t('common:errorMessages.invalidTime')),
@@ -137,31 +144,64 @@ export const CalendarEditEventDetailsModal = ({
         recurrenceEnum: RecurrenceEnum.NoRecurrence,
         colour: Colour.Red,
       },
+      mode: 'onChange',
     });
 
-  const participantsProps = useParticipantsSearchProps();
+  useEffect(() => {
+    reset();
+  }, [isSubmitSuccessful]);
 
-  const onSubmit = ({
+  const handleClose = () => {
+    reset();
+    onClose();
+  };
+
+  const [
+    allDayEvent,
     startDate,
     startTime,
     endTime,
-    endDate,
+    recurrenceEnum,
     occurrences,
+    endDate,
+  ] = watch([
+    'allDayEvent',
+    'startDate',
+    'startTime',
+    'endTime',
+    'recurrenceEnum',
+    'occurrences',
+    'endDate',
+  ]);
+
+  const recurrenceFilter = useGetRecurrenceFilter({
+    allDayEvent,
+    startDate,
+    startTime,
+    endTime,
+    recurrenceEnum,
+    occurrences,
+    endDate,
+  });
+
+  const onSubmit = ({
     participants,
     location,
     ...restData
   }: CalendarEditEventFormState) => {
+    if (!recurrenceFilter) return;
+
     createCalendarEventMutation(
       {
         events: [
           {
             ...restData,
             type: CalendarEventType.General,
-            startDate: startDate.format('YYYY-MM-DD'),
-            startTime: startTime.format('HH:mm'),
-            endTime: endTime.format('HH:mm'),
-            endDate: endDate ? endDate.format('YYYY-MM-DD') : null,
-            occurrences: occurrences ? Number(occurrences) : null,
+            startDate: recurrenceFilter.fromDate,
+            startTime: recurrenceFilter.startTime,
+            endTime: recurrenceFilter.endTime,
+            endDate: recurrenceFilter.endDate ?? null,
+            occurrences: recurrenceFilter.occurrences ?? null,
             attendees: participants.map(({ partyId }) => ({
               partyId,
               type: CalendarEventAttendeeType.Attendee,
@@ -191,7 +231,7 @@ export const CalendarEditEventDetailsModal = ({
   };
 
   return (
-    <Dialog open={!!initialEventState} onClose={onClose}>
+    <Dialog open={!!initialEventState} onClose={handleClose}>
       <DialogTitle>
         {initialEventState?.eventId
           ? t('calendar:editEvent')
@@ -207,7 +247,7 @@ export const CalendarEditEventDetailsModal = ({
             }}
           />
 
-          <ScheduleEvent setValue={setValue} control={control} />
+          <ScheduleEvent control={control} />
 
           <RHFAutocomplete<CalendarEditEventFormState, CalendarParty>
             {...participantsProps}
@@ -217,7 +257,10 @@ export const CalendarEditEventDetailsModal = ({
             }}
           />
 
-          <RoomLocationOptions control={control} />
+          <RoomLocationOptions
+            recurrenceFilter={recurrenceFilter}
+            control={control}
+          />
 
           <RHFTextField<CalendarEditEventFormState>
             label={t('calendar:inputLabels.description')}
@@ -249,7 +292,7 @@ export const CalendarEditEventDetailsModal = ({
               </Tooltip>
             )} */}
 
-          <Button variant="outlined" color="inherit" onClick={onClose}>
+          <Button variant="outlined" color="inherit" onClick={handleClose}>
             {t('common:actions.cancel')}
           </Button>
 
