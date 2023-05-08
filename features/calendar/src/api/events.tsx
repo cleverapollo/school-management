@@ -1,9 +1,8 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import {
   gqlClient,
   graphql,
   CalendarEventFilter,
-  CreateCalendarEventsInput,
   CalendarEventAttendeeType,
   queryClient,
   getColorBasedOnIndex,
@@ -16,44 +15,7 @@ import dayjs from 'dayjs';
 import { CalendarEvent, IndividualAttendee } from '../@types/calendar';
 import { getResourceName } from '../../utils/get-party-name';
 import { useTimetableInfo } from './timetable';
-
-const createEvents = graphql(/* GraphQL */ `
-  mutation calendar_createCalendarEvents($input: CreateCalendarEventsInput!) {
-    calendar_createCalendarEvents(input: $input) {
-      eventId
-      calendarIds
-      schedule {
-        startTime
-        endTime
-        startDate
-        endDate
-        recurrenceRule
-        attendees {
-          partyId
-          type
-          startDate
-          endDate
-          recurrenceRule
-        }
-        exclusions {
-          partyId
-          startDate
-          endDate
-          recurrenceRule
-        }
-
-        rooms {
-          roomId
-        }
-      }
-      type
-      lessonInfo {
-        subjectGroupId
-        lessonId
-      }
-    }
-  }
-`);
+import { calendarKeys } from './keys';
 
 const events = graphql(/* GraphQL */ `
   query calendar_calendarEvents($filter: CalendarEventFilter!) {
@@ -147,11 +109,6 @@ interface CalendarFilter
   date: Date;
 }
 
-export const calendarEventsKeys = {
-  all: (filter: CalendarEventFilter) =>
-    ['calendar', 'calendarEvents', filter] as const,
-};
-
 const calendarEventsQuery = (filter: CalendarFilter) => {
   const { date, ...rest } = filter;
   const updatedFilter = {
@@ -163,7 +120,7 @@ const calendarEventsQuery = (filter: CalendarFilter) => {
     ...rest,
   };
   return {
-    queryKey: calendarEventsKeys.all(updatedFilter),
+    queryKey: calendarKeys.events(updatedFilter),
     queryFn: async () => gqlClient.request(events, { filter: updatedFilter }),
   };
 };
@@ -270,14 +227,6 @@ export function useCalendarEvents(
         ),
       };
     },
-  });
-}
-
-export function useCreateCalendarEvents() {
-  return useMutation({
-    mutationKey: ['calendar', 'createCalendarEvents'],
-    mutationFn: async (input: CreateCalendarEventsInput) =>
-      gqlClient.request(createEvents, { input }),
   });
 }
 
