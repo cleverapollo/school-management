@@ -33,6 +33,7 @@ import {
   RoomLocationOption,
 } from './room-location-options';
 import { useCreateCalendarEvent } from '../../../../api/add-event';
+import { MINIMUM_EVENT_DURATION } from './constants';
 
 export interface CalendarEditEventFormState extends ScheduleEventFormState {
   eventId?: string;
@@ -47,8 +48,6 @@ type CalendarEventViewProps = {
   initialEventState?: Partial<CalendarEditEventFormState> | null;
   onClose: () => void;
 };
-
-const MINIMUM_DURATION = 5;
 
 export const CalendarEditEventDetailsModal = ({
   initialEventState,
@@ -80,11 +79,12 @@ export const CalendarEditEventDetailsModal = ({
           rules.validate<CalendarEditEventFormState['endTime']>(
             (endTime, throwError, { startTime }) => {
               if (
-                dayjs(endTime).diff(startTime, 'minutes') < MINIMUM_DURATION
+                dayjs(endTime).diff(startTime, 'minutes') <
+                MINIMUM_EVENT_DURATION
               ) {
                 throwError(
                   t('calendar:errorMessages.minEventDuration', {
-                    time: MINIMUM_DURATION,
+                    time: MINIMUM_EVENT_DURATION,
                   })
                 );
               }
@@ -133,7 +133,7 @@ export const CalendarEditEventDetailsModal = ({
       defaultValues: {
         startDate: dayjs(),
         startTime: dayjs(),
-        endTime: dayjs().add(MINIMUM_DURATION, 'minutes'),
+        endTime: dayjs().add(MINIMUM_EVENT_DURATION, 'minutes'),
         recurrenceEnum: RecurrenceEnum.NoRecurrence,
         colour: Colour.Red,
       },
@@ -207,11 +207,7 @@ export const CalendarEditEventDetailsModal = ({
             }}
           />
 
-          <ScheduleEvent
-            minimumDuration={MINIMUM_DURATION}
-            setValue={setValue}
-            control={control}
-          />
+          <ScheduleEvent setValue={setValue} control={control} />
 
           <RHFAutocomplete<CalendarEditEventFormState, CalendarParty>
             {...participantsProps}

@@ -18,6 +18,11 @@ import {
   useWatch,
 } from 'react-hook-form';
 import { useEffect } from 'react';
+import {
+  ALL_DAY_END_TIME,
+  ALL_DAY_START_TIME,
+  MINIMUM_EVENT_DURATION,
+} from './constants';
 
 type EndsOption = {
   value: 'on' | 'after';
@@ -44,13 +49,11 @@ export type ScheduleEventFormState = {
 };
 
 type ScheduleEventProps<TField extends ScheduleEventFormState> = {
-  minimumDuration: number;
   setValue: UseFormSetValue<TField>;
   control: Control<TField>;
 };
 
 export const ScheduleEvent = <TField extends ScheduleEventFormState>({
-  minimumDuration,
   setValue,
   control,
 }: ScheduleEventProps<TField>) => {
@@ -66,14 +69,14 @@ export const ScheduleEvent = <TField extends ScheduleEventFormState>({
     setValue(
       'startTime' as Path<TField>,
       (allDayEvent
-        ? startDateAsDayjs.set('hour', 0).set('minutes', 0)
+        ? startDateAsDayjs.set('hour', ALL_DAY_START_TIME).set('minutes', 0)
         : startDateAsDayjs) as PathValue<TField, Path<TField>>
     );
     setValue(
       'endTime' as Path<TField>,
       (allDayEvent
-        ? startDateAsDayjs.set('hour', 23).set('minutes', 59)
-        : startDateAsDayjs.add(minimumDuration, 'minutes')) as PathValue<
+        ? startDateAsDayjs.set('hour', ALL_DAY_END_TIME).set('minutes', 0)
+        : startDateAsDayjs.add(MINIMUM_EVENT_DURATION, 'minutes')) as PathValue<
         TField,
         Path<TField>
       >
@@ -126,7 +129,7 @@ export const ScheduleEvent = <TField extends ScheduleEventFormState>({
                 label={t('calendar:inputLabels.endTime')}
                 timePickerProps={{
                   minTime: dayjs(startTime as dayjs.Dayjs).add(
-                    minimumDuration,
+                    MINIMUM_EVENT_DURATION,
                     'minutes'
                   ),
                 }}
