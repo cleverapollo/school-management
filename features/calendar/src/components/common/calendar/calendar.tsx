@@ -112,8 +112,9 @@ export const Calendar = function Calendar({
       calendarApi.unselect();
     }
     setEditEventInitialState({
-      start: dayjs(start),
-      end: dayjs(end),
+      startDate: dayjs(start),
+      startTime: dayjs(start),
+      endTime: dayjs(end),
     });
   };
 
@@ -150,8 +151,9 @@ export const Calendar = function Calendar({
 
   const handleAddEvent = () => {
     setEditEventInitialState({
-      start: dayjs(),
-      end: dayjs().add(30, 'minutes'),
+      startDate: dayjs(),
+      startTime: dayjs(),
+      endTime: dayjs().add(5, 'minutes'),
     });
   };
 
@@ -283,7 +285,7 @@ export const Calendar = function Calendar({
 
       <CalendarEditEventDetailsModal
         initialEventState={editEventInitialState}
-        onCancel={handleCloseEditModal}
+        onClose={handleCloseEditModal}
       />
     </>
   );

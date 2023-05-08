@@ -97,8 +97,8 @@ class Rules<TField extends FieldValues> {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  validate(
-    validateFn: <V extends FieldValue<TField>>(
+  validate<V extends FieldValue<TField>>(
+    validateFn: (
       value: V,
       throwError: (errorMessage: string) => ValidationError,
       formValues: TField

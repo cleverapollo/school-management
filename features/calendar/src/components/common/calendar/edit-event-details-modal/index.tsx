@@ -8,108 +8,190 @@ import {
 import {
   RHFAutocomplete,
   RHFColorPicker,
-  RHFDateTimePicker,
-  RHFSelect,
-  RHFSwitch,
   RHFTextField,
+  ValidationError,
   useFormValidator,
+  validations,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import { useForm } from 'react-hook-form';
-import { useEffect } from 'react';
 import { LoadingButton } from '@mui/lab';
+import {
+  CalendarEventAttendeeType,
+  CalendarEventType,
+  Colour,
+  RecurrenceEnum,
+} from '@tyro/api';
 import {
   CalendarParty,
   useParticipantsSearchProps,
 } from '../../../../hooks/use-participants-search-props';
+import { ScheduleEventFormState, ScheduleEvent } from './schedule-event';
+import {
+  RoomLocationOptions,
+  RoomLocationOption,
+} from './room-location-options';
+import { useCreateCalendarEvent } from '../../../../api/add-event';
 
-export interface CalendarEditEventFormState {
+export interface CalendarEditEventFormState extends ScheduleEventFormState {
   eventId?: string;
-  title: string;
+  name: string;
   description: string;
-  color: string;
-  allDay: boolean;
-  location: string;
-  schedule: string;
-  start: dayjs.Dayjs | null;
-  end: dayjs.Dayjs | null;
+  colour: Colour;
+  location: RoomLocationOption;
   participants: CalendarParty[];
 }
 
 type CalendarEventViewProps = {
   initialEventState?: Partial<CalendarEditEventFormState> | null;
-  onCancel: () => void;
+  onClose: () => void;
 };
 
-const scheduleOptions = [
-  {
-    name: 'norepeat',
-    label: "Doesn't repeat",
-  },
-  {
-    name: 'daily',
-    label: 'Daily',
-  },
-  {
-    name: 'weekly',
-    label: 'Weekly on Monday',
-  },
-  {
-    name: 'monthly',
-    label: 'Monthly on the first Monday',
-  },
-  {
-    name: 'annually',
-    label: 'Annually on November 7',
-  },
-  {
-    name: 'everyWeekday',
-    label: 'Every weekday(Monday to Friday)',
-  },
-  {
-    name: 'custom',
-    label: 'Custom...',
-  },
-];
+const MINIMUM_DURATION = 5;
 
 export const CalendarEditEventDetailsModal = ({
   initialEventState,
-  onCancel,
+  onClose,
 }: CalendarEventViewProps) => {
   const { t } = useTranslation(['calendar', 'common']);
+
+  const { mutate: createCalendarEventMutation, isLoading: isSubmitting } =
+    useCreateCalendarEvent();
+
   const { resolver, rules } = useFormValidator<CalendarEditEventFormState>();
+  const { control, handleSubmit, setValue } =
+    useForm<CalendarEditEventFormState>({
+      resolver: resolver({
+        name: rules.required(),
+        allDayEvent: rules.required(),
+        startDate: [rules.required(), rules.date()],
+        startTime: [
+          rules.required(),
+          rules.date(t('common:errorMessages.invalidTime')),
+        ],
+        endTime: [
+          rules.required(),
+          rules.date(t('common:errorMessages.invalidTime')),
+          rules.afterStartDate(
+            'startTime',
+            t('common:errorMessages.afterStartTime')
+          ),
+          rules.validate<CalendarEditEventFormState['endTime']>(
+            (endTime, throwError, { startTime }) => {
+              if (
+                dayjs(endTime).diff(startTime, 'minutes') < MINIMUM_DURATION
+              ) {
+                throwError(
+                  t('calendar:errorMessages.minEventDuration', {
+                    time: MINIMUM_DURATION,
+                  })
+                );
+              }
+            }
+          ),
+        ],
+        recurrenceEnum: rules.required(),
+        ends: rules.required(),
+        occurrences: rules.validate<CalendarEditEventFormState['occurrences']>(
+          (occurrences, throwError, { ends }) => {
+            if (ends === 'after') {
+              try {
+                validations.required(
+                  occurrences,
+                  t('common:errorMessages.required')
+                );
+                validations.min(
+                  occurrences ?? 0,
+                  1,
+                  t('common:errorMessages.min', { number: 1 })
+                );
+              } catch (error) {
+                throwError((error as ValidationError).message);
+              }
+            }
+          }
+        ),
+        endDate: [
+          rules.date(),
+          rules.validate<CalendarEditEventFormState['endDate']>(
+            (endDate, throwError, { ends }) => {
+              if (ends === 'on') {
+                try {
+                  validations.required(endDate);
+                } catch (error) {
+                  throwError(t('common:errorMessages.required'));
+                }
+              }
+            }
+          ),
+        ],
+        participants: rules.required(),
+        location: rules.required(),
+        colour: rules.required(),
+      }),
+      defaultValues: {
+        startDate: dayjs(),
+        startTime: dayjs(),
+        endTime: dayjs().add(MINIMUM_DURATION, 'minutes'),
+        recurrenceEnum: RecurrenceEnum.NoRecurrence,
+        colour: Colour.Red,
+      },
+    });
+
   const participantsProps = useParticipantsSearchProps();
 
-  const { reset, control, handleSubmit } = useForm<CalendarEditEventFormState>({
-    resolver: resolver({
-      title: rules.required(),
-      description: rules.required(),
-      color: rules.required(),
-      allDay: rules.required(),
-      location: rules.required(),
-      schedule: rules.required(),
-      participants: rules.required(),
-      start: rules.required(),
-      end: [rules.required(), rules.afterStartDate('start')],
-    }),
-  });
-
-  const onSubmit = (data: CalendarEditEventFormState) => {
-    console.log(data);
+  const onSubmit = ({
+    startDate,
+    startTime,
+    endTime,
+    endDate,
+    occurrences,
+    participants,
+    location,
+    ...restData
+  }: CalendarEditEventFormState) => {
+    createCalendarEventMutation(
+      {
+        events: [
+          {
+            ...restData,
+            type: CalendarEventType.General,
+            startDate: startDate.format('YYYY-MM-DD'),
+            startTime: startTime.format('HH:mm'),
+            endTime: endTime.format('HH:mm'),
+            endDate: endDate ? endDate.format('YYYY-MM-DD') : null,
+            occurrences: occurrences ? Number(occurrences) : null,
+            attendees: participants.map(({ partyId }) => ({
+              partyId,
+              type: CalendarEventAttendeeType.Attendee,
+              // TODO: remove when tags are non mandatory
+              tags: [],
+            })),
+            rooms: [
+              {
+                roomId: location.roomId,
+                // TODO: remove when tags are non mandatory
+                tags: [],
+              },
+            ],
+            // TODO: remove when tags are non mandatory
+            tags: [],
+          },
+        ],
+      },
+      {
+        onSuccess: onClose,
+        // TODO: handle error message from server
+        onError: (error) => {
+          console.error(error);
+        },
+      }
+    );
   };
 
-  useEffect(() => {
-    if (initialEventState) {
-      reset({
-        color: 'red',
-        ...initialEventState,
-      });
-    }
-  }, [initialEventState]);
-
   return (
-    <Dialog open={!!initialEventState} onClose={onCancel}>
+    <Dialog open={!!initialEventState} onClose={onClose}>
       <DialogTitle>
         {initialEventState?.eventId
           ? t('calendar:editEvent')
@@ -120,41 +202,17 @@ export const CalendarEditEventDetailsModal = ({
           <RHFTextField<CalendarEditEventFormState>
             label={t('calendar:inputLabels.title')}
             controlProps={{
-              name: 'title',
+              name: 'name',
               control,
             }}
           />
 
-          <Stack direction="row" gap={2}>
-            <RHFDateTimePicker<CalendarEditEventFormState>
-              label={t('common:startDate')}
-              controlProps={{ name: 'start', control }}
-            />
-            <RHFDateTimePicker<CalendarEditEventFormState>
-              label={t('common:endDate')}
-              controlProps={{ name: 'end', control }}
-            />
-          </Stack>
-
-          <RHFSwitch<CalendarEditEventFormState>
-            label={t('calendar:inputLabels.allDay')}
-            switchProps={{ color: 'primary' }}
-            controlProps={{ name: 'allDay', control }}
+          <ScheduleEvent
+            minimumDuration={MINIMUM_DURATION}
+            setValue={setValue}
+            control={control}
           />
 
-          <RHFSelect<
-            CalendarEditEventFormState,
-            (typeof scheduleOptions)[number]
-          >
-            label={t('calendar:inputLabels.schedule')}
-            options={scheduleOptions}
-            optionIdKey="name"
-            getOptionLabel={(option) => option.label}
-            controlProps={{
-              name: 'schedule',
-              control,
-            }}
-          />
           <RHFAutocomplete<CalendarEditEventFormState, CalendarParty>
             {...participantsProps}
             controlProps={{
@@ -163,22 +221,7 @@ export const CalendarEditEventDetailsModal = ({
             }}
           />
 
-          {/* Look at adding participants + rooms when we get resource endpoint */}
-          {/* <ParticipantInput
-              participants={participants}
-              setParticipants={setParticipants}
-            /> */}
-
-          {/* <RHFSelect
-              name="location"
-              label={t('calendar:inputLabels.location')}
-              // @ts-expect-error
-              customControl={control}
-            >
-              {LocationOptions.map((option) => (
-                <MenuItem value={option.name}>{option.label}</MenuItem>
-              ))}
-            </RHFSelect> */}
+          <RoomLocationOptions control={control} />
 
           <RHFTextField<CalendarEditEventFormState>
             label={t('calendar:inputLabels.description')}
@@ -195,7 +238,7 @@ export const CalendarEditEventDetailsModal = ({
           <RHFColorPicker<CalendarEditEventFormState>
             label={t('calendar:inputLabels.eventColor')}
             controlProps={{
-              name: 'color',
+              name: 'colour',
               control,
             }}
           />
@@ -210,14 +253,14 @@ export const CalendarEditEventDetailsModal = ({
               </Tooltip>
             )} */}
 
-          <Button variant="outlined" color="inherit" onClick={onCancel}>
+          <Button variant="outlined" color="inherit" onClick={onClose}>
             {t('common:actions.cancel')}
           </Button>
 
           <LoadingButton
             type="submit"
             variant="contained"
-            // loading={isSubmitting}
+            loading={isSubmitting}
           >
             {t('common:actions.add')}
           </LoadingButton>

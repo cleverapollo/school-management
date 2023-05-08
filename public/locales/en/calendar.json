@@ -25,19 +25,34 @@
   "editEvent": "Edit event",
   "editCalendar": "Edit calendar",
   "errorMessages": {
-    "title": "Title is required",
-    "date": "End date must be later than start date"
+    "minEventDuration": "The event must last at least {{time}} minutes"
   },
   "inputLabels": {
     "title": "Title",
-    "startDate": "Start date",
-    "endDate": "End date",
     "allDay": "All day",
+    "startDate": "Start date",
+    "startTime": "Start time",
+    "endTime": "End time",
     "schedule": "Schedule",
+    "recurrenceEnum": {
+      "NO_RECURRENCE": "Does not repeat",
+      "DAILY": "Daily",
+      "WEEKLY": "Weekly on {{day}}",
+      "BIWEEKLY": "Biweekly on {{day}}",
+      "MONTHLY": "Monthly on the first {{day}}"
+    },
+    "ends": "Ends",
+    "endsNever": "Never",
+    "endsOn": "On",
+    "endsAfter": "After",
+    "endDate": "End date",
+    "occurrences": "Occurrences",
+    "participants": "Participants",
     "location": "Location",
+    "freeLocation": "Free location",
+    "clashingLocation": "Clashing location",
     "description": "Description",
-    "eventColor": "Event color",
-    "participants": "Participants"
+    "eventColor": "Event color"
   },
   "placeholders": {
     "participants": "People, groups, rooms, etc"
