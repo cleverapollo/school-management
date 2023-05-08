@@ -152,8 +152,8 @@ export const CalendarEditEventDetailsModal = ({
   }, [isSubmitSuccessful]);
 
   const handleClose = () => {
-    reset();
     onClose();
+    reset();
   };
 
   const [
