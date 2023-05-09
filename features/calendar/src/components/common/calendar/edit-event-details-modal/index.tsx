@@ -66,6 +66,15 @@ export const CalendarEditEventDetailsModal = ({
   } = useCreateCalendarEvent();
 
   const { resolver, rules } = useFormValidator<CalendarEditEventFormState>();
+
+  const defaultFormStateValues: Partial<CalendarEditEventFormState> = {
+    startDate: dayjs(),
+    startTime: dayjs(),
+    endTime: dayjs().add(MINIMUM_EVENT_DURATION, 'minutes'),
+    recurrenceEnum: RecurrenceEnum.NoRecurrence,
+    colour: Colour.Red,
+  };
+
   const { control, handleSubmit, watch, reset } =
     useForm<CalendarEditEventFormState>({
       resolver: resolver({
@@ -140,15 +149,15 @@ export const CalendarEditEventDetailsModal = ({
         location: rules.required(),
         colour: rules.required(),
       }),
-      defaultValues: {
-        startDate: dayjs(),
-        startTime: dayjs(),
-        endTime: dayjs().add(MINIMUM_EVENT_DURATION, 'minutes'),
-        recurrenceEnum: RecurrenceEnum.NoRecurrence,
-        colour: Colour.Red,
-      },
+      defaultValues: defaultFormStateValues,
       mode: 'onChange',
     });
+
+  useEffect(() => {
+    if (initialEventState) {
+      reset({ ...defaultFormStateValues, ...initialEventState });
+    }
+  }, [initialEventState]);
 
   useEffect(() => {
     reset();

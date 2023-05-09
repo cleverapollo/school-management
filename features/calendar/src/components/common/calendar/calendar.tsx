@@ -34,6 +34,10 @@ import { EditCalendarPanel } from './edit-calendar-panel';
 import { CalendarDetailsPopover } from './details-popover';
 import { getDayHeaderContent } from './day-header-content';
 import { CalendarParty } from '../../../hooks/use-participants-search-props';
+import {
+  DEFAULT_END_TIME,
+  SELECTABLE_EVENT_CONSTRAINT,
+} from './edit-event-details-modal/constants';
 
 export interface CalendarProps {
   defaultPartys?: CalendarParty[];
@@ -105,14 +109,17 @@ export const Calendar = function Calendar({
   };
 
   const handleSelectRange = (arg: DateSelectArg) => {
-    const { start, end } = arg;
+    const { start, end, allDay } = arg;
     const calendarEl = calendarRef.current;
+
     if (calendarEl) {
       const calendarApi = calendarEl.getApi();
       calendarApi.unselect();
     }
+
     setEditEventInitialState({
       startDate: dayjs(start),
+      allDayEvent: allDay,
       startTime: dayjs(start),
       endTime: dayjs(end),
     });
@@ -153,7 +160,7 @@ export const Calendar = function Calendar({
     setEditEventInitialState({
       startDate: dayjs(),
       startTime: dayjs(),
-      endTime: dayjs().add(5, 'minutes'),
+      endTime: dayjs().add(DEFAULT_END_TIME, 'minutes'),
     });
   };
 
@@ -232,6 +239,7 @@ export const Calendar = function Calendar({
                 eventMinHeight={48}
                 slotEventOverlap={false}
                 height={isDesktop ? 720 : 'auto'}
+                selectConstraint={SELECTABLE_EVENT_CONSTRAINT}
                 businessHours={businessHours}
                 nowIndicator
                 plugins={[
