@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useId } from 'react';
 import { Box, FormLabel } from '@mui/material';
 import { Autocomplete } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 import {
   CalendarParty,
   useParticipantsSearchProps,
@@ -15,6 +16,8 @@ export function CalendarSearch({
   selectedPartys,
   onChangeSelectedPartys,
 }: CalendarSearchProps) {
+  const { t } = useTranslation(['common']);
+
   const id = useId();
   const participantsProps = useParticipantsSearchProps({
     id,
@@ -38,7 +41,7 @@ export function CalendarSearch({
 
   return (
     <Box>
-      <FormLabel htmlFor={id}>Calendars</FormLabel>
+      <FormLabel htmlFor={id}>{t('common:calendars')}</FormLabel>
       <Autocomplete<CalendarParty, true> {...participantsProps} />
     </Box>
   );

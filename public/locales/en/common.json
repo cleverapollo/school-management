@@ -230,5 +230,6 @@
     "yellow": "Yellow"
   },
   "createdBy": "Created by",
-  "dateOfCreation": "Date of creation"
+  "dateOfCreation": "Date of creation",
+  "calendars": "Calendars"
 }
