@@ -7,11 +7,13 @@ import {
   queryClient,
   getColorBasedOnIndex,
   CalendarEventType,
+  Calendar_CalendarEventsQuery,
 } from '@tyro/api';
 import { EventInput } from '@fullcalendar/core';
 import { useTheme } from '@mui/material';
 import { usePreferredNameLayout } from '@tyro/core';
 import dayjs from 'dayjs';
+import { useCallback } from 'react';
 import { CalendarEvent, IndividualAttendee } from '../@types/calendar';
 import { getResourceName } from '../../utils/get-party-name';
 import { useTimetableInfo } from './timetable';
@@ -142,93 +144,100 @@ export function useCalendarEvents(
     dayjs(filter.date).add(1, 'month').endOf('month')
   );
 
+  const hasPartyIds = Boolean(filter.resources.partyIds?.length);
+
   return useQuery({
     ...calendarEventsQuery(filter),
-    keepPreviousData: true,
-    select: ({ calendar_calendarEvents }) => {
-      const { resources } = calendar_calendarEvents ?? { resources: [] };
-      const numberOfResources = resources.length;
+    keepPreviousData: hasPartyIds,
+    enabled: hasPartyIds,
+    select: useCallback(
+      ({ calendar_calendarEvents }: Calendar_CalendarEventsQuery) => {
+        const { resources } = calendar_calendarEvents ?? { resources: [] };
+        const numberOfResources = resources.length;
 
-      const resourceList = resources.map((resource, index) => ({
-        id: String(resource.resourceId),
-        title: getResourceName(resource, displayName),
-        color: numberOfResources > 1 ? getColorBasedOnIndex(index) : null,
-      }));
+        const resourceList = resources.map((resource, index) => ({
+          id: String(resource.resourceId),
+          title: getResourceName(resource, displayName),
+          color: numberOfResources > 1 ? getColorBasedOnIndex(index) : null,
+        }));
 
-      const businessHours =
-        data?.reduce((acc, day) => {
-          if (day.date && day.startTime && day.endTime) {
-            const date = dayjs(day.date);
-            const startOfWeekKey = date.startOf('week').format('YYYY-MM-DD');
-            const valueForWeek = acc.get(startOfWeekKey) ?? [];
+        const businessHours =
+          data?.reduce((acc, day) => {
+            if (day.date && day.startTime && day.endTime) {
+              const date = dayjs(day.date);
+              const startOfWeekKey = date.startOf('week').format('YYYY-MM-DD');
+              const valueForWeek = acc.get(startOfWeekKey) ?? [];
 
-            acc.set(startOfWeekKey, [
-              ...valueForWeek,
-              {
-                daysOfWeek: [date.day()],
-                startTime: dayjs(day.startTime).format('HH:mm'),
-                endTime: dayjs(day.endTime).format('HH:mm'),
-              },
-            ]);
-          }
+              acc.set(startOfWeekKey, [
+                ...valueForWeek,
+                {
+                  daysOfWeek: [date.day()],
+                  startTime: dayjs(day.startTime).format('HH:mm'),
+                  endTime: dayjs(day.endTime).format('HH:mm'),
+                },
+              ]);
+            }
 
-          return acc;
-        }, new Map<string, BussinessHoursInput[]>()) ??
-        new Map<string, BussinessHoursInput[]>();
+            return acc;
+          }, new Map<string, BussinessHoursInput[]>()) ??
+          new Map<string, BussinessHoursInput[]>();
 
-      return {
-        numberOfResources,
-        resources: resourceList,
-        businessHours,
-        events: resources.reduce<ExtendedEventInput[]>(
-          (eventsList, resource) => {
-            const { id: resourceId, color: resourceEventColor } =
-              resourceList.find(
-                ({ id }) => id === String(resource.resourceId)
-              ) ?? { color: null };
+        return {
+          numberOfResources,
+          resources: resourceList,
+          businessHours,
+          events: resources.reduce<ExtendedEventInput[]>(
+            (eventsList, resource) => {
+              const { id: resourceId, color: resourceEventColor } =
+                resourceList.find(
+                  ({ id }) => id === String(resource.resourceId)
+                ) ?? { color: null };
 
-            resource.events.forEach((event) => {
-              if (!visableEventTypes.includes(event.type)) return; // skip if event type is not visable
+              resource.events.forEach((event) => {
+                if (!visableEventTypes.includes(event.type)) return; // skip if event type is not visable
 
-              const organizerInfo = event?.attendees?.filter(
-                (attendee) =>
-                  attendee?.type === CalendarEventAttendeeType.Organiser
-              )[0] as IndividualAttendee;
-              const additionalTeachers = event?.attendees?.filter(
-                (attendee) =>
-                  attendee?.type === CalendarEventAttendeeType.Additional
-              ) as IndividualAttendee[];
+                const organizerInfo = event?.attendees?.filter(
+                  (attendee) =>
+                    attendee?.type === CalendarEventAttendeeType.Organiser
+                )[0] as IndividualAttendee;
+                const additionalTeachers = event?.attendees?.filter(
+                  (attendee) =>
+                    attendee?.type === CalendarEventAttendeeType.Additional
+                ) as IndividualAttendee[];
 
-              const eventColor = resourceEventColor ?? event.colour ?? 'slate';
+                const eventColor =
+                  resourceEventColor ?? event.colour ?? 'slate';
 
-              eventsList.push({
-                id: `${resourceId ?? ''}-${event?.eventId}-${
-                  event?.startTime ?? ''
-                }-${event?.endTime ?? ''}`,
-                resourceId,
-                title: event?.name ?? '',
-                additionalTeachers,
-                start: event?.startTime,
-                end: event?.endTime,
-                color: eventColor,
-                backgroundColor: palette[eventColor][100],
-                borderColor: palette[eventColor][500],
-                organizer:
-                  organizerInfo?.partyInfo?.__typename === 'Staff'
-                    ? displayName(organizerInfo?.partyInfo?.person)
-                    : '',
-                room: event?.rooms?.length ? event.rooms[0]?.name : '',
-                originalEvent: event,
-                editable: event.type !== CalendarEventType.Lesson,
+                eventsList.push({
+                  id: `${resourceId ?? ''}-${event?.eventId}-${
+                    event?.startTime ?? ''
+                  }-${event?.endTime ?? ''}`,
+                  resourceId,
+                  title: event?.name ?? '',
+                  additionalTeachers,
+                  start: event?.startTime,
+                  end: event?.endTime,
+                  color: eventColor,
+                  backgroundColor: palette[eventColor][100],
+                  borderColor: palette[eventColor][500],
+                  organizer:
+                    organizerInfo?.partyInfo?.__typename === 'Staff'
+                      ? displayName(organizerInfo?.partyInfo?.person)
+                      : '',
+                  room: event?.rooms?.length ? event.rooms[0]?.name : '',
+                  originalEvent: event,
+                  editable: event.type !== CalendarEventType.Lesson,
+                });
               });
-            });
 
-            return eventsList;
-          },
-          []
-        ),
-      };
-    },
+              return eventsList;
+            },
+            []
+          ),
+        };
+      },
+      [data, palette, displayName]
+    ),
   });
 }
 

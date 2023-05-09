@@ -200,16 +200,21 @@ export const CalendarEditEventDetailsModal = ({
   const onSubmit = ({
     participants,
     location,
-    ...restData
+    ...restEventData
   }: CalendarEditEventFormState) => {
     if (!recurrenceFilter) return;
 
     // TODO: edition mutation is not ready yet
+    if (restEventData.eventId) {
+      console.log('edit event', restEventData);
+      return onClose();
+    }
+
     createCalendarEventMutation(
       {
         events: [
           {
-            ...restData,
+            ...restEventData,
             type: CalendarEventType.General,
             startDate: recurrenceFilter.fromDate,
             startTime: recurrenceFilter.startTime,

@@ -31,6 +31,7 @@ export const useParticipantsSearchProps = (
     multiple: true,
     open: searchValue.length > 0,
     filterSelectedOptions: true,
+    clearOnBlur: true,
     filterOptions: (x) => x,
     freeSolo: true,
     loading: isLoading,

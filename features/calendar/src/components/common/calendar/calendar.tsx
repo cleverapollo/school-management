@@ -169,6 +169,10 @@ export const Calendar = function Calendar({
   };
 
   useEffect(() => {
+    setSelectedPartys(defaultPartys);
+  }, [setSelectedPartys, defaultPartys]);
+
+  useEffect(() => {
     const calendarEl = calendarRef.current;
     if (calendarEl) {
       const calendarApi = calendarEl.getApi();
