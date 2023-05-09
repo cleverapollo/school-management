@@ -125,9 +125,12 @@ export const CalendarEditEventDetailsModal = ({
             (endDate, throwError, { ends }) => {
               if (ends === 'on') {
                 try {
-                  validations.required(endDate);
+                  validations.required(
+                    endDate,
+                    t('common:errorMessages.required')
+                  );
                 } catch (error) {
-                  throwError(t('common:errorMessages.required'));
+                  throwError((error as ValidationError).message);
                 }
               }
             }
