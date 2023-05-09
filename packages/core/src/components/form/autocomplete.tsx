@@ -10,18 +10,20 @@ import { Autocomplete, AutocompleteProps } from '../autocomplete';
 
 export type RHFAutocompleteProps<
   TField extends FieldValues,
-  TAutocompleteOption extends object | string
-> = AutocompleteProps<TAutocompleteOption> & {
+  TAutocompleteOption extends object | string,
+  FreeSolo extends boolean | undefined = false
+> = AutocompleteProps<TAutocompleteOption, FreeSolo> & {
   controlProps: UseControllerProps<TField>;
 };
 
 export const RHFAutocomplete = <
   TField extends FieldValues,
-  TAutocompleteOption extends object | string
+  TAutocompleteOption extends object | string,
+  FreeSolo extends boolean | undefined = false
 >({
   controlProps,
   ...restAutocompleteProps
-}: RHFAutocompleteProps<TField, TAutocompleteOption>) => {
+}: RHFAutocompleteProps<TField, TAutocompleteOption, FreeSolo>) => {
   const {
     field: { value, onChange, ref, name },
     fieldState: { error },

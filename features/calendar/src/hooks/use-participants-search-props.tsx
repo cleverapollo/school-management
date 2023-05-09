@@ -9,8 +9,8 @@ export type CalendarParty = Pick<Search, 'partyId' | 'text' | 'avatarUrl'> & {
 };
 
 export const useParticipantsSearchProps = (
-  customProps?: Partial<AutocompleteProps<CalendarParty>>
-): AutocompleteProps<CalendarParty> => {
+  customProps?: Partial<AutocompleteProps<CalendarParty, true>>
+): AutocompleteProps<CalendarParty, true> => {
   const { t } = useTranslation(['common', 'calendar']);
 
   const {
@@ -32,6 +32,7 @@ export const useParticipantsSearchProps = (
     open: searchValue.length > 0,
     filterSelectedOptions: true,
     filterOptions: (x) => x,
+    freeSolo: true,
     loading: isLoading,
     options: options ?? [],
     onInputChange: (_, newInputValue) => setSearchValue(newInputValue),

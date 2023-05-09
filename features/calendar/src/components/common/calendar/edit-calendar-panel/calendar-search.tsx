@@ -39,7 +39,7 @@ export function CalendarSearch({
   return (
     <Box>
       <FormLabel htmlFor={id}>Calendars</FormLabel>
-      <Autocomplete<CalendarParty> {...participantsProps} />
+      <Autocomplete<CalendarParty, true> {...participantsProps} />
     </Box>
   );
 }

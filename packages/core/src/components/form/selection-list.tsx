@@ -3,7 +3,7 @@ import { FieldValues } from 'react-hook-form';
 import { RHFAutocomplete, RHFAutocompleteProps } from './autocomplete';
 
 type RHFSelectionListProps<TField extends FieldValues> = Omit<
-  RHFAutocompleteProps<TField, string>,
+  RHFAutocompleteProps<TField, string, true>,
   'multiple' | 'options' | 'freeSolo' | 'renderTags'
 >;
 
@@ -17,7 +17,7 @@ export const RHFSelectionList = <TField extends FieldValues>({
   inputProps,
   ...restProps
 }: RHFSelectionListProps<TField>) => (
-  <RHFAutocomplete<TField, string>
+  <RHFAutocomplete<TField, string, true>
     {...restProps}
     inputProps={inputProps}
     options={[]}

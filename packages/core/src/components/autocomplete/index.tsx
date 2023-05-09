@@ -12,13 +12,11 @@ import React from 'react';
 import { getColorBasedOnIndex } from '@tyro/api';
 import { Avatar, AvatarProps } from '../avatar';
 
-export type AutocompleteProps<T extends object | string> = Omit<
-  MiAutocompleteProps<
-    T,
-    boolean,
-    undefined,
-    T extends string ? boolean : undefined
-  >,
+export type AutocompleteProps<
+  T extends object | string,
+  FreeSolo extends boolean | undefined = false
+> = Omit<
+  MiAutocompleteProps<T, boolean, undefined, FreeSolo>,
   'renderInput'
 > & {
   label?: TextFieldProps['label'];
@@ -41,7 +39,10 @@ export type AutocompleteProps<T extends object | string> = Omit<
   ) => React.ReactNode;
 };
 
-export const Autocomplete = <T extends object | string>({
+export const Autocomplete = <
+  T extends object | string,
+  FreeSolo extends boolean | undefined = false
+>({
   value,
   label,
   placeholder,
@@ -52,7 +53,7 @@ export const Autocomplete = <T extends object | string>({
   renderAvatarOption,
   renderAvatarTags,
   ...restAutocompleteProps
-}: AutocompleteProps<T>) => (
+}: AutocompleteProps<T, FreeSolo>) => (
   <MiAutocomplete
     value={value}
     isOptionEqualToValue={(option, newValue) => {

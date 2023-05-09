@@ -263,7 +263,7 @@ export const CalendarEditEventDetailsModal = ({
 
           <ScheduleEvent control={control} />
 
-          <RHFAutocomplete<CalendarEditEventFormState, CalendarParty>
+          <RHFAutocomplete<CalendarEditEventFormState, CalendarParty, true>
             {...participantsProps}
             controlProps={{
               name: 'participants',
