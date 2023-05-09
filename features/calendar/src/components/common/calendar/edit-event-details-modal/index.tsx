@@ -22,6 +22,7 @@ import {
   CalendarEventType,
   Colour,
   RecurrenceEnum,
+  CreateCalendarEventInput,
 } from '@tyro/api';
 import { useEffect } from 'react';
 import {
@@ -37,16 +38,16 @@ import { useCreateCalendarEvent } from '../../../../api/add-event';
 import { MINIMUM_EVENT_DURATION } from './constants';
 import { useGetRecurrenceFilter } from './hooks/use-get-recurrence-filter';
 
-export interface CalendarEditEventFormState extends ScheduleEventFormState {
-  eventId?: string;
-  name: string;
-  description: string;
-  colour: Colour;
-  location: RoomLocationOption;
+export type CalendarEditEventFormState = Pick<
+  CreateCalendarEventInput,
+  'calendarIds' | 'name' | 'description' | 'colour'
+> & {
+  eventId?: number;
+  location: Omit<RoomLocationOption, 'type'>;
   participants: CalendarParty[];
-}
+} & ScheduleEventFormState;
 
-type CalendarEventViewProps = {
+export type CalendarEventViewProps = {
   initialEventState?: Partial<CalendarEditEventFormState> | null;
   onClose: () => void;
 };
@@ -203,6 +204,7 @@ export const CalendarEditEventDetailsModal = ({
   }: CalendarEditEventFormState) => {
     if (!recurrenceFilter) return;
 
+    // TODO: edition mutation is not ready yet
     createCalendarEventMutation(
       {
         events: [
@@ -214,9 +216,9 @@ export const CalendarEditEventDetailsModal = ({
             endTime: recurrenceFilter.endTime,
             endDate: recurrenceFilter.endDate ?? null,
             occurrences: recurrenceFilter.occurrences ?? null,
-            attendees: participants.map(({ partyId }) => ({
+            attendees: participants.map(({ partyId, attendeeType }) => ({
               partyId,
-              type: CalendarEventAttendeeType.Attendee,
+              type: attendeeType ?? CalendarEventAttendeeType.Attendee,
               // TODO: remove when tags are non mandatory
               tags: [],
             })),
@@ -296,14 +298,6 @@ export const CalendarEditEventDetailsModal = ({
         </Stack>
 
         <DialogActions>
-          {/* {!isCreating && (
-              <Tooltip title="Delete Event">
-                <IconButton onClick={handleDelete}>
-                  <Iconify icon="eva:trash-2-outline" width={20} height={20} />
-                </IconButton>
-              </Tooltip>
-            )} */}
-
           <Button variant="outlined" color="inherit" onClick={handleClose}>
             {t('common:actions.cancel')}
           </Button>
@@ -313,7 +307,9 @@ export const CalendarEditEventDetailsModal = ({
             variant="contained"
             loading={isSubmitting}
           >
-            {t('common:actions.add')}
+            {initialEventState?.eventId
+              ? t('common:actions.edit')
+              : t('common:actions.add')}
           </LoadingButton>
         </DialogActions>
       </form>

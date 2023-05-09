@@ -27,7 +27,7 @@ import {
 } from '../../../api/events';
 import {
   CalendarEditEventDetailsModal,
-  CalendarEditEventFormState,
+  CalendarEventViewProps,
 } from './edit-event-details-modal';
 import { getCalendarContent } from './calendar-content';
 import { EditCalendarPanel } from './edit-calendar-panel';
@@ -71,7 +71,7 @@ export const Calendar = function Calendar({
     onToggle: onToggleEditCalendar,
   } = useDisclosure();
   const [editEventInitialState, setEditEventInitialState] =
-    useState<Partial<CalendarEditEventFormState> | null>(null);
+    useState<CalendarEventViewProps['initialEventState']>(null);
   const [selectedEventElement, setSelectedEventElement] =
     useState<HTMLElement | null>(null);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
@@ -287,7 +287,7 @@ export const Calendar = function Calendar({
         onClose={() => {
           setSelectedEventElement(null);
         }}
-        onEdit={() => console.log('edit')}
+        onEdit={setEditEventInitialState}
         event={selectedEvent}
       />
 

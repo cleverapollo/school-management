@@ -40,7 +40,7 @@ export const useGetRecurrenceFilter = ({
       endTime &&
       endTime.isValid();
 
-    if (!areValidRequiredDates) {
+    if (!areValidRequiredDates || !recurrenceEnum) {
       return setRecurrenceFilter(null);
     }
 

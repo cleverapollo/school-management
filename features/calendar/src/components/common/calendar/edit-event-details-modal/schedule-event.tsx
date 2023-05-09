@@ -9,7 +9,7 @@ import {
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
-import { RecurrenceEnum } from '@tyro/api';
+import { CreateCalendarEventInput, RecurrenceEnum } from '@tyro/api';
 import { Control, Path, useWatch } from 'react-hook-form';
 import { MINIMUM_EVENT_DURATION } from './constants';
 
@@ -26,14 +26,14 @@ const recurrenceOptions: RecurrenceEnum[] = [
   RecurrenceEnum.Monthly,
 ];
 
-export type ScheduleEventFormState = {
-  allDayEvent: boolean;
-  recurrenceEnum: RecurrenceEnum;
+export type ScheduleEventFormState = Pick<
+  CreateCalendarEventInput,
+  'allDayEvent' | 'recurrenceEnum' | 'occurrences'
+> & {
   startDate: dayjs.Dayjs;
   startTime: dayjs.Dayjs;
   endTime: dayjs.Dayjs;
   endDate: dayjs.Dayjs | null;
-  occurrences: number | null;
   ends: EndsOption['value'];
 };
 

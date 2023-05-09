@@ -52,6 +52,8 @@ const events = graphql(/* GraphQL */ `
           endTime
           type
           colour
+          description
+          allDayEvent
           lessonInfo {
             subjectGroupId
             lessonId
@@ -204,7 +206,7 @@ export function useCalendarEvents(
                   event?.startTime ?? ''
                 }-${event?.endTime ?? ''}`,
                 resourceId,
-                title: event?.name,
+                title: event?.name ?? '',
                 additionalTeachers,
                 start: event?.startTime,
                 end: event?.endTime,

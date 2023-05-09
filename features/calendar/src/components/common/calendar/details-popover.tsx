@@ -18,12 +18,16 @@ import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Avatar, orderByValue, usePreferredNameLayout } from '@tyro/core';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { CalendarEventAttendeeType, CalendarEventType } from '@tyro/api';
 import { Link } from 'react-router-dom';
 import { Attendee } from '../../../@types/calendar';
 import { ExtendedEventInput } from '../../../api/events';
-import { getPartyName } from '../../../../utils/get-party-name';
+import {
+  getPartyAvatarUrl,
+  getPartyName,
+} from '../../../../utils/get-party-name';
+import { CalendarEditEventFormState } from './edit-event-details-modal';
 
 dayjs.extend(LocalizedFormat);
 
@@ -31,7 +35,7 @@ interface CalendarDetailsPopoverProps {
   eventElementRef: HTMLElement | null;
   event: ExtendedEventInput | undefined;
   onClose: () => void;
-  onEdit: () => void;
+  onEdit: (eventToEdit: Partial<CalendarEditEventFormState>) => void;
 }
 
 const IconContainer = styled(Box)(({ theme }) => ({
@@ -117,6 +121,30 @@ export function CalendarDetailsPopover({
     [event?.originalEvent?.attendees]
   );
 
+  const handleEdit = useCallback(() => {
+    if (event) {
+      const { startTime, endTime, rooms, ...restData } = event.originalEvent;
+
+      onEdit({
+        ...restData,
+        // TODO: pass down the recurrenceEnum, and occurrences when BE sends them.
+        startDate: dayjs(startTime),
+        startTime: dayjs(startTime),
+        endDate: dayjs(endTime),
+        endTime: dayjs(endTime),
+        location: rooms[0],
+        participants: sortedParticipants.map(
+          ({ partyId, partyInfo, type }) => ({
+            partyId,
+            attendeeType: type,
+            avatarUrl: getPartyAvatarUrl(partyInfo),
+            text: getPartyName(partyInfo, displayName),
+          })
+        ),
+      });
+    }
+  }, [event, onEdit, sortedParticipants]);
+
   return (
     <Popover
       open={!!eventElementRef}
@@ -170,7 +198,7 @@ export function CalendarDetailsPopover({
             <IconButton
               aria-label={t('common:actions.edit')}
               size="small"
-              onClick={onEdit}
+              onClick={handleEdit}
             >
               <EditIcon />
             </IconButton>

@@ -1,12 +1,12 @@
 import { AutocompleteProps, useDebouncedValue } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { Search } from '@tyro/api';
+import { CalendarEventAttendeeType, Search } from '@tyro/api';
 import { useCalendarSearch } from '../api/calendar-search';
 
-export type CalendarParty = Pick<
-  Search,
-  'partyId' | 'text' | 'type' | 'avatarUrl'
->;
+export type CalendarParty = Pick<Search, 'partyId' | 'text' | 'avatarUrl'> & {
+  type?: Search['type'];
+  attendeeType?: CalendarEventAttendeeType;
+};
 
 export const useParticipantsSearchProps = (
   customProps?: Partial<AutocompleteProps<CalendarParty>>
@@ -44,7 +44,7 @@ export const useParticipantsSearchProps = (
       renderOption({
         name: option.text,
         src: option.avatarUrl ?? undefined,
-        caption: t(`common:searchType.${option.type}`),
+        caption: option.type ? t(`common:searchType.${option.type}`) : '',
       }),
     ...customProps,
   };
