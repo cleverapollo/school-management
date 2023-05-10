@@ -10,13 +10,13 @@ import {
   Table,
   TableBooleanValue,
   usePreferredNameLayout,
+  PageContainer,
 } from '@tyro/core';
 import { Link } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { AddDocIcon } from '@tyro/icons';
 import { useAcademicNamespace, UseQueryReturnType } from '@tyro/api';
 import dayjs from 'dayjs';
-import { PageContainer } from '../components/page-container';
 import { useAssessments } from '../api/assessments';
 import { AcademicYearDropdown } from '../components/list-assessments/academic-year-dropdown';
 import { getAssessmentSubjectGroupsLink } from '../utils/get-assessment-subject-groups-link';

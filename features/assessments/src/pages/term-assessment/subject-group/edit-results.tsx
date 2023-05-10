@@ -10,6 +10,7 @@ import {
   TableStudyLevelChip,
   useNumber,
   usePreferredNameLayout,
+  PageContainer,
   StudyLevelSelectCellEditor,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -26,7 +27,6 @@ import {
 } from '@tyro/api';
 import set from 'lodash/set';
 import { useAssessmentById } from '../../../api/assessments';
-import { PageContainer } from '../../../components/page-container';
 import {
   ReturnTypeFromUseAssessmentResults,
   useAssessmentResults,
