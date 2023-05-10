@@ -227,7 +227,9 @@ export function useCalendarEvents(
                       : '',
                   room: event?.rooms?.length ? event.rooms[0]?.name : '',
                   originalEvent: event,
-                  editable: event.type !== CalendarEventType.Lesson,
+                  // NOTE: enable when BE support edition
+                  // editable: event.type !== CalendarEventType.Lesson,
+                  editable: false,
                 });
               });
 
