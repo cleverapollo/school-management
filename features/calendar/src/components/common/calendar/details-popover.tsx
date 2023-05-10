@@ -46,15 +46,21 @@ const IconContainer = styled(Box)(({ theme }) => ({
   color: theme.palette.text.primary,
 }));
 
-function FormatedDateAndTime({
+function FormattedDateAndTime({
+  allDay,
   startDateTime,
   endDateTime,
 }: {
+  allDay: boolean;
   startDateTime: string | Date;
   endDateTime: string | Date;
 }) {
   const start = dayjs(startDateTime);
   const end = dayjs(endDateTime);
+
+  if (allDay) {
+    return <>{start.format('LL')}</>;
+  }
 
   const dash = (
     <Box
@@ -233,7 +239,8 @@ export function CalendarDetailsPopover({
             {event?.title}
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            <FormatedDateAndTime
+            <FormattedDateAndTime
+              allDay={Boolean(event?.allDay)}
               startDateTime={event?.start ?? ''}
               endDateTime={event?.end ?? ''}
             />

@@ -123,7 +123,7 @@ export const CalendarStyle = styled('div')(({ theme }) => ({
   },
   '& .fc .fc-daygrid-event': {
     marginTop: 4,
-    backgroundColor: 'transparent !important',
+    backgroundColor: 'transparent',
   },
   '& .fc .fc-daygrid-event.fc-event-start, & .fc .fc-daygrid-event.fc-event-end':
     {

@@ -215,6 +215,7 @@ export function useCalendarEvents(
                   resourceId,
                   title: event?.name ?? '',
                   additionalTeachers,
+                  allDay: event?.allDayEvent,
                   start: event?.startTime,
                   end: event?.endTime,
                   color: eventColor,
