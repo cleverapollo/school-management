@@ -7,3 +7,4 @@ export {
   getTimetableInfoForCalendar,
 } from './api/timetable';
 export { TimetableWidget } from './components/common/timetable-widget';
+export type { CalendarParty } from './hooks/use-participants-search-props';
