@@ -122,6 +122,9 @@ export const Calendar = function Calendar({
       allDayEvent: allDay,
       startTime: dayjs(start),
       endTime: dayjs(end),
+      participants: defaultPartys.filter(
+        (participant) => participant.attendeeType
+      ),
     });
   };
 
@@ -161,6 +164,9 @@ export const Calendar = function Calendar({
       startDate: dayjs(),
       startTime: dayjs(),
       endTime: dayjs().add(DEFAULT_END_TIME, 'minutes'),
+      participants: defaultPartys.filter(
+        (participant) => participant.attendeeType
+      ),
     });
   };
 
