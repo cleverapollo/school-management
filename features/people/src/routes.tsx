@@ -62,9 +62,9 @@ const StudentProfileSettingsPage = lazy(
   () => import('./pages/students/profile/settings')
 );
 
+// Contact pages
 const ContactsListPage = lazy(() => import('./pages/contacts'));
 
-// Contact profile pages
 const ContactProfileContainer = lazy(
   () => import('./components/contact/contact-profile-container')
 );
@@ -81,9 +81,12 @@ const ContactProfileAccessPage = lazy(
   () => import('./pages/contacts/profile/access')
 );
 
+const CreateContactPage = lazy(() => import('./pages/contacts/create'));
+
+// Staff pages
+
 const StaffListPage = lazy(() => import('./pages/staff'));
 
-// Staff profile pages
 const StaffProfileContainer = lazy(
   () => import('./components/staff/staff-profile-container')
 );
@@ -239,6 +242,11 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.people.contacts'),
             loader: () => getContacts(),
             element: <ContactsListPage />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: 'contacts/create',
+            element: <CreateContactPage />,
           },
           {
             type: NavObjectType.NonMenuLink,

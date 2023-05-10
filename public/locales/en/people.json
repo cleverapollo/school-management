@@ -115,5 +115,14 @@
   "includeInTmail": "Include in t-mail",
   "unlinkStudent": "Unlink student",
   "messageUnlinkContact": "You are about to unlink this contact from the student. Are you sure you want to continue?",
-  "yesUnlink": "Yes, Unlink"
+  "yesUnlink": "Yes, Unlink",
+  "createContact": "Create contact",
+  "pageTitle": {
+    "contacts": "List of contacts",
+    "createContact":"Add a new contact"
+  },
+  "pageHeading": {
+    "contacts": "Contacts",
+    "createContact": "Create contact"
+  }
 }
