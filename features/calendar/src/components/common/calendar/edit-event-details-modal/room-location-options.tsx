@@ -3,7 +3,7 @@ import { useTranslation } from '@tyro/i18n';
 import { Control, Path } from 'react-hook-form';
 import { useMemo } from 'react';
 import { FindFreeResourcesFilter } from '@tyro/api';
-import { useGetRoomLocation } from '../../../../api/add-event';
+import { useRoomLocation } from '../../../../api/add-event';
 import { ScheduleEventFormState } from './schedule-event';
 
 export type RoomLocationOption = {
@@ -25,7 +25,7 @@ export const RoomLocationOptions = <TField extends ScheduleEventFormState>({
 }: RoomLocationOptionsProps<TField>) => {
   const { t } = useTranslation(['calendar']);
 
-  const { data: freeLocationData } = useGetRoomLocation({
+  const { data: freeLocationData } = useRoomLocation({
     allRooms: true,
     resources: {},
     recurrence: recurrenceFilter,

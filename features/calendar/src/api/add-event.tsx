@@ -41,7 +41,7 @@ const roomLocationQuery = (filter: FindFreeResourcesFilter) => ({
   queryFn: () => gqlClient.request(roomLocation, { filter }),
 });
 
-export function useGetRoomLocation(filter: FindFreeResourcesFilter) {
+export function useRoomLocation(filter: FindFreeResourcesFilter) {
   return useQuery({
     ...roomLocationQuery(filter),
     select: ({ calendar_findFreeResources }) => calendar_findFreeResources,

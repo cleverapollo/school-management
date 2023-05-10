@@ -15,7 +15,7 @@ import { usePreferredNameLayout } from '@tyro/core';
 import dayjs from 'dayjs';
 import { useCallback } from 'react';
 import { CalendarEvent, IndividualAttendee } from '../@types/calendar';
-import { getResourceName } from '../../utils/get-party-name';
+import { getResourceName } from '../utils/get-party-name';
 import { useTimetableInfo } from './timetable';
 import { calendarKeys } from './keys';
 

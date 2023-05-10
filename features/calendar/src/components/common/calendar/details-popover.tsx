@@ -23,10 +23,7 @@ import { CalendarEventAttendeeType, CalendarEventType } from '@tyro/api';
 import { Link } from 'react-router-dom';
 import { Attendee } from '../../../@types/calendar';
 import { ExtendedEventInput } from '../../../api/events';
-import {
-  getPartyAvatarUrl,
-  getPartyName,
-} from '../../../../utils/get-party-name';
+import { getPartyAvatarUrl, getPartyName } from '../../../utils/get-party-name';
 import { CalendarEditEventFormState } from './edit-event-details-modal';
 
 dayjs.extend(LocalizedFormat);

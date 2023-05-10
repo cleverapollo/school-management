@@ -1,6 +1,6 @@
 import { Calendar_CalendarEventsQuery } from '@tyro/api';
 import { ReturnTypeDisplayName } from '@tyro/core';
-import { Attendee, PartyResource } from '../src/@types/calendar';
+import { Attendee, PartyResource } from '../@types/calendar';
 
 export function getPartyName(
   partyInfo: Attendee['partyInfo'] | PartyResource['partyInfo'],
