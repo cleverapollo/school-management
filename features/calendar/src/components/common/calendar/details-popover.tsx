@@ -96,7 +96,6 @@ function getAttendeeAvatarSrc(partyInfo: Attendee['partyInfo']) {
     case 'SubjectGroup':
       return partyInfo.avatarUrl ?? undefined;
     case 'Staff':
-      return partyInfo.person.avatarUrl ?? undefined;
     case 'Student':
       return partyInfo.person.avatarUrl ?? undefined;
     default:
@@ -219,7 +218,7 @@ export function CalendarDetailsPopover({
           <CloseIcon />
         </IconButton>
       </Stack>
-      <Stack direction="row">
+      <Stack direction="row" paddingRight={1.5}>
         <IconContainer
           sx={{
             height: 28,
