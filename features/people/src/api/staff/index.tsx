@@ -88,6 +88,7 @@ const staffForSelectQuery = (filter: StaffFilter) => ({
 export function useStaffForSelect(filter: StaffFilter) {
   return useQuery({
     ...staffForSelectQuery(filter),
+    enabled: Boolean(filter.partyIds?.length),
     select: ({ core_staff }) => core_staff.map(({ person }) => person),
   });
 }
