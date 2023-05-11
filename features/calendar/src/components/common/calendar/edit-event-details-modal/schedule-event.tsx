@@ -10,7 +10,7 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import { CreateCalendarEventInput, RecurrenceEnum } from '@tyro/api';
-import { Control, Path, useWatch } from 'react-hook-form';
+import { Control, useWatch } from 'react-hook-form';
 import { MINIMUM_EVENT_DURATION } from './constants';
 
 type EndsOption = {
@@ -38,7 +38,7 @@ export type ScheduleEventFormState = Pick<
 };
 
 type ScheduleEventProps<TField extends ScheduleEventFormState> = {
-  control: Control<TField>;
+  control: TField extends ScheduleEventFormState ? Control<TField> : never;
 };
 
 export const ScheduleEvent = <TField extends ScheduleEventFormState>({
@@ -53,26 +53,26 @@ export const ScheduleEvent = <TField extends ScheduleEventFormState>({
   return (
     <>
       <Stack direction="column" gap={1.5}>
-        <RHFSwitch<TField>
+        <RHFSwitch<ScheduleEventFormState>
           label={t('calendar:inputLabels.allDay')}
           switchProps={{ color: 'primary' }}
-          controlProps={{ name: 'allDayEvent' as Path<TField>, control }}
+          controlProps={{ name: 'allDayEvent', control }}
         />
 
         <Stack direction="row" gap={1}>
-          <RHFDatePicker<TField>
+          <RHFDatePicker<ScheduleEventFormState>
             label={t('calendar:inputLabels.startDate')}
             inputProps={{ fullWidth: true }}
-            controlProps={{ name: 'startDate' as Path<TField>, control }}
+            controlProps={{ name: 'startDate', control }}
           />
 
           {!allDayEvent && (
             <Stack direction="row" gap={1} width="100%">
-              <RHFTimePicker<TField>
+              <RHFTimePicker<ScheduleEventFormState>
                 label={t('calendar:inputLabels.startTime')}
-                controlProps={{ name: 'startTime' as Path<TField>, control }}
+                controlProps={{ name: 'startTime', control }}
               />
-              <RHFTimePicker<TField>
+              <RHFTimePicker<ScheduleEventFormState>
                 label={t('calendar:inputLabels.endTime')}
                 timePickerProps={{
                   minTime: dayjs(startTime as dayjs.Dayjs).add(
@@ -80,14 +80,14 @@ export const ScheduleEvent = <TField extends ScheduleEventFormState>({
                     'minutes'
                   ),
                 }}
-                controlProps={{ name: 'endTime' as Path<TField>, control }}
+                controlProps={{ name: 'endTime', control }}
               />
             </Stack>
           )}
         </Stack>
       </Stack>
 
-      <RHFSelect<TField, RecurrenceEnum>
+      <RHFSelect<ScheduleEventFormState, RecurrenceEnum>
         label={t('calendar:inputLabels.schedule')}
         options={recurrenceOptions}
         getOptionLabel={(option) =>
@@ -96,13 +96,13 @@ export const ScheduleEvent = <TField extends ScheduleEventFormState>({
           })
         }
         controlProps={{
-          name: 'recurrenceEnum' as Path<TField>,
+          name: 'recurrenceEnum',
           control,
         }}
       />
 
       {recurrenceEnum && recurrenceEnum !== RecurrenceEnum.NoRecurrence && (
-        <RHFRadioGroup<TField, EndsOption>
+        <RHFRadioGroup<ScheduleEventFormState, EndsOption>
           label={t('calendar:inputLabels.ends')}
           radioGroupProps={{ sx: { gap: 1 } }}
           options={[
@@ -124,7 +124,7 @@ export const ScheduleEvent = <TField extends ScheduleEventFormState>({
               })}
               <Box width="168px">
                 {option.value === 'on' && (
-                  <RHFDatePicker<TField>
+                  <RHFDatePicker<ScheduleEventFormState>
                     inputProps={{
                       variant: 'filled',
                       size: 'small',
@@ -132,13 +132,13 @@ export const ScheduleEvent = <TField extends ScheduleEventFormState>({
                       disabled: option.value !== ends,
                     }}
                     controlProps={{
-                      name: 'endDate' as Path<TField>,
+                      name: 'endDate',
                       control,
                     }}
                   />
                 )}
                 {option.value === 'after' && (
-                  <RHFTextField<TField>
+                  <RHFTextField
                     textFieldProps={{
                       variant: 'filled',
                       size: 'small',
@@ -155,7 +155,7 @@ export const ScheduleEvent = <TField extends ScheduleEventFormState>({
                       },
                     }}
                     controlProps={{
-                      name: 'occurrences' as Path<TField>,
+                      name: 'occurrences',
                       control,
                     }}
                   />
@@ -164,7 +164,7 @@ export const ScheduleEvent = <TField extends ScheduleEventFormState>({
             </Stack>
           )}
           controlProps={{
-            name: 'ends' as Path<TField>,
+            name: 'ends',
             control,
           }}
         />

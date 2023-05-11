@@ -32,7 +32,7 @@ import {
 import { ScheduleEventFormState, ScheduleEvent } from './schedule-event';
 import {
   RoomLocationOptions,
-  RoomLocationOption,
+  RoomLocationFormState,
 } from './room-location-options';
 import { useCreateCalendarEvent } from '../../../../api/add-event';
 import { MINIMUM_EVENT_DURATION } from './constants';
@@ -43,9 +43,9 @@ export type CalendarEditEventFormState = Pick<
   'calendarIds' | 'name' | 'description' | 'colour'
 > & {
   eventId?: number;
-  location: Omit<RoomLocationOption, 'type'>;
   participants: CalendarParty[];
-} & ScheduleEventFormState;
+} & RoomLocationFormState &
+  ScheduleEventFormState;
 
 export type CalendarEventViewProps = {
   initialEventState?: Partial<CalendarEditEventFormState> | null;

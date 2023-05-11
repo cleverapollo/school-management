@@ -1,10 +1,9 @@
 import { RHFAutocomplete } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { Control, Path } from 'react-hook-form';
+import { Control } from 'react-hook-form';
 import { useMemo } from 'react';
 import { FindFreeResourcesFilter } from '@tyro/api';
 import { useRoomLocation } from '../../../../api/add-event';
-import { ScheduleEventFormState } from './schedule-event';
 
 export type RoomLocationOption = {
   roomId: number;
@@ -12,14 +11,18 @@ export type RoomLocationOption = {
   type: string;
 };
 
-export type RecurrenceFilter = FindFreeResourcesFilter['recurrence'] | null;
-
-type RoomLocationOptionsProps<TField extends ScheduleEventFormState> = {
-  recurrenceFilter: RecurrenceFilter;
-  control: Control<TField>;
+export type RoomLocationFormState = {
+  location: Omit<RoomLocationOption, 'type'>;
 };
 
-export const RoomLocationOptions = <TField extends ScheduleEventFormState>({
+export type RecurrenceFilter = FindFreeResourcesFilter['recurrence'] | null;
+
+type RoomLocationOptionsProps<TField extends RoomLocationFormState> = {
+  recurrenceFilter: RecurrenceFilter;
+  control: TField extends RoomLocationFormState ? Control<TField> : never;
+};
+
+export const RoomLocationOptions = <TField extends RoomLocationFormState>({
   recurrenceFilter,
   control,
 }: RoomLocationOptionsProps<TField>) => {
@@ -49,12 +52,12 @@ export const RoomLocationOptions = <TField extends ScheduleEventFormState>({
   );
 
   return (
-    <RHFAutocomplete<TField, RoomLocationOption>
+    <RHFAutocomplete<RoomLocationFormState, RoomLocationOption>
       label={t('calendar:inputLabels.location')}
       optionIdKey="roomId"
       optionTextKey="name"
       groupBy={(option) => option.type}
-      controlProps={{ name: 'location' as Path<TField>, control }}
+      controlProps={{ name: 'location', control }}
       options={roomLocationOptions}
     />
   );
