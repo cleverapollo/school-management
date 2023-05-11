@@ -10,8 +10,8 @@ import { useTranslation } from '@tyro/i18n';
 import { Avatar, useDisclosure, usePreferredNameLayout } from '@tyro/core';
 import { SupportPlanRing } from '../../students/support-plan-ring';
 import { CurrentLocation } from './current-location';
-import { TyroId } from './tyro-id';
-import { useSingleStaff } from '../../../api';
+import { TyroId } from '../../common/tyro-id';
+import { useStaff } from '../../../api';
 
 interface StaffOverviewBarProps {
   staffId: number | undefined;
@@ -23,7 +23,9 @@ export function StaffOverviewBar({ staffId }: StaffOverviewBarProps) {
   const { getButtonProps, getDisclosureProps } = useDisclosure();
   const { displayName } = usePreferredNameLayout();
 
-  const { data: staffData } = useSingleStaff(staffId);
+  const { data } = useStaff({ partyIds: [staffId ?? 0] });
+  const staffData = Array.isArray(data) && data.length > 0 ? data[0] : null;
+
 
   const name = displayName(staffData?.person);
 
@@ -31,14 +33,7 @@ export function StaffOverviewBar({ staffId }: StaffOverviewBarProps) {
     <Box>
       <Card variant="outlined" sx={{ p: 1.25, display: 'inline-block' }}>
         <Stack direction="row" alignItems="center" sx={{ flexWrap: 'wrap' }}>
-          <IconButton
-            disabled={true}
-            {...getButtonProps()}
-          >
-            <SupportPlanRing hasSupportPlan={false}>
-              <Avatar src={''} name={name} />
-            </SupportPlanRing>
-          </IconButton>
+          <Avatar sx={{ mx: 1 }} src={staffData?.person?.avatarUrl} name={name} />
           <Stack sx={{ ml: 0.5, mr: 2.5 }}>
             <Typography variant="subtitle1" component="h2">
               {name}

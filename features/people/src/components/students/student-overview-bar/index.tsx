@@ -13,7 +13,7 @@ import { SupportPlanRing } from '../support-plan-ring';
 import { AdditionalInfo } from './additional-info';
 import { CurrentLocation } from './current-location';
 import { PrioritySupportStudentModal } from './priority-support-student-modal';
-import { TyroId } from './tyro-id';
+import { TyroId } from '../../common/tyro-id';
 import { useStudentStatus } from '../../../api';
 
 interface StudentOverviewBarProps {

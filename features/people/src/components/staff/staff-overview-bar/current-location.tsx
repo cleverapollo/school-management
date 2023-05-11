@@ -1,8 +1,6 @@
 import { Fragment, useMemo } from 'react';
 import { Box } from '@mui/material';
-import { CurrentAttendanceIcon } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { AttendanceCodeType } from '@tyro/api';
 import { useStaffStatus } from '../../../api';
 
 interface CurrentLocationProps {
@@ -10,36 +8,16 @@ interface CurrentLocationProps {
 }
 
 export function CurrentLocation({ staffPartyId }: CurrentLocationProps) {
-  const { t } = useTranslation(['people', 'attendance']);
+  const { t } = useTranslation(['people']);
   const { data } = useStaffStatus(staffPartyId);
   const currentLocationList = useMemo(() => {
     const room = data?.currentLocation?.room
       ?.map((a) => a?.name)
       .find((a) => true);
 
-    // todo  back end for attendnce is not in place
-
-    const currentAttendance =
-      data?.currentLocation?.eventId == null ? (
-        '-'
-      ) : (
-        <CurrentAttendanceIcon
-          tooltipText={
-            data?.currentLocation?.currentAttendance?.codeType ===
-            AttendanceCodeType.NotTaken
-              ? t('attendance:attendanceNotTaken')
-              : data?.currentLocation?.currentAttendance?.attendanceCodeName ??
-                undefined
-          }
-          codeType={
-            data?.currentLocation?.currentAttendance?.codeType ?? undefined
-          }
-        />
-      );
     return {
       [t('people:currentLocation')]: room ?? '-',
-      [t('people:currentLesson')]: data?.currentLocation?.lesson ?? '-',
-      [t('people:attendance')]: currentAttendance,
+      [t('people:currentLesson')]: data?.currentLocation?.lesson ?? '-'
     };
   }, [data, t]);
   return (
@@ -55,7 +33,7 @@ export function CurrentLocation({ staffPartyId }: CurrentLocationProps) {
         <Fragment key={key}>
           <Box
             component="dt"
-            gridColumn={(index % 3) + 1}
+            gridColumn={(index % 2) + 1}
             gridRow={1}
             sx={{
               fontSize: '0.75rem',
@@ -70,7 +48,7 @@ export function CurrentLocation({ staffPartyId }: CurrentLocationProps) {
           </Box>
           <Box
             component="dd"
-            gridColumn={(index % 3) + 1}
+            gridColumn={(index % 2) + 1}
             gridRow={2}
             sx={{
               fontSize: '0.75rem',
@@ -81,9 +59,8 @@ export function CurrentLocation({ staffPartyId }: CurrentLocationProps) {
               display: 'flex',
               alignItems: 'center',
               ...(index === 0 && { borderRadius: '17px 0 0 17px' }),
-              ...(index === 2 && {
+              ...(index === 1 && {
                 borderRadius: '0 17px 17px 0',
-                justifyContent: 'center',
               }),
             }}
           >

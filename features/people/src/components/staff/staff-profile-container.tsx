@@ -8,7 +8,7 @@ import {
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { Container } from '@mui/material';
-import { useSingleStaff } from '../../api/staff';
+import { useStaff } from '../../api/staff';
 import { StaffOverviewBar } from './staff-overview-bar';
 
 
@@ -18,7 +18,8 @@ export default function StaffProfileContainer() {
 
     const { id } = useParams();
     const idNumber = useNumber(id);
-    const { data: staffData } = useSingleStaff(idNumber);
+    const { data } = useStaff({ partyIds: [idNumber ?? 0] });
+    const staffData = Array.isArray(data) && data.length > 0 ? data[0] : null;
 
     const { displayName } = usePreferredNameLayout();
 

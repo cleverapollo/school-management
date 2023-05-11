@@ -1,3 +1,4 @@
+export * from './status';
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, queryClient, StaffFilter } from '@tyro/api';
 
@@ -78,23 +79,6 @@ export function useStaff(filter: StaffFilter) {
   });
 }
 
-export function useSingleStaff(staffId: number | undefined) {
-  const filter: StaffFilter = { partyIds: [staffId ?? 0] }
-  return useQuery({
-    ...staffQuery(filter),
-    select: ({ core_staff }) => {
-      const staff =
-        Array.isArray(core_staff) && core_staff.length > 0
-          ? core_staff[0]
-          : null;
-      return {
-        ...staff,
-      };
-    },
-  });
-}
-
-
 
 const staffForSelectQuery = (filter: StaffFilter) => ({
   queryKey: staffKey.details(filter),
@@ -107,6 +91,3 @@ export function useStaffForSelect(filter: StaffFilter) {
     select: ({ core_staff }) => core_staff.map(({ person }) => person),
   });
 }
-
-
-export * from './status';

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { AttendanceCodeType, gqlClient, graphql, queryClient } from '@tyro/api';
+import { gqlClient, graphql, queryClient } from '@tyro/api';
 
 
 const compositeStaffStatus = {
@@ -10,11 +10,7 @@ const compositeStaffStatus = {
       capacity: ''
     }],
     lesson: '2Eng-G',
-    eventId: '12345',
-    currentAttendance: {
-      attendanceCodeName: '',
-      codeType: AttendanceCodeType.Late
-    }
+    eventId: '12345'
   }
 };
 

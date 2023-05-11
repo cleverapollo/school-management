@@ -245,10 +245,10 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'staff/:id',
             element: <StaffProfileContainer />,
             loader: ({ params }) => {
-              const studentId = getNumber(params.id);
+              const staffId = getNumber(params.id);
               return Promise.all([
-                getStaff({ partyIds: [studentId ?? 0] }),
-                getStaffStatus(studentId),
+                getStaff({ partyIds: [staffId ?? 0] }),
+                getStaffStatus(staffId),
               ]);
             },
             children: [
