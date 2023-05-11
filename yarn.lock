@@ -5354,7 +5354,7 @@ __metadata:
     lodash: ^4.17.21
     react: ^18.2.0
     react-dom: ^18.2.0
-    react-hook-form: ^7.34.2
+    react-hook-form: ^7.43.9
     react-router: ^6.6.2
     react-router-dom: ^6.6.2
   languageName: unknown
@@ -5429,7 +5429,7 @@ __metadata:
     dayjs: ^1.11.7
     lodash: ^4.17.21
     react: ^18.2.0
-    react-hook-form: ^7.42.1
+    react-hook-form: ^7.43.9
     react-router: ^6.3.0
     react-router-dom: ^6.6.2
     yup: ^0.32.11
@@ -5490,7 +5490,7 @@ __metadata:
     react: ^18.2.0
     react-apexcharts: ^1.4.0
     react-dom: ^18.2.0
-    react-hook-form: ^7.34.2
+    react-hook-form: ^7.43.9
     react-router: ^6.6.2
     react-router-dom: ^6.6.2
     react-use: ^17.4.0
@@ -5564,7 +5564,7 @@ __metadata:
     "@tyro/icons": "*"
     react: ^18.2.0
     react-dom: ^18.2.0
-    react-hook-form: ^7.42.1
+    react-hook-form: ^7.43.9
     react-router: ^6.3.0
     react-router-dom: ^6.6.2
   languageName: unknown
@@ -5682,7 +5682,7 @@ __metadata:
     dayjs: ^1.11.7
     react: ^18.2.0
     react-dom: ^18.2.0
-    react-hook-form: ^7.34.2
+    react-hook-form: ^7.43.9
     react-router: ^6.6.2
     react-router-dom: ^6.6.2
   languageName: unknown
@@ -15550,7 +15550,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:^7.34.2, react-hook-form@npm:^7.42.1":
+"react-hook-form@npm:^7.43.9":
   version: 7.43.9
   resolution: "react-hook-form@npm:7.43.9"
   peerDependencies:
@@ -18177,7 +18177,7 @@ __metadata:
     react-dev-utils: ^12.0.1
     react-dom: ^18.2.0
     react-dropzone: ^14.2.2
-    react-hook-form: ^7.34.2
+    react-hook-form: ^7.43.9
     react-lazy-load-image-component: ^1.5.4
     react-markdown: ^8.0.4
     react-quill: ^2.0.0
