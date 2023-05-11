@@ -770,8 +770,11 @@ export type CreateStaffTeacherIre = {
 export type CreateStudentContactInput = {
   addresses?: InputMaybe<Array<InputMaybe<InputAddress>>>;
   emails?: InputMaybe<Array<InputMaybe<InputEmailAddress>>>;
+  nativeLanguage?: InputMaybe<Scalars['String']>;
+  occupation?: InputMaybe<Scalars['String']>;
   personal: PersonalInformationInput;
   phoneNumbers?: InputMaybe<Array<InputMaybe<InputPhoneNumber>>>;
+  requiresInterpreter?: InputMaybe<Scalars['Boolean']>;
   studentRelationships: Array<InputMaybe<StudentContactRelationshipInfoInput>>;
 };
 
@@ -1421,6 +1424,12 @@ export type MailStarredInput = {
   threadId: Scalars['Long'];
 };
 
+export enum MemberType {
+  Contact = 'CONTACT',
+  Staff = 'STAFF',
+  Student = 'STUDENT'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   asd?: Maybe<Scalars['String']>;
@@ -1435,7 +1444,7 @@ export type Mutation = {
   attendance_saveSession?: Maybe<Session>;
   attendance_saveStudentSessionAttendance?: Maybe<Array<Maybe<StudentSessionAttendance>>>;
   calendar_createCalendarEvents?: Maybe<Array<Maybe<CalendarEventRaw>>>;
-  catalogue_createSubjects?: Maybe<Array<Maybe<Subject>>>;
+  catalogue_createSubjects: Array<Subject>;
   catalogue_upsertSubjects?: Maybe<CatalogueSuccess>;
   communications_assignLabel?: Maybe<Mail>;
   communications_read?: Maybe<Scalars['String']>;
@@ -1447,6 +1456,7 @@ export type Mutation = {
   communications_sendSms?: Maybe<Scalars['String']>;
   communications_smsTopUp?: Maybe<SmsTopUpResponse>;
   communications_starred?: Maybe<Scalars['String']>;
+  core_createStudentContact: StudentContact;
   core_setActiveActiveAcademicNamespace?: Maybe<AcademicNamespace>;
   core_updateClassGroups?: Maybe<Success>;
   core_updateStudents?: Maybe<Success>;
@@ -1461,6 +1471,7 @@ export type Mutation = {
   staffWork_upsertAbsence: Array<StaffAbsence>;
   tt_editLessonInstance: Array<TtIndividualViewLesson>;
   users_inviteUsers?: Maybe<Array<Maybe<UserInvitation>>>;
+  users_savePermissionGroup?: Maybe<PermissionGroup>;
   wellbeing_savePriorityStudent?: Maybe<PriorityStudent>;
   wellbeing_saveStudentSupportFile?: Maybe<StudentSupportFile>;
   wellbeing_saveStudentSupportPlan?: Maybe<StudentSupportPlan>;
@@ -1583,6 +1594,11 @@ export type MutationCommunications_StarredArgs = {
 };
 
 
+export type MutationCore_CreateStudentContactArgs = {
+  input: CreateStudentContactInput;
+};
+
+
 export type MutationCore_SetActiveActiveAcademicNamespaceArgs = {
   input?: InputMaybe<SetActiveAcademicNamespace>;
 };
@@ -1645,6 +1661,11 @@ export type MutationTt_EditLessonInstanceArgs = {
 
 export type MutationUsers_InviteUsersArgs = {
   input?: InputMaybe<Array<InputMaybe<InviteUser>>>;
+};
+
+
+export type MutationUsers_SavePermissionGroupArgs = {
+  input?: InputMaybe<SavePermissionGroup>;
 };
 
 
@@ -1841,11 +1862,46 @@ export type Permission = {
 
 export type PermissionForGroup = {
   permission?: InputMaybe<Scalars['String']>;
-  permissionGroupType?: InputMaybe<PermissionGroupType>;
+  permissionType?: InputMaybe<PermissionType>;
 };
 
-export enum PermissionGroupType {
+export type PermissionGroup = {
+  __typename?: 'PermissionGroup';
+  custom?: Maybe<Scalars['Boolean']>;
+  description: Scalars['String'];
+  descriptionTextId?: Maybe<Scalars['Int']>;
+  id: Scalars['Int'];
+  memberPartyIds?: Maybe<Array<Scalars['Long']>>;
+  memberType: MemberType;
+  name: Scalars['String'];
+  nameTextId?: Maybe<Scalars['Int']>;
+  permissionSetIds?: Maybe<Array<Scalars['Int']>>;
+};
+
+export type PermissionGroupFilter = {
+  custom?: InputMaybe<Scalars['Boolean']>;
+  ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
+export type PermissionSet = {
+  __typename?: 'PermissionSet';
+  description: Scalars['String'];
+  descriptionTextId: Scalars['Int'];
+  id: Scalars['Int'];
+  name: Scalars['String'];
+  nameTextId: Scalars['Int'];
+  permissionType?: Maybe<PermissionType>;
+  permissions?: Maybe<Array<Permission>>;
+  toggle?: Maybe<Scalars['Boolean']>;
+};
+
+export type PermissionSetFilter = {
+  ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
+export enum PermissionType {
   All = 'ALL',
+  GroupAdmin = 'GROUP_ADMIN',
   MemberOfGroup = 'MEMBER_OF_GROUP',
   Self = 'SELF'
 }
@@ -1956,7 +2012,7 @@ export type Profile = {
   nickName?: Maybe<Scalars['String']>;
   partyId?: Maybe<Scalars['Long']>;
   permissionIds?: Maybe<Array<Maybe<Scalars['String']>>>;
-  permissions?: Maybe<Array<Maybe<Permission>>>;
+  permissions?: Maybe<Array<Permission>>;
   profileType?: Maybe<ProfileType>;
   profileTypeId?: Maybe<Scalars['Int']>;
   securityRoleIds?: Maybe<Array<Maybe<Scalars['Int']>>>;
@@ -2057,9 +2113,9 @@ export type Query = {
   calendar_dayInfo: Array<CalendarDayInfo>;
   /**    Checks whether the searched for calendar resources are free or not at particular times */
   calendar_findFreeResources: FreeCalendarResources;
-  catalogue_personalTitles?: Maybe<Array<Maybe<PersonalTitle>>>;
-  catalogue_subjects?: Maybe<Array<Maybe<Subject>>>;
-  catalogue_years?: Maybe<Array<Maybe<YearGroup>>>;
+  catalogue_personalTitles: Array<PersonalTitle>;
+  catalogue_subjects: Array<Subject>;
+  catalogue_years: Array<YearGroup>;
   communications_label?: Maybe<Array<Maybe<Label>>>;
   communications_mail?: Maybe<Array<Maybe<Mail>>>;
   communications_notificationTemplates?: Maybe<Array<Maybe<NotificationTemplate>>>;
@@ -2090,6 +2146,8 @@ export type Query = {
   subjectGroups?: Maybe<Array<SubjectGroup>>;
   tt_individualLessons: Array<TtIndividualViewLesson>;
   tt_timetables: Array<TtTimetable>;
+  users_permissionGroups?: Maybe<Array<Maybe<PermissionGroup>>>;
+  users_permissionSets?: Maybe<Array<Maybe<PermissionSet>>>;
   users_userInvitations?: Maybe<Array<Maybe<UserInvitation>>>;
   wellbeing_activeSupportPlan?: Maybe<Array<Maybe<ActivePlan>>>;
   wellbeing_priorityStudent?: Maybe<Array<Maybe<PriorityStudent>>>;
@@ -2336,6 +2394,16 @@ export type QueryTt_IndividualLessonsArgs = {
 
 export type QueryTt_TimetablesArgs = {
   filter?: InputMaybe<TtTimetableFilter>;
+};
+
+
+export type QueryUsers_PermissionGroupsArgs = {
+  filter?: InputMaybe<PermissionGroupFilter>;
+};
+
+
+export type QueryUsers_PermissionSetsArgs = {
+  filter?: InputMaybe<PermissionSetFilter>;
 };
 
 
@@ -2595,6 +2663,15 @@ export type SaveParentalAttendanceRequest = {
   status: ParentalAttendanceRequestStatus;
   studentPartyId: Scalars['Long'];
   to: Scalars['DateTime'];
+};
+
+export type SavePermissionGroup = {
+  description: Array<InputMaybe<TranslationInput>>;
+  id?: InputMaybe<Scalars['Int']>;
+  memberPartyIds?: InputMaybe<Array<Scalars['Long']>>;
+  memberType: MemberType;
+  name: Array<InputMaybe<TranslationInput>>;
+  permissionSets?: InputMaybe<Array<Scalars['Int']>>;
 };
 
 export type SavePriorityStudentInput = {
@@ -3013,12 +3090,14 @@ export type Student = Party & PartyPerson & {
 
 export type StudentContact = Party & PartyPerson & {
   __typename?: 'StudentContact';
+  nativeLanguage?: Maybe<Scalars['String']>;
   occupation?: Maybe<Scalars['String']>;
   partyId: Scalars['Long'];
   person: Person;
   /**  deep linked */
   personalInformation?: Maybe<PersonalInformation>;
   relationships?: Maybe<Array<Maybe<StudentContactRelationshipInfo>>>;
+  requiresInterpreter?: Maybe<Scalars['Boolean']>;
 };
 
 export type StudentContactFilter = {
@@ -3030,6 +3109,7 @@ export type StudentContactRelationshipInfo = {
   __typename?: 'StudentContactRelationshipInfo';
   allowedToContact?: Maybe<Scalars['Boolean']>;
   contactPartyId: Scalars['Long'];
+  includeInSms?: Maybe<Scalars['Boolean']>;
   primaryContact?: Maybe<Scalars['Boolean']>;
   relationshipType: StudentContactType;
   student: Student;
@@ -3038,6 +3118,7 @@ export type StudentContactRelationshipInfo = {
 
 export type StudentContactRelationshipInfoInput = {
   allowedToContact?: InputMaybe<Scalars['Boolean']>;
+  includeInSms?: InputMaybe<Scalars['Boolean']>;
   primaryContact?: InputMaybe<Scalars['Boolean']>;
   relationshipType: StudentContactType;
   studentPartyId: Scalars['Long'];
@@ -4117,7 +4198,7 @@ export type Core_RoomsQuery = { __typename?: 'Query', core_rooms?: Array<{ __typ
 export type CatalogueSubjectsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CatalogueSubjectsQuery = { __typename?: 'Query', catalogue_subjects?: Array<{ __typename?: 'Subject', id: number, name: string, description?: string | null, shortCode: string, nationalCode?: string | null, subjectSource: SubjectSource, colour?: Colour | null, icon?: string | null } | null> | null };
+export type CatalogueSubjectsQuery = { __typename?: 'Query', catalogue_subjects: Array<{ __typename?: 'Subject', id: number, name: string, description?: string | null, shortCode: string, nationalCode?: string | null, subjectSource: SubjectSource, colour?: Colour | null, icon?: string | null }> };
 
 export type Catalogue_UpsertSubjectsMutationVariables = Exact<{
   input: Array<UpsertSubject> | UpsertSubject;
@@ -4169,7 +4250,7 @@ export type YearsQueryVariables = Exact<{
 }>;
 
 
-export type YearsQuery = { __typename?: 'Query', catalogue_years?: Array<{ __typename?: 'YearGroup', yearGroupId: number, name: string } | null> | null };
+export type YearsQuery = { __typename?: 'Query', catalogue_years: Array<{ __typename?: 'YearGroup', yearGroupId: number, name: string }> };
 
 export type MyAuthDetailsQueryVariables = Exact<{ [key: string]: never; }>;
 
