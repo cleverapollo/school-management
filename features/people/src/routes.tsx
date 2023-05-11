@@ -19,6 +19,7 @@ import {
   getStudentStatus,
   getStaff,
   getStudentsSubjectGroups,
+  getStaffStatus
 } from './api';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
@@ -61,7 +62,27 @@ const StudentProfileSettingsPage = lazy(
 );
 
 const ContactsListPage = lazy(() => import('./pages/contacts'));
+
 const StaffListPage = lazy(() => import('./pages/staff'));
+//Staff profile pages
+const StaffProfileContainer = lazy(
+  () => import('./components/staff/staff-profile-container')
+);
+const StaffProfileOverviewPage = lazy(
+  () => import('./pages/staff/profile/overview')
+);
+const StaffProfilePersonalPage = lazy(
+  () => import('./pages/staff/profile/personal')
+);
+const StaffProfileContactsPage = lazy(
+  () => import('./pages/staff/profile/contacts')
+);
+const StaffProfileTimetablePage = lazy(
+  () => import('./pages/staff/profile/timetable')
+);
+const StaffProfileClassesPage = lazy(
+  () => import('./pages/staff/profile/classes')
+);
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -219,6 +240,65 @@ export const getRoutes: NavObjectFunction = (t) => [
             loader: () => getStaff({}),
             element: <StaffListPage />,
           },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: 'staff/:id',
+            element: <StaffProfileContainer />,
+            loader: ({ params }) => {
+              const studentId = getNumber(params.id);
+              return Promise.all([
+                getStaff({ partyIds: [studentId ?? 0] }),
+                getStaffStatus(studentId),
+              ]);
+            },
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                index: true,
+                loader: () => redirect('./overview'),
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'overview',
+                loader: ({ params }) => {
+                  return Promise.all([]);
+                },
+                element: <StaffProfileOverviewPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'personal',
+                loader: ({ params }) => {
+                  return Promise.all([]);
+                },
+                element: <StaffProfilePersonalPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'contacts',
+                loader: ({ params }) => {
+                  return Promise.all([]);
+                },
+                element: <StaffProfileContactsPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'timetable',
+                element: <StaffProfileTimetablePage />,
+                loader: ({ params }) => {
+                  return Promise.all([]);
+                },
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'classes',
+                loader: ({ params }) => {
+                  return Promise.all([]);
+                },
+                element: <StaffProfileClassesPage />,
+              },
+            ],
+          }
         ],
       },
     ],
