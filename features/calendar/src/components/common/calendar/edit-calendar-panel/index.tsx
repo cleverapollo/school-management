@@ -12,8 +12,6 @@ import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from '@tyro/i18n';
 import { CalendarSearch, CalendarSearchProps } from './calendar-search';
 
-export type { CalendarParty } from './calendar-search';
-
 interface EditCalendarPanelProps extends CalendarSearchProps {
   isOpen: boolean;
   visableEventTypes: CalendarEventType[];

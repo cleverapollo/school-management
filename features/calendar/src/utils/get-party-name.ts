@@ -1,6 +1,6 @@
 import { Calendar_CalendarEventsQuery } from '@tyro/api';
 import { ReturnTypeDisplayName } from '@tyro/core';
-import { Attendee, PartyResource } from '../src/@types/calendar';
+import { Attendee, PartyResource } from '../@types/calendar';
 
 export function getPartyName(
   partyInfo: Attendee['partyInfo'] | PartyResource['partyInfo'],
@@ -10,13 +10,28 @@ export function getPartyName(
 
   switch (partyInfo.__typename) {
     case 'GeneralGroup':
-      return partyInfo.name;
-    case 'Staff':
-      return getDisplayName(partyInfo.person);
-    case 'Student':
-      return getDisplayName(partyInfo.person);
     case 'SubjectGroup':
       return partyInfo.name;
+    case 'Staff':
+    case 'Student':
+      return getDisplayName(partyInfo.person);
+    default:
+      return '';
+  }
+}
+
+export function getPartyAvatarUrl(
+  partyInfo: Attendee['partyInfo'] | PartyResource['partyInfo']
+) {
+  if (!partyInfo) return '';
+
+  switch (partyInfo.__typename) {
+    case 'GeneralGroup':
+    case 'SubjectGroup':
+      return partyInfo.avatarUrl;
+    case 'Staff':
+    case 'Student':
+      return partyInfo.person.avatarUrl;
     default:
       return '';
   }

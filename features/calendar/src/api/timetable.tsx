@@ -8,6 +8,7 @@ import {
 } from '@tyro/api';
 import dayjs from 'dayjs';
 import { useEffect } from 'react';
+import { calendarKeys } from './keys';
 
 const timetable = graphql(/* GraphQL */ `
   query calendar_partyTimetable($filter: CalendarEventFilter!) {
@@ -62,15 +63,8 @@ const timetableInfo = graphql(/* GraphQL */ `
   }
 `);
 
-export const timetableKeys = {
-  timetable: (filter: CalendarEventFilter) =>
-    ['calendar', 'timetable', filter] as const,
-  dayInfo: (filter: CalendarDayInfoFilter) =>
-    ['calendar', 'timetable', 'day-info', filter] as const,
-};
-
 const timetableQuery = (filter: CalendarEventFilter) => ({
-  queryKey: timetableKeys.timetable(filter),
+  queryKey: calendarKeys.timetable(filter),
   queryFn: async () => gqlClient.request(timetable, { filter }),
 });
 
@@ -126,7 +120,7 @@ export function usePartyTimetable({
 }
 
 export const timetableInfoQuery = (filter: CalendarDayInfoFilter) => ({
-  queryKey: timetableKeys.dayInfo(filter),
+  queryKey: calendarKeys.dayInfo(filter),
   queryFn: async () => gqlClient.request(timetableInfo, { filter }),
   staleTime: 1000 * 60 * 60 * 24,
 });

@@ -27,12 +27,17 @@ import {
 } from '../../../api/events';
 import {
   CalendarEditEventDetailsModal,
-  CalendarEditEventFormState,
+  CalendarEventViewProps,
 } from './edit-event-details-modal';
 import { getCalendarContent } from './calendar-content';
-import { EditCalendarPanel, CalendarParty } from './edit-calendar-panel';
+import { EditCalendarPanel } from './edit-calendar-panel';
 import { CalendarDetailsPopover } from './details-popover';
 import { getDayHeaderContent } from './day-header-content';
+import { CalendarParty } from '../../../hooks/use-participants-search-props';
+import {
+  DEFAULT_END_TIME,
+  SELECTABLE_EVENT_CONSTRAINT,
+} from './edit-event-details-modal/constants';
 
 export interface CalendarProps {
   defaultPartys?: CalendarParty[];
@@ -66,7 +71,7 @@ export const Calendar = function Calendar({
     onToggle: onToggleEditCalendar,
   } = useDisclosure();
   const [editEventInitialState, setEditEventInitialState] =
-    useState<Partial<CalendarEditEventFormState> | null>(null);
+    useState<CalendarEventViewProps['initialEventState']>(null);
   const [selectedEventElement, setSelectedEventElement] =
     useState<HTMLElement | null>(null);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
@@ -104,15 +109,19 @@ export const Calendar = function Calendar({
   };
 
   const handleSelectRange = (arg: DateSelectArg) => {
-    const { start, end } = arg;
+    const { start, end, allDay } = arg;
     const calendarEl = calendarRef.current;
+
     if (calendarEl) {
       const calendarApi = calendarEl.getApi();
       calendarApi.unselect();
     }
+
     setEditEventInitialState({
-      start: dayjs(start),
-      end: dayjs(end),
+      startDate: dayjs(start),
+      allDayEvent: allDay,
+      startTime: dayjs(start),
+      endTime: dayjs(end),
     });
   };
 
@@ -149,14 +158,19 @@ export const Calendar = function Calendar({
 
   const handleAddEvent = () => {
     setEditEventInitialState({
-      start: dayjs(),
-      end: dayjs().add(30, 'minutes'),
+      startDate: dayjs(),
+      startTime: dayjs(),
+      endTime: dayjs().add(DEFAULT_END_TIME, 'minutes'),
     });
   };
 
   const handleCloseEditModal = () => {
     setEditEventInitialState(null);
   };
+
+  useEffect(() => {
+    setSelectedPartys(defaultPartys);
+  }, [setSelectedPartys, defaultPartys]);
 
   useEffect(() => {
     const calendarEl = calendarRef.current;
@@ -229,6 +243,7 @@ export const Calendar = function Calendar({
                 eventMinHeight={48}
                 slotEventOverlap={false}
                 height={isDesktop ? 720 : 'auto'}
+                selectConstraint={SELECTABLE_EVENT_CONSTRAINT}
                 businessHours={businessHours}
                 nowIndicator
                 plugins={[
@@ -276,13 +291,13 @@ export const Calendar = function Calendar({
         onClose={() => {
           setSelectedEventElement(null);
         }}
-        onEdit={() => console.log('edit')}
+        onEdit={setEditEventInitialState}
         event={selectedEvent}
       />
 
       <CalendarEditEventDetailsModal
         initialEventState={editEventInitialState}
-        onCancel={handleCloseEditModal}
+        onClose={handleCloseEditModal}
       />
     </>
   );

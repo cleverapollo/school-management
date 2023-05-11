@@ -196,7 +196,9 @@
   "errorMessages": {
     "required": "This field is required",
     "invalidDate": "This is not a valid date",
+    "invalidTime": "This is not a valid time",
     "afterStartDate": "End date must be later than start date",
+    "afterStartTime": "End time must be later than start time",
     "min": "You must enter a number greater or equal than {{number}}",
     "max": "You must enter a number less or equal than {{number}}",
     "minLength":"You must enter a minimum of {{count}} characters",
@@ -228,5 +230,6 @@
     "yellow": "Yellow"
   },
   "createdBy": "Created by",
-  "dateOfCreation": "Date of creation"
+  "dateOfCreation": "Date of creation",
+  "calendars": "Calendars"
 }

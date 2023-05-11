@@ -1,9 +1,11 @@
 import {
-  DatePicker,
-  DatePickerProps,
+  TimePicker,
+  TimePickerProps,
   LocalizationProvider,
 } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 
 import { TextFieldProps } from '@mui/material';
 import {
@@ -11,24 +13,25 @@ import {
   useController,
   UseControllerProps,
 } from 'react-hook-form';
-import dayjs from 'dayjs';
+
+dayjs.extend(LocalizedFormat);
 
 type RHFDatePickerProps<TField extends FieldValues, TInputDate> = {
   label?: string;
-  datePickerProps?: Omit<
-    DatePickerProps<TInputDate>,
+  timePickerProps?: Omit<
+    TimePickerProps<TInputDate>,
     'onChange' | 'value' | 'renderInput'
   >;
   controlProps: UseControllerProps<TField>;
   inputProps?: TextFieldProps;
 };
 
-export const RHFDatePicker = <
+export const RHFTimePicker = <
   TField extends FieldValues,
   TInputDate = dayjs.Dayjs
 >({
   label,
-  datePickerProps,
+  timePickerProps,
   controlProps,
   inputProps,
 }: RHFDatePickerProps<TField, TInputDate>) => {
@@ -39,9 +42,8 @@ export const RHFDatePicker = <
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DatePicker
-        format="DD/MM/YYYY"
-        {...datePickerProps}
+      <TimePicker
+        {...timePickerProps}
         onChange={onChange}
         value={value ?? null}
         label={label}

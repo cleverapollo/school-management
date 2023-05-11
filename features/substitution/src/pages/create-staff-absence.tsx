@@ -164,57 +164,55 @@ export default function ManagementPage() {
                 name: 'staff',
                 control,
               }}
-              autocompleteProps={{
-                sx: textFieldStyle,
-                options: staffData,
-                getOptionLabel: ({ person }) => displayName(person),
-                renderOption: (props, { person }, { selected }) => (
-                  <Box
-                    component="li"
-                    {...props}
-                    gap={2}
+              sx={textFieldStyle}
+              options={staffData}
+              getOptionLabel={({ person }) => displayName(person)}
+              renderOption={(props, { person }, { selected }) => (
+                <Box
+                  component="li"
+                  {...props}
+                  gap={2}
+                  sx={{
+                    '&.MuiAutocomplete-option': {
+                      px: 1,
+                    },
+                  }}
+                >
+                  {selected && (
+                    <Box
+                      position="absolute"
+                      display="flex"
+                      justifyContent="center"
+                      alignItems="center"
+                      width={32}
+                      zIndex={1}
+                    >
+                      <CheckmarkIcon color="success" fontSize="small" />
+                    </Box>
+                  )}
+                  <Avatar
                     sx={{
-                      '&.MuiAutocomplete-option': {
-                        px: 1,
-                      },
+                      width: 32,
+                      height: 32,
+                      ...((selected && {
+                        '&:after': {
+                          content: '""',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          bgcolor: 'common.black',
+                          opacity: 0.6,
+                        },
+                      }) as SxProps),
                     }}
-                  >
-                    {selected && (
-                      <Box
-                        position="absolute"
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                        width={32}
-                        zIndex={1}
-                      >
-                        <CheckmarkIcon color="success" fontSize="small" />
-                      </Box>
-                    )}
-                    <Avatar
-                      sx={{
-                        width: 32,
-                        height: 32,
-                        ...((selected && {
-                          '&:after': {
-                            content: '""',
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '100%',
-                            height: '100%',
-                            bgcolor: 'common.black',
-                            opacity: 0.6,
-                          },
-                        }) as SxProps),
-                      }}
-                      name={displayName(person)}
-                      src={person.avatarUrl}
-                    />
-                    {displayName(person)}
-                  </Box>
-                ),
-              }}
+                    name={displayName(person)}
+                    src={person.avatarUrl}
+                  />
+                  {displayName(person)}
+                </Box>
+              )}
             />
           </Stack>
 
@@ -258,10 +256,8 @@ export default function ManagementPage() {
                 name: 'absenceType',
                 control,
               }}
-              autocompleteProps={{
-                sx: textFieldStyle,
-                options: absenceTypesData,
-              }}
+              sx={textFieldStyle}
+              options={absenceTypesData}
             />
           </Stack>
 

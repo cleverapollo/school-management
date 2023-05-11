@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, Context } from '@tyro/api';
+import { calendarKeys } from './keys';
 
 const calendarSearch = graphql(/* GraphQL */ `
   query calendarSearchQuery($filter: SearchFilter) {
@@ -16,7 +17,7 @@ export function useCalendarSearch(query: string) {
   const trimmedQuery = query.trim();
 
   return useQuery({
-    queryKey: ['calendar-search', query],
+    queryKey: calendarKeys.search(query),
     queryFn: async () =>
       gqlClient.request(calendarSearch, {
         filter: { text: trimmedQuery, context: [Context.Calendar] },
