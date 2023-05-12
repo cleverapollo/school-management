@@ -1,5 +1,5 @@
 import { Box, Container, Fade, Typography } from '@mui/material';
-import { usePermissions } from '@tyro/api';
+import { SmsRecipientType, usePermissions } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -10,13 +10,10 @@ import {
   Page,
   Table,
   TableAvatar,
+  useDisclosure,
 } from '@tyro/core';
-import {
-  ArchiveIcon,
-  MobileIcon,
-  SendMailIcon,
-  UnarchiveIcon,
-} from '@tyro/icons';
+import { MobileIcon, SendMailIcon } from '@tyro/icons';
+import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import {
   useCustomGroups,
   ReturnTypeFromUseCustomGroups,
@@ -61,13 +58,18 @@ const getCustomGroupsColumns = (
 ];
 
 export default function CustomGroups() {
-  const { t } = useTranslation(['common', 'groups', 'people', 'mail']);
-  const [selectedGroups, setSelectedGroups] = useState<
-    ReturnTypeFromUseCustomGroups[]
-  >([]);
+  const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
+  const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
+    []
+  );
   const { isStaffUser } = usePermissions();
   const { data: customGroupData } = useCustomGroups();
   const showActionMenu = isStaffUser && selectedGroups.length > 0;
+  const {
+    isOpen: isSendSmsOpen,
+    onOpen: onOpenSendSms,
+    onClose: onCloseSendSms,
+  } = useDisclosure();
 
   const customGroupColumns = useMemo(
     () => getCustomGroupsColumns(t, isStaffUser),
@@ -79,71 +81,67 @@ export default function CustomGroups() {
       {
         label: t('people:sendSms'),
         icon: <MobileIcon />,
-        // TODO: add action logic
-        onClick: () => {},
+        onClick: onOpenSendSms,
       },
-      {
-        label: t('mail:sendMail'),
-        icon: <SendMailIcon />,
-        onClick: () => {},
-      },
+      // {
+      //   label: t('mail:sendMail'),
+      //   icon: <SendMailIcon />,
+      //   onClick: () => {},
+      // },
     ];
 
-    // TODO: add flag to check status
-    const isThereAtLeastOneUnarchived = true;
-
-    const archiveActions = [
-      isThereAtLeastOneUnarchived
-        ? {
-            label: t('common:actions.archive'),
-            icon: <ArchiveIcon />,
-            // TODO: add action logic
-            onClick: () => {},
-          }
-        : {
-            label: t('common:actions.unarchive'),
-            icon: <UnarchiveIcon />,
-            // TODO: add action logic
-            onClick: () => {},
-          },
-    ];
-
-    return [commonActions, archiveActions];
+    return commonActions;
   }, []);
 
   return (
-    <Page title={t('groups:customGroups')}>
-      <Container maxWidth="xl">
-        <Typography variant="h3" component="h1" paragraph>
-          {t('groups:customGroups')}
-        </Typography>
-        <Table
-          rowData={customGroupData ?? []}
-          columnDefs={customGroupColumns}
-          rowSelection="multiple"
-          getRowId={({ data }) => String(data?.partyId)}
-          rightAdornment={
-            <Fade in={showActionMenu} unmountOnExit>
-              <Box>
-                <ActionMenu
-                  menuProps={{
-                    anchorOrigin: {
-                      vertical: 'bottom',
-                      horizontal: 'right',
-                    },
-                    transformOrigin: {
-                      vertical: 'top',
-                      horizontal: 'right',
-                    },
-                  }}
-                  menuItems={actionMenuItems}
-                />
-              </Box>
-            </Fade>
-          }
-          onRowSelection={setSelectedGroups}
-        />
-      </Container>
-    </Page>
+    <>
+      <Page title={t('groups:customGroups')}>
+        <Container maxWidth="xl">
+          <Typography variant="h3" component="h1" paragraph>
+            {t('groups:customGroups')}
+          </Typography>
+          <Table
+            rowData={customGroupData ?? []}
+            columnDefs={customGroupColumns}
+            rowSelection="multiple"
+            getRowId={({ data }) => String(data?.partyId)}
+            rightAdornment={
+              <Fade in={showActionMenu} unmountOnExit>
+                <Box>
+                  <ActionMenu menuItems={actionMenuItems} />
+                </Box>
+              </Fade>
+            }
+            onRowSelection={(groups) =>
+              setSelectedGroups(
+                groups.map(({ partyId, name }) => ({
+                  id: partyId,
+                  name,
+                }))
+              )
+            }
+          />
+        </Container>
+      </Page>
+      <SendSmsModal
+        isOpen={isSendSmsOpen}
+        onClose={onCloseSendSms}
+        recipients={selectedGroups}
+        possibleRecipientTypes={[
+          {
+            label: t('sms:contactsOfStudentMembers', {
+              count: selectedGroups.length,
+            }),
+            type: SmsRecipientType.GeneralGroupContact,
+          },
+          {
+            label: t('sms:staffInGroup', {
+              count: selectedGroups.length,
+            }),
+            type: SmsRecipientType.GeneralGroupStaff,
+          },
+        ]}
+      />
+    </>
   );
 }
