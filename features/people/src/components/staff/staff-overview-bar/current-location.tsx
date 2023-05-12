@@ -17,7 +17,7 @@ export function CurrentLocation({ staffPartyId }: CurrentLocationProps) {
 
     return {
       [t('people:currentLocation')]: room ?? '-',
-      [t('people:currentLesson')]: data?.currentLocation?.lesson ?? '-'
+      [t('people:currentLesson')]: data?.currentLocation?.lesson ?? '-',
     };
   }, [data, t]);
   return (

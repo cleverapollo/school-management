@@ -9,6 +9,7 @@ import {
 import dayjs from 'dayjs';
 import { useEffect } from 'react';
 import { calendarKeys } from './keys';
+import { getCalendarEvents } from './events';
 
 const timetable = graphql(/* GraphQL */ `
   query calendar_partyTimetable($filter: CalendarEventFilter!) {
@@ -143,6 +144,21 @@ export function getTimetableInfoForCalendar(date: Date) {
     fromDate: dayInfoFromDate,
     toDate: dayInfoToDate,
   });
+}
+
+export function getTodayTimetableEvents(partyId: number | null | undefined) {
+  const today = dayjs().toDate();
+
+  const getEventsPromise = partyId
+    ? getCalendarEvents({
+        date: today,
+        resources: {
+          partyIds: [partyId],
+        },
+      })
+    : null;
+
+  return Promise.all([getEventsPromise, getTimetableInfoForCalendar(today)]);
 }
 
 export function useTimetableInfo(fromDate: dayjs.Dayjs, toDate: dayjs.Dayjs) {

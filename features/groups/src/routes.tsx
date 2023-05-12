@@ -10,7 +10,7 @@ import { Iterator } from '@tyro/api';
 import { redirect } from 'react-router-dom';
 import { getAttendanceCodes } from '@tyro/attendance';
 
-import { getCalendarEvents, getTimetableInfoForCalendar } from '@tyro/calendar';
+import { getTodayTimetableEvents } from '@tyro/calendar';
 import {
   getSubjectGroups,
   getSubjectGroupById,
@@ -157,19 +157,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                     loader: ({ params }) => {
                       const groupId = getNumber(params.groupId);
 
-                      const getEventsPromise = groupId
-                        ? getCalendarEvents({
-                            date: new Date(),
-                            resources: {
-                              partyIds: [groupId],
-                            },
-                          })
-                        : null;
-
-                      return Promise.all([
-                        getEventsPromise,
-                        getTimetableInfoForCalendar(new Date()),
-                      ]);
+                      return getTodayTimetableEvents(groupId);
                     },
                   },
                 ],
