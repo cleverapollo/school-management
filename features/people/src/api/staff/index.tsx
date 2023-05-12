@@ -1,3 +1,4 @@
+export * from './status';
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, queryClient, StaffFilter } from '@tyro/api';
 
@@ -77,6 +78,7 @@ export function useStaff(filter: StaffFilter) {
     select: ({ core_staff }) => core_staff,
   });
 }
+
 
 const staffForSelectQuery = (filter: StaffFilter) => ({
   queryKey: staffKey.details(filter),
