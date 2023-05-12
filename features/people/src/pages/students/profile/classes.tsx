@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   GridOptions,
@@ -11,9 +11,16 @@ import {
   StudyLevelSelectCellEditor,
   TableAvatar,
   getNumber,
+  ActionMenu,
+  ActionMenuProps,
+  useDisclosure,
 } from '@tyro/core';
 
 import set from 'lodash/set';
+import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
+import { Box, Fade } from '@mui/material';
+import { MobileIcon } from '@tyro/icons';
+import { SmsRecipientType } from '@tyro/api';
 import { useStudentsSubjectGroups } from '../../../api/student';
 
 type ReturnTypeFromUseStudentsSubjectGroups = NonNullable<
@@ -27,6 +34,9 @@ const getSubjectGroupsColumns = (
   {
     field: 'name',
     headerName: t('common:name'),
+    headerCheckboxSelection: true,
+    headerCheckboxSelectionFilteredOnly: true,
+    checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
     cellRenderer: ({
       data,
@@ -92,8 +102,16 @@ const getSubjectGroupsColumns = (
 export default function StudentProfileClassesPage() {
   const { id } = useParams();
   const studentId = getNumber(id);
-  const { t } = useTranslation(['common', 'groups', 'people', 'mail']);
+  const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
+  const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
+    []
+  );
   const { displayNames } = usePreferredNameLayout();
+  const {
+    isOpen: isSendSmsOpen,
+    onOpen: onOpenSendSms,
+    onClose: onCloseSendSms,
+  } = useDisclosure();
 
   const { data: subjectGroupsData } = useStudentsSubjectGroups(studentId);
 
@@ -102,11 +120,54 @@ export default function StudentProfileClassesPage() {
     [t, displayNames]
   );
 
+  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
+    () => [
+      {
+        label: t('people:sendSms'),
+        icon: <MobileIcon />,
+        onClick: onOpenSendSms,
+      },
+    ],
+    []
+  );
+
   return (
-    <Table
-      rowData={subjectGroupsData ?? []}
-      columnDefs={studentColumns}
-      getRowId={({ data }) => String(data?.partyId)}
-    />
+    <>
+      <Table
+        rowData={subjectGroupsData ?? []}
+        columnDefs={studentColumns}
+        rowSelection="multiple"
+        getRowId={({ data }) => String(data?.partyId)}
+        rightAdornment={
+          <Fade in={selectedGroups.length > 0} unmountOnExit>
+            <Box>
+              <ActionMenu menuItems={actionMenuItems} />
+            </Box>
+          </Fade>
+        }
+        onRowSelection={(groups) =>
+          setSelectedGroups(
+            groups.map(({ partyId, name }) => ({
+              id: partyId,
+              name,
+            }))
+          )
+        }
+      />
+
+      <SendSmsModal
+        isOpen={isSendSmsOpen}
+        onClose={onCloseSendSms}
+        recipients={selectedGroups}
+        possibleRecipientTypes={[
+          {
+            label: t('sms:teachersOfGroup', {
+              count: selectedGroups.length,
+            }),
+            type: SmsRecipientType.SubjectGroupStaff,
+          },
+        ]}
+      />
+    </>
   );
 }

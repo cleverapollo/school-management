@@ -10,6 +10,7 @@ import {
   TableBooleanValue,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
+  useDisclosure,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -20,6 +21,8 @@ import {
   PersonCrossIcon,
 } from '@tyro/icons';
 import { Box, Fade } from '@mui/material';
+import { SendSmsModal } from '@tyro/sms';
+import { SmsRecipientType } from '@tyro/api';
 import { useStudentsContacts } from '../../../api/student/overview';
 import { joinAddress } from '../../../utils/join-address';
 
@@ -107,6 +110,19 @@ const getStudentContactColumns = (
       return <TableBooleanValue value={isAllowedToContact} />;
     },
   },
+  {
+    field: 'relationships[0].includeInSms',
+    headerName: translate('people:includedInSms'),
+    valueGetter: ({ data }) =>
+      data?.relationships?.[0]?.includeInSms ? 'Yes' : 'No',
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => {
+      const isIncludedInSms = data?.relationships?.[0]?.includeInSms ?? false;
+
+      return <TableBooleanValue value={isIncludedInSms} />;
+    },
+  },
 ];
 
 export default function StudentProfileContactsPage() {
@@ -116,12 +132,28 @@ export default function StudentProfileContactsPage() {
     ReturnTypeFromUseContacts[]
   >([]);
   const { data: contacts } = useStudentsContacts(studentId);
-  const { t } = useTranslation(['common', 'people', 'mail']);
+  const { t } = useTranslation(['common', 'people', 'mail', 'sms']);
   const { displayName } = usePreferredNameLayout();
+  const {
+    isOpen: isSendSmsOpen,
+    onOpen: onOpenSendSms,
+    onClose: onCloseSendSms,
+  } = useDisclosure();
 
   const studentContactColumns = useMemo(
     () => getStudentContactColumns(t, displayName),
     [t, displayName]
+  );
+
+  const recipientsForSms = useMemo(
+    () =>
+      selectedContacts
+        .filter((contact) => contact?.relationships?.[0]?.includeInSms)
+        .map((contact) => ({
+          id: contact?.partyId ?? 0,
+          name: displayName(contact?.person),
+        })) ?? [],
+    [selectedContacts]
   );
 
   const actionMenuItems = useMemo(() => {
@@ -135,13 +167,17 @@ export default function StudentProfileContactsPage() {
         {
           label: t('people:sendSms'),
           icon: <MobileIcon />,
-          onClick: () => {},
+          onClick: onOpenSendSms,
+          disabled: recipientsForSms.length === 0,
+          disabledTooltip: t('sms:recipientNotIncludedInSms', {
+            count: selectedContacts.length,
+          }),
         },
-        {
-          label: t('mail:sendMail'),
-          icon: <SendMailIcon />,
-          onClick: () => {},
-        },
+        // {
+        //   label: t('mail:sendMail'),
+        //   icon: <SendMailIcon />,
+        //   onClick: () => {},
+        // },
       ],
       [
         {
@@ -166,38 +202,39 @@ export default function StudentProfileContactsPage() {
             },
       ],
     ];
-  }, [selectedContacts]);
+  }, [selectedContacts, recipientsForSms]);
 
   return (
-    <Table
-      rowData={contacts ?? []}
-      columnDefs={studentContactColumns}
-      tableContainerSx={{ height: 300 }}
-      rowSelection="multiple"
-      rowHeight={56}
-      getRowId={({ data }) => String(data?.partyId)}
-      onRowSelection={(rows) => {
-        setSelectedContacts(rows);
-      }}
-      rightAdornment={
-        <Fade in={selectedContacts.length > 0}>
-          <Box>
-            <ActionMenu
-              menuProps={{
-                anchorOrigin: {
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                },
-                transformOrigin: {
-                  vertical: 'top',
-                  horizontal: 'right',
-                },
-              }}
-              menuItems={actionMenuItems}
-            />
-          </Box>
-        </Fade>
-      }
-    />
+    <>
+      <Table
+        rowData={contacts ?? []}
+        columnDefs={studentContactColumns}
+        tableContainerSx={{ height: 300 }}
+        rowSelection="multiple"
+        getRowId={({ data }) => String(data?.partyId)}
+        onRowSelection={(rows) => {
+          setSelectedContacts(rows);
+        }}
+        rightAdornment={
+          <Fade in={selectedContacts.length > 0}>
+            <Box>
+              <ActionMenu menuItems={actionMenuItems} />
+            </Box>
+          </Fade>
+        }
+      />
+      <SendSmsModal
+        isOpen={isSendSmsOpen}
+        onClose={onCloseSendSms}
+        recipients={recipientsForSms}
+        showRecipientTypes={false}
+        possibleRecipientTypes={[
+          {
+            label: '',
+            type: SmsRecipientType.Contact,
+          },
+        ]}
+      />
+    </>
   );
 }

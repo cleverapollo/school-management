@@ -37,6 +37,7 @@ const studentsContacts = graphql(/* GraphQL */ `
           relationshipType
           primaryContact
           allowedToContact
+          includeInSms
         }
       }
     }
