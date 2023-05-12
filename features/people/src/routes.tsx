@@ -4,10 +4,9 @@ import { UserGroupIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
 import { getStudentDashboardAssessments } from '@tyro/assessments';
 import {
-  getCalendarEvents,
   getPartyTimetable,
   getTimetableInfo,
-  getTimetableInfoForCalendar,
+  getTodayTimetableEvents,
 } from '@tyro/calendar';
 import dayjs from 'dayjs';
 import {
@@ -186,19 +185,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
 
-                  const getEventsPromise = studentId
-                    ? getCalendarEvents({
-                        date: new Date(),
-                        resources: {
-                          partyIds: [studentId],
-                        },
-                      })
-                    : null;
-
-                  return Promise.all([
-                    getEventsPromise,
-                    getTimetableInfoForCalendar(new Date()),
-                  ]);
+                  return getTodayTimetableEvents(studentId);
                 },
               },
               {
@@ -247,6 +234,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             element: <StaffProfileContainer />,
             loader: ({ params }) => {
               const staffId = getNumber(params.id);
+
               return Promise.all([
                 getStaff({ partyIds: [staffId ?? 0] }),
                 getStaffStatus(staffId),
@@ -280,7 +268,11 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'timetable',
                 element: <StaffProfileTimetablePage />,
-                loader: ({ params }) => Promise.all([]),
+                loader: ({ params }) => {
+                  const staffId = getNumber(params.id);
+
+                  return getTodayTimetableEvents(staffId);
+                },
               },
               {
                 type: NavObjectType.NonMenuLink,
