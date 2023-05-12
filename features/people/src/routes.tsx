@@ -19,7 +19,7 @@ import {
   getStudentStatus,
   getStaff,
   getStudentsSubjectGroups,
-  getStaffStatus
+  getStaffStatus,
 } from './api';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
@@ -64,7 +64,8 @@ const StudentProfileSettingsPage = lazy(
 const ContactsListPage = lazy(() => import('./pages/contacts'));
 
 const StaffListPage = lazy(() => import('./pages/staff'));
-//Staff profile pages
+
+// Staff profile pages
 const StaffProfileContainer = lazy(
   () => import('./components/staff/staff-profile-container')
 );
@@ -260,45 +261,35 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'overview',
-                loader: ({ params }) => {
-                  return Promise.all([]);
-                },
+                loader: ({ params }) => Promise.all([]),
                 element: <StaffProfileOverviewPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'personal',
-                loader: ({ params }) => {
-                  return Promise.all([]);
-                },
+                loader: ({ params }) => Promise.all([]),
                 element: <StaffProfilePersonalPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'contacts',
-                loader: ({ params }) => {
-                  return Promise.all([]);
-                },
+                loader: ({ params }) => Promise.all([]),
                 element: <StaffProfileContactsPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'timetable',
                 element: <StaffProfileTimetablePage />,
-                loader: ({ params }) => {
-                  return Promise.all([]);
-                },
+                loader: ({ params }) => Promise.all([]),
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'classes',
-                loader: ({ params }) => {
-                  return Promise.all([]);
-                },
+                loader: ({ params }) => Promise.all([]),
                 element: <StaffProfileClassesPage />,
               },
             ],
-          }
+          },
         ],
       },
     ],
