@@ -1815,111 +1815,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@date-io/core@npm:^2.16.0":
-  version: 2.16.0
-  resolution: "@date-io/core@npm:2.16.0"
-  checksum: 336d0dd90fd0848116472cfb0e694e85860b2916952304201bb4d3a23d453d44589d346494584faba0fc05751cc38f1880889ce48cd982377aac2bfb20469b8a
-  languageName: node
-  linkType: hard
-
-"@date-io/date-fns-jalali@npm:^2.16.0":
-  version: 2.16.0
-  resolution: "@date-io/date-fns-jalali@npm:2.16.0"
-  dependencies:
-    "@date-io/core": ^2.16.0
-  peerDependencies:
-    date-fns-jalali: ^2.13.0-0
-  peerDependenciesMeta:
-    date-fns-jalali:
-      optional: true
-  checksum: 141ee217ee0599f2d593438903785e8b4ade87dd53b0fef986fd0b8545a22a7d2eaad59a3daba7a516d7426ea27b188a92f78bc0e72ae92f90c1dea269260a48
-  languageName: node
-  linkType: hard
-
-"@date-io/date-fns@npm:^2.16.0":
-  version: 2.16.0
-  resolution: "@date-io/date-fns@npm:2.16.0"
-  dependencies:
-    "@date-io/core": ^2.16.0
-  peerDependencies:
-    date-fns: ^2.0.0
-  peerDependenciesMeta:
-    date-fns:
-      optional: true
-  checksum: aedb23c07da6f1e38a81ffe77ca1cb95167e1a175a3d65561cf244fbd1a5a0b961e84df88fe00b9cfa4bd32eda6d430e6d14567e2b040257198cd12748d5fcc5
-  languageName: node
-  linkType: hard
-
-"@date-io/dayjs@npm:^2.16.0":
-  version: 2.16.0
-  resolution: "@date-io/dayjs@npm:2.16.0"
-  dependencies:
-    "@date-io/core": ^2.16.0
-  peerDependencies:
-    dayjs: ^1.8.17
-  peerDependenciesMeta:
-    dayjs:
-      optional: true
-  checksum: bb8192207addbf6430c35da7664b97761f87d2c6cf4a3eaf464584a980e6cecaede581af1a40c5ba0a0189dc6bff2ac16408a95ec88e542b16915430191298c8
-  languageName: node
-  linkType: hard
-
-"@date-io/hijri@npm:^2.16.1":
-  version: 2.16.1
-  resolution: "@date-io/hijri@npm:2.16.1"
-  dependencies:
-    "@date-io/moment": ^2.16.1
-  peerDependencies:
-    moment-hijri: ^2.1.2
-  peerDependenciesMeta:
-    moment-hijri:
-      optional: true
-  checksum: 21c5eb658f14c7a0deaa877565df305d01e9b6cf97d94ae5c7be4de47b8cf6e3b72a07142346c070d6c32da75a5c53638452c1ff0303de27c19757c03bc9d09a
-  languageName: node
-  linkType: hard
-
-"@date-io/jalaali@npm:^2.16.1":
-  version: 2.16.1
-  resolution: "@date-io/jalaali@npm:2.16.1"
-  dependencies:
-    "@date-io/moment": ^2.16.1
-  peerDependencies:
-    moment-jalaali: ^0.7.4 || ^0.8.0 || ^0.9.0
-  peerDependenciesMeta:
-    moment-jalaali:
-      optional: true
-  checksum: 3df4865145c38f20080804a2bb7650afeff2dd427e96f5c2fa4157ecb9ba6bdba56b25e791ecb2d5a13c8c04a87c42ab807f5be2485abc23c46281b6a5909f3a
-  languageName: node
-  linkType: hard
-
-"@date-io/luxon@npm:^2.16.1":
-  version: 2.16.1
-  resolution: "@date-io/luxon@npm:2.16.1"
-  dependencies:
-    "@date-io/core": ^2.16.0
-  peerDependencies:
-    luxon: ^1.21.3 || ^2.x || ^3.x
-  peerDependenciesMeta:
-    luxon:
-      optional: true
-  checksum: ac3f667ff122728e7559fac96f75bc85109d0054bf3955c1aea9d8365e08bd49ed51780f7f3900160773c0ed584db21556ea7d49acf075c61a30eb0b0e5da935
-  languageName: node
-  linkType: hard
-
-"@date-io/moment@npm:^2.16.1":
-  version: 2.16.1
-  resolution: "@date-io/moment@npm:2.16.1"
-  dependencies:
-    "@date-io/core": ^2.16.0
-  peerDependencies:
-    moment: ^2.24.0
-  peerDependenciesMeta:
-    moment:
-      optional: true
-  checksum: 37a541661c504e1005904fab27b7b01d0c5d6c9c8c8a3b0a69d42a578aee8c52de7c181f917ad7acb14a9d7356d240c7e107777edf10efa11a453535977fc905
-  languageName: node
-  linkType: hard
-
 "@emotion/babel-plugin@npm:^11.10.6":
   version: 11.10.6
   resolution: "@emotion/babel-plugin@npm:11.10.6"
@@ -3798,20 +3693,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^6.0.4":
-  version: 6.0.4
-  resolution: "@mui/x-date-pickers@npm:6.0.4"
+"@mui/utils@npm:^5.12.0":
+  version: 5.12.3
+  resolution: "@mui/utils@npm:5.12.3"
   dependencies:
     "@babel/runtime": ^7.21.0
-    "@date-io/core": ^2.16.0
-    "@date-io/date-fns": ^2.16.0
-    "@date-io/date-fns-jalali": ^2.16.0
-    "@date-io/dayjs": ^2.16.0
-    "@date-io/hijri": ^2.16.1
-    "@date-io/jalaali": ^2.16.1
-    "@date-io/luxon": ^2.16.1
-    "@date-io/moment": ^2.16.1
-    "@mui/utils": ^5.11.13
+    "@types/prop-types": ^15.7.5
+    "@types/react-is": ^16.7.1 || ^17.0.0
+    prop-types: ^15.8.1
+    react-is: ^18.2.0
+  peerDependencies:
+    react: ^17.0.0 || ^18.0.0
+  checksum: bec2d8e173805e2a7446aa4fa7a3119d96a62787b685dbf59908f337daec922fa74a54bc60038cf1269621aebb7b61e7a52caa4ac4daa0140c5e290adce20160
+  languageName: node
+  linkType: hard
+
+"@mui/x-date-pickers@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "@mui/x-date-pickers@npm:6.3.0"
+  dependencies:
+    "@babel/runtime": ^7.21.0
+    "@mui/utils": ^5.12.0
     "@types/react-transition-group": ^4.4.5
     clsx: ^1.2.1
     prop-types: ^15.8.1
@@ -3819,15 +3721,16 @@ __metadata:
   peerDependencies:
     "@emotion/react": ^11.9.0
     "@emotion/styled": ^11.8.1
-    "@mui/material": ^5.4.1
-    "@mui/system": ^5.4.1
+    "@mui/base": ^5.0.0-alpha.87
+    "@mui/material": ^5.8.6
+    "@mui/system": ^5.8.0
     date-fns: ^2.25.0
     date-fns-jalali: ^2.13.0-0
     dayjs: ^1.10.7
     luxon: ^3.0.2
     moment: ^2.29.4
     moment-hijri: ^2.1.2
-    moment-jalaali: ^0.7.4 || ^0.8.0 || ^0.9.0
+    moment-jalaali: ^0.7.4 || ^0.8.0 || ^0.9.0 || ^0.10.0
     react: ^17.0.2 || ^18.0.0
     react-dom: ^17.0.2 || ^18.0.0
   peerDependenciesMeta:
@@ -3849,7 +3752,7 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: c1fd2663ce0dace598448f156507bc63ee95203554c36d98db82a85b19dde3aabec789fb554d522c0dc31701987c16383cfbc619ed7f3274836d23d707d87f3e
+  checksum: 054a1074a3e719a6a9f9114f8483fb1cb886d41cd1f2d51099315a87be0bed21e42862d0ba3a6def57c301edfb9c8942bda850bfdb1d411abd4b04c51042b49a
   languageName: node
   linkType: hard
 
@@ -5452,7 +5355,7 @@ __metadata:
     lodash: ^4.17.21
     react: ^18.2.0
     react-dom: ^18.2.0
-    react-hook-form: ^7.34.2
+    react-hook-form: ^7.43.9
     react-router: ^6.6.2
     react-router-dom: ^6.6.2
   languageName: unknown
@@ -5516,7 +5419,7 @@ __metadata:
     "@mui/lab": ^5.0.0-alpha.57
     "@mui/material": ^5.11.6
     "@mui/system": ^5.11.5
-    "@mui/x-date-pickers": ^6.0.4
+    "@mui/x-date-pickers": ^6.3.0
     "@tanstack/react-query": ^4.16.1
     "@tyro/api": "*"
     "@tyro/configs": "*"
@@ -5527,7 +5430,7 @@ __metadata:
     dayjs: ^1.11.7
     lodash: ^4.17.21
     react: ^18.2.0
-    react-hook-form: ^7.42.1
+    react-hook-form: ^7.43.9
     react-router: ^6.3.0
     react-router-dom: ^6.6.2
     yup: ^0.32.11
@@ -5571,7 +5474,7 @@ __metadata:
     "@hookform/resolvers": ^3.0.1
     "@mui/lab": ^5.0.0-alpha.96
     "@mui/material": ^5.10.14
-    "@mui/x-date-pickers": ^6.0.4
+    "@mui/x-date-pickers": ^6.3.0
     "@tyro/api": "*"
     "@tyro/configs": "*"
     "@tyro/i18n": "*"
@@ -5588,7 +5491,7 @@ __metadata:
     react: ^18.2.0
     react-apexcharts: ^1.4.0
     react-dom: ^18.2.0
-    react-hook-form: ^7.34.2
+    react-hook-form: ^7.43.9
     react-router: ^6.6.2
     react-router-dom: ^6.6.2
     react-use: ^17.4.0
@@ -5663,7 +5566,7 @@ __metadata:
     "@tyro/icons": "*"
     react: ^18.2.0
     react-dom: ^18.2.0
-    react-hook-form: ^7.42.1
+    react-hook-form: ^7.43.9
     react-router: ^6.3.0
     react-router-dom: ^6.6.2
   languageName: unknown
@@ -5804,7 +5707,7 @@ __metadata:
     dayjs: ^1.11.7
     react: ^18.2.0
     react-dom: ^18.2.0
-    react-hook-form: ^7.34.2
+    react-hook-form: ^7.43.9
     react-router: ^6.6.2
     react-router-dom: ^6.6.2
   languageName: unknown
@@ -15672,7 +15575,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:^7.34.2, react-hook-form@npm:^7.42.1":
+"react-hook-form@npm:^7.43.9":
   version: 7.43.9
   resolution: "react-hook-form@npm:7.43.9"
   peerDependencies:
@@ -18217,7 +18120,7 @@ __metadata:
     "@mui/lab": ^5.0.0-alpha.96
     "@mui/material": ^5.10.14
     "@mui/system": ^5.10.14
-    "@mui/x-date-pickers": ^6.0.4
+    "@mui/x-date-pickers": ^6.3.0
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.3
     "@svgr/webpack": ^6.2.1
     "@tanstack/match-sorter-utils": ^8.5.14
@@ -18299,7 +18202,7 @@ __metadata:
     react-dev-utils: ^12.0.1
     react-dom: ^18.2.0
     react-dropzone: ^14.2.2
-    react-hook-form: ^7.34.2
+    react-hook-form: ^7.43.9
     react-lazy-load-image-component: ^1.5.4
     react-markdown: ^8.0.4
     react-quill: ^2.0.0

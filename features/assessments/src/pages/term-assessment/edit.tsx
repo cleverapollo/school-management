@@ -48,6 +48,7 @@ export default function EditTermAssessmentPage() {
       ...(commentBank && {
         commentBank: {
           id: commentBank.commentBankId,
+          name: commentBank.commentBankName ?? '',
         },
       }),
       extraFields: (extraFields ?? []).flatMap((field) =>
@@ -58,6 +59,7 @@ export default function EditTermAssessmentPage() {
                 ...(field.commentBankId && {
                   commentBank: {
                     id: field.commentBankId,
+                    name: field.commentBankName ?? '',
                   },
                 }),
               },

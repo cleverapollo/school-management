@@ -11,6 +11,7 @@ import {
   useController,
   UseControllerProps,
 } from 'react-hook-form';
+import dayjs from 'dayjs';
 
 type RHFDatePickerProps<TField extends FieldValues, TInputDate> = {
   label?: string;
@@ -22,7 +23,10 @@ type RHFDatePickerProps<TField extends FieldValues, TInputDate> = {
   inputProps?: TextFieldProps;
 };
 
-export const RHFDatePicker = <TField extends FieldValues, TInputDate = Date>({
+export const RHFDatePicker = <
+  TField extends FieldValues,
+  TInputDate = dayjs.Dayjs
+>({
   label,
   datePickerProps,
   controlProps,

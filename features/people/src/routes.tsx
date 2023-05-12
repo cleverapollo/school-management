@@ -4,10 +4,9 @@ import { UserGroupIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
 import { getStudentDashboardAssessments } from '@tyro/assessments';
 import {
-  getCalendarEvents,
   getPartyTimetable,
   getTimetableInfo,
-  getTimetableInfoForCalendar,
+  getTodayTimetableEvents,
 } from '@tyro/calendar';
 import dayjs from 'dayjs';
 import {
@@ -19,6 +18,7 @@ import {
   getStudentStatus,
   getStaff,
   getStudentsSubjectGroups,
+  getStaffStatus,
 } from './api';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
@@ -61,7 +61,28 @@ const StudentProfileSettingsPage = lazy(
 );
 
 const ContactsListPage = lazy(() => import('./pages/contacts'));
+
 const StaffListPage = lazy(() => import('./pages/staff'));
+
+// Staff profile pages
+const StaffProfileContainer = lazy(
+  () => import('./components/staff/staff-profile-container')
+);
+const StaffProfileOverviewPage = lazy(
+  () => import('./pages/staff/profile/overview')
+);
+const StaffProfilePersonalPage = lazy(
+  () => import('./pages/staff/profile/personal')
+);
+const StaffProfileContactsPage = lazy(
+  () => import('./pages/staff/profile/contacts')
+);
+const StaffProfileTimetablePage = lazy(
+  () => import('./pages/staff/profile/timetable')
+);
+const StaffProfileClassesPage = lazy(
+  () => import('./pages/staff/profile/classes')
+);
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -164,19 +185,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
 
-                  const getEventsPromise = studentId
-                    ? getCalendarEvents({
-                        date: new Date(),
-                        resources: {
-                          partyIds: [studentId],
-                        },
-                      })
-                    : null;
-
-                  return Promise.all([
-                    getEventsPromise,
-                    getTimetableInfoForCalendar(new Date()),
-                  ]);
+                  return getTodayTimetableEvents(studentId);
                 },
               },
               {
@@ -218,6 +227,60 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.people.staff'),
             loader: () => getStaff({}),
             element: <StaffListPage />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: 'staff/:id',
+            element: <StaffProfileContainer />,
+            loader: ({ params }) => {
+              const staffId = getNumber(params.id);
+
+              return Promise.all([
+                getStaff({ partyIds: [staffId ?? 0] }),
+                getStaffStatus(staffId),
+              ]);
+            },
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                index: true,
+                loader: () => redirect('./overview'),
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'overview',
+                loader: ({ params }) => Promise.all([]),
+                element: <StaffProfileOverviewPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'personal',
+                loader: ({ params }) => Promise.all([]),
+                element: <StaffProfilePersonalPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'contacts',
+                loader: ({ params }) => Promise.all([]),
+                element: <StaffProfileContactsPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'timetable',
+                element: <StaffProfileTimetablePage />,
+                loader: ({ params }) => {
+                  const staffId = getNumber(params.id);
+
+                  return getTodayTimetableEvents(staffId);
+                },
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'classes',
+                loader: ({ params }) => Promise.all([]),
+                element: <StaffProfileClassesPage />,
+              },
+            ],
           },
         ],
       },

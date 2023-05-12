@@ -214,11 +214,9 @@ export function TermAssessmentForm({
               optionIdKey="yearGroupId"
               optionTextKey="name"
               controlProps={{ name: 'years', control }}
-              autocompleteProps={{
-                multiple: true,
-                sx: textFieldStyle,
-                options: yearGroupsData,
-              }}
+              multiple
+              sx={textFieldStyle}
+              options={yearGroupsData}
             />
           </Stack>
           <Stack direction="row" gap={2}>
