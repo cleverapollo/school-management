@@ -17,5 +17,10 @@
   "subjectTeachersOfStudent_one": "Subject teacher(s) of student",
   "subjectTeachersOfStudent_other": "Subject teacher(s) of students",
   "recipientNotIncludedInSms_one": "Recipient not included in SMS",
-  "recipientNotIncludedInSms_other": "Recipients not included in SMS"
+  "recipientNotIncludedInSms_other": "Recipients not included in SMS",
+  "recipients": "Recipient(s)",
+  "numberOfRecipients": "Number of recipients",
+  "sentAt": "Sent at",
+  "sentBy": "Sent by",
+  "totalCost": "Total cost"
 }
