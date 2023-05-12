@@ -1,0 +1,21 @@
+{
+  "sendTo": "Send to",
+  "message": "Message",
+  "sendSms": "Send SMS",
+  "numberOfTextsAndCharacters_one": "{{count}} text: {{byteSize}}/{{byteSizePerSms}}",
+  "numberOfTextsAndCharacters_other": "{{count}} texts: {{byteSize}}/{{byteSizePerSms}}",
+  "contactsOfStudentMembers_one": "Contact(s) of student member(s) in group",
+  "contactsOfStudentMembers_other": "Contact(s) of student member(s) in groups",
+  "tutorsAndYearHeadsOfGroup_one": "Tutor(s) and year head(s) of group",
+  "tutorsAndYearHeadsOfGroup_other": "Tutor(s) and year head(s) of groups",
+  "teachersOfGroup_one": "Teacher(s) of group",
+  "teachersOfGroup_other": "Teacher(s) of groups",
+  "staffInGroup_one": "Staff in group",
+  "staffInGroup_other": "Staff in groups",
+  "contactsOfStudent_one": "Contact(s) of student",
+  "contactsOfStudent_other": "Contact(s) of students",
+  "subjectTeachersOfStudent_one": "Subject teacher(s) of student",
+  "subjectTeachersOfStudent_other": "Subject teacher(s) of students",
+  "recipientNotIncludedInSms_one": "Recipient not included in SMS",
+  "recipientNotIncludedInSms_other": "Recipients not included in SMS"
+}
