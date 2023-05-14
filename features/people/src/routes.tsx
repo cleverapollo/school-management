@@ -70,6 +70,15 @@ const ContactProfileContainer = lazy(
 const ContactProfilePersonalPage = lazy(
   () => import('./pages/contacts/profile/personal')
 );
+const ContactProfileStudentsPage = lazy(
+  () => import('./pages/contacts/profile/students')
+);
+const ContactProfileFeesPage = lazy(
+  () => import('./pages/contacts/profile/fees')
+);
+const ContactProfileAccessPage = lazy(
+  () => import('./pages/contacts/profile/access')
+);
 
 const StaffListPage = lazy(() => import('./pages/staff'));
 
@@ -257,19 +266,19 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'students',
                 loader: ({ params }) => Promise.all([]),
-                element: <ContactProfilePersonalPage />,
+                element: <ContactProfileStudentsPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'fees',
                 loader: ({ params }) => Promise.all([]),
-                element: <ContactProfilePersonalPage />,
+                element: <ContactProfileFeesPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'access',
                 loader: ({ params }) => Promise.all([]),
-                element: <ContactProfilePersonalPage />,
+                element: <ContactProfileAccessPage />,
               },
             ],
           },
