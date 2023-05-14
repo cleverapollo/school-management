@@ -20,6 +20,7 @@ import {
   getStudentsSubjectGroups,
   getStaffStatus,
 } from './api';
+import { getContactPersonal } from './api/contact';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
 // Student profile pages
@@ -61,6 +62,14 @@ const StudentProfileSettingsPage = lazy(
 );
 
 const ContactsListPage = lazy(() => import('./pages/contacts'));
+
+// Contact profile pages
+const ContactProfileContainer = lazy(
+  () => import('./components/contact/contact-profile-container')
+);
+const ContactProfilePersonalPage = lazy(
+  () => import('./pages/contacts/profile/personal')
+);
 
 const StaffListPage = lazy(() => import('./pages/staff'));
 
@@ -220,6 +229,49 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.people.contacts'),
             loader: () => getContacts(),
             element: <ContactsListPage />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: 'contacts/:id',
+            element: <ContactProfileContainer />,
+            loader: ({ params }) => {
+              const contactId = getNumber(params.id);
+              return getContactPersonal(contactId ?? 0);
+            },
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                index: true,
+                loader: () => redirect('./personal'),
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'personal',
+                loader: ({ params }) => {
+                  const contactId = getNumber(params.id);
+                  return getContactPersonal(contactId ?? 0);
+                },
+                element: <ContactProfilePersonalPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'students',
+                loader: ({ params }) => Promise.all([]),
+                element: <ContactProfilePersonalPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'fees',
+                loader: ({ params }) => Promise.all([]),
+                element: <ContactProfilePersonalPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'access',
+                loader: ({ params }) => Promise.all([]),
+                element: <ContactProfilePersonalPage />,
+              },
+            ],
           },
           {
             type: NavObjectType.MenuLink,
