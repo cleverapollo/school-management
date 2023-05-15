@@ -127,6 +127,7 @@ export function SendSmsModal({
       {
         text: data.message,
         recipients: fullRecipientList,
+        mobileNumbers: [],
         canReply: false,
       },
       {
