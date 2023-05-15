@@ -14,7 +14,7 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
 import { Link } from 'react-router-dom';
 import { AddUserIcon } from '@tyro/icons';
-import { useContacts } from '../../api/contacts';
+import { useContacts } from '../../api/contact/contacts';
 
 type ReturnTypeFromUseContacts = NonNullable<
   ReturnType<typeof useContacts>['data']

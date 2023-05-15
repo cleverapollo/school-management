@@ -8,7 +8,7 @@ import {
 } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
-import { peopleContactKeys } from './keys';
+import { peopleContactsKeys } from './keys';
 
 const createContact = graphql(/* GraphQL */ `
   mutation core_createStudentContact($input: CreateStudentContactInput!) {
@@ -23,12 +23,12 @@ export function useCreateContact() {
   const { t } = useTranslation(['common']);
 
   return useMutation({
-    mutationKey: peopleContactKeys.createContact(),
+    mutationKey: peopleContactsKeys.createContact(),
     mutationFn: async (input: CreateStudentContactInput) =>
       gqlClient.request(createContact, { input }),
     onSuccess: () => {
       toast(t('common:snackbarMessages.createSuccess'));
-      queryClient.invalidateQueries(peopleContactKeys.all);
+      queryClient.invalidateQueries(peopleContactsKeys.all);
     },
   });
 }
