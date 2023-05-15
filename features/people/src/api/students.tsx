@@ -219,6 +219,10 @@ const studentsForSelectQuery = (filter: StudentFilter) => ({
   queryFn: async () => gqlClient.request(studentsInfoForSelect, { filter }),
 });
 
+export function getStudentsForSelect(filter: StudentFilter) {
+  return queryClient.fetchQuery(studentsForSelectQuery(filter));
+}
+
 export function useStudentsForSelect(filter: StudentFilter) {
   return useQuery({
     ...studentsForSelectQuery(filter),
