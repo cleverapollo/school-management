@@ -9,24 +9,22 @@ import {
   usePreferredNameLayout,
   ReturnTypeDisplayName,
   PageHeading,
+  ReturnTypeDisplayNames,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import set from 'lodash/set';
 import { Link } from 'react-router-dom';
 import { AddUserIcon } from '@tyro/icons';
 import { useContacts } from '../../api/contact/contacts';
+import { joinAddress } from '../../utils/join-address';
 
 type ReturnTypeFromUseContacts = NonNullable<
   ReturnType<typeof useContacts>['data']
 >[number];
 
 const getContactColumns = (
-  translate: TFunction<
-    ('common' | 'people')[],
-    undefined,
-    ('common' | 'people')[]
-  >,
-  displayName: ReturnTypeDisplayName
+  translate: TFunction<'common'[], undefined, 'common'[]>,
+  displayName: ReturnTypeDisplayName,
+  displayNames: ReturnTypeDisplayNames
 ): GridOptions<ReturnTypeFromUseContacts>['columnDefs'] => [
   {
     field: 'person',
@@ -34,60 +32,43 @@ const getContactColumns = (
     valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) =>
-      data ? (
-        <TablePersonAvatar
-          person={data?.person}
-          to={`./${data?.partyId ?? ''}`}
-        />
-      ) : null,
+    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
+      <TablePersonAvatar
+        person={data?.person}
+        to={`./${data?.partyId ?? ''}`}
+      />
+    ),
     sort: 'asc',
-    headerCheckboxSelection: true,
-    headerCheckboxSelectionFilteredOnly: true,
-    checkboxSelection: ({ data }) => Boolean(data),
-    lockVisible: true,
-  },
-  {
-    field: 'personalInformation.preferredFirstName',
-    headerName: translate('common:preferredFirstName'),
-    editable: true,
-    hide: true,
   },
   {
     field: 'personalInformation.primaryPhoneNumber.number',
     headerName: translate('common:phone'),
-    editable: true,
-    hide: true,
-    cellEditor: 'agNumericCellEditor',
-    valueSetter: ({ data, newValue }) => {
-      set(
-        data ?? {},
-        'personalInformation.primaryPhoneNumber.number',
-        newValue
-      );
-      return true;
-    },
+    valueGetter: ({ data }) =>
+      data?.personalInformation?.primaryPhoneNumber?.number ?? '-',
   },
   {
-    field: 'personalInformation.primaryEmail.email',
-    headerName: translate('common:email'),
-    editable: true,
-    hide: true,
-    cellEditor: 'agEmailCellEditor',
-    valueSetter: ({ data, newValue }) => {
-      set(data ?? {}, 'personalInformation.primaryEmail.email', newValue);
-      return true;
-    },
+    field: 'personalInformation.primaryAddress.number',
+    headerName: translate('common:address'),
+    valueGetter: ({ data }) =>
+      joinAddress(data?.personalInformation?.primaryAddress),
+  },
+  {
+    field: 'relationships',
+    headerName: translate('common:students'),
+    valueGetter: ({ data }) =>
+      displayNames(
+        data?.relationships?.map((relationship) => relationship?.student.person)
+      ),
   },
 ];
 
 export default function ContactsListPage() {
   const { t } = useTranslation(['common', 'people']);
-  const { displayName } = usePreferredNameLayout();
+  const { displayName, displayNames } = usePreferredNameLayout();
   const { data: contactsData = [] } = useContacts();
 
   const contactColumns = useMemo(
-    () => getContactColumns(t, displayName),
+    () => getContactColumns(t, displayName, displayNames),
     [t, displayName]
   );
 

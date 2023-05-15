@@ -12,12 +12,28 @@ const contacts = graphql(/* GraphQL */ `
         lastName
       }
       personalInformation {
-        preferredFirstName
+        primaryAddress {
+          line1
+          line2
+          line3
+          city
+          country
+          postCode
+        }
         primaryPhoneNumber {
           number
         }
         primaryEmail {
           email
+        }
+      }
+      relationships {
+        student {
+          person {
+            avatarUrl
+            firstName
+            lastName
+          }
         }
       }
     }
