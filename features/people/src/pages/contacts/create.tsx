@@ -1,8 +1,9 @@
 import { useTranslation } from '@tyro/i18n';
 import { PageHeading, PageContainer } from '@tyro/core';
+import { ContactForm } from '../../components/contacts/contact-form';
 
 export default function CreateContactPage() {
-  const { t } = useTranslation(['people', 'common']);
+  const { t } = useTranslation(['people']);
 
   return (
     <PageContainer title={t('people:pageTitle.createContact')}>
@@ -20,7 +21,10 @@ export default function CreateContactPage() {
           ],
         }}
       />
-      contact form
+      <ContactForm
+        title={t('people:pageHeading.createContact')}
+        ctaText={t('people:createContact')}
+      />
     </PageContainer>
   );
 }

@@ -124,5 +124,40 @@
   "pageHeading": {
     "contacts": "Contacts",
     "createContact": "Create contact"
+  },
+  "contactForm": {
+    "personalInformation": "Personal information",
+    "studentRelationships": "Student Relationships",
+    "addStudent": "Add student",
+    "labels": {
+      "of": "of",
+      "firstName": "First name",
+      "surname": "Surname",
+      "mobileNumber": "Mobile number",
+      "email": "Email",
+      "addressLine1": "Address line 1",
+      "addressLine2": "Address line 2",
+      "addressLine3": "Address line 3",
+      "county": "County",
+      "eircode": "Eircode",
+      "country": "Country",
+      "spokenLanguage": "Spoken language",
+      "requiresInterpreter": "Requires an interpreter",
+      "relationship": "Relationship",
+      "studentContactType": "Student contact type",
+      "student": "Student",
+      "studentName": "Student name"
+    }
+  },
+  "studentContactType": {
+    "AUNTY": "Aunty",
+    "FAMILY_FRIEND": "Family friend",
+    "FATHER": "Father",
+    "GRAND_FATHER": "Grand father",
+    "GRAND_MOTHER": "Grand mother",
+    "MOTHER": "Mother",
+    "NEIGHBOUR": "Neighbour",
+    "SIBLING": "Sibiling",
+    "UNCLE": "Uncle"
   }
 }
