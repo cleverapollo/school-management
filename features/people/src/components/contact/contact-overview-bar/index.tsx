@@ -1,7 +1,7 @@
 import { Box, Card, Divider, Stack, Typography } from '@mui/material';
 import { Avatar, usePreferredNameLayout } from '@tyro/core';
 import { TyroId } from '../../common/tyro-id';
-import { useContactPersonal } from '../../../api/contact';
+import { useContactPersonal } from '../../../api';
 
 interface ContactOverviewBarProps {
   contactId: number | undefined;

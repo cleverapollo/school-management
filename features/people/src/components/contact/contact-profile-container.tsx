@@ -9,7 +9,7 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { Container } from '@mui/material';
 import { ContactOverviewBar } from './contact-overview-bar';
-import { useContactPersonal } from '../../api/contact';
+import { useContactPersonal } from '../../api';
 
 export default function ContactProfileContainer() {
   const { t } = useTranslation(['common', 'people']);

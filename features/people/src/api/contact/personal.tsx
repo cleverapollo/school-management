@@ -49,19 +49,18 @@ const contactsPersonalById = graphql(/* GraphQL */ `
   }
 `);
 
-export const personalKeys = {
+export const contactPersonalKeys = {
   all: ['people', 'contact', 'personal'] as const,
   details: (contactId: number | undefined) =>
-    [...personalKeys.all, 'about', contactId] as const,
+    [...contactPersonalKeys.all, 'about', contactId] as const,
 };
 
 const contactPersonalQuery = (contactId: number | undefined) => ({
-  queryKey: personalKeys.details(contactId),
+  queryKey: contactPersonalKeys.details(contactId),
   queryFn: async () =>
     gqlClient.request(contactsPersonalById, {
       filter: { studentContactPartyIds: [contactId ?? 0] },
     }),
-  staleTime: 1000 * 60 * 5,
 });
 
 export function getContactPersonal(contactId: number | undefined) {
@@ -72,19 +71,17 @@ export function useContactPersonal(contactId: number | undefined) {
   return useQuery({
     ...contactPersonalQuery(contactId),
     select: ({ core_studentContacts }) => {
-      const student =
-        Array.isArray(core_studentContacts) && core_studentContacts.length > 0
-          ? core_studentContacts[0]
-          : null;
+      const [contact] = core_studentContacts || [];
+      if (!contact) return null;
 
-      if (!student) return null;
+      const { personalInformation, ...restContact } = contact;
 
       return {
-        ...student,
+        ...restContact,
         personalInformation: {
-          ...student.personalInformation,
-          dateOfBirth: student?.personalInformation?.dateOfBirth
-            ? dayjs(student.personalInformation.dateOfBirth)
+          ...personalInformation,
+          dateOfBirth: personalInformation?.dateOfBirth
+            ? dayjs(personalInformation.dateOfBirth)
             : null,
         },
       };

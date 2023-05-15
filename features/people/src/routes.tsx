@@ -19,8 +19,8 @@ import {
   getStaff,
   getStudentsSubjectGroups,
   getStaffStatus,
+  getContactPersonal,
 } from './api';
-import { getContactPersonal } from './api/contact';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
 // Student profile pages
@@ -265,19 +265,16 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'students',
-                loader: ({ params }) => Promise.all([]),
                 element: <ContactProfileStudentsPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'fees',
-                loader: ({ params }) => Promise.all([]),
                 element: <ContactProfileFeesPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'access',
-                loader: ({ params }) => Promise.all([]),
                 element: <ContactProfileAccessPage />,
               },
             ],
@@ -310,19 +307,16 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'overview',
-                loader: ({ params }) => Promise.all([]),
                 element: <StaffProfileOverviewPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'personal',
-                loader: ({ params }) => Promise.all([]),
                 element: <StaffProfilePersonalPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'contacts',
-                loader: ({ params }) => Promise.all([]),
                 element: <StaffProfileContactsPage />,
               },
               {
@@ -331,14 +325,12 @@ export const getRoutes: NavObjectFunction = (t) => [
                 element: <StaffProfileTimetablePage />,
                 loader: ({ params }) => {
                   const staffId = getNumber(params.id);
-
                   return getTodayTimetableEvents(staffId);
                 },
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'classes',
-                loader: ({ params }) => Promise.all([]),
                 element: <StaffProfileClassesPage />,
               },
             ],
