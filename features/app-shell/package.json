@@ -11,6 +11,7 @@
     "@tyro/assessments": "*",
     "@tyro/authentication": "*",
     "@tyro/calendar": "*",
+    "@tyro/class-list-manager": "*",
     "@tyro/core": "*",
     "@tyro/groups": "*",
     "@tyro/i18n": "*",

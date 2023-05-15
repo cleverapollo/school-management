@@ -40,6 +40,7 @@ export * from './location';
 export * from './mail';
 export * from './minus';
 export * from './mobile';
+export * from './move-group';
 export * from './person-cross';
 export * from './person-gear';
 export * from './person-heart';
