@@ -91,16 +91,22 @@ export function ContactForm({
         },
         phoneNumbers: [
           {
+            primaryPhoneNumber: true,
+            active: true,
             number: mobileNumber,
           },
         ],
         emails: [
           {
+            primaryEmail: true,
+            active: true,
             email,
           },
         ],
         addresses: [
           {
+            primaryAddress: true,
+            active: true,
             city,
             country,
             line1,
@@ -113,6 +119,9 @@ export function ContactForm({
         requiresInterpreter,
         studentRelationships: studentRelationships.map(
           ({ relationshipType, student }) => ({
+            primaryContact: false,
+            allowedToContact: true,
+            includeInSms: true,
             relationshipType: relationshipType!,
             studentPartyId: student?.partyId ?? 0,
           })
