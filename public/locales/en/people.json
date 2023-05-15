@@ -148,16 +148,5 @@
       "student": "Student",
       "studentName": "Student name"
     }
-  },
-  "studentContactType": {
-    "AUNTY": "Aunty",
-    "FAMILY_FRIEND": "Family friend",
-    "FATHER": "Father",
-    "GRAND_FATHER": "Grand father",
-    "GRAND_MOTHER": "Grand mother",
-    "MOTHER": "Mother",
-    "NEIGHBOUR": "Neighbour",
-    "SIBLING": "Sibiling",
-    "UNCLE": "Uncle"
   }
 }

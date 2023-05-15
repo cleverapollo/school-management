@@ -112,7 +112,7 @@ export const StudentRelationships = <
                   label={t('people:contactForm.labels.studentContactType')}
                   options={relationshipTypeOptions}
                   getOptionLabel={(option) =>
-                    t(`people:studentContactType.${option}`)
+                    t(`common:relationshipType.${option}`)
                   }
                   controlProps={{
                     name: `studentRelationships.${index}.relationshipType`,
