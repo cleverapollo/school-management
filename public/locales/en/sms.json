@@ -19,8 +19,12 @@
   "recipientNotIncludedInSms_one": "Recipient not included in SMS",
   "recipientNotIncludedInSms_other": "Recipients not included in SMS",
   "recipients": "Recipient(s)",
+  "recipient": "Recipient",
   "numberOfRecipients": "Number of recipients",
   "sentAt": "Sent at",
   "sentBy": "Sent by",
-  "totalCost": "Total cost"
+  "sent": "Sent",
+  "failed": "Failed",
+  "totalCost": "Total cost",
+  "smsDetails": "SMS details"
 }

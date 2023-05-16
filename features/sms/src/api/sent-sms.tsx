@@ -1,5 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient, SmsFilter } from '@tyro/api';
+import {
+  gqlClient,
+  graphql,
+  queryClient,
+  SmsFilter,
+  UseQueryReturnType,
+} from '@tyro/api';
 import { smsKeys } from './keys';
 
 const sentSms = graphql(/* GraphQL */ `
@@ -11,6 +17,7 @@ const sentSms = graphql(/* GraphQL */ `
         title
         firstName
         lastName
+        avatarUrl
         type
       }
       body
@@ -50,6 +57,10 @@ export function useSentSms(filter: SmsFilter) {
   });
 }
 
-export function getAttendanceCodes(filter: SmsFilter) {
+export function getSentSms(filter: SmsFilter) {
   return queryClient.fetchQuery(sentSmsQuery(filter));
 }
+
+export type ReturnTypeFromUseSentSms = UseQueryReturnType<
+  typeof useSentSms
+>[number];
