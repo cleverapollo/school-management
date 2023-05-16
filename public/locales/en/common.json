@@ -202,7 +202,8 @@
     "min": "You must enter a number greater or equal than {{number}}",
     "max": "You must enter a number less or equal than {{number}}",
     "minLength":"You must enter a minimum of {{count}} characters",
-    "maxLength": "You have exceeded the maximum character length of {{count}}"
+    "maxLength": "You have exceeded the maximum character length of {{count}}",
+    "invalidMobileNumber": "This is an invalid mobile number for this country"
   },
   "studyLevel": {
     "COMMON": "Common",

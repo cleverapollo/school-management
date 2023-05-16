@@ -30,7 +30,8 @@ export function ContactForm({
   ctaText,
   contactFormData,
 }: ContactFormProp) {
-  const { t } = useTranslation(['people']);
+  const { t } = useTranslation(['common']);
+
   const navigate = useNavigate();
 
   const { mutate: createContactMutation, isLoading } = useCreateContact();
@@ -49,6 +50,13 @@ export function ContactForm({
     resolver: resolver({
       firstName: rules.required(),
       surname: rules.required(),
+      mobileNumber: rules.validate<ContactFormState['mobileNumber']>(
+        (mobileNumber, throwError) => {
+          if (mobileNumber && !mobileNumber.numberMatchWithMask) {
+            throwError(t('common:errorMessages.invalidMobileNumber'));
+          }
+        }
+      ),
       studentRelationships: {
         relationshipType: rules.required(),
         student: rules.required(),
@@ -77,13 +85,15 @@ export function ContactForm({
           firstName,
           lastName,
         },
-        phoneNumbers: [
-          {
-            primaryPhoneNumber: true,
-            active: true,
-            number: mobileNumber,
-          },
-        ],
+        ...(mobileNumber && {
+          phoneNumbers: [
+            {
+              primaryPhoneNumber: true,
+              active: true,
+              ...mobileNumber,
+            },
+          ],
+        }),
         emails: [
           {
             primaryEmail: true,

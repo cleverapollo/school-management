@@ -5,14 +5,14 @@ import { Control } from 'react-hook-form';
 
 import {
   InputEmailAddress,
-  InputPhoneNumber,
   PersonalInformation as PersonalInformationType,
 } from '@tyro/api';
+import { MobileNumber, MobileNumberData } from './mobile-number';
 
 export type PersonalInformationFormState = {
   firstName: PersonalInformationType['firstName'];
   surname: PersonalInformationType['lastName'];
-  mobileNumber: InputPhoneNumber['number'];
+  mobileNumber: MobileNumberData | undefined;
   email: InputEmailAddress['email'];
   spokenLanguage: string;
   requiresInterpreter: boolean;
@@ -60,9 +60,8 @@ export const PersonalInformation = <
         />
       </Stack>
       <Stack direction="row" gap={2}>
-        <RHFTextField
+        <MobileNumber
           label={t('people:contactForm.labels.mobileNumber')}
-          textFieldProps={{ fullWidth: true }}
           controlProps={{
             name: 'mobileNumber',
             control,
