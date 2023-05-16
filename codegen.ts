@@ -8,7 +8,7 @@ const config: CodegenConfig = {
   // schema: 'introspec.json',
   schema: [
     {
-      // 'http://localhost:80/api/tyrogql': {
+      // 'http://localhost:8082/api/tyrogql': {
       'https://tyro-api-uat.azurewebsites.net/api/tyrogql': {
         headers: {
           Authorization: `Bearer ${process.env.token}`,
