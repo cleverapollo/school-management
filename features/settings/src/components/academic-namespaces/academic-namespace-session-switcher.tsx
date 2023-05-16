@@ -1,101 +1,65 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
-import { useEffect, useState } from 'react';
-import { Button, MenuItem, Stack, Typography } from '@mui/material';
 import {
   usePermissions,
   useAcademicNamespace,
   EmulateHeaders,
+  queryClient,
 } from '@tyro/api';
-import MenuPopover from '../../../../../src/components/MenuPopover';
+import { useTranslation } from '@tyro/i18n';
+import { ActionMenu } from '@tyro/core';
 
 export function AcademicNamespaceSessionSwitcher() {
-  const [open, setOpen] = useState<HTMLElement | null>(null);
-  const { allNamespaces, activeAcademicNamespace, isLoading } =
-    useAcademicNamespace();
+  const { t } = useTranslation(['settings']);
+  const { allNamespaces, activeAcademicNamespace } = useAcademicNamespace();
   const { hasPermission } = usePermissions();
-  const [currentYear, setCurrentYear] = useState(activeAcademicNamespace);
-
-  const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setOpen(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setOpen(null);
-  };
 
   const onSelect = (namespace: NonNullable<typeof allNamespaces>[number]) => {
     if (!namespace) return;
 
-    setCurrentYear(namespace);
     localStorage.setItem(
       EmulateHeaders.ACADEMIC_NAMESPACE_ID,
       namespace.academicNamespaceId.toString()
     );
-    handleClose();
+    queryClient.invalidateQueries();
   };
 
-  useEffect(() => {
-    if (activeAcademicNamespace) {
-      setCurrentYear(activeAcademicNamespace);
-    }
-  }, [activeAcademicNamespace]);
-
   if (
-    isLoading ||
+    (allNamespaces ?? []).length === 0 ||
     !hasPermission('api:users:read:academic_namespace_switch_session')
   ) {
     return null;
   }
 
   return (
-    <>
-      <Button
-        onClick={handleOpen}
-        aria-label={`Change Academic Namespace. Currently set to ${
-          currentYear?.name ?? ''
-        }`}
-      >
-        <Typography
-          variant="subtitle1"
-          sx={{
-            flexGrow: 1,
-            color: 'black',
-          }}
-        >
-          {activeAcademicNamespace?.name || ''}
-        </Typography>
-      </Button>
-
-      <MenuPopover
-        open={Boolean(open)}
-        anchorEl={open}
-        onClose={handleClose}
-        sx={{
-          mt: 1.5,
-          ml: 0.75,
-          width: 180,
-          '& .MuiMenuItem-root': {
-            px: 1,
-            typography: 'body2',
-            borderRadius: 0.75,
+    <ActionMenu
+      buttonLabel={activeAcademicNamespace?.name || ''}
+      buttonProps={{
+        size: 'small',
+      }}
+      menuProps={{
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+        transformOrigin: {
+          vertical: 'top',
+          horizontal: 'right',
+        },
+        sx: {
+          '& .MuiMenu-list': {
+            minWidth: 120,
+            maxHeight: 320,
           },
-        }}
-      >
-        <Stack spacing={0.75}>
-          {allNamespaces?.map((option) => (
-            <MenuItem
-              key={option?.academicNamespaceId}
-              selected={
-                option?.academicNamespaceId === currentYear?.academicNamespaceId
-              }
-              onClick={() => onSelect(option)}
-            >
-              {option?.year}
-            </MenuItem>
-          ))}
-        </Stack>
-      </MenuPopover>
-    </>
+        },
+      }}
+      aria-label={t('settings:changeAcademicNamespaceCurrentlySet', {
+        name: activeAcademicNamespace?.name,
+      })}
+      menuItems={
+        allNamespaces?.map((option) => ({
+          label: String(option?.year),
+          onClick: () => onSelect(option),
+        })) ?? []
+      }
+    />
   );
 }
