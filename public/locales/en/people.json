@@ -127,6 +127,7 @@
   },
   "contactForm": {
     "personalInformation": "Personal information",
+    "primaryAddress": "Primary address",
     "studentRelationships": "Student Relationships",
     "addStudent": "Add student",
     "labels": {
