@@ -15,39 +15,49 @@ const getAboutDataWithLabels = (
     requiresInterpreter,
     occupation,
   } = data ?? {};
-  const { primaryPhoneNumber } = personalInformation || {};
+  const {
+    firstName,
+    lastName,
+    dateOfBirth,
+    gender,
+    ire,
+    primaryAddress,
+    primaryPhoneNumber,
+    primaryEmail,
+  } = personalInformation || {};
 
   const primaryNumber = primaryPhoneNumber
     ? `(${primaryPhoneNumber?.countryCode ?? ''}) ${
         primaryPhoneNumber?.number ?? ''
       }`
     : '-';
+
+  const i18nPrefix = 'people:personal.about';
+
   return {
     [t('people:title')]: '-',
-    [t('people:personal.about.forename')]:
-      personalInformation?.firstName ?? '-',
-    [t('people:personal.about.surname')]: personalInformation?.lastName ?? '-',
+    [t(`${i18nPrefix}.forename`)]: firstName ?? '-',
+    [t(`${i18nPrefix}.surname`)]: lastName ?? '-',
+    [t(`${i18nPrefix}.dateOfBirth`)]: dateOfBirth
+      ? dateOfBirth.format('DD/MM/YYYY')
+      : '-',
     [t('people:tyroId')]: partyId ?? '-',
-    [t('people:personal.about.spokenLanguage')]: nativeLanguage ?? '-',
-    [t('people:personal.about.requiresInterpreter')]: requiresInterpreter
-      ? 'Yes'
-      : 'No',
-    [t('people:personal.about.addressLine1')]:
-      personalInformation?.primaryAddress?.line1 ?? '-',
-    [t('people:personal.about.addressLine2')]:
-      personalInformation?.primaryAddress?.line2 ?? '-',
-    [t('people:personal.about.addressLine3')]:
-      personalInformation?.primaryAddress?.line3 ?? '-',
-    [t('people:personal.about.city')]:
-      personalInformation?.primaryAddress?.city ?? '-',
-    [t('people:personal.about.eircode')]:
-      personalInformation?.primaryAddress?.postCode ?? '-',
-    [t('people:personal.about.country')]:
-      personalInformation?.primaryAddress?.country ?? '-',
-    [t('people:personal.about.primaryNumber')]: primaryNumber ?? '-',
-    [t('people:personal.about.additionalNumber')]: '-',
-    [t('common:email')]: personalInformation?.primaryEmail?.email ?? '-',
-    [t('people:personal.about.occupation')]: occupation ?? '-',
+    [t('people:gender.title')]: gender ? t(`people:gender.${gender}`) : '-',
+    [t(`${i18nPrefix}.countryOfBirth`)]: ire?.countryOfBirth ?? '-',
+    [t(`${i18nPrefix}.spokenLanguage`)]: nativeLanguage ?? '-',
+    [t(`${i18nPrefix}.requiresInterpreter`)]: requiresInterpreter
+      ? t('common:yes')
+      : t('common:no'),
+    [t(`${i18nPrefix}.addressLine1`)]: primaryAddress?.line1 ?? '-',
+    [t(`${i18nPrefix}.addressLine2`)]: primaryAddress?.line2 ?? '-',
+    [t(`${i18nPrefix}.addressLine3`)]: primaryAddress?.line3 ?? '-',
+    [t(`${i18nPrefix}.city`)]: primaryAddress?.city ?? '-',
+    [t(`${i18nPrefix}.eircode`)]: primaryAddress?.postCode ?? '-',
+    [t(`${i18nPrefix}.country`)]: primaryAddress?.country ?? '-',
+    [t(`${i18nPrefix}.primaryNumber`)]: primaryNumber ?? '-',
+    [t(`${i18nPrefix}.additionalNumber`)]: '-',
+    [t('common:email')]: primaryEmail?.email ?? '-',
+    [t(`${i18nPrefix}.occupation`)]: occupation ?? '-',
   };
 };
 
