@@ -4,6 +4,9 @@ import {
   FormHelperText,
   FormControl,
 } from '@mui/material';
+
+import { styled } from '@mui/material/styles';
+
 import {
   FieldValues,
   UseControllerProps,
@@ -26,6 +29,36 @@ type RHFTextFieldProps<TField extends FieldValues> = {
 
 const DEFAULT_COUNTRY = 'ie';
 
+const ReactPhoneInputStyled = styled(ReactPhoneInput)(
+  ({ theme }) => `
+   &.react-tel-input {
+    .country-list {
+      margin: 0;
+      box-shadow: ${theme.customShadows.dropdown};
+      padding: ${theme.spacing(0, 1)};
+      border-radius: ${theme.spacing(1)};
+    }
+    .selected-flag {
+      padding-left: ${theme.spacing(2.5)};
+    }
+    li.country {
+      font-size: ${theme.typography.fontSize}px;
+      font-weight: 600;
+      padding: ${theme.spacing(1)};
+      margin: ${theme.spacing(0.75, 0)};
+      border-radius: ${theme.shape.borderRadius}px;
+      &:focus,
+      &:hover {
+        background-color: ${theme.palette.action.hover};
+      }
+      &.highlight {
+        background-color: ${theme.palette.action.selected};
+      }
+    }
+  }
+`
+);
+
 export const MobileNumber = <TField extends FieldValues>({
   label,
   controlProps,
@@ -38,8 +71,8 @@ export const MobileNumber = <TField extends FieldValues>({
   const { spacing } = useTheme();
 
   return (
-    <FormControl fullWidth>
-      <ReactPhoneInput
+    <FormControl fullWidth error={!!error}>
+      <ReactPhoneInputStyled
         placeholder=""
         label={label}
         value={value?.number as MobileNumberData['number']}
@@ -53,11 +86,7 @@ export const MobileNumber = <TField extends FieldValues>({
         }
         component={TextField}
         country={DEFAULT_COUNTRY}
-        jumpCursorToEnd
         isValid={() => !error?.message}
-        buttonStyle={{
-          paddingLeft: spacing(1.5),
-        }}
         inputProps={{
           name,
           ref,
@@ -72,7 +101,7 @@ export const MobileNumber = <TField extends FieldValues>({
           },
         }}
       />
-      {error && <FormHelperText error>{error.message}</FormHelperText>}
+      <FormHelperText error={!!error}>{error?.message}</FormHelperText>
     </FormControl>
   );
 };
