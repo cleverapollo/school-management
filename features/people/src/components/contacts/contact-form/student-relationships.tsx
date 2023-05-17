@@ -1,6 +1,7 @@
 import {
   Button,
   IconButton,
+  InputAdornment,
   Stack,
   Table,
   TableBody,
@@ -14,6 +15,7 @@ import {
   StudentContactType,
 } from '@tyro/api';
 import {
+  Avatar,
   RHFAutocomplete,
   RHFSelect,
   RHFSwitch,
@@ -114,6 +116,12 @@ export const StudentRelationships = <
                     optionIdKey="partyId"
                     getOptionLabel={(option) =>
                       typeof option === 'string' ? option : displayName(option)
+                    }
+                    renderAvatarAdornment={(value, renderAdornment) =>
+                      renderAdornment({
+                        name: displayName(value),
+                        src: value.avatarUrl,
+                      })
                     }
                     renderAvatarOption={(option, renderOption) =>
                       renderOption({

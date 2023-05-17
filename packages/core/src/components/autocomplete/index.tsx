@@ -7,6 +7,7 @@ import {
   Typography,
   Chip,
   ChipProps,
+  InputAdornment,
 } from '@mui/material';
 import React from 'react';
 import { getColorBasedOnIndex } from '@tyro/api';
@@ -24,6 +25,10 @@ export type AutocompleteProps<
   inputProps?: Omit<TextFieldProps, 'label' | 'placeholder'>;
   optionIdKey?: T extends object ? keyof T : never;
   optionTextKey?: T extends object ? keyof T : never;
+  renderAvatarAdornment?: (
+    value: T,
+    renderAdornment: (avatarProps: AvatarProps) => React.ReactNode
+  ) => React.ReactNode;
   renderAvatarOption?: (
     option: T,
     renderOption: (
@@ -50,6 +55,7 @@ export const Autocomplete = <
   optionTextKey,
   options,
   inputProps,
+  renderAvatarAdornment,
   renderAvatarOption,
   renderAvatarTags,
   ...restAutocompleteProps
@@ -76,6 +82,19 @@ export const Autocomplete = <
         placeholder={placeholder}
         {...params}
         {...inputProps}
+        {...(renderAvatarAdornment && {
+          InputProps: {
+            ...params.InputProps,
+            ...inputProps?.InputProps,
+            startAdornment: value
+              ? renderAvatarAdornment(value as T, (avatarProps) => (
+                  <InputAdornment position="start" sx={{ ml: 0.75, mr: 0 }}>
+                    <Avatar sx={{ width: 24, height: 24 }} {...avatarProps} />
+                  </InputAdornment>
+                ))
+              : null,
+          },
+        })}
       />
     )}
     {...(renderAvatarOption && {
