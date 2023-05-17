@@ -16,8 +16,8 @@ import ReactPhoneInput, { CountryData } from 'react-phone-input-material-ui';
 import 'react-phone-input-material-ui/lib/style.css';
 
 export type MobileNumberData = {
-  countryCode: CountryData['countryCode'];
-  areaCode: CountryData['dialCode'];
+  countryCode: CountryData['dialCode'];
+  areaCode: string;
   number: string;
   numberMatchWithMask: boolean;
 };
@@ -64,7 +64,7 @@ export const MobileNumber = <TField extends FieldValues>({
   controlProps,
 }: RHFTextFieldProps<TField>) => {
   const {
-    field: { value, name, onChange, ref },
+    field: { name, onChange, ref },
     fieldState: { error },
   } = useController(controlProps);
 
@@ -75,12 +75,10 @@ export const MobileNumber = <TField extends FieldValues>({
       <ReactPhoneInputStyled
         placeholder=""
         label={label}
-        value={value?.number as MobileNumberData['number']}
         onChange={(number, data: CountryData, _event, formattedNumber) =>
           onChange({
-            number,
-            countryCode: data.countryCode,
-            areaCode: data.dialCode,
+            number: number.replace(data.dialCode, ''),
+            countryCode: data.dialCode,
             numberMatchWithMask: formattedNumber.length === data.format.length,
           })
         }

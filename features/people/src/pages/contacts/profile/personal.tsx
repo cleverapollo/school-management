@@ -26,11 +26,11 @@ const getAboutDataWithLabels = (
     primaryEmail,
   } = personalInformation || {};
 
-  const primaryNumber = primaryPhoneNumber
-    ? `(${primaryPhoneNumber?.countryCode ?? ''}) ${
-        primaryPhoneNumber?.number ?? ''
-      }`
-    : '-';
+  const { countryCode, number } = primaryPhoneNumber || {};
+
+  const countryCodeValue = countryCode ? `(${countryCode}) ` : '';
+  const phoneNumberValue = number || '-';
+  const primaryNumber = `${countryCodeValue}${phoneNumberValue}`;
 
   const i18nPrefix = 'people:personal.about';
 

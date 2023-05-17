@@ -53,7 +53,7 @@ export function ContactForm({
       email: rules.isEmail(),
       mobileNumber: rules.validate<ContactFormState['mobileNumber']>(
         (mobileNumber, throwError) => {
-          if (mobileNumber && !mobileNumber.numberMatchWithMask) {
+          if (mobileNumber?.number && !mobileNumber.numberMatchWithMask) {
             throwError(t('common:errorMessages.invalidMobileNumber'));
           }
         }
@@ -91,7 +91,8 @@ export function ContactForm({
             {
               primaryPhoneNumber: true,
               active: true,
-              ...mobileNumber,
+              number: mobileNumber.number,
+              countryCode: mobileNumber.countryCode,
             },
           ],
         }),
