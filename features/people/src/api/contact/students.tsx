@@ -15,6 +15,9 @@ const contactsStudentsById = graphql(/* GraphQL */ `
         ... on StudentContactRelationshipInfo {
           student {
             partyId
+            classGroup {
+              name
+            }
             ... on Student {
               person {
                 firstName

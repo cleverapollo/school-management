@@ -9,10 +9,19 @@ import {
   StudyLevelSelectCellEditor,
   TableAvatar,
   useNumber,
+  ActionMenu,
 } from '@tyro/core';
-import { useMemo } from 'react';
+import { Box, Fade } from '@mui/material';
+import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
+import {
+  MobileIcon,
+  PersonHeartIcon,
+  SendMailIcon,
+  PersonTickIcon,
+  PersonCrossIcon,
+} from '@tyro/icons';
 import { useContactStudents } from '../../../api';
 
 type ReturnTypeFromUseContactStudents = NonNullable<
@@ -26,6 +35,9 @@ const getContactStudentsColumns = (
   {
     field: 'name',
     headerName: t('common:name'),
+    headerCheckboxSelection: true,
+    headerCheckboxSelectionFilteredOnly: true,
+    checkboxSelection: true,
     lockVisible: true,
     cellRenderer: ({
       data,
@@ -46,14 +58,14 @@ const getContactStudentsColumns = (
   },
   {
     field: 'classes',
-    headerName: 'Classes',
+    headerName: t('common:class'),
     filter: true,
     valueGetter: ({ data }) => '',
     enableRowGroup: true,
   },
   {
     field: 'relationship',
-    headerName: 'Relationship',
+    headerName: t('people:relationshipToStudent'),
     filter: true,
     editable: true,
     valueSetter: (params) => {
@@ -67,26 +79,38 @@ const getContactStudentsColumns = (
     enableRowGroup: true,
   },
   {
-    field: 'staff',
-    headerName: 'Is a Parent/Guardian',
+    field: 'priority',
+    headerName: t('people:priority'),
+    valueGetter: ({ data }) => '1',
+    enableRowGroup: true,
+  },
+  {
+    field: 'legalGuardian',
+    headerName: t('people:legalGuardian'),
     valueGetter: ({ data }) => 'No',
     enableRowGroup: true,
   },
   {
-    field: 'staff',
-    headerName: 'Has Pick-up Permission',
+    field: 'pickupPermission',
+    headerName: t('people:pickupPermission'),
     valueGetter: ({ data }) => 'No',
     enableRowGroup: true,
   },
   {
-    field: 'staff',
-    headerName: 'Permission to View',
+    field: 'allowAccessToStudentData',
+    headerName: t('people:allowAccessToStudentData'),
     valueGetter: ({ data }) => 'No',
     enableRowGroup: true,
   },
   {
-    field: 'staff',
-    headerName: 'Include in school communication',
+    field: 'includeInSms',
+    headerName: t('people:includeInSms'),
+    valueGetter: ({ data }) => 'No',
+    enableRowGroup: true,
+  },
+  {
+    field: 'includeInTmail',
+    headerName: t('people:includeInTmail'),
     valueGetter: ({ data }) => 'No',
     enableRowGroup: true,
   },
@@ -97,6 +121,9 @@ export default function ContactProfileStudentsPage() {
   const { id } = useParams();
   const idNumber = useNumber(id);
   const { displayName } = usePreferredNameLayout();
+  const [selectedContacts, setSelectedContacts] = useState<
+    ReturnTypeFromUseContactStudents[]
+  >([]);
   const { data: contactStudentsData } = useContactStudents(idNumber);
   console.log('data', contactStudentsData);
 
@@ -105,11 +132,67 @@ export default function ContactProfileStudentsPage() {
     [t, displayName]
   );
 
+  const actionMenuItems = useMemo(() => {
+    const isThereAtLeastOneContactThatIsNotAllowedToContact =
+      selectedContacts.some(
+        (contact) => !contact?.relationships?.[0]?.allowedToContact
+      );
+
+    return [
+      [
+        {
+          label: t('people:sendSms'),
+          icon: <MobileIcon />,
+          onClick: () => {},
+        },
+        {
+          label: t('mail:sendMail'),
+          icon: <SendMailIcon />,
+          onClick: () => {},
+        },
+      ],
+      [
+        {
+          label: t('people:unlinkStudent'),
+          icon: <PersonHeartIcon />,
+          onClick: () => {},
+          disabled: selectedContacts.length !== 1,
+          disabledTooltip: t(
+            'people:feedback.moreThanOneSelectedForPrimaryContact'
+          ),
+        },
+      ],
+    ];
+  }, [selectedContacts]);
+
   return (
     <Table
       rowData={contactStudentsData ?? []}
       columnDefs={contactStudentColumns}
       getRowId={({ data }) => String(data?.studentPartyId)}
+      rowSelection="multiple"
+      onRowSelection={(rows) => {
+        setSelectedContacts(rows);
+      }}
+      rightAdornment={
+        <Fade in={selectedContacts.length > 0}>
+          <Box>
+            <ActionMenu
+              menuProps={{
+                anchorOrigin: {
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                },
+                transformOrigin: {
+                  vertical: 'top',
+                  horizontal: 'right',
+                },
+              }}
+              menuItems={actionMenuItems}
+            />
+          </Box>
+        </Fade>
+      }
     />
   );
 }

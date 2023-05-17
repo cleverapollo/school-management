@@ -111,5 +111,13 @@
   "feedback": {
     "moreThanOneSelectedForPrimaryContact": "You must only select one contact to set as a primary contact."
   },
-  "title": "Title"
+  "title": "Title",
+  "relationshipToStudent": "Relationship to student",
+  "priority": "Priority",
+  "legalGuardian": "Legal guardian",
+  "pickupPermission": "Pick-up permission",
+  "allowAccessToStudentData": "Allow access to student data",
+  "includeInSms": "Include in SMS",
+  "includeInTmail": "Include in t-mail",
+  "unlinkStudent": "Unlink student"
 }
