@@ -123,8 +123,8 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getAssessmentRoutes(t),
   ...getPeopleRoutes(t),
   ...getReportingRoutes(t),
-  ...getSettingsRoutes(t),
   ...getSubstitutionRoutes(t),
+  ...getSettingsRoutes(t),
   ...getAdminRoutes(t),
 ];
 
