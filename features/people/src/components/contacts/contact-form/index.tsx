@@ -119,11 +119,16 @@ export function ContactForm({
         requiresInterpreter,
         studentRelationships: studentRelationships.map(
           ({ relationshipType, student }) => ({
-            primaryContact: false,
-            allowedToContact: true,
-            includeInSms: true,
             relationshipType: relationshipType!,
             studentPartyId: student?.partyId ?? 0,
+            // TODO: this value will be added
+            priority: 1,
+            allowedToContact: true,
+            includeInSms: true,
+            allowAccessToStudentData: true,
+            includeInTmail: true,
+            legalGuardian: true,
+            pickupRights: true,
           })
         ),
       },
