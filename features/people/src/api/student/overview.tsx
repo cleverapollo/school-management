@@ -35,7 +35,7 @@ const studentsContacts = graphql(/* GraphQL */ `
         }
         relationships {
           relationshipType
-          primaryContact
+          priority
           allowedToContact
         }
       }
