@@ -92,7 +92,7 @@ export function useYearGroupById(id: number | undefined) {
   return useQuery({
     ...yearGroupByIdQuery(id),
     select: ({ core_yearGroupEnrollments }) => {
-      if (!core_yearGroupEnrollments) return null;
+      if (!Array.isArray(core_yearGroupEnrollments)) return null;
 
       const [group] = core_yearGroupEnrollments || [];
 

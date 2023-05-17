@@ -53,7 +53,7 @@ const getYearGroupColumns = (
 ];
 
 export default function ViewYearGroupPage() {
-  const { t } = useTranslation(['common', 'groups', 'people', 'mail']);
+  const { t } = useTranslation(['common', 'groups']);
   const { groupId } = useParams();
   const groupIdAsNumber = useNumber(groupId);
   const { displayName, displayNames } = usePreferredNameLayout();
