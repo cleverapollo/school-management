@@ -15,12 +15,15 @@ import {
   getSubjectGroups,
   getSubjectGroupById,
   getCustomGroups,
-  getCustomGroupsById,
+  getCustomGroupById,
   getClassGroups,
   getClassGroupsById,
   getSubjectGroupLesson,
 } from './api';
+import { getYearGroups, getYearGroupById } from './api/year-groups';
 
+const YearGroups = lazy(() => import('./pages/year'));
+const ViewYearGroupPage = lazy(() => import('./pages/year/view'));
 const CustomGroups = lazy(() => import('./pages/custom'));
 const ViewCustomGroupPage = lazy(() => import('./pages/custom/view'));
 const ClassGroups = lazy(() => import('./pages/class'));
@@ -55,6 +58,32 @@ export const getRoutes: NavObjectFunction = (t) => [
         hasAccess: (permissions) => permissions.isStaffUser,
         title: t('navigation:general.groups.title'),
         children: [
+          {
+            type: NavObjectType.MenuLink,
+            path: 'year',
+            title: t('navigation:general.groups.year'),
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                index: true,
+                loader: () => getYearGroups(),
+                element: <YearGroups />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: ':groupId',
+                loader: ({ params }) => {
+                  const groupId = getNumber(params?.groupId);
+                  if (!groupId) {
+                    throw404Error();
+                  }
+
+                  return getYearGroupById(groupId);
+                },
+                element: <ViewYearGroupPage />,
+              },
+            ],
+          },
           {
             type: NavObjectType.MenuLink,
             path: 'class',
@@ -184,7 +213,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                     throw404Error();
                   }
 
-                  return getCustomGroupsById(groupId);
+                  return getCustomGroupById(groupId);
                 },
                 element: <ViewCustomGroupPage />,
               },
