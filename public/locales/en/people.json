@@ -16,7 +16,7 @@
   "yearHead": "Year Head",
   "tutor": "Tutor",
   "tyroId": "Tyro ID",
-  "primaryContact": "Primary Contact",
+  "priority": "Priority",
   "allowedToContact": "Allowed to contact",
   "includedInSms": "Included in SMS",
   "nextContact": "Next Contact",
@@ -62,7 +62,18 @@
       "nationality": "Nationality",
       "mothersMaidenName": "Mother's Maiden Name",
       "motherTongue": "Mother Tongue",
-      "ethnicityAndCulturalBackground": "Ethnicity and cultural background"
+      "ethnicityAndCulturalBackground": "Ethnicity and cultural background",
+      "spokenLanguage": "Spoken language",
+      "requiresInterpreter": "Requires interpreter",
+      "addressLine1": "Address line 1",
+      "addressLine2": "Address line 2",
+      "addressLine3": "Address line 3",
+      "city": "City",
+      "eircode": "Eircode",
+      "country": "Country",
+      "primaryNumber": "Primary number",
+      "additionalNumber": "Additional number",
+      "occupation": "Occupation"
     },
     "enrolmentHistory": {
       "title": "Enrolment history",
@@ -95,5 +106,6 @@
   },
   "feedback": {
     "moreThanOneSelectedForPrimaryContact": "You must only select one contact to set as a primary contact."
-  }
+  },
+  "title": "Title"
 }

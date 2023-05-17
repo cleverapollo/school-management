@@ -67,7 +67,6 @@ export function ActionMenu({
       )}
       <Menu
         anchorEl={buttonRef.current}
-        sx={{ mt: 1 }}
         {...getDisclosureProps()}
         anchorOrigin={{
           vertical: 'bottom',
@@ -78,6 +77,7 @@ export function ActionMenu({
           horizontal: 'right',
         }}
         {...menuProps}
+        sx={{ mt: 1, ...menuProps?.sx }}
       >
         {sectionedMenuItems.reduce<React.ReactNode[]>(
           (acc, section, index, menuSections) => {

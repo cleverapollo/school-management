@@ -22,6 +22,7 @@ export const addViewSchoolHeaders = (tenant: number | undefined) => {
 export const removeEmulationHeaders = () => {
   localStorage.removeItem(EmulateHeaders.TENANT);
   localStorage.removeItem(EmulateHeaders.PARTY_ID);
+  localStorage.removeItem(EmulateHeaders.ACADEMIC_NAMESPACE_ID);
 };
 
 export const checkEmulationMode = () => {

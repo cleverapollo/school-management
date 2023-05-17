@@ -83,18 +83,8 @@ const getStudentContactColumns = (
     },
   },
   {
-    field: 'relationships[0].primaryContact',
-    headerName: translate('people:primaryContact'),
-    valueGetter: ({ data }) =>
-      data?.relationships?.[0]?.primaryContact ? 'Yes' : 'No',
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => {
-      const isPrimaryContact =
-        data?.relationships?.[0]?.primaryContact ?? false;
-
-      return <TableBooleanValue value={isPrimaryContact} />;
-    },
+    field: 'relationships[0].priority',
+    headerName: translate('people:priority'),
   },
   {
     field: 'relationships[0].allowedToContact',
