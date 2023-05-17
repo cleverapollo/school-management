@@ -34,6 +34,7 @@ const config: CodegenConfig = {
           Long: 'number',
           Date: 'string',
           DateTime: 'string',
+          Time: 'string',
         },
       },
     },

@@ -1,5 +1,6 @@
 export * from './action-menu';
 export * from './animate';
+export * from './autocomplete';
 export * from './avatar';
 export * from './breadcrumbs';
 export * from './charts';

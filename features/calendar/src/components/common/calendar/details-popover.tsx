@@ -18,12 +18,13 @@ import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Avatar, orderByValue, usePreferredNameLayout } from '@tyro/core';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { CalendarEventAttendeeType, CalendarEventType } from '@tyro/api';
 import { Link } from 'react-router-dom';
 import { Attendee } from '../../../@types/calendar';
 import { ExtendedEventInput } from '../../../api/events';
-import { getPartyName } from '../../../../utils/get-party-name';
+import { getPartyAvatarUrl, getPartyName } from '../../../utils/get-party-name';
+import { CalendarEditEventFormState } from './edit-event-details-modal';
 
 dayjs.extend(LocalizedFormat);
 
@@ -31,7 +32,7 @@ interface CalendarDetailsPopoverProps {
   eventElementRef: HTMLElement | null;
   event: ExtendedEventInput | undefined;
   onClose: () => void;
-  onEdit: () => void;
+  onEdit: (eventToEdit: Partial<CalendarEditEventFormState>) => void;
 }
 
 const IconContainer = styled(Box)(({ theme }) => ({
@@ -42,15 +43,21 @@ const IconContainer = styled(Box)(({ theme }) => ({
   color: theme.palette.text.primary,
 }));
 
-function FormatedDateAndTime({
+function FormattedDateAndTime({
+  allDay,
   startDateTime,
   endDateTime,
 }: {
+  allDay: boolean;
   startDateTime: string | Date;
   endDateTime: string | Date;
 }) {
   const start = dayjs(startDateTime);
   const end = dayjs(endDateTime);
+
+  if (allDay) {
+    return <>{start.format('LL')}</>;
+  }
 
   const dash = (
     <Box
@@ -86,7 +93,6 @@ function getAttendeeAvatarSrc(partyInfo: Attendee['partyInfo']) {
     case 'SubjectGroup':
       return partyInfo.avatarUrl ?? undefined;
     case 'Staff':
-      return partyInfo.person.avatarUrl ?? undefined;
     case 'Student':
       return partyInfo.person.avatarUrl ?? undefined;
     default:
@@ -116,6 +122,30 @@ export function CalendarDetailsPopover({
       ),
     [event?.originalEvent?.attendees]
   );
+
+  const handleEdit = useCallback(() => {
+    if (event) {
+      const { startTime, endTime, rooms, ...restData } = event.originalEvent;
+
+      onEdit({
+        ...restData,
+        // TODO: pass down the recurrenceEnum, and occurrences when BE sends them.
+        startDate: dayjs(startTime),
+        startTime: dayjs(startTime),
+        endDate: dayjs(endTime),
+        endTime: dayjs(endTime),
+        location: rooms[0],
+        participants: sortedParticipants.map(
+          ({ partyId, partyInfo, type }) => ({
+            partyId,
+            attendeeType: type,
+            avatarUrl: getPartyAvatarUrl(partyInfo),
+            text: getPartyName(partyInfo, displayName),
+          })
+        ),
+      });
+    }
+  }, [event, onEdit, sortedParticipants]);
 
   return (
     <Popover
@@ -170,7 +200,7 @@ export function CalendarDetailsPopover({
             <IconButton
               aria-label={t('common:actions.edit')}
               size="small"
-              onClick={onEdit}
+              onClick={handleEdit}
             >
               <EditIcon />
             </IconButton>
@@ -185,7 +215,7 @@ export function CalendarDetailsPopover({
           <CloseIcon />
         </IconButton>
       </Stack>
-      <Stack direction="row">
+      <Stack direction="row" paddingRight={1.5}>
         <IconContainer
           sx={{
             height: 28,
@@ -205,7 +235,8 @@ export function CalendarDetailsPopover({
             {event?.title}
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            <FormatedDateAndTime
+            <FormattedDateAndTime
+              allDay={Boolean(event?.allDay)}
               startDateTime={event?.start ?? ''}
               endDateTime={event?.end ?? ''}
             />

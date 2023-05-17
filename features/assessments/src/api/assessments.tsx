@@ -71,6 +71,7 @@ const assessment = graphql(/* GraphQL */ `
         extraFieldType
         gradeSetId
         commentBankId
+        commentBankName
         selectOptions
         commentLength
       }

@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { Calendar } from '@tyro/calendar';
+import { Calendar, CalendarParty } from '@tyro/calendar';
 import { useNumber, usePreferredNameLayout } from '@tyro/core';
-import { SearchType } from '@tyro/api';
+import { CalendarEventAttendeeType, SearchType } from '@tyro/api';
 import { useStudent } from '../../../api/students';
 
 export default function StudentProfileTimetablePage() {
@@ -12,7 +12,7 @@ export default function StudentProfileTimetablePage() {
 
   const { data } = useStudent(studentId);
 
-  const defaultPartys = useMemo(
+  const defaultPartys = useMemo<CalendarParty[]>(
     () =>
       data?.partyId
         ? [
@@ -21,6 +21,7 @@ export default function StudentProfileTimetablePage() {
               text: displayName(data?.person),
               type: SearchType.Student,
               avatarUrl: data?.person?.avatarUrl,
+              attendeeType: CalendarEventAttendeeType.Attendee,
             },
           ]
         : [],

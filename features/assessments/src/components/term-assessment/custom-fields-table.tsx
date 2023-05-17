@@ -13,7 +13,7 @@ import {
   IconButton,
 } from '@mui/material';
 import { AddIcon, TrashIcon } from '@tyro/icons';
-import { useFieldArray, Control, Path, useWatch } from 'react-hook-form';
+import { useFieldArray, Control, useWatch } from 'react-hook-form';
 import { CommentBankOptions } from './comment-bank-options';
 import { CommentLengthField } from './comment-length-field';
 import { CommentBankOption } from '../../api/comment-bank';
@@ -43,7 +43,7 @@ export type FormCustomFieldsValues = {
 };
 
 type CustomFieldsTableProps<TField extends FormCustomFieldsValues> = {
-  control: Control<TField>;
+  control: TField extends FormCustomFieldsValues ? Control<TField> : never;
 };
 
 export const CustomFieldsTable = <TField extends FormCustomFieldsValues>({
@@ -51,8 +51,8 @@ export const CustomFieldsTable = <TField extends FormCustomFieldsValues>({
 }: CustomFieldsTableProps<TField>) => {
   const { t } = useTranslation(['assessments', 'common']);
 
-  const { fields, append, remove } = useFieldArray<FormCustomFieldsValues>({
-    control: control as unknown as Control<FormCustomFieldsValues>,
+  const { fields, append, remove } = useFieldArray({
+    control,
     name: 'extraFields',
   });
 
@@ -103,7 +103,7 @@ export const CustomFieldsTable = <TField extends FormCustomFieldsValues>({
               <TableRow key={field.id}>
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>
-                  <RHFTextField<TField>
+                  <RHFTextField<FormCustomFieldsValues>
                     textFieldProps={{
                       fullWidth: true,
                       'aria-label': t(
@@ -112,20 +112,20 @@ export const CustomFieldsTable = <TField extends FormCustomFieldsValues>({
                       placeholder: t('assessments:placeholders.extraFieldName'),
                     }}
                     controlProps={{
-                      name: `extraFields.${index}.name` as Path<TField>,
+                      name: `extraFields.${index}.name`,
                       control,
                     }}
                   />
                 </TableCell>
                 <TableCell>
-                  <RHFSelect<TField, ExtraFieldTypeOption>
+                  <RHFSelect<FormCustomFieldsValues, ExtraFieldTypeOption>
                     fullWidth
                     options={extraFieldTypeOptions}
                     getOptionLabel={(option) =>
                       t(`assessments:labels.extraFieldTypes.${option}`)
                     }
                     controlProps={{
-                      name: `extraFields.${index}.extraFieldType` as Path<TField>,
+                      name: `extraFields.${index}.extraFieldType`,
                       control,
                     }}
                   />
@@ -133,17 +133,15 @@ export const CustomFieldsTable = <TField extends FormCustomFieldsValues>({
                 <TableCell>
                   {extraFields[index]?.extraFieldType ===
                     ExtraFieldType.FreeForm && (
-                    <CommentLengthField<TField>
-                      name={
-                        `extraFields.${index}.commentLength` as Path<TField>
-                      }
+                    <CommentLengthField<FormCustomFieldsValues>
+                      name={`extraFields.${index}.commentLength`}
                       control={control}
                     />
                   )}
                   {extraFields[index]?.extraFieldType ===
                     ExtraFieldType.CommentBank && (
-                    <CommentBankOptions<TField>
-                      name={`extraFields.${index}.commentBank` as Path<TField>}
+                    <CommentBankOptions<FormCustomFieldsValues>
+                      name={`extraFields.${index}.commentBank`}
                       control={control}
                     />
                   )}

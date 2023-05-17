@@ -48,10 +48,12 @@ export function getCalendarContent(eventInfo: EventContentArg) {
               <Typography variant="subtitle2" noWrap>
                 {eventInfo.event.title}
               </Typography>
-              <Typography variant="caption" noWrap sx={{ mr: 0.5 }}>
-                {dayjs(eventInfo.event.start).format('LT')} -{' '}
-                {dayjs(eventInfo.event.end).format('LT')}
-              </Typography>
+              {!eventInfo.event.allDay && (
+                <Typography variant="caption" noWrap sx={{ mr: 0.5 }}>
+                  {dayjs(eventInfo.event.start).format('LT')} -{' '}
+                  {dayjs(eventInfo.event.end).format('LT')}
+                </Typography>
+              )}
             </Stack>
             <Typography variant="caption" noWrap sx={{ fontWeight: 600 }}>
               {subtitleList.filter(Boolean).join(', ')}
