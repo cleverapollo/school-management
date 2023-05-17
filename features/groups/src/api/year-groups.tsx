@@ -54,7 +54,7 @@ const yearGroupById = graphql(/* GraphQL */ `
 `);
 
 export const yearGroupsKeys = {
-  list: ['groups', 'custom'] as const,
+  list: ['groups', 'year'] as const,
   details: (id: number | undefined) => [...yearGroupsKeys.list, id] as const,
 };
 
