@@ -4,9 +4,8 @@ import {
   Table,
   ICellRendererParams,
   usePreferredNameLayout,
-  ReturnTypeDisplayNames,
   ReturnTypeDisplayName,
-  StudyLevelSelectCellEditor,
+  TableBooleanValue,
   TableAvatar,
   useNumber,
   ActionMenu,
@@ -14,26 +13,20 @@ import {
 import { Box, Fade } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import set from 'lodash/set';
-import {
-  MobileIcon,
-  PersonHeartIcon,
-  SendMailIcon,
-  PersonTickIcon,
-  PersonCrossIcon,
-} from '@tyro/icons';
+import { MobileIcon, PersonHeartIcon, SendMailIcon } from '@tyro/icons';
 import { useContactStudents } from '../../../api';
+import { ConfirmUnlinkModal } from '../../../components/contact/confirm-unlink-modal';
 
 type ReturnTypeFromUseContactStudents = NonNullable<
   ReturnType<typeof useContactStudents>['data']
 >[number];
 
 const getContactStudentsColumns = (
-  t: TFunction<'common'[], undefined, 'common'[]>,
+  t: TFunction<('people' | 'common')[]>,
   displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseContactStudents>['columnDefs'] => [
   {
-    field: 'name',
+    field: 'student.person',
     headerName: t('common:name'),
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
@@ -43,9 +36,7 @@ const getContactStudentsColumns = (
       data,
     }: ICellRendererParams<ReturnTypeFromUseContactStudents>) => {
       if (!data) return null;
-
       const student = data?.student;
-
       return (
         <TableAvatar
           name={displayName(student?.person) ?? ''}
@@ -57,62 +48,80 @@ const getContactStudentsColumns = (
     sort: 'asc',
   },
   {
-    field: 'classes',
+    field: 'student.classGroup.name',
     headerName: t('common:class'),
     filter: true,
-    valueGetter: ({ data }) => '',
     enableRowGroup: true,
   },
   {
-    field: 'relationship',
-    headerName: t('people:relationshipToStudent'),
-    filter: true,
-    editable: true,
-    valueSetter: (params) => {
-      set(params.data ?? {}, 'irePP.level', params.newValue);
-      return true;
+    field: 'relationshipType',
+    headerName: t('common:relationship'),
+    valueGetter: ({ data }) => {
+      const contactsRelationshipType = data?.relationshipType;
+      return contactsRelationshipType
+        ? t(`common:relationshipType.${contactsRelationshipType}`)
+        : '';
     },
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseContactStudents, any>) => null,
-    cellEditorSelector: StudyLevelSelectCellEditor(t),
-    enableRowGroup: true,
   },
   {
     field: 'priority',
     headerName: t('people:priority'),
-    valueGetter: ({ data }) => '1',
-    enableRowGroup: true,
   },
   {
     field: 'legalGuardian',
     headerName: t('people:legalGuardian'),
-    valueGetter: ({ data }) => 'No',
-    enableRowGroup: true,
+    valueGetter: ({ data }) => (data?.legalGuardian ? 'Yes' : 'No'),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseContactStudents, any>) => {
+      const isLegalGuardian = data?.legalGuardian ?? false;
+      return <TableBooleanValue value={isLegalGuardian} />;
+    },
   },
   {
-    field: 'pickupPermission',
+    field: 'pickupRights',
     headerName: t('people:pickupPermission'),
-    valueGetter: ({ data }) => 'No',
-    enableRowGroup: true,
+    valueGetter: ({ data }) => (data?.pickupRights ? 'Yes' : 'No'),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseContactStudents, any>) => {
+      const isPickupRights = data?.pickupRights ?? false;
+      return <TableBooleanValue value={isPickupRights} />;
+    },
   },
   {
     field: 'allowAccessToStudentData',
     headerName: t('people:allowAccessToStudentData'),
-    valueGetter: ({ data }) => 'No',
-    enableRowGroup: true,
+    valueGetter: ({ data }) => (data?.allowAccessToStudentData ? 'Yes' : 'No'),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseContactStudents, any>) => {
+      const isAllowAccessToStudentData =
+        data?.allowAccessToStudentData ?? false;
+      return <TableBooleanValue value={isAllowAccessToStudentData} />;
+    },
   },
   {
     field: 'includeInSms',
     headerName: t('people:includeInSms'),
-    valueGetter: ({ data }) => 'No',
-    enableRowGroup: true,
+    valueGetter: ({ data }) => (data?.includeInSms ? 'Yes' : 'No'),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseContactStudents, any>) => {
+      const isIncludeInSms = data?.includeInSms ?? false;
+      return <TableBooleanValue value={isIncludeInSms} />;
+    },
   },
   {
     field: 'includeInTmail',
     headerName: t('people:includeInTmail'),
-    valueGetter: ({ data }) => 'No',
-    enableRowGroup: true,
+    valueGetter: ({ data }) => (data?.includeInTmail ? 'Yes' : 'No'),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseContactStudents, any>) => {
+      const isIncludeInTmail = data?.includeInTmail ?? false;
+      return <TableBooleanValue value={isIncludeInTmail} />;
+    },
   },
 ];
 
@@ -124,21 +133,16 @@ export default function ContactProfileStudentsPage() {
   const [selectedContacts, setSelectedContacts] = useState<
     ReturnTypeFromUseContactStudents[]
   >([]);
+  const [isShowAlertUnlink, setIsShowAlertUnlink] = useState<boolean>(false);
   const { data: contactStudentsData } = useContactStudents(idNumber);
-  console.log('data', contactStudentsData);
 
   const contactStudentColumns = useMemo(
     () => getContactStudentsColumns(t, displayName),
     [t, displayName]
   );
 
-  const actionMenuItems = useMemo(() => {
-    const isThereAtLeastOneContactThatIsNotAllowedToContact =
-      selectedContacts.some(
-        (contact) => !contact?.relationships?.[0]?.allowedToContact
-      );
-
-    return [
+  const actionMenuItems = useMemo(
+    () => [
       [
         {
           label: t('people:sendSms'),
@@ -155,44 +159,51 @@ export default function ContactProfileStudentsPage() {
         {
           label: t('people:unlinkStudent'),
           icon: <PersonHeartIcon />,
-          onClick: () => {},
+          onClick: () => {
+            setIsShowAlertUnlink(true);
+          },
           disabled: selectedContacts.length !== 1,
-          disabledTooltip: t(
-            'people:feedback.moreThanOneSelectedForPrimaryContact'
-          ),
+          disabledTooltip: t('people:unlinkStudent'),
         },
       ],
-    ];
-  }, [selectedContacts]);
+    ],
+    [selectedContacts]
+  );
 
   return (
-    <Table
-      rowData={contactStudentsData ?? []}
-      columnDefs={contactStudentColumns}
-      getRowId={({ data }) => String(data?.studentPartyId)}
-      rowSelection="multiple"
-      onRowSelection={(rows) => {
-        setSelectedContacts(rows);
-      }}
-      rightAdornment={
-        <Fade in={selectedContacts.length > 0}>
-          <Box>
-            <ActionMenu
-              menuProps={{
-                anchorOrigin: {
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                },
-                transformOrigin: {
-                  vertical: 'top',
-                  horizontal: 'right',
-                },
-              }}
-              menuItems={actionMenuItems}
-            />
-          </Box>
-        </Fade>
-      }
-    />
+    <>
+      <Table
+        rowData={contactStudentsData ?? []}
+        columnDefs={contactStudentColumns}
+        getRowId={({ data }) => String(data?.studentPartyId)}
+        rowSelection="multiple"
+        onRowSelection={(rows) => {
+          setSelectedContacts(rows);
+        }}
+        rightAdornment={
+          <Fade in={selectedContacts.length > 0}>
+            <Box>
+              <ActionMenu
+                menuProps={{
+                  anchorOrigin: {
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                  },
+                  transformOrigin: {
+                    vertical: 'top',
+                    horizontal: 'right',
+                  },
+                }}
+                menuItems={actionMenuItems}
+              />
+            </Box>
+          </Fade>
+        }
+      />
+      <ConfirmUnlinkModal
+        isOpen={isShowAlertUnlink}
+        onClose={() => setIsShowAlertUnlink(false)}
+      />
+    </>
   );
 }

@@ -44,12 +44,7 @@
     "PART_TIME": "Part time",
     "PRIVATE": "Private",
     "VOLUNTARY": "Voluntary",
-    "UNKNOWN": "Unknown",
-    "PERMANENT": "Permanent",
-    "PRIVATE": "Private",
-    "REGULAR_PART_TIME": "Regular part time",
-    "TEMPORARY": "Temporary",
-    "CONTRACTS_OF_INDEFINITE_DURATION": "Contract of indefinite duration"
+    "UNKNOWN": "Unknown"
   },
   "personal": {
     "title": "Personal",
@@ -113,11 +108,12 @@
   },
   "title": "Title",
   "relationshipToStudent": "Relationship to student",
-  "priority": "Priority",
   "legalGuardian": "Legal guardian",
   "pickupPermission": "Pick-up permission",
   "allowAccessToStudentData": "Allow access to student data",
   "includeInSms": "Include in SMS",
   "includeInTmail": "Include in t-mail",
-  "unlinkStudent": "Unlink student"
+  "unlinkStudent": "Unlink student",
+  "messageUnlinkContact": "You are about to unlink this contact from the student. Are you sure you want to continue?",
+  "yesUnlink": "Yes, Unlink"
 }

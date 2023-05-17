@@ -9,9 +9,13 @@ const contactsStudentsById = graphql(/* GraphQL */ `
       relationships {
         studentPartyId
         relationshipType
-        primaryContact
+        priority
         allowedToContact
         includeInSms
+        includeInTmail
+        pickupRights
+        legalGuardian
+        allowAccessToStudentData
         ... on StudentContactRelationshipInfo {
           student {
             partyId
