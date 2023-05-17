@@ -50,6 +50,7 @@ export function ContactForm({
     resolver: resolver({
       firstName: rules.required(),
       surname: rules.required(),
+      email: rules.isEmail(),
       mobileNumber: rules.validate<ContactFormState['mobileNumber']>(
         (mobileNumber, throwError) => {
           if (mobileNumber && !mobileNumber.numberMatchWithMask) {

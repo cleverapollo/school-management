@@ -96,6 +96,15 @@ class Rules<TField extends FieldValues> {
     };
   }
 
+  isEmail(customMsg?: string) {
+    const errorMessage =
+      customMsg ?? this._t('common:errorMessages.invalidEmail');
+
+    return (value: FieldValue<TField>) => {
+      validations.isEmail(value, errorMessage);
+    };
+  }
+
   // eslint-disable-next-line class-methods-use-this
   validate<V extends FieldValue<TField>>(
     validateFn: (
