@@ -1,6 +1,6 @@
-import { Button, Container, Typography } from '@mui/material';
+import { Container, Typography } from '@mui/material';
 import { useTranslation, TFunction } from '@tyro/i18n';
-import { useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import {
   GridOptions,
   ICellRendererParams,
@@ -10,17 +10,20 @@ import {
   ActionMenu,
   ConfirmDialog,
   useDisclosure,
+  useDebouncedValue,
 } from '@tyro/core';
 import {
   useCoreAcademicNamespace,
   ReturnTypeFromUseCoreAcademicNamespace,
 } from '@tyro/api';
-import { AddIcon, VerticalDotsIcon } from '@tyro/icons';
+import { VerticalDotsIcon } from '@tyro/icons';
 import { useCoreSetActiveActiveAcademicNamespace } from '../api/academic-namespaces/change-active-academic-namespace';
 
 const getColumns = (
   t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>,
-  openConfirmDialog: () => void
+  setSelectedNamespace: Dispatch<
+    SetStateAction<ReturnTypeFromUseCoreAcademicNamespace | null>
+  >
 ): GridOptions<ReturnTypeFromUseCoreAcademicNamespace>['columnDefs'] => [
   {
     headerName: t('common:name'),
@@ -72,7 +75,7 @@ const getColumns = (
           menuItems={[
             {
               label: t('settings:actions.makeActive'),
-              onClick: openConfirmDialog,
+              onClick: () => setSelectedNamespace(data),
             },
           ]}
         />
@@ -85,18 +88,19 @@ export default function AcademicNamespaceList() {
   const { data: namespaces } = useCoreAcademicNamespace();
   const { mutateAsync: setActiveNamespace } =
     useCoreSetActiveActiveAcademicNamespace();
-  const [selectedNamespace, setSelectedNamespace] =
-    useState<ReturnTypeFromUseCoreAcademicNamespace | null>(null);
-
   const {
-    isOpen: isConfirmDialogOpen,
-    onClose: closeConfirmDialog,
-    onOpen: openConfirmDialog,
-  } = useDisclosure();
+    value: selectedNamespace,
+    debouncedValue: debouncedSelectedNamespace,
+    setValue: setSelectedNamespace,
+  } = useDebouncedValue<ReturnTypeFromUseCoreAcademicNamespace | null>({
+    defaultValue: null,
+  });
+
+  const selectedRow = selectedNamespace ?? debouncedSelectedNamespace;
 
   const columns = useMemo(
-    () => getColumns(t, openConfirmDialog),
-    [t, openConfirmDialog]
+    () => getColumns(t, setSelectedNamespace),
+    [t, setSelectedNamespace]
   );
 
   return (
@@ -111,30 +115,19 @@ export default function AcademicNamespaceList() {
             columnDefs={columns}
             rowSelection="single"
             getRowId={({ data }) => String(data?.academicNamespaceId)}
-            onRowSelection={(namespace) => {
-              const newValue =
-                namespace.length > 0 && namespace[0] ? namespace[0] : null;
-
-              setSelectedNamespace(newValue);
-            }}
-            rightAdornment={
-              <Button variant="text" startIcon={<AddIcon />}>
-                {t('settings:actions.addNewRoom')}
-              </Button>
-            }
           />
         </Container>
       </Page>
       <ConfirmDialog
-        open={isConfirmDialogOpen}
+        open={!!selectedNamespace}
         title={t('settings:namespacesDialog.title', {
-          year: selectedNamespace?.year,
+          year: selectedRow?.year,
         })}
         description={t('settings:namespacesDialog.description')}
         confirmText={t('settings:namespacesDialog.confirmation', {
-          year: selectedNamespace?.year,
+          year: selectedRow?.year,
         })}
-        onClose={closeConfirmDialog}
+        onClose={() => setSelectedNamespace(null)}
         onConfirm={() => {
           if (selectedNamespace) {
             setActiveNamespace(selectedNamespace);

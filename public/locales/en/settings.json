@@ -13,6 +13,7 @@
   "active": "Active",
   "successfullyUpdatedSubjects": "Successfully updated subjects",
   "updateToSubjectsUnsuccessful": "Your subject updates were unsuccessful",
+  "changeAcademicNamespaceCurrentlySet": "Change Academic Namespace. Currently set to {{name}}",
   "actions": {
     "makeActive": "Make active primary namespace",
     "addNewRoom": "Add new room"

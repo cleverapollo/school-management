@@ -12,6 +12,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 // hooks
 import { HamburgerMenuIcon } from '@tyro/icons';
+import { useNavigate } from 'react-router-dom';
 import { AcademicNamespaceSessionSwitcher } from '@tyro/settings';
 import { useResponsive } from '@tyro/core';
 import {
@@ -39,6 +40,7 @@ export function Header({ isNavExpanded, onOpenNav }: Props) {
   const { activeProfile } = useUser();
   const queryClient = useQueryClient();
   const { userType } = usePermissions();
+  const navigate = useNavigate();
 
   const emulationMode = useMemo(() => checkEmulationMode(), [activeProfile]);
 
@@ -61,6 +63,7 @@ export function Header({ isNavExpanded, onOpenNav }: Props) {
           onClick={() => {
             removeEmulationHeaders();
             queryClient.invalidateQueries();
+            navigate('/');
           }}
           sx={{ ml: 1 }}
         >
