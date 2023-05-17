@@ -9,7 +9,7 @@ export type PrimaryAddressFormState = {
   addressLine1: InputAddress['line1'];
   addressLine2: InputAddress['line2'];
   addressLine3: InputAddress['line3'];
-  county: InputAddress['city'];
+  city: InputAddress['city'];
   country: InputAddress['country'];
   eircode: InputAddress['postCode'];
 };
@@ -31,11 +31,11 @@ export const PrimaryAddress = <TField extends PrimaryAddressFormState>({
         color="text.secondary"
         fontWeight={600}
       >
-        {t('people:contactForm.primaryAddress')}
+        {t('people:primaryAddress')}
       </Typography>
       <Stack direction="row" gap={2}>
         <RHFTextField
-          label={t('people:contactForm.labels.addressLine1')}
+          label={t('people:personal.about.addressLine1')}
           textFieldProps={{ fullWidth: true }}
           controlProps={{
             name: 'addressLine1',
@@ -43,7 +43,7 @@ export const PrimaryAddress = <TField extends PrimaryAddressFormState>({
           }}
         />
         <RHFTextField
-          label={t('people:contactForm.labels.addressLine2')}
+          label={t('people:personal.about.addressLine2')}
           textFieldProps={{ fullWidth: true }}
           controlProps={{
             name: 'addressLine2',
@@ -53,7 +53,7 @@ export const PrimaryAddress = <TField extends PrimaryAddressFormState>({
       </Stack>
       <Stack direction="row" gap={2}>
         <RHFTextField
-          label={t('people:contactForm.labels.addressLine3')}
+          label={t('people:personal.about.addressLine3')}
           textFieldProps={{ fullWidth: true }}
           controlProps={{
             name: 'addressLine3',
@@ -61,17 +61,17 @@ export const PrimaryAddress = <TField extends PrimaryAddressFormState>({
           }}
         />
         <RHFTextField
-          label={t('people:contactForm.labels.county')}
+          label={t('people:personal.about.city')}
           textFieldProps={{ fullWidth: true }}
           controlProps={{
-            name: 'county',
+            name: 'city',
             control,
           }}
         />
       </Stack>
       <Stack direction="row" gap={2}>
         <RHFTextField
-          label={t('people:contactForm.labels.eircode')}
+          label={t('people:personal.about.eircode')}
           textFieldProps={{ fullWidth: true }}
           controlProps={{
             name: 'eircode',
@@ -79,7 +79,7 @@ export const PrimaryAddress = <TField extends PrimaryAddressFormState>({
           }}
         />
         <RHFTextField
-          label={t('people:contactForm.labels.country')}
+          label={t('people:personal.about.country')}
           textFieldProps={{ fullWidth: true }}
           controlProps={{
             name: 'country',

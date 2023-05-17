@@ -5,26 +5,34 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
   TableRow,
   Typography,
+  useTheme,
 } from '@mui/material';
-import { StudentContactType } from '@tyro/api';
-import { RHFAutocomplete, RHFSelect, usePreferredNameLayout } from '@tyro/core';
+import {
+  StudentContactRelationshipInfoInput,
+  StudentContactType,
+} from '@tyro/api';
+import {
+  RHFAutocomplete,
+  RHFSelect,
+  RHFSwitch,
+  usePreferredNameLayout,
+} from '@tyro/core';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
 import { AddIcon, TrashIcon } from '@tyro/icons';
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import {
   StudentSelectOption,
   useStudentsForSelect,
 } from '../../../api/students';
 
 const relationshipTypeOptions = Object.values(StudentContactType);
+const priorityOptions = Array.from({ length: 5 }, (_v, k) => k + 1);
 
-type StudentRelationship = {
-  relationshipType: StudentContactType | null;
-  student: StudentSelectOption | null;
+export type StudentRelationship = StudentContactRelationshipInfoInput & {
+  student: StudentSelectOption;
 };
 
 export type StudentRelationshipsFormState = {
@@ -43,6 +51,7 @@ export const StudentRelationships = <
   control,
 }: StudentRelationshipsProps<TField>) => {
   const { t } = useTranslation(['common', 'people']);
+  const { spacing } = useTheme();
 
   const { data: studentsData = [] } = useStudentsForSelect({});
   const { displayName } = usePreferredNameLayout();
@@ -72,118 +81,160 @@ export const StudentRelationships = <
         color="text.secondary"
         fontWeight={600}
       >
-        {t('people:contactForm.studentRelationships')}
+        {t('people:studentRelationships')}
       </Typography>
+
       <Table
         size="small"
         sx={{
-          '& th': {
-            background: 'transparent',
-            color: 'text.secondary',
-            fontWeight: 600,
+          '& td:first-of-type': {
+            width: '35%',
+            paddingLeft: 0,
           },
-          '& td:first-of-type, & td:nth-of-type(3)': {
-            width: '45%',
-          },
-          '& td:nth-of-type(2), & td:last-of-type': {
-            width: '64px',
-            maxWidth: '64px',
-            textAlign: 'center',
-          },
-          '& tbody td': {
-            verticalAlign: 'middle',
+          '& td:last-of-type': {
+            width: spacing(8),
+            maxWidth: spacing(8),
           },
         }}
       >
-        <TableHead>
-          <TableRow>
-            <TableCell>{t('people:contactForm.labels.relationship')}</TableCell>
-            <TableCell />
-            <TableCell>{t('people:contactForm.labels.student')}</TableCell>
-            <TableCell />
-          </TableRow>
-        </TableHead>
         <TableBody>
           {fields.map((field, index) => (
-            <TableRow key={field.id}>
-              <TableCell>
-                <RHFSelect<StudentRelationshipsFormState, StudentContactType>
-                  fullWidth
-                  label={t('people:contactForm.labels.studentContactType')}
-                  options={relationshipTypeOptions}
-                  getOptionLabel={(option) =>
-                    t(`common:relationshipType.${option}`)
-                  }
-                  controlProps={{
-                    name: `studentRelationships.${index}.relationshipType`,
-                    control,
-                  }}
-                />
-              </TableCell>
-              <TableCell>
-                <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  fontWeight={600}
-                >
-                  {t('people:contactForm.labels.of')}
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <RHFAutocomplete<
-                  StudentRelationshipsFormState,
-                  StudentSelectOption,
-                  true
-                >
-                  fullWidth
-                  freeSolo
-                  label={t('people:contactForm.labels.studentName')}
-                  options={availableStudents}
-                  optionIdKey="partyId"
-                  getOptionLabel={(option) =>
-                    typeof option === 'string' ? option : displayName(option)
-                  }
-                  renderAvatarOption={(option, renderOption) =>
-                    renderOption({
-                      name: displayName(option),
-                      src: option.avatarUrl,
-                    })
-                  }
-                  controlProps={{
-                    name: `studentRelationships.${index}.student`,
-                    control,
-                  }}
-                />
-              </TableCell>
-              <TableCell>
-                {index > 0 && (
-                  <IconButton
-                    color="primary"
-                    aria-label={t('common:delete')}
-                    onClick={() => remove(index)}
+            <Fragment key={field.id}>
+              <TableRow>
+                <TableCell>
+                  <RHFAutocomplete<
+                    StudentRelationshipsFormState,
+                    StudentSelectOption,
+                    true
                   >
-                    <TrashIcon />
-                  </IconButton>
-                )}
-              </TableCell>
-            </TableRow>
+                    fullWidth
+                    freeSolo
+                    label={t('people:studentName')}
+                    options={availableStudents}
+                    optionIdKey="partyId"
+                    getOptionLabel={(option) =>
+                      typeof option === 'string' ? option : displayName(option)
+                    }
+                    renderAvatarOption={(option, renderOption) =>
+                      renderOption({
+                        name: displayName(option),
+                        src: option.avatarUrl,
+                      })
+                    }
+                    controlProps={{
+                      name: `studentRelationships.${index}.student`,
+                      control,
+                    }}
+                  />
+                </TableCell>
+                <TableCell>
+                  <RHFSelect<StudentRelationshipsFormState, StudentContactType>
+                    fullWidth
+                    label={t('people:relationToStudent')}
+                    options={relationshipTypeOptions}
+                    getOptionLabel={(option) =>
+                      t(`common:relationshipType.${option}`)
+                    }
+                    controlProps={{
+                      name: `studentRelationships.${index}.relationshipType`,
+                      control,
+                    }}
+                  />
+                </TableCell>
+                <TableCell>
+                  <RHFSelect
+                    label={t('people:priority')}
+                    sx={{ width: spacing(25) }}
+                    options={priorityOptions}
+                    getOptionLabel={(option) => String(option)}
+                    controlProps={{
+                      name: `studentRelationships.${index}.priority`,
+                      control,
+                    }}
+                  />
+                </TableCell>
+                <TableCell>
+                  {index > 0 && (
+                    <IconButton
+                      color="primary"
+                      aria-label={t('common:delete')}
+                      onClick={() => remove(index)}
+                    >
+                      <TrashIcon />
+                    </IconButton>
+                  )}
+                </TableCell>
+              </TableRow>
+              <TableRow sx={{ verticalAlign: 'top' }}>
+                <TableCell sx={{ pb: 3 }}>
+                  <RHFSwitch
+                    label={t('people:allowedToContact')}
+                    switchProps={{ color: 'primary' }}
+                    controlProps={{
+                      name: `studentRelationships.${index}.allowedToContact`,
+                      control,
+                    }}
+                  />
+                  <RHFSwitch
+                    label={t('people:legalGuardian')}
+                    switchProps={{ color: 'primary' }}
+                    controlProps={{
+                      name: `studentRelationships.${index}.legalGuardian`,
+                      control,
+                    }}
+                  />
+                </TableCell>
+                <TableCell>
+                  <RHFSwitch
+                    label={t('people:pickupPermission')}
+                    switchProps={{ color: 'primary' }}
+                    controlProps={{
+                      name: `studentRelationships.${index}.pickupRights`,
+                      control,
+                    }}
+                  />
+                  <RHFSwitch
+                    label={t('people:allowAccessToStudentData')}
+                    switchProps={{ color: 'primary' }}
+                    controlProps={{
+                      name: `studentRelationships.${index}.allowAccessToStudentData`,
+                      control,
+                    }}
+                  />
+                </TableCell>
+                <TableCell>
+                  <RHFSwitch
+                    label={t('people:includeInSms')}
+                    switchProps={{ color: 'primary' }}
+                    controlProps={{
+                      name: `studentRelationships.${index}.includeInSms`,
+                      control,
+                    }}
+                  />
+                  <RHFSwitch
+                    label={t('people:includeInTmail')}
+                    switchProps={{ color: 'primary' }}
+                    controlProps={{
+                      name: `studentRelationships.${index}.includeInTmail`,
+                      control,
+                    }}
+                  />
+                </TableCell>
+              </TableRow>
+            </Fragment>
           ))}
         </TableBody>
       </Table>
+
       <Stack width="fit-content">
         <Button
           size="small"
           color="primary"
           variant="text"
-          onClick={() =>
-            append({
-              relationshipType: null,
-              student: null,
-            })
-          }
+          onClick={() => append({} as StudentRelationship)}
           startIcon={<AddIcon sx={{ width: 24, height: 24 }} />}
         >
-          {t('people:contactForm.addStudent')}
+          {t('people:addStudent')}
         </Button>
       </Stack>
     </Stack>

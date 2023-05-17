@@ -39,12 +39,7 @@ export function ContactForm({
   const { resolver, rules } = useFormValidator<ContactFormState>();
   const { control, handleSubmit } = useForm<ContactFormState>({
     defaultValues: {
-      studentRelationships: [
-        {
-          relationshipType: null,
-          student: null,
-        },
-      ],
+      studentRelationships: [{}],
       ...contactFormData,
     },
     resolver: resolver({
@@ -59,6 +54,7 @@ export function ContactForm({
         }
       ),
       studentRelationships: {
+        priority: rules.required(),
         relationshipType: rules.required(),
         student: rules.required(),
       },
@@ -74,7 +70,7 @@ export function ContactForm({
     addressLine2: line2,
     addressLine3: line3,
     eircode: postCode,
-    county: city,
+    city,
     country,
     spokenLanguage: nativeLanguage,
     requiresInterpreter,
@@ -118,17 +114,10 @@ export function ContactForm({
         nativeLanguage,
         requiresInterpreter,
         studentRelationships: studentRelationships.map(
-          ({ relationshipType, student }) => ({
-            relationshipType: relationshipType!,
-            studentPartyId: student?.partyId ?? 0,
-            // TODO: this value will be added
-            priority: 1,
-            allowedToContact: true,
-            includeInSms: true,
-            allowAccessToStudentData: true,
-            includeInTmail: true,
-            legalGuardian: true,
-            pickupRights: true,
+          ({ student, priority, ...restData }) => ({
+            ...restData,
+            studentPartyId: student.partyId,
+            priority: Number(priority),
           })
         ),
       },

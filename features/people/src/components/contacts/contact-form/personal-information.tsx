@@ -29,7 +29,7 @@ export const PersonalInformation = <
 >({
   control,
 }: PersonalInformationProps<TField>) => {
-  const { t } = useTranslation(['people']);
+  const { t } = useTranslation(['people', 'common']);
 
   return (
     <>
@@ -39,11 +39,11 @@ export const PersonalInformation = <
         color="text.secondary"
         fontWeight={600}
       >
-        {t('people:contactForm.personalInformation')}
+        {t('people:personalInformation')}
       </Typography>
       <Stack direction="row" gap={2}>
         <RHFTextField
-          label={t('people:contactForm.labels.firstName')}
+          label={t('people:personal.about.forename')}
           textFieldProps={{ fullWidth: true }}
           controlProps={{
             name: 'firstName',
@@ -51,7 +51,7 @@ export const PersonalInformation = <
           }}
         />
         <RHFTextField
-          label={t('people:contactForm.labels.surname')}
+          label={t('people:personal.about.surname')}
           textFieldProps={{ fullWidth: true }}
           controlProps={{
             name: 'surname',
@@ -61,14 +61,14 @@ export const PersonalInformation = <
       </Stack>
       <Stack direction="row" gap={2}>
         <MobileNumber
-          label={t('people:contactForm.labels.mobileNumber')}
+          label={t('common:mobileNumber')}
           controlProps={{
             name: 'mobileNumber',
             control,
           }}
         />
         <RHFTextField
-          label={t('people:contactForm.labels.email')}
+          label={t('common:email')}
           textFieldProps={{ fullWidth: true }}
           controlProps={{
             name: 'email',
@@ -78,7 +78,7 @@ export const PersonalInformation = <
       </Stack>
       <Stack direction="row" gap={2}>
         <RHFTextField
-          label={t('people:contactForm.labels.spokenLanguage')}
+          label={t('people:personal.about.spokenLanguage')}
           textFieldProps={{ fullWidth: true }}
           controlProps={{
             name: 'spokenLanguage',
@@ -86,7 +86,7 @@ export const PersonalInformation = <
           }}
         />
         <RHFSwitch
-          label={t('people:contactForm.labels.requiresInterpreter')}
+          label={t('people:personal.about.requiresInterpreter')}
           controlLabelProps={{ sx: { width: '100%' } }}
           switchProps={{ color: 'primary' }}
           controlProps={{ name: 'requiresInterpreter', control }}

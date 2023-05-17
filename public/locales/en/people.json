@@ -125,29 +125,15 @@
     "contacts": "Contacts",
     "createContact": "Create contact"
   },
-  "contactForm": {
-    "personalInformation": "Personal information",
-    "primaryAddress": "Primary address",
-    "studentRelationships": "Student Relationships",
-    "addStudent": "Add student",
-    "labels": {
-      "of": "of",
-      "firstName": "First name",
-      "surname": "Surname",
-      "mobileNumber": "Mobile number",
-      "email": "Email",
-      "addressLine1": "Address line 1",
-      "addressLine2": "Address line 2",
-      "addressLine3": "Address line 3",
-      "county": "County",
-      "eircode": "Eircode",
-      "country": "Country",
-      "spokenLanguage": "Spoken language",
-      "requiresInterpreter": "Requires an interpreter",
-      "relationship": "Relationship",
-      "studentContactType": "Student contact type",
-      "student": "Student",
-      "studentName": "Student name"
-    }
-  }
+  "addStudent": "Add student",
+  "primaryAddress": "Primary address",
+  "personalInformation": "Personal information",
+  "studentRelationships": "Student Relationships",
+  "studentName": "Student name",
+  "relationToStudent": "Relation to student",
+  "legalGuardian": "Legal guardian",
+  "pickupPermission": "Pick-up permission",
+  "allowAccessToStudentData": "Allow access to student data",
+  "includeInSms": "Include in SMS",
+  "includeInTmail": "Include in t-mail"
 }
