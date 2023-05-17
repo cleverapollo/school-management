@@ -9,7 +9,8 @@
       "title": "Groups",
       "class": "Class",
       "subject": "Subject",
-      "custom": "Custom"
+      "custom": "Custom",
+      "year": "Year"
     },
     "admin": {
       "title": "Admin",
