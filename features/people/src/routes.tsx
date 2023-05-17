@@ -19,6 +19,7 @@ import {
   getStaff,
   getStudentsSubjectGroups,
   getStaffStatus,
+  getContactPersonal,
 } from './api';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
@@ -61,6 +62,23 @@ const StudentProfileSettingsPage = lazy(
 );
 
 const ContactsListPage = lazy(() => import('./pages/contacts'));
+
+// Contact profile pages
+const ContactProfileContainer = lazy(
+  () => import('./components/contact/contact-profile-container')
+);
+const ContactProfilePersonalPage = lazy(
+  () => import('./pages/contacts/profile/personal')
+);
+const ContactProfileStudentsPage = lazy(
+  () => import('./pages/contacts/profile/students')
+);
+const ContactProfileFeesPage = lazy(
+  () => import('./pages/contacts/profile/fees')
+);
+const ContactProfileAccessPage = lazy(
+  () => import('./pages/contacts/profile/access')
+);
 
 const StaffListPage = lazy(() => import('./pages/staff'));
 
@@ -222,6 +240,46 @@ export const getRoutes: NavObjectFunction = (t) => [
             element: <ContactsListPage />,
           },
           {
+            type: NavObjectType.NonMenuLink,
+            path: 'contacts/:id',
+            element: <ContactProfileContainer />,
+            loader: ({ params }) => {
+              const contactId = getNumber(params.id);
+              return getContactPersonal(contactId ?? 0);
+            },
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                index: true,
+                loader: () => redirect('./personal'),
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'personal',
+                loader: ({ params }) => {
+                  const contactId = getNumber(params.id);
+                  return getContactPersonal(contactId ?? 0);
+                },
+                element: <ContactProfilePersonalPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'students',
+                element: <ContactProfileStudentsPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'fees',
+                element: <ContactProfileFeesPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'access',
+                element: <ContactProfileAccessPage />,
+              },
+            ],
+          },
+          {
             type: NavObjectType.MenuLink,
             path: 'staff',
             title: t('navigation:management.people.staff'),
@@ -249,19 +307,16 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'overview',
-                loader: ({ params }) => Promise.all([]),
                 element: <StaffProfileOverviewPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'personal',
-                loader: ({ params }) => Promise.all([]),
                 element: <StaffProfilePersonalPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'contacts',
-                loader: ({ params }) => Promise.all([]),
                 element: <StaffProfileContactsPage />,
               },
               {
@@ -270,14 +325,12 @@ export const getRoutes: NavObjectFunction = (t) => [
                 element: <StaffProfileTimetablePage />,
                 loader: ({ params }) => {
                   const staffId = getNumber(params.id);
-
                   return getTodayTimetableEvents(staffId);
                 },
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'classes',
-                loader: ({ params }) => Promise.all([]),
                 element: <StaffProfileClassesPage />,
               },
             ],
