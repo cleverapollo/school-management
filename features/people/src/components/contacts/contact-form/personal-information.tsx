@@ -1,5 +1,5 @@
 import { Stack, Typography } from '@mui/material';
-import { RHFSwitch, RHFTextField } from '@tyro/core';
+import { RHFCheckbox, RHFTextField } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { Control } from 'react-hook-form';
 
@@ -85,10 +85,10 @@ export const PersonalInformation = <
             control,
           }}
         />
-        <RHFSwitch
+        <RHFCheckbox
           label={t('people:personal.about.requiresInterpreter')}
-          controlLabelProps={{ sx: { width: '100%' } }}
-          switchProps={{ color: 'primary' }}
+          controlLabelProps={{ sx: { width: '100%', ml: 0 } }}
+          checkboxProps={{ color: 'primary' }}
           controlProps={{ name: 'requiresInterpreter', control }}
         />
       </Stack>
