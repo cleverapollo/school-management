@@ -38,7 +38,15 @@ export const RHFCheckbox = <TField extends FieldValues>({
       {...controlLabelProps}
       label={label}
       control={
-        <Checkbox {...checkboxProps} {...field} checked={!!field.value} />
+        <Checkbox
+          {...checkboxProps}
+          {...field}
+          checked={!!field.value}
+          onChange={(...args) => {
+            field.onChange(...args);
+            checkboxProps?.onChange?.(...args);
+          }}
+        />
       }
     />
   );

@@ -1,30 +1,35 @@
 import {
   Button,
-  IconButton,
-  InputAdornment,
+  Card,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
   Typography,
   useTheme,
+  CardHeader,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  IconButton,
 } from '@mui/material';
 import {
   StudentContactRelationshipInfoInput,
   StudentContactType,
 } from '@tyro/api';
 import {
-  Avatar,
   RHFAutocomplete,
+  RHFCheckbox,
   RHFSelect,
   RHFSwitch,
   usePreferredNameLayout,
 } from '@tyro/core';
-import { Control, useFieldArray, useWatch } from 'react-hook-form';
+import {
+  Control,
+  UseFormGetValues,
+  UseFormSetValue,
+  useFieldArray,
+} from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
-import { AddIcon, TrashIcon } from '@tyro/icons';
-import { Fragment, useMemo } from 'react';
+import { AddIcon, ChevronDownIcon, TrashIcon } from '@tyro/icons';
+import { useCallback, useMemo } from 'react';
 import {
   StudentSelectOption,
   useStudentsForSelect,
@@ -35,6 +40,7 @@ const priorityOptions = Array.from({ length: 5 }, (_v, k) => k + 1);
 
 export type StudentRelationship = StudentContactRelationshipInfoInput & {
   student: StudentSelectOption;
+  enableAll: boolean;
 };
 
 export type StudentRelationshipsFormState = {
@@ -42,6 +48,12 @@ export type StudentRelationshipsFormState = {
 };
 
 type StudentRelationshipsProps<TField extends StudentRelationshipsFormState> = {
+  getValues: TField extends StudentRelationshipsFormState
+    ? UseFormGetValues<TField>
+    : never;
+  setValue: TField extends StudentRelationshipsFormState
+    ? UseFormSetValue<TField>
+    : never;
   control: TField extends StudentRelationshipsFormState
     ? Control<TField>
     : never;
@@ -51,6 +63,8 @@ export const StudentRelationships = <
   TField extends StudentRelationshipsFormState
 >({
   control,
+  getValues,
+  setValue,
 }: StudentRelationshipsProps<TField>) => {
   const { t } = useTranslation(['common', 'people']);
   const { spacing } = useTheme();
@@ -63,176 +77,253 @@ export const StudentRelationships = <
     name: 'studentRelationships',
   });
 
-  const { studentRelationships } = useWatch({ control });
-
   const availableStudents = useMemo(() => {
-    const currentStudents = studentRelationships?.map(
+    const currentStudents = getValues('studentRelationships')?.map(
       (selected) => selected.student?.partyId
     );
 
     return studentsData.filter(
       ({ partyId }) => !currentStudents?.includes(partyId)
     );
-  }, [studentsData, studentRelationships]);
+  }, [studentsData, getValues]);
+
+  const CUSTOM_SETTINGS: Array<{
+    keyName: keyof StudentContactRelationshipInfoInput;
+    label: string;
+  }> = [
+    {
+      label: t('people:allowedToContact'),
+      keyName: 'allowedToContact',
+    },
+    {
+      label: t('people:legalGuardian'),
+      keyName: 'legalGuardian',
+    },
+    {
+      label: t('people:pickupPermission'),
+      keyName: 'pickupRights',
+    },
+    {
+      label: t('people:allowAccessToStudentData'),
+      keyName: 'allowAccessToStudentData',
+    },
+    {
+      label: t('people:includeInSms'),
+      keyName: 'includeInSms',
+    },
+    {
+      label: t('people:includeInTmail'),
+      keyName: 'includeInTmail',
+    },
+  ];
+
+  const updateContactSettings = useCallback(
+    (index: number, checked: boolean) => {
+      CUSTOM_SETTINGS.map(({ keyName }) => keyName).forEach((keyName) => {
+        setValue(`studentRelationships.${index}.${keyName}`, checked);
+      });
+    },
+    [setValue, CUSTOM_SETTINGS]
+  );
+
+  const updateEnableAll = useCallback(
+    (index: number) => {
+      const state = getValues(`studentRelationships.${index}`);
+
+      const enabled = CUSTOM_SETTINGS.map(({ keyName }) => keyName).every(
+        (keyName) => !!state[keyName]
+      );
+
+      setValue(`studentRelationships.${index}.enableAll`, enabled);
+    },
+    [setValue, CUSTOM_SETTINGS]
+  );
 
   return (
     <Stack direction="column" gap={2.5}>
       <Typography
         variant="body1"
-        component="h3"
+        component="h2"
         color="text.secondary"
         fontWeight={600}
       >
-        {t('people:studentRelationships')}
+        {t('people:studentRelationshipsRequired')}
       </Typography>
-
-      <Table
-        size="small"
-        sx={{
-          '& td:first-of-type': {
-            width: '35%',
-            paddingLeft: 0,
-          },
-          '& td:last-of-type': {
-            width: spacing(8),
-            maxWidth: spacing(8),
-          },
-        }}
-      >
-        <TableBody>
-          {fields.map((field, index) => (
-            <Fragment key={field.id}>
-              <TableRow>
-                <TableCell>
-                  <RHFAutocomplete<
-                    StudentRelationshipsFormState,
-                    StudentSelectOption,
-                    true
-                  >
-                    fullWidth
-                    freeSolo
-                    label={t('people:studentName')}
-                    options={availableStudents}
-                    optionIdKey="partyId"
-                    getOptionLabel={(option) =>
-                      typeof option === 'string' ? option : displayName(option)
-                    }
-                    renderAvatarAdornment={(value, renderAdornment) =>
-                      renderAdornment({
-                        name: displayName(value),
-                        src: value.avatarUrl,
-                      })
-                    }
-                    renderAvatarOption={(option, renderOption) =>
-                      renderOption({
-                        name: displayName(option),
-                        src: option.avatarUrl,
-                      })
-                    }
-                    controlProps={{
-                      name: `studentRelationships.${index}.student`,
-                      control,
-                    }}
-                  />
-                </TableCell>
-                <TableCell>
-                  <RHFSelect<StudentRelationshipsFormState, StudentContactType>
-                    fullWidth
-                    label={t('people:relationToStudent')}
-                    options={relationshipTypeOptions}
-                    getOptionLabel={(option) =>
-                      t(`common:relationshipType.${option}`)
-                    }
-                    controlProps={{
-                      name: `studentRelationships.${index}.relationshipType`,
-                      control,
-                    }}
-                  />
-                </TableCell>
-                <TableCell>
-                  <RHFSelect
-                    label={t('people:priority')}
-                    sx={{ width: spacing(25) }}
-                    options={priorityOptions}
-                    getOptionLabel={(option) => String(option)}
-                    controlProps={{
-                      name: `studentRelationships.${index}.priority`,
-                      control,
-                    }}
-                  />
-                </TableCell>
-                <TableCell>
-                  {index > 0 && (
-                    <IconButton
-                      color="primary"
-                      aria-label={t('common:delete')}
-                      onClick={() => remove(index)}
-                    >
-                      <TrashIcon />
-                    </IconButton>
-                  )}
-                </TableCell>
-              </TableRow>
-              <TableRow sx={{ verticalAlign: 'top' }}>
-                <TableCell sx={{ pb: 3 }}>
-                  <RHFSwitch
-                    label={t('people:allowedToContact')}
-                    switchProps={{ color: 'primary' }}
-                    controlProps={{
-                      name: `studentRelationships.${index}.allowedToContact`,
-                      control,
-                    }}
-                  />
-                  <RHFSwitch
-                    label={t('people:legalGuardian')}
-                    switchProps={{ color: 'primary' }}
-                    controlProps={{
-                      name: `studentRelationships.${index}.legalGuardian`,
-                      control,
-                    }}
-                  />
-                </TableCell>
-                <TableCell>
-                  <RHFSwitch
-                    label={t('people:pickupPermission')}
-                    switchProps={{ color: 'primary' }}
-                    controlProps={{
-                      name: `studentRelationships.${index}.pickupRights`,
-                      control,
-                    }}
-                  />
-                  <RHFSwitch
-                    label={t('people:allowAccessToStudentData')}
-                    switchProps={{ color: 'primary' }}
-                    controlProps={{
-                      name: `studentRelationships.${index}.allowAccessToStudentData`,
-                      control,
-                    }}
-                  />
-                </TableCell>
-                <TableCell>
-                  <RHFSwitch
-                    label={t('people:includeInSms')}
-                    switchProps={{ color: 'primary' }}
-                    controlProps={{
-                      name: `studentRelationships.${index}.includeInSms`,
-                      control,
-                    }}
-                  />
-                  <RHFSwitch
-                    label={t('people:includeInTmail')}
-                    switchProps={{ color: 'primary' }}
-                    controlProps={{
-                      name: `studentRelationships.${index}.includeInTmail`,
-                      control,
-                    }}
-                  />
-                </TableCell>
-              </TableRow>
-            </Fragment>
-          ))}
-        </TableBody>
-      </Table>
+      {fields.map((field, index) => (
+        <Card key={field.id} variant="outlined">
+          <CardHeader
+            component="h3"
+            title={`${t('common:student')} ${index + 1}`}
+            sx={{
+              m: 0,
+            }}
+            action={
+              index === 0 ? null : (
+                <IconButton
+                  color="primary"
+                  aria-label={t('common:delete')}
+                  onClick={() => remove(index)}
+                >
+                  <TrashIcon />
+                </IconButton>
+              )
+            }
+          />
+          <Stack direction="column" gap={2.5} p={3}>
+            <RHFAutocomplete<
+              StudentRelationshipsFormState,
+              StudentSelectOption,
+              true
+            >
+              fullWidth
+              freeSolo
+              label={t('common:student')}
+              options={availableStudents}
+              optionIdKey="partyId"
+              getOptionLabel={(option) =>
+                typeof option === 'string' ? option : displayName(option)
+              }
+              renderAvatarAdornment={(value, renderAdornment) =>
+                renderAdornment({
+                  name: displayName(value),
+                  src: value.avatarUrl,
+                })
+              }
+              renderAvatarOption={(option, renderOption) =>
+                renderOption({
+                  name: displayName(option),
+                  src: option.avatarUrl,
+                })
+              }
+              controlProps={{
+                name: `studentRelationships.${index}.student`,
+                control,
+              }}
+            />
+            <Stack direction="row" gap={2}>
+              <RHFSelect<StudentRelationshipsFormState, StudentContactType>
+                fullWidth
+                label={t('people:relationshipToStudent')}
+                options={relationshipTypeOptions}
+                getOptionLabel={(option) =>
+                  t(`common:relationshipType.${option}`)
+                }
+                controlProps={{
+                  name: `studentRelationships.${index}.relationshipType`,
+                  control,
+                }}
+              />
+              <RHFSelect
+                label={t('people:priority')}
+                fullWidth
+                options={priorityOptions}
+                getOptionLabel={(option) => String(option)}
+                controlProps={{
+                  name: `studentRelationships.${index}.priority`,
+                  control,
+                }}
+              />
+            </Stack>
+            <Stack gap={1.5}>
+              <CardHeader
+                component="h3"
+                title={t('people:contactSettings')}
+                sx={{
+                  p: 0,
+                  m: 0,
+                }}
+              />
+              <Typography
+                variant="body2"
+                component="p"
+                color="text.secondary"
+                fontWeight={600}
+              >
+                {t('people:contactSettingsDescription')}
+              </Typography>
+            </Stack>
+            <Accordion
+              defaultExpanded
+              sx={{
+                border: '1px solid',
+                width: '50%',
+                borderColor: 'divider',
+                borderRadius: spacing(1),
+                '&.MuiAccordion-root:before': {
+                  content: 'none',
+                },
+                '&.Mui-expanded': {
+                  m: 0,
+                  boxShadow: 'none',
+                },
+              }}
+            >
+              <AccordionSummary
+                aria-controls={`contactSettings.${index}`}
+                id={`contactSettings.${index}`}
+                expandIcon={<ChevronDownIcon />}
+                sx={{
+                  paddingRight: spacing(3),
+                }}
+              >
+                <RHFCheckbox
+                  label={t('common:enableAll')}
+                  controlLabelProps={{
+                    sx: {
+                      width: '100%',
+                      ml: 0,
+                      '& .MuiFormControlLabel-label': {
+                        fontWeight: 700,
+                        textTransform: 'uppercase',
+                        fontSize: '0.75rem',
+                        color: 'text.secondary',
+                      },
+                    },
+                    onClick: (e) => e.stopPropagation(),
+                  }}
+                  checkboxProps={{
+                    color: 'primary',
+                    onChange: (_event, checked) =>
+                      updateContactSettings(index, checked),
+                  }}
+                  controlProps={{
+                    name: `studentRelationships.${index}.enableAll`,
+                    control,
+                  }}
+                />
+              </AccordionSummary>
+              <AccordionDetails
+                sx={{
+                  backgroundColor: 'slate.50',
+                }}
+              >
+                <Stack>
+                  {CUSTOM_SETTINGS.map(({ label, keyName }) => (
+                    <RHFSwitch
+                      key={keyName}
+                      label={label}
+                      switchProps={{
+                        color: 'primary',
+                        onChange: () => updateEnableAll(index),
+                      }}
+                      controlLabelProps={{
+                        labelPlacement: 'start',
+                        sx: {
+                          justifyContent: 'space-between',
+                        },
+                      }}
+                      controlProps={{
+                        name: `studentRelationships.${index}.${keyName}`,
+                        control,
+                      }}
+                    />
+                  ))}
+                </Stack>
+              </AccordionDetails>
+            </Accordion>
+          </Stack>
+        </Card>
+      ))}
 
       <Stack width="fit-content">
         <Button
@@ -242,7 +333,7 @@ export const StudentRelationships = <
           onClick={() => append({} as StudentRelationship)}
           startIcon={<AddIcon sx={{ width: 24, height: 24 }} />}
         >
-          {t('people:addStudent')}
+          {t('people:addStudentRelationship')}
         </Button>
       </Stack>
     </Stack>

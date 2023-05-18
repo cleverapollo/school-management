@@ -39,7 +39,7 @@ export const PersonalInformation = <
         color="text.secondary"
         fontWeight={600}
       >
-        {t('people:personalInformation')}
+        {t('common:details')}
       </Typography>
       <Stack direction="row" gap={2}>
         <RHFTextField

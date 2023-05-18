@@ -1,4 +1,4 @@
-import { Card, Stack, CardHeader } from '@mui/material';
+import { Card, Stack, CardHeader, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { useFormValidator } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
@@ -19,47 +19,37 @@ type ContactFormState = PersonalInformationFormState &
   PrimaryAddressFormState &
   StudentRelationshipsFormState;
 
-type ContactFormProp = {
-  title: string;
-  ctaText: string;
-  contactFormData?: Partial<ContactFormState>;
-};
-
-export function ContactForm({
-  title,
-  ctaText,
-  contactFormData,
-}: ContactFormProp) {
-  const { t } = useTranslation(['common']);
+export function ContactForm() {
+  const { t } = useTranslation(['common', 'people']);
 
   const navigate = useNavigate();
 
   const { mutate: createContactMutation, isLoading } = useCreateContact();
 
   const { resolver, rules } = useFormValidator<ContactFormState>();
-  const { control, handleSubmit } = useForm<ContactFormState>({
-    defaultValues: {
-      studentRelationships: [{}],
-      ...contactFormData,
-    },
-    resolver: resolver({
-      firstName: rules.required(),
-      surname: rules.required(),
-      email: rules.isEmail(),
-      mobileNumber: rules.validate<ContactFormState['mobileNumber']>(
-        (mobileNumber, throwError) => {
-          if (mobileNumber?.number && !mobileNumber.numberMatchWithMask) {
-            throwError(t('common:errorMessages.invalidMobileNumber'));
-          }
-        }
-      ),
-      studentRelationships: {
-        priority: rules.required(),
-        relationshipType: rules.required(),
-        student: rules.required(),
+  const { control, handleSubmit, setValue, getValues } =
+    useForm<ContactFormState>({
+      defaultValues: {
+        studentRelationships: [{}],
       },
-    }),
-  });
+      resolver: resolver({
+        firstName: rules.required(),
+        surname: rules.required(),
+        email: rules.isEmail(),
+        mobileNumber: rules.validate<ContactFormState['mobileNumber']>(
+          (mobileNumber, throwError) => {
+            if (mobileNumber?.number && !mobileNumber.numberMatchWithMask) {
+              throwError(t('common:errorMessages.invalidMobileNumber'));
+            }
+          }
+        ),
+        studentRelationships: {
+          priority: rules.required(),
+          relationshipType: rules.required(),
+          student: rules.required(),
+        },
+      }),
+    });
 
   const onSubmit = ({
     firstName,
@@ -132,35 +122,60 @@ export function ContactForm({
     );
   };
 
+  const cardStyle = {
+    p: 3,
+    pt: 2.25,
+    pb: 1.25,
+    m: 0,
+    borderBottom: '1px solid',
+    borderColor: 'divider',
+  };
+
   return (
-    <Card variant="outlined" component="form" onSubmit={handleSubmit(onSubmit)}>
-      <CardHeader
-        component="h2"
-        title={title}
-        sx={{
-          p: 3,
-          pt: 2.25,
-          pb: 1.25,
-          m: 0,
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-        }}
-      />
-      <Stack direction="column" gap={3} p={3}>
-        <PersonalInformation control={control} />
-        <PrimaryAddress control={control} />
-        <StudentRelationships control={control} />
-        <Stack alignItems="flex-end">
-          <LoadingButton
-            variant="contained"
-            size="large"
-            type="submit"
-            loading={isLoading}
-          >
-            {ctaText}
-          </LoadingButton>
+    <Stack component="form" onSubmit={handleSubmit(onSubmit)} gap={3}>
+      <Card variant="outlined">
+        <CardHeader
+          component="h2"
+          title={t('people:personalInformation')}
+          sx={cardStyle}
+        />
+        <Stack direction="column" gap={3} p={3}>
+          <PersonalInformation control={control} />
+          <PrimaryAddress control={control} />
         </Stack>
+      </Card>
+      <Card variant="outlined">
+        <CardHeader
+          component="h2"
+          title={t('people:studentRelationships')}
+          sx={cardStyle}
+        />
+        <Stack direction="column" p={3}>
+          <StudentRelationships
+            setValue={setValue}
+            getValues={getValues}
+            control={control}
+          />
+        </Stack>
+      </Card>
+      <Stack direction="row" gap={2} justifyContent="flex-end">
+        <Button
+          variant="soft"
+          size="large"
+          color="primary"
+          onClick={() => navigate('/people/contacts')}
+        >
+          {t('common:actions.cancel')}
+        </Button>
+        <LoadingButton
+          variant="contained"
+          size="large"
+          type="submit"
+          loading={isLoading}
+        >
+          {t('people:createContact')}
+        </LoadingButton>
       </Stack>
-    </Card>
+    </Stack>
   );
 }

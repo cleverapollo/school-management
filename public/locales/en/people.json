@@ -125,15 +125,17 @@
     "contacts": "Contacts",
     "createContact": "Create contact"
   },
-  "addStudent": "Add student",
+  "addStudentRelationship": "Add another student relationship",
   "primaryAddress": "Primary address",
-  "personalInformation": "Personal information",
+  "personalInformation": "New Contact Personal Information",
   "studentRelationships": "Student Relationships",
-  "studentName": "Student name",
-  "relationToStudent": "Relation to student",
+  "relationshipToStudent": "Relationship to student",
   "legalGuardian": "Legal guardian",
   "pickupPermission": "Pick-up permission",
   "allowAccessToStudentData": "Allow access to student data",
   "includeInSms": "Include in SMS",
-  "includeInTmail": "Include in t-mail"
+  "includeInTmail": "Include in t-mail",
+  "studentRelationshipsRequired": "You must connect New Contact to at least one Student",
+  "contactSettings": "Contact Settings",
+  "contactSettingsDescription": "Ways in which new contact can receive information on, or interact with this student."
 }

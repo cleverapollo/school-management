@@ -37,7 +37,17 @@ export const RHFSwitch = <TField extends FieldValues>({
     <FormControlLabel
       {...controlLabelProps}
       label={label}
-      control={<Switch {...switchProps} {...field} checked={!!field.value} />}
+      control={
+        <Switch
+          {...switchProps}
+          {...field}
+          checked={!!field.value}
+          onChange={(...args) => {
+            field.onChange(...args);
+            switchProps?.onChange?.(...args);
+          }}
+        />
+      }
     />
   );
 };

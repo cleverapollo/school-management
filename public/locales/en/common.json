@@ -87,7 +87,7 @@
   "account": "account",
   "product": "product",
   "invoice": "invoice",
-  "details": "details",
+  "details": "Details",
   "checkout": "checkout",
   "calendar": "calendar",
   "analytics": "analytics",
@@ -117,7 +117,7 @@
   "attendance": "Attendance",
   "assessment": "assessment",
   "wellbeing": "wellbeing",
-  "student": "student",
+  "student": "Student",
   "subject options": "subject options",
   "people": "people",
   "substitution": "substitution",
@@ -234,5 +234,6 @@
   "createdBy": "Created by",
   "dateOfCreation": "Date of creation",
   "calendars": "Calendars",
-  "mobileNumber": "Mobile number"
+  "mobileNumber": "Mobile number",
+  "enableAll": "Enable all"
 }

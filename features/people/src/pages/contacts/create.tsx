@@ -21,10 +21,7 @@ export default function CreateContactPage() {
           ],
         }}
       />
-      <ContactForm
-        title={t('people:pageHeading.createContact')}
-        ctaText={t('people:createContact')}
-      />
+      <ContactForm />
     </PageContainer>
   );
 }
