@@ -12,13 +12,14 @@ import {
 } from '@tyro/core';
 import { Box, Fade } from '@mui/material';
 import { useMemo, useState } from 'react';
+import { UseQueryReturnType } from '@tyro/api';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { MobileIcon, PersonHeartIcon, SendMailIcon } from '@tyro/icons';
 import { useContactStudents } from '../../../api';
 import { ConfirmUnlinkModal } from '../../../components/contact/confirm-unlink-modal';
 
-type ReturnTypeFromUseContactStudents = NonNullable<
-  ReturnType<typeof useContactStudents>['data']
+type ReturnTypeFromUseContactStudents = UseQueryReturnType<
+  typeof useContactStudents
 >[number];
 
 const getContactStudentsColumns = (
@@ -70,58 +71,57 @@ const getContactStudentsColumns = (
   {
     field: 'legalGuardian',
     headerName: t('people:legalGuardian'),
-    valueGetter: ({ data }) => (data?.legalGuardian ? 'Yes' : 'No'),
+    valueGetter: ({ data }) =>
+      data?.legalGuardian ? t('common:yes') : t('common:no'),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseContactStudents, any>) => {
-      const isLegalGuardian = data?.legalGuardian ?? false;
-      return <TableBooleanValue value={isLegalGuardian} />;
-    },
+    }: ICellRendererParams<ReturnTypeFromUseContactStudents, any>) => (
+      <TableBooleanValue value={Boolean(data?.legalGuardian)} />
+    ),
   },
   {
     field: 'pickupRights',
     headerName: t('people:pickupPermission'),
-    valueGetter: ({ data }) => (data?.pickupRights ? 'Yes' : 'No'),
+    valueGetter: ({ data }) =>
+      data?.pickupRights ? t('common:yes') : t('common:no'),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseContactStudents, any>) => {
-      const isPickupRights = data?.pickupRights ?? false;
-      return <TableBooleanValue value={isPickupRights} />;
-    },
+    }: ICellRendererParams<ReturnTypeFromUseContactStudents, any>) => (
+      <TableBooleanValue value={Boolean(data?.pickupRights)} />
+    ),
   },
   {
     field: 'allowAccessToStudentData',
     headerName: t('people:allowAccessToStudentData'),
-    valueGetter: ({ data }) => (data?.allowAccessToStudentData ? 'Yes' : 'No'),
+    valueGetter: ({ data }) =>
+      data?.allowAccessToStudentData ? t('common:yes') : t('common:no'),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseContactStudents, any>) => {
-      const isAllowAccessToStudentData =
-        data?.allowAccessToStudentData ?? false;
-      return <TableBooleanValue value={isAllowAccessToStudentData} />;
-    },
+    }: ICellRendererParams<ReturnTypeFromUseContactStudents, any>) => (
+      <TableBooleanValue value={Boolean(data?.allowAccessToStudentData)} />
+    ),
   },
   {
     field: 'includeInSms',
     headerName: t('people:includeInSms'),
-    valueGetter: ({ data }) => (data?.includeInSms ? 'Yes' : 'No'),
+    valueGetter: ({ data }) =>
+      data?.includeInSms ? t('common:yes') : t('common:no'),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseContactStudents, any>) => {
-      const isIncludeInSms = data?.includeInSms ?? false;
-      return <TableBooleanValue value={isIncludeInSms} />;
-    },
+    }: ICellRendererParams<ReturnTypeFromUseContactStudents, any>) => (
+      <TableBooleanValue value={Boolean(data?.includeInSms)} />
+    ),
   },
   {
     field: 'includeInTmail',
     headerName: t('people:includeInTmail'),
-    valueGetter: ({ data }) => (data?.includeInTmail ? 'Yes' : 'No'),
+    valueGetter: ({ data }) =>
+      data?.includeInTmail ? t('common:yes') : t('common:no'),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseContactStudents, any>) => {
-      const isIncludeInTmail = data?.includeInTmail ?? false;
-      return <TableBooleanValue value={isIncludeInTmail} />;
-    },
+    }: ICellRendererParams<ReturnTypeFromUseContactStudents, any>) => (
+      <TableBooleanValue value={Boolean(data?.includeInTmail)} />
+    ),
   },
 ];
 

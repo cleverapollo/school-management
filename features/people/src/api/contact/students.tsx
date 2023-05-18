@@ -39,7 +39,7 @@ const contactsStudentsById = graphql(/* GraphQL */ `
 export const contactStudentsKeys = {
   all: ['people', 'contact', 'students'] as const,
   details: (contactId: number | undefined) =>
-    [...contactStudentsKeys.all, 'about', contactId] as const,
+    [...contactStudentsKeys.all, contactId] as const,
 };
 
 const contactStudentsQuery = (contactId: number | undefined) => ({
@@ -58,10 +58,10 @@ export function useContactStudents(contactId: number | undefined) {
   return useQuery({
     ...contactStudentsQuery(contactId),
     select: ({ core_studentContacts }) => {
-      const [studentContact] = core_studentContacts || [];
-      if (!studentContact?.relationships) return null;
+      if (!Array.isArray(core_studentContacts)) return [];
+      const [studentContact] = core_studentContacts;
 
-      return studentContact?.relationships;
+      return studentContact?.relationships ?? [];
     },
   });
 }
