@@ -9,6 +9,7 @@
     "@mui/material": "^5.11.4",
     "@mui/system": "^5.10.14",
     "@tanstack/react-query": "^4.16.1",
+    "@tanstack/react-virtual": "beta",
     "@tyro/api": "*",
     "@tyro/core": "*",
     "@tyro/i18n": "*",

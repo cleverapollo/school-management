@@ -180,6 +180,8 @@ export default function StudentsListPage() {
                 newSelectedStudents.map((student) => ({
                   id: student.partyId,
                   name: displayName(student.person),
+                  type: 'individual',
+                  avatarUrl: student.person?.avatarUrl,
                 }))
               )
             }

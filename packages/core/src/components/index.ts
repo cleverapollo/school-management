@@ -16,6 +16,7 @@ export * from './page-container';
 export * from './page-heading';
 export * from './router-link';
 export * from './scrollbar';
+export * from './search-input';
 export * from './select';
 export * from './tab-page-container';
 export * from './table';

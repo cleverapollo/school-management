@@ -165,6 +165,7 @@
   "schools": "Schools",
   "saving": "Saving",
   "saved": "Saved",
+  "selectedWithNumber": "Selected ({{count}})",
   "yes": "Yes",
   "no": "No",
   "comment": "Comment",

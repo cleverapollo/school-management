@@ -81,16 +81,12 @@ const getContactColumns = (
 export default function ContactsListPage() {
   const { t } = useTranslation(['common', 'people']);
   const { displayName } = usePreferredNameLayout();
-  const { data: contacts, isLoading } = useContacts();
+  const { data: contacts } = useContacts();
 
   const contactColumns = useMemo(
     () => getContactColumns(t, displayName),
     [t, displayName]
   );
-
-  if (isLoading) {
-    return null;
-  }
 
   return (
     <Page title={t('people:contacts')}>
@@ -101,7 +97,6 @@ export default function ContactsListPage() {
         <Table
           rowData={contacts ?? []}
           columnDefs={contactColumns}
-          rowSelection="multiple"
           getRowId={({ data }) => String(data?.partyId)}
         />
       </Container>

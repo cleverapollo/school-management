@@ -1,5 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
-import { gqlClient, graphql, SendSmsInput } from '@tyro/api';
+import { gqlClient, graphql, queryClient, SendSmsInput } from '@tyro/api';
+import { useToast } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
+import { smsKeys } from './keys';
 
 const sendSms = graphql(/* GraphQL */ `
   mutation sendSms($input: SendSmsInput) {
@@ -8,11 +11,17 @@ const sendSms = graphql(/* GraphQL */ `
 `);
 
 export function useSendSms() {
+  const { toast } = useToast();
+  const { t } = useTranslation(['sms']);
+
   return useMutation({
     mutationFn: (input: SendSmsInput) => gqlClient.request(sendSms, { input }),
     onSuccess: () => {
-      // TODO: Invalidate sms list query when built for other page
-      // queryClient.invalidateQueries(assessmentsKeys.all);
+      queryClient.invalidateQueries(smsKeys.all);
+      toast(t('sms:smsSentSuccessfully'));
+    },
+    onError: () => {
+      toast(t('sms:smsFailedToSend'));
     },
   });
 }

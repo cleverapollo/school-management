@@ -114,9 +114,11 @@ export default function CustomGroups() {
             }
             onRowSelection={(groups) =>
               setSelectedGroups(
-                groups.map(({ partyId, name }) => ({
+                groups.map(({ partyId, name, avatarUrl }) => ({
                   id: partyId,
                   name,
+                  type: 'group',
+                  avatarUrl,
                 }))
               )
             }

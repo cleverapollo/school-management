@@ -8,12 +8,12 @@ import { Box, BoxProps, Card, CardProps, Stack } from '@mui/material';
 import './styles.css';
 import { ColDef, FirstDataRenderedEvent } from 'ag-grid-community';
 import { useEnsuredForwardedRef } from 'react-use';
-import { TableSearchInput } from './search-input';
 import {
   useEditableState,
   UseEditableStateProps,
 } from '../hooks/use-editable-state';
 import { BulkEditSaveBar } from './bulk-edit-save-bar';
+import { SearchInput } from '../../search-input';
 
 export type {
   GridOptions,
@@ -103,7 +103,7 @@ function TableInner<T extends object>(
     <>
       <Card sx={sx}>
         <Stack direction="row" justifyContent="space-between" spacing={2} p={2}>
-          <TableSearchInput
+          <SearchInput
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />

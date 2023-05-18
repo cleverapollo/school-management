@@ -173,6 +173,8 @@ export default function StaffListPage() {
                 newSelectedStaff.map(({ partyId, person }) => ({
                   id: partyId,
                   name: displayName(person),
+                  type: 'individual',
+                  avatarUrl: person?.avatarUrl,
                 }))
               )
             }

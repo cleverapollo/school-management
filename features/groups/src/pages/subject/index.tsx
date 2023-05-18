@@ -52,7 +52,7 @@ const getSubjectGroupsColumns = (
     }: ICellRendererParams<ReturnTypeFromUseSubjectGroups>) => {
       if (!data) return null;
 
-      const subject = data?.subjects?.[0] ?? null;
+      const subject = data?.subjects?.[0];
       const bgColorStyle = subject?.colour
         ? { bgcolor: `${subject.colour}.500` }
         : {};
@@ -201,10 +201,16 @@ export default function SubjectGroups() {
             }
             onRowSelection={(groups) =>
               setSelectedGroups(
-                groups.map(({ partyId, name }) => ({
-                  id: partyId,
-                  name,
-                }))
+                groups.map(({ partyId, name, avatarUrl, subjects }) => {
+                  const subject = subjects?.[0];
+                  return {
+                    id: partyId,
+                    name,
+                    type: 'group',
+                    avatarUrl,
+                    avatarColor: subject?.colour,
+                  };
+                })
               )
             }
           />

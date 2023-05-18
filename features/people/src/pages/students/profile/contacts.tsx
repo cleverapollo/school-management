@@ -139,10 +139,15 @@ export default function StudentProfileContactsPage() {
     () =>
       selectedContacts
         .filter((contact) => contact?.relationships?.[0]?.includeInSms)
-        .map((contact) => ({
-          id: contact?.partyId ?? 0,
-          name: displayName(contact?.person),
-        })) ?? [],
+        .map(
+          (contact) =>
+            ({
+              id: contact?.partyId ?? 0,
+              name: displayName(contact?.person),
+              type: 'individual',
+              avatarUrl: contact?.person?.avatarUrl,
+            } as const)
+        ) ?? [],
     [selectedContacts]
   );
 

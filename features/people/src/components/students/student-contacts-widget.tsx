@@ -192,6 +192,8 @@ export function StudentContactsWidget({
                           {
                             id: contact?.partyId ?? 0,
                             name: displayName(contact?.person),
+                            type: 'individual',
+                            avatarUrl: contact?.person?.avatarUrl,
                           },
                         ])
                       }
