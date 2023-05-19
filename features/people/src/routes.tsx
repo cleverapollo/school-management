@@ -20,6 +20,7 @@ import {
   getStudentsSubjectGroups,
   getStaffStatus,
   getContactPersonal,
+  getContactStudents,
 } from './api';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
@@ -265,6 +266,10 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'students',
+                loader: ({ params }) => {
+                  const contactId = getNumber(params.id);
+                  return getContactStudents(contactId ?? 0);
+                },
                 element: <ContactProfileStudentsPage />,
               },
               {
