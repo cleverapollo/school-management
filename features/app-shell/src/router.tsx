@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-throw-literal */
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
 import {
   HasAccessFunction,
   LazyLoader,
@@ -39,6 +36,7 @@ import { getRoutes as getReportingRoutes } from '@tyro/reporting';
 import { getRoutes as getSettingsRoutes } from '@tyro/settings';
 import { getRoutes as getSubstitutionRoutes } from '@tyro/substitution';
 import { getRoutes as getAdminRoutes } from '@tyro/tyro-admin';
+import { getRoutes as getSmsRoutes } from '@tyro/sms';
 
 import { Box, CircularProgress } from '@mui/material';
 import { ErrorElement } from './components/error-element';
@@ -125,8 +123,9 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getAssessmentRoutes(t),
   ...getPeopleRoutes(t),
   ...getReportingRoutes(t),
-  ...getSettingsRoutes(t),
+  ...getSmsRoutes(t),
   ...getSubstitutionRoutes(t),
+  ...getSettingsRoutes(t),
   ...getAdminRoutes(t),
 ];
 

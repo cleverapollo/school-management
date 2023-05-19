@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/en-ie';
 import 'dayjs/locale/ga';
 
+export * from './hooks';
 export { useTranslation } from 'react-i18next';
 export type { TFunction } from 'i18next';
 

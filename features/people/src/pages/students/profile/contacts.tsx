@@ -10,6 +10,7 @@ import {
   TableBooleanValue,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
+  useDisclosure,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -20,6 +21,8 @@ import {
   PersonCrossIcon,
 } from '@tyro/icons';
 import { Box, Fade } from '@mui/material';
+import { SendSmsModal } from '@tyro/sms';
+import { SmsRecipientType } from '@tyro/api';
 import { useStudentsContacts } from '../../../api/student/overview';
 import { joinAddress } from '../../../utils/join-address';
 
@@ -80,32 +83,38 @@ const getStudentContactColumns = (
     },
   },
   {
-    field: 'relationships[0].primaryContact',
-    headerName: translate('people:primaryContact'),
-    valueGetter: ({ data }) =>
-      data?.relationships?.[0]?.primaryContact ? 'Yes' : 'No',
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => {
-      const isPrimaryContact =
-        data?.relationships?.[0]?.primaryContact ?? false;
-
-      return <TableBooleanValue value={isPrimaryContact} />;
-    },
+    field: 'relationships[0].priority',
+    headerName: translate('people:priority'),
   },
   {
     field: 'relationships[0].allowedToContact',
     headerName: translate('people:allowedToContact'),
     valueGetter: ({ data }) =>
-      data?.relationships?.[0]?.allowedToContact ? 'Yes' : 'No',
+      data?.relationships?.[0]?.allowedToContact
+        ? translate('common:yes')
+        : translate('common:no'),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => {
-      const isAllowedToContact =
-        data?.relationships?.[0]?.allowedToContact ?? false;
-
-      return <TableBooleanValue value={isAllowedToContact} />;
-    },
+    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
+      <TableBooleanValue
+        value={Boolean(data?.relationships?.[0]?.allowedToContact)}
+      />
+    ),
+  },
+  {
+    field: 'relationships[0].includeInSms',
+    headerName: translate('people:includedInSms'),
+    valueGetter: ({ data }) =>
+      data?.relationships?.[0]?.includeInSms
+        ? translate('common:yes')
+        : translate('common:no'),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
+      <TableBooleanValue
+        value={Boolean(data?.relationships?.[0]?.includeInSms)}
+      />
+    ),
   },
 ];
 
@@ -116,12 +125,33 @@ export default function StudentProfileContactsPage() {
     ReturnTypeFromUseContacts[]
   >([]);
   const { data: contacts } = useStudentsContacts(studentId);
-  const { t } = useTranslation(['common', 'people', 'mail']);
+  const { t } = useTranslation(['common', 'people', 'mail', 'sms']);
   const { displayName } = usePreferredNameLayout();
+  const {
+    isOpen: isSendSmsOpen,
+    onOpen: onOpenSendSms,
+    onClose: onCloseSendSms,
+  } = useDisclosure();
 
   const studentContactColumns = useMemo(
     () => getStudentContactColumns(t, displayName),
     [t, displayName]
+  );
+
+  const recipientsForSms = useMemo(
+    () =>
+      selectedContacts
+        .filter((contact) => contact?.relationships?.[0]?.includeInSms)
+        .map(
+          (contact) =>
+            ({
+              id: contact?.partyId ?? 0,
+              name: displayName(contact?.person),
+              type: 'individual',
+              avatarUrl: contact?.person?.avatarUrl,
+            } as const)
+        ) ?? [],
+    [selectedContacts]
   );
 
   const actionMenuItems = useMemo(() => {
@@ -135,13 +165,17 @@ export default function StudentProfileContactsPage() {
         {
           label: t('people:sendSms'),
           icon: <MobileIcon />,
-          onClick: () => {},
+          onClick: onOpenSendSms,
+          disabled: recipientsForSms.length === 0,
+          disabledTooltip: t('sms:recipientNotIncludedInSms', {
+            count: selectedContacts.length,
+          }),
         },
-        {
-          label: t('mail:sendMail'),
-          icon: <SendMailIcon />,
-          onClick: () => {},
-        },
+        // {
+        //   label: t('mail:sendMail'),
+        //   icon: <SendMailIcon />,
+        //   onClick: () => {},
+        // },
       ],
       [
         {
@@ -166,38 +200,39 @@ export default function StudentProfileContactsPage() {
             },
       ],
     ];
-  }, [selectedContacts]);
+  }, [selectedContacts, recipientsForSms]);
 
   return (
-    <Table
-      rowData={contacts ?? []}
-      columnDefs={studentContactColumns}
-      tableContainerSx={{ height: 300 }}
-      rowSelection="multiple"
-      rowHeight={56}
-      getRowId={({ data }) => String(data?.partyId)}
-      onRowSelection={(rows) => {
-        setSelectedContacts(rows);
-      }}
-      rightAdornment={
-        <Fade in={selectedContacts.length > 0}>
-          <Box>
-            <ActionMenu
-              menuProps={{
-                anchorOrigin: {
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                },
-                transformOrigin: {
-                  vertical: 'top',
-                  horizontal: 'right',
-                },
-              }}
-              menuItems={actionMenuItems}
-            />
-          </Box>
-        </Fade>
-      }
-    />
+    <>
+      <Table
+        rowData={contacts ?? []}
+        columnDefs={studentContactColumns}
+        tableContainerSx={{ height: 300 }}
+        rowSelection="multiple"
+        getRowId={({ data }) => String(data?.partyId)}
+        onRowSelection={(rows) => {
+          setSelectedContacts(rows);
+        }}
+        rightAdornment={
+          <Fade in={selectedContacts.length > 0}>
+            <Box>
+              <ActionMenu menuItems={actionMenuItems} />
+            </Box>
+          </Fade>
+        }
+      />
+      <SendSmsModal
+        isOpen={isSendSmsOpen}
+        onClose={onCloseSendSms}
+        recipients={recipientsForSms}
+        hideRecipientTypes
+        possibleRecipientTypes={[
+          {
+            label: '',
+            type: SmsRecipientType.Contact,
+          },
+        ]}
+      />
+    </>
   );
 }

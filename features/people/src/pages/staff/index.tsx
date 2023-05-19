@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { Container, Typography } from '@mui/material';
+import { useMemo, useState } from 'react';
+import { Box, Container, Fade, Typography } from '@mui/material';
 import {
   GridOptions,
   ICellRendererParams,
@@ -8,12 +8,16 @@ import {
   ReturnTypeDisplayName,
   TablePersonAvatar,
   usePreferredNameLayout,
+  useDisclosure,
+  ActionMenu,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
-import { UseQueryReturnType } from '@tyro/api';
+import { SmsRecipientType, UseQueryReturnType } from '@tyro/api';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
+import { MobileIcon } from '@tyro/icons';
 import { useStaff } from '../../api/staff';
 
 dayjs.extend(LocalizedFormat);
@@ -123,33 +127,72 @@ const getStaffColumns = (
 
 export default function StaffListPage() {
   const { t } = useTranslation(['common', 'people']);
-  const { data: staff, isLoading } = useStaff({});
+  const { data: staff } = useStaff({});
   const { displayName } = usePreferredNameLayout();
-
+  const [selectedStaff, setSelectedStaff] = useState<RecipientsForSmsModal>([]);
+  const {
+    isOpen: isSendSmsOpen,
+    onOpen: onOpenSendSms,
+    onClose: onCloseSendSms,
+  } = useDisclosure();
   const staffColumns = useMemo(
     () => getStaffColumns(t, displayName),
     [t, displayName]
   );
 
-  if (isLoading) {
-    return null;
-  }
+  const actionMenuItems = [
+    {
+      label: t('people:sendSms'),
+      icon: <MobileIcon />,
+      onClick: onOpenSendSms,
+    },
+  ];
 
   return (
-    <Page title={t('common:staff')}>
-      <Container maxWidth="xl">
-        <Typography variant="h3" component="h1" paragraph>
-          {t('common:staff')}
-        </Typography>
-        <Table
-          rowData={staff ?? []}
-          columnDefs={staffColumns}
-          rowSelection="multiple"
-          rowHeight={56}
-          getRowId={({ data }) => String(data?.partyId)}
-          onBulkSave={async () => {}}
-        />
-      </Container>
-    </Page>
+    <>
+      <Page title={t('common:staff')}>
+        <Container maxWidth="xl">
+          <Typography variant="h3" component="h1" paragraph>
+            {t('common:staff')}
+          </Typography>
+          <Table
+            rowData={staff ?? []}
+            columnDefs={staffColumns}
+            rowSelection="multiple"
+            getRowId={({ data }) => String(data?.partyId)}
+            onBulkSave={async () => {}}
+            rightAdornment={
+              <Fade in={selectedStaff.length > 0} unmountOnExit>
+                <Box>
+                  <ActionMenu menuItems={actionMenuItems} />
+                </Box>
+              </Fade>
+            }
+            onRowSelection={(newSelectedStaff) =>
+              setSelectedStaff(
+                newSelectedStaff.map(({ partyId, person }) => ({
+                  id: partyId,
+                  name: displayName(person),
+                  type: 'individual',
+                  avatarUrl: person?.avatarUrl,
+                }))
+              )
+            }
+          />
+        </Container>
+      </Page>
+      <SendSmsModal
+        isOpen={isSendSmsOpen}
+        onClose={onCloseSendSms}
+        recipients={selectedStaff}
+        hideRecipientTypes
+        possibleRecipientTypes={[
+          {
+            label: '',
+            type: SmsRecipientType.Staff,
+          },
+        ]}
+      />
+    </>
   );
 }

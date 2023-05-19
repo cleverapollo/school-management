@@ -97,7 +97,7 @@ const customGroupsByIdQuery = (id: number | undefined) => ({
     }),
 });
 
-export function getCustomGroupsById(id: number | undefined) {
+export function getCustomGroupById(id: number | undefined) {
   return queryClient.fetchQuery(customGroupsByIdQuery(id));
 }
 
