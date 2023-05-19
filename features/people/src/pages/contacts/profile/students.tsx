@@ -15,7 +15,7 @@ import { useMemo, useState } from 'react';
 import { UseQueryReturnType } from '@tyro/api';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { MobileIcon, PersonHeartIcon, SendMailIcon } from '@tyro/icons';
-import { useContactStudents } from '../../../api';
+import { useContactStudents } from '../../../api/contact/students';
 import { ConfirmUnlinkModal } from '../../../components/contact/confirm-unlink-modal';
 
 type ReturnTypeFromUseContactStudents = UseQueryReturnType<

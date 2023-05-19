@@ -2,7 +2,7 @@ import { useNumber } from '@tyro/core';
 import { useParams } from 'react-router-dom';
 import { Card, CardHeader, Box, Typography } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { useContactPersonal } from '../../../api';
+import { useContactPersonal } from '../../../api/contact/personal';
 
 const getAboutDataWithLabels = (
   data: ReturnType<typeof useContactPersonal>['data'],

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { queryClient } from '@tyro/api';
+import { peopleStaffKeys } from './keys';
 
 const compositeStaffStatus = {
   currentLocation: {
@@ -17,19 +18,12 @@ const compositeStaffStatus = {
 
 export type CompositeStaffStatus = typeof compositeStaffStatus;
 
-export const staffStatusKeys = {
-  all: ['people', 'staff', 'status'] as const,
-  details: (staffId: number | undefined) =>
-    [...staffStatusKeys.all, staffId] as const,
-};
-
 const statusQuery = (staffId: number | undefined) => ({
-  queryKey: staffStatusKeys.details(staffId),
+  queryKey: peopleStaffKeys.status(staffId),
   queryFn: async (): Promise<typeof compositeStaffStatus> =>
     new Promise((resolve) => {
       setTimeout(() => resolve(compositeStaffStatus), Math.random() * 1000);
     }),
-  staleTime: 1000 * 60 * 5,
 });
 
 export function getStaffStatus(staffId: number | undefined) {

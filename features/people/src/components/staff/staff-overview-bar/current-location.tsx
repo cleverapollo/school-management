@@ -1,7 +1,7 @@
 import { Fragment, useMemo } from 'react';
 import { Box } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { useStaffStatus } from '../../../api';
+import { useStaffStatus } from '../../../api/staff/status';
 
 interface CurrentLocationProps {
   staffPartyId: number | undefined;
