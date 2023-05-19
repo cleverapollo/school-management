@@ -26,7 +26,8 @@
     "save": "Save",
     "apply": "Apply",
     "close": "Close",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "viewDetails": "View Details"
   },
   "snackbarMessages": {
     "createSuccess": "Create success!",
@@ -164,6 +165,7 @@
   "schools": "Schools",
   "saving": "Saving",
   "saved": "Saved",
+  "selectedWithNumber": "Selected ({{count}})",
   "yes": "Yes",
   "no": "No",
   "comment": "Comment",
@@ -231,5 +233,6 @@
   },
   "createdBy": "Created by",
   "dateOfCreation": "Date of creation",
-  "calendars": "Calendars"
+  "calendars": "Calendars",
+  "status": "Status"
 }

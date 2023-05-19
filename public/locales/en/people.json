@@ -18,6 +18,7 @@
   "tyroId": "Tyro ID",
   "priority": "Priority",
   "allowedToContact": "Allowed to contact",
+  "includedInSms": "Included in SMS",
   "nextContact": "Next Contact",
   "studentClickableAvatarAria": "{{name}}'s Avatar. Click to view their support plan and priority note.",
   "guardianContactInformation": "Guardian Contact Information",
@@ -42,9 +43,9 @@
     "CONTRACTS_OF_INDEFINITE_DURATION": "Contracts of indefinite duration",
     "REGULAR_PART_TIME": "Regular part time",
     "PART_TIME": "Part time",
-    "PRIVATE": "Private",
     "VOLUNTARY": "Voluntary",
-    "UNKNOWN": "Unknown"
+    "UNKNOWN": "Unknown",
+    "PRIVATE": "Private"
   },
   "personal": {
     "title": "Personal",

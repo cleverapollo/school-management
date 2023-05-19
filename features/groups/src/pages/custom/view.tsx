@@ -113,16 +113,6 @@ export default function ViewCustomGroupPage() {
             <Fade in={showActionMenu} unmountOnExit>
               <Box>
                 <ActionMenu
-                  menuProps={{
-                    anchorOrigin: {
-                      vertical: 'bottom',
-                      horizontal: 'right',
-                    },
-                    transformOrigin: {
-                      vertical: 'top',
-                      horizontal: 'right',
-                    },
-                  }}
                   menuItems={actionMenuItems}
                 />
               </Box>

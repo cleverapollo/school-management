@@ -373,3 +373,7 @@
   border-radius: 6px;
 }
 
+.ag-theme-tyro .ag-right-aligned-cell {
+  justify-content: flex-end;
+}
+
