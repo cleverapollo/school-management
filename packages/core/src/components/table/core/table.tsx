@@ -7,7 +7,7 @@ import { Box, BoxProps, Card, CardProps, Stack } from '@mui/material';
 
 import './styles.css';
 import { ColDef, FirstDataRenderedEvent } from 'ag-grid-community';
-import { useEnsuredForwardedRef } from 'react-use';
+import { useEnsuredForwardedRef, useMeasure } from 'react-use';
 import { TableSearchInput } from './search-input';
 import {
   useEditableState,
@@ -50,6 +50,9 @@ const defaultColDef: ColDef = {
   },
 };
 
+const TOOLBAR_HEIGHT = 72;
+const MIN_TABLE_HEIGHT = 320;
+
 function TableInner<T extends object>(
   {
     onFirstDataRendered,
@@ -70,6 +73,15 @@ function TableInner<T extends object>(
   const tableRef = useEnsuredForwardedRef(
     ref as MutableRefObject<AgGridReact<T>>
   );
+  const [tableContainerRef, { height: tableContainerHeight }] = useMeasure();
+
+  const spaceForTable = tableContainerHeight;
+  const heightBasedOnRows = (props.rowData.length + 1) * rowHeight;
+  const innerContainerHeight = Math.max(
+    Math.min(heightBasedOnRows, spaceForTable),
+    MIN_TABLE_HEIGHT
+  );
+
   const {
     isEditing,
     editingState,
@@ -101,7 +113,16 @@ function TableInner<T extends object>(
 
   return (
     <>
-      <Card sx={sx}>
+      <Card
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          flex: 1,
+          maxHeight:
+            Math.max(MIN_TABLE_HEIGHT, heightBasedOnRows) + TOOLBAR_HEIGHT,
+          ...sx,
+        }}
+      >
         <Stack direction="row" justifyContent="space-between" spacing={2} p={2}>
           <TableSearchInput
             value={searchValue}
@@ -110,46 +131,57 @@ function TableInner<T extends object>(
           {rightAdornment}
         </Stack>
         <Box
+          ref={tableContainerRef}
           className="ag-theme-tyro"
-          sx={{ height: 500, ...tableContainerSx }}
+          sx={{
+            ...tableContainerSx,
+          }}
         >
-          <AgGridReact<(typeof props.rowData)[number]>
-            ref={tableRef}
-            defaultColDef={defaultColDef}
-            quickFilterText={searchValue}
-            undoRedoCellEditing
-            undoRedoCellEditingLimit={20}
-            popupParent={document.body}
-            suppressRowClickSelection
-            enableRangeSelection
-            enableFillHandle
-            fillHandleDirection="y"
-            allowContextMenuWithControlKey
-            onSelectionChanged={onSelectionChanged}
-            rowHeight={rowHeight}
-            rowSelection={rowSelection}
-            autoGroupColumnDef={autoGroupColumnDef || defaultAutoGroupColumnDef}
-            groupSelectsChildren={rowSelection === 'multiple'}
-            groupSelectsFiltered={rowSelection === 'multiple'}
-            stopEditingWhenCellsLoseFocus
-            {...props}
-            onCellValueChanged={onCellValueChanged}
-            onFirstDataRendered={(params: FirstDataRenderedEvent<T>) => {
-              params?.columnApi?.autoSizeAllColumns(false);
-              applyUpdatesToTable('newValue');
-
-              if (onFirstDataRendered) {
-                onFirstDataRendered(params);
-              }
+          <Box
+            sx={{
+              height: innerContainerHeight,
             }}
-            onColumnEverythingChanged={(params) => {
-              applyUpdatesToTable('newValue');
-
-              if (onColumnEverythingChanged) {
-                onColumnEverythingChanged(params);
+          >
+            <AgGridReact<(typeof props.rowData)[number]>
+              ref={tableRef}
+              defaultColDef={defaultColDef}
+              quickFilterText={searchValue}
+              undoRedoCellEditing
+              undoRedoCellEditingLimit={20}
+              popupParent={document.body}
+              suppressRowClickSelection
+              enableRangeSelection
+              enableFillHandle
+              fillHandleDirection="y"
+              allowContextMenuWithControlKey
+              onSelectionChanged={onSelectionChanged}
+              rowHeight={rowHeight}
+              rowSelection={rowSelection}
+              autoGroupColumnDef={
+                autoGroupColumnDef || defaultAutoGroupColumnDef
               }
-            }}
-          />
+              groupSelectsChildren={rowSelection === 'multiple'}
+              groupSelectsFiltered={rowSelection === 'multiple'}
+              stopEditingWhenCellsLoseFocus
+              {...props}
+              onCellValueChanged={onCellValueChanged}
+              onFirstDataRendered={(params: FirstDataRenderedEvent<T>) => {
+                params?.columnApi?.autoSizeAllColumns(false);
+                applyUpdatesToTable('newValue');
+
+                if (onFirstDataRendered) {
+                  onFirstDataRendered(params);
+                }
+              }}
+              onColumnEverythingChanged={(params) => {
+                applyUpdatesToTable('newValue');
+
+                if (onColumnEverythingChanged) {
+                  onColumnEverythingChanged(params);
+                }
+              }}
+            />
+          </Box>
         </Box>
       </Card>
       <BulkEditSaveBar
