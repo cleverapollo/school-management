@@ -20,6 +20,7 @@ jobs:
       - name: 'yarn build'
         run: |
           export AG_GRID_KEY="${{ secrets.AG_GRID_KEY }}"
+          yarn install
           yarn build
       - name: Docker Login
         uses: Azure/docker-login@v1
