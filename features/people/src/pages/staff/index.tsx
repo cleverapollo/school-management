@@ -185,7 +185,7 @@ export default function StaffListPage() {
         isOpen={isSendSmsOpen}
         onClose={onCloseSendSms}
         recipients={selectedStaff}
-        showRecipientTypes={false}
+        hideRecipientTypes
         possibleRecipientTypes={[
           {
             label: '',

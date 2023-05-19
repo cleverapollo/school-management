@@ -29,7 +29,7 @@ interface SendSmsModalProps {
     type: RecipientInput['recipientPartyType'];
     label: string;
   }[];
-  showRecipientTypes?: boolean;
+  hideRecipientTypes?: boolean;
 }
 
 interface SmsFormState {
@@ -43,44 +43,35 @@ export function SendSmsModal({
   onClose,
   recipients,
   possibleRecipientTypes,
-  showRecipientTypes = true,
+  hideRecipientTypes = false,
 }: SendSmsModalProps) {
   const { t } = useTranslation(['common', 'sms']);
 
   const { resolver, rules } = useFormValidator<SmsFormState>();
-  const {
-    reset,
-    control,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<SmsFormState>({
-    resolver: resolver({
-      recipients: rules.required(),
-      recipientTypes: rules.required(),
-      message: rules.required(),
-    }),
-    defaultValues: {
-      recipientTypes:
-        possibleRecipientTypes.length === 1
-          ? possibleRecipientTypes.map((recipientType) => recipientType.type)
-          : [],
-    },
-  });
-  const recipientList = watch('recipients') as
-    | RecipientsForSmsModal
-    | undefined;
+  const { reset, control, handleSubmit, setValue, watch } =
+    useForm<SmsFormState>({
+      resolver: resolver({
+        recipients: rules.required(),
+        recipientTypes: rules.required(),
+        message: rules.required(),
+      }),
+      defaultValues: {
+        recipients: [],
+        recipientTypes:
+          possibleRecipientTypes.length === 1
+            ? possibleRecipientTypes.map((recipientType) => recipientType.type)
+            : [],
+      },
+    });
+  const [recipientList, message] = watch(['recipients', 'message']);
 
   const { mutateAsync: sendSms, isLoading } = useSendSms();
 
   const removeRecipient = (recipientId: number) => {
-    if (recipientList) {
-      setValue(
-        'recipients',
-        recipientList.filter((recipient) => recipient.id !== recipientId)
-      );
-    }
+    setValue(
+      'recipients',
+      recipientList.filter((recipient) => recipient.id !== recipientId)
+    );
   };
 
   const onCancel = () => {
@@ -145,7 +136,7 @@ export function SendSmsModal({
                 }}
               />
 
-              {showRecipientTypes &&
+              {!hideRecipientTypes &&
                 (possibleRecipientTypes.length > 1 ? (
                   <RHFCheckboxGroup<
                     SmsFormState,
@@ -169,7 +160,7 @@ export function SendSmsModal({
           </Box>
           <RecipientList
             recipients={recipientList}
-            initialRecipientAmount={recipients?.length ?? 0}
+            initialRecipientAmount={recipients.length}
             removeRecipient={removeRecipient}
           />
         </Stack>
@@ -186,9 +177,9 @@ export function SendSmsModal({
             <Box sx={{ flex: 1.2, display: 'flex', alignItems: 'center' }}>
               <SmsSummary
                 sx={{ flex: 1, px: 3 }}
-                message={watch('message')}
+                message={message}
                 costPerSms={0.05}
-                totalCost={0.05 * (recipientList?.length ?? 0)}
+                totalCost={0.05 * recipientList.length}
               />
             </Box>
             <Box sx={{ flex: 1, display: 'flex', alignItems: 'center' }}>

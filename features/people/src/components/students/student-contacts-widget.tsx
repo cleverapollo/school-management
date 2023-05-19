@@ -295,7 +295,7 @@ export function StudentContactsWidget({
         isOpen={contactToSendSmsTo.length > 0}
         onClose={() => setContactToSendSmsTo([])}
         recipients={contactToSendSmsTo}
-        showRecipientTypes={false}
+        hideRecipientTypes
         possibleRecipientTypes={[
           {
             label: '',

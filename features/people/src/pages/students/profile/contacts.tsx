@@ -90,28 +90,31 @@ const getStudentContactColumns = (
     field: 'relationships[0].allowedToContact',
     headerName: translate('people:allowedToContact'),
     valueGetter: ({ data }) =>
-      data?.relationships?.[0]?.allowedToContact ? 'Yes' : 'No',
+      data?.relationships?.[0]?.allowedToContact
+        ? translate('common:yes')
+        : translate('common:no'),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => {
-      const isAllowedToContact =
-        data?.relationships?.[0]?.allowedToContact ?? false;
-
-      return <TableBooleanValue value={isAllowedToContact} />;
-    },
+    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
+      <TableBooleanValue
+        value={Boolean(data?.relationships?.[0]?.allowedToContact)}
+      />
+    ),
   },
   {
     field: 'relationships[0].includeInSms',
     headerName: translate('people:includedInSms'),
     valueGetter: ({ data }) =>
-      data?.relationships?.[0]?.includeInSms ? 'Yes' : 'No',
+      data?.relationships?.[0]?.includeInSms
+        ? translate('common:yes')
+        : translate('common:no'),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => {
-      const isIncludedInSms = data?.relationships?.[0]?.includeInSms ?? false;
-
-      return <TableBooleanValue value={isIncludedInSms} />;
-    },
+    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
+      <TableBooleanValue
+        value={Boolean(data?.relationships?.[0]?.includeInSms)}
+      />
+    ),
   },
 ];
 
@@ -222,7 +225,7 @@ export default function StudentProfileContactsPage() {
         isOpen={isSendSmsOpen}
         onClose={onCloseSendSms}
         recipients={recipientsForSms}
-        showRecipientTypes={false}
+        hideRecipientTypes
         possibleRecipientTypes={[
           {
             label: '',

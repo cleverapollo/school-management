@@ -8,8 +8,8 @@ import {
   useDebouncedValue,
   usePreferredNameLayout,
 } from '@tyro/core';
-import { TFunction, useTranslation } from '@tyro/i18n';
-import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import { TFunction, useFormatNumber, useTranslation } from '@tyro/i18n';
+import { Dispatch, SetStateAction, useMemo } from 'react';
 import { Button } from '@mui/material';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
@@ -21,6 +21,7 @@ dayjs.extend(LocalizedFormat);
 const getColumnDefs = (
   t: TFunction<('sms' | 'common')[], undefined, ('sms' | 'common')[]>,
   displayName: ReturnTypeDisplayName,
+  formatCurrency: ReturnType<typeof useFormatNumber>['formatCurrency'],
   setRowToViewDetails: Dispatch<SetStateAction<ReturnTypeFromUseSentSms>>
 ): GridOptions<ReturnTypeFromUseSentSms>['columnDefs'] => [
   {
@@ -47,17 +48,16 @@ const getColumnDefs = (
   {
     field: 'totalCost',
     headerName: t('sms:totalCost'),
-    valueGetter: ({ data }) => (data?.totalCost ? `€${data.totalCost}` : null),
+    valueGetter: ({ data }) =>
+      data?.totalCost ? formatCurrency(data.totalCost) : null,
     type: 'numericColumn',
   },
   {
     headerName: '',
+    cellClass: 'ag-show-on-row-interaction',
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseSentSms>) =>
       data && (
-        <Button
-          className="ag-show-on-row-interaction"
-          onClick={() => setRowToViewDetails(data)}
-        >
+        <Button onClick={() => setRowToViewDetails(data)}>
           {t('common:actions.viewDetails')}
         </Button>
       ),
@@ -72,13 +72,15 @@ export default function SmsList() {
     setValue: setRowToViewDetails,
   } = useDebouncedValue<ReturnTypeFromUseSentSms>({ defaultValue: null });
   const { displayName } = usePreferredNameLayout();
+  const { formatCurrency } = useFormatNumber();
+
   const { data: sentSms } = useSentSms({
     ids: [],
   });
 
   const columnDefs = useMemo(
-    () => getColumnDefs(t, displayName, setRowToViewDetails),
-    [t, displayName, setRowToViewDetails]
+    () => getColumnDefs(t, displayName, formatCurrency, setRowToViewDetails),
+    [t, displayName, formatCurrency, setRowToViewDetails]
   );
 
   return (

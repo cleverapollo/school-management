@@ -13,9 +13,10 @@ function ReadOnlyRecipientListInner({ recipients }: RecipientListProps) {
   const recipientContainerRef = useRef<HTMLDivElement>(null);
   const [search, setSearch] = useState('');
   const { t } = useTranslation(['common', 'sms']);
-  const showSearch = Array.isArray(recipients) && recipients?.length > 10;
   const { displayName } = usePreferredNameLayout();
   const { spacing } = useTheme();
+
+  const showSearch = Array.isArray(recipients) && recipients?.length > 10;
 
   const filteredRecipients = useMemo(() => {
     if (!recipients) return [];
@@ -143,7 +144,7 @@ function ReadOnlyRecipientListInner({ recipients }: RecipientListProps) {
             </Typography>
             <img
               alt=""
-              src="/assets/illustrations/ illustration-user-cloud.svg"
+              src="/assets/illustrations/illustration-user-cloud.svg"
             />
           </Stack>
         )}

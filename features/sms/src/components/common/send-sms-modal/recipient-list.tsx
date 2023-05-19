@@ -35,9 +35,10 @@ function RecipientListInner({
   const recipientContainerRef = useRef<HTMLDivElement>(null);
   const [search, setSearch] = useState('');
   const { t } = useTranslation(['common', 'sms']);
+  const { spacing } = useTheme();
+
   const disableRemoveButton = (recipients?.length ?? 0) <= 1;
   const showSearch = initialRecipientAmount > 10;
-  const { spacing } = useTheme();
 
   const filteredRecipients = useMemo(() => {
     if (!recipients) return [];
@@ -195,7 +196,7 @@ function RecipientListInner({
             </Typography>
             <img
               alt=""
-              src="/assets/illustrations/ illustration-user-cloud.svg"
+              src="/assets/illustrations/illustration-user-cloud.svg"
             />
           </Stack>
         )}
