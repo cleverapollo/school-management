@@ -20,15 +20,20 @@ const createContact = graphql(/* GraphQL */ `
 
 export function useCreateContact() {
   const { toast } = useToast();
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['people']);
 
   return useMutation({
     mutationKey: peopleContactsKeys.createContact(),
     mutationFn: async (input: CreateStudentContactInput) =>
       gqlClient.request(createContact, { input }),
     onSuccess: () => {
-      toast(t('common:snackbarMessages.createSuccess'));
+      toast(t('people:successfullyCreatedContact'));
       queryClient.invalidateQueries(peopleContactsKeys.all);
+    },
+    onError: () => {
+      toast(t('people:createdContactUnsuccessful'), {
+        variant: 'error',
+      });
     },
   });
 }

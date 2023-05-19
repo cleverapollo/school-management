@@ -1,9 +1,10 @@
 import { Card, Stack, CardHeader, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { useFormValidator } from '@tyro/core';
+import { ConfirmDialog, useFormValidator } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { useForm } from 'react-hook-form';
+import { useForm, useFormState } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import {
   StudentRelationships,
   StudentRelationshipsFormState,
@@ -19,10 +20,19 @@ type ContactFormState = PersonalInformationFormState &
   PrimaryAddressFormState &
   StudentRelationshipsFormState;
 
+const cardHeaderStyle = {
+  p: 3,
+  pt: 2.25,
+  pb: 1.25,
+  m: 0,
+  borderBottom: '1px solid',
+  borderColor: 'divider',
+};
+
 export function ContactForm() {
   const { t } = useTranslation(['common', 'people']);
-
   const navigate = useNavigate();
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 
   const { mutate: createContactMutation, isLoading } = useCreateContact();
 
@@ -50,6 +60,20 @@ export function ContactForm() {
         },
       }),
     });
+
+  const { isDirty } = useFormState({ control });
+
+  const goBack = () => {
+    navigate('/people/contacts');
+  };
+
+  const handleCancelForm = () => {
+    if (isDirty) {
+      setIsCancelModalOpen(true);
+    } else {
+      goBack();
+    }
+  };
 
   const onSubmit = ({
     firstName,
@@ -118,70 +142,65 @@ export function ContactForm() {
         ),
       },
       {
-        onSuccess: () => {
-          navigate('/people/contacts');
-        },
-        onError: (error) => {
-          console.error(error);
-        },
+        onSuccess: goBack,
       }
     );
   };
 
-  const cardStyle = {
-    p: 3,
-    pt: 2.25,
-    pb: 1.25,
-    m: 0,
-    borderBottom: '1px solid',
-    borderColor: 'divider',
-  };
-
   return (
-    <Stack component="form" onSubmit={handleSubmit(onSubmit)} gap={3}>
-      <Card variant="outlined">
-        <CardHeader
-          component="h2"
-          title={t('people:personalInformation')}
-          sx={cardStyle}
-        />
-        <Stack direction="column" gap={3} p={3}>
-          <PersonalInformation control={control} />
-          <PrimaryAddress control={control} />
-        </Stack>
-      </Card>
-      <Card variant="outlined">
-        <CardHeader
-          component="h2"
-          title={t('people:studentRelationships')}
-          sx={cardStyle}
-        />
-        <Stack direction="column" p={3}>
-          <StudentRelationships
-            setValue={setValue}
-            getValues={getValues}
-            control={control}
+    <>
+      <Stack component="form" onSubmit={handleSubmit(onSubmit)} gap={3}>
+        <Card variant="outlined">
+          <CardHeader
+            component="h2"
+            title={t('people:personalInformation')}
+            sx={cardHeaderStyle}
           />
+          <Stack direction="column" gap={3} p={3}>
+            <PersonalInformation control={control} />
+            <PrimaryAddress control={control} />
+          </Stack>
+        </Card>
+        <Card variant="outlined">
+          <CardHeader
+            component="h2"
+            title={t('people:studentRelationships')}
+            sx={cardHeaderStyle}
+          />
+          <Stack direction="column" p={3}>
+            <StudentRelationships
+              setValue={setValue}
+              getValues={getValues}
+              control={control}
+            />
+          </Stack>
+        </Card>
+        <Stack direction="row" gap={2} justifyContent="flex-end">
+          <Button
+            variant="soft"
+            size="large"
+            color="primary"
+            onClick={handleCancelForm}
+          >
+            {t('common:actions.cancel')}
+          </Button>
+          <LoadingButton
+            variant="contained"
+            size="large"
+            type="submit"
+            loading={isLoading}
+          >
+            {t('people:createContact')}
+          </LoadingButton>
         </Stack>
-      </Card>
-      <Stack direction="row" gap={2} justifyContent="flex-end">
-        <Button
-          variant="soft"
-          size="large"
-          color="primary"
-          onClick={() => navigate('/people/contacts')}
-        >
-          {t('common:actions.cancel')}
-        </Button>
-        <LoadingButton
-          variant="contained"
-          size="large"
-          type="submit"
-          loading={isLoading}
-        >
-          {t('people:createContact')}
-        </LoadingButton>
       </Stack>
-    </Stack>
+      <ConfirmDialog
+        open={isCancelModalOpen}
+        title={t('common:cancelConfirmDialog.title')}
+        description={t('common:cancelConfirmDialog.description')}
+        onClose={() => setIsCancelModalOpen(false)}
+        onConfirm={goBack}
+      />
+    </>
   );
 }

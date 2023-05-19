@@ -132,5 +132,7 @@
   "studentRelationships": "Student Relationships",
   "studentRelationshipsRequired": "You must connect New Contact to at least one Student",
   "contactSettings": "Contact Settings",
-  "contactSettingsDescription": "Ways in which new contact can receive information on, or interact with this student."
+  "contactSettingsDescription": "Ways in which new contact can receive information on, or interact with this student.",
+  "successfullyCreatedContact": "Successfully created contact",
+  "createdContactUnsuccessful": "Your contact creation was unsuccessful"
 }

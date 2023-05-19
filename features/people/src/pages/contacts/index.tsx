@@ -14,7 +14,7 @@ import {
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { Link } from 'react-router-dom';
 import { AddUserIcon } from '@tyro/icons';
-import { useContacts } from '../../api/contact/contacts';
+import { useContacts } from '../../api/contact/list';
 import { joinAddress } from '../../utils/join-address';
 
 type ReturnTypeFromUseContacts = NonNullable<

@@ -238,5 +238,9 @@
   "calendars": "Calendars",
   "status": "Status",
   "mobileNumber": "Mobile number",
-  "enableAll": "Enable all"
+  "enableAll": "Enable all",
+  "cancelConfirmDialog": {
+    "title": "Cancel",
+    "description":"Are you sure you want to cancel?"
+  }
 }
