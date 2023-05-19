@@ -47,7 +47,9 @@ export function Shell({ children }: ShellProps) {
         <Box
           component="main"
           sx={{
-            flexGrow: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
             backgroundColor: 'background.neutral',
             minHeight: '100vh',
             pt: `${HEADERCONFIG.H_MOBILE + 8}px`,

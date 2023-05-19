@@ -31,6 +31,7 @@ import Backdrop from './Backdrop';
 import Progress from './Progress';
 import Timeline from './Timeline';
 import TreeView from './TreeView';
+import Container from './Container';
 import Checkbox from './Checkbox';
 import Accordion from './Accordion';
 import DatePicker from './DatePicker';
@@ -72,6 +73,7 @@ export default function ComponentsOverrides(theme: Theme) {
     Tooltip(theme),
     Popover(theme),
     SvgIcon(theme),
+    Container(theme),
     Checkbox(theme),
     DataGrid(theme),
     Skeleton(theme),
