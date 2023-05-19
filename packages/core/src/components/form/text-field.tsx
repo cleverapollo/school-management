@@ -5,7 +5,7 @@ import {
   UseControllerProps,
 } from 'react-hook-form';
 
-type RHFTextFieldProps<TField extends FieldValues> = {
+export type RHFTextFieldProps<TField extends FieldValues> = {
   label?: string;
   textFieldProps?: TextFieldProps;
   controlProps: UseControllerProps<TField>;

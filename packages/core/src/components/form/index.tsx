@@ -1,4 +1,5 @@
 export * from './autocomplete';
+export * from './checkbox-group';
 export * from './color-picker';
 export * from './checkbox';
 export * from './date-picker';

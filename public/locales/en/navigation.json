@@ -40,7 +40,8 @@
       "rooms": "Rooms",
       "academicNamespaces": "Academic namespaces",
       "subjects": "Subjects"
-    }
+    },
+    "sms": "SMS"
   },
   "errors": {
     "404": {

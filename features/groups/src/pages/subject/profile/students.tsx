@@ -84,16 +84,6 @@ export default function SubjectGroupProfileStudentsPage() {
         <Fade in={showActionMenu && selectedGroups.length > 0} unmountOnExit>
           <Box>
             <ActionMenu
-              menuProps={{
-                anchorOrigin: {
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                },
-                transformOrigin: {
-                  vertical: 'top',
-                  horizontal: 'right',
-                },
-              }}
               menuItems={[
                 {
                   label: t('people:sendSms'),

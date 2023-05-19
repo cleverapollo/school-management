@@ -93,8 +93,6 @@ export default function ContactsListPage() {
       <Table
         rowData={contactsData || []}
         columnDefs={contactColumns}
-        rowSelection="multiple"
-        rowHeight={56}
         getRowId={({ data }) => String(data?.partyId)}
       />
     </PageContainer>
