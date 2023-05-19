@@ -8,7 +8,7 @@ type DataProviderProps = {
   children: ReactNode;
 };
 
-const API_URL = 'http://localhost:4000';
+const API_URL = 'https://app.tyro-dev.com';
 const CUBEJS_TOKEN =
   'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2ODQ2NzA2NjEsImlhdCI6MTY4NDQ3OTg2MX0.f8ASX8B6D5yqBOmk9go58H_dmyyK5oznGZ4GAKfl460';
 const cubejsApi = cubejs(CUBEJS_TOKEN, {

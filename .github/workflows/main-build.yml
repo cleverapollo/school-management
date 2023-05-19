@@ -56,7 +56,7 @@ jobs:
         uses: azure/setup-kubectl@v3
       - name: 'Rollout new image'
         run: |
-          kubectl set image deployments/tyro-ui tyro-ui=tyrocr.azurecr.io/tyro-ui:tyro-ui:0.0.${{ github.run_number }}
+          kubectl set image deployments/tyro-ui tyro-ui=tyrocr.azurecr.io/tyro-ui:0.0.${{ github.run_number }}
   deploy-prod:
     needs: [ build, deploy-uat ]
     environment: prod
