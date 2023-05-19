@@ -66,6 +66,8 @@ export function ContactForm() {
     requiresInterpreter,
     studentRelationships,
   }: ContactFormState) => {
+    const hasAddress = city || country || line1 || line2 || line3 || postCode;
+
     createContactMutation(
       {
         personal: {
@@ -82,25 +84,29 @@ export function ContactForm() {
             },
           ],
         }),
-        emails: [
-          {
-            primaryEmail: true,
-            active: true,
-            email,
-          },
-        ],
-        addresses: [
-          {
-            primaryAddress: true,
-            active: true,
-            city,
-            country,
-            line1,
-            line2,
-            line3,
-            postCode,
-          },
-        ],
+        ...(email && {
+          emails: [
+            {
+              primaryEmail: true,
+              active: true,
+              email,
+            },
+          ],
+        }),
+        ...(hasAddress && {
+          addresses: [
+            {
+              primaryAddress: true,
+              active: true,
+              city,
+              country,
+              line1,
+              line2,
+              line3,
+              postCode,
+            },
+          ],
+        }),
         nativeLanguage,
         requiresInterpreter,
         studentRelationships: studentRelationships.map(

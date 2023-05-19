@@ -99,7 +99,7 @@ export const MobileNumber = <TField extends FieldValues>({
           },
         }}
       />
-      <FormHelperText error={!!error}>{error?.message}</FormHelperText>
+      {error && <FormHelperText error>{error?.message}</FormHelperText>}
     </FormControl>
   );
 };

@@ -1,4 +1,4 @@
-import { Stack, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { RHFCheckbox, RHFTextField } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { Control } from 'react-hook-form';
@@ -32,16 +32,18 @@ export const PersonalInformation = <
   const { t } = useTranslation(['people', 'common']);
 
   return (
-    <>
-      <Typography
-        variant="body1"
-        component="h3"
-        color="text.secondary"
-        fontWeight={600}
-      >
-        {t('common:details')}
-      </Typography>
-      <Stack direction="row" gap={2}>
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Typography
+          variant="body1"
+          component="h3"
+          color="text.secondary"
+          fontWeight={600}
+        >
+          {t('common:details')}
+        </Typography>
+      </Grid>
+      <Grid item xs={12} sm={6}>
         <RHFTextField
           label={t('people:personal.about.forename')}
           textFieldProps={{ fullWidth: true }}
@@ -50,6 +52,8 @@ export const PersonalInformation = <
             control,
           }}
         />
+      </Grid>
+      <Grid item xs={12} sm={6}>
         <RHFTextField
           label={t('people:personal.about.surname')}
           textFieldProps={{ fullWidth: true }}
@@ -58,8 +62,8 @@ export const PersonalInformation = <
             control,
           }}
         />
-      </Stack>
-      <Stack direction="row" gap={2}>
+      </Grid>
+      <Grid item xs={12} sm={6}>
         <MobileNumber
           label={t('common:mobileNumber')}
           controlProps={{
@@ -67,6 +71,8 @@ export const PersonalInformation = <
             control,
           }}
         />
+      </Grid>
+      <Grid item xs={12} sm={6}>
         <RHFTextField
           label={t('common:email')}
           textFieldProps={{ fullWidth: true }}
@@ -75,8 +81,8 @@ export const PersonalInformation = <
             control,
           }}
         />
-      </Stack>
-      <Stack direction="row" gap={2}>
+      </Grid>
+      <Grid item xs={12} sm={6}>
         <RHFTextField
           label={t('people:personal.about.spokenLanguage')}
           textFieldProps={{ fullWidth: true }}
@@ -85,13 +91,15 @@ export const PersonalInformation = <
             control,
           }}
         />
+      </Grid>
+      <Grid item xs={12} sm={6}>
         <RHFCheckbox
           label={t('people:personal.about.requiresInterpreter')}
-          controlLabelProps={{ sx: { width: '100%', ml: 0 } }}
+          controlLabelProps={{ sx: { width: '100%', ml: 0, height: '100%' } }}
           checkboxProps={{ color: 'primary' }}
           controlProps={{ name: 'requiresInterpreter', control }}
         />
-      </Stack>
-    </>
+      </Grid>
+    </Grid>
   );
 };
