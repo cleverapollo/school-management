@@ -11,6 +11,7 @@
   "capacity": "Capacity",
   "namespaces": "Namespaces",
   "active": "Active",
+  "roomPool": "Room pool",
   "successfullyUpdatedSubjects": "Successfully updated subjects",
   "updateToSubjectsUnsuccessful": "Your subject updates were unsuccessful",
   "changeAcademicNamespaceCurrentlySet": "Change Academic Namespace. Currently set to {{name}}",

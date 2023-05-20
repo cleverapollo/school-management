@@ -7,6 +7,12 @@ const coreRooms = graphql(/* GraphQL */ `
       roomId
       name
       capacity
+      description
+      pools
+      includeInTimetable
+      externalSystemId
+      location
+      disabled
     }
   }
 `);
