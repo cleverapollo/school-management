@@ -1,29 +1,30 @@
 import { useMemo } from 'react';
-import { Container, Typography } from '@mui/material';
+import { Button, Box } from '@mui/material';
 import {
   GridOptions,
   ICellRendererParams,
-  Page,
+  PageContainer,
   Table,
   TablePersonAvatar,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
+  PageHeading,
+  ReturnTypeDisplayNames,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import set from 'lodash/set';
-import { useContacts } from '../../api/contacts';
+import { Link } from 'react-router-dom';
+import { AddUserIcon } from '@tyro/icons';
+import { useContacts } from '../../api/contact/list';
+import { joinAddress } from '../../utils/join-address';
 
 type ReturnTypeFromUseContacts = NonNullable<
   ReturnType<typeof useContacts>['data']
 >[number];
 
 const getContactColumns = (
-  translate: TFunction<
-    ('common' | 'people')[],
-    undefined,
-    ('common' | 'people')[]
-  >,
-  displayName: ReturnTypeDisplayName
+  translate: TFunction<'common'[], undefined, 'common'[]>,
+  displayName: ReturnTypeDisplayName,
+  displayNames: ReturnTypeDisplayNames
 ): GridOptions<ReturnTypeFromUseContacts>['columnDefs'] => [
   {
     field: 'person',
@@ -31,75 +32,69 @@ const getContactColumns = (
     valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) =>
-      data ? (
-        <TablePersonAvatar
-          person={data?.person}
-          to={`./${data?.partyId ?? ''}`}
-        />
-      ) : null,
+    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
+      <TablePersonAvatar
+        person={data?.person}
+        to={`./${data?.partyId ?? ''}`}
+      />
+    ),
     sort: 'asc',
-    headerCheckboxSelection: true,
-    headerCheckboxSelectionFilteredOnly: true,
-    checkboxSelection: ({ data }) => Boolean(data),
-    lockVisible: true,
-  },
-  {
-    field: 'personalInformation.preferredFirstName',
-    headerName: translate('common:preferredFirstName'),
-    editable: true,
-    hide: true,
   },
   {
     field: 'personalInformation.primaryPhoneNumber.number',
     headerName: translate('common:phone'),
-    editable: true,
-    hide: true,
-    cellEditor: 'agNumericCellEditor',
-    valueSetter: ({ data, newValue }) => {
-      set(
-        data ?? {},
-        'personalInformation.primaryPhoneNumber.number',
-        newValue
-      );
-      return true;
-    },
+    valueGetter: ({ data }) =>
+      data?.personalInformation?.primaryPhoneNumber?.number ?? '-',
   },
   {
-    field: 'personalInformation.primaryEmail.email',
-    headerName: translate('common:email'),
-    editable: true,
-    hide: true,
-    cellEditor: 'agEmailCellEditor',
-    valueSetter: ({ data, newValue }) => {
-      set(data ?? {}, 'personalInformation.primaryEmail.email', newValue);
-      return true;
-    },
+    field: 'personalInformation.primaryAddress.number',
+    headerName: translate('common:address'),
+    valueGetter: ({ data }) =>
+      joinAddress(data?.personalInformation?.primaryAddress),
+  },
+  {
+    field: 'relationships',
+    headerName: translate('common:students'),
+    valueGetter: ({ data }) =>
+      displayNames(
+        data?.relationships?.map((relationship) => relationship?.student.person)
+      ),
   },
 ];
 
 export default function ContactsListPage() {
   const { t } = useTranslation(['common', 'people']);
-  const { displayName } = usePreferredNameLayout();
-  const { data: contacts } = useContacts();
+  const { displayName, displayNames } = usePreferredNameLayout();
+  const { data: contactsData = [] } = useContacts();
 
   const contactColumns = useMemo(
-    () => getContactColumns(t, displayName),
+    () => getContactColumns(t, displayName, displayNames),
     [t, displayName]
   );
 
   return (
-    <Page title={t('people:contacts')}>
-      <Container maxWidth="xl">
-        <Typography variant="h3" component="h1" paragraph>
-          {t('people:contacts')}
-        </Typography>
-        <Table
-          rowData={contacts ?? []}
-          columnDefs={contactColumns}
-          getRowId={({ data }) => String(data?.partyId)}
-        />
-      </Container>
-    </Page>
+    <PageContainer title={t('people:pageTitle.contacts')}>
+      <PageHeading
+        title={t('people:pageHeading.contacts')}
+        titleProps={{ variant: 'h3' }}
+        rightAdornment={
+          <Box display="flex" alignItems="center">
+            <Button
+              variant="contained"
+              component={Link}
+              to="./create"
+              startIcon={<AddUserIcon />}
+            >
+              {t('people:createContact')}
+            </Button>
+          </Box>
+        }
+      />
+      <Table
+        rowData={contactsData || []}
+        columnDefs={contactColumns}
+        getRowId={({ data }) => String(data?.partyId)}
+      />
+    </PageContainer>
   );
 }

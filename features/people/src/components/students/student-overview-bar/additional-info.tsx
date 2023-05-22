@@ -1,7 +1,7 @@
 import { Box, Stack } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { usePreferredNameLayout } from '@tyro/core';
-import { ReturnTypeFromUseStudent } from '../../../api/students';
+import { ReturnTypeFromUseStudent } from '../../../api/student/students';
 
 export interface AdditionalInfoProps {
   years: ReturnTypeFromUseStudent['yearGroups'];

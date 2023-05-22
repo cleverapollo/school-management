@@ -1,5 +1,6 @@
 export * from './add';
 export * from './add-doc';
+export * from './add-user';
 export * from './archive';
 export * from './bell';
 export * from './book-open';
