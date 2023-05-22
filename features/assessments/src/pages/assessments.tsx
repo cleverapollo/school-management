@@ -10,17 +10,20 @@ import {
   Table,
   TableBooleanValue,
   usePreferredNameLayout,
+  PageContainer,
 } from '@tyro/core';
 import { Link } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { AddDocIcon } from '@tyro/icons';
 import { useAcademicNamespace, UseQueryReturnType } from '@tyro/api';
 import dayjs from 'dayjs';
-import { PageContainer } from '../components/page-container';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { useAssessments } from '../api/assessments';
 import { AcademicYearDropdown } from '../components/list-assessments/academic-year-dropdown';
 import { getAssessmentSubjectGroupsLink } from '../utils/get-assessment-subject-groups-link';
 import { AssessmentActionMenu } from '../components/list-assessments/assessment-action-menu';
+
+dayjs.extend(LocalizedFormat);
 
 type ReturnTypeFromUseAssessments = UseQueryReturnType<
   typeof useAssessments

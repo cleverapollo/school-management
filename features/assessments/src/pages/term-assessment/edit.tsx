@@ -1,10 +1,9 @@
 import { useTranslation } from '@tyro/i18n';
-import { PageHeading, useToast, useNumber } from '@tyro/core';
+import { PageHeading, useToast, useNumber, PageContainer } from '@tyro/core';
 import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { CommentType } from '@tyro/api';
-import { PageContainer } from '../../components/page-container';
 import { useAssessmentById } from '../../api/assessments';
 import {
   TermAssessmentForm,

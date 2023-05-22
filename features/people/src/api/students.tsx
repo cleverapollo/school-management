@@ -3,6 +3,7 @@ import {
   gqlClient,
   graphql,
   queryClient,
+  StudentFilter,
   UpdateStudentInput,
   UseQueryReturnType,
 } from '@tyro/api';
@@ -96,6 +97,21 @@ const studentById = graphql(/* GraphQL */ `
   }
 `);
 
+const studentsInfoForSelect = graphql(/* GraphQL */ `
+  query core_studentsInfoForSelect($filter: StudentFilter) {
+    core_students(filter: $filter) {
+      person {
+        partyId
+        title
+        firstName
+        lastName
+        avatarUrl
+        type
+      }
+    }
+  }
+`);
+
 const bulkUpdateCoreStudent = graphql(/* GraphQL */ `
   mutation updateCoreStudents($input: [UpdateStudentInput]!) {
     core_updateStudents(input: $input) {
@@ -108,6 +124,8 @@ export const studentKeys = {
   all: ['people', 'students'] as const,
   details: (studentId: number | undefined) =>
     [...studentKeys.all, studentId] as const,
+  forSelect: (filter: StudentFilter) =>
+    [...studentKeys.all, 'select', filter] as const,
 };
 
 const studentsQuery = {
@@ -195,3 +213,27 @@ export function useBulkUpdateCoreStudent() {
     },
   });
 }
+
+const studentsForSelectQuery = (filter: StudentFilter) => ({
+  queryKey: studentKeys.forSelect(filter),
+  queryFn: async () => gqlClient.request(studentsInfoForSelect, { filter }),
+});
+
+export function getStudentsForSelect(filter: StudentFilter) {
+  return queryClient.fetchQuery(studentsForSelectQuery(filter));
+}
+
+export function useStudentsForSelect(filter: StudentFilter) {
+  return useQuery({
+    ...studentsForSelectQuery(filter),
+    select: ({ core_students }) => {
+      if (!Array.isArray(core_students)) return [];
+
+      return core_students.map(({ person }) => person);
+    },
+  });
+}
+
+export type StudentSelectOption = UseQueryReturnType<
+  typeof useStudentsForSelect
+>[number];

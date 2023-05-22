@@ -4485,10 +4485,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/react-virtual@npm:beta":
+  version: 3.0.0-beta.54
+  resolution: "@tanstack/react-virtual@npm:3.0.0-beta.54"
+  dependencies:
+    "@tanstack/virtual-core": 3.0.0-beta.54
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: ddeb3cb46db89365609d5bc402b8a8d410dc7e5f38ee579f39e5589c62a2123799ba36586939a5a6ad1a701650a5b169f657fd24687687bf08f4827b0099bc75
+  languageName: node
+  linkType: hard
+
 "@tanstack/table-core@npm:8.8.5":
   version: 8.8.5
   resolution: "@tanstack/table-core@npm:8.8.5"
   checksum: 7bbf00635e57294dd5bd12d82efb273d3b68c47b905a1d7f2fdabe83d9c10314e67d24f918b570ba8fecf80a120008359c52682cdd917d9de26eeece31c43a7d
+  languageName: node
+  linkType: hard
+
+"@tanstack/virtual-core@npm:3.0.0-beta.54":
+  version: 3.0.0-beta.54
+  resolution: "@tanstack/virtual-core@npm:3.0.0-beta.54"
+  checksum: a58cb30e1bbf8a0420caea8693df11c909c1190908163fef75aeddfa11bba621ca993ab218f4e7537c05c1651f9398e61016f3e3d374093c87029b52c868f0e7
   languageName: node
   linkType: hard
 
@@ -5322,6 +5340,7 @@ __metadata:
     "@tyro/people": "*"
     "@tyro/reporting": "*"
     "@tyro/settings": "*"
+    "@tyro/sms": "*"
     "@tyro/substitution": "*"
     "@tyro/tyro-admin": "*"
     dayjs: ^1.11.7
@@ -5515,6 +5534,7 @@ __metadata:
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
     "@tyro/people": "*"
+    "@tyro/sms": "*"
     dayjs: ^1.11.7
     lodash: ^4.17.21
     react: ^18.2.0
@@ -5533,6 +5553,8 @@ __metadata:
     i18next: ^22.4.9
     i18next-browser-languagedetector: ^7.0.1
     i18next-http-backend: ^2.1.1
+    react: ^18.2.0
+    react-dom: ^18.2.0
     react-i18next: ^12.1.4
   languageName: unknown
   linkType: soft
@@ -5599,6 +5621,7 @@ __metadata:
   dependencies:
     "@cubejs-client/core": ^0.31.46
     "@cubejs-client/react": ^0.31.46
+    "@mui/lab": ^5.0.0-alpha.96
     "@mui/material": ^5.11.4
     "@mui/system": ^5.10.14
     "@tanstack/react-query": ^4.16.1
@@ -5610,11 +5633,14 @@ __metadata:
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
     "@tyro/reporting": "*"
+    "@tyro/sms": "*"
     dayjs: ^1.11.7
     framer-motion: ^9.0.1
     lodash: ^4.17.21
     react: ^18.2.0
     react-dom: ^18.2.0
+    react-hook-form: ^7.43.9
+    react-phone-input-material-ui: ^2.18.1
     react-router: ^6.6.2
     react-router-dom: ^6.6.2
     react-use: ^17.4.0
@@ -5663,6 +5689,30 @@ __metadata:
     react: ^18.2.0
     react-dom: ^18.2.0
     react-router: ^6.3.0
+  languageName: unknown
+  linkType: soft
+
+"@tyro/sms@*, @tyro/sms@workspace:features/sms":
+  version: 0.0.0-use.local
+  resolution: "@tyro/sms@workspace:features/sms"
+  dependencies:
+    "@mui/icons-material": ^5.10.9
+    "@mui/lab": ^5.0.0-alpha.57
+    "@mui/material": ^5.11.4
+    "@mui/system": ^5.10.14
+    "@tanstack/react-query": ^4.16.1
+    "@tanstack/react-virtual": beta
+    "@tyro/api": "*"
+    "@tyro/configs": "*"
+    "@tyro/core": "*"
+    "@tyro/i18n": "*"
+    "@tyro/icons": "*"
+    dayjs: ^1.11.7
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    react-hook-form: ^7.42.1
+    react-router: ^6.3.0
+    react-router-dom: ^6.6.2
   languageName: unknown
   linkType: soft
 
@@ -12697,10 +12747,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.reduce@npm:^4.6.0":
+  version: 4.6.0
+  resolution: "lodash.reduce@npm:4.6.0"
+  checksum: 81f2a1045440554f8427f895ef479f1de5c141edd7852dde85a894879312801efae0295116e5cf830c531c1a51cdab8f3628c3ad39fa21a9874bb9158d9ea075
+  languageName: node
+  linkType: hard
+
 "lodash.sortby@npm:^4.7.0":
   version: 4.7.0
   resolution: "lodash.sortby@npm:4.7.0"
   checksum: db170c9396d29d11fe9a9f25668c4993e0c1331bcb941ddbd48fb76f492e732add7f2a47cfdf8e9d740fa59ac41bbfaf931d268bc72aab3ab49e9f89354d718c
+  languageName: node
+  linkType: hard
+
+"lodash.startswith@npm:^4.2.1":
+  version: 4.2.1
+  resolution: "lodash.startswith@npm:4.2.1"
+  checksum: 1847371cbf6f32c4125a555847aff8a1ff1a977f40882b0ad4e2656a32e364793cfa7602915c9165cc0bba61fbd802e561888126d242faadcf3fc77215bab19b
   languageName: node
   linkType: hard
 
@@ -15550,7 +15614,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:^7.43.9":
+"react-hook-form@npm:^7.42.1, react-hook-form@npm:^7.43.9":
   version: 7.43.9
   resolution: "react-hook-form@npm:7.43.9"
   peerDependencies:
@@ -15641,6 +15705,36 @@ __metadata:
     "@types/react": ">=16"
     react: ">=16"
   checksum: 59fd5dcd089df0cd9098755e3063d8fcf4b4635b1ac2d5e05fcda9923769724476396abdf2afb80fb8e7589a951deac50d6f89c4740d5ec6decd34076122c80c
+  languageName: node
+  linkType: hard
+
+"react-phone-input-material-ui@npm:^2.18.1":
+  version: 2.18.1
+  resolution: "react-phone-input-material-ui@npm:2.18.1"
+  dependencies:
+    classnames: ^2.2.6
+    lodash.debounce: ^4.0.8
+    lodash.memoize: ^4.1.2
+    lodash.reduce: ^4.6.0
+    lodash.startswith: ^4.2.1
+    prop-types: ^15.7.2
+  peerDependencies:
+    "@emotion/react": ^11.7.1
+    "@emotion/styled": ^11.6.0
+    "@material-ui/core": ^4.12.3
+    "@mui/material": ^5.4.1
+    react: ^16.12.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.12.0 || ^17.0.0 || ^18.0.0
+  peerDependenciesMeta:
+    "@emotion/react":
+      optional: true
+    "@emotion/styled":
+      optional: true
+    "@material-ui/core":
+      optional: true
+    "@mui/material":
+      optional: true
+  checksum: 5e2bc51da9c578a5cae7be85220c3c362e871c946cbd19c9e1eb790d6d7ad66e98663572c9845dd00f17122aaed338ed09158940c89d634d23708c04a8ee6e91
   languageName: node
   linkType: hard
 

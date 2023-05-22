@@ -7,12 +7,12 @@ import {
   Table,
   TableLinearProgress,
   useNumber,
+  PageContainer,
   usePreferredNameLayout,
 } from '@tyro/core';
 import { Link, useParams } from 'react-router-dom';
 import { useMemo } from 'react';
 import { Button } from '@mui/material';
-import { PageContainer } from '../../components/page-container';
 import {
   useAssessmentSubjectGroups,
   ReturnTypeFromUseAssessmentSubjectGroups,

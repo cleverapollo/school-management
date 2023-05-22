@@ -1,5 +1,9 @@
 import { Box, Container, Fade, Typography } from '@mui/material';
-import { UpdateClassGroupGroupInput, usePermissions } from '@tyro/api';
+import {
+  SmsRecipientType,
+  UpdateClassGroupGroupInput,
+  usePermissions,
+} from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -11,14 +15,11 @@ import {
   Page,
   Table,
   TableAvatar,
+  useDisclosure,
   usePreferredNameLayout,
 } from '@tyro/core';
-import {
-  ArchiveIcon,
-  MobileIcon,
-  SendMailIcon,
-  UnarchiveIcon,
-} from '@tyro/icons';
+import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
+import { MobileIcon, SendMailIcon } from '@tyro/icons';
 import { TableStaffAutocomplete } from '@tyro/people';
 import set from 'lodash/set';
 import {
@@ -101,15 +102,20 @@ const getClassGroupColumns = (
 ];
 
 export default function ClassGroupsPage() {
-  const { t } = useTranslation(['common', 'groups', 'people', 'mail']);
-  const [selectedGroups, setSelectedGroups] = useState<
-    ReturnTypeFromUseClassGroups[]
-  >([]);
+  const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
+  const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
+    []
+  );
   const { displayNames } = usePreferredNameLayout();
   const { isStaffUser } = usePermissions();
   const { data: classGroupData } = useClassGroups();
   const { mutateAsync: updateClassGroup } = useSaveClassGroupEdits();
   const showActionMenu = isStaffUser && selectedGroups.length > 0;
+  const {
+    isOpen: isSendSmsOpen,
+    onOpen: onOpenSendSms,
+    onClose: onCloseSendSms,
+  } = useDisclosure();
 
   const classGroupColumns = useMemo(
     () => getClassGroupColumns(t, isStaffUser, displayNames),
@@ -121,36 +127,16 @@ export default function ClassGroupsPage() {
       {
         label: t('people:sendSms'),
         icon: <MobileIcon />,
-        // TODO: add action logic
-        onClick: () => {},
+        onClick: onOpenSendSms,
       },
-      {
-        label: t('mail:sendMail'),
-        icon: <SendMailIcon />,
-        onClick: () => {},
-      },
+      // {
+      //   label: t('mail:sendMail'),
+      //   icon: <SendMailIcon />,
+      //   onClick: () => {},
+      // },
     ];
 
-    // TODO: add flag to check status
-    const isThereAtLeastOneUnarchived = true;
-
-    const archiveActions = [
-      isThereAtLeastOneUnarchived
-        ? {
-            label: t('common:actions.archive'),
-            icon: <ArchiveIcon />,
-            // TODO: add action logic
-            onClick: () => {},
-          }
-        : {
-            label: t('common:actions.unarchive'),
-            icon: <UnarchiveIcon />,
-            // TODO: add action logic
-            onClick: () => {},
-          },
-    ];
-
-    return [commonActions, archiveActions];
+    return commonActions;
   }, []);
 
   const handleBulkSave = (
@@ -178,39 +164,57 @@ export default function ClassGroupsPage() {
   };
 
   return (
-    <Page title={t('groups:classGroups')}>
-      <Container maxWidth="xl">
-        <Typography variant="h3" component="h1" paragraph>
-          {t('groups:classGroups')}
-        </Typography>
-        <Table
-          rowData={classGroupData ?? []}
-          columnDefs={classGroupColumns}
-          rowSelection="multiple"
-          getRowId={({ data }) => String(data?.partyId)}
-          onBulkSave={handleBulkSave}
-          rightAdornment={
-            <Fade in={showActionMenu} unmountOnExit>
-              <Box>
-                <ActionMenu
-                  menuProps={{
-                    anchorOrigin: {
-                      vertical: 'bottom',
-                      horizontal: 'right',
-                    },
-                    transformOrigin: {
-                      vertical: 'top',
-                      horizontal: 'right',
-                    },
-                  }}
-                  menuItems={actionMenuItems}
-                />
-              </Box>
-            </Fade>
-          }
-          onRowSelection={setSelectedGroups}
-        />
-      </Container>
-    </Page>
+    <>
+      <Page title={t('groups:classGroups')}>
+        <Container maxWidth="xl">
+          <Typography variant="h3" component="h1" paragraph>
+            {t('groups:classGroups')}
+          </Typography>
+          <Table
+            rowData={classGroupData ?? []}
+            columnDefs={classGroupColumns}
+            rowSelection="multiple"
+            getRowId={({ data }) => String(data?.partyId)}
+            onBulkSave={handleBulkSave}
+            rightAdornment={
+              <Fade in={showActionMenu} unmountOnExit>
+                <Box>
+                  <ActionMenu menuItems={actionMenuItems} />
+                </Box>
+              </Fade>
+            }
+            onRowSelection={(groups) =>
+              setSelectedGroups(
+                groups.map(({ partyId, name, avatarUrl }) => ({
+                  id: partyId,
+                  name,
+                  type: 'group',
+                  avatarUrl,
+                }))
+              )
+            }
+          />
+        </Container>
+      </Page>
+      <SendSmsModal
+        isOpen={isSendSmsOpen}
+        onClose={onCloseSendSms}
+        recipients={selectedGroups}
+        possibleRecipientTypes={[
+          {
+            label: t('sms:contactsOfStudentMembers', {
+              count: selectedGroups.length,
+            }),
+            type: SmsRecipientType.GeneralGroupContact,
+          },
+          {
+            label: t('sms:tutorsAndYearHeadsOfGroup', {
+              count: selectedGroups.length,
+            }),
+            type: SmsRecipientType.ClassGroupStaff,
+          },
+        ]}
+      />
+    </>
   );
 }

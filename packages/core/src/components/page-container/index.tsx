@@ -1,7 +1,7 @@
-import { Page } from '@tyro/core';
 import { Container, ContainerProps } from '@mui/material';
+import { Page } from '../page';
 
-type PageContainerProps = ContainerProps & {
+export type PageContainerProps = ContainerProps & {
   title: string;
 };
 

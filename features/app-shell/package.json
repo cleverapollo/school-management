@@ -19,6 +19,7 @@
     "@tyro/people": "*",
     "@tyro/reporting": "*",
     "@tyro/settings": "*",
+    "@tyro/sms": "*",
     "@tyro/substitution": "*",
     "@tyro/tyro-admin": "*",
     "dayjs": "^1.11.7",

@@ -35,6 +35,7 @@ const config: CodegenConfig = {
           Date: 'string',
           DateTime: 'string',
           Time: 'string',
+          BigDecimal: 'number',
         },
       },
     },

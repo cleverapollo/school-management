@@ -1,4 +1,9 @@
-import { FormControlLabel, Switch, SwitchProps } from '@mui/material';
+import {
+  FormControlLabel,
+  FormControlLabelProps,
+  Switch,
+  SwitchProps,
+} from '@mui/material';
 import {
   FieldValues,
   Path,
@@ -10,11 +15,13 @@ import {
 type RHFSwitchProps<TField extends FieldValues> = {
   label?: string;
   switchProps?: SwitchProps;
+  controlLabelProps?: Omit<FormControlLabelProps, 'label' | 'control'>;
   controlProps: UseControllerProps<TField>;
 };
 
 export const RHFSwitch = <TField extends FieldValues>({
   label,
+  controlLabelProps,
   switchProps,
   controlProps,
 }: RHFSwitchProps<TField>) => {
@@ -28,8 +35,19 @@ export const RHFSwitch = <TField extends FieldValues>({
 
   return (
     <FormControlLabel
+      {...controlLabelProps}
       label={label}
-      control={<Switch {...switchProps} {...field} checked={!!field.value} />}
+      control={
+        <Switch
+          {...switchProps}
+          {...field}
+          checked={!!field.value}
+          onChange={(...args) => {
+            field.onChange(...args);
+            switchProps?.onChange?.(...args);
+          }}
+        />
+      }
     />
   );
 };
