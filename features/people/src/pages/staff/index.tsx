@@ -1,15 +1,18 @@
 import { useMemo, useState } from 'react';
-import { Box, Container, Fade, Typography } from '@mui/material';
+import { Box, Button, Fade } from '@mui/material';
+import { Link } from 'react-router-dom';
+
 import {
   GridOptions,
   ICellRendererParams,
-  Page,
   Table,
   ReturnTypeDisplayName,
   TablePersonAvatar,
   usePreferredNameLayout,
   useDisclosure,
   ActionMenu,
+  PageContainer,
+  PageHeading,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
@@ -17,7 +20,7 @@ import { SmsRecipientType, UseQueryReturnType } from '@tyro/api';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { MobileIcon } from '@tyro/icons';
+import { AddUserIcon, MobileIcon } from '@tyro/icons';
 import { useStaff } from '../../api/staff';
 
 dayjs.extend(LocalizedFormat);
@@ -150,37 +153,48 @@ export default function StaffListPage() {
 
   return (
     <>
-      <Page title={t('common:staff')}>
-        <Container maxWidth="xl">
-          <Typography variant="h3" component="h1" paragraph>
-            {t('common:staff')}
-          </Typography>
-          <Table
-            rowData={staff ?? []}
-            columnDefs={staffColumns}
-            rowSelection="multiple"
-            getRowId={({ data }) => String(data?.partyId)}
-            onBulkSave={async () => {}}
-            rightAdornment={
-              <Fade in={selectedStaff.length > 0} unmountOnExit>
-                <Box>
-                  <ActionMenu menuItems={actionMenuItems} />
-                </Box>
-              </Fade>
-            }
-            onRowSelection={(newSelectedStaff) =>
-              setSelectedStaff(
-                newSelectedStaff.map(({ partyId, person }) => ({
-                  id: partyId,
-                  name: displayName(person),
-                  type: 'individual',
-                  avatarUrl: person?.avatarUrl,
-                }))
-              )
-            }
-          />
-        </Container>
-      </Page>
+      <PageContainer title={t('people:pageTitle.staff')}>
+        <PageHeading
+          title={t('people:pageHeading.staff')}
+          titleProps={{ variant: 'h3' }}
+          rightAdornment={
+            <Box display="flex" alignItems="center">
+              <Button
+                variant="contained"
+                component={Link}
+                to="./create"
+                startIcon={<AddUserIcon />}
+              >
+                {t('people:createStaff')}
+              </Button>
+            </Box>
+          }
+        />
+        <Table
+          rowData={staff ?? []}
+          columnDefs={staffColumns}
+          rowSelection="multiple"
+          getRowId={({ data }) => String(data?.partyId)}
+          onBulkSave={async () => {}}
+          rightAdornment={
+            <Fade in={selectedStaff.length > 0} unmountOnExit>
+              <Box>
+                <ActionMenu menuItems={actionMenuItems} />
+              </Box>
+            </Fade>
+          }
+          onRowSelection={(newSelectedStaff) =>
+            setSelectedStaff(
+              newSelectedStaff.map(({ partyId, person }) => ({
+                id: partyId,
+                name: displayName(person),
+                type: 'individual',
+                avatarUrl: person?.avatarUrl,
+              }))
+            )
+          }
+        />
+      </PageContainer>
       <SendSmsModal
         isOpen={isSendSmsOpen}
         onClose={onCloseSendSms}

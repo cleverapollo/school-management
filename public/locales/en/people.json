@@ -120,11 +120,15 @@
   "createContact": "Create contact",
   "pageTitle": {
     "contacts": "List of contacts",
-    "createContact":"Add a new contact"
+    "createContact":"Add a new contact",
+    "staff": "list of staff",
+    "createStaff": "Add a new staff"
   },
   "pageHeading": {
     "contacts": "Contacts",
-    "createContact": "Create contact"
+    "createContact": "Create contact",
+    "staff": "Staff",
+    "createStaff": "Create staff"
   },
   "addStudentRelationship": "Add another student relationship",
   "primaryAddress": "Primary address",
@@ -141,5 +145,7 @@
     "pickupPermission": "Does the contact have permission to pick-up or sign-out this student from school?",
     "allowAccessToStudentData": "Does the contact have permission to access this student's data on Tyro?",
     "allowedToContact": "Can the contact receive correspondence from the school in relation to this student?"
-  }
+  },
+  "createdContactUnsuccessful": "Your contact creation was unsuccessful",
+  "createStaff": "Create staff"
 }

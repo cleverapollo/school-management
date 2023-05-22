@@ -110,6 +110,8 @@ const StaffProfileClassesPage = lazy(
   () => import('./pages/staff/profile/classes')
 );
 
+const CreateStaffPage = lazy(() => import('./pages/staff/create'));
+
 export const getRoutes: NavObjectFunction = (t) => [
   {
     type: NavObjectType.Category,
@@ -303,6 +305,12 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.people.staff'),
             loader: () => getStaff({}),
             element: <StaffListPage />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: 'staff/create',
+            loader: () => getStudentsForSelect({}),
+            element: <CreateStaffPage />,
           },
           {
             type: NavObjectType.NonMenuLink,
