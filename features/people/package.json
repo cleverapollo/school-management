@@ -8,7 +8,7 @@
     "@cubejs-client/react": "^0.31.46",
     "@mui/material": "^5.11.4",
     "@mui/system": "^5.10.14",
-    "@tanstack/react-query": "^4.16.1",
+    "@tanstack/react-query": "^4.29.7",
     "@tyro/api": "*",
     "@tyro/assessments": "*",
     "@tyro/calendar": "*",
