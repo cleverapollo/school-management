@@ -2,7 +2,7 @@ import { Box, Card, Divider, Stack, Typography } from '@mui/material';
 import { Avatar, usePreferredNameLayout } from '@tyro/core';
 import { CurrentLocation } from './current-location';
 import { TyroId } from '../../common/tyro-id';
-import { useStaff } from '../../../api';
+import { useStaff } from '../../../api/staff';
 
 interface StaffOverviewBarProps {
   staffId: number | undefined;

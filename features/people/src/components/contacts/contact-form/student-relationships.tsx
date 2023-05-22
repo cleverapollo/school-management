@@ -34,7 +34,7 @@ import { useCallback } from 'react';
 import {
   StudentSelectOption,
   useStudentsForSelect,
-} from '../../../api/students';
+} from '../../../api/student/students';
 
 const relationshipTypeOptions = Object.values(StudentContactType);
 const priorityOptions = Array.from({ length: 5 }, (_v, k) => k + 1);

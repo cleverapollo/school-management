@@ -12,17 +12,19 @@ import dayjs from 'dayjs';
 import {
   getStudent,
   getStudents,
-  getStudentPersonal,
-  getStudentsContacts,
-  getContacts,
-  getStudentStatus,
-  getStaff,
-  getStudentsSubjectGroups,
-  getStaffStatus,
-  getContactPersonal,
-  getContactStudents,
   getStudentsForSelect,
-} from './api';
+} from './api/student/students';
+import { getStudentStatus } from './api/student/status';
+import {
+  getStudentsContacts,
+  getStudentsSubjectGroups,
+} from './api/student/overview';
+import { getStudentPersonal } from './api/student/personal';
+import { getContacts } from './api/contact/list';
+import { getContactPersonal } from './api/contact/personal';
+import { getContactStudents } from './api/contact/students';
+import { getStaff } from './api/staff';
+import { getStaffStatus } from './api/staff/status';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
 // Student profile pages

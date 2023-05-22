@@ -8,6 +8,7 @@ import {
   UseQueryReturnType,
 } from '@tyro/api';
 import { BulkEditedRows } from '@tyro/core';
+import { peopleStudentsKeys } from './keys';
 
 const students = graphql(/* GraphQL */ `
   query core_students {
@@ -120,16 +121,8 @@ const bulkUpdateCoreStudent = graphql(/* GraphQL */ `
   }
 `);
 
-export const studentKeys = {
-  all: ['people', 'students'] as const,
-  details: (studentId: number | undefined) =>
-    [...studentKeys.all, studentId] as const,
-  forSelect: (filter: StudentFilter) =>
-    [...studentKeys.all, 'select', filter] as const,
-};
-
 const studentsQuery = {
-  queryKey: studentKeys.all,
+  queryKey: peopleStudentsKeys.all,
   queryFn: async () => gqlClient.request(students),
 };
 
@@ -145,7 +138,7 @@ export function useStudents() {
 }
 
 const studentQuery = (studentId: number | undefined) => ({
-  queryKey: studentKeys.details(studentId),
+  queryKey: peopleStudentsKeys.details(studentId),
   queryFn: async () =>
     gqlClient.request(studentById, {
       filter: { partyIds: [studentId ?? 0] },
@@ -209,13 +202,13 @@ export function useBulkUpdateCoreStudent() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(studentKeys.all);
+      queryClient.invalidateQueries(peopleStudentsKeys.all);
     },
   });
 }
 
 const studentsForSelectQuery = (filter: StudentFilter) => ({
-  queryKey: studentKeys.forSelect(filter),
+  queryKey: peopleStudentsKeys.forSelect(filter),
   queryFn: async () => gqlClient.request(studentsInfoForSelect, { filter }),
 });
 
