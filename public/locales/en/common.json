@@ -88,7 +88,7 @@
   "account": "account",
   "product": "product",
   "invoice": "invoice",
-  "details": "details",
+  "details": "Details",
   "checkout": "checkout",
   "calendar": "calendar",
   "analytics": "analytics",
@@ -118,7 +118,7 @@
   "attendance": "Attendance",
   "assessment": "assessment",
   "wellbeing": "wellbeing",
-  "student": "student",
+  "student": "Student",
   "subject options": "subject options",
   "people": "people",
   "substitution": "substitution",
@@ -204,7 +204,9 @@
     "min": "You must enter a number greater or equal than {{number}}",
     "max": "You must enter a number less or equal than {{number}}",
     "minLength":"You must enter a minimum of {{count}} characters",
-    "maxLength": "You have exceeded the maximum character length of {{count}}"
+    "maxLength": "You have exceeded the maximum character length of {{count}}",
+    "invalidMobileNumber": "This is an invalid mobile number for this country",
+    "invalidEmail": "This is an invalid email"
   },
   "studyLevel": {
     "COMMON": "Common",
@@ -234,5 +236,11 @@
   "createdBy": "Created by",
   "dateOfCreation": "Date of creation",
   "calendars": "Calendars",
-  "status": "Status"
+  "status": "Status",
+  "mobileNumber": "Mobile number",
+  "enableAll": "Enable all",
+  "cancelConfirmDialog": {
+    "title": "Cancel",
+    "description":"Are you sure you want to cancel?"
+  }
 }

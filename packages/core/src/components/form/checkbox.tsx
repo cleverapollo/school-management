@@ -1,8 +1,8 @@
 import {
+  Checkbox,
   FormControlLabel,
   FormControlLabelProps,
-  Switch,
-  SwitchProps,
+  CheckboxProps,
 } from '@mui/material';
 import {
   FieldValues,
@@ -12,19 +12,19 @@ import {
   UseControllerProps,
 } from 'react-hook-form';
 
-type RHFSwitchProps<TField extends FieldValues> = {
+type RHFCheckboxProps<TField extends FieldValues> = {
   label?: string;
-  switchProps?: SwitchProps;
+  checkboxProps?: CheckboxProps;
   controlLabelProps?: Omit<FormControlLabelProps, 'label' | 'control'>;
   controlProps: UseControllerProps<TField>;
 };
 
-export const RHFSwitch = <TField extends FieldValues>({
+export const RHFCheckbox = <TField extends FieldValues>({
   label,
   controlLabelProps,
-  switchProps,
+  checkboxProps,
   controlProps,
-}: RHFSwitchProps<TField>) => {
+}: RHFCheckboxProps<TField>) => {
   const { field } = useController({
     ...controlProps,
     defaultValue: !!controlProps.defaultValue as PathValue<
@@ -38,13 +38,13 @@ export const RHFSwitch = <TField extends FieldValues>({
       {...controlLabelProps}
       label={label}
       control={
-        <Switch
-          {...switchProps}
+        <Checkbox
+          {...checkboxProps}
           {...field}
           checked={!!field.value}
           onChange={(...args) => {
             field.onChange(...args);
-            switchProps?.onChange?.(...args);
+            checkboxProps?.onChange?.(...args);
           }}
         />
       }

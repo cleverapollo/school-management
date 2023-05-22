@@ -1,21 +1,21 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient } from '@tyro/api';
-
+import { queryClient } from '@tyro/api';
 
 const compositeStaffStatus = {
   currentLocation: {
-    room: [{
-      roomId: '123',
-      name: 'E101',
-      capacity: ''
-    }],
+    room: [
+      {
+        roomId: '123',
+        name: 'E101',
+        capacity: '',
+      },
+    ],
     lesson: '2Eng-G',
-    eventId: '12345'
-  }
+    eventId: '12345',
+  },
 };
 
 export type CompositeStaffStatus = typeof compositeStaffStatus;
-
 
 export const staffStatusKeys = {
   all: ['people', 'staff', 'status'] as const,
