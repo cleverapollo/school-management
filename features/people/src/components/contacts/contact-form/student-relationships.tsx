@@ -9,6 +9,7 @@ import {
   AccordionSummary,
   AccordionDetails,
   IconButton,
+  Tooltip,
   Stack,
 } from '@mui/material';
 import {
@@ -29,8 +30,13 @@ import {
   useFieldArray,
 } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
-import { AddIcon, ChevronDownIcon, TrashIcon } from '@tyro/icons';
-import { useCallback } from 'react';
+import {
+  AddIcon,
+  ChevronDownIcon,
+  InfoCircleIcon,
+  TrashIcon,
+} from '@tyro/icons';
+import { useCallback, useState } from 'react';
 import {
   StudentSelectOption,
   useStudentsForSelect,
@@ -60,6 +66,13 @@ type StudentRelationshipsProps<TField extends StudentRelationshipsFormState> = {
     : never;
 };
 
+type CustomSettings = {
+  keyName: keyof StudentContactRelationshipInfoInput;
+  label: string;
+  disabled: boolean;
+  tooltipText?: string;
+};
+
 export const StudentRelationships = <
   TField extends StudentRelationshipsFormState
 >({
@@ -70,64 +83,122 @@ export const StudentRelationships = <
   const { t } = useTranslation(['common', 'people']);
   const { spacing } = useTheme();
 
-  const { data: studentsData = [] } = useStudentsForSelect({});
-  const { displayName } = usePreferredNameLayout();
-
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'studentRelationships',
   });
 
-  const CUSTOM_SETTINGS: Array<{
-    keyName: keyof StudentContactRelationshipInfoInput;
-    label: string;
-  }> = [
-    {
-      label: t('people:allowedToContact'),
-      keyName: 'allowedToContact',
-    },
+  const { data: studentsData = [] } = useStudentsForSelect({});
+  const { displayName } = usePreferredNameLayout();
+  const [isPartiallyEnabled, setIsPartiallyEnabled] = useState<
+    boolean | undefined
+  >();
+
+  const [customSettings, setCustomSettings] = useState<CustomSettings[]>([
     {
       label: t('people:legalGuardian'),
       keyName: 'legalGuardian',
+      disabled: false,
     },
     {
       label: t('people:pickupPermission'),
       keyName: 'pickupRights',
+      disabled: false,
     },
     {
       label: t('people:allowAccessToStudentData'),
       keyName: 'allowAccessToStudentData',
+      disabled: false,
+    },
+    {
+      label: t('people:allowedToContact'),
+      keyName: 'allowedToContact',
+      disabled: false,
     },
     {
       label: t('people:includeInSms'),
       keyName: 'includeInSms',
+      disabled: true,
+      tooltipText: t('people:allowedToContactRequired'),
     },
     {
       label: t('people:includeInTmail'),
       keyName: 'includeInTmail',
+      disabled: true,
+      tooltipText: t('people:allowedToContactRequired'),
     },
-  ];
+  ]);
+
+  const handleEnableContactPermissions = useCallback(
+    (index: number, enable: boolean) => {
+      setCustomSettings(
+        customSettings.map((settings) => ({
+          ...settings,
+          ...(settings.keyName === 'includeInSms' && {
+            disabled: !enable,
+          }),
+          ...(settings.keyName === 'includeInTmail' && {
+            disabled: !enable,
+          }),
+        }))
+      );
+
+      if (!enable) {
+        setValue(`studentRelationships.${index}.includeInSms`, false);
+        setValue(`studentRelationships.${index}.includeInTmail`, false);
+      }
+    },
+    [setValue, customSettings, setCustomSettings]
+  );
+
+  const handlePartiallyEnabled = useCallback(
+    (index: number) => {
+      const state = getValues(`studentRelationships.${index}`);
+      const partial = customSettings.filter(({ keyName }) => !!state[keyName]);
+      const enabledAll = partial.length === customSettings.length;
+
+      setValue(`studentRelationships.${index}.enableAll`, enabledAll);
+      setIsPartiallyEnabled(enabledAll ? undefined : partial.length > 0);
+    },
+    [getValues, customSettings, setValue, setIsPartiallyEnabled]
+  );
 
   const updateContactSettings = useCallback(
-    (index: number, checked: boolean) => {
-      CUSTOM_SETTINGS.map(({ keyName }) => keyName).forEach((keyName) => {
-        setValue(`studentRelationships.${index}.${keyName}`, checked);
-      });
+    (
+      index: number,
+      currentKeyName: keyof StudentContactRelationshipInfoInput,
+      checked: boolean
+    ) => {
+      setValue(`studentRelationships.${index}.${currentKeyName}`, checked);
+
+      if (currentKeyName === 'allowedToContact') {
+        handleEnableContactPermissions(index, checked);
+      }
+
+      handlePartiallyEnabled(index);
     },
-    [setValue, CUSTOM_SETTINGS]
+    [setValue, handlePartiallyEnabled, handleEnableContactPermissions]
   );
 
   const updateEnableAll = useCallback(
-    (index: number) => {
-      const state = getValues(`studentRelationships.${index}`);
+    (index: number, checked: boolean) => {
+      setValue(`studentRelationships.${index}.enableAll`, checked);
 
-      const enabled = CUSTOM_SETTINGS.map(({ keyName }) => keyName).every(
-        (keyName) => !!state[keyName]
-      );
+      customSettings.forEach(({ keyName }) => {
+        setValue(`studentRelationships.${index}.${keyName}`, checked);
+        if (keyName === 'allowedToContact') {
+          handleEnableContactPermissions(index, checked);
+        }
+      });
 
-      setValue(`studentRelationships.${index}.enableAll`, enabled);
+      setIsPartiallyEnabled(checked ? undefined : checked);
     },
-    [setValue, CUSTOM_SETTINGS]
+    [
+      setValue,
+      customSettings,
+      setIsPartiallyEnabled,
+      handleEnableContactPermissions,
+    ]
   );
 
   return (
@@ -267,7 +338,11 @@ export const StudentRelationships = <
                     }}
                   >
                     <RHFCheckbox
-                      label={t('common:enableAll')}
+                      label={
+                        isPartiallyEnabled
+                          ? t('common:partiallyEnabled')
+                          : t('common:enableAll')
+                      }
                       controlLabelProps={{
                         sx: {
                           width: '100%',
@@ -282,9 +357,10 @@ export const StudentRelationships = <
                         onClick: (e) => e.stopPropagation(),
                       }}
                       checkboxProps={{
+                        indeterminate: isPartiallyEnabled,
                         color: 'primary',
                         onChange: (_event, checked) =>
-                          updateContactSettings(index, checked),
+                          updateEnableAll(index, checked),
                       }}
                       controlProps={{
                         name: `studentRelationships.${index}.enableAll`,
@@ -298,26 +374,62 @@ export const StudentRelationships = <
                     }}
                   >
                     <Stack>
-                      {CUSTOM_SETTINGS.map(({ label, keyName }) => (
-                        <RHFSwitch
-                          key={keyName}
-                          label={label}
-                          switchProps={{
-                            color: 'primary',
-                            onChange: () => updateEnableAll(index),
-                          }}
-                          controlLabelProps={{
-                            labelPlacement: 'start',
-                            sx: {
-                              justifyContent: 'space-between',
-                            },
-                          }}
-                          controlProps={{
-                            name: `studentRelationships.${index}.${keyName}`,
-                            control,
-                          }}
-                        />
-                      ))}
+                      {customSettings.map(
+                        ({ label, keyName, disabled, tooltipText }) => (
+                          <Tooltip
+                            title={disabled ? tooltipText : ''}
+                            describeChild
+                            placement="top-end"
+                            PopperProps={{
+                              sx: {
+                                '& .MuiTooltip-tooltip': {
+                                  marginBottom: '0 !important',
+                                },
+                              },
+                            }}
+                          >
+                            <Stack>
+                              <RHFSwitch
+                                key={keyName}
+                                label={
+                                  disabled ? (
+                                    <Stack direction="row" gap={0.5}>
+                                      {label}
+                                      {tooltipText && (
+                                        <InfoCircleIcon
+                                          sx={{ width: 18, height: 18 }}
+                                        />
+                                      )}
+                                    </Stack>
+                                  ) : (
+                                    label
+                                  )
+                                }
+                                switchProps={{
+                                  color: 'primary',
+                                  onChange: (_event, checked) =>
+                                    updateContactSettings(
+                                      index,
+                                      keyName,
+                                      checked
+                                    ),
+                                }}
+                                controlLabelProps={{
+                                  disabled,
+                                  labelPlacement: 'start',
+                                  sx: {
+                                    justifyContent: 'space-between',
+                                  },
+                                }}
+                                controlProps={{
+                                  name: `studentRelationships.${index}.${keyName}`,
+                                  control,
+                                }}
+                              />
+                            </Stack>
+                          </Tooltip>
+                        )
+                      )}
                     </Stack>
                   </AccordionDetails>
                 </Accordion>
