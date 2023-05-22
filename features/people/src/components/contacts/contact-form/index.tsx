@@ -2,7 +2,7 @@ import { Card, Stack, CardHeader, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { ConfirmDialog, useFormValidator } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { useForm, useFormState } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import {
@@ -37,31 +37,34 @@ export function ContactForm() {
   const { mutate: createContactMutation, isLoading } = useCreateContact();
 
   const { resolver, rules } = useFormValidator<ContactFormState>();
-  const { control, handleSubmit, setValue, getValues } =
-    useForm<ContactFormState>({
-      defaultValues: {
-        studentRelationships: [{}],
-      },
-      resolver: resolver({
-        firstName: rules.required(),
-        surname: rules.required(),
-        email: rules.isEmail(),
-        mobileNumber: rules.validate<ContactFormState['mobileNumber']>(
-          (mobileNumber, throwError) => {
-            if (mobileNumber?.number && !mobileNumber.numberMatchWithMask) {
-              throwError(t('common:errorMessages.invalidMobileNumber'));
-            }
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    getValues,
+    formState: { isDirty },
+  } = useForm<ContactFormState>({
+    defaultValues: {
+      studentRelationships: [{}],
+    },
+    resolver: resolver({
+      firstName: rules.required(),
+      surname: rules.required(),
+      email: rules.isEmail(),
+      mobileNumber: rules.validate<ContactFormState['mobileNumber']>(
+        (mobileNumber, throwError) => {
+          if (mobileNumber?.number && !mobileNumber.numberMatchWithMask) {
+            throwError(t('common:errorMessages.invalidMobileNumber'));
           }
-        ),
-        studentRelationships: {
-          priority: rules.required(),
-          relationshipType: rules.required(),
-          student: rules.required(),
-        },
-      }),
-    });
-
-  const { isDirty } = useFormState({ control });
+        }
+      ),
+      studentRelationships: {
+        priority: rules.required(),
+        relationshipType: rules.required(),
+        student: rules.required(),
+      },
+    }),
+  });
 
   const goBack = () => {
     navigate('/people/contacts');
