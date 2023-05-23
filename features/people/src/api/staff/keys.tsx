@@ -9,4 +9,5 @@ export const peopleStaffKeys = {
     [...peopleStaffKeys.all, 'status', staffId] as const,
   subjectGroups: (filter: StaffFilter) =>
     [...peopleStaffKeys.all, 'classes', filter] as const,
+  createStaff: () => [...peopleStaffKeys.all, 'createStaff'] as const,
 };

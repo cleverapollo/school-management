@@ -38,6 +38,7 @@
     "UNKNOWN": "Unknown"
   },
   "employmentCapacity": {
+    "title": "Employment capacity",
     "PERMANENT": "Permanent",
     "TEMPORARY": "Temporary",
     "CONTRACTS_OF_INDEFINITE_DURATION": "Contracts of indefinite duration",
@@ -132,13 +133,15 @@
   },
   "addStudentRelationship": "Add another student relationship",
   "primaryAddress": "Primary address",
-  "personalInformation": "New contact personal information",
+  "contactPersonalInformation": "New contact personal information",
   "studentRelationships": "Associated students",
   "studentRelationshipsRequired": "At least one student must be associated to the contact",
   "contactSettings": "Contact settings",
   "contactSettingsDescription": "Permissions and preferences for this contact and student relationship",
   "successfullyCreatedContact": "Successfully created contact",
   "createdContactUnsuccessful": "Your contact creation was unsuccessful",
+  "successfullyCreatedStaff": "Successfully created staff",
+  "createdStaffUnsuccessful": "Your staff creation was unsuccessful",
   "allowedToContactRequired": "Permission to receive correspondence is required to enable this permission",
   "contactSettingsPermissions": {
     "legalGuardian": "Is the contact a legal guardian of this student?",
@@ -146,6 +149,8 @@
     "allowAccessToStudentData": "Does the contact have permission to access this student's data on Tyro?",
     "allowedToContact": "Can the contact receive correspondence from the school in relation to this student?"
   },
-  "createdContactUnsuccessful": "Your contact creation was unsuccessful",
-  "createStaff": "Create staff"
+  "createStaff": "Create staff",
+  "staffPersonalInformation": "New staff personal information",
+  "nextOfKin": "Next of kin",
+  "employmentInformation": "Employment information"
 }

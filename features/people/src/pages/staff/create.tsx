@@ -1,5 +1,6 @@
 import { useTranslation } from '@tyro/i18n';
 import { PageHeading, PageContainer } from '@tyro/core';
+import { StaffForm } from '../../components/staff/staff-form';
 
 export default function CreateStaffPage() {
   const { t } = useTranslation(['people']);
@@ -20,7 +21,7 @@ export default function CreateStaffPage() {
           ],
         }}
       />
-      form
+      <StaffForm />
     </PageContainer>
   );
 }

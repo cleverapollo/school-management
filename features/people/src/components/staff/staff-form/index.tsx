@@ -6,61 +6,59 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import {
-  StudentRelationships,
-  StudentRelationshipsFormState,
-} from './student-relationships';
-import { useCreateContact } from '../../../api/contact/create-contact';
+  PersonalInformation,
+  PersonalInformationFormState,
+} from './personal-information';
 import {
   PrimaryAddress,
   PrimaryAddressFormState,
 } from '../../common/primary-address';
+import { NextOfKin, NextOfKinFormState } from './next-of-kin';
+import { useCreateStaff } from '../../../api/staff/create-staff';
 import {
-  PersonalInformation,
-  PersonalInformationFormState,
-} from './personal-information';
+  EmploymentInformation,
+  EmploymentInformationFormState,
+} from './employment-information';
 
-type ContactFormState = PersonalInformationFormState &
+type StaffFormState = PersonalInformationFormState &
+  EmploymentInformationFormState &
   PrimaryAddressFormState &
-  StudentRelationshipsFormState;
+  NextOfKinFormState;
 
-export function ContactForm() {
+export function StaffForm() {
   const { t } = useTranslation(['common', 'people']);
   const navigate = useNavigate();
+
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const { mutate: createStaffMutation, isLoading } = useCreateStaff();
 
-  const { mutate: createContactMutation, isLoading } = useCreateContact();
-
-  const { resolver, rules } = useFormValidator<ContactFormState>();
+  const { resolver, rules } = useFormValidator<StaffFormState>();
   const {
     control,
     handleSubmit,
-    setValue,
     formState: { isDirty },
-  } = useForm<ContactFormState>({
-    defaultValues: {
-      studentRelationships: [{}],
-    },
+  } = useForm<StaffFormState>({
     resolver: resolver({
+      title: rules.required(),
       firstName: rules.required(),
-      surname: rules.required(),
+      lastName: rules.required(),
       email: rules.isEmail(),
-      mobileNumber: rules.validate<ContactFormState['mobileNumber']>(
+      mobileNumber: rules.validate<StaffFormState['mobileNumber']>(
         (mobileNumber, throwError) => {
           if (mobileNumber?.number && !mobileNumber.numberMatchWithMask) {
             throwError(t('common:errorMessages.invalidMobileNumber'));
           }
         }
       ),
-      studentRelationships: {
-        priority: rules.required(),
-        relationshipType: rules.required(),
-        student: rules.required(),
-      },
+      additionalNumber: rules.isPhoneNumber(),
+      startDate: rules.date(),
+      nextOfKinPhoneNumber: rules.isPhoneNumber(),
+      nextOfKinAdditionalNumber: rules.isPhoneNumber(),
     }),
   });
 
   const goBack = () => {
-    navigate('/people/contacts');
+    navigate('/people/staff');
   };
 
   const handleCancelForm = () => {
@@ -72,9 +70,10 @@ export function ContactForm() {
   };
 
   const onSubmit = ({
-    firstName,
-    surname: lastName,
+    title,
+    startDate,
     mobileNumber,
+    additionalNumber,
     email,
     addressLine1: line1,
     addressLine2: line2,
@@ -82,28 +81,45 @@ export function ContactForm() {
     eircode: postCode,
     city,
     country,
-    spokenLanguage: nativeLanguage,
-    requiresInterpreter,
-    studentRelationships,
-  }: ContactFormState) => {
+    nextOfKinFirstName,
+    nextOfKinSurname,
+    nextOfKinPhoneNumber,
+    nextOfKinAdditionalNumber,
+    ...data
+  }: StaffFormState) => {
     const hasAddress = city || country || line1 || line2 || line3 || postCode;
+    const hasNextOfKin = nextOfKinFirstName || nextOfKinSurname;
+    const nextOfKinPhoneNumbers = [
+      nextOfKinPhoneNumber,
+      nextOfKinAdditionalNumber,
+    ].filter(Boolean);
 
-    createContactMutation(
+    createStaffMutation(
       {
-        personal: {
-          firstName,
-          lastName,
-        },
-        ...(mobileNumber && {
-          phoneNumbers: [
-            {
-              primaryPhoneNumber: true,
-              active: true,
-              number: mobileNumber.number,
-              countryCode: mobileNumber.countryCode,
-            },
-          ],
-        }),
+        ...data,
+        titleId: title.id,
+        startDate: startDate ? startDate.format('YYYY-MM-DD') : undefined,
+        phoneNumbers: [
+          ...(mobileNumber
+            ? [
+                {
+                  primaryPhoneNumber: true,
+                  active: true,
+                  number: mobileNumber.number,
+                  countryCode: mobileNumber.countryCode,
+                },
+              ]
+            : []),
+          ...(additionalNumber
+            ? [
+                {
+                  primaryPhoneNumber: false,
+                  active: true,
+                  number: additionalNumber,
+                },
+              ]
+            : []),
+        ],
         ...(email && {
           emails: [
             {
@@ -127,15 +143,13 @@ export function ContactForm() {
             },
           ],
         }),
-        nativeLanguage,
-        requiresInterpreter,
-        studentRelationships: studentRelationships.map(
-          ({ student, priority, ...restData }) => ({
-            ...restData,
-            studentPartyId: student.partyId,
-            priority: Number(priority),
-          })
-        ),
+        ...(hasNextOfKin && {
+          nextOfKin: {
+            firstName: nextOfKinFirstName,
+            lastName: nextOfKinSurname,
+            phoneNumbers: nextOfKinPhoneNumbers,
+          },
+        }),
       },
       {
         onSuccess: goBack,
@@ -149,19 +163,16 @@ export function ContactForm() {
         <Card variant="outlined">
           <CardHeader
             component="h2"
-            title={t('people:contactPersonalInformation')}
+            title={t('people:staffPersonalInformation')}
           />
           <Stack direction="column" gap={3} p={3}>
             <PersonalInformation control={control} />
+            <EmploymentInformation control={control} />
             <PrimaryAddress control={control} />
+            <NextOfKin control={control} />
           </Stack>
         </Card>
-        <Card variant="outlined">
-          <CardHeader component="h2" title={t('people:studentRelationships')} />
-          <Stack direction="column" p={3}>
-            <StudentRelationships setValue={setValue} control={control} />
-          </Stack>
-        </Card>
+
         <Stack direction="row" gap={2} justifyContent="flex-end">
           <Button
             variant="soft"
@@ -177,7 +188,7 @@ export function ContactForm() {
             type="submit"
             loading={isLoading}
           >
-            {t('people:createContact')}
+            {t('people:createStaff')}
           </LoadingButton>
         </Stack>
       </Stack>

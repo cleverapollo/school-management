@@ -248,6 +248,6 @@
     "title": "Cancel",
     "description":"Are you sure you want to cancel?"
   },
-  "homeNumber": "Home number",
-  "workNumber": "Work number"
+  "phoneNumber": "Phone number",
+  "additionalNumber": "Additional number"
 }

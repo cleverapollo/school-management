@@ -59,7 +59,7 @@ export default function SubjectGroupProfileAttendancePage() {
     cancelAttendance,
   } = useHandleLessonAttendance({
     partyId: groupIdNumber!,
-    students: subjectGroupData?.students,
+    students: subjectGroupData?.students || [],
   });
 
   const [showAlertSuccess, setAlertSuccess] = useState(false);
@@ -181,8 +181,8 @@ export default function SubjectGroupProfileAttendancePage() {
                   </TableCell>
                   <TableCell>
                     <AttendanceToggle
-                      codeId={getStudentAttendanceCode(student!.partyId)}
-                      onChange={setStudentAttendanceCode(student!.partyId)}
+                      codeId={getStudentAttendanceCode(student.partyId)}
+                      onChange={setStudentAttendanceCode(student.partyId)}
                     />
                   </TableCell>
                 </TableRow>
