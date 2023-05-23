@@ -19,6 +19,7 @@ const coreRooms = graphql(/* GraphQL */ `
 
 export const roomsKeys = {
   all: ['coreRooms'] as const,
+  createOrUpdateRoom: () => [...roomsKeys.all, 'createOrUpdateRoom'] as const,
 };
 
 const coreRoomsQuery = {

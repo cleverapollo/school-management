@@ -1,21 +1,32 @@
 import { Button, Container, Typography } from '@mui/material';
 import { useTranslation, TFunction } from '@tyro/i18n';
-import { useMemo } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import {
+  ActionMenu,
   GridOptions,
   ICellRendererParams,
   Page,
   Table,
   TableBooleanValue,
 } from '@tyro/core';
-import { AddIcon } from '@tyro/icons';
+import {
+  AddIcon,
+  EditIcon,
+  ExternalLinkIcon,
+  VerticalDotsIcon,
+} from '@tyro/icons';
 import { useCoreRooms } from '../api/rooms';
+import {
+  EditRoomDetailsModal,
+  EditRoomFormState,
+} from '../components/edit-room-details-modal';
 
 type ReturnTypeFromUseCoreRooms = NonNullable<
   ReturnType<typeof useCoreRooms>['data']
 >[number];
 
 const getRoomColumns = (
+  onClickEdit: Dispatch<SetStateAction<Partial<EditRoomFormState> | null>>,
   t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>
 ): GridOptions<ReturnTypeFromUseCoreRooms>['columnDefs'] => [
   {
@@ -47,7 +58,7 @@ const getRoomColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseCoreRooms, any>) => (
-      <TableBooleanValue value={Boolean(!data?.disabled)} />
+      <TableBooleanValue value={!data?.disabled} />
     ),
   },
   {
@@ -55,16 +66,50 @@ const getRoomColumns = (
     field: 'pools',
     lockVisible: true,
   },
+  {
+    suppressColumnsToolPanel: true,
+    sortable: false,
+    cellClass: 'ag-show-on-row-interaction',
+    cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseCoreRooms>) =>
+      data && (
+        <ActionMenu
+          iconOnly
+          buttonIcon={<VerticalDotsIcon />}
+          menuItems={[
+            {
+              label: t('settings:actions.editRoom'),
+              icon: <EditIcon />,
+              onClick: () => onClickEdit(data),
+            },
+            {
+              label: t('settings:actions.linkToViewRoomTimetable'),
+              icon: <ExternalLinkIcon />,
+              onClick: () => {},
+            },
+          ]}
+        />
+      ),
+  },
 ];
 
 export default function Rooms() {
   const { t } = useTranslation(['common', 'settings']);
   const { data: roomsList } = useCoreRooms();
+  const [editRoomInitialState, setEditRoomInitialState] =
+    useState<Partial<EditRoomFormState> | null>(null);
 
-  console.log('roomsList', roomsList);
+  const handleAddRoom = () => {
+    setEditRoomInitialState({});
+  };
 
-  const roomColumns = useMemo(() => getRoomColumns(t), [t]);
+  const handleCloseEditModal = () => {
+    setEditRoomInitialState(null);
+  };
 
+  const roomColumns = useMemo(
+    () => getRoomColumns(setEditRoomInitialState, t),
+    [editRoomInitialState, t]
+  );
   return (
     <Page title={t('settings:rooms')}>
       <Container maxWidth="xl">
@@ -76,10 +121,18 @@ export default function Rooms() {
           columnDefs={roomColumns}
           getRowId={({ data }) => String(data?.roomId)}
           rightAdornment={
-            <Button variant="text" endIcon={<AddIcon />}>
+            <Button
+              variant="text"
+              onClick={handleAddRoom}
+              endIcon={<AddIcon />}
+            >
               {t('settings:actions.addNewRoom')}
             </Button>
           }
+        />
+        <EditRoomDetailsModal
+          initialRoomState={editRoomInitialState}
+          onClose={handleCloseEditModal}
         />
       </Container>
     </Page>
