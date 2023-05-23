@@ -37,15 +37,19 @@
     "labelWasAssigned": "Label was assigned!"
   },
   "relationshipType": {
-    "FATHER": "Father",
-    "MOTHER": "Mother",
-    "SIBLING": "Sibling",
     "AUNTY": "Aunty",
-    "UNCLE": "Uncle",
-    "GRAND_FATHER": "Grandfather",
-    "GRAND_MOTHER": "Grandmother",
-    "FAMILY_FRIEND": "Family friend",
-    "NEIGHBOUR": "Neighbour"
+    "FAMILY_FRIEND": "FamilyFriend",
+    "FATHER": "Father",
+    "GRAND_FATHER": "GrandFather",
+    "GRAND_MOTHER": "GrandMother",
+    "MOTHER": "Mother",
+    "NEIGHBOUR": "Neighbour",
+    "OTHER": "Other",
+    "SIBLING": "Sibling",
+    "SOCIAL_WORKER": "SocialWorker",
+    "STEP_FATHER": "StepFather",
+    "STEP_MOTHER": "StepMother",
+    "UNCLE": "Uncle"
   },
   "total": "Total",
   "grade": "Grade",
@@ -203,7 +207,7 @@
     "afterStartTime": "End time must be later than start time",
     "min": "You must enter a number greater or equal than {{number}}",
     "max": "You must enter a number less or equal than {{number}}",
-    "minLength":"You must enter a minimum of {{count}} characters",
+    "minLength": "You must enter a minimum of {{count}} characters",
     "maxLength": "You have exceeded the maximum character length of {{count}}",
     "invalidMobileNumber": "This is an invalid mobile number for this country",
     "invalidEmail": "This is an invalid email"
@@ -241,6 +245,6 @@
   "enableAll": "Enable all",
   "cancelConfirmDialog": {
     "title": "Cancel",
-    "description":"Are you sure you want to cancel?"
+    "description": "Are you sure you want to cancel?"
   }
 }
