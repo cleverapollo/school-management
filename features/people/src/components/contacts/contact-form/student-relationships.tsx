@@ -25,9 +25,9 @@ import {
 } from '@tyro/core';
 import {
   Control,
-  UseFormGetValues,
   UseFormSetValue,
   useFieldArray,
+  useWatch,
 } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
 import {
@@ -36,7 +36,7 @@ import {
   InfoCircleIcon,
   TrashIcon,
 } from '@tyro/icons';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import {
   StudentSelectOption,
   useStudentsForSelect,
@@ -55,9 +55,6 @@ export type StudentRelationshipsFormState = {
 };
 
 type StudentRelationshipsProps<TField extends StudentRelationshipsFormState> = {
-  getValues: TField extends StudentRelationshipsFormState
-    ? UseFormGetValues<TField>
-    : never;
   setValue: TField extends StudentRelationshipsFormState
     ? UseFormSetValue<TField>
     : never;
@@ -69,7 +66,8 @@ type StudentRelationshipsProps<TField extends StudentRelationshipsFormState> = {
 type CustomSettings = {
   keyName: keyof StudentContactRelationshipInfoInput;
   label: string;
-  disabled: boolean;
+  checked: boolean;
+  disabled?: boolean;
   tooltipText?: string;
 };
 
@@ -77,10 +75,11 @@ export const StudentRelationships = <
   TField extends StudentRelationshipsFormState
 >({
   control,
-  getValues,
   setValue,
 }: StudentRelationshipsProps<TField>) => {
   const { t } = useTranslation(['common', 'people']);
+
+  const { displayName } = usePreferredNameLayout();
   const { spacing } = useTheme();
 
   const { fields, append, remove } = useFieldArray({
@@ -89,117 +88,80 @@ export const StudentRelationships = <
   });
 
   const { data: studentsData = [] } = useStudentsForSelect({});
-  const { displayName } = usePreferredNameLayout();
-  const [isPartiallyEnabled, setIsPartiallyEnabled] = useState<
-    boolean | undefined
-  >();
+  const { studentRelationships = [] } = useWatch({ control });
 
-  const [customSettings, setCustomSettings] = useState<CustomSettings[]>([
-    {
-      label: t('people:legalGuardian'),
-      keyName: 'legalGuardian',
-      disabled: false,
-    },
-    {
-      label: t('people:pickupPermission'),
-      keyName: 'pickupRights',
-      disabled: false,
-    },
-    {
-      label: t('people:allowAccessToStudentData'),
-      keyName: 'allowAccessToStudentData',
-      disabled: false,
-    },
-    {
-      label: t('people:allowedToContact'),
-      keyName: 'allowedToContact',
-      disabled: false,
-    },
-    {
-      label: t('people:includeInSms'),
-      keyName: 'includeInSms',
-      disabled: true,
-      tooltipText: t('people:allowedToContactRequired'),
-    },
-    {
-      label: t('people:includeInTmail'),
-      keyName: 'includeInTmail',
-      disabled: true,
-      tooltipText: t('people:allowedToContactRequired'),
-    },
-  ]);
-
-  const handleEnableContactPermissions = useCallback(
-    (index: number, enable: boolean) => {
-      setCustomSettings(
-        customSettings.map((settings) => ({
-          ...settings,
-          ...(settings.keyName === 'includeInSms' && {
-            disabled: !enable,
-          }),
-          ...(settings.keyName === 'includeInTmail' && {
-            disabled: !enable,
-          }),
-        }))
-      );
-
-      if (!enable) {
-        setValue(`studentRelationships.${index}.includeInSms`, false);
-        setValue(`studentRelationships.${index}.includeInTmail`, false);
-      }
-    },
-    [setValue, customSettings, setCustomSettings]
-  );
-
-  const handlePartiallyEnabled = useCallback(
-    (index: number) => {
-      const state = getValues(`studentRelationships.${index}`);
-      const partial = customSettings.filter(({ keyName }) => !!state[keyName]);
-      const enabledAll = partial.length === customSettings.length;
-
-      setValue(`studentRelationships.${index}.enableAll`, enabledAll);
-      setIsPartiallyEnabled(enabledAll ? undefined : partial.length > 0);
-    },
-    [getValues, customSettings, setValue, setIsPartiallyEnabled]
-  );
-
-  const updateContactSettings = useCallback(
-    (
-      index: number,
-      currentKeyName: keyof StudentContactRelationshipInfoInput,
-      checked: boolean
-    ) => {
-      setValue(`studentRelationships.${index}.${currentKeyName}`, checked);
-
-      if (currentKeyName === 'allowedToContact') {
-        handleEnableContactPermissions(index, checked);
-      }
-
-      handlePartiallyEnabled(index);
-    },
-    [setValue, handlePartiallyEnabled, handleEnableContactPermissions]
+  const contactSettings = useMemo<CustomSettings[][]>(
+    () =>
+      studentRelationships.map(
+        ({ allowedToContact, ...customSettingsFields }) => [
+          {
+            label: t('people:contactSettingsPermissions.legalGuardian'),
+            keyName: 'legalGuardian',
+            checked: Boolean(customSettingsFields.legalGuardian),
+          },
+          {
+            label: t('people:contactSettingsPermissions.pickupPermission'),
+            keyName: 'pickupRights',
+            checked: Boolean(customSettingsFields.pickupRights),
+          },
+          {
+            label: t(
+              'people:contactSettingsPermissions.allowAccessToStudentData'
+            ),
+            keyName: 'allowAccessToStudentData',
+            checked: Boolean(customSettingsFields.allowAccessToStudentData),
+          },
+          {
+            label: t('people:contactSettingsPermissions.allowedToContact'),
+            keyName: 'allowedToContact',
+            checked: Boolean(allowedToContact),
+          },
+          {
+            label: t('people:includeInSms'),
+            keyName: 'includeInSms',
+            checked: Boolean(customSettingsFields.includeInSms),
+            disabled: !allowedToContact,
+            tooltipText: t('people:allowedToContactRequired'),
+          },
+          {
+            label: t('people:includeInTmail'),
+            keyName: 'includeInTmail',
+            checked: Boolean(customSettingsFields.includeInTmail),
+            disabled: !allowedToContact,
+            tooltipText: t('people:allowedToContactRequired'),
+          },
+        ]
+      ),
+    [t, studentRelationships]
   );
 
   const updateEnableAll = useCallback(
     (index: number, checked: boolean) => {
       setValue(`studentRelationships.${index}.enableAll`, checked);
 
-      customSettings.forEach(({ keyName }) => {
+      contactSettings[index].forEach(({ keyName }) => {
         setValue(`studentRelationships.${index}.${keyName}`, checked);
-        if (keyName === 'allowedToContact') {
-          handleEnableContactPermissions(index, checked);
-        }
       });
-
-      setIsPartiallyEnabled(checked ? undefined : checked);
     },
-    [
-      setValue,
-      customSettings,
-      setIsPartiallyEnabled,
-      handleEnableContactPermissions,
-    ]
+    [setValue, contactSettings]
   );
+
+  useEffect(() => {
+    contactSettings.forEach((custom, index) => {
+      const enabledAll = custom.every(({ checked }) => checked);
+
+      const allowedToContact = custom.find(
+        ({ keyName }) => keyName === 'allowedToContact'
+      );
+
+      setValue(`studentRelationships.${index}.enableAll`, enabledAll);
+
+      if (!allowedToContact?.checked) {
+        setValue(`studentRelationships.${index}.includeInTmail`, false);
+        setValue(`studentRelationships.${index}.includeInSms`, false);
+      }
+    });
+  }, [setValue, contactSettings]);
 
   return (
     <Grid container spacing={2}>
@@ -338,14 +300,9 @@ export const StudentRelationships = <
                     }}
                   >
                     <RHFCheckbox
-                      label={
-                        isPartiallyEnabled
-                          ? t('common:partiallyEnabled')
-                          : t('common:enableAll')
-                      }
+                      label={t('common:enableAll')}
                       controlLabelProps={{
                         sx: {
-                          width: '100%',
                           ml: 0,
                           '& .MuiFormControlLabel-label': {
                             fontWeight: 700,
@@ -357,7 +314,11 @@ export const StudentRelationships = <
                         onClick: (e) => e.stopPropagation(),
                       }}
                       checkboxProps={{
-                        indeterminate: isPartiallyEnabled,
+                        indeterminate: studentRelationships[index]?.enableAll
+                          ? undefined
+                          : contactSettings[index]?.some(
+                              ({ checked }) => checked
+                            ),
                         color: 'primary',
                         onChange: (_event, checked) =>
                           updateEnableAll(index, checked),
@@ -373,10 +334,11 @@ export const StudentRelationships = <
                       backgroundColor: 'slate.50',
                     }}
                   >
-                    <Stack>
-                      {customSettings.map(
+                    <Stack gap={1}>
+                      {contactSettings[index]?.map(
                         ({ label, keyName, disabled, tooltipText }) => (
                           <Tooltip
+                            key={`${index}-${keyName}`}
                             title={disabled ? tooltipText : ''}
                             describeChild
                             placement="top-end"
@@ -390,7 +352,6 @@ export const StudentRelationships = <
                           >
                             <Stack>
                               <RHFSwitch
-                                key={keyName}
                                 label={
                                   disabled ? (
                                     <Stack direction="row" gap={0.5}>
@@ -407,12 +368,6 @@ export const StudentRelationships = <
                                 }
                                 switchProps={{
                                   color: 'primary',
-                                  onChange: (_event, checked) =>
-                                    updateContactSettings(
-                                      index,
-                                      keyName,
-                                      checked
-                                    ),
                                 }}
                                 controlLabelProps={{
                                   disabled,

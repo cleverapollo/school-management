@@ -135,5 +135,11 @@
   "contactSettingsDescription": "Permissions and preferences for this contact and student relationship",
   "successfullyCreatedContact": "Successfully created contact",
   "createdContactUnsuccessful": "Your contact creation was unsuccessful",
-  "allowedToContactRequired": "'Allowed to contact' is required to enable this permission"
+  "allowedToContactRequired": "Permission to receive correspondence is required to enable this permission",
+  "contactSettingsPermissions": {
+    "legalGuardian": "Is the contact a legal guardian of this student?",
+    "pickupPermission": "Does the contact have permission to pick-up or sign-out this student from school?",
+    "allowAccessToStudentData": "Does the contact have permission to access this student's data on Tyro?",
+    "allowedToContact": "Can the contact receive correspondence from the school in relation to this student?"
+  }
 }

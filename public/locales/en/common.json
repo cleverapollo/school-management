@@ -239,7 +239,6 @@
   "status": "Status",
   "mobileNumber": "Mobile number",
   "enableAll": "Enable all",
-  "partiallyEnabled": "Partially enabled",
   "cancelConfirmDialog": {
     "title": "Cancel",
     "description":"Are you sure you want to cancel?"
