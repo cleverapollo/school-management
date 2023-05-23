@@ -6,8 +6,8 @@
   "dependencies": {
     "@cubejs-client/core": "^0.31.46",
     "@cubejs-client/react": "^0.31.46",
-    "@mui/material": "^5.11.4",
-    "@mui/system": "^5.10.14",
+    "@mui/material": "^5.13.2",
+    "@mui/system": "^5.13.2",
     "@tanstack/react-query": "^4.29.7",
     "@tyro/api": "*",
     "@tyro/core": "*",
