@@ -21,7 +21,7 @@ import {
   useBulkUpdateCoreStudent,
   ReturnTypeFromUseStudents,
   useStudents,
-} from '../../api/students';
+} from '../../api/student/students';
 
 const getStudentColumns = (
   translate: TFunction<

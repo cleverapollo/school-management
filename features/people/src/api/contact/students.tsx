@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient, Student } from '@tyro/api';
-import dayjs from 'dayjs';
+import { gqlClient, graphql, queryClient } from '@tyro/api';
+import { peopleContactsKeys } from './keys';
 
 const contactsStudentsById = graphql(/* GraphQL */ `
   query core_studentContacts_students($filter: StudentContactFilter!) {
@@ -36,14 +36,8 @@ const contactsStudentsById = graphql(/* GraphQL */ `
   }
 `);
 
-export const contactStudentsKeys = {
-  all: ['people', 'contact', 'students'] as const,
-  details: (contactId: number | undefined) =>
-    [...contactStudentsKeys.all, contactId] as const,
-};
-
 const contactStudentsQuery = (contactId: number | undefined) => ({
-  queryKey: contactStudentsKeys.details(contactId),
+  queryKey: peopleContactsKeys.students(contactId),
   queryFn: async () =>
     gqlClient.request(contactsStudentsById, {
       filter: { studentContactPartyIds: [contactId ?? 0] },

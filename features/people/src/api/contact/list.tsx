@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, queryClient } from '@tyro/api';
+import { peopleContactsKeys } from './keys';
 
 const contacts = graphql(/* GraphQL */ `
   query core_studentContacts {
@@ -11,7 +12,14 @@ const contacts = graphql(/* GraphQL */ `
         lastName
       }
       personalInformation {
-        preferredFirstName
+        primaryAddress {
+          line1
+          line2
+          line3
+          city
+          country
+          postCode
+        }
         primaryPhoneNumber {
           number
         }
@@ -19,18 +27,21 @@ const contacts = graphql(/* GraphQL */ `
           email
         }
       }
+      relationships {
+        student {
+          person {
+            avatarUrl
+            firstName
+            lastName
+          }
+        }
+      }
     }
   }
 `);
 
-export const contactKeys = {
-  all: ['people', 'contacts'] as const,
-  details: (studentId: number | undefined) =>
-    [...contactKeys.all, studentId] as const,
-};
-
 const contactsQuery = {
-  queryKey: contactKeys.all,
+  queryKey: peopleContactsKeys.all,
   queryFn: async () => gqlClient.request(contacts),
 };
 

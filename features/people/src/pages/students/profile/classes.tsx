@@ -21,7 +21,7 @@ import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { Box, Fade } from '@mui/material';
 import { MobileIcon } from '@tyro/icons';
 import { SmsRecipientType } from '@tyro/api';
-import { useStudentsSubjectGroups } from '../../../api/student';
+import { useStudentsSubjectGroups } from '../../../api/student/overview';
 
 type ReturnTypeFromUseStudentsSubjectGroups = NonNullable<
   ReturnType<typeof useStudentsSubjectGroups>['data']

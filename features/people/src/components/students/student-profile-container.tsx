@@ -8,7 +8,7 @@ import {
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { Container } from '@mui/material';
-import { useStudent } from '../../api/students';
+import { useStudent } from '../../api/student/students';
 import { StudentOverviewBar } from './student-overview-bar';
 
 export default function StudentProfileContainer() {

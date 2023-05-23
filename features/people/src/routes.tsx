@@ -12,16 +12,19 @@ import dayjs from 'dayjs';
 import {
   getStudent,
   getStudents,
-  getStudentPersonal,
+  getStudentsForSelect,
+} from './api/student/students';
+import { getStudentStatus } from './api/student/status';
+import {
   getStudentsContacts,
-  getContacts,
-  getStudentStatus,
-  getStaff,
   getStudentsSubjectGroups,
-  getStaffStatus,
-  getContactPersonal,
-  getContactStudents,
-} from './api';
+} from './api/student/overview';
+import { getStudentPersonal } from './api/student/personal';
+import { getContacts } from './api/contact/list';
+import { getContactPersonal } from './api/contact/personal';
+import { getContactStudents } from './api/contact/students';
+import { getStaff } from './api/staff';
+import { getStaffStatus } from './api/staff/status';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
 // Student profile pages
@@ -62,9 +65,9 @@ const StudentProfileSettingsPage = lazy(
   () => import('./pages/students/profile/settings')
 );
 
+// Contact pages
 const ContactsListPage = lazy(() => import('./pages/contacts'));
 
-// Contact profile pages
 const ContactProfileContainer = lazy(
   () => import('./components/contact/contact-profile-container')
 );
@@ -81,9 +84,12 @@ const ContactProfileAccessPage = lazy(
   () => import('./pages/contacts/profile/access')
 );
 
+const CreateContactPage = lazy(() => import('./pages/contacts/create'));
+
+// Staff pages
+
 const StaffListPage = lazy(() => import('./pages/staff'));
 
-// Staff profile pages
 const StaffProfileContainer = lazy(
   () => import('./components/staff/staff-profile-container')
 );
@@ -239,6 +245,12 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.people.contacts'),
             loader: () => getContacts(),
             element: <ContactsListPage />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: 'contacts/create',
+            loader: () => getStudentsForSelect({}),
+            element: <CreateContactPage />,
           },
           {
             type: NavObjectType.NonMenuLink,
