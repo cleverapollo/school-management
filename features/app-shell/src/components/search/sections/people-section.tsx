@@ -17,7 +17,7 @@ function getPersonPath(partyId: number, type: SearchType) {
     case SearchType.Staff:
       return `/people/staff/${partyId}`;
     case SearchType.Contact:
-      return `/people/contact/${partyId}`;
+      return `/people/contacts/${partyId}`;
     default:
       return `/dashboard`;
   }
