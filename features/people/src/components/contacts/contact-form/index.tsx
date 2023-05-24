@@ -32,7 +32,6 @@ export function ContactForm() {
     control,
     handleSubmit,
     setValue,
-    getValues,
     formState: { isDirty },
   } = useForm<ContactFormState>({
     defaultValues: {
@@ -154,11 +153,7 @@ export function ContactForm() {
         <Card variant="outlined">
           <CardHeader component="h2" title={t('people:studentRelationships')} />
           <Stack direction="column" p={3}>
-            <StudentRelationships
-              setValue={setValue}
-              getValues={getValues}
-              control={control}
-            />
+            <StudentRelationships setValue={setValue} control={control} />
           </Stack>
         </Card>
         <Stack direction="row" gap={2} justifyContent="flex-end">

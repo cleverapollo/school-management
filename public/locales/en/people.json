@@ -128,11 +128,18 @@
   },
   "addStudentRelationship": "Add another student relationship",
   "primaryAddress": "Primary address",
-  "personalInformation": "New Contact Personal Information",
-  "studentRelationships": "Student Relationships",
-  "studentRelationshipsRequired": "You must connect New Contact to at least one Student",
-  "contactSettings": "Contact Settings",
-  "contactSettingsDescription": "Ways in which new contact can receive information on, or interact with this student.",
+  "personalInformation": "New contact personal information",
+  "studentRelationships": "Associated students",
+  "studentRelationshipsRequired": "At least one student must be associated to the contact",
+  "contactSettings": "Contact settings",
+  "contactSettingsDescription": "Permissions and preferences for this contact and student relationship",
   "successfullyCreatedContact": "Successfully created contact",
-  "createdContactUnsuccessful": "Your contact creation was unsuccessful"
+  "createdContactUnsuccessful": "Your contact creation was unsuccessful",
+  "allowedToContactRequired": "Permission to receive correspondence is required to enable this permission",
+  "contactSettingsPermissions": {
+    "legalGuardian": "Is the contact a legal guardian of this student?",
+    "pickupPermission": "Does the contact have permission to pick-up or sign-out this student from school?",
+    "allowAccessToStudentData": "Does the contact have permission to access this student's data on Tyro?",
+    "allowedToContact": "Can the contact receive correspondence from the school in relation to this student?"
+  }
 }

@@ -89,7 +89,10 @@ export const Autocomplete = <
             startAdornment: value
               ? renderAvatarAdornment(value as T, (avatarProps) => (
                   <InputAdornment position="start" sx={{ ml: 0.75, mr: 0 }}>
-                    <Avatar sx={{ width: 24, height: 24 }} {...avatarProps} />
+                    <Avatar
+                      sx={{ width: 24, height: 24, fontSize: '0.7rem' }}
+                      {...avatarProps}
+                    />
                   </InputAdornment>
                 ))
               : null,
