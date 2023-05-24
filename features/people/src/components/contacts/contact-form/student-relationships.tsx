@@ -149,7 +149,8 @@ export const StudentRelationships = <
               component="h3"
               title={`${t('common:student')} ${index + 1}`}
               sx={{
-                m: 0,
+                pb: 0,
+                border: 0,
               }}
               action={
                 index === 0 ? null : (
@@ -163,7 +164,7 @@ export const StudentRelationships = <
                 )
               }
             />
-            <Grid container spacing={2} p={2}>
+            <Grid container spacing={3} p={3}>
               <Grid item xs={12} sm={12} md={6}>
                 <RHFAutocomplete<
                   StudentRelationshipsFormState,
@@ -224,15 +225,15 @@ export const StudentRelationships = <
               </Grid>
 
               <Grid item xs={12}>
-                <CardHeader
+                <Typography
                   component="h3"
-                  title={t('people:contactSettings')}
+                  variant="h6"
                   sx={{
-                    p: 0,
-                    m: 0,
                     mb: 1,
                   }}
-                />
+                >
+                  {t('people:contactSettings')}
+                </Typography>
                 <Typography
                   variant="body2"
                   component="p"

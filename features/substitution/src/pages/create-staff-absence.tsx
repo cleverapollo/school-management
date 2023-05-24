@@ -143,14 +143,6 @@ export default function ManagementPage() {
         <CardHeader
           component="h2"
           title={t('substitution:creatingStaffAbsence')}
-          sx={{
-            p: 3,
-            pt: 2.25,
-            pb: 1.25,
-            m: 0,
-            borderBottom: '1px solid',
-            borderColor: 'divider',
-          }}
         />
         <Stack direction="column" gap={3} p={3}>
           <Stack direction="column" gap={2.5}>

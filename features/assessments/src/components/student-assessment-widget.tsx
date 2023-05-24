@@ -37,26 +37,15 @@ export function StudentAssessmentWidget({
 
   return (
     <Card variant="outlined" sx={{ height: '100%', flex: 1, pb: 2 }}>
-      <Stack
-        direction="row"
-        sx={{
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          pl: 3,
-          pr: 2,
-          pt: 2.25,
-          pb: 1.25,
-        }}
-      >
-        <CardHeader
-          component="h3"
-          title={t('assessments:assessmentResults')}
-          sx={{ p: 0, m: 0 }}
-        />
-        <IconButton component={Link} to="../assessment">
-          <ExternalLinkIcon sx={{ width: 20, height: 20 }} />
-        </IconButton>
-      </Stack>
+      <CardHeader
+        component="h3"
+        title={t('assessments:assessmentResults')}
+        action={
+          <IconButton component={Link} to="../assessment">
+            <ExternalLinkIcon sx={{ width: 20, height: 20 }} />
+          </IconButton>
+        }
+      />
       <Stack
         direction="row"
         sx={{
@@ -64,8 +53,7 @@ export function StudentAssessmentWidget({
           justifyContent: 'space-between',
           px: 2,
           py: 1,
-          borderWidth: '1px 0',
-          borderStyle: 'solid',
+          borderBottom: '1px solid',
           borderColor: 'divider',
         }}
       >
