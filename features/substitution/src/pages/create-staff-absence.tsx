@@ -109,11 +109,6 @@ export default function ManagementPage() {
     );
   };
 
-  const labelStyle = {
-    color: 'text.secondary',
-    fontWeight: 600,
-  };
-
   const textFieldStyle = {
     maxWidth: 300,
     width: '100%',
@@ -143,18 +138,10 @@ export default function ManagementPage() {
         <CardHeader
           component="h2"
           title={t('substitution:creatingStaffAbsence')}
-          sx={{
-            p: 3,
-            pt: 2.25,
-            pb: 1.25,
-            m: 0,
-            borderBottom: '1px solid',
-            borderColor: 'divider',
-          }}
         />
         <Stack direction="column" gap={3} p={3}>
           <Stack direction="column" gap={2.5}>
-            <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
+            <Typography variant="subtitle1" color="text.secondary">
               {t('substitution:details')}
             </Typography>
             <RHFAutocomplete<FormValues, StaffOption>
@@ -217,7 +204,7 @@ export default function ManagementPage() {
           </Stack>
 
           <Stack direction="column" gap={2.5}>
-            <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
+            <Typography variant="subtitle1" color="text.secondary">
               {t('substitution:durationOfAbsence')}
             </Typography>
             <Stack direction="row" spacing={2}>
@@ -245,7 +232,7 @@ export default function ManagementPage() {
           </Stack>
 
           <Stack direction="column" gap={2.5}>
-            <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
+            <Typography variant="subtitle1" color="text.secondary">
               {t('substitution:reasonForAbsence')}
             </Typography>
             <RHFAutocomplete<FormValues, AbsenceTypeOption>
@@ -262,7 +249,7 @@ export default function ManagementPage() {
           </Stack>
 
           <Stack direction="column" gap={2.5}>
-            <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
+            <Typography variant="subtitle1" color="text.secondary">
               {t('substitution:internalNote')}
             </Typography>
             <RHFTextField<FormValues>
