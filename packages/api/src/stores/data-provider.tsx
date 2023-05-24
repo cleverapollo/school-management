@@ -8,9 +8,9 @@ type DataProviderProps = {
   children: ReactNode;
 };
 
-const API_URL = 'https://cubejs-api.azurewebsites.net';
+const API_URL = 'https://app.tyro-dev.com';
 const CUBEJS_TOKEN =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NzU4NzE1MTQsImV4cCI6MTY4NDUxMTUxNH0.uKYnd0anQJuuUhyB79V4a2YhsIlxwk6A5OIYFqdzHvU';
+  'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2ODY0ODQzODYsImlhdCI6MTY4NDczODM4Nn0.RQSYR0RWcoBARldwUbIJOGNMeJGc89JAJrvSW2dEXLI';
 const cubejsApi = cubejs(CUBEJS_TOKEN, {
   apiUrl: `${API_URL}/cubejs-api/v1`,
 });
