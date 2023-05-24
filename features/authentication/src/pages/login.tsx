@@ -92,7 +92,7 @@ export default function Login() {
             <Stack direction="row" alignItems="center" sx={{ mb: 5 }}>
               <Box sx={{ flexGrow: 1 }}>
                 <Typography variant="h4" gutterBottom>
-                  {t('authentication:sign_in_to_tyro')}
+                  {t('authentication:sign_in_to_tyro')} v2
                 </Typography>
                 <Typography sx={{ color: 'text.secondary' }}>
                   {t('authentication:enter_your_details_below')}.

@@ -30,7 +30,9 @@ export default function Card(theme: Theme) {
       },
       styleOverrides: {
         root: {
-          padding: theme.spacing(3, 3, 0),
+          padding: theme.spacing(2.25, 3, 1.25, 3),
+          margin: 0,
+          borderBottom: `1px solid ${theme.palette.divider}`,
         },
       },
     },
