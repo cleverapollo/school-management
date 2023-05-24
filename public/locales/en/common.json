@@ -45,7 +45,11 @@
     "GRAND_FATHER": "Grandfather",
     "GRAND_MOTHER": "Grandmother",
     "FAMILY_FRIEND": "Family friend",
-    "NEIGHBOUR": "Neighbour"
+    "NEIGHBOUR": "Neighbour",
+    "OTHER": "Other",
+    "SOCIAL_WORKER": "Social worker",
+    "STEP_FATHER": "Step father",
+    "STEP_MOTHER": "Step mother"
   },
   "total": "Total",
   "grade": "Grade",
