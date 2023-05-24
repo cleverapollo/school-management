@@ -16,7 +16,9 @@ import { useCreateOrUpdateRoom } from '../../api/add-or-update-room';
 export type EditRoomFormState = Pick<
   UpsertRoomInput,
   'roomId' | 'name' | 'description' | 'capacity' | 'location' | 'disabled'
->;
+> & {
+  active?: boolean;
+};
 
 export type EditRoomDetailsViewProps = {
   initialRoomState?: Partial<EditRoomFormState> | null;
@@ -38,39 +40,38 @@ export const EditRoomDetailsModal = ({
   const { resolver, rules } = useFormValidator<EditRoomFormState>();
 
   const defaultFormStateValues: Partial<EditRoomFormState> = {
-    name: initialRoomState?.name,
-    description: initialRoomState?.description,
-    capacity: initialRoomState?.capacity,
-    location: initialRoomState?.location,
-    disabled: initialRoomState?.roomId ? !initialRoomState?.disabled : true,
+    ...initialRoomState,
+    active: !initialRoomState?.disabled ?? true,
   };
 
   const { control, handleSubmit, watch, reset } = useForm<EditRoomFormState>({
     resolver: resolver({
-      name: rules.required(),
-      description: rules.required(),
-      capacity: rules.required(),
-      location: rules.required(),
+      name: [rules.required(), rules.max(20)],
+      description: [rules.required(), rules.max(50)],
+      capacity: [rules.required(), rules.min(0)],
+      location: [rules.required(), rules.max(50)],
     }),
     defaultValues: defaultFormStateValues,
     mode: 'onChange',
   });
 
-  const onSubmit = ({ disabled, ...restData }: EditRoomFormState) => {
+  const onSubmit = ({ active, ...restData }: EditRoomFormState) => {
     createOrUpdateRoomMutation(
       {
-        disabled: !disabled,
         ...restData,
+        disabled: !active,
       },
       {
         onSuccess: onClose,
-        // TODO: handle error message from server
-        onError: (error) => {
-          console.error(error);
-        },
       }
     );
   };
+
+  useEffect(() => {
+    if (initialRoomState) {
+      reset({ ...defaultFormStateValues, ...initialRoomState });
+    }
+  }, [initialRoomState]);
 
   useEffect(() => {
     reset();
@@ -97,21 +98,9 @@ export const EditRoomDetailsModal = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={3} sx={{ p: 3 }}>
           <RHFTextField<EditRoomFormState>
-            textFieldProps={{
-              sx: { display: 'none' },
-            }}
-            controlProps={{
-              name: 'roomId',
-              defaultValue: initialRoomState?.roomId,
-              control,
-            }}
-          />
-
-          <RHFTextField<EditRoomFormState>
             label={t('common:name')}
             controlProps={{
               name: 'name',
-              defaultValue: initialRoomState?.name,
               control,
             }}
           />
@@ -120,16 +109,10 @@ export const EditRoomDetailsModal = ({
             label={t('settings:capacity')}
             controlProps={{
               name: 'capacity',
-              defaultValue: initialRoomState?.capacity,
               control,
             }}
             textFieldProps={{
               type: 'number',
-              inputProps: {
-                inputMode: 'numeric',
-                pattern: '[0-9]*',
-                min: 0,
-              },
             }}
           />
 
@@ -137,7 +120,6 @@ export const EditRoomDetailsModal = ({
             label={t('common:description')}
             controlProps={{
               name: 'description',
-              defaultValue: initialRoomState?.description,
               control,
             }}
             textFieldProps={{
@@ -150,7 +132,6 @@ export const EditRoomDetailsModal = ({
             label={t('common:location')}
             controlProps={{
               name: 'location',
-              defaultValue: initialRoomState?.location,
               control,
             }}
           />
@@ -158,13 +139,10 @@ export const EditRoomDetailsModal = ({
           <RHFSwitch<EditRoomFormState>
             label={t('settings:active')}
             switchProps={{
-              color: 'success',
+              color: 'primary',
             }}
             controlProps={{
-              name: 'disabled',
-              defaultValue: initialRoomState?.roomId
-                ? !initialRoomState?.disabled
-                : true,
+              name: 'active',
               control,
             }}
           />

@@ -34,7 +34,8 @@
     "updateSuccess": "Update success!",
     "deleteSuccess": "Delete success!",
     "mailWasSent": "Mail was sent",
-    "labelWasAssigned": "Label was assigned!"
+    "labelWasAssigned": "Label was assigned!",
+    "errorFailed": "Error! An error occurred. Please try again later."
   },
   "relationshipType": {
     "FATHER": "Father",

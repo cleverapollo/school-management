@@ -1,11 +1,12 @@
-import { Button, Container, Typography } from '@mui/material';
+import { Button, Box } from '@mui/material';
 import { useTranslation, TFunction } from '@tyro/i18n';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import {
   ActionMenu,
   GridOptions,
   ICellRendererParams,
-  Page,
+  PageContainer,
+  PageHeading,
   Table,
   TableBooleanValue,
 } from '@tyro/core';
@@ -18,7 +19,7 @@ import {
 import { useCoreRooms } from '../api/rooms';
 import {
   EditRoomDetailsModal,
-  EditRoomFormState,
+  EditRoomDetailsViewProps,
 } from '../components/edit-room-details-modal';
 
 type ReturnTypeFromUseCoreRooms = NonNullable<
@@ -26,7 +27,9 @@ type ReturnTypeFromUseCoreRooms = NonNullable<
 >[number];
 
 const getRoomColumns = (
-  onClickEdit: Dispatch<SetStateAction<Partial<EditRoomFormState> | null>>,
+  onClickEdit: Dispatch<
+    SetStateAction<EditRoomDetailsViewProps['initialRoomState']>
+  >,
   t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>
 ): GridOptions<ReturnTypeFromUseCoreRooms>['columnDefs'] => [
   {
@@ -96,7 +99,7 @@ export default function Rooms() {
   const { t } = useTranslation(['common', 'settings']);
   const { data: roomsList } = useCoreRooms();
   const [editRoomInitialState, setEditRoomInitialState] =
-    useState<Partial<EditRoomFormState> | null>(null);
+    useState<EditRoomDetailsViewProps['initialRoomState']>(null);
 
   const handleAddRoom = () => {
     setEditRoomInitialState({});
@@ -111,30 +114,31 @@ export default function Rooms() {
     [editRoomInitialState, t]
   );
   return (
-    <Page title={t('settings:rooms')}>
-      <Container maxWidth="xl">
-        <Typography variant="h3" component="h1" paragraph>
-          {t('settings:rooms')}
-        </Typography>
-        <Table
-          rowData={roomsList ?? []}
-          columnDefs={roomColumns}
-          getRowId={({ data }) => String(data?.roomId)}
-          rightAdornment={
+    <PageContainer title={t('settings:rooms')}>
+      <PageHeading
+        title={t('settings:rooms')}
+        titleProps={{ variant: 'h3' }}
+        rightAdornment={
+          <Box display="flex" alignItems="center">
             <Button
-              variant="text"
+              variant="contained"
               onClick={handleAddRoom}
-              endIcon={<AddIcon />}
+              startIcon={<AddIcon />}
             >
               {t('settings:actions.addNewRoom')}
             </Button>
-          }
-        />
-        <EditRoomDetailsModal
-          initialRoomState={editRoomInitialState}
-          onClose={handleCloseEditModal}
-        />
-      </Container>
-    </Page>
+          </Box>
+        }
+      />
+      <Table
+        rowData={roomsList ?? []}
+        columnDefs={roomColumns}
+        getRowId={({ data }) => String(data?.roomId)}
+      />
+      <EditRoomDetailsModal
+        initialRoomState={editRoomInitialState}
+        onClose={handleCloseEditModal}
+      />
+    </PageContainer>
   );
 }
