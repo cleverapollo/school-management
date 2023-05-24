@@ -34,12 +34,7 @@ export const PersonalInformation = <
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <Typography
-          variant="body1"
-          component="h3"
-          color="text.secondary"
-          fontWeight={600}
-        >
+        <Typography variant="subtitle1" color="text.secondary">
           {t('common:details')}
         </Typography>
       </Grid>

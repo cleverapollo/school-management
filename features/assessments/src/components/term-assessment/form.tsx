@@ -171,11 +171,6 @@ export function TermAssessmentForm({
     );
   };
 
-  const labelStyle = {
-    color: 'text.secondary',
-    fontWeight: 600,
-  };
-
   const textFieldStyle = {
     maxWidth: 300,
     width: '100%',
@@ -197,7 +192,7 @@ export function TermAssessmentForm({
       />
       <Stack direction="column" gap={3} p={3}>
         <Stack direction="column" gap={2.5}>
-          <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
+          <Typography variant="subtitle1" color="text.secondary">
             {t('assessments:details')}
           </Typography>
           <Stack direction="row" gap={2}>
@@ -233,7 +228,7 @@ export function TermAssessmentForm({
           </Stack>
         </Stack>
         <Stack direction="column" gap={2.5}>
-          <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
+          <Typography variant="subtitle1" color="text.secondary">
             {t('assessments:grades')}
           </Typography>
           <RHFSwitch<FormValues>
@@ -243,7 +238,7 @@ export function TermAssessmentForm({
           />
         </Stack>
         <Stack direction="column" gap={2.5}>
-          <Typography variant="body1" component="h3" sx={{ ...labelStyle }}>
+          <Typography variant="subtitle1" color="text.secondary">
             {t('assessments:comments')}
           </Typography>
           <RHFSwitch<FormValues>
