@@ -20,15 +20,6 @@ type ContactFormState = PersonalInformationFormState &
   PrimaryAddressFormState &
   StudentRelationshipsFormState;
 
-const cardHeaderStyle = {
-  p: 3,
-  pt: 2.25,
-  pb: 1.25,
-  m: 0,
-  borderBottom: '1px solid',
-  borderColor: 'divider',
-};
-
 export function ContactForm() {
   const { t } = useTranslation(['common', 'people']);
   const navigate = useNavigate();
@@ -41,7 +32,6 @@ export function ContactForm() {
     control,
     handleSubmit,
     setValue,
-    getValues,
     formState: { isDirty },
   } = useForm<ContactFormState>({
     defaultValues: {
@@ -154,28 +144,16 @@ export function ContactForm() {
     <>
       <Stack component="form" onSubmit={handleSubmit(onSubmit)} gap={3}>
         <Card variant="outlined">
-          <CardHeader
-            component="h2"
-            title={t('people:personalInformation')}
-            sx={cardHeaderStyle}
-          />
+          <CardHeader component="h2" title={t('people:personalInformation')} />
           <Stack direction="column" gap={3} p={3}>
             <PersonalInformation control={control} />
             <PrimaryAddress control={control} />
           </Stack>
         </Card>
         <Card variant="outlined">
-          <CardHeader
-            component="h2"
-            title={t('people:studentRelationships')}
-            sx={cardHeaderStyle}
-          />
+          <CardHeader component="h2" title={t('people:studentRelationships')} />
           <Stack direction="column" p={3}>
-            <StudentRelationships
-              setValue={setValue}
-              getValues={getValues}
-              control={control}
-            />
+            <StudentRelationships setValue={setValue} control={control} />
           </Stack>
         </Card>
         <Stack direction="row" gap={2} justifyContent="flex-end">
