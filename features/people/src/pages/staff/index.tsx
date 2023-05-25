@@ -64,7 +64,7 @@ const getStaffColumns = (
   },
   {
     field: 'carRegistrationNumber',
-    headerName: t('people:carRegistation'),
+    headerName: t('people:carRegistration'),
   },
   {
     field: 'startDate',
