@@ -44,7 +44,7 @@ export const EditRoomDetailsModal = ({
     active: !initialRoomState?.disabled ?? true,
   };
 
-  const { control, handleSubmit, watch, reset } = useForm<EditRoomFormState>({
+  const { control, handleSubmit, reset } = useForm<EditRoomFormState>({
     resolver: resolver({
       name: [rules.required(), rules.max(20)],
       description: [rules.required(), rules.max(50)],

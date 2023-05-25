@@ -21,12 +21,15 @@ export function useCreateOrUpdateRoom() {
     mutationKey: roomsKeys.createOrUpdateRoom(),
     mutationFn: async (input: UpsertRoomInput) =>
       gqlClient.request(createRooms, { input: [input] }),
-    onError: (error) => {
+    onError: () => {
       toast(t('common:snackbarMessages.errorFailed'));
-      console.error(error);
     },
-    onSuccess: () => {
-      toast(t('common:snackbarMessages.createSuccess'));
+    onSuccess: (_, variables) => {
+      if (variables?.roomId) {
+        toast(t('common:snackbarMessages.updateSuccess'));
+      } else {
+        toast(t('common:snackbarMessages.createSuccess'));
+      }
       queryClient.invalidateQueries(roomsKeys.all);
     },
   });
