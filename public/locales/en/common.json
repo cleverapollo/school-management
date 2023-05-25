@@ -249,5 +249,6 @@
     "description":"Are you sure you want to cancel?"
   },
   "phoneNumber": "Phone number",
-  "additionalNumber": "Additional number"
+  "additionalNumber": "Additional number",
+  "contact": "Contact"
 }

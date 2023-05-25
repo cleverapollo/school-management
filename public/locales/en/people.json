@@ -74,6 +74,8 @@
       "country": "Country",
       "primaryNumber": "Primary number",
       "additionalNumber": "Additional number",
+      "additionalEmail": "Additional email",
+      "email": "Email",
       "occupation": "Occupation"
     },
     "enrolmentHistory": {
@@ -152,5 +154,16 @@
   "createStaff": "Create staff",
   "staffPersonalInformation": "New staff personal information",
   "nextOfKin": "Next of kin",
-  "employmentInformation": "Employment information"
+  "employmentInformation": "Employment information",
+  "employment": "Employment",
+  "emergency": "Emergency",
+  "capacity": "Capacity",
+  "payrollNumber": "Payroll number",
+  "jobSharing": "Job sharing",
+  "dateOfEmployment": "Date of employment",
+  "qualifications": "Qualifications",
+  "includeInTimetabling": "Include in timetabling",
+  "competencies": "Competencies",
+  "present": "Present",
+  "displayCode": "Display code"
 }

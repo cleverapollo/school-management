@@ -10,4 +10,6 @@ export const peopleStaffKeys = {
   subjectGroups: (filter: StaffFilter) =>
     [...peopleStaffKeys.all, 'classes', filter] as const,
   createStaff: () => [...peopleStaffKeys.all, 'createStaff'] as const,
+  personalDetails: (filter: StaffFilter) =>
+    [...peopleStaffKeys.all, 'personal', filter] as const,
 };

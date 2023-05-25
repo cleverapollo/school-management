@@ -26,6 +26,7 @@ import { getContactStudents } from './api/contact/students';
 import { getStaff } from './api/staff';
 import { getStaffStatus } from './api/staff/status';
 import { getStaffSubjectGroups } from './api/staff/subject-groups';
+import { getStaffPersonal } from './api/staff/personal';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
 // Student profile pages
@@ -338,6 +339,10 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'personal',
+                loader: ({ params }) => {
+                  const staffId = getNumber(params.id);
+                  return getStaffPersonal({ partyIds: [staffId ?? 0] });
+                },
                 element: <StaffProfilePersonalPage />,
               },
               {
