@@ -3,6 +3,10 @@
     "en": "English",
     "ga": "Irish"
   },
+  "ppod": "PPOD",
+  "sync": "Sync",
+  "login": "Login",
+  "ppodCredentials": "PPOD Credentials",
   "subjects": "Subjects",
   "shortCode": "Short code",
   "nationalCode": "National code",
@@ -30,5 +34,47 @@
   "subjectSource": {
     "NATIONAL": "National",
     "CUSTOM": "Custom"
+  },
+  "ppodSync": {
+    "completedBy": "Completed by",
+    "date": "Date",
+    "time":"Time",
+    "status": "Status",
+    "details":" Details",
+    "credentialsSaved": "Credentials saved",
+    "login": "Login",
+    "enterSyncCredentials": "Enter school sync credentials",
+    "enterPpodCredentials": "Please enter the schools PPOD sync credentials",
+    "username": "Username",
+    "password": "Password",
+    "syncFromPpod": "Sync from PPOD"
+
+  },
+  "schoolDetails": {
+    "contact": "Contact",
+    "title": "School details",
+    "name": "School name",
+    "rollNo": "Roll number",
+    "phone": "Phone number",
+    "parentAssociation": "Parents Association",
+    "studentCouncil": "Student Council",
+    "email": "Email",
+    "coOperatingSchoolRollNo1":
+      "Co-op school 1:",
+    "website": "Website",
+    "coOperatingSchoolRollNo2": "Co-op school 2:",
+    "boardingFeeSixOrSevenDay": "7 day boarding",
+    "schoolGender": "School gender",
+    "boardingFeeFiveDay": "5 day boarding",
+    "irishClassification": "Irish classification",
+    "schoolAddress": "School address",
+    "address": "Address",
+    "localAuthority": "Local authority",
+    "trustee": "Trustee",
+    "forename": "Forename",
+    "surname": "Surname",
+    "ownerInformation": "Owner information",
+    "boardOfManagementChairPerson": "Board of management chairperson",
+    "octoberReturnsContact": "October returns contact person"
   }
 }

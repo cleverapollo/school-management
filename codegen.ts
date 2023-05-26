@@ -4,12 +4,14 @@ if (!process.env.token) {
   throw new Error('You must pass in a auth token. Please re-run the command like `token=[token] yarn run codegen`')
 }
 
+const url = process.env.REACT_APP_GRAPHQL_API_URI ?? 'https://tyro-api-uat.azurewebsites.net/api/tyrogql';
+console.log('Using url: ', url);
+
 const config: CodegenConfig = {
   // schema: 'introspec.json',
   schema: [
     {
-      // 'http://localhost:80/api/tyrogql': {
-      'https://tyro-api-uat.azurewebsites.net/api/tyrogql': {
+      [url]: {
         headers: {
           Authorization: `Bearer ${process.env.token}`,
         },
