@@ -165,5 +165,6 @@
   "includeInTimetabling": "Include in timetabling",
   "competencies": "Competencies",
   "present": "Present",
-  "displayCode": "Display code"
+  "displayCode": "Display code",
+  "isATeacher": "Is a teacher?"
 }

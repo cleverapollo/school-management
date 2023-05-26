@@ -39,7 +39,6 @@ export function StaffForm() {
     formState: { isDirty },
   } = useForm<StaffFormState>({
     resolver: resolver({
-      title: rules.required(),
       firstName: rules.required(),
       lastName: rules.required(),
       email: rules.isEmail(),
@@ -95,62 +94,65 @@ export function StaffForm() {
     ].filter(Boolean);
 
     createStaffMutation(
-      {
-        ...data,
-        titleId: title.id,
-        startDate: startDate ? startDate.format('YYYY-MM-DD') : undefined,
-        phoneNumbers: [
-          ...(mobileNumber
-            ? [
-                {
-                  primaryPhoneNumber: true,
-                  active: true,
-                  number: mobileNumber.number,
-                  countryCode: mobileNumber.countryCode,
-                },
-              ]
-            : []),
-          ...(additionalNumber
-            ? [
-                {
-                  primaryPhoneNumber: false,
-                  active: true,
-                  number: additionalNumber,
-                },
-              ]
-            : []),
-        ],
-        ...(email && {
-          emails: [
-            {
-              primaryEmail: true,
-              active: true,
-              email,
-            },
+      [
+        {
+          ...data,
+          titleId: title?.id,
+          startDate: startDate ? startDate.format('YYYY-MM-DD') : undefined,
+          phoneNumbers: [
+            ...(mobileNumber
+              ? [
+                  {
+                    primaryPhoneNumber: true,
+                    active: true,
+                    number: mobileNumber.number,
+                    countryCode: mobileNumber.countryCode,
+                  },
+                ]
+              : []),
+            ...(additionalNumber
+              ? [
+                  {
+                    primaryPhoneNumber: false,
+                    active: true,
+                    number: additionalNumber,
+                  },
+                ]
+              : []),
           ],
-        }),
-        ...(hasAddress && {
-          addresses: [
-            {
-              primaryAddress: true,
-              active: true,
-              city,
-              country,
-              line1,
-              line2,
-              line3,
-              postCode,
+          ...(email && {
+            emails: [
+              {
+                primaryEmail: true,
+                active: true,
+                email,
+              },
+            ],
+          }),
+          ...(hasAddress && {
+            addresses: [
+              {
+                primaryAddress: true,
+                active: true,
+                city,
+                country,
+                line1,
+                line2,
+                line3,
+                postCode,
+              },
+            ],
+          }),
+          ...(hasNextOfKin && {
+            nextOfKin: {
+              firstName: nextOfKinFirstName,
+              lastName: nextOfKinSurname,
+              phoneNumbers: nextOfKinPhoneNumbers,
             },
-          ],
-        }),
-        ...(hasNextOfKin && {
-          nextOfKin: {
-            firstName: nextOfKinFirstName,
-            lastName: nextOfKinSurname,
-            phoneNumbers: nextOfKinPhoneNumbers,
-          },
-        }),
-      },
+          }),
+          noLongerStaff: false,
+        },
+      ],
       {
         onSuccess: goBack,
       }

@@ -19,7 +19,7 @@ export function useCreateStaff() {
 
   return useMutation({
     mutationKey: peopleStaffKeys.createStaff(),
-    mutationFn: async (input: CreateStaffInput) =>
+    mutationFn: async (input: [CreateStaffInput]) =>
       gqlClient.request(createStaff, { input }),
     onSuccess: () => {
       toast(t('people:successfullyCreatedStaff'));

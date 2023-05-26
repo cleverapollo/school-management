@@ -1,5 +1,5 @@
 import { Grid, Typography } from '@mui/material';
-import { RHFSelect, RHFDatePicker } from '@tyro/core';
+import { RHFSelect, RHFDatePicker, RHFSwitch, RHFTextField } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { Control } from 'react-hook-form';
 
@@ -8,6 +8,9 @@ import dayjs from 'dayjs';
 
 export type EmploymentInformationFormState = {
   employmentCapacity: CreateStaffInput['employmentCapacity'];
+  isTeacher: CreateStaffInput['isTeacher'];
+  displayCode: CreateStaffInput['displayCode'];
+  includeInTimetabling: CreateStaffInput['includeInTimetabling'];
   startDate: dayjs.Dayjs;
 };
 
@@ -51,6 +54,27 @@ export const EmploymentInformation = <
             name: 'employmentCapacity',
             control,
           }}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <RHFTextField
+          label={t('people:displayCode')}
+          textFieldProps={{ fullWidth: true }}
+          controlProps={{ name: 'displayCode', control }}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <RHFSwitch
+          label={t('people:isATeacher')}
+          switchProps={{ color: 'primary' }}
+          controlProps={{ name: 'isTeacher', control }}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <RHFSwitch
+          label={t('people:includeInTimetabling')}
+          switchProps={{ color: 'primary' }}
+          controlProps={{ name: 'includeInTimetabling', control }}
         />
       </Grid>
     </Grid>
