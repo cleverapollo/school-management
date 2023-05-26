@@ -14,6 +14,7 @@
   "roomPool": "Room pool",
   "addRoom": "Add Room",
   "editRoom": "Edit Room",
+  "roomNameShouldBeUnique": "Room name should be unique",
   "successfullyUpdatedSubjects": "Successfully updated subjects",
   "updateToSubjectsUnsuccessful": "Your subject updates were unsuccessful",
   "changeAcademicNamespaceCurrentlySet": "Change Academic Namespace. Currently set to {{name}}",

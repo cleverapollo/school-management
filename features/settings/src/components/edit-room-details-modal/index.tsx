@@ -12,6 +12,7 @@ import { LoadingButton } from '@mui/lab';
 import { UpsertRoomInput } from '@tyro/api';
 import { useEffect } from 'react';
 import { useCreateOrUpdateRoom } from '../../api/add-or-update-room';
+import { ReturnTypeFromUseCoreRooms } from '../../pages/rooms';
 
 export type EditRoomFormState = Pick<
   UpsertRoomInput,
@@ -22,11 +23,13 @@ export type EditRoomFormState = Pick<
 
 export type EditRoomDetailsViewProps = {
   initialRoomState?: Partial<EditRoomFormState> | null;
+  rooms: ReturnTypeFromUseCoreRooms[];
   onClose: () => void;
 };
 
 export const EditRoomDetailsModal = ({
   initialRoomState,
+  rooms,
   onClose,
 }: EditRoomDetailsViewProps) => {
   const { t } = useTranslation(['settings', 'common']);
@@ -44,9 +47,19 @@ export const EditRoomDetailsModal = ({
     active: !initialRoomState?.disabled ?? true,
   };
 
+  const ruleCheckUniqueName = initialRoomState?.roomId
+    ? []
+    : [
+        rules.validate<EditRoomFormState['name']>((name, throwError) => {
+          if (rooms.some((room) => room?.name === name)) {
+            throwError(t('settings:roomNameShouldBeUnique'));
+          }
+        }),
+      ];
+
   const { control, handleSubmit, reset } = useForm<EditRoomFormState>({
     resolver: resolver({
-      name: [rules.required(), rules.max(20)],
+      name: [rules.required(), rules.max(20), ...ruleCheckUniqueName],
       description: [rules.required(), rules.max(50)],
       capacity: [rules.required(), rules.min(0)],
       location: [rules.required(), rules.max(50)],

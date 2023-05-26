@@ -22,7 +22,7 @@ import {
   EditRoomDetailsViewProps,
 } from '../components/edit-room-details-modal';
 
-type ReturnTypeFromUseCoreRooms = NonNullable<
+export type ReturnTypeFromUseCoreRooms = NonNullable<
   ReturnType<typeof useCoreRooms>['data']
 >[number];
 
@@ -136,6 +136,7 @@ export default function Rooms() {
         getRowId={({ data }) => String(data?.roomId)}
       />
       <EditRoomDetailsModal
+        rooms={roomsList ?? []}
         initialRoomState={editRoomInitialState}
         onClose={handleCloseEditModal}
       />
