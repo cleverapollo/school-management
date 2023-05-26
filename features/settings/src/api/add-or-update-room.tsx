@@ -22,7 +22,7 @@ export function useCreateOrUpdateRoom() {
     mutationFn: async (input: UpsertRoomInput) =>
       gqlClient.request(createRooms, { input: [input] }),
     onError: () => {
-      toast(t('common:snackbarMessages.errorFailed'));
+      toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     },
     onSuccess: (_, variables) => {
       if (variables?.roomId) {

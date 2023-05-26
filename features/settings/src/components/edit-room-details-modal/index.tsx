@@ -47,15 +47,22 @@ export const EditRoomDetailsModal = ({
     active: !initialRoomState?.disabled ?? true,
   };
 
-  const ruleCheckUniqueName = initialRoomState?.roomId
-    ? []
-    : [
-        rules.validate<EditRoomFormState['name']>((name, throwError) => {
-          if (rooms.some((room) => room?.name === name)) {
-            throwError(t('settings:roomNameShouldBeUnique'));
-          }
-        }),
-      ];
+  const roomsWithoutSelf = rooms.filter(
+    (room) => room?.roomId !== initialRoomState?.roomId
+  );
+
+  const ruleCheckUniqueName = [
+    rules.validate<EditRoomFormState['name']>((name, throwError) => {
+      if (
+        roomsWithoutSelf.some(
+          (room) =>
+            room?.name?.trim()?.toLowerCase() === name?.trim()?.toLowerCase()
+        )
+      ) {
+        throwError(t('settings:roomNameShouldBeUnique'));
+      }
+    }),
+  ];
 
   const { control, handleSubmit, reset } = useForm<EditRoomFormState>({
     resolver: resolver({
