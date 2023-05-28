@@ -37,6 +37,8 @@ type AuthProviderProps = {
 function InnerAuthProvider({ children }: AuthProviderProps) {
   const { instance, accounts, inProgress } = useMsal();
   const account = useAccount(accounts[0] || {});
+  console.log('account');
+  console.log(account);
   const isAuthenticated = useIsAuthenticated();
   const [isTokenInitialized, setIsTokenInitialized] = useState(false);
 

@@ -8,25 +8,25 @@ import { setToken } from './jwt';
  */
 export const b2cPolicies = {
   names: {
-    signUpSignIn: 'B2C_1_signin',
-    forgotPassword: 'B2C_1_reset_password',
+    signUpSignIn: 'B2C_1_spa_login',
+    forgotPassword: 'B2C_1_spa_password_reset',
     editProfile: 'B2C_1_edit_profile_v2',
   },
   authorities: {
     signUpSignIn: {
       authority:
-        'https://tyroschool.b2clogin.com/tyroschool.onmicrosoft.com/B2C_1_signin',
+        'https://tyrouat.b2clogin.com/tyrouat.onmicrosoft.com/B2C_1_spa_login',
     },
     forgotPassword: {
       authority:
-        'https://tyroschool.b2clogin.com/tyroschool.onmicrosoft.com/B2C_1_reset_password',
+        'https://tyrouat.b2clogin.com/tyrouat.onmicrosoft.com/B2C_1_spa_password_reset',
     },
     editProfile: {
       authority:
-        'https://tyroschool.b2clogin.com/tyroschool.onmicrosoft.com/b2c_1_edit_profile',
+        'https://tyrouat.b2clogin.com/tyrouat.onmicrosoft.com/b2c_1_edit_profile',
     },
   },
-  authorityDomain: 'tyroschool.b2clogin.com',
+  authorityDomain: 'tyrouat.b2clogin.com',
 };
 
 /**
@@ -36,7 +36,7 @@ export const b2cPolicies = {
  */
 export const msalConfig = {
   auth: {
-    clientId: '99177d7e-e8ed-4c67-ab73-07eafc664492', // This is the ONLY mandatory field that you need to supply.
+    clientId: '4dcc7808-8282-4b56-9518-ff8f306db255', // This is the ONLY mandatory field that you need to supply.
     authority: b2cPolicies.authorities.signUpSignIn.authority, // Use a sign-up/sign-in user-flow as a default authority
     knownAuthorities: [b2cPolicies.authorityDomain], // Mark your B2C tenant's domain as trusted.
     redirectUri: `${window.location.origin}/auth/callback`, // Points to window.location.origin. You must register this URI on Azure Portal/App Registration.
@@ -65,7 +65,7 @@ export const loginRequest = {
   scopes: [
     'openid',
     'profile',
-    'https://tyroschool.onmicrosoft.com/tyro-api/graphql.use',
+    'https://tyrouat.onmicrosoft.com/tyro-api/graphql.use',
   ],
 };
 
@@ -80,17 +80,15 @@ export async function acquireMsalToken(
   }
 ) {
   const activeAccount = account ?? instance.getActiveAccount();
-  console.log('activeAccount');
-  console.log(activeAccount);
+
   try {
     const response = await instance.acquireTokenSilent({
       ...loginRequest,
       account: activeAccount ?? undefined,
     });
-    console.log(response);
+
     instance.setActiveAccount(activeAccount);
     const token = response?.accessToken || null;
-    console.log(token);
     setToken(token);
     return token;
   } catch (error) {
