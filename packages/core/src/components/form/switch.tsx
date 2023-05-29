@@ -13,7 +13,7 @@ import {
 } from 'react-hook-form';
 
 type RHFSwitchProps<TField extends FieldValues> = {
-  label?: string;
+  label?: FormControlLabelProps['label'];
   switchProps?: SwitchProps;
   controlLabelProps?: Omit<FormControlLabelProps, 'label' | 'control'>;
   controlProps: UseControllerProps<TField>;

@@ -7,12 +7,19 @@ const coreRooms = graphql(/* GraphQL */ `
       roomId
       name
       capacity
+      description
+      pools
+      includeInTimetable
+      externalSystemId
+      location
+      disabled
     }
   }
 `);
 
 export const roomsKeys = {
   all: ['coreRooms'] as const,
+  createOrUpdateRoom: () => [...roomsKeys.all, 'createOrUpdateRoom'] as const,
 };
 
 const coreRoomsQuery = {

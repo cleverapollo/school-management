@@ -37,7 +37,7 @@ export function SubjectGroupStatusBar({
   };
 
   return (
-    <Card variant="outlined" sx={{ p: 1.25, flex: 1 }}>
+    <Card variant="outlined" sx={{ p: 1.25 }}>
       <Stack
         direction="row"
         sx={{ flexWrap: 'wrap', gap: 2, alignItems: 'flex-start' }}

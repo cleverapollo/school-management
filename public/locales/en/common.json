@@ -37,22 +37,23 @@
     "labelWasAssigned": "Label was assigned!",
     "credentialsCorrect": "Credentials success!",
     "unableToSyncData": "Unable to sync data",
-    "incorrectCredentials": "Incorrect credentials"
+    "incorrectCredentials": "Incorrect credentials",
+    "errorFailed": "Error! An error occurred. Please try again later."
   },
   "relationshipType": {
     "AUNTY": "Aunty",
-    "FAMILY_FRIEND": "FamilyFriend",
     "FATHER": "Father",
-    "GRAND_FATHER": "GrandFather",
-    "GRAND_MOTHER": "GrandMother",
     "MOTHER": "Mother",
+    "SIBLING": "Sibling",
+    "UNCLE": "Uncle",
+    "GRAND_FATHER": "Grandfather",
+    "GRAND_MOTHER": "Grandmother",
+    "FAMILY_FRIEND": "Family friend",
     "NEIGHBOUR": "Neighbour",
     "OTHER": "Other",
-    "SIBLING": "Sibling",
-    "SOCIAL_WORKER": "SocialWorker",
-    "STEP_FATHER": "StepFather",
-    "STEP_MOTHER": "StepMother",
-    "UNCLE": "Uncle"
+    "SOCIAL_WORKER": "Social worker",
+    "STEP_FATHER": "Step father",
+    "STEP_MOTHER": "Step mother"
   },
   "total": "Total",
   "grade": "Grade",
