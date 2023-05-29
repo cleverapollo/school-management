@@ -1,4 +1,4 @@
-import { useState, PropsWithChildren } from 'react';
+import { useState, PropsWithChildren, ComponentProps } from 'react';
 import { useMatches, Outlet } from 'react-router-dom';
 import { Box, CircularProgress, Stack } from '@mui/material';
 
@@ -10,6 +10,7 @@ type TabLink = { label: string; value: string };
 
 type TabNavigationProps = PropsWithChildren<{
   links: TabLink[];
+  TabProps?: Omit<ComponentProps<typeof Tabs>, 'value' | 'onChange'>;
 }>;
 
 function getInitialTabValue(
@@ -22,7 +23,7 @@ function getInitialTabValue(
   return matchedPathname?.value ?? tabs[0].value;
 }
 
-export const TabPageContainer = ({ links }: TabNavigationProps) => {
+export const TabPageContainer = ({ links, TabProps }: TabNavigationProps) => {
   const matches = useMatches();
 
   const [value, setValue] = useState<string>(() =>
@@ -36,6 +37,7 @@ export const TabPageContainer = ({ links }: TabNavigationProps) => {
         onChange={(_event, newValue: string) => {
           setValue(newValue);
         }}
+        {...TabProps}
       >
         {links.map((tab) => (
           <LinkTab key={tab.value} {...tab} to={`./${tab.value}`} />

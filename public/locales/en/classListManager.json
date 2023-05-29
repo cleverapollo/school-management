@@ -1,0 +1,10 @@
+{
+  "blocks": "Blocks",
+  "block": "Block",
+  "classes": "Classes",
+  "unassignedStudents": "Unassigned Students",
+  "noStudents": "No students",
+  "youHaveXUnassignedStudents_zero": "You have no unassigned students",
+  "youHaveXUnassignedStudents_one": "You have ({{count}}) unassigned student",
+  "youHaveXUnassignedStudents_other": "You have ({{count}}) unassigned students"
+}

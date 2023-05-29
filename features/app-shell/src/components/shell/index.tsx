@@ -60,7 +60,9 @@ export function Shell({ children }: ShellProps) {
                 width: `calc(100% - ${NAV.W_DASHBOARD_MINI}px)`,
               }),
             }),
-            ...(!isDesktop && { width: '100%' }),
+            ...(!isDesktop && {
+              width: '100%',
+            }),
           }}
         >
           {children}

@@ -1,0 +1,292 @@
+import React from 'react';
+import { DraggableLocation } from 'react-beautiful-dnd';
+import cloneDeep from 'lodash/cloneDeep';
+import { ListManagerState } from './types';
+
+interface DragArguments {
+  groups: ListManagerState[];
+  selectedStudentIds: string[];
+  source: DraggableLocation;
+  destination: DraggableLocation;
+}
+
+/**
+ * Reorder an item in a single list
+ */
+function reorder(list: ListManagerState, startIndex: number, endIndex: number) {
+  const result = Array.from(list?.students ?? []);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return {
+    ...list,
+    students: result,
+  };
+}
+
+/**
+ * Moves an item from one list to another list.
+ */
+const move = (
+  source: ListManagerState,
+  destination: ListManagerState,
+  droppableSource: DraggableLocation,
+  droppableDestination: DraggableLocation
+) => {
+  const sourceStudentsClone = Array.from(source?.students ?? []);
+  const destStudentsClone = Array.from(destination?.students ?? []);
+  const [removed] = sourceStudentsClone.splice(droppableSource.index, 1);
+
+  destStudentsClone.splice(droppableDestination.index, 0, removed);
+
+  return {
+    [droppableSource.droppableId]: {
+      ...source,
+      students: sourceStudentsClone,
+    },
+    [droppableDestination.droppableId]: {
+      ...destination,
+      students: destStudentsClone,
+    },
+  };
+};
+
+const singleDrag = ({ groups, source, destination }: DragArguments) => {
+  const sourceGroupId = source.droppableId;
+  const destinationGroupId = destination.droppableId;
+  const sourceGroupIndex = groups.findIndex(
+    (group) => String(group.id) === sourceGroupId
+  );
+  const destinationGroupIndex = groups.findIndex(
+    (group) => String(group.id) === destinationGroupId
+  );
+
+  // Moving in same list
+  if (sourceGroupIndex === destinationGroupIndex) {
+    // Reorder in list
+    const items = reorder(
+      groups[sourceGroupIndex],
+      source.index,
+      destination.index
+    );
+    const newGroups = [...groups];
+    newGroups[sourceGroupIndex] = items;
+    return newGroups;
+  }
+
+  // Move to new list
+  const moveResult = move(
+    groups[sourceGroupIndex],
+    groups[destinationGroupIndex],
+    source,
+    destination
+  );
+
+  const newGroups = [...groups];
+  newGroups[sourceGroupIndex] = moveResult[sourceGroupId];
+  newGroups[destinationGroupIndex] = moveResult[destinationGroupId];
+
+  return newGroups;
+};
+
+const multiDrag = ({
+  groups,
+  source,
+  destination,
+  selectedStudentIds,
+}: DragArguments) => {
+  const destinationGroupId = destination.droppableId;
+  const destinationGroupIndex = groups.findIndex(
+    (group) => String(group.id) === destinationGroupId
+  );
+
+  const sourceGroupId = source.droppableId;
+  const sourceGroup = groups.find(
+    (group) => String(group.id) === sourceGroupId
+  );
+  const dragged = sourceGroup?.students[source.index];
+
+  const selectedStudents: ListManagerState['students'] = [];
+  const newGroups = [...groups].reduce((acc, group) => {
+    const newGroup = { ...group };
+
+    newGroup.students = group.students.reduce((studentAcc, student) => {
+      if (selectedStudentIds.includes(student.id)) {
+        selectedStudents.push(student);
+        return studentAcc;
+      }
+      studentAcc.push(student);
+      return studentAcc;
+    }, [] as ListManagerState['students']);
+
+    acc.push(newGroup);
+    return acc;
+  }, [] as ListManagerState[]);
+
+  selectedStudents.sort((a, b) => {
+    if (a.id === dragged?.id) {
+      return -1;
+    }
+    if (b.id === dragged?.id) {
+      return 1;
+    }
+    return 0;
+  });
+
+  newGroups[destinationGroupIndex].students.splice(
+    destination.index,
+    0,
+    ...selectedStudents
+  );
+
+  // TODO add ability to merge duplicate students when passed to group with the student
+
+  return newGroups;
+};
+
+export const multiDragAwareReorder = (args: DragArguments) => {
+  if (args.selectedStudentIds.length > 1) {
+    return multiDrag(args);
+  }
+  return singleDrag(args);
+};
+
+// Determines if the platform specific toggle selection in group key was used
+export const wasToggleInSelectionGroupKeyUsed = (
+  event: React.MouseEvent | React.KeyboardEvent | React.TouchEvent
+) => {
+  const isUsingWindows = navigator.platform.indexOf('Win') >= 0;
+  return isUsingWindows ? event.ctrlKey : event.metaKey;
+};
+
+// Determines if the multiSelect key was used
+export const wasMultiSelectKeyUsed = (
+  event: React.MouseEvent | React.KeyboardEvent | React.TouchEvent
+) => event.shiftKey;
+
+export const toggleSelection = (
+  studentId: string,
+  selectedStudentIds: string[]
+) => {
+  const wasSelected = selectedStudentIds.includes(studentId);
+
+  // If wasn't selected or was selected as part of a group
+  if (!wasSelected || selectedStudentIds.length > 1) {
+    return [studentId];
+  }
+
+  return [];
+};
+
+export const toggleSelectionInGroup = (
+  studentId: string,
+  selectedStudentIds: string[]
+) => {
+  const selectedStudentIdsClone = [...selectedStudentIds];
+  const studentIdIndex = selectedStudentIdsClone.indexOf(studentId);
+
+  if (studentIdIndex === -1) {
+    selectedStudentIdsClone.push(studentId);
+  } else {
+    selectedStudentIdsClone.splice(studentIdIndex, 1);
+  }
+
+  return selectedStudentIdsClone;
+};
+
+const getStudentsGroup = (groups: ListManagerState[], studentId: string) =>
+  groups.find((group) =>
+    group.students.some((student) => student.id === studentId)
+  );
+
+// This behaviour matches the MacOSX finder selection
+export const multiSelectTo = (
+  studentId: string,
+  selectedStudentIds: string[],
+  groups: ListManagerState[]
+) => {
+  // Nothing already selected
+  if (!selectedStudentIds.length) {
+    return [studentId];
+  }
+
+  const groupOfNew = getStudentsGroup(groups, studentId);
+
+  const lastSelectedId = selectedStudentIds[selectedStudentIds.length - 1];
+  const groupOfLast = getStudentsGroup(groups, lastSelectedId);
+
+  // Shouldn't happen, but lets keep typescript happy
+  if (!groupOfNew || !groupOfLast) return selectedStudentIds;
+
+  const indexOfNew = groupOfNew.students.findIndex(
+    ({ id }) => id === studentId
+  );
+  const indexOfLast = groupOfLast.students.findIndex(
+    ({ id }) => id === lastSelectedId
+  );
+
+  // multi selecting to another column
+  // select everything up to the index of the current item
+  if (groupOfNew.id !== groupOfLast.id) {
+    return groupOfNew.students.slice(0, indexOfNew + 1).map(({ id }) => id);
+  }
+
+  // multi selecting in the same column
+  // need to select everything between the last index and the current index inclusive
+
+  // nothing to do here
+  if (indexOfNew === indexOfLast) {
+    return selectedStudentIds;
+  }
+
+  const isSelectingForwards = indexOfNew > indexOfLast;
+  const start = isSelectingForwards ? indexOfLast : indexOfNew;
+  const end = isSelectingForwards ? indexOfNew : indexOfLast;
+
+  const studentIdsBetween = groupOfNew.students
+    .slice(start, end + 1)
+    .map(({ id }) => id);
+
+  // everything inbetween needs to have it's selection toggled.
+  // with the exception of the start and end values which will always be selected
+
+  const idsToAdd = studentIdsBetween.filter(
+    (id) =>
+      // if already selected: then no need to select it again
+      !selectedStudentIds.includes(id)
+  );
+
+  const sorted = isSelectingForwards ? idsToAdd : [...idsToAdd].reverse();
+  const combined = [...selectedStudentIds, ...sorted];
+
+  return combined;
+};
+
+export const getGroupsWithDuplicates = (
+  groupIdToMoveTo: number,
+  studentIds: string[],
+  groups: ListManagerState[]
+) => {
+  const groupToMoveTo = groups.find((group) => group.id === groupIdToMoveTo);
+
+  if (!groupToMoveTo) return groups;
+
+  const newStudents = groups.reduce((acc, group) => {
+    group.students.forEach((student) => {
+      if (studentIds.includes(student.id)) {
+        const clonedStudent = {
+          ...cloneDeep(student),
+          id: `${student.person.partyId}-${groupIdToMoveTo}`,
+          isDuplicate: true,
+        };
+        acc.push(clonedStudent);
+      }
+    });
+
+    return acc;
+  }, [] as ListManagerState['students']);
+
+  groupToMoveTo.students = [...groupToMoveTo.students, ...newStudents];
+
+  return [...groups];
+};

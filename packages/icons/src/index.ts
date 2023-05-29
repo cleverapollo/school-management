@@ -59,6 +59,7 @@ export * from './thumbs-up-checkmark';
 export * from './trash';
 export * from './unarchive';
 export * from './undo';
+export * from './user';
 export * from './user-group';
 export * from './user-group-two';
 export * from './user-profile-card';

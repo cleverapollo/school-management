@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
 
-export default function ClassListManager() {
+export default function ClassListManagerClasses() {
   return <Box />;
 }
