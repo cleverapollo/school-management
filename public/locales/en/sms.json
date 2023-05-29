@@ -37,5 +37,13 @@
   "smsFailedToSend": "SMS failed to send",
   "costPerSms": "Cost per SMS",
   "totalCost": "Total cost",
-  "smsDetails": "SMS details"
+  "smsDetails": "SMS details",
+  "addSmsCredit": "Add SMS credit",
+  "addCredit": "Add credit",
+  "smsCreditTopSuccessful": "Your SMS credit has been topped up successfully",
+  "smsCreditTopFailed": "There seemed to be a problem topping up your SMS credit",
+  "availableCredit": "Available credit",
+  "topUpAmount": "Top up amount",
+  "currentAvailableBudget": "Current available budget",
+  "newAvailableBudget": "New available budget"
 }

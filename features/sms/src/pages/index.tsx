@@ -6,15 +6,19 @@ import {
   ReturnTypeDisplayName,
   Table,
   useDebouncedValue,
+  useDisclosure,
   usePreferredNameLayout,
 } from '@tyro/core';
 import { TFunction, useFormatNumber, useTranslation } from '@tyro/i18n';
 import { Dispatch, SetStateAction, useMemo } from 'react';
-import { Button } from '@mui/material';
+import { Button, Stack, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import { AddIcon } from '@tyro/icons';
 import { ReturnTypeFromUseSentSms, useSentSms } from '../api/sent-sms';
 import { SentSmsDetailsModal } from '../components/sent-sms-details-modal';
+import { useSmsCredit } from '../api/sms-credit';
+import { AddCreditModal } from '../components/add-credit-modal';
 
 dayjs.extend(LocalizedFormat);
 
@@ -71,9 +75,15 @@ export default function SmsList() {
     debouncedValue: debouncedRowToViewDetails,
     setValue: setRowToViewDetails,
   } = useDebouncedValue<ReturnTypeFromUseSentSms>({ defaultValue: null });
+  const {
+    isOpen: isAddCreditOpen,
+    onOpen: onOpenAddCredit,
+    onClose: onCloseAddCredit,
+  } = useDisclosure();
   const { displayName } = usePreferredNameLayout();
   const { formatCurrency } = useFormatNumber();
 
+  const { data: smsCredit } = useSmsCredit();
   const { data: sentSms } = useSentSms({
     ids: [],
   });
@@ -89,6 +99,35 @@ export default function SmsList() {
         <PageHeading
           title={t('navigation:management.sms')}
           titleProps={{ variant: 'h3' }}
+          rightAdornment={
+            <Stack direction="row" alignItems="center" spacing={2}>
+              <Stack
+                sx={{
+                  '& > *': {
+                    textAlign: 'right',
+                  },
+                }}
+              >
+                <Typography
+                  variant="caption"
+                  component="h2"
+                  sx={{ fontWeight: 600, color: 'text.secondary' }}
+                >
+                  {t('sms:availableCredit')}
+                </Typography>
+                <Typography variant="body1" component="span">
+                  {formatCurrency(smsCredit ?? 0)}
+                </Typography>
+              </Stack>
+              <Button
+                variant="contained"
+                onClick={onOpenAddCredit}
+                startIcon={<AddIcon />}
+              >
+                {t('sms:addSmsCredit')}
+              </Button>
+            </Stack>
+          }
         />
         <Table
           rowData={sentSms || []}
@@ -100,6 +139,11 @@ export default function SmsList() {
         isOpen={!!rowToViewDetails}
         data={rowToViewDetails || debouncedRowToViewDetails}
         onClose={() => setRowToViewDetails(null)}
+      />
+      <AddCreditModal
+        isOpen={isAddCreditOpen}
+        onClose={onCloseAddCredit}
+        currentCredit={smsCredit ?? 0}
       />
     </>
   );

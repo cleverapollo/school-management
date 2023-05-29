@@ -13,6 +13,7 @@ const smsCost = graphql(/* GraphQL */ `
 const smsCostQuery = (filter: SmsCostFilter) => ({
   queryKey: smsKeys.cost(filter),
   queryFn: () => gqlClient.request(smsCost, { filter }),
+  staleTime: 1000 * 60 * 60,
 });
 
 export function useSmsCostPerMessage(filter: SmsCostFilter) {
@@ -20,6 +21,5 @@ export function useSmsCostPerMessage(filter: SmsCostFilter) {
     ...smsCostQuery(filter),
     select: ({ communications_smsCost }) => communications_smsCost?.total ?? 0,
     keepPreviousData: true,
-    staleTime: 1000 * 60 * 60,
   });
 }
