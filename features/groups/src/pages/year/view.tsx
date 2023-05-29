@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { Container } from '@mui/material';
+import { useMemo, useState } from 'react';
+import { Box, Container, Fade } from '@mui/material';
 import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -13,7 +13,12 @@ import {
   ReturnTypeDisplayName,
   PageHeading,
   ReturnTypeDisplayNames,
+  useDisclosure,
+  ActionMenu,
 } from '@tyro/core';
+import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
+import { SmsRecipientType } from '@tyro/api';
+import { MobileIcon } from '@tyro/icons';
 import { getPersonProfileLink } from '../../utils/get-person-profile-link';
 import { useYearGroupById } from '../../api/year-groups';
 
@@ -29,7 +34,10 @@ const getYearGroupColumns = (
   {
     field: 'person',
     headerName: t('common:name'),
-    valueFormatter: ({ data }) => displayName(data?.person),
+    headerCheckboxSelection: true,
+    headerCheckboxSelectionFilteredOnly: true,
+    checkboxSelection: ({ data }) => Boolean(data),
+    valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
     }: ICellRendererParams<MembersReturnTypeFromUseYearGroupsById, any>) => (
@@ -38,6 +46,7 @@ const getYearGroupColumns = (
         to={getPersonProfileLink(data?.person)}
       />
     ),
+    sort: 'asc',
     lockVisible: true,
   },
   {
@@ -53,12 +62,32 @@ const getYearGroupColumns = (
 ];
 
 export default function ViewYearGroupPage() {
-  const { t } = useTranslation(['common', 'groups']);
+  const { t } = useTranslation(['common', 'groups', 'people', 'sms']);
   const { groupId } = useParams();
   const groupIdAsNumber = useNumber(groupId);
   const { displayName, displayNames } = usePreferredNameLayout();
+  const [selectedRecipients, setSelectedRecipients] =
+    useState<RecipientsForSmsModal>([]);
+  const {
+    isOpen: isSendSmsOpen,
+    onOpen: onOpenSendSms,
+    onClose: onCloseSendSms,
+  } = useDisclosure();
 
   const { data: groupData } = useYearGroupById(groupIdAsNumber);
+
+  const actionMenuItems = [
+    {
+      label: t('people:sendSms'),
+      icon: <MobileIcon />,
+      onClick: onOpenSendSms,
+    },
+    // {
+    //   label: t('mail:sendMail'),
+    //   icon: <SendMailIcon />,
+    //   onClick: () => {},
+    // },
+  ];
 
   const yearGroupColumns = useMemo(
     () => getYearGroupColumns(t, displayName, displayNames),
@@ -69,36 +98,69 @@ export default function ViewYearGroupPage() {
   });
 
   return (
-    <Page title={title}>
-      <Container
-        maxWidth="xl"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
-          pb: 3,
-        }}
-      >
-        <PageHeading
-          title={title}
-          breadcrumbs={{
-            links: [
-              {
-                name: t('groups:yearGroups'),
-                href: './..',
-              },
-              {
-                name: groupData?.name ?? '',
-              },
-            ],
+    <>
+      <Page title={title}>
+        <Container
+          maxWidth="xl"
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            pb: 3,
           }}
-        />
-        <Table
-          rowData={groupData?.students ?? []}
-          columnDefs={yearGroupColumns}
-          getRowId={({ data }) => String(data?.partyId)}
-        />
-      </Container>
-    </Page>
+        >
+          <PageHeading
+            title={title}
+            breadcrumbs={{
+              links: [
+                {
+                  name: t('groups:yearGroups'),
+                  href: './..',
+                },
+                {
+                  name: groupData?.name ?? '',
+                },
+              ],
+            }}
+          />
+          <Table
+            rowData={groupData?.students ?? []}
+            columnDefs={yearGroupColumns}
+            getRowId={({ data }) => String(data?.partyId)}
+            rowSelection="multiple"
+            rightAdornment={
+              <Fade in={selectedRecipients.length > 0} unmountOnExit>
+                <Box>
+                  <ActionMenu menuItems={actionMenuItems} />
+                </Box>
+              </Fade>
+            }
+            onRowSelection={(students) =>
+              setSelectedRecipients(
+                students.map(({ partyId, person }) => ({
+                  id: partyId,
+                  name: displayName(person),
+                  type: 'individual',
+                  avatarUrl: person.avatarUrl,
+                }))
+              )
+            }
+          />
+        </Container>
+      </Page>
+      <SendSmsModal
+        isOpen={isSendSmsOpen}
+        onClose={onCloseSendSms}
+        recipients={selectedRecipients}
+        possibleRecipientTypes={[
+          {
+            label: t('sms:contactsOfStudent', {
+              count: selectedRecipients?.length ?? 0,
+            }),
+            type: SmsRecipientType.Student,
+          },
+        ]}
+      />
+    </>
   );
 }
