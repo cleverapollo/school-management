@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { RecipientInput, SendSmsInput } from '@tyro/api';
 import { RHFCheckboxGroup, useFormValidator } from '@tyro/core';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -18,6 +18,8 @@ import { useSendSms } from '../../../api/send-sms';
 import { RHFSmsMessageField } from '../sms-message-field';
 import { SmsSummary } from '../sms-summary';
 import { RecipientList, RecipientsForSmsModal } from './recipient-list';
+import { useSmsCostPerMessage } from '../../../api/sms-cost';
+import { BYTE_SIZE_PER_SMS, getByteSize } from '../../../utils/byte-size';
 
 export type { RecipientsForSmsModal } from './recipient-list';
 
@@ -63,8 +65,36 @@ export function SendSmsModal({
             : [],
       },
     });
-  const [recipientList, message] = watch(['recipients', 'message']);
+  const [recipientList, message, recipientTypes] = watch([
+    'recipients',
+    'message',
+    'recipientTypes',
+  ]);
+  const numberOfMessages = useMemo(() => {
+    const messageByteSize = getByteSize(message);
+    return Math.ceil(messageByteSize / BYTE_SIZE_PER_SMS);
+  }, [message]);
+  const fullRecipientList = useMemo(
+    () =>
+      recipientList.reduce<NonNullable<SendSmsInput['recipients']>>(
+        (acc, recipient) => {
+          recipientTypes.forEach((recipientType) => {
+            acc.push({
+              recipientPartyId: recipient.id,
+              recipientPartyType: recipientType,
+            });
+          });
 
+          return acc;
+        },
+        []
+      ),
+    [recipientList, recipientTypes]
+  );
+
+  const { data: costPerMessage } = useSmsCostPerMessage({
+    recipients: fullRecipientList,
+  });
   const { mutateAsync: sendSms, isLoading } = useSendSms();
 
   const removeRecipient = (recipientId: number) => {
@@ -80,19 +110,6 @@ export function SendSmsModal({
   };
 
   const onSubmit = (data: SmsFormState) => {
-    const fullRecipientList = data.recipients.reduce<
-      NonNullable<SendSmsInput['recipients']>
-    >((acc, recipient) => {
-      data.recipientTypes.forEach((recipientType) => {
-        acc.push({
-          recipientPartyId: recipient.id,
-          recipientPartyType: recipientType,
-        });
-      });
-
-      return acc;
-    }, []);
-
     sendSms(
       {
         text: data.message,
@@ -179,7 +196,7 @@ export function SendSmsModal({
                 sx={{ flex: 1, px: 3 }}
                 message={message}
                 costPerSms={0.05}
-                totalCost={0.05 * recipientList.length}
+                totalCost={(costPerMessage ?? 0) * numberOfMessages}
               />
             </Box>
             <Box sx={{ flex: 1, display: 'flex', alignItems: 'center' }}>
