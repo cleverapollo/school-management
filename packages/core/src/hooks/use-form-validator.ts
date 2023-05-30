@@ -105,6 +105,15 @@ class Rules<TField extends FieldValues> {
     };
   }
 
+  isPhoneNumber(customMsg?: string) {
+    const errorMessage =
+      customMsg ?? this._t('common:errorMessages.invalidPhoneNumber');
+
+    return (value: FieldValue<TField>) => {
+      validations.isPhoneNumber(value, errorMessage);
+    };
+  }
+
   // eslint-disable-next-line class-methods-use-this
   validate<V extends FieldValue<TField>>(
     validateFn: (
