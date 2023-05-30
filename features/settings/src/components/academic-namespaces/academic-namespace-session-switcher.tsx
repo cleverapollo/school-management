@@ -48,14 +48,6 @@ export function AcademicNamespaceSessionSwitcher() {
         size: 'small',
       }}
       menuProps={{
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-        transformOrigin: {
-          vertical: 'top',
-          horizontal: 'right',
-        },
         sx: {
           '& .MuiMenu-list': {
             minWidth: spacing(15),

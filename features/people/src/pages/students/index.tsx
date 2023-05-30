@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { Container, Typography } from '@mui/material';
+import { useMemo, useState } from 'react';
+import { Box, Container, Fade, Typography } from '@mui/material';
 import {
   GridOptions,
   ICellRendererParams,
@@ -9,14 +9,19 @@ import {
   usePreferredNameLayout,
   ReturnTypeDisplayName,
   ReturnTypeDisplayNames,
+  useDisclosure,
+  ActionMenu,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
+import { MobileIcon } from '@tyro/icons';
+import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
+import { SmsRecipientType } from '@tyro/api';
 import {
   useBulkUpdateCoreStudent,
   ReturnTypeFromUseStudents,
   useStudents,
-} from '../../api/students';
+} from '../../api/student/students';
 
 const getStudentColumns = (
   translate: TFunction<
@@ -124,36 +129,84 @@ const getStudentColumns = (
 ];
 
 export default function StudentsListPage() {
-  const { t } = useTranslation(['common', 'people']);
+  const { t } = useTranslation(['common', 'people', 'sms']);
   const { displayName, displayNames } = usePreferredNameLayout();
+  const [selectedStudents, setSelectedStudents] =
+    useState<RecipientsForSmsModal>([]);
 
-  const { data: students, isLoading } = useStudents();
+  const { data: students } = useStudents();
   const { mutateAsync: bulkSaveStudents } = useBulkUpdateCoreStudent();
+  const {
+    isOpen: isSendSmsOpen,
+    onOpen: onOpenSendSms,
+    onClose: onCloseSendSms,
+  } = useDisclosure();
 
   const studentColumns = useMemo(
     () => getStudentColumns(t, displayName, displayNames),
     [t, displayName, displayNames]
   );
 
-  if (isLoading) {
-    return null;
-  }
+  const actionMenuItems = [
+    {
+      label: t('people:sendSms'),
+      icon: <MobileIcon />,
+      onClick: onOpenSendSms,
+    },
+  ];
 
   return (
-    <Page title={t('common:students')}>
-      <Container maxWidth="xl">
-        <Typography variant="h3" component="h1" paragraph>
-          {t('common:students')}
-        </Typography>
-        <Table
-          rowData={students ?? []}
-          columnDefs={studentColumns}
-          rowSelection="multiple"
-          rowHeight={56}
-          getRowId={({ data }) => String(data?.partyId)}
-          onBulkSave={bulkSaveStudents}
-        />
-      </Container>
-    </Page>
+    <>
+      <Page title={t('common:students')}>
+        <Container maxWidth="xl">
+          <Typography variant="h3" component="h1" paragraph>
+            {t('common:students')}
+          </Typography>
+          <Table
+            rowData={students ?? []}
+            columnDefs={studentColumns}
+            rowSelection="multiple"
+            getRowId={({ data }) => String(data?.partyId)}
+            onBulkSave={bulkSaveStudents}
+            rightAdornment={
+              <Fade in={selectedStudents.length > 0} unmountOnExit>
+                <Box>
+                  <ActionMenu menuItems={actionMenuItems} />
+                </Box>
+              </Fade>
+            }
+            onRowSelection={(newSelectedStudents) =>
+              setSelectedStudents(
+                newSelectedStudents.map((student) => ({
+                  id: student.partyId,
+                  name: displayName(student.person),
+                  type: 'individual',
+                  avatarUrl: student.person?.avatarUrl,
+                }))
+              )
+            }
+          />
+        </Container>
+      </Page>
+      <SendSmsModal
+        isOpen={isSendSmsOpen}
+        onClose={onCloseSendSms}
+        recipients={selectedStudents}
+        possibleRecipientTypes={[
+          {
+            label: t('sms:contactsOfStudent', {
+              count: selectedStudents.length,
+            }),
+            type: SmsRecipientType.Student,
+          },
+          {
+            label: t('sms:subjectTeachersOfStudent', {
+              count: selectedStudents.length,
+            }),
+            type: SmsRecipientType.StudentTeachers,
+          },
+        ]}
+      />
+    </>
   );
 }

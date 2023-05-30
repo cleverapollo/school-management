@@ -93,4 +93,19 @@ export const validations = {
 
     return value;
   },
+  isEmail: <T extends string>(
+    value: T,
+    errorMessage?: string
+  ): T | ValidationError => {
+    // NOTE: matcher was taken from https://github.com/segmentio/is-email
+    const matcher =
+      // eslint-disable-next-line no-useless-escape
+      /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+    if (value && !matcher.test(value)) {
+      throw new ValidationError('isEmail', errorMessage);
+    }
+
+    return value;
+  },
 };

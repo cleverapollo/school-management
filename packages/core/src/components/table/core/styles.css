@@ -74,6 +74,10 @@
   --ag-popup-shadow: 0 0 2px 0 rgba(100, 116, 139, 0.24), 0px 20px 40px -4px rgba(100, 116, 139, 0.24);
   --ag-card-radius: 8px;
   --ag-invalid-color: #e02525;
+
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .ag-theme-tyro .ag-filter-toolpanel-header,
@@ -367,5 +371,9 @@
 
 .ag-theme-tyro .ag-popup-editor {
   border-radius: 6px;
+}
+
+.ag-theme-tyro .ag-right-aligned-cell {
+  justify-content: flex-end;
 }
 

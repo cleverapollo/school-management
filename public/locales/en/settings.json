@@ -11,12 +11,18 @@
   "capacity": "Capacity",
   "namespaces": "Namespaces",
   "active": "Active",
+  "roomPool": "Room pool",
+  "addRoom": "Add room",
+  "editRoom": "Edit room",
+  "roomNameShouldBeUnique": "Room name should be unique",
   "successfullyUpdatedSubjects": "Successfully updated subjects",
   "updateToSubjectsUnsuccessful": "Your subject updates were unsuccessful",
   "changeAcademicNamespaceCurrentlySet": "Change Academic Namespace. Currently set to {{name}}",
   "actions": {
     "makeActive": "Make active primary namespace",
-    "addNewRoom": "Add new room"
+    "addNewRoom": "Add new room",
+    "editRoom": "Edit room",
+    "linkToViewRoomTimetable": "Link to view room timetable"
   },
   "namespacesDialog": {
     "title": "Change Academic Namespace to {{year}}?",

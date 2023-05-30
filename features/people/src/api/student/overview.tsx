@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, queryClient } from '@tyro/api';
+import { peopleStudentsKeys } from './keys';
 
 const studentsContacts = graphql(/* GraphQL */ `
   query core_student_contacts($filter: StudentFilter!) {
@@ -37,6 +38,7 @@ const studentsContacts = graphql(/* GraphQL */ `
           relationshipType
           priority
           allowedToContact
+          includeInSms
         }
       }
     }
@@ -68,16 +70,8 @@ const studentsSubjectGroups = graphql(/* GraphQL */ `
   }
 `);
 
-export const overviewKeys = {
-  all: ['people', 'student', 'overview'] as const,
-  contacts: (studentId: number | undefined) =>
-    [...overviewKeys.all, 'contacts', studentId] as const,
-  subjectGroups: (studentId: number | undefined) =>
-    [...overviewKeys.all, 'classes', studentId] as const,
-};
-
 const studentsContactsQuery = (studentId: number | undefined) => ({
-  queryKey: overviewKeys.contacts(studentId),
+  queryKey: peopleStudentsKeys.contacts(studentId),
   queryFn: async () =>
     gqlClient.request(studentsContacts, {
       filter: { partyIds: [studentId ?? 0] },
@@ -99,7 +93,7 @@ export function useStudentsContacts(studentId: number | undefined) {
 }
 
 const studentsSubjectGroupsQuery = (studentId: number | undefined) => ({
-  queryKey: overviewKeys.subjectGroups(studentId),
+  queryKey: peopleStudentsKeys.subjectGroups(studentId),
   queryFn: async () =>
     gqlClient.request(studentsSubjectGroups, {
       filter: { partyIds: [studentId ?? 0] },

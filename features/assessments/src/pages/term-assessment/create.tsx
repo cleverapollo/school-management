@@ -1,7 +1,6 @@
 import { useTranslation } from '@tyro/i18n';
-import { PageHeading, useToast } from '@tyro/core';
+import { PageHeading, PageContainer, useToast } from '@tyro/core';
 
-import { PageContainer } from '../../components/page-container';
 import { TermAssessmentForm } from '../../components/term-assessment/form';
 
 export default function CreateTermAssessmentPage() {

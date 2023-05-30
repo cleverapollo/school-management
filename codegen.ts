@@ -8,8 +8,9 @@ const config: CodegenConfig = {
   // schema: 'introspec.json',
   schema: [
     {
-      // 'http://localhost:8082/api/tyrogql': {
-      'https://tyro-api-uat.azurewebsites.net/api/tyrogql': {
+      // 'http://localhost:80/api/tyrogql': {
+      'https://app.tyro-dev.com/api/tyrogql': {
+
         headers: {
           Authorization: `Bearer ${process.env.token}`,
         },
@@ -35,6 +36,7 @@ const config: CodegenConfig = {
           Date: 'string',
           DateTime: 'string',
           Time: 'string',
+          BigDecimal: 'number',
         },
       },
     },

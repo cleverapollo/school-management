@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Calendar, CalendarParty } from '@tyro/calendar';
 import { useNumber, usePreferredNameLayout } from '@tyro/core';
 import { CalendarEventAttendeeType, SearchType } from '@tyro/api';
-import { useStudent } from '../../../api/students';
+import { useStudent } from '../../../api/student/students';
 
 export default function StudentProfileTimetablePage() {
   const { id } = useParams();

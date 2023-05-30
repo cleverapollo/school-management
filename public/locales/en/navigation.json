@@ -9,7 +9,8 @@
       "title": "Groups",
       "class": "Class",
       "subject": "Subject",
-      "custom": "Custom"
+      "custom": "Custom",
+      "year": "Year"
     },
     "admin": {
       "title": "Admin",
@@ -40,7 +41,8 @@
       "rooms": "Rooms",
       "academicNamespaces": "Academic namespaces",
       "subjects": "Subjects"
-    }
+    },
+    "sms": "SMS"
   },
   "errors": {
     "404": {

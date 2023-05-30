@@ -18,6 +18,7 @@
   "tyroId": "Tyro ID",
   "priority": "Priority",
   "allowedToContact": "Allowed to contact",
+  "includedInSms": "Included in SMS",
   "nextContact": "Next Contact",
   "studentClickableAvatarAria": "{{name}}'s Avatar. Click to view their support plan and priority note.",
   "guardianContactInformation": "Guardian Contact Information",
@@ -42,14 +43,9 @@
     "CONTRACTS_OF_INDEFINITE_DURATION": "Contracts of indefinite duration",
     "REGULAR_PART_TIME": "Regular part time",
     "PART_TIME": "Part time",
-    "PRIVATE": "Private",
     "VOLUNTARY": "Voluntary",
     "UNKNOWN": "Unknown",
-    "PERMANENT": "Permanent",
-    "PRIVATE": "Private",
-    "REGULAR_PART_TIME": "Regular part time",
-    "TEMPORARY": "Temporary",
-    "CONTRACTS_OF_INDEFINITE_DURATION": "Contract of indefinite duration"
+    "PRIVATE": "Private"
   },
   "personal": {
     "title": "Personal",
@@ -111,5 +107,39 @@
   "feedback": {
     "moreThanOneSelectedForPrimaryContact": "You must only select one contact to set as a primary contact."
   },
-  "title": "Title"
+  "title": "Title",
+  "relationshipToStudent": "Relationship to student",
+  "legalGuardian": "Legal guardian",
+  "pickupPermission": "Pick-up permission",
+  "allowAccessToStudentData": "Allow access to student data",
+  "includeInSms": "Include in SMS",
+  "includeInTmail": "Include in t-mail",
+  "unlinkStudent": "Unlink student",
+  "messageUnlinkContact": "You are about to unlink this contact from the student. Are you sure you want to continue?",
+  "yesUnlink": "Yes, Unlink",
+  "createContact": "Create contact",
+  "pageTitle": {
+    "contacts": "List of contacts",
+    "createContact":"Add a new contact"
+  },
+  "pageHeading": {
+    "contacts": "Contacts",
+    "createContact": "Create contact"
+  },
+  "addStudentRelationship": "Add another student relationship",
+  "primaryAddress": "Primary address",
+  "personalInformation": "New contact personal information",
+  "studentRelationships": "Associated students",
+  "studentRelationshipsRequired": "At least one student must be associated to the contact",
+  "contactSettings": "Contact settings",
+  "contactSettingsDescription": "Permissions and preferences for this contact and student relationship",
+  "successfullyCreatedContact": "Successfully created contact",
+  "createdContactUnsuccessful": "Your contact creation was unsuccessful",
+  "allowedToContactRequired": "Permission to receive correspondence is required to enable this permission",
+  "contactSettingsPermissions": {
+    "legalGuardian": "Is the contact a legal guardian of this student?",
+    "pickupPermission": "Does the contact have permission to pick-up or sign-out this student from school?",
+    "allowAccessToStudentData": "Does the contact have permission to access this student's data on Tyro?",
+    "allowedToContact": "Can the contact receive correspondence from the school in relation to this student?"
+  }
 }

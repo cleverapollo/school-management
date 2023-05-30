@@ -68,6 +68,14 @@ export function ActionMenu({
       <Menu
         anchorEl={buttonRef.current}
         {...getDisclosureProps()}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
         {...menuProps}
         sx={{ mt: 1, ...menuProps?.sx }}
       >

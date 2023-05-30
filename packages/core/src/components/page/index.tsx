@@ -25,6 +25,9 @@ export const Page = forwardRef<HTMLDivElement, PageProps>(
             px: 2,
             pb: 4,
           }),
+          display: 'flex',
+          flexDirection: 'column',
+          flex: 1,
           ...sx,
         }}
         {...props}

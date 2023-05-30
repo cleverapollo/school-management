@@ -30,7 +30,7 @@ export const TabPageContainer = ({ links }: TabNavigationProps) => {
   );
 
   return (
-    <Stack flexDirection="column" gap={3}>
+    <Stack flexDirection="column" gap={3} flex={1}>
       <Tabs
         value={value}
         onChange={(_event, newValue: string) => {
