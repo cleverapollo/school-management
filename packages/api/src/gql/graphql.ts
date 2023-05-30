@@ -263,6 +263,7 @@ export type Calendar = {
   startDate: Scalars['Date'];
 };
 
+/**  Information about the grid for a specific date */
 export type CalendarDayInfo = {
   __typename?: 'CalendarDayInfo';
   date: Scalars['Date'];
@@ -422,13 +423,23 @@ export type CalendarFilter = {
 
 export type CalendarGrid = {
   __typename?: 'CalendarGrid';
-  calendarGridId: Scalars['Int'];
   calendarId: Scalars['Int'];
-  days?: Maybe<Array<Maybe<CalendarDayInfo>>>;
+  days?: Maybe<Array<Maybe<CalendarGridDay>>>;
   /**  date grid is active from. default to calendar dates if null */
   fromDate?: Maybe<Scalars['Date']>;
+  gridIdx: Scalars['Int'];
+  gridVersion: Scalars['Int'];
   /**  date grid is active to. default to calendar dates if null */
   toDate?: Maybe<Scalars['Date']>;
+};
+
+export type CalendarGridDay = {
+  __typename?: 'CalendarGridDay';
+  dayIdx: Scalars['Int'];
+  endTime: Scalars['Time'];
+  isoDayOfWeek: Scalars['Int'];
+  periods: Array<CalendarGridPeriod>;
+  startTime: Scalars['Time'];
 };
 
 export type CalendarGridDayRaw = {
@@ -438,6 +449,19 @@ export type CalendarGridDayRaw = {
   /**  the distinct number and order for the days */
   idx: Scalars['Int'];
   periods: Array<CalendarGridPeriodRaw>;
+};
+
+export type CalendarGridFilter = {
+  gridIds?: InputMaybe<Array<Scalars['Int']>>;
+};
+
+export type CalendarGridPeriod = {
+  __typename?: 'CalendarGridPeriod';
+  endTime: Scalars['Time'];
+  /**  periods are sequential with no gapes between them */
+  periodIdx: Scalars['Int'];
+  startTime: Scalars['Time'];
+  type: CalendarGridPeriodType;
 };
 
 export type CalendarGridPeriodInfo = {
@@ -607,16 +631,6 @@ export type CoreBlock = {
   description?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   subjectGroupIds: Array<Scalars['Long']>;
-};
-
-/**    -------------- Inputs --------------- */
-export type CreateAcademicNamespaceInput = {
-  description?: InputMaybe<Scalars['String']>;
-  endDate: Scalars['Date'];
-  name?: InputMaybe<Scalars['String']>;
-  startDate: Scalars['Date'];
-  type?: InputMaybe<AcademicNamespaceType>;
-  year: Scalars['Int'];
 };
 
 export type CreateCalendarEventAttendeeInput = {
@@ -1035,6 +1049,11 @@ export type EnrollmentHistory = {
   studentPartyId: Scalars['Long'];
 };
 
+/** ###  ire enrollment */
+export type EnrollmentIre_BlockEnrollmentFilter = {
+  blockId: Scalars['String'];
+};
+
 /**
  *  Within a block switch a student to a new subject group.
  *  For ADD Type
@@ -1048,22 +1067,44 @@ export type EnrollmentIre_BlockMembershipChange = {
   type?: InputMaybe<EnrollmentIre_MembershipChangeEnum>;
 };
 
+export type EnrollmentIre_BlockMembershipStudent = {
+  __typename?: 'EnrollmentIre_BlockMembershipStudent';
+  isDuplicate: Scalars['Boolean'];
+  partyId: Scalars['Long'];
+  person: Person;
+};
+
+export type EnrollmentIre_BlockMembershipSubjectGroup = {
+  __typename?: 'EnrollmentIre_BlockMembershipSubjectGroup';
+  avatarUrl?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  partyId: Scalars['Long'];
+  staff: Array<Person>;
+  students: Array<EnrollmentIre_BlockMembershipStudent>;
+  subjects: Array<Subject>;
+};
+
 /**
  * ####
  * ###  ire enrollment
  */
 export type EnrollmentIre_BlockMemberships = {
   __typename?: 'EnrollmentIre_BlockMemberships';
-  block?: Maybe<CoreBlock>;
-  blockId?: Maybe<Scalars['String']>;
-  subjectGroupIds: Array<Scalars['Long']>;
-  subjectGroups: Array<SubjectGroup>;
-  unenrolledStudentIds: Array<Scalars['Long']>;
-  unenrolledStudents: Array<Student>;
+  block: CoreBlock;
+  blockId: Scalars['String'];
+  groups: Array<EnrollmentIre_BlockMembershipsDetails>;
+  isRotation: Scalars['Boolean'];
 };
 
-export type EnrollmentIre_ClassEnrollmentFilter = {
-  yearGroupId: Scalars['Int'];
+export type EnrollmentIre_BlockMembershipsDetails = {
+  __typename?: 'EnrollmentIre_BlockMembershipsDetails';
+  rotationName?: Maybe<Scalars['String']>;
+  subjectGroups: Array<EnrollmentIre_BlockMembershipSubjectGroup>;
+  unenrolledStudents: Array<EnrollmentIre_BlockMembershipStudent>;
+};
+
+export type EnrollmentIre_CoreEnrollmentFilter = {
+  yearGroupEnrollmentId: Scalars['Long'];
 };
 
 export type EnrollmentIre_CoreMembershipChange = {
@@ -1074,8 +1115,8 @@ export type EnrollmentIre_CoreMembershipChange = {
 
 export type EnrollmentIre_CoreMemberships = {
   __typename?: 'EnrollmentIre_CoreMemberships';
-  subjectGroupIds: Array<Scalars['Long']>;
-  subjectGroups: Array<SubjectGroup>;
+  classGroupIds: Array<Scalars['Long']>;
+  classGroups: Array<GeneralGroup>;
   unenrolledStudentIds: Array<Scalars['Long']>;
   unenrolledStudents: Array<Student>;
   yearGroupEnrollment?: Maybe<YearGroupEnrollment>;
@@ -1085,11 +1126,6 @@ export enum EnrollmentIre_MembershipChangeEnum {
   Add = 'ADD',
   Remove = 'REMOVE'
 }
-
-/** ###  ire enrollment */
-export type EnrollmentIre_SubjectGroupEnrollmentFilter = {
-  blockId: Scalars['String'];
-};
 
 /** ## Enrollment Ire */
 export type EnrollmentIre_UpsertBlockMembership = {
@@ -1511,6 +1547,7 @@ export type Mutation = {
   core_updateStudents?: Maybe<Success>;
   core_updateSubjectGroups?: Maybe<Success>;
   core_updateYearGroupEnrollments?: Maybe<Success>;
+  core_upsertAcademicNamespace?: Maybe<AcademicNamespace>;
   core_upsertRooms: Array<Room>;
   createProfileForGlobalUser?: Maybe<Profile>;
   createRole?: Maybe<SecurityRole>;
@@ -1519,6 +1556,7 @@ export type Mutation = {
   fees_deleteFee?: Maybe<Scalars['String']>;
   fees_saveDiscount?: Maybe<Discount>;
   fees_saveFee?: Maybe<Fee>;
+  ppod_savePPODCredentials: PpodCredentials;
   /**  staff_work_upsert_absence_type(input: [UpsertStaffAbsenceType]): [StaffAbsenceType!]! */
   staffWork_upsertAbsence: Array<StaffAbsence>;
   tt_editLessonInstance: Array<TtIndividualViewLesson>;
@@ -1681,6 +1719,11 @@ export type MutationCore_UpdateYearGroupEnrollmentsArgs = {
 };
 
 
+export type MutationCore_UpsertAcademicNamespaceArgs = {
+  input?: InputMaybe<SaveAcademicNamespaceInput>;
+};
+
+
 export type MutationCore_UpsertRoomsArgs = {
   input?: InputMaybe<Array<InputMaybe<UpsertRoomInput>>>;
 };
@@ -1718,6 +1761,11 @@ export type MutationFees_SaveDiscountArgs = {
 
 export type MutationFees_SaveFeeArgs = {
   input?: InputMaybe<SaveFeeInput>;
+};
+
+
+export type MutationPpod_SavePpodCredentialsArgs = {
+  input?: InputMaybe<SavePpodCredentials>;
 };
 
 
@@ -1852,6 +1900,17 @@ export type Owner = {
   ownerId?: Maybe<Scalars['Int']>;
   startDate?: Maybe<Scalars['Date']>;
   surname?: Maybe<Scalars['String']>;
+};
+
+export type PpodCredentials = {
+  __typename?: 'PPODCredentials';
+  lastSyncSuccessful: Scalars['Boolean'];
+  password: Scalars['String'];
+  username: Scalars['String'];
+};
+
+export type PpodFilter = {
+  transactionId?: InputMaybe<Scalars['String']>;
 };
 
 export type PpodStudent = {
@@ -2015,7 +2074,6 @@ export type PermissionSet = {
   permissions?: Maybe<Array<Permission>>;
   toggle?: Maybe<Scalars['Boolean']>;
 };
-
 
 export type PermissionSetFilter = {
   ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
@@ -2248,7 +2306,9 @@ export type Query = {
   communications_notifications?: Maybe<Array<Maybe<Notification>>>;
   communications_registeredDevices?: Maybe<Array<Maybe<DeviceRegistration>>>;
   communications_sms?: Maybe<Array<Maybe<Sms>>>;
+  communications_smsCost?: Maybe<SmsCost>;
   communications_smsCredit?: Maybe<SmsCredit>;
+  communications_smsXeroItem: Array<XeroItem>;
   communications_unreadCount?: Maybe<Array<Maybe<UnreadCount>>>;
   composite_studentStatus: StudentStatus;
   core_academicNamespaces?: Maybe<Array<AcademicNamespace>>;
@@ -2266,6 +2326,9 @@ export type Query = {
   generalGroups?: Maybe<Array<GeneralGroup>>;
   myAuthDetails?: Maybe<GlobalUser>;
   permissions?: Maybe<Array<Maybe<Permission>>>;
+  ppod_PPODCredentials?: Maybe<PpodCredentials>;
+  ppod_syncPPOD: SyncRequest;
+  ppod_syncRequests: Array<SyncRequest>;
   profileTypes?: Maybe<Array<Maybe<ProfileType>>>;
   profiles?: Maybe<Array<Maybe<ProfileType>>>;
   roles?: Maybe<Array<Maybe<SecurityRole>>>;
@@ -2423,6 +2486,11 @@ export type QueryCommunications_SmsArgs = {
 };
 
 
+export type QueryCommunications_SmsCostArgs = {
+  filter?: InputMaybe<SmsCostFilter>;
+};
+
+
 export type QueryCommunications_UnreadCountArgs = {
   filter?: InputMaybe<UnreadCountFilter>;
 };
@@ -2495,6 +2563,11 @@ export type QueryFees_FeesArgs = {
 
 export type QueryGeneralGroupsArgs = {
   filter?: InputMaybe<GeneralGroupFilter>;
+};
+
+
+export type QueryPpod_SyncRequestsArgs = {
+  filter?: InputMaybe<SyncRequestsFilter>;
 };
 
 
@@ -2669,6 +2742,17 @@ export type RoomFilter = {
   roomIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
+/**    -------------- Inputs --------------- */
+export type SaveAcademicNamespaceInput = {
+  description?: InputMaybe<Scalars['String']>;
+  endDate: Scalars['Date'];
+  id?: InputMaybe<Scalars['Int']>;
+  name?: InputMaybe<Scalars['String']>;
+  startDate: Scalars['Date'];
+  type?: InputMaybe<AcademicNamespaceType>;
+  year: Scalars['Int'];
+};
+
 export type SaveAssessmentCommentInput = {
   assessmentId: Scalars['Long'];
   comment?: InputMaybe<Scalars['String']>;
@@ -2829,6 +2913,11 @@ export type SaveOwner = {
   ownerId?: InputMaybe<Scalars['Int']>;
   startDate?: InputMaybe<Scalars['Date']>;
   surname?: InputMaybe<Scalars['String']>;
+};
+
+export type SavePpodCredentials = {
+  password: Scalars['String'];
+  username: Scalars['String'];
 };
 
 export type SavePpodSchoolInfo = {
@@ -3214,6 +3303,15 @@ export type Sms = {
   totalCost: Scalars['BigDecimal'];
 };
 
+export type SmsCost = {
+  __typename?: 'SmsCost';
+  total?: Maybe<Scalars['BigDecimal']>;
+};
+
+export type SmsCostFilter = {
+  recipients?: InputMaybe<Array<InputMaybe<RecipientInput>>>;
+};
+
 export type SmsCredit = {
   __typename?: 'SmsCredit';
   smsCredit: Scalars['Float'];
@@ -3231,6 +3329,7 @@ export type SmsGroupRecipient = {
 
 export type SmsRecipient = {
   __typename?: 'SmsRecipient';
+  deliveredOn?: Maybe<Scalars['DateTime']>;
   id?: Maybe<SmsRecipientId>;
   /** deep linked */
   recipient?: Maybe<Person>;
@@ -3256,7 +3355,8 @@ export enum SmsRecipientType {
   StudentTeachers = 'STUDENT_TEACHERS',
   SubjectGroupContact = 'SUBJECT_GROUP_CONTACT',
   SubjectGroupStaff = 'SUBJECT_GROUP_STAFF',
-  YearGroupContact = 'YEAR_GROUP_CONTACT'
+  YearGroupContact = 'YEAR_GROUP_CONTACT',
+  YearGroupStaff = 'YEAR_GROUP_STAFF'
 }
 
 export type SmsSentResponse = {
@@ -3837,6 +3937,28 @@ export type Success = {
   success?: Maybe<Scalars['Boolean']>;
 };
 
+export type SyncRequest = {
+  __typename?: 'SyncRequest';
+  id: Scalars['Int'];
+  requestedOn: Scalars['DateTime'];
+  /** deep linked */
+  requester: Person;
+  requesterPartyId: Scalars['Long'];
+  syncRequestStatus: SyncRequestStatus;
+};
+
+export enum SyncRequestStatus {
+  Error = 'ERROR',
+  Fail = 'FAIL',
+  Success = 'SUCCESS'
+}
+
+export type SyncRequestsFilter = {
+  from?: InputMaybe<Scalars['DateTime']>;
+  id?: InputMaybe<Scalars['Int']>;
+  to?: InputMaybe<Scalars['DateTime']>;
+};
+
 /** ## Creates or replaces grid on calendar */
 export type TtCreateTimetable = {
   blocksIds?: InputMaybe<Array<Scalars['String']>>;
@@ -4203,6 +4325,12 @@ export type XeroContact = {
   xeroContactId: Scalars['String'];
 };
 
+export type XeroItem = {
+  __typename?: 'XeroItem';
+  code?: Maybe<Scalars['String']>;
+  cost?: Maybe<Scalars['BigDecimal']>;
+};
+
 export type YearGroup = {
   __typename?: 'YearGroup';
   description?: Maybe<Scalars['String']>;
@@ -4222,6 +4350,8 @@ export type YearGroupEnrollment = {
   name: Scalars['String'];
   nationalCode: Scalars['String'];
   shortName: Scalars['String'];
+  studentMembers: Group;
+  students: Array<Student>;
   yearGroupEnrollmentPartyId: Scalars['Long'];
   yearGroupId: Scalars['Int'];
   yearGroupLeads: Array<Person>;
@@ -4583,8 +4713,7 @@ export type Core_Student_ContactsQueryVariables = Exact<{
 }>;
 
 
-export type Core_Student_ContactsQuery = { __typename?: 'Query', core_students: Array<{ __typename?: 'Student', partyId: number, contacts?: Array<{ __typename?: 'StudentContact', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null }, personalInformation?: { __typename?: 'PersonalInformation', gender?: Gender | null, nationality?: string | null, primaryAddress?: { __typename?: 'Address', line1?: string | null, line2?: string | null, line3?: string | null, city?: string | null, country?: string | null, postCode?: string | null } | null, primaryPhoneNumber?: { __typename?: 'PhoneNumber', number?: string | null, areaCode?: string | null, countryCode?: string | null } | null, primaryEmail?: { __typename?: 'EmailAddress', email?: string | null } | null } | null, relationships?: Array<{ __typename?: 'StudentContactRelationshipInfo', relationshipType: StudentContactType, primaryContact?: boolean | null, allowedToContact?: boolean | null } | null> | null }> | null }> };
-
+export type Core_Student_ContactsQuery = { __typename?: 'Query', core_students: Array<{ __typename?: 'Student', partyId: number, contacts?: Array<{ __typename?: 'StudentContact', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null }, personalInformation?: { __typename?: 'PersonalInformation', gender?: Gender | null, nationality?: string | null, primaryAddress?: { __typename?: 'Address', line1?: string | null, line2?: string | null, line3?: string | null, city?: string | null, country?: string | null, postCode?: string | null } | null, primaryPhoneNumber?: { __typename?: 'PhoneNumber', number?: string | null, areaCode?: string | null, countryCode?: string | null } | null, primaryEmail?: { __typename?: 'EmailAddress', email?: string | null } | null } | null, relationships?: Array<{ __typename?: 'StudentContactRelationshipInfo', relationshipType: StudentContactType, priority: number, allowedToContact: boolean, includeInSms: boolean } | null> | null }> | null }> };
 
 export type Core_Student_SubjectGroupsQueryVariables = Exact<{
   filter: StudentFilter;
@@ -4592,7 +4721,6 @@ export type Core_Student_SubjectGroupsQueryVariables = Exact<{
 
 
 export type Core_Student_SubjectGroupsQuery = { __typename?: 'Query', core_students: Array<{ __typename?: 'Student', partyId: number, subjectGroups: Array<{ __typename?: 'SubjectGroup', partyId: number, name: string, avatarUrl?: string | null, subjects: Array<{ __typename?: 'Subject', name: string, colour?: Colour | null }>, staff: Array<{ __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null }>, irePP?: { __typename?: 'SubjectGroupIrePP', level?: StudyLevel | null } | null }> }> };
-
 
 export type Core_Student_PersonalQueryVariables = Exact<{
   filter: StudentFilter;
