@@ -2,6 +2,7 @@ import { lazy } from 'react';
 import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { MobileIcon } from '@tyro/icons';
 import { getSentSms } from './api/sent-sms';
+import { getSmsCredit } from './api/sms-credit';
 
 const Sms = lazy(() => import('./pages/index'));
 
@@ -17,7 +18,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         title: t('navigation:management.sms'),
         icon: <MobileIcon />,
         element: <Sms />,
-        loader: () => getSentSms({ ids: [] }),
+        loader: () => Promise.all([getSentSms({ ids: [] }), getSmsCredit()]),
       },
     ],
   },
