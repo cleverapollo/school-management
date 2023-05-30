@@ -1,16 +1,9 @@
 import {
   Box,
-  Button,
   Dialog,
   DialogActions,
   DialogTitle,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Typography,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';

@@ -59,7 +59,7 @@ export default function SubjectGroupProfileAttendancePage() {
     cancelAttendance,
   } = useHandleLessonAttendance({
     partyId: groupIdNumber!,
-    students: subjectGroupData?.students ?? [],
+    students: subjectGroupData?.students || [],
   });
 
   const [showAlertSuccess, setAlertSuccess] = useState(false);

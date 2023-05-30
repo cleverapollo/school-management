@@ -10,7 +10,10 @@ import {
   StudentRelationshipsFormState,
 } from './student-relationships';
 import { useCreateContact } from '../../../api/contact/create-contact';
-import { PrimaryAddress, PrimaryAddressFormState } from './primary-address';
+import {
+  PrimaryAddress,
+  PrimaryAddressFormState,
+} from '../../common/primary-address';
 import {
   PersonalInformation,
   PersonalInformationFormState,
@@ -144,7 +147,10 @@ export function ContactForm() {
     <>
       <Stack component="form" onSubmit={handleSubmit(onSubmit)} gap={3}>
         <Card variant="outlined">
-          <CardHeader component="h2" title={t('people:personalInformation')} />
+          <CardHeader
+            component="h2"
+            title={t('people:contactPersonalInformation')}
+          />
           <Stack direction="column" gap={3} p={3}>
             <PersonalInformation control={control} />
             <PrimaryAddress control={control} />
