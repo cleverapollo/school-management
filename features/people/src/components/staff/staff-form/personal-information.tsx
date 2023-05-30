@@ -1,22 +1,28 @@
 import { Grid, Typography } from '@mui/material';
-import { RHFCheckbox, RHFTextField } from '@tyro/core';
+import { RHFTextField, RHFSelect } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { Control } from 'react-hook-form';
 
 import {
   InputEmailAddress,
-  PersonalInformation as PersonalInformationType,
+  CreateStaffInput,
+  Gender,
+  PersonalTitle,
 } from '@tyro/api';
 import { MobileNumber, MobileNumberData } from '../../common/mobile-number';
+import { PersonalTitlesDropdown } from '../../common/personal-titles-dropdown';
 
 export type PersonalInformationFormState = {
-  firstName: PersonalInformationType['firstName'];
-  surname: PersonalInformationType['lastName'];
+  title: PersonalTitle;
+  firstName: CreateStaffInput['firstName'];
+  lastName: CreateStaffInput['lastName'];
+  gender: CreateStaffInput['gender'];
   mobileNumber: MobileNumberData | undefined;
+  additionalNumber: string;
   email: InputEmailAddress['email'];
-  spokenLanguage: string;
-  requiresInterpreter: boolean;
 };
+
+const genderOptions = Object.values(Gender);
 
 type PersonalInformationProps<TField extends PersonalInformationFormState> = {
   control: TField extends PersonalInformationFormState
@@ -34,9 +40,12 @@ export const PersonalInformation = <
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <Typography variant="subtitle1" color="text.secondary">
+        <Typography variant="subtitle1" component="h3" color="text.secondary">
           {t('common:details')}
         </Typography>
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <PersonalTitlesDropdown control={control} name="title" />
       </Grid>
       <Grid item xs={12} sm={6}>
         <RHFTextField
@@ -53,7 +62,19 @@ export const PersonalInformation = <
           label={t('people:personal.about.surname')}
           textFieldProps={{ fullWidth: true }}
           controlProps={{
-            name: 'surname',
+            name: 'lastName',
+            control,
+          }}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <RHFSelect<PersonalInformationFormState, Gender>
+          fullWidth
+          label={t('people:gender.title')}
+          options={genderOptions}
+          getOptionLabel={(option) => t(`people:gender.${option}`)}
+          controlProps={{
+            name: 'gender',
             control,
           }}
         />
@@ -69,30 +90,22 @@ export const PersonalInformation = <
       </Grid>
       <Grid item xs={12} sm={6}>
         <RHFTextField
-          label={t('common:email')}
+          label={t('common:additionalNumber')}
           textFieldProps={{ fullWidth: true }}
           controlProps={{
-            name: 'email',
+            name: 'additionalNumber',
             control,
           }}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
         <RHFTextField
-          label={t('people:personal.about.spokenLanguage')}
+          label={t('common:email')}
           textFieldProps={{ fullWidth: true }}
           controlProps={{
-            name: 'spokenLanguage',
+            name: 'email',
             control,
           }}
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <RHFCheckbox
-          label={t('people:personal.about.requiresInterpreter')}
-          controlLabelProps={{ sx: { width: '100%', ml: 0, height: '100%' } }}
-          checkboxProps={{ color: 'primary' }}
-          controlProps={{ name: 'requiresInterpreter', control }}
         />
       </Grid>
     </Grid>

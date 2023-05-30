@@ -108,4 +108,16 @@ export const validations = {
 
     return value;
   },
+  isPhoneNumber: <T extends string>(
+    value: T,
+    errorMessage?: string
+  ): T | ValidationError => {
+    const matcher = /[A-Z]/gi;
+
+    if (value && matcher.test(value)) {
+      throw new ValidationError('isPhoneNumber', errorMessage);
+    }
+
+    return value;
+  },
 };

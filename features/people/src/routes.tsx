@@ -1,5 +1,10 @@
 import { lazy } from 'react';
-import { NavObjectFunction, NavObjectType, getNumber } from '@tyro/core';
+import {
+  NavObjectFunction,
+  NavObjectType,
+  getNumber,
+  throw404Error,
+} from '@tyro/core';
 import { UserGroupIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
 import { getStudentDashboardAssessments } from '@tyro/assessments';
@@ -26,6 +31,7 @@ import { getContactStudents } from './api/contact/students';
 import { getStaff } from './api/staff';
 import { getStaffStatus } from './api/staff/status';
 import { getStaffSubjectGroups } from './api/staff/subject-groups';
+import { getStaffPersonal } from './api/staff/personal';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
 // Student profile pages
@@ -110,6 +116,8 @@ const StaffProfileClassesPage = lazy(
   () => import('./pages/staff/profile/classes')
 );
 
+const CreateStaffPage = lazy(() => import('./pages/staff/create'));
+
 export const getRoutes: NavObjectFunction = (t) => [
   {
     type: NavObjectType.Category,
@@ -135,6 +143,11 @@ export const getRoutes: NavObjectFunction = (t) => [
             element: <StudentProfileContainer />,
             loader: ({ params }) => {
               const studentId = getNumber(params.id);
+
+              if (!studentId) {
+                throw404Error();
+              }
+
               return Promise.all([
                 getStudent(studentId),
                 getStudentStatus(studentId),
@@ -152,6 +165,10 @@ export const getRoutes: NavObjectFunction = (t) => [
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
                   const formattedDate = dayjs().format('YYYY-MM-DD');
+
+                  if (!studentId) {
+                    throw404Error();
+                  }
 
                   return Promise.all([
                     getStudentsContacts(studentId),
@@ -176,6 +193,11 @@ export const getRoutes: NavObjectFunction = (t) => [
                 path: 'personal',
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
+
+                  if (!studentId) {
+                    throw404Error();
+                  }
+
                   return getStudentPersonal(studentId);
                 },
                 element: <StudentProfilePersonalPage />,
@@ -211,6 +233,10 @@ export const getRoutes: NavObjectFunction = (t) => [
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
 
+                  if (!studentId) {
+                    throw404Error();
+                  }
+
                   return getTodayTimetableEvents(studentId);
                 },
               },
@@ -229,6 +255,11 @@ export const getRoutes: NavObjectFunction = (t) => [
                 path: 'classes',
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
+
+                  if (!studentId) {
+                    throw404Error();
+                  }
+
                   return getStudentsSubjectGroups(studentId);
                 },
                 element: <StudentProfileClassesPage />,
@@ -259,6 +290,11 @@ export const getRoutes: NavObjectFunction = (t) => [
             element: <ContactProfileContainer />,
             loader: ({ params }) => {
               const contactId = getNumber(params.id);
+
+              if (!contactId) {
+                throw404Error();
+              }
+
               return getContactPersonal(contactId ?? 0);
             },
             children: [
@@ -272,7 +308,12 @@ export const getRoutes: NavObjectFunction = (t) => [
                 path: 'personal',
                 loader: ({ params }) => {
                   const contactId = getNumber(params.id);
-                  return getContactPersonal(contactId ?? 0);
+
+                  if (!contactId) {
+                    throw404Error();
+                  }
+
+                  return getContactPersonal(contactId);
                 },
                 element: <ContactProfilePersonalPage />,
               },
@@ -281,7 +322,12 @@ export const getRoutes: NavObjectFunction = (t) => [
                 path: 'students',
                 loader: ({ params }) => {
                   const contactId = getNumber(params.id);
-                  return getContactStudents(contactId ?? 0);
+
+                  if (!contactId) {
+                    throw404Error();
+                  }
+
+                  return getContactStudents(contactId);
                 },
                 element: <ContactProfileStudentsPage />,
               },
@@ -306,13 +352,23 @@ export const getRoutes: NavObjectFunction = (t) => [
           },
           {
             type: NavObjectType.NonMenuLink,
+            path: 'staff/create',
+            loader: () => getStudentsForSelect({}),
+            element: <CreateStaffPage />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
             path: 'staff/:id',
             element: <StaffProfileContainer />,
             loader: ({ params }) => {
               const staffId = getNumber(params.id);
 
+              if (!staffId) {
+                throw404Error();
+              }
+
               return Promise.all([
-                getStaff({ partyIds: [staffId ?? 0] }),
+                getStaff({ partyIds: [staffId] }),
                 getStaffStatus(staffId),
               ]);
             },
@@ -330,6 +386,15 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'personal',
+                loader: ({ params }) => {
+                  const staffId = getNumber(params.id);
+
+                  if (!staffId) {
+                    throw404Error();
+                  }
+
+                  return getStaffPersonal({ partyIds: [staffId] });
+                },
                 element: <StaffProfilePersonalPage />,
               },
               {
@@ -343,6 +408,11 @@ export const getRoutes: NavObjectFunction = (t) => [
                 element: <StaffProfileTimetablePage />,
                 loader: ({ params }) => {
                   const staffId = getNumber(params.id);
+
+                  if (!staffId) {
+                    throw404Error();
+                  }
+
                   return getTodayTimetableEvents(staffId);
                 },
               },
@@ -352,7 +422,11 @@ export const getRoutes: NavObjectFunction = (t) => [
                 loader: ({ params }) => {
                   const staffId = getNumber(params.id);
 
-                  return getStaffSubjectGroups({ partyIds: [staffId ?? 0] });
+                  if (!staffId) {
+                    throw404Error();
+                  }
+
+                  return getStaffSubjectGroups({ partyIds: [staffId] });
                 },
                 element: <StaffProfileClassesPage />,
               },
