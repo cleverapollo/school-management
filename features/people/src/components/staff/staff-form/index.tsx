@@ -1,10 +1,9 @@
 import { Card, Stack, CardHeader, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { ConfirmDialog, useFormValidator } from '@tyro/core';
+import { ConfirmDialog, useDisclosure, useFormValidator } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 import {
   PersonalInformation,
   PersonalInformationFormState,
@@ -29,7 +28,12 @@ export function StaffForm() {
   const { t } = useTranslation(['common', 'people']);
   const navigate = useNavigate();
 
-  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const {
+    isOpen: isCancelModalOpen,
+    onOpen: onOpenCancelModal,
+    onClose: onCloseCancelModal,
+  } = useDisclosure();
+
   const { mutate: createStaffMutation, isLoading } = useCreateStaff();
 
   const { resolver, rules } = useFormValidator<StaffFormState>();
@@ -62,7 +66,7 @@ export function StaffForm() {
 
   const handleCancelForm = () => {
     if (isDirty) {
-      setIsCancelModalOpen(true);
+      onOpenCancelModal();
     } else {
       goBack();
     }
@@ -198,7 +202,7 @@ export function StaffForm() {
         open={isCancelModalOpen}
         title={t('common:cancelConfirmDialog.title')}
         description={t('common:cancelConfirmDialog.description')}
-        onClose={() => setIsCancelModalOpen(false)}
+        onClose={onCloseCancelModal}
         onConfirm={goBack}
       />
     </>

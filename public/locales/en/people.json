@@ -27,7 +27,7 @@
   "sendSms": "Send SMS",
   "makePrimaryContact": "Make primary contact",
   "position": "Position",
-  "carRegistration": "Car Registration",
+  "carRegistration": "Car registration",
   "ppsNumber": "PPS number",
   "teacherCouncilNumber": "Teacher Council number",
   "gender": {
@@ -124,7 +124,7 @@
   "pageTitle": {
     "contacts": "List of contacts",
     "createContact":"Add a new contact",
-    "staff": "list of staff",
+    "staff": "List of staff",
     "createStaff": "Add a new staff"
   },
   "pageHeading": {
