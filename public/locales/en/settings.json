@@ -53,7 +53,9 @@
     "enterPpodCredentials": "Please enter the schools PPOD sync credentials",
     "username": "Username",
     "password": "Password",
-    "syncFromPpod": "Sync from PPOD"
+    "syncFromPpod": "Sync from PPOD",
+    "syncSuccessful": "Sync successful",
+    "syncUnsuccessful": "Sync unsuccessful"
 
   },
   "schoolDetails": {
@@ -81,6 +83,7 @@
     "surname": "Surname",
     "ownerInformation": "Owner information",
     "boardOfManagementChairPerson": "Board of management chairperson",
-    "octoberReturnsContact": "October returns contact person"
+    "octoberReturnsContact": "October returns contact person",
+    "dataUnavailable": "Data unavailable."
   }
 }

@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { Box, Fade, Stack } from '@mui/material';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { useNavigate } from 'react-router-dom';
 import {
   ActionMenu,
@@ -10,96 +9,27 @@ import {
   Table,
   TablePersonAvatar,
 } from '@tyro/core';
-
-import { MobileIcon } from '@tyro/icons';
+import { useAcademicNamespace } from '@tyro/api';
+import { EditIcon } from '@tyro/icons';
 import { TFunction, useTranslation } from '@tyro/i18n';
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 import dayjs from 'dayjs';
 
 import { useSyncRequests, ReturnTypeFromUseSyncRequests } from '../../api/ppod';
 
-type SyncRequestStatus = 'SUCCESS' | 'ERROR' | 'FAIL';
-
-type Requester = {
-  partyId: string;
-  title: string;
-  titleId: string;
-  firstName: string;
-  lastName: string;
-  avatarUrl: string;
-  type: string;
-};
-
-type PpodSyncRequestData = {
-  id: number;
-  syncRequestStatus: SyncRequestStatus;
-  requesterPartyId: number;
-  requester: Requester;
-  requestedOn: string;
-};
-
-const ppodSyncRequestData: PpodSyncRequestData[] = [
-  {
-    id: 1,
-    syncRequestStatus: 'SUCCESS',
-    requesterPartyId: 12345,
-    requester: {
-      partyId: '12345',
-      title: 'Mr',
-      titleId: '123',
-      firstName: 'John',
-      lastName: 'Doe',
-      avatarUrl: 'https://example.com/avatar',
-      type: 'Staff',
-    },
-    requestedOn: '2023-05-10T09:15:00Z',
-  },
-  {
-    id: 2,
-    syncRequestStatus: 'ERROR',
-    requesterPartyId: 54321,
-    requester: {
-      partyId: '54321',
-      title: 'Mr',
-      titleId: '4',
-      firstName: 'John',
-      lastName: 'Smith',
-      avatarUrl: 'https://example.com/avatar',
-      type: 'Staff',
-    },
-    requestedOn: '2023-04-19T14:35:00Z',
-  },
-  {
-    id: 3,
-    syncRequestStatus: 'FAIL',
-    requesterPartyId: 54321,
-    requester: {
-      partyId: '54322',
-      title: 'Ms',
-      titleId: '4',
-      firstName: 'Jane',
-      lastName: 'Smith',
-      avatarUrl: 'https://example.com/avatar',
-      type: 'Staff',
-    },
-    requestedOn: '2023-04-18T12:30:00Z',
-  },
-];
+function capitalizeFirstLetter(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
 
 const getColumnDefs = (
   t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>
-): GridOptions<
-  ReturnTypeFromUseSyncRequests | PpodSyncRequestData
->['columnDefs'] => [
+): GridOptions<ReturnTypeFromUseSyncRequests>['columnDefs'] => [
   {
     field: 'requester',
     headerName: t('settings:ppodSync.completedBy'),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<
-      ReturnTypeFromUseSyncRequests | PpodSyncRequestData,
-      any
-    >) => {
+    }: ICellRendererParams<ReturnTypeFromUseSyncRequests, any>) => {
       const person = {
         firstName: data?.requester?.firstName ?? '',
         lastName: data?.requester?.lastName ?? '',
@@ -125,37 +55,35 @@ const getColumnDefs = (
     field: 'syncRequestStatus',
     headerName: t('settings:ppodSync.status'),
     enableRowGroup: true,
-    valueFormatter: ({ data }) => data?.syncRequestStatus ?? '',
+    valueFormatter: ({ data }) =>
+      data?.syncRequestStatus
+        ? capitalizeFirstLetter(data?.syncRequestStatus)
+        : '',
   },
 ];
 
 export default function Sync() {
   const { t } = useTranslation(['common', 'settings']);
   const navigate = useNavigate();
+  const { activeAcademicNamespace } = useAcademicNamespace();
 
-  const useSyncRequestsParams = {
-    from: '2022-03-01T00:00:00Z',
-    to: '2023-05-15T23:59:59Z',
+  const startDate = activeAcademicNamespace?.startDate;
+  const endDate = activeAcademicNamespace?.endDate;
+
+  const formattedDates = {
+    from: dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss[Z]'),
+    to: dayjs(endDate).format('YYYY-MM-DDTHH:mm:ss[Z]'),
   };
 
-  const { data: syncRequests } = useSyncRequests(useSyncRequestsParams);
+  const { data: syncRequests } = useSyncRequests(formattedDates);
 
   const myColumnDefs = useMemo(() => getColumnDefs(t), [t]);
-
-  const tableData = useMemo(
-    () =>
-      Array.isArray(syncRequests) && syncRequests?.length > 0
-        ? syncRequests
-        : ppodSyncRequestData,
-    [syncRequests]
-  );
 
   const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => {
     const commonActions = [
       {
         label: t('settings:ppodSync.enterSyncCredentials'),
-        // TODO: CHANGE ICON
-        icon: <MobileIcon />,
+        icon: <EditIcon />,
         onClick: () => {
           navigate('/settings/ppod');
         },
@@ -168,7 +96,7 @@ export default function Sync() {
   return (
     <Stack spacing={3}>
       <Table
-        rowData={tableData ?? []}
+        rowData={syncRequests ?? []}
         columnDefs={myColumnDefs}
         getRowId={({ data }) => String(data?.id)}
         rightAdornment={

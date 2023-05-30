@@ -6,11 +6,10 @@ import {
   SavePpodCredentials,
   SyncRequestsFilter,
   UseQueryReturnType,
-  SyncRequest,
-  SchoolInfo,
 } from '@tyro/api';
+import { useToast } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 
-// Query to retrieve sync requests
 const syncRequests = graphql(/* GraphQL */ `
   query ppod_syncRequests($filter: SyncRequestsFilter!) {
     ppod_syncRequests(filter: $filter) {
@@ -31,7 +30,6 @@ const syncRequests = graphql(/* GraphQL */ `
   }
 `);
 
-// Query to sync PPOD
 const syncFromPpod = graphql(/* GraphQL */ `
   query ppod_syncPPOD {
     ppod_syncPPOD {
@@ -52,7 +50,6 @@ const syncFromPpod = graphql(/* GraphQL */ `
   }
 `);
 
-// Login to PPOD
 const savePpodCredentials = graphql(/* GraphQL */ `
   mutation ppod_savePPODCredentials($input: SavePPODCredentials!) {
     ppod_savePPODCredentials(input: $input) {
@@ -62,7 +59,6 @@ const savePpodCredentials = graphql(/* GraphQL */ `
   }
 `);
 
-// Query to check if PPOD credentials have previously been saved
 const ppodCredentials = graphql(/* GraphQL */ `
   query ppod_PPODCredentials {
     ppod_PPODCredentials {
@@ -73,7 +69,6 @@ const ppodCredentials = graphql(/* GraphQL */ `
   }
 `);
 
-// Query to retrieve school details
 const schoolsInfo = graphql(/* GraphQL */ `
   query users_schoolInfo {
     users_schoolInfo {
@@ -142,7 +137,6 @@ const schoolsInfo = graphql(/* GraphQL */ `
   }
 `);
 
-// KEYS
 export const ppodSyncKeys = {
   all: ['ppodSync'] as const,
   syncRequests: (filter: SyncRequestsFilter) =>
@@ -154,7 +148,6 @@ export const ppodSyncKeys = {
     [...ppodSyncKeys.all, 'savePpodCredentials'] as const,
 };
 
-// QUERY => FETCH ALL DATA BELONG TO PREVIOUS SYNC REQUESTS
 const syncRequestsQuery = (filter: SyncRequestsFilter) => ({
   queryKey: ppodSyncKeys.syncRequests(filter),
   queryFn: async () => gqlClient.request(syncRequests, { filter }),
@@ -169,12 +162,11 @@ export function useSyncRequests(filter: SyncRequestsFilter) {
     ...syncRequestsQuery(filter),
     select: ({ ppod_syncRequests }) => {
       if (!Array.isArray(ppod_syncRequests)) return [];
-      return ppod_syncRequests as [];
+      return ppod_syncRequests;
     },
   });
 }
 
-// MUTATION => SAVE PPOD credentials
 export function useSavePpodCredentials() {
   return useMutation({
     mutationKey: ppodSyncKeys.savePpodCredentials(),
@@ -183,7 +175,6 @@ export function useSavePpodCredentials() {
   });
 }
 
-// QUERY => SYNC DATA FROM PPOD
 const syncFromPpodQuery = {
   queryKey: ppodSyncKeys.syncFromPpod(),
   queryFn: async () => gqlClient.request(syncFromPpod),
@@ -194,18 +185,25 @@ export function getSyncFromPpodQuery() {
 }
 
 export function useSyncFromPpodQuery() {
-  const test = useQuery({
+  const { toast } = useToast();
+  const { t } = useTranslation('settings');
+  return useQuery({
     ...syncFromPpodQuery,
+    select: ({ ppod_syncPPOD }) => {
+      if (!Array.isArray(ppod_syncPPOD)) return [];
+      return ppod_syncPPOD;
+    },
+    onSuccess: () => {
+      toast(t('ppodSync.syncSuccessful'), { variant: 'success' });
+      queryClient.invalidateQueries(ppodSyncKeys.all);
+    },
+    onError: () => {
+      toast(t('ppodSync.syncUnsuccessful'), { variant: 'error' });
+    },
     enabled: false,
   });
-  console.log(test.data, 'TESTING');
-  if (test.data) {
-    console.log(test.data, 'TESTING');
-  }
-  return test;
 }
 
-// QUERY => CHECK IF PPOD CREDENTIALS HAVE PREVIOUSLY BEEN SAVED
 const ppodCredentialsStatus = {
   queryKey: ppodSyncKeys.ppodCredentialsStatus(),
   queryFn: async () => gqlClient.request(ppodCredentials),
@@ -218,18 +216,10 @@ export function getPpodCredentialsStatus() {
 export function usePpodCredentialsStatus() {
   return useQuery({
     ...ppodCredentialsStatus,
-    select: ({ ppod_PPODCredentials }) => {
-      if (!ppod_PPODCredentials) return null;
-      return ppod_PPODCredentials as {
-        username: string;
-        password: string;
-        lastSyncSuccessful: boolean;
-      };
-    },
+    select: ({ ppod_PPODCredentials }) => ppod_PPODCredentials,
   });
 }
 
-// QUERY => FETCH SCHOOL DETAILS
 const schoolsInfoQuery = {
   queryKey: ppodSyncKeys.schoolsInfo(),
   queryFn: async () => gqlClient.request(schoolsInfo),
@@ -242,11 +232,10 @@ export function getSchoolsInfo() {
 export function useSchoolsInfo() {
   return useQuery({
     ...schoolsInfoQuery,
-    select: ({ users_schoolInfo }) => users_schoolInfo as SchoolInfo,
+    select: ({ users_schoolInfo }) => users_schoolInfo,
   });
 }
 
-// Return type for useSyncRequests
 export type ReturnTypeFromUseSyncRequests = UseQueryReturnType<
   typeof useSyncRequests
 >[number];

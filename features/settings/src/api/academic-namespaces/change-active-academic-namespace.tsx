@@ -35,11 +35,11 @@ export function useCoreSetActiveActiveAcademicNamespace() {
     ) =>
       gqlClient.request(coreSetActiveActiveAcademicNamespace, {
         input: {
-          academicNamespaceId: namespace.academicNamespaceId,
+          academicNamespaceId: namespace?.academicNamespaceId,
         },
       }),
     onSuccess: (_, namespace) => {
-      toast(`Successfully changed year to ${namespace.year}`, {
+      toast(`Successfully changed year to ${namespace?.year}`, {
         variant: 'success',
       });
       queryClient.clear();

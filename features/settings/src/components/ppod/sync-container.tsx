@@ -1,17 +1,17 @@
-import { useState } from 'react';
 import { Page, PageHeading, TabPageContainer } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { Box, Container } from '@mui/material';
 import { useLocation } from 'react-router';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { LoadingButton } from '@mui/lab';
 import { useSyncFromPpodQuery } from '../../api/ppod';
 
 export default function SyncContainer() {
   const { t } = useTranslation(['common', 'settings']);
-  const { refetch, isFetching } = useSyncFromPpodQuery();
+  const { refetch, isInitialLoading } = useSyncFromPpodQuery();
 
   const currentUrl = useLocation();
+  const showSyncFromPpodButton =
+    !currentUrl.pathname.includes('sync-data/details');
 
   return (
     <Page title="PPOD">
@@ -27,7 +27,7 @@ export default function SyncContainer() {
           title={t('settings:ppod')}
           titleProps={{ variant: 'h3' }}
           rightAdornment={
-            !currentUrl?.pathname?.includes('details') && (
+            showSyncFromPpodButton && (
               <Box display="flex" alignItems="center">
                 <LoadingButton
                   variant="contained"
@@ -35,7 +35,7 @@ export default function SyncContainer() {
                   onClick={() => {
                     refetch();
                   }}
-                  loading={isFetching}
+                  loading={isInitialLoading}
                 >
                   {t('settings:ppodSync.syncFromPpod')}
                 </LoadingButton>

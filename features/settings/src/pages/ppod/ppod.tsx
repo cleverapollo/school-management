@@ -1,20 +1,17 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { useLoaderData } from 'react-router-dom';
 import Sync from './sync';
 import Login from './login';
 
-type CredentialStatusProps = {
+type CredentialsStatusProps = {
   ppod_PPODCredentials: {
     lastSyncSuccessful: boolean;
   };
 };
 
 export default function Ppod() {
-  const ppodCredentialsStatus = useLoaderData() as CredentialStatusProps;
+  const ppodCredentialsStatus = useLoaderData() as CredentialsStatusProps;
+  const isPpodCredentialsSuccess =
+    ppodCredentialsStatus?.ppod_PPODCredentials?.lastSyncSuccessful ?? false;
 
-  return !ppodCredentialsStatus?.ppod_PPODCredentials?.lastSyncSuccessful ? (
-    <Login />
-  ) : (
-    <Sync />
-  );
+  return isPpodCredentialsSuccess ? <Sync /> : <Login />;
 }

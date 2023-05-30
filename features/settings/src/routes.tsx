@@ -1,7 +1,6 @@
 import { lazy } from 'react';
 import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { GearIcon } from '@tyro/icons';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { redirect } from 'react-router-dom';
 import { getCoreAcademicNamespace } from '@tyro/api';
 import { getCoreRooms } from './api/rooms';

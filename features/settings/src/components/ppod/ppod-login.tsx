@@ -1,11 +1,7 @@
 import { Card, CardHeader, Stack } from '@mui/material';
 import { RHFTextField, useFormValidator, useToast } from '@tyro/core';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { useForm } from 'react-hook-form';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { useNavigate } from 'react-router-dom';
-
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { LoadingButton } from '@mui/lab';
 import { queryClient } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
@@ -15,11 +11,6 @@ import { useSavePpodCredentials, ppodSyncKeys } from '../../api/ppod';
 type FormValues = {
   username: string;
   password: string;
-};
-
-const textFieldStyle = {
-  maxWidth: 300,
-  width: '100%',
 };
 
 export default function PpodLogin() {
@@ -76,13 +67,12 @@ export default function PpodLogin() {
           borderColor: 'divider',
         }}
       />
-      <Stack direction="row" gap={3} p={3}>
+      <Stack direction={{ xs: 'column', sm: 'row' }} gap={3} p={3}>
         <Stack direction="column" gap={2.5}>
           <RHFTextField
             label={t('settings:ppodSync.username')}
             textFieldProps={{
               minRows: 1,
-              sx: textFieldStyle,
             }}
             controlProps={{
               name: 'username',
@@ -97,7 +87,6 @@ export default function PpodLogin() {
             type="password"
             textFieldProps={{
               minRows: 1,
-              sx: textFieldStyle,
             }}
             controlProps={{
               name: 'password',
@@ -112,6 +101,7 @@ export default function PpodLogin() {
             size="large"
             type="submit"
             loading={isLoading}
+            sx={{ width: { xs: '100%' } }}
           >
             {t('settings:ppodSync.login')}
           </LoadingButton>
