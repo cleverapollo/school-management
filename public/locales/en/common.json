@@ -34,7 +34,8 @@
     "updateSuccess": "Update success!",
     "deleteSuccess": "Delete success!",
     "mailWasSent": "Mail was sent",
-    "labelWasAssigned": "Label was assigned!"
+    "labelWasAssigned": "Label was assigned!",
+    "errorFailed": "Error! An error occurred. Please try again later."
   },
   "relationshipType": {
     "AUNTY": "Aunty",
@@ -214,7 +215,8 @@
     "minLength": "You must enter a minimum of {{count}} characters",
     "maxLength": "You have exceeded the maximum character length of {{count}}",
     "invalidMobileNumber": "This is an invalid mobile number for this country",
-    "invalidEmail": "This is an invalid email"
+    "invalidEmail": "This is an invalid email",
+    "invalidPhoneNumber": "This is an invalid phone number"
   },
   "studyLevel": {
     "COMMON": "Common",
@@ -250,5 +252,8 @@
   "cancelConfirmDialog": {
     "title": "Cancel",
     "description": "Are you sure you want to cancel?"
-  }
+  },
+  "phoneNumber": "Phone number",
+  "additionalNumber": "Additional number",
+  "contact": "Contact"
 }

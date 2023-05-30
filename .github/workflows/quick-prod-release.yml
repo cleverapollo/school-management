@@ -1,9 +1,7 @@
-name: Release pipeline
+name: Quick release prod
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch
 
 jobs:
   build:
@@ -33,34 +31,13 @@ jobs:
           # Container registry server url
           login-server: tyrocr.azurecr.io
       - name: Build image
-        run: docker build -t tyrocr.azurecr.io/tyro-ui:0.0.${{ github.run_number }} .
+        run: docker build -t tyrocr.azurecr.io/tyro-ui:quick-release-${{ github.run_number }} .
       - name: Push Docker image
-        run: docker push tyrocr.azurecr.io/tyro-ui:0.0.${{ github.run_number }}
-
-  deploy-uat:
+        run: docker push tyrocr.azurecr.io/tyro-ui:quick-release-${{ github.run_number }}
+  deploy-prod:
     needs: build
     runs-on: ubuntu-latest
-    environment: uat
-    steps:
-      - name: Log in with Azure
-        uses: azure/login@v1
-        with:
-          creds: '${{ secrets.AZURE_CREDENTIALS }}'
-      - name: Set AKS context
-        uses: azure/aks-set-context@v3
-        with:
-          resource-group: '${{ secrets.AKS_RESOURCE_GROUP }}'
-          cluster-name: '${{ secrets.AKS_CLUSTER_NAME }}'
-      - name: Setup kubectl
-        id: install-kubectl
-        uses: azure/setup-kubectl@v3
-      - name: 'Rollout new image'
-        run: |
-          kubectl set image deployments/tyro-ui tyro-ui=tyrocr.azurecr.io/tyro-ui:0.0.${{ github.run_number }}
-  deploy-prod:
-    needs: [ build, deploy-uat ]
     environment: prod
-    runs-on: ubuntu-latest
     steps:
       - name: Log in with Azure
         uses: azure/login@v1
@@ -71,15 +48,9 @@ jobs:
         with:
           resource-group: '${{ secrets.AKS_RESOURCE_GROUP }}'
           cluster-name: '${{ secrets.AKS_CLUSTER_NAME }}'
-      - name: Set AKS context
-        id: set-context
-        uses: azure/aks-set-context@v3
-        with:
-          resource-group: '${{ secrets.AKS_RESOURCE_GROUP }}'
-          cluster-name: '${{ secrets.AKS_CLUSTER_NAME }}'
       - name: Setup kubectl
         id: install-kubectl
         uses: azure/setup-kubectl@v3
       - name: 'Rollout new image'
         run: |
-          kubectl set image deployments/tyro-ui tyro-ui=tyrocr.azurecr.io/tyro-ui:0.0.${{ github.run_number }}        
+          kubectl set image deployments/tyro-ui tyro-ui=tyrocr.azurecr.io/tyro-ui:quick-release-${{ github.run_number }}
