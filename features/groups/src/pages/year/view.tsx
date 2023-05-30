@@ -1,10 +1,9 @@
 import { useMemo, useState } from 'react';
-import { Box, Container, Fade } from '@mui/material';
+import { Box, Fade } from '@mui/material';
 import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   useNumber,
-  Page,
   Table,
   GridOptions,
   TablePersonAvatar,
@@ -15,6 +14,7 @@ import {
   ReturnTypeDisplayNames,
   useDisclosure,
   ActionMenu,
+  PageContainer,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { SmsRecipientType } from '@tyro/api';
@@ -99,55 +99,45 @@ export default function ViewYearGroupPage() {
 
   return (
     <>
-      <Page title={title}>
-        <Container
-          maxWidth="xl"
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-            pb: 3,
+      <PageContainer title={title}>
+        <PageHeading
+          title={title}
+          breadcrumbs={{
+            links: [
+              {
+                name: t('groups:yearGroups'),
+                href: './..',
+              },
+              {
+                name: groupData?.name ?? '',
+              },
+            ],
           }}
-        >
-          <PageHeading
-            title={title}
-            breadcrumbs={{
-              links: [
-                {
-                  name: t('groups:yearGroups'),
-                  href: './..',
-                },
-                {
-                  name: groupData?.name ?? '',
-                },
-              ],
-            }}
-          />
-          <Table
-            rowData={groupData?.students ?? []}
-            columnDefs={yearGroupColumns}
-            getRowId={({ data }) => String(data?.partyId)}
-            rowSelection="multiple"
-            rightAdornment={
-              <Fade in={selectedRecipients.length > 0} unmountOnExit>
-                <Box>
-                  <ActionMenu menuItems={actionMenuItems} />
-                </Box>
-              </Fade>
-            }
-            onRowSelection={(students) =>
-              setSelectedRecipients(
-                students.map(({ partyId, person }) => ({
-                  id: partyId,
-                  name: displayName(person),
-                  type: 'individual',
-                  avatarUrl: person.avatarUrl,
-                }))
-              )
-            }
-          />
-        </Container>
-      </Page>
+        />
+        <Table
+          rowData={groupData?.students ?? []}
+          columnDefs={yearGroupColumns}
+          getRowId={({ data }) => String(data?.partyId)}
+          rowSelection="multiple"
+          rightAdornment={
+            <Fade in={selectedRecipients.length > 0} unmountOnExit>
+              <Box>
+                <ActionMenu menuItems={actionMenuItems} />
+              </Box>
+            </Fade>
+          }
+          onRowSelection={(students) =>
+            setSelectedRecipients(
+              students.map(({ partyId, person }) => ({
+                id: partyId,
+                name: displayName(person),
+                type: 'individual',
+                avatarUrl: person.avatarUrl,
+              }))
+            )
+          }
+        />
+      </PageContainer>
       <SendSmsModal
         isOpen={isSendSmsOpen}
         onClose={onCloseSendSms}

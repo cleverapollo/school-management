@@ -103,7 +103,7 @@ export function AddCreditModal({
                 <Typography
                   component="dt"
                   variant="body2"
-                  sx={{ color: 'text.secondary' }}
+                  color="text.secondary"
                 >
                   {title}
                 </Typography>

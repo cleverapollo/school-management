@@ -1,4 +1,4 @@
-import { Box, Container, Fade, Typography } from '@mui/material';
+import { Box, Fade } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { SmsRecipientType } from '@tyro/api';
@@ -6,7 +6,8 @@ import {
   ActionMenu,
   GridOptions,
   ICellRendererParams,
-  Page,
+  PageContainer,
+  PageHeading,
   Table,
   TableAvatar,
   useDisclosure,
@@ -94,36 +95,35 @@ export default function YearGroups() {
 
   return (
     <>
-      <Page title={t('groups:yearGroups')}>
-        <Container maxWidth="xl">
-          <Typography variant="h3" component="h1" paragraph>
-            {t('groups:yearGroups')}
-          </Typography>
-          <Table
-            rowData={yearGroupData ?? []}
-            columnDefs={yearGroupColumns}
-            rowSelection="multiple"
-            getRowId={({ data }) => String(data?.yearGroupEnrollmentPartyId)}
-            rightAdornment={
-              <Fade in={selectedGroups.length > 0} unmountOnExit>
-                <Box>
-                  <ActionMenu menuItems={actionMenuItems} />
-                </Box>
-              </Fade>
-            }
-            onRowSelection={(groups) =>
-              setSelectedGroups(
-                groups.map(({ yearGroupEnrollmentPartyId, name }) => ({
-                  id: yearGroupEnrollmentPartyId,
-                  name,
-                  type: 'group',
-                  avatarUrl: undefined,
-                }))
-              )
-            }
-          />
-        </Container>
-      </Page>
+      <PageContainer title={t('groups:yearGroups')}>
+        <PageHeading
+          title={t('groups:yearGroups')}
+          titleProps={{ variant: 'h3' }}
+        />
+        <Table
+          rowData={yearGroupData ?? []}
+          columnDefs={yearGroupColumns}
+          rowSelection="multiple"
+          getRowId={({ data }) => String(data?.yearGroupEnrollmentPartyId)}
+          rightAdornment={
+            <Fade in={selectedGroups.length > 0} unmountOnExit>
+              <Box>
+                <ActionMenu menuItems={actionMenuItems} />
+              </Box>
+            </Fade>
+          }
+          onRowSelection={(groups) =>
+            setSelectedGroups(
+              groups.map(({ yearGroupEnrollmentPartyId, name }) => ({
+                id: yearGroupEnrollmentPartyId,
+                name,
+                type: 'group',
+                avatarUrl: undefined,
+              }))
+            )
+          }
+        />
+      </PageContainer>
 
       <SendSmsModal
         isOpen={isSendSmsOpen}

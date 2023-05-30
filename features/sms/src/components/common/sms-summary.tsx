@@ -38,7 +38,6 @@ export function SmsSummary({
       {...props}
       sx={{
         m: 0,
-
         ...props.sx,
       }}
     >

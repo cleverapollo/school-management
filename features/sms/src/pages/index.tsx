@@ -111,7 +111,8 @@ export default function SmsList() {
                 <Typography
                   variant="caption"
                   component="h2"
-                  sx={{ fontWeight: 600, color: 'text.secondary' }}
+                  fontWeight={600}
+                  color="text.secondary"
                 >
                   {t('sms:availableCredit')}
                 </Typography>
