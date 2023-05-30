@@ -263,6 +263,7 @@ export type Calendar = {
   startDate: Scalars['Date'];
 };
 
+/**  Information about the grid for a specific date */
 export type CalendarDayInfo = {
   __typename?: 'CalendarDayInfo';
   date: Scalars['Date'];
@@ -422,13 +423,23 @@ export type CalendarFilter = {
 
 export type CalendarGrid = {
   __typename?: 'CalendarGrid';
-  calendarGridId: Scalars['Int'];
   calendarId: Scalars['Int'];
-  days?: Maybe<Array<Maybe<CalendarDayInfo>>>;
+  days?: Maybe<Array<Maybe<CalendarGridDay>>>;
   /**  date grid is active from. default to calendar dates if null */
   fromDate?: Maybe<Scalars['Date']>;
+  gridIdx: Scalars['Int'];
+  gridVersion: Scalars['Int'];
   /**  date grid is active to. default to calendar dates if null */
   toDate?: Maybe<Scalars['Date']>;
+};
+
+export type CalendarGridDay = {
+  __typename?: 'CalendarGridDay';
+  dayIdx: Scalars['Int'];
+  endTime: Scalars['Time'];
+  isoDayOfWeek: Scalars['Int'];
+  periods: Array<CalendarGridPeriod>;
+  startTime: Scalars['Time'];
 };
 
 export type CalendarGridDayRaw = {
@@ -438,6 +449,19 @@ export type CalendarGridDayRaw = {
   /**  the distinct number and order for the days */
   idx: Scalars['Int'];
   periods: Array<CalendarGridPeriodRaw>;
+};
+
+export type CalendarGridFilter = {
+  gridIds?: InputMaybe<Array<Scalars['Int']>>;
+};
+
+export type CalendarGridPeriod = {
+  __typename?: 'CalendarGridPeriod';
+  endTime: Scalars['Time'];
+  /**  periods are sequential with no gapes between them */
+  periodIdx: Scalars['Int'];
+  startTime: Scalars['Time'];
+  type: CalendarGridPeriodType;
 };
 
 export type CalendarGridPeriodInfo = {
@@ -607,16 +631,6 @@ export type CoreBlock = {
   description?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   subjectGroupIds: Array<Scalars['Long']>;
-};
-
-/**    -------------- Inputs --------------- */
-export type CreateAcademicNamespaceInput = {
-  description?: InputMaybe<Scalars['String']>;
-  endDate: Scalars['Date'];
-  name?: InputMaybe<Scalars['String']>;
-  startDate: Scalars['Date'];
-  type?: InputMaybe<AcademicNamespaceType>;
-  year: Scalars['Int'];
 };
 
 export type CreateCalendarEventAttendeeInput = {
@@ -1533,6 +1547,7 @@ export type Mutation = {
   core_updateStudents?: Maybe<Success>;
   core_updateSubjectGroups?: Maybe<Success>;
   core_updateYearGroupEnrollments?: Maybe<Success>;
+  core_upsertAcademicNamespace?: Maybe<AcademicNamespace>;
   core_upsertRooms: Array<Room>;
   createProfileForGlobalUser?: Maybe<Profile>;
   createRole?: Maybe<SecurityRole>;
@@ -1541,6 +1556,7 @@ export type Mutation = {
   fees_deleteFee?: Maybe<Scalars['String']>;
   fees_saveDiscount?: Maybe<Discount>;
   fees_saveFee?: Maybe<Fee>;
+  ppod_savePPODCredentials: PpodCredentials;
   /**  staff_work_upsert_absence_type(input: [UpsertStaffAbsenceType]): [StaffAbsenceType!]! */
   staffWork_upsertAbsence: Array<StaffAbsence>;
   tt_editLessonInstance: Array<TtIndividualViewLesson>;
@@ -1703,6 +1719,11 @@ export type MutationCore_UpdateYearGroupEnrollmentsArgs = {
 };
 
 
+export type MutationCore_UpsertAcademicNamespaceArgs = {
+  input?: InputMaybe<SaveAcademicNamespaceInput>;
+};
+
+
 export type MutationCore_UpsertRoomsArgs = {
   input?: InputMaybe<Array<InputMaybe<UpsertRoomInput>>>;
 };
@@ -1740,6 +1761,11 @@ export type MutationFees_SaveDiscountArgs = {
 
 export type MutationFees_SaveFeeArgs = {
   input?: InputMaybe<SaveFeeInput>;
+};
+
+
+export type MutationPpod_SavePpodCredentialsArgs = {
+  input?: InputMaybe<SavePpodCredentials>;
 };
 
 
@@ -1874,6 +1900,17 @@ export type Owner = {
   ownerId?: Maybe<Scalars['Int']>;
   startDate?: Maybe<Scalars['Date']>;
   surname?: Maybe<Scalars['String']>;
+};
+
+export type PpodCredentials = {
+  __typename?: 'PPODCredentials';
+  lastSyncSuccessful: Scalars['Boolean'];
+  password: Scalars['String'];
+  username: Scalars['String'];
+};
+
+export type PpodFilter = {
+  transactionId?: InputMaybe<Scalars['String']>;
 };
 
 export type PpodStudent = {
@@ -2271,6 +2308,7 @@ export type Query = {
   communications_sms?: Maybe<Array<Maybe<Sms>>>;
   communications_smsCost?: Maybe<SmsCost>;
   communications_smsCredit?: Maybe<SmsCredit>;
+  communications_smsXeroItem: Array<XeroItem>;
   communications_unreadCount?: Maybe<Array<Maybe<UnreadCount>>>;
   composite_studentStatus: StudentStatus;
   core_academicNamespaces?: Maybe<Array<AcademicNamespace>>;
@@ -2288,6 +2326,9 @@ export type Query = {
   generalGroups?: Maybe<Array<GeneralGroup>>;
   myAuthDetails?: Maybe<GlobalUser>;
   permissions?: Maybe<Array<Maybe<Permission>>>;
+  ppod_PPODCredentials?: Maybe<PpodCredentials>;
+  ppod_syncPPOD: SyncRequest;
+  ppod_syncRequests: Array<SyncRequest>;
   profileTypes?: Maybe<Array<Maybe<ProfileType>>>;
   profiles?: Maybe<Array<Maybe<ProfileType>>>;
   roles?: Maybe<Array<Maybe<SecurityRole>>>;
@@ -2525,6 +2566,11 @@ export type QueryGeneralGroupsArgs = {
 };
 
 
+export type QueryPpod_SyncRequestsArgs = {
+  filter?: InputMaybe<SyncRequestsFilter>;
+};
+
+
 export type QueryProfileTypesArgs = {
   filter?: InputMaybe<ProfileTypeFilter>;
 };
@@ -2696,6 +2742,17 @@ export type RoomFilter = {
   roomIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
+/**    -------------- Inputs --------------- */
+export type SaveAcademicNamespaceInput = {
+  description?: InputMaybe<Scalars['String']>;
+  endDate: Scalars['Date'];
+  id?: InputMaybe<Scalars['Int']>;
+  name?: InputMaybe<Scalars['String']>;
+  startDate: Scalars['Date'];
+  type?: InputMaybe<AcademicNamespaceType>;
+  year: Scalars['Int'];
+};
+
 export type SaveAssessmentCommentInput = {
   assessmentId: Scalars['Long'];
   comment?: InputMaybe<Scalars['String']>;
@@ -2856,6 +2913,11 @@ export type SaveOwner = {
   ownerId?: InputMaybe<Scalars['Int']>;
   startDate?: InputMaybe<Scalars['Date']>;
   surname?: InputMaybe<Scalars['String']>;
+};
+
+export type SavePpodCredentials = {
+  password: Scalars['String'];
+  username: Scalars['String'];
 };
 
 export type SavePpodSchoolInfo = {
@@ -3875,6 +3937,28 @@ export type Success = {
   success?: Maybe<Scalars['Boolean']>;
 };
 
+export type SyncRequest = {
+  __typename?: 'SyncRequest';
+  id: Scalars['Int'];
+  requestedOn: Scalars['DateTime'];
+  /** deep linked */
+  requester: Person;
+  requesterPartyId: Scalars['Long'];
+  syncRequestStatus: SyncRequestStatus;
+};
+
+export enum SyncRequestStatus {
+  Error = 'ERROR',
+  Fail = 'FAIL',
+  Success = 'SUCCESS'
+}
+
+export type SyncRequestsFilter = {
+  from?: InputMaybe<Scalars['DateTime']>;
+  id?: InputMaybe<Scalars['Int']>;
+  to?: InputMaybe<Scalars['DateTime']>;
+};
+
 /** ## Creates or replaces grid on calendar */
 export type TtCreateTimetable = {
   blocksIds?: InputMaybe<Array<Scalars['String']>>;
@@ -4239,6 +4323,12 @@ export type XeroContact = {
   __typename?: 'XeroContact';
   smsCredit: Scalars['Float'];
   xeroContactId: Scalars['String'];
+};
+
+export type XeroItem = {
+  __typename?: 'XeroItem';
+  code?: Maybe<Scalars['String']>;
+  cost?: Maybe<Scalars['BigDecimal']>;
 };
 
 export type YearGroup = {
@@ -4710,6 +4800,11 @@ export type Communications_SmsCreditQueryVariables = Exact<{ [key: string]: neve
 
 export type Communications_SmsCreditQuery = { __typename?: 'Query', communications_smsCredit?: { __typename?: 'SmsCredit', smsCredit: number } | null };
 
+export type Communications_SmsXeroItemQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type Communications_SmsXeroItemQuery = { __typename?: 'Query', communications_smsXeroItem: Array<{ __typename?: 'XeroItem', code?: string | null, cost?: number | null }> };
+
 export type Communications_SmsTopUpMutationVariables = Exact<{
   input?: InputMaybe<SmsTopUpInput>;
 }>;
@@ -4831,6 +4926,7 @@ export const SendSmsDocument = {"kind":"Document","definitions":[{"kind":"Operat
 export const Communications_SmsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_sms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SmsFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_sms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"sender"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"sentOn"}},{"kind":"Field","name":{"kind":"Name","value":"canReply"}},{"kind":"Field","name":{"kind":"Name","value":"numRecipients"}},{"kind":"Field","name":{"kind":"Name","value":"totalCost"}},{"kind":"Field","name":{"kind":"Name","value":"recipients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"smsId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientPartyId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"recipient"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"recipientPhoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"smsSuccess"}}]}}]}}]}}]} as unknown as DocumentNode<Communications_SmsQuery, Communications_SmsQueryVariables>;
 export const Communications_SmsCostDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_smsCost"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SmsCostFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_smsCost"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]} as unknown as DocumentNode<Communications_SmsCostQuery, Communications_SmsCostQueryVariables>;
 export const Communications_SmsCreditDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_smsCredit"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_smsCredit"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"smsCredit"}}]}}]}}]} as unknown as DocumentNode<Communications_SmsCreditQuery, Communications_SmsCreditQueryVariables>;
+export const Communications_SmsXeroItemDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_smsXeroItem"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_smsXeroItem"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"cost"}}]}}]}}]} as unknown as DocumentNode<Communications_SmsXeroItemQuery, Communications_SmsXeroItemQueryVariables>;
 export const Communications_SmsTopUpDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"communications_smsTopUp"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SmsTopUpInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_smsTopUp"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"smsCredit"}}]}}]}}]} as unknown as DocumentNode<Communications_SmsTopUpMutation, Communications_SmsTopUpMutationVariables>;
 export const StaffWork_AbsenceTypesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"staffWork_absenceTypes"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StaffAbsenceTypeFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staffWork_absenceTypes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"absenceTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"descriptionTextId"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"availableForRequests"}}]}}]}}]} as unknown as DocumentNode<StaffWork_AbsenceTypesQuery, StaffWork_AbsenceTypesQueryVariables>;
 export const Staff_Work_AbsencesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"staff_work_absences"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StaffAbsenceFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staffWork_absences"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"absenceId"}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"absenceType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fromDate"}},{"kind":"Field","name":{"kind":"Name","value":"toDate"}}]}}]}}]} as unknown as DocumentNode<Staff_Work_AbsencesQuery, Staff_Work_AbsencesQueryVariables>;

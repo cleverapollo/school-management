@@ -1,5 +1,11 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient, SmsTopUpInput } from '@tyro/api';
+import {
+  gqlClient,
+  graphql,
+  queryClient,
+  SmsTopUpInput,
+  UseQueryReturnType,
+} from '@tyro/api';
 import { useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { smsKeys } from './keys';
@@ -8,6 +14,15 @@ const smsCredit = graphql(/* GraphQL */ `
   query communications_smsCredit {
     communications_smsCredit {
       smsCredit
+    }
+  }
+`);
+
+const smsXeroItems = graphql(/* GraphQL */ `
+  query communications_smsXeroItem {
+    communications_smsXeroItem {
+      code
+      cost
     }
   }
 `);
@@ -38,6 +53,21 @@ export function getSmsCredit() {
   return queryClient.fetchQuery(smsCreditQuery());
 }
 
+const smsXeroItemsQuery = () => ({
+  queryKey: smsKeys.xeroItems(),
+  queryFn: () => gqlClient.request(smsXeroItems),
+  staleTime: 1000 * 60 * 60,
+});
+
+export function useSmsXeroItems(enabled: boolean) {
+  return useQuery({
+    ...smsXeroItemsQuery(),
+    select: ({ communications_smsXeroItem }) =>
+      communications_smsXeroItem ?? [],
+    enabled,
+  });
+}
+
 export function useTopUpSms() {
   const { toast } = useToast();
   const { t } = useTranslation(['sms']);
@@ -54,3 +84,7 @@ export function useTopUpSms() {
     },
   });
 }
+
+export type ReturnTypeOfUseSmsXeroItems = UseQueryReturnType<
+  typeof useSmsXeroItems
+>[number];

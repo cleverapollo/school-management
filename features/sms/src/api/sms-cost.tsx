@@ -20,6 +20,7 @@ export function useSmsCostPerMessage(filter: SmsCostFilter) {
   return useQuery({
     ...smsCostQuery(filter),
     select: ({ communications_smsCost }) => communications_smsCost?.total ?? 0,
+    enabled: !!filter.recipients?.length,
     keepPreviousData: true,
   });
 }
