@@ -1,29 +1,35 @@
-import { Container, Typography } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { useTranslation, TFunction } from '@tyro/i18n';
-import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   GridOptions,
   ICellRendererParams,
-  Page,
   TableBooleanValue,
   Table,
   ActionMenu,
   ConfirmDialog,
-  useDisclosure,
   useDebouncedValue,
+  PageHeading,
+  PageContainer,
 } from '@tyro/core';
 import {
   useCoreAcademicNamespace,
   ReturnTypeFromUseCoreAcademicNamespace,
 } from '@tyro/api';
-import { VerticalDotsIcon } from '@tyro/icons';
+import { AddIcon, VerticalDotsIcon } from '@tyro/icons';
+import dayjs from 'dayjs';
 import { useCoreSetActiveActiveAcademicNamespace } from '../api/academic-namespaces/change-active-academic-namespace';
+import {
+  EditAcademicYearModal,
+  EditAcademicYearViewProps,
+} from '../components/edit-academic-year-modal';
 
 const getColumns = (
   t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>,
-  setSelectedNamespace: Dispatch<
-    SetStateAction<ReturnTypeFromUseCoreAcademicNamespace | null>
-  >
+  setSelectedNamespace: (
+    data: ReturnTypeFromUseCoreAcademicNamespace,
+    active: boolean
+  ) => void
 ): GridOptions<ReturnTypeFromUseCoreAcademicNamespace>['columnDefs'] => [
   {
     headerName: t('common:name'),
@@ -38,11 +44,14 @@ const getColumns = (
     enableRowGroup: true,
   },
   {
-    headerName: t('common:type'),
-    field: 'type',
+    headerName: t('common:startDate'),
+    field: 'startDate',
     enableRowGroup: true,
-    valueGetter: ({ data }) =>
-      data ? t(`settings:academicNamespaceType.${data.type}`) : '-',
+  },
+  {
+    headerName: t('common:endDate'),
+    field: 'endDate',
+    enableRowGroup: true,
   },
   {
     headerName: t('common:description'),
@@ -74,8 +83,12 @@ const getColumns = (
           buttonIcon={<VerticalDotsIcon />}
           menuItems={[
             {
+              label: t('settings:actions.editAcademicYear'),
+              onClick: () => setSelectedNamespace(data, false),
+            },
+            {
               label: t('settings:actions.makeActive'),
-              onClick: () => setSelectedNamespace(data),
+              onClick: () => setSelectedNamespace(data, true),
             },
           ]}
         />
@@ -88,6 +101,7 @@ export default function AcademicNamespaceList() {
   const { data: namespaces } = useCoreAcademicNamespace();
   const { mutateAsync: setActiveNamespace } =
     useCoreSetActiveActiveAcademicNamespace();
+
   const {
     value: selectedNamespace,
     debouncedValue: debouncedSelectedNamespace,
@@ -98,42 +112,83 @@ export default function AcademicNamespaceList() {
 
   const selectedRow = selectedNamespace ?? debouncedSelectedNamespace;
 
+  const [editAcademicYearInitialState, setEditAcademicYearInitialState] =
+    useState<EditAcademicYearViewProps['initialAcademicYearState']>();
+
+  const handleCreateAcademicYear = () => {
+    setEditAcademicYearInitialState(
+      {} as EditAcademicYearViewProps['initialAcademicYearState']
+    );
+  };
+
+  const handleCloseModal = () => {
+    setEditAcademicYearInitialState(undefined);
+    setSelectedNamespace(null);
+  };
+
   const columns = useMemo(
-    () => getColumns(t, setSelectedNamespace),
-    [t, setSelectedNamespace]
+    () =>
+      getColumns(t, (data, isActive) => {
+        if (isActive) {
+          setSelectedNamespace(data);
+        } else {
+          setEditAcademicYearInitialState({
+            ...data,
+            id: data?.academicNamespaceId,
+            startDate: dayjs(data.startDate),
+            endDate: dayjs(data?.endDate),
+          });
+        }
+      }),
+    [t, setSelectedNamespace, setEditAcademicYearInitialState]
   );
 
   return (
-    <>
-      <Page title={t('settings:namespaces')}>
-        <Container maxWidth="xl">
-          <Typography variant="h3" component="h1" paragraph>
-            {t('settings:namespaces')}
-          </Typography>
-          <Table
-            rowData={namespaces ?? []}
-            columnDefs={columns}
-            rowSelection="single"
-            getRowId={({ data }) => String(data?.academicNamespaceId)}
-          />
-        </Container>
-      </Page>
+    <PageContainer title={t('settings:namespaces')}>
+      <PageHeading
+        title={t('settings:namespaces')}
+        titleProps={{ variant: 'h3' }}
+        rightAdornment={
+          <Box display="flex" alignItems="center">
+            <Button
+              variant="contained"
+              onClick={handleCreateAcademicYear}
+              startIcon={<AddIcon />}
+            >
+              {t('settings:actions.createAcademicYear')}
+            </Button>
+          </Box>
+        }
+      />
+      <Table
+        rowData={namespaces ?? []}
+        columnDefs={columns}
+        rowSelection="single"
+        getRowId={({ data }) => String(data?.academicNamespaceId)}
+      />
       <ConfirmDialog
         open={!!selectedNamespace}
         title={t('settings:namespacesDialog.title', {
-          year: selectedRow?.year,
+          name: selectedRow?.name,
         })}
-        description={t('settings:namespacesDialog.description')}
+        description={t('settings:namespacesDialog.description', {
+          name: selectedRow?.name,
+        })}
         confirmText={t('settings:namespacesDialog.confirmation', {
-          year: selectedRow?.year,
+          name: selectedRow?.name,
         })}
-        onClose={() => setSelectedNamespace(null)}
+        onClose={handleCloseModal}
         onConfirm={() => {
           if (selectedNamespace) {
             setActiveNamespace(selectedNamespace);
           }
         }}
       />
-    </>
+      <EditAcademicYearModal
+        academicYears={namespaces ?? []}
+        initialAcademicYearState={editAcademicYearInitialState}
+        onClose={handleCloseModal}
+      />
+    </PageContainer>
   );
 }

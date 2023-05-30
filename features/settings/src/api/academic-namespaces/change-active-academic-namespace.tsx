@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
+  coreAcademicNamespaceKeys,
   gqlClient,
   graphql,
   ReturnTypeFromUseCoreAcademicNamespace,
@@ -26,10 +27,7 @@ export function useCoreSetActiveActiveAcademicNamespace() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationKey: [
-      'coreAcademicNamespace',
-      'core_setActiveActiveAcademicNamespace',
-    ],
+    mutationKey: coreAcademicNamespaceKeys.activeAcademicNamespace(),
     mutationFn: async (
       namespace: NonNullable<ReturnTypeFromUseCoreAcademicNamespace>
     ) =>
@@ -38,13 +36,13 @@ export function useCoreSetActiveActiveAcademicNamespace() {
           academicNamespaceId: namespace.academicNamespaceId,
         },
       }),
-    onSuccess: (_, namespace) => {
+    onSuccess: (_: any, namespace: ReturnTypeFromUseCoreAcademicNamespace) => {
       toast(`Successfully changed year to ${namespace.year}`, {
         variant: 'success',
       });
       queryClient.clear();
     },
-    onError: (_, namespace) => {
+    onError: (_, namespace: ReturnTypeFromUseCoreAcademicNamespace) => {
       toast(`Failed changing year to ${namespace.year}`, {
         variant: 'error',
       });

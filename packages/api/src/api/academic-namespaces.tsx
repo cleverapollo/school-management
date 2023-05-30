@@ -17,12 +17,24 @@ const coreAcademicNamespaces = graphql(/* GraphQL */ `
       year
       description
       isActiveDefaultNamespace
+      startDate
+      endDate
     }
   }
 `);
 
 export const coreAcademicNamespaceKeys = {
   all: ['coreAcademicNamespace'] as const,
+  activeAcademicNamespace: () =>
+    [
+      ...coreAcademicNamespaceKeys.all,
+      'core_setActiveActiveAcademicNamespace',
+    ] as const,
+  createOrUpdateAcademicNamespace: () =>
+    [
+      ...coreAcademicNamespaceKeys.all,
+      'createOrUpdateAcademicNamespace',
+    ] as const,
 };
 
 const coreAcademicNamespaceQuery = {
