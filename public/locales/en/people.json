@@ -27,7 +27,7 @@
   "sendSms": "Send SMS",
   "makePrimaryContact": "Make primary contact",
   "position": "Position",
-  "carRegistation": "Car Registration",
+  "carRegistration": "Car registration",
   "ppsNumber": "PPS number",
   "teacherCouncilNumber": "Teacher Council number",
   "gender": {
@@ -38,6 +38,7 @@
     "UNKNOWN": "Unknown"
   },
   "employmentCapacity": {
+    "title": "Employment capacity",
     "PERMANENT": "Permanent",
     "TEMPORARY": "Temporary",
     "CONTRACTS_OF_INDEFINITE_DURATION": "Contracts of indefinite duration",
@@ -73,6 +74,8 @@
       "country": "Country",
       "primaryNumber": "Primary number",
       "additionalNumber": "Additional number",
+      "additionalEmail": "Additional email",
+      "email": "Email",
       "occupation": "Occupation"
     },
     "enrolmentHistory": {
@@ -120,26 +123,48 @@
   "createContact": "Create contact",
   "pageTitle": {
     "contacts": "List of contacts",
-    "createContact":"Add a new contact"
+    "createContact":"Add a new contact",
+    "staff": "List of staff",
+    "createStaff": "Add a new staff"
   },
   "pageHeading": {
     "contacts": "Contacts",
-    "createContact": "Create contact"
+    "createContact": "Create contact",
+    "staff": "Staff",
+    "createStaff": "Create staff"
   },
   "addStudentRelationship": "Add another student relationship",
   "primaryAddress": "Primary address",
-  "personalInformation": "New contact personal information",
+  "contactPersonalInformation": "New contact personal information",
   "studentRelationships": "Associated students",
   "studentRelationshipsRequired": "At least one student must be associated to the contact",
   "contactSettings": "Contact settings",
   "contactSettingsDescription": "Permissions and preferences for this contact and student relationship",
   "successfullyCreatedContact": "Successfully created contact",
   "createdContactUnsuccessful": "Your contact creation was unsuccessful",
+  "successfullyCreatedStaff": "Successfully created staff",
+  "createdStaffUnsuccessful": "Your staff creation was unsuccessful",
   "allowedToContactRequired": "Permission to receive correspondence is required to enable this permission",
   "contactSettingsPermissions": {
     "legalGuardian": "Is the contact a legal guardian of this student?",
     "pickupPermission": "Does the contact have permission to pick-up or sign-out this student from school?",
     "allowAccessToStudentData": "Does the contact have permission to access this student's data on Tyro?",
     "allowedToContact": "Can the contact receive correspondence from the school in relation to this student?"
-  }
+  },
+  "createStaff": "Create staff",
+  "staffPersonalInformation": "New staff personal information",
+  "nextOfKin": "Next of kin",
+  "employmentInformation": "Employment information",
+  "employment": "Employment",
+  "emergency": "Emergency",
+  "capacity": "Capacity",
+  "payrollNumber": "Payroll number",
+  "jobSharing": "Job sharing",
+  "dateOfEmployment": "Date of employment",
+  "qualifications": "Qualifications",
+  "includeInTimetabling": "Include in timetabling",
+  "competencies": "Competencies",
+  "present": "Present",
+  "displayCode": "Display code",
+  "isATeacher": "Is a teacher?"
 }

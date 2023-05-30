@@ -1,4 +1,4 @@
-import { useNumber } from '@tyro/core';
+import { formatPhoneNumber, useNumber } from '@tyro/core';
 import { useParams } from 'react-router-dom';
 import { Card, CardHeader, Box, Typography } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -26,12 +26,6 @@ const getAboutDataWithLabels = (
     primaryEmail,
   } = personalInformation || {};
 
-  const { countryCode, number } = primaryPhoneNumber || {};
-
-  const countryCodeValue = countryCode ? `(${countryCode}) ` : '';
-  const phoneNumberValue = number || '-';
-  const primaryNumber = `${countryCodeValue}${phoneNumberValue}`;
-
   const i18nPrefix = 'people:personal.about';
 
   return {
@@ -54,7 +48,7 @@ const getAboutDataWithLabels = (
     [t(`${i18nPrefix}.city`)]: primaryAddress?.city ?? '-',
     [t(`${i18nPrefix}.eircode`)]: primaryAddress?.postCode ?? '-',
     [t(`${i18nPrefix}.country`)]: primaryAddress?.country ?? '-',
-    [t(`${i18nPrefix}.primaryNumber`)]: primaryNumber ?? '-',
+    [t(`${i18nPrefix}.primaryNumber`)]: formatPhoneNumber(primaryPhoneNumber),
     [t(`${i18nPrefix}.additionalNumber`)]: '-',
     [t('common:email')]: primaryEmail?.email ?? '-',
     [t(`${i18nPrefix}.occupation`)]: occupation ?? '-',
