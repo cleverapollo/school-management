@@ -52,7 +52,7 @@ const getStaffColumns = (
   },
   {
     field: 'staffIreTeacher.teachingPost',
-    headerName: t('people:position'),
+    headerName: t('people:post'),
   },
   {
     field: 'employmentCapacity',
