@@ -33,7 +33,14 @@ export function SmsSummary({
   }, [t, formatCurrency, message, costPerSms, totalCost]);
 
   return (
-    <Stack component="dl" {...props} sx={{ m: 0, ...props.sx }}>
+    <Stack
+      component="dl"
+      {...props}
+      sx={{
+        m: 0,
+        ...props.sx,
+      }}
+    >
       {Object.entries(summaryLines).map(([title, value]) => (
         <Stack direction="row" justifyContent="space-between" key={title}>
           <Typography
