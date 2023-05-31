@@ -39,6 +39,12 @@ const contactsPersonalById = graphql(/* GraphQL */ `
           areaCode
           countryCode
         }
+        phoneNumbers {
+          primaryPhoneNumber
+          number
+          areaCode
+          countryCode
+        }
         primaryEmail {
           email
         }
