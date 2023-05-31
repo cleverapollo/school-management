@@ -1,17 +1,9 @@
-import { useLoaderData } from 'react-router-dom';
+import { usePpodCredentialsStatus } from '../../api/ppod/ppod-credentials-status';
 import Sync from './sync';
 import Login from './login';
 
-type CredentialsStatusProps = {
-  ppod_PPODCredentials: {
-    lastSyncSuccessful: boolean;
-  };
-};
-
 export default function Ppod() {
-  const ppodCredentialsStatus = useLoaderData() as CredentialsStatusProps;
-  const isPpodCredentialsSuccess =
-    ppodCredentialsStatus?.ppod_PPODCredentials?.lastSyncSuccessful ?? false;
+  const { data: ppodCredentialsStatus } = usePpodCredentialsStatus();
 
-  return isPpodCredentialsSuccess ? <Sync /> : <Login />;
+  return ppodCredentialsStatus ? <Sync /> : <Login />;
 }

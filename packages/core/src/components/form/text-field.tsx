@@ -7,14 +7,12 @@ import {
 
 export type RHFTextFieldProps<TField extends FieldValues> = {
   label?: string;
-  type?: string;
   textFieldProps?: TextFieldProps;
   controlProps: UseControllerProps<TField>;
 };
 
 export const RHFTextField = <TField extends FieldValues>({
   label,
-  type,
   textFieldProps,
   controlProps,
 }: RHFTextFieldProps<TField>) => {
@@ -29,7 +27,6 @@ export const RHFTextField = <TField extends FieldValues>({
       {...field}
       value={field.value ?? ''}
       label={label}
-      type={type}
       error={!!error}
       helperText={error?.message}
     />

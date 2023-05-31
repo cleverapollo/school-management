@@ -1,6 +1,6 @@
 import { Box, Card, CardHeader, Stack, Typography } from '@mui/material';
 import { useTranslation, TFunction } from '@tyro/i18n';
-import { useSchoolsInfo } from '../../api/ppod';
+import { useSchoolsInfo } from '../../api/ppod/school-details';
 
 const getSchoolDetailsWithLabels = (
   schoolDetails: ReturnType<typeof useSchoolsInfo>['data'],

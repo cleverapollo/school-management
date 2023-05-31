@@ -35,7 +35,6 @@
     "deleteSuccess": "Delete success!",
     "mailWasSent": "Mail was sent",
     "labelWasAssigned": "Label was assigned!",
-    "credentialsCorrect": "Credentials success!",
     "unableToSyncData": "Unable to sync data",
     "incorrectCredentials": "Incorrect credentials",
     "errorFailed": "Error! An error occurred. Please try again later."

@@ -14,12 +14,14 @@ import { EditIcon } from '@tyro/icons';
 import { TFunction, useTranslation } from '@tyro/i18n';
 
 import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 
-import { useSyncRequests, ReturnTypeFromUseSyncRequests } from '../../api/ppod';
+import {
+  useSyncRequests,
+  ReturnTypeFromUseSyncRequests,
+} from '../../api/ppod/sync-requests';
 
-function capitalizeFirstLetter(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-}
+dayjs.extend(LocalizedFormat);
 
 const getColumnDefs = (
   t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>
@@ -42,14 +44,14 @@ const getColumnDefs = (
     headerName: t('settings:ppodSync.date'),
     enableRowGroup: true,
     valueFormatter: ({ data }) =>
-      dayjs(data?.requestedOn).format('DD/MM/YYYY') ?? '',
+      data?.requestedOn ? dayjs(data?.requestedOn).format('LL') : '',
   },
   {
     field: 'requestedOn',
     headerName: t('settings:ppodSync.time'),
     enableRowGroup: true,
     valueFormatter: ({ data }) =>
-      dayjs(data?.requestedOn).format('HH:mm') ?? '',
+      data?.requestedOn ? dayjs(data?.requestedOn).format('LT') : '',
   },
   {
     field: 'syncRequestStatus',
@@ -57,7 +59,7 @@ const getColumnDefs = (
     enableRowGroup: true,
     valueFormatter: ({ data }) =>
       data?.syncRequestStatus
-        ? capitalizeFirstLetter(data?.syncRequestStatus)
+        ? t(`settings:ppodSync.${data?.syncRequestStatus}`)
         : '',
   },
 ];
@@ -67,8 +69,7 @@ export default function Sync() {
   const navigate = useNavigate();
   const { activeAcademicNamespace } = useAcademicNamespace();
 
-  const startDate = activeAcademicNamespace?.startDate;
-  const endDate = activeAcademicNamespace?.endDate;
+  const { startDate, endDate } = activeAcademicNamespace || {};
 
   const formattedDates = {
     from: dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss[Z]'),
@@ -102,19 +103,7 @@ export default function Sync() {
         rightAdornment={
           <Fade in unmountOnExit>
             <Box>
-              <ActionMenu
-                menuProps={{
-                  anchorOrigin: {
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                  },
-                  transformOrigin: {
-                    vertical: 'top',
-                    horizontal: 'right',
-                  },
-                }}
-                menuItems={actionMenuItems}
-              />
+              <ActionMenu menuItems={actionMenuItems} />
             </Box>
           </Fade>
         }

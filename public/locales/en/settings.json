@@ -6,7 +6,7 @@
   "ppod": "PPOD",
   "sync": "Sync",
   "login": "Login",
-  "ppodCredentials": "PPOD Credentials",
+  "ppodCredentials": "PPOD credentials",
   "subjects": "Subjects",
   "shortCode": "Short code",
   "nationalCode": "National code",
@@ -42,12 +42,14 @@
     "CUSTOM": "Custom"
   },
   "ppodSync": {
+    "title": "PPOD Sync Information",
     "completedBy": "Completed by",
     "date": "Date",
     "time":"Time",
     "status": "Status",
     "details":" Details",
     "credentialsSaved": "Credentials saved",
+    "credentialsCorrect": "Credentials success!",
     "login": "Login",
     "enterSyncCredentials": "Enter school sync credentials",
     "enterPpodCredentials": "Please enter the schools PPOD sync credentials",
@@ -55,7 +57,10 @@
     "password": "Password",
     "syncFromPpod": "Sync from PPOD",
     "syncSuccessful": "Sync successful",
-    "syncUnsuccessful": "Sync unsuccessful"
+    "syncUnsuccessful": "Sync unsuccessful",
+    "SUCCESS": "Success",
+    "FAIL": "Fail",
+    "ERROR": "Error"
 
   },
   "schoolDetails": {
@@ -64,8 +69,8 @@
     "name": "School name",
     "rollNo": "Roll number",
     "phone": "Phone number",
-    "parentAssociation": "Parents Association",
-    "studentCouncil": "Student Council",
+    "parentAssociation": "Parents association",
+    "studentCouncil": "Student council",
     "email": "Email",
     "coOperatingSchoolRollNo1":
       "Co-op school 1:",

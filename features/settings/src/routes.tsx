@@ -5,7 +5,7 @@ import { redirect } from 'react-router-dom';
 import { getCoreAcademicNamespace } from '@tyro/api';
 import { getCoreRooms } from './api/rooms';
 import { getCatalogueSubjects } from './api/subjects';
-import { getPpodCredentialsStatus } from './api/ppod';
+import { getPpodCredentialsStatus } from './api/ppod/ppod-credentials-status';
 
 const Rooms = lazy(() => import('./pages/rooms'));
 const AcademicNamespaceList = lazy(() => import('./pages/academic-namespaces'));
