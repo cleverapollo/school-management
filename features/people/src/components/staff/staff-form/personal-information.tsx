@@ -45,7 +45,13 @@ export const PersonalInformation = <
         </Typography>
       </Grid>
       <Grid item xs={12} sm={6}>
-        <PersonalTitlesDropdown control={control} name="title" />
+        <PersonalTitlesDropdown
+          label={t('people:title')}
+          controlProps={{
+            name: 'title',
+            control,
+          }}
+        />
       </Grid>
       <Grid item xs={12} sm={6}>
         <RHFTextField
@@ -85,6 +91,7 @@ export const PersonalInformation = <
           controlProps={{
             name: 'mobileNumber',
             control,
+            defaultValue: '(+52) 8443561465',
           }}
         />
       </Grid>

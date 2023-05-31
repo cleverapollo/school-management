@@ -3,9 +3,12 @@ import {
   useTheme,
   FormHelperText,
   FormControl,
+  TextFieldProps,
 } from '@mui/material';
 
 import { styled } from '@mui/material/styles';
+import { formatPhoneNumber } from '@tyro/core';
+import { useMemo } from 'react';
 
 import {
   FieldValues,
@@ -16,14 +19,15 @@ import ReactPhoneInput, { CountryData } from 'react-phone-input-material-ui';
 import 'react-phone-input-material-ui/lib/style.css';
 
 export type MobileNumberData = {
-  countryCode: CountryData['dialCode'];
-  areaCode: string;
-  number: string;
-  numberMatchWithMask: boolean;
+  countryCode?: CountryData['dialCode'] | null | undefined;
+  areaCode?: string | null | undefined;
+  number?: string | null | undefined;
+  numberMatchWithMask?: boolean;
 };
 
 type RHFTextFieldProps<TField extends FieldValues> = {
-  label: string;
+  label?: string;
+  variant?: TextFieldProps['variant'];
   controlProps: UseControllerProps<TField>;
 };
 
@@ -39,7 +43,15 @@ const ReactPhoneInputStyled = styled(ReactPhoneInput)(
       border-radius: ${theme.spacing(1)};
     }
     .selected-flag {
-      padding-left: ${theme.spacing(2.5)};
+      display: flex;
+      align-items: center;
+      padding-left: ${theme.spacing(2)};
+      margin-top: 0;
+
+     .flag {
+        position: static;
+        margin-top: 0;
+      }
     }
     li.country {
       font-size: ${theme.typography.fontSize}px;
@@ -60,21 +72,30 @@ const ReactPhoneInputStyled = styled(ReactPhoneInput)(
 );
 
 export const MobileNumber = <TField extends FieldValues>({
+  variant,
   label,
   controlProps,
 }: RHFTextFieldProps<TField>) => {
   const {
-    field: { name, onChange, ref },
+    field: { value, name, onChange, ref },
     fieldState: { error },
   } = useController(controlProps);
 
   const { spacing } = useTheme();
 
+  const formattedValue = useMemo(() => {
+    const initialValue: MobileNumberData = value;
+    if (!initialValue) return null;
+    if (typeof initialValue === 'string') return initialValue;
+
+    return formatPhoneNumber(initialValue);
+  }, [value]);
+
   return (
     <FormControl fullWidth error={!!error}>
       <ReactPhoneInputStyled
         placeholder=""
-        label={label}
+        label={label ?? ''}
         onChange={(number, data: CountryData, _event, formattedNumber) =>
           onChange({
             number: number.replace(data.dialCode, ''),
@@ -82,8 +103,9 @@ export const MobileNumber = <TField extends FieldValues>({
             numberMatchWithMask: formattedNumber.length === data.format.length,
           })
         }
-        component={TextField}
+        value={formattedValue}
         country={DEFAULT_COUNTRY}
+        component={TextField}
         isValid={() => !error?.message}
         inputProps={{
           name,
@@ -97,6 +119,7 @@ export const MobileNumber = <TField extends FieldValues>({
               paddingLeft: spacing(7),
             },
           },
+          variant,
         }}
       />
       {error && <FormHelperText error>{error?.message}</FormHelperText>}
