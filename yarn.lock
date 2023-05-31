@@ -5678,6 +5678,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@tyro/settings@workspace:features/settings"
   dependencies:
+    "@mui/lab": ^5.0.0-alpha.96
     "@mui/material": ^5.11.4
     "@mui/system": ^5.10.14
     "@tanstack/react-query": ^4.16.1
@@ -5688,6 +5689,7 @@ __metadata:
     "@tyro/icons": "*"
     react: ^18.2.0
     react-dom: ^18.2.0
+    react-hook-form: ^7.43.9
     react-router: ^6.3.0
   languageName: unknown
   linkType: soft
