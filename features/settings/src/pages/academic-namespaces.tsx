@@ -18,11 +18,14 @@ import {
 } from '@tyro/api';
 import { AddIcon, VerticalDotsIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { useCoreSetActiveActiveAcademicNamespace } from '../api/academic-namespaces/change-active-academic-namespace';
 import {
   EditAcademicYearModal,
   EditAcademicYearViewProps,
 } from '../components/edit-academic-year-modal';
+
+dayjs.extend(LocalizedFormat);
 
 const getColumns = (
   t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>,
@@ -46,16 +49,17 @@ const getColumns = (
   {
     headerName: t('common:startDate'),
     field: 'startDate',
-    enableRowGroup: true,
+    valueGetter: ({ data }) =>
+      data && data.startDate ? dayjs(data.startDate).format('ll') : '-',
   },
   {
     headerName: t('common:endDate'),
     field: 'endDate',
-    enableRowGroup: true,
+    valueGetter: ({ data }) =>
+      data && data.endDate ? dayjs(data.endDate).format('ll') : '-',
   },
   {
     headerName: t('common:description'),
-    editable: true,
     field: 'description',
   },
   {
@@ -83,7 +87,7 @@ const getColumns = (
           buttonIcon={<VerticalDotsIcon />}
           menuItems={[
             {
-              label: t('settings:actions.editAcademicYear'),
+              label: t('settings:editAcademicYear'),
               onClick: () => setSelectedNamespace(data, false),
             },
             {
@@ -155,7 +159,7 @@ export default function AcademicNamespaceList() {
               onClick={handleCreateAcademicYear}
               startIcon={<AddIcon />}
             >
-              {t('settings:actions.createAcademicYear')}
+              {t('settings:createAcademicYear')}
             </Button>
           </Box>
         }

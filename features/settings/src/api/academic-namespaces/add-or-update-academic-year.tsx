@@ -9,6 +9,7 @@ import {
 } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
+import { academicNamspaceKeys } from '../keys';
 
 const createAcademicNamespace = graphql(/* GraphQL */ `
   mutation core_upsertAcademicNamespace($input: SaveAcademicNamespaceInput) {
@@ -23,7 +24,7 @@ export function useCreateOrUpdateAcademicYear() {
   const { t } = useTranslation(['common']);
 
   return useMutation({
-    mutationKey: ['coreAcademicNamespace', 'core_upsertAcademicNamespace'],
+    mutationKey: academicNamspaceKeys.createOrUpdateAcademicNamespace(),
     mutationFn: async (input: SaveAcademicNamespaceInput) =>
       gqlClient.request(createAcademicNamespace, { input }),
     onError: () => {

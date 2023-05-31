@@ -25,16 +25,6 @@ const coreAcademicNamespaces = graphql(/* GraphQL */ `
 
 export const coreAcademicNamespaceKeys = {
   all: ['coreAcademicNamespace'] as const,
-  activeAcademicNamespace: () =>
-    [
-      ...coreAcademicNamespaceKeys.all,
-      'core_setActiveActiveAcademicNamespace',
-    ] as const,
-  createOrUpdateAcademicNamespace: () =>
-    [
-      ...coreAcademicNamespaceKeys.all,
-      'createOrUpdateAcademicNamespace',
-    ] as const,
 };
 
 const coreAcademicNamespaceQuery = {

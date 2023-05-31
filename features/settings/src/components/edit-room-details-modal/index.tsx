@@ -5,7 +5,13 @@ import {
   DialogActions,
   Dialog,
 } from '@mui/material';
-import { RHFSwitch, RHFTextField, useFormValidator } from '@tyro/core';
+import {
+  RHFSwitch,
+  RHFTextField,
+  ValidationError,
+  useFormValidator,
+  validations,
+} from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
@@ -51,22 +57,23 @@ export const EditRoomDetailsModal = ({
     (room) => room?.roomId !== initialRoomState?.roomId
   );
 
-  const ruleCheckUniqueName = [
-    rules.validate<EditRoomFormState['name']>((name, throwError) => {
-      if (
-        roomsWithoutSelf.some(
-          (room) =>
-            room?.name?.trim()?.toLowerCase() === name?.trim()?.toLowerCase()
-        )
-      ) {
-        throwError(t('settings:roomNameShouldBeUnique'));
-      }
-    }),
-  ];
-
   const { control, handleSubmit, reset } = useForm<EditRoomFormState>({
     resolver: resolver({
-      name: [rules.required(), rules.max(20), ...ruleCheckUniqueName],
+      name: [
+        rules.required(),
+        rules.max(20),
+        rules.validate<EditRoomFormState['name']>((name, throwError) => {
+          try {
+            validations.isUniqueByKey<ReturnTypeFromUseCoreRooms>(
+              name,
+              roomsWithoutSelf,
+              t('settings:roomNameShouldBeUnique')
+            );
+          } catch (error) {
+            throwError((error as ValidationError).message);
+          }
+        }),
+      ],
       description: [rules.required(), rules.max(50)],
       capacity: [rules.required(), rules.min(0)],
       location: [rules.required(), rules.max(50)],

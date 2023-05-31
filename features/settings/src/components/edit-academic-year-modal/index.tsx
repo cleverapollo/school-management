@@ -5,7 +5,13 @@ import {
   DialogActions,
   Dialog,
 } from '@mui/material';
-import { RHFDatePicker, RHFTextField, useFormValidator } from '@tyro/core';
+import {
+  RHFDatePicker,
+  RHFTextField,
+  ValidationError,
+  useFormValidator,
+  validations,
+} from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
@@ -47,7 +53,6 @@ export const EditAcademicYearModal = ({
 
   const { resolver, rules } = useFormValidator<EditAcademicYearFormState>();
 
-  console.log('initialAcademicYearState', initialAcademicYearState);
   const defaultFormStateValues: Partial<EditAcademicYearFormState> = {
     ...initialAcademicYearState,
   };
@@ -73,7 +78,23 @@ export const EditAcademicYearModal = ({
 
   const { control, handleSubmit, reset } = useForm<EditAcademicYearFormState>({
     resolver: resolver({
-      name: [rules.required(), rules.max(20), ...ruleCheckUniqueName],
+      name: [
+        rules.required(),
+        rules.max(20),
+        rules.validate<EditAcademicYearFormState['name']>(
+          (name, throwError) => {
+            try {
+              validations.isUniqueByKey<ReturnTypeFromUseCoreAcademicNamespace>(
+                name,
+                academicYearsWithoutSelf,
+                t('settings:academicYearNameShouldBeUnique')
+              );
+            } catch (error) {
+              throwError((error as ValidationError).message);
+            }
+          }
+        ),
+      ],
       year: [rules.required(), rules.min(1900), rules.max(2100)],
       startDate: [rules.required(), rules.date()],
       endDate: [
@@ -92,11 +113,6 @@ export const EditAcademicYearModal = ({
     year,
     ...restData
   }: EditAcademicYearFormState) => {
-    console.log('restData', {
-      ...restData,
-      startDate: startDate.format('YYYY-MM-DD'),
-      endDate: endDate.format('YYYY-MM-DD'),
-    });
     createOrUpdateAcademicYearMutation(
       {
         ...restData,

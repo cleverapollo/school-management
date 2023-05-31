@@ -21,10 +21,10 @@
   "createAcademicYear": "Create academic year",
   "editAcademicYear": "Edit academic year",
   "academicYearNameShouldBeUnique": "Academic Year name should be unique",
+  "successfullyChangedYear": "Successfully changed year to {{name}}",
+  "failedChangingYear": "Failed changing year to {{name}}",
   "actions": {
     "makeActive": "Make active primary namespace",
-    "createAcademicYear": "Create Academic Year",
-    "editAcademicYear": "Edit Academic Year",
     "addNewRoom": "Add new room",
     "editRoom": "Edit room",
     "linkToViewRoomTimetable": "Link to view room timetable"
