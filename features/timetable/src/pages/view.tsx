@@ -124,10 +124,10 @@ export default function Timetables() {
         key
       ) as ReturnTypeFromUseTimetables['id'];
 
-      const dayId = value?.dayIdx?.newValue ?? null;
-      const periodId = value?.periodIdx?.newValue ?? null;
+      const dayIdx = value?.dayIdx?.newValue ?? null;
+      const periodIdx = value?.periodIdx?.newValue ?? null;
       const roomId = value?.room?.newValue?.roomId ?? null;
-      const teacherIds =
+      const teachersPartyIds =
         value?.teachers?.newValue?.map(({ partyId }) => partyId) ?? null;
 
       return {
@@ -136,10 +136,10 @@ export default function Timetables() {
           lessonInstanceIdx,
           timetableGroupId,
         },
-        ...(dayId ? { dayId } : {}),
-        ...(periodId ? { periodId } : {}),
+        ...(dayIdx ? { dayIdx } : {}),
+        ...(periodIdx ? { periodIdx } : {}),
         ...(roomId ? { roomId } : {}),
-        ...(teacherIds ? { teacherIds } : {}),
+        ...(teachersPartyIds ? { teachersPartyIds } : {}),
       };
     });
 
