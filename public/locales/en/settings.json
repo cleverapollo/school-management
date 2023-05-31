@@ -60,7 +60,9 @@
     "syncUnsuccessful": "Sync unsuccessful",
     "SUCCESS": "Success",
     "FAIL": "Fail",
-    "ERROR": "Error"
+    "ERROR": "Error",
+    "unableToSyncData": "Unable to sync data",
+    "incorrectCredentials": "Incorrect credentials"
 
   },
   "schoolDetails": {

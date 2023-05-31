@@ -34,7 +34,7 @@ export function useSavePpodCredentials() {
       toast(t('settings:ppodSync.credentialsCorrect'));
     },
     onError: () => {
-      toast(t('common:snackbarMessages.incorrectCredentials'), {
+      toast(t('settings:ppodSync.incorrectCredentials'), {
         variant: 'error',
       });
     },

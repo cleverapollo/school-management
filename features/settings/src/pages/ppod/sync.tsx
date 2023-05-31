@@ -31,13 +31,8 @@ const getColumnDefs = (
     headerName: t('settings:ppodSync.completedBy'),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseSyncRequests, any>) => {
-      const person = {
-        firstName: data?.requester?.firstName ?? '',
-        lastName: data?.requester?.lastName ?? '',
-      };
-      return data ? <TablePersonAvatar person={person} /> : null;
-    },
+    }: ICellRendererParams<ReturnTypeFromUseSyncRequests, any>) =>
+      data ? <TablePersonAvatar person={data?.requester} /> : null,
   },
   {
     field: 'requestedOn',

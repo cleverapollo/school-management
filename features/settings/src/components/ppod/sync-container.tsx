@@ -24,9 +24,7 @@ export default function SyncContainer() {
               <LoadingButton
                 variant="contained"
                 size="large"
-                onClick={() => {
-                  refetch();
-                }}
+                onClick={() => refetch()}
                 loading={isFetching}
               >
                 {t('settings:ppodSync.syncFromPpod')}
