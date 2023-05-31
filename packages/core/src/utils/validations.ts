@@ -123,6 +123,7 @@ export const validations = {
     if (
       typeof value === 'object' &&
       value.number &&
+      'numberMatchWithMask' in value &&
       !value.numberMatchWithMask
     ) {
       throw new ValidationError('isPhoneNumber', errorMessage);

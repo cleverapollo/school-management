@@ -46,12 +46,8 @@ export function StaffForm() {
       firstName: rules.required(),
       lastName: rules.required(),
       email: rules.isEmail(),
-      mobileNumber: rules.validate<StaffFormState['mobileNumber']>(
-        (mobileNumber, throwError) => {
-          if (mobileNumber?.number && !mobileNumber.numberMatchWithMask) {
-            throwError(t('common:errorMessages.invalidMobileNumber'));
-          }
-        }
+      mobileNumber: rules.isPhoneNumber(
+        t('common:errorMessages.invalidMobileNumber')
       ),
       additionalNumber: rules.isPhoneNumber(),
       startDate: rules.date(),

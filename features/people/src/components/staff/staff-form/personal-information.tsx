@@ -88,11 +88,7 @@ export const PersonalInformation = <
       <Grid item xs={12} sm={6}>
         <MobileNumber
           label={t('common:mobileNumber')}
-          controlProps={{
-            name: 'mobileNumber',
-            control,
-            defaultValue: '(+52) 8443561465',
-          }}
+          controlProps={{ name: 'mobileNumber', control }}
         />
       </Grid>
       <Grid item xs={12} sm={6}>

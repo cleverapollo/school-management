@@ -44,12 +44,8 @@ export function ContactForm() {
       firstName: rules.required(),
       surname: rules.required(),
       email: rules.isEmail(),
-      mobileNumber: rules.validate<ContactFormState['mobileNumber']>(
-        (mobileNumber, throwError) => {
-          if (mobileNumber?.number && !mobileNumber.numberMatchWithMask) {
-            throwError(t('common:errorMessages.invalidMobileNumber'));
-          }
-        }
+      mobileNumber: rules.isPhoneNumber(
+        t('common:errorMessages.invalidMobileNumber')
       ),
       studentRelationships: {
         priority: rules.required(),
