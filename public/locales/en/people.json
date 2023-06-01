@@ -50,6 +50,7 @@
   },
   "personal": {
     "title": "Personal",
+    "studentContactDetails": "Student's contact details",
     "about": {
       "title": "About",
       "preferredName": "Preferred Name",
