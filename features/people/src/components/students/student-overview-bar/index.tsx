@@ -1,16 +1,7 @@
-import {
-  Badge,
-  Box,
-  Card,
-  Divider,
-  IconButton,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Card, Divider, Stack, Typography } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { Avatar, useDisclosure, usePreferredNameLayout } from '@tyro/core';
 import { useStudent } from '../../../api/student/students';
-import { SupportPlanRing } from '../support-plan-ring';
 import { AdditionalInfo } from './additional-info';
 import { CurrentLocation } from './current-location';
 import { PrioritySupportStudentModal } from './priority-support-student-modal';
@@ -24,7 +15,7 @@ interface StudentOverviewBarProps {
 export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
   const { t } = useTranslation(['people']);
 
-  const { getButtonProps, getDisclosureProps } = useDisclosure();
+  const { getDisclosureProps } = useDisclosure();
   const { displayName } = usePreferredNameLayout();
 
   const { data: studentData } = useStudent(studentId);
@@ -37,33 +28,11 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
       <Box>
         <Card variant="outlined" sx={{ p: 1.25, display: 'inline-block' }}>
           <Stack direction="row" alignItems="center" sx={{ flexWrap: 'wrap' }}>
-            <IconButton
-              disabled={
-                !statusData?.priorityStudent && !statusData?.activeSupportPlan
-              }
-              aria-label={t('people:studentClickableAvatarAria', { name })}
-              {...getButtonProps()}
-            >
-              <Badge
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left',
-                }}
-                sx={({ palette }) => ({
-                  '& .MuiBadge-badge': {
-                    boxShadow: `0 0 0 2px ${palette.background.paper}`,
-                    backgroundColor: palette.blue[500],
-                  },
-                })}
-                overlap="circular"
-                variant="dot"
-                badgeContent={statusData?.priorityStudent ? 1 : 0}
-              >
-                <SupportPlanRing hasSupportPlan>
-                  <Avatar src={studentData?.person?.avatarUrl} name={name} />
-                </SupportPlanRing>
-              </Badge>
-            </IconButton>
+            <Avatar
+              sx={{ mx: 1 }}
+              src={studentData?.person?.avatarUrl}
+              name={name}
+            />
             <Stack sx={{ ml: 0.5, mr: 2.5 }}>
               <Typography variant="subtitle1" component="h2">
                 {name}
