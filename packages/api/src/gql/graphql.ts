@@ -1263,9 +1263,7 @@ export type FreeCalendarResources = {
 
 export enum Gender {
   Female = 'FEMALE',
-  Male = 'MALE',
-  Other = 'OTHER',
-  Unknown = 'UNKNOWN'
+  Male = 'MALE'
 }
 
 export type GeneralGroup = Party & PartyGroup & {
