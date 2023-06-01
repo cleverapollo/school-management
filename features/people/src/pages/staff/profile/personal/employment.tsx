@@ -183,9 +183,7 @@ const getEmploymentDataWitLabels = (
         ) : (
           '-'
         ),
-      valueEditor: <div />,
       value: subjectGroups,
-      readOnly: true,
     },
   ];
 };

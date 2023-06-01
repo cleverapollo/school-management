@@ -129,8 +129,6 @@ const getAboutDataWithLabels = (
     {
       label: t('people:tyroId'),
       value: partyId,
-      valueEditor: <div />,
-      readOnly: true,
     },
     {
       label: t('people:gender.title'),
