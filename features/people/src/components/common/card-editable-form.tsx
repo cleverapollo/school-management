@@ -6,6 +6,7 @@ import {
   IconButton,
   Stack,
   Tooltip,
+  CardProps,
 } from '@mui/material';
 import { EditIcon, UndoIcon, SaveIcon } from '@tyro/icons';
 import {
@@ -24,12 +25,12 @@ type CardEditableField<TField extends FieldValues> = {
   // NOTE: this is the proper type but as it is a recursive typed function it causes eslint/typescript performance issues.
   // value: PathValue<TField, Path<TField>>;
   value: any;
-  valueEditor: ReactElement<{ controlProps: UseControllerProps<TField> }>;
+  valueEditor?: ReactElement<{ controlProps: UseControllerProps<TField> }>;
   valueRenderer?: ReactNode;
   readOnly?: boolean;
 };
 
-export type CardEditableFormProps<TField extends FieldValues> = {
+export type CardEditableFormProps<TField extends FieldValues> = CardProps & {
   title: string;
   editable?: boolean;
   fields: Array<CardEditableField<TField>>;
@@ -43,6 +44,9 @@ export const CardEditableForm = <TField extends FieldValues>({
   fields,
   resolver,
   onSave,
+  sx,
+  children,
+  ...cardProps
 }: CardEditableFormProps<TField>) => {
   const { t } = useTranslation(['common']);
 
@@ -73,9 +77,10 @@ export const CardEditableForm = <TField extends FieldValues>({
   return (
     <Card
       variant="outlined"
-      sx={{ height: '100%', position: 'static', overflow: 'inherit' }}
+      sx={{ position: 'static', overflow: 'inherit', ...sx }}
       component="form"
       onSubmit={handleSubmit(handleSave)}
+      {...cardProps}
     >
       <CardHeader
         title={title}
@@ -123,7 +128,7 @@ export const CardEditableForm = <TField extends FieldValues>({
       >
         {fields.map(
           ({ label, value, valueRenderer, valueEditor, readOnly }) => {
-            const canBeEdited = isEditMode && !readOnly;
+            const canBeEdited = isEditMode && !readOnly && valueEditor;
 
             return (
               <Box key={label}>
@@ -131,25 +136,25 @@ export const CardEditableForm = <TField extends FieldValues>({
                   {label}
                 </Typography>
 
-                {(readOnly || !isEditMode) && (
-                  <Typography paddingY={0.5} component="dd" variant="body1">
-                    {valueRenderer || value || '-'}
-                  </Typography>
-                )}
-
-                {canBeEdited &&
+                {canBeEdited ? (
                   cloneElement(valueEditor, {
                     controlProps: {
                       name: valueEditor.props.controlProps.name,
                       control,
                       defaultValue: value as PathValue<TField, Path<TField>>,
                     },
-                  })}
+                  })
+                ) : (
+                  <Typography paddingY={0.5} component="dd" variant="body1">
+                    {valueRenderer || value || '-'}
+                  </Typography>
+                )}
               </Box>
             );
           }
         )}
       </Box>
+      <Box p={3}>{children}</Box>
     </Card>
   );
 };

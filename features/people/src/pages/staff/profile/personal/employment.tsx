@@ -224,6 +224,7 @@ export const ProfileEmployment = ({
       fields={employmentDataWithLabels}
       resolver={employmentResolver}
       onSave={handleEdit}
+      sx={{ height: '100%' }}
     />
   );
 };
