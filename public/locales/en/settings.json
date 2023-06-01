@@ -42,7 +42,7 @@
     "CUSTOM": "Custom"
   },
   "ppodSync": {
-    "title": "PPOD Sync Information",
+    "title": "PPOD sync information",
     "completedBy": "Completed by",
     "date": "Date",
     "time":"Time",

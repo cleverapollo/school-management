@@ -12,7 +12,6 @@ const AcademicNamespaceList = lazy(() => import('./pages/academic-namespaces'));
 const Subjects = lazy(() => import('./pages/subjects'));
 const Ppod = lazy(() => import('./pages/ppod/ppod'));
 const SyncContainer = lazy(() => import('./components/ppod/sync-container'));
-const Login = lazy(() => import('./pages/ppod/login'));
 const Sync = lazy(() => import('./pages/ppod/sync'));
 const SchoolDetails = lazy(() => import('./pages/ppod/school-details'));
 
@@ -56,12 +55,6 @@ export const getRoutes: NavObjectFunction = (t) => [
             hasAccess: (permissions) => permissions.isStaffUser,
             loader: () => getPpodCredentialsStatus(),
             element: <Ppod />,
-          },
-          {
-            type: NavObjectType.NonMenuLink,
-            path: 'ppod',
-            hasAccess: (permissions) => permissions.isStaffUser,
-            element: <Login />,
           },
           {
             type: NavObjectType.NonMenuLink,

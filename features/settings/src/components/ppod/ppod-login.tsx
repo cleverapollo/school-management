@@ -1,4 +1,4 @@
-import { Box, Card, CardHeader, Stack } from '@mui/material';
+import { Card, CardHeader, Stack } from '@mui/material';
 import { RHFTextField, useFormValidator } from '@tyro/core';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
