@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Box, Menu, MenuItem, MenuProps } from '@mui/material';
 import { ChevronRightIcon, UserGroupTwoIcon, UserIcon } from '@tyro/icons';
 import { ActionMenuIconWrapper } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 import { ReturnTypeOfUseListManagerState } from './state';
 import { ListManagerState } from './state/types';
 
@@ -17,7 +18,10 @@ interface GroupSelectSubMenuProps
   extends Pick<MenuProps, 'anchorEl' | 'open' | 'onClose'> {
   groups: ContextMenuProps['groups'];
   groupId: ListManagerState['id'];
-  onSelect?: (groupId: number) => void;
+  onSelect?: (
+    event: React.MouseEvent<HTMLLIElement, MouseEvent>,
+    groupId: number
+  ) => void;
 }
 
 function GroupSelectSubMenu({
@@ -48,24 +52,27 @@ function GroupSelectSubMenu({
         horizontal: 'left',
       }}
       sx={{
-        ml: 1,
+        ml: 1.25,
+        pointerEvents: 'none',
         '& li': {
           fontSize: '0.875rem',
         },
       }}
     >
-      {groupsWithoutCurrent.map(({ partyId, name }) => (
-        <MenuItem
-          key={partyId}
-          onClick={() => {
-            if (onSelect) {
-              onSelect(partyId);
-            }
-          }}
-        >
-          {name}
-        </MenuItem>
-      ))}
+      <Box sx={{ pointerEvents: 'auto' }}>
+        {groupsWithoutCurrent.map(({ partyId, name }) => (
+          <MenuItem
+            key={partyId}
+            onClick={(event) => {
+              if (onSelect) {
+                onSelect(event, partyId);
+              }
+            }}
+          >
+            {name}
+          </MenuItem>
+        ))}
+      </Box>
     </Menu>
   );
 }
@@ -78,12 +85,17 @@ export function ContextMenu({
   duplicateStudents,
   ...props
 }: CardRightClickMenuProps) {
+  const { t } = useTranslation(['classListManager']);
   const [subMenuContext, setSubMenuContext] = useState<null | {
     anchorEl: Element;
-    onSelect: (groupId: number) => void;
+    onSelect: (
+      event: React.MouseEvent<HTMLLIElement, MouseEvent>,
+      groupId: number
+    ) => void;
   }>(null);
 
-  const handleClose = () => {
+  const handleClose = (event: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+    event.preventDefault();
     setSubMenuContext(null);
     props.onClose?.({}, 'backdropClick');
   };
@@ -93,9 +105,12 @@ export function ContextMenu({
   ) =>
     setSubMenuContext({
       anchorEl: event.currentTarget,
-      onSelect: (id: number) => {
+      onSelect: (
+        e: React.MouseEvent<HTMLLIElement, MouseEvent>,
+        id: number
+      ) => {
         duplicateStudents(id, [studentId]);
-        handleClose();
+        handleClose(e);
       },
     });
 
@@ -104,9 +119,12 @@ export function ContextMenu({
   ) =>
     setSubMenuContext({
       anchorEl: event.currentTarget,
-      onSelect: (id: number) => {
+      onSelect: (
+        e: React.MouseEvent<HTMLLIElement, MouseEvent>,
+        id: number
+      ) => {
         duplicateStudents(id, selectedStudentIds);
-        handleClose();
+        handleClose(e);
       },
     });
 
@@ -114,6 +132,7 @@ export function ContextMenu({
     <>
       <Menu
         {...props}
+        onClose={handleClose}
         disableAutoFocusItem
         anchorOrigin={{
           vertical: 'top',
@@ -148,7 +167,7 @@ export function ContextMenu({
             <ActionMenuIconWrapper>
               <UserIcon />
             </ActionMenuIconWrapper>
-            Duplicate student
+            {t('classListManager:duplicateStudent')}
           </Box>
           <ChevronRightIcon />
         </MenuItem>
@@ -161,7 +180,7 @@ export function ContextMenu({
               <ActionMenuIconWrapper>
                 <UserGroupTwoIcon />
               </ActionMenuIconWrapper>
-              Duplicate selected students
+              {t('classListManager:duplicateSelectedStudents')}
             </Box>
             <ChevronRightIcon />
           </MenuItem>

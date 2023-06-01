@@ -40,10 +40,10 @@ export function GroupColumn({ group, cardProps }: GroupColumnProps) {
                 })}
               </Typography>
             </Stack>
-            {/* <TeacherCards
+            <TeacherCards
               teachers={group?.staff}
               isDraggingOver={snapshot.isDraggingOver}
-            /> */}
+            />
             <Box ref={provided.innerRef} {...provided.droppableProps}>
               {group?.students?.map((student, index) => (
                 <DraggableCard

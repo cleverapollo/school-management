@@ -9,5 +9,5 @@ export interface ListManagerState {
   students:
     | ReturnTypeOfUseBlockMembership['groups'][number]['unenrolledStudents']
     | SubjectGroup['students'];
-  // staff?: SubjectGroup['staff'];
+  staff?: SubjectGroup['staff'];
 }

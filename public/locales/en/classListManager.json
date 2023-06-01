@@ -6,5 +6,9 @@
   "noStudents": "No students",
   "youHaveXUnassignedStudents_zero": "You have no unassigned students",
   "youHaveXUnassignedStudents_one": "You have ({{count}}) unassigned student",
-  "youHaveXUnassignedStudents_other": "You have ({{count}}) unassigned students"
+  "youHaveXUnassignedStudents_other": "You have ({{count}}) unassigned students",
+  "deleteDuplicateStudent": "Delete duplicate student",
+  "duplicateStudent": "Duplicate student",
+  "duplicateSelectedStudents": "Duplicate selected students",
+  "weveTidiedStudentsInGroup": "We've tidied up one or more students as they're already in the group."
 }

@@ -35,6 +35,7 @@ export function BulkEditSaveBar({
   return (
     <Slide direction="up" in={isEditing} mountOnEnter unmountOnExit>
       <Box
+        className="bulk-edit-save-bar"
         sx={{
           position: 'fixed',
           bottom: 0,

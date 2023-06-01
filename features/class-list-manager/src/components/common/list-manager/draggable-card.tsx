@@ -6,8 +6,9 @@ import {
   NotDraggingStyle,
 } from 'react-beautiful-dnd';
 import { Avatar, usePreferredNameLayout } from '@tyro/core';
-import { Box, Theme, Typography } from '@mui/material';
-import { CheckmarkIcon } from '@tyro/icons';
+import { Box, IconButton, Theme, Tooltip, Typography } from '@mui/material';
+import { CheckmarkIcon, CloseIcon } from '@tyro/icons';
+import { useTranslation } from '@tyro/i18n';
 import { ListManagerState } from './state/types';
 import { ReturnTypeOfUseListManagerState } from './state';
 import { ContextMenu } from './context-menu';
@@ -38,6 +39,9 @@ const getCardStyle = (
   }
 
   return {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     userSelect: 'none',
     padding: 1,
     marginBottom: 1,
@@ -63,7 +67,9 @@ export function DraggableCard({
   selectedStudentIds,
   draggingStudentId,
   contextMenuProps,
+  deleteDuplicate,
 }: DraggableCardProps) {
+  const { t } = useTranslation(['classListManager']);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const { displayName } = usePreferredNameLayout();
   const name = displayName(student?.person);
@@ -199,6 +205,18 @@ export function DraggableCard({
                 {name}
               </Typography>
             </Box>
+            {student.isDuplicate && (
+              <Tooltip title={t('classListManager:deleteDuplicateStudent')}>
+                <IconButton
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    deleteDuplicate(groupId, student.id);
+                  }}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Tooltip>
+            )}
           </Box>
         )}
       </Draggable>

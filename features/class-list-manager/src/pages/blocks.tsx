@@ -42,6 +42,7 @@ export default function ClassListManagerBlocks() {
         <ListManager
           unassignedStudents={blockData.unenrolledStudents}
           groups={blockData.subjectGroups}
+          onBulkSave={() => Promise.resolve()}
         />
       )}
     </Stack>

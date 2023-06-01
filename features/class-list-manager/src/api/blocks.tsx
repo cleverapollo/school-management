@@ -59,6 +59,14 @@ const blockMemberships = graphql(/* GraphQL */ `
               type
             }
           }
+          staff {
+            partyId
+            title
+            firstName
+            lastName
+            avatarUrl
+            type
+          }
         }
       }
     }
@@ -103,7 +111,9 @@ export function useBlockMembership(blockId: string | null) {
         subjectGroups: group.subjectGroups.map((subjectGroup) => ({
           ...subjectGroup,
           students: subjectGroup.students.map((student) => ({
-            id: `${student.person.partyId}-${subjectGroup.partyId}`,
+            id: student.isDuplicate
+              ? `${student.person.partyId}-${subjectGroup.partyId}`
+              : String(student.person.partyId),
             ...student,
           })),
         })),

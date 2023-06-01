@@ -1,8 +1,12 @@
-import { useEffect, useState } from 'react';
+import cloneDeep from 'lodash/cloneDeep';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { OnDragEndResponder, OnDragStartResponder } from 'react-beautiful-dnd';
+import { useTranslation } from '@tyro/i18n';
+import { useToast } from '@tyro/core';
 import { ReturnTypeOfUseBlockMembership } from '../../../../api/blocks';
 import { ListManagerState } from './types';
 import {
+  clearSameStudentsFromGroup,
   getGroupsWithDuplicates,
   multiDragAwareReorder,
   multiSelectTo,
@@ -11,30 +15,77 @@ import {
   wasMultiSelectKeyUsed,
   wasToggleInSelectionGroupKeyUsed,
 } from './utils';
+import { useEditedState, UseEditedStateProps } from './edited-state';
 
 export interface UseListManagerStateProps {
   unassignedStudents: ReturnTypeOfUseBlockMembership['groups'][number]['unenrolledStudents'];
   groups: ReturnTypeOfUseBlockMembership['groups'][number]['subjectGroups'];
+  onBulkSave: UseEditedStateProps['onBulkSave'];
 }
 
 export function useListManagerState({
   unassignedStudents,
   groups,
+  onBulkSave,
 }: UseListManagerStateProps) {
+  const { t } = useTranslation(['classListManager']);
+  const { toast } = useToast();
+
+  const lastEditedGroups = useRef<
+    UseEditedStateProps['lastEditedGroups']['current']
+  >({
+    sourceIds: null,
+    destinationId: null,
+  });
   const [state, setState] = useState<ListManagerState[]>([]);
   const [draggingStudentId, setDraggingStudentId] = useState<string>();
   const [selectedStudentIds, setSelectedStudentIds] = useState<Array<string>>(
     []
   );
 
-  console.log({
-    selectedStudentIds,
-    draggingStudentId,
+  const resetBoard = () => {
+    const mappedGroups =
+      groups?.map((group) => ({
+        ...group,
+        id: group.partyId,
+      })) ?? [];
+
+    setState([
+      {
+        id: 'unassigned',
+        name: t('classListManager:unassignedStudents'),
+        students: unassignedStudents,
+      },
+      ...mappedGroups,
+    ]);
+  };
+
+  const editedState = useEditedState({
+    lastEditedGroups,
+    state,
+    onBulkSave,
+    resetBoard,
   });
 
   const unselectAll = () => {
     setSelectedStudentIds([]);
   };
+
+  const clearStudentsWithSamePartyId = useCallback(
+    (groupsToCheck: ListManagerState[], groupId: string) => {
+      const onDuplicateCleared = () => {
+        toast(t('classListManager:weveTidiedStudentsInGroup'), {
+          variant: 'info',
+        });
+      };
+      return clearSameStudentsFromGroup(
+        groupsToCheck,
+        groupId,
+        onDuplicateCleared
+      );
+    },
+    [t, toast]
+  );
 
   const onDragStart: OnDragStartResponder = (result) => {
     const id = result.draggableId;
@@ -50,31 +101,60 @@ export function useListManagerState({
   const onDragEnd: OnDragEndResponder = (result) => {
     const { source, destination } = result;
 
-    // dropped outside the list
+    // dropped on a list
     if (destination && result.reason !== 'CANCEL') {
-      const newState = multiDragAwareReorder({
-        groups: state,
-        selectedStudentIds,
-        source,
-        destination,
+      setState((prevState) => {
+        const { newGroups, sourceGroupIds } = multiDragAwareReorder({
+          groups: prevState,
+          selectedStudentIds,
+          source,
+          destination,
+        });
+
+        lastEditedGroups.current = {
+          destinationId: destination.droppableId,
+          sourceIds: sourceGroupIds,
+        };
+
+        return clearStudentsWithSamePartyId(newGroups, destination.droppableId);
       });
-      setState(newState);
     }
 
     setDraggingStudentId(undefined);
   };
 
   const duplicateStudents = (groupIdToMoveTo: number, studentIds: string[]) => {
+    lastEditedGroups.current = {
+      destinationId: String(groupIdToMoveTo),
+      sourceIds: null,
+    };
     setState((prevState) => {
-      const duplicateState = getGroupsWithDuplicates(
+      const updatedGroups = getGroupsWithDuplicates(
         groupIdToMoveTo,
         studentIds,
         prevState
       );
-      console.log({
-        duplicateState,
-      });
-      return duplicateState;
+
+      return clearStudentsWithSamePartyId(
+        updatedGroups,
+        String(groupIdToMoveTo)
+      );
+    });
+  };
+
+  const deleteDuplicate = (groupId: number | string, studentId: string) => {
+    lastEditedGroups.current = {
+      destinationId: null,
+      sourceIds: [String(groupId)],
+    };
+    setState((prevState) => {
+      const newState = cloneDeep(prevState);
+      const groupIndex = newState.findIndex((group) => group.id === groupId);
+      const studentIndex = newState[groupIndex].students.findIndex(
+        (student) => student.id === studentId
+      );
+      newState[groupIndex].students.splice(studentIndex, 1);
+      return newState;
     });
   };
 
@@ -96,26 +176,12 @@ export function useListManagerState({
   };
 
   useEffect(() => {
-    const mappedGroups =
-      groups?.map((group) => ({
-        ...group,
-        id: group.partyId,
-      })) ?? [];
-
-    setState([
-      {
-        id: 'unassigned',
-        name: 'Unassigned Students',
-        students: unassignedStudents,
-      },
-      ...mappedGroups,
-    ]);
-  }, [unassignedStudents, groups]);
+    resetBoard();
+  }, [t, unassignedStudents, groups]);
 
   useEffect(() => {
     const onWindowClickOrTouchEnd = (event: MouseEvent | TouchEvent) => {
       if (event.defaultPrevented) return;
-      console.log('onWindowClickOrTouchEnd', event);
       unselectAll();
     };
 
@@ -142,10 +208,12 @@ export function useListManagerState({
     state,
     onDragEnd,
     onDragStart,
+    editedState,
     cardProps: {
       draggingStudentId,
       performCardAction,
       selectedStudentIds,
+      deleteDuplicate,
       contextMenuProps: {
         selectedStudentIds,
         groups,

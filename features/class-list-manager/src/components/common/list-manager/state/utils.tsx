@@ -51,6 +51,79 @@ const move = (
   };
 };
 
+export const clearSameStudentsFromGroup = (
+  groups: ListManagerState[],
+  groupId: string,
+  onDuplicateCleared: () => void
+) => {
+  const matchedGroupIndex = groups.findIndex(
+    (group) => String(group.id) === groupId
+  );
+  const matchedGroup = groups[matchedGroupIndex];
+
+  if (!matchedGroup) return groups;
+
+  // Group students by matching partyId
+  const groupedStudents = matchedGroup.students.reduce(
+    (acc, student, index) => {
+      const key = student.person.partyId;
+
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+
+      acc[key].push({
+        index,
+        student,
+      });
+
+      return acc;
+    },
+    {} as Record<
+      string,
+      { index: number; student: ListManagerState['students'][number] }[]
+    >
+  );
+
+  // Gather the duplicate indexes to remove, ones that are not duplicates will be kept
+  const indexesToRemove: number[] = [];
+  Object.values(groupedStudents).forEach((group) => {
+    if (group.length > 1) {
+      const isOneNotADuplicate = group.some(
+        ({ student }) => !student.isDuplicate
+      );
+
+      if (isOneNotADuplicate) {
+        group.forEach(({ index, student }) => {
+          if (student.isDuplicate) {
+            indexesToRemove.push(index);
+          }
+        });
+      } else {
+        const [first, ...rest] = group;
+        rest.forEach(({ index }) => {
+          indexesToRemove.push(index);
+        });
+      }
+    }
+  });
+
+  if (indexesToRemove.length > 0) {
+    onDuplicateCleared();
+
+    // Remove the duplicates
+    groups[matchedGroupIndex].students = matchedGroup.students.filter(
+      (_, index) => !indexesToRemove.includes(index)
+    );
+  }
+
+  console.log({
+    groups,
+  });
+
+  return groups;
+};
+
 const singleDrag = ({ groups, source, destination }: DragArguments) => {
   const sourceGroupId = source.droppableId;
   const destinationGroupId = destination.droppableId;
@@ -71,7 +144,10 @@ const singleDrag = ({ groups, source, destination }: DragArguments) => {
     );
     const newGroups = [...groups];
     newGroups[sourceGroupIndex] = items;
-    return newGroups;
+    return {
+      sourceGroupIds: [sourceGroupId],
+      newGroups,
+    };
   }
 
   // Move to new list
@@ -86,7 +162,10 @@ const singleDrag = ({ groups, source, destination }: DragArguments) => {
   newGroups[sourceGroupIndex] = moveResult[sourceGroupId];
   newGroups[destinationGroupIndex] = moveResult[destinationGroupId];
 
-  return newGroups;
+  return {
+    sourceGroupIds: [sourceGroupId],
+    newGroups,
+  };
 };
 
 const multiDrag = ({
@@ -107,12 +186,14 @@ const multiDrag = ({
   const dragged = sourceGroup?.students[source.index];
 
   const selectedStudents: ListManagerState['students'] = [];
+  const sourceGroupIds = new Set<string>();
   const newGroups = [...groups].reduce((acc, group) => {
     const newGroup = { ...group };
 
     newGroup.students = group.students.reduce((studentAcc, student) => {
       if (selectedStudentIds.includes(student.id)) {
         selectedStudents.push(student);
+        sourceGroupIds.add(String(group.id));
         return studentAcc;
       }
       studentAcc.push(student);
@@ -139,9 +220,10 @@ const multiDrag = ({
     ...selectedStudents
   );
 
-  // TODO add ability to merge duplicate students when passed to group with the student
-
-  return newGroups;
+  return {
+    sourceGroupIds: Array.from(sourceGroupIds),
+    newGroups,
+  };
 };
 
 export const multiDragAwareReorder = (args: DragArguments) => {
@@ -267,10 +349,11 @@ export const getGroupsWithDuplicates = (
   studentIds: string[],
   groups: ListManagerState[]
 ) => {
-  const groupToMoveTo = groups.find((group) => group.id === groupIdToMoveTo);
+  const groupIndex = groups.findIndex((group) => group.id === groupIdToMoveTo);
 
-  if (!groupToMoveTo) return groups;
+  if (groupIndex === -1) return groups;
 
+  const groupToMoveTo = groups[groupIndex];
   const newStudents = groups.reduce((acc, group) => {
     group.students.forEach((student) => {
       if (studentIds.includes(student.id)) {
@@ -286,7 +369,10 @@ export const getGroupsWithDuplicates = (
     return acc;
   }, [] as ListManagerState['students']);
 
-  groupToMoveTo.students = [...groupToMoveTo.students, ...newStudents];
+  const clonedGroup = cloneDeep(groupToMoveTo);
+  clonedGroup.students = [...newStudents, ...clonedGroup.students];
+  const newGroups = [...groups];
+  newGroups[groupIndex] = clonedGroup;
 
-  return [...groups];
+  return newGroups;
 };
