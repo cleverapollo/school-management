@@ -39,7 +39,10 @@
       "title": "Settings",
       "rooms": "Rooms",
       "academicNamespaces": "Academic namespaces",
-      "subjects": "Subjects"
+      "subjects": "Subjects",
+      "ppod": "PPOD",
+      "schoolDetails": "School details",
+      "login":"Login"
     },
     "sms": "SMS"
   },
