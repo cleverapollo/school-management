@@ -7,6 +7,7 @@ import {
   isStudent,
   isTyroTenantAndUser,
   isTyroUser,
+  isTeacher,
 } from '../utils/permission-utils';
 import { findActiveProfile, getUser, useUser } from './use-user';
 
@@ -22,6 +23,7 @@ export interface PermissionUtils {
   isTyroUser: boolean;
   isStudent: boolean;
   isContact: boolean;
+  isTeacher: boolean;
 }
 
 export interface UsePermissionsReturn extends PermissionUtils {
@@ -49,6 +51,7 @@ export async function getPermissionUtils(): Promise<PermissionUtils> {
     isTyroUser: isTyroUser({ userType }),
     isStudent: isStudent({ userType }),
     isContact: isContact({ userType }),
+    isTeacher: isTeacher({ userType }),
   };
 }
 
@@ -77,5 +80,6 @@ export function usePermissions(): UsePermissionsReturn {
     isTyroUser: isTyroUser({ userType }),
     isStudent: isStudent({ userType }),
     isContact: isContact({ userType }),
+    isTeacher: isTeacher({ userType }),
   };
 }
