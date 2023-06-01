@@ -27,10 +27,12 @@ export function AcademicNamespaceSessionSwitcher() {
 
   const menuItems = useMemo(
     () =>
-      allNamespaces?.map((option) => ({
-        label: String(option?.year),
-        onClick: () => onSelect(option),
-      })) ?? [],
+      allNamespaces
+        ?.sort((a, b) => b.year - a.year)
+        ?.map((option) => ({
+          label: String(option?.year),
+          onClick: () => onSelect(option),
+        })) ?? [],
     [allNamespaces]
   );
 
