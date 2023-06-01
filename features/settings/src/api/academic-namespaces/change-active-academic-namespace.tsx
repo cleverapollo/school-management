@@ -35,7 +35,7 @@ export function useCoreSetActiveActiveAcademicNamespace() {
     ) =>
       gqlClient.request(coreSetActiveActiveAcademicNamespace, {
         input: {
-          academicNamespaceId: namespace.academicNamespaceId,
+          academicNamespaceId: namespace?.academicNamespaceId,
         },
       }),
     onSuccess: (_, namespace) => {
