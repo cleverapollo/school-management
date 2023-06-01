@@ -212,7 +212,8 @@
     "maxLength": "You have exceeded the maximum character length of {{count}}",
     "invalidMobileNumber": "This is an invalid mobile number for this country",
     "invalidEmail": "This is an invalid email",
-    "invalidPhoneNumber": "This is an invalid phone number"
+    "invalidPhoneNumber": "This is an invalid phone number",
+    "invalidUniqueByKey": "{{key}} should be unique"
   },
   "studyLevel": {
     "COMMON": "Common",
