@@ -38,10 +38,10 @@
     "errorFailed": "Error! An error occurred. Please try again later."
   },
   "relationshipType": {
+    "AUNTY": "Aunty",
     "FATHER": "Father",
     "MOTHER": "Mother",
     "SIBLING": "Sibling",
-    "AUNTY": "Aunty",
     "UNCLE": "Uncle",
     "GRAND_FATHER": "Grandfather",
     "GRAND_MOTHER": "Grandmother",
