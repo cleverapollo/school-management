@@ -3,18 +3,20 @@
 import { Box } from '@mui/material';
 import { useDisclosure, useResponsive } from '@tyro/core';
 import { ScrollRestoration } from 'react-router-dom';
+import { useEffect } from 'react';
 import { HEADER as HEADERCONFIG, NAV } from './nav/config';
 
 import { Header } from './header';
 import NavMini from './nav/NavMini';
 import NavVertical from './nav/NavVertical';
 import { useNavigationConfig } from '../../hooks/use-navigation-config';
+import { ShellProvider, useShell } from './provider';
 
 interface ShellProps {
   children?: React.ReactNode;
 }
 
-export function Shell({ children }: ShellProps) {
+function InnerShell({ children }: ShellProps) {
   const isDesktop = useResponsive('up', 'lg');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -23,6 +25,11 @@ export function Shell({ children }: ShellProps) {
     onClose: onCollapse,
   } = useDisclosure({ defaultIsOpen: true });
   const navConfig = useNavigationConfig();
+  const { setIsNavExpanded } = useShell();
+
+  useEffect(() => {
+    setIsNavExpanded(isExpanded);
+  }, [isExpanded]);
 
   return (
     <>
@@ -68,5 +75,13 @@ export function Shell({ children }: ShellProps) {
         </Box>
       </Box>
     </>
+  );
+}
+
+export function Shell({ children }: ShellProps) {
+  return (
+    <ShellProvider>
+      <InnerShell>{children}</InnerShell>
+    </ShellProvider>
   );
 }
