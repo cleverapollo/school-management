@@ -17,10 +17,10 @@
   "roomNameShouldBeUnique": "Room name should be unique",
   "successfullyUpdatedSubjects": "Successfully updated subjects",
   "updateToSubjectsUnsuccessful": "Your subject updates were unsuccessful",
-  "changeAcademicNamespaceCurrentlySet": "Change Academic Namespace. Currently set to {{name}}",
+  "changeAcademicNamespaceCurrentlySet": "Change academic namespace. Currently set to {{name}}",
   "createAcademicYear": "Create academic year",
   "editAcademicYear": "Edit academic year",
-  "academicYearNameShouldBeUnique": "Academic Year name should be unique",
+  "academicYearNameShouldBeUnique": "Academic year name should be unique",
   "successfullyChangedYear": "Successfully changed year to {{name}}",
   "failedChangingYear": "Failed changing year to {{name}}",
   "actions": {
@@ -30,7 +30,7 @@
     "linkToViewRoomTimetable": "Link to view room timetable"
   },
   "namespacesDialog": {
-    "title": "Change Academic Year to {{name}}?",
+    "title": "Change academic year to {{name}}?",
     "description": "You are about to change the academic year to {{name}} for everyone in the school. Users who login to Tyro will view data from {{name}}. Are you sure you want to continue?",
     "confirmation": "Yes, change academic year to {{name}}"
   },
