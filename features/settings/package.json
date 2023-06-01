@@ -13,7 +13,10 @@
     "@tyro/icons": "*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router": "^6.3.0"
+    "react-router": "^6.3.0",
+    "@mui/lab": "5.0.0-alpha.96",
+    "react-hook-form": "^7.43.9",
+    "dayjs": "^1.11.7"
   },
   "devDependencies": {
     "@tyro/configs": "*"

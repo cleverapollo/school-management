@@ -120,20 +120,30 @@ export const validations = {
 
     return value;
   },
-  isUniqueByKey: <T extends Record<string, unknown>>(
-    value?: string | null,
-    array?: Array<T>,
-    errorMessage?: string,
-    key: keyof T = 'name'
-  ): string | undefined | null => {
+  isUniqueByKey: <
+    Value extends string | number | null | undefined,
+    T extends Record<string, Value>
+  >(
+    array: Array<T>,
+    keyName: keyof T,
+    value: Value,
+    errorMessage?: string
+  ): Value => {
     if (
-      array?.some(
-        (item) =>
-          item[key] &&
-          typeof item[key] === 'string' &&
-          (item[key] as string)?.trim()?.toLowerCase() ===
-            value?.trim()?.toLowerCase()
-      )
+      array.some((item) => {
+        const currentValue = item[keyName];
+        if (!currentValue) return false;
+        if (typeof currentValue === 'string' && typeof value === 'string') {
+          return (
+            currentValue.replace(/\s/g, '').toLowerCase() ===
+            value.replace(/\s/g, '').toLowerCase()
+          );
+        }
+        if (typeof currentValue === 'number' && typeof value === 'number') {
+          return currentValue === value;
+        }
+        return false;
+      })
     ) {
       throw new ValidationError('isUniqueByKey', errorMessage);
     }

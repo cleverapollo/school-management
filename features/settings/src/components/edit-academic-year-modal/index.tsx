@@ -5,13 +5,7 @@ import {
   DialogActions,
   Dialog,
 } from '@mui/material';
-import {
-  RHFDatePicker,
-  RHFTextField,
-  ValidationError,
-  useFormValidator,
-  validations,
-} from '@tyro/core';
+import { RHFDatePicker, RHFTextField, useFormValidator } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
@@ -62,37 +56,15 @@ export const EditAcademicYearModal = ({
       academicYear?.academicNamespaceId !== initialAcademicYearState?.id
   );
 
-  const ruleCheckUniqueName = [
-    rules.validate<EditAcademicYearFormState['name']>((name, throwError) => {
-      if (
-        academicYearsWithoutSelf.some(
-          (academicYear) =>
-            academicYear?.name?.trim()?.toLowerCase() ===
-            name?.trim()?.toLowerCase()
-        )
-      ) {
-        throwError(t('settings:academicYearNameShouldBeUnique'));
-      }
-    }),
-  ];
-
   const { control, handleSubmit, reset } = useForm<EditAcademicYearFormState>({
     resolver: resolver({
       name: [
         rules.required(),
         rules.max(20),
-        rules.validate<EditAcademicYearFormState['name']>(
-          (name, throwError) => {
-            try {
-              validations.isUniqueByKey<ReturnTypeFromUseCoreAcademicNamespace>(
-                name,
-                academicYearsWithoutSelf,
-                t('settings:academicYearNameShouldBeUnique')
-              );
-            } catch (error) {
-              throwError((error as ValidationError).message);
-            }
-          }
+        rules.isUniqueByKey(
+          academicYearsWithoutSelf,
+          'name',
+          t('settings:academicYearNameShouldBeUnique')
         ),
       ],
       year: [rules.required(), rules.min(1900), rules.max(2100)],

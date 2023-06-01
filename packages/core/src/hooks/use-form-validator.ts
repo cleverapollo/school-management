@@ -114,15 +114,19 @@ class Rules<TField extends FieldValues> {
     };
   }
 
-  isUniqueByKey(array: Array<any>, customMsg?: string, key?: string) {
+  isUniqueByKey<T extends Record<string, FieldValue<TField>>>(
+    array: Array<T>,
+    keyName: keyof T,
+    customMsg?: string
+  ) {
     const errorMessage =
       customMsg ??
       this._t('common:errorMessages.invalidUniqueByKey', {
-        name: key,
+        name: keyName,
       });
 
     return (value: FieldValue<TField>) => {
-      validations.isUniqueByKey(value, array, errorMessage, key);
+      validations.isUniqueByKey(array, keyName, value, errorMessage);
     };
   }
 
