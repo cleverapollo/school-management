@@ -32,6 +32,9 @@ const subjectGroupsList = graphql(/* GraphQL */ `
           name
         }
       }
+      yearGroups {
+        name
+      }
     }
   }
 `);
