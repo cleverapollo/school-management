@@ -84,8 +84,8 @@ export default function StudentProfileContainer() {
               value: 'well-being',
             },
             {
-              label: 'SEN',
-              value: 'sen',
+              label: 'AEN',
+              value: 'aen',
             },
             {
               label: 'Classes',
