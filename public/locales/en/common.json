@@ -41,10 +41,10 @@
   "relationshipType": {
     "AUNTY": "Aunty",
     "FAMILY_FRIEND": "FamilyFriend",
-    "FATHER": "Father",
     "GRAND_FATHER": "GrandFather",
     "GRAND_MOTHER": "GrandMother",
     "MOTHER": "Mother",
+    "FATHER": "Father",
     "NEIGHBOUR": "Neighbour",
     "OTHER": "Other",
     "SIBLING": "Sibling",
@@ -218,7 +218,8 @@
     "maxLength": "You have exceeded the maximum character length of {{count}}",
     "invalidMobileNumber": "This is an invalid mobile number for this country",
     "invalidEmail": "This is an invalid email",
-    "invalidPhoneNumber": "This is an invalid phone number"
+    "invalidPhoneNumber": "This is an invalid phone number",
+    "invalidUniqueByKey": "{{key}} should be unique"
   },
   "studyLevel": {
     "COMMON": "Common",

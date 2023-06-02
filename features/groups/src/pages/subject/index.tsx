@@ -1,10 +1,5 @@
 import { Box, Fade, Container, Typography } from '@mui/material';
-import {
-  SmsRecipientType,
-  UpdateSubjectGroupInput,
-  usePermissions,
-  UserType,
-} from '@tyro/api';
+import { SmsRecipientType, UpdateSubjectGroupInput } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -13,7 +8,6 @@ import {
   Table,
   ICellRendererParams,
   ActionMenu,
-  ActionMenuProps,
   usePreferredNameLayout,
   ReturnTypeDisplayNames,
   TableStudyLevelChip,
@@ -87,6 +81,13 @@ const getSubjectGroupsColumns = (
     headerName: t('common:members'),
   },
   {
+    headerName: t('common:year'),
+    field: 'year',
+    enableRowGroup: true,
+    valueGetter: ({ data }) =>
+      data?.yearGroups?.map((year) => year?.name).join(', '),
+  },
+  {
     field: 'irePP.level',
     headerName: t('common:level'),
     filter: true,
@@ -118,7 +119,6 @@ export default function SubjectGroups() {
 
   const { data: subjectGroupsData } = useSubjectGroups();
   const { mutateAsync: updateSubjectGroup } = useSaveSubjectGroupEdits();
-  const { userType } = usePermissions();
 
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
@@ -129,30 +129,23 @@ export default function SubjectGroups() {
     onClose: onCloseSendSms,
   } = useDisclosure();
 
-  const isAdminUserType = userType === UserType.Admin;
-  const isTeacherUserType = userType === UserType.Teacher;
-  const showActionMenu = isAdminUserType || isTeacherUserType;
-
   const studentColumns = useMemo(
     () => getSubjectGroupsColumns(t, displayNames),
     [t, displayNames]
   );
 
-  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
-    () => [
-      {
-        label: t('people:sendSms'),
-        icon: <MobileIcon />,
-        onClick: onOpenSendSms,
-      },
-      // {
-      //   label: t('mail:sendMail'),
-      //   icon: <SendMailIcon />,
-      //   onClick: () => {},
-      // },
-    ],
-    [isTeacherUserType, isAdminUserType]
-  );
+  const actionMenuItems = [
+    {
+      label: t('people:sendSms'),
+      icon: <MobileIcon />,
+      onClick: onOpenSendSms,
+    },
+    // {
+    //   label: t('mail:sendMail'),
+    //   icon: <SendMailIcon />,
+    //   onClick: () => {},
+    // },
+  ];
 
   const handleBulkSave = (
     data: BulkEditedRows<ReturnTypeFromUseSubjectGroups, 'irePP.level'>
@@ -190,10 +183,7 @@ export default function SubjectGroups() {
             getRowId={({ data }) => String(data?.partyId)}
             onBulkSave={handleBulkSave}
             rightAdornment={
-              <Fade
-                in={showActionMenu && selectedGroups.length > 0}
-                unmountOnExit
-              >
+              <Fade in={selectedGroups.length > 0} unmountOnExit>
                 <Box>
                   <ActionMenu menuItems={actionMenuItems} />
                 </Box>
@@ -226,13 +216,13 @@ export default function SubjectGroups() {
             label: t('sms:contactsOfStudentMembers', {
               count: selectedGroups.length,
             }),
-            type: SmsRecipientType.SubjectGroupContact,
+            type: SmsRecipientType.YearGroupContact,
           },
           {
-            label: t('sms:teachersOfGroup', {
+            label: t('sms:yearHeadsOfGroup', {
               count: selectedGroups.length,
             }),
-            type: SmsRecipientType.SubjectGroupStaff,
+            type: SmsRecipientType.YearGroupStaff,
           },
         ]}
       />
