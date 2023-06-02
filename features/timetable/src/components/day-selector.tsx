@@ -1,8 +1,9 @@
 import { TableSelect } from '@tyro/core';
 import dayjs from 'dayjs';
 
+const availableDays = Array.from({ length: 5 }, (_, index) => index + 1);
+
 export function DaySelector() {
-  const availableDays = Array.from({ length: 5 }, (_, index) => index + 1);
   const options = availableDays.map((dayIndex) => ({
     label: dayjs().day(dayIndex).format('dddd'),
     value: dayIndex,

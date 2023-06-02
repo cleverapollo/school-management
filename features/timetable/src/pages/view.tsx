@@ -28,13 +28,10 @@ import {
 
 dayjs.extend(LocalizedFormat);
 
-const weekdays: string[] = Array.from(
-  { length: 5 },
-  (_, index) =>
-    dayjs()
-      .day(index + 1)
-      .format('LLLL')
-      .split(' ')[0]
+const weekdays: string[] = Array.from({ length: 5 }, (_, index) =>
+  dayjs()
+    .day(index + 1)
+    .format('dddd')
 );
 
 const getColumnDefs = (
@@ -156,6 +153,7 @@ export default function Timetables() {
     <PageContainer title={t('navigation:general.timetable')}>
       <PageHeading
         title={t('navigation:general.timetable')}
+        titleProps={{ variant: 'h3' }}
         breadcrumbs={{
           links: [
             {
