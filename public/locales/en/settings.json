@@ -3,6 +3,10 @@
     "en": "English",
     "ga": "Irish"
   },
+  "ppod": "PPOD",
+  "sync": "Sync",
+  "login": "Login",
+  "ppodCredentials": "PPOD credentials",
   "subjects": "Subjects",
   "shortCode": "Short code",
   "nationalCode": "National code",
@@ -24,7 +28,7 @@
   "successfullyChangedYear": "Successfully changed year to {{name}}",
   "failedChangingYear": "Failed changing year to {{name}}",
   "actions": {
-    "makeActive": "Make active primary namespace",
+    "makeActive": "Activate academic year",
     "addNewRoom": "Add new room",
     "editRoom": "Edit room",
     "linkToViewRoomTimetable": "Link to view room timetable"
@@ -41,5 +45,57 @@
   "subjectSource": {
     "NATIONAL": "National",
     "CUSTOM": "Custom"
+  },
+  "ppodSync": {
+    "title": "PPOD sync information",
+    "completedBy": "Completed by",
+    "date": "Date",
+    "time":"Time",
+    "status": "Status",
+    "details":" Details",
+    "credentialsSaved": "Credentials saved",
+    "credentialsCorrect": "Credentials success!",
+    "login": "Login",
+    "enterSyncCredentials": "Enter school sync credentials",
+    "enterPpodCredentials": "Please enter the schools PPOD sync credentials",
+    "username": "Username",
+    "password": "Password",
+    "syncFromPpod": "Sync from PPOD",
+    "syncSuccessful": "Sync successful",
+    "syncUnsuccessful": "Sync unsuccessful",
+    "SUCCESS": "Success",
+    "FAIL": "Fail",
+    "ERROR": "Error",
+    "unableToSyncData": "Unable to sync data",
+    "incorrectCredentials": "Incorrect credentials"
+
+  },
+  "schoolDetails": {
+    "contact": "Contact",
+    "title": "School details",
+    "name": "School name",
+    "rollNo": "Roll number",
+    "phone": "Phone number",
+    "parentAssociation": "Parents association",
+    "studentCouncil": "Student council",
+    "email": "Email",
+    "coOperatingSchoolRollNo1":
+      "Co-op school 1:",
+    "website": "Website",
+    "coOperatingSchoolRollNo2": "Co-op school 2:",
+    "boardingFeeSixOrSevenDay": "7 day boarding",
+    "schoolGender": "School gender",
+    "boardingFeeFiveDay": "5 day boarding",
+    "irishClassification": "Irish classification",
+    "schoolAddress": "School address",
+    "address": "Address",
+    "localAuthority": "Local authority",
+    "trustee": "Trustee",
+    "forename": "Forename",
+    "surname": "Surname",
+    "ownerInformation": "Owner information",
+    "boardOfManagementChairPerson": "Board of management chairperson",
+    "octoberReturnsContact": "October returns contact person",
+    "dataUnavailable": "Data unavailable."
   }
 }

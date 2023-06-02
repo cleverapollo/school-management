@@ -33,9 +33,7 @@
   "gender": {
     "title": "Gender",
     "MALE": "Male",
-    "FEMALE": "Female",
-    "OTHER": "Other",
-    "UNKNOWN": "Unknown"
+    "FEMALE": "Female"
   },
   "employmentCapacity": {
     "title": "Employment capacity",
