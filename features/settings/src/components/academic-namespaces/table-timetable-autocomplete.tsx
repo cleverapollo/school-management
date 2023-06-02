@@ -2,12 +2,7 @@ import { ICellEditorParams, TableAutocomplete } from '@tyro/core';
 import { Stack, Typography } from '@mui/material';
 import { forwardRef, ForwardedRef, useImperativeHandle, useRef } from 'react';
 import { useTranslation } from '@tyro/i18n';
-import { UseQueryReturnType } from '@tyro/api';
-import { useCoreRooms } from '../../api/rooms';
-
-type ReturnTypeFromUseCoreRooms = UseQueryReturnType<
-  typeof useCoreRooms
->[number];
+import { useCoreRooms, ReturnTypeFromUseCoreRooms } from '../../api/rooms';
 
 export const TableTimetableAutocomplete = forwardRef(
   (
@@ -40,9 +35,7 @@ export const TableTimetableAutocomplete = forwardRef(
           loadingText: t('common:loading'),
           renderOption: (optionProps, option) => (
             <Stack component="li" direction="row" spacing={1} {...optionProps}>
-              <Stack>
-                <Typography variant="subtitle2">{option?.name}</Typography>
-              </Stack>
+              <Typography variant="subtitle2">{option?.name}</Typography>
             </Stack>
           ),
         }}

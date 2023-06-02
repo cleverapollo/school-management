@@ -1,31 +1,41 @@
 import { useMemo } from 'react';
 import { useParams } from 'react-router';
-import { Container } from '@mui/material';
 import {
   GridOptions,
   useNumber,
-  Page,
+  PageContainer,
   PageHeading,
   Table,
   usePreferredNameLayout,
   BulkEditedRows,
 } from '@tyro/core';
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 import set from 'lodash/set';
-import { TFunction, useTranslation } from '@tyro/i18n';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { TableStaffAutocomplete } from '@tyro/people';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { TableTimetableAutocomplete } from '@tyro/settings';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from 'dayjs';
+
+import { TFunction, useTranslation } from '@tyro/i18n';
+import { TableStaffAutocomplete } from '@tyro/people';
+import { TableTimetableAutocomplete } from '@tyro/settings';
+
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { DaySelector } from '../components/day-selector';
 import { PeriodSelector } from '../components/period-selector';
+import { useUpdateTimetableLessons } from '../api/update-timetable-lessons';
 import {
   useTimetables,
-  useUpdateTimetableLessons,
   ReturnTypeFromUseTimetables,
-} from '../api/timetable';
+} from '../api/timetable-list';
+
+dayjs.extend(LocalizedFormat);
+
+const weekdays: string[] = Array.from(
+  { length: 5 },
+  (_, index) =>
+    dayjs()
+      .day(index + 1)
+      .format('LLLL')
+      .split(' ')[0]
+);
 
 const getColumnDefs = (
   t: TFunction<'timetable'[], undefined, 'timetable'[]>,
@@ -34,15 +44,7 @@ const getColumnDefs = (
   {
     headerName: t('timetable:day'),
     field: 'dayIdx',
-    valueFormatter: ({ data }) => {
-      const weekdays: string[] = Array.from({ length: 5 }, (_, index) =>
-        dayjs()
-          .day(index + 1)
-          .format('dddd')
-      );
-      const dayId = data?.dayIdx;
-      return typeof dayId === 'number' ? weekdays[dayId - 1] : '';
-    },
+    valueFormatter: ({ data }) => weekdays[Number(data?.dayIdx) - 1] ?? '',
     valueSetter: ({ data, newValue }) => {
       set(data ?? {}, 'dayIdx', newValue);
       return true;
@@ -151,31 +153,28 @@ export default function Timetables() {
   };
 
   return (
-    <Page title={t('navigation:general.timetable')}>
-      <Container maxWidth="xl">
-        <PageHeading
-          title={t('navigation:general.timetable')}
-          breadcrumbs={{
-            links: [
-              {
-                name: t('navigation:general.timetable'),
-                href: './..',
-              },
-              {
-                name: String(timetableId),
-              },
-            ],
-          }}
-        />
-
-        <Table
-          rowData={timetables ?? []}
-          columnDefs={myColumnDefs}
-          rowSelection="multiple"
-          getRowId={({ data }) => JSON.stringify(data?.id)}
-          onBulkSave={handleBulkSave}
-        />
-      </Container>
-    </Page>
+    <PageContainer title={t('navigation:general.timetable')}>
+      <PageHeading
+        title={t('navigation:general.timetable')}
+        breadcrumbs={{
+          links: [
+            {
+              name: t('navigation:general.timetable'),
+              href: './..',
+            },
+            {
+              name: String(timetableId),
+            },
+          ],
+        }}
+      />
+      <Table
+        rowData={timetables ?? []}
+        columnDefs={myColumnDefs}
+        rowSelection="multiple"
+        getRowId={({ data }) => JSON.stringify(data?.id)}
+        onBulkSave={handleBulkSave}
+      />
+    </PageContainer>
   );
 }

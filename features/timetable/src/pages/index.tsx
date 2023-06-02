@@ -1,13 +1,18 @@
 import { useMemo } from 'react';
-import { Container, Typography } from '@mui/material';
 
-import { Page, Table, ICellRendererParams, RouterLink } from '@tyro/core';
+import {
+  PageContainer,
+  PageHeading,
+  Table,
+  ICellRendererParams,
+  RouterLink,
+} from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 
 import {
   useTimetableLesson,
   ReturnTypeFromUseTimeTableLesson,
-} from '../api/timetable';
+} from '../api/timetable-lessons';
 
 const getColumnDefs = (
   t: TFunction<'timetable'[], undefined, 'timetable'[]>
@@ -34,17 +39,16 @@ export default function Timetables() {
   const columnDefs = useMemo(() => getColumnDefs(t), [t]);
 
   return (
-    <Page title={t('navigation:general.timetable')}>
-      <Container maxWidth="xl">
-        <Typography variant="h3" component="h1" paragraph>
-          {t('navigation:general.timetable')}
-        </Typography>
-        <Table
-          rowData={timetables ?? []}
-          columnDefs={columnDefs}
-          getRowId={({ data }) => String(data.timetableId)}
-        />
-      </Container>
-    </Page>
+    <PageContainer title={t('navigation:general.timetable')}>
+      <PageHeading
+        title={t('navigation:general.timetable')}
+        titleProps={{ variant: 'h3' }}
+      />
+      <Table
+        rowData={timetables ?? []}
+        columnDefs={columnDefs}
+        getRowId={({ data }) => String(data.timetableId)}
+      />
+    </PageContainer>
   );
 }

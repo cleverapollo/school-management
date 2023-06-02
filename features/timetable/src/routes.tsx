@@ -6,7 +6,8 @@ import {
   throw404Error,
 } from '@tyro/core';
 import { EditCalendarIcon } from '@tyro/icons';
-import { getTimetables, getTimetableLesson } from './api/timetable';
+import { getTimetables } from './api/timetable-list';
+import { getTimetableLesson } from './api/timetable-lessons';
 
 const TimetableList = lazy(() => import('./pages/index'));
 const ViewTimetable = lazy(() => import('./pages/view'));
