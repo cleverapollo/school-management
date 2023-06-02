@@ -34,12 +34,12 @@ function ShellProvider({ children }: ShellProviderProps) {
   );
 }
 
-function useShell() {
+function useAppShellConfig() {
   const context = useContext(ShellContext);
   if (context === undefined) {
-    throw new Error('useShell must be used within a ShellContext');
+    throw new Error('useAppShellConfig must be used within a ShellContext');
   }
   return context;
 }
 
-export { ShellContext, ShellProvider, useShell };
+export { ShellContext, ShellProvider, useAppShellConfig };

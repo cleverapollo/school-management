@@ -10,7 +10,7 @@ import { Header } from './header';
 import NavMini from './nav/NavMini';
 import NavVertical from './nav/NavVertical';
 import { useNavigationConfig } from '../../hooks/use-navigation-config';
-import { ShellProvider, useShell } from './provider';
+import { ShellProvider, useAppShellConfig } from './provider';
 
 interface ShellProps {
   children?: React.ReactNode;
@@ -25,7 +25,7 @@ function InnerShell({ children }: ShellProps) {
     onClose: onCollapse,
   } = useDisclosure({ defaultIsOpen: true });
   const navConfig = useNavigationConfig();
-  const { setIsNavExpanded } = useShell();
+  const { setIsNavExpanded } = useAppShellConfig();
 
   useEffect(() => {
     setIsNavExpanded(isExpanded);

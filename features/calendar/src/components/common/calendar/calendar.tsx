@@ -18,7 +18,7 @@ import { usePermissions, UserType, CalendarEventType } from '@tyro/api';
 import { useResponsive, useDisclosure } from '@tyro/core';
 import { ChevronLeftIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
-import { useShell } from '@tyro/app-shell';
+import { useAppShellConfig } from '@tyro/app-shell';
 import { CalendarView } from '../../../types';
 // sections
 import { CalendarStyle, CalendarToolbar } from '.';
@@ -50,7 +50,7 @@ export const Calendar = function Calendar({
   defaultDate = dayjs().startOf('week').toDate(),
 }: CalendarProps) {
   const { userType } = usePermissions();
-  const { isNavExpanded } = useShell();
+  const { isNavExpanded } = useAppShellConfig();
   const [selectedPartys, setSelectedPartys] = useState(defaultPartys);
   const [visableEventTypes, setVisableEventTypes] = useState<
     CalendarEventType[]
