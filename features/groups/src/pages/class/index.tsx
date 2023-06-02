@@ -66,7 +66,10 @@ const getClassGroupColumns = (
     field: 'year',
     enableRowGroup: true,
     valueGetter: ({ data }) =>
-      data?.yearGroups?.map((year) => year?.name).join(', '),
+      data?.yearGroups
+        ?.sort((a, b) => a.yearGroupId - b.yearGroupId)
+        .map((year) => year?.name)
+        .join(', '),
     sort: 'asc',
   },
   {

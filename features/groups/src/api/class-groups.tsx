@@ -40,6 +40,7 @@ const classGroupsList = graphql(/* GraphQL */ `
         type
       }
       yearGroups {
+        yearGroupId
         name
       }
     }
