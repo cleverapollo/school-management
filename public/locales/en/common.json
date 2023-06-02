@@ -38,10 +38,10 @@
     "errorFailed": "Error! An error occurred. Please try again later."
   },
   "relationshipType": {
+    "AUNTY": "Aunty",
     "FATHER": "Father",
     "MOTHER": "Mother",
     "SIBLING": "Sibling",
-    "AUNTY": "Aunty",
     "UNCLE": "Uncle",
     "GRAND_FATHER": "Grandfather",
     "GRAND_MOTHER": "Grandmother",
@@ -212,7 +212,8 @@
     "maxLength": "You have exceeded the maximum character length of {{count}}",
     "invalidMobileNumber": "This is an invalid mobile number for this country",
     "invalidEmail": "This is an invalid email",
-    "invalidPhoneNumber": "This is an invalid phone number"
+    "invalidPhoneNumber": "This is an invalid phone number",
+    "invalidUniqueByKey": "{{key}} should be unique"
   },
   "studyLevel": {
     "COMMON": "Common",

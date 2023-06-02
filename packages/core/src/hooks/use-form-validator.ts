@@ -114,6 +114,22 @@ class Rules<TField extends FieldValues> {
     };
   }
 
+  isUniqueByKey<T extends Record<string, FieldValue<TField>>>(
+    array: Array<T>,
+    keyName: keyof T,
+    customMsg?: string
+  ) {
+    const errorMessage =
+      customMsg ??
+      this._t('common:errorMessages.invalidUniqueByKey', {
+        name: keyName,
+      });
+
+    return (value: FieldValue<TField>) => {
+      validations.isUniqueByKey(array, keyName, value, errorMessage);
+    };
+  }
+
   // eslint-disable-next-line class-methods-use-this
   validate<V extends FieldValue<TField>>(
     validateFn: (

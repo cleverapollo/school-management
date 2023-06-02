@@ -31,8 +31,12 @@
   "noRecipientsFound": "No recipients found",
   "sentAt": "Sent at",
   "sentBy": "Sent by",
-  "sent": "Sent",
-  "failed": "Failed",
+  "smsStatus": {
+    "FAILED": "Failed",
+    "PENDING": "Pending",
+    "SCHEDULED": "Scheduled",
+    "SUCCESS": "Success"
+  },
   "smsSentSuccessfully": "SMS sent successfully",
   "smsFailedToSend": "SMS failed to send",
   "costPerSms": "Cost per SMS",

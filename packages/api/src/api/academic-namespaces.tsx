@@ -17,6 +17,8 @@ const coreAcademicNamespaces = graphql(/* GraphQL */ `
       year
       description
       isActiveDefaultNamespace
+      startDate
+      endDate
     }
   }
 `);
