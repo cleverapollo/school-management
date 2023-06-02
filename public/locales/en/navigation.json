@@ -20,7 +20,8 @@
     "assessments": {
       "title": "Assessments",
       "termAssessments": "Term Assessments"
-    }
+    },
+    "timetable": "Timetable"
   },
   "management": {
     "title": "Management",
