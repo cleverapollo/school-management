@@ -1,6 +1,12 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { useCallback, useEffect, useState, useRef } from 'react';
-import { OnDragEndResponder, OnDragStartResponder } from 'react-beautiful-dnd';
+import {
+  DragStart,
+  DropResult,
+  OnDragEndResponder,
+  OnDragStartResponder,
+  ResponderProvided,
+} from 'react-beautiful-dnd';
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
 import { ReturnTypeOfUseBlockMembership } from '../../../../api/blocks';
@@ -15,7 +21,11 @@ import {
   wasMultiSelectKeyUsed,
   wasToggleInSelectionGroupKeyUsed,
 } from './utils';
-import { useEditedState, UseEditedStateProps } from './edited-state';
+import {
+  useEditedState,
+  UseEditedStateProps,
+  EditedStudent,
+} from './edited-state';
 
 export interface UseListManagerStateProps {
   unassignedStudents: ReturnTypeOfUseBlockMembership['groups'][number]['unenrolledStudents'];
@@ -149,7 +159,9 @@ export function useListManagerState({
     };
     setState((prevState) => {
       const newState = cloneDeep(prevState);
-      const groupIndex = newState.findIndex((group) => group.id === groupId);
+      const groupIndex = newState.findIndex(
+        (group) => String(group.id) === String(groupId)
+      );
       const studentIndex = newState[groupIndex].students.findIndex(
         (student) => student.id === studentId
       );
@@ -173,6 +185,44 @@ export function useListManagerState({
 
       return toggleSelection(studentId, selectedIds);
     });
+  };
+
+  const revertChange = ({
+    student,
+    sourceGroup,
+    destinationGroup,
+  }: EditedStudent) => {
+    if (sourceGroup && destinationGroup) {
+      onDragStart(
+        {
+          draggableId: student.id,
+        } as DragStart,
+        {} as ResponderProvided
+      );
+      const destinationGroupIndexFromState = state.findIndex(
+        (group) => group.id === destinationGroup.id
+      );
+      const currentStudentIndex = state[
+        destinationGroupIndexFromState
+      ].students.findIndex(({ id }) => id === student.id);
+      onDragEnd(
+        {
+          source: {
+            droppableId: String(destinationGroup.id),
+            index: currentStudentIndex,
+          },
+          destination: {
+            droppableId: String(sourceGroup.id),
+            index: 0,
+          },
+        } as DropResult,
+        {} as ResponderProvided
+      );
+    } else if (destinationGroup) {
+      deleteDuplicate(destinationGroup.id, student.id);
+    } else if (sourceGroup && sourceGroup.id !== 'unassigned') {
+      duplicateStudents(sourceGroup.id, [String(student.person.partyId)]);
+    }
   };
 
   useEffect(() => {
@@ -208,7 +258,10 @@ export function useListManagerState({
     state,
     onDragEnd,
     onDragStart,
-    editedState,
+    editedState: {
+      ...editedState,
+      revertChange,
+    },
     cardProps: {
       draggingStudentId,
       performCardAction,

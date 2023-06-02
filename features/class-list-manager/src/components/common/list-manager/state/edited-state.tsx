@@ -1,9 +1,10 @@
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { ListManagerState } from './types';
 
-export interface EditedStudents {
-  sourceGroup: Pick<ListManagerState, 'id' | 'name'> | null;
-  destinationGroup: Pick<ListManagerState, 'id' | 'name'> | null;
+type EditStudentGroup = Pick<ListManagerState, 'id' | 'name'>;
+export interface EditedStudent {
+  sourceGroup: EditStudentGroup | null;
+  destinationGroup: EditStudentGroup | null;
   student: ListManagerState['students'][number];
 }
 
@@ -13,7 +14,7 @@ export interface UseEditedStateProps {
     destinationId: string | null;
   }>;
   state: ListManagerState[];
-  onBulkSave: ((data: EditedStudents[]) => Promise<unknown>) | undefined;
+  onBulkSave: ((data: EditedStudent[]) => Promise<unknown>) | undefined;
   resetBoard: (state?: ListManagerState[]) => void;
 }
 
@@ -31,7 +32,7 @@ function getChangesSinceLastChange(
 ) {
   const { current: lastEdited } = lastEditedGroups;
   const { sourceIds, destinationId } = lastEdited;
-  const changedStudents = new Map<string, EditedStudents>();
+  const changedStudents = new Map<string, EditedStudent>();
 
   const previousSourceGroups = sourceIds?.map((id) =>
     previousState.find((group) => String(group.id) === id)
@@ -104,9 +105,9 @@ export function useEditedState({
   resetBoard,
 }: UseEditedStateProps) {
   const previousState = useRef<ListManagerState[]>([]);
-  const changeHistory = useRef<EditedStudents[][]>([]);
+  const changeHistory = useRef<EditedStudent[][]>([]);
   const [editingState, setEditingState] = useState<EditState>(EditState.Idle);
-  const [editedStudents, setEditedStudents] = useState<EditedStudents[]>([]);
+  const [editedStudents, setEditedStudents] = useState<EditedStudent[]>([]);
 
   useEffect(() => {
     const changedStudents = getChangesSinceLastChange(

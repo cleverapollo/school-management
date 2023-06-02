@@ -1,4 +1,4 @@
-import { Box, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 import { useEffect, useState, useMemo } from 'react';
 import { useBlockMembership } from '../api/blocks';
 import { BlockAutocomplete } from '../components/blocks/block-autocomplete';
@@ -25,11 +25,6 @@ export default function ClassListManagerBlocks() {
   useEffect(() => {
     setSelectedRotationIndex(null);
   }, []);
-
-  console.log({
-    selectedBlock,
-    blockData,
-  });
 
   return (
     <Stack spacing={3}>

@@ -1,4 +1,5 @@
-import { Box, Stack } from '@mui/material';
+import { Box, Stack, useTheme } from '@mui/material';
+import { useBreakpointValue } from '@tyro/core';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { useContainerMargin } from '../../../hooks/use-container-margin';
 import { BulkEditSaveBar } from './bulk-edit-save-bar';
@@ -10,6 +11,18 @@ interface ListManagerProps {
   unassignedStudents: UseListManagerStateProps['unassignedStudents'];
   groups: UseListManagerStateProps['groups'];
   onBulkSave: UseListManagerStateProps['onBulkSave'];
+}
+
+function ListEndSpacer() {
+  const { spacing } = useTheme();
+  const space = useBreakpointValue({ sm: 1, lg: 3 });
+  const spaceValue = space ? spacing(space) : '1px';
+
+  return (
+    <Box>
+      <Box sx={{ width: spaceValue, height: spaceValue }} />
+    </Box>
+  );
 }
 
 export function ListManager({
@@ -57,6 +70,7 @@ export function ListManager({
                   />
                 )
               )}
+              <ListEndSpacer />
             </Stack>
           </Box>
         </Box>

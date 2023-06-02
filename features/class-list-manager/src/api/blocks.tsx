@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   EnrollmentIre_BlockEnrollmentFilter,
   gqlClient,
@@ -6,6 +6,8 @@ import {
   queryClient,
   UseQueryReturnType,
 } from '@tyro/api';
+import { useToast } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 import { classListManagerKeys } from './keys';
 
 const blocks = graphql(/* GraphQL */ `
@@ -14,6 +16,7 @@ const blocks = graphql(/* GraphQL */ `
       blockId
       name
       description
+      subjectGroupNamesJoined
     }
   }
 `);
@@ -33,7 +36,7 @@ const blockMemberships = graphql(/* GraphQL */ `
       }
       isRotation
       groups {
-        rotationName
+        iteration
         unenrolledStudents {
           isDuplicate
           person {
@@ -69,6 +72,16 @@ const blockMemberships = graphql(/* GraphQL */ `
           }
         }
       }
+    }
+  }
+`);
+
+const upsertBlockMemberships = graphql(/* GraphQL */ `
+  mutation enrollment_ire_upsertBlockMemberships(
+    $input: EnrollmentIre_UpsertBlockMembership!
+  ) {
+    enrollment_ire_upsertBlockMemberships(input: $input) {
+      blockId
     }
   }
 `);
@@ -119,6 +132,20 @@ export function useBlockMembership(blockId: string | null) {
         })),
       })),
     }),
+  });
+}
+
+export function useUpdateBlockMemberships() {
+  const { toast } = useToast();
+  const { t } = useTranslation(['common']);
+
+  return useMutation({
+    mutationFn: async (input: EnrollmentIre_UpsertBlockMembership) =>
+      gqlClient.request(upsertBlockMemberships, { input }),
+    onSuccess: () => {
+      toast(t('common:snackbarMessages.updateSuccess'));
+      queryClient.invalidateQueries(classListManagerKeys.allBlockMemberships());
+    },
   });
 }
 

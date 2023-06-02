@@ -1,12 +1,4 @@
-import {
-  Box,
-  Button,
-  Fade,
-  Slide,
-  Stack,
-  Typography,
-  Link,
-} from '@mui/material';
+import { Box, Button, Fade, Slide, Stack, Link } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useTranslation } from '@tyro/i18n';
 import { SaveIcon, ThumbsUpCheckmarkIcon, UndoIcon } from '@tyro/icons';
@@ -21,9 +13,9 @@ export function BulkEditSaveBar({
   isEditing,
   editingState,
   numberOfEdits,
-  editedStudents,
   onSave,
   onCancel,
+  ...modalProps
 }: BulkEditSaveBarProps) {
   const { t } = useTranslation(['common']);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -107,11 +99,7 @@ export function BulkEditSaveBar({
           </Stack>
         </Box>
       </Slide>
-      <StudentEditsModal
-        open={isOpen}
-        onClose={onClose}
-        editedStudents={editedStudents}
-      />
+      <StudentEditsModal open={isOpen} onClose={onClose} {...modalProps} />
     </>
   );
 }

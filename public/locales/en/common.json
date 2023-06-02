@@ -27,7 +27,8 @@
     "apply": "Apply",
     "close": "Close",
     "confirm": "Confirm",
-    "viewDetails": "View Details"
+    "viewDetails": "View Details",
+    "undo": "Undo"
   },
   "snackbarMessages": {
     "createSuccess": "Create success!",
@@ -179,6 +180,7 @@
   "no": "No",
   "comment": "Comment",
   "preferredFirstName": "Preferred first name",
+  "changes": "Changes",
   "unsavedChanges_one": "{{count}} unsaved change",
   "unsavedChanges_other": "{{count}} unsaved changes",
   "tyroId": "Tyro ID",

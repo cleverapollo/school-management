@@ -1,25 +1,62 @@
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
+  DialogContent,
   DialogTitle,
+  IconButton,
   Stack,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { Avatar, usePreferredNameLayout } from '@tyro/core';
-import { useTranslation } from '@tyro/i18n';
+import { TFunction, useTranslation } from '@tyro/i18n';
+import { UndoIcon } from '@tyro/icons';
 import { ReturnTypeOfUseListManagerState } from '../state';
+import { EditedStudent } from '../state/edited-state';
 
 interface StudentEditsModalProps {
   open: boolean;
   editedStudents: ReturnTypeOfUseListManagerState['editedState']['editedStudents'];
   onClose: () => void;
+  revertChange: ReturnTypeOfUseListManagerState['editedState']['revertChange'];
+}
+
+function getChangeStatus(
+  editedStudent: EditedStudent,
+  t: TFunction<
+    ('common' | 'classListManager')[],
+    undefined,
+    ('common' | 'classListManager')[]
+  >
+) {
+  const { sourceGroup, destinationGroup } = editedStudent;
+
+  if (sourceGroup && destinationGroup) {
+    return `${sourceGroup.name} → ${destinationGroup.name}`;
+  }
+
+  if (sourceGroup) {
+    return t('classListManager:duplicateRemovedFromGroup', {
+      group: sourceGroup.name,
+    });
+  }
+
+  if (destinationGroup) {
+    return t('classListManager:duplicateAddedToGroup', {
+      group: destinationGroup.name,
+    });
+  }
+
+  return '';
 }
 
 export function StudentEditsModal({
   open,
   editedStudents,
   onClose,
+  revertChange,
 }: StudentEditsModalProps) {
   const { t } = useTranslation(['common']);
   const { displayName } = usePreferredNameLayout();
@@ -30,36 +67,83 @@ export function StudentEditsModal({
       onClose={onClose}
       scroll="paper"
       fullWidth
-      maxWidth="sm"
+      maxWidth="xs"
     >
-      <DialogTitle>Moved students</DialogTitle>
-      <Stack sx={{ p: 3 }}>
-        {editedStudents.map(({ student, sourceGroup, destinationGroup }) => {
-          const name = displayName(student?.person);
-          return (
-            <Stack
-              direction="row"
-              key={student.id}
-              spacing={1}
-              alignItems="center"
-            >
-              <Avatar
-                name={name}
-                src={student?.person?.avatarUrl}
+      <DialogTitle>{t('common:changes')}</DialogTitle>
+      <DialogContent sx={{ p: 0 }}>
+        <Stack
+          component="ul"
+          sx={{
+            m: 0,
+            px: 1,
+            '@media (hover: hover) and (pointer: fine)': {
+              '& li button': {
+                opacity: 0,
+              },
+
+              '& li:focus-within, & li:hover': {
+                bgcolor: 'primary.lighter',
+
+                '& button': {
+                  opacity: 1,
+                },
+              },
+            },
+          }}
+        >
+          {editedStudents.map((editedStudent) => {
+            const { student } = editedStudent;
+            const name = displayName(student?.person);
+
+            return (
+              <Stack
+                component="li"
+                direction="row"
+                key={student.id}
+                spacing={1}
+                alignItems="center"
                 sx={{
-                  my: 1,
-                  mr: 1,
+                  px: 2,
+                  borderRadius: 1.5,
+                  justifyContent: 'space-between',
                 }}
-              />
-              <Stack>
-                <Typography variant="body2" color="text.primary">
-                  {name}
-                </Typography>
+              >
+                <Box display="flex" alignItems="center">
+                  <Avatar
+                    name={name}
+                    src={student?.person?.avatarUrl}
+                    sx={{
+                      my: 1,
+                      mr: 1,
+                    }}
+                  />
+                  <Stack>
+                    <Typography variant="subtitle2" color="text.primary">
+                      {name}
+                    </Typography>
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      color="text.secondary"
+                    >
+                      {getChangeStatus(editedStudent, t)}
+                    </Typography>
+                  </Stack>
+                </Box>
+                <Tooltip title={t('common:actions.undo')}>
+                  <IconButton
+                    aria-label={t('common:actions.undo')}
+                    onClick={() => revertChange(editedStudent)}
+                    color="primary"
+                  >
+                    <UndoIcon />
+                  </IconButton>
+                </Tooltip>
               </Stack>
-            </Stack>
-          );
-        })}
-      </Stack>
+            );
+          })}
+        </Stack>
+      </DialogContent>
 
       <DialogActions>
         <Button variant="outlined" color="inherit" onClick={onClose}>

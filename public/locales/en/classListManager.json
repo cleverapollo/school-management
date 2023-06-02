@@ -10,5 +10,7 @@
   "deleteDuplicateStudent": "Delete duplicate student",
   "duplicateStudent": "Duplicate student",
   "duplicateSelectedStudents": "Duplicate selected students",
-  "weveTidiedStudentsInGroup": "We've tidied up one or more students as they're already in the group."
+  "weveTidiedStudentsInGroup": "We've tidied up one or more students as they're already in the group.",
+  "duplicateRemovedFromGroup": "Duplicate removed from {{group}}",
+  "duplicateAddedToGroup": "Duplicate added to {{group}}"
 }

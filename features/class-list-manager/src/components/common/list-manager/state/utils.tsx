@@ -117,10 +117,6 @@ export const clearSameStudentsFromGroup = (
     );
   }
 
-  console.log({
-    groups,
-  });
-
   return groups;
 };
 
