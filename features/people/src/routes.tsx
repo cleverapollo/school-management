@@ -62,8 +62,8 @@ const StudentProfileTimetablePage = lazy(
 const StudentProfileWellBeingPage = lazy(
   () => import('./pages/students/profile/well-being')
 );
-const StudentProfileSenPage = lazy(
-  () => import('./pages/students/profile/sen')
+const StudentProfileAenPage = lazy(
+  () => import('./pages/students/profile/aen')
 );
 const StudentProfileClassesPage = lazy(
   () => import('./pages/students/profile/classes')
@@ -247,8 +247,8 @@ export const getRoutes: NavObjectFunction = (t) => [
               },
               {
                 type: NavObjectType.NonMenuLink,
-                path: 'sen',
-                element: <StudentProfileSenPage />,
+                path: 'aen',
+                element: <StudentProfileAenPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,

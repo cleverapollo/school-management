@@ -39,7 +39,7 @@ const sentSms = graphql(/* GraphQL */ `
           type
         }
         recipientPhoneNumber
-        smsSuccess
+        smsStatus
       }
     }
   }

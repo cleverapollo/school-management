@@ -3,6 +3,7 @@ import { Box, Stack, Typography, useTheme } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { Avatar, SearchInput, usePreferredNameLayout } from '@tyro/core';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { SmsStatus } from '@tyro/api';
 import { ReturnTypeFromUseSentSms } from '../../api/sent-sms';
 
 interface RecipientListProps {
@@ -81,7 +82,7 @@ function ReadOnlyRecipientListInner({ recipients }: RecipientListProps) {
             }}
           >
             {virtualRecipients.map((virtualRow) => {
-              const { recipient, smsSuccess } =
+              const { recipient, smsStatus } =
                 filteredRecipients[virtualRow.index];
               const name = displayName(recipient);
               return (
@@ -117,9 +118,14 @@ function ReadOnlyRecipientListInner({ recipients }: RecipientListProps) {
                     <Typography
                       component="span"
                       variant="body2"
-                      sx={{ color: smsSuccess ? 'primary.main' : 'error.main' }}
+                      sx={{
+                        color:
+                          smsStatus === SmsStatus.Failed
+                            ? 'error.main'
+                            : 'primary.main',
+                      }}
                     >
-                      {smsSuccess ? t('sms:sent') : t('sms:failed')}
+                      {t(`sms:smsStatus.${smsStatus}`)}
                     </Typography>
                   </Stack>
                 </Box>

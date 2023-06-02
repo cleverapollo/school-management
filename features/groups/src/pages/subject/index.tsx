@@ -85,6 +85,13 @@ const getSubjectGroupsColumns = (
     headerName: t('common:members'),
   },
   {
+    headerName: t('common:year'),
+    field: 'year',
+    enableRowGroup: true,
+    valueGetter: ({ data }) =>
+      data?.yearGroups?.map((year) => year?.name).join(', '),
+  },
+  {
     field: 'irePP.level',
     headerName: t('common:level'),
     filter: true,
