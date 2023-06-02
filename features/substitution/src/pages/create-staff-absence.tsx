@@ -5,6 +5,7 @@ import {
   Stack,
   Box,
   SxProps,
+  Button,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
@@ -18,6 +19,8 @@ import {
   usePreferredNameLayout,
   useToast,
   useFormValidator,
+  useDisclosure,
+  ConfirmDialog,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
@@ -57,6 +60,12 @@ export default function ManagementPage() {
   const { t } = useTranslation(['substitution', 'common']);
   const { displayName } = usePreferredNameLayout();
 
+  const {
+    isOpen: isCancelModalOpen,
+    onOpen: onOpenCancelModal,
+    onClose: onCloseCancelModal,
+  } = useDisclosure();
+
   const { data: staffData = [] } = useStaff({});
   const { data: absenceTypesData = [] } = useStaffWorkAbsenceTypes({});
   const {
@@ -66,7 +75,11 @@ export default function ManagementPage() {
 
   const { resolver, rules } = useFormValidator<FormValues>();
 
-  const { handleSubmit, control } = useForm<FormValues>({
+  const {
+    handleSubmit,
+    control,
+    formState: { isDirty },
+  } = useForm<FormValues>({
     resolver: resolver({
       staff: rules.required(),
       absenceType: rules.required(),
@@ -78,6 +91,18 @@ export default function ManagementPage() {
       ],
     }),
   });
+
+  const goBack = () => {
+    navigate('/substitution/management', { replace: true });
+  };
+
+  const handleCancelForm = () => {
+    if (isDirty) {
+      onOpenCancelModal();
+    } else {
+      goBack();
+    }
+  };
 
   const onSubmit = ({
     staff,
@@ -277,7 +302,15 @@ export default function ManagementPage() {
             }}
           />
 
-          <Stack alignItems="flex-end">
+          <Stack direction="row" gap={2} justifyContent="flex-end">
+            <Button
+              variant="soft"
+              size="large"
+              color="primary"
+              onClick={handleCancelForm}
+            >
+              {t('common:actions.cancel')}
+            </Button>
             <LoadingButton
               variant="contained"
               size="large"
@@ -289,6 +322,13 @@ export default function ManagementPage() {
           </Stack>
         </Stack>
       </Card>
+      <ConfirmDialog
+        open={isCancelModalOpen}
+        title={t('common:cancelConfirmDialog.title')}
+        description={t('common:cancelConfirmDialog.description')}
+        onClose={onCloseCancelModal}
+        onConfirm={goBack}
+      />
     </>
   );
 }
