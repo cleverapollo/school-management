@@ -1,13 +1,12 @@
 import { TableSelect } from '@tyro/core';
 
 const availablePeriods = Array.from({ length: 12 }, (_, index) => index + 1);
+const options = availablePeriods.map((index) => ({
+  value: index,
+  label: index,
+}));
 
 export function PeriodSelector() {
-  const options = availablePeriods.map((index) => ({
-    value: index,
-    label: index,
-  }));
-
   return () =>
     ({
       component: TableSelect<(typeof options)[number]>,
