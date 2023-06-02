@@ -36,7 +36,6 @@ type ReturnTypeFromUseSubjectGroups = NonNullable<
 
 const getSubjectGroupsColumns = (
   t: TFunction<'common'[], undefined, 'common'[]>,
-  isTeacher: boolean,
   displayNames: ReturnTypeDisplayNames
 ): GridOptions<ReturnTypeFromUseSubjectGroups>['columnDefs'] => [
   {
@@ -89,7 +88,7 @@ const getSubjectGroupsColumns = (
     field: 'irePP.level',
     headerName: t('common:level'),
     filter: true,
-    editable: !isTeacher,
+    editable: true,
     valueSetter: (params) => {
       set(params.data ?? {}, 'irePP.level', params.newValue);
       return true;
@@ -114,7 +113,6 @@ const getSubjectGroupsColumns = (
 export default function SubjectGroups() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
   const { displayNames } = usePreferredNameLayout();
-  const { isTeacher } = usePermissions();
   const { data: subjectGroupsData } = useSubjectGroups();
   const { mutateAsync: updateSubjectGroup } = useSaveSubjectGroupEdits();
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
@@ -127,8 +125,8 @@ export default function SubjectGroups() {
   } = useDisclosure();
 
   const studentColumns = useMemo(
-    () => getSubjectGroupsColumns(t, isTeacher, displayNames),
-    [t, isTeacher, displayNames]
+    () => getSubjectGroupsColumns(t, displayNames),
+    [t, displayNames]
   );
 
   const actionMenuItems = [
