@@ -20,9 +20,14 @@ const getListStyle = ({ customShadows }: Theme, isDraggingOver: boolean) =>
 interface UnassignedColumnProps {
   group: ListManagerState;
   cardProps: ReturnTypeOfUseListManagerState['cardProps'];
+  enableDuplicateStudents?: boolean;
 }
 
-export function UnassignedColumn({ group, cardProps }: UnassignedColumnProps) {
+export function UnassignedColumn({
+  group,
+  cardProps,
+  enableDuplicateStudents,
+}: UnassignedColumnProps) {
   const theme = useTheme();
   const { t } = useTranslation(['common', 'classListManager']);
   const { displayName } = usePreferredNameLayout();
@@ -75,6 +80,7 @@ export function UnassignedColumn({ group, cardProps }: UnassignedColumnProps) {
                   index={index}
                   student={student}
                   groupId={group.id}
+                  enableDuplicateStudents={enableDuplicateStudents}
                   {...cardProps}
                 />
               ))}

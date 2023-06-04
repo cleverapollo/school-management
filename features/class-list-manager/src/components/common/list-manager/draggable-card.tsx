@@ -19,6 +19,7 @@ interface DraggableCardProps extends CardProps {
   index: number;
   groupId: ListManagerState['id'];
   student: ListManagerState['students'][number];
+  enableDuplicateStudents?: boolean;
 }
 
 const getCardStyle = (
@@ -68,6 +69,7 @@ export function DraggableCard({
   draggingStudentId,
   contextMenuProps,
   deleteDuplicate,
+  enableDuplicateStudents,
 }: DraggableCardProps) {
   const { t } = useTranslation(['classListManager']);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -130,8 +132,10 @@ export function DraggableCard({
             onKeyDown={(event) => onKeydown(event, snapshot)}
             onTouchEnd={onTouchEnd}
             onContextMenu={(event) => {
-              event.preventDefault();
-              setAnchorEl(event.currentTarget);
+              if (enableDuplicateStudents) {
+                event.preventDefault();
+                setAnchorEl(event.currentTarget);
+              }
             }}
           >
             {showSelectionCount && (

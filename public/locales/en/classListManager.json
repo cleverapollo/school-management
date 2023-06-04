@@ -2,6 +2,8 @@
   "blocks": "Blocks",
   "block": "Block",
   "classes": "Classes",
+  "rotation": "Rotation",
+  "rotationX": "Rotation {{number}}",
   "unassignedStudents": "Unassigned Students",
   "noStudents": "No students",
   "youHaveXUnassignedStudents_zero": "You have no unassigned students",
@@ -12,5 +14,10 @@
   "duplicateSelectedStudents": "Duplicate selected students",
   "weveTidiedStudentsInGroup": "We've tidied up one or more students as they're already in the group.",
   "duplicateRemovedFromGroup": "Duplicate removed from {{group}}",
-  "duplicateAddedToGroup": "Duplicate added to {{group}}"
+  "duplicateAddedToGroup": "Duplicate added to {{group}}",
+  "noChangesMade": "No changes made",
+  "areYouSureYouWantToChangeBlock": "Are you sure you want to change block?",
+  "areYouSureYouWantToChangeRotation": "Are you sure you want to change rotation?",
+  "changeBlock": "Change block",
+  "changeRotation": "Change rotation"
 }

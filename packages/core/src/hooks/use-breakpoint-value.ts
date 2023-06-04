@@ -47,10 +47,11 @@ export function useBreakpointValue<T>(
         ? Object.keys(isBreakpointMatched).reverse()
         : Object.keys(isBreakpointMatched)
     ) as Breakpoint[];
-    const firstMatchedBreakpoint = breakpointKeys.find(
-      (breakpoint) =>
-        Boolean(values[breakpoint]) && isBreakpointMatched[breakpoint]
-    );
+    const firstMatchedBreakpoint =
+      breakpointKeys.find(
+        (breakpoint) =>
+          Boolean(values[breakpoint]) && isBreakpointMatched[breakpoint]
+      ) || 'base';
 
     return firstMatchedBreakpoint ? values[firstMatchedBreakpoint] : undefined;
   }, [values, xs, sm, md, lg, xl, type]);

@@ -28,12 +28,14 @@ import {
 } from './edited-state';
 
 export interface UseListManagerStateProps {
+  listKey: string;
   unassignedStudents: ReturnTypeOfUseBlockMembership['groups'][number]['unenrolledStudents'];
   groups: ReturnTypeOfUseBlockMembership['groups'][number]['subjectGroups'];
   onBulkSave: UseEditedStateProps['onBulkSave'];
 }
 
 export function useListManagerState({
+  listKey,
   unassignedStudents,
   groups,
   onBulkSave,
@@ -71,6 +73,7 @@ export function useListManagerState({
   };
 
   const editedState = useEditedState({
+    listKey,
     lastEditedGroups,
     state,
     onBulkSave,
@@ -227,7 +230,7 @@ export function useListManagerState({
 
   useEffect(() => {
     resetBoard();
-  }, [t, unassignedStudents, groups]);
+  }, [listKey]);
 
   useEffect(() => {
     const onWindowClickOrTouchEnd = (event: MouseEvent | TouchEvent) => {

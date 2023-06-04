@@ -62,7 +62,7 @@ const TeacherCard = forwardRef<HTMLDivElement, TeacherCardProps>(
                 )}
               </Typography>
               <Chip
-                label={t('common:classTeacher')}
+                label={t('common:teacher')}
                 size="small"
                 sx={{
                   backgroundColor: 'slate.200',

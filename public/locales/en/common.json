@@ -28,7 +28,8 @@
     "close": "Close",
     "confirm": "Confirm",
     "viewDetails": "View Details",
-    "undo": "Undo"
+    "undo": "Undo",
+    "continue": "Continue"
   },
   "snackbarMessages": {
     "createSuccess": "Create success!",
@@ -66,7 +67,6 @@
   "members": "Members",
   "numOfMembers_one": "({{count}}) Member",
   "numOfMembers_other": "({{count}}) Members",
-  "classTeacher": "Class teacher",
   "siblings": "Siblings",
   "noSiblingsRegisteredAtThisSchool": "No siblings registered at this school",
   "address": "Address",
@@ -252,6 +252,10 @@
   "status": "Status",
   "mobileNumber": "Mobile number",
   "enableAll": "Enable all",
+  "confirmDialog": {
+    "areYouSureYouWantToChangePage": "Are you sure you want to change page?",
+    "youHaveUnsavedChanges": "You have unsaved changes that will be lost if you continue."
+  },
   "cancelConfirmDialog": {
     "title": "Cancel",
     "description": "Are you sure you want to cancel?"

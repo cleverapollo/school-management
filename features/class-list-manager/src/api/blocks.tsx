@@ -1,14 +1,18 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   EnrollmentIre_BlockEnrollmentFilter,
+  EnrollmentIre_UpsertBlockMembership,
+  Enrollment_Ire_BlockMembershipsQuery,
   gqlClient,
   graphql,
   queryClient,
   UseQueryReturnType,
 } from '@tyro/api';
-import { useToast } from '@tyro/core';
+import { usePreferredNameLayout, useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
+import { useCallback } from 'react';
 import { classListManagerKeys } from './keys';
+import { sortByDisplayName } from '../utils/sort-by-name';
 
 const blocks = graphql(/* GraphQL */ `
   query core_blocks($filter: BlockFilter) {
@@ -17,6 +21,12 @@ const blocks = graphql(/* GraphQL */ `
       name
       description
       subjectGroupNamesJoined
+      isRotation
+      rotations {
+        iteration
+        startDate
+        endDate
+      }
     }
   }
 `);
@@ -36,7 +46,7 @@ const blockMemberships = graphql(/* GraphQL */ `
       }
       isRotation
       groups {
-        iteration
+        rotationIteration
         unenrolledStudents {
           isDuplicate
           person {
@@ -110,28 +120,40 @@ const blockMembershipsQuery = (
 });
 
 export function useBlockMembership(blockId: string | null) {
+  const { displayName } = usePreferredNameLayout();
   return useQuery({
     ...blockMembershipsQuery({ blockId: blockId || '' }),
     enabled: !!blockId,
-    select: ({ enrollment_ire_blockMemberships }) => ({
-      ...enrollment_ire_blockMemberships,
-      groups: enrollment_ire_blockMemberships.groups.map((group) => ({
-        ...group,
-        unenrolledStudents: group.unenrolledStudents.map((student) => ({
-          id: String(student.person.partyId),
-          ...student,
-        })),
-        subjectGroups: group.subjectGroups.map((subjectGroup) => ({
-          ...subjectGroup,
-          students: subjectGroup.students.map((student) => ({
-            id: student.isDuplicate
-              ? `${student.person.partyId}-${subjectGroup.partyId}`
-              : String(student.person.partyId),
-            ...student,
+    select: useCallback(
+      ({
+        enrollment_ire_blockMemberships,
+      }: Enrollment_Ire_BlockMembershipsQuery) => ({
+        ...enrollment_ire_blockMemberships,
+        groups: enrollment_ire_blockMemberships.groups.map((group) => ({
+          ...group,
+          unenrolledStudents: group.unenrolledStudents
+            .sort((a, b) => sortByDisplayName(displayName, a.person, b.person))
+            .map((student) => ({
+              id: String(student.person.partyId),
+              ...student,
+            })),
+          subjectGroups: group.subjectGroups.map((subjectGroup) => ({
+            ...subjectGroup,
+            students: subjectGroup.students
+              .sort((a, b) =>
+                sortByDisplayName(displayName, a.person, b.person)
+              )
+              .map((student) => ({
+                id: student.isDuplicate
+                  ? `${student.person.partyId}-${subjectGroup.partyId}`
+                  : String(student.person.partyId),
+                ...student,
+              })),
           })),
         })),
-      })),
-    }),
+      }),
+      [displayName]
+    ),
   });
 }
 
@@ -148,6 +170,8 @@ export function useUpdateBlockMemberships() {
     },
   });
 }
+
+export type ReturnTypeOfUseBlockList = UseQueryReturnType<typeof useBlocksList>;
 
 export type ReturnTypeOfUseBlockMembership = UseQueryReturnType<
   typeof useBlockMembership

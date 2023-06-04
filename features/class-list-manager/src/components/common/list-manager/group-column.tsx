@@ -19,9 +19,14 @@ const getListStyle = (isDraggingOver: boolean) =>
 interface GroupColumnProps {
   group: ListManagerState;
   cardProps: ReturnTypeOfUseListManagerState['cardProps'];
+  enableDuplicateStudents?: boolean;
 }
 
-export function GroupColumn({ group, cardProps }: GroupColumnProps) {
+export function GroupColumn({
+  group,
+  cardProps,
+  enableDuplicateStudents,
+}: GroupColumnProps) {
   const { t } = useTranslation(['common']);
   const { spacing } = useTheme();
 
@@ -51,6 +56,7 @@ export function GroupColumn({ group, cardProps }: GroupColumnProps) {
                   index={index}
                   student={student}
                   groupId={group.id}
+                  enableDuplicateStudents={enableDuplicateStudents}
                   {...cardProps}
                 />
               ))}

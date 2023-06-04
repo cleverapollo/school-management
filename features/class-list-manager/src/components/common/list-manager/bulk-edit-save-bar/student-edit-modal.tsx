@@ -58,7 +58,7 @@ export function StudentEditsModal({
   onClose,
   revertChange,
 }: StudentEditsModalProps) {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'classListManager']);
   const { displayName } = usePreferredNameLayout();
 
   return (
@@ -143,6 +143,25 @@ export function StudentEditsModal({
             );
           })}
         </Stack>
+        {editedStudents.length === 0 && (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              py: 2,
+              border: '1px solid transparent',
+            }}
+          >
+            <Typography
+              component="span"
+              variant="body2"
+              sx={{ color: 'text.secondary' }}
+            >
+              {t('classListManager:noChangesMade')}
+            </Typography>
+          </Box>
+        )}
       </DialogContent>
 
       <DialogActions>

@@ -9,6 +9,7 @@ export interface EditedStudent {
 }
 
 export interface UseEditedStateProps {
+  listKey: string;
   lastEditedGroups: MutableRefObject<{
     sourceIds: string[] | null;
     destinationId: string | null;
@@ -99,59 +100,18 @@ function getChangesSinceLastChange(
 }
 
 export function useEditedState({
+  listKey,
   lastEditedGroups,
   state,
   onBulkSave,
   resetBoard,
 }: UseEditedStateProps) {
+  const previousListKey = useRef<string>(listKey);
+  const originalState = useRef<ListManagerState[]>([]);
   const previousState = useRef<ListManagerState[]>([]);
   const changeHistory = useRef<EditedStudent[][]>([]);
   const [editingState, setEditingState] = useState<EditState>(EditState.Idle);
   const [editedStudents, setEditedStudents] = useState<EditedStudent[]>([]);
-
-  useEffect(() => {
-    const changedStudents = getChangesSinceLastChange(
-      lastEditedGroups,
-      previousState.current,
-      state
-    );
-
-    changeHistory.current.unshift(changedStudents);
-    if (changeHistory.current.length > 20) {
-      changeHistory.current.pop();
-    }
-
-    setEditedStudents((previousEditedState) => {
-      const newEditedState = [...previousEditedState];
-      changedStudents.forEach((changedStudent) => {
-        const changedStudentIndex = newEditedState.findIndex(
-          (student) => student.student.id === changedStudent.student.id
-        );
-
-        if (changedStudentIndex === -1) {
-          newEditedState.push(changedStudent);
-        } else {
-          const existingStudent = newEditedState[changedStudentIndex];
-
-          if (
-            existingStudent.sourceGroup?.id ===
-            changedStudent.destinationGroup?.id
-          ) {
-            newEditedState.splice(changedStudentIndex, 1);
-          } else {
-            newEditedState[changedStudentIndex] = {
-              ...existingStudent,
-              destinationGroup: changedStudent.destinationGroup,
-            };
-          }
-        }
-      });
-
-      return newEditedState;
-    });
-
-    previousState.current = state;
-  }, [state]);
 
   const onSave = async () => {
     if (onBulkSave) {
@@ -176,7 +136,62 @@ export function useEditedState({
     changeHistory.current = [];
     setEditingState(EditState.Idle);
     setEditedStudents([]);
+    if (originalState.current.length > 0) {
+      previousState.current = originalState.current;
+    }
   };
+
+  useEffect(() => {
+    if (previousListKey.current !== listKey) {
+      changeHistory.current = [];
+      setEditingState(EditState.Idle);
+      setEditedStudents([]);
+      originalState.current = state;
+    } else {
+      const changedStudents = getChangesSinceLastChange(
+        lastEditedGroups,
+        previousState.current,
+        state
+      );
+
+      changeHistory.current.unshift(changedStudents);
+      if (changeHistory.current.length > 20) {
+        changeHistory.current.pop();
+      }
+
+      setEditedStudents((previousEditedState) => {
+        const newEditedState = [...previousEditedState];
+        changedStudents.forEach((changedStudent) => {
+          const changedStudentIndex = newEditedState.findIndex(
+            (student) => student.student.id === changedStudent.student.id
+          );
+
+          if (changedStudentIndex === -1) {
+            newEditedState.push(changedStudent);
+          } else {
+            const existingStudent = newEditedState[changedStudentIndex];
+
+            if (
+              existingStudent.sourceGroup?.id ===
+              changedStudent.destinationGroup?.id
+            ) {
+              newEditedState.splice(changedStudentIndex, 1);
+            } else {
+              newEditedState[changedStudentIndex] = {
+                ...existingStudent,
+                destinationGroup: changedStudent.destinationGroup,
+              };
+            }
+          }
+        });
+
+        return newEditedState;
+      });
+    }
+
+    previousListKey.current = listKey;
+    previousState.current = state;
+  }, [state]);
 
   return {
     isEditing: editedStudents.length > 0 || editingState !== EditState.Idle,

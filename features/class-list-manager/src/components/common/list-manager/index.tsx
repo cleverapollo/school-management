@@ -1,16 +1,21 @@
 import { Box, Stack, useTheme } from '@mui/material';
 import { useBreakpointValue } from '@tyro/core';
+import { useEffect } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { useContainerMargin } from '../../../hooks/use-container-margin';
 import { BulkEditSaveBar } from './bulk-edit-save-bar';
 import { GroupColumn } from './group-column';
+import { NavConfirmDialog } from './nav-confirm-dialog';
 import { useListManagerState, UseListManagerStateProps } from './state';
 import { UnassignedColumn } from './unassigned-column';
 
 interface ListManagerProps {
+  listKey: string;
   unassignedStudents: UseListManagerStateProps['unassignedStudents'];
   groups: UseListManagerStateProps['groups'];
   onBulkSave: UseListManagerStateProps['onBulkSave'];
+  enableDuplicateStudents?: boolean;
+  onIsDirtyChange?: (isDirty: boolean) => void;
 }
 
 function ListEndSpacer() {
@@ -26,17 +31,27 @@ function ListEndSpacer() {
 }
 
 export function ListManager({
+  listKey,
   unassignedStudents,
   groups,
   onBulkSave,
+  enableDuplicateStudents = false,
+  onIsDirtyChange,
 }: ListManagerProps) {
   const containerMargin = useContainerMargin();
   const { state, onDragStart, onDragEnd, cardProps, editedState } =
     useListManagerState({
+      listKey,
       unassignedStudents,
       groups,
       onBulkSave,
     });
+
+  useEffect(() => {
+    if (onIsDirtyChange) {
+      onIsDirtyChange(editedState.isEditing);
+    }
+  }, [editedState.isEditing, onIsDirtyChange]);
 
   return (
     <>
@@ -61,12 +76,14 @@ export function ListManager({
                     cardProps={cardProps}
                     key={group.id}
                     group={group}
+                    enableDuplicateStudents={enableDuplicateStudents}
                   />
                 ) : (
                   <GroupColumn
                     cardProps={cardProps}
                     key={group.id}
                     group={group}
+                    enableDuplicateStudents={enableDuplicateStudents}
                   />
                 )
               )}
@@ -76,6 +93,7 @@ export function ListManager({
         </Box>
       </DragDropContext>
       <BulkEditSaveBar {...editedState} />
+      <NavConfirmDialog isDirty={editedState.isEditing} />
     </>
   );
 }

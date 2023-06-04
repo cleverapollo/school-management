@@ -1,12 +1,14 @@
 import { useTranslation } from '@tyro/i18n';
 import { Autocomplete } from '@tyro/core';
 import { useMemo } from 'react';
-import { SxProps, Theme, useTheme } from '@mui/material';
-import { useBlocksList } from '../../api/blocks';
+import { SxProps, Theme, Typography, Box } from '@mui/material';
+import { ReturnTypeOfUseBlockList, useBlocksList } from '../../api/blocks';
 
-type BlockAutocompleteProps = {
-  value: string | null;
-  onChange: (blockId: string | null) => void;
+type BlockAutocompleteValue = NonNullable<ReturnTypeOfUseBlockList>[number];
+
+export type BlockAutocompleteProps = {
+  value: BlockAutocompleteValue | null;
+  onChange: (blockId: BlockAutocompleteValue | null) => void;
   sx?: SxProps<Theme> | undefined;
 };
 
@@ -18,14 +20,11 @@ export const BlockAutocomplete = ({
   const { t } = useTranslation(['classListManager']);
   const { data: blocks } = useBlocksList();
 
-  const { spacing } = useTheme();
-  const MAX_WIDTH = spacing(54);
-
   const options = useMemo(
     () =>
-      blocks
-        ?.map(({ blockId }) => blockId)
-        .sort((prev, next) => prev.localeCompare(next) ?? 0) ?? [],
+      blocks?.sort(
+        (prev, next) => prev.blockId.localeCompare(next.blockId) ?? 0
+      ) ?? [],
     [blocks]
   );
 
@@ -35,17 +34,34 @@ export const BlockAutocomplete = ({
       value={value}
       multiple={false}
       options={options}
+      isOptionEqualToValue={(option, { blockId }) => option.blockId === blockId}
+      getOptionLabel={({ blockId, subjectGroupNamesJoined }) =>
+        subjectGroupNamesJoined
+          ? `${blockId}: ${subjectGroupNamesJoined}`
+          : blockId
+      }
       onChange={(event, newValue) => {
-        if (Array.isArray(newValue)) {
-          onChange(newValue[0]);
-        } else {
-          onChange(newValue);
-        }
+        const extractedValue = Array.isArray(newValue) ? newValue[0] : newValue;
+        onChange(extractedValue);
       }}
       inputProps={{
         variant: 'white-filled',
       }}
-      sx={{ maxWidth: MAX_WIDTH, ...sx }}
+      sx={sx}
+      renderOption={(optionProps, { blockId, subjectGroupNamesJoined }) => (
+        <Box component="li" {...optionProps}>
+          <Typography noWrap component="span" variant="subtitle2">
+            <Typography component="span" variant="subtitle2">
+              {blockId}
+            </Typography>
+            {subjectGroupNamesJoined && (
+              <Typography component="span" variant="body2">
+                {`: ${subjectGroupNamesJoined}`}
+              </Typography>
+            )}
+          </Typography>
+        </Box>
+      )}
     />
   );
 };
