@@ -13,6 +13,7 @@
     "@tyro/i18n": "*",
     "@tyro/icons": "*",
     "lodash": "^4.17.21",
+    "nanoid": "^4.0.2",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.2.0",

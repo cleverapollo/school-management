@@ -1,6 +1,7 @@
 import React from 'react';
 import { DraggableLocation } from 'react-beautiful-dnd';
 import cloneDeep from 'lodash/cloneDeep';
+import { nanoid } from 'nanoid';
 import { ListManagerState } from './types';
 
 interface DragArguments {
@@ -355,7 +356,7 @@ export const getGroupsWithDuplicates = (
       if (studentIds.includes(student.id)) {
         const clonedStudent = {
           ...cloneDeep(student),
-          id: `${student.person.partyId}-${groupIdToMoveTo}`,
+          id: `${student.person.partyId}-${nanoid(10)}`,
           isDuplicate: true,
         };
         acc.push(clonedStudent);

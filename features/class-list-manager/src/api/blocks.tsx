@@ -9,6 +9,7 @@ import {
   UseQueryReturnType,
 } from '@tyro/api';
 import { usePreferredNameLayout, useToast } from '@tyro/core';
+import { nanoid } from 'nanoid';
 import { useTranslation } from '@tyro/i18n';
 import { useCallback } from 'react';
 import { classListManagerKeys } from './keys';
@@ -145,7 +146,7 @@ export function useBlockMemberships(blockId: string | null) {
               )
               .map((student) => ({
                 id: student.isDuplicate
-                  ? `${student.person.partyId}-${subjectGroup.partyId}`
+                  ? `${student.person.partyId}-${nanoid(10)}`
                   : String(student.person.partyId),
                 ...student,
               })),
