@@ -22,6 +22,7 @@
     "@tyro/settings": "*",
     "@tyro/sms": "*",
     "@tyro/substitution": "*",
+    "@tyro/timetable": "*",
     "@tyro/tyro-admin": "*",
     "dayjs": "^1.11.7",
     "framer-motion": "^9.0.1",

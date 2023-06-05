@@ -12,6 +12,7 @@ import people from './people.json';
 import settings from './settings.json';
 import sms from './sms.json';
 import substitution from './substitution.json';
+import timetable from './timetable.json'
 import userAccounts from './userAccounts.json';
 
 export const en = {
@@ -29,5 +30,6 @@ export const en = {
   settings,
   sms,
   substitution,
-  userAccounts,
+  timetable,
+  userAccounts
 };

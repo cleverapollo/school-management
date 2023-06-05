@@ -5572,6 +5572,7 @@ __metadata:
     "@tyro/settings": "*"
     "@tyro/sms": "*"
     "@tyro/substitution": "*"
+    "@tyro/timetable": "*"
     "@tyro/tyro-admin": "*"
     dayjs: ^1.11.7
     framer-motion: ^9.0.1
@@ -5991,6 +5992,29 @@ __metadata:
     react: ^18.2.0
     react-dom: ^18.2.0
     react-hook-form: ^7.43.9
+    react-router: ^6.6.2
+    react-router-dom: ^6.6.2
+  languageName: unknown
+  linkType: soft
+
+"@tyro/timetable@*, @tyro/timetable@workspace:features/timetable":
+  version: 0.0.0-use.local
+  resolution: "@tyro/timetable@workspace:features/timetable"
+  dependencies:
+    "@mui/material": ^5.11.4
+    "@mui/system": ^5.10.14
+    "@tanstack/react-query": ^4.16.1
+    "@tyro/api": "*"
+    "@tyro/configs": "*"
+    "@tyro/core": "*"
+    "@tyro/i18n": "*"
+    "@tyro/icons": "*"
+    "@tyro/people": "*"
+    "@tyro/settings": "*"
+    dayjs: ^1.11.7
+    lodash: ^4.17.21
+    react: ^18.2.0
+    react-dom: ^18.2.0
     react-router: ^6.6.2
     react-router-dom: ^6.6.2
   languageName: unknown

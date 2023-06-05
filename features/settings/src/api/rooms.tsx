@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient } from '@tyro/api';
+import { gqlClient, graphql, queryClient, UseQueryReturnType } from '@tyro/api';
 
 const coreRooms = graphql(/* GraphQL */ `
   query core_rooms {
@@ -37,3 +37,7 @@ export function useCoreRooms() {
     select: ({ core_rooms }) => core_rooms,
   });
 }
+
+export type ReturnTypeFromUseCoreRooms = UseQueryReturnType<
+  typeof useCoreRooms
+>[number];
