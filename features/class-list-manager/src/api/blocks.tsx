@@ -119,7 +119,7 @@ const blockMembershipsQuery = (
   queryFn: () => gqlClient.request(blockMemberships, { filter }),
 });
 
-export function useBlockMembership(blockId: string | null) {
+export function useBlockMemberships(blockId: string | null) {
   const { displayName } = usePreferredNameLayout();
   return useQuery({
     ...blockMembershipsQuery({ blockId: blockId || '' }),
@@ -168,11 +168,16 @@ export function useUpdateBlockMemberships() {
       toast(t('common:snackbarMessages.updateSuccess'));
       queryClient.invalidateQueries(classListManagerKeys.allBlockMemberships());
     },
+    onError: () => {
+      toast(t('common:snackbarMessages.errorFailed'), {
+        variant: 'error',
+      });
+    },
   });
 }
 
 export type ReturnTypeOfUseBlockList = UseQueryReturnType<typeof useBlocksList>;
 
-export type ReturnTypeOfUseBlockMembership = UseQueryReturnType<
-  typeof useBlockMembership
+export type ReturnTypeOfUseBlockMemberships = UseQueryReturnType<
+  typeof useBlockMemberships
 >;

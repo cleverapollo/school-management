@@ -11,7 +11,7 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { useEffect, useState, useMemo } from 'react';
 
-import { useBlockMembership, useUpdateBlockMemberships } from '../api/blocks';
+import { useBlockMemberships, useUpdateBlockMemberships } from '../api/blocks';
 import {
   BlockAutocomplete,
   BlockAutocompleteProps,
@@ -48,7 +48,7 @@ export default function ClassListManagerBlocks() {
     sm: 'row',
   });
 
-  const { data } = useBlockMembership(selectedBlock?.blockId ?? null);
+  const { data } = useBlockMemberships(selectedBlock?.blockId ?? null);
   const { mutateAsync: saveBlockMemberships } = useUpdateBlockMemberships();
 
   const blockData = useMemo(() => {
@@ -58,36 +58,6 @@ export default function ClassListManagerBlocks() {
       ? data.groups[blockIndex]
       : null;
   }, [selectedBlock, selectedRotationIndex, data?.groups]);
-
-  const onBulkSave = async (edited: EditedStudent[]) => {
-    const membershipChange = edited.reduce(
-      (acc, { student, sourceGroup, destinationGroup }) => {
-        if (sourceGroup && sourceGroup.id !== 'unassigned') {
-          acc.push({
-            studentId: student.person.partyId,
-            subjectGroupId: sourceGroup.id,
-            type: EnrollmentIre_MembershipChangeEnum.Remove,
-          });
-        }
-
-        if (destinationGroup && destinationGroup.id !== 'unassigned') {
-          acc.push({
-            studentId: student.person.partyId,
-            subjectGroupId: destinationGroup.id,
-            type: EnrollmentIre_MembershipChangeEnum.Add,
-          });
-        }
-
-        return acc;
-      },
-      [] as EnrollmentIre_BlockMembershipChange[]
-    );
-
-    return saveBlockMemberships({
-      blockId: selectedBlock?.blockId ?? '',
-      membershipChange,
-    });
-  };
 
   const requestSetSelectedBlock = (block: BlockAutocompleteProps['value']) => {
     if (isDirty) {
@@ -121,6 +91,36 @@ export default function ClassListManagerBlocks() {
     } else {
       setSelectedRotationIndex(rotationIndex);
     }
+  };
+
+  const onBulkSave = async (edited: EditedStudent[]) => {
+    const membershipChange = edited.reduce(
+      (acc, { student, sourceGroup, destinationGroup }) => {
+        if (sourceGroup && sourceGroup.id !== 'unassigned') {
+          acc.push({
+            studentId: student.person.partyId ?? 0,
+            subjectGroupId: sourceGroup.id,
+            type: EnrollmentIre_MembershipChangeEnum.Remove,
+          });
+        }
+
+        if (destinationGroup && destinationGroup.id !== 'unassigned') {
+          acc.push({
+            studentId: student.person.partyId,
+            subjectGroupId: destinationGroup.id,
+            type: EnrollmentIre_MembershipChangeEnum.Add,
+          });
+        }
+
+        return acc;
+      },
+      [] as EnrollmentIre_BlockMembershipChange[]
+    );
+
+    return saveBlockMemberships({
+      blockId: selectedBlock?.blockId ?? '',
+      membershipChange,
+    });
   };
 
   useEffect(() => {

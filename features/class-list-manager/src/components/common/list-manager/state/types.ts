@@ -1,13 +1,26 @@
-import { ReturnTypeOfUseBlockMembership } from '../../../../api/blocks';
+import { Person } from '@tyro/api';
 
-type SubjectGroup =
-  ReturnTypeOfUseBlockMembership['groups'][number]['subjectGroups'][number];
+type ListManagerPerson = Pick<
+  Person,
+  'partyId' | 'title' | 'firstName' | 'lastName' | 'avatarUrl' | 'type'
+>;
+
+export type ListManagerStudent = {
+  id: string;
+  isDuplicate: boolean;
+  person: ListManagerPerson;
+};
+
+export interface ListManagerGroup {
+  partyId: number;
+  name: string;
+  students: ListManagerStudent[];
+  staff?: ListManagerPerson[];
+}
 
 export interface ListManagerState {
   id: 'unassigned' | number;
   name: string;
-  students:
-    | ReturnTypeOfUseBlockMembership['groups'][number]['unenrolledStudents']
-    | SubjectGroup['students'];
-  staff?: SubjectGroup['staff'];
+  students: ListManagerStudent[];
+  staff?: ListManagerPerson[];
 }

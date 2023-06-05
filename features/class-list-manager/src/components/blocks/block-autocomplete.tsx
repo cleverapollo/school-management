@@ -8,7 +8,7 @@ type BlockAutocompleteValue = NonNullable<ReturnTypeOfUseBlockList>[number];
 
 export type BlockAutocompleteProps = {
   value: BlockAutocompleteValue | null;
-  onChange: (blockId: BlockAutocompleteValue | null) => void;
+  onChange: (block: BlockAutocompleteValue | null) => void;
   sx?: SxProps<Theme> | undefined;
 };
 

@@ -5696,6 +5696,7 @@ __metadata:
     "@tyro/api": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
+    "@tyro/groups": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
     lodash: ^4.17.21

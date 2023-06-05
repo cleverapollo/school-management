@@ -2,6 +2,8 @@ import { lazy } from 'react';
 import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { MoveGroupIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
+import { getYearGroups } from '@tyro/groups';
+import { getBlocksList } from './api/blocks';
 
 const ClassListManagerContainer = lazy(
   () => import('./components/class-list-manager-container')
@@ -30,11 +32,13 @@ export const getRoutes: NavObjectFunction = (t) => [
           {
             type: NavObjectType.NonMenuLink,
             path: 'classes',
+            loader: () => getYearGroups(),
             element: <ClassListManagerClasses />,
           },
           {
             type: NavObjectType.NonMenuLink,
             path: 'blocks',
+            loader: () => getBlocksList(),
             element: <ClassListManagerBlocks />,
           },
         ],

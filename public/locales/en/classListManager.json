@@ -18,6 +18,8 @@
   "noChangesMade": "No changes made",
   "areYouSureYouWantToChangeBlock": "Are you sure you want to change block?",
   "areYouSureYouWantToChangeRotation": "Are you sure you want to change rotation?",
+  "areYouSureYouWantToChangeYear": "Are you sure you want to change year?",
   "changeBlock": "Change block",
-  "changeRotation": "Change rotation"
+  "changeRotation": "Change rotation",
+  "changeYear": "Change year"
 }

@@ -11,8 +11,6 @@ export function NavConfirmDialog({ isDirty }: NavConfirmDialogProps) {
 
   const blocker = useBlocker(isDirty);
 
-  console.log(blocker);
-
   return (
     <ConfirmDialog
       open={blocker.state === 'blocked'}

@@ -9,8 +9,11 @@ import {
 } from 'react-beautiful-dnd';
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
-import { ReturnTypeOfUseBlockMembership } from '../../../../api/blocks';
-import { ListManagerState } from './types';
+import {
+  ListManagerGroup,
+  ListManagerState,
+  ListManagerStudent,
+} from './types';
 import {
   clearSameStudentsFromGroup,
   getGroupsWithDuplicates,
@@ -29,8 +32,8 @@ import {
 
 export interface UseListManagerStateProps {
   listKey: string;
-  unassignedStudents: ReturnTypeOfUseBlockMembership['groups'][number]['unenrolledStudents'];
-  groups: ReturnTypeOfUseBlockMembership['groups'][number]['subjectGroups'];
+  unassignedStudents: ListManagerStudent[];
+  groups: ListManagerGroup[];
   onBulkSave: UseEditedStateProps['onBulkSave'];
 }
 
