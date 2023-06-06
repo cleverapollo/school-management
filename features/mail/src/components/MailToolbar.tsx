@@ -12,9 +12,16 @@ import {
 // hooks
 import { Dispatch, SetStateAction } from 'react';
 import { useResponsive } from '@tyro/core';
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  CollapseIcon,
+  HamburgerMenuIcon,
+  RefreshIcon,
+  SearchIcon,
+} from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
 // components
-import { Iconify } from '../../../../src/components/iconify';
 import InputStyle from '../../../../src/components/InputStyle';
 
 // ----------------------------------------------------------------------
@@ -67,7 +74,7 @@ export default function MailToolbar({
     <RootStyle {...other}>
       {!mdUp && (
         <IconButton onClick={onOpenSidebar}>
-          <Iconify icon="eva:menu-fill" />
+          <HamburgerMenuIcon />
         </IconButton>
       )}
 
@@ -82,13 +89,13 @@ export default function MailToolbar({
           />
           <Tooltip title={t('mail:tooltipTitles.refresh')}>
             <IconButton onClick={() => window.location.reload()}>
-              <Iconify icon="eva:refresh-fill" width={20} height={20} />
+              <RefreshIcon />
             </IconButton>
           </Tooltip>
 
           <Tooltip title={t('mail:tooltipTitles.dense')}>
             <IconButton onClick={onToggleDense}>
-              <Iconify icon="eva:collapse-fill" width={20} height={20} />
+              <CollapseIcon />
             </IconButton>
           </Tooltip>
         </>
@@ -105,10 +112,7 @@ export default function MailToolbar({
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <Iconify
-                icon="eva:search-fill"
-                sx={{ color: 'text.disabled', width: 20, height: 20 }}
-              />
+              <SearchIcon sx={{ color: 'text.disabled' }} />
             </InputAdornment>
           ),
         }}
@@ -123,17 +127,13 @@ export default function MailToolbar({
 
           <Tooltip title={t('mail:tooltipTitles.nextPage')}>
             <IconButton disabled={mails < 50}>
-              <Iconify icon="eva:arrow-ios-back-fill" width={20} height={20} />
+              <ChevronLeftIcon />
             </IconButton>
           </Tooltip>
 
           <Tooltip title={t('mail:tooltipTitles.previousPage')}>
             <IconButton disabled={mails < 50}>
-              <Iconify
-                icon="eva:arrow-ios-forward-fill"
-                width={20}
-                height={20}
-              />
+              <ChevronRightIcon />
             </IconButton>
           </Tooltip>
         </Box>

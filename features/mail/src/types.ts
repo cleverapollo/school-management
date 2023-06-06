@@ -12,7 +12,7 @@ export type MailState = {
   labels: MailLabel[];
 };
 
-export type MailLabelId = 'inbox' | 'sent' | 'trash' | 'starred' | 'important';
+export type MailLabelId = 'inbox' | 'sent' | 'trash' | 'starred' | 'drafts';
 
 export type MailLabel = {
   originalId?: number;

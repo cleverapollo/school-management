@@ -1,6 +1,5 @@
 // components
 import Image from '../components/Image';
-import { Iconify } from '../components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -68,6 +67,8 @@ sx = {{ width: 28, height: 28 }}
 />
 );
 
+// NOTE: the following code is not implemented yet, but we leave it as reference.
+
 export function getFileThumb(fileUrl: string) {
   let thumb;
   switch (getFileFormat(fileUrl)) {
@@ -97,8 +98,8 @@ export function getFileThumb(fileUrl: string) {
   } />;
   break;
     default:
-  thumb = <Iconify icon={ 'eva:file-fill' } sx = {{ width: 28, height: 28 }
-} />;
+  // thumb = <Iconify icon={ 'eva:file-fill' } sx = {{ width: 28, height: 28 }
+// } />;
   }
 return thumb;
 }

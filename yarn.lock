@@ -3207,15 +3207,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iconify/react@npm:^3.2.2":
-  version: 3.2.2
-  resolution: "@iconify/react@npm:3.2.2"
-  peerDependencies:
-    react: ">=16"
-  checksum: 8b52e1291d7e6c9422ab49eabd6c3bbb29cb852578c08616dd66a2b0e64aad4579ea3e8a6a3881d9d25d363eada16940e78477806fa36cfd98c0cd79778d7d0f
-  languageName: node
-  linkType: hard
-
 "@istanbuljs/load-nyc-config@npm:^1.0.0":
   version: 1.1.0
   resolution: "@istanbuljs/load-nyc-config@npm:1.1.0"
@@ -3684,22 +3675,6 @@ __metadata:
   version: 5.13.3
   resolution: "@mui/core-downloads-tracker@npm:5.13.3"
   checksum: 58140ae4620ab71f7ef932c18f5ddc7904011bd19d48ed78c9705dca83e7807377804322b901b1083d4304aaf72c09e20cd7a234beb232db4e39f6ccafbd8fd6
-  languageName: node
-  linkType: hard
-
-"@mui/icons-material@npm:^5.10.9, @mui/icons-material@npm:^5.11.0":
-  version: 5.11.16
-  resolution: "@mui/icons-material@npm:5.11.16"
-  dependencies:
-    "@babel/runtime": ^7.21.0
-  peerDependencies:
-    "@mui/material": ^5.0.0
-    "@types/react": ^17.0.0 || ^18.0.0
-    react: ^17.0.0 || ^18.0.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: db70426b6ede049307b951fc622c6ab3b156a24589242bebbc7effd4b0df2d3c7aca93796ed8dfdf20776248778a798724c7a112f8f687c3b4a1ae813f98fb17
   languageName: node
   linkType: hard
 
@@ -5664,7 +5639,6 @@ __metadata:
     "@fullcalendar/timegrid": ^6.1.4
     "@fullcalendar/timeline": ^6.1.4
     "@hookform/resolvers": ^2.9.10
-    "@mui/icons-material": ^5.11.0
     "@mui/lab": ^5.0.0-alpha.57
     "@mui/material": ^5.13.2
     "@mui/system": ^5.13.2
@@ -5831,7 +5805,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@tyro/mail@workspace:features/mail"
   dependencies:
-    "@mui/icons-material": ^5.10.9
     "@mui/lab": ^5.0.0-alpha.57
     "@mui/material": ^5.13.2
     "@mui/system": ^5.13.2
@@ -5957,7 +5930,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@tyro/sms@workspace:features/sms"
   dependencies:
-    "@mui/icons-material": ^5.10.9
     "@mui/lab": ^5.0.0-alpha.57
     "@mui/material": ^5.13.2
     "@mui/system": ^5.13.2
@@ -18732,8 +18704,6 @@ __metadata:
     "@graphql-codegen/typescript": 2.7.3
     "@graphql-codegen/typescript-operations": 2.5.3
     "@hookform/resolvers": ^2.9.10
-    "@iconify/react": ^3.2.2
-    "@mui/icons-material": ^5.10.9
     "@mui/lab": ^5.0.0-alpha.96
     "@mui/material": ^5.13.2
     "@mui/system": ^5.13.2

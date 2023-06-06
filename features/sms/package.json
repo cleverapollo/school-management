@@ -4,7 +4,6 @@
   "private": true,
   "main": "src/index.ts",
   "dependencies": {
-    "@mui/icons-material": "^5.10.9",
     "@mui/lab": "^5.0.0-alpha.57",
     "@mui/material": "^5.13.2",
     "@mui/system": "^5.13.2",
