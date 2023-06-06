@@ -82,6 +82,7 @@ export function useClassMemberships(yearGroupEnrollmentId: number | undefined) {
     ...classMembershipsQuery({
       yearGroupEnrollmentId: yearGroupEnrollmentId || 0,
     }),
+    keepPreviousData: true,
     enabled: !!yearGroupEnrollmentId,
     select: useCallback(
       ({

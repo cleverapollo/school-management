@@ -210,7 +210,7 @@ export function DraggableCard({
               </Typography>
             </Box>
             {student.isDuplicate && (
-              <Tooltip title={t('classListManager:deleteDuplicateStudent')}>
+              <Tooltip title={t('classListManager:removeDuplicateStudent')}>
                 <IconButton
                   onClick={(event) => {
                     event.stopPropagation();

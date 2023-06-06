@@ -159,19 +159,7 @@ export function ContextMenu({
           ...props.sx,
         }}
       >
-        <MenuItem
-          onMouseEnter={getSingleStudentContext}
-          onFocus={getSingleStudentContext}
-        >
-          <Box>
-            <ActionMenuIconWrapper>
-              <UserIcon />
-            </ActionMenuIconWrapper>
-            {t('classListManager:duplicateStudent')}
-          </Box>
-          <ChevronRightIcon />
-        </MenuItem>
-        {selectedStudentIds.length > 1 && (
+        {selectedStudentIds.length > 1 ? (
           <MenuItem
             onMouseEnter={getSelectedStudentContext}
             onFocus={getSelectedStudentContext}
@@ -181,6 +169,19 @@ export function ContextMenu({
                 <UserGroupTwoIcon />
               </ActionMenuIconWrapper>
               {t('classListManager:duplicateSelectedStudents')}
+            </Box>
+            <ChevronRightIcon />
+          </MenuItem>
+        ) : (
+          <MenuItem
+            onMouseEnter={getSingleStudentContext}
+            onFocus={getSingleStudentContext}
+          >
+            <Box>
+              <ActionMenuIconWrapper>
+                <UserIcon />
+              </ActionMenuIconWrapper>
+              {t('classListManager:duplicateStudent')}
             </Box>
             <ChevronRightIcon />
           </MenuItem>

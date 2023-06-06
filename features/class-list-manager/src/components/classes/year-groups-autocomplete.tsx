@@ -1,6 +1,6 @@
 import { useTranslation } from '@tyro/i18n';
 import { Autocomplete } from '@tyro/core';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { SxProps, Theme } from '@mui/material';
 import { useYearGroups, ReturnTypeFromUseYearGroups } from '@tyro/groups';
 
@@ -26,6 +26,12 @@ export const YearGroupsAutocomplete = ({
       [],
     [years]
   );
+
+  useEffect(() => {
+    if (!value && options.length) {
+      onChange(options[0]);
+    }
+  }, [options]);
 
   return (
     <Autocomplete

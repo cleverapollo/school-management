@@ -125,6 +125,7 @@ export function useBlockMemberships(blockId: string | null) {
   return useQuery({
     ...blockMembershipsQuery({ blockId: blockId || '' }),
     enabled: !!blockId,
+    keepPreviousData: true,
     select: useCallback(
       ({
         enrollment_ire_blockMemberships,

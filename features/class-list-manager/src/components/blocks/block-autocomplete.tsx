@@ -1,6 +1,6 @@
 import { useTranslation } from '@tyro/i18n';
 import { Autocomplete } from '@tyro/core';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { SxProps, Theme, Typography, Box } from '@mui/material';
 import { ReturnTypeOfUseBlockList, useBlocksList } from '../../api/blocks';
 
@@ -27,6 +27,12 @@ export const BlockAutocomplete = ({
       ) ?? [],
     [blocks]
   );
+
+  useEffect(() => {
+    if (!value && options.length) {
+      onChange(options[0]);
+    }
+  }, [options]);
 
   return (
     <Autocomplete
