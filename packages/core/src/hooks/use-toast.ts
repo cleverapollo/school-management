@@ -8,3 +8,5 @@ export function useToast() {
     closeAllToasts: closeSnackbar,
   };
 }
+
+export type ReturnOfUseToast = ReturnType<typeof useToast>;

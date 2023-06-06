@@ -13,7 +13,7 @@ interface MenuItemListProps {
   onClose: () => void;
 }
 
-const IconWrapper = styled('span')(({ theme }) => ({
+export const ActionMenuIconWrapper = styled('span')(({ theme }) => ({
   color: theme.palette.text.secondary,
   marginRight: 6,
   marginLeft: -2,
@@ -41,7 +41,8 @@ export function getMenuItemList({ menuItems, onClose }: MenuItemListProps) {
             fontSize: '0.875rem',
           }}
         >
-          {icon && <IconWrapper>{icon}</IconWrapper>} {label}
+          {icon && <ActionMenuIconWrapper>{icon}</ActionMenuIconWrapper>}{' '}
+          {label}
         </MenuItem>
       );
 

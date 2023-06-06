@@ -3,6 +3,7 @@ import assessments from './assessments.json';
 import attendance from './attendance.json';
 import authentication from './authentication.json';
 import calendar from './calendar.json';
+import classListManager from './classListManager.json';
 import common from './common.json';
 import groups from './groups.json';
 import mail from './mail.json';
@@ -20,6 +21,7 @@ export const en = {
   attendance,
   authentication,
   calendar,
+  classListManager,
   common,
   groups,
   mail,
