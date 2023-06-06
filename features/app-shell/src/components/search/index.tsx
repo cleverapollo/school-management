@@ -12,6 +12,7 @@ import {
 import { SearchIcon } from '@tyro/icons';
 import { useLocation } from 'react-router-dom';
 import { useDebouncedValue } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 import { PagesSection } from './sections/pages-section';
 import { SearchProvider } from './provider';
 import { SearchInput } from './input';
@@ -29,6 +30,7 @@ function Searchbar() {
     setValue: setSearchQuery,
   } = useDebouncedValue<string>({ defaultValue: '' });
   const location = useLocation();
+  const { t } = useTranslation(['common']);
 
   const { data, isLoading } = useOmniSearch(debouncedSearchQuery);
   const { hasResults, pages, people, groups } = data || { hasResults: false };
@@ -96,7 +98,7 @@ function Searchbar() {
                   </SearchListboxContainer>
                 ) : (
                   <Typography variant="body2" sx={{ mt: 2 }}>
-                    No results found
+                    {t('common:noResultsFound')}
                   </Typography>
                 )}
               </DialogContent>

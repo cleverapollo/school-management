@@ -4,6 +4,8 @@ import { useAuth } from '@tyro/api';
 import { Router } from './router';
 import LoadingScreen from '../../../src/components/LoadingScreen';
 
+export * from './components/shell/provider';
+
 export function AppShell() {
   const { isTokenInitialized } = useAuth();
 
