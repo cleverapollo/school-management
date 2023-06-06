@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, queryClient, StaffFilter } from '@tyro/api';
-
-export * from './status';
+import { peopleStaffKeys } from './keys';
 
 const staff = graphql(/* GraphQL */ `
   query core_staff($filter: StaffFilter) {
@@ -58,15 +57,8 @@ const staffInfoForSelect = graphql(/* GraphQL */ `
   }
 `);
 
-export const staffKey = {
-  all: ['people', 'staff'] as const,
-  details: (filter: StaffFilter) => [...staffKey.all, filter] as const,
-  forSelect: (filter: StaffFilter) =>
-    [...staffKey.all, 'select', filter] as const,
-};
-
 const staffQuery = (filter: StaffFilter) => ({
-  queryKey: staffKey.details(filter),
+  queryKey: peopleStaffKeys.details(filter),
   queryFn: async () => gqlClient.request(staff, { filter }),
 });
 
@@ -82,7 +74,7 @@ export function useStaff(filter: StaffFilter) {
 }
 
 const staffForSelectQuery = (filter: StaffFilter) => ({
-  queryKey: staffKey.forSelect(filter),
+  queryKey: peopleStaffKeys.forSelect(filter),
   queryFn: async () => gqlClient.request(staffInfoForSelect, { filter }),
 });
 

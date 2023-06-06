@@ -2,10 +2,9 @@ version: '3'
 
 services:
   tyro-api:
-
-    image: tyrocr.azurecr.io/tyro-api-niall:123aaa    # <--- api
+    image: tyrocr.azurecr.io/tyro-api-niall:12
     ports:
-      - 80:80
+      - 8082:8082
     depends_on:
       - postgres
       - redis
@@ -13,7 +12,7 @@ services:
       SPRING_PROFILES_ACTIVE: docker
 
   postgres:
-    image:  tyrocr.azurecr.io/tyro-testdb:05-25-2023--46 # <--- database
+    image: tyrocr.azurecr.io/tyro-testdb:05-08-2023--39
     container_name: local-test-api-db
     environment:
       POSTGRES_USER: root

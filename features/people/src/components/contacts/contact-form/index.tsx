@@ -10,7 +10,10 @@ import {
   StudentRelationshipsFormState,
 } from './student-relationships';
 import { useCreateContact } from '../../../api/contact/create-contact';
-import { PrimaryAddress, PrimaryAddressFormState } from './primary-address';
+import {
+  PrimaryAddress,
+  PrimaryAddressFormState,
+} from '../../common/primary-address';
 import {
   PersonalInformation,
   PersonalInformationFormState,
@@ -19,15 +22,6 @@ import {
 type ContactFormState = PersonalInformationFormState &
   PrimaryAddressFormState &
   StudentRelationshipsFormState;
-
-const cardHeaderStyle = {
-  p: 3,
-  pt: 2.25,
-  pb: 1.25,
-  m: 0,
-  borderBottom: '1px solid',
-  borderColor: 'divider',
-};
 
 export function ContactForm() {
   const { t } = useTranslation(['common', 'people']);
@@ -41,7 +35,6 @@ export function ContactForm() {
     control,
     handleSubmit,
     setValue,
-    getValues,
     formState: { isDirty },
   } = useForm<ContactFormState>({
     defaultValues: {
@@ -156,8 +149,7 @@ export function ContactForm() {
         <Card variant="outlined">
           <CardHeader
             component="h2"
-            title={t('people:personalInformation')}
-            sx={cardHeaderStyle}
+            title={t('people:contactPersonalInformation')}
           />
           <Stack direction="column" gap={3} p={3}>
             <PersonalInformation control={control} />
@@ -165,17 +157,9 @@ export function ContactForm() {
           </Stack>
         </Card>
         <Card variant="outlined">
-          <CardHeader
-            component="h2"
-            title={t('people:studentRelationships')}
-            sx={cardHeaderStyle}
-          />
+          <CardHeader component="h2" title={t('people:studentRelationships')} />
           <Stack direction="column" p={3}>
-            <StudentRelationships
-              setValue={setValue}
-              getValues={getValues}
-              control={control}
-            />
+            <StudentRelationships setValue={setValue} control={control} />
           </Stack>
         </Card>
         <Stack direction="row" gap={2} justifyContent="flex-end">

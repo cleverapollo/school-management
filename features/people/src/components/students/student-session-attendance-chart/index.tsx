@@ -137,7 +137,7 @@ export function StudentSessionAttendanceChart({
           title={t('attendance:sessionAttendanceYear', {
             year: getYearString(selectedYear?.year),
           })}
-          sx={{ p: 0, m: 0, textAlign: 'center' }}
+          sx={{ p: 0, m: 0, border: 0, textAlign: 'center' }}
         />
 
         <Stack direction="row" alignItems="center" spacing={2}>

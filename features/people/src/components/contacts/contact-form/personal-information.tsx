@@ -7,7 +7,7 @@ import {
   InputEmailAddress,
   PersonalInformation as PersonalInformationType,
 } from '@tyro/api';
-import { MobileNumber, MobileNumberData } from './mobile-number';
+import { MobileNumber, MobileNumberData } from '../../common/mobile-number';
 
 export type PersonalInformationFormState = {
   firstName: PersonalInformationType['firstName'];
@@ -34,12 +34,7 @@ export const PersonalInformation = <
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <Typography
-          variant="body1"
-          component="h3"
-          color="text.secondary"
-          fontWeight={600}
-        >
+        <Typography variant="subtitle1" color="text.secondary">
           {t('common:details')}
         </Typography>
       </Grid>

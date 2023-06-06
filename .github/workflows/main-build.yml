@@ -1,9 +1,9 @@
-name: Azure Static Web Apps CI/CD
+name: Release pipeline
 
 on:
   push:
     branches:
-      - deploy-test
+      - main
 
 jobs:
   build:
@@ -80,6 +80,6 @@ jobs:
       - name: Setup kubectl
         id: install-kubectl
         uses: azure/setup-kubectl@v3
-      - name: 'Run Azure CLI commands'
+      - name: 'Rollout new image'
         run: |
-          kubectl get pods        
+          kubectl set image deployments/tyro-ui tyro-ui=tyrocr.azurecr.io/tyro-ui:0.0.${{ github.run_number }}        

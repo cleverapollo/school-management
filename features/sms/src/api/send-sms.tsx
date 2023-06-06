@@ -21,7 +21,7 @@ export function useSendSms() {
       toast(t('sms:smsSentSuccessfully'));
     },
     onError: () => {
-      toast(t('sms:smsFailedToSend'));
+      toast(t('sms:smsFailedToSend'), { variant: 'error' });
     },
   });
 }

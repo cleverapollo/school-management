@@ -9,37 +9,34 @@ import { Header } from './header';
 import NavMini from './nav/NavMini';
 import NavVertical from './nav/NavVertical';
 import { useNavigationConfig } from '../../hooks/use-navigation-config';
+import { AppShellConfigProvider, useAppShellConfig } from './provider';
 
 interface ShellProps {
   children?: React.ReactNode;
 }
 
-export function Shell({ children }: ShellProps) {
+function InnerShell({ children }: ShellProps) {
   const isDesktop = useResponsive('up', 'lg');
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const {
-    isOpen: isExpanded,
-    onOpen: onExpand,
-    onClose: onCollapse,
-  } = useDisclosure({ defaultIsOpen: true });
   const navConfig = useNavigationConfig();
+  const { isNavExpanded, onNavExpand, onNavCollapse } = useAppShellConfig();
 
   return (
     <>
-      <Header isNavExpanded={isExpanded} onOpenNav={onOpen} />
+      <Header isNavExpanded={isNavExpanded} onOpenNav={onOpen} />
 
       <Box
         sx={{
           display: 'flex',
         }}
       >
-        {isDesktop && !isExpanded ? (
-          <NavMini onExpand={onExpand} navConfig={navConfig} />
+        {isDesktop && !isNavExpanded ? (
+          <NavMini onExpand={onNavExpand} navConfig={navConfig} />
         ) : (
           <NavVertical
             navConfig={navConfig}
             openNav={isOpen}
-            onCollapse={onCollapse}
+            onCollapse={onNavCollapse}
             onCloseNav={onClose}
           />
         )}
@@ -56,9 +53,12 @@ export function Shell({ children }: ShellProps) {
             ...(isDesktop && {
               pt: `${HEADERCONFIG.H_DASHBOARD_DESKTOP + 8}px`,
               width: `calc(100% - ${NAV.W_DASHBOARD}px)`,
-              ...(!isExpanded && {
+              ...(!isNavExpanded && {
                 width: `calc(100% - ${NAV.W_DASHBOARD_MINI}px)`,
               }),
+            }),
+            ...(!isDesktop && {
+              width: '100%',
             }),
           }}
         >
@@ -67,5 +67,13 @@ export function Shell({ children }: ShellProps) {
         </Box>
       </Box>
     </>
+  );
+}
+
+export function Shell({ children }: ShellProps) {
+  return (
+    <AppShellConfigProvider>
+      <InnerShell>{children}</InnerShell>
+    </AppShellConfigProvider>
   );
 }

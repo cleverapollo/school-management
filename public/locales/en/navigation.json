@@ -20,10 +20,12 @@
     "assessments": {
       "title": "Assessments",
       "termAssessments": "Term Assessments"
-    }
+    },
+    "timetable": "Timetable"
   },
   "management": {
     "title": "Management",
+    "classListManager": "Class list manager",
     "people": {
       "title": "People",
       "students": "Students",
@@ -39,7 +41,10 @@
       "title": "Settings",
       "rooms": "Rooms",
       "academicNamespaces": "Academic namespaces",
-      "subjects": "Subjects"
+      "subjects": "Subjects",
+      "ppod": "PPOD",
+      "schoolDetails": "School details",
+      "login":"Login"
     },
     "sms": "SMS"
   },

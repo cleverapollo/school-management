@@ -4,12 +4,15 @@ if (!process.env.token) {
   throw new Error('You must pass in a auth token. Please re-run the command like `token=[token] yarn run codegen`')
 }
 
+// const schemaEndpoint = 'http://localhost:8082/api/graphql';
+const schemaEndpoint = 'https://app.tyro-dev.com/api/tyrogql';
+
+
 const config: CodegenConfig = {
   // schema: 'introspec.json',
   schema: [
     {
-      // 'http://localhost:80/api/tyrogql': {
-      'https://app.tyro-dev.com/api/tyrogql': {
+      [schemaEndpoint]: {
         headers: {
           Authorization: `Bearer ${process.env.token}`,
         },

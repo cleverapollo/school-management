@@ -112,9 +112,7 @@ export default function ViewCustomGroupPage() {
           rightAdornment={
             <Fade in={showActionMenu} unmountOnExit>
               <Box>
-                <ActionMenu
-                  menuItems={actionMenuItems}
-                />
+                <ActionMenu menuItems={actionMenuItems} />
               </Box>
             </Fade>
           }

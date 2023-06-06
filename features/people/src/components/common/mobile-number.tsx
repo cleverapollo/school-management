@@ -78,7 +78,7 @@ export const MobileNumber = <TField extends FieldValues>({
         onChange={(number, data: CountryData, _event, formattedNumber) =>
           onChange({
             number: number.replace(data.dialCode, ''),
-            countryCode: data.dialCode,
+            countryCode: `+${data.dialCode}`,
             numberMatchWithMask: formattedNumber.length === data.format.length,
           })
         }

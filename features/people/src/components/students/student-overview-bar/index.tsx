@@ -9,13 +9,13 @@ import {
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { Avatar, useDisclosure, usePreferredNameLayout } from '@tyro/core';
-import { useStudent } from '../../../api/students';
+import { useStudent } from '../../../api/student/students';
 import { SupportPlanRing } from '../support-plan-ring';
 import { AdditionalInfo } from './additional-info';
 import { CurrentLocation } from './current-location';
 import { PrioritySupportStudentModal } from './priority-support-student-modal';
 import { TyroId } from '../../common/tyro-id';
-import { useStudentStatus } from '../../../api';
+import { useStudentStatus } from '../../../api/student/status';
 
 interface StudentOverviewBarProps {
   studentId: number | undefined;
@@ -59,7 +59,9 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
                 variant="dot"
                 badgeContent={statusData?.priorityStudent ? 1 : 0}
               >
-                <SupportPlanRing hasSupportPlan>
+                <SupportPlanRing
+                  hasSupportPlan={statusData?.activeSupportPlan ?? false}
+                >
                   <Avatar src={studentData?.person?.avatarUrl} name={name} />
                 </SupportPlanRing>
               </Badge>
