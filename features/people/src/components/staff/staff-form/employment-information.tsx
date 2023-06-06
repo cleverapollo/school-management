@@ -8,9 +8,10 @@ import dayjs from 'dayjs';
 
 export type EmploymentInformationFormState = {
   employmentCapacity: CreateStaffInput['employmentCapacity'];
-  // isTeacher: CreateStaffInput['isTeacher'];
+  availableForTeaching: CreateStaffInput['availableForTeaching'];
+  availableForSubstitution: CreateStaffInput['availableForSubstitution'];
+  availableForSupportClasses: CreateStaffInput['availableForSupportClasses'];
   displayCode: CreateStaffInput['displayCode'];
-  // includeInTimetabling: CreateStaffInput['includeInTimetabling'];
   startDate: dayjs.Dayjs;
 };
 
@@ -31,7 +32,7 @@ export const EmploymentInformation = <
   const { t } = useTranslation(['people', 'common']);
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} alignItems="center">
       <Grid item xs={12}>
         <Typography variant="subtitle1" component="h3" color="text.secondary">
           {t('people:employmentInformation')}
@@ -63,20 +64,27 @@ export const EmploymentInformation = <
           controlProps={{ name: 'displayCode', control }}
         />
       </Grid>
-      {/* <Grid item xs={12} sm={6}>
+      <Grid item xs={12} sm={6}>
         <RHFSwitch
-          label={t('people:isATeacher')}
+          label={t('people:availableForTeaching')}
           switchProps={{ color: 'primary' }}
-          controlProps={{ name: 'isTeacher', control }}
+          controlProps={{ name: 'availableForTeaching', control }}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
         <RHFSwitch
-          label={t('people:includeInTimetabling')}
+          label={t('people:availableForSubstitution')}
           switchProps={{ color: 'primary' }}
-          controlProps={{ name: 'includeInTimetabling', control }}
+          controlProps={{ name: 'availableForSubstitution', control }}
         />
-      </Grid> */}
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <RHFSwitch
+          label={t('people:availableForSupportClasses')}
+          switchProps={{ color: 'primary' }}
+          controlProps={{ name: 'availableForSupportClasses', control }}
+        />
+      </Grid>
     </Grid>
   );
 };

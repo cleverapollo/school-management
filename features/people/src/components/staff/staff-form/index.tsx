@@ -46,6 +46,7 @@ export function StaffForm() {
       firstName: rules.required(),
       lastName: rules.required(),
       email: rules.isEmail(),
+      employmentCapacity: rules.required(),
       mobileNumber: rules.isPhoneNumber(
         t('common:errorMessages.invalidMobileNumber')
       ),

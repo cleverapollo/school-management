@@ -29,7 +29,6 @@ type EmploymentFormState = {
   displayCode: CreateStaffInput['displayCode'];
   teacherCouncilNumber: CreateStaffTeacherIre['teacherCouncilNumber'];
   startDate: CreateStaffInput['startDate'];
-  includeInTimetabling: CreateStaffInput['includeInTimetabling'];
   subjectGroups: Staff['subjectGroups'];
   jobSharing: boolean;
   qualifications: string;
@@ -47,7 +46,6 @@ const getEmploymentDataWitLabels = (
     staffIreTeacher,
     startDate,
     endDate,
-    includeInTimetabling,
     subjectGroups = [],
     displayCode,
   } = data || {};
@@ -151,19 +149,6 @@ const getEmploymentDataWitLabels = (
         <RHFTextField
           textFieldProps={{ variant: 'standard' }}
           controlProps={{ name: 'teacherCouncilNumber' }}
-        />
-      ),
-    },
-    {
-      label: t('people:includeInTimetabling'),
-      valueRenderer: includeInTimetabling
-        ? t('common:yes')
-        : t('common:no') ?? '-',
-      value: includeInTimetabling,
-      valueEditor: (
-        <RHFSwitch
-          switchProps={{ color: 'primary' }}
-          controlProps={{ name: 'includeInTimetabling' }}
         />
       ),
     },

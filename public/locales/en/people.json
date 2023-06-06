@@ -166,5 +166,7 @@
   "competencies": "Competencies",
   "present": "Present",
   "displayCode": "Display code",
-  "isATeacher": "Is a teacher?"
+  "availableForTeaching": "Available for teaching",
+  "availableForSubstitution": "Available for substitution",
+  "availableForSupportClasses": "Available for support classes"
 }
