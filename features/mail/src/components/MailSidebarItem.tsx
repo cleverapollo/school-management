@@ -8,11 +8,10 @@ import { Typography, ListItemText, ListItemButton } from '@mui/material';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Label as LabelIcon } from '@mui/icons-material';
 import { useTranslation } from '@tyro/i18n';
-import { EditIcon, TrashIcon } from '@tyro/icons';
+import { EditIcon, TrashIcon, MailIcon } from '@tyro/icons';
 import { ActionMenu } from '@tyro/core';
 import { MailLabel, Mails } from '../types';
 // components
-import { Iconify } from '../../../../src/components/iconify';
 import { useMails } from '../api/mails';
 import { objFromArray } from '../helpers';
 import { LabelType } from '../constants';
@@ -22,7 +21,7 @@ import { LabelType } from '../constants';
 const NavItemSize = 24;
 
 const LABEL_ICONS = {
-  all: 'eva:email-fill',
+  all: <MailIcon />,
   inbox: 'eva:inbox-fill',
   trash: 'eva:trash-2-outline',
   drafts: 'eva:file-fill',

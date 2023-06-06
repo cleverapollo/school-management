@@ -4,6 +4,7 @@ import { alpha, styled } from '@mui/material/styles';
 import { Box, Typography, IconButton } from '@mui/material';
 // utils
 import { Scrollbar } from '@tyro/core';
+import { DownloadArrowCircleIcon } from '@tyro/icons';
 import { bgBlur } from '../../../../src/utils/cssStyles';
 import {
   getFileType,
@@ -12,8 +13,6 @@ import {
 } from '../../../../src/utils/getFileFormat';
 // @types
 import { Mail } from '../types';
-// components
-import { Iconify } from '../../../../src/components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -90,7 +89,7 @@ function FileItem({ fileUrl }: FileItemProps) {
         {getFileThumb(fileUrl)}
         <DownloadStyle>
           <IconButton>
-            <Iconify icon="eva:arrow-circle-down-fill" />
+            <DownloadArrowCircleIcon />
           </IconButton>
         </DownloadStyle>
       </ThumbStyle>

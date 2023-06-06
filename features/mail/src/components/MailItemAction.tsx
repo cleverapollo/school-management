@@ -3,8 +3,13 @@
 import { styled } from '@mui/material/styles';
 import { Tooltip, IconButton } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-// components
-import { Iconify } from '../../../../src/components/iconify';
+import { useMemo } from 'react';
+import {
+  ArchiveAltIcon,
+  EyeSlashIcon,
+  MailCheckmarkIcon,
+  TrashIcon,
+} from '@tyro/icons';
 
 // ----------------------------------------------------------------------
 
@@ -45,28 +50,31 @@ export default function MailItemAction({
   ...other
 }: Props) {
   const { t } = useTranslation(['common']);
-  const MAIL_ACTIONS = [
-    {
-      name: t('common:actions.archive'),
-      icon: 'eva:archive-fill',
-      action: handleArchive,
-    },
-    {
-      name: t('common:actions.delete'),
-      icon: 'eva:trash-2-outline',
-      action: handleDelete,
-    },
-    {
-      name: t('common:actions.markEmail'),
-      icon: 'ic:round-mark-email-read',
-      action: handleMarkRead,
-    },
-    {
-      name: t('common:actions.hideEmail'),
-      icon: 'eva:eye-off-fill',
-      action: handleHidden,
-    },
-  ];
+  const MAIL_ACTIONS = useMemo(
+    () => [
+      {
+        name: t('common:actions.archive'),
+        icon: <ArchiveAltIcon />,
+        action: handleArchive,
+      },
+      {
+        name: t('common:actions.delete'),
+        icon: <TrashIcon />,
+        action: handleDelete,
+      },
+      {
+        name: t('common:actions.markEmail'),
+        icon: <MailCheckmarkIcon />,
+        action: handleMarkRead,
+      },
+      {
+        name: t('common:actions.hideEmail'),
+        icon: <EyeSlashIcon />,
+        action: handleHidden,
+      },
+    ],
+    [t]
+  );
 
   return (
     <RootStyle {...other}>
@@ -82,7 +90,7 @@ export default function MailItemAction({
               },
             }}
           >
-            <Iconify icon={action.icon} width={24} height={24} />
+            {action.icon}
           </IconButton>
         </Tooltip>
       ))}
