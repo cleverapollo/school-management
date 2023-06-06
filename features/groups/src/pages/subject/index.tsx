@@ -1,8 +1,5 @@
 import { Box, Fade, Container, Typography } from '@mui/material';
-import {
-  SmsRecipientType,
-  UpdateSubjectGroupInput,
-} from '@tyro/api';
+import { SmsRecipientType, UpdateSubjectGroupInput } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
