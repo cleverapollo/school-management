@@ -116,10 +116,8 @@ const getSubjectGroupsColumns = (
 export default function SubjectGroups() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
   const { displayNames } = usePreferredNameLayout();
-
   const { data: subjectGroupsData } = useSubjectGroups();
   const { mutateAsync: updateSubjectGroup } = useSaveSubjectGroupEdits();
-
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
