@@ -20,10 +20,12 @@
     "assessments": {
       "title": "Assessments",
       "termAssessments": "Term Assessments"
-    }
+    },
+    "timetable": "Timetable"
   },
   "management": {
     "title": "Management",
+    "classListManager": "Class list manager",
     "people": {
       "title": "People",
       "students": "Students",

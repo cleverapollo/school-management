@@ -27,7 +27,9 @@
     "apply": "Apply",
     "close": "Close",
     "confirm": "Confirm",
-    "viewDetails": "View Details"
+    "viewDetails": "View Details",
+    "undo": "Undo",
+    "continue": "Continue"
   },
   "snackbarMessages": {
     "createSuccess": "Create success!",
@@ -39,22 +41,23 @@
   },
   "relationshipType": {
     "AUNTY": "Aunty",
-    "FATHER": "Father",
+    "FAMILY_FRIEND": "FamilyFriend",
+    "GRAND_FATHER": "GrandFather",
+    "GRAND_MOTHER": "GrandMother",
     "MOTHER": "Mother",
-    "SIBLING": "Sibling",
-    "UNCLE": "Uncle",
-    "GRAND_FATHER": "Grandfather",
-    "GRAND_MOTHER": "Grandmother",
-    "FAMILY_FRIEND": "Family friend",
+    "FATHER": "Father",
     "NEIGHBOUR": "Neighbour",
     "OTHER": "Other",
-    "SOCIAL_WORKER": "Social worker",
-    "STEP_FATHER": "Step father",
-    "STEP_MOTHER": "Step mother"
+    "SIBLING": "Sibling",
+    "SOCIAL_WORKER": "SocialWorker",
+    "STEP_FATHER": "StepFather",
+    "STEP_MOTHER": "StepMother",
+    "UNCLE": "Uncle"
   },
   "total": "Total",
   "grade": "Grade",
   "result": "Result",
+  "noResultsFound": "No results found",
   "name": "Name",
   "colour": "Colour",
   "icon": "Icon",
@@ -62,6 +65,8 @@
   "type": "Type",
   "created": "Created",
   "members": "Members",
+  "numOfMembers_one": "({{count}}) Member",
+  "numOfMembers_other": "({{count}}) Members",
   "siblings": "Siblings",
   "noSiblingsRegisteredAtThisSchool": "No siblings registered at this school",
   "address": "Address",
@@ -175,6 +180,7 @@
   "no": "No",
   "comment": "Comment",
   "preferredFirstName": "Preferred first name",
+  "changes": "Changes",
   "unsavedChanges_one": "{{count}} unsaved change",
   "unsavedChanges_other": "{{count}} unsaved changes",
   "tyroId": "Tyro ID",
@@ -208,7 +214,7 @@
     "afterStartTime": "End time must be later than start time",
     "min": "You must enter a number greater or equal than {{number}}",
     "max": "You must enter a number less or equal than {{number}}",
-    "minLength":"You must enter a minimum of {{count}} characters",
+    "minLength": "You must enter a minimum of {{count}} characters",
     "maxLength": "You have exceeded the maximum character length of {{count}}",
     "invalidMobileNumber": "This is an invalid mobile number for this country",
     "invalidEmail": "This is an invalid email",
@@ -246,9 +252,13 @@
   "status": "Status",
   "mobileNumber": "Mobile number",
   "enableAll": "Enable all",
+  "confirmDialog": {
+    "areYouSureYouWantToChangePage": "Are you sure you want to change page?",
+    "youHaveUnsavedChanges": "You have unsaved changes that will be lost if you continue."
+  },
   "cancelConfirmDialog": {
     "title": "Cancel",
-    "description":"Are you sure you want to cancel?"
+    "description": "Are you sure you want to cancel?"
   },
   "phoneNumber": "Phone number",
   "additionalNumber": "Additional number",

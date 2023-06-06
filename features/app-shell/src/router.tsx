@@ -27,6 +27,7 @@ import { TFunction } from '@tyro/i18n';
 // Extenal routers
 import { routes as authRoutes } from '@tyro/authentication';
 import { getRoutes as getCalendarRoutes } from '@tyro/calendar';
+import { getRoutes as getClassListManagerRoutes } from '@tyro/class-list-manager';
 import { getRoutes as getGroupRoutes } from '@tyro/groups';
 import { getRoutes as getMailRoutes } from '@tyro/mail';
 import { getRoutes as getAssessmentRoutes } from '@tyro/assessments';
@@ -34,6 +35,7 @@ import { getRoutes as getPeopleRoutes } from '@tyro/people';
 import { getRoutes as getReportingRoutes } from '@tyro/reporting';
 import { getRoutes as getSettingsRoutes } from '@tyro/settings';
 import { getRoutes as getSubstitutionRoutes } from '@tyro/substitution';
+import { getRoutes as getTimetableRoutes } from '@tyro/timetable';
 import { getRoutes as getAdminRoutes } from '@tyro/tyro-admin';
 import { getRoutes as getSmsRoutes } from '@tyro/sms';
 
@@ -116,6 +118,7 @@ const mockTFunction = ((key: string) => key) as TFunction<
 export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getShellRoutes(t),
   ...getCalendarRoutes(t),
+  ...getClassListManagerRoutes(t),
   ...getGroupRoutes(t),
   ...getMailRoutes(t),
   ...getAssessmentRoutes(t),
@@ -123,6 +126,7 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getReportingRoutes(t),
   ...getSmsRoutes(t),
   ...getSubstitutionRoutes(t),
+  ...getTimetableRoutes(t),
   ...getSettingsRoutes(t),
   ...getAdminRoutes(t),
 ];
