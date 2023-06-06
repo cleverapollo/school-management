@@ -106,7 +106,7 @@ export function useEditedState({
   onBulkSave,
   resetBoard,
 }: UseEditedStateProps) {
-  const previousListKey = useRef<string>(listKey);
+  const previousListKey = useRef<string>();
   const originalState = useRef<ListManagerState[]>([]);
   const previousState = useRef<ListManagerState[]>([]);
   const changeHistory = useRef<EditedStudent[][]>([]);
@@ -142,6 +142,8 @@ export function useEditedState({
   };
 
   useEffect(() => {
+    if (state.length <= 0) return;
+
     if (previousListKey.current !== listKey) {
       changeHistory.current = [];
       setEditingState(EditState.Idle);

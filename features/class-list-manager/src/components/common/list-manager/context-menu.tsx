@@ -1,6 +1,11 @@
 import { useMemo, useState } from 'react';
 import { Box, Menu, MenuItem, MenuProps } from '@mui/material';
-import { ChevronRightIcon, UserGroupTwoIcon, UserIcon } from '@tyro/icons';
+import {
+  ChevronRightIcon,
+  ReplyIcon,
+  UserGroupTwoIcon,
+  UserIcon,
+} from '@tyro/icons';
 import { ActionMenuIconWrapper } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { ReturnTypeOfUseListManagerState } from './state';
@@ -11,16 +16,19 @@ type ContextMenuProps =
 
 interface CardRightClickMenuProps extends MenuProps, ContextMenuProps {
   studentId: string;
+  studentIndex: number;
+  enableDuplicateStudents?: boolean;
   groupId: ListManagerState['id'];
 }
 
 interface GroupSelectSubMenuProps
   extends Pick<MenuProps, 'anchorEl' | 'open' | 'onClose'> {
-  groups: ContextMenuProps['groups'];
+  state: ContextMenuProps['state'];
   groupId: ListManagerState['id'];
+  includeUnassigned?: boolean;
   onSelect?: (
     event: React.MouseEvent<HTMLLIElement, MouseEvent>,
-    groupId: number
+    groupId: string
   ) => void;
 }
 
@@ -28,13 +36,17 @@ function GroupSelectSubMenu({
   anchorEl,
   open,
   onClose,
-  groups,
+  state,
   groupId,
+  includeUnassigned,
   onSelect,
 }: GroupSelectSubMenuProps) {
   const groupsWithoutCurrent = useMemo(
-    () => groups.filter(({ partyId }) => partyId !== groupId),
-    [groups, groupId]
+    () =>
+      state.filter(({ id }) =>
+        id === 'unassigned' ? includeUnassigned : id !== groupId
+      ),
+    [state, groupId, includeUnassigned]
   );
 
   return (
@@ -60,12 +72,12 @@ function GroupSelectSubMenu({
       }}
     >
       <Box sx={{ pointerEvents: 'auto' }}>
-        {groupsWithoutCurrent.map(({ partyId, name }) => (
+        {groupsWithoutCurrent.map(({ id, name }) => (
           <MenuItem
-            key={partyId}
+            key={id}
             onClick={(event) => {
               if (onSelect) {
-                onSelect(event, partyId);
+                onSelect(event, String(id));
               }
             }}
           >
@@ -80,17 +92,22 @@ function GroupSelectSubMenu({
 export function ContextMenu({
   selectedStudentIds,
   studentId,
+  studentIndex,
   groupId,
-  groups,
+  state,
   duplicateStudents,
+  moveStudents,
+  enableDuplicateStudents,
   ...props
 }: CardRightClickMenuProps) {
   const { t } = useTranslation(['classListManager']);
+  const isMultipleSelected = selectedStudentIds.length > 1;
   const [subMenuContext, setSubMenuContext] = useState<null | {
     anchorEl: Element;
+    includeUnassigned: boolean;
     onSelect: (
       event: React.MouseEvent<HTMLLIElement, MouseEvent>,
-      groupId: number
+      groupId: string
     ) => void;
   }>(null);
 
@@ -100,33 +117,49 @@ export function ContextMenu({
     props.onClose?.({}, 'backdropClick');
   };
 
-  const getSingleStudentContext = (
+  const getMoveStudentContext = (
     event: React.MouseEvent | React.FocusEvent
-  ) =>
+  ) => {
+    const studentIds = isMultipleSelected ? selectedStudentIds : [studentId];
     setSubMenuContext({
       anchorEl: event.currentTarget,
+      includeUnassigned: false,
       onSelect: (
         e: React.MouseEvent<HTMLLIElement, MouseEvent>,
-        id: number
+        id: string
       ) => {
-        duplicateStudents(id, [studentId]);
+        moveStudents(
+          studentIds,
+          {
+            droppableId: String(groupId),
+            index: studentIndex,
+          },
+          {
+            droppableId: id,
+            index: 0,
+          }
+        );
         handleClose(e);
       },
     });
+  };
 
-  const getSelectedStudentContext = (
+  const getDuplicateStudentContext = (
     event: React.MouseEvent | React.FocusEvent
-  ) =>
+  ) => {
+    const studentIds = isMultipleSelected ? selectedStudentIds : [studentId];
     setSubMenuContext({
       anchorEl: event.currentTarget,
+      includeUnassigned: false,
       onSelect: (
         e: React.MouseEvent<HTMLLIElement, MouseEvent>,
-        id: number
+        id: string
       ) => {
-        duplicateStudents(id, selectedStudentIds);
+        duplicateStudents(Number(id), studentIds);
         handleClose(e);
       },
     });
+  };
 
   return (
     <>
@@ -159,29 +192,32 @@ export function ContextMenu({
           ...props.sx,
         }}
       >
-        {selectedStudentIds.length > 1 ? (
+        <MenuItem
+          onMouseEnter={getMoveStudentContext}
+          onFocus={getMoveStudentContext}
+        >
+          <Box>
+            <ActionMenuIconWrapper>
+              <ReplyIcon sx={{ transform: 'scaleX(-1)' }} />
+            </ActionMenuIconWrapper>
+            {t('classListManager:moveStudent', {
+              count: selectedStudentIds.length || 1,
+            })}
+          </Box>
+          <ChevronRightIcon />
+        </MenuItem>
+        {enableDuplicateStudents && (
           <MenuItem
-            onMouseEnter={getSelectedStudentContext}
-            onFocus={getSelectedStudentContext}
+            onMouseEnter={getDuplicateStudentContext}
+            onFocus={getDuplicateStudentContext}
           >
             <Box>
               <ActionMenuIconWrapper>
-                <UserGroupTwoIcon />
+                {isMultipleSelected ? <UserGroupTwoIcon /> : <UserIcon />}
               </ActionMenuIconWrapper>
-              {t('classListManager:duplicateSelectedStudents')}
-            </Box>
-            <ChevronRightIcon />
-          </MenuItem>
-        ) : (
-          <MenuItem
-            onMouseEnter={getSingleStudentContext}
-            onFocus={getSingleStudentContext}
-          >
-            <Box>
-              <ActionMenuIconWrapper>
-                <UserIcon />
-              </ActionMenuIconWrapper>
-              {t('classListManager:duplicateStudent')}
+              {t('classListManager:duplicateStudent', {
+                count: selectedStudentIds.length || 1,
+              })}
             </Box>
             <ChevronRightIcon />
           </MenuItem>
@@ -191,7 +227,7 @@ export function ContextMenu({
         {...subMenuContext}
         open={Boolean(subMenuContext)}
         groupId={groupId}
-        groups={groups}
+        state={state}
         onClose={() => setSubMenuContext(null)}
       />
     </>

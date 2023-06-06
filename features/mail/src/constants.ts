@@ -4,7 +4,7 @@ export const labelsMap: Record<number, MailLabelId> = {
   1: 'inbox',
   2: 'sent',
   3: 'trash',
-  4: 'important',
+  4: 'drafts',
   0: 'starred',
 };
 

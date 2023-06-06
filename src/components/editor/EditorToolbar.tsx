@@ -1,7 +1,8 @@
 import { Quill } from 'react-quill';
 import { useTranslation } from '@tyro/i18n';
+import { RoundRedoIcon, RoundUndoIcon } from '@tyro/icons';
+
 // components
-import { Iconify } from '../iconify';
 //
 import EditorToolbarStyle from './EditorToolbarStyle';
 
@@ -167,10 +168,10 @@ export default function EditorToolbar({ id, isSimple, ...other }: EditorToolbarP
         {!isSimple && (
           <div className="ql-formats">
             <button type="button" className="ql-undo">
-              <Iconify icon={'ic:round-undo'} width={18} height={18} />
+              <RoundUndoIcon width={18} height={18} />
             </button>
             <button type="button" className="ql-redo">
-              <Iconify icon={'ic:round-redo'} width={18} height={18} />
+              <RoundRedoIcon width={18} height={18} />
             </button>
           </div>
         )}

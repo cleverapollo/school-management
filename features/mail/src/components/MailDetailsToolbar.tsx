@@ -15,6 +15,7 @@ import { useMemo, useState } from 'react';
 import { useResponsive, Avatar, ActionMenu } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import {
+  ChevronLeftIcon,
   ForwardMailIcon,
   LabelsIcon,
   MailIcon,
@@ -22,7 +23,6 @@ import {
   TrashIcon,
 } from '@tyro/icons';
 import { fDateTimeSuffix } from '../../../../src/utils/formatTime';
-import { Iconify } from '../../../../src/components/iconify';
 import { DialogAnimate } from '../../../../src/components/animate';
 import { MailLabel, MailLabelId } from '../types';
 import ApplyLabelsForm from './ApplyLabelsForm';
@@ -128,7 +128,7 @@ export default function MailDetailsToolbar({
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Tooltip title={t('mail:tooltipTitles.back')}>
           <IconButton onClick={handleBack}>
-            <Iconify icon="eva:arrow-ios-back-fill" width={20} height={20} />
+            <ChevronLeftIcon sx={{ width: 20, height: 20 }} />
           </IconButton>
         </Tooltip>
         <Avatar src="google.com" name={mail.senderPartyId?.toString()} />
@@ -162,7 +162,7 @@ export default function MailDetailsToolbar({
             </Typography>
             <Tooltip title={t('mail:tooltipTitles.reply')}>
               <IconButton>
-                <Iconify icon="ic:round-reply" width={20} height={20} />
+                <ReplyIcon sx={{ width: 20, height: 20 }} />
               </IconButton>
             </Tooltip>
           </>

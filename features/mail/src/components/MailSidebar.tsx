@@ -15,12 +15,10 @@ import {
 } from '@mui/material';
 // hooks
 import { Scrollbar, useResponsive } from '@tyro/core';
-import { AddOutlined } from '@mui/icons-material';
 import { LabelInput, Maybe } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
-// components
-import { Iconify } from '../../../../src/components/iconify';
 //
+import { AddIcon } from '@tyro/icons';
 import MailSidebarItem from './MailSidebarItem';
 // @types
 import { Mails, MailLabel } from '../types';
@@ -80,7 +78,7 @@ export default function MailSidebar({
         <Button
           fullWidth
           variant="contained"
-          startIcon={<Iconify icon="eva:plus-fill" />}
+          startIcon={<AddIcon />}
           onClick={handleOpenCompose}
         >
           {t('common:actions.compose')}
@@ -119,7 +117,7 @@ export default function MailSidebar({
       >
         <Typography variant="body1">{t('mail:labels')}</Typography>
         <IconButton onClick={() => setIsOpenDialog(true)}>
-          <AddOutlined />
+          <AddIcon />
         </IconButton>
       </Box>
 
@@ -141,7 +139,9 @@ export default function MailSidebar({
       </List>
 
       <DialogAnimate open={isOpenDialog} onClose={() => setIsOpenDialog(false)}>
-        <DialogTitle>{labelInfo ? t('mail:editLabel') : t('mail:newLabel')}</DialogTitle>
+        <DialogTitle>
+          {labelInfo ? t('mail:editLabel') : t('mail:newLabel')}
+        </DialogTitle>
 
         <LabelForm
           onCancel={() => setIsOpenDialog(false)}

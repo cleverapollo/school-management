@@ -1,15 +1,17 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
-import { useToast } from '@tyro/core';
+import {
+  useToast,
+  RHFTextField,
+  useFormValidator,
+  RHFColorPicker,
+} from '@tyro/core';
 // form
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 // @mui
-import { Stack, Button, DialogActions, TextField, Box } from '@mui/material';
+import { Stack, Button, DialogActions } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import { ColorOptions, LabelInput, Maybe } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
-import { ColorSinglePicker } from '../../../../src/components/color-utils';
 import { useCreateLabel } from '../api/labels';
 
 interface FormValuesProps {
@@ -35,14 +37,18 @@ export default function LabelForm({ labelInfo, onCancel }: LabelFormProps) {
   const { t } = useTranslation(['mail', 'common']);
   const { toast } = useToast();
 
+  const { resolver, rules } = useFormValidator<FormValuesProps>();
+
   const {
     reset,
     control,
     handleSubmit,
-    register,
-    formState: { isSubmitting, errors },
+    formState: { isSubmitting },
   } = useForm<FormValuesProps>({
     defaultValues: getInitialValues(labelInfo),
+    resolver: resolver({
+      labelName: rules.required(t('mail:errorMessages.labelRequired')),
+    }),
   });
 
   const { mutate: createLabel } = useCreateLabel();
@@ -71,27 +77,8 @@ export default function LabelForm({ labelInfo, onCancel }: LabelFormProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3} sx={{ p: 3 }}>
-        <TextField
-          {...register('labelName', { required: true })}
-          error={!!errors.labelName}
-        />
-        {errors.labelName?.type === 'required' && (
-          <Box role="alert" sx={{ color: 'red' }}>
-            {t('mail:errorMessages.labelRequired')}
-          </Box>
-        )}
-
-        <Controller
-          name="color"
-          control={control}
-          render={({ field }) => (
-            <ColorSinglePicker
-              value={field.value}
-              onChange={field.onChange}
-              colors={ColorOptions}
-            />
-          )}
-        />
+        <RHFTextField controlProps={{ name: 'labelName', control }} />
+        <RHFColorPicker controlProps={{ name: 'color', control }} />
       </Stack>
 
       <DialogActions>
