@@ -5671,6 +5671,7 @@ __metadata:
     "@mui/x-date-pickers": ^6.3.0
     "@tanstack/react-query": ^4.29.7
     "@tyro/api": "*"
+    "@tyro/app-shell": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
     "@tyro/i18n": "*"
