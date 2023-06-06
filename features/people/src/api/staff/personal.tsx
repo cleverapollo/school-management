@@ -59,7 +59,6 @@ const staffPersonal = graphql(/* GraphQL */ `
       employmentCapacity
       displayCode
       carRegistrationNumber
-      includeInTimetabling
       subjectGroups {
         subjects {
           name

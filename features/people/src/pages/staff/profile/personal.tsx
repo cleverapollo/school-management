@@ -94,7 +94,7 @@ const getEmploymentDataWitLabels = (
     staffIreTeacher,
     startDate,
     endDate,
-    includeInTimetabling,
+    // includeInTimetabling,
     subjectGroups = [],
     displayCode,
   } = data || {};
@@ -123,9 +123,9 @@ const getEmploymentDataWitLabels = (
         }`
       : '-',
     [t('people:qualifications')]: '-',
-    [t('people:includeInTimetabling')]: includeInTimetabling
-      ? t('common:yes')
-      : t('common:no') ?? '-',
+    // [t('people:includeInTimetabling')]: includeInTimetabling
+    //   ? t('common:yes')
+    //   : t('common:no') ?? '-',
     [t('people:competencies')]:
       competencies.length > 0 ? (
         <Stack flexDirection="row" flexWrap="wrap" gap={0.5}>

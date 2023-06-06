@@ -27,6 +27,7 @@ import { TFunction } from '@tyro/i18n';
 // Extenal routers
 import { routes as authRoutes } from '@tyro/authentication';
 import { getRoutes as getCalendarRoutes } from '@tyro/calendar';
+import { getRoutes as getClassListManagerRoutes } from '@tyro/class-list-manager';
 import { getRoutes as getGroupRoutes } from '@tyro/groups';
 import { getRoutes as getMailRoutes } from '@tyro/mail';
 import { getRoutes as getAssessmentRoutes } from '@tyro/assessments';
@@ -117,6 +118,7 @@ const mockTFunction = ((key: string) => key) as TFunction<
 export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getShellRoutes(t),
   ...getCalendarRoutes(t),
+  ...getClassListManagerRoutes(t),
   ...getGroupRoutes(t),
   ...getMailRoutes(t),
   ...getAssessmentRoutes(t),
