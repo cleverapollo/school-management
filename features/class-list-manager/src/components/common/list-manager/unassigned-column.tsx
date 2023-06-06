@@ -48,6 +48,8 @@ export function UnassignedColumn({
   }, [search, group?.students]);
 
   const showNoSearchResults = search.length > 0 && filteredGroup.length === 0;
+  const showEmptyGroupPlaceholder =
+    !showNoSearchResults && group?.students?.length === 0;
 
   return (
     <Droppable key={group.id} droppableId={`${group.id}`} type="group">
@@ -105,18 +107,26 @@ export function UnassignedColumn({
                 </Box>
               )}
 
-              {!showNoSearchResults &&
-                (group?.students?.length === 0 ? (
-                  <EmptyGroupPlaceholder
-                    sx={{
-                      borderColor: snapshot.isDraggingOver
-                        ? 'indigo.500'
-                        : 'slate.300',
-                    }}
-                  />
-                ) : (
-                  provided.placeholder
-                ))}
+              {showEmptyGroupPlaceholder && (
+                <EmptyGroupPlaceholder
+                  sx={{
+                    borderColor: snapshot.isDraggingOver
+                      ? 'indigo.500'
+                      : 'slate.400',
+                  }}
+                />
+              )}
+
+              <Box
+                sx={{
+                  display:
+                    !showNoSearchResults && !showEmptyGroupPlaceholder
+                      ? 'block'
+                      : 'none',
+                }}
+              >
+                {provided.placeholder}
+              </Box>
             </Box>
           </Box>
         </Box>

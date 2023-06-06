@@ -4,7 +4,7 @@ import { useEffect, useMemo } from 'react';
 import { SxProps, Theme } from '@mui/material';
 import { useYearGroups, ReturnTypeFromUseYearGroups } from '@tyro/groups';
 
-type YearGroupsAutocompleteValue = NonNullable<ReturnTypeFromUseYearGroups>;
+type YearGroupsAutocompleteValue = ReturnTypeFromUseYearGroups;
 
 export type YearGroupsAutocompleteProps = {
   value: YearGroupsAutocompleteValue | null;
@@ -37,13 +37,12 @@ export const YearGroupsAutocomplete = ({
     <Autocomplete
       label={t('common:year')}
       value={value}
-      multiple={false}
       options={options}
       isOptionEqualToValue={(option, { yearGroupEnrollmentPartyId }) =>
         option.yearGroupEnrollmentPartyId === yearGroupEnrollmentPartyId
       }
       getOptionLabel={({ name }) => name}
-      onChange={(event, newValue) => {
+      onChange={(_event, newValue) => {
         const extractedValue = Array.isArray(newValue) ? newValue[0] : newValue;
         onChange(extractedValue);
       }}

@@ -1,11 +1,9 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { useCallback, useEffect, useState, useRef } from 'react';
 import {
-  DragStart,
-  DropResult,
   OnDragEndResponder,
   OnDragStartResponder,
-  ResponderProvided,
+  DraggableLocation,
 } from 'react-beautiful-dnd';
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
@@ -103,6 +101,28 @@ export function useListManagerState({
     [t, toast]
   );
 
+  const moveStudents = (
+    studentIds: string[],
+    source: DraggableLocation,
+    destination: DraggableLocation
+  ) => {
+    setState((prevState) => {
+      const { newGroups, sourceGroupIds } = multiDragAwareReorder({
+        groups: prevState,
+        selectedStudentIds: studentIds,
+        source,
+        destination,
+      });
+
+      lastEditedGroups.current = {
+        destinationId: destination.droppableId,
+        sourceIds: sourceGroupIds,
+      };
+
+      return clearStudentsWithSamePartyId(newGroups, destination.droppableId);
+    });
+  };
+
   const onDragStart: OnDragStartResponder = (result) => {
     const id = result.draggableId;
     const selected = selectedStudentIds.includes(id);
@@ -119,21 +139,7 @@ export function useListManagerState({
 
     // dropped on a list
     if (destination && result.reason !== 'CANCEL') {
-      setState((prevState) => {
-        const { newGroups, sourceGroupIds } = multiDragAwareReorder({
-          groups: prevState,
-          selectedStudentIds,
-          source,
-          destination,
-        });
-
-        lastEditedGroups.current = {
-          destinationId: destination.droppableId,
-          sourceIds: sourceGroupIds,
-        };
-
-        return clearStudentsWithSamePartyId(newGroups, destination.droppableId);
-      });
+      moveStudents(selectedStudentIds, source, destination);
     }
 
     setDraggingStudentId(undefined);
@@ -199,30 +205,22 @@ export function useListManagerState({
     destinationGroup,
   }: EditedStudent) => {
     if (sourceGroup && destinationGroup) {
-      onDragStart(
-        {
-          draggableId: student.id,
-        } as DragStart,
-        {} as ResponderProvided
-      );
       const destinationGroupIndexFromState = state.findIndex(
         (group) => group.id === destinationGroup.id
       );
       const currentStudentIndex = state[
         destinationGroupIndexFromState
       ].students.findIndex(({ id }) => id === student.id);
-      onDragEnd(
+      moveStudents(
+        [String(student.id)],
         {
-          source: {
-            droppableId: String(destinationGroup.id),
-            index: currentStudentIndex,
-          },
-          destination: {
-            droppableId: String(sourceGroup.id),
-            index: 0,
-          },
-        } as DropResult,
-        {} as ResponderProvided
+          droppableId: String(destinationGroup.id),
+          index: currentStudentIndex,
+        },
+        {
+          droppableId: String(sourceGroup.id),
+          index: 0,
+        }
       );
     } else if (destinationGroup) {
       deleteDuplicate(destinationGroup.id, student.id);
@@ -275,8 +273,9 @@ export function useListManagerState({
       deleteDuplicate,
       contextMenuProps: {
         selectedStudentIds,
-        groups,
+        state,
         duplicateStudents,
+        moveStudents,
       },
     },
   };

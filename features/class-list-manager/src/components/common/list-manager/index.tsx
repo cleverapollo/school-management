@@ -48,9 +48,7 @@ export function ListManager({
     });
 
   useEffect(() => {
-    if (onIsDirtyChange) {
-      onIsDirtyChange(editedState.isEditing);
-    }
+    onIsDirtyChange?.(editedState.isEditing);
   }, [editedState.isEditing, onIsDirtyChange]);
 
   return (

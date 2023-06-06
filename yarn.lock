@@ -3737,7 +3737,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/material@npm:^5.0.0, @mui/material@npm:^5.11.4, @mui/material@npm:^5.13.2":
+"@mui/material@npm:^5.0.0, @mui/material@npm:^5.13.2":
   version: 5.13.3
   resolution: "@mui/material@npm:5.13.3"
   dependencies:
@@ -3808,7 +3808,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/system@npm:^5.10.14, @mui/system@npm:^5.10.2, @mui/system@npm:^5.13.2":
+"@mui/system@npm:^5.10.2, @mui/system@npm:^5.13.2":
   version: 5.13.2
   resolution: "@mui/system@npm:5.13.2"
   dependencies:
@@ -4609,7 +4609,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:^4.16.1, @tanstack/react-query@npm:^4.29.7":
+"@tanstack/react-query@npm:^4.29.7":
   version: 4.29.12
   resolution: "@tanstack/react-query@npm:4.29.12"
   dependencies:
@@ -5975,9 +5975,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@tyro/timetable@workspace:features/timetable"
   dependencies:
-    "@mui/material": ^5.11.4
-    "@mui/system": ^5.10.14
-    "@tanstack/react-query": ^4.16.1
+    "@mui/material": ^5.13.2
+    "@mui/system": ^5.13.2
+    "@tanstack/react-query": ^4.29.7
     "@tyro/api": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"

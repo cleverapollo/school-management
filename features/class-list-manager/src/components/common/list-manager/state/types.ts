@@ -7,7 +7,7 @@ type ListManagerPerson = Pick<
 
 export type ListManagerStudent = {
   id: string;
-  isDuplicate: boolean;
+  isDuplicate?: boolean;
   person: ListManagerPerson;
 };
 
