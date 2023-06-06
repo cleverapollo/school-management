@@ -1,7 +1,7 @@
 import { SxProps, Theme } from '@mui/material';
 import { Select } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { BlockAutocompleteProps } from './block-autocomplete';
 
 interface RotationSelectProps {
