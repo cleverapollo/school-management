@@ -57,8 +57,6 @@
     "@graphiql/toolkit": "^0.8.0",
     "@graphql-codegen/client-preset": "1.1.4",
     "@hookform/resolvers": "^2.9.10",
-    "@iconify/react": "^3.2.2",
-    "@mui/icons-material": "^5.10.9",
     "@mui/lab": "^5.0.0-alpha.96",
     "@mui/material": "^5.10.14",
     "@mui/system": "^5.10.14",

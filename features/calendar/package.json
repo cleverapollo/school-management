@@ -15,7 +15,6 @@
     "@fullcalendar/timegrid": "^6.1.4",
     "@fullcalendar/timeline": "^6.1.4",
     "@hookform/resolvers": "^2.9.10",
-    "@mui/icons-material": "^5.11.0",
     "@mui/lab": "^5.0.0-alpha.57",
     "@mui/material": "^5.11.6",
     "@mui/system": "^5.11.5",

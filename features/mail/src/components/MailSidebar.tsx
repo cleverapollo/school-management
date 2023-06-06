@@ -15,7 +15,6 @@ import {
 } from '@mui/material';
 // hooks
 import { Scrollbar, useResponsive } from '@tyro/core';
-import { AddOutlined } from '@mui/icons-material';
 import { LabelInput, Maybe } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 //
@@ -118,7 +117,7 @@ export default function MailSidebar({
       >
         <Typography variant="body1">{t('mail:labels')}</Typography>
         <IconButton onClick={() => setIsOpenDialog(true)}>
-          <AddOutlined />
+          <AddIcon />
         </IconButton>
       </Box>
 
