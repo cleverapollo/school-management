@@ -1,6 +1,6 @@
 import { Person } from '@tyro/api';
 
-type DisplayNamePersonProps =
+export type DisplayNamePersonProps =
   | Pick<Person, 'title' | 'firstName' | 'lastName' | 'type'>
   | undefined
   | null;

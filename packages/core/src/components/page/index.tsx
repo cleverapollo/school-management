@@ -20,14 +20,18 @@ export const Page = forwardRef<HTMLDivElement, PageProps>(
     ) : (
       <Box
         ref={ref}
+        className="tyro-page"
         sx={{
           ...(isDesktop && {
             px: 2,
-            pb: 4,
           }),
+          pb: 4,
           display: 'flex',
           flexDirection: 'column',
           flex: 1,
+          '&:has(.bulk-edit-save-bar)': {
+            pb: 12,
+          },
           ...sx,
         }}
         {...props}

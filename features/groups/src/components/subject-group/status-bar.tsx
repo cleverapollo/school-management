@@ -57,7 +57,9 @@ export function SubjectGroupStatusBar({
             {[
               {
                 label: t('common:subject'),
-                value: subjectGroupData?.name,
+                value: subjectGroupData?.subjects
+                  ?.map((subject) => subject?.name)
+                  .join(', '),
               },
               {
                 label: t('common:year'),

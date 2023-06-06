@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
   tyro-api:
@@ -7,6 +7,7 @@ services:
       - 8082:8082
     depends_on:
       - postgres
+      - redis
     environment:
       SPRING_PROFILES_ACTIVE: docker
 
@@ -18,3 +19,8 @@ services:
       POSTGRES_PASSWORD: root
     ports:
       - "5432:5432"
+  redis:
+    image: redis
+    command: redis-server
+    ports:
+      - "6379:6379"

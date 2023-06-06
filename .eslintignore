@@ -6,4 +6,5 @@ src/reportWebVitals.ts
 src/service-worker.ts
 src/serviceWorkerRegistration.ts
 src/setupTests.ts
+packages/api/src/gql/*
 .eslintrc.js

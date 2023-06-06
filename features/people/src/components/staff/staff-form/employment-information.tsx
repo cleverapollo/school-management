@@ -8,9 +8,9 @@ import dayjs from 'dayjs';
 
 export type EmploymentInformationFormState = {
   employmentCapacity: CreateStaffInput['employmentCapacity'];
-  isTeacher: CreateStaffInput['isTeacher'];
+  // isTeacher: CreateStaffInput['isTeacher'];
   displayCode: CreateStaffInput['displayCode'];
-  includeInTimetabling: CreateStaffInput['includeInTimetabling'];
+  // includeInTimetabling: CreateStaffInput['includeInTimetabling'];
   startDate: dayjs.Dayjs;
 };
 
@@ -63,7 +63,7 @@ export const EmploymentInformation = <
           controlProps={{ name: 'displayCode', control }}
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      {/* <Grid item xs={12} sm={6}>
         <RHFSwitch
           label={t('people:isATeacher')}
           switchProps={{ color: 'primary' }}
@@ -76,7 +76,7 @@ export const EmploymentInformation = <
           switchProps={{ color: 'primary' }}
           controlProps={{ name: 'includeInTimetabling', control }}
         />
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 };

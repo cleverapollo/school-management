@@ -5,9 +5,9 @@
   "main": "src/index.ts",
   "dependencies": {
     "@mui/lab": "^5.0.0-alpha.57",
-    "@mui/material": "^5.11.4",
-    "@mui/system": "^5.10.14",
-    "@tanstack/react-query": "^4.16.1",
+    "@mui/material": "^5.13.2",
+    "@mui/system": "^5.13.2",
+    "@tanstack/react-query": "^4.29.7",
     "@tanstack/react-virtual": "beta",
     "@tyro/api": "*",
     "@tyro/core": "*",
