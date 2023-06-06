@@ -132,10 +132,8 @@ export function DraggableCard({
             onKeyDown={(event) => onKeydown(event, snapshot)}
             onTouchEnd={onTouchEnd}
             onContextMenu={(event) => {
-              if (enableDuplicateStudents) {
-                event.preventDefault();
-                setAnchorEl(event.currentTarget);
-              }
+              event.preventDefault();
+              setAnchorEl(event.currentTarget);
             }}
           >
             {showSelectionCount && (
@@ -229,7 +227,9 @@ export function DraggableCard({
         open={Boolean(anchorEl)}
         onClose={() => setAnchorEl(null)}
         studentId={student.id}
+        studentIndex={index}
         groupId={groupId}
+        enableDuplicateStudents={enableDuplicateStudents}
         {...contextMenuProps}
       />
     </>

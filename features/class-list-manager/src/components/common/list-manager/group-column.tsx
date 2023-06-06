@@ -29,6 +29,7 @@ export function GroupColumn({
 }: GroupColumnProps) {
   const { t } = useTranslation(['common']);
   const { spacing } = useTheme();
+  const showEmptyGroupPlaceholder = group?.students?.length === 0;
 
   return (
     <Droppable key={group.id} droppableId={`${group.id}`} type="group">
@@ -60,7 +61,7 @@ export function GroupColumn({
                   {...cardProps}
                 />
               ))}
-              {group?.students?.length === 0 ? (
+              {showEmptyGroupPlaceholder && (
                 <EmptyGroupPlaceholder
                   sx={{
                     borderColor: snapshot.isDraggingOver
@@ -68,9 +69,14 @@ export function GroupColumn({
                       : 'slate.400',
                   }}
                 />
-              ) : (
-                provided.placeholder
               )}
+              <Box
+                sx={{
+                  display: showEmptyGroupPlaceholder ? 'none' : 'block',
+                }}
+              >
+                {provided.placeholder}
+              </Box>
             </Box>
           </Box>
         </Box>
