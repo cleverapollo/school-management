@@ -35,7 +35,7 @@ export default function ClassListManagerBlocks() {
     useState<BlockAutocompleteProps['value']>(null);
   const [selectedRotationIndex, setSelectedRotationIndex] = useState<
     number | string
-  >('');
+  >(0);
   const {
     value: confirmDialogSettings,
     debouncedValue: debouncedConfirmDialogSettings,
@@ -124,7 +124,7 @@ export default function ClassListManagerBlocks() {
   };
 
   useEffect(() => {
-    setSelectedRotationIndex('');
+    setSelectedRotationIndex(0);
   }, [selectedBlock]);
 
   return (

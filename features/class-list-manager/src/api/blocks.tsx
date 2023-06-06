@@ -13,7 +13,6 @@ import { nanoid } from 'nanoid';
 import { useTranslation } from '@tyro/i18n';
 import { useCallback } from 'react';
 import { classListManagerKeys } from './keys';
-import { sortByDisplayName } from '../utils/sort-by-name';
 
 const blocks = graphql(/* GraphQL */ `
   query core_blocks($filter: BlockFilter) {
@@ -121,11 +120,10 @@ const blockMembershipsQuery = (
 });
 
 export function useBlockMemberships(blockId: string | null) {
-  const { displayName } = usePreferredNameLayout();
+  const { sortByDisplayName } = usePreferredNameLayout();
   return useQuery({
     ...blockMembershipsQuery({ blockId: blockId || '' }),
     enabled: !!blockId,
-    keepPreviousData: true,
     select: useCallback(
       ({
         enrollment_ire_blockMemberships,
@@ -134,27 +132,25 @@ export function useBlockMemberships(blockId: string | null) {
         groups: enrollment_ire_blockMemberships.groups.map((group) => ({
           ...group,
           unenrolledStudents: group.unenrolledStudents
-            .sort((a, b) => sortByDisplayName(displayName, a.person, b.person))
+            .sort((a, b) => sortByDisplayName(a.person, b.person))
             .map((student) => ({
-              id: String(student.person.partyId),
               ...student,
+              id: String(student.person.partyId),
             })),
           subjectGroups: group.subjectGroups.map((subjectGroup) => ({
             ...subjectGroup,
             students: subjectGroup.students
-              .sort((a, b) =>
-                sortByDisplayName(displayName, a.person, b.person)
-              )
+              .sort((a, b) => sortByDisplayName(a.person, b.person))
               .map((student) => ({
+                ...student,
                 id: student.isDuplicate
                   ? `${student.person.partyId}-${nanoid(10)}`
                   : String(student.person.partyId),
-                ...student,
               })),
           })),
         })),
       }),
-      [displayName]
+      [sortByDisplayName]
     ),
   });
 }
