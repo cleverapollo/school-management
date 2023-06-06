@@ -3,14 +3,13 @@
 import { Box } from '@mui/material';
 import { useDisclosure, useResponsive } from '@tyro/core';
 import { ScrollRestoration } from 'react-router-dom';
-import { useEffect } from 'react';
 import { HEADER as HEADERCONFIG, NAV } from './nav/config';
 
 import { Header } from './header';
 import NavMini from './nav/NavMini';
 import NavVertical from './nav/NavVertical';
 import { useNavigationConfig } from '../../hooks/use-navigation-config';
-import { ShellProvider, useAppShellConfig } from './provider';
+import { AppShellConfigProvider, useAppShellConfig } from './provider';
 
 interface ShellProps {
   children?: React.ReactNode;
@@ -19,34 +18,25 @@ interface ShellProps {
 function InnerShell({ children }: ShellProps) {
   const isDesktop = useResponsive('up', 'lg');
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const {
-    isOpen: isExpanded,
-    onOpen: onExpand,
-    onClose: onCollapse,
-  } = useDisclosure({ defaultIsOpen: true });
   const navConfig = useNavigationConfig();
-  const { setIsNavExpanded } = useAppShellConfig();
-
-  useEffect(() => {
-    setIsNavExpanded(isExpanded);
-  }, [isExpanded]);
+  const { isNavExpanded, onNavExpand, onNavCollapse } = useAppShellConfig();
 
   return (
     <>
-      <Header isNavExpanded={isExpanded} onOpenNav={onOpen} />
+      <Header isNavExpanded={isNavExpanded} onOpenNav={onOpen} />
 
       <Box
         sx={{
           display: 'flex',
         }}
       >
-        {isDesktop && !isExpanded ? (
-          <NavMini onExpand={onExpand} navConfig={navConfig} />
+        {isDesktop && !isNavExpanded ? (
+          <NavMini onExpand={onNavExpand} navConfig={navConfig} />
         ) : (
           <NavVertical
             navConfig={navConfig}
             openNav={isOpen}
-            onCollapse={onCollapse}
+            onCollapse={onNavCollapse}
             onCloseNav={onClose}
           />
         )}
@@ -63,7 +53,7 @@ function InnerShell({ children }: ShellProps) {
             ...(isDesktop && {
               pt: `${HEADERCONFIG.H_DASHBOARD_DESKTOP + 8}px`,
               width: `calc(100% - ${NAV.W_DASHBOARD}px)`,
-              ...(!isExpanded && {
+              ...(!isNavExpanded && {
                 width: `calc(100% - ${NAV.W_DASHBOARD_MINI}px)`,
               }),
             }),
@@ -80,8 +70,8 @@ function InnerShell({ children }: ShellProps) {
 
 export function Shell({ children }: ShellProps) {
   return (
-    <ShellProvider>
+    <AppShellConfigProvider>
       <InnerShell>{children}</InnerShell>
-    </ShellProvider>
+    </AppShellConfigProvider>
   );
 }

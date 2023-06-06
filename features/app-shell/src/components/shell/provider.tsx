@@ -1,45 +1,50 @@
-import {
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-  createContext,
-  useContext,
-  useMemo,
-  useState,
-} from 'react';
+import { ReactNode, createContext, useContext, useMemo } from 'react';
+import { useDisclosure } from '@tyro/core';
 
-export type ShellContextValue = {
+export type AppShellConfigContextValue = {
   isNavExpanded: boolean;
-  setIsNavExpanded: Dispatch<SetStateAction<boolean>>;
+  onNavExpand: () => void;
+  onNavCollapse: () => void;
 };
 
-const ShellContext = createContext<ShellContextValue | undefined>(undefined);
+const AppShellConfigContext = createContext<
+  AppShellConfigContextValue | undefined
+>(undefined);
 
-type ShellProviderProps = {
+type AppShellConfigProviderProps = {
   children: ReactNode;
 };
 
-function ShellProvider({ children }: ShellProviderProps) {
-  const [isNavExpanded, setIsNavExpanded] = useState(false);
+function AppShellConfigProvider({ children }: AppShellConfigProviderProps) {
+  const {
+    isOpen: isNavExpanded,
+    onOpen: onNavExpand,
+    onClose: onNavCollapse,
+  } = useDisclosure({ defaultIsOpen: true });
 
   const value = useMemo(
     () => ({
       isNavExpanded,
-      setIsNavExpanded,
+      onNavExpand,
+      onNavCollapse,
     }),
-    [isNavExpanded, setIsNavExpanded]
+    [isNavExpanded, onNavCollapse]
   );
   return (
-    <ShellContext.Provider value={value}>{children}</ShellContext.Provider>
+    <AppShellConfigContext.Provider value={value}>
+      {children}
+    </AppShellConfigContext.Provider>
   );
 }
 
 function useAppShellConfig() {
-  const context = useContext(ShellContext);
+  const context = useContext(AppShellConfigContext);
   if (context === undefined) {
-    throw new Error('useAppShellConfig must be used within a ShellContext');
+    throw new Error(
+      'useAppShellConfig must be used within a AppShellConfigContext'
+    );
   }
   return context;
 }
 
-export { ShellContext, ShellProvider, useAppShellConfig };
+export { AppShellConfigContext, AppShellConfigProvider, useAppShellConfig };
