@@ -79,12 +79,12 @@ export function Header({ isNavExpanded, onOpenNav }: Props) {
         spacing={{ xs: 0.5, sm: 1.5 }}
       >
         <AcademicNamespaceSessionSwitcher />
-        {userType !== UserType.Tyro && (
+        {/* {userType !== UserType.Tyro && (
           <>
             <MailLinkWithCount />
             <NotificationsPopover />
           </>
-        )}
+        )} */}
         <AccountPopover />
       </Stack>
     </>
