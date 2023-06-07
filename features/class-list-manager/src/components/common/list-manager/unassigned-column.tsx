@@ -55,14 +55,18 @@ export function UnassignedColumn({
     <Droppable key={group.id} droppableId={`${group.id}`} type="group">
       {(provided, snapshot) => (
         <Box sx={getListStyle(theme, snapshot.isDraggingOver)}>
-          <Box sx={{ width: theme.spacing(30) }}>
-            <Stack sx={{ p: 2, pb: 0 }}>
-              <Typography component="h2" variant="h6">
+          <Box sx={{ width: theme.spacing(22) }}>
+            <Stack sx={{ p: 1.5, pb: 0 }}>
+              <Typography
+                component="h2"
+                variant="h6"
+                sx={{ fontSize: '0.875rem !important' }}
+              >
                 {t('classListManager:unassignedStudents')}
               </Typography>
               <Typography
                 component="span"
-                variant="body2"
+                variant="caption"
                 sx={{ color: 'text.secondary' }}
               >
                 {t('classListManager:youHaveXUnassignedStudents', {
@@ -73,6 +77,7 @@ export function UnassignedColumn({
             <SearchInput
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              sx={{ fontSize: '0.875rem' }}
               containerProps={{ sx: { my: 1 } }}
             />
             <Box ref={provided.innerRef} {...provided.droppableProps}>
@@ -92,15 +97,15 @@ export function UnassignedColumn({
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    py: 2.5,
+                    height: theme.spacing(6.25),
                     mb: 1,
                     border: '1px solid transparent',
                   }}
                 >
                   <Typography
                     component="span"
-                    variant="body2"
-                    sx={{ color: 'text.secondary' }}
+                    variant="subtitle2"
+                    sx={{ color: 'text.secondary', fontSize: '0.75rem' }}
                   >
                     {t('common:noResultsFound')}
                   </Typography>

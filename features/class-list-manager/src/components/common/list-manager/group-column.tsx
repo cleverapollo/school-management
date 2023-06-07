@@ -35,12 +35,16 @@ export function GroupColumn({
     <Droppable key={group.id} droppableId={`${group.id}`} type="group">
       {(provided, snapshot) => (
         <Box sx={getListStyle(snapshot.isDraggingOver)}>
-          <Box sx={{ width: spacing(30) }}>
-            <Stack sx={{ p: 2 }}>
-              <Typography component="h2" variant="h6">
+          <Box sx={{ width: spacing(22) }}>
+            <Stack sx={{ p: 1.5 }}>
+              <Typography
+                component="h2"
+                variant="h6"
+                sx={{ fontSize: '0.875rem !important' }}
+              >
                 {group.name}
               </Typography>
-              <Typography component="span" variant="subtitle1">
+              <Typography component="span" variant="caption">
                 {t('common:numOfMembers', {
                   count: group?.students?.length ?? 0,
                 })}
