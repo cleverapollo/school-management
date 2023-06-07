@@ -9,7 +9,7 @@ import {
   StudentRelationships,
   StudentRelationshipsFormState,
 } from './student-relationships';
-import { useCreateContact } from '../../../api/contact/create-contact';
+import { useUpsertContact } from '../../../api/contact/upsert-contact';
 import {
   PrimaryAddress,
   PrimaryAddressFormState,
@@ -28,7 +28,7 @@ export function ContactForm() {
   const navigate = useNavigate();
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 
-  const { mutate: createContactMutation, isLoading } = useCreateContact();
+  const { mutate: upsertContactMutation, isLoading } = useUpsertContact();
 
   const { resolver, rules } = useFormValidator<ContactFormState>();
   const {
@@ -78,13 +78,13 @@ export function ContactForm() {
     eircode: postCode,
     city,
     country,
-    spokenLanguage: nativeLanguage,
+    spokenLanguage,
     requiresInterpreter,
     studentRelationships,
   }: ContactFormState) => {
     const hasAddress = city || country || line1 || line2 || line3 || postCode;
 
-    createContactMutation(
+    upsertContactMutation(
       {
         personal: {
           firstName,
@@ -123,7 +123,9 @@ export function ContactForm() {
             },
           ],
         }),
-        nativeLanguage,
+        ...(spokenLanguage && {
+          spokenLanguages: [spokenLanguage],
+        }),
         requiresInterpreter,
         studentRelationships: studentRelationships.map(
           ({ student, priority, ...restData }) => ({
