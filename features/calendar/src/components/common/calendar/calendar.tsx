@@ -31,7 +31,7 @@ import {
   CalendarEventViewProps,
 } from './edit-event-details-modal';
 import { getCalendarContent } from './calendar-content';
-import { EditCalendarPanel } from './edit-calendar-panel';
+import { FilterCalendarPanel } from './edit-calendar-panel';
 import { CalendarDetailsPopover } from './details-popover';
 import { getDayHeaderContent } from './day-header-content';
 import { CalendarParty } from '../../../hooks/use-participants-search-props';
@@ -68,9 +68,9 @@ export const Calendar = function Calendar({
   );
 
   const {
-    isOpen: isEditCalendarOpen,
-    onClose: onCloseEditCalendar,
-    onToggle: onToggleEditCalendar,
+    isOpen: isFilterCalendarOpen,
+    onClose: onCloseFilterCalendar,
+    onToggle: onToggleFilterCalendar,
   } = useDisclosure();
   const [editEventInitialState, setEditEventInitialState] =
     useState<CalendarEventViewProps['initialEventState']>(null);
@@ -201,7 +201,7 @@ export const Calendar = function Calendar({
     }, 300);
 
     return () => clearTimeout(resizeTimeout);
-  }, [isEditCalendarOpen, isNavExpanded]);
+  }, [isFilterCalendarOpen, isNavExpanded]);
 
   return (
     <>
@@ -212,14 +212,14 @@ export const Calendar = function Calendar({
             date={date}
             setDate={setDate}
             view={view}
-            onEditCalendar={onToggleEditCalendar}
+            onEditCalendar={onToggleFilterCalendar}
             onAddEvent={handleAddEvent}
             onChangeView={handleChangeView}
             hasMultipleResources={data && data.numberOfResources > 1}
           />
           <Stack direction="row" alignItems="stretch">
-            <EditCalendarPanel
-              isOpen={isEditCalendarOpen}
+            <FilterCalendarPanel
+              isOpen={isFilterCalendarOpen}
               selectedPartys={selectedPartys}
               onChangeSelectedPartys={setSelectedPartys}
               visableEventTypes={visableEventTypes}
@@ -272,7 +272,7 @@ export const Calendar = function Calendar({
                 }
                 schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
               />
-              <Fade in={isEditCalendarOpen}>
+              <Fade in={isFilterCalendarOpen}>
                 <IconButton
                   sx={{
                     position: 'absolute',
@@ -284,7 +284,7 @@ export const Calendar = function Calendar({
                     backdropFilter: 'blur(6px)',
                     backgroundColor: 'rgba(255, 255, 255, 0.6)',
                   }}
-                  onClick={onCloseEditCalendar}
+                  onClick={onCloseFilterCalendar}
                 >
                   <ChevronLeftIcon />
                 </IconButton>
