@@ -21,18 +21,18 @@ const environmentMsalConfig = isProd
         authorities: {
           signUpSignIn: {
             authority:
-              'https://tyroschool.b2clogin.com/tyroschool.onmicrosoft.com/B2C_1_signin',
+              'https://login.tyro.school/tyroschool.onmicrosoft.com/B2C_1_signin',
           },
           forgotPassword: {
             authority:
-              'https://tyroschool.b2clogin.com/tyroschool.onmicrosoft.com/B2C_1_reset_password',
+              'https://login.tyro.school/tyroschool.onmicrosoft.com/B2C_1_reset_password',
           },
           editProfile: {
             authority:
-              'https://tyroschool.b2clogin.com/tyroschool.onmicrosoft.com/b2c_1_edit_profile',
+              'https://login.tyro.school/tyroschool.onmicrosoft.com/b2c_1_edit_profile',
           },
         },
-        authorityDomain: 'tyroschool.b2clogin.com',
+        authorityDomain: 'login.tyro.school',
       },
     }
   : {
@@ -47,18 +47,18 @@ const environmentMsalConfig = isProd
         authorities: {
           signUpSignIn: {
             authority:
-              'https://tyrouat.b2clogin.com/tyrouat.onmicrosoft.com/B2C_1_spa_login',
+              'https://login.tyro-dev.com/tyrouat.onmicrosoft.com/B2C_1_spa_login',
           },
           forgotPassword: {
             authority:
-              'https://tyrouat.b2clogin.com/tyrouat.onmicrosoft.com/B2C_1_spa_password_reset',
+              'https://login.tyro-dev.com/tyrouat.onmicrosoft.com/B2C_1_spa_password_reset',
           },
           editProfile: {
             authority:
-              'https://tyrouat.b2clogin.com/tyrouat.onmicrosoft.com/b2c_1_edit_profile',
+              'https://login.tyro-dev.com/tyrouat.onmicrosoft.com/b2c_1_edit_profile',
           },
         },
-        authorityDomain: 'tyrouat.b2clogin.com',
+        authorityDomain: 'login.tyro-dev.com',
       },
     };
 
