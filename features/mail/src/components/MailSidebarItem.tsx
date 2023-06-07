@@ -1,38 +1,47 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
 import { useNavigate } from 'react-router-dom';
 import { LabelInput, Maybe, useUser, Mail } from '@tyro/api';
 // @mui
-import { Typography, ListItemText, ListItemButton } from '@mui/material';
+import {
+  Typography,
+  ListItemText,
+  ListItemButton,
+  SxProps,
+} from '@mui/material';
+
 // @types
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { Label as LabelIcon } from '@mui/icons-material';
+import {
+  Dispatch,
+  ReactElement,
+  SetStateAction,
+  cloneElement,
+  useEffect,
+  useState,
+} from 'react';
 import { useTranslation } from '@tyro/i18n';
-import { EditIcon, TrashIcon } from '@tyro/icons';
+import {
+  EditIcon,
+  TrashIcon,
+  MailInboxIcon,
+  BlankFileIcon,
+  SendMailIcon,
+  StarIcon,
+  LabelIcon,
+} from '@tyro/icons';
 import { ActionMenu } from '@tyro/core';
-import { MailLabel, Mails } from '../types';
+import { MailLabel, MailLabelId, Mails } from '../types';
 // components
-import { Iconify } from '../../../../src/components/iconify';
 import { useMails } from '../api/mails';
 import { objFromArray } from '../helpers';
 import { LabelType } from '../constants';
 
 // ----------------------------------------------------------------------
 
-const NavItemSize = 24;
-
-const LABEL_ICONS = {
-  all: 'eva:email-fill',
-  inbox: 'eva:inbox-fill',
-  trash: 'eva:trash-2-outline',
-  drafts: 'eva:file-fill',
-  spam: 'ic:round-report',
-  sent: 'ic:round-send',
-  starred: 'eva:star-fill',
-  important: 'ic:round-label-important',
-  id_social: 'eva:share-fill',
-  id_promotions: 'ic:round-label',
-  id_forums: 'ic:round-forum',
+const LABEL_ICONS: Record<MailLabelId, ReactElement<{ sx?: SxProps }>> = {
+  inbox: <MailInboxIcon />,
+  trash: <TrashIcon />,
+  drafts: <BlankFileIcon />,
+  sent: <SendMailIcon />,
+  starred: <StarIcon />,
 };
 
 const linkTo = (label: MailLabel) => {
@@ -90,14 +99,11 @@ export default function MailSidebarItem({
   const [hovered, setHovered] = useState(false);
   const { user } = useUser();
 
-  const {
-    isLoading: isLoadingMails,
-    data: mailsData,
-    refetch,
-  } = useMails(
+  const { data: mailsData, refetch } = useMails(
     label.originalId ?? 1,
     user?.profiles && user.profiles[0].partyId
   );
+
   useEffect(() => {
     if (isActive) {
       const mailsDataWithThreads: Maybe<Mail>[] = [];
@@ -131,6 +137,11 @@ export default function MailSidebarItem({
     }
   };
 
+  const sharedIconProps = {
+    mr: 2,
+    color: label.color,
+  };
+
   return (
     <ListItemButton
       sx={{
@@ -147,29 +158,10 @@ export default function MailSidebarItem({
       onMouseLeave={() => setHovered(false)}
       {...other}
     >
-      {label.type !== LabelType.CUSTOM ? (
-        <Iconify
-          icon={
-            LABEL_ICONS[
-              typeof label.id !== 'number' ? label.id ?? 'inbox' : 'inbox'
-            ]
-          } // ToDo: remove inbox
-          sx={{
-            mr: 2,
-            width: NavItemSize,
-            height: NavItemSize,
-            color: label.color,
-          }}
-        />
+      {label.type === LabelType.CUSTOM ? (
+        <LabelIcon sx={{ ...sharedIconProps, '& path': { opacity: 1 } }} />
       ) : (
-        <LabelIcon
-          sx={{
-            mr: 2,
-            width: NavItemSize,
-            height: NavItemSize,
-            color: label.color,
-          }}
-        />
+        cloneElement(LABEL_ICONS[label.id], { sx: sharedIconProps })
       )}
 
       <ListItemText disableTypography primary={label.name} />

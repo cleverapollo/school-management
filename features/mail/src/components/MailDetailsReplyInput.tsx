@@ -13,7 +13,7 @@ import {
 } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
-import { Iconify } from '../../../../src/components/iconify';
+import { AddPhotoIcon, AttachmentIcon } from '@tyro/icons';
 import { useSendMail } from '../api/mails';
 
 // ----------------------------------------------------------------------
@@ -95,11 +95,11 @@ export default function MailDetailsReplyInput({
         }}
       >
         <IconButton size="small" onClick={handleAttach}>
-          <Iconify icon="ic:round-add-photo-alternate" width={24} height={24} />
+          <AddPhotoIcon />
         </IconButton>
 
         <IconButton size="small" onClick={handleAttach} sx={{ ml: 1, mr: 2 }}>
-          <Iconify icon="eva:attach-2-fill" width={24} height={24} />
+          <AttachmentIcon />
         </IconButton>
 
         <Button variant="contained" onClick={onReplyClick}>

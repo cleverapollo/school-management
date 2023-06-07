@@ -38,15 +38,14 @@ export const BlockAutocomplete = ({
     <Autocomplete
       label={t('classListManager:block')}
       value={value}
-      multiple={false}
       options={options}
-      isOptionEqualToValue={(option, { blockId }) => option.blockId === blockId}
+      optionIdKey="blockId"
       getOptionLabel={({ blockId, subjectGroupNamesJoined }) =>
         subjectGroupNamesJoined
           ? `${blockId}: ${subjectGroupNamesJoined}`
           : blockId
       }
-      onChange={(event, newValue) => {
+      onChange={(_event, newValue) => {
         const extractedValue = Array.isArray(newValue) ? newValue[0] : newValue;
         onChange(extractedValue);
       }}

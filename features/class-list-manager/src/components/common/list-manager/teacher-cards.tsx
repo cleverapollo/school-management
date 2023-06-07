@@ -30,9 +30,9 @@ const TeacherCard = forwardRef<HTMLDivElement, TeacherCardProps>(
       <Box ref={ref}>
         <Box
           sx={{
-            padding: 1,
-            marginBottom: 1,
-            borderRadius: 1,
+            padding: 0.75,
+            marginBottom: 0.75,
+            borderRadius: 0.75,
             backgroundColor: 'slate.300',
           }}
           tabIndex={0}
@@ -49,11 +49,18 @@ const TeacherCard = forwardRef<HTMLDivElement, TeacherCardProps>(
               name={name}
               sx={{
                 my: 0.5,
-                mr: 1.5,
+                mr: 1,
+                width: 30,
+                height: 30,
+                fontSize: '0.6875rem',
               }}
             />
             <Stack alignItems="flex-start">
-              <Typography component="span" variant="subtitle1">
+              <Typography
+                component="span"
+                variant="subtitle2"
+                sx={{ fontSize: '0.75rem', lineHeight: 1.5 }}
+              >
                 {name}{' '}
                 {showAdditionalTeachersNumber && (
                   <span className="additional-teachers-num">
@@ -65,8 +72,11 @@ const TeacherCard = forwardRef<HTMLDivElement, TeacherCardProps>(
                 label={t('common:teacher')}
                 size="small"
                 sx={{
+                  height: 18,
                   backgroundColor: 'slate.200',
                   '& span': {
+                    fontSize: '0.6875rem',
+                    px: 0.75,
                     color: 'text.primary',
                     fontWeight: 600,
                   },
@@ -93,7 +103,7 @@ export function TeacherCards({ teachers, isDraggingOver }: TeacherCardsProps) {
   return (
     <Box
       sx={{
-        height: firstItemHeight + 8,
+        height: firstItemHeight + 6,
         transitionProperty: 'height',
         overflow: 'hidden',
         '&, & .additional-teachers-num': {
@@ -105,7 +115,7 @@ export function TeacherCards({ teachers, isDraggingOver }: TeacherCardsProps) {
         },
         ...(!isDraggingOver && {
           '&:hover, &:focus-within': {
-            height: innerContainerHeight + 8,
+            height: innerContainerHeight + 6,
 
             '& .additional-teachers-num': {
               opacity: 0,

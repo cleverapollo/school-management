@@ -12,7 +12,6 @@ import { usePreferredNameLayout, useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useCallback } from 'react';
 import { classListManagerKeys } from './keys';
-import { sortByDisplayName } from '../utils/sort-by-name';
 
 const classMemberships = graphql(/* GraphQL */ `
   query enrollment_ire_coreMemberships(
@@ -77,12 +76,11 @@ const classMembershipsQuery = (filter: EnrollmentIre_CoreEnrollmentFilter) => ({
 });
 
 export function useClassMemberships(yearGroupEnrollmentId: number | undefined) {
-  const { displayName } = usePreferredNameLayout();
+  const { sortByDisplayName } = usePreferredNameLayout();
   return useQuery({
     ...classMembershipsQuery({
       yearGroupEnrollmentId: yearGroupEnrollmentId || 0,
     }),
-    keepPreviousData: true,
     enabled: !!yearGroupEnrollmentId,
     select: useCallback(
       ({
@@ -90,28 +88,24 @@ export function useClassMemberships(yearGroupEnrollmentId: number | undefined) {
       }: Enrollment_Ire_CoreMembershipsQuery) => ({
         ...enrollment_ire_coreMemberships,
         unenrolledStudents: enrollment_ire_coreMemberships.unenrolledStudents
-          .sort((a, b) => sortByDisplayName(displayName, a.person, b.person))
+          .sort((a, b) => sortByDisplayName(a.person, b.person))
           .map((student) => ({
             ...student,
             id: String(student?.person.partyId),
-            isDuplicate: false,
           })),
         classGroups: enrollment_ire_coreMemberships.classGroups.map(
           (classGroup) => ({
             ...classGroup,
             students: classGroup.students
-              .sort((a, b) =>
-                sortByDisplayName(displayName, a?.person, b?.person)
-              )
+              .sort((a, b) => sortByDisplayName(a?.person, b?.person))
               .map((student) => ({
                 ...student,
                 id: String(student?.person.partyId),
-                isDuplicate: false,
               })),
           })
         ),
       }),
-      [displayName]
+      [sortByDisplayName]
     ),
   });
 }

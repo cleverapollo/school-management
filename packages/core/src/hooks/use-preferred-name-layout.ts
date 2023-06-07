@@ -24,10 +24,29 @@ const displayNames = (
     .join(', ');
 };
 
+export function sortByDisplayName(
+  studentA: DisplayNamePersonProps,
+  studentB: DisplayNamePersonProps
+) {
+  const nameA = displayName(studentA);
+  const nameB = displayName(studentB);
+
+  if (nameA < nameB) {
+    return -1;
+  }
+
+  if (nameA > nameB) {
+    return 1;
+  }
+
+  return 0;
+}
+
 export function usePreferredNameLayout() {
   return {
     displayName,
     displayNames,
+    sortByDisplayName,
   };
 }
 

@@ -48,9 +48,7 @@ export function ListManager({
     });
 
   useEffect(() => {
-    if (onIsDirtyChange) {
-      onIsDirtyChange(editedState.isEditing);
-    }
+    onIsDirtyChange?.(editedState.isEditing);
   }, [editedState.isEditing, onIsDirtyChange]);
 
   return (
@@ -64,7 +62,7 @@ export function ListManager({
           <Box>
             <Stack
               direction="row"
-              spacing={2}
+              spacing={1.5}
               alignItems="flex-start"
               sx={{
                 px: containerMargin,

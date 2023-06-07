@@ -18,7 +18,13 @@ import { RecipientType, SendMailInput } from '@tyro/api';
 import { useResponsive } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 // components
-import { Iconify } from '../../../../src/components/iconify';
+import {
+  AddPhotoIcon,
+  AttachmentIcon,
+  CloseIcon,
+  CollapseIcon,
+  ExpandIcon,
+} from '@tyro/icons';
 import Editor from '../../../../src/components/editor';
 import { useSendMail } from '../api/mails';
 
@@ -143,15 +149,15 @@ export default function MailCompose({ isOpenCompose, onCloseCompose }: Props) {
                 fullScreen ? handleExitFullScreen : handleEnterFullScreen
               }
             >
-              <Iconify
-                icon={fullScreen ? 'eva:collapse-fill' : 'eva:expand-fill'}
-                width={20}
-                height={20}
-              />
+              {fullScreen ? (
+                <CollapseIcon sx={{ height: 20, width: 20 }} />
+              ) : (
+                <ExpandIcon sx={{ height: 20, width: 20 }} />
+              )}
             </IconButton>
 
             <IconButton onClick={handleClose}>
-              <Iconify icon="eva:close-fill" width={20} height={20} />
+              <CloseIcon sx={{ height: 20, width: 20 }} />
             </IconButton>
           </Box>
         </Box>
@@ -192,15 +198,11 @@ export default function MailCompose({ isOpenCompose, onCloseCompose }: Props) {
           </Button>
 
           <IconButton size="small" sx={{ ml: 2, mr: 1 }}>
-            <Iconify
-              icon="ic:round-add-photo-alternate"
-              width={24}
-              height={24}
-            />
+            <AddPhotoIcon />
           </IconButton>
 
           <IconButton size="small">
-            <Iconify icon="eva:attach-2-fill" width={24} height={24} />
+            <AttachmentIcon />
           </IconButton>
         </Box>
       </RootStyle>

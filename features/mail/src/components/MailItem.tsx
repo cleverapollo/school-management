@@ -9,6 +9,7 @@ import { useUser, Mail } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useResponsive, Avatar } from '@tyro/core';
 // utils
+import { LinkIcon, StarIcon } from '@tyro/icons';
 import { fDate } from '../../../../src/utils/formatTime';
 // @types
 import {
@@ -17,8 +18,6 @@ import {
 } from '../types';
 // components
 import Label from '../../../../src/components/Label';
-import { Iconify } from '../../../../src/components/iconify';
-//
 import MailItemAction from './MailItemAction';
 import { useStarMail } from '../api/mails';
 
@@ -106,8 +105,16 @@ export default function MailItem({
               color="warning"
               onChange={onStarMail}
               defaultChecked={!!mail.starred}
-              icon={<Iconify icon="eva:star-outline" />}
-              checkedIcon={<Iconify icon="eva:star-fill" />}
+              icon={<StarIcon />}
+              checkedIcon={
+                <StarIcon
+                  sx={{
+                    '& path': {
+                      fill: 'currentcolor',
+                    },
+                  }}
+                />
+              }
             />
           </Tooltip>
         </Box>
@@ -219,8 +226,7 @@ export default function MailItem({
                 </Box>
 
                 {isAttached && (
-                  <Iconify
-                    icon="eva:link-fill"
+                  <LinkIcon
                     sx={{
                       mx: 2,
                       width: 20,
