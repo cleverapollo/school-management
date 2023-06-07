@@ -13,8 +13,8 @@ const getListStyle = ({ customShadows }: Theme, isDraggingOver: boolean) =>
     backgroundColor: isDraggingOver ? 'indigo.200' : 'background.paper',
     boxShadow: customShadows.card,
     borderRadius: 2,
-    paddingY: 1,
-    paddingX: 2,
+    paddingY: 0.75,
+    paddingX: 1.5,
   } as const);
 
 interface UnassignedColumnProps {

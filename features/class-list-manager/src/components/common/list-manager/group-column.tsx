@@ -12,8 +12,8 @@ const getListStyle = (isDraggingOver: boolean) =>
     backgroundColor: isDraggingOver ? 'indigo.200' : 'slate.200',
     borderColor: isDraggingOver ? 'indigo.100' : 'slate.100',
     borderRadius: 2,
-    paddingY: 1,
-    paddingX: 2,
+    paddingY: 0.75,
+    paddingX: 1.5,
   } as const);
 
 interface GroupColumnProps {
