@@ -14,4 +14,5 @@ export const peopleStaffKeys = {
     [...peopleStaffKeys.all, 'personal', filter] as const,
   employmentCapacities: () =>
     [...peopleStaffKeys.all, 'employmentCapacities'] as const,
+  staffPosts: () => [...peopleStaffKeys.all, 'staffPosts'] as const,
 };
