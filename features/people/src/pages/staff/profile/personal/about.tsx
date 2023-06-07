@@ -8,7 +8,7 @@ import {
 import dayjs from 'dayjs';
 
 import {
-  CreateStaffInput,
+  UpsertStaffInput,
   Gender,
   InputAddress,
   PersonalTitle,
@@ -24,9 +24,9 @@ const genderOptions = Object.values(Gender);
 
 type AboutFormState = {
   title: PersonalTitle;
-  firstName: CreateStaffInput['firstName'];
-  lastName: CreateStaffInput['lastName'];
-  gender: CreateStaffInput['gender'];
+  firstName: UpsertStaffInput['firstName'];
+  lastName: UpsertStaffInput['lastName'];
+  gender: UpsertStaffInput['gender'];
   dateOfBirth: dayjs.Dayjs | null;
   ppsNumber: string | null | undefined;
   line1: InputAddress['line1'];
@@ -35,7 +35,7 @@ type AboutFormState = {
   city: InputAddress['city'];
   country: InputAddress['country'];
   eircode: InputAddress['postCode'];
-  carRegistrationNumber: CreateStaffInput['carRegistrationNumber'];
+  carRegistrationNumber: UpsertStaffInput['carRegistrationNumber'];
 };
 
 const getAboutDataWithLabels = (

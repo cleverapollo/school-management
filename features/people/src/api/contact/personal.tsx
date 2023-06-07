@@ -50,7 +50,6 @@ const contactsPersonalById = graphql(/* GraphQL */ `
         }
       }
       occupation
-      nativeLanguage
       requiresInterpreter
     }
   }

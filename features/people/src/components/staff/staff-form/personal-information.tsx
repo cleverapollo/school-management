@@ -1,28 +1,22 @@
 import { Grid, Typography } from '@mui/material';
-import { RHFTextField, RHFSelect } from '@tyro/core';
+import { RHFTextField } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { Control } from 'react-hook-form';
 
-import {
-  InputEmailAddress,
-  CreateStaffInput,
-  Gender,
-  PersonalTitle,
-} from '@tyro/api';
+import { InputEmailAddress, UpsertStaffInput, PersonalTitle } from '@tyro/api';
 import { MobileNumber, MobileNumberData } from '../../common/mobile-number';
 import { PersonalTitlesDropdown } from '../../common/personal-titles-dropdown';
+import { GenderDropdown } from '../../common/gender-dropdown';
 
 export type PersonalInformationFormState = {
   title: PersonalTitle;
-  firstName: CreateStaffInput['firstName'];
-  lastName: CreateStaffInput['lastName'];
-  gender: CreateStaffInput['gender'];
+  firstName: UpsertStaffInput['firstName'];
+  lastName: UpsertStaffInput['lastName'];
+  gender: UpsertStaffInput['gender'];
   mobileNumber: MobileNumberData | undefined;
   additionalNumber: string;
   email: InputEmailAddress['email'];
 };
-
-const genderOptions = Object.values(Gender);
 
 type PersonalInformationProps<TField extends PersonalInformationFormState> = {
   control: TField extends PersonalInformationFormState
@@ -74,11 +68,8 @@ export const PersonalInformation = <
         />
       </Grid>
       <Grid item xs={12} sm={6}>
-        <RHFSelect<PersonalInformationFormState, Gender>
-          fullWidth
+        <GenderDropdown
           label={t('people:gender.title')}
-          options={genderOptions}
-          getOptionLabel={(option) => t(`people:gender.${option}`)}
           controlProps={{
             name: 'gender',
             control,

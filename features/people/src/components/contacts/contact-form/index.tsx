@@ -78,7 +78,7 @@ export function ContactForm() {
     eircode: postCode,
     city,
     country,
-    spokenLanguage: nativeLanguage,
+    spokenLanguage,
     requiresInterpreter,
     studentRelationships,
   }: ContactFormState) => {
@@ -123,7 +123,7 @@ export function ContactForm() {
             },
           ],
         }),
-        nativeLanguage,
+        spokenLanguages: [spokenLanguage],
         requiresInterpreter,
         studentRelationships: studentRelationships.map(
           ({ student, priority, ...restData }) => ({

@@ -51,12 +51,17 @@ const staffPersonal = graphql(/* GraphQL */ `
           phoneNumbers
         }
       }
-      staffIreTeacher {
-        teachingPost
+      staffIre {
         teacherCouncilNumber
+        staffPost {
+          name
+        }
       }
       payrollNumber
-      employmentCapacity
+      employmentCapacity {
+        id
+        name
+      }
       displayCode
       carRegistrationNumber
       subjectGroups {

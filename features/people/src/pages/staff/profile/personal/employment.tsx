@@ -10,12 +10,13 @@ import {
 import dayjs from 'dayjs';
 
 import {
-  CreateStaffInput,
+  UpsertStaffInput,
   getColorBasedOnIndex,
-  EmploymentCapacity,
+  // EmploymentCapacity,
   Staff,
-  CreateStaffTeacherIre,
+  // CreateStaffTeacherIre,
 } from '@tyro/api';
+import { EmploymentCapacityAutocomplete } from '../../../../components/common/employment-capacity-autocomplete';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
   CardEditableForm,
@@ -23,18 +24,18 @@ import {
 } from '../../../../components/common/card-editable-form';
 
 type EmploymentFormState = {
-  post: CreateStaffTeacherIre['teachingPost'];
-  capacity: CreateStaffInput['employmentCapacity'];
-  payrollNumber: CreateStaffInput['payrollNumber'];
-  displayCode: CreateStaffInput['displayCode'];
-  teacherCouncilNumber: CreateStaffTeacherIre['teacherCouncilNumber'];
-  startDate: CreateStaffInput['startDate'];
+  // post: CreateStaffTeacherIre['teachingPost'];
+  employmentCapacity: Staff['employmentCapacity'];
+  payrollNumber: UpsertStaffInput['payrollNumber'];
+  displayCode: UpsertStaffInput['displayCode'];
+  // teacherCouncilNumber: CreateStaffTeacherIre['teacherCouncilNumber'];
+  startDate: UpsertStaffInput['startDate'];
   subjectGroups: Staff['subjectGroups'];
   jobSharing: boolean;
   qualifications: string;
 };
 
-const employmentCapacityOptions = Object.values(EmploymentCapacity);
+// const employmentCapacityOptions = Object.values(EmploymentCapacity);
 
 const getEmploymentDataWitLabels = (
   data: ReturnType<typeof useStaffPersonal>['data'],
@@ -43,7 +44,7 @@ const getEmploymentDataWitLabels = (
   const {
     payrollNumber,
     employmentCapacity,
-    staffIreTeacher,
+    // staffIreTeacher,
     startDate,
     endDate,
     subjectGroups = [],
@@ -59,29 +60,24 @@ const getEmploymentDataWitLabels = (
   );
 
   return [
-    {
-      label: t('people:post'),
-      value: staffIreTeacher?.teachingPost,
-      valueEditor: (
-        <RHFTextField
-          textFieldProps={{ variant: 'standard' }}
-          controlProps={{ name: 'position' }}
-        />
-      ),
-    },
+    // {
+    //   label: t('people:post'),
+    //   value: staffIreTeacher?.teachingPost,
+    //   valueEditor: (
+    //     <RHFTextField
+    //       textFieldProps={{ variant: 'standard' }}
+    //       controlProps={{ name: 'position' }}
+    //     />
+    //   ),
+    // },
     {
       label: t('people:capacity'),
-      valueRenderer: employmentCapacity
-        ? t(`people:employmentCapacity.${employmentCapacity}`)
-        : '-',
       value: employmentCapacity,
+      valueRenderer: employmentCapacity?.name,
       valueEditor: (
-        <RHFSelect<EmploymentFormState, EmploymentCapacity>
-          variant="standard"
-          fullWidth
-          options={employmentCapacityOptions}
-          getOptionLabel={(option) => t(`people:employmentCapacity.${option}`)}
-          controlProps={{ name: 'capacity' }}
+        <EmploymentCapacityAutocomplete
+          inputProps={{ variant: 'standard' }}
+          controlProps={{ name: 'employmentCapacity' }}
         />
       ),
     },
@@ -105,16 +101,16 @@ const getEmploymentDataWitLabels = (
         />
       ),
     },
-    {
-      label: t('people:teacherCouncilNumber'),
-      value: staffIreTeacher?.teacherCouncilNumber,
-      valueEditor: (
-        <RHFTextField
-          textFieldProps={{ variant: 'standard' }}
-          controlProps={{ name: 'teacherCouncilNumber' }}
-        />
-      ),
-    },
+    // {
+    //   label: t('people:teacherCouncilNumber'),
+    //   value: staffIreTeacher?.teacherCouncilNumber,
+    //   valueEditor: (
+    //     <RHFTextField
+    //       textFieldProps={{ variant: 'standard' }}
+    //       controlProps={{ name: 'teacherCouncilNumber' }}
+    //     />
+    //   ),
+    // },
     {
       // NOTE: at this stage, this value doesn't come from BE
       label: t('people:jobSharing'),
@@ -152,24 +148,24 @@ const getEmploymentDataWitLabels = (
         />
       ),
     },
-    {
-      label: t('people:competencies'),
-      valueRenderer:
-        competencies.length > 0 ? (
-          <Stack flexDirection="row" flexWrap="wrap" gap={0.5}>
-            {competencies.map(({ name, colour }, index) => (
-              <Chip
-                key={name}
-                color={colour ?? getColorBasedOnIndex(index)}
-                label={name}
-              />
-            ))}
-          </Stack>
-        ) : (
-          '-'
-        ),
-      value: subjectGroups,
-    },
+    // {
+    //   label: t('people:competencies'),
+    //   valueRenderer:
+    //     competencies.length > 0 ? (
+    //       <Stack flexDirection="row" flexWrap="wrap" gap={0.5}>
+    //         {competencies.map(({ name, colour }, index) => (
+    //           <Chip
+    //             key={name}
+    //             color={colour ?? getColorBasedOnIndex(index)}
+    //             label={name}
+    //           />
+    //         ))}
+    //       </Stack>
+    //     ) : (
+    //       '-'
+    //     ),
+    //   value: subjectGroups,
+    // },
   ];
 };
 

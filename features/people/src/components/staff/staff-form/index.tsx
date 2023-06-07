@@ -45,13 +45,13 @@ export function StaffForm() {
     resolver: resolver({
       firstName: rules.required(),
       lastName: rules.required(),
-      email: rules.isEmail(),
-      employmentCapacity: rules.required(),
       mobileNumber: rules.isPhoneNumber(
         t('common:errorMessages.invalidMobileNumber')
       ),
       additionalNumber: rules.isPhoneNumber(),
-      startDate: rules.date(),
+      email: rules.isEmail(),
+      startDate: [rules.required(), rules.date()],
+      employmentCapacity: rules.required(),
       nextOfKinPhoneNumber: rules.isPhoneNumber(),
       nextOfKinAdditionalNumber: rules.isPhoneNumber(),
     }),
@@ -85,6 +85,7 @@ export function StaffForm() {
     nextOfKinSurname,
     nextOfKinPhoneNumber,
     nextOfKinAdditionalNumber,
+    employmentCapacity,
     ...data
   }: StaffFormState) => {
     const hasAddress = city || country || line1 || line2 || line3 || postCode;
@@ -100,6 +101,7 @@ export function StaffForm() {
           ...data,
           titleId: title?.id,
           startDate: startDate ? startDate.format('YYYY-MM-DD') : undefined,
+          employmentCapacity: employmentCapacity?.id,
           phoneNumbers: [
             ...(mobileNumber
               ? [

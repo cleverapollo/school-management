@@ -123,7 +123,7 @@
   "createContact": "Create contact",
   "pageTitle": {
     "contacts": "List of contacts",
-    "createContact":"Add a new contact",
+    "createContact": "Add a new contact",
     "staff": "List of staff",
     "createStaff": "Add a new staff"
   },
@@ -168,5 +168,6 @@
   "displayCode": "Display code",
   "availableForTeaching": "Available for teaching",
   "availableForSubstitution": "Available for substitution",
-  "availableForSupportClasses": "Available for support classes"
+  "availableForSupportClasses": "Available for support classes",
+  "position": "Position"
 }
