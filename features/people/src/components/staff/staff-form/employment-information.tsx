@@ -9,8 +9,8 @@ import { EmploymentCapacityAutocomplete } from '../../common/employment-capacity
 import { EmploymentCapacityOption } from '../../../api/staff/employment-capacities';
 
 export type EmploymentInformationFormState = {
-  startDate: dayjs.Dayjs;
-  position?: string;
+  startDate: dayjs.Dayjs | null;
+  position: UpsertStaffInput['position'];
   employmentCapacity: EmploymentCapacityOption;
   availableForTeaching: UpsertStaffInput['availableForTeaching'];
   availableForSubstitution: UpsertStaffInput['availableForSubstitution'];

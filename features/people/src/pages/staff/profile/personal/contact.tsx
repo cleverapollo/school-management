@@ -1,7 +1,7 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { formatPhoneNumber, RHFTextField, useFormValidator } from '@tyro/core';
 
-import { InputEmailAddress } from '@tyro/api';
+import { InputEmailAddress, UpsertStaffInput } from '@tyro/api';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
   CardEditableForm,
@@ -13,8 +13,8 @@ import {
 } from '../../../../components/common/mobile-number';
 
 type ContactFormState = {
-  primaryNumber: MobileNumberData | null;
-  additionalNumber: MobileNumberData | null;
+  primaryNumber: MobileNumberData | string | null;
+  additionalNumber: MobileNumberData | string | null;
   primaryEmail: InputEmailAddress['email'];
   additionalEmail: InputEmailAddress['email'];
 };
@@ -101,11 +101,13 @@ const getContactDataWithLabels = (
 type ProfileContactProps = {
   staffData: ReturnType<typeof useStaffPersonal>['data'];
   editable?: boolean;
+  onSave: (data: UpsertStaffInput) => void;
 };
 
 export const ProfileContact = ({
   staffData,
   editable,
+  onSave,
 }: ProfileContactProps) => {
   const { t } = useTranslation(['common', 'people']);
 
@@ -120,13 +122,61 @@ export const ProfileContact = ({
     additionalEmail: rules.isEmail(),
   });
 
-  const handleEdit = async (data: ContactFormState) =>
-    new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(data);
-        resolve(data);
-      }, 300);
+  const handleEdit = ({
+    primaryNumber,
+    additionalNumber,
+    primaryEmail,
+    additionalEmail,
+  }: ContactFormState) => {
+    onSave({
+      phoneNumbers: [
+        primaryNumber
+          ? {
+              primaryPhoneNumber: true,
+              active: true,
+              number:
+                typeof primaryNumber === 'string'
+                  ? primaryNumber
+                  : primaryNumber.number,
+              countryCode:
+                typeof primaryNumber === 'string'
+                  ? undefined
+                  : primaryNumber.countryCode,
+            }
+          : null,
+        additionalNumber
+          ? {
+              primaryPhoneNumber: false,
+              active: true,
+              number:
+                typeof additionalNumber === 'string'
+                  ? additionalNumber
+                  : additionalNumber.number,
+              countryCode:
+                typeof additionalNumber === 'string'
+                  ? undefined
+                  : additionalNumber.countryCode,
+            }
+          : null,
+      ].filter(Boolean),
+      emails: [
+        primaryEmail
+          ? {
+              primaryEmail: true,
+              active: true,
+              email: primaryEmail,
+            }
+          : null,
+        additionalEmail
+          ? {
+              primaryEmail: false,
+              active: true,
+              email: additionalEmail,
+            }
+          : null,
+      ].filter(Boolean),
     });
+  };
 
   return (
     <CardEditableForm<ContactFormState>
@@ -135,6 +185,7 @@ export const ProfileContact = ({
       fields={contactDataWithLabels}
       resolver={contactResolver}
       onSave={handleEdit}
+      sx={{ height: '100%' }}
     />
   );
 };

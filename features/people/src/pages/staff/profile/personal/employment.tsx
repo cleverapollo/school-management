@@ -2,39 +2,40 @@ import { Chip, Stack } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   RHFTextField,
-  RHFSelect,
   RHFDatePicker,
   RHFSwitch,
   useFormValidator,
 } from '@tyro/core';
 import dayjs from 'dayjs';
 
-import {
-  CreateStaffInput,
-  getColorBasedOnIndex,
-  EmploymentCapacity,
-  Staff,
-  CreateStaffTeacherIre,
-} from '@tyro/api';
+import { UpsertStaffInput, getColorBasedOnIndex, StaffIre } from '@tyro/api';
+import { CatalogueSubjectOption } from '@tyro/settings';
+import { EmploymentCapacityAutocomplete } from '../../../../components/common/employment-capacity-autocomplete';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
   CardEditableForm,
   CardEditableFormProps,
 } from '../../../../components/common/card-editable-form';
+import { StaffPostsAutocomplete } from '../../../../components/common/staff-posts-autocomplete';
+import { CompetencySubjectsAutocomplete } from '../../../../components/common/competency-subjects-autocomplete';
+import { StaffPostsOption } from '../../../../api/staff/staff-posts';
+import { EmploymentCapacityOption } from '../../../../api/staff/employment-capacities';
 
 type EmploymentFormState = {
-  post: CreateStaffTeacherIre['teachingPost'];
-  capacity: CreateStaffInput['employmentCapacity'];
-  payrollNumber: CreateStaffInput['payrollNumber'];
-  displayCode: CreateStaffInput['displayCode'];
-  teacherCouncilNumber: CreateStaffTeacherIre['teacherCouncilNumber'];
-  startDate: CreateStaffInput['startDate'];
-  subjectGroups: Staff['subjectGroups'];
-  jobSharing: boolean;
-  qualifications: string;
+  position: UpsertStaffInput['position'];
+  employmentCapacity: EmploymentCapacityOption;
+  post: StaffPostsOption | null;
+  payrollNumber: UpsertStaffInput['payrollNumber'];
+  teacherCouncilNumber: StaffIre['teacherCouncilNumber'];
+  startDate: dayjs.Dayjs | null;
+  qualifications: UpsertStaffInput['qualifications'];
+  jobSharing: UpsertStaffInput['jobSharing'];
+  availableForTeaching: UpsertStaffInput['availableForTeaching'];
+  availableForSubstitution: UpsertStaffInput['availableForSubstitution'];
+  availableForSupportClasses: UpsertStaffInput['availableForSupportClasses'];
+  displayCode: UpsertStaffInput['displayCode'];
+  competencies: CatalogueSubjectOption[] | null;
 };
-
-const employmentCapacityOptions = Object.values(EmploymentCapacity);
 
 const getEmploymentDataWitLabels = (
   data: ReturnType<typeof useStaffPersonal>['data'],
@@ -43,25 +44,23 @@ const getEmploymentDataWitLabels = (
   const {
     payrollNumber,
     employmentCapacity,
-    staffIreTeacher,
+    position,
+    staffIre,
     startDate,
     endDate,
-    subjectGroups = [],
     displayCode,
+    jobSharing,
+    qualifications,
+    availableForTeaching,
+    availableForSubstitution,
+    availableForSupportClasses,
+    competency_subjects: competencySubjects = [],
   } = data || {};
-
-  const competencies = Array.from(
-    new Map(
-      subjectGroups
-        .flatMap(({ subjects }) => subjects)
-        .map((subject) => [subject.name, subject])
-    ).values()
-  );
 
   return [
     {
-      label: t('people:post'),
-      value: staffIreTeacher?.teachingPost,
+      label: t('people:position'),
+      value: position,
       valueEditor: (
         <RHFTextField
           textFieldProps={{ variant: 'standard' }}
@@ -71,17 +70,23 @@ const getEmploymentDataWitLabels = (
     },
     {
       label: t('people:capacity'),
-      valueRenderer: employmentCapacity
-        ? t(`people:employmentCapacity.${employmentCapacity}`)
-        : '-',
       value: employmentCapacity,
+      valueRenderer: employmentCapacity?.name,
       valueEditor: (
-        <RHFSelect<EmploymentFormState, EmploymentCapacity>
-          variant="standard"
-          fullWidth
-          options={employmentCapacityOptions}
-          getOptionLabel={(option) => t(`people:employmentCapacity.${option}`)}
-          controlProps={{ name: 'capacity' }}
+        <EmploymentCapacityAutocomplete
+          inputProps={{ variant: 'standard' }}
+          controlProps={{ name: 'employmentCapacity' }}
+        />
+      ),
+    },
+    {
+      label: t('people:post'),
+      value: staffIre?.staffPost,
+      valueRenderer: staffIre?.staffPost?.name,
+      valueEditor: (
+        <StaffPostsAutocomplete
+          inputProps={{ variant: 'standard' }}
+          controlProps={{ name: 'post' }}
         />
       ),
     },
@@ -96,33 +101,12 @@ const getEmploymentDataWitLabels = (
       ),
     },
     {
-      label: t('people:displayCode'),
-      value: displayCode,
-      valueEditor: (
-        <RHFTextField
-          textFieldProps={{ variant: 'standard' }}
-          controlProps={{ name: 'displayCode' }}
-        />
-      ),
-    },
-    {
       label: t('people:teacherCouncilNumber'),
-      value: staffIreTeacher?.teacherCouncilNumber,
+      value: staffIre?.teacherCouncilNumber,
       valueEditor: (
         <RHFTextField
           textFieldProps={{ variant: 'standard' }}
           controlProps={{ name: 'teacherCouncilNumber' }}
-        />
-      ),
-    },
-    {
-      // NOTE: at this stage, this value doesn't come from BE
-      label: t('people:jobSharing'),
-      value: null,
-      valueEditor: (
-        <RHFSwitch
-          switchProps={{ color: 'primary' }}
-          controlProps={{ name: 'jobSharing' }}
         />
       ),
     },
@@ -133,7 +117,7 @@ const getEmploymentDataWitLabels = (
             endDate ? dayjs(endDate).format('DD/MM/YYYY') : t('people:present')
           }`
         : '-',
-      value: startDate ? dayjs(startDate) : undefined,
+      value: startDate ? dayjs(startDate) : null,
       valueEditor: (
         <RHFDatePicker
           inputProps={{ variant: 'standard' }}
@@ -142,25 +126,83 @@ const getEmploymentDataWitLabels = (
       ),
     },
     {
-      // NOTE: at this stage, this value doesn't come from BE
       label: t('people:qualifications'),
-      value: null,
+      value: qualifications,
       valueEditor: (
         <RHFTextField
           textFieldProps={{ variant: 'standard' }}
-          controlProps={{ name: 'teacherCouncilNumber' }}
+          controlProps={{ name: 'qualifications' }}
+        />
+      ),
+    },
+    {
+      label: t('people:jobSharing'),
+      value: jobSharing,
+      valueRenderer: jobSharing ? t('common:yes') : t('common:no'),
+      valueEditor: (
+        <RHFSwitch
+          switchProps={{ color: 'primary' }}
+          controlProps={{ name: 'jobSharing' }}
+        />
+      ),
+    },
+    {
+      label: t('people:availableForTeaching'),
+      value: availableForTeaching,
+      valueRenderer: availableForTeaching ? t('common:yes') : t('common:no'),
+      valueEditor: (
+        <RHFSwitch
+          switchProps={{ color: 'primary' }}
+          controlProps={{ name: 'availableForTeaching' }}
+        />
+      ),
+    },
+    {
+      label: t('people:availableForSubstitution'),
+      value: availableForSubstitution,
+      valueRenderer: availableForSubstitution
+        ? t('common:yes')
+        : t('common:no'),
+      valueEditor: (
+        <RHFSwitch
+          switchProps={{ color: 'primary' }}
+          controlProps={{ name: 'availableForSubstitution' }}
+        />
+      ),
+    },
+    {
+      label: t('people:availableForSupportClasses'),
+      value: availableForSupportClasses,
+      valueRenderer: availableForSupportClasses
+        ? t('common:yes')
+        : t('common:no'),
+      valueEditor: (
+        <RHFSwitch
+          switchProps={{ color: 'primary' }}
+          controlProps={{ name: 'availableForSupportClasses' }}
+        />
+      ),
+    },
+    {
+      label: t('people:displayCode'),
+      value: displayCode,
+      valueEditor: (
+        <RHFTextField
+          textFieldProps={{ variant: 'standard' }}
+          controlProps={{ name: 'displayCode' }}
         />
       ),
     },
     {
       label: t('people:competencies'),
+      value: competencySubjects,
       valueRenderer:
-        competencies.length > 0 ? (
+        competencySubjects.length > 0 ? (
           <Stack flexDirection="row" flexWrap="wrap" gap={0.5}>
-            {competencies.map(({ name, colour }, index) => (
+            {competencySubjects.map(({ name, colour }, index) => (
               <Chip
                 key={name}
-                color={colour ?? getColorBasedOnIndex(index)}
+                color={colour || getColorBasedOnIndex(index)}
                 label={name}
               />
             ))}
@@ -168,7 +210,12 @@ const getEmploymentDataWitLabels = (
         ) : (
           '-'
         ),
-      value: subjectGroups,
+      valueEditor: (
+        <CompetencySubjectsAutocomplete
+          inputProps={{ variant: 'standard' }}
+          controlProps={{ name: 'competencies' }}
+        />
+      ),
     },
   ];
 };
@@ -176,11 +223,13 @@ const getEmploymentDataWitLabels = (
 type ProfileEmploymentProps = {
   staffData: ReturnType<typeof useStaffPersonal>['data'];
   editable?: boolean;
+  onSave: (data: UpsertStaffInput) => void;
 };
 
 export const ProfileEmployment = ({
   staffData,
   editable,
+  onSave,
 }: ProfileEmploymentProps) => {
   const { t } = useTranslation(['common', 'people']);
 
@@ -190,14 +239,26 @@ export const ProfileEmployment = ({
 
   const employmentResolver = resolver({
     startDate: rules.date(),
+    employmentCapacity: rules.required(),
   });
 
-  const handleEdit = async (data: EmploymentFormState) =>
-    new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(data);
-        resolve(data);
-      }, 300);
+  const handleEdit = ({
+    employmentCapacity,
+    startDate,
+    competencies,
+    post,
+    teacherCouncilNumber,
+    ...data
+  }: EmploymentFormState) =>
+    onSave({
+      employmentCapacity: employmentCapacity.id,
+      startDate: startDate ? startDate.format('YYYY-MM-DD') : null,
+      competencies: competencies?.map((competency) => competency.id),
+      staffIre: {
+        staffPost: post?.id,
+        teacherCouncilNumber,
+      },
+      ...data,
     });
 
   return (

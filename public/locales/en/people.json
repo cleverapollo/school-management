@@ -36,17 +36,7 @@
     "FEMALE": "Female",
     "UNKNOWN": "Unknown"
   },
-  "employmentCapacity": {
-    "title": "Employment capacity",
-    "PERMANENT": "Permanent",
-    "TEMPORARY": "Temporary",
-    "CONTRACTS_OF_INDEFINITE_DURATION": "Contracts of indefinite duration",
-    "REGULAR_PART_TIME": "Regular part time",
-    "PART_TIME": "Part time",
-    "VOLUNTARY": "Voluntary",
-    "UNKNOWN": "Unknown",
-    "PRIVATE": "Private"
-  },
+  "employmentCapacity": "Employment capacity",
   "personal": {
     "title": "Personal",
     "studentContactDetails": "Student's contact details",
@@ -123,7 +113,7 @@
   "createContact": "Create contact",
   "pageTitle": {
     "contacts": "List of contacts",
-    "createContact":"Add a new contact",
+    "createContact": "Add a new contact",
     "staff": "List of staff",
     "createStaff": "Add a new staff"
   },
@@ -142,8 +132,12 @@
   "contactSettingsDescription": "Permissions and preferences for this contact and student relationship",
   "successfullyCreatedContact": "Successfully created contact",
   "createdContactUnsuccessful": "Your contact creation was unsuccessful",
+  "successfullyUpdatedContact": "Successfully updated contact",
+  "updatedContactUnsuccessful": "Your contact edition was unsuccessful",
   "successfullyCreatedStaff": "Successfully created staff",
+  "successfullyUpdatedStaff": "Successfully updated staff",
   "createdStaffUnsuccessful": "Your staff creation was unsuccessful",
+  "updatedStaffUnsuccessful": "Your staff edition was unsuccessful",
   "allowedToContactRequired": "Permission to receive correspondence is required to enable this permission",
   "contactSettingsPermissions": {
     "legalGuardian": "Is the contact a legal guardian of this student?",
@@ -168,5 +162,8 @@
   "displayCode": "Display code",
   "availableForTeaching": "Available for teaching",
   "availableForSubstitution": "Available for substitution",
-  "availableForSupportClasses": "Available for support classes"
+  "availableForSupportClasses": "Available for support classes",
+  "position": "Position",
+  "parkingLocation": "Parking location",
+  "makeAndModel": "Make and model"
 }

@@ -13,7 +13,7 @@ import {
   PrimaryAddressFormState,
 } from '../../common/primary-address';
 import { NextOfKin, NextOfKinFormState } from './next-of-kin';
-import { useCreateStaff } from '../../../api/staff/create-staff';
+import { useUpsertStaff } from '../../../api/staff/upsert-staff';
 import {
   EmploymentInformation,
   EmploymentInformationFormState,
@@ -34,7 +34,7 @@ export function StaffForm() {
     onClose: onCloseCancelModal,
   } = useDisclosure();
 
-  const { mutate: createStaffMutation, isLoading } = useCreateStaff();
+  const { mutate: upsertStaffMutation, isLoading } = useUpsertStaff();
 
   const { resolver, rules } = useFormValidator<StaffFormState>();
   const {
@@ -95,7 +95,7 @@ export function StaffForm() {
       nextOfKinAdditionalNumber,
     ].filter(Boolean);
 
-    createStaffMutation(
+    upsertStaffMutation(
       [
         {
           ...data,

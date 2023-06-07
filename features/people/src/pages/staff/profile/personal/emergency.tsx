@@ -1,18 +1,17 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { RHFTextField, useFormValidator } from '@tyro/core';
-import { CreateNextOfKin } from '@tyro/api';
+import { StaffEmergencyContact, UpsertStaffInput } from '@tyro/api';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
   CardEditableForm,
   CardEditableFormProps,
 } from '../../../../components/common/card-editable-form';
-import { MobileNumberData } from '../../../../components/common/mobile-number';
 
 type EmergencyFormState = {
-  firstName: CreateNextOfKin['firstName'];
-  lastName: CreateNextOfKin['lastName'];
-  primaryNumber: MobileNumberData | null;
-  additionalNumber: MobileNumberData | null;
+  firstName: StaffEmergencyContact['firstName'];
+  lastName: StaffEmergencyContact['lastName'];
+  primaryNumber: StaffEmergencyContact['primaryNumber'];
+  additionalNumber: StaffEmergencyContact['additionalNumber'];
 };
 
 const getEmergencyDataWitLabels = (
@@ -71,11 +70,13 @@ const getEmergencyDataWitLabels = (
 type ProfileEmergencyProps = {
   staffData: ReturnType<typeof useStaffPersonal>['data'];
   editable?: boolean;
+  onSave: (data: UpsertStaffInput) => void;
 };
 
 export const ProfileEmergency = ({
   staffData,
   editable,
+  onSave,
 }: ProfileEmergencyProps) => {
   const { t } = useTranslation(['common', 'people']);
 
@@ -88,13 +89,8 @@ export const ProfileEmergency = ({
     additionalNumber: rules.isPhoneNumber(),
   });
 
-  const handleEdit = async (data: EmergencyFormState) =>
-    new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(data);
-        resolve(data);
-      }, 300);
-    });
+  const handleEdit = (emergencyContact: EmergencyFormState) =>
+    onSave({ emergencyContact });
 
   return (
     <CardEditableForm<EmergencyFormState>
@@ -103,6 +99,7 @@ export const ProfileEmergency = ({
       fields={emergencyDataWithLabels}
       resolver={emergencyResolver}
       onSave={handleEdit}
+      sx={{ height: '100%' }}
     />
   );
 };

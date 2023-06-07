@@ -1,32 +1,22 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
-import {
-  RHFTextField,
-  RHFSelect,
-  RHFDatePicker,
-  useFormValidator,
-} from '@tyro/core';
+import { RHFTextField, RHFDatePicker, useFormValidator } from '@tyro/core';
 import dayjs from 'dayjs';
 
-import {
-  CreateStaffInput,
-  Gender,
-  InputAddress,
-  PersonalTitle,
-} from '@tyro/api';
+import { UpsertStaffInput, InputAddress, PersonalTitle } from '@tyro/api';
+import { useMemo } from 'react';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
   CardEditableForm,
   CardEditableFormProps,
 } from '../../../../components/common/card-editable-form';
 import { PersonalTitlesDropdown } from '../../../../components/common/personal-titles-dropdown';
-
-const genderOptions = Object.values(Gender);
+import { GenderDropdown } from '../../../../components/common/gender-dropdown';
 
 type AboutFormState = {
-  title: PersonalTitle;
-  firstName: CreateStaffInput['firstName'];
-  lastName: CreateStaffInput['lastName'];
-  gender: CreateStaffInput['gender'];
+  title: PersonalTitle | null;
+  firstName: UpsertStaffInput['firstName'];
+  lastName: UpsertStaffInput['lastName'];
+  gender: UpsertStaffInput['gender'];
   dateOfBirth: dayjs.Dayjs | null;
   ppsNumber: string | null | undefined;
   line1: InputAddress['line1'];
@@ -35,14 +25,22 @@ type AboutFormState = {
   city: InputAddress['city'];
   country: InputAddress['country'];
   eircode: InputAddress['postCode'];
-  carRegistrationNumber: CreateStaffInput['carRegistrationNumber'];
+  carRegistrationNumber: UpsertStaffInput['carRegistrationNumber'];
+  makeAndModel: UpsertStaffInput['makeAndModel'];
+  parking: UpsertStaffInput['parking'];
 };
 
 const getAboutDataWithLabels = (
   data: ReturnType<typeof useStaffPersonal>['data'],
   t: TFunction<'people'[]>
 ): CardEditableFormProps<AboutFormState>['fields'] => {
-  const { person, personalInformation, carRegistrationNumber } = data || {};
+  const {
+    person,
+    personalInformation,
+    carRegistrationNumber,
+    makeAndModel,
+    parking,
+  } = data || {};
   const { gender, dateOfBirth, ire, primaryAddress } =
     personalInformation || {};
 
@@ -82,18 +80,12 @@ const getAboutDataWithLabels = (
       value: gender,
       valueRenderer: gender ? t(`people:gender.${gender}`) : '-',
       valueEditor: (
-        <RHFSelect<AboutFormState, Gender>
-          variant="standard"
-          fullWidth
-          options={genderOptions}
-          getOptionLabel={(option) => t(`people:gender.${option}`)}
-          controlProps={{ name: 'gender' }}
-        />
+        <GenderDropdown variant="standard" controlProps={{ name: 'gender' }} />
       ),
     },
     {
       label: t('people:personal.about.dateOfBirth'),
-      value: dateOfBirth ? dayjs(dateOfBirth) : undefined,
+      value: dateOfBirth ? dayjs(dateOfBirth) : null,
       valueRenderer: dateOfBirth
         ? dayjs(dateOfBirth).format('DD/MM/YYYY')
         : '-',
@@ -184,18 +176,46 @@ const getAboutDataWithLabels = (
         />
       ),
     },
+    {
+      label: t('people:makeAndModel'),
+      value: makeAndModel,
+      valueEditor: (
+        <RHFTextField
+          textFieldProps={{ variant: 'standard' }}
+          controlProps={{ name: 'makeAndModel' }}
+        />
+      ),
+    },
+    {
+      label: t('people:parkingLocation'),
+      value: parking,
+      valueEditor: (
+        <RHFTextField
+          textFieldProps={{ variant: 'standard' }}
+          controlProps={{ name: 'parking' }}
+        />
+      ),
+    },
   ];
 };
 
 type ProfileAboutProps = {
   staffData: ReturnType<typeof useStaffPersonal>['data'];
   editable?: boolean;
+  onSave: (data: UpsertStaffInput) => void;
 };
 
-export const ProfileAbout = ({ staffData, editable }: ProfileAboutProps) => {
+export const ProfileAbout = ({
+  staffData,
+  editable,
+  onSave,
+}: ProfileAboutProps) => {
   const { t } = useTranslation(['people']);
 
-  const aboutDataWithLabels = getAboutDataWithLabels(staffData, t);
+  const aboutDataWithLabels = useMemo(
+    () => getAboutDataWithLabels(staffData, t),
+    [staffData]
+  );
 
   const { resolver, rules } = useFormValidator<AboutFormState>();
 
@@ -205,13 +225,44 @@ export const ProfileAbout = ({ staffData, editable }: ProfileAboutProps) => {
     dateOfBirth: rules.date(),
   });
 
-  const handleEdit = async (data: AboutFormState) =>
-    new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(data);
-        resolve(data);
-      }, 300);
+  const handleEdit = ({
+    title,
+    dateOfBirth,
+    ppsNumber,
+    line1,
+    line2,
+    line3,
+    eircode: postCode,
+    city,
+    country,
+    ...data
+  }: AboutFormState) => {
+    const hasAddress = city || country || line1 || line2 || line3 || postCode;
+
+    return onSave({
+      ...data,
+      id: staffData?.partyId,
+      titleId: title?.id,
+      dateOfBirth: dateOfBirth ? dateOfBirth.format('YYYY-MM-DD') : undefined,
+      staffIre: {
+        pps: ppsNumber,
+      },
+      ...(hasAddress && {
+        addresses: [
+          {
+            primaryAddress: true,
+            active: true,
+            city,
+            country,
+            line1,
+            line2,
+            line3,
+            postCode,
+          },
+        ],
+      }),
     });
+  };
 
   return (
     <CardEditableForm<AboutFormState>

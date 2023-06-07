@@ -18,7 +18,13 @@ import {
   Resolver,
 } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
-import { ReactNode, ReactElement, cloneElement, useState } from 'react';
+import {
+  ReactNode,
+  ReactElement,
+  cloneElement,
+  useState,
+  useEffect,
+} from 'react';
 
 type CardEditableField<TField extends FieldValues> = {
   label: string;
@@ -35,7 +41,7 @@ export type CardEditableFormProps<TField extends FieldValues> = CardProps & {
   editable?: boolean;
   fields: Array<CardEditableField<TField>>;
   resolver?: Resolver<TField>;
-  onSave: (data: TField) => Promise<unknown>;
+  onSave: (data: TField) => void;
 };
 
 export const CardEditableForm = <TField extends FieldValues>({
@@ -55,15 +61,15 @@ export const CardEditableForm = <TField extends FieldValues>({
 
   const { control, handleSubmit, reset } = useForm<TField>({ resolver });
 
-  const handleSave = async (data: TField) => {
-    try {
-      setIsSubmitting(true);
-      await onSave(data);
-    } finally {
-      setIsEditMode(false);
-      setIsSubmitting(false);
-    }
+  const handleSave = (data: TField) => {
+    setIsSubmitting(true);
+    onSave(data);
   };
+
+  useEffect(() => {
+    setIsEditMode(false);
+    setIsSubmitting(false);
+  }, [fields]);
 
   const handleCancel = () => {
     setIsEditMode(false);
