@@ -39,7 +39,7 @@ export default function CalendarPage() {
 
   return (
     <Page title={t('calendar:calendar')}>
-      <Container maxWidth="xl">
+      <Container maxWidth={false} sx={{ maxWidth: 1980 }}>
         <Typography variant="h3" component="h1" paragraph>
           {t('calendar:calendar')}
         </Typography>

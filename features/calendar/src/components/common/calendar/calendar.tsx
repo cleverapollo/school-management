@@ -88,10 +88,10 @@ export const Calendar = function Calendar({
     visableEventTypes
   );
 
-  const businessHours = useMemo(() => {
+  const weekHours = useMemo(() => {
     const currentDate = dayjs(date).startOf('week').format('YYYY-MM-DD');
-    return data?.businessHours.get(currentDate);
-  }, [data?.businessHours, date]);
+    return data?.weekHours.get(currentDate);
+  }, [data?.weekHours, date]);
 
   const selectedEvent = useMemo(() => {
     if (selectedEventId) {
@@ -250,9 +250,11 @@ export const Calendar = function Calendar({
                 eventResize={handleResizeEvent}
                 eventMinHeight={48}
                 slotEventOverlap={false}
-                height={isDesktop ? 720 : 'auto'}
+                height="auto"
                 selectConstraint={SELECTABLE_EVENT_CONSTRAINT}
-                businessHours={businessHours}
+                slotMinTime={weekHours?.slotMinTime}
+                slotMaxTime={weekHours?.slotMaxTime}
+                businessHours={weekHours?.businessHours}
                 nowIndicator
                 plugins={[
                   listPlugin,
@@ -266,8 +268,10 @@ export const Calendar = function Calendar({
                 dayHeaderContent={getDayHeaderContent}
                 resourceAreaWidth={200}
                 scrollTime={
-                  Array.isArray(businessHours) && businessHours.length > 0
-                    ? businessHours[0].startTime
+                  weekHours?.businessHours &&
+                  Array.isArray(weekHours.businessHours) &&
+                  weekHours.businessHours.length > 0
+                    ? weekHours.businessHours[0].startTime
                     : '08:00:00'
                 }
                 schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
