@@ -37,7 +37,7 @@ export const RHFAutocomplete = <
 
   return (
     <Autocomplete
-      value={value}
+      value={value ?? null}
       onChange={(event, newValue, ...restParams) => {
         onChange(newValue);
         restAutocompleteProps.onChange?.(event, newValue, ...restParams);
