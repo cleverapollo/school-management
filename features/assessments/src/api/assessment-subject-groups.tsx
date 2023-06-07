@@ -20,7 +20,11 @@ const assessmentSubjectGroupsList = graphql(/* GraphQL */ `
           name
         }
         staff {
-          title
+          title {
+            id
+            name
+            nameTextId
+          }
           firstName
           lastName
         }

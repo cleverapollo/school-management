@@ -12,8 +12,11 @@ const syncFromPpod = graphql(/* GraphQL */ `
       requesterPartyId
       requester {
         partyId
-        title
-        titleId
+        title {
+          id
+          name
+          nameTextId
+        }
         firstName
         lastName
         avatarUrl

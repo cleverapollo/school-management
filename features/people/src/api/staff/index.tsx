@@ -7,7 +7,11 @@ const staff = graphql(/* GraphQL */ `
     core_staff(filter: $filter) {
       partyId
       person {
-        title
+        title {
+          id
+          name
+          nameTextId
+        }
         firstName
         lastName
         avatarUrl
@@ -43,7 +47,11 @@ const staffInfoForSelect = graphql(/* GraphQL */ `
     core_staff(filter: $filter) {
       person {
         partyId
-        title
+        title {
+          nameTextId
+          id
+          name
+        }
         firstName
         lastName
         avatarUrl

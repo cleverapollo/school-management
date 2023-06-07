@@ -24,7 +24,11 @@ const assessmentsList = graphql(/* GraphQL */ `
       createdOn
       createdBy {
         type
-        title
+        title {
+          id
+          name
+          nameTextId
+        }
         firstName
         lastName
         avatarUrl
@@ -77,7 +81,11 @@ const assessment = graphql(/* GraphQL */ `
       }
       createdBy {
         type
-        title
+        title {
+          id
+          name
+          nameTextId
+        }
         firstName
         lastName
         avatarUrl

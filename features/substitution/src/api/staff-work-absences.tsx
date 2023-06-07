@@ -14,7 +14,11 @@ const staffWorkAbsences = graphql(/* GraphQL */ `
     staffWork_absences(filter: $filter) {
       absenceId
       staff {
-        title
+        title {
+          id
+          name
+          nameTextId
+        }
         firstName
         lastName
         avatarUrl
