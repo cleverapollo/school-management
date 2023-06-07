@@ -13,6 +13,7 @@ import {
   InputEmailAddress,
   UpsertStudentContactInput,
 } from '@tyro/api';
+import { useMemo } from 'react';
 import { useContactPersonal } from '../../../../api/contact/personal';
 import {
   MobileNumber,
@@ -271,7 +272,10 @@ export const ProfileAbout = ({
 }: ProfileAboutProps) => {
   const { t } = useTranslation(['common', 'people']);
 
-  const aboutDataWithLabels = getAboutDataWithLabels(contactData, t);
+  const aboutDataWithLabels = useMemo(
+    () => getAboutDataWithLabels(contactData, t),
+    [contactData]
+  );
 
   const { resolver, rules } = useFormValidator<AboutFormState>();
 

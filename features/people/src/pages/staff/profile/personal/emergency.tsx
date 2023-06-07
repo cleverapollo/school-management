@@ -1,6 +1,7 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { RHFTextField, useFormValidator } from '@tyro/core';
 import { StaffEmergencyContact, UpsertStaffInput } from '@tyro/api';
+import { useMemo } from 'react';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
   CardEditableForm,
@@ -80,7 +81,10 @@ export const ProfileEmergency = ({
 }: ProfileEmergencyProps) => {
   const { t } = useTranslation(['common', 'people']);
 
-  const emergencyDataWithLabels = getEmergencyDataWitLabels(staffData, t);
+  const emergencyDataWithLabels = useMemo(
+    () => getEmergencyDataWitLabels(staffData, t),
+    [staffData]
+  );
 
   const { resolver, rules } = useFormValidator<EmergencyFormState>();
 

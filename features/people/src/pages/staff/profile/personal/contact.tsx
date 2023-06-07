@@ -2,6 +2,7 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import { formatPhoneNumber, RHFTextField, useFormValidator } from '@tyro/core';
 
 import { InputEmailAddress, UpsertStaffInput } from '@tyro/api';
+import { useMemo } from 'react';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
   CardEditableForm,
@@ -111,7 +112,10 @@ export const ProfileContact = ({
 }: ProfileContactProps) => {
   const { t } = useTranslation(['common', 'people']);
 
-  const contactDataWithLabels = getContactDataWithLabels(staffData, t);
+  const contactDataWithLabels = useMemo(
+    () => getContactDataWithLabels(staffData, t),
+    [staffData]
+  );
 
   const { resolver, rules } = useFormValidator<ContactFormState>();
 

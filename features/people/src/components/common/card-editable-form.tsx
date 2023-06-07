@@ -59,11 +59,20 @@ export const CardEditableForm = <TField extends FieldValues>({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 
-  const { control, handleSubmit, reset } = useForm<TField>({ resolver });
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isDirty },
+  } = useForm<TField>({ resolver });
 
   const handleSave = (data: TField) => {
-    setIsSubmitting(true);
-    onSave(data);
+    if (isDirty) {
+      setIsSubmitting(true);
+      onSave(data);
+    } else {
+      setIsEditMode(false);
+    }
   };
 
   useEffect(() => {

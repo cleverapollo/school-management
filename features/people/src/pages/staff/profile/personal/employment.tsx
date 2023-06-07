@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 
 import { UpsertStaffInput, getColorBasedOnIndex, StaffIre } from '@tyro/api';
 import { CatalogueSubjectOption } from '@tyro/settings';
+import { useMemo } from 'react';
 import { EmploymentCapacityAutocomplete } from '../../../../components/common/employment-capacity-autocomplete';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
@@ -233,7 +234,10 @@ export const ProfileEmployment = ({
 }: ProfileEmploymentProps) => {
   const { t } = useTranslation(['common', 'people']);
 
-  const employmentDataWithLabels = getEmploymentDataWitLabels(staffData, t);
+  const employmentDataWithLabels = useMemo(
+    () => getEmploymentDataWitLabels(staffData, t),
+    [staffData]
+  );
 
   const { resolver, rules } = useFormValidator<EmploymentFormState>();
 
