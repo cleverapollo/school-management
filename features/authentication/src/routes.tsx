@@ -6,6 +6,7 @@ import { RouteObject, redirect } from 'react-router-dom';
 import LoadingScreen from '../../../src/components/LoadingScreen';
 
 const Login = lazy(() => import('./pages/login'));
+const Logout = lazy(() => import('./pages/logout'));
 const Callback = lazy(() => import('./pages/callback'));
 const Unauthorized = lazy(() => import('./pages/unauthorized'));
 
@@ -53,9 +54,10 @@ export const routes: RouteObject[] = [
   },
   {
     path: '/logout',
-    loader: () => {
-      clearUsersData();
-      return redirect('/login');
-    },
+    element: (
+      <Loadable>
+        <Logout />
+      </Loadable>
+    ),
   },
 ];

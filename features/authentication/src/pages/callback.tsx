@@ -11,7 +11,7 @@ export default function Callback() {
 
   useEffect(() => {
     if (!isLoading) {
-      navigate(activeProfile ? '/dashboard' : '/login');
+      navigate(activeProfile ? '/calendar' : '/login');
     }
   }, [navigate, activeProfile, isLoading]);
 

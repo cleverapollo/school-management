@@ -74,7 +74,7 @@ export const msalConfig = {
       environmentMsalConfig.b2cPolicies.authorities.signUpSignIn.authority, // Use a sign-up/sign-in user-flow as a default authority
     knownAuthorities: [environmentMsalConfig.b2cPolicies.authorityDomain], // Mark your B2C tenant's domain as trusted.
     redirectUri: `${window.location.origin}/auth/callback`, // Points to window.location.origin. You must register this URI on Azure Portal/App Registration.
-    postLogoutRedirectUri: '/logout', // Indicates the page to navigate after logout.
+    postLogoutRedirectUri: '/login', // Indicates the page to navigate after logout.
     navigateToLoginRequestUrl: false, // If "true", will navigate back to the original request location before processing the auth code response.
   },
   cache: {
