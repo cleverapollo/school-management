@@ -44,9 +44,9 @@ const getCardStyle = (
     alignItems: 'center',
     justifyContent: 'space-between',
     userSelect: 'none',
-    padding: 1,
-    marginBottom: 1,
-    borderRadius: 1,
+    padding: 0.75,
+    marginBottom: 0.75,
+    borderRadius: 0.75,
     opacity: isGhosting ? 0.8 : 1,
     backgroundColor,
     transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
@@ -170,11 +170,15 @@ export function DraggableCard({
                   justifyContent: 'center',
                   alignItems: 'center',
                   my: 0.5,
-                  mr: 1.5,
+                  mr: 1,
                   position: 'relative',
                 }}
               >
-                <Avatar src={student?.person.avatarUrl} name={name} />
+                <Avatar
+                  src={student?.person.avatarUrl}
+                  name={name}
+                  sx={{ width: 30, height: 30, fontSize: '0.6875rem' }}
+                />
                 <Box
                   aria-hidden
                   sx={{
@@ -188,8 +192,8 @@ export function DraggableCard({
                     bottom: 0,
                     borderRadius: '50%',
                     backgroundColor: 'white',
-                    width: 40,
-                    height: 40,
+                    width: 30,
+                    height: 30,
                     opacity: isCardSelected ? 1 : 0,
                     color: 'primary.main',
                     transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
@@ -203,7 +207,11 @@ export function DraggableCard({
                   <CheckmarkIcon />
                 </Box>
               </Box>
-              <Typography component="span" variant="subtitle1">
+              <Typography
+                component="span"
+                variant="subtitle2"
+                sx={{ fontSize: '0.75rem', lineHeight: 1.5 }}
+              >
                 {name}
               </Typography>
             </Box>
