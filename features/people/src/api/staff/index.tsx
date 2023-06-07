@@ -12,10 +12,12 @@ const staff = graphql(/* GraphQL */ `
         lastName
         avatarUrl
       }
+      employmentCapacity {
+        name
+      }
       startDate
       endDate
       personalInformation {
-        preferredFirstName
         gender
         primaryPhoneNumber {
           number
@@ -23,21 +25,15 @@ const staff = graphql(/* GraphQL */ `
         primaryEmail {
           email
         }
+        ire {
+          ppsNumber
+        }
       }
       staffIre {
-        pps
-        religion
-        countryOfBirth
-      }
-      staffIreTeacher {
-        teachingPost
         teacherCouncilNumber
       }
-      payrollNumber
-      noLongerStaffMember
-      employmentCapacity
-      displayCode
       carRegistrationNumber
+      parking
     }
   }
 `);

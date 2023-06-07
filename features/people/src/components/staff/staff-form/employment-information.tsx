@@ -1,21 +1,21 @@
 import { Grid, Typography } from '@mui/material';
-import { RHFSelect, RHFDatePicker, RHFSwitch, RHFTextField } from '@tyro/core';
+import { RHFDatePicker, RHFSwitch, RHFTextField } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { Control } from 'react-hook-form';
 
-import { CreateStaffInput, EmploymentCapacity } from '@tyro/api';
+import { UpsertStaffInput } from '@tyro/api';
 import dayjs from 'dayjs';
+import { EmploymentCapacityAutocomplete } from '../../common/employment-capacity-autocomplete';
+import { EmploymentCapacityOption } from '../../../api/staff/employment-capacities';
 
 export type EmploymentInformationFormState = {
-  employmentCapacity: CreateStaffInput['employmentCapacity'];
-  availableForTeaching: CreateStaffInput['availableForTeaching'];
-  availableForSubstitution: CreateStaffInput['availableForSubstitution'];
-  availableForSupportClasses: CreateStaffInput['availableForSupportClasses'];
-  displayCode: CreateStaffInput['displayCode'];
   startDate: dayjs.Dayjs;
+  position?: string;
+  employmentCapacity: EmploymentCapacityOption;
+  availableForTeaching: UpsertStaffInput['availableForTeaching'];
+  availableForSubstitution: UpsertStaffInput['availableForSubstitution'];
+  availableForSupportClasses: UpsertStaffInput['availableForSupportClasses'];
 };
-
-const employmentCapacityOptions = Object.values(EmploymentCapacity);
 
 type EmploymentInformationProps<TField extends EmploymentInformationFormState> =
   {
@@ -46,22 +46,19 @@ export const EmploymentInformation = <
         />
       </Grid>
       <Grid item xs={12} sm={6}>
-        <RHFSelect<EmploymentInformationFormState, EmploymentCapacity>
-          fullWidth
-          label={t('people:employmentCapacity.title')}
-          options={employmentCapacityOptions}
-          getOptionLabel={(option) => t(`people:employmentCapacity.${option}`)}
+        <RHFTextField
+          label={t('people:position')}
+          textFieldProps={{ fullWidth: true }}
+          controlProps={{ name: 'position', control }}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <EmploymentCapacityAutocomplete
+          label={t('people:employmentCapacity')}
           controlProps={{
             name: 'employmentCapacity',
             control,
           }}
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <RHFTextField
-          label={t('people:displayCode')}
-          textFieldProps={{ fullWidth: true }}
-          controlProps={{ name: 'displayCode', control }}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
