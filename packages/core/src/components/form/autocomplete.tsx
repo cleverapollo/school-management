@@ -28,11 +28,11 @@ export const RHFAutocomplete = <
     field: { value, onChange, ref, name },
     fieldState: { error },
   } = useController({
-    ...controlProps,
     defaultValue: (restAutocompleteProps.multiple ? [] : null) as PathValue<
       TField,
       Path<TField>
     >,
+    ...controlProps,
   });
 
   return (

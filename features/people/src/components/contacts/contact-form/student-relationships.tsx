@@ -13,7 +13,7 @@ import {
   Stack,
 } from '@mui/material';
 import {
-  StudentContactRelationshipInfoInput,
+  UpsertStudentContactRelationshipInfoInput,
   StudentContactType,
 } from '@tyro/api';
 import {
@@ -45,7 +45,7 @@ import {
 const relationshipTypeOptions = Object.values(StudentContactType);
 const priorityOptions = Array.from({ length: 5 }, (_v, k) => k + 1);
 
-export type StudentRelationship = StudentContactRelationshipInfoInput & {
+export type StudentRelationship = UpsertStudentContactRelationshipInfoInput & {
   student: StudentSelectOption;
   enableAll: boolean;
 };
@@ -64,7 +64,7 @@ type StudentRelationshipsProps<TField extends StudentRelationshipsFormState> = {
 };
 
 type CustomSettings = {
-  keyName: keyof StudentContactRelationshipInfoInput;
+  keyName: keyof UpsertStudentContactRelationshipInfoInput;
   label: string;
   checked: boolean;
   disabled?: boolean;
