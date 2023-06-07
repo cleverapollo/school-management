@@ -35,7 +35,7 @@ type AboutFormState = {
   dateOfBirth: dayjs.Dayjs | null;
   gender: PersonalInformation['gender'];
   countryOfBirth: PersonalInformationIre['countryOfBirth'];
-  nativeLanguage: StudentContact['nativeLanguage'];
+  // nativeLanguage: StudentContact['nativeLanguage'];
   requiresInterpreter: StudentContact['requiresInterpreter'];
   line1: InputAddress['line1'];
   line2: InputAddress['line2'];
@@ -58,7 +58,7 @@ const getAboutDataWithLabels = (
   const {
     partyId,
     personalInformation,
-    nativeLanguage,
+    // nativeLanguage,
     requiresInterpreter,
     occupation,
   } = data || {};
@@ -154,16 +154,16 @@ const getAboutDataWithLabels = (
         />
       ),
     },
-    {
-      label: t('people:personal.about.spokenLanguage'),
-      value: nativeLanguage,
-      valueEditor: (
-        <RHFTextField
-          textFieldProps={{ variant: 'standard' }}
-          controlProps={{ name: 'nativeLanguage' }}
-        />
-      ),
-    },
+    // {
+    //   label: t('people:personal.about.spokenLanguage'),
+    //   value: nativeLanguage,
+    //   valueEditor: (
+    //     <RHFTextField
+    //       textFieldProps={{ variant: 'standard' }}
+    //       controlProps={{ name: 'nativeLanguage' }}
+    //     />
+    //   ),
+    // },
     {
       label: t('people:personal.about.requiresInterpreter'),
       value: requiresInterpreter,

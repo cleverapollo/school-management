@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 
 import {
-  CreateStudentContactInput,
+  UpsertStudentContactInput,
   gqlClient,
   queryClient,
   graphql,
@@ -11,8 +11,8 @@ import { useToast } from '@tyro/core';
 import { peopleContactsKeys } from './keys';
 
 const createContact = graphql(/* GraphQL */ `
-  mutation core_createStudentContact($input: CreateStudentContactInput!) {
-    core_createStudentContact(input: $input) {
+  mutation core_upsertStudentContact($input: UpsertStudentContactInput!) {
+    core_upsertStudentContact(input: $input) {
       partyId
     }
   }
@@ -24,7 +24,7 @@ export function useCreateContact() {
 
   return useMutation({
     mutationKey: peopleContactsKeys.createContact(),
-    mutationFn: async (input: CreateStudentContactInput) =>
+    mutationFn: async (input: UpsertStudentContactInput) =>
       gqlClient.request(createContact, { input }),
     onSuccess: () => {
       toast(t('people:successfullyCreatedContact'));

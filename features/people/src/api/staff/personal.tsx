@@ -59,6 +59,7 @@ const staffPersonal = graphql(/* GraphQL */ `
       }
       payrollNumber
       employmentCapacity {
+        id
         name
       }
       displayCode

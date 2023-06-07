@@ -16,6 +16,7 @@ import {
   Staff,
   // CreateStaffTeacherIre,
 } from '@tyro/api';
+import { EmploymentCapacityAutocomplete } from '../../../../components/common/employment-capacity-autocomplete';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
   CardEditableForm,
@@ -42,7 +43,7 @@ const getEmploymentDataWitLabels = (
 ): CardEditableFormProps<EmploymentFormState>['fields'] => {
   const {
     payrollNumber,
-    // employmentCapacity,
+    employmentCapacity,
     // staffIreTeacher,
     startDate,
     endDate,
@@ -69,29 +70,17 @@ const getEmploymentDataWitLabels = (
     //     />
     //   ),
     // },
-    // {
-    //   label: t('people:capacity'),
-    //   valueRenderer: employmentCapacity
-    //     ? t(`people:employmentCapacity.${employmentCapacity}`)
-    //     : '-',
-    //   value: employmentCapacity,
-
-    //   valueEditor: (
-    //     <PersonalTitlesDropdown
-    //       inputProps={{ variant: 'standard' }}
-    //       controlProps={{ name: 'title' }}
-    //     />
-    //   ),
-    // valueEditor: (
-    //   <RHFSelect<EmploymentFormState, EmploymentCapacity>
-    //     variant="standard"
-    //     fullWidth
-    //     options={employmentCapacityOptions}
-    //     getOptionLabel={(option) => t(`people:employmentCapacity.${option}`)}
-    //     controlProps={{ name: 'capacity' }}
-    //   />
-    // ),
-    // },
+    {
+      label: t('people:capacity'),
+      value: employmentCapacity,
+      valueRenderer: employmentCapacity?.name,
+      valueEditor: (
+        <EmploymentCapacityAutocomplete
+          inputProps={{ variant: 'standard' }}
+          controlProps={{ name: 'employmentCapacity' }}
+        />
+      ),
+    },
     {
       label: t('people:payrollNumber'),
       value: payrollNumber,
@@ -159,24 +148,24 @@ const getEmploymentDataWitLabels = (
         />
       ),
     },
-    {
-      label: t('people:competencies'),
-      valueRenderer:
-        competencies.length > 0 ? (
-          <Stack flexDirection="row" flexWrap="wrap" gap={0.5}>
-            {competencies.map(({ name, colour }, index) => (
-              <Chip
-                key={name}
-                color={colour ?? getColorBasedOnIndex(index)}
-                label={name}
-              />
-            ))}
-          </Stack>
-        ) : (
-          '-'
-        ),
-      value: subjectGroups,
-    },
+    // {
+    //   label: t('people:competencies'),
+    //   valueRenderer:
+    //     competencies.length > 0 ? (
+    //       <Stack flexDirection="row" flexWrap="wrap" gap={0.5}>
+    //         {competencies.map(({ name, colour }, index) => (
+    //           <Chip
+    //             key={name}
+    //             color={colour ?? getColorBasedOnIndex(index)}
+    //             label={name}
+    //           />
+    //         ))}
+    //       </Stack>
+    //     ) : (
+    //       '-'
+    //     ),
+    //   value: subjectGroups,
+    // },
   ];
 };
 
