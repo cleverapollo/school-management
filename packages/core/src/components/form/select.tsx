@@ -5,7 +5,7 @@ import {
 } from 'react-hook-form';
 import { Select, SelectProps } from '../select';
 
-type RHFSelectProps<TField extends FieldValues, TSelectOption> = {
+export type RHFSelectProps<TField extends FieldValues, TSelectOption> = {
   controlProps: UseControllerProps<TField>;
 } & SelectProps<TSelectOption>;
 
