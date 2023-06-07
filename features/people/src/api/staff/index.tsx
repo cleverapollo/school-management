@@ -23,19 +23,23 @@ const staff = graphql(/* GraphQL */ `
         primaryEmail {
           email
         }
+        ire {
+          ppsNumber
+          religion
+          countryOfBirth
+        }
       }
       staffIre {
-        pps
-        religion
-        countryOfBirth
-      }
-      staffIreTeacher {
-        teachingPost
         teacherCouncilNumber
+        staffPost {
+          name
+        }
       }
       payrollNumber
       noLongerStaffMember
-      employmentCapacity
+      employmentCapacity {
+        name
+      }
       displayCode
       carRegistrationNumber
     }

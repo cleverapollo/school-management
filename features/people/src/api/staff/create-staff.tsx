@@ -1,13 +1,13 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { CreateStaffInput, gqlClient, queryClient, graphql } from '@tyro/api';
+import { UpsertStaffInput, gqlClient, queryClient, graphql } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
 import { peopleStaffKeys } from './keys';
 
-const createStaff = graphql(/* GraphQL */ `
-  mutation core_createStaff($input: [CreateStaffInput]) {
-    core_createStaff(input: $input) {
+const upsertStaff = graphql(/* GraphQL */ `
+  mutation core_upsertStaff($input: [UpsertStaffInput]) {
+    core_upsertStaff(input: $input) {
       partyId
     }
   }
@@ -18,9 +18,9 @@ export function useCreateStaff() {
   const { t } = useTranslation(['people']);
 
   return useMutation({
-    mutationKey: peopleStaffKeys.createStaff(),
-    mutationFn: async (input: [CreateStaffInput]) =>
-      gqlClient.request(createStaff, { input }),
+    mutationKey: peopleStaffKeys.upsertStaff(),
+    mutationFn: async (input: [UpsertStaffInput]) =>
+      gqlClient.request(upsertStaff, { input }),
     onSuccess: () => {
       toast(t('people:successfullyCreatedStaff'));
       queryClient.invalidateQueries(peopleStaffKeys.all);

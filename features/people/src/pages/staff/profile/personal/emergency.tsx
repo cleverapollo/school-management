@@ -1,6 +1,6 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { RHFTextField, useFormValidator } from '@tyro/core';
-import { CreateNextOfKin } from '@tyro/api';
+import { InputNextOfKin } from '@tyro/api';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
   CardEditableForm,
@@ -9,8 +9,8 @@ import {
 import { MobileNumberData } from '../../../../components/common/mobile-number';
 
 type EmergencyFormState = {
-  firstName: CreateNextOfKin['firstName'];
-  lastName: CreateNextOfKin['lastName'];
+  firstName: InputNextOfKin['firstName'];
+  lastName: InputNextOfKin['lastName'];
   primaryNumber: MobileNumberData | null;
   additionalNumber: MobileNumberData | null;
 };

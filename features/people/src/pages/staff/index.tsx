@@ -54,14 +54,14 @@ const getStaffColumns = (
     field: 'staffIreTeacher.teachingPost',
     headerName: t('people:post'),
   },
-  {
-    field: 'employmentCapacity',
-    headerName: t('common:capacity'),
-    valueGetter: ({ data }) =>
-      data && data.employmentCapacity
-        ? t(`people:employmentCapacity.${data.employmentCapacity}`)
-        : t(`people:employmentCapacity.UNKNOWN`),
-  },
+  // {
+  //   field: 'employmentCapacity',
+  //   headerName: t('common:capacity'),
+  //   valueGetter: ({ data }) =>
+  //     data && data.employmentCapacity
+  //       ? t(`people:employmentCapacity.${data.employmentCapacity}`)
+  //       : t(`people:employmentCapacity.UNKNOWN`),
+  // },
   {
     field: 'carRegistrationNumber',
     headerName: t('people:carRegistration'),

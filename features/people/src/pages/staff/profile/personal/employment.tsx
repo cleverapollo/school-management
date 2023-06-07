@@ -10,11 +10,11 @@ import {
 import dayjs from 'dayjs';
 
 import {
-  CreateStaffInput,
+  UpsertStaffInput,
   getColorBasedOnIndex,
-  EmploymentCapacity,
+  // EmploymentCapacity,
   Staff,
-  CreateStaffTeacherIre,
+  // CreateStaffTeacherIre,
 } from '@tyro/api';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
@@ -23,18 +23,18 @@ import {
 } from '../../../../components/common/card-editable-form';
 
 type EmploymentFormState = {
-  post: CreateStaffTeacherIre['teachingPost'];
-  capacity: CreateStaffInput['employmentCapacity'];
-  payrollNumber: CreateStaffInput['payrollNumber'];
-  displayCode: CreateStaffInput['displayCode'];
-  teacherCouncilNumber: CreateStaffTeacherIre['teacherCouncilNumber'];
-  startDate: CreateStaffInput['startDate'];
+  // post: CreateStaffTeacherIre['teachingPost'];
+  employmentCapacity: Staff['employmentCapacity'];
+  payrollNumber: UpsertStaffInput['payrollNumber'];
+  displayCode: UpsertStaffInput['displayCode'];
+  // teacherCouncilNumber: CreateStaffTeacherIre['teacherCouncilNumber'];
+  startDate: UpsertStaffInput['startDate'];
   subjectGroups: Staff['subjectGroups'];
   jobSharing: boolean;
   qualifications: string;
 };
 
-const employmentCapacityOptions = Object.values(EmploymentCapacity);
+// const employmentCapacityOptions = Object.values(EmploymentCapacity);
 
 const getEmploymentDataWitLabels = (
   data: ReturnType<typeof useStaffPersonal>['data'],
@@ -42,8 +42,8 @@ const getEmploymentDataWitLabels = (
 ): CardEditableFormProps<EmploymentFormState>['fields'] => {
   const {
     payrollNumber,
-    employmentCapacity,
-    staffIreTeacher,
+    // employmentCapacity,
+    // staffIreTeacher,
     startDate,
     endDate,
     subjectGroups = [],
@@ -59,32 +59,39 @@ const getEmploymentDataWitLabels = (
   );
 
   return [
-    {
-      label: t('people:post'),
-      value: staffIreTeacher?.teachingPost,
-      valueEditor: (
-        <RHFTextField
-          textFieldProps={{ variant: 'standard' }}
-          controlProps={{ name: 'position' }}
-        />
-      ),
-    },
-    {
-      label: t('people:capacity'),
-      valueRenderer: employmentCapacity
-        ? t(`people:employmentCapacity.${employmentCapacity}`)
-        : '-',
-      value: employmentCapacity,
-      valueEditor: (
-        <RHFSelect<EmploymentFormState, EmploymentCapacity>
-          variant="standard"
-          fullWidth
-          options={employmentCapacityOptions}
-          getOptionLabel={(option) => t(`people:employmentCapacity.${option}`)}
-          controlProps={{ name: 'capacity' }}
-        />
-      ),
-    },
+    // {
+    //   label: t('people:post'),
+    //   value: staffIreTeacher?.teachingPost,
+    //   valueEditor: (
+    //     <RHFTextField
+    //       textFieldProps={{ variant: 'standard' }}
+    //       controlProps={{ name: 'position' }}
+    //     />
+    //   ),
+    // },
+    // {
+    //   label: t('people:capacity'),
+    //   valueRenderer: employmentCapacity
+    //     ? t(`people:employmentCapacity.${employmentCapacity}`)
+    //     : '-',
+    //   value: employmentCapacity,
+
+    //   valueEditor: (
+    //     <PersonalTitlesDropdown
+    //       inputProps={{ variant: 'standard' }}
+    //       controlProps={{ name: 'title' }}
+    //     />
+    //   ),
+    // valueEditor: (
+    //   <RHFSelect<EmploymentFormState, EmploymentCapacity>
+    //     variant="standard"
+    //     fullWidth
+    //     options={employmentCapacityOptions}
+    //     getOptionLabel={(option) => t(`people:employmentCapacity.${option}`)}
+    //     controlProps={{ name: 'capacity' }}
+    //   />
+    // ),
+    // },
     {
       label: t('people:payrollNumber'),
       value: payrollNumber,
@@ -105,16 +112,16 @@ const getEmploymentDataWitLabels = (
         />
       ),
     },
-    {
-      label: t('people:teacherCouncilNumber'),
-      value: staffIreTeacher?.teacherCouncilNumber,
-      valueEditor: (
-        <RHFTextField
-          textFieldProps={{ variant: 'standard' }}
-          controlProps={{ name: 'teacherCouncilNumber' }}
-        />
-      ),
-    },
+    // {
+    //   label: t('people:teacherCouncilNumber'),
+    //   value: staffIreTeacher?.teacherCouncilNumber,
+    //   valueEditor: (
+    //     <RHFTextField
+    //       textFieldProps={{ variant: 'standard' }}
+    //       controlProps={{ name: 'teacherCouncilNumber' }}
+    //     />
+    //   ),
+    // },
     {
       // NOTE: at this stage, this value doesn't come from BE
       label: t('people:jobSharing'),
