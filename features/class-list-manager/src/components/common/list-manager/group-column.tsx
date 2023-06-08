@@ -12,8 +12,8 @@ const getListStyle = (isDraggingOver: boolean) =>
     backgroundColor: isDraggingOver ? 'indigo.200' : 'slate.200',
     borderColor: isDraggingOver ? 'indigo.100' : 'slate.100',
     borderRadius: 2,
-    paddingY: 1,
-    paddingX: 2,
+    paddingY: 0.75,
+    paddingX: 1.5,
   } as const);
 
 interface GroupColumnProps {
@@ -35,12 +35,16 @@ export function GroupColumn({
     <Droppable key={group.id} droppableId={`${group.id}`} type="group">
       {(provided, snapshot) => (
         <Box sx={getListStyle(snapshot.isDraggingOver)}>
-          <Box sx={{ width: spacing(30) }}>
-            <Stack sx={{ p: 2 }}>
-              <Typography component="h2" variant="h6">
+          <Box sx={{ width: spacing(22) }}>
+            <Stack sx={{ p: 1.5 }}>
+              <Typography
+                component="h2"
+                variant="h6"
+                sx={{ fontSize: '0.875rem !important' }}
+              >
                 {group.name}
               </Typography>
-              <Typography component="span" variant="subtitle1">
+              <Typography component="span" variant="caption">
                 {t('common:numOfMembers', {
                   count: group?.students?.length ?? 0,
                 })}
