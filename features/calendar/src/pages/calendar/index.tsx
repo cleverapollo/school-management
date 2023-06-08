@@ -1,5 +1,5 @@
-import { Container, Typography } from '@mui/material';
-import { Page } from '@tyro/core';
+import { Typography } from '@mui/material';
+import { PageContainer } from '@tyro/core';
 import { usePermissions, useUser, SearchType } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useMemo } from 'react';
@@ -38,13 +38,15 @@ export default function CalendarPage() {
   );
 
   return (
-    <Page title={t('calendar:calendar')}>
-      <Container maxWidth={false} sx={{ maxWidth: 1980 }}>
-        <Typography variant="h3" component="h1" paragraph>
-          {t('calendar:calendar')}
-        </Typography>
-        <Calendar defaultPartys={defaultPartys} />
-      </Container>
-    </Page>
+    <PageContainer
+      title={t('calendar:calendar')}
+      maxWidth={false}
+      sx={{ maxWidth: 1980 }}
+    >
+      <Typography variant="h3" component="h1" paragraph>
+        {t('calendar:calendar')}
+      </Typography>
+      <Calendar defaultPartys={defaultPartys} />
+    </PageContainer>
   );
 }

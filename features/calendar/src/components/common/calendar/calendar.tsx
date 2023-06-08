@@ -23,6 +23,7 @@ import { CalendarView } from '../../../types';
 // sections
 import { CalendarStyle, CalendarToolbar } from '.';
 import {
+  DEFAULT_CALENDAR_TIMES,
   useCalendarEvents,
   useUpdateCalendarEvents,
 } from '../../../api/events';
@@ -268,11 +269,9 @@ export const Calendar = function Calendar({
                 dayHeaderContent={getDayHeaderContent}
                 resourceAreaWidth={200}
                 scrollTime={
-                  weekHours?.businessHours &&
-                  Array.isArray(weekHours.businessHours) &&
-                  weekHours.businessHours.length > 0
+                  weekHours?.businessHours && weekHours.businessHours.length > 0
                     ? weekHours.businessHours[0].startTime
-                    : '08:00:00'
+                    : DEFAULT_CALENDAR_TIMES.start
                 }
                 schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
               />

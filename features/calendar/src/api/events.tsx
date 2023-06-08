@@ -19,6 +19,11 @@ import { getResourceName } from '../utils/get-party-name';
 import { useTimetableInfo } from './timetable';
 import { calendarKeys } from './keys';
 
+export const DEFAULT_CALENDAR_TIMES = {
+  start: '08:00:00',
+  end: '15:00:00',
+};
+
 const calendarEvents = graphql(/* GraphQL */ `
   query calendar_calendarEvents($filter: CalendarEventFilter!) {
     calendar_calendarEvents(filter: $filter) {
@@ -175,8 +180,8 @@ export function useCalendarEvents(
               const startOfWeekKey = date.startOf('week').format('YYYY-MM-DD');
               const valueForWeek = acc.get(startOfWeekKey) ?? {
                 businessHours: [],
-                slotMinTime: '08:00:00',
-                slotMaxTime: '15:00:00',
+                slotMinTime: DEFAULT_CALENDAR_TIMES.start,
+                slotMaxTime: DEFAULT_CALENDAR_TIMES.end,
               };
 
               const startTimeForSlot = dayjs(day.startTime)
