@@ -51,9 +51,19 @@ const getStaffColumns = (
     lockVisible: true,
   },
   {
-    field: 'employmentCapacity',
+    field: 'position',
+    headerName: t('people:position'),
+    valueGetter: ({ data }) => data?.position || '-',
+  },
+  {
+    field: 'employmentCapacity.name',
     headerName: t('common:capacity'),
     valueGetter: ({ data }) => data?.employmentCapacity?.name || '-',
+  },
+  {
+    field: 'staffIre.staffPost.name',
+    headerName: t('people:post'),
+    valueGetter: ({ data }) => data?.staffIre?.staffPost?.name || '-',
   },
   {
     field: 'startDate',

@@ -35,9 +35,14 @@ const staff = graphql(/* GraphQL */ `
       }
       staffIre {
         teacherCouncilNumber
+        staffPost {
+          id
+          name
+        }
       }
       carRegistrationNumber
       parking
+      position
     }
   }
 `);
