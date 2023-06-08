@@ -32,12 +32,6 @@ export default function StaffProfilePersonalPage() {
           lastName: staffData?.person.lastName,
           gender: staffData?.personalInformation?.gender,
           startDate: staffData?.startDate,
-          staffIre: {
-            staffPost: staffData?.staffIre?.staffPost?.id,
-            teacherCouncilNumber: staffData?.staffIre?.teacherCouncilNumber,
-            pps: staffData?.personalInformation?.ire?.ppsNumber,
-            ...staffIre,
-          },
           dateOfBirth: staffData?.personalInformation?.dateOfBirth,
           payrollNumber: staffData?.payrollNumber,
           availableForTeaching: staffData?.availableForTeaching,
@@ -51,10 +45,15 @@ export default function StaffProfilePersonalPage() {
           qualifications: staffData?.qualifications,
           emergencyContact: staffData?.emergencyContact,
           competencies: staffData?.competencies,
-          // TODO: check displayCode is notNull
-          displayCode: staffData?.displayCode ?? '',
-          // TODO: check how can set this value since it is mandatory
+          displayCode: staffData?.displayCode,
+          position: staffData?.position,
           noLongerStaff: false,
+          staffIre: {
+            staffPost: staffData?.staffIre?.staffPost?.id,
+            teacherCouncilNumber: staffData?.staffIre?.teacherCouncilNumber,
+            pps: staffData?.personalInformation?.ire?.ppsNumber,
+            ...staffIre,
+          },
           ...updatedData,
         },
       ],

@@ -47,6 +47,7 @@ const getAboutDataWithLabels = (
     {
       label: t('people:title'),
       value: person?.title,
+      valueRenderer: person?.title?.name,
       valueEditor: (
         <PersonalTitlesDropdown
           inputProps={{ variant: 'standard' }}
@@ -250,6 +251,7 @@ export const ProfileAbout = ({
         ...(hasAddress && {
           addresses: [
             {
+              addressId: staffData?.personalInformation?.primaryAddress?.id,
               primaryAddress: true,
               active: true,
               city,

@@ -131,11 +131,26 @@ export const ProfileContact = ({
     }: ContactFormState,
     onSuccess: () => void
   ) => {
+    const {
+      phoneNumbers = [],
+      emails = [],
+      primaryPhoneNumber: currentPrimaryPhoneNumer,
+      primaryEmail: currentPrimaryEmail,
+    } = staffData?.personalInformation || {};
+
+    const currentAdditionalNumber = phoneNumbers?.find(
+      (phoneNumber) => !phoneNumber?.primaryPhoneNumber
+    );
+    const currentAdditionalEmail = emails?.find(
+      (email) => !email?.primaryEmail
+    );
+
     onSave(
       {
         phoneNumbers: [
           primaryNumber
             ? {
+                phoneNumberId: currentPrimaryPhoneNumer?.phoneNumberId,
                 primaryPhoneNumber: true,
                 active: true,
                 number:
@@ -150,6 +165,7 @@ export const ProfileContact = ({
             : null,
           additionalNumber
             ? {
+                phoneNumberId: currentAdditionalNumber?.phoneNumberId,
                 primaryPhoneNumber: false,
                 active: true,
                 number:
@@ -166,6 +182,7 @@ export const ProfileContact = ({
         emails: [
           primaryEmail
             ? {
+                emailId: currentPrimaryEmail?.emailId,
                 primaryEmail: true,
                 active: true,
                 email: primaryEmail,
@@ -173,6 +190,7 @@ export const ProfileContact = ({
             : null,
           additionalEmail
             ? {
+                emailId: currentAdditionalEmail?.emailId,
                 primaryEmail: false,
                 active: true,
                 email: additionalEmail,

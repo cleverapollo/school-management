@@ -154,7 +154,11 @@ export function StaffForm() {
             },
           }),
           noLongerStaff: false,
-          displayCode: '',
+          // NOTE: They need to be sent since BE needs them for updating
+          staffIre: {
+            pps: undefined,
+            staffPost: undefined,
+          },
         },
       ],
       {

@@ -54,7 +54,7 @@ const getEmploymentDataWitLabels = (
     availableForTeaching,
     availableForSubstitution,
     availableForSupportClasses,
-    competency_subjects: competencySubjects = [],
+    competencySubjects = [],
   } = data || {};
 
   return [

@@ -25,6 +25,7 @@ const staffPersonal = graphql(/* GraphQL */ `
           ppsNumber
         }
         primaryAddress {
+          id
           line1
           line2
           line3
@@ -33,20 +34,24 @@ const staffPersonal = graphql(/* GraphQL */ `
           postCode
         }
         primaryPhoneNumber {
+          phoneNumberId
           number
           areaCode
           countryCode
         }
         phoneNumbers {
+          phoneNumberId
           primaryPhoneNumber
           number
           areaCode
           countryCode
         }
         primaryEmail {
+          emailId
           email
         }
         emails {
+          emailId
           email
           primaryEmail
         }
@@ -85,7 +90,7 @@ const staffPersonal = graphql(/* GraphQL */ `
       availableForSubstitution
       availableForSupportClasses
       position
-      competency_subjects {
+      competencySubjects {
         id
         name
         colour
