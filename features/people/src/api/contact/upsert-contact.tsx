@@ -26,26 +26,26 @@ export function useUpsertContact() {
     mutationKey: peopleContactsKeys.upsertContact(),
     mutationFn: async (input: UpsertStudentContactInput) =>
       gqlClient.request(upsertContact, { input }),
-    onSuccess: (_, contact) => {
-      // @ts-expect-error
-      if (contact.id) {
-        toast(t('people:successfullyUpdatedContact'));
-      } else {
-        toast(t('people:successfullyCreatedContact'));
-      }
-      queryClient.invalidateQueries(peopleContactsKeys.all);
+    onSuccess: async (_, contact) => {
+      await queryClient.invalidateQueries(peopleContactsKeys.all);
+
+      toast(
+        // @ts-expect-error
+        contact.id
+          ? t('people:successfullyUpdatedContact')
+          : t('people:successfullyCreatedContact')
+      );
     },
     onError: (_, contact) => {
-      // @ts-expect-error
-      if (contact.id) {
-        toast(t('people:updatedContactUnsuccessful'), {
+      toast(
+        // @ts-expect-error
+        contact.id
+          ? t('people:updatedContactUnsuccessful')
+          : t('people:createdContactUnsuccessful'),
+        {
           variant: 'error',
-        });
-      } else {
-        toast(t('people:createdContactUnsuccessful'), {
-          variant: 'error',
-        });
-      }
+        }
+      );
     },
   });
 }

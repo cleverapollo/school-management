@@ -1,12 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import {
-  gqlClient,
-  graphql,
-  queryClient,
-  StaffFilter,
-  Core_Staff_PersonalQuery,
-} from '@tyro/api';
-import { useCallback } from 'react';
+import { gqlClient, graphql, queryClient, StaffFilter } from '@tyro/api';
 import { peopleStaffKeys } from './keys';
 
 const staffPersonal = graphql(/* GraphQL */ `
@@ -113,9 +106,6 @@ export function getStaffPersonal(filter: StaffFilter) {
 export function useStaffPersonal(filter: StaffFilter) {
   return useQuery({
     ...staffPersonalQuery(filter),
-    select: useCallback(
-      ({ core_staff }: Core_Staff_PersonalQuery) => core_staff[0],
-      []
-    ),
+    select: ({ core_staff }) => core_staff[0],
   });
 }

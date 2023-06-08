@@ -1,7 +1,6 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { RHFTextField, useFormValidator } from '@tyro/core';
 import { StaffEmergencyContact, UpsertStaffInput } from '@tyro/api';
-import { useMemo } from 'react';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
   CardEditableForm,
@@ -69,7 +68,7 @@ const getEmergencyDataWitLabels = (
 type ProfileEmergencyProps = {
   staffData: ReturnType<typeof useStaffPersonal>['data'];
   editable?: boolean;
-  onSave: (data: UpsertStaffInput) => void;
+  onSave: CardEditableFormProps<UpsertStaffInput>['onSave'];
 };
 
 export const ProfileEmergency = ({
@@ -79,10 +78,7 @@ export const ProfileEmergency = ({
 }: ProfileEmergencyProps) => {
   const { t } = useTranslation(['common', 'people']);
 
-  const emergencyDataWithLabels = useMemo(
-    () => getEmergencyDataWitLabels(staffData, t),
-    [staffData]
-  );
+  const emergencyDataWithLabels = getEmergencyDataWitLabels(staffData, t);
 
   const { resolver, rules } = useFormValidator<EmergencyFormState>();
 
@@ -91,8 +87,10 @@ export const ProfileEmergency = ({
     additionalNumber: rules.isPhoneNumber(),
   });
 
-  const handleEdit = (emergencyContact: EmergencyFormState) =>
-    onSave({ emergencyContact });
+  const handleEdit = (
+    emergencyContact: EmergencyFormState,
+    onSuccess: () => void
+  ) => onSave({ emergencyContact }, onSuccess);
 
   return (
     <CardEditableForm<EmergencyFormState>

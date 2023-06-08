@@ -19,41 +19,49 @@ export default function StaffProfilePersonalPage() {
 
   // TODO: add permission to check if the user can edit the profile
 
-  const handleEdit = ({ staffIre, ...updatedData }: UpsertStaffInput) =>
-    upsertStaffMutation([
-      {
-        id: staffData?.partyId,
-        titleId: staffData?.person?.title?.id,
-        firstName: staffData?.person.firstName,
-        lastName: staffData?.person.lastName,
-        gender: staffData?.personalInformation?.gender,
-        startDate: staffData?.startDate,
-        staffIre: {
-          staffPost: staffData?.staffIre?.staffPost?.id,
-          teacherCouncilNumber: staffData?.staffIre?.teacherCouncilNumber,
-          pps: staffData?.personalInformation?.ire?.ppsNumber,
-          ...staffIre,
+  const handleEdit = (
+    { staffIre, ...updatedData }: UpsertStaffInput,
+    onSuccess: () => void
+  ) =>
+    upsertStaffMutation(
+      [
+        {
+          id: staffData?.partyId,
+          titleId: staffData?.person?.title?.id,
+          firstName: staffData?.person.firstName,
+          lastName: staffData?.person.lastName,
+          gender: staffData?.personalInformation?.gender,
+          startDate: staffData?.startDate,
+          staffIre: {
+            staffPost: staffData?.staffIre?.staffPost?.id,
+            teacherCouncilNumber: staffData?.staffIre?.teacherCouncilNumber,
+            pps: staffData?.personalInformation?.ire?.ppsNumber,
+            ...staffIre,
+          },
+          dateOfBirth: staffData?.personalInformation?.dateOfBirth,
+          payrollNumber: staffData?.payrollNumber,
+          availableForTeaching: staffData?.availableForTeaching,
+          availableForSubstitution: staffData?.availableForSubstitution,
+          availableForSupportClasses: staffData?.availableForSupportClasses,
+          employmentCapacity: staffData?.employmentCapacity?.id,
+          carRegistrationNumber: staffData?.carRegistrationNumber,
+          makeAndModel: staffData?.makeAndModel,
+          parking: staffData?.parking,
+          jobSharing: staffData?.jobSharing,
+          qualifications: staffData?.qualifications,
+          emergencyContact: staffData?.emergencyContact,
+          competencies: staffData?.competencies,
+          // TODO: check displayCode is notNull
+          displayCode: staffData?.displayCode ?? '',
+          // TODO: check how can set this value since it is mandatory
+          noLongerStaff: false,
+          ...updatedData,
         },
-        dateOfBirth: staffData?.personalInformation?.dateOfBirth,
-        payrollNumber: staffData?.payrollNumber,
-        availableForTeaching: staffData?.availableForTeaching,
-        availableForSubstitution: staffData?.availableForSubstitution,
-        availableForSupportClasses: staffData?.availableForSupportClasses,
-        employmentCapacity: staffData?.employmentCapacity?.id,
-        carRegistrationNumber: staffData?.carRegistrationNumber,
-        makeAndModel: staffData?.makeAndModel,
-        parking: staffData?.parking,
-        jobSharing: staffData?.jobSharing,
-        qualifications: staffData?.qualifications,
-        emergencyContact: staffData?.emergencyContact,
-        competencies: staffData?.competencies,
-        // TODO: check displayCode is notNull
-        displayCode: staffData?.displayCode ?? '',
-        // TODO: check how can set this value since it is mandatory
-        noLongerStaff: false,
-        ...updatedData,
-      },
-    ]);
+      ],
+      {
+        onSuccess,
+      }
+    );
 
   return (
     <Grid container spacing={2}>

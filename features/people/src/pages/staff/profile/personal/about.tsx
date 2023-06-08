@@ -3,7 +3,6 @@ import { RHFTextField, RHFDatePicker, useFormValidator } from '@tyro/core';
 import dayjs from 'dayjs';
 
 import { UpsertStaffInput, InputAddress, PersonalTitle } from '@tyro/api';
-import { useMemo } from 'react';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
   CardEditableForm,
@@ -202,7 +201,7 @@ const getAboutDataWithLabels = (
 type ProfileAboutProps = {
   staffData: ReturnType<typeof useStaffPersonal>['data'];
   editable?: boolean;
-  onSave: (data: UpsertStaffInput) => void;
+  onSave: CardEditableFormProps<UpsertStaffInput>['onSave'];
 };
 
 export const ProfileAbout = ({
@@ -212,10 +211,7 @@ export const ProfileAbout = ({
 }: ProfileAboutProps) => {
   const { t } = useTranslation(['people']);
 
-  const aboutDataWithLabels = useMemo(
-    () => getAboutDataWithLabels(staffData, t),
-    [staffData]
-  );
+  const aboutDataWithLabels = getAboutDataWithLabels(staffData, t);
 
   const { resolver, rules } = useFormValidator<AboutFormState>();
 
@@ -225,43 +221,49 @@ export const ProfileAbout = ({
     dateOfBirth: rules.date(),
   });
 
-  const handleEdit = ({
-    title,
-    dateOfBirth,
-    ppsNumber,
-    line1,
-    line2,
-    line3,
-    eircode: postCode,
-    city,
-    country,
-    ...data
-  }: AboutFormState) => {
+  const handleEdit = (
+    {
+      title,
+      dateOfBirth,
+      ppsNumber,
+      line1,
+      line2,
+      line3,
+      eircode: postCode,
+      city,
+      country,
+      ...data
+    }: AboutFormState,
+    onSuccess: () => void
+  ) => {
     const hasAddress = city || country || line1 || line2 || line3 || postCode;
 
-    return onSave({
-      ...data,
-      id: staffData?.partyId,
-      titleId: title?.id,
-      dateOfBirth: dateOfBirth ? dateOfBirth.format('YYYY-MM-DD') : undefined,
-      staffIre: {
-        pps: ppsNumber,
+    return onSave(
+      {
+        ...data,
+        id: staffData?.partyId,
+        titleId: title?.id,
+        dateOfBirth: dateOfBirth ? dateOfBirth.format('YYYY-MM-DD') : undefined,
+        staffIre: {
+          pps: ppsNumber,
+        },
+        ...(hasAddress && {
+          addresses: [
+            {
+              primaryAddress: true,
+              active: true,
+              city,
+              country,
+              line1,
+              line2,
+              line3,
+              postCode,
+            },
+          ],
+        }),
       },
-      ...(hasAddress && {
-        addresses: [
-          {
-            primaryAddress: true,
-            active: true,
-            city,
-            country,
-            line1,
-            line2,
-            line3,
-            postCode,
-          },
-        ],
-      }),
-    });
+      onSuccess
+    );
   };
 
   return (

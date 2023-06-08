@@ -10,7 +10,6 @@ import dayjs from 'dayjs';
 
 import { UpsertStaffInput, getColorBasedOnIndex, StaffIre } from '@tyro/api';
 import { CatalogueSubjectOption } from '@tyro/settings';
-import { useMemo } from 'react';
 import { EmploymentCapacityAutocomplete } from '../../../../components/common/employment-capacity-autocomplete';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
@@ -224,7 +223,7 @@ const getEmploymentDataWitLabels = (
 type ProfileEmploymentProps = {
   staffData: ReturnType<typeof useStaffPersonal>['data'];
   editable?: boolean;
-  onSave: (data: UpsertStaffInput) => void;
+  onSave: CardEditableFormProps<UpsertStaffInput>['onSave'];
 };
 
 export const ProfileEmployment = ({
@@ -234,10 +233,7 @@ export const ProfileEmployment = ({
 }: ProfileEmploymentProps) => {
   const { t } = useTranslation(['common', 'people']);
 
-  const employmentDataWithLabels = useMemo(
-    () => getEmploymentDataWitLabels(staffData, t),
-    [staffData]
-  );
+  const employmentDataWithLabels = getEmploymentDataWitLabels(staffData, t);
 
   const { resolver, rules } = useFormValidator<EmploymentFormState>();
 
@@ -246,24 +242,30 @@ export const ProfileEmployment = ({
     employmentCapacity: rules.required(),
   });
 
-  const handleEdit = ({
-    employmentCapacity,
-    startDate,
-    competencies,
-    post,
-    teacherCouncilNumber,
-    ...data
-  }: EmploymentFormState) =>
-    onSave({
-      employmentCapacity: employmentCapacity.id,
-      startDate: startDate ? startDate.format('YYYY-MM-DD') : null,
-      competencies: competencies?.map((competency) => competency.id),
-      staffIre: {
-        staffPost: post?.id,
-        teacherCouncilNumber,
+  const handleEdit = (
+    {
+      employmentCapacity,
+      startDate,
+      competencies,
+      post,
+      teacherCouncilNumber,
+      ...data
+    }: EmploymentFormState,
+    onSuccess: () => void
+  ) =>
+    onSave(
+      {
+        employmentCapacity: employmentCapacity.id,
+        startDate: startDate ? startDate.format('YYYY-MM-DD') : null,
+        competencies: competencies?.map((competency) => competency.id),
+        staffIre: {
+          staffPost: post?.id,
+          teacherCouncilNumber,
+        },
+        ...data,
       },
-      ...data,
-    });
+      onSuccess
+    );
 
   return (
     <CardEditableForm<EmploymentFormState>

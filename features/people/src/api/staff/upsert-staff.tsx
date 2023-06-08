@@ -21,24 +21,24 @@ export function useUpsertStaff() {
     mutationKey: peopleStaffKeys.upsertStaff(),
     mutationFn: async (input: [UpsertStaffInput]) =>
       gqlClient.request(upsertStaff, { input }),
-    onSuccess: (_, [staff]) => {
-      if (staff.id) {
-        toast(t('people:successfullyUpdatedStaff'));
-      } else {
-        toast(t('people:successfullyCreatedStaff'));
-      }
-      queryClient.invalidateQueries(peopleStaffKeys.all);
+    onSuccess: async (_, [staff]) => {
+      await queryClient.invalidateQueries(peopleStaffKeys.all);
+
+      toast(
+        staff.id
+          ? t('people:successfullyUpdatedStaff')
+          : t('people:successfullyCreatedStaff')
+      );
     },
     onError: (_, [staff]) => {
-      if (staff.id) {
-        toast(t('people:updatedStaffUnsuccessful'), {
+      toast(
+        staff.id
+          ? t('people:updatedStaffUnsuccessful')
+          : t('people:createdStaffUnsuccessful'),
+        {
           variant: 'error',
-        });
-      } else {
-        toast(t('people:createdStaffUnsuccessful'), {
-          variant: 'error',
-        });
-      }
+        }
+      );
     },
   });
 }

@@ -2,7 +2,6 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import { formatPhoneNumber, RHFTextField, useFormValidator } from '@tyro/core';
 
 import { InputEmailAddress, UpsertStaffInput } from '@tyro/api';
-import { useMemo } from 'react';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
   CardEditableForm,
@@ -102,7 +101,7 @@ const getContactDataWithLabels = (
 type ProfileContactProps = {
   staffData: ReturnType<typeof useStaffPersonal>['data'];
   editable?: boolean;
-  onSave: (data: UpsertStaffInput) => void;
+  onSave: CardEditableFormProps<UpsertStaffInput>['onSave'];
 };
 
 export const ProfileContact = ({
@@ -112,10 +111,7 @@ export const ProfileContact = ({
 }: ProfileContactProps) => {
   const { t } = useTranslation(['common', 'people']);
 
-  const contactDataWithLabels = useMemo(
-    () => getContactDataWithLabels(staffData, t),
-    [staffData]
-  );
+  const contactDataWithLabels = getContactDataWithLabels(staffData, t);
 
   const { resolver, rules } = useFormValidator<ContactFormState>();
 
@@ -126,60 +122,66 @@ export const ProfileContact = ({
     additionalEmail: rules.isEmail(),
   });
 
-  const handleEdit = ({
-    primaryNumber,
-    additionalNumber,
-    primaryEmail,
-    additionalEmail,
-  }: ContactFormState) => {
-    onSave({
-      phoneNumbers: [
-        primaryNumber
-          ? {
-              primaryPhoneNumber: true,
-              active: true,
-              number:
-                typeof primaryNumber === 'string'
-                  ? primaryNumber
-                  : primaryNumber.number,
-              countryCode:
-                typeof primaryNumber === 'string'
-                  ? undefined
-                  : primaryNumber.countryCode,
-            }
-          : null,
-        additionalNumber
-          ? {
-              primaryPhoneNumber: false,
-              active: true,
-              number:
-                typeof additionalNumber === 'string'
-                  ? additionalNumber
-                  : additionalNumber.number,
-              countryCode:
-                typeof additionalNumber === 'string'
-                  ? undefined
-                  : additionalNumber.countryCode,
-            }
-          : null,
-      ].filter(Boolean),
-      emails: [
-        primaryEmail
-          ? {
-              primaryEmail: true,
-              active: true,
-              email: primaryEmail,
-            }
-          : null,
-        additionalEmail
-          ? {
-              primaryEmail: false,
-              active: true,
-              email: additionalEmail,
-            }
-          : null,
-      ].filter(Boolean),
-    });
+  const handleEdit = (
+    {
+      primaryNumber,
+      additionalNumber,
+      primaryEmail,
+      additionalEmail,
+    }: ContactFormState,
+    onSuccess: () => void
+  ) => {
+    onSave(
+      {
+        phoneNumbers: [
+          primaryNumber
+            ? {
+                primaryPhoneNumber: true,
+                active: true,
+                number:
+                  typeof primaryNumber === 'string'
+                    ? primaryNumber
+                    : primaryNumber.number,
+                countryCode:
+                  typeof primaryNumber === 'string'
+                    ? undefined
+                    : primaryNumber.countryCode,
+              }
+            : null,
+          additionalNumber
+            ? {
+                primaryPhoneNumber: false,
+                active: true,
+                number:
+                  typeof additionalNumber === 'string'
+                    ? additionalNumber
+                    : additionalNumber.number,
+                countryCode:
+                  typeof additionalNumber === 'string'
+                    ? undefined
+                    : additionalNumber.countryCode,
+              }
+            : null,
+        ].filter(Boolean),
+        emails: [
+          primaryEmail
+            ? {
+                primaryEmail: true,
+                active: true,
+                email: primaryEmail,
+              }
+            : null,
+          additionalEmail
+            ? {
+                primaryEmail: false,
+                active: true,
+                email: additionalEmail,
+              }
+            : null,
+        ].filter(Boolean),
+      },
+      onSuccess
+    );
   };
 
   return (
