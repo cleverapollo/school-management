@@ -12,19 +12,19 @@ import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from '@tyro/i18n';
 import { CalendarSearch, CalendarSearchProps } from './calendar-search';
 
-interface EditCalendarPanelProps extends CalendarSearchProps {
+interface FilterCalendarPanelProps extends CalendarSearchProps {
   isOpen: boolean;
   visableEventTypes: CalendarEventType[];
   setVisableEventTypes: Dispatch<SetStateAction<CalendarEventType[]>>;
 }
 
-export function EditCalendarPanel({
+export function FilterCalendarPanel({
   isOpen,
   selectedPartys,
   onChangeSelectedPartys,
   visableEventTypes,
   setVisableEventTypes,
-}: EditCalendarPanelProps) {
+}: FilterCalendarPanelProps) {
   const { t } = useTranslation(['calendar']);
 
   const toggleVisableEventType = (
