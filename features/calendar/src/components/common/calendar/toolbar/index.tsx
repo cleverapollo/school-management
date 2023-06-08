@@ -146,7 +146,7 @@ export function CalendarToolbar({
           onClick={onEditCalendar}
           startIcon={<EditCalendarIcon sx={{ width: 20, height: 20 }} />}
         >
-          {t('calendar:editCalendar')}
+          {t('calendar:filterCalendar')}
         </Button>
         <Button
           size="small"

@@ -23,6 +23,7 @@ import { CalendarView } from '../../../types';
 // sections
 import { CalendarStyle, CalendarToolbar } from '.';
 import {
+  DEFAULT_CALENDAR_TIMES,
   useCalendarEvents,
   useUpdateCalendarEvents,
 } from '../../../api/events';
@@ -31,7 +32,7 @@ import {
   CalendarEventViewProps,
 } from './edit-event-details-modal';
 import { getCalendarContent } from './calendar-content';
-import { EditCalendarPanel } from './edit-calendar-panel';
+import { FilterCalendarPanel } from './edit-calendar-panel';
 import { CalendarDetailsPopover } from './details-popover';
 import { getDayHeaderContent } from './day-header-content';
 import { CalendarParty } from '../../../hooks/use-participants-search-props';
@@ -68,9 +69,9 @@ export const Calendar = function Calendar({
   );
 
   const {
-    isOpen: isEditCalendarOpen,
-    onClose: onCloseEditCalendar,
-    onToggle: onToggleEditCalendar,
+    isOpen: isFilterCalendarOpen,
+    onClose: onCloseFilterCalendar,
+    onToggle: onToggleFilterCalendar,
   } = useDisclosure();
   const [editEventInitialState, setEditEventInitialState] =
     useState<CalendarEventViewProps['initialEventState']>(null);
@@ -88,10 +89,10 @@ export const Calendar = function Calendar({
     visableEventTypes
   );
 
-  const businessHours = useMemo(() => {
+  const weekHours = useMemo(() => {
     const currentDate = dayjs(date).startOf('week').format('YYYY-MM-DD');
-    return data?.businessHours.get(currentDate);
-  }, [data?.businessHours, date]);
+    return data?.weekHours.get(currentDate);
+  }, [data?.weekHours, date]);
 
   const selectedEvent = useMemo(() => {
     if (selectedEventId) {
@@ -201,7 +202,7 @@ export const Calendar = function Calendar({
     }, 300);
 
     return () => clearTimeout(resizeTimeout);
-  }, [isEditCalendarOpen, isNavExpanded]);
+  }, [isFilterCalendarOpen, isNavExpanded]);
 
   return (
     <>
@@ -212,14 +213,14 @@ export const Calendar = function Calendar({
             date={date}
             setDate={setDate}
             view={view}
-            onEditCalendar={onToggleEditCalendar}
+            onEditCalendar={onToggleFilterCalendar}
             onAddEvent={handleAddEvent}
             onChangeView={handleChangeView}
             hasMultipleResources={data && data.numberOfResources > 1}
           />
           <Stack direction="row" alignItems="stretch">
-            <EditCalendarPanel
-              isOpen={isEditCalendarOpen}
+            <FilterCalendarPanel
+              isOpen={isFilterCalendarOpen}
               selectedPartys={selectedPartys}
               onChangeSelectedPartys={setSelectedPartys}
               visableEventTypes={visableEventTypes}
@@ -250,9 +251,11 @@ export const Calendar = function Calendar({
                 eventResize={handleResizeEvent}
                 eventMinHeight={48}
                 slotEventOverlap={false}
-                height={isDesktop ? 720 : 'auto'}
+                height="auto"
                 selectConstraint={SELECTABLE_EVENT_CONSTRAINT}
-                businessHours={businessHours}
+                slotMinTime={weekHours?.slotMinTime}
+                slotMaxTime={weekHours?.slotMaxTime}
+                businessHours={weekHours?.businessHours}
                 nowIndicator
                 plugins={[
                   listPlugin,
@@ -266,13 +269,13 @@ export const Calendar = function Calendar({
                 dayHeaderContent={getDayHeaderContent}
                 resourceAreaWidth={200}
                 scrollTime={
-                  Array.isArray(businessHours) && businessHours.length > 0
-                    ? businessHours[0].startTime
-                    : '08:00:00'
+                  weekHours?.businessHours && weekHours.businessHours.length > 0
+                    ? weekHours.businessHours[0].startTime
+                    : DEFAULT_CALENDAR_TIMES.start
                 }
                 schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
               />
-              <Fade in={isEditCalendarOpen}>
+              <Fade in={isFilterCalendarOpen}>
                 <IconButton
                   sx={{
                     position: 'absolute',
@@ -284,7 +287,7 @@ export const Calendar = function Calendar({
                     backdropFilter: 'blur(6px)',
                     backgroundColor: 'rgba(255, 255, 255, 0.6)',
                   }}
-                  onClick={onCloseEditCalendar}
+                  onClick={onCloseFilterCalendar}
                 >
                   <ChevronLeftIcon />
                 </IconButton>
