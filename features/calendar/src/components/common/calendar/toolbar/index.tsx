@@ -153,6 +153,11 @@ export function CalendarToolbar({
           color="primary"
           variant="text"
           onClick={onAddEvent}
+          sx={{
+            '& .MuiButton-startIcon': {
+              mr: 0.25,
+            },
+          }}
           startIcon={<AddIcon sx={{ width: 24, height: 24 }} />}
         >
           {t('calendar:addEvent')}
