@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 
 import { UpsertStaffInput, getColorBasedOnIndex, StaffIre } from '@tyro/api';
 import { CatalogueSubjectOption } from '@tyro/settings';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { EmploymentCapacityAutocomplete } from '../../../../components/common/employment-capacity-autocomplete';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
@@ -20,6 +21,8 @@ import { StaffPostsAutocomplete } from '../../../../components/common/staff-post
 import { CompetencySubjectsAutocomplete } from '../../../../components/common/competency-subjects-autocomplete';
 import { StaffPostsOption } from '../../../../api/staff/staff-posts';
 import { EmploymentCapacityOption } from '../../../../api/staff/employment-capacities';
+
+dayjs.extend(LocalizedFormat);
 
 type EmploymentFormState = {
   position: UpsertStaffInput['position'];
@@ -113,8 +116,8 @@ const getEmploymentDataWitLabels = (
     {
       label: t('people:dateOfEmployment'),
       valueRenderer: startDate
-        ? `${dayjs(startDate).format('DD/MM/YYYY')} - ${
-            endDate ? dayjs(endDate).format('DD/MM/YYYY') : t('people:present')
+        ? `${dayjs(startDate).format('l')} - ${
+            endDate ? dayjs(endDate).format('l') : t('people:present')
           }`
         : '-',
       value: startDate ? dayjs(startDate) : null,
