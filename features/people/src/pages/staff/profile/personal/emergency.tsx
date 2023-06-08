@@ -19,10 +19,8 @@ const getEmergencyDataWitLabels = (
   data: ReturnType<typeof useStaffPersonal>['data'],
   t: TFunction<'people'[]>
 ): CardEditableFormProps<EmergencyFormState>['fields'] => {
-  const { nextOfKin } = data?.personalInformation || {};
-
-  const { phoneNumbers, firstName, lastName } = nextOfKin || {};
-  const [primaryNumber, additionalNumber] = phoneNumbers || [];
+  const { firstName, lastName, primaryNumber, additionalNumber } =
+    data?.emergencyContact || {};
 
   return [
     {
