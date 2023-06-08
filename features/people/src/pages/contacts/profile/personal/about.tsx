@@ -78,6 +78,7 @@ const getAboutDataWithLabels = (
     {
       label: t('people:title'),
       value: person?.title,
+      valueRenderer: person?.title?.name,
       valueEditor: (
         <PersonalTitlesDropdown
           inputProps={{ variant: 'standard' }}
@@ -261,7 +262,9 @@ const getAboutDataWithLabels = (
 type ProfileAboutProps = {
   contactData: ReturnType<typeof useContactPersonal>['data'];
   editable?: boolean;
-  onSave: (data: UpsertStudentContactInput) => void;
+  onSave: CardEditableFormProps<
+    Omit<UpsertStudentContactInput, 'studentRelationships'>
+  >['onSave'];
 };
 
 export const ProfileAbout = ({
@@ -283,89 +286,111 @@ export const ProfileAbout = ({
     primaryEmail: rules.isEmail(),
   });
 
-  const handleEdit = ({
-    title,
-    firstName,
-    lastName,
-    primaryNumber,
-    additionalNumber,
-    primaryEmail,
-    line1,
-    line2,
-    line3,
-    eircode: postCode,
-    city,
-    country,
-    spokenLanguage,
-    ...data
-  }: AboutFormState) => {
+  const handleEdit = (
+    {
+      title,
+      firstName,
+      lastName,
+      primaryNumber,
+      additionalNumber,
+      primaryEmail,
+      line1,
+      line2,
+      line3,
+      eircode: postCode,
+      city,
+      country,
+      spokenLanguage,
+      gender,
+      ...data
+    }: AboutFormState,
+    onSuccess: () => void
+  ) => {
     const hasAddress = city || country || line1 || line2 || line3 || postCode;
 
-    return onSave({
-      // @ts-expect-error
-      titleId: title?.id,
-      personal: {
-        firstName,
-        lastName,
+    const {
+      phoneNumbers = [],
+      primaryAddress,
+      primaryPhoneNumber: currentPrimaryPhoneNumer,
+      primaryEmail: currentPrimaryEmail,
+    } = contactData?.personalInformation || {};
+
+    const currentAdditionalNumber = phoneNumbers?.find(
+      (phoneNumber) => !phoneNumber?.primaryPhoneNumber
+    );
+
+    return onSave(
+      {
+        titleId: title?.id,
+        personal: {
+          firstName,
+          lastName,
+          gender,
+        },
+        phoneNumbers: [
+          primaryNumber
+            ? {
+                phoneNumberId: currentPrimaryPhoneNumer?.phoneNumberId,
+                primaryPhoneNumber: true,
+                active: true,
+                number:
+                  typeof primaryNumber === 'string'
+                    ? primaryNumber
+                    : primaryNumber.number,
+                countryCode:
+                  typeof primaryNumber === 'string'
+                    ? undefined
+                    : primaryNumber.countryCode,
+              }
+            : null,
+          additionalNumber
+            ? {
+                phoneNumberId: currentAdditionalNumber?.phoneNumberId,
+                primaryPhoneNumber: false,
+                active: true,
+                number:
+                  typeof additionalNumber === 'string'
+                    ? additionalNumber
+                    : additionalNumber.number,
+                countryCode:
+                  typeof additionalNumber === 'string'
+                    ? undefined
+                    : additionalNumber.countryCode,
+              }
+            : null,
+        ].filter(Boolean),
+        ...(primaryEmail && {
+          emails: [
+            {
+              emailId: currentPrimaryEmail?.emailId,
+              primaryEmail: true,
+              active: true,
+              email: primaryEmail,
+            },
+          ],
+        }),
+        ...(hasAddress && {
+          addresses: [
+            {
+              addressId: primaryAddress?.id,
+              primaryAddress: true,
+              active: true,
+              city,
+              country,
+              line1,
+              line2,
+              line3,
+              postCode,
+            },
+          ],
+        }),
+        ...(spokenLanguage && {
+          spokenLanguages: [spokenLanguage],
+        }),
+        ...data,
       },
-      phoneNumbers: [
-        primaryNumber
-          ? {
-              primaryPhoneNumber: true,
-              active: true,
-              number:
-                typeof primaryNumber === 'string'
-                  ? primaryNumber
-                  : primaryNumber.number,
-              countryCode:
-                typeof primaryNumber === 'string'
-                  ? undefined
-                  : primaryNumber.countryCode,
-            }
-          : null,
-        additionalNumber
-          ? {
-              primaryPhoneNumber: false,
-              active: true,
-              number:
-                typeof additionalNumber === 'string'
-                  ? additionalNumber
-                  : additionalNumber.number,
-              countryCode:
-                typeof additionalNumber === 'string'
-                  ? undefined
-                  : additionalNumber.countryCode,
-            }
-          : null,
-      ].filter(Boolean),
-      ...(primaryEmail && {
-        emails: [
-          {
-            primaryEmail: true,
-            active: true,
-            email: primaryEmail,
-          },
-        ],
-      }),
-      ...(hasAddress && {
-        addresses: [
-          {
-            primaryAddress: true,
-            active: true,
-            city,
-            country,
-            line1,
-            line2,
-            line3,
-            postCode,
-          },
-        ],
-      }),
-      ...(spokenLanguage && {
-        spokenLanguages: [spokenLanguage],
-      }),
-      ...data,
-    });
+      onSuccess
+    );
   };
 
   return (

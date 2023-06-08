@@ -31,6 +31,7 @@ const contactsPersonalById = graphql(/* GraphQL */ `
         nationality
         mothersMaidenName
         primaryAddress {
+          id
           line1
           line2
           line3
@@ -39,23 +40,37 @@ const contactsPersonalById = graphql(/* GraphQL */ `
           postCode
         }
         primaryPhoneNumber {
+          phoneNumberId
           number
           areaCode
           countryCode
         }
         phoneNumbers {
+          phoneNumberId
           primaryPhoneNumber
           number
           areaCode
           countryCode
         }
         primaryEmail {
+          emailId
           email
         }
       }
       occupation
       requiresInterpreter
       spokenLanguages
+      relationships {
+        relationshipType
+        studentPartyId
+        priority
+        allowedToContact
+        includeInSms
+        includeInTmail
+        pickupRights
+        legalGuardian
+        allowAccessToStudentData
+      }
     }
   }
 `);

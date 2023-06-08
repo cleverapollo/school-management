@@ -10,18 +10,18 @@ export default function StudentProfilePersonalPage() {
   const { id } = useParams();
   const idNumber = useNumber(id);
 
-  const { data } = useStudentPersonal(idNumber);
+  const { data: studentData } = useStudentPersonal(idNumber);
 
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <ProfileAbout studentData={data} editable />
+        <ProfileAbout studentData={studentData} editable />
       </Grid>
       <Grid item xs={12} md={6}>
-        <ProfileContact studentData={data} editable />
+        <ProfileContact studentData={studentData} editable />
       </Grid>
       <Grid item xs={12} md={6}>
-        <ProfileEnrolment studentData={data} editable />
+        <ProfileEnrolment studentData={studentData} editable />
       </Grid>
     </Grid>
   );

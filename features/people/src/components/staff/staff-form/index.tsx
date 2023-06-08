@@ -158,6 +158,7 @@ export function StaffForm() {
           staffIre: {
             pps: undefined,
             staffPost: undefined,
+            teacherCouncilNumber: undefined,
           },
         },
       ],

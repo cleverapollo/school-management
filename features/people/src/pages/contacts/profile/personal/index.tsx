@@ -11,12 +11,20 @@ export default function ContactProfilePersonalPage() {
   const { data: contactData } = useContactPersonal(idNumber);
   const { mutate: upsertContactMutation } = useUpsertContact();
 
-  const handleEdit = (updatedData: UpsertStudentContactInput) =>
-    upsertContactMutation({
-      // @ts-expect-error
-      id: contactData?.partyId,
-      ...updatedData,
-    });
+  const handleEdit = (
+    updatedData: Omit<UpsertStudentContactInput, 'studentRelationships'>,
+    onSuccess: () => void
+  ) =>
+    upsertContactMutation(
+      {
+        contactPartyId: contactData?.partyId,
+        studentRelationships: contactData?.relationships || [],
+        ...updatedData,
+      },
+      {
+        onSuccess,
+      }
+    );
 
   return (
     <ProfileAbout contactData={contactData} editable onSave={handleEdit} />
