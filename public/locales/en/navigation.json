@@ -40,11 +40,11 @@
     "settings": {
       "title": "Settings",
       "rooms": "Rooms",
-      "academicNamespaces": "Academic namespaces",
+      "academicNamespaces": "Academic years",
       "subjects": "Subjects",
       "ppod": "PPOD",
       "schoolDetails": "School details",
-      "login":"Login"
+      "login": "Login"
     },
     "sms": "SMS"
   },

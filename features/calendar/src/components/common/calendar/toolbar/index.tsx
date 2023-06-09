@@ -146,13 +146,18 @@ export function CalendarToolbar({
           onClick={onEditCalendar}
           startIcon={<EditCalendarIcon sx={{ width: 20, height: 20 }} />}
         >
-          {t('calendar:editCalendar')}
+          {t('calendar:filterCalendar')}
         </Button>
         <Button
           size="small"
           color="primary"
           variant="text"
           onClick={onAddEvent}
+          sx={{
+            '& .MuiButton-startIcon': {
+              mr: 0.25,
+            },
+          }}
           startIcon={<AddIcon sx={{ width: 24, height: 24 }} />}
         >
           {t('calendar:addEvent')}

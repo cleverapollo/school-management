@@ -67,10 +67,11 @@ export default function StudentProfileContainer() {
               label: t('common:attendance'),
               value: 'attendance',
             },
-            {
-              label: 'Fees',
-              value: 'fees',
-            },
+            // NOTE: hide temporary this tab
+            // {
+            //   label: 'Fees',
+            //   value: 'fees',
+            // },
             {
               label: 'Assessment',
               value: 'assessment',
@@ -80,8 +81,8 @@ export default function StudentProfileContainer() {
               value: 'timetable',
             },
             {
-              label: 'Well-being',
-              value: 'well-being',
+              label: t('people:behaviour'),
+              value: 'behaviour',
             },
             {
               label: 'AEN',

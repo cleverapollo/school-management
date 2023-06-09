@@ -15,17 +15,17 @@ const ViewTimetable = lazy(() => import('./pages/view'));
 export const getRoutes: NavObjectFunction = (t) => [
   {
     type: NavObjectType.Category,
-    title: t('navigation:general.title'),
+    title: t('navigation:management.title'),
     children: [
       {
-        type: NavObjectType.RootLink,
-        path: 'timetable',
+        type: NavObjectType.RootGroup,
         icon: <EditCalendarIcon />,
         title: t('navigation:general.timetable'),
         children: [
           {
-            type: NavObjectType.NonMenuLink,
-            index: true,
+            type: NavObjectType.MenuLink,
+            title: t('navigation:general.timetable'),
+            path: 'timetables',
             loader: async () => getTimetableLesson(),
             element: <TimetableList />,
           },

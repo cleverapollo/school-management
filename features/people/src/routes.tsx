@@ -59,8 +59,8 @@ const StudentProfileAssessmentPage = lazy(
 const StudentProfileTimetablePage = lazy(
   () => import('./pages/students/profile/timetable')
 );
-const StudentProfileWellBeingPage = lazy(
-  () => import('./pages/students/profile/well-being')
+const StudentProfileBehaviourPage = lazy(
+  () => import('./pages/students/profile/behaviour')
 );
 const StudentProfileAenPage = lazy(
   () => import('./pages/students/profile/aen')
@@ -105,9 +105,6 @@ const StaffProfileOverviewPage = lazy(
 );
 const StaffProfilePersonalPage = lazy(
   () => import('./pages/staff/profile/personal')
-);
-const StaffProfileContactsPage = lazy(
-  () => import('./pages/staff/profile/contacts')
 );
 const StaffProfileTimetablePage = lazy(
   () => import('./pages/staff/profile/timetable')
@@ -242,8 +239,8 @@ export const getRoutes: NavObjectFunction = (t) => [
               },
               {
                 type: NavObjectType.NonMenuLink,
-                path: 'well-being',
-                element: <StudentProfileWellBeingPage />,
+                path: 'behaviour',
+                element: <StudentProfileBehaviourPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,
@@ -396,11 +393,6 @@ export const getRoutes: NavObjectFunction = (t) => [
                   return getStaffPersonal({ partyIds: [staffId] });
                 },
                 element: <StaffProfilePersonalPage />,
-              },
-              {
-                type: NavObjectType.NonMenuLink,
-                path: 'contacts',
-                element: <StaffProfileContactsPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,

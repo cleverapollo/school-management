@@ -169,5 +169,7 @@
   "availableForTeaching": "Available for teaching",
   "availableForSubstitution": "Available for substitution",
   "availableForSupportClasses": "Available for support classes",
-  "position": "Position"
+  "position": "Position",
+  "isATeacher": "Is a teacher?",
+  "behaviour": "Behaviour"
 }

@@ -116,17 +116,17 @@ const mockTFunction = ((key: string) => key) as TFunction<
 >;
 
 export const getNavCategories = (t: TFunction<'navigation'[]>) => [
-  ...getShellRoutes(t),
+  // ...getShellRoutes(t),
   ...getCalendarRoutes(t),
   ...getClassListManagerRoutes(t),
   ...getGroupRoutes(t),
-  ...getMailRoutes(t),
+  // ...getMailRoutes(t),
   ...getAssessmentRoutes(t),
   ...getPeopleRoutes(t),
-  ...getReportingRoutes(t),
+  // ...getReportingRoutes(t),
   ...getSmsRoutes(t),
-  ...getSubstitutionRoutes(t),
-  ...getTimetableRoutes(t),
+  // ...getSubstitutionRoutes(t),
+  // ...getTimetableRoutes(t),
   ...getSettingsRoutes(t),
   ...getAdminRoutes(t),
 ];
@@ -181,7 +181,7 @@ function useAppRouter() {
       children: [
         {
           path: '/',
-          loader: () => redirect('/dashboard'),
+          loader: () => redirect('/calendar'),
         },
         ...buildRouteTree(getNavCategories(mockTFunction)),
       ],

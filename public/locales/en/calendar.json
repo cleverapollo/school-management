@@ -23,7 +23,7 @@
   "changeCalendarView": "Change calendar view",
   "addEvent": "Add event",
   "editEvent": "Edit event",
-  "editCalendar": "Edit calendar",
+  "filterCalendar": "Filter calendar",
   "errorMessages": {
     "minEventDuration": "The event must last at least {{time}} minutes"
   },
