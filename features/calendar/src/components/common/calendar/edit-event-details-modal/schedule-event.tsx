@@ -53,11 +53,11 @@ export const ScheduleEvent = <TField extends ScheduleEventFormState>({
   return (
     <>
       <Stack direction="column" gap={1.5}>
-        <RHFSwitch<ScheduleEventFormState>
+        {/* <RHFSwitch<ScheduleEventFormState>
           label={t('calendar:inputLabels.allDay')}
           switchProps={{ color: 'primary' }}
           controlProps={{ name: 'allDayEvent', control }}
-        />
+        /> */}
 
         <Stack direction="row" gap={1}>
           <RHFDatePicker<ScheduleEventFormState>
