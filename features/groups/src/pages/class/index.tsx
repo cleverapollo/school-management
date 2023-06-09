@@ -27,6 +27,7 @@ import {
   ReturnTypeFromUseClassGroups,
   useSaveClassGroupEdits,
 } from '../../api/class-groups';
+import { sortStartNumberFirst } from '../../utils/sort-start-number-first';
 
 const getClassGroupColumns = (
   t: TFunction<'common'[], undefined, 'common'[]>,
@@ -55,6 +56,7 @@ const getClassGroupColumns = (
           }}
         />
       ) : null,
+    comparator: sortStartNumberFirst,
   },
   {
     headerName: t('common:members'),
