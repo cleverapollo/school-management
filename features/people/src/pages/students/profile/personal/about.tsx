@@ -1,5 +1,5 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { PersonalInformation } from '@tyro/api';
+import { PersonalInformation, UpdateStudentInput } from '@tyro/api';
 import { RHFTextField } from '@tyro/core';
 import { Stack, Typography, Chip } from '@mui/material';
 import { UserGroupTwoIcon } from '@tyro/icons';
@@ -108,21 +108,22 @@ const getAboutDataWithLabels = (
 type ProfileAboutProps = {
   studentData: ReturnType<typeof useStudentPersonal>['data'];
   editable?: boolean;
+  onSave: CardEditableFormProps<Partial<UpdateStudentInput>>['onSave'];
 };
 
-export const ProfileAbout = ({ studentData, editable }: ProfileAboutProps) => {
+export const ProfileAbout = ({
+  studentData,
+  editable,
+  onSave,
+}: ProfileAboutProps) => {
   const { t } = useTranslation(['common', 'people']);
 
   const aboutDataWithLabels = getAboutDataWithLabels(studentData, t);
 
-  // NOTE: integrate upsertStudent when BE supports it
-  const handleEdit = async (data: AboutFormState) =>
-    new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(data);
-        resolve(data);
-      }, 300);
-    });
+  const handleEdit = (
+    { preferredName }: AboutFormState,
+    onSuccess: () => void
+  ) => onSave({ preferredName }, onSuccess);
 
   return (
     <CardEditableForm<AboutFormState>

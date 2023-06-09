@@ -1,5 +1,6 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { RHFTextField } from '@tyro/core';
+import { UpdateStudentInput } from '@tyro/api';
 import { useStudentPersonal } from '../../../../api/student/personal';
 import {
   CardEditableForm,
@@ -7,12 +8,11 @@ import {
 } from '../../../../components/common/card-editable-form';
 
 type EnrolmentFormState = {
-  lockerNumber: string;
-  examNumber: string;
+  examNumber: UpdateStudentInput['examNumber'];
 };
 
 const getEnrolmentDataWithLabels = (
-  _data: ReturnType<typeof useStudentPersonal>['data'],
+  data: ReturnType<typeof useStudentPersonal>['data'],
   t: TFunction<('people' | 'common')[]>
 ): CardEditableFormProps<EnrolmentFormState>['fields'] => {
   const i18nPrefix = 'people:personal.enrolmentHistory';
@@ -48,20 +48,14 @@ const getEnrolmentDataWithLabels = (
     {
       label: t(`${i18nPrefix}.lockerNumber`),
       value: null,
-      valueEditor: (
-        <RHFTextField
-          textFieldProps={{ variant: 'standard' }}
-          controlProps={{ name: 'lockerNumber' }}
-        />
-      ),
     },
     {
       label: t(`${i18nPrefix}.examNumber`),
-      value: null,
+      value: data?.studentIrePP?.examNumber,
       valueEditor: (
         <RHFTextField
           textFieldProps={{ variant: 'standard' }}
-          controlProps={{ name: 'lockerNumber' }}
+          controlProps={{ name: 'examNumber' }}
         />
       ),
     },
@@ -123,23 +117,22 @@ const getEnrolmentDataWithLabels = (
 type ProfileEnrolmentProps = {
   studentData: ReturnType<typeof useStudentPersonal>['data'];
   editable?: boolean;
+  onSave: CardEditableFormProps<Partial<UpdateStudentInput>>['onSave'];
 };
 
 export const ProfileEnrolment = ({
   studentData,
   editable,
+  onSave,
 }: ProfileEnrolmentProps) => {
   const { t } = useTranslation(['people', 'common']);
 
   const enrolmentDataWithLabels = getEnrolmentDataWithLabels(studentData, t);
 
-  const handleEdit = async (data: EnrolmentFormState) =>
-    new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(data);
-        resolve(data);
-      }, 300);
-    });
+  const handleEdit = (
+    { examNumber }: EnrolmentFormState,
+    onSuccess: () => void
+  ) => onSave({ examNumber }, onSuccess);
 
   return (
     <CardEditableForm<EnrolmentFormState>

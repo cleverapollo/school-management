@@ -136,6 +136,8 @@
   "updatedContactUnsuccessful": "Your contact edition was unsuccessful",
   "successfullyCreatedStaff": "Successfully created staff",
   "successfullyUpdatedStaff": "Successfully updated staff",
+  "successfullyUpdatedStudent": "Successfully updated student",
+  "updatedStudentUnsuccessful": "Your student edition was unsuccessful",
   "createdStaffUnsuccessful": "Your staff creation was unsuccessful",
   "updatedStaffUnsuccessful": "Your staff edition was unsuccessful",
   "allowedToContactRequired": "Permission to receive correspondence is required to enable this permission",
