@@ -106,9 +106,6 @@ const StaffProfileOverviewPage = lazy(
 const StaffProfilePersonalPage = lazy(
   () => import('./pages/staff/profile/personal')
 );
-const StaffProfileContactsPage = lazy(
-  () => import('./pages/staff/profile/contacts')
-);
 const StaffProfileTimetablePage = lazy(
   () => import('./pages/staff/profile/timetable')
 );
@@ -396,11 +393,6 @@ export const getRoutes: NavObjectFunction = (t) => [
                   return getStaffPersonal({ partyIds: [staffId] });
                 },
                 element: <StaffProfilePersonalPage />,
-              },
-              {
-                type: NavObjectType.NonMenuLink,
-                path: 'contacts',
-                element: <StaffProfileContactsPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,
