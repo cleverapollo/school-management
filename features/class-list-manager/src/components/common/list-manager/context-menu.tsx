@@ -123,7 +123,7 @@ export function ContextMenu({
     const studentIds = isMultipleSelected ? selectedStudentIds : [studentId];
     setSubMenuContext({
       anchorEl: event.currentTarget,
-      includeUnassigned: false,
+      includeUnassigned: true,
       onSelect: (
         e: React.MouseEvent<HTMLLIElement, MouseEvent>,
         id: string
