@@ -12,6 +12,7 @@ export type EmploymentInformationFormState = {
   startDate: dayjs.Dayjs | null;
   position: UpsertStaffInput['position'];
   employmentCapacity: EmploymentCapacityOption;
+  displayCode: UpsertStaffInput['displayCode'];
   availableForTeaching: UpsertStaffInput['availableForTeaching'];
   availableForSubstitution: UpsertStaffInput['availableForSubstitution'];
   availableForSupportClasses: UpsertStaffInput['availableForSupportClasses'];
@@ -59,6 +60,13 @@ export const EmploymentInformation = <
             name: 'employmentCapacity',
             control,
           }}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <RHFTextField
+          label={t('people:displayCode')}
+          textFieldProps={{ fullWidth: true }}
+          controlProps={{ name: 'displayCode', control }}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
