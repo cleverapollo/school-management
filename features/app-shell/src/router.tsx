@@ -181,7 +181,7 @@ function useAppRouter() {
       children: [
         {
           path: '/',
-          loader: () => redirect('/calendar'),
+          loader: () => redirect('/groups/class'),
         },
         ...buildRouteTree(getNavCategories(mockTFunction)),
       ],
