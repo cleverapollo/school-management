@@ -8,6 +8,7 @@ import {
 } from '../../../../components/common/card-editable-form';
 
 type EnrolmentFormState = {
+  lockerNumber: UpdateStudentInput['lockerNumber'];
   examNumber: UpdateStudentInput['examNumber'];
 };
 
@@ -47,7 +48,13 @@ const getEnrolmentDataWithLabels = (
     },
     {
       label: t(`${i18nPrefix}.lockerNumber`),
-      value: null,
+      value: data?.studentIrePP?.lockerNumber,
+      valueEditor: (
+        <RHFTextField
+          textFieldProps={{ variant: 'standard' }}
+          controlProps={{ name: 'lockerNumber' }}
+        />
+      ),
     },
     {
       label: t(`${i18nPrefix}.examNumber`),
@@ -129,17 +136,12 @@ export const ProfileEnrolment = ({
 
   const enrolmentDataWithLabels = getEnrolmentDataWithLabels(studentData, t);
 
-  const handleEdit = (
-    { examNumber }: EnrolmentFormState,
-    onSuccess: () => void
-  ) => onSave({ examNumber }, onSuccess);
-
   return (
     <CardEditableForm<EnrolmentFormState>
       title={t('people:personal.enrolmentHistory.title')}
       editable={editable}
       fields={enrolmentDataWithLabels}
-      onSave={handleEdit}
+      onSave={onSave}
     />
   );
 };

@@ -120,17 +120,12 @@ export const ProfileAbout = ({
 
   const aboutDataWithLabels = getAboutDataWithLabels(studentData, t);
 
-  const handleEdit = (
-    { preferredName }: AboutFormState,
-    onSuccess: () => void
-  ) => onSave({ preferredName }, onSuccess);
-
   return (
     <CardEditableForm<AboutFormState>
       title={t('people:personal.about.title')}
       editable={editable}
       fields={aboutDataWithLabels}
-      onSave={handleEdit}
+      onSave={onSave}
     >
       <Stack direction="row" gap={1} alignItems="center">
         <UserGroupTwoIcon sx={{ color: 'text.secondary' }} />

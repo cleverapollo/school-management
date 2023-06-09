@@ -44,6 +44,7 @@ const studentsPersonalById = graphql(/* GraphQL */ `
         languageSupportApplicant
         borderIndicator
         examNumber
+        lockerNumber
         previousSchoolRollNumber
       }
     }

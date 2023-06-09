@@ -91,25 +91,13 @@ export const ProfileContact = ({
     primaryEmail: rules.isEmail(),
   });
 
-  const handleEdit = (
-    { primaryEmail, primaryPhoneNumber }: ContactFormState,
-    onSuccess: () => void
-  ) =>
-    onSave(
-      {
-        primaryEmail,
-        primaryPhoneNumber,
-      },
-      onSuccess
-    );
-
   return (
     <CardEditableForm<ContactFormState>
       title={t('people:personal.studentContactDetails')}
       editable={editable}
       fields={contactDataWithLabels}
       resolver={contactResolver}
-      onSave={handleEdit}
+      onSave={onSave}
       sx={{ height: '100%' }}
     />
   );
