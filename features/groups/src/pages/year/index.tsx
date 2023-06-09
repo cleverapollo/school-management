@@ -1,9 +1,10 @@
 import { Box, Fade } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { SmsRecipientType } from '@tyro/api';
+import { SmsRecipientType, UpdateYearGroupEnrollmentInput } from '@tyro/api';
 import {
   ActionMenu,
+  BulkEditedRows,
   GridOptions,
   ICellRendererParams,
   PageContainer,
@@ -15,8 +16,11 @@ import {
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { MobileIcon } from '@tyro/icons';
+import set from 'lodash/set';
+import { TableStaffMultipleAutocomplete } from './table-staff-autocomplete';
 import {
   useYearGroups,
+  useUpdateYearGroupLeads,
   ReturnTypeFromUseYearGroups,
 } from '../../api/year-groups';
 
@@ -56,8 +60,20 @@ const getYearGroupsColumns = (
   {
     headerName: t('common:yearhead'),
     field: 'yearGroupLeads',
+    cellClass: 'disable-cell-edit-style',
     enableRowGroup: true,
-    valueGetter: ({ data }) => displayNames(data?.yearGroupLeads),
+    valueSetter: ({ data, newValue }) => {
+      set(data, 'yearGroupLeads', newValue);
+      return true;
+    },
+    valueFormatter: ({ data }) => displayNames(data?.yearGroupLeads),
+    editable: true,
+    cellEditor: TableStaffMultipleAutocomplete,
+    cellEditorParams: {
+      multiple: true,
+    },
+    suppressKeyboardEvent: ({ editing, event }) =>
+      editing && event.key === 'Enter',
   },
 ];
 
@@ -74,6 +90,7 @@ export default function YearGroups() {
   } = useDisclosure();
 
   const { data: yearGroupData } = useYearGroups();
+  const { mutateAsync: updateYearGroupLeads } = useUpdateYearGroupLeads();
 
   const yearGroupColumns = useMemo(
     () => getYearGroupsColumns(t, displayNames),
@@ -92,6 +109,27 @@ export default function YearGroups() {
     //   onClick: () => {},
     // },
   ];
+
+  const handleBulkSave = (
+    data: BulkEditedRows<ReturnTypeFromUseYearGroups, 'yearGroupLeads'>
+  ) => {
+    const updates = Object.entries(data).reduce<
+      UpdateYearGroupEnrollmentInput[]
+    >((acc, [partyId, changes]) => {
+      const yearGroupLeads = changes?.yearGroupLeads?.newValue;
+      if (Array.isArray(yearGroupLeads) && yearGroupLeads.length > 0) {
+        const yearGroupLeadUpdates = yearGroupLeads.map((yearGroupLead) => ({
+          yearGroupEnrollmentPartyId: Number(partyId),
+          yearGroupLead: yearGroupLead?.partyId,
+        }));
+        return [...acc, ...yearGroupLeadUpdates];
+      }
+
+      return acc;
+    }, []);
+
+    return updateYearGroupLeads(updates);
+  };
 
   return (
     <>
@@ -122,6 +160,7 @@ export default function YearGroups() {
               }))
             )
           }
+          onBulkSave={handleBulkSave}
         />
       </PageContainer>
 
