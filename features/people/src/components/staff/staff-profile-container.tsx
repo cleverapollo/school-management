@@ -62,10 +62,6 @@ export default function StaffProfileContainer() {
               value: 'personal',
             },
             {
-              label: t('people:contacts'),
-              value: 'contacts',
-            },
-            {
               label: 'Timetable',
               value: 'timetable',
             },
