@@ -32,7 +32,7 @@ import {
   CalendarEventViewProps,
 } from './edit-event-details-modal';
 import { getCalendarContent } from './calendar-content';
-import { FilterCalendarPanel } from './edit-calendar-panel';
+import { FilterCalendarPanel } from './filter-calendar-panel';
 import { CalendarDetailsPopover } from './details-popover';
 import { getDayHeaderContent } from './day-header-content';
 import { CalendarParty } from '../../../hooks/use-participants-search-props';
@@ -229,6 +229,7 @@ export const Calendar = function Calendar({
             <Box sx={{ flex: 1, position: 'relative' }}>
               <FullCalendar
                 weekends={false} // Update this to come from school settings when available
+                allDaySlot={false}
                 editable={isEditable}
                 droppable={isEditable}
                 selectable={isEditable}
