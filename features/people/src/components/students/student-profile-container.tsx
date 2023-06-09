@@ -67,10 +67,11 @@ export default function StudentProfileContainer() {
               label: t('common:attendance'),
               value: 'attendance',
             },
-            {
-              label: 'Fees',
-              value: 'fees',
-            },
+            // NOTE: hide temporary this tab
+            // {
+            //   label: 'Fees',
+            //   value: 'fees',
+            // },
             {
               label: 'Assessment',
               value: 'assessment',
