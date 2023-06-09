@@ -122,7 +122,7 @@
   "createContact": "Create contact",
   "pageTitle": {
     "contacts": "List of contacts",
-    "createContact":"Add a new contact",
+    "createContact": "Add a new contact",
     "staff": "List of staff",
     "createStaff": "Add a new staff"
   },
@@ -165,5 +165,6 @@
   "competencies": "Competencies",
   "present": "Present",
   "displayCode": "Display code",
-  "isATeacher": "Is a teacher?"
+  "isATeacher": "Is a teacher?",
+  "behaviour": "Behaviour"
 }

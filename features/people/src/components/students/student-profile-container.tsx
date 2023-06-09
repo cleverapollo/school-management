@@ -81,8 +81,8 @@ export default function StudentProfileContainer() {
               value: 'timetable',
             },
             {
-              label: 'Well-being',
-              value: 'well-being',
+              label: t('people:behaviour'),
+              value: 'behaviour',
             },
             {
               label: 'AEN',
