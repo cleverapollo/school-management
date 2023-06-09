@@ -278,7 +278,10 @@ export const Calendar = function Calendar({
                     ? weekHours.businessHours[0].startTime
                     : DEFAULT_CALENDAR_TIMES.start
                 }
-                schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
+                schedulerLicenseKey={
+                  process.env.FULL_CALENDAR_KEY ??
+                  'CC-Attribution-NonCommercial-NoDerivatives'
+                }
               />
               <Fade in={isFilterCalendarOpen}>
                 <IconButton
