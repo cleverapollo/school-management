@@ -19,6 +19,7 @@ jobs:
       - name: 'yarn build'
         run: |
           export AG_GRID_KEY="${{ secrets.AG_GRID_KEY }}"
+          export FULL_CALENDAR_KEY="${{ secrets.FULL_CALENDAR_KEY }}"
           yarn install
           yarn build
       - name: Docker Login

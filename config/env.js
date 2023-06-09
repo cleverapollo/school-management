@@ -89,6 +89,7 @@ function getClientEnvironment(publicUrl) {
         // It is defined here so it is available in the webpackHotDevClient.
         FAST_REFRESH: process.env.FAST_REFRESH !== 'false',
         AG_GRID_KEY: process.env.AG_GRID_KEY,
+        FULL_CALENDAR_KEY: process.env.FULL_CALENDAR_KEY,
       }
     );
   // Stringify all values so we can feed into webpack DefinePlugin

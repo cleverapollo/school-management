@@ -254,8 +254,12 @@ export const Calendar = function Calendar({
                 slotEventOverlap={false}
                 height="auto"
                 selectConstraint={SELECTABLE_EVENT_CONSTRAINT}
-                slotMinTime={weekHours?.slotMinTime}
-                slotMaxTime={weekHours?.slotMaxTime}
+                slotMinTime={
+                  weekHours?.slotMinTime ?? DEFAULT_CALENDAR_TIMES.start
+                }
+                slotMaxTime={
+                  weekHours?.slotMaxTime ?? DEFAULT_CALENDAR_TIMES.end
+                }
                 businessHours={weekHours?.businessHours}
                 nowIndicator
                 plugins={[
@@ -274,7 +278,10 @@ export const Calendar = function Calendar({
                     ? weekHours.businessHours[0].startTime
                     : DEFAULT_CALENDAR_TIMES.start
                 }
-                schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
+                schedulerLicenseKey={
+                  process.env.FULL_CALENDAR_KEY ??
+                  'CC-Attribution-NonCommercial-NoDerivatives'
+                }
               />
               <Fade in={isFilterCalendarOpen}>
                 <IconButton
