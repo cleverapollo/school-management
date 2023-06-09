@@ -39,6 +39,7 @@ export function useHandleLessonAttendance({
 }: UseHandleLessonAttendanceParams) {
   const initialAttendanceRef = useRef<StudentAttendance>({});
   const [newAttendance, setNewAttendance] = useState<StudentAttendance>({});
+  const currentStartTime = useRef(dayjs().format('YYYY-MM-DD[T]HH:mm:ss'));
 
   const [filter, setFilter] = useState<CalendarEventIteratorFilter>({
     partyId,
@@ -61,6 +62,7 @@ export function useHandleLessonAttendance({
 
   useLayoutEffect(() => {
     if (lessonData) {
+      currentStartTime.current = lessonData.startTime;
       const date = dayjs(lessonData.startTime).format('YYYY-MM-DD');
 
       const studentAttendance = eventAttendance.reduce((acc, event) => {
@@ -103,7 +105,7 @@ export function useHandleLessonAttendance({
     setFilter({
       ...filter,
       iterator: Iterator.Previous,
-      eventStartTime: lessonData?.startTime,
+      eventStartTime: lessonData?.startTime || currentStartTime.current,
     });
   };
 

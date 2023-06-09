@@ -100,7 +100,7 @@ export default function SubjectGroupProfileAttendancePage() {
         <IconButton
           size="small"
           color="primary"
-          disabled={isLoading || isEmptyLesson}
+          disabled={isLoading}
           onClick={previousLesson}
         >
           <ChevronLeftIcon />
