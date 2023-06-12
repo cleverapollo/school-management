@@ -63,6 +63,13 @@ export const EmploymentInformation = <
         />
       </Grid>
       <Grid item xs={12} sm={6}>
+        <RHFTextField
+          label={t('people:displayCode')}
+          textFieldProps={{ fullWidth: true }}
+          controlProps={{ name: 'displayCode', control }}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
         <RHFSwitch
           label={t('people:availableForTeaching')}
           switchProps={{ color: 'primary' }}

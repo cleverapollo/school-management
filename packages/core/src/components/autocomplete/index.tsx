@@ -167,7 +167,6 @@ export const Autocomplete = <
                 label={avatarProps.name}
                 {...getTagProps({ index })}
                 {...chipProps}
-                key={`${avatarProps.name ?? ''}-${index}`}
               />
             ))
           ),

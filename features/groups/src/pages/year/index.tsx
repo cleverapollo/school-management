@@ -17,7 +17,7 @@ import {
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { MobileIcon } from '@tyro/icons';
 import set from 'lodash/set';
-import { TableStaffMultipleAutocomplete } from './table-staff-autocomplete';
+import { TableStaffMultipleAutocomplete } from '@tyro/people';
 import {
   useYearGroups,
   useUpdateYearGroupLeads,
