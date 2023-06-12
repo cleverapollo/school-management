@@ -1,4 +1,18 @@
 {
+  "pageTitle": {
+    "attendance": "Attendance"
+  },
+  "pageHeading": {
+    "attendance": "Attendance"
+  },
+  "attendance": "Attendance",
+  "attendanceCodes": "Attendance Codes",
+  "overview": "Overview",
+  "createAttendanceCode": "Create Attendance Code",
+  "code": "Code",
+  "reportAs": "Report As",
+  "tuslaCode": "Tusla Code",
+  "availableTo": "Available To",
   "attendanceNotTaken": "Attendance not taken",
   "attendanceTaken": "Attendance taken",
   "sessionAttendanceYear": "Session attendance {{year}}",
