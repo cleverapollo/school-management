@@ -53,7 +53,11 @@ const subjectGroupById = graphql(/* GraphQL */ `
         colour
       }
       staff {
-        title
+        title {
+          id
+          name
+          nameTextId
+        }
         firstName
         lastName
         type

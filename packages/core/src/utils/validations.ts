@@ -28,7 +28,7 @@ export const validations = {
     date: Date | dayjs.Dayjs,
     errorMessage?: string
   ): Date | dayjs.Dayjs | ValidationError => {
-    if (!dayjs(date).isValid()) {
+    if (date && !dayjs(date).isValid()) {
       throw new ValidationError('date', errorMessage);
     }
 
@@ -108,13 +108,24 @@ export const validations = {
 
     return value;
   },
-  isPhoneNumber: <T extends string>(
+  isPhoneNumber: <
+    T extends string | { number: string; numberMatchWithMask: boolean }
+  >(
     value: T,
     errorMessage?: string
   ): T | ValidationError => {
-    const matcher = /[A-Z]/gi;
+    const simpleMatch = /[A-Z]/gi;
 
-    if (value && matcher.test(value)) {
+    if (value && typeof value === 'string' && simpleMatch.test(value)) {
+      throw new ValidationError('isPhoneNumber', errorMessage);
+    }
+
+    if (
+      typeof value === 'object' &&
+      value.number &&
+      'numberMatchWithMask' in value &&
+      !value.numberMatchWithMask
+    ) {
       throw new ValidationError('isPhoneNumber', errorMessage);
     }
 

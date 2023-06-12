@@ -25,7 +25,11 @@ const classMemberships = graphql(/* GraphQL */ `
       unenrolledStudents {
         person {
           partyId
-          title
+          title {
+            id
+            name
+            nameTextId
+          }
           firstName
           lastName
           avatarUrl
@@ -38,7 +42,11 @@ const classMemberships = graphql(/* GraphQL */ `
         students {
           person {
             partyId
-            title
+            title {
+              id
+              name
+              nameTextId
+            }
             firstName
             lastName
             avatarUrl
@@ -47,7 +55,11 @@ const classMemberships = graphql(/* GraphQL */ `
         }
         staff {
           partyId
-          title
+          title {
+            id
+            name
+            nameTextId
+          }
           firstName
           lastName
           avatarUrl

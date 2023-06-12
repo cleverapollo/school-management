@@ -13,7 +13,7 @@ import {
   PrimaryAddressFormState,
 } from '../../common/primary-address';
 import { NextOfKin, NextOfKinFormState } from './next-of-kin';
-import { useCreateStaff } from '../../../api/staff/create-staff';
+import { useUpsertStaff } from '../../../api/staff/upsert-staff';
 import {
   EmploymentInformation,
   EmploymentInformationFormState,
@@ -34,7 +34,7 @@ export function StaffForm() {
     onClose: onCloseCancelModal,
   } = useDisclosure();
 
-  const { mutate: createStaffMutation, isLoading } = useCreateStaff();
+  const { mutate: upsertStaffMutation, isLoading } = useUpsertStaff();
 
   const { resolver, rules } = useFormValidator<StaffFormState>();
   const {
@@ -45,16 +45,13 @@ export function StaffForm() {
     resolver: resolver({
       firstName: rules.required(),
       lastName: rules.required(),
-      email: rules.isEmail(),
-      mobileNumber: rules.validate<StaffFormState['mobileNumber']>(
-        (mobileNumber, throwError) => {
-          if (mobileNumber?.number && !mobileNumber.numberMatchWithMask) {
-            throwError(t('common:errorMessages.invalidMobileNumber'));
-          }
-        }
+      mobileNumber: rules.isPhoneNumber(
+        t('common:errorMessages.invalidMobileNumber')
       ),
       additionalNumber: rules.isPhoneNumber(),
+      email: rules.isEmail(),
       startDate: rules.date(),
+      employmentCapacity: rules.required(),
       nextOfKinPhoneNumber: rules.isPhoneNumber(),
       nextOfKinAdditionalNumber: rules.isPhoneNumber(),
     }),
@@ -88,6 +85,7 @@ export function StaffForm() {
     nextOfKinSurname,
     nextOfKinPhoneNumber,
     nextOfKinAdditionalNumber,
+    employmentCapacity,
     ...data
   }: StaffFormState) => {
     const hasAddress = city || country || line1 || line2 || line3 || postCode;
@@ -97,12 +95,13 @@ export function StaffForm() {
       nextOfKinAdditionalNumber,
     ].filter(Boolean);
 
-    createStaffMutation(
+    upsertStaffMutation(
       [
         {
           ...data,
           titleId: title?.id,
           startDate: startDate ? startDate.format('YYYY-MM-DD') : undefined,
+          employmentCapacity: employmentCapacity.id,
           phoneNumbers: [
             ...(mobileNumber
               ? [
@@ -155,6 +154,12 @@ export function StaffForm() {
             },
           }),
           noLongerStaff: false,
+          // NOTE: They need to be sent since BE needs them for updating
+          staffIre: {
+            pps: undefined,
+            staffPost: undefined,
+            teacherCouncilNumber: undefined,
+          },
         },
       ],
       {

@@ -14,7 +14,11 @@ const sentSms = graphql(/* GraphQL */ `
       id
       name
       sender {
-        title
+        title {
+          id
+          name
+          nameTextId
+        }
         firstName
         lastName
         avatarUrl
@@ -32,7 +36,11 @@ const sentSms = graphql(/* GraphQL */ `
           recipientPartyId
         }
         recipient {
-          title
+          title {
+            id
+            name
+            nameTextId
+          }
           firstName
           lastName
           avatarUrl

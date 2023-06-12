@@ -260,6 +260,8 @@
     "title": "Cancel",
     "description": "Are you sure you want to cancel?"
   },
+  "processingYourData": "Processing your data",
+  "wereImportingDataForFeature": "We're currently importing data for this feature.",
   "phoneNumber": "Phone number",
   "additionalNumber": "Additional number",
   "contact": "Contact"

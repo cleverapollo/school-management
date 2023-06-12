@@ -154,37 +154,37 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 index: true,
-                loader: () => redirect('./personal'),
+                loader: () => redirect('./overview'),
               },
-              // {
-              //   type: NavObjectType.NonMenuLink,
-              //   path: 'overview',
-              //   loader: ({ params }) => {
-              //     const studentId = getNumber(params.id);
-              //     const formattedDate = dayjs().format('YYYY-MM-DD');
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'overview',
+                loader: ({ params }) => {
+                  const studentId = getNumber(params.id);
+                  const formattedDate = dayjs().format('YYYY-MM-DD');
 
-              //     if (!studentId) {
-              //       throw404Error();
-              //     }
+                  if (!studentId) {
+                    throw404Error();
+                  }
 
-              //     return Promise.all([
-              //       getStudentsContacts(studentId),
-              //       getStudentDashboardAssessments(studentId),
-              //       getPartyTimetable({
-              //         resources: {
-              //           partyIds: [studentId ?? 0],
-              //         },
-              //         startDate: formattedDate,
-              //         endDate: formattedDate,
-              //       }),
-              //       getTimetableInfo({
-              //         fromDate: formattedDate,
-              //         toDate: formattedDate,
-              //       }),
-              //     ]);
-              //   },
-              //   element: <StudentProfileOverviewPage />,
-              // },
+                  return Promise.all([
+                    getStudentsContacts(studentId),
+                    getStudentDashboardAssessments(studentId),
+                    getPartyTimetable({
+                      resources: {
+                        partyIds: [studentId ?? 0],
+                      },
+                      startDate: formattedDate,
+                      endDate: formattedDate,
+                    }),
+                    getTimetableInfo({
+                      fromDate: formattedDate,
+                      toDate: formattedDate,
+                    }),
+                  ]);
+                },
+                element: <StudentProfileOverviewPage />,
+              },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'personal',

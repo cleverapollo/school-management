@@ -51,20 +51,19 @@ const getStaffColumns = (
     lockVisible: true,
   },
   {
-    field: 'staffIreTeacher.teachingPost',
+    field: 'position',
     headerName: t('people:position'),
+    valueGetter: ({ data }) => data?.position || '-',
   },
   {
-    field: 'employmentCapacity',
+    field: 'employmentCapacity.name',
     headerName: t('common:capacity'),
-    valueGetter: ({ data }) =>
-      data && data.employmentCapacity
-        ? t(`people:employmentCapacity.${data.employmentCapacity}`)
-        : t(`people:employmentCapacity.UNKNOWN`),
+    valueGetter: ({ data }) => data?.employmentCapacity?.name || '-',
   },
   {
-    field: 'carRegistrationNumber',
-    headerName: t('people:carRegistration'),
+    field: 'staffIre.staffPost.name',
+    headerName: t('people:post'),
+    valueGetter: ({ data }) => data?.staffIre?.staffPost?.name || '-',
   },
   {
     field: 'startDate',
@@ -73,38 +72,9 @@ const getStaffColumns = (
       data && data.startDate ? dayjs(data.startDate).format('ll') : '-',
   },
   {
-    field: 'endDate',
-    headerName: t('common:endDate'),
-    valueGetter: ({ data }) =>
-      data && data.endDate ? dayjs(data.endDate).format('ll') : '-',
-  },
-  {
-    field: 'staffIre.pps',
-    headerName: t('people:ppsNumber'),
-  },
-  {
-    field: 'personalInformation.gender',
-    headerName: t('people:gender.title'),
-    valueGetter: ({ data }) =>
-      data?.personalInformation?.gender
-        ? t(`people:gender.${data?.personalInformation?.gender}`)
-        : t('people:gender.UNKNOWN'),
-  },
-  {
-    field: 'staffIreTeacher.teacherCouncilNumber',
-    headerName: t('people:teacherCouncilNumber'),
-  },
-  {
-    field: 'personalInformation.preferredFirstName',
-    headerName: t('common:preferredFirstName'),
-    editable: true,
-    hide: true,
-  },
-  {
     field: 'personalInformation.primaryPhoneNumber.number',
     headerName: t('common:phone'),
     editable: true,
-    hide: true,
     cellEditor: 'agNumericCellEditor',
     valueSetter: ({ data, newValue }) => {
       set(
@@ -125,6 +95,42 @@ const getStaffColumns = (
       set(data ?? {}, 'personalInformation.primaryEmail.email', newValue);
       return true;
     },
+  },
+  {
+    field: 'personalInformation.gender',
+    headerName: t('people:gender.title'),
+    valueGetter: ({ data }) =>
+      data?.personalInformation?.gender
+        ? t(`people:gender.${data?.personalInformation?.gender}`)
+        : t('people:gender.UNKNOWN'),
+    hide: true,
+  },
+  {
+    field: 'carRegistrationNumber',
+    headerName: t('people:carRegistration'),
+    hide: true,
+  },
+  {
+    field: 'parking',
+    headerName: t('people:parkingLocation'),
+    hide: true,
+  },
+  {
+    field: 'personalInformation.ire.ppsNumber',
+    headerName: t('people:ppsNumber'),
+    hide: true,
+  },
+  {
+    field: 'staffIre.teacherCouncilNumber',
+    headerName: t('people:teacherCouncilNumber'),
+    hide: true,
+  },
+  {
+    field: 'endDate',
+    headerName: t('common:endDate'),
+    hide: true,
+    valueGetter: ({ data }) =>
+      data && data.endDate ? dayjs(data.endDate).format('ll') : '-',
   },
 ];
 

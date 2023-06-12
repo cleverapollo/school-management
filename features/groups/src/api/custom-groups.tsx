@@ -34,7 +34,11 @@ const customGroupById = graphql(/* GraphQL */ `
       students {
         person {
           partyId
-          title
+          title {
+            id
+            name
+            nameTextId
+          }
           firstName
           lastName
           avatarUrl
@@ -43,7 +47,11 @@ const customGroupById = graphql(/* GraphQL */ `
       }
       staff {
         partyId
-        title
+        title {
+          id
+          name
+          nameTextId
+        }
         firstName
         lastName
         avatarUrl
@@ -51,7 +59,11 @@ const customGroupById = graphql(/* GraphQL */ `
       }
       contacts {
         partyId
-        title
+        title {
+          id
+          name
+          nameTextId
+        }
         firstName
         lastName
         avatarUrl

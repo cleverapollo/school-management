@@ -28,7 +28,11 @@ const timetable = graphql(/* GraphQL */ `
               partyId
               ... on Staff {
                 person {
-                  title
+                  title {
+                    id
+                    name
+                    nameTextId
+                  }
                   firstName
                   lastName
                   type
