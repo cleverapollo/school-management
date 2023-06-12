@@ -29,6 +29,13 @@ export const getRoutes: NavObjectFunction = (t) => [
         children: [
           {
             type: NavObjectType.MenuLink,
+            title: t('navigation:management.settings.subjects'),
+            path: 'subjects',
+            loader: () => getCatalogueSubjects(),
+            element: <Subjects />,
+          },
+          {
+            type: NavObjectType.MenuLink,
             title: t('navigation:management.settings.rooms'),
             path: 'rooms',
             loader: () => getCoreRooms(),
@@ -40,13 +47,6 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'academic-namespaces',
             loader: () => getCoreAcademicNamespace(),
             element: <AcademicNamespaceList />,
-          },
-          {
-            type: NavObjectType.MenuLink,
-            title: t('navigation:management.settings.subjects'),
-            path: 'subjects',
-            loader: () => getCatalogueSubjects(),
-            element: <Subjects />,
           },
           {
             type: NavObjectType.MenuLink,

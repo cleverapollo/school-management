@@ -28,15 +28,15 @@
   "successfullyChangedYear": "Successfully changed year to {{name}}",
   "failedChangingYear": "Failed changing year to {{name}}",
   "actions": {
-    "makeActive": "Activate academic year",
+    "makeActive": "Activate academic year for all users",
     "addNewRoom": "Add new room",
     "editRoom": "Edit room",
     "linkToViewRoomTimetable": "Link to view room timetable"
   },
   "namespacesDialog": {
-    "title": "Change academic year to {{name}}?",
-    "description": "You are about to change the academic year to {{name}} for everyone in the school. Users who login to Tyro will view data from {{name}}. Are you sure you want to continue?",
-    "confirmation": "Yes, change academic year to {{name}}"
+    "title": "Activate academic year {{name}}?",
+    "description": "You are about to set the academic year to {{name}} for all users in the school. Users who access Tyro will view data from {{name}}. Are you sure you want to continue?",
+    "confirmation": "Yes, activate academic year {{name}} for all users"
   },
   "academicNamespaceType": {
     "YEAR": "Year",
@@ -50,9 +50,9 @@
     "title": "PPOD sync information",
     "completedBy": "Completed by",
     "date": "Date",
-    "time":"Time",
+    "time": "Time",
     "status": "Status",
-    "details":" Details",
+    "details": " Details",
     "credentialsSaved": "Credentials saved",
     "credentialsCorrect": "Credentials success!",
     "login": "Login",
@@ -68,7 +68,6 @@
     "ERROR": "Error",
     "unableToSyncData": "Unable to sync data",
     "incorrectCredentials": "Incorrect credentials"
-
   },
   "schoolDetails": {
     "contact": "Contact",
@@ -79,8 +78,7 @@
     "parentAssociation": "Parents association",
     "studentCouncil": "Student council",
     "email": "Email",
-    "coOperatingSchoolRollNo1":
-      "Co-op school 1:",
+    "coOperatingSchoolRollNo1": "Co-op school 1:",
     "website": "Website",
     "coOperatingSchoolRollNo2": "Co-op school 2:",
     "boardingFeeSixOrSevenDay": "7 day boarding",

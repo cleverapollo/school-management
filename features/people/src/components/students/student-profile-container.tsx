@@ -51,10 +51,11 @@ export default function StudentProfileContainer() {
         <StudentOverviewBar studentId={idNumber} />
         <TabPageContainer
           links={[
-            {
-              label: 'Overview',
-              value: 'overview',
-            },
+            // NOTE: temporary hide this tab
+            // {
+            //   label: 'Overview',
+            //   value: 'overview',
+            // },
             {
               label: t('people:personal.title'),
               value: 'personal',
@@ -67,10 +68,11 @@ export default function StudentProfileContainer() {
               label: t('common:attendance'),
               value: 'attendance',
             },
-            {
-              label: 'Fees',
-              value: 'fees',
-            },
+            // NOTE: temporary hide this tab
+            // {
+            //   label: 'Fees',
+            //   value: 'fees',
+            // },
             {
               label: 'Assessment',
               value: 'assessment',
@@ -80,8 +82,8 @@ export default function StudentProfileContainer() {
               value: 'timetable',
             },
             {
-              label: 'Well-being',
-              value: 'well-being',
+              label: t('people:behaviour'),
+              value: 'behaviour',
             },
             {
               label: 'AEN',

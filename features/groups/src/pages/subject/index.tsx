@@ -25,6 +25,7 @@ import {
   useSaveSubjectGroupEdits,
   useSubjectGroups,
 } from '../../api/subject-groups';
+import { sortStartNumberFirst } from '../../utils/sort-start-number-first';
 
 type ReturnTypeFromUseSubjectGroups = NonNullable<
   ReturnType<typeof useSubjectGroups>['data']
@@ -41,6 +42,7 @@ const getSubjectGroupsColumns = (
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
+
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseSubjectGroups>) => {
@@ -64,6 +66,7 @@ const getSubjectGroupsColumns = (
         />
       );
     },
+    comparator: sortStartNumberFirst,
     sort: 'asc',
   },
   {

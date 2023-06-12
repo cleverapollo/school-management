@@ -60,10 +60,11 @@ export default function ContactProfileContainer() {
               label: t('common:students'),
               value: 'students',
             },
-            {
-              label: 'Fees',
-              value: 'fees',
-            },
+            // NOTE: hide temporary this tab
+            // {
+            //   label: 'Fees',
+            //   value: 'fees',
+            // },
             {
               label: 'Access',
               value: 'access',
