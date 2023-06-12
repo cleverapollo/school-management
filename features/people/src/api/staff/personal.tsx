@@ -5,8 +5,13 @@ import { peopleStaffKeys } from './keys';
 const staffPersonal = graphql(/* GraphQL */ `
   query core_staff_personal($filter: StaffFilter) {
     core_staff(filter: $filter) {
+      partyId
       person {
-        title
+        title {
+          id
+          name
+          nameTextId
+        }
         firstName
         lastName
         avatarUrl
@@ -20,6 +25,7 @@ const staffPersonal = graphql(/* GraphQL */ `
           ppsNumber
         }
         primaryAddress {
+          id
           line1
           line2
           line3
@@ -28,20 +34,24 @@ const staffPersonal = graphql(/* GraphQL */ `
           postCode
         }
         primaryPhoneNumber {
+          phoneNumberId
           number
           areaCode
           countryCode
         }
         phoneNumbers {
+          phoneNumberId
           primaryPhoneNumber
           number
           areaCode
           countryCode
         }
         primaryEmail {
+          emailId
           email
         }
         emails {
+          emailId
           email
           primaryEmail
         }
@@ -54,6 +64,7 @@ const staffPersonal = graphql(/* GraphQL */ `
       staffIre {
         teacherCouncilNumber
         staffPost {
+          id
           name
         }
       }
@@ -62,13 +73,27 @@ const staffPersonal = graphql(/* GraphQL */ `
         id
         name
       }
+      emergencyContact {
+        firstName
+        lastName
+        primaryNumber
+        additionalNumber
+      }
       displayCode
       carRegistrationNumber
-      subjectGroups {
-        subjects {
-          name
-          colour
-        }
+      makeAndModel
+      parking
+      jobSharing
+      qualifications
+      competencies
+      availableForTeaching
+      availableForSubstitution
+      availableForSupportClasses
+      position
+      competencySubjects {
+        id
+        name
+        colour
       }
     }
   }
@@ -86,10 +111,6 @@ export function getStaffPersonal(filter: StaffFilter) {
 export function useStaffPersonal(filter: StaffFilter) {
   return useQuery({
     ...staffPersonalQuery(filter),
-    select: ({ core_staff }) => {
-      const [staffData] = core_staff;
-
-      return staffData;
-    },
+    select: ({ core_staff }) => core_staff[0],
   });
 }

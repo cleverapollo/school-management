@@ -7,15 +7,21 @@ const staff = graphql(/* GraphQL */ `
     core_staff(filter: $filter) {
       partyId
       person {
-        title
+        title {
+          id
+          name
+          nameTextId
+        }
         firstName
         lastName
         avatarUrl
       }
+      employmentCapacity {
+        name
+      }
       startDate
       endDate
       personalInformation {
-        preferredFirstName
         gender
         primaryPhoneNumber {
           number
@@ -25,23 +31,18 @@ const staff = graphql(/* GraphQL */ `
         }
         ire {
           ppsNumber
-          religion
-          countryOfBirth
         }
       }
       staffIre {
         teacherCouncilNumber
         staffPost {
+          id
           name
         }
       }
-      payrollNumber
-      noLongerStaffMember
-      employmentCapacity {
-        name
-      }
-      displayCode
       carRegistrationNumber
+      parking
+      position
     }
   }
 `);
@@ -51,7 +52,11 @@ const staffInfoForSelect = graphql(/* GraphQL */ `
     core_staff(filter: $filter) {
       person {
         partyId
-        title
+        title {
+          nameTextId
+          id
+          name
+        }
         firstName
         lastName
         avatarUrl

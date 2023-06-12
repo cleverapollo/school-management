@@ -1,13 +1,17 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { PersonalInformation } from '@tyro/api';
+import { PersonalInformation, UpdateStudentInput } from '@tyro/api';
 import { RHFTextField } from '@tyro/core';
 import { Stack, Typography, Chip } from '@mui/material';
 import { UserGroupTwoIcon } from '@tyro/icons';
+import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import {
   CardEditableForm,
   CardEditableFormProps,
 } from '../../../../components/common/card-editable-form';
 import { useStudentPersonal } from '../../../../api/student/personal';
+
+dayjs.extend(LocalizedFormat);
 
 type AboutFormState = {
   preferredName: PersonalInformation['preferredFirstName'];
@@ -51,7 +55,7 @@ const getAboutDataWithLabels = (
     {
       label: t('people:personal.about.dateOfBirth'),
       value: dateOfBirth,
-      valueRenderer: dateOfBirth ? dateOfBirth.format('DD/MM/YYYY') : '-',
+      valueRenderer: dateOfBirth ? dayjs(dateOfBirth).format('l') : '-',
     },
     {
       label: t('people:ppsNumber'),
@@ -104,31 +108,28 @@ const getAboutDataWithLabels = (
 type ProfileAboutProps = {
   studentData: ReturnType<typeof useStudentPersonal>['data'];
   editable?: boolean;
+  onSave: CardEditableFormProps<Partial<UpdateStudentInput>>['onSave'];
 };
 
-export const ProfileAbout = ({ studentData, editable }: ProfileAboutProps) => {
+export const ProfileAbout = ({
+  studentData,
+  editable,
+  onSave,
+}: ProfileAboutProps) => {
   const { t } = useTranslation(['common', 'people']);
 
   const aboutDataWithLabels = getAboutDataWithLabels(studentData, t);
-
-  const handleEdit = async (data: AboutFormState) =>
-    new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(data);
-        resolve(data);
-      }, 300);
-    });
 
   return (
     <CardEditableForm<AboutFormState>
       title={t('people:personal.about.title')}
       editable={editable}
       fields={aboutDataWithLabels}
-      onSave={handleEdit}
+      onSave={onSave}
     >
       <Stack direction="row" gap={1} alignItems="center">
-        <UserGroupTwoIcon sx={{ color: 'slate.500' }} />
-        <Typography variant="body1" sx={{ color: 'slate.600' }}>
+        <UserGroupTwoIcon sx={{ color: 'text.secondary' }} />
+        <Typography variant="body1" color="text.primary">
           {t('common:siblings')}
         </Typography>
         <Chip label={t('common:noSiblingsRegisteredAtThisSchool')} />

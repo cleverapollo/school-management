@@ -1,28 +1,25 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { RHFTextField, useFormValidator } from '@tyro/core';
-import { InputNextOfKin } from '@tyro/api';
+import { StaffEmergencyContact, UpsertStaffInput } from '@tyro/api';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
   CardEditableForm,
   CardEditableFormProps,
 } from '../../../../components/common/card-editable-form';
-import { MobileNumberData } from '../../../../components/common/mobile-number';
 
 type EmergencyFormState = {
-  firstName: InputNextOfKin['firstName'];
-  lastName: InputNextOfKin['lastName'];
-  primaryNumber: MobileNumberData | null;
-  additionalNumber: MobileNumberData | null;
+  firstName: StaffEmergencyContact['firstName'];
+  lastName: StaffEmergencyContact['lastName'];
+  primaryNumber: StaffEmergencyContact['primaryNumber'];
+  additionalNumber: StaffEmergencyContact['additionalNumber'];
 };
 
 const getEmergencyDataWitLabels = (
   data: ReturnType<typeof useStaffPersonal>['data'],
   t: TFunction<'people'[]>
 ): CardEditableFormProps<EmergencyFormState>['fields'] => {
-  const { nextOfKin } = data?.personalInformation || {};
-
-  const { phoneNumbers, firstName, lastName } = nextOfKin || {};
-  const [primaryNumber, additionalNumber] = phoneNumbers || [];
+  const { firstName, lastName, primaryNumber, additionalNumber } =
+    data?.emergencyContact || {};
 
   return [
     {
@@ -71,11 +68,13 @@ const getEmergencyDataWitLabels = (
 type ProfileEmergencyProps = {
   staffData: ReturnType<typeof useStaffPersonal>['data'];
   editable?: boolean;
+  onSave: CardEditableFormProps<UpsertStaffInput>['onSave'];
 };
 
 export const ProfileEmergency = ({
   staffData,
   editable,
+  onSave,
 }: ProfileEmergencyProps) => {
   const { t } = useTranslation(['common', 'people']);
 
@@ -88,13 +87,10 @@ export const ProfileEmergency = ({
     additionalNumber: rules.isPhoneNumber(),
   });
 
-  const handleEdit = async (data: EmergencyFormState) =>
-    new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(data);
-        resolve(data);
-      }, 300);
-    });
+  const handleEdit = (
+    emergencyContact: EmergencyFormState,
+    onSuccess: () => void
+  ) => onSave({ emergencyContact }, onSuccess);
 
   return (
     <CardEditableForm<EmergencyFormState>
@@ -103,6 +99,7 @@ export const ProfileEmergency = ({
       fields={emergencyDataWithLabels}
       resolver={emergencyResolver}
       onSave={handleEdit}
+      sx={{ height: '100%' }}
     />
   );
 };

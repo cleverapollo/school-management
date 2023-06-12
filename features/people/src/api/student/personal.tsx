@@ -44,6 +44,7 @@ const studentsPersonalById = graphql(/* GraphQL */ `
         languageSupportApplicant
         borderIndicator
         examNumber
+        lockerNumber
         previousSchoolRollNumber
       }
     }
@@ -65,23 +66,6 @@ export function getStudentPersonal(studentId: number | undefined) {
 export function useStudentPersonal(studentId: number | undefined) {
   return useQuery({
     ...studentPersonalQuery(studentId),
-    select: ({ core_students }) => {
-      const student =
-        Array.isArray(core_students) && core_students.length > 0
-          ? core_students[0]
-          : null;
-
-      if (!student) return null;
-
-      return {
-        ...student,
-        personalInformation: {
-          ...student.personalInformation,
-          dateOfBirth: student?.personalInformation?.dateOfBirth
-            ? dayjs(student.personalInformation.dateOfBirth)
-            : null,
-        },
-      };
-    },
+    select: ({ core_students }) => core_students[0],
   });
 }

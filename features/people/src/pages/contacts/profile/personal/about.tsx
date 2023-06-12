@@ -1,6 +1,4 @@
 import {
-  RHFDatePicker,
-  RHFSelect,
   RHFSwitch,
   RHFTextField,
   formatPhoneNumber,
@@ -10,13 +8,11 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   PersonalTitle,
   PersonalInformation,
-  PersonalInformationIre,
   InputAddress,
   StudentContact,
   InputEmailAddress,
-  Gender,
+  UpsertStudentContactInput,
 } from '@tyro/api';
-import dayjs from 'dayjs';
 import { useContactPersonal } from '../../../../api/contact/personal';
 import {
   MobileNumber,
@@ -27,15 +23,14 @@ import {
   CardEditableFormProps,
 } from '../../../../components/common/card-editable-form';
 import { PersonalTitlesDropdown } from '../../../../components/common/personal-titles-dropdown';
+import { GenderDropdown } from '../../../../components/common/gender-dropdown';
 
 type AboutFormState = {
-  title: PersonalTitle;
+  title: PersonalTitle | null;
   firstName: PersonalInformation['firstName'];
   lastName: PersonalInformation['lastName'];
-  dateOfBirth: dayjs.Dayjs | null;
   gender: PersonalInformation['gender'];
-  countryOfBirth: PersonalInformationIre['countryOfBirth'];
-  // nativeLanguage: StudentContact['nativeLanguage'];
+  spokenLanguage: string;
   requiresInterpreter: StudentContact['requiresInterpreter'];
   line1: InputAddress['line1'];
   line2: InputAddress['line2'];
@@ -43,13 +38,11 @@ type AboutFormState = {
   city: InputAddress['city'];
   country: InputAddress['country'];
   eircode: InputAddress['postCode'];
-  primaryNumber: MobileNumberData | null;
-  additionalNumber: MobileNumberData | null;
+  primaryNumber: MobileNumberData | string | null;
+  additionalNumber: MobileNumberData | string | null;
   primaryEmail: InputEmailAddress['email'];
   occupation: StudentContact['occupation'];
 };
-
-const genderOptions = Object.values(Gender);
 
 const getAboutDataWithLabels = (
   data: ReturnType<typeof useContactPersonal>['data'],
@@ -58,17 +51,16 @@ const getAboutDataWithLabels = (
   const {
     partyId,
     personalInformation,
-    // nativeLanguage,
+    spokenLanguages,
     requiresInterpreter,
     occupation,
+    person,
   } = data || {};
 
   const {
     firstName,
     lastName,
-    dateOfBirth,
     gender,
-    ire,
     primaryAddress,
     primaryPhoneNumber,
     phoneNumbers = [],
@@ -85,7 +77,8 @@ const getAboutDataWithLabels = (
   return [
     {
       label: t('people:title'),
-      value: null,
+      value: person?.title,
+      valueRenderer: person?.title?.name,
       valueEditor: (
         <PersonalTitlesDropdown
           inputProps={{ variant: 'standard' }}
@@ -114,62 +107,27 @@ const getAboutDataWithLabels = (
       ),
     },
     {
-      label: t('people:personal.about.dateOfBirth'),
-      value: dateOfBirth ? dayjs(dateOfBirth) : undefined,
-      valueRenderer: dateOfBirth
-        ? dayjs(dateOfBirth).format('DD/MM/YYYY')
-        : '-',
-      valueEditor: (
-        <RHFDatePicker
-          inputProps={{ variant: 'standard' }}
-          controlProps={{ name: 'dateOfBirth' }}
-        />
-      ),
-    },
-    {
-      label: t('people:tyroId'),
-      value: partyId,
-    },
-    {
       label: t('people:gender.title'),
       value: gender,
       valueRenderer: gender ? t(`people:gender.${gender}`) : '-',
       valueEditor: (
-        <RHFSelect<AboutFormState, Gender>
-          variant="standard"
-          fullWidth
-          options={genderOptions}
-          getOptionLabel={(option) => t(`people:gender.${option}`)}
-          controlProps={{ name: 'gender' }}
-        />
+        <GenderDropdown variant="standard" controlProps={{ name: 'gender' }} />
       ),
     },
     {
-      label: t('people:personal.about.countryOfBirth'),
-      value: ire?.countryOfBirth,
+      label: t('people:personal.about.spokenLanguage'),
+      value: (spokenLanguages || [])[0],
       valueEditor: (
         <RHFTextField
           textFieldProps={{ variant: 'standard' }}
-          controlProps={{ name: 'countryOfBirth' }}
+          controlProps={{ name: 'spokenLanguage' }}
         />
       ),
     },
-    // {
-    //   label: t('people:personal.about.spokenLanguage'),
-    //   value: nativeLanguage,
-    //   valueEditor: (
-    //     <RHFTextField
-    //       textFieldProps={{ variant: 'standard' }}
-    //       controlProps={{ name: 'nativeLanguage' }}
-    //     />
-    //   ),
-    // },
     {
       label: t('people:personal.about.requiresInterpreter'),
       value: requiresInterpreter,
-      valueRenderer: requiresInterpreter
-        ? t('common:yes')
-        : t('common:no') ?? '-',
+      valueRenderer: requiresInterpreter ? t('common:yes') : t('common:no'),
       valueEditor: (
         <RHFSwitch
           switchProps={{ color: 'primary' }}
@@ -294,15 +252,26 @@ const getAboutDataWithLabels = (
         />
       ),
     },
+    {
+      label: t('people:tyroId'),
+      value: partyId,
+    },
   ];
 };
 
 type ProfileAboutProps = {
   contactData: ReturnType<typeof useContactPersonal>['data'];
   editable?: boolean;
+  onSave: CardEditableFormProps<
+    Omit<UpsertStudentContactInput, 'studentRelationships'>
+  >['onSave'];
 };
 
-export const ProfileAbout = ({ contactData, editable }: ProfileAboutProps) => {
+export const ProfileAbout = ({
+  contactData,
+  editable,
+  onSave,
+}: ProfileAboutProps) => {
   const { t } = useTranslation(['common', 'people']);
 
   const aboutDataWithLabels = getAboutDataWithLabels(contactData, t);
@@ -312,19 +281,117 @@ export const ProfileAbout = ({ contactData, editable }: ProfileAboutProps) => {
   const aboutResolver = resolver({
     firstName: rules.required(),
     lastName: rules.required(),
-    dateOfBirth: rules.date(),
     primaryNumber: rules.isPhoneNumber(),
     additionalNumber: rules.isPhoneNumber(),
     primaryEmail: rules.isEmail(),
   });
 
-  const handleEdit = async (data: AboutFormState) =>
-    new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(data);
-        resolve(data);
-      }, 300);
-    });
+  const handleEdit = (
+    {
+      title,
+      firstName,
+      lastName,
+      primaryNumber,
+      additionalNumber,
+      primaryEmail,
+      line1,
+      line2,
+      line3,
+      eircode: postCode,
+      city,
+      country,
+      spokenLanguage,
+      gender,
+      ...data
+    }: AboutFormState,
+    onSuccess: () => void
+  ) => {
+    const hasAddress = city || country || line1 || line2 || line3 || postCode;
+
+    const {
+      phoneNumbers = [],
+      primaryAddress,
+      primaryPhoneNumber: currentPrimaryPhoneNumer,
+      primaryEmail: currentPrimaryEmail,
+    } = contactData?.personalInformation || {};
+
+    const currentAdditionalNumber = phoneNumbers?.find(
+      (phoneNumber) => !phoneNumber?.primaryPhoneNumber
+    );
+
+    return onSave(
+      {
+        titleId: title?.id,
+        personal: {
+          firstName,
+          lastName,
+          gender,
+        },
+        phoneNumbers: [
+          primaryNumber
+            ? {
+                phoneNumberId: currentPrimaryPhoneNumer?.phoneNumberId,
+                primaryPhoneNumber: true,
+                active: true,
+                number:
+                  typeof primaryNumber === 'string'
+                    ? primaryNumber
+                    : primaryNumber.number,
+                countryCode:
+                  typeof primaryNumber === 'string'
+                    ? undefined
+                    : primaryNumber.countryCode,
+              }
+            : null,
+          additionalNumber
+            ? {
+                phoneNumberId: currentAdditionalNumber?.phoneNumberId,
+                primaryPhoneNumber: false,
+                active: true,
+                number:
+                  typeof additionalNumber === 'string'
+                    ? additionalNumber
+                    : additionalNumber.number,
+                countryCode:
+                  typeof additionalNumber === 'string'
+                    ? undefined
+                    : additionalNumber.countryCode,
+              }
+            : null,
+        ].filter(Boolean),
+        ...(primaryEmail && {
+          emails: [
+            {
+              emailId: currentPrimaryEmail?.emailId,
+              primaryEmail: true,
+              active: true,
+              email: primaryEmail,
+            },
+          ],
+        }),
+        ...(hasAddress && {
+          addresses: [
+            {
+              addressId: primaryAddress?.id,
+              primaryAddress: true,
+              active: true,
+              city,
+              country,
+              line1,
+              line2,
+              line3,
+              postCode,
+            },
+          ],
+        }),
+        ...(spokenLanguage && {
+          spokenLanguages: [spokenLanguage],
+        }),
+        ...data,
+      },
+      onSuccess
+    );
+  };
 
   return (
     <CardEditableForm<AboutFormState>

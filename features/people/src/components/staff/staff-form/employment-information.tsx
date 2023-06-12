@@ -9,9 +9,10 @@ import { EmploymentCapacityAutocomplete } from '../../common/employment-capacity
 import { EmploymentCapacityOption } from '../../../api/staff/employment-capacities';
 
 export type EmploymentInformationFormState = {
-  startDate: dayjs.Dayjs;
-  position?: string;
-  employmentCapacity: EmploymentCapacityOption | null;
+  startDate: dayjs.Dayjs | null;
+  position: UpsertStaffInput['position'];
+  employmentCapacity: EmploymentCapacityOption;
+  displayCode: UpsertStaffInput['displayCode'];
   availableForTeaching: UpsertStaffInput['availableForTeaching'];
   availableForSubstitution: UpsertStaffInput['availableForSubstitution'];
   availableForSupportClasses: UpsertStaffInput['availableForSupportClasses'];
@@ -54,7 +55,7 @@ export const EmploymentInformation = <
       </Grid>
       <Grid item xs={12} sm={6}>
         <EmploymentCapacityAutocomplete
-          label={t('people:employmentCapacity.title')}
+          label={t('people:employmentCapacity')}
           controlProps={{
             name: 'employmentCapacity',
             control,

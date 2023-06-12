@@ -8,6 +8,7 @@ import {
   Tooltip,
   CardProps,
 } from '@mui/material';
+
 import { EditIcon, UndoIcon, SaveIcon } from '@tyro/icons';
 import {
   FieldValues,
@@ -35,7 +36,7 @@ export type CardEditableFormProps<TField extends FieldValues> = CardProps & {
   editable?: boolean;
   fields: Array<CardEditableField<TField>>;
   resolver?: Resolver<TField>;
-  onSave: (data: TField) => Promise<unknown>;
+  onSave: (data: TField, onSuccess: () => void) => void;
 };
 
 export const CardEditableForm = <TField extends FieldValues>({
@@ -53,15 +54,22 @@ export const CardEditableForm = <TField extends FieldValues>({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 
-  const { control, handleSubmit, reset } = useForm<TField>({ resolver });
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isDirty },
+  } = useForm<TField>({ resolver });
 
-  const handleSave = async (data: TField) => {
-    try {
+  const handleSave = (data: TField) => {
+    if (isDirty) {
       setIsSubmitting(true);
-      await onSave(data);
-    } finally {
+      onSave(data, () => {
+        setIsEditMode(false);
+        setIsSubmitting(false);
+      });
+    } else {
       setIsEditMode(false);
-      setIsSubmitting(false);
     }
   };
 
@@ -91,13 +99,18 @@ export const CardEditableForm = <TField extends FieldValues>({
                 <IconButton
                   aria-label={t('common:actions.cancel')}
                   onClick={handleCancel}
+                  disabled={isSubmitting}
                 >
                   <UndoIcon />
                 </IconButton>
               </Tooltip>
 
               <Tooltip title={t('common:actions.save')}>
-                <IconButton aria-label={t('common:actions.save')} type="submit">
+                <IconButton
+                  aria-label={t('common:actions.save')}
+                  type="submit"
+                  disabled={isSubmitting}
+                >
                   <SaveIcon />
                 </IconButton>
               </Tooltip>
@@ -107,7 +120,6 @@ export const CardEditableForm = <TField extends FieldValues>({
               <IconButton
                 aria-label={t('common:actions.edit')}
                 onClick={handleEdit}
-                disabled={isSubmitting}
               >
                 <EditIcon />
               </IconButton>

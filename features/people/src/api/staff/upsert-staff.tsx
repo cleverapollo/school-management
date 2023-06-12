@@ -13,7 +13,7 @@ const upsertStaff = graphql(/* GraphQL */ `
   }
 `);
 
-export function useCreateStaff() {
+export function useUpsertStaff() {
   const { toast } = useToast();
   const { t } = useTranslation(['people']);
 
@@ -21,14 +21,24 @@ export function useCreateStaff() {
     mutationKey: peopleStaffKeys.upsertStaff(),
     mutationFn: async (input: [UpsertStaffInput]) =>
       gqlClient.request(upsertStaff, { input }),
-    onSuccess: () => {
-      toast(t('people:successfullyCreatedStaff'));
-      queryClient.invalidateQueries(peopleStaffKeys.all);
+    onSuccess: async (_, [staff]) => {
+      await queryClient.invalidateQueries(peopleStaffKeys.all);
+
+      toast(
+        staff.id
+          ? t('people:successfullyUpdatedStaff')
+          : t('people:successfullyCreatedStaff')
+      );
     },
-    onError: () => {
-      toast(t('people:createdStaffUnsuccessful'), {
-        variant: 'error',
-      });
+    onError: (_, [staff]) => {
+      toast(
+        staff.id
+          ? t('people:updatedStaffUnsuccessful')
+          : t('people:createdStaffUnsuccessful'),
+        {
+          variant: 'error',
+        }
+      );
     },
   });
 }

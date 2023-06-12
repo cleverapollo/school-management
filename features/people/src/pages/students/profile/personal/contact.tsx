@@ -1,26 +1,16 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { formatPhoneNumber, RHFTextField, useFormValidator } from '@tyro/core';
 
-import { InputAddress, InputEmailAddress } from '@tyro/api';
+import { UpdateStudentInput } from '@tyro/api';
 import {
   CardEditableForm,
   CardEditableFormProps,
 } from '../../../../components/common/card-editable-form';
-import {
-  MobileNumber,
-  MobileNumberData,
-} from '../../../../components/common/mobile-number';
 import { useStudentPersonal } from '../../../../api/student/personal';
 
 type ContactFormState = {
-  primaryNumber: MobileNumberData | null;
-  primaryEmail: InputEmailAddress['email'];
-  line1: InputAddress['line1'];
-  line2: InputAddress['line2'];
-  line3: InputAddress['line3'];
-  city: InputAddress['city'];
-  country: InputAddress['country'];
-  eircode: InputAddress['postCode'];
+  primaryPhoneNumber: UpdateStudentInput['primaryPhoneNumber'];
+  primaryEmail: UpdateStudentInput['primaryEmail'];
 };
 
 const getContactDataWithLabels = (
@@ -29,8 +19,6 @@ const getContactDataWithLabels = (
 ): CardEditableFormProps<ContactFormState>['fields'] => {
   const { primaryAddress, primaryPhoneNumber, primaryEmail } =
     data?.personalInformation || {};
-
-  const isPrimaryNumberAMobile = Boolean(primaryPhoneNumber?.countryCode);
 
   return [
     {
@@ -59,19 +47,12 @@ const getContactDataWithLabels = (
     },
     {
       label: t('people:personal.about.primaryNumber'),
-      value: isPrimaryNumberAMobile
-        ? primaryPhoneNumber
-        : primaryPhoneNumber?.number,
+      value: primaryPhoneNumber?.number,
       valueRenderer: formatPhoneNumber(primaryPhoneNumber),
-      valueEditor: isPrimaryNumberAMobile ? (
-        <MobileNumber
-          variant="standard"
-          controlProps={{ name: 'primaryNumber' }}
-        />
-      ) : (
+      valueEditor: (
         <RHFTextField
           textFieldProps={{ variant: 'standard' }}
-          controlProps={{ name: 'primaryNumber' }}
+          controlProps={{ name: 'primaryPhoneNumber' }}
         />
       ),
     },
@@ -91,11 +72,13 @@ const getContactDataWithLabels = (
 type ProfileContactProps = {
   studentData: ReturnType<typeof useStudentPersonal>['data'];
   editable?: boolean;
+  onSave: CardEditableFormProps<Partial<UpdateStudentInput>>['onSave'];
 };
 
 export const ProfileContact = ({
   studentData,
   editable,
+  onSave,
 }: ProfileContactProps) => {
   const { t } = useTranslation(['people']);
 
@@ -104,17 +87,9 @@ export const ProfileContact = ({
   const { resolver, rules } = useFormValidator<ContactFormState>();
 
   const contactResolver = resolver({
-    primaryNumber: rules.isPhoneNumber(),
+    primaryPhoneNumber: rules.isPhoneNumber(),
     primaryEmail: rules.isEmail(),
   });
-
-  const handleEdit = async (data: ContactFormState) =>
-    new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(data);
-        resolve(data);
-      }, 300);
-    });
 
   return (
     <CardEditableForm<ContactFormState>
@@ -122,7 +97,7 @@ export const ProfileContact = ({
       editable={editable}
       fields={contactDataWithLabels}
       resolver={contactResolver}
-      onSave={handleEdit}
+      onSave={onSave}
       sx={{ height: '100%' }}
     />
   );

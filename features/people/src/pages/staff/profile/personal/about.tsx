@@ -1,29 +1,18 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
-import {
-  RHFTextField,
-  RHFSelect,
-  RHFDatePicker,
-  useFormValidator,
-} from '@tyro/core';
+import { RHFTextField, RHFDatePicker, useFormValidator } from '@tyro/core';
 import dayjs from 'dayjs';
 
-import {
-  UpsertStaffInput,
-  Gender,
-  InputAddress,
-  PersonalTitle,
-} from '@tyro/api';
+import { UpsertStaffInput, InputAddress, PersonalTitle } from '@tyro/api';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
   CardEditableForm,
   CardEditableFormProps,
 } from '../../../../components/common/card-editable-form';
 import { PersonalTitlesDropdown } from '../../../../components/common/personal-titles-dropdown';
-
-const genderOptions = Object.values(Gender);
+import { GenderDropdown } from '../../../../components/common/gender-dropdown';
 
 type AboutFormState = {
-  title: PersonalTitle;
+  title: PersonalTitle | null;
   firstName: UpsertStaffInput['firstName'];
   lastName: UpsertStaffInput['lastName'];
   gender: UpsertStaffInput['gender'];
@@ -36,13 +25,21 @@ type AboutFormState = {
   country: InputAddress['country'];
   eircode: InputAddress['postCode'];
   carRegistrationNumber: UpsertStaffInput['carRegistrationNumber'];
+  makeAndModel: UpsertStaffInput['makeAndModel'];
+  parking: UpsertStaffInput['parking'];
 };
 
 const getAboutDataWithLabels = (
   data: ReturnType<typeof useStaffPersonal>['data'],
   t: TFunction<'people'[]>
 ): CardEditableFormProps<AboutFormState>['fields'] => {
-  const { person, personalInformation, carRegistrationNumber } = data || {};
+  const {
+    person,
+    personalInformation,
+    carRegistrationNumber,
+    makeAndModel,
+    parking,
+  } = data || {};
   const { gender, dateOfBirth, ire, primaryAddress } =
     personalInformation || {};
 
@@ -50,6 +47,7 @@ const getAboutDataWithLabels = (
     {
       label: t('people:title'),
       value: person?.title,
+      valueRenderer: person?.title?.name,
       valueEditor: (
         <PersonalTitlesDropdown
           inputProps={{ variant: 'standard' }}
@@ -82,18 +80,12 @@ const getAboutDataWithLabels = (
       value: gender,
       valueRenderer: gender ? t(`people:gender.${gender}`) : '-',
       valueEditor: (
-        <RHFSelect<AboutFormState, Gender>
-          variant="standard"
-          fullWidth
-          options={genderOptions}
-          getOptionLabel={(option) => t(`people:gender.${option}`)}
-          controlProps={{ name: 'gender' }}
-        />
+        <GenderDropdown variant="standard" controlProps={{ name: 'gender' }} />
       ),
     },
     {
       label: t('people:personal.about.dateOfBirth'),
-      value: dateOfBirth ? dayjs(dateOfBirth) : undefined,
+      value: dateOfBirth ? dayjs(dateOfBirth) : null,
       valueRenderer: dateOfBirth
         ? dayjs(dateOfBirth).format('DD/MM/YYYY')
         : '-',
@@ -184,15 +176,40 @@ const getAboutDataWithLabels = (
         />
       ),
     },
+    {
+      label: t('people:makeAndModel'),
+      value: makeAndModel,
+      valueEditor: (
+        <RHFTextField
+          textFieldProps={{ variant: 'standard' }}
+          controlProps={{ name: 'makeAndModel' }}
+        />
+      ),
+    },
+    {
+      label: t('people:parkingLocation'),
+      value: parking,
+      valueEditor: (
+        <RHFTextField
+          textFieldProps={{ variant: 'standard' }}
+          controlProps={{ name: 'parking' }}
+        />
+      ),
+    },
   ];
 };
 
 type ProfileAboutProps = {
   staffData: ReturnType<typeof useStaffPersonal>['data'];
   editable?: boolean;
+  onSave: CardEditableFormProps<UpsertStaffInput>['onSave'];
 };
 
-export const ProfileAbout = ({ staffData, editable }: ProfileAboutProps) => {
+export const ProfileAbout = ({
+  staffData,
+  editable,
+  onSave,
+}: ProfileAboutProps) => {
   const { t } = useTranslation(['people']);
 
   const aboutDataWithLabels = getAboutDataWithLabels(staffData, t);
@@ -205,13 +222,51 @@ export const ProfileAbout = ({ staffData, editable }: ProfileAboutProps) => {
     dateOfBirth: rules.date(),
   });
 
-  const handleEdit = async (data: AboutFormState) =>
-    new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(data);
-        resolve(data);
-      }, 300);
-    });
+  const handleEdit = (
+    {
+      title,
+      dateOfBirth,
+      ppsNumber,
+      line1,
+      line2,
+      line3,
+      eircode: postCode,
+      city,
+      country,
+      ...data
+    }: AboutFormState,
+    onSuccess: () => void
+  ) => {
+    const hasAddress = city || country || line1 || line2 || line3 || postCode;
+
+    return onSave(
+      {
+        ...data,
+        id: staffData?.partyId,
+        titleId: title?.id,
+        dateOfBirth: dateOfBirth ? dateOfBirth.format('YYYY-MM-DD') : undefined,
+        staffIre: {
+          pps: ppsNumber,
+        },
+        ...(hasAddress && {
+          addresses: [
+            {
+              addressId: staffData?.personalInformation?.primaryAddress?.id,
+              primaryAddress: true,
+              active: true,
+              city,
+              country,
+              line1,
+              line2,
+              line3,
+              postCode,
+            },
+          ],
+        }),
+      },
+      onSuccess
+    );
+  };
 
   return (
     <CardEditableForm<AboutFormState>
