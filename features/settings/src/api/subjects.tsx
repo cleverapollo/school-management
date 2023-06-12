@@ -1,5 +1,11 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient, UpsertSubject } from '@tyro/api';
+import {
+  gqlClient,
+  graphql,
+  queryClient,
+  UpsertSubject,
+  UseQueryReturnType,
+} from '@tyro/api';
 import { useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 
@@ -67,3 +73,7 @@ export function useUpdateCatalogueSubjects() {
     },
   });
 }
+
+export type CatalogueSubjectOption = UseQueryReturnType<
+  typeof useCatalogueSubjects
+>[number];

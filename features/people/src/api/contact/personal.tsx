@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, queryClient } from '@tyro/api';
-import dayjs from 'dayjs';
 import { peopleContactsKeys } from './keys';
 
 const contactsPersonalById = graphql(/* GraphQL */ `
@@ -8,6 +7,11 @@ const contactsPersonalById = graphql(/* GraphQL */ `
     core_studentContacts(filter: $filter) {
       partyId
       person {
+        title {
+          id
+          name
+          nameTextId
+        }
         avatarUrl
         firstName
         lastName
@@ -27,6 +31,7 @@ const contactsPersonalById = graphql(/* GraphQL */ `
         nationality
         mothersMaidenName
         primaryAddress {
+          id
           line1
           line2
           line3
@@ -35,17 +40,37 @@ const contactsPersonalById = graphql(/* GraphQL */ `
           postCode
         }
         primaryPhoneNumber {
+          phoneNumberId
+          number
+          areaCode
+          countryCode
+        }
+        phoneNumbers {
+          phoneNumberId
+          primaryPhoneNumber
           number
           areaCode
           countryCode
         }
         primaryEmail {
+          emailId
           email
         }
       }
       occupation
-      nativeLanguage
       requiresInterpreter
+      spokenLanguages
+      relationships {
+        relationshipType
+        studentPartyId
+        priority
+        allowedToContact
+        includeInSms
+        includeInTmail
+        pickupRights
+        legalGuardian
+        allowAccessToStudentData
+      }
     }
   }
 `);
@@ -67,19 +92,8 @@ export function useContactPersonal(contactId: number | undefined) {
     ...contactPersonalQuery(contactId),
     select: ({ core_studentContacts }) => {
       const [contact] = core_studentContacts || [];
-      if (!contact) return null;
 
-      const { personalInformation, ...restContact } = contact;
-
-      return {
-        ...restContact,
-        personalInformation: {
-          ...personalInformation,
-          dateOfBirth: personalInformation?.dateOfBirth
-            ? dayjs(personalInformation.dateOfBirth)
-            : null,
-        },
-      };
+      return contact;
     },
   });
 }

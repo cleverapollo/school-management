@@ -51,7 +51,11 @@ const blockMemberships = graphql(/* GraphQL */ `
           isDuplicate
           person {
             partyId
-            title
+            title {
+              id
+              name
+              nameTextId
+            }
             firstName
             lastName
             avatarUrl
@@ -65,7 +69,11 @@ const blockMemberships = graphql(/* GraphQL */ `
             isDuplicate
             person {
               partyId
-              title
+              title {
+                id
+                name
+                nameTextId
+              }
               firstName
               lastName
               avatarUrl
@@ -74,7 +82,11 @@ const blockMemberships = graphql(/* GraphQL */ `
           }
           staff {
             partyId
-            title
+            title {
+              id
+              name
+              nameTextId
+            }
             firstName
             lastName
             avatarUrl

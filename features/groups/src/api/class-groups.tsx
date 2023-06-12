@@ -27,14 +27,22 @@ const classGroupsList = graphql(/* GraphQL */ `
       }
       tutors {
         partyId
-        title
+        title {
+          id
+          name
+          nameTextId
+        }
         firstName
         lastName
         type
       }
       yearGroupLeads {
         partyId
-        title
+        title {
+          id
+          name
+          nameTextId
+        }
         firstName
         lastName
         type
@@ -55,7 +63,11 @@ const classGroupById = graphql(/* GraphQL */ `
       students {
         person {
           partyId
-          title
+          title {
+            nameTextId
+            id
+            name
+          }
           firstName
           lastName
           avatarUrl

@@ -14,4 +14,5 @@ export const peopleStudentsKeys = {
     [...peopleStudentsKeys.all, 'contacts', studentId] as const,
   subjectGroups: (studentId: number | undefined) =>
     [...peopleStudentsKeys.all, 'classes', studentId] as const,
+  updateStudent: () => [...peopleStudentsKeys.all, 'updateStudent'] as const,
 };

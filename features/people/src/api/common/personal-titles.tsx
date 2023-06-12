@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { UseQueryReturnType, gqlClient, graphql, queryClient } from '@tyro/api';
+import { UseQueryReturnType, gqlClient, graphql } from '@tyro/api';
 import { peopleCommonKeys } from './keys';
 
 const personalTitles = graphql(/* GraphQL */ `
@@ -15,10 +15,6 @@ const personalTitlesQuery = () => ({
   queryKey: peopleCommonKeys.personalTitles,
   queryFn: async () => gqlClient.request(personalTitles),
 });
-
-export function getPersonalTitles() {
-  return queryClient.fetchQuery(personalTitlesQuery());
-}
 
 export function usePersonalTitles() {
   return useQuery({

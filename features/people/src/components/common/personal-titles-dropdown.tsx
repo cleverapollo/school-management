@@ -1,31 +1,27 @@
-import { Path, FieldValues, Control } from 'react-hook-form';
-import { useTranslation } from '@tyro/i18n';
-import { RHFAutocomplete } from '@tyro/core';
+import { FieldValues } from 'react-hook-form';
+import { RHFAutocomplete, RHFAutocompleteProps } from '@tyro/core';
 import {
   usePersonalTitles,
   PersonalTitleOption,
 } from '../../api/common/personal-titles';
 
-type PersonalTitlesDropdownProps<TField extends FieldValues> = {
-  name: Path<TField>;
-  control: Control<TField>;
-};
+type PersonalTitlesDropdownProps<TField extends FieldValues> = Omit<
+  RHFAutocompleteProps<TField, PersonalTitleOption>,
+  'options'
+>;
 
-export const PersonalTitlesDropdown = <TField extends FieldValues>({
-  name,
-  control,
-}: PersonalTitlesDropdownProps<TField>) => {
-  const { t } = useTranslation(['people']);
+export const PersonalTitlesDropdown = <TField extends FieldValues>(
+  props: PersonalTitlesDropdownProps<TField>
+) => {
   const { data: personalTitlesData = [] } = usePersonalTitles();
 
   return (
     <RHFAutocomplete<TField, PersonalTitleOption>
-      label={t('people:title')}
       optionIdKey="id"
       optionTextKey="name"
-      controlProps={{ name, control }}
       fullWidth
       options={personalTitlesData}
+      {...props}
     />
   );
 };

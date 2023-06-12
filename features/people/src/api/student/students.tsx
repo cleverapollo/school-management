@@ -103,7 +103,11 @@ const studentsInfoForSelect = graphql(/* GraphQL */ `
     core_students(filter: $filter) {
       person {
         partyId
-        title
+        title {
+          id
+          name
+          nameTextId
+        }
         firstName
         lastName
         avatarUrl

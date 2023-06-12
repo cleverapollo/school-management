@@ -81,7 +81,11 @@ const calendarEvents = graphql(/* GraphQL */ `
               }
               ... on PartyPerson {
                 person {
-                  title
+                  title {
+                    id
+                    name
+                    nameTextId
+                  }
                   firstName
                   lastName
                   avatarUrl

@@ -12,8 +12,11 @@ const yearGroupsList = graphql(/* GraphQL */ `
       description
       yearGroupLeads {
         partyId
-        title
-        titleId
+        title {
+          id
+          name
+          nameTextId
+        }
         firstName
         lastName
         avatarUrl
@@ -32,7 +35,11 @@ const yearGroupById = graphql(/* GraphQL */ `
         partyId
         person {
           partyId
-          title
+          title {
+            id
+            name
+            nameTextId
+          }
           firstName
           lastName
           avatarUrl
@@ -42,7 +49,11 @@ const yearGroupById = graphql(/* GraphQL */ `
           name
         }
         tutors {
-          title
+          title {
+            id
+            name
+            nameTextId
+          }
           firstName
           lastName
           avatarUrl

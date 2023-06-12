@@ -28,16 +28,16 @@ export const RHFAutocomplete = <
     field: { value, onChange, ref, name },
     fieldState: { error },
   } = useController({
-    ...controlProps,
     defaultValue: (restAutocompleteProps.multiple ? [] : null) as PathValue<
       TField,
       Path<TField>
     >,
+    ...controlProps,
   });
 
   return (
     <Autocomplete
-      value={value}
+      value={value ?? null}
       onChange={(event, newValue, ...restParams) => {
         onChange(newValue);
         restAutocompleteProps.onChange?.(event, newValue, ...restParams);
