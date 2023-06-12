@@ -51,11 +51,10 @@ export default function StudentProfileContainer() {
         <StudentOverviewBar studentId={idNumber} />
         <TabPageContainer
           links={[
-            // NOTE: temporary hide this tab
-            // {
-            //   label: 'Overview',
-            //   value: 'overview',
-            // },
+            {
+              label: 'Overview',
+              value: t('common:overview'),
+            },
             {
               label: t('people:personal.title'),
               value: 'personal',
