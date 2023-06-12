@@ -1,7 +1,8 @@
+import { ProcessingDataPlaceholder } from '@tyro/core';
 import { useParams } from 'react-router-dom';
 
 export default function ContactProfileAccessPage() {
   const { id } = useParams();
 
-  return <div>Contact Profile Access Page {id}</div>;
+  return <ProcessingDataPlaceholder />;
 }
