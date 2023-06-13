@@ -15,6 +15,7 @@
   "availableToTeachers": "Available to Teachers",
   "availableToContacts": "Available to Contacts",
   "editAttendanceCode": "Edit attendance code",
+  "attendanceCodeNameShouldBeUnique": "Attendance code name should be unique",
   "attendanceCodeShouldBeUnique": "Attendance code should be unique",
   "availableTo": "Available to",
   "whichUserGroupsHaveAccessToUseThisAttendanceCode": "Which User Groups have access to use this attendance code",

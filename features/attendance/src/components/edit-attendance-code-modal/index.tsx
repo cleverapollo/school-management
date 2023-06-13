@@ -40,7 +40,7 @@ export type EditAttendanceCodeFormState = Pick<
   | 'codeType'
 > & {
   name: string;
-  description?: string;
+  description?: string | null;
 };
 
 export type EditAttendanceCodeViewProps = {
@@ -78,7 +78,14 @@ export const EditAttendanceCodeModal = ({
   const { control, handleSubmit, reset, watch } =
     useForm<EditAttendanceCodeFormState>({
       resolver: resolver({
-        name: rules.required(),
+        name: [
+          rules.required(),
+          rules.isUniqueByKey(
+            attendanceCodesWithoutSelf as [],
+            'name',
+            t('attendance:attendanceCodeNameShouldBeUnique')
+          ),
+        ],
         code: [
           rules.required(),
           rules.isUniqueByKey(
@@ -94,11 +101,16 @@ export const EditAttendanceCodeModal = ({
       mode: 'onChange',
     });
 
-  const onSubmit = ({ name, ...restData }: EditAttendanceCodeFormState) => {
-    console.log('restData', restData);
+  const onSubmit = ({
+    name,
+    description,
+    ...restData
+  }: EditAttendanceCodeFormState) => {
     createOrUpdateAttendanceCodeMutation(
       {
         name: [{ locale: 'en', value: name }],
+        description: [{ locale: 'en', value: description }],
+        isActive: true,
         ...restData,
       },
       {

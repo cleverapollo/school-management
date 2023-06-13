@@ -14,6 +14,7 @@ const attendanceCodes = graphql(/* GraphQL */ `
     attendance_attendanceCodes(filter: $filter) {
       id
       name
+      description
       code
       active
       visibleForTeacher

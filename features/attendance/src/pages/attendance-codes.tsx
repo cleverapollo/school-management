@@ -104,6 +104,7 @@ export default function AttendanceCodes() {
   const tabFilterCodeType = useMemo(
     () => (
       <Tabs
+        sx={{ height: 50 }}
         value={tabSelectedCodeType}
         onChange={(_, value: string) => setTabSelectedCodeType(value)}
       >
@@ -151,6 +152,7 @@ export default function AttendanceCodes() {
     <>
       <Table
         headerComponent={tabFilterCodeType}
+        headerHeight={60}
         rowData={getAttendanceCodesByType(tabSelectedCodeType) ?? []}
         columnDefs={attendanceCodeColumns}
         rowSelection="multiple"

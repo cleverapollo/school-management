@@ -2,6 +2,7 @@ import { lazy } from 'react';
 import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { AttendanceIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
+import { getAttendanceCodes } from './api';
 
 const AttendanceCodesContainer = lazy(
   () => import('./components/attendance-codes-container')
@@ -22,6 +23,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         icon: <AttendanceIcon />,
         hasAccess: (permissions) => !permissions.isTyroTenantAndUser,
         element: <AttendanceCodesContainer />,
+        loader: () => getAttendanceCodes({}),
         children: [
           {
             type: NavObjectType.NonMenuLink,
