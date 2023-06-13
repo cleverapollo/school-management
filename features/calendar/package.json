@@ -25,7 +25,6 @@
     "@tyro/core": "*",
     "@tyro/i18n": "*",
     "@tyro/icons": "*",
-    "@tyro/party": "*",
     "dayjs": "^1.11.7",
     "lodash": "^4.17.21",
     "react": "^18.2.0",

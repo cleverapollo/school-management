@@ -1,28 +1,23 @@
 import { Dispatch, SetStateAction, useId } from 'react';
-import { Box, FormLabel } from '@mui/material';
 import { Autocomplete, AutocompleteProps } from '@tyro/core';
+import { useParticipantsSearchProps, CalendarParty } from '@tyro/calendar';
 import { useTranslation } from '@tyro/i18n';
-import {
-  CalendarParty,
-  useParticipantsSearchProps,
-} from '../../../../hooks/use-participants-search-props';
 
-export interface CalendarSearchProps
+export interface TimetableSearchProps
   extends Partial<AutocompleteProps<CalendarParty, true>> {
   selectedPartys: CalendarParty[];
   onChangeSelectedPartys: Dispatch<SetStateAction<CalendarParty[]>>;
 }
 
-export function CalendarSearch({
+export function TimetableSearch({
   selectedPartys,
   onChangeSelectedPartys,
-}: CalendarSearchProps) {
-  const { t } = useTranslation(['common']);
-
+}: TimetableSearchProps) {
   const id = useId();
+  const { t } = useTranslation(['timetable']);
   const participantsProps = useParticipantsSearchProps({
     id,
-    label: '',
+    label: t('timetable:timetables'),
     value: selectedPartys,
     ListboxProps: {
       sx: {
@@ -32,18 +27,16 @@ export function CalendarSearch({
       },
     },
     inputProps: {
-      variant: 'filled',
-      hiddenLabel: true,
+      variant: 'white-filled',
       fullWidth: true,
     },
     onChange: (_, options) =>
       onChangeSelectedPartys((options as CalendarParty[]) ?? []),
+    sx: {
+      flex: 1,
+      maxWidth: 600,
+    },
   });
 
-  return (
-    <Box>
-      <FormLabel htmlFor={id}>{t('common:calendars')}</FormLabel>
-      <Autocomplete<CalendarParty, true> {...participantsProps} />
-    </Box>
-  );
+  return <Autocomplete<CalendarParty, true> {...participantsProps} />;
 }

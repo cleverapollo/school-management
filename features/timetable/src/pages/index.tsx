@@ -39,9 +39,9 @@ export default function Timetables() {
   const columnDefs = useMemo(() => getColumnDefs(t), [t]);
 
   return (
-    <PageContainer title={t('navigation:general.timetable')}>
+    <PageContainer title={t('navigation:management.timetable.timetables')}>
       <PageHeading
-        title={t('navigation:general.timetable')}
+        title={t('navigation:management.timetable.timetables')}
         titleProps={{ variant: 'h3' }}
       />
       <Table

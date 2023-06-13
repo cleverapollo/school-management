@@ -1,7 +1,8 @@
 {
-    "room":"Room",
-    "teacher":"Teacher",
-    "period":"Period",
-    "day":"Day",
-    "timetable":"Timetable"
+    "room": "Room",
+    "teacher": "Teacher",
+    "period": "Period",
+    "day": "Day",
+    "timetable": "Timetable",
+    "timetables": "Timetable(s)"
 }

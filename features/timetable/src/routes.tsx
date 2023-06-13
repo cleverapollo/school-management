@@ -11,6 +11,7 @@ import { getTimetableLesson } from './api/timetable-lessons';
 
 const TimetableList = lazy(() => import('./pages/index'));
 const ViewTimetable = lazy(() => import('./pages/view'));
+const EditTimetable = lazy(() => import('./pages/edit-timetable'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -20,11 +21,12 @@ export const getRoutes: NavObjectFunction = (t) => [
       {
         type: NavObjectType.RootGroup,
         icon: <EditCalendarIcon />,
-        title: t('navigation:general.timetable'),
+        title: t('navigation:management.timetable.title'),
+        path: 'timetable',
         children: [
           {
             type: NavObjectType.MenuLink,
-            title: t('navigation:general.timetable'),
+            title: t('navigation:management.timetable.timetables'),
             path: 'timetables',
             loader: async () => getTimetableLesson(),
             element: <TimetableList />,
@@ -40,6 +42,12 @@ export const getRoutes: NavObjectFunction = (t) => [
               return getTimetables(timetableId);
             },
             element: <ViewTimetable />,
+          },
+          {
+            type: NavObjectType.MenuLink,
+            title: t('navigation:management.timetable.editTimetable'),
+            path: 'edit-timetable',
+            element: <EditTimetable />,
           },
         ],
       },

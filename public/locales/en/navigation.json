@@ -20,8 +20,7 @@
     "assessments": {
       "title": "Assessments",
       "termAssessments": "Term Assessments"
-    },
-    "timetable": "Timetable"
+    }
   },
   "management": {
     "title": "Management",
@@ -45,6 +44,11 @@
       "ppod": "PPOD",
       "schoolDetails": "School details",
       "login": "Login"
+    },
+    "timetable": {
+      "title": "Timetable",
+      "timetables": "Timetables",
+      "editTimetable": "Edit timetable"
     },
     "sms": "SMS"
   },

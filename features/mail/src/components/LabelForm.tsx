@@ -10,13 +10,13 @@ import { useForm } from 'react-hook-form';
 import { Stack, Button, DialogActions } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
-import { ColorOptions, LabelInput, Maybe } from '@tyro/api';
+import { ColorOptions, Colour, LabelInput, Maybe } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useCreateLabel } from '../api/labels';
 
 interface FormValuesProps {
   labelName: string;
-  color: string;
+  color: Colour;
 }
 
 type LabelFormProps = {
