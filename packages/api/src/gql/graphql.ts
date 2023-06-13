@@ -87,6 +87,7 @@ export type Assessment = {
   createdOn: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
   endDate: Scalars['Date'];
+  externalSystemId?: Maybe<Scalars['String']>;
   extraFields?: Maybe<Array<AssessmentExtraField>>;
   gradeSets?: Maybe<Array<AssessmentGradeSet>>;
   gradeType?: Maybe<GradeType>;
@@ -153,6 +154,7 @@ export type AssessmentGradeSet = {
 export type AssessmentResult = {
   __typename?: 'AssessmentResult';
   assessmentId?: Maybe<Scalars['Long']>;
+  externalSystemId?: Maybe<Scalars['String']>;
   extraFields?: Maybe<Array<ResultExtraField>>;
   grade?: Maybe<Scalars['String']>;
   gradeNameTextId?: Maybe<Scalars['Int']>;
@@ -210,6 +212,8 @@ export type AttendanceCode = {
   active: Scalars['Boolean'];
   code: Scalars['String'];
   codeType: AttendanceCodeType;
+  description?: Maybe<Scalars['String']>;
+  descriptionTextId?: Maybe<Scalars['Int']>;
   id: Scalars['Int'];
   name: Scalars['String'];
   nameTextId?: Maybe<Scalars['Int']>;
@@ -265,9 +269,13 @@ export type CalculatedGrade = {
 
 export type Calendar = {
   __typename?: 'Calendar';
+  academicEndDate: Scalars['Date'];
   academicNamespaceId: Scalars['Int'];
+  academicStartDate: Scalars['Date'];
+  /**  end Date of the Calendar this will typically be after the end of the academic year */
   endDate: Scalars['Date'];
   id: Scalars['Int'];
+  /**  start Date of the Calendar this will typically be the before start of the academic year */
   startDate: Scalars['Date'];
 };
 
@@ -599,6 +607,7 @@ export type Comment = {
   __typename?: 'Comment';
   active: Scalars['Boolean'];
   comment: Scalars['String'];
+  externalSystemId?: Maybe<Scalars['String']>;
   id: Scalars['Long'];
 };
 
@@ -607,6 +616,7 @@ export type CommentBank = {
   active: Scalars['Boolean'];
   comments?: Maybe<Array<Comment>>;
   description?: Maybe<Scalars['String']>;
+  externalSystemId?: Maybe<Scalars['String']>;
   id: Scalars['Long'];
   name: Scalars['String'];
 };
@@ -1279,6 +1289,7 @@ export type Grade = {
   __typename?: 'Grade';
   active: Scalars['Boolean'];
   end: Scalars['Int'];
+  externalSystemId?: Maybe<Scalars['String']>;
   id: Scalars['Long'];
   name: Scalars['String'];
   nameTextId: Scalars['Int'];
@@ -1293,6 +1304,7 @@ export type GradeSet = {
   customGradeSet: Scalars['Boolean'];
   description?: Maybe<Scalars['String']>;
   descriptionTextId?: Maybe<Scalars['Int']>;
+  externalSystemId?: Maybe<Scalars['String']>;
   grades?: Maybe<Array<Grade>>;
   id: Scalars['Long'];
   isCba: Scalars['Boolean'];
@@ -1416,7 +1428,7 @@ export enum Iterator {
 
 export type Label = {
   __typename?: 'Label';
-  colour?: Maybe<Scalars['String']>;
+  colour?: Maybe<Colour>;
   custom?: Maybe<Scalars['Boolean']>;
   id: Scalars['Long'];
   name: Scalars['String'];
@@ -1429,7 +1441,7 @@ export type LabelFilter = {
 };
 
 export type LabelInput = {
-  colour?: InputMaybe<Scalars['String']>;
+  colour?: InputMaybe<Colour>;
   id?: InputMaybe<Scalars['Long']>;
   name: Scalars['String'];
 };
@@ -2793,6 +2805,7 @@ export type SaveAssessmentInput = {
   commentType: CommentType;
   description?: InputMaybe<Scalars['String']>;
   endDate: Scalars['Date'];
+  externalSystemId?: InputMaybe<Scalars['String']>;
   extraFields?: InputMaybe<Array<InputMaybe<SaveExtraFieldInput>>>;
   gradeSetIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   gradeType?: InputMaybe<GradeType>;
@@ -2824,6 +2837,7 @@ export type SaveAssessmentResultInput = {
 export type SaveAttendanceCodeInput = {
   code: Scalars['String'];
   codeType?: InputMaybe<AttendanceCodeType>;
+  description?: InputMaybe<Array<InputMaybe<TranslationInput>>>;
   id?: InputMaybe<Scalars['Int']>;
   isActive?: InputMaybe<Scalars['Boolean']>;
   name: Array<InputMaybe<TranslationInput>>;
@@ -2844,6 +2858,7 @@ export type SaveCommentBankInput = {
   active?: InputMaybe<Scalars['Boolean']>;
   comments: Array<SaveCommentInput>;
   description?: InputMaybe<Scalars['String']>;
+  externalSystemId?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Long']>;
   name: Scalars['String'];
 };
@@ -2851,6 +2866,7 @@ export type SaveCommentBankInput = {
 export type SaveCommentInput = {
   active?: InputMaybe<Scalars['Boolean']>;
   comment?: InputMaybe<Scalars['String']>;
+  externalSystemId?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Long']>;
 };
 
@@ -2894,6 +2910,7 @@ export type SaveFeeInput = {
 export type SaveGradeInput = {
   active?: InputMaybe<Scalars['Boolean']>;
   end: Scalars['Int'];
+  externalSystemId?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Long']>;
   name: Array<TranslationInput>;
   passFailThreshold?: InputMaybe<Scalars['Int']>;
@@ -2905,6 +2922,7 @@ export type SaveGradeSetInput = {
   active?: InputMaybe<Scalars['Boolean']>;
   customGradeSet?: InputMaybe<Scalars['Boolean']>;
   description: Array<TranslationInput>;
+  externalSystemId?: InputMaybe<Scalars['String']>;
   grades: Array<SaveGradeInput>;
   id?: InputMaybe<Scalars['Long']>;
   isCba?: InputMaybe<Scalars['Boolean']>;
@@ -4881,14 +4899,14 @@ export type Communications_LabelQueryVariables = Exact<{
 }>;
 
 
-export type Communications_LabelQuery = { __typename?: 'Query', communications_label?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: string | null, custom?: boolean | null } | null> | null };
+export type Communications_LabelQuery = { __typename?: 'Query', communications_label?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null } | null> | null };
 
 export type Update_Communications_LabelMutationVariables = Exact<{
   input?: InputMaybe<LabelInput>;
 }>;
 
 
-export type Update_Communications_LabelMutation = { __typename?: 'Mutation', communications_saveLabel?: { __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: string | null, custom?: boolean | null } | null };
+export type Update_Communications_LabelMutation = { __typename?: 'Mutation', communications_saveLabel?: { __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null } | null };
 
 export type Communications_UnreadCountQueryVariables = Exact<{
   filter?: InputMaybe<UnreadCountFilter>;
@@ -4902,21 +4920,21 @@ export type Communications_AssignLabelMutationVariables = Exact<{
 }>;
 
 
-export type Communications_AssignLabelMutation = { __typename?: 'Mutation', communications_assignLabel?: { __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients?: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: string | null, custom?: boolean | null } | null> | null, threads?: Array<{ __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients?: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: string | null, custom?: boolean | null } | null> | null } | null> | null } | null };
+export type Communications_AssignLabelMutation = { __typename?: 'Mutation', communications_assignLabel?: { __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients?: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null } | null> | null, threads?: Array<{ __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients?: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null } | null> | null } | null> | null } | null };
 
 export type Communications_MailQueryVariables = Exact<{
   filter?: InputMaybe<MailFilter>;
 }>;
 
 
-export type Communications_MailQuery = { __typename?: 'Query', communications_mail?: Array<{ __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients?: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: string | null, custom?: boolean | null } | null> | null, threads?: Array<{ __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients?: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: string | null, custom?: boolean | null } | null> | null } | null> | null } | null> | null };
+export type Communications_MailQuery = { __typename?: 'Query', communications_mail?: Array<{ __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients?: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null } | null> | null, threads?: Array<{ __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients?: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null } | null> | null } | null> | null } | null> | null };
 
 export type Communications_SendMailMutationVariables = Exact<{
   input?: InputMaybe<SendMailInput>;
 }>;
 
 
-export type Communications_SendMailMutation = { __typename?: 'Mutation', communications_sendMail?: { __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients?: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: string | null, custom?: boolean | null } | null> | null, threads?: Array<{ __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients?: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: string | null, custom?: boolean | null } | null> | null } | null> | null } | null };
+export type Communications_SendMailMutation = { __typename?: 'Mutation', communications_sendMail?: { __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients?: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null } | null> | null, threads?: Array<{ __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients?: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null } | null> | null } | null> | null } | null };
 
 export type Communications_StarredMutationVariables = Exact<{
   input?: InputMaybe<MailStarredInput>;

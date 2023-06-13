@@ -1,4 +1,4 @@
-import { Mail as MailType } from '@tyro/api';
+import { Colour, Mail as MailType } from '@tyro/api';
 
 // ----------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ export type MailLabel = {
   type: string;
   name: string;
   unreadCount: number;
-  color?: string;
+  color?: Colour;
 };
 
 export type Mail = {
