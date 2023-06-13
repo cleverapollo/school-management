@@ -6,7 +6,7 @@ import {
 } from '@tyro/api';
 import { useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { academicNamspaceKeys } from '../keys';
+import { academicNamspaceKeys } from './keys';
 
 const coreSetActiveActiveAcademicNamespace = graphql(/* GraphQL */ `
   mutation core_setActiveActiveAcademicNamespace(
