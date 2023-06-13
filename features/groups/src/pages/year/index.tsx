@@ -69,9 +69,6 @@ const getYearGroupsColumns = (
     valueFormatter: ({ data }) => displayNames(data?.yearGroupLeads),
     editable: true,
     cellEditor: TableStaffMultipleAutocomplete,
-    cellEditorParams: {
-      multiple: true,
-    },
     suppressKeyboardEvent: ({ editing, event }) =>
       editing && event.key === 'Enter',
   },
