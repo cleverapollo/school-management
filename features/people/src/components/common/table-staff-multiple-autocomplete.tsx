@@ -37,9 +37,11 @@ export const TableStaffMultipleAutocomplete = forwardRef(
         optionTextKey="firstName"
         fullWidth
         value={localSelectedValue ?? []}
-        onChange={(event, value) => {
+        onChange={(_, value) => {
           setLocalSelectedValue(value as ReturnTypeFromUseStaffForSelect[]);
         }}
+        inputProps={{ autoFocus: true }}
+        openOnFocus
         options={data ?? []}
         renderAvatarOption={(option, renderOption) =>
           renderOption({
