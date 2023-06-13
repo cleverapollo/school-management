@@ -25,10 +25,10 @@ export function ProcessingDataPlaceholder() {
           <UploadIllustration sx={{ maxWidth: 216 }} />
           <Box>
             <Typography component="h2" variant="h5">
-              {t('common:processingYourData')}
+              {t('common:launchingSoon')}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {t('common:wereImportingDataForFeature')}
+              {t('common:wellEmailWhenLive')}
             </Typography>
           </Box>
         </Stack>
