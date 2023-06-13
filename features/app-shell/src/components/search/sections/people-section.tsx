@@ -19,7 +19,7 @@ function getPersonPath(partyId: number, type: SearchType) {
     case SearchType.Contact:
       return `/people/contacts/${partyId}`;
     default:
-      return `/dashboard`;
+      return `/groups/class`;
   }
 }
 

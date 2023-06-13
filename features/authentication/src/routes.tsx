@@ -18,7 +18,7 @@ export const routes: RouteObject[] = [
   {
     loader: () => {
       const activeAccount = msalInstance.getActiveAccount();
-      return activeAccount ? redirect('/dashboard') : null;
+      return activeAccount ? redirect('/groups/class') : null;
     },
     errorElement: (
       <Loadable>
