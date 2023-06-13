@@ -14,6 +14,7 @@ export * from './lazy-loader';
 export * from './page';
 export * from './page-container';
 export * from './page-heading';
+export * from './placeholder-card';
 export * from './processing-data-placeholder';
 export * from './router-link';
 export * from './scrollbar';
