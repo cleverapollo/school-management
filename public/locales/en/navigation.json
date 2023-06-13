@@ -44,7 +44,8 @@
       "subjects": "Subjects",
       "ppod": "PPOD",
       "schoolDetails": "School details",
-      "login": "Login"
+      "login": "Login",
+      "permissions": "Permissions"
     },
     "sms": "SMS"
   },

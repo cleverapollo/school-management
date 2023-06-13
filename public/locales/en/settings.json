@@ -95,5 +95,10 @@
     "boardOfManagementChairPerson": "Board of management chairperson",
     "octoberReturnsContact": "October returns contact person",
     "dataUnavailable": "Data unavailable."
+  },
+  "permissions": {
+    "title": "Permissions",
+    "permissionManagement": "Permission management",
+    "permissionsGroups": "Permissions groups"
   }
 }

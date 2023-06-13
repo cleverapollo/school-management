@@ -14,6 +14,7 @@ const Ppod = lazy(() => import('./pages/ppod/ppod'));
 const SyncContainer = lazy(() => import('./components/ppod/sync-container'));
 const Sync = lazy(() => import('./pages/ppod/sync'));
 const SchoolDetails = lazy(() => import('./pages/ppod/school-details'));
+const Permissions = lazy(() => import('./pages/permissions'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -78,6 +79,12 @@ export const getRoutes: NavObjectFunction = (t) => [
                 element: <SchoolDetails />,
               },
             ],
+          },
+          {
+            type: NavObjectType.MenuLink,
+            title: t('navigation:management.settings.permissions'),
+            path: 'permissions',
+            element: <Permissions />,
           },
         ],
       },
