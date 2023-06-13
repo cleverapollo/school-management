@@ -8,11 +8,19 @@
   "attendance": "Attendance",
   "attendanceCodes": "Attendance Codes",
   "overview": "Overview",
-  "createAttendanceCode": "Create Attendance Code",
-  "code": "Code",
+  "createAttendanceCode": "Create attendance code",
   "reportAs": "Report As",
   "tuslaCode": "Tusla Code",
-  "availableTo": "Available To",
+  "attendanceCodeName": "Attendance Code Name",
+  "availableToTeachers": "Available to Teachers",
+  "availableToContacts": "Available to Contacts",
+  "editAttendanceCode": "Edit attendance code",
+  "attendanceCodeShouldBeUnique": "Attendance code should be unique",
+  "availableTo": "Available to",
+  "whichUserGroupsHaveAccessToUseThisAttendanceCode": "Which User Groups have access to use this attendance code",
+  "someEnabled": "Some enabled",
+  "teachers": "Teachers",
+  "contacts": "Contacts",
   "attendanceNotTaken": "Attendance not taken",
   "attendanceTaken": "Attendance taken",
   "sessionAttendanceYear": "Session attendance {{year}}",
@@ -25,5 +33,13 @@
     "LATE": "Late",
     "EXPLAINED_ABSENCE": "In school",
     "UNEXPLAINED_ABSENCE": "Unknown"
+  },
+  "all": "All",
+  "tabNameByCodeType": {
+    "PRESENT": "Present",
+    "LATE": "Late",
+    "EXPLAINED_ABSENCE": "Absence explained",
+    "UNEXPLAINED_ABSENCE": "Absence Unexplained",
+    "NOT_TAKEN": "Not Taken"
   }
 }
