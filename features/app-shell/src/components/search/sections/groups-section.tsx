@@ -20,7 +20,7 @@ function getGroupPath(partyId: number, type: SearchType) {
     // case SearchType.GeneralGroup:
     //   return `/people/custom/${partyId}`;
     default:
-      return `/dashboard`;
+      return `/groups/class`;
   }
 }
 

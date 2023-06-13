@@ -47,18 +47,18 @@ const environmentMsalConfig = isProd
         authorities: {
           signUpSignIn: {
             authority:
-              'https://login.tyro-dev.com/tyrouat.onmicrosoft.com/B2C_1_spa_login',
+              'https://tyrouat.b2clogin.com/tyrouat.onmicrosoft.com/B2C_1_spa_login',
           },
           forgotPassword: {
             authority:
-              'https://login.tyro-dev.com/tyrouat.onmicrosoft.com/B2C_1_spa_password_reset',
+              'https://tyrouat.b2clogin.com/tyrouat.onmicrosoft.com/B2C_1_spa_password_reset',
           },
           editProfile: {
             authority:
-              'https://login.tyro-dev.com/tyrouat.onmicrosoft.com/b2c_1_edit_profile',
+              'https://tyrouat.b2clogin.com/tyrouat.onmicrosoft.com/b2c_1_edit_profile',
           },
         },
-        authorityDomain: 'login.tyro-dev.com',
+        authorityDomain: 'tyrouat.b2clogin.com',
       },
     };
 
