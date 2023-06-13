@@ -99,6 +99,12 @@
   "permissions": {
     "title": "Permissions",
     "permissionManagement": "Permission management",
-    "permissionsGroups": "Permissions groups"
+    "permissionsGroups": "Permissions groups",
+    "presetPermissionsOptions": "Preset permissions options",
+    "createNewGroup": "Create permission group",
+    "membersCount_one": "{{count}} member",
+    "membersCount_other": "{{count}} members",
+    "customPermissionsGroups": "Custom permissions groups",
+    "emptyCustomPermissionsGroups": "There aren't any custom permission groups created yet."
   }
 }
