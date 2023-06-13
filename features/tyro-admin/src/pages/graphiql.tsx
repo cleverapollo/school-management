@@ -2,7 +2,12 @@ import { createGraphiQLFetcher } from '@graphiql/toolkit';
 import { GraphiQL } from 'graphiql';
 import '@graphiql/react/dist/style.css';
 import 'graphiql/graphiql.css';
-import { checkEmulationMode, EmulateHeaders, EmulationMode } from '@tyro/api';
+import {
+  checkEmulationMode,
+  EmulateHeaders,
+  EmulationMode,
+  getEndpoint,
+} from '@tyro/api';
 
 const emulationHeaders = () => {
   const emulationMode = checkEmulationMode();
@@ -32,9 +37,7 @@ const emulationHeaders = () => {
 };
 
 const fetcher = createGraphiQLFetcher({
-  url:
-    process.env.REACT_APP_GRAPHQL_API_URI ||
-    'https://app.tyro-dev.com/api/tyrogql',
+  url: getEndpoint(),
   headers: {
     ...emulationHeaders(),
   },

@@ -1,11 +1,11 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
 import { m } from 'framer-motion';
-import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { Button, Typography, Container } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { Page } from '@tyro/core';
+import { useAuth } from '@tyro/api';
 import { MotionContainer, varBounce } from '../../../../src/components/animate';
 import { PageNotFoundIllustration } from '../../../../src/assets';
 
@@ -21,6 +21,8 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 export default function PageUnauthorized() {
   const { t } = useTranslation(['common', 'authentication']);
+  const { login } = useAuth();
+
   return (
     <Page title={t('authentication:titles.unauthorized')}>
       <Container component={MotionContainer}>
@@ -43,12 +45,7 @@ export default function PageUnauthorized() {
             />
           </m.div>
 
-          <Button
-            to="/login"
-            size="large"
-            variant="contained"
-            component={RouterLink}
-          >
+          <Button onClick={login} size="large" variant="contained">
             {t('authentication:go_to_login')}
           </Button>
         </ContentStyle>

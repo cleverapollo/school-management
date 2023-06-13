@@ -10,7 +10,7 @@ import {
   InputAdornment,
   useTheme,
 } from '@mui/material';
-import React from 'react';
+import React, { ForwardedRef } from 'react';
 import { getColorBasedOnIndex } from '@tyro/api';
 import { Avatar, AvatarProps } from '../avatar';
 
@@ -33,6 +33,7 @@ export type AutocompleteProps<
   inputProps?: TextfieldCustomProps;
   optionIdKey?: T extends object ? keyof T : never;
   optionTextKey?: T extends object ? keyof T : never;
+  customRef?: ForwardedRef<unknown>;
   renderAvatarAdornment?: (
     value: T,
     renderAdornment: (avatarProps: AvatarProps) => React.ReactNode
@@ -66,6 +67,7 @@ export const Autocomplete = <
   renderAvatarAdornment,
   renderAvatarOption,
   renderAvatarTags,
+  customRef,
   ...restAutocompleteProps
 }: AutocompleteProps<T, FreeSolo>) => {
   const { spacing, palette } = useTheme();
@@ -75,6 +77,7 @@ export const Autocomplete = <
 
   return (
     <MiAutocomplete
+      ref={customRef}
       value={value}
       isOptionEqualToValue={(option, newValue) => {
         if (optionIdKey) {
@@ -132,7 +135,13 @@ export const Autocomplete = <
       {...(renderAvatarOption && {
         renderOption: (props, option) =>
           renderAvatarOption(option, ({ caption, ...avatarProps }) => (
-            <Stack component="li" direction="row" spacing={1} {...props}>
+            <Stack
+              component="li"
+              direction="row"
+              spacing={1}
+              key={String(optionIdKey ? option[optionIdKey] : option)}
+              {...props}
+            >
               <Avatar
                 sx={{ width: 32, height: 32, fontSize: '0.75rem' }}
                 {...avatarProps}
