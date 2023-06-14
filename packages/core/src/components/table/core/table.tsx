@@ -25,7 +25,6 @@ export type {
   ValueSetterParams,
   CellValueChangedEvent,
   ICellEditorParams,
-  InitialGroupOrderComparatorParams,
 } from 'ag-grid-community';
 
 if (process.env.AG_GRID_KEY) {
