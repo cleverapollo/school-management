@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useToast } from '@tyro/core';
+import { BulkEditedRows, useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import {
   AttendanceCodeFilter,
@@ -8,6 +8,7 @@ import {
   graphql,
   queryClient,
 } from '@tyro/api';
+import { ReturnTypeFromUseAttendanceCodes } from '../pages/codes';
 
 const attendanceCodes = graphql(/* GraphQL */ `
   query attendance_attendanceCodes($filter: AttendanceCodeFilter) {

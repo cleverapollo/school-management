@@ -35,8 +35,6 @@ export interface TableProps<T> extends AgGridReactProps<T> {
   sx?: CardProps['sx'];
   tableContainerSx?: BoxProps['sx'];
   rightAdornment?: React.ReactNode;
-  headerComponent?: React.ReactNode;
-  headerHeight?: number;
 }
 
 const defaultColDef: ColDef = {
@@ -63,8 +61,6 @@ function TableInner<T extends object>(
     sx,
     onRowSelection,
     rightAdornment,
-    headerComponent,
-    headerHeight = 56,
     autoGroupColumnDef,
     rowHeight = 56,
     rowSelection,
@@ -78,10 +74,9 @@ function TableInner<T extends object>(
     ref as MutableRefObject<AgGridReact<T>>
   );
   const [tableContainerRef, { height: tableContainerHeight }] = useMeasure();
-  const heightHeader = headerComponent ? headerHeight : 0;
+
   const spaceForTable = tableContainerHeight;
-  const heightBasedOnRows =
-    (props.rowData.length + 1) * rowHeight + heightHeader;
+  const heightBasedOnRows = (props.rowData.length + 1) * rowHeight;
   const innerContainerHeight = Math.max(
     Math.min(heightBasedOnRows, spaceForTable),
     MIN_TABLE_HEIGHT
@@ -134,9 +129,6 @@ function TableInner<T extends object>(
             onChange={(e) => setSearchValue(e.target.value)}
           />
           {rightAdornment}
-        </Stack>
-        <Stack spacing={2} px={2}>
-          {headerComponent}
         </Stack>
         <Box
           ref={tableContainerRef}

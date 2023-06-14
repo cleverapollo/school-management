@@ -5,15 +5,12 @@ import {
   DialogActions,
   Dialog,
   Typography,
-  Collapse,
-  List,
-  ListItemButton,
-  ListItemIcon,
   Box,
+  Tooltip,
 } from '@mui/material';
 import {
+  RHFCheckbox,
   RHFSelect,
-  RHFSwitch,
   RHFTextField,
   useFormValidator,
 } from '@tyro/core';
@@ -22,12 +19,8 @@ import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import { AttendanceCodeType, SaveAttendanceCodeInput } from '@tyro/api';
 import React, { useEffect } from 'react';
-import {
-  CheckmarkCircleIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-} from '@tyro/icons';
-import { ReturnTypeFromUseAttendanceCodes } from '../../pages/attendance-codes';
+import { InfoCircleIcon } from '@tyro/icons';
+import { ReturnTypeFromUseAttendanceCodes } from '../../pages/codes';
 import { useCreateOrUpdateAttendanceCode } from '../../api';
 
 export type EditAttendanceCodeFormState = Pick<
@@ -41,12 +34,24 @@ export type EditAttendanceCodeFormState = Pick<
 > & {
   name: string;
   description?: string | null;
+  visibleForAdmin?: boolean;
 };
 
 export type EditAttendanceCodeViewProps = {
   initialAttendanceCodeState?: EditAttendanceCodeFormState | undefined;
   attendanceCodes: ReturnTypeFromUseAttendanceCodes[];
   onClose: () => void;
+};
+
+export const codeDescriptionMapping = {
+  A: 'Student illness',
+  B: 'Urgent family matter',
+  C: 'Expelled from school',
+  D: 'Suspended from school',
+  E: 'Other explained absence',
+  F: 'Unexplained absence',
+  G: 'Transferred to another school',
+  H: 'Student on holiday',
 };
 
 export const EditAttendanceCodeModal = ({
@@ -62,12 +67,11 @@ export const EditAttendanceCodeModal = ({
     isSuccess: isSubmitSuccessful,
   } = useCreateOrUpdateAttendanceCode();
 
-  const [isExpand, setIsExpand] = React.useState(true);
-
   const { resolver, rules } = useFormValidator<EditAttendanceCodeFormState>();
 
   const defaultFormStateValues: Partial<EditAttendanceCodeFormState> = {
     ...initialAttendanceCodeState,
+    visibleForAdmin: true,
   };
 
   const attendanceCodesWithoutSelf = attendanceCodes.filter(
@@ -75,26 +79,19 @@ export const EditAttendanceCodeModal = ({
       attendanceCode?.code !== initialAttendanceCodeState?.code
   );
 
-  const { control, handleSubmit, reset, watch } =
+  const { control, handleSubmit, reset, watch, setValue } =
     useForm<EditAttendanceCodeFormState>({
       resolver: resolver({
         name: [
           rules.required(),
+          rules.max(20),
           rules.isUniqueByKey(
             attendanceCodesWithoutSelf as [],
             'name',
             t('attendance:attendanceCodeNameShouldBeUnique')
           ),
         ],
-        code: [
-          rules.required(),
-          rules.isUniqueByKey(
-            attendanceCodesWithoutSelf as [],
-            'code',
-            t('attendance:attendanceCodeShouldBeUnique')
-          ),
-        ],
-        description: rules.required(),
+        description: [rules.required(), rules.max(20)],
         codeType: rules.required(),
       }),
       defaultValues: defaultFormStateValues,
@@ -137,10 +134,16 @@ export const EditAttendanceCodeModal = ({
     reset();
   };
 
-  const [visibleForTeacher, visibleForContact] = watch([
-    'visibleForTeacher',
-    'visibleForContact',
-  ]);
+  const [code] = watch(['code']);
+
+  useEffect(() => {
+    if (code !== undefined) {
+      setValue(
+        'description',
+        codeDescriptionMapping[code as keyof typeof codeDescriptionMapping]
+      );
+    }
+  }, [code]);
 
   return (
     <Dialog
@@ -168,15 +171,14 @@ export const EditAttendanceCodeModal = ({
                 fullWidth: true,
               }}
             />
-
-            <RHFTextField<EditAttendanceCodeFormState>
+            <RHFSelect<EditAttendanceCodeFormState, string>
+              fullWidth
+              options={Object.keys(codeDescriptionMapping)}
               label={t('attendance:tuslaCode')}
+              getOptionLabel={(option) => option}
               controlProps={{
                 name: 'code',
                 control,
-              }}
-              textFieldProps={{
-                fullWidth: true,
               }}
             />
           </Stack>
@@ -189,6 +191,7 @@ export const EditAttendanceCodeModal = ({
               }}
               textFieldProps={{
                 fullWidth: true,
+                contentEditable: code !== undefined,
               }}
             />
             <RHFSelect<EditAttendanceCodeFormState, AttendanceCodeType>
@@ -220,68 +223,60 @@ export const EditAttendanceCodeModal = ({
               border: 1,
               borderColor: 'slate.200',
               width: '60%',
+              p: 1,
             }}
           >
-            <ListItemButton
-              onClick={() => setIsExpand(!isExpand)}
-              sx={{
-                backgroundColor: 'white',
-                borderRadius: 1,
+            <Tooltip
+              key="visibleForAdmin"
+              title={t(
+                'attendance:administrationStaffAccessAllAttendanceCodesByDefault'
+              )}
+              describeChild
+              placement="top-end"
+              PopperProps={{
+                sx: {
+                  '& .MuiTooltip-tooltip': {
+                    marginBottom: '0 !important',
+                  },
+                },
               }}
             >
-              <ListItemIcon>
-                <CheckmarkCircleIcon
-                  sx={{
-                    color: 'indigo.500',
+              <Stack>
+                <RHFCheckbox
+                  label={
+                    <Stack direction="row" gap={0.5}>
+                      {t('common:administration')}
+                      <InfoCircleIcon sx={{ width: 18, height: 18 }} />
+                    </Stack>
+                  }
+                  controlLabelProps={{
+                    sx: { ml: 0, height: '100%' },
                   }}
+                  checkboxProps={{
+                    color: 'primary',
+                    value: true,
+                    disabled: true,
+                  }}
+                  controlProps={{ name: 'visibleForAdmin', control }}
                 />
-              </ListItemIcon>
-              <Typography
-                sx={{ flex: 1, textTransform: 'uppercase' }}
-                variant="subtitle2"
-              >
-                {t('attendance:someEnabled')}
-              </Typography>
-              {isExpand ? (
-                <ChevronDownIcon sx={{ ml: 1, flexShrink: 0 }} />
-              ) : (
-                <ChevronUpIcon sx={{ ml: 1, flexShrink: 0 }} />
-              )}
-            </ListItemButton>
-            <Collapse in={isExpand} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                <ListItemButton disableRipple disableTouchRipple sx={{ pl: 4 }}>
-                  <Typography sx={{ flex: 1 }} variant="body2">
-                    {t('attendance:teachers')}
-                  </Typography>
-                  <RHFSwitch<EditAttendanceCodeFormState>
-                    label={visibleForTeacher ? t('common:yes') : t('common:no')}
-                    switchProps={{
-                      color: 'primary',
-                    }}
-                    controlProps={{
-                      name: 'visibleForTeacher',
-                      control,
-                    }}
-                  />
-                </ListItemButton>
-                <ListItemButton disableRipple disableTouchRipple sx={{ pl: 4 }}>
-                  <Typography sx={{ flex: 1 }} variant="body2">
-                    {t('attendance:contacts')}
-                  </Typography>
-                  <RHFSwitch<EditAttendanceCodeFormState>
-                    label={visibleForContact ? t('common:yes') : t('common:no')}
-                    switchProps={{
-                      color: 'primary',
-                    }}
-                    controlProps={{
-                      name: 'visibleForContact',
-                      control,
-                    }}
-                  />
-                </ListItemButton>
-              </List>
-            </Collapse>
+              </Stack>
+            </Tooltip>
+            <RHFCheckbox
+              label={t('attendance:teachers')}
+              controlLabelProps={{
+                sx: { width: '100%', ml: 0, height: '100%' },
+              }}
+              checkboxProps={{ color: 'primary' }}
+              controlProps={{ name: 'visibleForTeacher', control }}
+            />
+            <RHFCheckbox
+              label={t('attendance:contacts')}
+              controlLabelProps={{
+                sx: { width: '100%', ml: 0, height: '100%' },
+              }}
+              checkboxProps={{ color: 'primary' }}
+              controlProps={{ name: 'visibleForContact', control }}
+            />
           </Box>
         </Stack>
 

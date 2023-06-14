@@ -24,6 +24,7 @@
     "@tyro/substitution": "*",
     "@tyro/timetable": "*",
     "@tyro/tyro-admin": "*",
+    "@tyro/attendance": "*",
     "dayjs": "^1.11.7",
     "framer-motion": "^9.0.1",
     "fuse.js": "^6.6.2",

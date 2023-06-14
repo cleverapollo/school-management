@@ -1,14 +1,14 @@
 import { forwardRef } from 'react';
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent } from './attendance.svg';
+import { ReactComponent } from './person-checkmark.svg';
 
-export const AttendanceIcon = forwardRef<SVGSVGElement, SvgIconProps>(
+export const PersonCheckmarkIcon = forwardRef<SVGSVGElement, SvgIconProps>(
   (props, ref) => (
     <SvgIcon ref={ref} component={ReactComponent} inheritViewBox {...props} />
   )
 );
 
 if (process.env.NODE_ENV !== 'production') {
-  AttendanceIcon.displayName = 'AttendanceIcon';
+  PersonCheckmarkIcon.displayName = 'PersonCheckmarkIcon';
 }

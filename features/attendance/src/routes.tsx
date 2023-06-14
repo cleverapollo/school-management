@@ -1,15 +1,10 @@
 import { lazy } from 'react';
 import { NavObjectFunction, NavObjectType } from '@tyro/core';
-import { AttendanceIcon } from '@tyro/icons';
-import { redirect } from 'react-router-dom';
+import { PersonCheckmarkIcon } from '@tyro/icons';
 import { getAttendanceCodes } from './api';
 
-const AttendanceCodesContainer = lazy(
-  () => import('./components/attendance-codes-container')
-);
-
-const AttendanceOverview = lazy(() => import('./pages/overview'));
-const AttendanceCodes = lazy(() => import('./pages/attendance-codes'));
+const Overview = lazy(() => import('./pages/overview'));
+const AttendanceCodes = lazy(() => import('./pages/codes'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -17,28 +12,36 @@ export const getRoutes: NavObjectFunction = (t) => [
     title: t('navigation:general.title'),
     children: [
       {
-        type: NavObjectType.RootLink,
+        type: NavObjectType.RootGroup,
         path: 'attendance',
-        title: t('navigation:general.attendance'),
-        icon: <AttendanceIcon />,
+        title: t('navigation:general.attendance.title'),
+        icon: <PersonCheckmarkIcon />,
         hasAccess: (permissions) => !permissions.isTyroTenantAndUser,
-        element: <AttendanceCodesContainer />,
-        loader: () => getAttendanceCodes({}),
         children: [
           {
-            type: NavObjectType.NonMenuLink,
-            index: true,
-            loader: () => redirect('./overview'),
-          },
-          {
-            type: NavObjectType.NonMenuLink,
+            type: NavObjectType.MenuLink,
             path: 'overview',
-            element: <AttendanceOverview />,
+            title: t('navigation:general.attendance.overview'),
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                index: true,
+                element: <Overview />,
+              },
+            ],
           },
           {
-            type: NavObjectType.NonMenuLink,
-            path: 'attendance-codes',
-            element: <AttendanceCodes />,
+            type: NavObjectType.MenuLink,
+            path: 'codes',
+            title: t('navigation:general.attendance.codes'),
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                index: true,
+                loader: () => getAttendanceCodes({}),
+                element: <AttendanceCodes />,
+              },
+            ],
           },
         ],
       },
