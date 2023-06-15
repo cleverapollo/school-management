@@ -5,4 +5,5 @@ export const peopleContactsKeys = {
   students: (contactId: number | undefined) =>
     [...peopleContactsKeys.all, 'students', contactId] as const,
   upsertContact: () => [...peopleContactsKeys.all, 'upsertContact'] as const,
+  forSelect: () => [...peopleContactsKeys.all, 'select'] as const,
 };
