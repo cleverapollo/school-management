@@ -104,12 +104,14 @@ export const EditAttendanceCodeModal = ({
     ...restData
   }: EditAttendanceCodeFormState) => {
     createOrUpdateAttendanceCodeMutation(
-      {
-        name: [{ locale: 'en', value: name }],
-        description: [{ locale: 'en', value: description }],
-        isActive: true,
-        ...restData,
-      },
+      [
+        {
+          name: [{ locale: 'en', value: name }],
+          description: [{ locale: 'en', value: description }],
+          isActive: true,
+          ...restData,
+        },
+      ],
       {
         onSuccess: onClose,
       }

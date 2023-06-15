@@ -10,16 +10,13 @@ import {
   TableBooleanValue,
   AttendanceCodeSelectCellEditor,
   BulkEditedRows,
+  TuslaCodeSelectCellEditor,
 } from '@tyro/core';
 import { Box, Button } from '@mui/material';
 import { AddIcon, VerticalDotsIcon } from '@tyro/icons';
-import {
-  AttendanceCodeType,
-  SaveAttendanceCodeInput,
-  UseQueryReturnType,
-} from '@tyro/api';
+import { SaveAttendanceCodeInput, UseQueryReturnType } from '@tyro/api';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
-import { useAttendanceCodes, useBulkUpdateAttendanceCode } from '../api';
+import { useAttendanceCodes, useCreateOrUpdateAttendanceCode } from '../api';
 import {
   EditAttendanceCodeModal,
   EditAttendanceCodeViewProps,
@@ -46,6 +43,7 @@ const getAttendanceCodeColumns = (
     sort: 'asc',
     editable: true,
     lockVisible: true,
+    cellEditorSelector: TuslaCodeSelectCellEditor(),
     onCellValueChanged: (params) => {
       const codes = Object.keys(codeDescriptionMapping);
       if (params.newValue && codes.includes(params.newValue as string)) {
@@ -129,7 +127,7 @@ export default function Codes() {
   const { data: attendanceCodes } = useAttendanceCodes({});
 
   const { mutateAsync: saveBulkAttendanceCodes } =
-    useBulkUpdateAttendanceCode();
+    useCreateOrUpdateAttendanceCode();
 
   const [editAttendanceCodeInitialState, setEditAttendanceCodeInitialState] =
     useState<EditAttendanceCodeViewProps['initialAttendanceCodeState']>();
@@ -167,10 +165,7 @@ export default function Codes() {
         );
         return {
           id: Number(id),
-          code:
-            data[id].code?.newValue ??
-            currentData?.code ??
-            AttendanceCodeType.NotTaken,
+          code: data[id].code?.newValue ?? currentData?.code,
           name: data[id].name?.newValue
             ? [{ locale: 'en', value: data[id].name?.newValue }]
             : [{ locale: 'en', value: currentData?.name }],

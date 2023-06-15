@@ -26,7 +26,7 @@ const attendanceCodes = graphql(/* GraphQL */ `
 `);
 
 const createAttendanceCodes = graphql(/* GraphQL */ `
-  mutation attendance_saveAttendanceCode($input: SaveAttendanceCodeInput) {
+  mutation attendance_saveAttendanceCode($input: [SaveAttendanceCodeInput]) {
     attendance_saveAttendanceCode(input: $input) {
       id
     }
@@ -62,44 +62,17 @@ export function useCreateOrUpdateAttendanceCode() {
 
   return useMutation({
     mutationKey: attendanceCodesKeys.createOrUpdateAttendanceCode(),
-    mutationFn: async (input: SaveAttendanceCodeInput) =>
+    mutationFn: async (input: SaveAttendanceCodeInput[]) =>
       gqlClient.request(createAttendanceCodes, { input }),
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     },
     onSuccess: (_, variables) => {
-      if (variables?.id) {
+      if (variables && variables.length > 0 && variables[0].id) {
         toast(t('common:snackbarMessages.updateSuccess'));
       } else {
         toast(t('common:snackbarMessages.createSuccess'));
       }
-      queryClient.invalidateQueries(attendanceCodesKeys.list);
-    },
-  });
-}
-
-export function useBulkUpdateAttendanceCode() {
-  const { toast } = useToast();
-  const { t } = useTranslation(['common']);
-  const { mutateAsync } = useMutation({
-    mutationKey: attendanceCodesKeys.createOrUpdateAttendanceCode(),
-    mutationFn: async (input: SaveAttendanceCodeInput) =>
-      gqlClient.request(createAttendanceCodes, { input }),
-  });
-
-  return useMutation({
-    mutationFn: (input: SaveAttendanceCodeInput[]) => {
-      const promises: Promise<any>[] = [];
-      input.forEach((item) => {
-        promises.push(mutateAsync(item));
-      });
-      return Promise.all([...promises]);
-    },
-    onError: () => {
-      toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
-    },
-    onSuccess: () => {
-      toast(t('common:snackbarMessages.updateSuccess'));
       queryClient.invalidateQueries(attendanceCodesKeys.list);
     },
   });
