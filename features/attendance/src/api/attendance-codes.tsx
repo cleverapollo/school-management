@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { BulkEditedRows, useToast } from '@tyro/core';
+import { useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import {
   AttendanceCodeFilter,
@@ -8,7 +8,6 @@ import {
   graphql,
   queryClient,
 } from '@tyro/api';
-import { ReturnTypeFromUseAttendanceCodes } from '../pages/codes';
 
 const attendanceCodes = graphql(/* GraphQL */ `
   query attendance_attendanceCodes($filter: AttendanceCodeFilter) {
@@ -74,6 +73,33 @@ export function useCreateOrUpdateAttendanceCode() {
       } else {
         toast(t('common:snackbarMessages.createSuccess'));
       }
+      queryClient.invalidateQueries(attendanceCodesKeys.list);
+    },
+  });
+}
+
+export function useBulkUpdateAttendanceCode() {
+  const { toast } = useToast();
+  const { t } = useTranslation(['common']);
+  const { mutateAsync } = useMutation({
+    mutationKey: attendanceCodesKeys.createOrUpdateAttendanceCode(),
+    mutationFn: async (input: SaveAttendanceCodeInput) =>
+      gqlClient.request(createAttendanceCodes, { input }),
+  });
+
+  return useMutation({
+    mutationFn: (input: SaveAttendanceCodeInput[]) => {
+      const promises: Promise<any>[] = [];
+      input.forEach((item) => {
+        promises.push(mutateAsync(item));
+      });
+      return Promise.all([...promises]);
+    },
+    onError: () => {
+      toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
+    },
+    onSuccess: () => {
+      toast(t('common:snackbarMessages.updateSuccess'));
       queryClient.invalidateQueries(attendanceCodesKeys.list);
     },
   });

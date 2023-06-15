@@ -19,7 +19,7 @@ import {
   UseQueryReturnType,
 } from '@tyro/api';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
-import { useAttendanceCodes } from '../api';
+import { useAttendanceCodes, useBulkUpdateAttendanceCode } from '../api';
 import {
   EditAttendanceCodeModal,
   EditAttendanceCodeViewProps,
@@ -128,6 +128,9 @@ export default function Codes() {
   const { t } = useTranslation(['common', 'attendance']);
   const { data: attendanceCodes } = useAttendanceCodes({});
 
+  const { mutateAsync: saveBulkAttendanceCodes } =
+    useBulkUpdateAttendanceCode();
+
   const [editAttendanceCodeInitialState, setEditAttendanceCodeInitialState] =
     useState<EditAttendanceCodeViewProps['initialAttendanceCodeState']>();
 
@@ -146,9 +149,7 @@ export default function Codes() {
     setEditAttendanceCodeInitialState(undefined);
   };
 
-  // wait for API update, because update Attendance code input required `name` and `code`
   const handleBulkSave = (
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     data: BulkEditedRows<
       ReturnTypeFromUseAttendanceCodes,
       | 'name'
@@ -158,32 +159,39 @@ export default function Codes() {
       | 'visibleForTeacher'
       | 'visibleForContact'
     >
-  ) =>
-    // const dataForEndpoint = Object.keys(data).map<SaveAttendanceCodeInput>(
-    //   (id) => {
-    //     const currentData = attendanceCodes?.find(
-    //       (item) => item?.id === Number(id)
-    //     );
-    //     return {
-    //       id: Number(id),
-    //       code: data[id].code?.newValue ?? currentData?.code ?? '',
-    //       name: data[id].name?.newValue
-    //         ? [{ locale: 'en', value: data[id].name?.newValue }]
-    //         : [{ locale: 'en', value: currentData?.name }],
-    //       description: data[id].description?.newValue
-    //         ? [{ locale: 'en', value: data[id].description?.newValue }]
-    //         : [{ locale: 'en', value: currentData?.description }],
-    //       codeType: data[id].codeType?.newValue ?? currentData?.codeType,
-    //       availableForTeacher:
-    //         data[id].visibleForTeacher?.newValue ??
-    //         currentData?.visibleForTeacher,
-    //       availableForContact:
-    //         data[id].visibleForContact?.newValue ??
-    //         currentData?.visibleForContact,
-    //     };
-    //   }
-    // );
-    Promise.all([]);
+  ) => {
+    const dataForEndpoint = Object.keys(data).map<SaveAttendanceCodeInput>(
+      (id) => {
+        const currentData = attendanceCodes?.find(
+          (item) => item?.id === Number(id)
+        );
+        return {
+          id: Number(id),
+          code:
+            data[id].code?.newValue ??
+            currentData?.code ??
+            AttendanceCodeType.NotTaken,
+          name: data[id].name?.newValue
+            ? [{ locale: 'en', value: data[id].name?.newValue }]
+            : [{ locale: 'en', value: currentData?.name }],
+          description: data[id].description?.newValue
+            ? [{ locale: 'en', value: data[id].description?.newValue }]
+            : [{ locale: 'en', value: currentData?.description }],
+          codeType: data[id].codeType?.newValue ?? currentData?.codeType,
+          availableForTeacher:
+            data[id].visibleForTeacher?.newValue ??
+            currentData?.visibleForTeacher,
+          availableForContact:
+            data[id].visibleForContact?.newValue ??
+            currentData?.visibleForContact,
+          nameTextId: currentData?.nameTextId,
+          isActive: true,
+        };
+      }
+    );
+    return saveBulkAttendanceCodes(dataForEndpoint);
+  };
+
   return (
     <PageContainer
       title={t('attendance:pageTitle.attendance')}
