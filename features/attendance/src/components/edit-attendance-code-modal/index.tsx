@@ -191,7 +191,9 @@ export const EditAttendanceCodeModal = ({
               }}
               textFieldProps={{
                 fullWidth: true,
-                contentEditable: code !== undefined,
+                inputProps: {
+                  readOnly: code !== undefined,
+                },
               }}
             />
             <RHFSelect<EditAttendanceCodeFormState, AttendanceCodeType>
