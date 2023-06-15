@@ -178,10 +178,10 @@ export default function Codes() {
             ? [{ locale: 'en', value: data[id].description?.newValue }]
             : [{ locale: 'en', value: currentData?.description }],
           codeType: data[id].codeType?.newValue ?? currentData?.codeType,
-          availableForTeacher:
+          visibleForTeacher:
             data[id].visibleForTeacher?.newValue ??
             currentData?.visibleForTeacher,
-          availableForContact:
+          visibleForContact:
             data[id].visibleForContact?.newValue ??
             currentData?.visibleForContact,
           nameTextId: currentData?.nameTextId,
