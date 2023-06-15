@@ -56,7 +56,7 @@ export function StudentContactsWidget({
       <Card variant="outlined" sx={{ height: '100%', flex: 1 }}>
         <CardHeader
           component="h3"
-          title={t('people:guardianContactInformation')}
+          title={t('people:contactInformation')}
           {...(contact?.partyId && {
             action: (
               <IconButton
@@ -82,7 +82,7 @@ export function StudentContactsWidget({
         >
           <Typography variant="body1" sx={{ color: 'text.secondary' }}>
             <>
-              {t('common:guardian')}{' '}
+              {t('common:contact')}{' '}
               <Box component="span" fontWeight={600}>
                 {contactIndex + 1}/{contacts?.length}
               </Box>
@@ -152,12 +152,6 @@ export function StudentContactsWidget({
                             `common:relationshipType.${contactsRelationshipType}`
                           )
                         : '-'}
-                    </Box>
-                    <Box component="dt" sx={{ color: 'slate.600' }}>
-                      {t('common:language')}
-                    </Box>
-                    <Box component="dd" sx={{ m: 0 }}>
-                      -
                     </Box>
                   </Box>
                 </Stack>
@@ -250,7 +244,7 @@ export function StudentContactsWidget({
                       sx={{ color: 'slate.400', width: 20, height: 20 }}
                     />
                     <Box component="dt" sx={{ color: 'slate.600' }}>
-                      {t('people:addressLocation')}
+                      {t('common:address')}
                     </Box>
                   </Stack>
                   <Box component="dd" sx={{ m: 0 }}>

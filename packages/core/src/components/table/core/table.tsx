@@ -6,7 +6,11 @@ import { forwardRef, MutableRefObject, useCallback, useState } from 'react';
 import { Box, BoxProps, Card, CardProps, Stack } from '@mui/material';
 
 import './styles.css';
-import { ColDef, FirstDataRenderedEvent } from 'ag-grid-community';
+import {
+  ColDef,
+  ColumnRowGroupChangedEvent,
+  FirstDataRenderedEvent,
+} from 'ag-grid-community';
 import { useEnsuredForwardedRef, useMeasure } from 'react-use';
 import {
   useEditableState,
@@ -111,6 +115,24 @@ function TableInner<T extends object>(
         }
       : undefined;
 
+  const onColumnRowGroupChanged = useCallback(
+    ({ column, columnApi }: ColumnRowGroupChangedEvent) => {
+      if (column) {
+        const colDef = column.getColDef();
+        const sort = column.getSort();
+        const colId = column.getColId();
+
+        if (colDef.sortable && sort === undefined) {
+          columnApi.applyColumnState({
+            state: [{ colId, sort: 'asc' }],
+            defaultState: { sort: null },
+          });
+        }
+      }
+    },
+    []
+  );
+
   return (
     <>
       <Card
@@ -180,6 +202,7 @@ function TableInner<T extends object>(
                   onColumnEverythingChanged(params);
                 }
               }}
+              onColumnRowGroupChanged={onColumnRowGroupChanged}
             />
           </Box>
         </Box>
