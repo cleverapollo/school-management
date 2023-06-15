@@ -17,7 +17,7 @@
   "tutor": "Tutor",
   "tyroId": "Tyro ID",
   "priority": "Priority",
-  "allowedToContact": "Allowed to contact",
+  "allowedToContact": "Allowed to contact regarding student",
   "includedInSms": "Included in SMS",
   "nextContact": "Next Contact",
   "studentClickableAvatarAria": "{{name}}'s Avatar. Click to view their support plan and priority note.",

@@ -1,5 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient } from '@tyro/api';
+import {
+  Core_Student_ContactsQuery,
+  gqlClient,
+  graphql,
+  queryClient,
+} from '@tyro/api';
 import { peopleStudentsKeys } from './keys';
 
 const studentsContacts = graphql(/* GraphQL */ `
@@ -39,6 +44,10 @@ const studentsContacts = graphql(/* GraphQL */ `
           priority
           allowedToContact
           includeInSms
+          includeInTmail
+          pickupRights
+          legalGuardian
+          allowAccessToStudentData
         }
       }
     }
@@ -85,7 +94,7 @@ export function getStudentsContacts(studentId: number | undefined) {
 export function useStudentsContacts(studentId: number | undefined) {
   return useQuery({
     ...studentsContactsQuery(studentId),
-    select: ({ core_students }) =>
+    select: ({ core_students }: Core_Student_ContactsQuery) =>
       Array.isArray(core_students) && core_students.length > 0
         ? core_students[0]?.contacts ?? []
         : [],
