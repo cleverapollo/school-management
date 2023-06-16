@@ -39,6 +39,10 @@ const studentsContacts = graphql(/* GraphQL */ `
           priority
           allowedToContact
           includeInSms
+          includeInTmail
+          pickupRights
+          legalGuardian
+          allowAccessToStudentData
         }
       }
     }
