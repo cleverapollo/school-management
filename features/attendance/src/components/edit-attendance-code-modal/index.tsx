@@ -17,11 +17,17 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import { AttendanceCodeType, SaveAttendanceCodeInput } from '@tyro/api';
+import {
+  AttendanceCodeType,
+  SaveAttendanceCodeInput,
+  TuslaCode,
+} from '@tyro/api';
 import React, { useEffect } from 'react';
 import { InfoCircleIcon } from '@tyro/icons';
-import { ReturnTypeFromUseAttendanceCodes } from '../../pages/codes';
-import { useCreateOrUpdateAttendanceCode } from '../../api';
+import {
+  ReturnTypeFromUseAttendanceCodes,
+  useCreateOrUpdateAttendanceCode,
+} from '../../api';
 
 export type EditAttendanceCodeFormState = Pick<
   SaveAttendanceCodeInput,
@@ -43,24 +49,13 @@ export type EditAttendanceCodeViewProps = {
   onClose: () => void;
 };
 
-export const codeDescriptionMapping = {
-  A: 'Student illness',
-  B: 'Urgent family matter',
-  C: 'Expelled from school',
-  D: 'Suspended from school',
-  E: 'Other explained absence',
-  F: 'Unexplained absence',
-  G: 'Transferred to another school',
-  H: 'Student on holiday',
-};
-
 export const EditAttendanceCodeModal = ({
   initialAttendanceCodeState,
   attendanceCodes,
   onClose,
 }: EditAttendanceCodeViewProps) => {
-  const { t } = useTranslation(['common', 'attendance']);
-
+  const { t, i18n } = useTranslation(['common', 'attendance']);
+  const currentLanguageCode = i18n.language;
   const {
     mutate: createOrUpdateAttendanceCodeMutation,
     isLoading: isSubmitting,
@@ -106,8 +101,8 @@ export const EditAttendanceCodeModal = ({
     createOrUpdateAttendanceCodeMutation(
       [
         {
-          name: [{ locale: 'en', value: name }],
-          description: [{ locale: 'en', value: description }],
+          name: [{ locale: currentLanguageCode, value: name }],
+          description: [{ locale: currentLanguageCode, value: description }],
           isActive: true,
           ...restData,
         },
@@ -139,11 +134,8 @@ export const EditAttendanceCodeModal = ({
   const [code] = watch(['code']);
 
   useEffect(() => {
-    if (code !== undefined) {
-      setValue(
-        'description',
-        codeDescriptionMapping[code as keyof typeof codeDescriptionMapping]
-      );
+    if (code !== undefined && code !== null) {
+      setValue('description', t(`attendance:tuslaCodeDescription.${code}`));
     }
   }, [code]);
 
@@ -175,7 +167,7 @@ export const EditAttendanceCodeModal = ({
             />
             <RHFSelect<EditAttendanceCodeFormState, string>
               fullWidth
-              options={Object.keys(codeDescriptionMapping)}
+              options={Object.keys(TuslaCode)}
               label={t('attendance:tuslaCode')}
               getOptionLabel={(option) => option}
               controlProps={{
@@ -200,11 +192,11 @@ export const EditAttendanceCodeModal = ({
             />
             <RHFSelect<EditAttendanceCodeFormState, AttendanceCodeType>
               fullWidth
-              options={Object.values(AttendanceCodeType)}
+              options={Object.values(AttendanceCodeType).filter(
+                (item) => item !== AttendanceCodeType.NotTaken
+              )}
               label={t('attendance:reportAs')}
-              getOptionLabel={(option) =>
-                t(`attendance:tabNameByCodeType.${option}`)
-              }
+              getOptionLabel={(option) => t(`common:attendanceCode.${option}`)}
               controlProps={{
                 name: 'codeType',
                 control,
@@ -215,7 +207,7 @@ export const EditAttendanceCodeModal = ({
             <Typography variant="subtitle1">
               {t('attendance:availableTo')}
             </Typography>
-            <Typography sx={{ m: 0, p: 0 }} variant="caption">
+            <Typography variant="caption">
               {t('attendance:whichUserGroupsHaveAccessToUseThisAttendanceCode')}
             </Typography>
           </Stack>

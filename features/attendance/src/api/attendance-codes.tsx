@@ -4,10 +4,15 @@ import { useTranslation } from '@tyro/i18n';
 import {
   AttendanceCodeFilter,
   SaveAttendanceCodeInput,
+  UseQueryReturnType,
   gqlClient,
   graphql,
   queryClient,
 } from '@tyro/api';
+
+export type ReturnTypeFromUseAttendanceCodes = UseQueryReturnType<
+  typeof useAttendanceCodes
+>[number];
 
 const attendanceCodes = graphql(/* GraphQL */ `
   query attendance_attendanceCodes($filter: AttendanceCodeFilter) {

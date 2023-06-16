@@ -33,11 +33,14 @@
     "EXPLAINED_ABSENCE": "In school",
     "UNEXPLAINED_ABSENCE": "Unknown"
   },
-  "tabNameByCodeType": {
-    "PRESENT": "Present",
-    "LATE": "Late",
-    "EXPLAINED_ABSENCE": "Absence explained",
-    "UNEXPLAINED_ABSENCE": "Absence unexplained",
-    "NOT_TAKEN": "Not taken"
+  "tuslaCodeDescription": {
+    "A": "Student illness",
+    "B": "Urgent family matter",
+    "C": "Expelled from school",
+    "D": "Suspended from school",
+    "E": "Other explained absence",
+    "F": "Unexplained absence",
+    "G": "Transferred to another school",
+    "H": "Student on holiday"
   }
 }

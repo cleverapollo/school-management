@@ -7,7 +7,6 @@ const attendanceCodes = [
   AttendanceCodeType.Late,
   AttendanceCodeType.ExplainedAbsence,
   AttendanceCodeType.UnexplainedAbsence,
-  AttendanceCodeType.NotTaken,
 ];
 
 export function AttendanceCodeSelectCellEditor(

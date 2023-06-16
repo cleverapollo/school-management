@@ -14,18 +14,17 @@ import {
 } from '@tyro/core';
 import { Box, Button } from '@mui/material';
 import { AddIcon, VerticalDotsIcon } from '@tyro/icons';
-import { SaveAttendanceCodeInput, UseQueryReturnType } from '@tyro/api';
+import { SaveAttendanceCodeInput, TuslaCode } from '@tyro/api';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
-import { useAttendanceCodes, useCreateOrUpdateAttendanceCode } from '../api';
+import {
+  ReturnTypeFromUseAttendanceCodes,
+  useAttendanceCodes,
+  useCreateOrUpdateAttendanceCode,
+} from '../api';
 import {
   EditAttendanceCodeModal,
   EditAttendanceCodeViewProps,
-  codeDescriptionMapping,
 } from '../components/edit-attendance-code-modal';
-
-export type ReturnTypeFromUseAttendanceCodes = UseQueryReturnType<
-  typeof useAttendanceCodes
->[number];
 
 const getAttendanceCodeColumns = (
   t: TFunction<
@@ -45,13 +44,11 @@ const getAttendanceCodeColumns = (
     lockVisible: true,
     cellEditorSelector: TuslaCodeSelectCellEditor(),
     onCellValueChanged: (params) => {
-      const codes = Object.keys(codeDescriptionMapping);
+      const codes = Object.keys(TuslaCode);
       if (params.newValue && codes.includes(params.newValue as string)) {
         params.node?.setDataValue(
           'description',
-          codeDescriptionMapping[
-            params.newValue as keyof typeof codeDescriptionMapping
-          ]
+          t(`attendance:tuslaCodeDescription.${params.newValue as TuslaCode}`)
         );
       }
     },
@@ -65,7 +62,7 @@ const getAttendanceCodeColumns = (
     field: 'description',
     headerName: t('common:description'),
     editable: ({ data }) => {
-      const codes = Object.keys(codeDescriptionMapping);
+      const codes = Object.keys(TuslaCode);
       return !(data?.code && codes.includes(data?.code));
     },
   },
@@ -74,6 +71,8 @@ const getAttendanceCodeColumns = (
     headerName: t('attendance:reportAs'),
     filter: true,
     editable: true,
+    filterValueGetter: ({ data }) =>
+      data?.codeType ? t(`common:attendanceCode.${data.codeType}`) : null,
     cellEditorSelector: AttendanceCodeSelectCellEditor(t),
     cellRenderer: ({
       data,
@@ -123,7 +122,8 @@ const getAttendanceCodeColumns = (
 ];
 
 export default function Codes() {
-  const { t } = useTranslation(['common', 'attendance']);
+  const { t, i18n } = useTranslation(['common', 'attendance']);
+  const currentLanguageCode = i18n.language;
   const { data: attendanceCodes } = useAttendanceCodes({});
 
   const { mutateAsync: saveBulkAttendanceCodes } =
@@ -167,11 +167,21 @@ export default function Codes() {
           id: Number(id),
           code: data[id].code?.newValue ?? currentData?.code,
           name: data[id].name?.newValue
-            ? [{ locale: 'en', value: data[id].name?.newValue }]
-            : [{ locale: 'en', value: currentData?.name }],
+            ? [{ locale: currentLanguageCode, value: data[id].name?.newValue }]
+            : [{ locale: currentLanguageCode, value: currentData?.name }],
           description: data[id].description?.newValue
-            ? [{ locale: 'en', value: data[id].description?.newValue }]
-            : [{ locale: 'en', value: currentData?.description }],
+            ? [
+                {
+                  locale: currentLanguageCode,
+                  value: data[id].description?.newValue,
+                },
+              ]
+            : [
+                {
+                  locale: currentLanguageCode,
+                  value: currentData?.description,
+                },
+              ],
           codeType: data[id].codeType?.newValue ?? currentData?.codeType,
           visibleForTeacher:
             data[id].visibleForTeacher?.newValue ??
@@ -188,28 +198,10 @@ export default function Codes() {
   };
 
   return (
-    <PageContainer
-      title={t('attendance:pageTitle.attendance')}
-      maxWidth="xl"
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2,
-      }}
-    >
+    <PageContainer title={t('attendance:pageTitle.attendance')}>
       <PageHeading
         title={t('attendance:pageHeading.attendance')}
-        breadcrumbs={{
-          links: [
-            {
-              name: t('attendance:attendance'),
-              href: './..',
-            },
-            {
-              name: t('attendance:attendanceCodes'),
-            },
-          ],
-        }}
+        titleProps={{ variant: 'h3' }}
         rightAdornment={
           <Box display="flex" alignItems="center">
             <Button

@@ -6,28 +6,10 @@ export default function Overview() {
   const { t } = useTranslation(['common', 'attendance']);
   const { id } = useParams();
   return (
-    <PageContainer
-      title={t('attendance:pageTitle.attendance')}
-      maxWidth="xl"
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2,
-      }}
-    >
+    <PageContainer title={t('attendance:pageTitle.attendance')}>
       <PageHeading
+        titleProps={{ variant: 'h3' }}
         title={t('attendance:pageHeading.attendance')}
-        breadcrumbs={{
-          links: [
-            {
-              name: t('attendance:attendance'),
-              href: './..',
-            },
-            {
-              name: t('common:overview'),
-            },
-          ],
-        }}
       />
       <div>Attendance Page Overview {id}</div>
     </PageContainer>
