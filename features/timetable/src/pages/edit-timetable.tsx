@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Box, Button, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 import {
   PageContainer,
   PageHeading,
@@ -11,6 +11,7 @@ import { useTranslation } from '@tyro/i18n';
 import { CalendarParty } from '@tyro/calendar';
 import { TimetableSearch } from '../components/edit-timetable/timetable-search';
 import { useTimetableResourceView } from '../api/resource-view';
+import { ResourcesTable } from '../components/edit-timetable/resources-table';
 
 export default function EditTimetable() {
   const { t } = useTranslation(['navigation']);
@@ -34,15 +35,21 @@ export default function EditTimetable() {
     [selectedPartys]
   );
 
+  console.log({ partysForEndpoint });
+
   const { data } = useTimetableResourceView({
-    timetableId: 13,
+    timetableId: 20,
     ...partysForEndpoint,
   });
 
   console.log({ data });
 
   return (
-    <PageContainer title={t('navigation:management.timetable.editTimetable')}>
+    <PageContainer
+      title={t('navigation:management.timetable.editTimetable')}
+      maxWidth={false}
+      sx={{ maxWidth: 1980 }}
+    >
       <PageHeading
         title={t('navigation:management.timetable.editTimetable')}
         titleProps={{ variant: 'h3' }}
@@ -52,9 +59,8 @@ export default function EditTimetable() {
           selectedPartys={selectedPartys}
           onChangeSelectedPartys={setSelectedPartys}
         />
-
-        <SearchInput size="medium" />
       </Stack>
+      {data && <ResourcesTable resources={data} />}
     </PageContainer>
   );
 }

@@ -2,7 +2,11 @@
     "room": "Room",
     "teacher": "Teacher",
     "period": "Period",
+    "periodNumber": "Period {{number}}",
     "day": "Day",
     "timetable": "Timetable",
-    "timetables": "Timetable(s)"
+    "timetables": "Timetable(s)",
+    "break": "Break",
+    "finished": "Finished",
+    "forGridId": "for grid {{ id }}"
 }

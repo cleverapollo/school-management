@@ -1,49 +1,74 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, TtResourceTimetableViewFilter } from '@tyro/api';
+import {
+  gqlClient,
+  graphql,
+  TtResourceTimetableViewFilter,
+  UseQueryReturnType,
+} from '@tyro/api';
 import { timetableKeys } from './keys';
 
 const timetableResourceView = graphql(/* GraphQL */ `
   query tt_resourceTimetableView($filter: TTResourceTimetableViewFilter!) {
     tt_resourceTimetableView(filter: $filter) {
-      timeslotIds {
-        gridIdx
-        dayIdx
-        periodIdx
-      }
       timeslots {
-        dayOfWeek
-        startTime
-        endTime
-      }
-      lessons {
-        id {
-          lessonIdx
-          lessonInstanceIdx
-          timetableGroupId
+        timeslotIds {
+          gridIdx
+          dayIdx
+          periodIdx
         }
-        partyGroup {
-          partyId
-          name
-          avatarUrl
+        timeslots {
+          dayOfWeek
+          startTime
+          endTime
+          periodType
         }
-        room {
-          roomId
-          name
-        }
-        teachers {
-          person {
-            partyId
-            title {
-              id
-              name
-            }
-            firstName
-            lastName
-            avatarUrl
-            type
+        lessons {
+          id {
+            lessonIdx
+            lessonInstanceIdx
+            timetableGroupId
           }
+          timeslotId {
+            gridIdx
+            dayIdx
+            periodIdx
+          }
+          timeslotInfo {
+            startTime
+            endTime
+          }
+          partyGroup {
+            __typename
+            partyId
+            name
+            avatarUrl
+            ... on SubjectGroup {
+              subjects {
+                name
+                colour
+              }
+            }
+          }
+          room {
+            roomId
+            name
+          }
+          teachers {
+            person {
+              partyId
+              title {
+                id
+                name
+                nameTextId
+              }
+              firstName
+              lastName
+              avatarUrl
+              type
+            }
+          }
+          spread
         }
-        spread
       }
     }
   }
@@ -60,6 +85,11 @@ export function useTimetableResourceView(
   return useQuery({
     ...timetableResourceViewQuery(filter),
     enabled: !!filter.partyIds?.length || !!filter.roomIds?.length,
-    select: ({ tt_resourceTimetableView }) => tt_resourceTimetableView,
+    select: ({ tt_resourceTimetableView }) =>
+      tt_resourceTimetableView.timeslots,
   });
 }
+
+export type ReturnTypeFromUseTimetableResourceView = UseQueryReturnType<
+  typeof useTimetableResourceView
+>;
