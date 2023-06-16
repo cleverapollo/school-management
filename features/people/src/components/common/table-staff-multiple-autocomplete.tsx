@@ -50,7 +50,7 @@ export const TableStaffMultipleAutocomplete = forwardRef(
         }
         renderAvatarTags={(option, renderTag) =>
           renderTag({
-            name: option.firstName || undefined,
+            name: displayName(option),
             src: option.avatarUrl,
           })
         }
