@@ -9,7 +9,7 @@ const displayName = (person: DisplayNamePersonProps): string => {
   if (!person) {
     return '';
   }
-  return `${person.firstName ?? ''} ${person.lastName ?? ''}`;
+  return `${person.lastName ?? ''}, ${person.firstName ?? ''}`;
 };
 
 const displayNames = (
