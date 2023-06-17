@@ -21,18 +21,18 @@ const environmentMsalConfig = isProd
         authorities: {
           signUpSignIn: {
             authority:
-              'https://login.tyro.school/tyroschool.onmicrosoft.com/B2C_1_signin',
+              'https://tyroschool.b2clogin.com/login.tyro.school/B2C_1_signin',
           },
           forgotPassword: {
             authority:
-              'https://login.tyro.school/tyroschool.onmicrosoft.com/B2C_1_reset_password',
+              'https://tyroschool.b2clogin.com/login.tyro.school/B2C_1_reset_password',
           },
           editProfile: {
             authority:
-              'https://login.tyro.school/tyroschool.onmicrosoft.com/b2c_1_edit_profile',
+              'https://tyroschool.b2clogin.com/login.tyro.school/b2c_1_edit_profile',
           },
         },
-        authorityDomain: 'login.tyro.school',
+        authorityDomain: 'tyroschool.b2clogin.com',
       },
     }
   : {

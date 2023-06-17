@@ -56,22 +56,6 @@ const getStudentContactColumns = (
     lockVisible: true,
   },
   {
-    field: 'personalInformation.primaryAddress.number',
-    headerName: translate('common:address'),
-    valueGetter: ({ data }) =>
-      joinAddress(data?.personalInformation?.primaryAddress, {
-        emptyValue: '',
-      }),
-  },
-  {
-    field: 'personalInformation.primaryPhoneNumber.number',
-    headerName: translate('common:phone'),
-  },
-  {
-    field: 'personalInformation.primaryEmail.email',
-    headerName: translate('common:email'),
-  },
-  {
     field: 'relationships[0].relationshipType',
     headerName: translate('common:relationship'),
     valueGetter: ({ data }) => {
@@ -83,8 +67,69 @@ const getStudentContactColumns = (
     },
   },
   {
+    field: 'personalInformation.primaryPhoneNumber.number',
+    headerName: translate('common:phone'),
+  },
+  {
+    field: 'personalInformation.primaryEmail.email',
+    headerName: translate('common:email'),
+  },
+  {
+    field: 'personalInformation.primaryAddress.number',
+    headerName: translate('common:address'),
+    valueGetter: ({ data }) =>
+      joinAddress(data?.personalInformation?.primaryAddress, {
+        emptyValue: '',
+      }),
+  },
+  {
     field: 'relationships[0].priority',
     headerName: translate('people:priority'),
+  },
+  {
+    field: 'legalGuardian',
+    headerName: translate('people:legalGuardian'),
+    valueGetter: ({ data }) =>
+      data?.relationships?.[0]?.legalGuardian
+        ? translate('common:yes')
+        : translate('common:no'),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
+      <TableBooleanValue
+        value={Boolean(data?.relationships?.[0]?.legalGuardian)}
+      />
+    ),
+  },
+  {
+    field: 'pickupRights',
+    headerName: translate('people:pickupPermission'),
+    valueGetter: ({ data }) =>
+      data?.relationships?.[0]?.pickupRights
+        ? translate('common:yes')
+        : translate('common:no'),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
+      <TableBooleanValue
+        value={Boolean(data?.relationships?.[0]?.pickupRights)}
+      />
+    ),
+  },
+  {
+    field: 'allowAccessToStudentData',
+    headerName: translate('people:allowAccessToStudentData'),
+    valueGetter: ({ data }) =>
+      data?.relationships?.[0]?.allowAccessToStudentData
+        ? translate('common:yes')
+        : translate('common:no'),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
+      <TableBooleanValue
+        value={Boolean(data?.relationships?.[0]?.allowAccessToStudentData)}
+      />
+    ),
   },
   {
     field: 'relationships[0].allowedToContact',
@@ -113,6 +158,21 @@ const getStudentContactColumns = (
     }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
       <TableBooleanValue
         value={Boolean(data?.relationships?.[0]?.includeInSms)}
+      />
+    ),
+  },
+  {
+    field: 'relationships[0].includeInTmail',
+    headerName: translate('people:includeInTmail'),
+    valueGetter: ({ data }) =>
+      data?.relationships?.[0]?.includeInSms
+        ? translate('common:yes')
+        : translate('common:no'),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
+      <TableBooleanValue
+        value={Boolean(data?.relationships?.[0]?.includeInTmail)}
       />
     ),
   },
