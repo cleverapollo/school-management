@@ -7,6 +7,7 @@ import {
   Typography,
   Box,
   Tooltip,
+  IconButton,
 } from '@mui/material';
 import {
   RHFCheckbox,
@@ -23,7 +24,7 @@ import {
   TuslaCode,
 } from '@tyro/api';
 import React, { useEffect } from 'react';
-import { InfoCircleIcon } from '@tyro/icons';
+import { CloseIcon, InfoCircleIcon } from '@tyro/icons';
 import {
   ReturnTypeFromUseAttendanceCodes,
   useCreateOrUpdateAttendanceCode,
@@ -134,7 +135,7 @@ export const EditAttendanceCodeModal = ({
   const [code] = watch(['code']);
 
   useEffect(() => {
-    if (code !== undefined && code !== null) {
+    if (code) {
       setValue('description', t(`attendance:tuslaCodeDescription.${code}`));
     }
   }, [code]);
@@ -153,8 +154,8 @@ export const EditAttendanceCodeModal = ({
           : t('attendance:createAttendanceCode')}
       </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack spacing={3} sx={{ p: 3 }}>
-          <Stack direction="row" gap={1}>
+        <Stack gap={3} p={3}>
+          <Stack direction="row" gap={2}>
             <RHFTextField<EditAttendanceCodeFormState>
               label={t('attendance:attendanceCodeName')}
               controlProps={{
@@ -165,18 +166,32 @@ export const EditAttendanceCodeModal = ({
                 fullWidth: true,
               }}
             />
-            <RHFSelect<EditAttendanceCodeFormState, string>
+            <RHFSelect<EditAttendanceCodeFormState, TuslaCode>
               fullWidth
-              options={Object.keys(TuslaCode)}
+              options={Object.values(TuslaCode)}
               label={t('attendance:tuslaCode')}
               getOptionLabel={(option) => option}
+              InputProps={{
+                endAdornment: code && (
+                  <IconButton
+                    sx={{ mr: 2 }}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      event.preventDefault();
+                      setValue('code', undefined);
+                    }}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                ),
+              }}
               controlProps={{
                 name: 'code',
                 control,
               }}
             />
           </Stack>
-          <Stack direction="row" gap={1}>
+          <Stack direction="row" gap={2}>
             <RHFTextField<EditAttendanceCodeFormState>
               label={t('common:description')}
               controlProps={{
@@ -186,7 +201,7 @@ export const EditAttendanceCodeModal = ({
               textFieldProps={{
                 fullWidth: true,
                 inputProps: {
-                  readOnly: code !== undefined,
+                  readOnly: Boolean(code),
                 },
               }}
             />
@@ -207,7 +222,7 @@ export const EditAttendanceCodeModal = ({
             <Typography variant="subtitle1">
               {t('attendance:availableTo')}
             </Typography>
-            <Typography variant="caption">
+            <Typography variant="body2" color="text.secondary">
               {t('attendance:whichUserGroupsHaveAccessToUseThisAttendanceCode')}
             </Typography>
           </Stack>

@@ -47,7 +47,6 @@ const attendanceCodesKeys = {
 const attendanceCodesQuery = (filter: AttendanceCodeFilter) => ({
   queryKey: attendanceCodesKeys.list,
   queryFn: () => gqlClient.request(attendanceCodes, { filter }),
-  staleTime: 1000 * 60 * 20,
 });
 
 export function useAttendanceCodes(filter: AttendanceCodeFilter) {
@@ -72,8 +71,8 @@ export function useCreateOrUpdateAttendanceCode() {
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     },
-    onSuccess: (_, variables) => {
-      if (variables && variables.length > 0 && variables[0].id) {
+    onSuccess: (_, [code]) => {
+      if (code?.id) {
         toast(t('common:snackbarMessages.updateSuccess'));
       } else {
         toast(t('common:snackbarMessages.createSuccess'));

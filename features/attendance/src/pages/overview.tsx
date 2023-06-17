@@ -3,7 +3,7 @@ import { PageContainer, PageHeading } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 
 export default function Overview() {
-  const { t } = useTranslation(['common', 'attendance']);
+  const { t } = useTranslation(['attendance']);
   const { id } = useParams();
   return (
     <PageContainer title={t('attendance:pageTitle.attendance')}>

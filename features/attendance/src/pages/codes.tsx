@@ -32,6 +32,7 @@ const getAttendanceCodeColumns = (
     undefined,
     ('attendance' | 'attendance')[]
   >,
+  tuslaCodes: TuslaCode[],
   onClickEdit: Dispatch<
     SetStateAction<EditAttendanceCodeViewProps['initialAttendanceCodeState']>
   >
@@ -44,8 +45,10 @@ const getAttendanceCodeColumns = (
     lockVisible: true,
     cellEditorSelector: TuslaCodeSelectCellEditor(),
     onCellValueChanged: (params) => {
-      const codes = Object.keys(TuslaCode);
-      if (params.newValue && codes.includes(params.newValue as string)) {
+      if (
+        params.newValue &&
+        tuslaCodes.includes(params.newValue as TuslaCode)
+      ) {
         params.node?.setDataValue(
           'description',
           t(`attendance:tuslaCodeDescription.${params.newValue as TuslaCode}`)
@@ -61,10 +64,7 @@ const getAttendanceCodeColumns = (
   {
     field: 'description',
     headerName: t('common:description'),
-    editable: ({ data }) => {
-      const codes = Object.keys(TuslaCode);
-      return !(data?.code && codes.includes(data?.code));
-    },
+    editable: ({ data }) => !(data?.code && tuslaCodes.includes(data?.code)),
   },
   {
     field: 'codeType',
@@ -125,6 +125,7 @@ export default function Codes() {
   const { t, i18n } = useTranslation(['common', 'attendance']);
   const currentLanguageCode = i18n.language;
   const { data: attendanceCodes } = useAttendanceCodes({});
+  const tuslaCodes = Object.values(TuslaCode);
 
   const { mutateAsync: saveBulkAttendanceCodes } =
     useCreateOrUpdateAttendanceCode();
@@ -133,8 +134,13 @@ export default function Codes() {
     useState<EditAttendanceCodeViewProps['initialAttendanceCodeState']>();
 
   const attendanceCodeColumns = useMemo(
-    () => getAttendanceCodeColumns(t, setEditAttendanceCodeInitialState),
-    [t, setEditAttendanceCodeInitialState]
+    () =>
+      getAttendanceCodeColumns(
+        t,
+        tuslaCodes,
+        setEditAttendanceCodeInitialState
+      ),
+    [t, tuslaCodes, setEditAttendanceCodeInitialState]
   );
 
   const handleCreateAttendanceCode = () => {
