@@ -40,6 +40,7 @@ const getColumnDefs = (
   {
     field: 'name',
     headerName: translate('common:name'),
+    sort: 'asc',
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAssessments>) =>
@@ -70,13 +71,15 @@ const getColumnDefs = (
     valueGetter: ({ data }) => (data ? displayName(data.createdBy) : null),
   },
   {
-    field: 'dateOfCreation',
-    headerName: translate('common:dateOfCreation'),
+    field: 'startDate',
+    headerName: translate('common:startDate'),
     valueGetter: ({ data }) =>
-      data ? dayjs(data.createdOn).format('LL') : null,
-    sort: 'desc',
-    comparator: (dateA: string, dateB: string) =>
-      dayjs(dateA).unix() - dayjs(dateB).unix(),
+      data ? dayjs(data.startDate).format('LL') : null,
+  },
+  {
+    field: 'endDate',
+    headerName: translate('common:endDate'),
+    valueGetter: ({ data }) => (data ? dayjs(data.endDate).format('LL') : null),
   },
   {
     field: 'publish',
