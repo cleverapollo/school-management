@@ -40,7 +40,6 @@ const getColumnDefs = (
   {
     field: 'name',
     headerName: translate('common:name'),
-    sort: 'asc',
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAssessments>) =>
@@ -75,6 +74,9 @@ const getColumnDefs = (
     headerName: translate('common:startDate'),
     valueGetter: ({ data }) =>
       data ? dayjs(data.startDate).format('LL') : null,
+    sort: 'desc',
+    comparator: (dateA: string, dateB: string) =>
+      dayjs(dateA).unix() - dayjs(dateB).unix(),
   },
   {
     field: 'endDate',
