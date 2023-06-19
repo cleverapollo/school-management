@@ -82,6 +82,9 @@ const getColumnDefs = (
     field: 'endDate',
     headerName: translate('common:endDate'),
     valueGetter: ({ data }) => (data ? dayjs(data.endDate).format('LL') : null),
+    sort: 'desc',
+    comparator: (dateA: string, dateB: string) =>
+      dayjs(dateA).unix() - dayjs(dateB).unix(),
   },
   {
     field: 'publish',
