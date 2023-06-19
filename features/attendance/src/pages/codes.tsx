@@ -26,13 +26,14 @@ import {
   EditAttendanceCodeViewProps,
 } from '../components/edit-attendance-code-modal';
 
+const tuslaCodes = Object.values(TuslaCode);
+
 const getAttendanceCodeColumns = (
   t: TFunction<
     ('common' | 'attendance')[],
     undefined,
     ('attendance' | 'attendance')[]
   >,
-  tuslaCodes: TuslaCode[],
   onClickEdit: Dispatch<
     SetStateAction<EditAttendanceCodeViewProps['initialAttendanceCodeState']>
   >
@@ -125,7 +126,6 @@ export default function Codes() {
   const { t, i18n } = useTranslation(['common', 'attendance']);
   const currentLanguageCode = i18n.language;
   const { data: attendanceCodes } = useAttendanceCodes({});
-  const tuslaCodes = Object.values(TuslaCode);
 
   const { mutateAsync: saveBulkAttendanceCodes } =
     useCreateOrUpdateAttendanceCode();
@@ -134,13 +134,8 @@ export default function Codes() {
     useState<EditAttendanceCodeViewProps['initialAttendanceCodeState']>();
 
   const attendanceCodeColumns = useMemo(
-    () =>
-      getAttendanceCodeColumns(
-        t,
-        tuslaCodes,
-        setEditAttendanceCodeInitialState
-      ),
-    [t, tuslaCodes, setEditAttendanceCodeInitialState]
+    () => getAttendanceCodeColumns(t, setEditAttendanceCodeInitialState),
+    [t, setEditAttendanceCodeInitialState]
   );
 
   const handleCreateAttendanceCode = () => {

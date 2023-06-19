@@ -137,8 +137,14 @@ export const EditAttendanceCodeModal = ({
   useEffect(() => {
     if (code) {
       setValue('description', t(`attendance:tuslaCodeDescription.${code}`));
+    } else {
+      setValue('description', undefined);
     }
   }, [code]);
+
+  const handleClearCode = () => {
+    setValue('code', undefined);
+  };
 
   return (
     <Dialog
@@ -175,11 +181,8 @@ export const EditAttendanceCodeModal = ({
                 endAdornment: code && (
                   <IconButton
                     sx={{ mr: 2 }}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      event.preventDefault();
-                      setValue('code', undefined);
-                    }}
+                    type="button"
+                    onClick={handleClearCode}
                   >
                     <CloseIcon />
                   </IconButton>
