@@ -5533,6 +5533,7 @@ __metadata:
     "@tanstack/react-query": ^4.29.7
     "@tyro/api": "*"
     "@tyro/assessments": "*"
+    "@tyro/attendance": "*"
     "@tyro/authentication": "*"
     "@tyro/calendar": "*"
     "@tyro/class-list-manager": "*"
@@ -5589,6 +5590,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@tyro/attendance@workspace:features/attendance"
   dependencies:
+    "@mui/lab": ^5.0.0-alpha.96
     "@mui/material": ^5.13.2
     "@tanstack/react-query": ^4.29.7
     "@tyro/api": "*"
@@ -5598,6 +5600,7 @@ __metadata:
     "@tyro/icons": "*"
     react: ^18.2.0
     react-dom: ^18.2.0
+    react-hook-form: ^7.43.9
     react-router: ^6.6.2
     react-router-dom: ^6.6.2
   languageName: unknown

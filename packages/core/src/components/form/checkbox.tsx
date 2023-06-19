@@ -13,7 +13,7 @@ import {
 } from 'react-hook-form';
 
 type RHFCheckboxProps<TField extends FieldValues> = {
-  label?: string;
+  label?: FormControlLabelProps['label'];
   checkboxProps?: CheckboxProps;
   controlLabelProps?: Omit<FormControlLabelProps, 'label' | 'control'>;
   controlProps: UseControllerProps<TField>;
