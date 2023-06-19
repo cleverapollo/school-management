@@ -43,6 +43,7 @@ export function useCoreSetActiveActiveAcademicNamespace() {
         variant: 'success',
       });
       queryClient.clear();
+      window.location.reload();
     },
     onError: (_, namespace) => {
       toast(t(`settings:failedChangingYear`, { name: namespace.name }), {
