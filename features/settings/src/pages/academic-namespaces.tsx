@@ -24,6 +24,7 @@ import {
   EditAcademicYearModal,
   EditAcademicYearViewProps,
 } from '../components/edit-academic-year-modal';
+import { changeAcademicNamespace } from '../utils/change-academic-namespace';
 
 dayjs.extend(LocalizedFormat);
 
@@ -89,6 +90,10 @@ const getColumns = (
             {
               label: t('settings:editAcademicYear'),
               onClick: () => setSelectedNamespace(data, false),
+            },
+            {
+              label: t('settings:actions.changeAcademicYear'),
+              onClick: () => changeAcademicNamespace(data.academicNamespaceId),
             },
             {
               label: t('settings:actions.makeActive'),

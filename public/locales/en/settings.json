@@ -29,6 +29,7 @@
   "failedChangingYear": "Failed changing year to {{name}}",
   "actions": {
     "makeActive": "Activate academic year for all users",
+    "changeAcademicYear": "Change academic year for just me",
     "addNewRoom": "Add new room",
     "editRoom": "Edit room",
     "linkToViewRoomTimetable": "Link to view room timetable"
