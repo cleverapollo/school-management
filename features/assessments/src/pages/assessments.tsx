@@ -70,10 +70,18 @@ const getColumnDefs = (
     valueGetter: ({ data }) => (data ? displayName(data.createdBy) : null),
   },
   {
-    field: 'dateOfCreation',
-    headerName: translate('common:dateOfCreation'),
+    field: 'startDate',
+    headerName: translate('common:startDate'),
     valueGetter: ({ data }) =>
-      data ? dayjs(data.createdOn).format('LL') : null,
+      data ? dayjs(data.startDate).format('LL') : null,
+    sort: 'desc',
+    comparator: (dateA: string, dateB: string) =>
+      dayjs(dateA).unix() - dayjs(dateB).unix(),
+  },
+  {
+    field: 'endDate',
+    headerName: translate('common:endDate'),
+    valueGetter: ({ data }) => (data ? dayjs(data.endDate).format('LL') : null),
     sort: 'desc',
     comparator: (dateA: string, dateB: string) =>
       dayjs(dateA).unix() - dayjs(dateB).unix(),
