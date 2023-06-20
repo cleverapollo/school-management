@@ -46,6 +46,7 @@ const getColumnDefs = (
     valueGetter: ({ data }) =>
       data?.subjectGroup.staff?.map((person) => displayName(person)).join(', '),
     enableRowGroup: true,
+    sort: 'asc',
   },
   {
     field: 'resultsTotal',
