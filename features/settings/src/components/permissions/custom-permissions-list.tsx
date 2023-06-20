@@ -44,7 +44,11 @@ export const CustomPermissionsList = () => {
       {permissionsData.length > 0 ? (
         permissionsData?.map((permission) => (
           <Grid item xs={12} sm={6} md={4}>
-            <PermissionGroupCard key={permission?.id} {...permission} />
+            <PermissionGroupCard
+              key={permission?.id}
+              {...permission}
+              onClick={console.log}
+            />
           </Grid>
         ))
       ) : (

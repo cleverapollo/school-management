@@ -7,7 +7,7 @@ import {
 } from '@tyro/icons';
 import { Typography, Grid } from '@mui/material';
 import { ReactNode } from 'react';
-import { MemberType, PermissionGroup } from '@tyro/api';
+import { MemberType } from '@tyro/api';
 import {
   PresetIconName,
   usePermissionGroups,
@@ -21,9 +21,8 @@ const Icons: Record<PresetIconName, ReactNode> = {
   [PresetIconName.Contact]: <HandHeartIcon />,
 };
 
-const mockedPermissions: (PermissionGroup & {
-  presetIconName?: PresetIconName;
-})[] = [
+// TODO: remove when BE is ready
+const mockedPermissions = [
   {
     id: 1,
     name: 'Student',
@@ -49,7 +48,7 @@ const mockedPermissions: (PermissionGroup & {
     presetIconName: PresetIconName.Admin,
   },
   {
-    id: 3,
+    id: 4,
     name: 'Contact',
     description: 'Related Student info and more',
     memberPartyIds: Array.from({ length: 459 }, (_v, k) => k + 1),
@@ -75,13 +74,17 @@ export const PresetPermissionsList = () => {
       {tempData.map(
         (permission) =>
           permission && (
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={6} key={permission?.id}>
               <PermissionGroupCard
-                key={permission?.id}
                 {...permission}
-                // @ts-expect-error
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-                icon={Icons[permission.presetIconName]}
+                onClick={() =>
+                  console.log('go to add permission', permission.id)
+                }
+                icon={
+                  permission.presetIconName
+                    ? Icons[permission.presetIconName]
+                    : null
+                }
               />
             </Grid>
           )

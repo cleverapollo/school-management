@@ -105,6 +105,33 @@
     "membersCount_one": "{{count}} member",
     "membersCount_other": "{{count}} members",
     "customPermissionsGroups": "Custom permissions groups",
-    "emptyCustomPermissionsGroups": "There aren't any custom permission groups created yet."
+    "emptyCustomPermissionsGroups": "There aren't any custom permission groups created yet.",
+    "creatingNewGroup": "Creating a new permissions group",
+    "memberType": "Member type",
+    "groupDescription": "Group description",
+    "groupDescriptionPlaceholder": "Add a brief description of the actions taken or goals for this permissions group.",
+    "namePermissionsPlaceholder": "New permission group name",
+    "memberTypeOption": {
+      "CONTACT": "Contacts",
+      "STAFF": "Staff",
+      "STUDENT": "Students"
+    },
+    "selectPermissions": "Select permissions",
+    "permissionSet": "Permission set",
+    "assignMembers": "Assign members",
+    "permissionType": "Permission type",
+    "permissionTypeOption": {
+      "ALL": "All members",
+      "GROUP_ADMIN": "Group admin",
+      "MEMBER_OF_GROUP": "Member of group",
+      "SELF": "Self"
+    },
+    "searchByMemberType": {
+      "CONTACT": "Search by contact name",
+      "STAFF": "Search by staff name",
+      "STUDENT": "Search by student name"
+    },
+    "removeMember": "Remove member",
+    "savePermissionsGroup": "Save permissions group"
   }
 }

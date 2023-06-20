@@ -19,7 +19,7 @@ const permissionGroupsQuery = (filter: PermissionGroupFilter) => ({
   queryFn: () => gqlClient.request(permissionGroups, { filter }),
 });
 
-// NOTE: take this from the PermissionGroup schema when BE supports it
+// TODO: take this from the PermissionGroup schema when BE supports it
 export enum PresetIconName {
   Student = 'STUDENT',
   Teacher = 'TEACHER',
@@ -31,6 +31,10 @@ export function usePermissionGroups(filter: PermissionGroupFilter) {
   return useQuery({
     ...permissionGroupsQuery(filter),
     select: ({ users_permissionGroups }) =>
-      Array.isArray(users_permissionGroups) ? users_permissionGroups : [],
+      // Array.isArray(users_permissionGroups) ? users_permissionGroups : []
+      // TODO: remove these line and uncomment above when BE sends presetIconName
+      (Array.isArray(users_permissionGroups) ? users_permissionGroups : []).map(
+        (a) => ({ ...a, presetIconName: undefined })
+      ),
   });
 }
