@@ -227,7 +227,7 @@ export const EditAttendanceCodeModal = ({
               {t('attendance:availableTo')}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {t('attendance:whichUserGroupsHaveAccessToUseThisAttendanceCode')}
+              {t('attendance:selectUserGroups')}
             </Typography>
           </Stack>
 

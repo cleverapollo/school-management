@@ -16,7 +16,7 @@
   "editAttendanceCode": "Edit attendance code",
   "attendanceCodeNameShouldBeUnique": "Attendance code name should be unique",
   "availableTo": "Available to",
-  "whichUserGroupsHaveAccessToUseThisAttendanceCode": "Which User Groups have access to use this attendance code",
+  "selectUserGroups": "Select user groups that will use this attendance code",
   "teachers": "Teachers",
   "contacts": "Contacts",
   "administrationStaffAccessAllAttendanceCodesByDefault": "Administration staff access all attendance codes by default",
