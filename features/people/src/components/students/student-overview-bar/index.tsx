@@ -30,7 +30,9 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
   const { data: studentData } = useStudent(studentId);
   const { data: statusData } = useStudentStatus(studentId);
 
-  const name = displayName(studentData?.person);
+  const name = displayName(studentData?.person, {
+    format: 'fullName',
+  });
 
   return (
     <>

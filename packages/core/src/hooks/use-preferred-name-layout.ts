@@ -5,11 +5,22 @@ export type DisplayNamePersonProps =
   | undefined
   | null;
 
-const displayName = (person: DisplayNamePersonProps): string => {
+const displayName = (
+  person: DisplayNamePersonProps,
+  options?: {
+    format: 'fullName';
+  }
+): string => {
   if (!person) {
     return '';
   }
-  return `${person.lastName ?? ''}, ${person.firstName ?? ''}`;
+
+  switch (options?.format) {
+    case 'fullName':
+      return `${person.firstName ?? ''} ${person.lastName ?? ''}`;
+    default:
+      return `${person.lastName ?? ''}, ${person.firstName ?? ''}`;
+  }
 };
 
 const displayNames = (
