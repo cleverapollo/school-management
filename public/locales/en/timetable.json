@@ -8,5 +8,10 @@
     "timetables": "Timetable(s)",
     "break": "Break",
     "finished": "Finished",
-    "forGridId": "for grid {{ id }}"
+    "forGridId": "for grid {{ id }}",
+    "swapTeacherOrRoom_one": "Swap Teacher or Room",
+    "swapTeacherOrRoom_other": "Swap Teachers or Rooms",
+    "swapping": "Swapping",
+    "teachersAvailable": "Teachers available",
+    "dayAtTime": "{{day}} at {{time}}"
 }

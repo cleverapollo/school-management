@@ -3,4 +3,5 @@ export * from './get-classes-from-object';
 export * from './keyboard';
 export * from './navigation';
 export * from './order-by-value';
+export * from './typography';
 export * from './validations';

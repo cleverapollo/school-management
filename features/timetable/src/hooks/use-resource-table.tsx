@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState, useEffect } from 'react';
 import groupBy from 'lodash/groupBy';
 import { nanoid } from 'nanoid';
 import { TtGridPeriodType, TtTimeslotId, TtTimeslotInfo } from '@tyro/api';
@@ -33,7 +33,7 @@ const getIdFromTimeslotIds = (timeslotIds: TtTimeslotId | undefined | null) => {
 export function useResourceTable(
   resources: ReturnTypeFromUseTimetableResourceView
 ) {
-  const [selectedLessons, setSelectedLessons] = useState<string[]>([]);
+  const [selectedLessonIds, setSelectedLessonIds] = useState<string[]>([]);
   const resourcesGroupedByDay = useMemo(
     () => groupBy(resources, 'timeslotIds.dayIdx'),
     [resources]
@@ -116,24 +116,86 @@ export function useResourceTable(
 
   const toggleLessonSelection = useCallback(
     (event: React.MouseEvent<HTMLDivElement, MouseEvent>, lesson: Lesson) => {
-      setSelectedLessons((prev) => {
+      setSelectedLessonIds((prev) => {
         const idString = JSON.stringify(lesson.id);
 
         if (wasToggleInSelectionGroupKeyUsed(event)) {
-          return selectedLessons.includes(idString)
+          return selectedLessonIds.includes(idString)
             ? prev.filter((id) => id !== idString)
             : [...prev, idString];
         }
 
-        // if (wasMultiSelectKeyUsed(event)) {
-        //   return multiSelectTo(studentId, selectedIds, state);
-        // }
+        if (wasMultiSelectKeyUsed(event) && prev.length > 0) {
+          const lastLessonId = prev[prev.length - 1];
+          const lastLesson = lessonsById.get(lastLessonId) as Lesson;
+          const clickedLesson = lessonsById.get(idString) as Lesson;
+
+          if (lastLesson.timeslotId && clickedLesson.timeslotId) {
+            const lastLessonTimeslotIds = getIdFromTimeslotIds(
+              lastLesson.timeslotId
+            );
+            const clickedLessonTimeslotIds = getIdFromTimeslotIds(
+              clickedLesson.timeslotId
+            );
+            const clickedResources = getResourcesByTimeslotId(
+              clickedLesson.timeslotId
+            );
+            const clickedLessonIndex = clickedResources.findIndex(
+              (resource) => resource.id === clickedLesson.id
+            );
+
+            if (lastLessonTimeslotIds === clickedLessonTimeslotIds) {
+              const lastLessonIndex = clickedResources.findIndex(
+                (resource) => resource.id === lastLesson.id
+              );
+
+              const [start, end] = [
+                Math.min(lastLessonIndex, clickedLessonIndex),
+                Math.max(lastLessonIndex, clickedLessonIndex),
+              ];
+              const resourcesToSelect = clickedResources
+                .slice(start, end + 1)
+                .map((resource) => JSON.stringify(resource.id));
+              return Array.from(new Set([...prev, ...resourcesToSelect]));
+            }
+            const resourcesToSelect = clickedResources
+              .slice(0, clickedLessonIndex + 1)
+              .map((resource) => JSON.stringify(resource.id));
+            return Array.from(new Set(resourcesToSelect));
+          }
+        }
 
         return [idString];
       });
     },
-    [selectedLessons]
+    [selectedLessonIds]
   );
+
+  useEffect(() => {
+    const onWindowClickOrTouchEnd = (event: MouseEvent | TouchEvent) => {
+      if (event.defaultPrevented) return;
+
+      setSelectedLessonIds([]);
+    };
+
+    const onWindowKeyDown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented) return;
+
+      if (event.key === 'Escape') {
+        setSelectedLessonIds([]);
+      }
+    };
+
+    window.addEventListener('click', onWindowClickOrTouchEnd);
+    window.addEventListener('touchend', onWindowClickOrTouchEnd);
+    window.addEventListener('keydown', onWindowKeyDown);
+
+    return () => {
+      window.removeEventListener('click', onWindowClickOrTouchEnd);
+      window.removeEventListener('touchend', onWindowClickOrTouchEnd);
+      window.removeEventListener('keydown', onWindowKeyDown);
+    };
+  }, []);
 
   return {
     gridIds,
@@ -141,7 +203,10 @@ export function useResourceTable(
     periods,
     getResourcesByTimeslotId,
     isLessonSelected: (lesson: Lesson) =>
-      selectedLessons.includes(JSON.stringify(lesson.id)),
+      selectedLessonIds.includes(JSON.stringify(lesson.id)),
+    selectedLessonIds,
+    getLessons: (lessonIds: string[]) =>
+      lessonIds.map((id) => lessonsById.get(id) as Lesson),
     toggleLessonSelection,
   };
 }

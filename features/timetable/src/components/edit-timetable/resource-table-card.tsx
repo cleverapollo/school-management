@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import { usePreferredNameLayout } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
@@ -10,6 +10,7 @@ import {
 } from '../../hooks/use-resource-table';
 import { getResourceName } from '../../utils/get-resource-name';
 import { ResourceCardTooltip } from './resource-card-tooltip';
+import { LessonContextMenu } from './lesson-context-menu';
 
 export type UseResourceTableReturnType = ReturnType<typeof useResourceTable>;
 
@@ -19,6 +20,8 @@ interface ResourceTableCardProps {
   searchValue: string;
   isLessonSelected: UseResourceTableReturnType['isLessonSelected'];
   toggleLessonSelection: UseResourceTableReturnType['toggleLessonSelection'];
+  selectedLessonIds: UseResourceTableReturnType['selectedLessonIds'];
+  onOpenSwapTeacherOrRoomDialog: (anchorLesson: Lesson) => void;
 }
 
 type GroupCardProps = {
@@ -26,6 +29,8 @@ type GroupCardProps = {
   searchValue: string;
   isLessonSelected: UseResourceTableReturnType['isLessonSelected'];
   toggleLessonSelection: UseResourceTableReturnType['toggleLessonSelection'];
+  selectedLessonIds: UseResourceTableReturnType['selectedLessonIds'];
+  onOpenSwapTeacherOrRoomDialog: (anchorLesson: Lesson) => void;
 };
 
 interface PlaceholderLessonProps {
@@ -89,8 +94,13 @@ function GroupCard({
   searchValue,
   isLessonSelected,
   toggleLessonSelection,
+  onOpenSwapTeacherOrRoomDialog,
+  selectedLessonIds,
 }: GroupCardProps) {
   const { displayName, displayNames } = usePreferredNameLayout();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const isSelected = isLessonSelected(lesson);
+  const isContextMenuOpen = Boolean(anchorEl);
 
   const partyGroup = lesson?.partyGroup;
   const subject =
@@ -118,89 +128,107 @@ function GroupCard({
 
   const opacity = isMatched ? 1 : 0.2;
   const color = isMatched && subject?.colour ? subject.colour : 'slate';
-  const borderColor = isLessonSelected(lesson) ? `${color}.600` : 'white';
+  const borderColor =
+    isSelected || isContextMenuOpen ? `${color}.600` : 'white';
 
   return (
-    <ResourceCardTooltip
-      timeslotInfo={lesson.timeslotInfo}
-      additionalTeachers={additionalTeachers}
-    >
-      <Box
-        sx={{
-          backgroundColor: `${color}.100`,
-          opacity,
-          borderRadius: 0.75,
-          width: 240,
-          transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
-          transitionDuration: '150ms',
-          transitionProperty: 'background-color, opacity',
-          border: '2px solid',
-          borderColor,
-          cursor: 'pointer',
-        }}
-        role="button"
-        tabIndex={0}
-        onClick={(event) => {
-          event.stopPropagation();
-          toggleLessonSelection(event, lesson);
-        }}
+    <>
+      <ResourceCardTooltip
+        timeslotInfo={lesson.timeslotInfo}
+        additionalTeachers={additionalTeachers}
       >
-        <Stack
-          direction="row"
-          sx={{ alignItems: 'stretch', height: '100%', p: 0.75, pr: 1.25 }}
+        <Box
+          sx={{
+            backgroundColor: `${color}.100`,
+            opacity,
+            borderRadius: 0.75,
+            width: 240,
+            transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+            transitionDuration: '150ms',
+            transitionProperty: 'background-color, opacity',
+            border: '2px solid',
+            borderColor,
+            cursor: 'pointer',
+            userSelect: 'none',
+          }}
+          role="button"
+          tabIndex={0}
+          onClick={(event) => {
+            event.preventDefault();
+            toggleLessonSelection(event, lesson);
+          }}
+          onContextMenu={(event) => {
+            event.preventDefault();
+            setAnchorEl(event.currentTarget);
+          }}
         >
-          <Box
-            sx={{
-              width: 3,
-              borderRadius: 1.5,
-              backgroundColor: `${color}.main`,
-              transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
-              transitionDuration: '150ms',
-              transitionProperty: 'background-color',
-              mr: 0.75,
-            }}
-          />
-          <Stack sx={{ overflow: 'hidden', flex: 1 }}>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              spacing={1}
-            >
-              <Typography variant="subtitle2" noWrap sx={{ flex: 1 }}>
-                {name}
-              </Typography>
-              <Typography variant="subtitle2" noWrap>
-                {room}
-              </Typography>
-            </Stack>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              spacing={1}
-            >
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                noWrap
-                sx={{ flex: 1 }}
+          <Stack
+            direction="row"
+            sx={{ alignItems: 'stretch', height: '100%', p: 0.75, pr: 1.25 }}
+          >
+            <Box
+              sx={{
+                width: 3,
+                borderRadius: 1.5,
+                backgroundColor: `${color}.main`,
+                transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+                transitionDuration: '150ms',
+                transitionProperty: 'background-color',
+                mr: 0.75,
+              }}
+            />
+            <Stack sx={{ overflow: 'hidden', flex: 1 }}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                spacing={1}
               >
-                {displayName(teacher?.person)}
-                {additionalTeachers.length > 0
-                  ? ` +${additionalTeachers.length}`
-                  : ''}
-              </Typography>
-              {subjectGroupName && (
-                <Typography variant="caption" color="text.secondary" noWrap>
-                  {subjectGroupName}
+                <Typography variant="subtitle2" noWrap sx={{ flex: 1 }}>
+                  {name}
                 </Typography>
-              )}
+                <Typography variant="subtitle2" noWrap>
+                  {room}
+                </Typography>
+              </Stack>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                spacing={1}
+              >
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  noWrap
+                  sx={{ flex: 1 }}
+                >
+                  {displayName(teacher?.person)}
+                  {additionalTeachers.length > 0
+                    ? ` +${additionalTeachers.length}`
+                    : ''}
+                </Typography>
+                {subjectGroupName && (
+                  <Typography variant="caption" color="text.secondary" noWrap>
+                    {subjectGroupName}
+                  </Typography>
+                )}
+              </Stack>
             </Stack>
           </Stack>
-        </Stack>
-      </Box>
-    </ResourceCardTooltip>
+        </Box>
+      </ResourceCardTooltip>
+      <LessonContextMenu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+        selectedLessonIds={selectedLessonIds}
+        onOpenSwapTeacherOrRoomDialog={() =>
+          onOpenSwapTeacherOrRoomDialog(lesson)
+        }
+        isSelected={isSelected}
+      />
+    </>
   );
 }
 

@@ -1,11 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Stack } from '@mui/material';
-import {
-  PageContainer,
-  PageHeading,
-  SearchInput,
-  useBreakpointValue,
-} from '@tyro/core';
+import { PageContainer, PageHeading, useBreakpointValue } from '@tyro/core';
 import { TtResourceTimetableViewFilter } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { CalendarParty } from '@tyro/calendar';
@@ -16,6 +11,7 @@ import { ResourcesTable } from '../components/edit-timetable/resources-table';
 export default function EditTimetable() {
   const { t } = useTranslation(['navigation']);
   const [selectedPartys, setSelectedPartys] = useState<CalendarParty[]>([]);
+  const timetableId = 20;
   const direction = useBreakpointValue<'column' | 'row'>({
     base: 'column',
     sm: 'row',
@@ -35,14 +31,10 @@ export default function EditTimetable() {
     [selectedPartys]
   );
 
-  console.log({ partysForEndpoint });
-
   const { data } = useTimetableResourceView({
-    timetableId: 20,
+    timetableId,
     ...partysForEndpoint,
   });
-
-  console.log({ data });
 
   return (
     <PageContainer
@@ -60,7 +52,7 @@ export default function EditTimetable() {
           onChangeSelectedPartys={setSelectedPartys}
         />
       </Stack>
-      {data && <ResourcesTable resources={data} />}
+      {data && <ResourcesTable timetableId={timetableId} resources={data} />}
     </PageContainer>
   );
 }
