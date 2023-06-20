@@ -203,6 +203,7 @@ export const EditAttendanceCodeModal = ({
               }}
               textFieldProps={{
                 fullWidth: true,
+                disabled: Boolean(code),
                 inputProps: {
                   readOnly: Boolean(code),
                 },
