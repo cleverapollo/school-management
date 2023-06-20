@@ -2,7 +2,7 @@ import { Grid, Tab, Card, CardHeader, Button, Stack } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { LoadingButton, TabContext, TabList, TabPanel } from '@mui/lab';
 import { useTranslation } from '@tyro/i18n';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MemberType } from '@tyro/api';
 import { ConfirmDialog, useDisclosure, useFormValidator } from '@tyro/core';
 import { useNavigate } from 'react-router-dom';
@@ -43,11 +43,13 @@ export const PermissionForm = () => {
     control,
     watch,
     handleSubmit,
+    setFocus,
     setValue,
     formState: { isDirty },
   } = useForm<PermissionFormState>({
     defaultValues: {
       memberType: MemberType.Staff,
+      members: [],
     },
     resolver: resolver({
       name: rules.required(),
@@ -56,7 +58,7 @@ export const PermissionForm = () => {
     }),
   });
 
-  const [memberType] = watch(['memberType']);
+  const [memberType, members] = watch(['memberType', 'members']);
 
   const onSubmit = (data: PermissionFormState) => {
     console.log(data);
@@ -73,6 +75,10 @@ export const PermissionForm = () => {
       goBack();
     }
   };
+
+  useEffect(() => {
+    setValue('members', []);
+  }, [setValue, memberType]);
 
   return (
     <Grid container gap={3} component="form" onSubmit={handleSubmit(onSubmit)}>
@@ -101,7 +107,13 @@ export const PermissionForm = () => {
               <SelectPermissions control={control} setValue={setValue} />
             </TabPanel>
             <TabPanel value={TabOption.MEMBERS}>
-              <AssignMembers control={control} memberType={memberType} />
+              <AssignMembers
+                control={control}
+                memberType={memberType}
+                members={members}
+                setFocus={setFocus}
+                setValue={setValue}
+              />
             </TabPanel>
           </TabContext>
         </Card>

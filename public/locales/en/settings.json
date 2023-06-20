@@ -132,6 +132,9 @@
       "STUDENT": "Search by student name"
     },
     "removeMember": "Remove member",
-    "savePermissionsGroup": "Save permissions group"
+    "savePermissionsGroup": "Save permissions group",
+    "emptyMembers": "There aren't any members assigned yet.",
+    "emptyMembersCta": "Search for a member and assign to the group",
+    "noMembersFound": "No members found"
   }
 }
