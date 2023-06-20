@@ -1,4 +1,4 @@
-import { Box, Button } from '@mui/material';
+import { Box, Button, Menu, MenuItem, Stack } from '@mui/material';
 import { SwapHorizontalIcon } from '@tyro/icons';
 import { useState } from 'react';
 import {
@@ -9,6 +9,7 @@ import {
 
 interface SwapChangeWithLabel extends SwapChange {
   label: string;
+  isSelected: boolean;
 }
 
 interface SwapButtonProps {
@@ -54,37 +55,82 @@ export function SwapButton({
   to,
   isSwapped,
 }: SwapButtonProps) {
-  const [isMouseOver, setIsMouseOver] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [isFocused, setIsFocused] = useState(false);
+  const isMenuOpen = Boolean(anchorEl);
   const newLessonLabel = fromOptions[0].lesson?.partyGroup.name ?? '-';
   const originalLessonLabel = to.lesson?.partyGroup.name ?? '-';
-  const showNewLabel = isSwapped || isMouseOver;
+  const showNewLabel = isSwapped || isFocused || isMenuOpen;
   const label = showNewLabel ? newLessonLabel : originalLessonLabel;
 
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
-    <Button
-      variant="text"
-      size="small"
-      onMouseEnter={() => setIsMouseOver(true)}
-      onMouseLeave={() => setIsMouseOver(false)}
-      sx={({ palette }) => ({
-        justifyContent: 'flex-start',
-        color: 'text.primary',
-        fontWeight: 500,
-        border: `1px solid ${isSwapped ? palette.primary.main : 'transparent'}`,
-        backgroundColor: isSwapped ? `primary.lighter` : undefined,
-      })}
-      endIcon={showNewLabel ? <SwapIcon /> : undefined}
-      onClick={() =>
-        onClick({
-          from: {
-            id: fromOptions[0].id,
-            lesson: fromOptions[0].lesson,
-          },
-          to,
-        })
-      }
-    >
-      {label}
-    </Button>
+    <>
+      <Button
+        variant="text"
+        size="small"
+        onMouseEnter={() => setIsFocused(true)}
+        onMouseLeave={() => setIsFocused(false)}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        sx={({ palette }) => ({
+          justifyContent: 'flex-start',
+          color: 'text.primary',
+          fontWeight: 500,
+          border: `1px solid ${
+            isSwapped ? palette.primary.main : 'transparent'
+          }`,
+          backgroundColor: isSwapped ? `primary.lighter` : undefined,
+        })}
+        endIcon={showNewLabel ? <SwapIcon /> : undefined}
+        onClick={() => {
+          if (fromOptions.length === 1) {
+            onClick({
+              from: {
+                id: fromOptions[0].id,
+                lesson: fromOptions[0].lesson,
+              },
+              to,
+            });
+            return;
+          }
+          setAnchorEl(document.activeElement as HTMLElement);
+        }}
+      >
+        {label}
+      </Button>
+      <Menu
+        open={isMenuOpen}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        disableAutoFocusItem
+      >
+        {fromOptions.map((fromOption) => (
+          <MenuItem
+            key={fromOption.id}
+            dense
+            selected={fromOption.isSelected}
+            onClick={() => {
+              onClick({
+                from: {
+                  id: fromOption.id,
+                  lesson: fromOption.lesson,
+                },
+                to,
+              });
+              handleClose();
+            }}
+          >
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <span>{fromOption.label}</span>
+              {fromOption.isSelected && <SwapIcon />}
+            </Stack>
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
   );
 }

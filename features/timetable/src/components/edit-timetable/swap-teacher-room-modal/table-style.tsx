@@ -2,6 +2,11 @@ import { styled, Table } from '@mui/material';
 import { pxToRem } from '@tyro/core';
 
 export const SwapStyledTable = styled(Table)(({ theme: { palette } }) => ({
+  th: {
+    backgroundImage: 'none',
+    borderBottom: `1px solid ${palette.divider}`,
+  },
+
   '& .day-initial': {
     display: 'flex',
     justifyContent: 'center',

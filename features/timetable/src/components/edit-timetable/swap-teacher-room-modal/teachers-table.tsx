@@ -1,4 +1,6 @@
 import {
+  Box,
+  CircularProgress,
   Stack,
   TableBody,
   TableCell,
@@ -10,11 +12,13 @@ import {
 import { TtSwapTeacherFilter } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
-import { usePreferredNameLayout } from '@tyro/core';
+import { TablePersonAvatar, usePreferredNameLayout } from '@tyro/core';
 import { ReturnTypeOfUseSwapTeacherAndRoom } from '../../../hooks/use-swap-teacher-and-room';
 import { useAvailableTeachersForResource } from '../../../api/available-resource-options';
 import { SwapStyledTable } from './table-style';
 import { SwapButton } from './swap-button';
+import { StatusChip } from './status-chip';
+import { LoadingPlaceholder } from './loading-placeholder';
 
 interface TeacherSwapTableProps {
   isOpen: boolean;
@@ -31,13 +35,15 @@ export function TeacherSwapTable({
 }: TeacherSwapTableProps) {
   const { t } = useTranslation(['common', 'timetable']);
   const { displayName } = usePreferredNameLayout();
-  const { data: availableTeachers } = useAvailableTeachersForResource(
-    isOpen,
-    filter
-  );
+  const { data: availableTeachers, isLoading } =
+    useAvailableTeachersForResource(isOpen, filter);
+
+  if (isLoading || changeState.length === 0) {
+    return <LoadingPlaceholder />;
+  }
 
   return (
-    <SwapStyledTable>
+    <SwapStyledTable stickyHeader size="small">
       <TableHead>
         <TableRow>
           <TableCell>{t('timetable:teachersAvailable')}</TableCell>
@@ -47,9 +53,7 @@ export function TeacherSwapTable({
             return (
               <TableCell key={JSON.stringify(lesson.id)}>
                 <Stack>
-                  <Typography component="span">
-                    {lesson.partyGroup.name}
-                  </Typography>
+                  <span>{lesson.partyGroup.name}</span>
                   <Tooltip
                     title={t('timetable:dayAtTime', {
                       day: day.format('dddd'),
@@ -76,50 +80,59 @@ export function TeacherSwapTable({
         </TableRow>
       </TableHead>
       <TableBody>
-        {availableTeachers?.teachers.map(({ staffId, lessonOnTimeslots }) => (
-          <TableRow key={staffId}>
-            <>
-              <TableCell>{staffId}</TableCell>
-              {changeState?.map(
-                (
-                  { id, teachers, partyGroup, teacherChangesByLessonId },
-                  index
-                ) => {
-                  const lessonOnTimeslot = lessonOnTimeslots[index] ?? null;
-                  const changesForLesson = teacherChangesByLessonId.get(
-                    JSON.stringify(id)
-                  );
-                  const isSwapped =
-                    changesForLesson?.some(({ to }) => to.id === staffId) ??
-                    false;
+        {availableTeachers?.teachers.map(
+          ({ staffId, teacher, lessonOnTimeslots }) => (
+            <TableRow key={staffId}>
+              <>
+                <TableCell>
+                  <TablePersonAvatar person={teacher.person} />
+                </TableCell>
+                {changeState?.map(
+                  (
+                    { id, teachers, partyGroup, teacherChangesByLessonId },
+                    index
+                  ) => {
+                    const lessonOnTimeslot = lessonOnTimeslots[index] ?? null;
+                    const changesForLesson = teacherChangesByLessonId.get(
+                      JSON.stringify(id)
+                    );
+                    const changeForCell = changesForLesson?.find(
+                      ({ to }) => to.id === staffId
+                    );
+                    const isSwapped = Boolean(changeForCell);
 
-                  const fromOptions = teachers.map((teacher) => ({
-                    id: teacher.person.partyId,
-                    label: displayName(teacher.person),
-                    lesson: {
-                      id,
-                      partyGroup,
-                    },
-                  }));
+                    const fromOptions = teachers.map(({ person }) => ({
+                      id: person.partyId,
+                      label: displayName(person),
+                      isSelected: changeForCell?.from.id === person.partyId,
+                      lesson: {
+                        id,
+                        partyGroup,
+                      },
+                    }));
 
-                  return (
-                    <TableCell key={JSON.stringify(id)}>
-                      <SwapButton
-                        fromOptions={fromOptions}
-                        to={{
-                          id: staffId,
-                          lesson: lessonOnTimeslot,
-                        }}
-                        onClick={swapTeacher}
-                        isSwapped={isSwapped}
-                      />
-                    </TableCell>
-                  );
-                }
-              )}
-            </>
-          </TableRow>
-        ))}
+                    return (
+                      <TableCell key={JSON.stringify(id)}>
+                        <SwapButton
+                          fromOptions={fromOptions}
+                          to={{
+                            id: staffId,
+                            lesson: lessonOnTimeslot,
+                          }}
+                          onClick={swapTeacher}
+                          isSwapped={isSwapped}
+                        />
+                      </TableCell>
+                    );
+                  }
+                )}
+                <TableCell>
+                  <StatusChip lessons={lessonOnTimeslots} />
+                </TableCell>
+              </>
+            </TableRow>
+          )
+        )}
       </TableBody>
     </SwapStyledTable>
   );

@@ -15,6 +15,7 @@ import { useSwapTeacherAndRoom } from '../../../hooks/use-swap-teacher-and-room'
 import { useAvailableRoomsForResource } from '../../../api/available-resource-options';
 import { Lesson } from '../../../hooks/use-resource-table';
 import { TeacherSwapTable } from './teachers-table';
+import { RoomSwapTable } from './rooms-table';
 
 interface SwapTeacherRoomModalProps {
   timetableId: number;
@@ -37,21 +38,16 @@ export function SwapTeacherRoomModal({
   const { t } = useTranslation(['common', 'timetable']);
   const [visibleView, setVisibleView] = useState(ModalViews.Teacher);
 
-  const { requestFilter, changeState, swapTeacher } = useSwapTeacherAndRoom({
-    timetableId,
-    lessons,
-  });
+  const { requestFilter, changeState, swapTeacher, swapRoom } =
+    useSwapTeacherAndRoom({
+      timetableId,
+      lessons,
+    });
 
   const { data: availableRooms } = useAvailableRoomsForResource(
     isOpen,
     requestFilter
   );
-
-  console.log({
-    lessons,
-    visibleView,
-    availableRooms,
-  });
 
   const handleClose = () => {
     onClose();
@@ -82,16 +78,27 @@ export function SwapTeacherRoomModal({
         </Tabs>
       </Box>
       <DialogContent>
-        {visibleView === ModalViews.Teacher && (
+        {visibleView === ModalViews.Teacher ? (
           <TeacherSwapTable
             isOpen={isOpen}
             filter={requestFilter}
             swapTeacher={swapTeacher}
             changeState={changeState}
           />
+        ) : (
+          <RoomSwapTable
+            isOpen={isOpen}
+            filter={requestFilter}
+            swapRoom={swapRoom}
+            changeState={changeState}
+          />
         )}
       </DialogContent>
-      <DialogActions>
+      <DialogActions
+        sx={({ palette }) => ({
+          borderTop: `1px solid ${palette.divider}`,
+        })}
+      >
         <Button variant="outlined" color="inherit" onClick={handleClose}>
           {t('common:actions.cancel')}
         </Button>

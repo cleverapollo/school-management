@@ -59,7 +59,10 @@ export function useSwapTeacherAndRoom({
     );
   }, [lessons]);
 
-  const swapTeacher = ({ to, from }: ChangeList[number]) => {
+  const swapResource = (
+    type: 'room' | 'teacher',
+    { to, from }: ChangeList[number]
+  ) => {
     const lessonId = JSON.stringify(from.lesson.id);
 
     const findLessonIndex = changeState.findIndex(
@@ -69,18 +72,36 @@ export function useSwapTeacherAndRoom({
     if (findLessonIndex === -1) return;
 
     const lesson = changeState[findLessonIndex];
-    const changes = lesson.teacherChangesByLessonId.get(lessonId) ?? [];
-    const indexOfExistingChange = changes.findIndex(
+    const changesMap =
+      type === 'teacher'
+        ? lesson.teacherChangesByLessonId
+        : lesson.roomChangesByLessonId;
+    const changes = changesMap.get(lessonId) ?? [];
+    const indexOfExistingFromChange = changes.findIndex(
       ({ from: existingFrom }) => existingFrom.id === from.id
     );
+    const indexOfExistingToChange = changes.findIndex(
+      ({ to: existingTo }) => existingTo.id === to.id
+    );
 
-    if (indexOfExistingChange === -1) {
-      changes.push({ from, to });
+    if (
+      indexOfExistingFromChange !== -1 &&
+      indexOfExistingFromChange === indexOfExistingToChange
+    ) {
+      changes.splice(indexOfExistingFromChange, 1);
     } else {
-      changes[indexOfExistingChange] = { from, to };
+      [indexOfExistingFromChange, indexOfExistingToChange]
+        .sort((a, b) => b - a)
+        .forEach((index) => {
+          if (index !== -1) {
+            changes.splice(index, 1);
+          }
+        });
+
+      changes.push({ from, to });
     }
 
-    lesson.teacherChangesByLessonId.set(lessonId, changes);
+    changesMap.set(lessonId, changes);
 
     setChangeState((prevState) => {
       const newState = [...prevState];
@@ -90,13 +111,15 @@ export function useSwapTeacherAndRoom({
     });
   };
 
-  const swapRoom = ({ to, from }: ChangeList[number]) => {};
-
   return {
     requestFilter,
     changeState,
-    swapTeacher,
-    swapRoom,
+    swapTeacher: (args: ChangeList[number]) => {
+      swapResource('teacher', args);
+    },
+    swapRoom: (args: ChangeList[number]) => {
+      swapResource('room', args);
+    },
   };
 }
 

@@ -13,5 +13,11 @@
     "swapTeacherOrRoom_other": "Swap Teachers or Rooms",
     "swapping": "Swapping",
     "teachersAvailable": "Teachers available",
-    "dayAtTime": "{{day}} at {{time}}"
+    "roomsAvailable": "Rooms available",
+    "dayAtTime": "{{day}} at {{time}}",
+    "status": {
+        "free": "Free",
+        "busy": "Busy",
+        "partial": "Partial"
+    }
 }
