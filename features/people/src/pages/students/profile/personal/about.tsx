@@ -37,6 +37,7 @@ const getAboutDataWithLabels = (
     {
       label: t('people:personal.about.preferredName'),
       value: preferredFirstName,
+      tooltipInfo: t('people:preferredNameInfo'),
       valueEditor: (
         <RHFTextField
           textFieldProps={{ variant: 'standard' }}

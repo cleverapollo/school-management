@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, queryClient } from '@tyro/api';
-import dayjs from 'dayjs';
 import { peopleStudentsKeys } from './keys';
 
 const studentsPersonalById = graphql(/* GraphQL */ `

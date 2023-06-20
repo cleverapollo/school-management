@@ -167,5 +167,6 @@
   "availableForSupportClasses": "Available for support classes",
   "position": "Position",
   "parkingLocation": "Parking location",
-  "makeAndModel": "Make and model"
+  "makeAndModel": "Make and model",
+  "preferredNameInfo": "The preferred name is displayed in place of the student's forename in Tyro"
 }

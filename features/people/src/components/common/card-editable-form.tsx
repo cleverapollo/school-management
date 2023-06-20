@@ -9,7 +9,7 @@ import {
   CardProps,
 } from '@mui/material';
 
-import { EditIcon, UndoIcon, SaveIcon } from '@tyro/icons';
+import { EditIcon, UndoIcon, SaveIcon, InfoCircleIcon } from '@tyro/icons';
 import {
   FieldValues,
   Path,
@@ -23,6 +23,7 @@ import { ReactNode, ReactElement, cloneElement, useState } from 'react';
 
 type CardEditableField<TField extends FieldValues> = {
   label: string;
+  tooltipInfo?: string;
   // NOTE: this is the proper type but as it is a recursive typed function it causes eslint/typescript performance issues.
   // value: PathValue<TField, Path<TField>>;
   value: any;
@@ -139,14 +140,28 @@ export const CardEditableForm = <TField extends FieldValues>({
         }}
       >
         {fields.map(
-          ({ label, value, valueRenderer, valueEditor, readOnly }) => {
+          ({
+            label,
+            tooltipInfo,
+            value,
+            valueRenderer,
+            valueEditor,
+            readOnly,
+          }) => {
             const canBeEdited = isEditMode && !readOnly && valueEditor;
 
             return (
               <Box key={label}>
-                <Typography component="dt" variant="subtitle1">
-                  {label}
-                </Typography>
+                <Stack gap={0.5} flexDirection="row">
+                  <Typography component="dt" variant="subtitle1">
+                    {label}
+                  </Typography>
+                  {tooltipInfo && (
+                    <Tooltip title={tooltipInfo}>
+                      <InfoCircleIcon sx={{ width: 18, height: 18 }} />
+                    </Tooltip>
+                  )}
+                </Stack>
 
                 {canBeEdited ? (
                   cloneElement(valueEditor, {
