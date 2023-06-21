@@ -12,7 +12,8 @@ const Rooms = lazy(() => import('./pages/rooms'));
 const AcademicNamespaceList = lazy(() => import('./pages/academic-namespaces'));
 const Subjects = lazy(() => import('./pages/subjects'));
 const Ppod = lazy(() => import('./pages/ppod/ppod'));
-const SyncContainer = lazy(() => import('./components/ppod/sync-container'));
+const Container = lazy(() => import('./pages/ppod/container'));
+const Login = lazy(() => import('./pages/ppod/login'));
 const Sync = lazy(() => import('./pages/ppod/sync'));
 const SchoolDetails = lazy(() => import('./pages/ppod/school-details'));
 
@@ -63,17 +64,20 @@ export const getRoutes: NavObjectFunction = (t) => [
             hasAccess: (permissions) => permissions.isStaffUser,
             loader: () => getPpodCredentialsStatus(),
             element: <Ppod />,
-          },
-          {
-            type: NavObjectType.NonMenuLink,
-            path: 'ppod/sync-data',
-            hasAccess: (permissions) => permissions.isStaffUser,
-            element: <SyncContainer />,
             children: [
               {
                 type: NavObjectType.NonMenuLink,
                 index: true,
-                loader: () => redirect('./sync'),
+                loader: async () => {
+                  const ppodCredentialsStatus =
+                    await getPpodCredentialsStatus();
+
+                  return ppodCredentialsStatus?.ppod_PPODCredentials
+                    ?.lastSyncSuccessful
+                    ? redirect('./sync')
+                    : redirect('/settings/ppod-login');
+                },
+                element: <Container />,
               },
               {
                 type: NavObjectType.NonMenuLink,
@@ -86,6 +90,12 @@ export const getRoutes: NavObjectFunction = (t) => [
                 element: <SchoolDetails />,
               },
             ],
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: 'ppod-login',
+            hasAccess: (permissions) => permissions.isStaffUser,
+            element: <Login />,
           },
         ],
       },
