@@ -7,8 +7,7 @@ import {
 } from '@tyro/core';
 import { EditCalendarIcon } from '@tyro/icons';
 import { getYearGroups, sortStartNumberFirst } from '@tyro/groups';
-import { getTimetables } from './api/timetable-list';
-import { getTimetableLesson } from './api/timetable-lessons';
+import { getTimetables } from './api/timetables';
 import { getTimetableResourceView } from './api/resource-view';
 
 const TimetableList = lazy(() => import('./pages/index'));
@@ -50,14 +49,18 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.timetable.editTimetable'),
             path: 'edit-timetable',
             loader: async () => {
-              const yearGroups = await getYearGroups();
+              const [activeTimetables, yearGroups] = await Promise.all([
+                getTimetables({ liveTimetable: false }),
+                getYearGroups(),
+              ]);
+              const activeTimetable = activeTimetables.tt_timetables[0];
               const firstYearGroup = yearGroups.core_yearGroupEnrollments.sort(
                 (a, b) => sortStartNumberFirst(a.name, b.name)
               )[0];
 
-              if (firstYearGroup) {
+              if (activeTimetable && firstYearGroup) {
                 return getTimetableResourceView({
-                  timetableId: 20,
+                  timetableId: activeTimetable.timetableId,
                   partyIds: [firstYearGroup.yearGroupEnrollmentPartyId],
                   roomIds: [],
                 });

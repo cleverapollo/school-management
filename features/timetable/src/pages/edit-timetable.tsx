@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Stack } from '@mui/material';
-import { PageContainer, PageHeading, useBreakpointValue } from '@tyro/core';
+import { Card, Stack, Typography } from '@mui/material';
+import {
+  ComingSoonIllustration,
+  PageContainer,
+  PageHeading,
+  useBreakpointValue,
+} from '@tyro/core';
 import { SearchType, TtResourceTimetableViewFilter } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { CalendarParty } from '@tyro/calendar';
@@ -8,11 +13,13 @@ import { sortStartNumberFirst, useYearGroups } from '@tyro/groups';
 import { TimetableSearch } from '../components/edit-timetable/timetable-search';
 import { useTimetableResourceView } from '../api/resource-view';
 import { ResourcesTable } from '../components/edit-timetable/resources-table';
+import { useTimetables } from '../api/timetables';
 
 export default function EditTimetable() {
-  const { t } = useTranslation(['navigation']);
+  const { t } = useTranslation(['navigation', 'timetable']);
   const [selectedPartys, setSelectedPartys] = useState<CalendarParty[]>([]);
-  const timetableId = 20;
+  const { data: liveTimetables } = useTimetables({ liveTimetable: true });
+  const activeTimetableId = liveTimetables?.[0]?.timetableId ?? 0;
   const direction = useBreakpointValue<'column' | 'row'>({
     base: 'column',
     sm: 'row',
@@ -33,7 +40,7 @@ export default function EditTimetable() {
   );
 
   const { data } = useTimetableResourceView({
-    timetableId,
+    timetableId: activeTimetableId,
     ...partysForEndpoint,
   });
   const { data: yearGroups } = useYearGroups();
@@ -65,13 +72,43 @@ export default function EditTimetable() {
         title={t('navigation:management.timetable.editTimetable')}
         titleProps={{ variant: 'h3' }}
       />
-      <Stack direction={direction} justifyContent="space-between" spacing={2}>
-        <TimetableSearch
-          selectedPartys={selectedPartys}
-          onChangeSelectedPartys={setSelectedPartys}
-        />
-      </Stack>
-      {data && <ResourcesTable timetableId={timetableId} resources={data} />}
+      {activeTimetableId !== 0 ? (
+        <>
+          <Stack
+            direction={direction}
+            justifyContent="space-between"
+            spacing={2}
+          >
+            <TimetableSearch
+              selectedPartys={selectedPartys}
+              onChangeSelectedPartys={setSelectedPartys}
+            />
+          </Stack>
+          {data && (
+            <ResourcesTable timetableId={activeTimetableId} resources={data} />
+          )}
+        </>
+      ) : (
+        <Card sx={{ justifyContent: 'center', alignItems: 'center' }}>
+          <Stack
+            spacing={4}
+            justifyContent="center"
+            alignItems="center"
+            my={10}
+            mx={4}
+          >
+            <ComingSoonIllustration
+              sx={{
+                width: '100%',
+                maxWidth: 320,
+              }}
+            />
+            <Typography component="h2" variant="subtitle1" textAlign="center">
+              {t('timetable:noTimetablePublishedForYear')}
+            </Typography>
+          </Stack>
+        </Card>
+      )}
     </PageContainer>
   );
 }

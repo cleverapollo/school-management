@@ -75,7 +75,7 @@
       "description": "There seems to be an issue with connecting to Tyro, please try again later."
     },
     "unknown": {
-      "title": "Opps, something went wrong",
+      "title": "Sorry, something went wrong",
       "description": "If this problem persists, please contact support."
     },
     "action": "Go to dashboard"

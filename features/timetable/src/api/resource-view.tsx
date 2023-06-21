@@ -91,7 +91,9 @@ export function useTimetableResourceView(
 ) {
   return useQuery({
     ...timetableResourceViewQuery(filter),
-    enabled: !!filter.partyIds?.length || !!filter.roomIds?.length,
+    enabled:
+      (!!filter.partyIds?.length || !!filter.roomIds?.length) &&
+      filter.timetableId !== 0,
     keepPreviousData: true,
     select: ({ tt_resourceTimetableView }) =>
       tt_resourceTimetableView.timeslots,

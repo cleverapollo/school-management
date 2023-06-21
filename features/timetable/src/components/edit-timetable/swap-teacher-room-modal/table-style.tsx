@@ -7,6 +7,10 @@ export const SwapStyledTable = styled(Table)(({ theme: { palette } }) => ({
     borderBottom: `1px solid ${palette.divider}`,
   },
 
+  '& button': {
+    textWrap: 'nowrap',
+  },
+
   '& .day-initial': {
     display: 'flex',
     justifyContent: 'center',

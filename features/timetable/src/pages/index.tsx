@@ -9,10 +9,7 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 
-import {
-  useTimetableLesson,
-  ReturnTypeFromUseTimeTableLesson,
-} from '../api/timetable-lessons';
+import { useTimetables, ReturnTypeFromUseTimeTables } from '../api/timetables';
 
 const getColumnDefs = (
   t: TFunction<'timetable'[], undefined, 'timetable'[]>
@@ -22,7 +19,7 @@ const getColumnDefs = (
     headerName: t('timetable:timetable'),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseTimeTableLesson>) =>
+    }: ICellRendererParams<ReturnTypeFromUseTimeTables>) =>
       data && (
         <RouterLink sx={{ fontWeight: 600 }} to={`./${data?.timetableId}`}>
           {data.timetableId}
@@ -35,7 +32,7 @@ const getColumnDefs = (
 
 export default function Timetables() {
   const { t } = useTranslation(['timetable', 'navigation']);
-  const { data: timetables = [] } = useTimetableLesson();
+  const { data: timetables = [] } = useTimetables({});
   const columnDefs = useMemo(() => getColumnDefs(t), [t]);
 
   return (

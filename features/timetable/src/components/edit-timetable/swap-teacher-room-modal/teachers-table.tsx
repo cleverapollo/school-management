@@ -56,7 +56,9 @@ export function TeacherSwapTable({
           ({ staffId, teacher, lessonOnTimeslots }) => (
             <TableRow key={staffId}>
               <>
-                <TableCell sx={{ '& span': { fontWeight: 600 } }}>
+                <TableCell
+                  sx={{ '& span': { fontWeight: 600, textWrap: 'nowrap' } }}
+                >
                   <TablePersonAvatar person={teacher.person} />
                 </TableCell>
                 {changeState?.map(

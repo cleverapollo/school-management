@@ -16,6 +16,7 @@
     "roomsAvailable": "Rooms available",
     "dayAtTime": "{{day}} at {{time}}",
     "nothingToSwap": "You have not selected any rooms or teachers to swap.",
+    "noTimetablePublishedForYear": "There is no timetable published for this academic year.",
     "status": {
         "free": "Free",
         "busy": "Busy",
