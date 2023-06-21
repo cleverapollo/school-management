@@ -30,6 +30,7 @@ type CardEditableField<TField extends FieldValues> = {
   valueEditor?: ReactElement<{ controlProps: UseControllerProps<TField> }>;
   valueRenderer?: ReactNode;
   readOnly?: boolean;
+  showOnlyOnEdition?: boolean;
 };
 
 export type CardEditableFormProps<TField extends FieldValues> = CardProps & {
@@ -140,19 +141,25 @@ export const CardEditableForm = <TField extends FieldValues>({
         }}
       >
         {fields.map(
-          ({
-            label,
-            tooltipInfo,
-            value,
-            valueRenderer,
-            valueEditor,
-            readOnly,
-          }) => {
+          (
+            {
+              label,
+              tooltipInfo,
+              value,
+              valueRenderer,
+              valueEditor,
+              showOnlyOnEdition,
+              readOnly,
+            },
+            index
+          ) => {
             const canBeEdited = isEditMode && !readOnly && valueEditor;
 
+            if (showOnlyOnEdition && !isEditMode) return null;
+
             return (
-              <Box key={label}>
-                <Stack gap={0.5} flexDirection="row">
+              <Box key={`${label}-${index}`}>
+                <Stack gap={0.5} flexDirection="row" alignItems="center">
                   <Typography component="dt" variant="subtitle1">
                     {label}
                   </Typography>
@@ -181,7 +188,9 @@ export const CardEditableForm = <TField extends FieldValues>({
           }
         )}
       </Box>
-      <Box p={3}>{children}</Box>
+      <Box p={3} pt={0}>
+        {children}
+      </Box>
     </Card>
   );
 };

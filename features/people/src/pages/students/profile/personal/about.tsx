@@ -19,18 +19,22 @@ type AboutFormState = {
 
 const getAboutDataWithLabels = (
   data: ReturnType<typeof useStudentPersonal>['data'],
-  t: TFunction<'people'[]>
+  t: TFunction<('common' | 'people')[]>
 ): CardEditableFormProps<AboutFormState>['fields'] => {
-  const { partyId, personalInformation } = data || {};
+  const { partyId, personalInformation, studentIrePP } = data || {};
   const {
     preferredFirstName,
     firstName,
     lastName,
+    middleName,
     dateOfBirth,
     ire,
     gender,
     nationality,
     mothersMaidenName,
+    nativeLanguage,
+    birthCertFirstName,
+    birthCertLastName,
   } = personalInformation || {};
 
   return [
@@ -50,12 +54,16 @@ const getAboutDataWithLabels = (
       value: firstName,
     },
     {
+      label: t('people:personal.about.middleName'),
+      value: middleName,
+    },
+    {
       label: t('people:personal.about.surname'),
       value: lastName,
     },
     {
       label: t('people:personal.about.dateOfBirth'),
-      value: dateOfBirth,
+      value: dateOfBirth ? dayjs(dateOfBirth) : null,
       valueRenderer: dateOfBirth ? dayjs(dateOfBirth).format('l') : '-',
     },
     {
@@ -64,7 +72,7 @@ const getAboutDataWithLabels = (
     },
     {
       label: t('people:personal.about.departmentId'),
-      value: null,
+      value: studentIrePP?.dpin,
     },
     {
       label: t('people:gender.title'),
@@ -73,11 +81,11 @@ const getAboutDataWithLabels = (
     },
     {
       label: t('people:personal.about.birthCertForename'),
-      value: null,
+      value: birthCertFirstName,
     },
     {
       label: t('people:personal.about.birthCertSurname'),
-      value: null,
+      value: birthCertLastName,
     },
     {
       label: t('people:tyroId'),
@@ -96,12 +104,15 @@ const getAboutDataWithLabels = (
       value: mothersMaidenName,
     },
     {
-      label: t('people:personal.about.motherTongue'),
-      value: null,
+      label: t('people:personal.about.nativeLanguage'),
+      value: nativeLanguage,
     },
     {
-      label: t('people:personal.about.ethnicityAndCulturalBackground'),
-      value: null,
+      label: t('people:personal.about.memberOfTravellerCommunity'),
+      value: studentIrePP?.travellerHeritage,
+      valueRenderer: studentIrePP?.travellerHeritage
+        ? t('common:yes')
+        : t('common:no'),
     },
   ];
 };
