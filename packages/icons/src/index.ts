@@ -75,6 +75,7 @@ export * from './send-mail';
 export * from './star';
 export * from './stop';
 export * from './swap-horizontal';
+export * from './sync';
 export * from './tea-cup';
 export * from './thumbs-up-checkmark';
 export * from './trash';
