@@ -86,3 +86,4 @@ export * from './user-group-two';
 export * from './user-profile-card';
 export * from './vertical-dots';
 export * from './warning';
+export * from './person-checkmark';

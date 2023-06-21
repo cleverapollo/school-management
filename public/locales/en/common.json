@@ -205,6 +205,7 @@
     "SUBJECT_GROUP_CONTACT": "Contacts of Students from Subject group",
     "YEAR_GROUP_ENROLLMENT": "Year group"
   },
+  "administration": "Administration",
   "staff": "Staff",
   "overview": "Overview",
   "errorMessages": {
@@ -228,6 +229,13 @@
     "HIGHER": "Higher",
     "NOT_APPLICABLE": "Not Applicable",
     "ORDINARY": "Ordinary"
+  },
+  "attendanceCode": {
+    "PRESENT": "Present",
+    "LATE": "Late",
+    "EXPLAINED_ABSENCE": "Absence explained",
+    "UNEXPLAINED_ABSENCE": "Absence unexplained",
+    "NOT_TAKEN": "Not taken"
   },
   "colors": {
     "amber": "Amber",
@@ -256,6 +264,8 @@
   "time": "Time",
   "mobileNumber": "Mobile number",
   "enableAll": "Enable all",
+  "all": "All",
+  "someEnabled": "Some enabled",
   "confirmDialog": {
     "areYouSureYouWantToChangePage": "Are you sure you want to change page?",
     "youHaveUnsavedChanges": "You have unsaved changes that will be lost if you continue."

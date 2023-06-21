@@ -5,6 +5,11 @@
     "calendar": "Calendar",
     "subjects": "Subjects",
     "mail": "Mail",
+    "attendance": {
+      "title": "Attendance",
+      "overview": "Overview",
+      "codes": "Attendance codes"
+    },
     "groups": {
       "title": "Groups",
       "class": "Class",

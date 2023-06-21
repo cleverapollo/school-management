@@ -21,7 +21,8 @@ const assessmentsList = graphql(/* GraphQL */ `
         name
       }
       publish
-      createdOn
+      startDate
+      endDate
       createdBy {
         type
         title {
