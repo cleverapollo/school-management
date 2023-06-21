@@ -35,7 +35,7 @@ export default function PpodLogin() {
       },
       {
         onSuccess: () => {
-          navigate('/settings/ppod/sync');
+          navigate('/settings/ppod/sync', { replace: true });
         },
         onError: () => {
           reset();
