@@ -16,7 +16,6 @@ const studentsPersonalById = graphql(/* GraphQL */ `
         middleName
         gender
         dateOfBirth
-        nativeLanguage
         birthCertFirstName
         birthCertLastName
         ire {
@@ -66,7 +65,6 @@ const studentsPersonalById = graphql(/* GraphQL */ `
         boardingDays
         shortTermPupil
         shortTermPupilNumWeeks
-        repeatLeaving
         reasonForLeaving
         destinationRollNo
         previousSchoolName
