@@ -53,9 +53,9 @@ const getYearGroupsColumns = (
       ) : null,
   },
   {
-    field: 'members',
+    field: 'studentMembers.memberCount',
     headerName: t('common:members'),
-    filter: true,
+    sortable: true,
   },
   {
     headerName: t('common:yearhead'),
