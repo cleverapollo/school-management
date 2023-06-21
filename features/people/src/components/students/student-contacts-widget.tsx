@@ -18,7 +18,7 @@ import {
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@tyro/i18n';
-import { Avatar, usePreferredNameLayout } from '@tyro/core';
+import { Avatar, usePreferredNameLayout, formatPhoneNumber } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { SmsRecipientType } from '@tyro/api';
 import { useStudentsContacts } from '../../api/student/overview';
@@ -213,8 +213,9 @@ export function StudentContactsWidget({
                     </Box>
                   </Stack>
                   <Box component="dd" sx={{ m: 0 }}>
-                    {contact?.personalInformation?.primaryPhoneNumber?.number ??
-                      '-'}
+                    {formatPhoneNumber(
+                      contact?.personalInformation?.primaryPhoneNumber
+                    )}
                   </Box>
 
                   <Stack direction="row" spacing={0.75} alignItems="center">
