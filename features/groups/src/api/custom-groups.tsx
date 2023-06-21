@@ -6,6 +6,7 @@ import {
   queryClient,
   UseQueryReturnType,
 } from '@tyro/api';
+import { groupsKeys } from './keys';
 
 const customGroupsList = graphql(/* GraphQL */ `
   query customGroupsList($filter: GeneralGroupFilter!) {
@@ -73,13 +74,8 @@ const customGroupById = graphql(/* GraphQL */ `
   }
 `);
 
-export const customGroupsKeys = {
-  list: ['groups', 'custom'] as const,
-  details: (id: number | undefined) => [...customGroupsKeys.list, id] as const,
-};
-
 const customGroupsQuery = {
-  queryKey: customGroupsKeys.list,
+  queryKey: groupsKeys.custom.groups(),
   queryFn: async () =>
     gqlClient.request(customGroupsList, {
       filter: {
@@ -100,7 +96,7 @@ export function useCustomGroups() {
 }
 
 const customGroupsByIdQuery = (id: number | undefined) => ({
-  queryKey: customGroupsKeys.details(id),
+  queryKey: groupsKeys.custom.details(id),
   queryFn: async () =>
     gqlClient.request(customGroupById, {
       filter: {

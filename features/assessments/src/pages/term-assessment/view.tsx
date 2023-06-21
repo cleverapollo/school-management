@@ -30,6 +30,7 @@ const getColumnDefs = (
   {
     field: 'subjectGroup.name',
     headerName: t('common:name'),
+    sort: 'asc',
   },
   {
     field: 'subjectGroup.subjects',

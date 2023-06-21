@@ -1,7 +1,7 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { PersonalInformation, UpdateStudentInput } from '@tyro/api';
 import { RHFTextField } from '@tyro/core';
-import { Stack, Typography, Chip } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import { UserGroupTwoIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
@@ -10,6 +10,7 @@ import {
   CardEditableFormProps,
 } from '../../../../components/common/card-editable-form';
 import { useStudentPersonal } from '../../../../api/student/personal';
+import { SiblingsChips } from '../../../../components/students/siblings-chips';
 
 dayjs.extend(LocalizedFormat);
 
@@ -139,7 +140,7 @@ export const ProfileAbout = ({
         <Typography variant="body1" color="text.primary">
           {t('common:siblings')}
         </Typography>
-        <Chip label={t('common:noSiblingsRegisteredAtThisSchool')} />
+        <SiblingsChips siblings={studentData?.siblings} />
       </Stack>
     </CardEditableForm>
   );
