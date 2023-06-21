@@ -8,7 +8,7 @@ import {
 } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
-import { peopleContactsKeys } from './keys';
+import { peopleKeys } from '../keys';
 
 const upsertContact = graphql(/* GraphQL */ `
   mutation core_upsertStudentContact($input: UpsertStudentContactInput!) {
@@ -23,11 +23,11 @@ export function useUpsertContact() {
   const { t } = useTranslation(['people']);
 
   return useMutation({
-    mutationKey: peopleContactsKeys.upsertContact(),
+    mutationKey: peopleKeys.contacts.upsertContact(),
     mutationFn: async (input: UpsertStudentContactInput) =>
       gqlClient.request(upsertContact, { input }),
     onSuccess: async (_, contact) => {
-      await queryClient.invalidateQueries(peopleContactsKeys.all);
+      await queryClient.invalidateQueries(peopleKeys.contacts.all());
 
       toast(
         // @ts-expect-error

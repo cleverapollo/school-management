@@ -9,9 +9,11 @@ import {
   UseQueryReturnType,
 } from '@tyro/api';
 import { usePreferredNameLayout, useToast } from '@tyro/core';
+import { groupsKeys } from '@tyro/groups';
 import { nanoid } from 'nanoid';
 import { useTranslation } from '@tyro/i18n';
 import { useCallback } from 'react';
+import { peopleKeys } from '@tyro/people';
 import { classListManagerKeys } from './keys';
 
 const blocks = graphql(/* GraphQL */ `
@@ -177,6 +179,8 @@ export function useUpdateBlockMemberships() {
     onSuccess: () => {
       toast(t('common:snackbarMessages.updateSuccess'));
       queryClient.invalidateQueries(classListManagerKeys.allBlockMemberships());
+      queryClient.invalidateQueries(groupsKeys.all);
+      queryClient.invalidateQueries(peopleKeys.all);
     },
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), {

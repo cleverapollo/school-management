@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { UpsertStaffInput, gqlClient, queryClient, graphql } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
-import { peopleStaffKeys } from './keys';
+import { peopleKeys } from '../keys';
 
 const upsertStaff = graphql(/* GraphQL */ `
   mutation core_upsertStaff($input: [UpsertStaffInput]) {
@@ -18,11 +18,11 @@ export function useUpsertStaff() {
   const { t } = useTranslation(['people']);
 
   return useMutation({
-    mutationKey: peopleStaffKeys.upsertStaff(),
+    mutationKey: peopleKeys.staff.upsertStaff(),
     mutationFn: async (input: [UpsertStaffInput]) =>
       gqlClient.request(upsertStaff, { input }),
     onSuccess: async (_, [staff]) => {
-      await queryClient.invalidateQueries(peopleStaffKeys.all);
+      await queryClient.invalidateQueries(peopleKeys.staff.all());
 
       toast(
         staff.id
