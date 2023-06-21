@@ -5,10 +5,15 @@ export type DisplayNamePersonProps =
   | undefined
   | null;
 
+export enum PreferredNameFormat {
+  'FirstnameSurname' = 'FIRST_NAME_SURNAME',
+  'SurnameFirstname' = 'SURNAME_FIRST_NAME',
+}
+
 const displayName = (
   person: DisplayNamePersonProps,
   options?: {
-    format: 'fullName';
+    format: PreferredNameFormat;
   }
 ): string => {
   if (!person) {
@@ -16,8 +21,9 @@ const displayName = (
   }
 
   switch (options?.format) {
-    case 'fullName':
+    case PreferredNameFormat.FirstnameSurname:
       return `${person.firstName ?? ''} ${person.lastName ?? ''}`;
+    case PreferredNameFormat.SurnameFirstname:
     default:
       return `${person.lastName ?? ''}, ${person.firstName ?? ''}`;
   }

@@ -8,7 +8,12 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { Avatar, useDisclosure, usePreferredNameLayout } from '@tyro/core';
+import {
+  Avatar,
+  PreferredNameFormat,
+  useDisclosure,
+  usePreferredNameLayout,
+} from '@tyro/core';
 import { useStudent } from '../../../api/student/students';
 import { SupportPlanRing } from '../support-plan-ring';
 import { AdditionalInfo } from './additional-info';
@@ -31,7 +36,7 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
   const { data: statusData } = useStudentStatus(studentId);
 
   const name = displayName(studentData?.person, {
-    format: 'fullName',
+    format: PreferredNameFormat.FirstnameSurname,
   });
 
   return (

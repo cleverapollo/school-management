@@ -5,6 +5,7 @@ import {
   PageHeading,
   TabPageContainer,
   PageContainer,
+  PreferredNameFormat,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useStudent } from '../../api/student/students';
@@ -21,7 +22,7 @@ export default function StudentProfileContainer() {
 
   const userProfileName = t('people:usersProfile', {
     name: displayName(studentData?.person, {
-      format: 'fullName',
+      format: PreferredNameFormat.FirstnameSurname,
     }),
   });
 
