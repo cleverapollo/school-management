@@ -32,7 +32,6 @@ const getAboutDataWithLabels = (
     gender,
     nationality,
     mothersMaidenName,
-    nativeLanguage,
     birthCertFirstName,
     birthCertLastName,
   } = personalInformation || {};
@@ -102,10 +101,6 @@ const getAboutDataWithLabels = (
     {
       label: t('people:personal.about.mothersMaidenName'),
       value: mothersMaidenName,
-    },
-    {
-      label: t('people:personal.about.nativeLanguage'),
-      value: nativeLanguage,
     },
     {
       label: t('people:personal.about.memberOfTravellerCommunity'),

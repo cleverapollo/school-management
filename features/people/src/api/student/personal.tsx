@@ -16,7 +16,6 @@ const studentsPersonalById = graphql(/* GraphQL */ `
         middleName
         gender
         dateOfBirth
-        nativeLanguage
         birthCertFirstName
         birthCertLastName
         ire {
