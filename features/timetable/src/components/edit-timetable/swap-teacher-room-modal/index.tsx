@@ -90,9 +90,7 @@ export function SwapTeacherRoomModal({
       toast(t('timetable:nothingToSwap'), { variant: 'warning' });
     } else {
       await swapTeachersAndRooms(changes, {
-        onSuccess: () => {
-          handleClose();
-        },
+        onSuccess: handleClose,
       });
     }
   };
@@ -103,8 +101,8 @@ export function SwapTeacherRoomModal({
         <DialogTitle sx={{ p: 0 }}>{t('timetable:swapping')}</DialogTitle>
         <Tabs
           value={visibleView}
-          onChange={(event, newValue: ModalViews) => setVisibleView(newValue)}
-          aria-label="Select if you want to swap teachers or rooms"
+          onChange={(_event, newValue: ModalViews) => setVisibleView(newValue)}
+          aria-label={t('timetable:selectIfYouWantSwapTeachersOrRooms')}
           sx={{
             minHeight: 32,
             '& button': {

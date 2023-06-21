@@ -11,7 +11,7 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import { SearchInput, useDebouncedValue } from '@tyro/core';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ReturnTypeFromUseTimetableResourceView } from '../../api/resource-view';
 import { Lesson, useResourceTable } from '../../hooks/use-resource-table';
 import { ResourceTableCard } from './resource-table-card';
@@ -45,37 +45,40 @@ export function ResourcesTable({
     getLessons,
   } = useResourceTable(resources);
 
-  const onOpenSwapRoomOrTeacher = (lesson: Lesson) => {
-    const lessonId = JSON.stringify(lesson.id);
+  const onOpenSwapRoomOrTeacher = useCallback(
+    (lesson: Lesson) => {
+      const lessonId = JSON.stringify(lesson.id);
 
-    const arrayOfUniqueIds = Array.from(
-      new Set([...selectedLessonIds, lessonId])
-    );
-    const lessons = getLessons(arrayOfUniqueIds).sort(
-      (
-        { timeslotId: timeslotIdA, timeslotInfo: timeslotInfoA },
-        { timeslotId: timeslotIdB, timeslotInfo: timeslotInfoB }
-      ) => {
-        if (timeslotIdA && timeslotIdB) {
-          if (timeslotIdA.dayIdx < timeslotIdB.dayIdx) return -1;
+      const arrayOfUniqueIds = Array.from(
+        new Set([...selectedLessonIds, lessonId])
+      );
+      const lessons = getLessons(arrayOfUniqueIds).sort(
+        (
+          { timeslotId: timeslotIdA, timeslotInfo: timeslotInfoA },
+          { timeslotId: timeslotIdB, timeslotInfo: timeslotInfoB }
+        ) => {
+          if (timeslotIdA && timeslotIdB) {
+            if (timeslotIdA.dayIdx < timeslotIdB.dayIdx) return -1;
 
-          if (timeslotIdA.dayIdx > timeslotIdB.dayIdx) return 1;
+            if (timeslotIdA.dayIdx > timeslotIdB.dayIdx) return 1;
 
-          if (timeslotIdA.periodIdx < timeslotIdB.periodIdx) return -1;
+            if (timeslotIdA.periodIdx < timeslotIdB.periodIdx) return -1;
 
-          if (timeslotIdA.periodIdx < timeslotIdB.periodIdx) return -1;
+            if (timeslotIdA.periodIdx < timeslotIdB.periodIdx) return -1;
+          }
+
+          if (timeslotInfoA && timeslotInfoB) {
+            if (timeslotInfoA.startTime < timeslotInfoB.endTime) return -1;
+            if (timeslotInfoA.startTime > timeslotInfoB.endTime) return 1;
+          }
+
+          return 0;
         }
-
-        if (timeslotInfoA && timeslotInfoB) {
-          if (timeslotInfoA.startTime < timeslotInfoB.endTime) return -1;
-          if (timeslotInfoA.startTime > timeslotInfoB.endTime) return 1;
-        }
-
-        return 0;
-      }
-    );
-    setSelectLessonsToSwapRoomOrTeacher(lessons);
-  };
+      );
+      setSelectLessonsToSwapRoomOrTeacher(lessons);
+    },
+    [selectedLessonIds, getLessons, setSelectLessonsToSwapRoomOrTeacher]
+  );
 
   return (
     <>
@@ -142,7 +145,9 @@ export function ResourcesTable({
                     {dayjs().set('day', day).format('ddd')}
                   </TableCell>
                   {periods.map((period) => {
-                    const resourcesForPeriod = gridIds.reduce(
+                    const resourcesForPeriod = gridIds.reduce<
+                      ReturnType<typeof getResourcesByTimeslotId>
+                    >(
                       (acc, gridIdx) => [
                         ...acc,
                         ...getResourcesByTimeslotId({
@@ -151,7 +156,7 @@ export function ResourcesTable({
                           periodIdx: period,
                         }),
                       ],
-                      [] as ReturnType<typeof getResourcesByTimeslotId>
+                      []
                     );
                     return (
                       <TableCell key={period}>

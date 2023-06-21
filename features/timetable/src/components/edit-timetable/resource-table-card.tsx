@@ -220,7 +220,7 @@ function GroupCard({
       </ResourceCardTooltip>
       <LessonContextMenu
         anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
+        open={isContextMenuOpen}
         onClose={() => setAnchorEl(null)}
         selectedLessonIds={selectedLessonIds}
         onOpenSwapTeacherOrRoomDialog={() =>

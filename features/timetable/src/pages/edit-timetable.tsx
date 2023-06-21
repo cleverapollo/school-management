@@ -9,7 +9,7 @@ import {
 import { SearchType, TtResourceTimetableViewFilter } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { CalendarParty } from '@tyro/calendar';
-import { sortStartNumberFirst, useYearGroups } from '@tyro/groups';
+import { useYearGroups } from '@tyro/groups';
 import { TimetableSearch } from '../components/edit-timetable/timetable-search';
 import { useTimetableResourceView } from '../api/resource-view';
 import { ResourcesTable } from '../components/edit-timetable/resources-table';
@@ -46,15 +46,15 @@ export default function EditTimetable() {
   const { data: yearGroups } = useYearGroups();
 
   useEffect(() => {
-    const firstYearGroup = yearGroups?.sort((a, b) =>
-      sortStartNumberFirst(a.name, b.name)
-    )[0];
+    const sixthYearGroup = yearGroups?.find(
+      ({ yearGroupId }) => yearGroupId === 6
+    );
 
-    if (firstYearGroup) {
+    if (sixthYearGroup) {
       setSelectedPartys([
         {
-          partyId: firstYearGroup.yearGroupEnrollmentPartyId,
-          text: firstYearGroup.name,
+          partyId: sixthYearGroup.yearGroupEnrollmentPartyId,
+          text: sixthYearGroup.name,
           avatarUrl: undefined,
           type: SearchType.YearGroupEnrollment,
         },

@@ -1,12 +1,7 @@
 import { lazy } from 'react';
-import {
-  getNumber,
-  NavObjectFunction,
-  NavObjectType,
-  throw404Error,
-} from '@tyro/core';
+import { getNumber, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { EditCalendarIcon } from '@tyro/icons';
-import { getYearGroups, sortStartNumberFirst } from '@tyro/groups';
+import { getYearGroups } from '@tyro/groups';
 import { getTimetables } from './api/timetables';
 import { getTimetableResourceView } from './api/resource-view';
 
@@ -54,14 +49,14 @@ export const getRoutes: NavObjectFunction = (t) => [
                 getYearGroups(),
               ]);
               const activeTimetable = activeTimetables.tt_timetables[0];
-              const firstYearGroup = yearGroups.core_yearGroupEnrollments.sort(
-                (a, b) => sortStartNumberFirst(a.name, b.name)
-              )[0];
+              const sixthYearGroup = yearGroups.core_yearGroupEnrollments.find(
+                ({ yearGroupId }) => yearGroupId === 6
+              );
 
-              if (activeTimetable && firstYearGroup) {
+              if (activeTimetable && sixthYearGroup) {
                 return getTimetableResourceView({
                   timetableId: activeTimetable.timetableId,
-                  partyIds: [firstYearGroup.yearGroupEnrollmentPartyId],
+                  partyIds: [sixthYearGroup.yearGroupEnrollmentPartyId],
                   roomIds: [],
                 });
               }

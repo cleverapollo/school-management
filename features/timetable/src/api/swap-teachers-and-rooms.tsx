@@ -13,7 +13,7 @@ const swapTeachersAndRooms = graphql(/* GraphQL */ `
 `);
 
 export function useSwapTeachersAndRooms() {
-  const { t } = useTranslation(['common', 'settings']);
+  const { t } = useTranslation(['common']);
   const { toast } = useToast();
 
   return useMutation({

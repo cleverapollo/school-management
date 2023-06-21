@@ -16,7 +16,9 @@ export function LessonContextMenu({
   ...props
 }: ResourceContextMenuProps) {
   const { t } = useTranslation(['timetable']);
-  const additionToSelectedCount = isSelected ? 0 : 1;
+  const numberOfSelectedLessons = isSelected
+    ? selectedLessonIds.length
+    : selectedLessonIds.length + 1;
 
   const handleClose = () => {
     props.onClose?.({}, 'backdropClick');
@@ -63,7 +65,7 @@ export function LessonContextMenu({
             <BuildingGraduateHatIcon />
           </ActionMenuIconWrapper>
           {t('timetable:swapTeacherOrRoom', {
-            count: selectedLessonIds.length + additionToSelectedCount,
+            count: numberOfSelectedLessons,
           })}
         </>
       </MenuItem>
