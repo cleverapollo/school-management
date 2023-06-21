@@ -1,13 +1,14 @@
 import { Dispatch, SetStateAction, useId } from 'react';
 import { Box, FormLabel } from '@mui/material';
-import { Autocomplete } from '@tyro/core';
+import { Autocomplete, AutocompleteProps } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import {
   CalendarParty,
   useParticipantsSearchProps,
 } from '../../../../hooks/use-participants-search-props';
 
-export interface CalendarSearchProps {
+export interface CalendarSearchProps
+  extends Partial<AutocompleteProps<CalendarParty, true>> {
   selectedPartys: CalendarParty[];
   onChangeSelectedPartys: Dispatch<SetStateAction<CalendarParty[]>>;
 }

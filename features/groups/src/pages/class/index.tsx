@@ -17,6 +17,7 @@ import {
   TableAvatar,
   useDisclosure,
   usePreferredNameLayout,
+  sortStartNumberFirst,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { MobileIcon, SendMailIcon } from '@tyro/icons';
@@ -27,7 +28,6 @@ import {
   ReturnTypeFromUseClassGroups,
   useSaveClassGroupEdits,
 } from '../../api/class-groups';
-import { sortStartNumberFirst } from '../../utils/sort-start-number-first';
 
 const getClassGroupColumns = (
   t: TFunction<'common'[], undefined, 'common'[]>,
