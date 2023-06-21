@@ -68,72 +68,73 @@ const getContactDataWithLabels = (
       label: t('people:personal.about.country'),
       value: primaryAddress?.country,
     },
-    {
-      label: t('people:personal.about.additionalAddressLine1'),
-      value: additionalAddress?.line1,
-      showOnlyOnEdition: !hasAdditionalAddress,
-      valueEditor: (
-        <RHFTextField
-          textFieldProps={{ variant: 'standard' }}
-          controlProps={{ name: 'additionalLine1' }}
-        />
-      ),
-    },
-    {
-      label: t('people:personal.about.additionalAddressLine2'),
-      value: additionalAddress?.line2,
-      showOnlyOnEdition: !hasAdditionalAddress,
-      valueEditor: (
-        <RHFTextField
-          textFieldProps={{ variant: 'standard' }}
-          controlProps={{ name: 'additionalLine2' }}
-        />
-      ),
-    },
-    {
-      label: t('people:personal.about.additionalAddressLine3'),
-      value: additionalAddress?.line3,
-      showOnlyOnEdition: !hasAdditionalAddress,
-      valueEditor: (
-        <RHFTextField
-          textFieldProps={{ variant: 'standard' }}
-          controlProps={{ name: 'additionalLine3' }}
-        />
-      ),
-    },
-    {
-      label: t('people:personal.about.city'),
-      value: additionalAddress?.city,
-      showOnlyOnEdition: !hasAdditionalAddress,
-      valueEditor: (
-        <RHFTextField
-          textFieldProps={{ variant: 'standard' }}
-          controlProps={{ name: 'additionalCity' }}
-        />
-      ),
-    },
-    {
-      label: t('people:personal.about.eircode'),
-      value: additionalAddress?.postCode,
-      showOnlyOnEdition: !hasAdditionalAddress,
-      valueEditor: (
-        <RHFTextField
-          textFieldProps={{ variant: 'standard' }}
-          controlProps={{ name: 'additionalEircode' }}
-        />
-      ),
-    },
-    {
-      label: t('people:personal.about.country'),
-      value: additionalAddress?.country,
-      showOnlyOnEdition: !hasAdditionalAddress,
-      valueEditor: (
-        <RHFTextField
-          textFieldProps={{ variant: 'standard' }}
-          controlProps={{ name: 'additionalCountry' }}
-        />
-      ),
-    },
+    // TODO: uncomment when BE support updating the additional address
+    // {
+    //   label: t('people:personal.about.additionalAddressLine1'),
+    //   value: additionalAddress?.line1,
+    //   showOnlyOnEdition: !hasAdditionalAddress,
+    //   valueEditor: (
+    //     <RHFTextField
+    //       textFieldProps={{ variant: 'standard' }}
+    //       controlProps={{ name: 'additionalLine1' }}
+    //     />
+    //   ),
+    // },
+    // {
+    //   label: t('people:personal.about.additionalAddressLine2'),
+    //   value: additionalAddress?.line2,
+    //   showOnlyOnEdition: !hasAdditionalAddress,
+    //   valueEditor: (
+    //     <RHFTextField
+    //       textFieldProps={{ variant: 'standard' }}
+    //       controlProps={{ name: 'additionalLine2' }}
+    //     />
+    //   ),
+    // },
+    // {
+    //   label: t('people:personal.about.additionalAddressLine3'),
+    //   value: additionalAddress?.line3,
+    //   showOnlyOnEdition: !hasAdditionalAddress,
+    //   valueEditor: (
+    //     <RHFTextField
+    //       textFieldProps={{ variant: 'standard' }}
+    //       controlProps={{ name: 'additionalLine3' }}
+    //     />
+    //   ),
+    // },
+    // {
+    //   label: t('people:personal.about.city'),
+    //   value: additionalAddress?.city,
+    //   showOnlyOnEdition: !hasAdditionalAddress,
+    //   valueEditor: (
+    //     <RHFTextField
+    //       textFieldProps={{ variant: 'standard' }}
+    //       controlProps={{ name: 'additionalCity' }}
+    //     />
+    //   ),
+    // },
+    // {
+    //   label: t('people:personal.about.eircode'),
+    //   value: additionalAddress?.postCode,
+    //   showOnlyOnEdition: !hasAdditionalAddress,
+    //   valueEditor: (
+    //     <RHFTextField
+    //       textFieldProps={{ variant: 'standard' }}
+    //       controlProps={{ name: 'additionalEircode' }}
+    //     />
+    //   ),
+    // },
+    // {
+    //   label: t('people:personal.about.country'),
+    //   value: additionalAddress?.country,
+    //   showOnlyOnEdition: !hasAdditionalAddress,
+    //   valueEditor: (
+    //     <RHFTextField
+    //       textFieldProps={{ variant: 'standard' }}
+    //       controlProps={{ name: 'additionalCountry' }}
+    //     />
+    //   ),
+    // },
     // TODO: uncomment this when BE support PhoneInput payload at this moment is a string.
     // {
     //   label: t('people:personal.about.primaryNumber'),
