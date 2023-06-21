@@ -73,11 +73,9 @@ export const getRoutes: NavObjectFunction = (t) => [
                     await getPpodCredentialsStatus();
 
                   return ppodCredentialsStatus?.ppod_PPODCredentials
-                    ?.lastSyncSuccessful ? (
-                    redirect('./sync')
-                  ) : (
-                    <Login />
-                  );
+                    ?.lastSyncSuccessful
+                    ? redirect('./sync')
+                    : redirect('/settings/ppod-login');
                 },
                 element: <Container />,
               },
