@@ -27,8 +27,8 @@ export const groupsKeys = {
   },
   year: {
     all: () => [...groupsKeys.all, 'year'] as const,
-    groups: () => [...groupsKeys.custom.all(), 'list'] as const,
+    groups: () => [...groupsKeys.year.all(), 'list'] as const,
     details: (id: number | undefined) =>
-      [...groupsKeys.custom.all(), 'details', id] as const,
+      [...groupsKeys.year.all(), 'details', id] as const,
   },
 };
