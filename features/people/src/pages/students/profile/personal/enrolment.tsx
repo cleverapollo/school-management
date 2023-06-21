@@ -127,7 +127,6 @@ export const ProfileEnrolment = ({
     boardingDays,
     shortTermPupil,
     shortTermPupilNumWeeks,
-    repeatLeaving,
     reasonForLeaving,
     destinationRollNo,
   } = studentIrePP || {};
@@ -170,12 +169,6 @@ export const ProfileEnrolment = ({
           shortTermPupil && {
             label: t('people:personal.enrolmentHistory.numberOfWeeks'),
             value: t('common:weeks', { count: shortTermPupilNumWeeks ?? 0 }),
-          },
-          {
-            label: t(
-              'people:personal.enrolmentHistory.repeatLeavingCertificateFeesPayable'
-            ),
-            value: repeatLeaving ? t('common:yes') : t('common:no'),
           },
           {
             label: t('people:personal.enrolmentHistory.leftEarly'),

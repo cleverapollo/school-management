@@ -65,7 +65,6 @@ const studentsPersonalById = graphql(/* GraphQL */ `
         boardingDays
         shortTermPupil
         shortTermPupilNumWeeks
-        repeatLeaving
         reasonForLeaving
         destinationRollNo
         previousSchoolName
