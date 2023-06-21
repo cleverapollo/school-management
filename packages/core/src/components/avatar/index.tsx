@@ -80,7 +80,7 @@ const availableAvatarColors = [
   'rose.800',
 ];
 
-function stringToColor(string: string) {
+export function stringToColor(string: string) {
   const hashString = string
     .split('')
     .map((char) => char.charCodeAt(0))
