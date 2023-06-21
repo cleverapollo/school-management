@@ -81,7 +81,7 @@ export default function Sync() {
         label: t('settings:ppodSync.enterSyncCredentials'),
         icon: <EditIcon />,
         onClick: () => {
-          navigate('/settings/ppod');
+          navigate('/settings/ppod-login');
         },
       },
     ];

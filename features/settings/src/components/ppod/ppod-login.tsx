@@ -35,7 +35,7 @@ export default function PpodLogin() {
       },
       {
         onSuccess: () => {
-          navigate('./sync-data/sync');
+          navigate({ pathname: '/settings/ppod/sync' });
         },
         onError: () => {
           reset();
