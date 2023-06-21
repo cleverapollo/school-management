@@ -7,6 +7,7 @@ import { ProfileAbout } from './about';
 import { ProfileEnrolment } from './enrolment';
 import { ProfileContact } from './contact';
 import { useUpdateStudent } from '../../../../api/student/update-student';
+import { ProfileGuardianship } from './guardianship';
 
 export default function StudentProfilePersonalPage() {
   const { id } = useParams();
@@ -34,14 +35,26 @@ export default function StudentProfilePersonalPage() {
       <Grid item xs={12}>
         <ProfileAbout studentData={studentData} editable onSave={handleEdit} />
       </Grid>
-      <Grid item xs={12} md={6}>
-        <ProfileContact
-          studentData={studentData}
-          editable
-          onSave={handleEdit}
-        />
+
+      <Grid item xs={12} container spacing={2}>
+        <Grid item xs={12} md={6} lg={7}>
+          <ProfileContact
+            studentData={studentData}
+            editable
+            onSave={handleEdit}
+          />
+        </Grid>
+
+        <Grid item xs={12} md={6} lg={5}>
+          <ProfileGuardianship
+            studentData={studentData}
+            editable
+            onSave={handleEdit}
+          />
+        </Grid>
       </Grid>
-      <Grid item xs={12} md={6}>
+
+      <Grid item xs={12}>
         <ProfileEnrolment
           studentData={studentData}
           editable
