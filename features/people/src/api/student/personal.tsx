@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient } from '@tyro/api';
+import { gqlClient, graphql, queryClient, UseQueryReturnType } from '@tyro/api';
 import { peopleKeys } from '../keys';
 
 const studentsPersonalById = graphql(/* GraphQL */ `
@@ -96,6 +96,27 @@ const studentsPersonalById = graphql(/* GraphQL */ `
           name
         }
       }
+      siblings {
+        enrolledSiblings {
+          partyId
+          person {
+            title {
+              id
+              nameTextId
+              name
+            }
+            firstName
+            lastName
+            avatarUrl
+            type
+          }
+        }
+        nonEnrolledSiblings {
+          partyId
+          firstName
+          lastName
+        }
+      }
     }
   }
 `);
@@ -118,3 +139,7 @@ export function useStudentPersonal(studentId: number | undefined) {
     select: ({ core_students }) => core_students[0],
   });
 }
+
+export type ReturnTypeFromUseStudentPersonal = UseQueryReturnType<
+  typeof useStudentPersonal
+>;
