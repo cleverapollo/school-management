@@ -275,5 +275,7 @@
   "wellEmailWhenLive": "We'll email you once this feature is live.",
   "phoneNumber": "Phone number",
   "additionalNumber": "Additional number",
-  "contact": "Contact"
+  "contact": "Contact",
+  "weeks_one": "{{count}} week",
+  "weeks_other": "{{count}} weeks"
 }
