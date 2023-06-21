@@ -7,6 +7,7 @@ import {
   queryClient,
 } from '@tyro/api';
 import { useEffect } from 'react';
+import { groupsKeys } from './keys';
 
 // Query for getting closest/prev/next lesson for a subject group
 const subjectGroupLessonByIterator = graphql(/* GraphQL */ `
@@ -45,14 +46,8 @@ const subjectGroupLessonByIterator = graphql(/* GraphQL */ `
   }
 `);
 
-export const subjectGroupLessonKeys = {
-  list: ['groups', 'subject', 'lesson'] as const,
-  details: (filter: CalendarEventIteratorFilter) =>
-    [...subjectGroupLessonKeys.list, filter] as const,
-};
-
 const subjectGroupLessonQuery = (filter: CalendarEventIteratorFilter) => ({
-  queryKey: subjectGroupLessonKeys.details(filter),
+  queryKey: groupsKeys.subject.lesson(filter),
   queryFn: () => gqlClient.request(subjectGroupLessonByIterator, { filter }),
 });
 

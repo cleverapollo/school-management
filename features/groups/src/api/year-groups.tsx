@@ -6,6 +6,7 @@ import {
   UpdateYearGroupEnrollmentInput,
   UseQueryReturnType,
 } from '@tyro/api';
+import { groupsKeys } from './keys';
 
 const yearGroupsList = graphql(/* GraphQL */ `
   query yearGroupsList($filter: YearGroupEnrollmentFilter) {
@@ -80,13 +81,8 @@ const updateYearGroupLeads = graphql(/* GraphQL */ `
   }
 `);
 
-export const yearGroupsKeys = {
-  list: ['groups', 'year'] as const,
-  details: (id: number | undefined) => [...yearGroupsKeys.list, id] as const,
-};
-
 const yearGroupsQuery = {
-  queryKey: yearGroupsKeys.list,
+  queryKey: groupsKeys.year.groups(),
   queryFn: async () => gqlClient.request(yearGroupsList, { filter: {} }),
 };
 
@@ -102,7 +98,7 @@ export function useYearGroups() {
 }
 
 const yearGroupByIdQuery = (id: number | undefined) => ({
-  queryKey: yearGroupsKeys.details(id),
+  queryKey: groupsKeys.year.details(id),
   queryFn: async () =>
     gqlClient.request(yearGroupById, {
       filter: {
@@ -133,7 +129,7 @@ export function useUpdateYearGroupLeads() {
     mutationFn: (input: UpdateYearGroupEnrollmentInput[]) =>
       gqlClient.request(updateYearGroupLeads, { input }),
     onSuccess: () => {
-      queryClient.invalidateQueries(yearGroupsKeys.list);
+      queryClient.invalidateQueries(groupsKeys.year.all());
     },
   });
 }
