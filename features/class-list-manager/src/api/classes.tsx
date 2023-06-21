@@ -10,7 +10,9 @@ import {
 } from '@tyro/api';
 import { usePreferredNameLayout, useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
+import { groupsKeys } from '@tyro/groups';
 import { useCallback } from 'react';
+import { peopleKeys } from '@tyro/people';
 import { classListManagerKeys } from './keys';
 
 const classMemberships = graphql(/* GraphQL */ `
@@ -133,6 +135,8 @@ export function useUpdateClassMemberships() {
       toast(t('common:snackbarMessages.updateSuccess'));
       queryClient.invalidateQueries(classListManagerKeys.allClassMemberships());
       queryClient.invalidateQueries(classListManagerKeys.allBlockMemberships());
+      queryClient.invalidateQueries(groupsKeys.all);
+      queryClient.invalidateQueries(peopleKeys.all);
     },
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), {

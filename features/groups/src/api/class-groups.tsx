@@ -9,6 +9,7 @@ import {
   UpdateClassGroupGroupInput,
   ClassGroupsListQuery,
 } from '@tyro/api';
+import { groupsKeys } from './keys';
 
 const classGroupsList = graphql(/* GraphQL */ `
   query classGroupsList($filter: GeneralGroupFilter!) {
@@ -86,13 +87,8 @@ const updateClassGroups = graphql(/* GraphQL */ `
   }
 `);
 
-export const classGroupsKeys = {
-  list: ['groups', 'class'] as const,
-  details: (id: number | undefined) => [...classGroupsKeys.list, id] as const,
-};
-
 const classGroupsQuery = {
-  queryKey: classGroupsKeys.list,
+  queryKey: groupsKeys.class.groups(),
   queryFn: async () =>
     gqlClient.request(classGroupsList, {
       filter: {
@@ -116,7 +112,7 @@ export function useClassGroups() {
 }
 
 const classGroupsByIdQuery = (id: number | undefined) => ({
-  queryKey: classGroupsKeys.details(id),
+  queryKey: groupsKeys.class.details(id),
   queryFn: async () =>
     gqlClient.request(classGroupById, {
       filter: {
@@ -149,7 +145,7 @@ export function useSaveClassGroupEdits() {
     mutationFn: (input: UpdateClassGroupGroupInput[]) =>
       gqlClient.request(updateClassGroups, { input }),
     onSuccess: () => {
-      queryClient.invalidateQueries(classGroupsKeys.list);
+      queryClient.invalidateQueries(groupsKeys.class.all());
     },
   });
 }

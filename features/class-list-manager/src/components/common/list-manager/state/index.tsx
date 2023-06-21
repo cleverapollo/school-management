@@ -6,7 +6,11 @@ import {
   DraggableLocation,
 } from 'react-beautiful-dnd';
 import { useTranslation } from '@tyro/i18n';
-import { useToast } from '@tyro/core';
+import {
+  useToast,
+  wasMultiSelectKeyUsed,
+  wasToggleInSelectionGroupKeyUsed,
+} from '@tyro/core';
 import {
   ListManagerGroup,
   ListManagerState,
@@ -19,8 +23,6 @@ import {
   multiSelectTo,
   toggleSelection,
   toggleSelectionInGroup,
-  wasMultiSelectKeyUsed,
-  wasToggleInSelectionGroupKeyUsed,
 } from './utils';
 import {
   useEditedState,

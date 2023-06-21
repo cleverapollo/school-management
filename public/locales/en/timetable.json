@@ -1,7 +1,26 @@
 {
-    "room":"Room",
-    "teacher":"Teacher",
-    "period":"Period",
-    "day":"Day",
-    "timetable":"Timetable"
+    "room": "Room",
+    "teacher": "Teacher",
+    "period": "Period",
+    "periodNumber": "Period {{number}}",
+    "day": "Day",
+    "timetable": "Timetable",
+    "timetables": "Timetable(s)",
+    "break": "Break",
+    "finished": "Finished",
+    "forGridId": "for grid {{ id }}",
+    "swapTeacherOrRoom_one": "Swap Teacher or Room",
+    "swapTeacherOrRoom_other": "Swap Teachers or Rooms",
+    "swapping": "Swapping",
+    "teachersAvailable": "Teachers available",
+    "roomsAvailable": "Rooms available",
+    "dayAtTime": "{{day}} at {{time}}",
+    "nothingToSwap": "You have not selected any rooms or teachers to swap.",
+    "noTimetablePublishedForYear": "There is no timetable published for this academic year.",
+    "selectIfYouWantSwapTeachersOrRooms": "Select if you want to swap teachers or rooms.",
+    "status": {
+        "free": "Free",
+        "busy": "Busy",
+        "partial": "Partial"
+    }
 }

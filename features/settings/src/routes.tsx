@@ -3,6 +3,7 @@ import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { GearIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
 import { getCoreAcademicNamespace } from '@tyro/api';
+import { AttendanceCodes, getAttendanceCodes } from '@tyro/attendance';
 import { getCoreRooms } from './api/rooms';
 import { getCatalogueSubjects } from './api/subjects';
 import { getPpodCredentialsStatus } from './api/ppod/ppod-credentials-status';
@@ -28,6 +29,13 @@ export const getRoutes: NavObjectFunction = (t) => [
         icon: <GearIcon />,
         hasAccess: (permissions) => permissions.isStaffUser,
         children: [
+          {
+            type: NavObjectType.MenuLink,
+            path: 'attendance-codes',
+            title: t('navigation:general.attendance.codes'),
+            loader: () => getAttendanceCodes({}),
+            element: <AttendanceCodes />,
+          },
           {
             type: NavObjectType.MenuLink,
             title: t('navigation:management.settings.subjects'),

@@ -1,12 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, queryClient } from '@tyro/api';
-import dayjs from 'dayjs';
-import { peopleStudentsKeys } from './keys';
+import { peopleKeys } from '../keys';
 
 const studentsPersonalById = graphql(/* GraphQL */ `
   query core_student_personal($filter: StudentFilter!) {
     core_students(filter: $filter) {
       partyId
+      startDate
+      leftEarly
+      endDate
       personalInformation {
         firstName
         lastName
@@ -14,6 +16,9 @@ const studentsPersonalById = graphql(/* GraphQL */ `
         middleName
         gender
         dateOfBirth
+        nativeLanguage
+        birthCertFirstName
+        birthCertLastName
         ire {
           ppsNumber
           religion
@@ -28,6 +33,15 @@ const studentsPersonalById = graphql(/* GraphQL */ `
           city
           country
           postCode
+        }
+        addresses {
+          line1
+          line2
+          line3
+          city
+          country
+          postCode
+          primaryAddress
         }
         primaryPhoneNumber {
           number
@@ -46,13 +60,48 @@ const studentsPersonalById = graphql(/* GraphQL */ `
         examNumber
         lockerNumber
         previousSchoolRollNumber
+        dpin
+        examEntrant
+        repeatYear
+        boardingDays
+        shortTermPupil
+        shortTermPupilNumWeeks
+        repeatLeaving
+        reasonForLeaving
+        destinationRollNo
+        previousSchoolName
+        previousSchoolType
+      }
+      classGroup {
+        name
+      }
+      tutors {
+        partyId
+        firstName
+        lastName
+        avatarUrl
+      }
+      yearGroupLeads {
+        partyId
+        firstName
+        lastName
+        avatarUrl
+      }
+      yearGroups {
+        name
+      }
+      programmeStages {
+        name
+        programme {
+          name
+        }
       }
     }
   }
 `);
 
 const studentPersonalQuery = (studentId: number | undefined) => ({
-  queryKey: peopleStudentsKeys.personalDetails(studentId),
+  queryKey: peopleKeys.students.personalDetails(studentId),
   queryFn: async () =>
     gqlClient.request(studentsPersonalById, {
       filter: { partyIds: [studentId ?? 0] },
