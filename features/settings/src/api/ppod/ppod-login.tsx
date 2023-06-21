@@ -28,9 +28,11 @@ export function useSavePpodCredentials() {
     mutationFn: (input: SavePpodCredentials) =>
       gqlClient.request(savePpodCredentials, { input }),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [...ppodSyncKeys.all],
-      });
+      // NOTE: according to Ian, once the credentials are successfully we need to redirect to the sync page
+      // this way, we set the flag which is used in the loader to check if the user is logged in
+      queryClient.setQueryData(ppodSyncKeys.ppodCredentialsStatus(), () => ({
+        ppod_PPODCredentials: { lastSyncSuccessful: true },
+      }));
       toast(t('settings:ppodSync.credentialsCorrect'));
     },
     onError: () => {
