@@ -29,6 +29,9 @@ const yearGroupsList = graphql(/* GraphQL */ `
         avatarUrl
         type
       }
+      studentMembers {
+        memberCount
+      }
     }
   }
 `);

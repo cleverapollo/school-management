@@ -202,7 +202,8 @@
     "SUBJECT_GROUP": "Subject group",
     "SUBJECT_GROUP_STUDENT": "Students from Subject group",
     "SUBJECT_GROUP_STAFF": "Staff from Subject group",
-    "SUBJECT_GROUP_CONTACT": "Contacts of Students from Subject group"
+    "SUBJECT_GROUP_CONTACT": "Contacts of Students from Subject group",
+    "YEAR_GROUP_ENROLLMENT": "Year group"
   },
   "administration": "Administration",
   "staff": "Staff",
@@ -274,5 +275,7 @@
   "wellEmailWhenLive": "We'll email you once this feature is live.",
   "phoneNumber": "Phone number",
   "additionalNumber": "Additional number",
-  "contact": "Contact"
+  "contact": "Contact",
+  "weeks_one": "{{count}} week",
+  "weeks_other": "{{count}} weeks"
 }

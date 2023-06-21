@@ -82,6 +82,7 @@ const getSubjectGroupsColumns = (
   {
     field: 'studentMembers.memberCount',
     headerName: t('common:members'),
+    sortable: true,
   },
   {
     headerName: t('common:year'),
