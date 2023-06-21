@@ -5917,6 +5917,7 @@ __metadata:
     "@mui/system": ^5.13.2
     "@tanstack/react-query": ^4.29.7
     "@tyro/api": "*"
+    "@tyro/attendance": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
     "@tyro/i18n": "*"

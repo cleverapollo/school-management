@@ -72,6 +72,7 @@ export * from './search';
 export * from './send-mail';
 export * from './star';
 export * from './stop';
+export * from './sync';
 export * from './thumbs-up-checkmark';
 export * from './trash';
 export * from './unarchive';

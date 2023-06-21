@@ -203,6 +203,7 @@ export const EditAttendanceCodeModal = ({
               }}
               textFieldProps={{
                 fullWidth: true,
+                disabled: Boolean(code),
                 inputProps: {
                   readOnly: Boolean(code),
                 },
@@ -226,7 +227,7 @@ export const EditAttendanceCodeModal = ({
               {t('attendance:availableTo')}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {t('attendance:whichUserGroupsHaveAccessToUseThisAttendanceCode')}
+              {t('attendance:selectUserGroups')}
             </Typography>
           </Stack>
 

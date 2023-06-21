@@ -66,6 +66,7 @@ export default function PpodLogin() {
 
         <RHFTextField
           label={t('settings:ppodSync.password')}
+          textFieldProps={{ type: 'password' }}
           controlProps={{
             name: 'password',
             control,

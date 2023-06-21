@@ -199,9 +199,9 @@ export default function Codes() {
   };
 
   return (
-    <PageContainer title={t('attendance:pageTitle.attendance')}>
+    <PageContainer title={t('attendance:attendanceCodes')}>
       <PageHeading
-        title={t('attendance:pageHeading.attendance')}
+        title={t('attendance:attendanceCodes')}
         titleProps={{ variant: 'h3' }}
         rightAdornment={
           <Box display="flex" alignItems="center">
