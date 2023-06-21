@@ -31,7 +31,7 @@ interface LessonChangeState extends Lesson {
   roomChangesByLessonId: Map<string, ChangeList>;
 }
 
-export function useSwapTeacherAndRoom({
+export function useSwapTeacherAndRoomModal({
   timetableId,
   lessons,
 }: UseSwapTeacherAndRoomProps) {
@@ -124,5 +124,5 @@ export function useSwapTeacherAndRoom({
 }
 
 export type ReturnTypeOfUseSwapTeacherAndRoom = ReturnType<
-  typeof useSwapTeacherAndRoom
+  typeof useSwapTeacherAndRoomModal
 >;

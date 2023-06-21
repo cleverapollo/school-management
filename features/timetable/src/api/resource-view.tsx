@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
   gqlClient,
   graphql,
+  queryClient,
   TtResourceTimetableViewFilter,
   UseQueryReturnType,
 } from '@tyro/api';
@@ -79,12 +80,19 @@ const timetableResourceViewQuery = (filter: TtResourceTimetableViewFilter) => ({
   queryFn: () => gqlClient.request(timetableResourceView, { filter }),
 });
 
+export function getTimetableResourceView(
+  filter: TtResourceTimetableViewFilter
+) {
+  return queryClient.fetchQuery(timetableResourceViewQuery(filter));
+}
+
 export function useTimetableResourceView(
   filter: TtResourceTimetableViewFilter
 ) {
   return useQuery({
     ...timetableResourceViewQuery(filter),
     enabled: !!filter.partyIds?.length || !!filter.roomIds?.length,
+    keepPreviousData: true,
     select: ({ tt_resourceTimetableView }) =>
       tt_resourceTimetableView.timeslots,
   });

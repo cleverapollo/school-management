@@ -11,6 +11,7 @@
     "@tyro/api": "*",
     "@tyro/calendar": "*",
     "@tyro/core": "*",
+    "@tyro/groups": "*",
     "@tyro/i18n": "*",
     "@tyro/icons": "*",
     "@tyro/people": "*",

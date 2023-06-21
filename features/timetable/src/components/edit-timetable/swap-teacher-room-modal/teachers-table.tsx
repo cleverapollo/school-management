@@ -13,12 +13,13 @@ import { TtSwapTeacherFilter } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import { TablePersonAvatar, usePreferredNameLayout } from '@tyro/core';
-import { ReturnTypeOfUseSwapTeacherAndRoom } from '../../../hooks/use-swap-teacher-and-room';
+import { ReturnTypeOfUseSwapTeacherAndRoom } from '../../../hooks/use-swap-teacher-and-room-modal';
 import { useAvailableTeachersForResource } from '../../../api/available-resource-options';
 import { SwapStyledTable } from './table-style';
 import { SwapButton } from './swap-button';
 import { StatusChip } from './status-chip';
 import { LoadingPlaceholder } from './loading-placeholder';
+import { TableHeaderRow } from './table-header-row';
 
 interface TeacherSwapTableProps {
   isOpen: boolean;
@@ -45,46 +46,17 @@ export function TeacherSwapTable({
   return (
     <SwapStyledTable stickyHeader size="small">
       <TableHead>
-        <TableRow>
-          <TableCell>{t('timetable:teachersAvailable')}</TableCell>
-          {changeState?.map((lesson) => {
-            const day = dayjs().set('day', lesson.timeslotId?.dayIdx ?? 0);
-
-            return (
-              <TableCell key={JSON.stringify(lesson.id)}>
-                <Stack>
-                  <span>{lesson.partyGroup.name}</span>
-                  <Tooltip
-                    title={t('timetable:dayAtTime', {
-                      day: day.format('dddd'),
-                      time: lesson.timeslotInfo?.startTime,
-                    })}
-                  >
-                    <Stack direction="row" alignItems="center" spacing={0.5}>
-                      <Typography component="span" className="day-initial">
-                        {day.format('dd')[0]}
-                      </Typography>
-                      <Typography
-                        component="span"
-                        className="resource-start-time"
-                      >
-                        {lesson.timeslotInfo?.startTime}
-                      </Typography>
-                    </Stack>
-                  </Tooltip>
-                </Stack>
-              </TableCell>
-            );
-          })}
-          <TableCell>{t('common:status')}</TableCell>
-        </TableRow>
+        <TableHeaderRow
+          changeState={changeState}
+          firstRowLabel={t('timetable:teachersAvailable')}
+        />
       </TableHead>
       <TableBody>
         {availableTeachers?.teachers.map(
           ({ staffId, teacher, lessonOnTimeslots }) => (
             <TableRow key={staffId}>
               <>
-                <TableCell>
+                <TableCell sx={{ '& span': { fontWeight: 600 } }}>
                   <TablePersonAvatar person={teacher.person} />
                 </TableCell>
                 {changeState?.map(

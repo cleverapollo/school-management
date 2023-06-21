@@ -15,6 +15,7 @@
     "teachersAvailable": "Teachers available",
     "roomsAvailable": "Rooms available",
     "dayAtTime": "{{day}} at {{time}}",
+    "nothingToSwap": "You have not selected any rooms or teachers to swap.",
     "status": {
         "free": "Free",
         "busy": "Busy",

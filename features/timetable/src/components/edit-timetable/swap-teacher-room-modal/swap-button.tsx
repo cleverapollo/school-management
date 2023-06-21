@@ -5,7 +5,7 @@ import {
   ReturnTypeOfUseSwapTeacherAndRoom,
   SwapChange,
   SwapChangeWithOptionalLesson,
-} from '../../../hooks/use-swap-teacher-and-room';
+} from '../../../hooks/use-swap-teacher-and-room-modal';
 
 interface SwapChangeWithLabel extends SwapChange {
   label: string;

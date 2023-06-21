@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Stack } from '@mui/material';
 import { PageContainer, PageHeading, useBreakpointValue } from '@tyro/core';
-import { TtResourceTimetableViewFilter } from '@tyro/api';
+import { SearchType, TtResourceTimetableViewFilter } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { CalendarParty } from '@tyro/calendar';
+import { sortStartNumberFirst, useYearGroups } from '@tyro/groups';
 import { TimetableSearch } from '../components/edit-timetable/timetable-search';
 import { useTimetableResourceView } from '../api/resource-view';
 import { ResourcesTable } from '../components/edit-timetable/resources-table';
@@ -35,6 +36,24 @@ export default function EditTimetable() {
     timetableId,
     ...partysForEndpoint,
   });
+  const { data: yearGroups } = useYearGroups();
+
+  useEffect(() => {
+    const firstYearGroup = yearGroups?.sort((a, b) =>
+      sortStartNumberFirst(a.name, b.name)
+    )[0];
+
+    if (firstYearGroup) {
+      setSelectedPartys([
+        {
+          partyId: firstYearGroup.yearGroupEnrollmentPartyId,
+          text: firstYearGroup.name,
+          avatarUrl: undefined,
+          type: SearchType.YearGroupEnrollment,
+        },
+      ]);
+    }
+  }, [yearGroups]);
 
   return (
     <PageContainer

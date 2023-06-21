@@ -52,7 +52,8 @@ export function LessonContextMenu({
       }}
     >
       <MenuItem
-        onClick={() => {
+        onClick={(event) => {
+          event.preventDefault();
           onOpenSwapTeacherOrRoomDialog();
           handleClose();
         }}

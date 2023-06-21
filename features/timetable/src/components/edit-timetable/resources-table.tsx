@@ -77,10 +77,6 @@ export function ResourcesTable({
     setSelectLessonsToSwapRoomOrTeacher(lessons);
   };
 
-  console.log({
-    selectLessonsToSwapRoomOrTeacher,
-  });
-
   return (
     <>
       <Card>

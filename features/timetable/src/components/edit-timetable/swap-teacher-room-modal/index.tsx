@@ -10,12 +10,14 @@ import {
   Tabs,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { useMemo, useState } from 'react';
-import { useSwapTeacherAndRoom } from '../../../hooks/use-swap-teacher-and-room';
-import { useAvailableRoomsForResource } from '../../../api/available-resource-options';
+import { useState } from 'react';
+import { TtSwapsInput } from '@tyro/api';
+import { useToast } from '@tyro/core';
+import { useSwapTeacherAndRoomModal } from '../../../hooks/use-swap-teacher-and-room-modal';
 import { Lesson } from '../../../hooks/use-resource-table';
 import { TeacherSwapTable } from './teachers-table';
 import { RoomSwapTable } from './rooms-table';
+import { useSwapTeachersAndRooms } from '../../../api/swap-teachers-and-rooms';
 
 interface SwapTeacherRoomModalProps {
   timetableId: number;
@@ -36,21 +38,63 @@ export function SwapTeacherRoomModal({
   lessons,
 }: SwapTeacherRoomModalProps) {
   const { t } = useTranslation(['common', 'timetable']);
+  const { toast } = useToast();
   const [visibleView, setVisibleView] = useState(ModalViews.Teacher);
 
+  const { mutateAsync: swapTeachersAndRooms, isLoading } =
+    useSwapTeachersAndRooms();
   const { requestFilter, changeState, swapTeacher, swapRoom } =
-    useSwapTeacherAndRoom({
+    useSwapTeacherAndRoomModal({
       timetableId,
       lessons,
     });
 
-  const { data: availableRooms } = useAvailableRoomsForResource(
-    isOpen,
-    requestFilter
-  );
-
   const handleClose = () => {
     onClose();
+  };
+
+  const onSave = async () => {
+    const changes = changeState.reduce<TtSwapsInput>(
+      (acc, lesson) => {
+        const lessonId = JSON.stringify(lesson.id);
+        const roomChanges = lesson.roomChangesByLessonId.get(lessonId);
+        const teacherChanges = lesson.teacherChangesByLessonId.get(lessonId);
+
+        roomChanges?.forEach(({ to }) => {
+          acc.roomsSwaps!.push({
+            lessonInstanceId: lesson.id,
+            timeslotId: lesson.timeslotId!,
+            swapToRoomId: to.id,
+          });
+        });
+
+        teacherChanges?.forEach(({ from, to }) => {
+          acc.teacherSwaps!.push({
+            lessonInstanceId: lesson.id,
+            timeslotId: lesson.timeslotId!,
+            swapFromStaffId: from.id,
+            swapToStaffId: to.id,
+          });
+        });
+
+        return acc;
+      },
+      {
+        timetableId,
+        roomsSwaps: [],
+        teacherSwaps: [],
+      }
+    );
+
+    if (!changes.roomsSwaps?.length && !changes.teacherSwaps?.length) {
+      toast(t('timetable:nothingToSwap'), { variant: 'warning' });
+    } else {
+      await swapTeachersAndRooms(changes, {
+        onSuccess: () => {
+          handleClose();
+        },
+      });
+    }
   };
 
   return (
@@ -103,7 +147,12 @@ export function SwapTeacherRoomModal({
           {t('common:actions.cancel')}
         </Button>
 
-        <LoadingButton type="submit" variant="contained" loading={false}>
+        <LoadingButton
+          type="submit"
+          variant="contained"
+          onClick={onSave}
+          loading={isLoading}
+        >
           {t('common:actions.save')}
         </LoadingButton>
       </DialogActions>

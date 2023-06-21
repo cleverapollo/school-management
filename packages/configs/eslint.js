@@ -17,6 +17,7 @@ module.exports = {
         ],
         "react-hooks/exhaustive-deps": "off",
         "@typescript-eslint/no-throw-literal": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
         'camelcase': 'off',
       }
     },
