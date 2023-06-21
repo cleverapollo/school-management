@@ -5,6 +5,7 @@ import {
   queryClient,
   UpdateSubjectGroupInput,
 } from '@tyro/api';
+import { groupsKeys } from './keys';
 
 const subjectGroupsList = graphql(/* GraphQL */ `
   query subjectGroups {
@@ -85,18 +86,13 @@ const updateSubjectGroups = graphql(/* GraphQL */ `
   }
 `);
 
-const subjectGroupsKeys = {
-  list: ['groups', 'subject'] as const,
-  details: (id?: number) => [...subjectGroupsKeys.list, id] as const,
-};
-
 const subjectGroupsQuery = {
   list: {
-    queryKey: subjectGroupsKeys.list,
+    queryKey: groupsKeys.subject.groups(),
     queryFn: async () => gqlClient.request(subjectGroupsList),
   },
   details: (id?: number) => ({
-    queryKey: subjectGroupsKeys.details(id),
+    queryKey: groupsKeys.subject.details(id),
     queryFn: () =>
       gqlClient.request(subjectGroupById, {
         filter: { partyIds: [id ?? 0] },
@@ -137,7 +133,7 @@ export function useSaveSubjectGroupEdits() {
     mutationFn: (input: UpdateSubjectGroupInput[]) =>
       gqlClient.request(updateSubjectGroups, { input }),
     onSuccess: () => {
-      queryClient.invalidateQueries(subjectGroupsKeys.list);
+      queryClient.invalidateQueries(groupsKeys.subject.all());
     },
   });
 }

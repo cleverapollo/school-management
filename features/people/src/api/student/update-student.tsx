@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { UpdateStudentInput, gqlClient, queryClient, graphql } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
-import { peopleStudentsKeys } from './keys';
+import { peopleKeys } from '../keys';
 
 const updateStudent = graphql(/* GraphQL */ `
   mutation updateStudent($input: [UpdateStudentInput]!) {
@@ -18,11 +18,11 @@ export function useUpdateStudent() {
   const { t } = useTranslation(['people']);
 
   return useMutation({
-    mutationKey: peopleStudentsKeys.updateStudent(),
+    mutationKey: peopleKeys.students.updateStudent(),
     mutationFn: async (input: [UpdateStudentInput]) =>
       gqlClient.request(updateStudent, { input }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries(peopleStudentsKeys.all);
+      await queryClient.invalidateQueries(peopleKeys.students.all());
       toast(t('people:successfullyUpdatedStudent'));
     },
     onError: () => {
