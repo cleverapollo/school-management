@@ -41,9 +41,11 @@ export default function Chip(theme: Theme) {
         ...(softVariant && {
           color: theme.palette.text.primary,
           backgroundColor: alpha(theme.palette.grey[500], 0.16),
-          '&:hover': {
-            backgroundColor: alpha(theme.palette.grey[500], 0.32),
-          },
+          ...(ownerState.onClick && {
+            '&:hover': {
+              backgroundColor: alpha(theme.palette.grey[500], 0.32),
+            },
+          })
         }),
       }),
     };
@@ -67,14 +69,18 @@ export default function Chip(theme: Theme) {
         ...(softVariant && {
           color: theme.palette[color][isLight ? 'dark' : 'light'],
           backgroundColor: alpha(theme.palette[color].main, 0.16),
-          '&:hover': {
-            backgroundColor: alpha(theme.palette[color].main, 0.32),
-          },
+          ...(ownerState.onClick && {
+            '&:hover': {
+              backgroundColor: alpha(theme.palette[color].main, 0.32),
+            },
+          }),
           '& .MuiChip-deleteIcon': {
             color: alpha(theme.palette[color][isLight ? 'dark' : 'light'], 0.48),
-            '&:hover': {
-              color: theme.palette[color].dark,
-            },
+            ...(ownerState.onClick && {
+              '&:hover': {
+                color: theme.palette[color].dark,
+              },
+            }),
           },
         }),
       }),
