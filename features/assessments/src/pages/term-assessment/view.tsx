@@ -3,16 +3,17 @@ import {
   GridOptions,
   ICellRendererParams,
   PageHeading,
-  ReturnTypeDisplayName,
   Table,
   TableLinearProgress,
   useNumber,
   PageContainer,
   usePreferredNameLayout,
+  ReturnTypeDisplayNames,
+  useResponsive,
 } from '@tyro/core';
 import { Link, useParams } from 'react-router-dom';
 import { useMemo } from 'react';
-import { Button } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import {
   useAssessmentSubjectGroups,
   ReturnTypeFromUseAssessmentSubjectGroups,
@@ -20,17 +21,19 @@ import {
 import { useAssessmentById } from '../../api/assessments';
 
 const getColumnDefs = (
+  isDesktop: boolean,
   t: TFunction<
     ('common' | 'assessments')[],
     undefined,
     ('common' | 'assessments')[]
   >,
-  displayName: ReturnTypeDisplayName
+  displayNames: ReturnTypeDisplayNames
 ): GridOptions<ReturnTypeFromUseAssessmentSubjectGroups>['columnDefs'] => [
   {
     field: 'subjectGroup.name',
     headerName: t('common:name'),
     sort: 'asc',
+    suppressSizeToFit: isDesktop,
   },
   {
     field: 'subjectGroup.subjects',
@@ -40,17 +43,35 @@ const getColumnDefs = (
         ?.map((subject) => subject?.name ?? '')
         .join(', '),
     enableRowGroup: true,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAssessmentSubjectGroups>) =>
+      data && (
+        <Typography variant="body2" noWrap>
+          {data?.subjectGroup.subjects
+            ?.map((subject) => subject?.name ?? '')
+            .join(', ')}
+        </Typography>
+      ),
   },
   {
     field: 'subjectGroup.staff',
     headerName: t('common:teacher'),
-    valueGetter: ({ data }) =>
-      data?.subjectGroup.staff?.map((person) => displayName(person)).join(', '),
+    valueGetter: ({ data }) => displayNames(data?.subjectGroup.staff),
     enableRowGroup: true,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAssessmentSubjectGroups>) =>
+      data && (
+        <Typography variant="body2" noWrap>
+          {displayNames(data?.subjectGroup.staff)}
+        </Typography>
+      ),
   },
   {
     field: 'resultsTotal',
     headerName: t('assessments:results'),
+    suppressSizeToFit: true,
     valueGetter: ({ data }) =>
       data && `${data?.resultsEntered ?? '-'}/${data?.resultsTotal ?? '-'}`,
     cellRenderer: ({
@@ -66,6 +87,7 @@ const getColumnDefs = (
   {
     field: 'commentsTotal',
     headerName: t('assessments:comments'),
+    suppressSizeToFit: true,
     valueGetter: ({ data }) =>
       data && `${data?.commentsEntered ?? '-'}/${data?.commentsTotal ?? '-'}`,
     cellRenderer: ({
@@ -79,7 +101,9 @@ const getColumnDefs = (
       ),
   },
   {
+    field: 'editResults',
     headerName: '',
+    suppressSizeToFit: true,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAssessmentSubjectGroups, any>) =>
@@ -101,7 +125,7 @@ export default function ViewTermAssessment() {
   const { academicNamespaceId, assessmentId } = useParams();
   const academicNameSpaceIdAsNumber = useNumber(academicNamespaceId);
   const assessmentIdAsNumber = useNumber(assessmentId);
-  const { displayName } = usePreferredNameLayout();
+  const { displayNames } = usePreferredNameLayout();
 
   const { data: assessmentData } = useAssessmentById({
     academicNameSpaceId: academicNameSpaceIdAsNumber ?? 0,
@@ -114,9 +138,11 @@ export default function ViewTermAssessment() {
     }
   );
 
+  const isDesktop = useResponsive('up', 'md');
+
   const columnDefs = useMemo(
-    () => getColumnDefs(t, displayName),
-    [t, displayName]
+    () => getColumnDefs(!!isDesktop, t, displayNames),
+    [t, displayNames]
   );
 
   return (
@@ -145,6 +171,15 @@ export default function ViewTermAssessment() {
         rowData={assessmentSubjectGroupsData || []}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.subjectGroup.partyId)}
+        onFirstDataRendered={(params) => {
+          params.columnApi.autoSizeColumns([
+            'subjectGroup.name',
+            'resultsTotal',
+            'commentsTotal',
+            'editResults',
+          ]);
+          params.api.sizeColumnsToFit();
+        }}
       />
     </PageContainer>
   );
