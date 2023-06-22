@@ -155,10 +155,7 @@ export default function ClassGroupsPage() {
           (changeAcc, key) => {
             if (key === 'tutors') {
               const tutors = changes?.tutors?.newValue;
-              const tutor =
-                Array.isArray(tutors) && tutors.length > 0
-                  ? tutors[0]
-                  : undefined;
+              const [tutor] = tutors ?? [];
               changeAcc.tutor = tutor?.partyId;
             } else {
               const value = changes[key];
