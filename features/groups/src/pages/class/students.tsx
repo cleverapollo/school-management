@@ -3,6 +3,7 @@ import { Box, Fade } from '@mui/material';
 import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { MobileIcon, SendMailIcon } from '@tyro/icons';
+import { UseQueryReturnType } from '@tyro/api';
 import {
   useNumber,
   Table,
@@ -16,21 +17,21 @@ import {
 import { useClassGroupById } from '../../api/class-groups';
 import { getPersonProfileLink } from '../../utils/get-person-profile-link';
 
-type MembersReturnTypeFromUseClassGroupById = NonNullable<
-  ReturnType<typeof useClassGroupById>['data']
+type ReturnTypeFromUseSubjectGroupById = UseQueryReturnType<
+  typeof useClassGroupById
 >['students'][number];
 
 const getClassGroupColumns = (
   t: TFunction<('common' | 'groups')[], undefined, ('common' | 'groups')[]>,
   displayName: ReturnTypeDisplayName
-): GridOptions<MembersReturnTypeFromUseClassGroupById>['columnDefs'] => [
+): GridOptions<ReturnTypeFromUseSubjectGroupById>['columnDefs'] => [
   {
     field: 'person',
     headerName: t('common:name'),
     valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<MembersReturnTypeFromUseClassGroupById, any>) => (
+    }: ICellRendererParams<ReturnTypeFromUseSubjectGroupById, any>) => (
       <TablePersonAvatar
         person={data?.person}
         to={getPersonProfileLink(data?.person)}
@@ -52,7 +53,7 @@ export default function SubjectGroup() {
   const { displayName } = usePreferredNameLayout();
 
   const [selectedMembers, setSelectedMembers] = useState<
-    MembersReturnTypeFromUseClassGroupById[]
+    ReturnTypeFromUseSubjectGroupById[]
   >([]);
 
   const actionMenuItems = [

@@ -30,8 +30,10 @@ const ClassGroups = lazy(() => import('./pages/class'));
 const ClassGroupContainer = lazy(
   () => import('./components/class-group/container')
 );
-const ClassGroupTimetablePage = lazy(() => import('./pages/class/timetable'));
-const ClassGroupsMemberListPage = lazy(() => import('./pages/class/members'));
+const ClassGroupProfileTimetablePage = lazy(
+  () => import('./pages/class/timetable')
+);
+const ClassGroupsMemberListPage = lazy(() => import('./pages/class/students'));
 const ClassGroupAttendancePage = lazy(() => import('./pages/class/attendance'));
 const SubjectGroupsPage = lazy(() => import('./pages/class/subject-groups'));
 const SubjectGroups = lazy(() => import('./pages/subject'));
@@ -132,7 +134,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                   {
                     type: NavObjectType.NonMenuLink,
                     path: 'timetable',
-                    element: <ClassGroupTimetablePage />,
+                    element: <ClassGroupProfileTimetablePage />,
                   },
                   {
                     type: NavObjectType.NonMenuLink,

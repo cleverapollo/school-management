@@ -41,7 +41,7 @@ export function ClassGroupStatusBar({ groupId }: ClassGroupOverviewBarProps) {
 
   return (
     <Box>
-      <Card variant="outlined" sx={{ p: 1.25, display: 'inline-block' }}>
+      <Card variant="outlined" sx={{ p: 1.25 }}>
         <Stack
           direction="row"
           sx={{ flexWrap: 'wrap', gap: 2, alignItems: 'flex-start' }}
@@ -85,7 +85,7 @@ export function ClassGroupStatusBar({ groupId }: ClassGroupOverviewBarProps) {
                 mb: 0.5,
               }}
             >
-              {t('groups:members')}
+              {t('common:members')}
             </Typography>
             <Typography
               component="dd"

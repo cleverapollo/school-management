@@ -9,7 +9,7 @@ import { useTranslation } from '@tyro/i18n';
 import { ClassGroupStatusBar } from './status-bar';
 import { useClassGroupById } from '../../api/class-groups';
 
-export default function SubjectGroupContainer() {
+export default function ClassGroupContainer() {
   const { t } = useTranslation(['groups', 'common']);
 
   const { groupId } = useParams();

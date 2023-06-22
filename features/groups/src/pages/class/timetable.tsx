@@ -5,7 +5,7 @@ import { useNumber } from '@tyro/core';
 import { SearchType } from '@tyro/api';
 import { useClassGroupById } from '../../api/class-groups';
 
-export default function SubjectGroupProfileTimetablePage() {
+export default function ClassGroupProfileTimetablePage() {
   const { groupId } = useParams();
   const groupIdNumber = useNumber(groupId);
 

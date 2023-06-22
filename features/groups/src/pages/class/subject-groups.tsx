@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Box, Fade } from '@mui/material';
-import { SmsRecipientType } from '@tyro/api';
+import { SmsRecipientType, UseQueryReturnType } from '@tyro/api';
 import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -21,11 +21,9 @@ import { MobileIcon } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { useClassGroupById } from '../../api/class-groups';
 
-type ReturnTypeFromUseSubjectGroupById = NonNullable<
-  NonNullable<
-    ReturnType<typeof useClassGroupById>['data']
-  >['relatedSubjectGroups']
->[number];
+type ReturnTypeFromUseSubjectGroupById = UseQueryReturnType<
+  typeof useClassGroupById
+>['relatedSubjectGroups'][number];
 
 const getSubjectGroupsColumns = (
   t: TFunction<'common'[], undefined, 'common'[]>,
@@ -93,15 +91,7 @@ const getSubjectGroupsColumns = (
   {
     field: 'staff',
     headerName: t('common:teacher'),
-    valueGetter: ({ data }) => {
-      const person = [
-        {
-          firstName: data?.staff?.[0]?.firstName,
-          lastName: data?.staff?.[0]?.lastName,
-        },
-      ];
-      return displayNames(person);
-    },
+    valueGetter: ({ data }) => displayNames(data?.staff),
     enableRowGroup: true,
   },
   {

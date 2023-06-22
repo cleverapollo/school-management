@@ -90,6 +90,12 @@ const classGroupById = graphql(/* GraphQL */ `
           name
         }
         staff {
+          title {
+            id
+            nameTextId
+            name
+          }
+          type
           firstName
           lastName
         }
