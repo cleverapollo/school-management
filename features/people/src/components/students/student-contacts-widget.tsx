@@ -8,8 +8,9 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { AnimatePresence, m } from 'framer-motion';
+import { AnimatePresence, m, Variants, wrap } from 'framer-motion';
 import {
+  ChevronLeftIcon,
   ChevronRightIcon,
   ExternalLinkIcon,
   MailIcon,
@@ -27,10 +28,25 @@ interface StudentContactsWidgetProps {
   studentId: number | undefined;
 }
 
+const animationVariants: Variants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? '100%' : '-100%',
+    position: 'absolute',
+  }),
+  center: {
+    x: '0%',
+    position: 'relative',
+  },
+  exit: (direction: number) => ({
+    x: direction > 0 ? '-100%' : '100%',
+    position: 'absolute',
+  }),
+};
+
 export function StudentContactsWidget({
   studentId,
 }: StudentContactsWidgetProps) {
-  const [contactIndex, setContactIndex] = useState(0);
+  const [[contactIndex, direction], setContactIndex] = useState([0, 0]);
   const { t } = useTranslation(['common', 'people', 'mail', 'sms']);
   const { displayName } = usePreferredNameLayout();
   const { data: contacts, isLoading } = useStudentsContacts(studentId);
@@ -38,14 +54,14 @@ export function StudentContactsWidget({
     useState<RecipientsForSmsModal>([]);
 
   const numberOfContacts = contacts?.length ?? 0;
-  const contact = contacts?.[contactIndex];
+  const clampedIndex = wrap(0, numberOfContacts, contactIndex);
+  const isButtonsDisabled = isLoading || numberOfContacts <= 1;
+  const contact = contacts?.[clampedIndex];
   const contactsRelationshipType =
     contact?.relationships?.[0]?.relationshipType;
 
-  const nextContact = () => {
-    const nextContactIndex =
-      contactIndex + 1 >= numberOfContacts ? 0 : contactIndex + 1;
-    setContactIndex(nextContactIndex);
+  const paginate = (newDirection: number) => {
+    setContactIndex([contactIndex + newDirection, newDirection]);
   };
 
   return (
@@ -70,48 +86,72 @@ export function StudentContactsWidget({
           sx={{
             alignItems: 'center',
             justifyContent: 'space-between',
-            pl: 3,
-            pr: 2,
-            py: 1.5,
+            px: 2,
+            py: 1,
             borderBottom: '1px solid',
             borderColor: 'divider',
           }}
         >
-          <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-            <>
-              {t('common:contact')}{' '}
-              <Box component="span" fontWeight={600}>
-                {contactIndex + 1}/{contacts?.length}
-              </Box>
-            </>
-          </Typography>
           <Tooltip
             title={
-              isLoading || numberOfContacts <= 1
+              isButtonsDisabled
                 ? t('people:nextContactDisabled', { count: numberOfContacts })
                 : ''
             }
           >
             <span>
-              <Button
-                disabled={isLoading || numberOfContacts <= 1}
-                onClick={nextContact}
-                endIcon={<ChevronRightIcon />}
+              <IconButton
                 size="small"
+                color="primary"
+                onClick={() => paginate(-1)}
               >
-                {t('people:nextContact')}
-              </Button>
+                <ChevronLeftIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+          <Box sx={{ flex: 1, overflowX: 'hidden' }}>
+            <Typography
+              component="h4"
+              variant="subtitle2"
+              noWrap
+              sx={{ px: 2, textOverflow: 'ellipsis', textAlign: 'center' }}
+            >
+              {t('common:contact')}{' '}
+              <Box component="span" fontWeight={600}>
+                {clampedIndex + 1}/{contacts?.length}
+              </Box>
+            </Typography>
+          </Box>
+
+          <Tooltip
+            title={
+              isButtonsDisabled
+                ? t('people:nextContactDisabled', { count: numberOfContacts })
+                : ''
+            }
+          >
+            <span>
+              <IconButton
+                size="small"
+                color="primary"
+                disabled={isButtonsDisabled}
+                onClick={() => paginate(1)}
+              >
+                <ChevronRightIcon />
+              </IconButton>
             </span>
           </Tooltip>
         </Stack>
 
-        <AnimatePresence initial={false}>
+        <AnimatePresence initial={false} custom={direction}>
           <Box
             component={m.div}
-            key={contact?.partyId}
-            initial={{ x: '100%', position: 'absolute' }}
-            animate={{ x: '0%', position: 'relative' }}
-            exit={{ x: '-100%', position: 'absolute' }}
+            key={contactIndex}
+            custom={direction}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            variants={animationVariants}
             transition={{ ease: 'easeInOut', duration: 0.3 }}
             sx={{
               width: '100%',
