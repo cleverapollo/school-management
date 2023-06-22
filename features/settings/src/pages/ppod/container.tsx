@@ -4,9 +4,7 @@ import { Box } from '@mui/material';
 import { useLocation } from 'react-router';
 import { LoadingButton } from '@mui/lab';
 import { useSyncFromPpodQuery } from '../../api/ppod/sync-data';
-import { usePpodCredentialsStatus } from '../../api/ppod/ppod-credentials-status';
 import SyncContainer from '../../components/ppod/sync-container';
-import Login from './login';
 
 export default function Container() {
   const { t } = useTranslation(['common', 'settings']);
@@ -14,12 +12,11 @@ export default function Container() {
 
   const currentUrl = useLocation();
 
-  const showSyncFromPpodButton =
-    !currentUrl.pathname.includes('sync-data/details');
+  const showSyncFromPpodButton = !currentUrl.pathname.includes(
+    'settings/ppod/details'
+  );
 
-  const { data: ppodCredentialsStatus } = usePpodCredentialsStatus();
-
-  return ppodCredentialsStatus ? (
+  return (
     <PageContainer title={t('settings:ppodSync.title')}>
       <PageHeading
         title={t('settings:ppod')}
@@ -41,7 +38,5 @@ export default function Container() {
       />
       <SyncContainer />
     </PageContainer>
-  ) : (
-    <Login />
   );
 }

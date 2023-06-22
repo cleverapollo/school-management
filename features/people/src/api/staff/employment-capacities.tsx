@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { UseQueryReturnType, gqlClient, graphql } from '@tyro/api';
-import { peopleStaffKeys } from './keys';
+import { peopleKeys } from '../keys';
 
 const employmentCapacities = graphql(/* GraphQL */ `
   query catalogue_staffCapacities {
@@ -12,7 +12,7 @@ const employmentCapacities = graphql(/* GraphQL */ `
 `);
 
 const capacitiesQuery = () => ({
-  queryKey: peopleStaffKeys.employmentCapacities(),
+  queryKey: peopleKeys.staff.employmentCapacities(),
   queryFn: () => gqlClient.request(employmentCapacities),
 });
 

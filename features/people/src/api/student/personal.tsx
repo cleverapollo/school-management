@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient } from '@tyro/api';
-import { peopleStudentsKeys } from './keys';
+import { gqlClient, graphql, queryClient, UseQueryReturnType } from '@tyro/api';
+import { peopleKeys } from '../keys';
 
 const studentsPersonalById = graphql(/* GraphQL */ `
   query core_student_personal($filter: StudentFilter!) {
@@ -65,7 +65,6 @@ const studentsPersonalById = graphql(/* GraphQL */ `
         boardingDays
         shortTermPupil
         shortTermPupilNumWeeks
-        repeatLeaving
         reasonForLeaving
         destinationRollNo
         previousSchoolName
@@ -95,12 +94,33 @@ const studentsPersonalById = graphql(/* GraphQL */ `
           name
         }
       }
+      siblings {
+        enrolledSiblings {
+          partyId
+          person {
+            title {
+              id
+              nameTextId
+              name
+            }
+            firstName
+            lastName
+            avatarUrl
+            type
+          }
+        }
+        nonEnrolledSiblings {
+          partyId
+          firstName
+          lastName
+        }
+      }
     }
   }
 `);
 
 const studentPersonalQuery = (studentId: number | undefined) => ({
-  queryKey: peopleStudentsKeys.personalDetails(studentId),
+  queryKey: peopleKeys.students.personalDetails(studentId),
   queryFn: async () =>
     gqlClient.request(studentsPersonalById, {
       filter: { partyIds: [studentId ?? 0] },
@@ -117,3 +137,7 @@ export function useStudentPersonal(studentId: number | undefined) {
     select: ({ core_students }) => core_students[0],
   });
 }
+
+export type ReturnTypeFromUseStudentPersonal = UseQueryReturnType<
+  typeof useStudentPersonal
+>;

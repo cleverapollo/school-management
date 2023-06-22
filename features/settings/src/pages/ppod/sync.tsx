@@ -62,16 +62,15 @@ const getColumnDefs = (
 export default function Sync() {
   const { t } = useTranslation(['common', 'settings']);
   const navigate = useNavigate();
-  const { activeAcademicNamespace } = useAcademicNamespace();
+  // NOTE: according to Ian filter should be an empty object
+  // const { activeAcademicNamespace } = useAcademicNamespace();
+  // const { startDate, endDate } = activeAcademicNamespace || {};
+  // const formattedDates = {
+  //   from: dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss[Z]'),
+  //   to: dayjs(endDate).format('YYYY-MM-DDTHH:mm:ss[Z]'),
+  // };
 
-  const { startDate, endDate } = activeAcademicNamespace || {};
-
-  const formattedDates = {
-    from: dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss[Z]'),
-    to: dayjs(endDate).format('YYYY-MM-DDTHH:mm:ss[Z]'),
-  };
-
-  const { data: syncRequests } = useSyncRequests(formattedDates);
+  const { data: syncRequests } = useSyncRequests({});
 
   const myColumnDefs = useMemo(() => getColumnDefs(t), [t]);
 
@@ -81,7 +80,7 @@ export default function Sync() {
         label: t('settings:ppodSync.enterSyncCredentials'),
         icon: <EditIcon />,
         onClick: () => {
-          navigate('/settings/ppod');
+          navigate('/settings/ppod-login');
         },
       },
     ];
