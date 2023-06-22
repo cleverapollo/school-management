@@ -22,7 +22,7 @@ type ReturnTypeFromUseSubjectGroupById = UseQueryReturnType<
 >['students'][number];
 
 const getClassGroupColumns = (
-  t: TFunction<('common' | 'groups')[], undefined, ('common' | 'groups')[]>,
+  t: TFunction<'common'[], undefined, 'common'[]>,
   displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseSubjectGroupById>['columnDefs'] => [
   {
@@ -44,8 +44,8 @@ const getClassGroupColumns = (
   },
 ];
 
-export default function SubjectGroup() {
-  const { t } = useTranslation(['common', 'groups', 'people', 'mail']);
+export default function ClassGroupStudentsPage() {
+  const { t } = useTranslation(['common', 'people']);
 
   const { groupId } = useParams();
   const groupIdAsNumber = useNumber(groupId);
