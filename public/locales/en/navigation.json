@@ -24,7 +24,7 @@
     },
     "assessments": {
       "title": "Assessments",
-      "termAssessments": "Term Assessments"
+      "termAssessments": "Term assessments"
     }
   },
   "management": {
@@ -44,7 +44,7 @@
     "settings": {
       "title": "Settings",
       "rooms": "Rooms",
-      "academicNamespaces": "Academic years",
+      "academicYears": "Academic years",
       "subjects": "Subjects",
       "ppod": "PPOD",
       "schoolDetails": "School details",

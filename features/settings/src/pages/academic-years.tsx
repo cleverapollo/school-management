@@ -106,7 +106,7 @@ const getColumns = (
 ];
 
 export default function AcademicNamespaceList() {
-  const { t } = useTranslation(['common', 'settings']);
+  const { t } = useTranslation(['common', 'settings', 'navigation']);
   const { data: namespaces } = useCoreAcademicNamespace();
   const { mutateAsync: setActiveNamespace } =
     useCoreSetActiveActiveAcademicNamespace();
@@ -153,9 +153,9 @@ export default function AcademicNamespaceList() {
   );
 
   return (
-    <PageContainer title={t('settings:namespaces')}>
+    <PageContainer title={t('navigation:management.settings.academicYears')}>
       <PageHeading
-        title={t('settings:namespaces')}
+        title={t('navigation:management.settings.academicYears')}
         titleProps={{ variant: 'h3' }}
         rightAdornment={
           <Box display="flex" alignItems="center">
