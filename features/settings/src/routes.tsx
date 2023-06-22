@@ -9,7 +9,7 @@ import { getCatalogueSubjects } from './api/subjects';
 import { getPpodCredentialsStatus } from './api/ppod/ppod-credentials-status';
 
 const Rooms = lazy(() => import('./pages/rooms'));
-const AcademicNamespaceList = lazy(() => import('./pages/academic-namespaces'));
+const AcademicYearsList = lazy(() => import('./pages/academic-years'));
 const Subjects = lazy(() => import('./pages/subjects'));
 const Ppod = lazy(() => import('./pages/ppod/ppod'));
 const Container = lazy(() => import('./pages/ppod/container'));
@@ -52,10 +52,10 @@ export const getRoutes: NavObjectFunction = (t) => [
           },
           {
             type: NavObjectType.MenuLink,
-            title: t('navigation:management.settings.academicNamespaces'),
-            path: 'academic-namespaces',
+            title: t('navigation:management.settings.academicYears'),
+            path: 'academic-years',
             loader: () => getCoreAcademicNamespace(),
-            element: <AcademicNamespaceList />,
+            element: <AcademicYearsList />,
           },
           {
             type: NavObjectType.MenuLink,
