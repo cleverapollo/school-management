@@ -43,7 +43,6 @@ export const StyledItem = styled(ListItemButton, {
 
   return {
     flexDirection: 'column',
-    textTransform: 'capitalize',
     padding: theme.spacing(1, 0, 0.5, 0),
     color: theme.palette.text.secondary,
     borderRadius: theme.shape.borderRadius,

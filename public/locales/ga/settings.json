@@ -10,7 +10,6 @@
   "subjectType": "Subject type",
   "rooms": "Rooms",
   "capacity": "Capacity",
-  "namespaces": "Namespaces",
   "active": "Active",
   "actions": {
     "makeActive": "Make Active Primary Namespace"
