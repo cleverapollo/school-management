@@ -67,7 +67,6 @@ const studentsPersonalById = graphql(/* GraphQL */ `
         shortTermPupilNumWeeks
         reasonForLeaving
         destinationRollNo
-        previousSchoolName
         previousSchoolType
       }
       classGroup {

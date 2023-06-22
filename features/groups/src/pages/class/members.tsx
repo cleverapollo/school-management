@@ -1,11 +1,10 @@
 import { useMemo, useState } from 'react';
-import { Box, Container, Fade } from '@mui/material';
+import { Box, Fade } from '@mui/material';
 import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { MobileIcon, SendMailIcon } from '@tyro/icons';
 import {
   useNumber,
-  Page,
   Table,
   GridOptions,
   ActionMenu,
@@ -13,14 +12,13 @@ import {
   ICellRendererParams,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
-  PageHeading,
 } from '@tyro/core';
 import { useClassGroupById } from '../../api/class-groups';
 import { getPersonProfileLink } from '../../utils/get-person-profile-link';
 
 type MembersReturnTypeFromUseClassGroupById = NonNullable<
   ReturnType<typeof useClassGroupById>['data']
->['members'][number];
+>['students'][number];
 
 const getClassGroupColumns = (
   t: TFunction<('common' | 'groups')[], undefined, ('common' | 'groups')[]>,
@@ -29,13 +27,13 @@ const getClassGroupColumns = (
   {
     field: 'person',
     headerName: t('common:name'),
-    valueGetter: ({ data }) => displayName(data?.person ?? undefined),
+    valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
     }: ICellRendererParams<MembersReturnTypeFromUseClassGroupById, any>) => (
       <TablePersonAvatar
-        person={data?.person ?? undefined}
-        to={getPersonProfileLink(data?.person ?? undefined)}
+        person={data?.person}
+        to={getPersonProfileLink(data?.person)}
       />
     ),
     headerCheckboxSelection: true,
@@ -45,11 +43,14 @@ const getClassGroupColumns = (
   },
 ];
 
-export default function ViewClassGroupPage() {
+export default function SubjectGroup() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail']);
+
   const { groupId } = useParams();
   const groupIdAsNumber = useNumber(groupId);
+
   const { displayName } = usePreferredNameLayout();
+
   const [selectedMembers, setSelectedMembers] = useState<
     MembersReturnTypeFromUseClassGroupById[]
   >([]);
@@ -61,11 +62,6 @@ export default function ViewClassGroupPage() {
       // TODO: add action logic
       onClick: () => {},
     },
-    {
-      label: t('mail:sendMail'),
-      icon: <SendMailIcon />,
-      onClick: () => {},
-    },
   ];
 
   const { data: groupData } = useClassGroupById(groupIdAsNumber);
@@ -74,51 +70,23 @@ export default function ViewClassGroupPage() {
     () => getClassGroupColumns(t, displayName),
     [t, displayName]
   );
-  const title = t('groups:namedMemberList', {
-    groupName: groupData?.name ?? '',
-  });
+
   const showActionMenu = selectedMembers.length > 0;
 
   return (
-    <Page title={title}>
-      <Container
-        maxWidth="xl"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
-          pb: 3,
-        }}
-      >
-        <PageHeading
-          title={title}
-          breadcrumbs={{
-            links: [
-              {
-                name: t('groups:classGroups'),
-                href: './..',
-              },
-              {
-                name: groupData?.name ?? '',
-              },
-            ],
-          }}
-        />
-        <Table
-          rowData={groupData?.members ?? []}
-          columnDefs={classGroupColumns}
-          rowSelection="multiple"
-          getRowId={({ data }) => String(data?.person?.partyId)}
-          rightAdornment={
-            <Fade in={showActionMenu} unmountOnExit>
-              <Box>
-                <ActionMenu menuItems={actionMenuItems} />
-              </Box>
-            </Fade>
-          }
-          onRowSelection={setSelectedMembers}
-        />
-      </Container>
-    </Page>
+    <Table
+      rowData={groupData?.students ?? []}
+      columnDefs={classGroupColumns}
+      rowSelection="multiple"
+      getRowId={({ data }) => String(data?.person?.partyId)}
+      rightAdornment={
+        <Fade in={showActionMenu} unmountOnExit>
+          <Box>
+            <ActionMenu menuItems={actionMenuItems} />
+          </Box>
+        </Fade>
+      }
+      onRowSelection={setSelectedMembers}
+    />
   );
 }

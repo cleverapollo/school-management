@@ -75,6 +75,31 @@ const classGroupById = graphql(/* GraphQL */ `
           type
         }
       }
+      relatedSubjectGroups {
+        name
+        partyId
+        avatarUrl
+        studentMembershipType {
+          type
+        }
+        subjects {
+          name
+          colour
+        }
+        programmeStages {
+          name
+        }
+        staff {
+          firstName
+          lastName
+        }
+        irePP {
+          level
+        }
+        studentMembers {
+          memberCount
+        }
+      }
     }
   }
 `);
@@ -131,11 +156,7 @@ export function useClassGroupById(id: number | undefined) {
     select: ({ generalGroups }) => {
       if (!generalGroups) return null;
       const group = generalGroups[0];
-
-      return {
-        name: group?.name,
-        members: group?.students ?? [],
-      };
+      return group;
     },
   });
 }

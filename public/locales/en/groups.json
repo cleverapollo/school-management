@@ -1,11 +1,13 @@
 {
   "namedMemberList": "{{groupName}} member list",
   "classGroups": "Class Groups",
-  "subjectGroups": "Subject Groups",
+  "subjectGroups": "Subject groups",
   "customGroups": "Custom Groups",
   "yearGroups": "Year Groups",
   "subjectGroupsProfile": "{{name}}'s Profile",
   "teachersInGroup": "Teachers in group",
+  "membersInGroup": "Members in group",
+  "members": "Members",
   "nextLesson": "Next Lesson",
   "room": "Room",
   "students": "Students",
@@ -14,5 +16,6 @@
   "cancelEdits": "Cancel Edits",
   "saveAttendance": "Save Attendance",
   "attendanceUpdated": "Attendance updates are saved!",
-  "lessonAttendanceNotFound": "No lesson attendance data found"
+  "lessonAttendanceNotFound": "No lesson attendance data found",
+  "groupType": "Group type"
 }
