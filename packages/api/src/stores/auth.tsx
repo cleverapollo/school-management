@@ -41,7 +41,7 @@ function InnerAuthProvider({ children }: AuthProviderProps) {
   const [isTokenInitialized, setIsTokenInitialized] = useState(false);
 
   const logout = useCallback(() => {
-    instance.logout();
+    instance.logoutRedirect();
   }, [instance]);
 
   const login = useCallback(() => {
