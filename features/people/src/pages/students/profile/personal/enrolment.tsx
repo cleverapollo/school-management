@@ -84,10 +84,6 @@ const getEnrolmentDataWithLabels = (
       ),
     },
     {
-      label: t('people:personal.enrolmentHistory.previousSchoolName'),
-      value: studentIrePP?.previousSchoolName,
-    },
-    {
       label: t('people:personal.enrolmentHistory.previousSchoolType'),
       value: studentIrePP?.previousSchoolType,
     },
