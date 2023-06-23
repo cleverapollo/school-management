@@ -41,8 +41,9 @@
     "studentContactDetails": "Student's contact details",
     "about": {
       "title": "About",
-      "preferredName": "Preferred name",
+      "preferredFirstName": "Preferred forename",
       "forename": "Forename",
+      "preferredLastName": "Preferred surname",
       "surname": "Surname",
       "dateOfBirth": "Date of birth",
       "departmentId": "Department ID",
