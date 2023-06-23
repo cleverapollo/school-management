@@ -86,9 +86,7 @@ const getAboutDataWithLabels = (
     {
       label: t('people:personal.about.dateOfBirth'),
       value: dateOfBirth ? dayjs(dateOfBirth) : null,
-      valueRenderer: dateOfBirth
-        ? dayjs(dateOfBirth).format('DD/MM/YYYY')
-        : '-',
+      valueRenderer: dateOfBirth ? dayjs(dateOfBirth).format('l') : '-',
       valueEditor: (
         <RHFDatePicker
           inputProps={{ variant: 'standard' }}

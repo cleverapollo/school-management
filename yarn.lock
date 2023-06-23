@@ -5533,6 +5533,7 @@ __metadata:
     "@tanstack/react-query": ^4.29.7
     "@tyro/api": "*"
     "@tyro/assessments": "*"
+    "@tyro/attendance": "*"
     "@tyro/authentication": "*"
     "@tyro/calendar": "*"
     "@tyro/class-list-manager": "*"
@@ -5589,6 +5590,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@tyro/attendance@workspace:features/attendance"
   dependencies:
+    "@mui/lab": ^5.0.0-alpha.96
     "@mui/material": ^5.13.2
     "@tanstack/react-query": ^4.29.7
     "@tyro/api": "*"
@@ -5598,6 +5600,7 @@ __metadata:
     "@tyro/icons": "*"
     react: ^18.2.0
     react-dom: ^18.2.0
+    react-hook-form: ^7.43.9
     react-router: ^6.6.2
     react-router-dom: ^6.6.2
   languageName: unknown
@@ -5650,7 +5653,6 @@ __metadata:
     "@tyro/core": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
-    "@tyro/party": "*"
     dayjs: ^1.11.7
     lodash: ^4.17.21
     react: ^18.2.0
@@ -5675,6 +5677,7 @@ __metadata:
     "@tyro/groups": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    "@tyro/people": "*"
     lodash: ^4.17.21
     nanoid: ^4.0.2
     react: ^18.2.0
@@ -5822,29 +5825,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@tyro/party@*, @tyro/party@workspace:features/party":
-  version: 0.0.0-use.local
-  resolution: "@tyro/party@workspace:features/party"
-  dependencies:
-    "@mui/material": ^5.13.2
-    "@mui/system": ^5.13.2
-    "@tanstack/react-query": ^4.29.7
-    "@tyro/api": "*"
-    "@tyro/assessments": "*"
-    "@tyro/configs": "*"
-    "@tyro/core": "*"
-    "@tyro/i18n": "*"
-    "@tyro/icons": "*"
-    dayjs: ^1.11.7
-    framer-motion: ^9.0.1
-    react: ^18.2.0
-    react-dom: ^18.2.0
-    react-router: ^6.6.2
-    react-router-dom: ^6.6.2
-    react-use: ^17.4.0
-  languageName: unknown
-  linkType: soft
-
 "@tyro/people@*, @tyro/people@workspace:features/people":
   version: 0.0.0-use.local
   resolution: "@tyro/people@workspace:features/people"
@@ -5914,6 +5894,7 @@ __metadata:
     "@mui/system": ^5.13.2
     "@tanstack/react-query": ^4.29.7
     "@tyro/api": "*"
+    "@tyro/attendance": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
     "@tyro/i18n": "*"
@@ -5976,18 +5957,22 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@tyro/timetable@workspace:features/timetable"
   dependencies:
+    "@mui/lab": ^5.0.0-alpha.96
     "@mui/material": ^5.13.2
     "@mui/system": ^5.13.2
     "@tanstack/react-query": ^4.29.7
     "@tyro/api": "*"
+    "@tyro/calendar": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
+    "@tyro/groups": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
     "@tyro/people": "*"
     "@tyro/settings": "*"
     dayjs: ^1.11.7
     lodash: ^4.17.21
+    nanoid: ^4.0.2
     react: ^18.2.0
     react-dom: ^18.2.0
     react-router: ^6.6.2

@@ -15,6 +15,7 @@ import {
   BulkEditedRows,
   TableAvatar,
   useDisclosure,
+  sortStartNumberFirst,
 } from '@tyro/core';
 
 import { MobileIcon, SendMailIcon } from '@tyro/icons';
@@ -25,7 +26,6 @@ import {
   useSaveSubjectGroupEdits,
   useSubjectGroups,
 } from '../../api/subject-groups';
-import { sortStartNumberFirst } from '../../utils/sort-start-number-first';
 
 type ReturnTypeFromUseSubjectGroups = NonNullable<
   ReturnType<typeof useSubjectGroups>['data']
@@ -82,6 +82,7 @@ const getSubjectGroupsColumns = (
   {
     field: 'studentMembers.memberCount',
     headerName: t('common:members'),
+    sortable: true,
   },
   {
     headerName: t('common:year'),

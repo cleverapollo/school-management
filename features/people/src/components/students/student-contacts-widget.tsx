@@ -12,19 +12,16 @@ import { AnimatePresence, m } from 'framer-motion';
 import {
   ChevronRightIcon,
   ExternalLinkIcon,
-  HouseLocationIcon,
-  LabelsIcon,
   MailIcon,
   PhoneIcon,
 } from '@tyro/icons';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@tyro/i18n';
-import { Avatar, usePreferredNameLayout } from '@tyro/core';
+import { Avatar, usePreferredNameLayout, formatPhoneNumber } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { SmsRecipientType } from '@tyro/api';
 import { useStudentsContacts } from '../../api/student/overview';
-import { joinAddress } from '../../utils/join-address';
 
 interface StudentContactsWidgetProps {
   studentId: number | undefined;
@@ -216,8 +213,9 @@ export function StudentContactsWidget({
                     </Box>
                   </Stack>
                   <Box component="dd" sx={{ m: 0 }}>
-                    {contact?.personalInformation?.primaryPhoneNumber?.number ??
-                      '-'}
+                    {formatPhoneNumber(
+                      contact?.personalInformation?.primaryPhoneNumber
+                    )}
                   </Box>
 
                   <Stack direction="row" spacing={0.75} alignItems="center">
@@ -232,42 +230,6 @@ export function StudentContactsWidget({
                     {contact?.personalInformation?.primaryEmail?.email ?? '-'}
                   </Box>
                 </Box>
-
-                <Stack>
-                  <Stack
-                    direction="row"
-                    spacing={0.75}
-                    alignItems="center"
-                    mt={2}
-                  >
-                    <HouseLocationIcon
-                      sx={{ color: 'slate.400', width: 20, height: 20 }}
-                    />
-                    <Box component="dt" sx={{ color: 'slate.600' }}>
-                      {t('common:address')}
-                    </Box>
-                  </Stack>
-                  <Box component="dd" sx={{ m: 0 }}>
-                    {joinAddress(contact?.personalInformation?.primaryAddress)}
-                  </Box>
-
-                  <Stack
-                    direction="row"
-                    spacing={0.75}
-                    alignItems="center"
-                    mt={2}
-                  >
-                    <LabelsIcon
-                      sx={{ color: 'slate.400', width: 20, height: 20 }}
-                    />
-                    <Box component="dt" sx={{ color: 'slate.600' }}>
-                      {t('common:groups')}
-                    </Box>
-                  </Stack>
-                  <Box component="dd" sx={{ m: 0 }}>
-                    -
-                  </Box>
-                </Stack>
               </Box>
             </Box>
           </Box>

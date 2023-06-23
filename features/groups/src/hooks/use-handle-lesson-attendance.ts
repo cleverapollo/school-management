@@ -12,11 +12,8 @@ import isEqual from 'lodash/isEqual';
 
 import { useLayoutEffect, useRef, useState } from 'react';
 import dayjs from 'dayjs';
-import {
-  subjectGroupLessonKeys,
-  useSubjectGroupById,
-  useSubjectGroupLessonByIterator,
-} from '../api';
+import { useSubjectGroupById, useSubjectGroupLessonByIterator } from '../api';
+import { groupsKeys } from '../api/keys';
 import { useFormatLessonTime } from './use-format-lesson-time';
 
 type StudentAttendance = Record<
@@ -125,14 +122,7 @@ export function useHandleLessonAttendance({
   const saveAttendance = ({ onSuccess }: SaveAttendanceCallback) => {
     saveAttendanceMutation(Object.values(newAttendance), {
       onSuccess: () => {
-        queryClient.invalidateQueries({
-          predicate: (query) => {
-            const lessonKey = subjectGroupLessonKeys.details(filter)[3];
-            const queryKey = query.queryKey[3] as typeof lessonKey;
-
-            return queryKey?.partyId === lessonKey.partyId;
-          },
-        });
+        queryClient.invalidateQueries(groupsKeys.subject.all());
         onSuccess();
       },
     });

@@ -10,6 +10,7 @@ import {
   CardEditableFormProps,
 } from '../../../../components/common/card-editable-form';
 import { useStudentPersonal } from '../../../../api/student/personal';
+import { SiblingsChips } from '../../../../components/students/siblings-chips';
 
 dayjs.extend(LocalizedFormat);
 
@@ -20,25 +21,29 @@ type AboutFormState = {
 
 const getAboutDataWithLabels = (
   data: ReturnType<typeof useStudentPersonal>['data'],
-  t: TFunction<'people'[]>
+  t: TFunction<('common' | 'people')[]>
 ): CardEditableFormProps<AboutFormState>['fields'] => {
-  const { partyId, personalInformation } = data || {};
+  const { partyId, personalInformation, studentIrePP } = data || {};
   const {
     preferredFirstName,
     firstName,
     preferredLastName,
     lastName,
+    middleName,
     dateOfBirth,
     ire,
     gender,
     nationality,
     mothersMaidenName,
+    birthCertFirstName,
+    birthCertLastName,
   } = personalInformation || {};
 
   return [
     {
       label: t('people:personal.about.preferredFirstName'),
       value: preferredFirstName,
+      tooltipInfo: t('people:preferredFirstNameInfo'),
       valueEditor: (
         <RHFTextField
           textFieldProps={{ variant: 'standard' }}
@@ -47,12 +52,9 @@ const getAboutDataWithLabels = (
       ),
     },
     {
-      label: t('people:personal.about.forename'),
-      value: firstName,
-    },
-    {
       label: t('people:personal.about.preferredLastName'),
       value: preferredLastName,
+      tooltipInfo: t('people:preferredLastNameInfo'),
       valueEditor: (
         <RHFTextField
           textFieldProps={{ variant: 'standard' }}
@@ -61,12 +63,21 @@ const getAboutDataWithLabels = (
       ),
     },
     {
+      label: t('people:personal.about.forename'),
+      value: firstName,
+    },
+    {
+      label: t('people:personal.about.middleName'),
+      value: middleName,
+    },
+
+    {
       label: t('people:personal.about.surname'),
       value: lastName,
     },
     {
       label: t('people:personal.about.dateOfBirth'),
-      value: dateOfBirth,
+      value: dateOfBirth ? dayjs(dateOfBirth) : null,
       valueRenderer: dateOfBirth ? dayjs(dateOfBirth).format('l') : '-',
     },
     {
@@ -75,7 +86,7 @@ const getAboutDataWithLabels = (
     },
     {
       label: t('people:personal.about.departmentId'),
-      value: null,
+      value: studentIrePP?.dpin,
     },
     {
       label: t('people:gender.title'),
@@ -84,11 +95,11 @@ const getAboutDataWithLabels = (
     },
     {
       label: t('people:personal.about.birthCertForename'),
-      value: null,
+      value: birthCertFirstName,
     },
     {
       label: t('people:personal.about.birthCertSurname'),
-      value: null,
+      value: birthCertLastName,
     },
     {
       label: t('people:tyroId'),
@@ -107,12 +118,11 @@ const getAboutDataWithLabels = (
       value: mothersMaidenName,
     },
     {
-      label: t('people:personal.about.motherTongue'),
-      value: null,
-    },
-    {
-      label: t('people:personal.about.ethnicityAndCulturalBackground'),
-      value: null,
+      label: t('people:personal.about.memberOfTravellerCommunity'),
+      value: studentIrePP?.travellerHeritage,
+      valueRenderer: studentIrePP?.travellerHeritage
+        ? t('common:yes')
+        : t('common:no'),
     },
   ];
 };
@@ -144,7 +154,7 @@ export const ProfileAbout = ({
         <Typography variant="body1" color="text.primary">
           {t('common:siblings')}
         </Typography>
-        <Chip label={t('common:noSiblingsRegisteredAtThisSchool')} />
+        <SiblingsChips siblings={studentData?.siblings} />
       </Stack>
     </CardEditableForm>
   );

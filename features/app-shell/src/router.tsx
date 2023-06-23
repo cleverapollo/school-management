@@ -30,6 +30,7 @@ import { getRoutes as getCalendarRoutes } from '@tyro/calendar';
 import { getRoutes as getClassListManagerRoutes } from '@tyro/class-list-manager';
 import { getRoutes as getGroupRoutes } from '@tyro/groups';
 import { getRoutes as getMailRoutes } from '@tyro/mail';
+import { getRoutes as getAttendanceRoutes } from '@tyro/attendance';
 import { getRoutes as getAssessmentRoutes } from '@tyro/assessments';
 import { getRoutes as getPeopleRoutes } from '@tyro/people';
 import { getRoutes as getReportingRoutes } from '@tyro/reporting';
@@ -120,13 +121,14 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getCalendarRoutes(t),
   ...getClassListManagerRoutes(t),
   ...getGroupRoutes(t),
+  // ...getAttendanceRoutes(t),
   // ...getMailRoutes(t),
   ...getAssessmentRoutes(t),
   ...getPeopleRoutes(t),
   // ...getReportingRoutes(t),
   ...getSmsRoutes(t),
   // ...getSubstitutionRoutes(t),
-  // ...getTimetableRoutes(t),
+  ...getTimetableRoutes(t),
   ...getSettingsRoutes(t),
   ...getAdminRoutes(t),
 ];
@@ -134,14 +136,8 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
 function useAppRouter() {
   return createBrowserRouter([
     {
-      loader: async () => {
-        const activeAccount = msalInstance.getActiveAccount();
-
-        if (!activeAccount) {
-          return redirect('/login');
-        }
-
-        return Promise.all([getUser(), getCoreAcademicNamespace()]).catch(
+      loader: async () =>
+        Promise.all([getUser(), getCoreAcademicNamespace()]).catch(
           (error: Error) => {
             if (error?.message === 'Failed to fetch') {
               throw new Response('Service Unavailable', { status: 503 });
@@ -149,8 +145,7 @@ function useAppRouter() {
 
             throw error;
           }
-        );
-      },
+        ),
       element: (
         <LazyLoader>
           <Shell>

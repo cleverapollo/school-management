@@ -1,12 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient } from '@tyro/api';
-import dayjs from 'dayjs';
-import { peopleStudentsKeys } from './keys';
+import { gqlClient, graphql, queryClient, UseQueryReturnType } from '@tyro/api';
+import { peopleKeys } from '../keys';
 
 const studentsPersonalById = graphql(/* GraphQL */ `
   query core_student_personal($filter: StudentFilter!) {
     core_students(filter: $filter) {
       partyId
+      startDate
+      leftEarly
+      endDate
       personalInformation {
         firstName
         lastName
@@ -15,6 +17,8 @@ const studentsPersonalById = graphql(/* GraphQL */ `
         middleName
         gender
         dateOfBirth
+        birthCertFirstName
+        birthCertLastName
         ire {
           ppsNumber
           religion
@@ -29,6 +33,15 @@ const studentsPersonalById = graphql(/* GraphQL */ `
           city
           country
           postCode
+        }
+        addresses {
+          line1
+          line2
+          line3
+          city
+          country
+          postCode
+          primaryAddress
         }
         primaryPhoneNumber {
           number
@@ -47,13 +60,67 @@ const studentsPersonalById = graphql(/* GraphQL */ `
         examNumber
         lockerNumber
         previousSchoolRollNumber
+        dpin
+        examEntrant
+        repeatYear
+        boardingDays
+        shortTermPupil
+        shortTermPupilNumWeeks
+        reasonForLeaving
+        destinationRollNo
+        previousSchoolType
+      }
+      classGroup {
+        name
+      }
+      tutors {
+        partyId
+        firstName
+        lastName
+        avatarUrl
+      }
+      yearGroupLeads {
+        partyId
+        firstName
+        lastName
+        avatarUrl
+      }
+      yearGroups {
+        name
+      }
+      programmeStages {
+        name
+        programme {
+          name
+        }
+      }
+      siblings {
+        enrolledSiblings {
+          partyId
+          person {
+            title {
+              id
+              nameTextId
+              name
+            }
+            firstName
+            lastName
+            avatarUrl
+            type
+          }
+        }
+        nonEnrolledSiblings {
+          partyId
+          firstName
+          lastName
+        }
       }
     }
   }
 `);
 
 const studentPersonalQuery = (studentId: number | undefined) => ({
-  queryKey: peopleStudentsKeys.personalDetails(studentId),
+  queryKey: peopleKeys.students.personalDetails(studentId),
   queryFn: async () =>
     gqlClient.request(studentsPersonalById, {
       filter: { partyIds: [studentId ?? 0] },
@@ -70,3 +137,7 @@ export function useStudentPersonal(studentId: number | undefined) {
     select: ({ core_students }) => core_students[0],
   });
 }
+
+export type ReturnTypeFromUseStudentPersonal = UseQueryReturnType<
+  typeof useStudentPersonal
+>;
