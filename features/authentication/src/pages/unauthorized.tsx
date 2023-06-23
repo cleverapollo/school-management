@@ -6,6 +6,7 @@ import { Button, Typography, Container } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { Page } from '@tyro/core';
 import { useAuth } from '@tyro/api';
+import { useEffect } from 'react';
 import { MotionContainer, varBounce } from '../../../../src/components/animate';
 import { PageNotFoundIllustration } from '../../../../src/assets';
 
@@ -21,7 +22,13 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 export default function PageUnauthorized() {
   const { t } = useTranslation(['common', 'authentication']);
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      login();
+    }
+  }, [isAuthenticated]);
 
   return (
     <Page title={t('authentication:titles.unauthorized')}>

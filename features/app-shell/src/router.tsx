@@ -136,14 +136,8 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
 function useAppRouter() {
   return createBrowserRouter([
     {
-      loader: async () => {
-        const activeAccount = msalInstance.getActiveAccount();
-
-        if (!activeAccount) {
-          return redirect('/login');
-        }
-
-        return Promise.all([getUser(), getCoreAcademicNamespace()]).catch(
+      loader: async () =>
+        Promise.all([getUser(), getCoreAcademicNamespace()]).catch(
           (error: Error) => {
             if (error?.message === 'Failed to fetch') {
               throw new Response('Service Unavailable', { status: 503 });
@@ -151,8 +145,7 @@ function useAppRouter() {
 
             throw error;
           }
-        );
-      },
+        ),
       element: (
         <LazyLoader>
           <Shell>
