@@ -16,5 +16,9 @@
   "saveAttendance": "Save Attendance",
   "attendanceUpdated": "Attendance updates are saved!",
   "lessonAttendanceNotFound": "No lesson attendance data found",
-  "groupType": "Group type"
+  "groupType": "Group type",
+  "tutor_one": "Tutor",
+  "tutor_other": "Tutors",
+  "yearHead_one": "Year head",
+  "yearHead_other": "Year heads"
 }

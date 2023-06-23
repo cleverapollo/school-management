@@ -108,7 +108,7 @@ export function ClassGroupStatusBar({ groupId }: ClassGroupOverviewBarProps) {
                 mb: 0.5,
               }}
             >
-              {t('common:yearhead', {
+              {t('groups:yearHead', {
                 count: classGroup?.yearGroupLeads?.length,
               })}
             </Typography>
@@ -133,7 +133,7 @@ export function ClassGroupStatusBar({ groupId }: ClassGroupOverviewBarProps) {
                 mb: 0.5,
               }}
             >
-              {t('common:tutor', { count: classGroup?.tutors?.length })}
+              {t('groups:tutor', { count: classGroup?.tutors?.length })}
             </Typography>
             <Typography
               component="dd"
