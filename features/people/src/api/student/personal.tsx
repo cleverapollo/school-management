@@ -13,6 +13,7 @@ const studentsPersonalById = graphql(/* GraphQL */ `
         firstName
         lastName
         preferredFirstName
+        preferredLastName
         middleName
         gender
         dateOfBirth
