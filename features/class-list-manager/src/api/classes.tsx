@@ -25,6 +25,9 @@ const classMemberships = graphql(/* GraphQL */ `
         name
       }
       unenrolledStudents {
+        personalInformation {
+          gender
+        }
         person {
           partyId
           title {
@@ -42,6 +45,9 @@ const classMemberships = graphql(/* GraphQL */ `
         partyId
         name
         students {
+          personalInformation {
+            gender
+          }
           person {
             partyId
             title {
@@ -114,6 +120,7 @@ export function useClassMemberships(yearGroupEnrollmentId: number | undefined) {
               .sort((a, b) => sortByDisplayName(a?.person, b?.person))
               .map((student) => ({
                 ...student,
+                gender: student?.personalInformation?.gender,
                 id: String(student?.person.partyId),
               })),
           })

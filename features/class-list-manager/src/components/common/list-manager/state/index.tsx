@@ -1,5 +1,14 @@
 import cloneDeep from 'lodash/cloneDeep';
-import { useCallback, useEffect, useState, useRef } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useState,
+  useRef,
+  useContext,
+  createContext,
+  useMemo,
+  ReactNode,
+} from 'react';
 import {
   OnDragEndResponder,
   OnDragStartResponder,
@@ -28,6 +37,7 @@ import {
   useEditedState,
   UseEditedStateProps,
   EditedStudent,
+  ReturnTypeOfUseEditedState,
 } from './edited-state';
 
 export interface UseListManagerStateProps {
@@ -37,12 +47,53 @@ export interface UseListManagerStateProps {
   onBulkSave: UseEditedStateProps['onBulkSave'];
 }
 
-export function useListManagerState({
+export type AuthContextValue = {
+  state: ListManagerState[];
+  onDragEnd: OnDragEndResponder;
+  onDragStart: OnDragStartResponder;
+  editedState: ReturnTypeOfUseEditedState & {
+    revertChange: (student: EditedStudent) => void;
+  };
+  draggingStudentId: string | undefined;
+  performCardAction: (
+    event: React.MouseEvent | React.KeyboardEvent | React.TouchEvent,
+    studentId: string
+  ) => void;
+  selectedStudentIds: string[];
+  deleteDuplicate: (groupId: number | string, studentId: string) => void;
+  duplicateStudents: (groupIdToMoveTo: number, studentIds: string[]) => void;
+  moveStudents: (
+    studentIds: string[],
+    source: DraggableLocation,
+    destination: DraggableLocation
+  ) => void;
+  enableDuplicateStudents: boolean;
+  includeClassGroupName: boolean;
+};
+
+const ListManagerContext = createContext<AuthContextValue | undefined>(
+  undefined
+);
+
+type ListManagerProviderProps = {
+  children: ReactNode;
+  listKey: string;
+  unassignedStudents: ListManagerStudent[];
+  groups: ListManagerGroup[];
+  onBulkSave: UseEditedStateProps['onBulkSave'];
+  enableDuplicateStudents: boolean;
+  includeClassGroupName: boolean;
+};
+
+export function ListManagerProvider({
   listKey,
   unassignedStudents,
   groups,
   onBulkSave,
-}: UseListManagerStateProps) {
+  children,
+  enableDuplicateStudents,
+  includeClassGroupName,
+}: ListManagerProviderProps) {
   const { t } = useTranslation(['classListManager']);
   const { toast } = useToast();
 
@@ -260,29 +311,54 @@ export function useListManagerState({
     };
   }, []);
 
-  return {
-    state,
-    onDragEnd,
-    onDragStart,
-    editedState: {
-      ...editedState,
-      revertChange,
-    },
-    cardProps: {
+  const providerValue = useMemo(
+    () => ({
+      state,
+      onDragEnd,
+      onDragStart,
+      editedState: {
+        ...editedState,
+        revertChange,
+      },
       draggingStudentId,
       performCardAction,
       selectedStudentIds,
       deleteDuplicate,
-      contextMenuProps: {
-        selectedStudentIds,
-        state,
-        duplicateStudents,
-        moveStudents,
-      },
-    },
-  };
+      duplicateStudents,
+      moveStudents,
+      enableDuplicateStudents,
+      includeClassGroupName,
+    }),
+    [
+      state,
+      onDragEnd,
+      onDragStart,
+      editedState,
+      revertChange,
+      draggingStudentId,
+      performCardAction,
+      selectedStudentIds,
+      deleteDuplicate,
+      duplicateStudents,
+      moveStudents,
+      enableDuplicateStudents,
+      includeClassGroupName,
+    ]
+  );
+
+  return (
+    <ListManagerContext.Provider value={providerValue}>
+      {children}
+    </ListManagerContext.Provider>
+  );
 }
 
-export type ReturnTypeOfUseListManagerState = ReturnType<
-  typeof useListManagerState
->;
+export function useListManagerState() {
+  const context = useContext(ListManagerContext);
+  if (context === undefined) {
+    throw new Error(
+      'useListManagerState must be used within a ListManagerContext'
+    );
+  }
+  return context;
+}

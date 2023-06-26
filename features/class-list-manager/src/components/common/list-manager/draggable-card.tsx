@@ -17,17 +17,13 @@ import {
 import { CheckmarkIcon, CloseIcon } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
 import { ListManagerState } from './state/types';
-import { ReturnTypeOfUseListManagerState } from './state';
+import { useListManagerState } from './state';
 import { ContextMenu } from './context-menu';
 
-type CardProps = ReturnTypeOfUseListManagerState['cardProps'];
-
-interface DraggableCardProps extends CardProps {
+interface DraggableCardProps {
   index: number;
   groupId: ListManagerState['id'];
   student: ListManagerState['students'][number];
-  enableDuplicateStudents?: boolean;
-  includeClassGroupName?: boolean | undefined | null;
 }
 
 const getCardStyle = (
@@ -68,21 +64,18 @@ const getCardStyle = (
   } as const;
 };
 
-export function DraggableCard({
-  index,
-  student,
-  groupId,
-  performCardAction,
-  selectedStudentIds,
-  draggingStudentId,
-  contextMenuProps,
-  deleteDuplicate,
-  enableDuplicateStudents,
-  includeClassGroupName,
-}: DraggableCardProps) {
+export function DraggableCard({ index, student, groupId }: DraggableCardProps) {
   const { t } = useTranslation(['classListManager']);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const { displayName } = usePreferredNameLayout();
+  const {
+    selectedStudentIds,
+    draggingStudentId,
+    performCardAction,
+    deleteDuplicate,
+    enableDuplicateStudents,
+    includeClassGroupName,
+  } = useListManagerState();
   const name = displayName(student?.person);
   const isCardSelected = selectedStudentIds.includes(student.id);
   const showSelectionCount =
@@ -259,7 +252,6 @@ export function DraggableCard({
         studentIndex={index}
         groupId={groupId}
         enableDuplicateStudents={enableDuplicateStudents}
-        {...contextMenuProps}
       />
     </>
   );

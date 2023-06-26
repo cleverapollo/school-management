@@ -8,13 +8,10 @@ import {
 } from '@tyro/icons';
 import { ActionMenuIconWrapper } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { ReturnTypeOfUseListManagerState } from './state';
+import { AuthContextValue, useListManagerState } from './state';
 import { ListManagerState } from './state/types';
 
-type ContextMenuProps =
-  ReturnTypeOfUseListManagerState['cardProps']['contextMenuProps'];
-
-interface CardRightClickMenuProps extends MenuProps, ContextMenuProps {
+interface CardRightClickMenuProps extends MenuProps {
   studentId: string;
   studentIndex: number;
   enableDuplicateStudents?: boolean;
@@ -23,7 +20,7 @@ interface CardRightClickMenuProps extends MenuProps, ContextMenuProps {
 
 interface GroupSelectSubMenuProps
   extends Pick<MenuProps, 'anchorEl' | 'open' | 'onClose'> {
-  state: ContextMenuProps['state'];
+  state: AuthContextValue['state'];
   groupId: ListManagerState['id'];
   includeUnassigned?: boolean;
   onSelect?: (
@@ -90,17 +87,15 @@ function GroupSelectSubMenu({
 }
 
 export function ContextMenu({
-  selectedStudentIds,
   studentId,
   studentIndex,
   groupId,
-  state,
-  duplicateStudents,
-  moveStudents,
   enableDuplicateStudents,
   ...props
 }: CardRightClickMenuProps) {
   const { t } = useTranslation(['classListManager']);
+  const { state, selectedStudentIds, duplicateStudents, moveStudents } =
+    useListManagerState();
   const isMultipleSelected = selectedStudentIds.length > 1;
   const [subMenuContext, setSubMenuContext] = useState<null | {
     anchorEl: Element;
