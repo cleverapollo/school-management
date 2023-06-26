@@ -58,7 +58,7 @@ export function StudentContactsWidget({
   const contact = contacts?.[clampedIndex];
   const isButtonsDisabled = isLoading || numberOfContacts <= 1;
   const buttonTooltipTitle = isButtonsDisabled
-    ? t('people:nextContactDisabled', { count: 1 })
+    ? t('people:nextContactDisabled', { count: numberOfContacts })
     : '';
   const contactsRelationshipType =
     contact?.relationships?.[0]?.relationshipType;
