@@ -16,9 +16,11 @@ import {
 } from '@mui/material';
 import { CheckmarkIcon, CloseIcon } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
+import { Gender } from '@tyro/api';
 import { ListManagerState } from './state/types';
 import { useListManagerState } from './state';
 import { ContextMenu } from './context-menu';
+import { useClassListSettings } from '../../../store/class-list-settings';
 
 interface DraggableCardProps {
   index: number;
@@ -26,20 +28,36 @@ interface DraggableCardProps {
   student: ListManagerState['students'][number];
 }
 
-const getCardStyle = (
-  theme: Theme,
-  isDragging: boolean,
-  isSelected: boolean,
-  isGhosting: boolean,
-  draggableStyle: DraggingStyle | NotDraggingStyle | undefined
-) => {
+interface GetCardStyleProps {
+  theme: Theme;
+  gender: Gender | undefined | null;
+  showGender: boolean;
+  isDragging: boolean;
+  isCardSelected: boolean;
+  isGhosting: boolean;
+  draggableStyle: DraggingStyle | NotDraggingStyle | undefined;
+}
+
+const getCardStyle = ({
+  theme,
+  gender,
+  showGender,
+  isDragging,
+  isCardSelected,
+  isGhosting,
+  draggableStyle,
+}: GetCardStyleProps) => {
   // some basic styles to make the items look a bit nicer
   let backgroundColor = 'white';
+
+  if (showGender && gender) {
+    backgroundColor = gender === Gender.Male ? 'blue.lighter' : 'pink.lighter';
+  }
 
   // change background color if dragging or selected
   if (isDragging) {
     backgroundColor = 'primary.lighter';
-  } else if (isSelected) {
+  } else if (isCardSelected) {
     backgroundColor = 'primary.light';
   }
 
@@ -76,6 +94,7 @@ export function DraggableCard({ index, student, groupId }: DraggableCardProps) {
     enableDuplicateStudents,
     includeClassGroupName,
   } = useListManagerState();
+  const { showGender } = useClassListSettings();
   const name = displayName(student?.person);
   const isCardSelected = selectedStudentIds.includes(student.id);
   const showSelectionCount =
@@ -122,13 +141,15 @@ export function DraggableCard({ index, student, groupId }: DraggableCardProps) {
             {...provided.draggableProps}
             {...provided.dragHandleProps}
             sx={(theme) =>
-              getCardStyle(
+              getCardStyle({
                 theme,
-                snapshot.isDragging,
+                gender: student.gender,
+                showGender,
+                isDragging: snapshot.isDragging,
                 isCardSelected,
                 isGhosting,
-                provided.draggableProps.style
-              )
+                draggableStyle: provided.draggableProps.style,
+              })
             }
             onClick={onClick}
             onKeyDown={(event) => onKeydown(event, snapshot)}

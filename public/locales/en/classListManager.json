@@ -23,5 +23,7 @@
   "areYouSureYouWantToChangeYear": "Are you sure you want to change year?",
   "changeBlock": "Change block",
   "changeRotation": "Change rotation",
-  "changeYear": "Change year"
+  "changeYear": "Change year",
+  "activateGenderView": "Activate gender view",
+  "deactivateGenderView": "Deactivate gender view"
 }

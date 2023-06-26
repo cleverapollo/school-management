@@ -1,0 +1,13 @@
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<g stroke="currentColor" fill="none" stroke-width="1.5">
+<circle cx="7.08984" cy="10" r="5" />
+<g stroke-linecap="round" stroke-linejoin="round">
+<path d="M7.08767 20V14.9987" />
+<path d="M9.51298 17.4994H4.51172" />
+<path d="M22.0713 8.49884V4.99908" />
+<path d="M18.5714 4.99902H22.0712" />
+<path d="M14.0003 7.18549C15.6085 6.83455 17.3563 7.28424 18.6066 8.53458C20.5592 10.4872 20.5592 13.653 18.6066 15.6057C16.7957 17.4165 13.9414 17.548 11.979 16" />
+<path d="M22.0709 4.99923L18.5712 8.49898" />
+</g>
+</g>
+</svg>

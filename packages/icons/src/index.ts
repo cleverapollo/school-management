@@ -54,6 +54,7 @@ export * from './location';
 export * from './mail';
 export * from './mail-checkmark';
 export * from './mail-inbox';
+export * from './male-female';
 export * from './minus';
 export * from './mobile';
 export * from './move-group';
