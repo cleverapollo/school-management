@@ -45,12 +45,11 @@ export function UnassignedColumn({
       ?.map((student, index) => ({ student, index }))
       ?.filter(({ student }) => {
         const name = displayName(student?.person);
-        const classGroupName = student?.classGroupName;
-        const inClassGroup = includeClassGroupName
-          ? classGroupName?.toLowerCase().includes(lowerCaseSearch)
-          : false;
 
-        return name.toLowerCase().includes(lowerCaseSearch) || inClassGroup;
+        return [
+          name,
+          includeClassGroupName ? student?.classGroupName ?? '' : '',
+        ].some((toSearch) => toSearch.toLowerCase().includes(lowerCaseSearch));
       });
   }, [search, group?.students, includeClassGroupName]);
 
