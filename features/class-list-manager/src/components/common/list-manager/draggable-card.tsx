@@ -6,7 +6,14 @@ import {
   NotDraggingStyle,
 } from 'react-beautiful-dnd';
 import { Avatar, usePreferredNameLayout } from '@tyro/core';
-import { Box, IconButton, Theme, Tooltip, Typography } from '@mui/material';
+import {
+  Box,
+  IconButton,
+  Stack,
+  Theme,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { CheckmarkIcon, CloseIcon } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
 import { ListManagerState } from './state/types';
@@ -20,6 +27,7 @@ interface DraggableCardProps extends CardProps {
   groupId: ListManagerState['id'];
   student: ListManagerState['students'][number];
   enableDuplicateStudents?: boolean;
+  includeClassGroupName?: boolean | undefined | null;
 }
 
 const getCardStyle = (
@@ -70,6 +78,7 @@ export function DraggableCard({
   contextMenuProps,
   deleteDuplicate,
   enableDuplicateStudents,
+  includeClassGroupName,
 }: DraggableCardProps) {
   const { t } = useTranslation(['classListManager']);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -207,13 +216,25 @@ export function DraggableCard({
                   <CheckmarkIcon />
                 </Box>
               </Box>
-              <Typography
-                component="span"
-                variant="subtitle2"
-                sx={{ fontSize: '0.75rem', lineHeight: 1.5 }}
-              >
-                {name}
-              </Typography>
+              <Stack>
+                <Typography
+                  component="span"
+                  variant="subtitle2"
+                  sx={{ fontSize: '0.75rem', lineHeight: 1.5 }}
+                >
+                  {name}
+                </Typography>
+                {includeClassGroupName && student?.classGroupName && (
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ fontSize: '0.625rem', lineHeight: 1.5 }}
+                  >
+                    {student?.classGroupName}
+                  </Typography>
+                )}
+              </Stack>
             </Box>
             {student.isDuplicate && (
               <Tooltip title={t('classListManager:removeDuplicateStudent')}>

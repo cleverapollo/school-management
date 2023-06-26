@@ -15,6 +15,7 @@ interface ListManagerProps {
   groups: UseListManagerStateProps['groups'];
   onBulkSave: UseListManagerStateProps['onBulkSave'];
   enableDuplicateStudents?: boolean;
+  includeClassGroupName?: boolean;
   onIsDirtyChange?: (isDirty: boolean) => void;
 }
 
@@ -36,6 +37,7 @@ export function ListManager({
   groups,
   onBulkSave,
   enableDuplicateStudents = false,
+  includeClassGroupName = false,
   onIsDirtyChange,
 }: ListManagerProps) {
   const containerMargin = useContainerMargin();
@@ -75,6 +77,7 @@ export function ListManager({
                     key={group.id}
                     group={group}
                     enableDuplicateStudents={enableDuplicateStudents}
+                    includeClassGroupName={includeClassGroupName}
                   />
                 ) : (
                   <GroupColumn
@@ -82,6 +85,7 @@ export function ListManager({
                     key={group.id}
                     group={group}
                     enableDuplicateStudents={enableDuplicateStudents}
+                    includeClassGroupName={includeClassGroupName}
                   />
                 )
               )}

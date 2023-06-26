@@ -8,6 +8,7 @@ type ListManagerPerson = Pick<
 export type ListManagerStudent = {
   id: string;
   isDuplicate?: boolean;
+  classGroupName?: string | null | undefined;
   person: ListManagerPerson;
 };
 

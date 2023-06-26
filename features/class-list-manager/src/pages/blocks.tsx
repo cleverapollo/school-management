@@ -159,6 +159,7 @@ export default function ClassListManagerBlocks() {
             onBulkSave={onBulkSave}
             enableDuplicateStudents
             onIsDirtyChange={setIsDirty}
+            includeClassGroupName
           />
         )}
       </Stack>
