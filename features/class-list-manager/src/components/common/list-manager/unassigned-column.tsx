@@ -45,9 +45,13 @@ export function UnassignedColumn({
       ?.map((student, index) => ({ student, index }))
       ?.filter(({ student }) => {
         const name = displayName(student?.person);
-        return name.toLowerCase().includes(lowerCaseSearch);
+
+        return [
+          name,
+          includeClassGroupName ? student?.classGroupName ?? '' : '',
+        ].some((toSearch) => toSearch.toLowerCase().includes(lowerCaseSearch));
       });
-  }, [search, group?.students]);
+  }, [search, group?.students, includeClassGroupName]);
 
   const showNoSearchResults = search.length > 0 && filteredGroup.length === 0;
   const showEmptyGroupPlaceholder =
