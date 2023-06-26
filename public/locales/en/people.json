@@ -41,8 +41,9 @@
     "studentContactDetails": "Student's contact details",
     "about": {
       "title": "About",
-      "preferredName": "Preferred name",
+      "preferredFirstName": "Preferred forename",
       "forename": "Forename",
+      "preferredLastName": "Preferred surname",
       "surname": "Surname",
       "middleName": "Middle name",
       "dateOfBirth": "Date of birth",
@@ -174,5 +175,6 @@
   "position": "Position",
   "parkingLocation": "Parking location",
   "makeAndModel": "Make and model",
-  "preferredNameInfo": "The preferred name is displayed in place of the student's forename in Tyro"
+  "preferredFirstNameInfo": "The preferred name is displayed in place of the student's forename in Tyro",
+  "preferredLastNameInfo": "The preferred name is displayed in place of the student's surname in Tyro"
 }

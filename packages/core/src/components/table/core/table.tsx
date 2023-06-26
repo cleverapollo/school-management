@@ -2,7 +2,13 @@ import { LicenseManager } from 'ag-grid-enterprise';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
 
 import 'ag-grid-community/styles/ag-grid.css';
-import { forwardRef, MutableRefObject, useCallback, useState } from 'react';
+import {
+  ForwardedRef,
+  forwardRef,
+  MutableRefObject,
+  useCallback,
+  useState,
+} from 'react';
 import { Box, BoxProps, Card, CardProps, Stack } from '@mui/material';
 
 import './styles.css';
@@ -26,6 +32,8 @@ export type {
   CellValueChangedEvent,
   ICellEditorParams,
 } from 'ag-grid-community';
+
+export type { AgGridReact } from 'ag-grid-react';
 
 if (process.env.AG_GRID_KEY) {
   LicenseManager.setLicenseKey(process.env.AG_GRID_KEY);
@@ -219,5 +227,5 @@ function TableInner<T extends object>(
 }
 
 export const Table = forwardRef(TableInner) as <T>(
-  props: TableProps<T> & { ref?: React.Ref<AgGridReact<T>> }
+  props: TableProps<T> & { ref?: ForwardedRef<AgGridReact<T>> | null }
 ) => ReturnType<typeof TableInner>;

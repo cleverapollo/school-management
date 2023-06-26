@@ -41,6 +41,7 @@ const getClassGroupColumns = (
     headerCheckboxSelectionFilteredOnly: isStaffUser,
     checkboxSelection: ({ data }) => Boolean(data) && isStaffUser,
     lockVisible: true,
+    editable: true,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseClassGroups>) =>
@@ -145,20 +146,30 @@ export default function ClassGroupsPage() {
   }, []);
 
   const handleBulkSave = (
-    data: BulkEditedRows<ReturnTypeFromUseClassGroups, 'tutors'>
+    data: BulkEditedRows<ReturnTypeFromUseClassGroups, 'tutors' | 'name'>
   ) => {
     const updates = Object.entries(data).reduce<UpdateClassGroupGroupInput[]>(
       (acc, [partyId, changes]) => {
-        const tutors = changes?.tutors?.newValue;
-        const tutor =
-          Array.isArray(tutors) && tutors.length > 0 ? tutors[0] : undefined;
+        const changeKeys = Object.keys(changes) as Array<keyof typeof changes>;
+        const changesByKey = changeKeys.reduce<UpdateClassGroupGroupInput>(
+          (changeAcc, key) => {
+            if (key === 'tutors') {
+              const tutors = changes?.tutors?.newValue;
+              const [tutor] = tutors ?? [];
+              changeAcc.tutor = tutor?.partyId;
+            } else {
+              const value = changes[key];
+              changeAcc[key] = value?.newValue;
+            }
 
-        if (tutor) {
-          acc.push({
+            return changeAcc;
+          },
+          {
             classGroupPartyId: Number(partyId),
-            tutor: tutor?.partyId,
-          });
-        }
+          }
+        );
+
+        acc.push(changesByKey);
 
         return acc;
       },

@@ -21,12 +21,14 @@ interface UnassignedColumnProps {
   group: ListManagerState;
   cardProps: ReturnTypeOfUseListManagerState['cardProps'];
   enableDuplicateStudents?: boolean;
+  includeClassGroupName?: boolean;
 }
 
 export function UnassignedColumn({
   group,
   cardProps,
   enableDuplicateStudents,
+  includeClassGroupName,
 }: UnassignedColumnProps) {
   const theme = useTheme();
   const { t } = useTranslation(['common', 'classListManager']);
@@ -43,9 +45,13 @@ export function UnassignedColumn({
       ?.map((student, index) => ({ student, index }))
       ?.filter(({ student }) => {
         const name = displayName(student?.person);
-        return name.toLowerCase().includes(lowerCaseSearch);
+
+        return [
+          name,
+          includeClassGroupName ? student?.classGroupName ?? '' : '',
+        ].some((toSearch) => toSearch.toLowerCase().includes(lowerCaseSearch));
       });
-  }, [search, group?.students]);
+  }, [search, group?.students, includeClassGroupName]);
 
   const showNoSearchResults = search.length > 0 && filteredGroup.length === 0;
   const showEmptyGroupPlaceholder =
@@ -88,6 +94,7 @@ export function UnassignedColumn({
                   student={student}
                   groupId={group.id}
                   enableDuplicateStudents={enableDuplicateStudents}
+                  includeClassGroupName={includeClassGroupName}
                   {...cardProps}
                 />
               ))}

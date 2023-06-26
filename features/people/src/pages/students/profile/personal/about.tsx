@@ -1,7 +1,7 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { PersonalInformation, UpdateStudentInput } from '@tyro/api';
 import { RHFTextField } from '@tyro/core';
-import { Stack, Typography } from '@mui/material';
+import {  Stack, Typography } from '@mui/material';
 import { UserGroupTwoIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
@@ -15,7 +15,8 @@ import { SiblingsChips } from '../../../../components/students/siblings-chips';
 dayjs.extend(LocalizedFormat);
 
 type AboutFormState = {
-  preferredName: PersonalInformation['preferredFirstName'];
+  preferredFirstName: PersonalInformation['preferredFirstName'];
+  preferredLastName: PersonalInformation['preferredLastName'];
 };
 
 const getAboutDataWithLabels = (
@@ -26,6 +27,7 @@ const getAboutDataWithLabels = (
   const {
     preferredFirstName,
     firstName,
+    preferredLastName,
     lastName,
     middleName,
     dateOfBirth,
@@ -39,13 +41,24 @@ const getAboutDataWithLabels = (
 
   return [
     {
-      label: t('people:personal.about.preferredName'),
+      label: t('people:personal.about.preferredFirstName'),
       value: preferredFirstName,
-      tooltipInfo: t('people:preferredNameInfo'),
+      tooltipInfo: t('people:preferredFirstNameInfo'),
       valueEditor: (
         <RHFTextField
           textFieldProps={{ variant: 'standard' }}
-          controlProps={{ name: 'preferredName' }}
+          controlProps={{ name: 'preferredFirstName' }}
+        />
+      ),
+    },
+    {
+      label: t('people:personal.about.preferredLastName'),
+      value: preferredLastName,
+      tooltipInfo: t('people:preferredLastNameInfo'),
+      valueEditor: (
+        <RHFTextField
+          textFieldProps={{ variant: 'standard' }}
+          controlProps={{ name: 'preferredLastName' }}
         />
       ),
     },
@@ -57,6 +70,7 @@ const getAboutDataWithLabels = (
       label: t('people:personal.about.middleName'),
       value: middleName,
     },
+
     {
       label: t('people:personal.about.surname'),
       value: lastName,

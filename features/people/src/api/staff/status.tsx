@@ -7,11 +7,11 @@ const compositeStaffStatus = {
     room: [
       {
         roomId: '123',
-        name: 'E101',
+        name: '-',
         capacity: '',
       },
     ],
-    lesson: '2Eng-G',
+    lesson: '-',
     eventId: '12345',
   },
 };

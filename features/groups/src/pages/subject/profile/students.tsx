@@ -32,21 +32,24 @@ const getSubjectGroupsColumns = (
     valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseSubjectGroupById>) => (
-      <TablePersonAvatar
-        person={data?.person}
-        to={`/people/students/${data?.partyId ?? ''}`}
-      />
-    ),
+    }: ICellRendererParams<ReturnTypeFromUseSubjectGroupById>) =>
+      data && (
+        <TablePersonAvatar
+          person={data?.person}
+          to={`/people/students/${data?.partyId ?? ''}`}
+        />
+      ),
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
-    checkboxSelection: true,
+    checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
+    sort: 'asc',
   },
   {
-    field: 'classGroup',
+    field: 'classGroup.name',
     headerName: translate('common:classGroup'),
     valueGetter: ({ data }) => data?.classGroup?.name || '-',
+    enableRowGroup: true,
   },
 ];
 

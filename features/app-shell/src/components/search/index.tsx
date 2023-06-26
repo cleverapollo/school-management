@@ -85,7 +85,8 @@ function Searchbar() {
           <DialogTitle component="div" sx={{ p: 0 }}>
             <SearchInput value={searchQuery} onChange={setSearchQuery} />
           </DialogTitle>
-          {(!searchQuery || isLoading) && <RecentSearchSection />}
+          {/* Need to move logic to backend rather than localstorage */}
+          {/* {(!searchQuery || isLoading) && <RecentSearchSection />} */}
           {searchQuery && !isLoading && (
             <>
               <Divider />

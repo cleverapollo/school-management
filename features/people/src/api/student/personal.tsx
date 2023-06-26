@@ -13,6 +13,7 @@ const studentsPersonalById = graphql(/* GraphQL */ `
         firstName
         lastName
         preferredFirstName
+        preferredLastName
         middleName
         gender
         dateOfBirth
@@ -67,7 +68,6 @@ const studentsPersonalById = graphql(/* GraphQL */ `
         shortTermPupilNumWeeks
         reasonForLeaving
         destinationRollNo
-        previousSchoolName
         previousSchoolType
       }
       classGroup {

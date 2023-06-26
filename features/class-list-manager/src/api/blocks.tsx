@@ -51,6 +51,7 @@ const blockMemberships = graphql(/* GraphQL */ `
         rotationIteration
         unenrolledStudents {
           isDuplicate
+          classGroupName
           person {
             partyId
             title {
@@ -69,6 +70,7 @@ const blockMemberships = graphql(/* GraphQL */ `
           name
           students {
             isDuplicate
+            classGroupName
             person {
               partyId
               title {

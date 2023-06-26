@@ -41,20 +41,25 @@ function InnerAuthProvider({ children }: AuthProviderProps) {
   const [isTokenInitialized, setIsTokenInitialized] = useState(false);
 
   const logout = useCallback(() => {
-    instance.logout();
-  }, [instance]);
+    if (!account) return;
+    instance.logoutRedirect({
+      account,
+    });
+  }, [instance, account]);
 
   const login = useCallback(() => {
     instance.loginRedirect(loginRequest);
   }, [instance]);
 
   useEffect(() => {
-    if (account) {
-      acquireMsalToken({ account }).then(() => {
+    if (inProgress === 'none') {
+      if (account) {
+        acquireMsalToken({ account }).then(() => {
+          setIsTokenInitialized(true);
+        });
+      } else {
         setIsTokenInitialized(true);
-      });
-    } else if (inProgress === 'none') {
-      setIsTokenInitialized(true);
+      }
     }
   }, [account, instance, inProgress]);
 
