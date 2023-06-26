@@ -55,8 +55,11 @@ export function StudentContactsWidget({
 
   const numberOfContacts = contacts?.length ?? 0;
   const clampedIndex = wrap(0, numberOfContacts, contactIndex);
-  const isButtonsDisabled = isLoading || numberOfContacts <= 1;
   const contact = contacts?.[clampedIndex];
+  const isButtonsDisabled = isLoading || numberOfContacts <= 1;
+  const buttonTooltipTitle = isButtonsDisabled
+    ? t('people:nextContactDisabled', { count: 1 })
+    : '';
   const contactsRelationshipType =
     contact?.relationships?.[0]?.relationshipType;
 
@@ -92,17 +95,12 @@ export function StudentContactsWidget({
             borderColor: 'divider',
           }}
         >
-          <Tooltip
-            title={
-              isButtonsDisabled
-                ? t('people:nextContactDisabled', { count: numberOfContacts })
-                : ''
-            }
-          >
+          <Tooltip title={buttonTooltipTitle}>
             <span>
               <IconButton
                 size="small"
                 color="primary"
+                disabled={isButtonsDisabled}
                 onClick={() => paginate(-1)}
               >
                 <ChevronLeftIcon />
@@ -114,7 +112,9 @@ export function StudentContactsWidget({
               component="h4"
               variant="subtitle2"
               noWrap
-              sx={{ px: 2, textOverflow: 'ellipsis', textAlign: 'center' }}
+              px={2}
+              textOverflow="ellipsis"
+              textAlign="center"
             >
               {t('common:contact')}{' '}
               <Box component="span" fontWeight={600}>
@@ -123,13 +123,7 @@ export function StudentContactsWidget({
             </Typography>
           </Box>
 
-          <Tooltip
-            title={
-              isButtonsDisabled
-                ? t('people:nextContactDisabled', { count: numberOfContacts })
-                : ''
-            }
-          >
+          <Tooltip title={buttonTooltipTitle}>
             <span>
               <IconButton
                 size="small"
