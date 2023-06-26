@@ -45,9 +45,14 @@ export function UnassignedColumn({
       ?.map((student, index) => ({ student, index }))
       ?.filter(({ student }) => {
         const name = displayName(student?.person);
-        return name.toLowerCase().includes(lowerCaseSearch);
+        const classGroupName = student?.classGroupName;
+        const inClassGroup = includeClassGroupName
+          ? classGroupName?.toLowerCase().includes(lowerCaseSearch)
+          : false;
+
+        return name.toLowerCase().includes(lowerCaseSearch) || inClassGroup;
       });
-  }, [search, group?.students]);
+  }, [search, group?.students, includeClassGroupName]);
 
   const showNoSearchResults = search.length > 0 && filteredGroup.length === 0;
   const showEmptyGroupPlaceholder =
