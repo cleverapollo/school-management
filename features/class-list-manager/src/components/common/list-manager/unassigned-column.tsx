@@ -21,12 +21,14 @@ interface UnassignedColumnProps {
   group: ListManagerState;
   cardProps: ReturnTypeOfUseListManagerState['cardProps'];
   enableDuplicateStudents?: boolean;
+  includeClassGroupName?: boolean;
 }
 
 export function UnassignedColumn({
   group,
   cardProps,
   enableDuplicateStudents,
+  includeClassGroupName,
 }: UnassignedColumnProps) {
   const theme = useTheme();
   const { t } = useTranslation(['common', 'classListManager']);
@@ -88,6 +90,7 @@ export function UnassignedColumn({
                   student={student}
                   groupId={group.id}
                   enableDuplicateStudents={enableDuplicateStudents}
+                  includeClassGroupName={includeClassGroupName}
                   {...cardProps}
                 />
               ))}

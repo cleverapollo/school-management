@@ -20,12 +20,14 @@ interface GroupColumnProps {
   group: ListManagerState;
   cardProps: ReturnTypeOfUseListManagerState['cardProps'];
   enableDuplicateStudents?: boolean;
+  includeClassGroupName?: boolean;
 }
 
 export function GroupColumn({
   group,
   cardProps,
   enableDuplicateStudents,
+  includeClassGroupName,
 }: GroupColumnProps) {
   const { t } = useTranslation(['common']);
   const { spacing } = useTheme();
@@ -62,6 +64,7 @@ export function GroupColumn({
                   student={student}
                   groupId={group.id}
                   enableDuplicateStudents={enableDuplicateStudents}
+                  includeClassGroupName={includeClassGroupName}
                   {...cardProps}
                 />
               ))}
