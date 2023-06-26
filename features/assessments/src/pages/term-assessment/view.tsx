@@ -69,6 +69,16 @@ const getColumnDefs = (
       ),
   },
   {
+    headerName: t('common:year'),
+    field: 'subjectGroup.yearGroups',
+    enableRowGroup: true,
+    valueGetter: ({ data }) =>
+      data?.subjectGroup.yearGroups
+        ?.sort((a, b) => a.yearGroupId - b.yearGroupId)
+        .map((year) => year?.name)
+        .join(', '),
+  },
+  {
     field: 'resultsTotal',
     headerName: t('assessments:results'),
     suppressSizeToFit: true,
