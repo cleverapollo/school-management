@@ -1,18 +1,18 @@
 import { LoadingButton } from '@mui/lab';
 import {
-  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Stack,
   Tab,
   Tabs,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { useState } from 'react';
 import { TtSwapsInput } from '@tyro/api';
-import { useToast } from '@tyro/core';
+import { SearchInput, useToast } from '@tyro/core';
 import { useSwapTeacherAndRoomModal } from '../../../hooks/use-swap-teacher-and-room-modal';
 import { Lesson } from '../../../hooks/use-resource-table';
 import { TeacherSwapTable } from './teachers-table';
@@ -31,6 +31,13 @@ enum ModalViews {
   Room = 'room',
 }
 
+function getModalMaxWidth(numberOfLessons: number) {
+  if (numberOfLessons <= 2) return 'sm';
+  if (numberOfLessons <= 4) return 'md';
+  if (numberOfLessons <= 6) return 'lg';
+  return 'xl';
+}
+
 export function SwapTeacherRoomModal({
   isOpen,
   onClose,
@@ -40,6 +47,7 @@ export function SwapTeacherRoomModal({
   const { t } = useTranslation(['common', 'timetable']);
   const { toast } = useToast();
   const [visibleView, setVisibleView] = useState(ModalViews.Teacher);
+  const [searchValue, setSearchValue] = useState('');
 
   const { mutateAsync: swapTeachersAndRooms, isLoading } =
     useSwapTeachersAndRooms();
@@ -96,29 +104,55 @@ export function SwapTeacherRoomModal({
   };
 
   return (
-    <Dialog scroll="paper" open={isOpen} onClose={handleClose} maxWidth="xl">
-      <Box p={3}>
-        <DialogTitle sx={{ p: 0 }}>{t('timetable:swapping')}</DialogTitle>
-        <Tabs
-          value={visibleView}
-          onChange={(_event, newValue: ModalViews) => setVisibleView(newValue)}
-          aria-label={t('timetable:selectIfYouWantSwapTeachersOrRooms')}
-          sx={{
-            minHeight: 32,
-            '& button': {
-              fontSize: '0.75rem',
+    <Dialog
+      scroll="paper"
+      open={isOpen}
+      onClose={handleClose}
+      maxWidth={getModalMaxWidth(lessons?.length ?? 0)}
+      fullWidth
+      PaperProps={{
+        sx: {
+          height: '100%',
+        },
+      }}
+    >
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        spacing={2}
+        p={3}
+        pb={0}
+      >
+        <Stack>
+          <DialogTitle sx={{ p: 0 }}>{t('timetable:swapping')}</DialogTitle>
+          <Tabs
+            value={visibleView}
+            onChange={(_event, newValue: ModalViews) => {
+              setSearchValue('');
+              setVisibleView(newValue);
+            }}
+            aria-label={t('timetable:selectIfYouWantSwapTeachersOrRooms')}
+            sx={{
               minHeight: 32,
+              '& button': {
+                fontSize: '0.75rem',
+                minHeight: 32,
 
-              '&:not(:last-of-type)': {
-                mr: 2,
+                '&:not(:last-of-type)': {
+                  mr: 2,
+                },
               },
-            },
-          }}
-        >
-          <Tab value={ModalViews.Teacher} label={t('common:teacher')} />
-          <Tab value={ModalViews.Room} label={t('timetable:room')} />
-        </Tabs>
-      </Box>
+            }}
+          >
+            <Tab value={ModalViews.Teacher} label={t('common:teacher')} />
+            <Tab value={ModalViews.Room} label={t('timetable:room')} />
+          </Tabs>
+        </Stack>
+        <SearchInput
+          value={searchValue}
+          onChange={(event) => setSearchValue(event.target.value)}
+        />
+      </Stack>
       <DialogContent>
         {visibleView === ModalViews.Teacher ? (
           <TeacherSwapTable
@@ -126,6 +160,7 @@ export function SwapTeacherRoomModal({
             filter={requestFilter}
             swapTeacher={swapTeacher}
             changeState={changeState}
+            searchValue={searchValue}
           />
         ) : (
           <RoomSwapTable
@@ -133,6 +168,7 @@ export function SwapTeacherRoomModal({
             filter={requestFilter}
             swapRoom={swapRoom}
             changeState={changeState}
+            searchValue={searchValue}
           />
         )}
       </DialogContent>
