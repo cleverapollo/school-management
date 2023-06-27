@@ -6,6 +6,10 @@ const contactsStudentsById = graphql(/* GraphQL */ `
   query core_studentContacts_students($filter: StudentContactFilter!) {
     core_studentContacts(filter: $filter) {
       partyId
+      person {
+        firstName
+        lastName
+      }
       relationships {
         studentPartyId
         relationshipType
@@ -52,10 +56,10 @@ export function useContactStudents(contactId: number | undefined) {
   return useQuery({
     ...contactStudentsQuery(contactId),
     select: ({ core_studentContacts }) => {
-      if (!Array.isArray(core_studentContacts)) return [];
+      if (!Array.isArray(core_studentContacts)) return null;
       const [studentContact] = core_studentContacts;
 
-      return studentContact?.relationships ?? [];
+      return studentContact;
     },
   });
 }

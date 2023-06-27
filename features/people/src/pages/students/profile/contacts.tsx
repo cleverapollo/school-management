@@ -11,6 +11,7 @@ import {
   usePreferredNameLayout,
   ReturnTypeDisplayName,
   useDisclosure,
+  TableSwitch,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -23,8 +24,10 @@ import {
 import { Box, Fade } from '@mui/material';
 import { SendSmsModal } from '@tyro/sms';
 import { SmsRecipientType } from '@tyro/api';
+import { RelationshipTypeCellEditor } from '../../../components/contacts/relationship-type-cell-editor';
 import { useStudentsContacts } from '../../../api/student/overview';
 import { joinAddress } from '../../../utils/join-address';
+import { PriorityTypeCellEditor } from '../../../components/contacts/priority-cell-editor';
 
 type ReturnTypeFromUseContacts = NonNullable<
   ReturnType<typeof useStudentsContacts>['data']
@@ -56,9 +59,11 @@ const getStudentContactColumns = (
     lockVisible: true,
   },
   {
-    field: 'relationships[0].relationshipType',
+    field: 'relationships.0.relationshipType',
     headerName: translate('common:relationship'),
-    valueGetter: ({ data }) => {
+    editable: true,
+    cellEditorSelector: RelationshipTypeCellEditor(translate),
+    valueFormatter: ({ data }) => {
       const contactsRelationshipType =
         data?.relationships?.[0]?.relationshipType;
       return contactsRelationshipType
@@ -83,13 +88,18 @@ const getStudentContactColumns = (
       }),
   },
   {
-    field: 'relationships[0].priority',
+    field: 'relationships.0.priority',
     headerName: translate('people:priority'),
+    editable: true,
+    cellEditorSelector: PriorityTypeCellEditor(),
   },
   {
-    field: 'legalGuardian',
+    field: 'relationships.0.legalGuardian',
     headerName: translate('people:legalGuardian'),
-    valueGetter: ({ data }) =>
+    editable: true,
+    cellClass: 'disable-cell-edit-style',
+    cellEditor: TableSwitch,
+    valueFormatter: ({ data }) =>
       data?.relationships?.[0]?.legalGuardian
         ? translate('common:yes')
         : translate('common:no'),
@@ -102,9 +112,12 @@ const getStudentContactColumns = (
     ),
   },
   {
-    field: 'pickupRights',
+    field: 'relationships.0.pickupRights',
     headerName: translate('people:pickupPermission'),
-    valueGetter: ({ data }) =>
+    editable: true,
+    cellClass: 'disable-cell-edit-style',
+    cellEditor: TableSwitch,
+    valueFormatter: ({ data }) =>
       data?.relationships?.[0]?.pickupRights
         ? translate('common:yes')
         : translate('common:no'),
@@ -117,9 +130,12 @@ const getStudentContactColumns = (
     ),
   },
   {
-    field: 'allowAccessToStudentData',
+    field: 'relationships.0.allowAccessToStudentData',
     headerName: translate('people:allowAccessToStudentData'),
-    valueGetter: ({ data }) =>
+    editable: true,
+    cellClass: 'disable-cell-edit-style',
+    cellEditor: TableSwitch,
+    valueFormatter: ({ data }) =>
       data?.relationships?.[0]?.allowAccessToStudentData
         ? translate('common:yes')
         : translate('common:no'),
@@ -132,9 +148,12 @@ const getStudentContactColumns = (
     ),
   },
   {
-    field: 'relationships[0].allowedToContact',
+    field: 'relationships.0.allowedToContact',
     headerName: translate('people:allowedToContact'),
-    valueGetter: ({ data }) =>
+    editable: true,
+    cellClass: 'disable-cell-edit-style',
+    cellEditor: TableSwitch,
+    valueFormatter: ({ data }) =>
       data?.relationships?.[0]?.allowedToContact
         ? translate('common:yes')
         : translate('common:no'),
@@ -147,9 +166,15 @@ const getStudentContactColumns = (
     ),
   },
   {
-    field: 'relationships[0].includeInSms',
+    field: 'relationships.0.includeInSms',
     headerName: translate('people:includedInSms'),
+    editable: true,
+    cellClass: 'disable-cell-edit-style',
+    cellEditor: TableSwitch,
     valueGetter: ({ data }) =>
+      data?.relationships?.[0]?.allowedToContact &&
+      data?.relationships?.[0]?.includeInSms,
+    valueFormatter: ({ data }) =>
       data?.relationships?.[0]?.includeInSms
         ? translate('common:yes')
         : translate('common:no'),
@@ -157,22 +182,34 @@ const getStudentContactColumns = (
       data,
     }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
       <TableBooleanValue
-        value={Boolean(data?.relationships?.[0]?.includeInSms)}
+        value={Boolean(
+          data?.relationships?.[0]?.allowedToContact &&
+            data?.relationships?.[0]?.includeInSms
+        )}
       />
     ),
   },
   {
-    field: 'relationships[0].includeInTmail',
+    field: 'relationships.0.includeInTmail',
     headerName: translate('people:includeInTmail'),
+    editable: true,
+    cellClass: 'disable-cell-edit-style',
+    cellEditor: TableSwitch,
     valueGetter: ({ data }) =>
-      data?.relationships?.[0]?.includeInSms
+      data?.relationships?.[0]?.allowedToContact &&
+      data?.relationships?.[0]?.includeInTmail,
+    valueFormatter: ({ data }) =>
+      data?.relationships?.[0]?.includeInTmail
         ? translate('common:yes')
         : translate('common:no'),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
       <TableBooleanValue
-        value={Boolean(data?.relationships?.[0]?.includeInTmail)}
+        value={Boolean(
+          data?.relationships?.[0]?.allowedToContact &&
+            data?.relationships?.[0]?.includeInTmail
+        )}
       />
     ),
   },
