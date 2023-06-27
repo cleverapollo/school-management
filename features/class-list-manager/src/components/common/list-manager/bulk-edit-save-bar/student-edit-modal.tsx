@@ -13,14 +13,12 @@ import {
 import { Avatar, usePreferredNameLayout } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { UndoIcon } from '@tyro/icons';
-import { ReturnTypeOfUseListManagerState } from '../state';
+import { useListManagerState } from '../state';
 import { EditedStudent } from '../state/edited-state';
 
 interface StudentEditsModalProps {
   open: boolean;
-  editedStudents: ReturnTypeOfUseListManagerState['editedState']['editedStudents'];
   onClose: () => void;
-  revertChange: ReturnTypeOfUseListManagerState['editedState']['revertChange'];
 }
 
 function getChangeStatus(
@@ -52,14 +50,12 @@ function getChangeStatus(
   return '';
 }
 
-export function StudentEditsModal({
-  open,
-  editedStudents,
-  onClose,
-  revertChange,
-}: StudentEditsModalProps) {
+export function StudentEditsModal({ open, onClose }: StudentEditsModalProps) {
   const { t } = useTranslation(['common', 'classListManager']);
   const { displayName } = usePreferredNameLayout();
+  const {
+    editedState: { editedStudents, revertChange },
+  } = useListManagerState();
 
   return (
     <Dialog

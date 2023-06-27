@@ -6,7 +6,7 @@ import { useState, useMemo } from 'react';
 import { DraggableCard } from './draggable-card';
 import { EmptyGroupPlaceholder } from './empty-group-placeholder';
 import { ListManagerState } from './state/types';
-import { ReturnTypeOfUseListManagerState } from './state';
+import { useListManagerState } from './state';
 
 const getListStyle = ({ customShadows }: Theme, isDraggingOver: boolean) =>
   ({
@@ -19,21 +19,14 @@ const getListStyle = ({ customShadows }: Theme, isDraggingOver: boolean) =>
 
 interface UnassignedColumnProps {
   group: ListManagerState;
-  cardProps: ReturnTypeOfUseListManagerState['cardProps'];
-  enableDuplicateStudents?: boolean;
-  includeClassGroupName?: boolean;
 }
 
-export function UnassignedColumn({
-  group,
-  cardProps,
-  enableDuplicateStudents,
-  includeClassGroupName,
-}: UnassignedColumnProps) {
+export function UnassignedColumn({ group }: UnassignedColumnProps) {
   const theme = useTheme();
   const { t } = useTranslation(['common', 'classListManager']);
   const { displayName } = usePreferredNameLayout();
   const [search, setSearch] = useState('');
+  const { includeClassGroupName } = useListManagerState();
 
   const filteredGroup = useMemo(() => {
     if (!group?.students) return [];
@@ -93,9 +86,6 @@ export function UnassignedColumn({
                   index={index}
                   student={student}
                   groupId={group.id}
-                  enableDuplicateStudents={enableDuplicateStudents}
-                  includeClassGroupName={includeClassGroupName}
-                  {...cardProps}
                 />
               ))}
               {showNoSearchResults && (

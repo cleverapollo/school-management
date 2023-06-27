@@ -16,34 +16,48 @@ import {
 } from '@mui/material';
 import { CheckmarkIcon, CloseIcon } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
+import { Gender } from '@tyro/api';
 import { ListManagerState } from './state/types';
-import { ReturnTypeOfUseListManagerState } from './state';
+import { useListManagerState } from './state';
 import { ContextMenu } from './context-menu';
+import { useClassListSettings } from '../../../store/class-list-settings';
 
-type CardProps = ReturnTypeOfUseListManagerState['cardProps'];
-
-interface DraggableCardProps extends CardProps {
+interface DraggableCardProps {
   index: number;
   groupId: ListManagerState['id'];
   student: ListManagerState['students'][number];
-  enableDuplicateStudents?: boolean;
-  includeClassGroupName?: boolean | undefined | null;
 }
 
-const getCardStyle = (
-  theme: Theme,
-  isDragging: boolean,
-  isSelected: boolean,
-  isGhosting: boolean,
-  draggableStyle: DraggingStyle | NotDraggingStyle | undefined
-) => {
+interface GetCardStyleProps {
+  theme: Theme;
+  gender: Gender | undefined | null;
+  showGender: boolean;
+  isDragging: boolean;
+  isCardSelected: boolean;
+  isGhosting: boolean;
+  draggableStyle: DraggingStyle | NotDraggingStyle | undefined;
+}
+
+const getCardStyle = ({
+  theme,
+  gender,
+  showGender,
+  isDragging,
+  isCardSelected,
+  isGhosting,
+  draggableStyle,
+}: GetCardStyleProps) => {
   // some basic styles to make the items look a bit nicer
   let backgroundColor = 'white';
+
+  if (showGender && gender) {
+    backgroundColor = gender === Gender.Male ? 'blue.lighter' : 'pink.lighter';
+  }
 
   // change background color if dragging or selected
   if (isDragging) {
     backgroundColor = 'primary.lighter';
-  } else if (isSelected) {
+  } else if (isCardSelected) {
     backgroundColor = 'primary.light';
   }
 
@@ -68,21 +82,19 @@ const getCardStyle = (
   } as const;
 };
 
-export function DraggableCard({
-  index,
-  student,
-  groupId,
-  performCardAction,
-  selectedStudentIds,
-  draggingStudentId,
-  contextMenuProps,
-  deleteDuplicate,
-  enableDuplicateStudents,
-  includeClassGroupName,
-}: DraggableCardProps) {
+export function DraggableCard({ index, student, groupId }: DraggableCardProps) {
   const { t } = useTranslation(['classListManager']);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const { displayName } = usePreferredNameLayout();
+  const {
+    selectedStudentIds,
+    draggingStudentId,
+    performCardAction,
+    deleteDuplicate,
+    enableDuplicateStudents,
+    includeClassGroupName,
+  } = useListManagerState();
+  const { showGender } = useClassListSettings();
   const name = displayName(student?.person);
   const isCardSelected = selectedStudentIds.includes(student.id);
   const showSelectionCount =
@@ -129,13 +141,15 @@ export function DraggableCard({
             {...provided.draggableProps}
             {...provided.dragHandleProps}
             sx={(theme) =>
-              getCardStyle(
+              getCardStyle({
                 theme,
-                snapshot.isDragging,
+                gender: student.gender,
+                showGender,
+                isDragging: snapshot.isDragging,
                 isCardSelected,
                 isGhosting,
-                provided.draggableProps.style
-              )
+                draggableStyle: provided.draggableProps.style,
+              })
             }
             onClick={onClick}
             onKeyDown={(event) => onKeydown(event, snapshot)}
@@ -259,7 +273,6 @@ export function DraggableCard({
         studentIndex={index}
         groupId={groupId}
         enableDuplicateStudents={enableDuplicateStudents}
-        {...contextMenuProps}
       />
     </>
   );

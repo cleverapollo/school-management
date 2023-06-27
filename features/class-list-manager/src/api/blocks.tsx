@@ -52,6 +52,7 @@ const blockMemberships = graphql(/* GraphQL */ `
         unenrolledStudents {
           isDuplicate
           classGroupName
+          gender
           person {
             partyId
             title {
@@ -71,6 +72,7 @@ const blockMemberships = graphql(/* GraphQL */ `
           students {
             isDuplicate
             classGroupName
+            gender
             person {
               partyId
               title {
