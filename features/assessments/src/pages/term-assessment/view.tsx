@@ -47,7 +47,7 @@ const getColumnDefs = (
       data,
     }: ICellRendererParams<ReturnTypeFromUseAssessmentSubjectGroups>) =>
       data && (
-        <Typography variant="body2" noWrap>
+        <Typography component="span" variant="body2" noWrap>
           {data?.subjectGroup.subjects
             ?.map((subject) => subject?.name ?? '')
             .join(', ')}
@@ -63,7 +63,7 @@ const getColumnDefs = (
       data,
     }: ICellRendererParams<ReturnTypeFromUseAssessmentSubjectGroups>) =>
       data && (
-        <Typography variant="body2" noWrap>
+        <Typography component="span" variant="body2" noWrap>
           {displayNames(data?.subjectGroup.staff)}
         </Typography>
       ),
