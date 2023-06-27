@@ -34,7 +34,9 @@ export function TeacherSwapTable({
   const filteredTeachers = useMemo(
     () =>
       availableTeachers?.teachers.filter(({ teacher }) =>
-        displayName(teacher.person).toLowerCase().includes(searchValue)
+        displayName(teacher.person)
+          .toLowerCase()
+          .includes(searchValue.toLowerCase())
       ) ?? [],
     [searchValue, availableTeachers?.teachers]
   );
