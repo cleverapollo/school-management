@@ -72,11 +72,23 @@ const getColumnDefs = (
     headerName: t('common:year'),
     field: 'subjectGroup.yearGroups',
     enableRowGroup: true,
+    filter: true,
     valueGetter: ({ data }) =>
       data?.subjectGroup.yearGroups
         ?.sort((a, b) => a.yearGroupId - b.yearGroupId)
         .map((year) => year?.name)
         .join(', '),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAssessmentSubjectGroups>) =>
+      data && (
+        <Typography component="span" variant="body2" noWrap>
+          {data?.subjectGroup.yearGroups
+            ?.sort((a, b) => a.yearGroupId - b.yearGroupId)
+            .map((year) => year?.name)
+            .join(', ')}
+        </Typography>
+      ),
   },
   {
     field: 'resultsTotal',
