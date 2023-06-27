@@ -47,7 +47,7 @@ const getColumnDefs = (
       data,
     }: ICellRendererParams<ReturnTypeFromUseAssessmentSubjectGroups>) =>
       data && (
-        <Typography variant="body2" noWrap>
+        <Typography component="span" variant="body2" noWrap>
           {data?.subjectGroup.subjects
             ?.map((subject) => subject?.name ?? '')
             .join(', ')}
@@ -63,8 +63,30 @@ const getColumnDefs = (
       data,
     }: ICellRendererParams<ReturnTypeFromUseAssessmentSubjectGroups>) =>
       data && (
-        <Typography variant="body2" noWrap>
+        <Typography component="span" variant="body2" noWrap>
           {displayNames(data?.subjectGroup.staff)}
+        </Typography>
+      ),
+  },
+  {
+    headerName: t('common:year'),
+    field: 'subjectGroup.yearGroups',
+    enableRowGroup: true,
+    filter: true,
+    valueGetter: ({ data }) =>
+      data?.subjectGroup.yearGroups
+        ?.sort((a, b) => a.yearGroupId - b.yearGroupId)
+        .map((year) => year?.name)
+        .join(', '),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAssessmentSubjectGroups>) =>
+      data && (
+        <Typography component="span" variant="body2" noWrap>
+          {data?.subjectGroup.yearGroups
+            ?.sort((a, b) => a.yearGroupId - b.yearGroupId)
+            .map((year) => year?.name)
+            .join(', ')}
         </Typography>
       ),
   },
