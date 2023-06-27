@@ -47,7 +47,7 @@ export interface UseListManagerStateProps {
   onBulkSave: UseEditedStateProps['onBulkSave'];
 }
 
-export type AuthContextValue = {
+export type ListManagerContextValue = {
   state: ListManagerState[];
   onDragEnd: OnDragEndResponder;
   onDragStart: OnDragStartResponder;
@@ -71,7 +71,7 @@ export type AuthContextValue = {
   includeClassGroupName: boolean;
 };
 
-const ListManagerContext = createContext<AuthContextValue | undefined>(
+const ListManagerContext = createContext<ListManagerContextValue | undefined>(
   undefined
 );
 

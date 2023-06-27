@@ -8,7 +8,7 @@ import {
 } from '@tyro/icons';
 import { ActionMenuIconWrapper } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { AuthContextValue, useListManagerState } from './state';
+import { ListManagerContextValue, useListManagerState } from './state';
 import { ListManagerState } from './state/types';
 
 interface CardRightClickMenuProps extends MenuProps {
@@ -20,7 +20,7 @@ interface CardRightClickMenuProps extends MenuProps {
 
 interface GroupSelectSubMenuProps
   extends Pick<MenuProps, 'anchorEl' | 'open' | 'onClose'> {
-  state: AuthContextValue['state'];
+  state: ListManagerContextValue['state'];
   groupId: ListManagerState['id'];
   includeUnassigned?: boolean;
   onSelect?: (
