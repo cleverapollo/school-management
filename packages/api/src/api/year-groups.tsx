@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { graphql } from '../gql';
-import { gqlClient } from '../gql-client';
+import { gqlClient } from '../clients';
 import { queryClient } from '../query-client';
 import { YearGroupFilter } from '../gql/graphql';
 
