@@ -8,6 +8,8 @@ import {
   createContext,
   useMemo,
   ReactNode,
+  Dispatch,
+  SetStateAction,
 } from 'react';
 import {
   OnDragEndResponder,
@@ -16,6 +18,7 @@ import {
 } from 'react-beautiful-dnd';
 import { useTranslation } from '@tyro/i18n';
 import {
+  usePreferredNameLayout,
   useToast,
   wasMultiSelectKeyUsed,
   wasToggleInSelectionGroupKeyUsed,
@@ -69,6 +72,8 @@ export type ListManagerContextValue = {
   ) => void;
   enableDuplicateStudents: boolean;
   includeClassGroupName: boolean;
+  unassignedSearch: string;
+  setUnassignedSearch: Dispatch<SetStateAction<string>>;
 };
 
 const ListManagerContext = createContext<ListManagerContextValue | undefined>(
@@ -96,6 +101,8 @@ export function ListManagerProvider({
 }: ListManagerProviderProps) {
   const { t } = useTranslation(['classListManager']);
   const { toast } = useToast();
+  const [unassignedSearch, setUnassignedSearch] = useState('');
+  const { displayName } = usePreferredNameLayout();
 
   const lastEditedGroups = useRef<
     UseEditedStateProps['lastEditedGroups']['current']
@@ -245,7 +252,13 @@ export function ListManagerProvider({
       }
 
       if (wasMultiSelectKeyUsed(event)) {
-        return multiSelectTo(studentId, selectedIds, state);
+        return multiSelectTo(
+          studentId,
+          selectedIds,
+          state,
+          unassignedSearch,
+          displayName
+        );
       }
 
       return toggleSelection(studentId, selectedIds);
@@ -328,6 +341,8 @@ export function ListManagerProvider({
       moveStudents,
       enableDuplicateStudents,
       includeClassGroupName,
+      unassignedSearch,
+      setUnassignedSearch,
     }),
     [
       state,
@@ -343,6 +358,8 @@ export function ListManagerProvider({
       moveStudents,
       enableDuplicateStudents,
       includeClassGroupName,
+      unassignedSearch,
+      setUnassignedSearch,
     ]
   );
 
