@@ -9,7 +9,6 @@ import {
   Table,
   TablePersonAvatar,
 } from '@tyro/core';
-import { useAcademicNamespace } from '@tyro/api';
 import { EditIcon } from '@tyro/icons';
 import { TFunction, useTranslation } from '@tyro/i18n';
 
@@ -20,55 +19,52 @@ import {
   useSyncRequests,
   ReturnTypeFromUseSyncRequests,
 } from '../../api/ppod/sync-requests';
+import { SyncStatusChip } from '../../components/ppod/sync-status-chip';
 
 dayjs.extend(LocalizedFormat);
 
 const getColumnDefs = (
   t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>
 ): GridOptions<ReturnTypeFromUseSyncRequests>['columnDefs'] => [
-  {
-    field: 'requester',
-    headerName: t('settings:ppodSync.completedBy'),
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseSyncRequests, any>) =>
-      data ? <TablePersonAvatar person={data?.requester} /> : null,
-  },
-  {
-    field: 'requestedOn',
-    headerName: t('settings:ppodSync.date'),
-    enableRowGroup: true,
-    valueFormatter: ({ data }) =>
-      data?.requestedOn ? dayjs(data?.requestedOn).format('LL') : '',
-  },
+  // {
+  //   field: 'requester',
+  //   headerName: t('settings:ppodSync.completedBy'),
+  //   cellRenderer: ({
+  //     data,
+  //   }: ICellRendererParams<ReturnTypeFromUseSyncRequests, any>) =>
+  //     data ? <TablePersonAvatar person={data?.requester} /> : null,
+  // },
   {
     field: 'requestedOn',
-    headerName: t('settings:ppodSync.time'),
+    headerName: t('common:dateAndTime'),
     enableRowGroup: true,
+    sortable: true,
+    sort: 'desc',
     valueFormatter: ({ data }) =>
-      data?.requestedOn ? dayjs(data?.requestedOn).format('LT') : '',
+      data?.requestedOn ? dayjs(data?.requestedOn).format('lll') : '',
+    comparator: (dateA: string, dateB: string) =>
+      dayjs(dateA).unix() - dayjs(dateB).unix(),
   },
   {
     field: 'syncRequestStatus',
     headerName: t('settings:ppodSync.status'),
     enableRowGroup: true,
-    valueFormatter: ({ data }) =>
+    valueGetter: ({ data }) =>
       data?.syncRequestStatus
-        ? t(`settings:ppodSync.${data?.syncRequestStatus}`)
+        ? t(`settings:ppodSyncStatus.${data?.syncRequestStatus}`)
         : '',
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseSyncRequests, any>) =>
+      data?.syncRequestStatus ? (
+        <SyncStatusChip status={data.syncRequestStatus} />
+      ) : null,
   },
 ];
 
 export default function Sync() {
   const { t } = useTranslation(['common', 'settings']);
   const navigate = useNavigate();
-  // NOTE: according to Ian filter should be an empty object
-  // const { activeAcademicNamespace } = useAcademicNamespace();
-  // const { startDate, endDate } = activeAcademicNamespace || {};
-  // const formattedDates = {
-  //   from: dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss[Z]'),
-  //   to: dayjs(endDate).format('YYYY-MM-DDTHH:mm:ss[Z]'),
-  // };
 
   const { data: syncRequests } = useSyncRequests({});
 
@@ -80,7 +76,7 @@ export default function Sync() {
         label: t('settings:ppodSync.enterSyncCredentials'),
         icon: <EditIcon />,
         onClick: () => {
-          navigate('/settings/ppod-login');
+          navigate('/settings/ppod/login');
         },
       },
     ];
@@ -89,19 +85,17 @@ export default function Sync() {
   }, []);
 
   return (
-    <Stack spacing={3}>
-      <Table
-        rowData={syncRequests ?? []}
-        columnDefs={myColumnDefs}
-        getRowId={({ data }) => String(data?.id)}
-        rightAdornment={
-          <Fade in unmountOnExit>
-            <Box>
-              <ActionMenu menuItems={actionMenuItems} />
-            </Box>
-          </Fade>
-        }
-      />
-    </Stack>
+    <Table
+      rowData={syncRequests ?? []}
+      columnDefs={myColumnDefs}
+      getRowId={({ data }) => String(data?.id)}
+      rightAdornment={
+        <Fade in unmountOnExit>
+          <Box>
+            <ActionMenu menuItems={actionMenuItems} />
+          </Box>
+        </Fade>
+      }
+    />
   );
 }

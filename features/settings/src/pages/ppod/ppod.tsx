@@ -3,23 +3,20 @@ import { useTranslation } from '@tyro/i18n';
 import { Box } from '@mui/material';
 import { useLocation } from 'react-router';
 import { LoadingButton } from '@mui/lab';
+import { SyncIcon } from '@tyro/icons';
 import { useSyncFromPpodQuery } from '../../api/ppod/sync-data';
-import { usePpodCredentialsStatus } from '../../api/ppod/ppod-credentials-status';
 import SyncContainer from '../../components/ppod/sync-container';
-import Login from './login';
 
 export default function Container() {
   const { t } = useTranslation(['common', 'settings']);
-  const { refetch, isFetching } = useSyncFromPpodQuery();
+  const { mutateAsync: syncFromPpod, isLoading } = useSyncFromPpodQuery();
 
   const currentUrl = useLocation();
 
   const showSyncFromPpodButton =
     !currentUrl.pathname.includes('sync-data/details');
 
-  const { data: ppodCredentialsStatus } = usePpodCredentialsStatus();
-
-  return ppodCredentialsStatus ? (
+  return (
     <PageContainer title={t('settings:ppodSync.title')}>
       <PageHeading
         title={t('settings:ppod')}
@@ -29,9 +26,9 @@ export default function Container() {
             <Box display="flex" alignItems="center">
               <LoadingButton
                 variant="contained"
-                size="large"
-                onClick={() => refetch()}
-                loading={isFetching}
+                onClick={() => syncFromPpod()}
+                loading={isLoading}
+                startIcon={<SyncIcon />}
               >
                 {t('settings:ppodSync.syncFromPpod')}
               </LoadingButton>
@@ -41,7 +38,5 @@ export default function Container() {
       />
       <SyncContainer />
     </PageContainer>
-  ) : (
-    <Login />
   );
 }
