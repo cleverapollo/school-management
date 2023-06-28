@@ -6,10 +6,6 @@ const contactsStudentsById = graphql(/* GraphQL */ `
   query core_studentContacts_students($filter: StudentContactFilter!) {
     core_studentContacts(filter: $filter) {
       partyId
-      person {
-        firstName
-        lastName
-      }
       relationships {
         studentPartyId
         relationshipType
