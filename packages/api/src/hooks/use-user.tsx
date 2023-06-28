@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router';
-import { gqlClient } from '../gql-client';
+import { gqlClient } from '../clients';
 
 import { graphql } from '../gql/gql';
 import { GlobalUser, MyAuthDetailsQuery } from '../gql/graphql';

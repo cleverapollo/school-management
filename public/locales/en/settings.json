@@ -63,11 +63,14 @@
     "syncFromPpod": "Sync from PPOD",
     "syncSuccessful": "Sync successful",
     "syncUnsuccessful": "Sync unsuccessful",
+    "unableToSyncData": "Unable to sync data",
+    "incorrectCredentials": "Incorrect credentials"
+  },
+  "ppodSyncStatus": {
     "SUCCESS": "Success",
     "FAIL": "Fail",
     "ERROR": "Error",
-    "unableToSyncData": "Unable to sync data",
-    "incorrectCredentials": "Incorrect credentials"
+    "IN_PROGRESS": "In progress"
   },
   "schoolDetails": {
     "contact": "Contact",
