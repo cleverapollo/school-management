@@ -28,6 +28,10 @@ const assessmentSubjectGroupsList = graphql(/* GraphQL */ `
           firstName
           lastName
         }
+        yearGroups {
+          yearGroupId
+          name
+        }
       }
       resultsTotal
       resultsEntered

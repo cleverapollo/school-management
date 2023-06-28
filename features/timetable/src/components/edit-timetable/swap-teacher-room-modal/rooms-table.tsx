@@ -1,15 +1,7 @@
-import {
-  Stack,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { TtSwapTeacherFilter } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
-import dayjs from 'dayjs';
+import { useMemo } from 'react';
 import { ReturnTypeOfUseSwapTeacherAndRoom } from '../../../hooks/use-swap-teacher-and-room-modal';
 import { useAvailableRoomsForResource } from '../../../api/available-resource-options';
 import { SwapStyledTable } from './table-style';
@@ -23,6 +15,7 @@ interface RoomSwapTableProps {
   filter: TtSwapTeacherFilter;
   swapRoom: ReturnTypeOfUseSwapTeacherAndRoom['swapRoom'];
   changeState: ReturnTypeOfUseSwapTeacherAndRoom['changeState'];
+  searchValue: string;
 }
 
 export function RoomSwapTable({
@@ -30,11 +23,20 @@ export function RoomSwapTable({
   filter,
   swapRoom,
   changeState,
+  searchValue,
 }: RoomSwapTableProps) {
   const { t } = useTranslation(['common', 'timetable']);
   const { data: availableRooms, isLoading } = useAvailableRoomsForResource(
     isOpen,
     filter
+  );
+
+  const filteredRooms = useMemo(
+    () =>
+      availableRooms?.rooms.filter(({ room }) =>
+        room.name.toLowerCase().includes(searchValue.toLowerCase())
+      ) ?? [],
+    [availableRooms, searchValue]
   );
 
   if (isLoading || changeState.length === 0) {
@@ -50,7 +52,7 @@ export function RoomSwapTable({
         />
       </TableHead>
       <TableBody>
-        {availableRooms?.rooms.map(({ roomId, room, lessonOnTimeslots }) => (
+        {filteredRooms.map(({ roomId, room, lessonOnTimeslots }) => (
           <TableRow key={roomId}>
             <>
               <TableCell sx={{ fontWeight: 600 }}>{room.name}</TableCell>

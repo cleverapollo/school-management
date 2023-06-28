@@ -12,7 +12,6 @@ const Rooms = lazy(() => import('./pages/rooms'));
 const AcademicYearsList = lazy(() => import('./pages/academic-years'));
 const Subjects = lazy(() => import('./pages/subjects'));
 const Ppod = lazy(() => import('./pages/ppod/ppod'));
-const Container = lazy(() => import('./pages/ppod/container'));
 const Login = lazy(() => import('./pages/ppod/login'));
 const Sync = lazy(() => import('./pages/ppod/sync'));
 const SchoolDetails = lazy(() => import('./pages/ppod/school-details'));
@@ -75,9 +74,8 @@ export const getRoutes: NavObjectFunction = (t) => [
                   return ppodCredentialsStatus?.ppod_PPODCredentials
                     ?.lastSyncSuccessful
                     ? redirect('./sync')
-                    : redirect('/settings/ppod-login');
+                    : redirect('./login');
                 },
-                element: <Container />,
               },
               {
                 type: NavObjectType.NonMenuLink,
@@ -93,7 +91,7 @@ export const getRoutes: NavObjectFunction = (t) => [
           },
           {
             type: NavObjectType.NonMenuLink,
-            path: 'ppod-login',
+            path: 'ppod/login',
             hasAccess: (permissions) => permissions.isStaffUser,
             element: <Login />,
           },

@@ -4,21 +4,22 @@ import { useTranslation } from '@tyro/i18n';
 import { SaveIcon, ThumbsUpCheckmarkIcon, UndoIcon } from '@tyro/icons';
 import { useDisclosure } from '@tyro/core';
 import { EditState } from '../state/edited-state';
-import { ReturnTypeOfUseListManagerState } from '../state';
 import { StudentEditsModal } from './student-edit-modal';
+import { useListManagerState } from '../state';
 
-type BulkEditSaveBarProps = ReturnTypeOfUseListManagerState['editedState'];
-
-export function BulkEditSaveBar({
-  isEditing,
-  editingState,
-  numberOfEdits,
-  onSave,
-  onCancel,
-  ...modalProps
-}: BulkEditSaveBarProps) {
+export function BulkEditSaveBar() {
   const { t } = useTranslation(['common']);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    editedState: {
+      isEditing,
+      editingState,
+      numberOfEdits,
+      onSave,
+      onCancel,
+      ...modalProps
+    },
+  } = useListManagerState();
 
   const getButtonLabel = () => {
     switch (editingState) {

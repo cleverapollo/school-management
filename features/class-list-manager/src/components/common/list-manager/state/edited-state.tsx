@@ -204,3 +204,5 @@ export function useEditedState({
     onCancel,
   };
 }
+
+export type ReturnTypeOfUseEditedState = ReturnType<typeof useEditedState>;
