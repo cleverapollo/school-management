@@ -246,6 +246,7 @@ export type AttendanceEventId = {
 
 export type BlockFilter = {
   blockIds?: InputMaybe<Array<Scalars['String']>>;
+  yearGroupIds?: InputMaybe<Array<Scalars['Int']>>;
 };
 
 export type BlockRotation = {
@@ -694,6 +695,7 @@ export type CoreBlock = {
   rotations: Array<BlockRotation>;
   subjectGroupIds: Array<Scalars['Long']>;
   subjectGroupNamesJoined?: Maybe<Scalars['String']>;
+  yearGroupIds: Array<Scalars['Int']>;
 };
 
 export type Core_NonEnrolledSibling = {
@@ -713,6 +715,19 @@ export type Core_Siblings = {
 
 export type Core_SiblingsFilter = {
   studentId: Array<Scalars['Long']>;
+};
+
+export type Core_UpsertStudentContactRelationshipInput = {
+  allowAccessToStudentData: Scalars['Boolean'];
+  allowedToContact: Scalars['Boolean'];
+  contactPartyId: Scalars['Long'];
+  includeInSms: Scalars['Boolean'];
+  includeInTmail: Scalars['Boolean'];
+  legalGuardian: Scalars['Boolean'];
+  pickupRights: Scalars['Boolean'];
+  priority: Scalars['Int'];
+  relationshipType: StudentContactType;
+  studentPartyId: Scalars['Long'];
 };
 
 export type CreateCalendarEventAttendeeInput = {
@@ -1199,6 +1214,10 @@ export type EnrollmentIre_UpsertBlockMembership = {
  */
 export type EnrollmentIre_UpsertCoreMembership = {
   membershipChange: Array<EnrollmentIre_CoreMembershipChange>;
+  /**
+   *  @deprecated(reason: "This was used in the old implementation. It is no longer used.")
+   *  todo handle graphql deprecated annotation internally
+   */
   yearGroupEnrollmentId: Scalars['Long'];
 };
 
@@ -1625,6 +1644,7 @@ export type Mutation = {
   core_upsertRooms: Array<Room>;
   core_upsertStaff?: Maybe<Array<Maybe<Staff>>>;
   core_upsertStudentContact: StudentContact;
+  core_upsertStudentContactRelationships?: Maybe<Success>;
   createProfileForGlobalUser?: Maybe<Profile>;
   createRole?: Maybe<SecurityRole>;
   enrollment_ire_changeProgrammeStage: Success;
@@ -1808,6 +1828,11 @@ export type MutationCore_UpsertStaffArgs = {
 
 export type MutationCore_UpsertStudentContactArgs = {
   input: UpsertStudentContactInput;
+};
+
+
+export type MutationCore_UpsertStudentContactRelationshipsArgs = {
+  input?: InputMaybe<Array<InputMaybe<Core_UpsertStudentContactRelationshipInput>>>;
 };
 
 
@@ -2489,6 +2514,7 @@ export type Query = {
   /**    Checks whether the searched for calendar resources are free or not at particular times */
   calendar_findFreeResources: FreeCalendarResources;
   catalogue_personalTitles: Array<PersonalTitle>;
+  catalogue_programmeStages: Array<ProgrammeStage>;
   catalogue_staffCapacities: Array<StaffCapacity>;
   catalogue_staffPosts: Array<StaffPost>;
   catalogue_subjects: Array<Subject>;
@@ -2522,7 +2548,6 @@ export type Query = {
   notes_studentMedical?: Maybe<StudentMedical>;
   permissions?: Maybe<Array<Maybe<Permission>>>;
   ppod_PPODCredentials?: Maybe<PpodCredentials>;
-  ppod_syncPPOD: SyncRequest;
   ppod_syncRequests: Array<SyncRequest>;
   profileTypes?: Maybe<Array<Maybe<ProfileType>>>;
   profiles?: Maybe<Array<Maybe<ProfileType>>>;
@@ -3782,6 +3807,7 @@ export type Student = Party & PartyPerson & {
   /**  deep linked */
   enrolmentHistory?: Maybe<Array<EnrollmentHistory>>;
   extensions?: Maybe<StudentGraphqlExtension>;
+  guardianshipNote?: Maybe<Scalars['String']>;
   leftEarly?: Maybe<Scalars['Boolean']>;
   partyId: Scalars['Long'];
   /**  deep linked */
@@ -4272,6 +4298,7 @@ export type SyncRequest = {
 export enum SyncRequestStatus {
   Error = 'ERROR',
   Fail = 'FAIL',
+  InProgress = 'IN_PROGRESS',
   Success = 'SUCCESS'
 }
 
@@ -4716,6 +4743,7 @@ export type UpdateClassGroupGroupInput = {
 
 export type UpdateStudentInput = {
   examNumber?: InputMaybe<Scalars['String']>;
+  guardianshipNote?: InputMaybe<Scalars['String']>;
   lockerNumber?: InputMaybe<Scalars['String']>;
   preferredFirstName?: InputMaybe<Scalars['String']>;
   preferredLastName?: InputMaybe<Scalars['String']>;

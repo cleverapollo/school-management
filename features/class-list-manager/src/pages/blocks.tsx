@@ -23,7 +23,7 @@ import { useContainerMargin } from '../hooks/use-container-margin';
 import {
   YearGroupsAutocomplete,
   YearGroupsAutocompleteProps,
-} from '../components/classes/year-groups-autocomplete';
+} from '../components/blocks/year-groups-autocomplete';
 
 interface ConfirmDialogSettings {
   proceed: () => void;
@@ -166,7 +166,7 @@ export default function ClassListManagerBlocks() {
           <YearGroupsAutocomplete
             value={selectedYearGroup}
             onChange={requestSetSelectedYearGroup}
-            sx={{ maxWidth: spacing(54), flex: 1 }}
+            sx={{ maxWidth: spacing(34), flex: 1 }}
           />
           {selectedYearGroup && (
             <>

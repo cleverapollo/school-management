@@ -3,6 +3,7 @@ import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { MoveGroupIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
 import { getYearGroups } from '@tyro/groups';
+import { getYearGroups as getCatalogueYearGroups } from '@tyro/api';
 import { getBlocksList } from './api/blocks';
 
 const ClassListManagerContainer = lazy(
@@ -38,7 +39,7 @@ export const getRoutes: NavObjectFunction = (t) => [
           {
             type: NavObjectType.NonMenuLink,
             path: 'blocks',
-            loader: () => getBlocksList(),
+            loader: () => getCatalogueYearGroups({}),
             element: <ClassListManagerBlocks />,
           },
         ],
