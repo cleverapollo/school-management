@@ -221,7 +221,7 @@ export default function ContactProfileStudentsPage() {
 
   const handleBulkSave = (
     data: BulkEditedRows<
-      ContactStudentsRelationships,
+      NonNullable<ContactStudentsRelationships>,
       | 'relationshipType'
       | 'priority'
       | 'legalGuardian'
@@ -238,48 +238,21 @@ export default function ContactProfileStudentsPage() {
       const currentData = contactStudentsData?.relationships?.find(
         (item) => item?.studentPartyId === Number(studentId)
       );
-      const {
-        relationshipType = {
-          newValue: currentData?.relationshipType,
-        },
-        priority = {
-          newValue: currentData?.priority,
-        },
-        legalGuardian = {
-          newValue: currentData?.legalGuardian,
-        },
-        pickupRights = {
-          newValue: currentData?.pickupRights,
-        },
-        allowAccessToStudentData = {
-          newValue: currentData?.allowAccessToStudentData,
-        },
-        allowedToContact = {
-          newValue: currentData?.allowedToContact,
-        },
-        includeInSms = {
-          newValue: currentData?.includeInSms,
-        },
-        includeInTmail = {
-          newValue: currentData?.includeInTmail,
-        },
-      } = data[studentId] || {};
 
-      const toUpdate = {
-        studentPartyId: Number(studentId),
-        contactPartyId: contactPartyId!,
-        relationshipType: relationshipType.newValue,
-        priority: priority.newValue,
-        legalGuardian: legalGuardian.newValue,
-        pickupRights: pickupRights.newValue,
-        allowAccessToStudentData: allowAccessToStudentData.newValue,
-        allowedToContact: allowedToContact.newValue,
-        includeInSms: includeInSms.newValue,
-        includeInTmail: includeInTmail.newValue,
-      } as Core_UpsertStudentContactRelationshipInput;
+      const toUpdate = Object.entries(data[studentId]).reduce(
+        (acc, [key, { newValue }]) => ({
+          ...acc,
+          [key]:
+            newValue ??
+            currentData?.[key as keyof ContactStudentsRelationships],
+        }),
+        {} as Core_UpsertStudentContactRelationshipInput
+      );
 
       return {
         ...toUpdate,
+        studentPartyId: Number(studentId),
+        contactPartyId: contactPartyId!,
         ...(!toUpdate.allowedToContact && {
           includeInSms: false,
           includeInTmail: false,

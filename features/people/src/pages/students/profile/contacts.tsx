@@ -65,17 +65,14 @@ const getStudentContactColumns = (
     lockVisible: true,
   },
   {
-    field: 'relationships.0.relationshipType',
+    field: 'relationshipType',
     headerName: translate('common:relationship'),
     editable: true,
     cellEditorSelector: RelationshipTypeCellEditor(translate),
-    valueFormatter: ({ data }) => {
-      const contactsRelationshipType =
-        data?.relationships?.[0]?.relationshipType;
-      return contactsRelationshipType
-        ? translate(`common:relationshipType.${contactsRelationshipType}`)
-        : '';
-    },
+    valueFormatter: ({ data }) =>
+      data?.relationshipType
+        ? translate(`common:relationshipType.${data?.relationshipType}`)
+        : '',
   },
   {
     field: 'personalInformation.primaryPhoneNumber.number',
@@ -94,128 +91,100 @@ const getStudentContactColumns = (
       }),
   },
   {
-    field: 'relationships.0.priority',
+    field: 'priority',
     headerName: translate('people:priority'),
     editable: true,
     cellEditorSelector: PriorityTypeCellEditor(),
   },
   {
-    field: 'relationships.0.legalGuardian',
+    field: 'legalGuardian',
     headerName: translate('people:legalGuardian'),
     editable: true,
     cellClass: 'disable-cell-edit-style',
     cellEditor: TableSwitch,
     valueFormatter: ({ data }) =>
-      data?.relationships?.[0]?.legalGuardian
-        ? translate('common:yes')
-        : translate('common:no'),
+      data?.legalGuardian ? translate('common:yes') : translate('common:no'),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
-      <TableBooleanValue
-        value={Boolean(data?.relationships?.[0]?.legalGuardian)}
-      />
+      <TableBooleanValue value={Boolean(data?.legalGuardian)} />
     ),
   },
   {
-    field: 'relationships.0.pickupRights',
+    field: 'pickupRights',
     headerName: translate('people:pickupPermission'),
     editable: true,
     cellClass: 'disable-cell-edit-style',
     cellEditor: TableSwitch,
     valueFormatter: ({ data }) =>
-      data?.relationships?.[0]?.pickupRights
-        ? translate('common:yes')
-        : translate('common:no'),
+      data?.pickupRights ? translate('common:yes') : translate('common:no'),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
-      <TableBooleanValue
-        value={Boolean(data?.relationships?.[0]?.pickupRights)}
-      />
+      <TableBooleanValue value={Boolean(data?.pickupRights)} />
     ),
   },
   {
-    field: 'relationships.0.allowAccessToStudentData',
+    field: 'allowAccessToStudentData',
     headerName: translate('people:allowAccessToStudentData'),
     editable: true,
     cellClass: 'disable-cell-edit-style',
     cellEditor: TableSwitch,
     valueFormatter: ({ data }) =>
-      data?.relationships?.[0]?.allowAccessToStudentData
+      data?.allowAccessToStudentData
         ? translate('common:yes')
         : translate('common:no'),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
-      <TableBooleanValue
-        value={Boolean(data?.relationships?.[0]?.allowAccessToStudentData)}
-      />
+      <TableBooleanValue value={Boolean(data?.allowAccessToStudentData)} />
     ),
   },
   {
-    field: 'relationships.0.allowedToContact',
+    field: 'allowedToContact',
     headerName: translate('people:allowedToContact'),
     editable: true,
     cellClass: 'disable-cell-edit-style',
     cellEditor: TableSwitch,
     valueFormatter: ({ data }) =>
-      data?.relationships?.[0]?.allowedToContact
-        ? translate('common:yes')
-        : translate('common:no'),
+      data?.allowedToContact ? translate('common:yes') : translate('common:no'),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
-      <TableBooleanValue
-        value={Boolean(data?.relationships?.[0]?.allowedToContact)}
-      />
+      <TableBooleanValue value={Boolean(data?.allowedToContact)} />
     ),
   },
   {
-    field: 'relationships.0.includeInSms',
+    field: 'includeInSms',
     headerName: translate('people:includedInSms'),
     editable: true,
     cellClass: 'disable-cell-edit-style',
     cellEditor: TableSwitch,
-    valueGetter: ({ data }) =>
-      data?.relationships?.[0]?.allowedToContact &&
-      data?.relationships?.[0]?.includeInSms,
+    valueGetter: ({ data }) => data?.allowedToContact && data?.includeInSms,
     valueFormatter: ({ data }) =>
-      data?.relationships?.[0]?.includeInSms
-        ? translate('common:yes')
-        : translate('common:no'),
+      data?.includeInSms ? translate('common:yes') : translate('common:no'),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
       <TableBooleanValue
-        value={Boolean(
-          data?.relationships?.[0]?.allowedToContact &&
-            data?.relationships?.[0]?.includeInSms
-        )}
+        value={Boolean(data?.allowedToContact && data?.includeInSms)}
       />
     ),
   },
   {
-    field: 'relationships.0.includeInTmail',
+    field: 'includeInTmail',
     headerName: translate('people:includeInTmail'),
     editable: true,
     cellClass: 'disable-cell-edit-style',
     cellEditor: TableSwitch,
-    valueGetter: ({ data }) =>
-      data?.relationships?.[0]?.allowedToContact &&
-      data?.relationships?.[0]?.includeInTmail,
+    valueGetter: ({ data }) => data?.allowedToContact && data?.includeInTmail,
     valueFormatter: ({ data }) =>
-      data?.relationships?.[0]?.includeInTmail
-        ? translate('common:yes')
-        : translate('common:no'),
+      data?.includeInTmail ? translate('common:yes') : translate('common:no'),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
       <TableBooleanValue
-        value={Boolean(
-          data?.relationships?.[0]?.allowedToContact &&
-            data?.relationships?.[0]?.includeInTmail
-        )}
+        value={Boolean(data?.allowedToContact && data?.includeInTmail)}
       />
     ),
   },
@@ -248,7 +217,7 @@ export default function StudentProfileContactsPage() {
   const recipientsForSms = useMemo(
     () =>
       selectedContacts
-        .filter((contact) => contact?.relationships?.[0]?.includeInSms)
+        .filter((contact) => contact?.includeInSms)
         .map(
           (contact) =>
             ({
@@ -263,9 +232,7 @@ export default function StudentProfileContactsPage() {
 
   const actionMenuItems = useMemo(() => {
     const isThereAtLeastOneContactThatIsNotAllowedToContact =
-      selectedContacts.some(
-        (contact) => !contact?.relationships?.[0]?.allowedToContact
-      );
+      selectedContacts.some((contact) => !contact?.allowedToContact);
 
     return [
       [
@@ -312,14 +279,14 @@ export default function StudentProfileContactsPage() {
   const handleBulkSave = (
     data: BulkEditedRows<
       ReturnTypeFromUseContacts,
-      | 'relationships.0.relationshipType'
-      | 'relationships.0.priority'
-      | 'relationships.0.legalGuardian'
-      | 'relationships.0.pickupRights'
-      | 'relationships.0.allowAccessToStudentData'
-      | 'relationships.0.allowedToContact'
-      | 'relationships.0.includeInSms'
-      | 'relationships.0.includeInTmail'
+      | 'relationshipType'
+      | 'priority'
+      | 'legalGuardian'
+      | 'pickupRights'
+      | 'allowAccessToStudentData'
+      | 'allowedToContact'
+      | 'includeInSms'
+      | 'includeInTmail'
     >
   ) => {
     const dataForEndpoint = Object.keys(
@@ -329,42 +296,19 @@ export default function StudentProfileContactsPage() {
         (item) => item?.partyId === Number(contactId)
       );
 
-      const relationship = currentData
-        ?.relationships?.[0] as StudentContactRelationshipInfo;
-
-      const contactData = data[contactId];
-
-      const toUpdate = {
-        studentPartyId: studentId!,
-        contactPartyId: Number(contactId),
-        relationshipType:
-          contactData['relationships.0.relationshipType']?.newValue ??
-          relationship.relationshipType,
-        priority:
-          contactData['relationships.0.priority']?.newValue ??
-          relationship.priority,
-        legalGuardian:
-          contactData['relationships.0.legalGuardian']?.newValue ??
-          relationship.legalGuardian,
-        pickupRights:
-          contactData['relationships.0.pickupRights']?.newValue ??
-          relationship.pickupRights,
-        allowAccessToStudentData:
-          contactData['relationships.0.allowAccessToStudentData']?.newValue ??
-          relationship.allowAccessToStudentData,
-        allowedToContact:
-          contactData['relationships.0.allowedToContact']?.newValue ??
-          relationship.allowedToContact,
-        includeInSms:
-          contactData['relationships.0.includeInSms']?.newValue ??
-          relationship.includeInSms,
-        includeInTmail:
-          contactData['relationships.0.includeInTmail']?.newValue ??
-          relationship.includeInTmail,
-      } as Core_UpsertStudentContactRelationshipInput;
+      const toUpdate = Object.entries(data[contactId]).reduce(
+        (acc, [key, { newValue }]) => ({
+          ...acc,
+          [key]:
+            newValue ?? currentData?.[key as keyof ReturnTypeFromUseContacts],
+        }),
+        {} as Core_UpsertStudentContactRelationshipInput
+      );
 
       return {
         ...toUpdate,
+        studentPartyId: studentId!,
+        contactPartyId: Number(contactId),
         ...(!toUpdate.allowedToContact && {
           includeInSms: false,
           includeInTmail: false,
