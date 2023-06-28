@@ -20,6 +20,10 @@ import { RotationSelect } from '../components/blocks/rotation-select';
 import { ListManager } from '../components/common/list-manager';
 import { EditedStudent } from '../components/common/list-manager/state/edited-state';
 import { useContainerMargin } from '../hooks/use-container-margin';
+import {
+  YearGroupsAutocomplete,
+  YearGroupsAutocompleteProps,
+} from '../components/classes/year-groups-autocomplete';
 
 interface ConfirmDialogSettings {
   proceed: () => void;
@@ -31,6 +35,9 @@ interface ConfirmDialogSettings {
 export default function ClassListManagerBlocks() {
   const { spacing } = useTheme();
   const { t } = useTranslation(['common', 'classListManager']);
+
+  const [selectedYearGroup, setSelectedYearGroup] =
+    useState<YearGroupsAutocompleteProps['value']>(null);
   const [selectedBlock, setSelectedBlock] =
     useState<BlockAutocompleteProps['value']>(null);
   const [selectedRotationIndex, setSelectedRotationIndex] = useState<
@@ -58,6 +65,27 @@ export default function ClassListManagerBlocks() {
       ? data.groups[blockIndex]
       : null;
   }, [selectedBlock, selectedRotationIndex, data?.groups]);
+
+  const requestSetSelectedYearGroup = (
+    yearGroup: YearGroupsAutocompleteProps['value']
+  ) => {
+    if (isDirty) {
+      setConfirmDialogSettings({
+        title: t('classListManager:areYouSureYouWantToChangeYear'),
+        confirmText: t('classListManager:changeYear'),
+        proceed: () => {
+          setSelectedYearGroup(yearGroup);
+          setSelectedBlock(null);
+        },
+        reset: () => {
+          setConfirmDialogSettings(null);
+        },
+      });
+    } else {
+      setSelectedYearGroup(yearGroup);
+      setSelectedBlock(null);
+    }
+  };
 
   const requestSetSelectedBlock = (block: BlockAutocompleteProps['value']) => {
     if (isDirty) {
@@ -135,18 +163,28 @@ export default function ClassListManagerBlocks() {
           spacing={2}
           sx={{ px: containerMargin }}
         >
-          <BlockAutocomplete
-            value={selectedBlock}
-            onChange={requestSetSelectedBlock}
+          <YearGroupsAutocomplete
+            value={selectedYearGroup}
+            onChange={requestSetSelectedYearGroup}
             sx={{ maxWidth: spacing(54), flex: 1 }}
           />
-          {selectedBlock?.isRotation && (
-            <RotationSelect
-              value={selectedRotationIndex}
-              onChange={requestSetSelectedRotationIndex}
-              rotations={selectedBlock.rotations}
-              sx={{ maxWidth: spacing(34), flex: 1 }}
-            />
+          {selectedYearGroup && (
+            <>
+              <BlockAutocomplete
+                value={selectedBlock}
+                yearGroup={selectedYearGroup}
+                onChange={requestSetSelectedBlock}
+                sx={{ maxWidth: spacing(54), flex: 1 }}
+              />
+              {selectedBlock?.isRotation && (
+                <RotationSelect
+                  value={selectedRotationIndex}
+                  onChange={requestSetSelectedRotationIndex}
+                  rotations={selectedBlock.rotations}
+                  sx={{ maxWidth: spacing(34), flex: 1 }}
+                />
+              )}
+            </>
           )}
         </Stack>
         {blockData && (
