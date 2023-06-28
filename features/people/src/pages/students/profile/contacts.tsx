@@ -12,6 +12,7 @@ import {
   ReturnTypeDisplayName,
   useDisclosure,
   TableSwitch,
+  BulkEditedRows,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -23,11 +24,16 @@ import {
 } from '@tyro/icons';
 import { Box, Fade } from '@mui/material';
 import { SendSmsModal } from '@tyro/sms';
-import { SmsRecipientType } from '@tyro/api';
+import {
+  Core_UpsertStudentContactRelationshipInput,
+  SmsRecipientType,
+  StudentContactRelationshipInfo,
+} from '@tyro/api';
 import { RelationshipTypeCellEditor } from '../../../components/contacts/relationship-type-cell-editor';
 import { useStudentsContacts } from '../../../api/student/overview';
 import { joinAddress } from '../../../utils/join-address';
 import { PriorityTypeCellEditor } from '../../../components/contacts/priority-cell-editor';
+import { useUpsertStudentContactRelationships } from '../../../api/student/upsert-student-contact-relationship';
 
 type ReturnTypeFromUseContacts = NonNullable<
   ReturnType<typeof useStudentsContacts>['data']
@@ -217,13 +223,17 @@ const getStudentContactColumns = (
 
 export default function StudentProfileContactsPage() {
   const { id } = useParams();
+  const { t } = useTranslation(['common', 'people', 'mail', 'sms']);
+  const { displayName } = usePreferredNameLayout();
+
   const studentId = getNumber(id);
+  const { data: contacts = [] } = useStudentsContacts(studentId);
+  const { mutateAsync: upsertRelationshipsAsyncMutation } =
+    useUpsertStudentContactRelationships();
+
   const [selectedContacts, setSelectedContacts] = useState<
     ReturnTypeFromUseContacts[]
   >([]);
-  const { data: contacts } = useStudentsContacts(studentId);
-  const { t } = useTranslation(['common', 'people', 'mail', 'sms']);
-  const { displayName } = usePreferredNameLayout();
   const {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
@@ -299,6 +309,72 @@ export default function StudentProfileContactsPage() {
     ];
   }, [selectedContacts, recipientsForSms]);
 
+  const handleBulkSave = (
+    data: BulkEditedRows<
+      ReturnTypeFromUseContacts,
+      | 'relationships.0.relationshipType'
+      | 'relationships.0.priority'
+      | 'relationships.0.legalGuardian'
+      | 'relationships.0.pickupRights'
+      | 'relationships.0.allowAccessToStudentData'
+      | 'relationships.0.allowedToContact'
+      | 'relationships.0.includeInSms'
+      | 'relationships.0.includeInTmail'
+    >
+  ) => {
+    const dataForEndpoint = Object.keys(
+      data
+    ).map<Core_UpsertStudentContactRelationshipInput>((contactId) => {
+      const currentData = contacts.find(
+        (item) => item?.partyId === Number(contactId)
+      );
+
+      const relationship = currentData
+        ?.relationships?.[0] as StudentContactRelationshipInfo;
+
+      const contactData = data[contactId];
+
+      const toUpdate = {
+        studentPartyId: studentId!,
+        contactPartyId: Number(contactId),
+        relationshipType:
+          contactData['relationships.0.relationshipType']?.newValue ??
+          relationship.relationshipType,
+        priority:
+          contactData['relationships.0.priority']?.newValue ??
+          relationship.priority,
+        legalGuardian:
+          contactData['relationships.0.legalGuardian']?.newValue ??
+          relationship.legalGuardian,
+        pickupRights:
+          contactData['relationships.0.pickupRights']?.newValue ??
+          relationship.pickupRights,
+        allowAccessToStudentData:
+          contactData['relationships.0.allowAccessToStudentData']?.newValue ??
+          relationship.allowAccessToStudentData,
+        allowedToContact:
+          contactData['relationships.0.allowedToContact']?.newValue ??
+          relationship.allowedToContact,
+        includeInSms:
+          contactData['relationships.0.includeInSms']?.newValue ??
+          relationship.includeInSms,
+        includeInTmail:
+          contactData['relationships.0.includeInTmail']?.newValue ??
+          relationship.includeInTmail,
+      } as Core_UpsertStudentContactRelationshipInput;
+
+      return {
+        ...toUpdate,
+        ...(!toUpdate.allowedToContact && {
+          includeInSms: false,
+          includeInTmail: false,
+        }),
+      };
+    });
+
+    return upsertRelationshipsAsyncMutation(dataForEndpoint);
+  };
+
   return (
     <>
       <Table
@@ -317,6 +393,7 @@ export default function StudentProfileContactsPage() {
             </Box>
           </Fade>
         }
+        onBulkSave={handleBulkSave}
       />
       <SendSmsModal
         isOpen={isSendSmsOpen}

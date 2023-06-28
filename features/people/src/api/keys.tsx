@@ -44,5 +44,10 @@ export const peopleKeys = {
       [...peopleKeys.students.all(), 'classes', studentId] as const,
     updateStudent: () =>
       [...peopleKeys.students.all(), 'updateStudent'] as const,
+    upsertStudentContactRelationships: () =>
+      [
+        ...peopleKeys.students.all(),
+        'upsertStudentContactRelationships',
+      ] as const,
   },
 };

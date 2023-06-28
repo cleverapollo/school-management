@@ -17,7 +17,7 @@ import { Box, Fade } from '@mui/material';
 import { useMemo, useState } from 'react';
 import {
   UseQueryReturnType,
-  UpsertStudentContactRelationshipInfoInput,
+  Core_UpsertStudentContactRelationshipInput,
 } from '@tyro/api';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { MobileIcon, PersonHeartIcon, SendMailIcon } from '@tyro/icons';
@@ -25,7 +25,7 @@ import { useContactStudents } from '../../../api/contact/students';
 import { ConfirmUnlinkModal } from '../../../components/contact/confirm-unlink-modal';
 import { RelationshipTypeCellEditor } from '../../../components/contacts/relationship-type-cell-editor';
 import { PriorityTypeCellEditor } from '../../../components/contacts/priority-cell-editor';
-import { useUpsertContact } from '../../../api/contact/upsert-contact';
+import { useUpsertStudentContactRelationships } from '../../../api/student/upsert-student-contact-relationship';
 
 type ContactStudentsRelationships = NonNullable<
   UseQueryReturnType<typeof useContactStudents>['relationships']
@@ -174,15 +174,16 @@ const getContactStudentsColumns = (
 export default function ContactProfileStudentsPage() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail']);
   const { id } = useParams();
-  const contactId = useNumber(id);
+  const contactPartyId = useNumber(id);
   const { displayName } = usePreferredNameLayout();
   const [selectedContacts, setSelectedContacts] = useState<
     ContactStudentsRelationships[]
   >([]);
   const [isShowAlertUnlink, setIsShowAlertUnlink] = useState<boolean>(false);
-  const { data: contactStudentsData } = useContactStudents(contactId);
+  const { data: contactStudentsData } = useContactStudents(contactPartyId);
 
-  const { mutateAsync: upsertContactAsyncMutation } = useUpsertContact();
+  const { mutateAsync: upsertRelationshipsAsyncMutation } =
+    useUpsertStudentContactRelationships();
 
   const contactStudentColumns = useMemo(
     () => getContactStudentsColumns(t, displayName),
@@ -231,67 +232,62 @@ export default function ContactProfileStudentsPage() {
       | 'includeInTmail'
     >
   ) => {
-    const studentRelationshipsUpdated = (
-      contactStudentsData?.relationships as NonNullable<ContactStudentsRelationships>[]
-    ).map<UpsertStudentContactRelationshipInfoInput>(
-      ({ studentPartyId, ...student }) => {
-        const {
-          relationshipType = {
-            newValue: student.relationshipType,
-          },
-          priority = {
-            newValue: student.priority,
-          },
-          legalGuardian = {
-            newValue: student.legalGuardian,
-          },
-          pickupRights = {
-            newValue: student.pickupRights,
-          },
-          allowAccessToStudentData = {
-            newValue: student.allowAccessToStudentData,
-          },
-          allowedToContact = {
-            newValue: student.allowedToContact,
-          },
-          includeInSms = {
-            newValue: student.includeInSms,
-          },
-          includeInTmail = {
-            newValue: student.includeInTmail,
-          },
-        } = data[studentPartyId] || {};
+    const dataForEndpoint = Object.keys(
+      data
+    ).map<Core_UpsertStudentContactRelationshipInput>((studentId) => {
+      const currentData = contactStudentsData?.relationships?.find(
+        (item) => item?.studentPartyId === Number(studentId)
+      );
+      const {
+        relationshipType = {
+          newValue: currentData?.relationshipType,
+        },
+        priority = {
+          newValue: currentData?.priority,
+        },
+        legalGuardian = {
+          newValue: currentData?.legalGuardian,
+        },
+        pickupRights = {
+          newValue: currentData?.pickupRights,
+        },
+        allowAccessToStudentData = {
+          newValue: currentData?.allowAccessToStudentData,
+        },
+        allowedToContact = {
+          newValue: currentData?.allowedToContact,
+        },
+        includeInSms = {
+          newValue: currentData?.includeInSms,
+        },
+        includeInTmail = {
+          newValue: currentData?.includeInTmail,
+        },
+      } = data[studentId] || {};
 
-        const toUpdate: UpsertStudentContactRelationshipInfoInput = {
-          studentPartyId,
-          relationshipType: relationshipType.newValue,
-          priority: priority.newValue,
-          legalGuardian: legalGuardian.newValue,
-          pickupRights: pickupRights.newValue,
-          allowAccessToStudentData: allowAccessToStudentData.newValue,
-          allowedToContact: allowedToContact.newValue,
-          includeInSms: includeInSms.newValue,
-          includeInTmail: includeInTmail.newValue,
-        };
+      const toUpdate = {
+        studentPartyId: Number(studentId),
+        contactPartyId: contactPartyId!,
+        relationshipType: relationshipType.newValue,
+        priority: priority.newValue,
+        legalGuardian: legalGuardian.newValue,
+        pickupRights: pickupRights.newValue,
+        allowAccessToStudentData: allowAccessToStudentData.newValue,
+        allowedToContact: allowedToContact.newValue,
+        includeInSms: includeInSms.newValue,
+        includeInTmail: includeInTmail.newValue,
+      } as Core_UpsertStudentContactRelationshipInput;
 
-        return {
-          ...toUpdate,
-          ...(!toUpdate.allowedToContact && {
-            includeInSms: false,
-            includeInTmail: false,
-          }),
-        };
-      }
-    );
-
-    return upsertContactAsyncMutation({
-      contactPartyId: contactId!,
-      studentRelationships: studentRelationshipsUpdated,
-      personal: {
-        firstName: contactStudentsData?.person.firstName ?? '',
-        lastName: contactStudentsData?.person.lastName ?? '',
-      },
+      return {
+        ...toUpdate,
+        ...(!toUpdate.allowedToContact && {
+          includeInSms: false,
+          includeInTmail: false,
+        }),
+      };
     });
+
+    return upsertRelationshipsAsyncMutation(dataForEndpoint);
   };
 
   return (
