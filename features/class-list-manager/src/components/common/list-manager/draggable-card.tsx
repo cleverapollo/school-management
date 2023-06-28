@@ -51,7 +51,7 @@ const getCardStyle = ({
   let backgroundColor = 'white';
 
   if (showGender && gender) {
-    backgroundColor = gender === Gender.Male ? 'blue.lighter' : 'pink.lighter';
+    backgroundColor = gender === Gender.Male ? 'blue.200' : 'pink.200';
   }
 
   // change background color if dragging or selected
