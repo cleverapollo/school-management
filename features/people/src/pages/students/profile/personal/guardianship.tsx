@@ -8,7 +8,7 @@ import {
 import { useStudentPersonal } from '../../../../api/student/personal';
 
 type GuardianshipFormState = {
-  // description?: string;
+  guardianshipNote?: string;
 };
 
 const getGuardianshipWithLabels = (
@@ -17,10 +17,10 @@ const getGuardianshipWithLabels = (
 ): CardEditableFormProps<GuardianshipFormState>['fields'] => [
   {
     label: t('common:description'),
-    value: null,
+    value: data?.guardianshipNote,
     valueEditor: (
       <RHFTextField
-        controlProps={{ name: 'description' }}
+        controlProps={{ name: 'guardianshipNote' }}
         textFieldProps={{
           fullWidth: true,
           variant: 'standard',
@@ -49,7 +49,7 @@ export const ProfileGuardianship = ({
   const { resolver, rules } = useFormValidator<GuardianshipFormState>();
 
   const guardianshipResolver = resolver({
-    description: rules.maxLength(500),
+    guardianshipNote: rules.maxLength(500),
   });
 
   return (

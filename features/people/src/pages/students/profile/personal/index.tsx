@@ -17,13 +17,14 @@ export default function StudentProfilePersonalPage() {
   const { mutate: updateStudentMutation } = useUpdateStudent();
 
   const handleEdit = (
-    updatedData: Partial<UpdateStudentInput>,
+    { guardianshipNote, ...updatedData }: Partial<UpdateStudentInput>,
     onSuccess: () => void
   ) =>
     updateStudentMutation(
       [
         {
           ...updatedData,
+          guardianshipNote: guardianshipNote || null,
           studentPartyId: studentData?.partyId ?? 0,
         },
       ],
