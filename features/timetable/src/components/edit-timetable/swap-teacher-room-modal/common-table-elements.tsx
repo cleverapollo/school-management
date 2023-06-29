@@ -1,6 +1,7 @@
 import {
   Box,
   Stack,
+  SxProps,
   TableCell,
   TableRow,
   Tooltip,
@@ -14,6 +15,36 @@ interface TableHeaderRowProps {
   changeState: ReturnTypeOfUseSwapTeacherAndRoom['changeState'];
   firstRowLabel: string;
 }
+
+export const getFixedRowStyles = (
+  hoveredColumnIndex: number,
+  numberOfFixedRows: number
+): SxProps => ({
+  [`& tr td:nth-of-type(${hoveredColumnIndex})`]: {
+    backgroundColor: 'slate.50',
+  },
+  'tr.fixed-row': {
+    position: 'sticky',
+    width: '100%',
+    zIndex: 1,
+
+    '& td': {
+      backgroundColor: 'slate.50',
+    },
+  },
+
+  [`tr:nth-of-type(${numberOfFixedRows})`]: {
+    backgroundColor: 'red',
+    '& td:first-of-type': {
+      borderBottomLeftRadius: 12,
+    },
+    '& td:last-of-type': {
+      borderBottomRightRadius: 12,
+    },
+  },
+});
+
+export const TABLE_HEADER_ROW_HEIGHT = 58;
 
 export function TableHeaderRow({
   changeState,
