@@ -13,6 +13,7 @@ import {
   useDisclosure,
   TableSwitch,
   BulkEditedRows,
+  useToast,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -192,6 +193,7 @@ export default function StudentProfileContactsPage() {
   const { id } = useParams();
   const { t } = useTranslation(['common', 'people', 'mail', 'sms']);
   const { displayName } = usePreferredNameLayout();
+  const { toast } = useToast();
 
   const studentId = getNumber(id);
   const { data: contacts = [] } = useStudentsContacts(studentId);
@@ -318,6 +320,14 @@ export default function StudentProfileContactsPage() {
         getRowId={({ data }) => String(data?.partyId)}
         onRowSelection={(rows) => {
           setSelectedContacts(rows);
+        }}
+        onCellValueChanged={(data) => {
+          if (
+            data.colDef.field === 'allowedToContact' &&
+            data.newValue === false
+          ) {
+            toast(t('people:allowedToContactDisabled'), { variant: 'info' });
+          }
         }}
         rightAdornment={
           <Fade in={selectedContacts.length > 0}>

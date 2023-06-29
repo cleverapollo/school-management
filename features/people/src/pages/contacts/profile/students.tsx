@@ -11,6 +11,7 @@ import {
   ActionMenu,
   TableSwitch,
   BulkEditedRows,
+  useToast,
 } from '@tyro/core';
 
 import { Box, Fade } from '@mui/material';
@@ -175,6 +176,7 @@ export default function ContactProfileStudentsPage() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail']);
   const { id } = useParams();
   const contactPartyId = useNumber(id);
+  const { toast } = useToast();
   const { displayName } = usePreferredNameLayout();
   const [selectedContacts, setSelectedContacts] = useState<
     ContactStudentsRelationships[]
@@ -260,6 +262,14 @@ export default function ContactProfileStudentsPage() {
         columnDefs={contactStudentColumns}
         getRowId={({ data }) => String(data?.studentPartyId)}
         rowSelection="multiple"
+        onCellValueChanged={(data) => {
+          if (
+            data.colDef.field === 'allowedToContact' &&
+            data.newValue === false
+          ) {
+            toast(t('people:allowedToContactDisabled'), { variant: 'info' });
+          }
+        }}
         onRowSelection={setSelectedContacts}
         rightAdornment={
           <Fade in={selectedContacts.length > 0}>
