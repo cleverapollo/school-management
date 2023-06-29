@@ -96,7 +96,8 @@
       "dateOfLeaving": "Date of leaving",
       "reasonOfDeparture": "What is the reason of departure?",
       "destinationRollNumber": "Destination roll number"
-    }
+    },
+    "guardianship": "Guardianship, custody, access orders or arrangements"
   },
   "actions": {
     "allowUsersToContact": "Allow users to contact",

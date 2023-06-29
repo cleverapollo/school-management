@@ -231,7 +231,6 @@ export const ProfileContact = ({
       fields={contactDataWithLabels}
       resolver={contactResolver}
       onSave={handleEdit}
-      sx={{ height: '100%' }}
     />
   );
 };
