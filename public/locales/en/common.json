@@ -29,7 +29,9 @@
     "confirm": "Confirm",
     "viewDetails": "View Details",
     "undo": "Undo",
-    "continue": "Continue"
+    "continue": "Continue",
+    "stayLoggedIn": "Stay logged in",
+    "logMeOut": "Log me out"
   },
   "snackbarMessages": {
     "createSuccess": "Create success!",
@@ -281,5 +283,7 @@
   "additionalNumber": "Additional number",
   "contact": "Contact",
   "weeks_one": "{{count}} week",
-  "weeks_other": "{{count}} weeks"
+  "weeks_other": "{{count}} weeks",
+  "helloAnyoneHome": "👋 Hello, anyone home?",
+  "itLooksLikeYouveBeenIdle": "It's looks like you've been idle for a while. We will automatically log you out in {{count}} seconds."
 }

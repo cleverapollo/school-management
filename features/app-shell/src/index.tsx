@@ -3,6 +3,7 @@
 import { useAuth } from '@tyro/api';
 import { Router } from './router';
 import LoadingScreen from '../../../src/components/LoadingScreen';
+import { IdleModal } from './components/idle-modal';
 
 export * from './components/shell/provider';
 
@@ -11,5 +12,10 @@ export function AppShell() {
 
   if (!isTokenInitialized) return <LoadingScreen />;
 
-  return <Router />;
+  return (
+    <>
+      <Router />
+      <IdleModal />
+    </>
+  );
 }

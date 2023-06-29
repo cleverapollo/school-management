@@ -9,6 +9,7 @@ const studentsPersonalById = graphql(/* GraphQL */ `
       startDate
       leftEarly
       endDate
+      guardianshipNote
       personalInformation {
         firstName
         lastName
