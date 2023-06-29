@@ -45,7 +45,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'edit-timetable',
             loader: async () => {
               const [activeTimetables, yearGroups] = await Promise.all([
-                getTimetables({ liveTimetable: false }),
+                getTimetables({ liveTimetable: true }),
                 getYearGroups(),
               ]);
               const activeTimetable = activeTimetables.tt_timetables[0];

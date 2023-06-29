@@ -1,6 +1,6 @@
-import { Box, Button, Menu, MenuItem, Stack } from '@mui/material';
+import { Box, Button, Menu, MenuItem, Stack, styled } from '@mui/material';
 import { SwapHorizontalIcon } from '@tyro/icons';
-import { useState } from 'react';
+import { FocusEventHandler, useState } from 'react';
 import {
   ReturnTypeOfUseSwapTeacherAndRoom,
   SwapChange,
@@ -12,14 +12,41 @@ interface SwapChangeWithLabel extends SwapChange {
   isSelected: boolean;
 }
 
-interface SwapButtonProps {
+interface StyledSwapButtonProps {
+  isSwapped: boolean;
+}
+
+interface SwapButtonProps extends StyledSwapButtonProps {
   onClick:
     | ReturnTypeOfUseSwapTeacherAndRoom['swapTeacher']
     | ReturnTypeOfUseSwapTeacherAndRoom['swapRoom'];
+  onFocus?: FocusEventHandler<HTMLButtonElement> | undefined;
   fromOptions: SwapChangeWithLabel[];
   to: SwapChangeWithOptionalLesson;
-  isSwapped: boolean;
 }
+
+interface UndoSwapButtonProps extends StyledSwapButtonProps {
+  onClick: () => void;
+  lesson: SwapChangeWithOptionalLesson['lesson'];
+}
+
+const StyledSwapButton = styled(Button)<StyledSwapButtonProps>(
+  ({ theme: { palette }, isSwapped }) => ({
+    justifyContent: 'flex-start',
+    color: palette.text.primary,
+    fontWeight: 500,
+    border: `1px solid ${isSwapped ? palette.primary.main : 'transparent'}`,
+    backgroundColor: isSwapped ? palette.primary.lighter : undefined,
+    '&:disabled': {
+      color: palette.text.primary,
+    },
+  })
+);
+
+StyledSwapButton.defaultProps = {
+  variant: 'text',
+  size: 'small',
+};
 
 function SwapIcon() {
   return (
@@ -51,6 +78,7 @@ function SwapIcon() {
 
 export function SwapButton({
   onClick,
+  onFocus,
   fromOptions,
   to,
   isSwapped,
@@ -69,22 +97,17 @@ export function SwapButton({
 
   return (
     <>
-      <Button
-        variant="text"
-        size="small"
+      <StyledSwapButton
         onMouseEnter={() => setIsFocused(true)}
         onMouseLeave={() => setIsFocused(false)}
-        onFocus={() => setIsFocused(true)}
+        onFocus={(...args) => {
+          setIsFocused(true);
+          if (onFocus) {
+            onFocus(...args);
+          }
+        }}
         onBlur={() => setIsFocused(false)}
-        sx={({ palette }) => ({
-          justifyContent: 'flex-start',
-          color: 'text.primary',
-          fontWeight: 500,
-          border: `1px solid ${
-            isSwapped ? palette.primary.main : 'transparent'
-          }`,
-          backgroundColor: isSwapped ? `primary.lighter` : undefined,
-        })}
+        isSwapped={isSwapped}
         endIcon={showNewLabel ? <SwapIcon /> : undefined}
         onClick={() => {
           if (fromOptions.length === 1) {
@@ -101,7 +124,7 @@ export function SwapButton({
         }}
       >
         {label}
-      </Button>
+      </StyledSwapButton>
       <Menu
         open={isMenuOpen}
         anchorEl={anchorEl}
@@ -121,6 +144,7 @@ export function SwapButton({
                 },
                 to,
               });
+              setIsFocused(false);
               handleClose();
             }}
           >
@@ -132,5 +156,22 @@ export function SwapButton({
         ))}
       </Menu>
     </>
+  );
+}
+
+export function UndoSwapButton({
+  isSwapped,
+  lesson,
+  ...props
+}: UndoSwapButtonProps) {
+  return (
+    <StyledSwapButton
+      {...props}
+      isSwapped={isSwapped}
+      disabled={!isSwapped}
+      endIcon={isSwapped ? <SwapIcon /> : undefined}
+    >
+      {lesson?.partyGroup.name || '-'}
+    </StyledSwapButton>
   );
 }
