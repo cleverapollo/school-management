@@ -23,7 +23,7 @@ import { useContainerMargin } from '../hooks/use-container-margin';
 import {
   YearGroupsAutocomplete,
   YearGroupsAutocompleteProps,
-} from '../components/blocks/year-groups-autocomplete';
+} from '../components/common/list-manager/year-groups-autocomplete';
 
 interface ConfirmDialogSettings {
   proceed: () => void;

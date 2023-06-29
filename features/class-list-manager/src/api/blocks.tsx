@@ -120,15 +120,15 @@ const blocksQuery = (filter?: BlockFilter) => ({
   queryFn: () => gqlClient.request(blocks, { filter }),
 });
 
-export function useBlocksList(yearGroup: number) {
+export function useBlocksList(yearGroupId: number) {
   return useQuery({
-    ...blocksQuery({ yearGroupIds: [yearGroup] }),
+    ...blocksQuery({ yearGroupIds: [yearGroupId] }),
     select: ({ core_blocks }) => core_blocks,
   });
 }
 
-export function getBlocksList() {
-  return queryClient.fetchQuery(blocksQuery());
+export function getBlocksList(yearGroupId: number) {
+  return queryClient.fetchQuery(blocksQuery({ yearGroupIds: [yearGroupId] }));
 }
 
 const blockMembershipsQuery = (

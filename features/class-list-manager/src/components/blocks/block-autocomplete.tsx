@@ -2,7 +2,7 @@ import { useTranslation } from '@tyro/i18n';
 import { Autocomplete } from '@tyro/core';
 import { useEffect, useMemo } from 'react';
 import { SxProps, Theme, Typography, Box } from '@mui/material';
-import { ReturnTypeFromUseYearGroups } from '@tyro/api';
+import { ReturnTypeFromUseYearGroups } from '@tyro/groups';
 import { ReturnTypeOfUseBlockList, useBlocksList } from '../../api/blocks';
 
 type BlockAutocompleteValue = NonNullable<ReturnTypeOfUseBlockList>[number];
