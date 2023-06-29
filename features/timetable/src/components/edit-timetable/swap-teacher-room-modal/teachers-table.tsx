@@ -12,7 +12,11 @@ import { SwapStyledTable } from './table-style';
 import { SwapButton, UndoSwapButton } from './swap-button';
 import { StatusChip } from './status-chip';
 import { LoadingPlaceholder } from './loading-placeholder';
-import { getFixedRowStyles, TableHeaderRow } from './common-table-elements';
+import {
+  getFixedRowStyles,
+  TableHeaderRow,
+  TABLE_HEADER_ROW_HEIGHT,
+} from './common-table-elements';
 
 interface TeacherSwapTableProps {
   isOpen: boolean;
@@ -21,6 +25,8 @@ interface TeacherSwapTableProps {
   changeState: ReturnTypeOfUseSwapTeacherAndRoom['changeState'];
   searchValue: string;
 }
+
+const ROW_HEIGHT = 68;
 
 export function TeacherSwapTable({
   isOpen,
@@ -114,7 +120,8 @@ export function TeacherSwapTable({
           ({ staffId, teacher, lessonOnTimeslots }, teacherIndex) => {
             const isCurrentTeacher =
               teacherIdsOfHoveredLesson.includes(staffId);
-            const stickyTop = 58 + teacherIndex * 68;
+            const stickyTop =
+              TABLE_HEADER_ROW_HEIGHT + teacherIndex * ROW_HEIGHT;
 
             return (
               <TableRow

@@ -44,6 +44,8 @@ export const getFixedRowStyles = (
   },
 });
 
+export const TABLE_HEADER_ROW_HEIGHT = 58;
+
 export function TableHeaderRow({
   changeState,
   firstRowLabel,

@@ -164,10 +164,6 @@ export function UndoSwapButton({
   lesson,
   ...props
 }: UndoSwapButtonProps) {
-  console.log({
-    lesson,
-  });
-
   return (
     <StyledSwapButton
       {...props}
@@ -175,7 +171,7 @@ export function UndoSwapButton({
       disabled={!isSwapped}
       endIcon={isSwapped ? <SwapIcon /> : undefined}
     >
-      {lesson?.partyGroup.name ?? '-'}
+      {lesson?.partyGroup.name || '-'}
     </StyledSwapButton>
   );
 }

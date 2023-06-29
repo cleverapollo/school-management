@@ -11,7 +11,11 @@ import { SwapStyledTable } from './table-style';
 import { SwapButton, UndoSwapButton } from './swap-button';
 import { StatusChip } from './status-chip';
 import { LoadingPlaceholder } from './loading-placeholder';
-import { getFixedRowStyles, TableHeaderRow } from './common-table-elements';
+import {
+  getFixedRowStyles,
+  TableHeaderRow,
+  TABLE_HEADER_ROW_HEIGHT,
+} from './common-table-elements';
 
 interface RoomSwapTableProps {
   isOpen: boolean;
@@ -88,7 +92,7 @@ export function RoomSwapTable({
         {filteredRooms.map(({ roomId, room, lessonOnTimeslots }) => {
           const isCurrentRoom =
             roomId === hoveredLessonChangeState.room?.roomId;
-          const stickyTop = 58;
+          const stickyTop = TABLE_HEADER_ROW_HEIGHT;
 
           return (
             <TableRow
