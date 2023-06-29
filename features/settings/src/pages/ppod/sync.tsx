@@ -85,19 +85,17 @@ export default function Sync() {
   }, []);
 
   return (
-    <Stack spacing={3}>
-      <Table
-        rowData={syncRequests ?? []}
-        columnDefs={myColumnDefs}
-        getRowId={({ data }) => String(data?.id)}
-        rightAdornment={
-          <Fade in unmountOnExit>
-            <Box>
-              <ActionMenu menuItems={actionMenuItems} />
-            </Box>
-          </Fade>
-        }
-      />
-    </Stack>
+    <Table
+      rowData={syncRequests ?? []}
+      columnDefs={myColumnDefs}
+      getRowId={({ data }) => String(data?.id)}
+      rightAdornment={
+        <Fade in unmountOnExit>
+          <Box>
+            <ActionMenu menuItems={actionMenuItems} />
+          </Box>
+        </Fade>
+      }
+    />
   );
 }

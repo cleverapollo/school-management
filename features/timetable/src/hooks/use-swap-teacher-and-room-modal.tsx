@@ -26,7 +26,7 @@ type ChangeList = Array<{
   to: SwapChangeWithOptionalLesson;
 }>;
 
-interface LessonChangeState extends Lesson {
+export interface LessonChangeState extends Lesson {
   teacherChangesByLessonId: Map<string, ChangeList>;
   roomChangesByLessonId: Map<string, ChangeList>;
 }
