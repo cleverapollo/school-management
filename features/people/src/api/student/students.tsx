@@ -54,6 +54,7 @@ const students = graphql(/* GraphQL */ `
         name
       }
       programmeStages {
+        id
         name
         programme {
           name

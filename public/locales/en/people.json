@@ -176,5 +176,8 @@
   "parkingLocation": "Parking location",
   "makeAndModel": "Make and model",
   "preferredFirstNameInfo": "The preferred name is displayed in place of the student's forename in Tyro",
-  "preferredLastNameInfo": "The preferred name is displayed in place of the student's surname in Tyro"
+  "preferredLastNameInfo": "The preferred name is displayed in place of the student's surname in Tyro",
+  "changeProgrammeYear": "Change programme year",
+  "changeProgrammeYearModalTitle": "Change student programme year",
+  "changeProgrammeYearModalDescription": "To move the student from their current year group, select a destination programme year. This action will also remove the student from their existing class and subject groups. You can assign new class and subject groups within class list manager."
 }

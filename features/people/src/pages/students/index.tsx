@@ -14,7 +14,7 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
-import { MobileIcon } from '@tyro/icons';
+import { MobileIcon, CalendarEditPenIcon } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { SmsRecipientType } from '@tyro/api';
 import {
@@ -22,6 +22,7 @@ import {
   ReturnTypeFromUseStudents,
   useStudents,
 } from '../../api/student/students';
+import { ChangeProgrammeYearModal } from '../../components/students/change-programme-year-modal';
 
 const getStudentColumns = (
   translate: TFunction<
@@ -136,24 +137,23 @@ export default function StudentsListPage() {
 
   const { data: students } = useStudents();
   const { mutateAsync: bulkSaveStudents } = useBulkUpdateCoreStudent();
+
   const {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
 
+  const {
+    isOpen: isChangeYearGroupOpen,
+    onOpen: onOpenChangeYearGroup,
+    onClose: onCloseChangeYearGroup,
+  } = useDisclosure();
+
   const studentColumns = useMemo(
     () => getStudentColumns(t, displayName, displayNames),
     [t, displayName, displayNames]
   );
-
-  const actionMenuItems = [
-    {
-      label: t('people:sendSms'),
-      icon: <MobileIcon />,
-      onClick: onOpenSendSms,
-    },
-  ];
 
   return (
     <>
@@ -171,23 +171,46 @@ export default function StudentsListPage() {
             rightAdornment={
               <Fade in={selectedStudents.length > 0} unmountOnExit>
                 <Box>
-                  <ActionMenu menuItems={actionMenuItems} />
+                  <ActionMenu
+                    menuItems={[
+                      {
+                        label: t('people:sendSms'),
+                        icon: <MobileIcon />,
+                        onClick: onOpenSendSms,
+                      },
+                      {
+                        label: t('people:changeProgrammeYear'),
+                        icon: <CalendarEditPenIcon />,
+                        onClick: onOpenChangeYearGroup,
+                      },
+                    ]}
+                  />
                 </Box>
               </Fade>
             }
-            onRowSelection={(newSelectedStudents) =>
+            onRowSelection={(newSelectedStudents) => {
               setSelectedStudents(
-                newSelectedStudents.map((student) => ({
-                  id: student.partyId,
-                  name: displayName(student.person),
-                  type: 'individual',
-                  avatarUrl: student.person?.avatarUrl,
-                }))
-              )
-            }
+                newSelectedStudents.map((student) => {
+                  const [programmeStage] = student.programmeStages || [];
+
+                  return {
+                    id: student.partyId,
+                    name: displayName(student.person),
+                    type: 'individual',
+                    avatarUrl: student.person?.avatarUrl,
+                    programmeStage,
+                  };
+                })
+              );
+            }}
           />
         </Container>
       </Page>
+      <ChangeProgrammeYearModal
+        isOpen={isChangeYearGroupOpen}
+        onClose={onCloseChangeYearGroup}
+        students={selectedStudents}
+      />
       <SendSmsModal
         isOpen={isSendSmsOpen}
         onClose={onCloseSendSms}
