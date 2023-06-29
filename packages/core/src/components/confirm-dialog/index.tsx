@@ -50,6 +50,7 @@ export function ConfirmDialog({
           {cancelText || t('common:actions.cancel')}
         </Button>
         <Button
+          variant="soft"
           onClick={() => {
             onConfirm();
             onClose();
