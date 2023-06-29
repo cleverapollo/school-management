@@ -17,7 +17,7 @@ import { Box, Fade } from '@mui/material';
 import { useMemo, useState } from 'react';
 import {
   UseQueryReturnType,
-  Core_UpsertStudentContactRelationshipInput,
+  Core_UpdateStudentContactRelationshipInput,
 } from '@tyro/api';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { MobileIcon, PersonHeartIcon, SendMailIcon } from '@tyro/icons';
@@ -25,7 +25,7 @@ import { useContactStudents } from '../../../api/contact/students';
 import { ConfirmUnlinkModal } from '../../../components/contact/confirm-unlink-modal';
 import { RelationshipTypeCellEditor } from '../../../components/contacts/relationship-type-cell-editor';
 import { PriorityTypeCellEditor } from '../../../components/contacts/priority-cell-editor';
-import { useUpsertStudentContactRelationships } from '../../../api/student/upsert-student-contact-relationship';
+import { useUpdateStudentContactRelationships } from '../../../api/student/update-student-contact-relationships';
 
 type ContactStudentsRelationships = NonNullable<
   UseQueryReturnType<typeof useContactStudents>['relationships']
@@ -182,8 +182,8 @@ export default function ContactProfileStudentsPage() {
   const [isShowAlertUnlink, setIsShowAlertUnlink] = useState<boolean>(false);
   const { data: contactStudentsData } = useContactStudents(contactPartyId);
 
-  const { mutateAsync: upsertRelationshipsAsyncMutation } =
-    useUpsertStudentContactRelationships();
+  const { mutateAsync: updateRelationshipsAsyncMutation } =
+    useUpdateStudentContactRelationships();
 
   const contactStudentColumns = useMemo(
     () => getContactStudentsColumns(t, displayName),
@@ -234,33 +234,23 @@ export default function ContactProfileStudentsPage() {
   ) => {
     const dataForEndpoint = Object.keys(
       data
-    ).map<Core_UpsertStudentContactRelationshipInput>((studentId) => {
-      const currentData = contactStudentsData?.relationships?.find(
-        (item) => item?.studentPartyId === Number(studentId)
-      );
-
+    ).map<Core_UpdateStudentContactRelationshipInput>((studentId) => {
       const toUpdate = Object.entries(data[studentId]).reduce(
         (acc, [key, { newValue }]) => ({
           ...acc,
-          [key]:
-            newValue ??
-            currentData?.[key as keyof ContactStudentsRelationships],
+          [key]: newValue,
         }),
-        {} as Core_UpsertStudentContactRelationshipInput
+        {} as Core_UpdateStudentContactRelationshipInput
       );
 
       return {
         ...toUpdate,
         studentPartyId: Number(studentId),
         contactPartyId: contactPartyId!,
-        ...(!toUpdate.allowedToContact && {
-          includeInSms: false,
-          includeInTmail: false,
-        }),
       };
     });
 
-    return upsertRelationshipsAsyncMutation(dataForEndpoint);
+    return updateRelationshipsAsyncMutation(dataForEndpoint);
   };
 
   return (

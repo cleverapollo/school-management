@@ -18,22 +18,20 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   MobileIcon,
   PersonHeartIcon,
-  SendMailIcon,
   PersonTickIcon,
   PersonCrossIcon,
 } from '@tyro/icons';
 import { Box, Fade } from '@mui/material';
 import { SendSmsModal } from '@tyro/sms';
 import {
-  Core_UpsertStudentContactRelationshipInput,
+  Core_UpdateStudentContactRelationshipInput,
   SmsRecipientType,
-  StudentContactRelationshipInfo,
 } from '@tyro/api';
 import { RelationshipTypeCellEditor } from '../../../components/contacts/relationship-type-cell-editor';
 import { useStudentsContacts } from '../../../api/student/overview';
 import { joinAddress } from '../../../utils/join-address';
 import { PriorityTypeCellEditor } from '../../../components/contacts/priority-cell-editor';
-import { useUpsertStudentContactRelationships } from '../../../api/student/upsert-student-contact-relationship';
+import { useUpdateStudentContactRelationships } from '../../../api/student/update-student-contact-relationships';
 
 type ReturnTypeFromUseContacts = NonNullable<
   ReturnType<typeof useStudentsContacts>['data']
@@ -197,8 +195,8 @@ export default function StudentProfileContactsPage() {
 
   const studentId = getNumber(id);
   const { data: contacts = [] } = useStudentsContacts(studentId);
-  const { mutateAsync: upsertRelationshipsAsyncMutation } =
-    useUpsertStudentContactRelationships();
+  const { mutateAsync: updateRelationshipsAsyncMutation } =
+    useUpdateStudentContactRelationships();
 
   const [selectedContacts, setSelectedContacts] = useState<
     ReturnTypeFromUseContacts[]
@@ -291,32 +289,23 @@ export default function StudentProfileContactsPage() {
   ) => {
     const dataForEndpoint = Object.keys(
       data
-    ).map<Core_UpsertStudentContactRelationshipInput>((contactId) => {
-      const currentData = contacts.find(
-        (item) => item?.partyId === Number(contactId)
-      );
-
+    ).map<Core_UpdateStudentContactRelationshipInput>((contactId) => {
       const toUpdate = Object.entries(data[contactId]).reduce(
         (acc, [key, { newValue }]) => ({
           ...acc,
-          [key]:
-            newValue ?? currentData?.[key as keyof ReturnTypeFromUseContacts],
+          [key]: newValue,
         }),
-        {} as Core_UpsertStudentContactRelationshipInput
+        {} as Core_UpdateStudentContactRelationshipInput
       );
 
       return {
         ...toUpdate,
         studentPartyId: studentId!,
         contactPartyId: Number(contactId),
-        ...(!toUpdate.allowedToContact && {
-          includeInSms: false,
-          includeInTmail: false,
-        }),
       };
     });
 
-    return upsertRelationshipsAsyncMutation(dataForEndpoint);
+    return updateRelationshipsAsyncMutation(dataForEndpoint);
   };
 
   return (
