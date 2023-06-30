@@ -40,11 +40,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'blocks',
             loader: async () => {
               const { core_yearGroupEnrollments } = await getYearGroups();
-              const yearGroups =
-                core_yearGroupEnrollments?.sort(
-                  (prev, next) => prev.name.localeCompare(next.name) ?? 0
-                ) ?? [];
-              const [yearGroup] = yearGroups;
+              const [yearGroup] = core_yearGroupEnrollments;
               return getBlocksList(yearGroup?.yearGroupId ?? 0);
             },
             element: <ClassListManagerBlocks />,

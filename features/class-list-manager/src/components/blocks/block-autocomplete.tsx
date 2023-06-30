@@ -2,26 +2,25 @@ import { useTranslation } from '@tyro/i18n';
 import { Autocomplete } from '@tyro/core';
 import { useEffect, useMemo } from 'react';
 import { SxProps, Theme, Typography, Box } from '@mui/material';
-import { ReturnTypeFromUseYearGroups } from '@tyro/groups';
 import { ReturnTypeOfUseBlockList, useBlocksList } from '../../api/blocks';
 
 type BlockAutocompleteValue = NonNullable<ReturnTypeOfUseBlockList>[number];
 
 export type BlockAutocompleteProps = {
   value: BlockAutocompleteValue | null;
-  yearGroup: ReturnTypeFromUseYearGroups;
+  yearGroupId: number | undefined;
   onChange: (block: BlockAutocompleteValue | null) => void;
   sx?: SxProps<Theme> | undefined;
 };
 
 export const BlockAutocomplete = ({
   value,
-  yearGroup,
+  yearGroupId,
   onChange,
   sx,
 }: BlockAutocompleteProps) => {
   const { t } = useTranslation(['classListManager']);
-  const { data: blocks } = useBlocksList(yearGroup.yearGroupId);
+  const { data: blocks } = useBlocksList(yearGroupId ?? 0);
   const options = useMemo(
     () =>
       blocks?.sort(

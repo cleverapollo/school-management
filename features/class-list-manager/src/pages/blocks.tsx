@@ -66,6 +66,13 @@ export default function ClassListManagerBlocks() {
       : null;
   }, [selectedBlock, selectedRotationIndex, data?.groups]);
 
+  const onSelectedYearGroup = (
+    yearGroup: YearGroupsAutocompleteProps['value']
+  ) => {
+    setSelectedYearGroup(yearGroup);
+    setSelectedBlock(null);
+  };
+
   const requestSetSelectedYearGroup = (
     yearGroup: YearGroupsAutocompleteProps['value']
   ) => {
@@ -74,16 +81,14 @@ export default function ClassListManagerBlocks() {
         title: t('classListManager:areYouSureYouWantToChangeYear'),
         confirmText: t('classListManager:changeYear'),
         proceed: () => {
-          setSelectedYearGroup(yearGroup);
-          setSelectedBlock(null);
+          onSelectedYearGroup(yearGroup);
         },
         reset: () => {
           setConfirmDialogSettings(null);
         },
       });
     } else {
-      setSelectedYearGroup(yearGroup);
-      setSelectedBlock(null);
+      onSelectedYearGroup(yearGroup);
     }
   };
 
@@ -172,7 +177,7 @@ export default function ClassListManagerBlocks() {
             <>
               <BlockAutocomplete
                 value={selectedBlock}
-                yearGroup={selectedYearGroup}
+                yearGroupId={selectedYearGroup.yearGroupId}
                 onChange={requestSetSelectedBlock}
                 sx={{ maxWidth: spacing(54), flex: 1 }}
               />
