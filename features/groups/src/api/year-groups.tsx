@@ -88,18 +88,20 @@ const updateYearGroupLeads = graphql(/* GraphQL */ `
 
 const yearGroupsQuery = {
   queryKey: groupsKeys.year.groups(),
-  queryFn: async () => gqlClient.request(yearGroupsList, { filter: {} }),
+  queryFn: async () => {
+    const { core_yearGroupEnrollments: yearGroupEnrollments } =
+      await gqlClient.request(yearGroupsList, { filter: {} });
+
+    return {
+      core_yearGroupEnrollments: yearGroupEnrollments.sort((prev, next) =>
+        prev.name.localeCompare(next.name)
+      ),
+    };
+  },
 };
 
-export async function getYearGroups() {
-  const { core_yearGroupEnrollments: yearGroupEnrollments } =
-    await queryClient.fetchQuery(yearGroupsQuery);
-
-  return {
-    core_yearGroupEnrollments: yearGroupEnrollments.sort((prev, next) =>
-      prev.name.localeCompare(next.name)
-    ),
-  };
+export function getYearGroups() {
+  return queryClient.fetchQuery(yearGroupsQuery);
 }
 
 export function useYearGroups() {
