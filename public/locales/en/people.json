@@ -180,5 +180,8 @@
   "allowedToContactDisabled": "SMS & t-mail have been disabled for this contact as they are dependant on 'Allowed to contact'.",
   "changeProgrammeYear": "Change programme year",
   "changeProgrammeYearModalTitle": "Change student programme year",
-  "changeProgrammeYearModalDescription": "To move the student from their current year group, select a destination programme year. This action will also remove the student from their existing class and subject groups. You can assign new class and subject groups within class list manager."
+  "changeProgrammeYearModalDescription": "Select a new programme year to move the student. This action will also remove them from existing class and subject groups within class list manager.",
+  "moveStudent_one": "Move student",
+  "moveStudent_other": "Move students",
+  "youMustHaveAtLeastOneStudent": "You must have at least one student"
 }

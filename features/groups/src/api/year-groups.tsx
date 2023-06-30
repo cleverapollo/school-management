@@ -91,20 +91,21 @@ const yearGroupsQuery = {
   queryFn: async () => gqlClient.request(yearGroupsList, { filter: {} }),
 };
 
-export function getYearGroups() {
-  return queryClient.fetchQuery(yearGroupsQuery);
+export async function getYearGroups() {
+  const { core_yearGroupEnrollments: yearGroupEnrollments } =
+    await queryClient.fetchQuery(yearGroupsQuery);
+
+  return {
+    core_yearGroupEnrollments: yearGroupEnrollments.sort((prev, next) =>
+      prev.name.localeCompare(next.name)
+    ),
+  };
 }
 
 export function useYearGroups() {
   return useQuery({
     ...yearGroupsQuery,
-    select: useCallback(
-      ({ core_yearGroupEnrollments }: YearGroupsListQuery) =>
-        core_yearGroupEnrollments.sort((prev, next) =>
-          prev.name.localeCompare(next.name)
-        ),
-      []
-    ),
+    select: ({ core_yearGroupEnrollments }) => core_yearGroupEnrollments,
   });
 }
 

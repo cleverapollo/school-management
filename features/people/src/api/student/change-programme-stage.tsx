@@ -8,7 +8,6 @@ import {
 } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
-import { peopleKeys } from '../keys';
 
 const changeProgrammeStage = graphql(/* GraphQL */ `
   mutation enrollment_ire_changeProgrammeStage(
@@ -27,8 +26,8 @@ export function useChangeProgrammeStage() {
   return useMutation({
     mutationFn: async (input: EnrollmentIre_ChangeProgrammeStage[]) =>
       gqlClient.request(changeProgrammeStage, { input }),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries(peopleKeys.students.all());
+    onSuccess: () => {
+      queryClient.clear();
       toast(t('common:snackbarMessages.updateSuccess'));
     },
     onError: () => {

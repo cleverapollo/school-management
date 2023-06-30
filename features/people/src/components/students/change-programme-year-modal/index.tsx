@@ -30,7 +30,9 @@ export function ChangeProgrammeYearModal({
 }: ChangeYearGroupModalProps) {
   const { t } = useTranslation(['common', 'people']);
 
-  const { reset, control, handleSubmit } = useForm<FormState>();
+  const { reset, control, handleSubmit, watch } = useForm<FormState>({
+    defaultValues: { students: [] },
+  });
 
   const { mutate: changeProgrammeStageMutation, isLoading } =
     useChangeProgrammeStage();
@@ -51,13 +53,15 @@ export function ChangeProgrammeYearModal({
   const onSubmit = ({ students: studentsFormData }: FormState) => {
     const toUpdate = studentsFormData
       .filter((student) => student.programmeStage)
-      .map((student) => ({
-        studentPartyId: student.id,
-        programmeStageId: student.programmeStage?.id,
+      .map(({ id, programmeStage }) => ({
+        studentPartyId: id,
+        programmeStageId: programmeStage?.id,
       })) as EnrollmentIre_ChangeProgrammeStage[];
 
     changeProgrammeStageMutation(toUpdate, { onSuccess: onCancel });
   };
+
+  const [studentsToUpdate] = watch(['students']);
 
   return (
     <Dialog
@@ -65,7 +69,7 @@ export function ChangeProgrammeYearModal({
       onClose={onCancel}
       scroll="paper"
       fullWidth
-      maxWidth="md"
+      maxWidth="sm"
     >
       <DialogTitle>{t('people:changeProgrammeYearModalTitle')}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -83,7 +87,7 @@ export function ChangeProgrammeYearModal({
           </Button>
 
           <LoadingButton type="submit" variant="contained" loading={isLoading}>
-            {t('people:changeProgrammeYear')}
+            {t('people:moveStudent', { count: studentsToUpdate.length })}
           </LoadingButton>
         </DialogActions>
       </form>

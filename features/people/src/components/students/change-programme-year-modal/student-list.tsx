@@ -59,6 +59,8 @@ export const StudentList = <TField extends StudentListFormState>({
 
   const virtualStudents = virtualizer.getVirtualItems();
 
+  const disableRemoveButton = fields.length === 1;
+
   return (
     <Box
       ref={listContainerRef}
@@ -90,13 +92,23 @@ export const StudentList = <TField extends StudentListFormState>({
                 transform: `translateY(${virtualRow.start}px)`,
               }}
               secondaryAction={
-                <Tooltip title={t('common:actions.remove')}>
-                  <IconButton
-                    color="primary"
-                    onClick={() => remove(virtualRow.index)}
-                  >
-                    <TrashIcon />
-                  </IconButton>
+                <Tooltip
+                  title={
+                    disableRemoveButton
+                      ? t('people:youMustHaveAtLeastOneStudent')
+                      : t('common:actions.remove')
+                  }
+                >
+                  <span>
+                    <IconButton
+                      aria-label={t('common:actions.remove')}
+                      color="primary"
+                      disabled={disableRemoveButton}
+                      onClick={() => remove(virtualRow.index)}
+                    >
+                      <TrashIcon />
+                    </IconButton>
+                  </span>
                 </Tooltip>
               }
             >
