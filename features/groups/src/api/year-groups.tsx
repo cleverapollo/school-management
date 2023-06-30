@@ -5,7 +5,9 @@ import {
   queryClient,
   UpdateYearGroupEnrollmentInput,
   UseQueryReturnType,
+  YearGroupsListQuery,
 } from '@tyro/api';
+import { useCallback } from 'react';
 import { groupsKeys } from './keys';
 
 const yearGroupsList = graphql(/* GraphQL */ `
@@ -86,7 +88,16 @@ const updateYearGroupLeads = graphql(/* GraphQL */ `
 
 const yearGroupsQuery = {
   queryKey: groupsKeys.year.groups(),
-  queryFn: async () => gqlClient.request(yearGroupsList, { filter: {} }),
+  queryFn: async () => {
+    const { core_yearGroupEnrollments: yearGroupEnrollments } =
+      await gqlClient.request(yearGroupsList, { filter: {} });
+
+    return {
+      core_yearGroupEnrollments: yearGroupEnrollments.sort((prev, next) =>
+        prev.name.localeCompare(next.name)
+      ),
+    };
+  },
 };
 
 export function getYearGroups() {

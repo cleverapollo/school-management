@@ -12,6 +12,7 @@ export * from './building-graduate-hat';
 export * from './calendar-22';
 export * from './calendar-31';
 export * from './calendar-dates';
+export * from './calendar-edit-pen';
 export * from './calendar-month';
 export * from './calendar-month-alt';
 export * from './calendar-schedule';

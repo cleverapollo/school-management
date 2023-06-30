@@ -285,5 +285,6 @@
   "weeks_one": "{{count}} week",
   "weeks_other": "{{count}} weeks",
   "helloAnyoneHome": "👋 Hello, anyone home?",
-  "itLooksLikeYouveBeenIdle": "It's looks like you've been idle for a while. We will automatically log you out in {{count}} seconds."
+  "itLooksLikeYouveBeenIdle": "It's looks like you've been idle for a while. We will automatically log you out in {{count}} seconds.",
+  "programmeYear": "Programme year"
 }
