@@ -115,14 +115,15 @@ const upsertBlockMemberships = graphql(/* GraphQL */ `
   }
 `);
 
-const blocksQuery = (filter?: BlockFilter) => ({
-  queryKey: classListManagerKeys.blocksList(filter ?? {}),
+const blocksQuery = (filter: BlockFilter) => ({
+  queryKey: classListManagerKeys.blocksList(filter),
   queryFn: () => gqlClient.request(blocks, { filter }),
 });
 
 export function useBlocksList(yearGroupId: number) {
   return useQuery({
     ...blocksQuery({ yearGroupIds: [yearGroupId] }),
+    enabled: !!yearGroupId,
     select: ({ core_blocks }) => core_blocks,
   });
 }
