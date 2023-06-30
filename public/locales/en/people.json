@@ -176,5 +176,6 @@
   "parkingLocation": "Parking location",
   "makeAndModel": "Make and model",
   "preferredFirstNameInfo": "The preferred name is displayed in place of the student's forename in Tyro",
-  "preferredLastNameInfo": "The preferred name is displayed in place of the student's surname in Tyro"
+  "preferredLastNameInfo": "The preferred name is displayed in place of the student's surname in Tyro",
+  "allowedToContactDisabled": "SMS & t-mail have been disabled for this contact as they are dependant on 'Allowed to contact'."
 }

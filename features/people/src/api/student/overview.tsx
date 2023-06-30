@@ -1,5 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient } from '@tyro/api';
+import {
+  Core_Student_ContactsQuery,
+  gqlClient,
+  graphql,
+  queryClient,
+} from '@tyro/api';
+import { useCallback } from 'react';
 import { peopleKeys } from '../keys';
 
 const studentsContacts = graphql(/* GraphQL */ `
@@ -89,10 +95,15 @@ export function getStudentsContacts(studentId: number | undefined) {
 export function useStudentsContacts(studentId: number | undefined) {
   return useQuery({
     ...studentsContactsQuery(studentId),
-    select: ({ core_students }) =>
-      Array.isArray(core_students) && core_students.length > 0
-        ? core_students[0]?.contacts ?? []
-        : [],
+    select: useCallback(({ core_students }: Core_Student_ContactsQuery) => {
+      const [contact] = core_students;
+      if (!Array.isArray(contact.contacts)) return [];
+
+      return contact.contacts.map(({ relationships, ...restData }) => ({
+        ...restData,
+        ...relationships?.[0],
+      }));
+    }, []),
   });
 }
 

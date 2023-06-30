@@ -52,10 +52,10 @@ export function useContactStudents(contactId: number | undefined) {
   return useQuery({
     ...contactStudentsQuery(contactId),
     select: ({ core_studentContacts }) => {
-      if (!Array.isArray(core_studentContacts)) return [];
+      if (!Array.isArray(core_studentContacts)) return null;
       const [studentContact] = core_studentContacts;
 
-      return studentContact?.relationships ?? [];
+      return studentContact;
     },
   });
 }
