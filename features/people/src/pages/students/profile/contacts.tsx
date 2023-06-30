@@ -11,20 +11,28 @@ import {
   usePreferredNameLayout,
   ReturnTypeDisplayName,
   useDisclosure,
+  TableSwitch,
+  BulkEditedRows,
+  useToast,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   MobileIcon,
   PersonHeartIcon,
-  SendMailIcon,
   PersonTickIcon,
   PersonCrossIcon,
 } from '@tyro/icons';
 import { Box, Fade } from '@mui/material';
 import { SendSmsModal } from '@tyro/sms';
-import { SmsRecipientType } from '@tyro/api';
+import {
+  Core_UpdateStudentContactRelationshipInput,
+  SmsRecipientType,
+} from '@tyro/api';
+import { RelationshipTypeCellEditor } from '../../../components/contacts/relationship-type-cell-editor';
 import { useStudentsContacts } from '../../../api/student/overview';
 import { joinAddress } from '../../../utils/join-address';
+import { PriorityTypeCellEditor } from '../../../components/contacts/priority-cell-editor';
+import { useUpdateStudentContactRelationships } from '../../../api/student/update-student-contact-relationships';
 
 type ReturnTypeFromUseContacts = NonNullable<
   ReturnType<typeof useStudentsContacts>['data']
@@ -56,15 +64,14 @@ const getStudentContactColumns = (
     lockVisible: true,
   },
   {
-    field: 'relationships[0].relationshipType',
+    field: 'relationshipType',
     headerName: translate('common:relationship'),
-    valueGetter: ({ data }) => {
-      const contactsRelationshipType =
-        data?.relationships?.[0]?.relationshipType;
-      return contactsRelationshipType
-        ? translate(`common:relationshipType.${contactsRelationshipType}`)
-        : '';
-    },
+    editable: true,
+    cellEditorSelector: RelationshipTypeCellEditor(translate),
+    valueFormatter: ({ data }) =>
+      data?.relationshipType
+        ? translate(`common:relationshipType.${data?.relationshipType}`)
+        : '',
   },
   {
     field: 'personalInformation.primaryPhoneNumber.number',
@@ -83,96 +90,100 @@ const getStudentContactColumns = (
       }),
   },
   {
-    field: 'relationships[0].priority',
+    field: 'priority',
     headerName: translate('people:priority'),
+    editable: true,
+    cellEditorSelector: PriorityTypeCellEditor(),
   },
   {
     field: 'legalGuardian',
     headerName: translate('people:legalGuardian'),
-    valueGetter: ({ data }) =>
-      data?.relationships?.[0]?.legalGuardian
-        ? translate('common:yes')
-        : translate('common:no'),
+    editable: true,
+    cellClass: 'disable-cell-edit-style',
+    cellEditor: TableSwitch,
+    valueFormatter: ({ data }) =>
+      data?.legalGuardian ? translate('common:yes') : translate('common:no'),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
-      <TableBooleanValue
-        value={Boolean(data?.relationships?.[0]?.legalGuardian)}
-      />
+      <TableBooleanValue value={Boolean(data?.legalGuardian)} />
     ),
   },
   {
     field: 'pickupRights',
     headerName: translate('people:pickupPermission'),
-    valueGetter: ({ data }) =>
-      data?.relationships?.[0]?.pickupRights
-        ? translate('common:yes')
-        : translate('common:no'),
+    editable: true,
+    cellClass: 'disable-cell-edit-style',
+    cellEditor: TableSwitch,
+    valueFormatter: ({ data }) =>
+      data?.pickupRights ? translate('common:yes') : translate('common:no'),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
-      <TableBooleanValue
-        value={Boolean(data?.relationships?.[0]?.pickupRights)}
-      />
+      <TableBooleanValue value={Boolean(data?.pickupRights)} />
     ),
   },
   {
     field: 'allowAccessToStudentData',
     headerName: translate('people:allowAccessToStudentData'),
-    valueGetter: ({ data }) =>
-      data?.relationships?.[0]?.allowAccessToStudentData
+    editable: true,
+    cellClass: 'disable-cell-edit-style',
+    cellEditor: TableSwitch,
+    valueFormatter: ({ data }) =>
+      data?.allowAccessToStudentData
         ? translate('common:yes')
         : translate('common:no'),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
-      <TableBooleanValue
-        value={Boolean(data?.relationships?.[0]?.allowAccessToStudentData)}
-      />
+      <TableBooleanValue value={Boolean(data?.allowAccessToStudentData)} />
     ),
   },
   {
-    field: 'relationships[0].allowedToContact',
+    field: 'allowedToContact',
     headerName: translate('people:allowedToContact'),
-    valueGetter: ({ data }) =>
-      data?.relationships?.[0]?.allowedToContact
-        ? translate('common:yes')
-        : translate('common:no'),
+    editable: true,
+    cellClass: 'disable-cell-edit-style',
+    cellEditor: TableSwitch,
+    valueFormatter: ({ data }) =>
+      data?.allowedToContact ? translate('common:yes') : translate('common:no'),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
-      <TableBooleanValue
-        value={Boolean(data?.relationships?.[0]?.allowedToContact)}
-      />
+      <TableBooleanValue value={Boolean(data?.allowedToContact)} />
     ),
   },
   {
-    field: 'relationships[0].includeInSms',
+    field: 'includeInSms',
     headerName: translate('people:includedInSms'),
-    valueGetter: ({ data }) =>
-      data?.relationships?.[0]?.includeInSms
-        ? translate('common:yes')
-        : translate('common:no'),
+    editable: true,
+    cellClass: 'disable-cell-edit-style',
+    cellEditor: TableSwitch,
+    valueGetter: ({ data }) => data?.allowedToContact && data?.includeInSms,
+    valueFormatter: ({ data }) =>
+      data?.includeInSms ? translate('common:yes') : translate('common:no'),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
       <TableBooleanValue
-        value={Boolean(data?.relationships?.[0]?.includeInSms)}
+        value={Boolean(data?.allowedToContact && data?.includeInSms)}
       />
     ),
   },
   {
-    field: 'relationships[0].includeInTmail',
+    field: 'includeInTmail',
     headerName: translate('people:includeInTmail'),
-    valueGetter: ({ data }) =>
-      data?.relationships?.[0]?.includeInSms
-        ? translate('common:yes')
-        : translate('common:no'),
+    editable: true,
+    cellClass: 'disable-cell-edit-style',
+    cellEditor: TableSwitch,
+    valueGetter: ({ data }) => data?.allowedToContact && data?.includeInTmail,
+    valueFormatter: ({ data }) =>
+      data?.includeInTmail ? translate('common:yes') : translate('common:no'),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
       <TableBooleanValue
-        value={Boolean(data?.relationships?.[0]?.includeInTmail)}
+        value={Boolean(data?.allowedToContact && data?.includeInTmail)}
       />
     ),
   },
@@ -180,13 +191,18 @@ const getStudentContactColumns = (
 
 export default function StudentProfileContactsPage() {
   const { id } = useParams();
+  const { t } = useTranslation(['common', 'people', 'mail', 'sms']);
+  const { displayName } = usePreferredNameLayout();
+  const { toast } = useToast();
+
   const studentId = getNumber(id);
+  const { data: contacts = [] } = useStudentsContacts(studentId);
+  const { mutateAsync: updateRelationshipsAsyncMutation } =
+    useUpdateStudentContactRelationships();
+
   const [selectedContacts, setSelectedContacts] = useState<
     ReturnTypeFromUseContacts[]
   >([]);
-  const { data: contacts } = useStudentsContacts(studentId);
-  const { t } = useTranslation(['common', 'people', 'mail', 'sms']);
-  const { displayName } = usePreferredNameLayout();
   const {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
@@ -201,7 +217,7 @@ export default function StudentProfileContactsPage() {
   const recipientsForSms = useMemo(
     () =>
       selectedContacts
-        .filter((contact) => contact?.relationships?.[0]?.includeInSms)
+        .filter((contact) => contact?.includeInSms)
         .map(
           (contact) =>
             ({
@@ -216,9 +232,7 @@ export default function StudentProfileContactsPage() {
 
   const actionMenuItems = useMemo(() => {
     const isThereAtLeastOneContactThatIsNotAllowedToContact =
-      selectedContacts.some(
-        (contact) => !contact?.relationships?.[0]?.allowedToContact
-      );
+      selectedContacts.some((contact) => !contact?.allowedToContact);
 
     return [
       [
@@ -262,6 +276,40 @@ export default function StudentProfileContactsPage() {
     ];
   }, [selectedContacts, recipientsForSms]);
 
+  const handleBulkSave = (
+    data: BulkEditedRows<
+      ReturnTypeFromUseContacts,
+      | 'relationshipType'
+      | 'priority'
+      | 'legalGuardian'
+      | 'pickupRights'
+      | 'allowAccessToStudentData'
+      | 'allowedToContact'
+      | 'includeInSms'
+      | 'includeInTmail'
+    >
+  ) => {
+    const dataForEndpoint = Object.keys(
+      data
+    ).map<Core_UpdateStudentContactRelationshipInput>((contactId) => {
+      const toUpdate = Object.entries(data[contactId]).reduce(
+        (acc, [key, { newValue }]) => ({
+          ...acc,
+          [key]: newValue,
+        }),
+        {} as Core_UpdateStudentContactRelationshipInput
+      );
+
+      return {
+        ...toUpdate,
+        studentPartyId: studentId!,
+        contactPartyId: Number(contactId),
+      };
+    });
+
+    return updateRelationshipsAsyncMutation(dataForEndpoint);
+  };
+
   return (
     <>
       <Table
@@ -273,6 +321,14 @@ export default function StudentProfileContactsPage() {
         onRowSelection={(rows) => {
           setSelectedContacts(rows);
         }}
+        onCellValueChanged={(data) => {
+          if (
+            data.colDef.field === 'allowedToContact' &&
+            data.newValue === false
+          ) {
+            toast(t('people:allowedToContactDisabled'), { variant: 'info' });
+          }
+        }}
         rightAdornment={
           <Fade in={selectedContacts.length > 0}>
             <Box>
@@ -280,6 +336,7 @@ export default function StudentProfileContactsPage() {
             </Box>
           </Fade>
         }
+        onBulkSave={handleBulkSave}
       />
       <SendSmsModal
         isOpen={isSendSmsOpen}

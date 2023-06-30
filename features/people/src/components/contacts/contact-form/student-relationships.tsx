@@ -43,7 +43,7 @@ import {
 } from '../../../api/student/students';
 
 const relationshipTypeOptions = Object.values(StudentContactType);
-const priorityOptions = Array.from({ length: 5 }, (_v, k) => k + 1);
+export const priorityOptions = Array.from({ length: 5 }, (_v, k) => k + 1);
 
 export type StudentRelationship = UpsertStudentContactRelationshipInfoInput & {
   student: StudentSelectOption;
