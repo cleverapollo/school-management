@@ -60,8 +60,7 @@ export function StudentContactsWidget({
   const buttonTooltipTitle = isButtonsDisabled
     ? t('people:nextContactDisabled', { count: numberOfContacts })
     : '';
-  const contactsRelationshipType =
-    contact?.relationships?.[0]?.relationshipType;
+  const contactsRelationshipType = contact?.relationshipType;
 
   const paginate = (newDirection: number) => {
     setContactIndex([contactIndex + newDirection, newDirection]);
@@ -191,7 +190,7 @@ export function StudentContactsWidget({
                 <Tooltip
                   describeChild
                   title={
-                    !contact?.relationships?.[0]?.includeInSms &&
+                    !contact?.includeInSms &&
                     t('sms:recipientNotIncludedInSms', { count: 1 })
                   }
                 >
@@ -199,7 +198,7 @@ export function StudentContactsWidget({
                     <Button
                       variant="contained"
                       sx={{ flex: 1 }}
-                      disabled={!contact?.relationships?.[0]?.includeInSms}
+                      disabled={!contact?.includeInSms}
                       onClick={() =>
                         setContactToSendSmsTo([
                           {

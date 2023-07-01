@@ -194,7 +194,10 @@ function TableInner<T extends object>(
               groupSelectsFiltered={rowSelection === 'multiple'}
               stopEditingWhenCellsLoseFocus
               {...props}
-              onCellValueChanged={onCellValueChanged}
+              onCellValueChanged={(args) => {
+                onCellValueChanged(args);
+                props.onCellValueChanged?.(args);
+              }}
               onFirstDataRendered={(params: FirstDataRenderedEvent<T>) => {
                 params?.columnApi?.autoSizeAllColumns(false);
                 applyUpdatesToTable('newValue');
