@@ -1,0 +1,210 @@
+import { useMemo, useState } from 'react';
+import {
+  GridOptions,
+  ICellRendererParams,
+  ReturnTypeDisplayNames,
+  sortStartNumberFirst,
+  Table,
+  TableAvatar,
+  usePreferredNameLayout,
+} from '@tyro/core';
+import { TFunction, useTranslation } from '@tyro/i18n';
+import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import { Chip, Stack, Tooltip } from '@mui/material';
+import {
+  ReturnTypeFromUseTimetableSubjectGroups,
+  useTimetableSubjectGroups,
+} from '../../api/edit-timetable/subject-groups';
+import { useLiveTimetableId } from '../../api/common/timetables';
+import { Lesson } from '../../hooks/use-resource-table';
+import { SwapTeacherRoomModal } from '../../components/edit-timetable/swap-teacher-room-modal';
+
+dayjs.extend(LocalizedFormat);
+
+function getLessonLabels(
+  lesson: ReturnTypeFromUseTimetableSubjectGroups['lessons'][number],
+  displayNames: ReturnTypeDisplayNames,
+  t: TFunction<
+    ('common' | 'timetable')[],
+    undefined,
+    ('common' | 'timetable')[]
+  >
+) {
+  const teachers = lesson.teachers.map(({ person }) => person);
+  const teacherNames = displayNames(teachers, ' & ');
+  const roomName = lesson.room?.name ? `${lesson.room.name} - ` : '';
+  const day = dayjs()
+    .set('day', lesson.timeslotId?.dayIdx ?? 0)
+    .format('ddd');
+  const [hour, minute] = lesson.timeslotInfo?.startTime.split(':') ?? [];
+  const time =
+    hour && minute
+      ? dayjs().hour(Number(hour)).minute(Number(minute)).format('LT')
+      : '';
+  const formattedDayTime = day && time ? `${day}, ${time}` : '';
+
+  return {
+    label: `${teacherNames} - ${roomName}${formattedDayTime}`,
+    tooltip: t('timetable:lessonDetailTooltip', {
+      teacher: teacherNames,
+      room: lesson.room?.name ?? t('common:noRoomSet'),
+      day,
+      time,
+    }),
+  };
+}
+
+const getSubjectGroupsColumns = (
+  t: TFunction<
+    ('common' | 'timetable')[],
+    undefined,
+    ('common' | 'timetable')[]
+  >,
+  displayNames: ReturnTypeDisplayNames,
+  onLessonClick: (lesson: Lesson) => void
+): GridOptions<ReturnTypeFromUseTimetableSubjectGroups>['columnDefs'] => [
+  {
+    field: 'name',
+    headerName: t('common:name'),
+    lockVisible: true,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseTimetableSubjectGroups>) => {
+      const partyGroup = data?.partyGroup;
+      if (!partyGroup || partyGroup.__typename !== 'SubjectGroup') return null;
+
+      const subject = partyGroup?.subjects?.[0];
+      const bgColorStyle = subject?.colour
+        ? { bgcolor: `${subject.colour}.500` }
+        : {};
+      return (
+        <TableAvatar
+          name={partyGroup.name ?? ''}
+          to={`./${partyGroup.partyId ?? ''}`}
+          avatarUrl={partyGroup.avatarUrl}
+          AvatarProps={{
+            sx: {
+              borderRadius: 1,
+              ...bgColorStyle,
+            },
+          }}
+        />
+      );
+    },
+    valueGetter: ({ data }) => data?.partyGroup.name,
+    comparator: sortStartNumberFirst,
+    sort: 'asc',
+  },
+  {
+    headerName: t('common:year'),
+    field: 'year',
+    enableRowGroup: true,
+    valueGetter: ({ data }) => {
+      const yearGroups =
+        data?.partyGroup?.__typename === 'SubjectGroup'
+          ? data.partyGroup.yearGroups
+          : [];
+      return yearGroups.map((year) => year.name).join(', ');
+    },
+  },
+  {
+    headerName: t('timetable:core'),
+    field: 'partyGroup.studentMembershipType.classGroupName',
+  },
+  {
+    headerName: t('timetable:block'),
+    field: 'partyGroup.studentMembershipType.blockId',
+  },
+  {
+    field: 'teachers',
+    headerName: t('common:teacher'),
+    valueGetter: ({ data }) =>
+      displayNames(data?.teachers.map(({ person }) => person) ?? []),
+    enableRowGroup: true,
+  },
+  {
+    field: 'lessons',
+    valueGetter: ({ data }) =>
+      data?.lessons.map(
+        (lesson) => getLessonLabels(lesson, displayNames, t).label
+      ),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseTimetableSubjectGroups>) => {
+      const partyGroup = data?.partyGroup;
+      if (!partyGroup || partyGroup.__typename !== 'SubjectGroup') return null;
+
+      const subject =
+        partyGroup?.__typename === 'SubjectGroup'
+          ? partyGroup?.subjects?.[0]
+          : {};
+      const color = subject?.colour ?? 'default';
+
+      return (
+        <Stack spacing={0.5} direction="row">
+          {data?.lessons.map((lesson) => {
+            const { label, tooltip } = getLessonLabels(lesson, displayNames, t);
+
+            return (
+              <Tooltip
+                title={tooltip}
+                describeChild
+                enterDelay={1000}
+                enterNextDelay={1000}
+              >
+                <Chip
+                  key={JSON.stringify(lesson.id)}
+                  label={label}
+                  color={color}
+                  variant="soft"
+                  onClick={() => {
+                    onLessonClick(lesson);
+                  }}
+                />
+              </Tooltip>
+            );
+          })}
+        </Stack>
+      );
+    },
+    headerName: t('timetable:lessons'),
+  },
+];
+
+export default function TimetableSubjectGroups() {
+  const { t } = useTranslation(['timetable', 'timetable']);
+  const { displayNames } = usePreferredNameLayout();
+  const [openedLessonToEdit, setOpenedLessonToEdit] = useState<Lesson[] | null>(
+    null
+  );
+  const { data: liveTimetableId = 0 } = useLiveTimetableId();
+  const { data: subjectGroupsData } = useTimetableSubjectGroups({
+    timetableId: liveTimetableId,
+  });
+
+  const onLessonClick = (lesson: Lesson) => {
+    setOpenedLessonToEdit([lesson]);
+  };
+
+  const subjectGroupsColumns = useMemo(
+    () => getSubjectGroupsColumns(t, displayNames, onLessonClick),
+    [t, displayNames]
+  );
+
+  return (
+    <>
+      <Table
+        rowData={subjectGroupsData ?? []}
+        columnDefs={subjectGroupsColumns}
+        getRowId={({ data }) => String(data?.partyGroup.partyId)}
+      />
+      <SwapTeacherRoomModal
+        isOpen={!!openedLessonToEdit}
+        onClose={() => setOpenedLessonToEdit(null)}
+        timetableId={liveTimetableId}
+        lessons={openedLessonToEdit}
+      />
+    </>
+  );
+}

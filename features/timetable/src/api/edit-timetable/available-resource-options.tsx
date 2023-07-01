@@ -5,7 +5,7 @@ import {
   TtSwapRoomFilter,
   TtSwapTeacherFilter,
 } from '@tyro/api';
-import { timetableKeys } from './keys';
+import { timetableKeys } from '../keys';
 
 const availableTeachersOptionsForResource = graphql(/* GraphQL */ `
   query tt_swapTeacherOptions($filter: TTSwapTeacherFilter!) {

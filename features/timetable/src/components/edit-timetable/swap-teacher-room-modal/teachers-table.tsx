@@ -7,7 +7,7 @@ import {
   LessonChangeState,
   ReturnTypeOfUseSwapTeacherAndRoom,
 } from '../../../hooks/use-swap-teacher-and-room-modal';
-import { useAvailableTeachersForResource } from '../../../api/available-resource-options';
+import { useAvailableTeachersForResource } from '../../../api/edit-timetable/available-resource-options';
 import { SwapStyledTable } from './table-style';
 import { SwapButton, UndoSwapButton } from './swap-button';
 import { StatusChip } from './status-chip';

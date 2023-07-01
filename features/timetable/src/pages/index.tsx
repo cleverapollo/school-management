@@ -9,14 +9,15 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 
-import { useTimetables, ReturnTypeFromUseTimeTables } from '../api/timetables';
+import {
+  useTimetables,
+  ReturnTypeFromUseTimeTables,
+} from '../api/common/timetables';
 
-const getColumnDefs = (
-  t: TFunction<'timetable'[], undefined, 'timetable'[]>
-) => [
+const getColumnDefs = (t: TFunction<('common' | 'timetable')[]>) => [
   {
     field: 'timetableId',
-    headerName: t('timetable:timetable'),
+    headerName: t('common:timetable'),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseTimeTables>) =>
@@ -31,7 +32,7 @@ const getColumnDefs = (
 ];
 
 export default function Timetables() {
-  const { t } = useTranslation(['timetable', 'navigation']);
+  const { t } = useTranslation(['common', 'timetable', 'navigation']);
   const { data: timetables = [] } = useTimetables({});
   const columnDefs = useMemo(() => getColumnDefs(t), [t]);
 

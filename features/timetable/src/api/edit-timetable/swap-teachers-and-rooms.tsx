@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { gqlClient, graphql, queryClient, TtSwapsInput } from '@tyro/api';
 import { useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { timetableKeys } from './keys';
+import { timetableKeys } from '../keys';
 
 const swapTeachersAndRooms = graphql(/* GraphQL */ `
   mutation tt_swap($input: TTSwapsInput!) {

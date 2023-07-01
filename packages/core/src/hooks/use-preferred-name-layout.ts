@@ -30,7 +30,8 @@ const displayName = (
 };
 
 const displayNames = (
-  persons: DisplayNamePersonProps[] | undefined | null
+  persons: DisplayNamePersonProps[] | undefined | null,
+  separator = ', '
 ): string => {
   if (!persons) {
     return '';
@@ -38,7 +39,7 @@ const displayNames = (
   return persons
     .map((person) => displayName(person))
     .filter(Boolean)
-    .join(', ');
+    .join(separator);
 };
 
 export function sortByDisplayName(

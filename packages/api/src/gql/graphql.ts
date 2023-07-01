@@ -246,6 +246,7 @@ export type AttendanceEventId = {
 
 export type BlockFilter = {
   blockIds?: InputMaybe<Array<Scalars['String']>>;
+  yearGroupIds?: InputMaybe<Array<Scalars['Int']>>;
 };
 
 export type BlockRotation = {
@@ -694,6 +695,18 @@ export type CoreBlock = {
   rotations: Array<BlockRotation>;
   subjectGroupIds: Array<Scalars['Long']>;
   subjectGroupNamesJoined?: Maybe<Scalars['String']>;
+  yearGroupIds: Array<Scalars['Int']>;
+};
+
+export type Core_EnableBlockRotationInput = {
+  blockId: Scalars['String'];
+  iterations: Array<Core_EnableBlockRotationIterationInput>;
+  rotationName: Scalars['String'];
+};
+
+export type Core_EnableBlockRotationIterationInput = {
+  endDate?: InputMaybe<Scalars['Date']>;
+  startDate?: InputMaybe<Scalars['Date']>;
 };
 
 export type Core_NonEnrolledSibling = {
@@ -715,16 +728,16 @@ export type Core_SiblingsFilter = {
   studentId: Array<Scalars['Long']>;
 };
 
-export type Core_UpsertStudentContactRelationshipInput = {
-  allowAccessToStudentData: Scalars['Boolean'];
-  allowedToContact: Scalars['Boolean'];
+export type Core_UpdateStudentContactRelationshipInput = {
+  allowAccessToStudentData?: InputMaybe<Scalars['Boolean']>;
+  allowedToContact?: InputMaybe<Scalars['Boolean']>;
   contactPartyId: Scalars['Long'];
-  includeInSms: Scalars['Boolean'];
-  includeInTmail: Scalars['Boolean'];
-  legalGuardian: Scalars['Boolean'];
-  pickupRights: Scalars['Boolean'];
-  priority: Scalars['Int'];
-  relationshipType: StudentContactType;
+  includeInSms?: InputMaybe<Scalars['Boolean']>;
+  includeInTmail?: InputMaybe<Scalars['Boolean']>;
+  legalGuardian?: InputMaybe<Scalars['Boolean']>;
+  pickupRights?: InputMaybe<Scalars['Boolean']>;
+  priority?: InputMaybe<Scalars['Int']>;
+  relationshipType?: InputMaybe<StudentContactType>;
   studentPartyId: Scalars['Long'];
 };
 
@@ -1111,6 +1124,19 @@ export type EnrollmentHistory = {
   classGroupId: Scalars['Long'];
   classGroupName: Scalars['String'];
   studentPartyId: Scalars['Long'];
+};
+
+export type EnrollmentIre_AutoAssignBlockMembershipInput = {
+  assignmentType: EnrollmentIre_AutoAssignBlockMembershipType;
+  blockId: Scalars['String'];
+};
+
+export enum EnrollmentIre_AutoAssignBlockMembershipType {
+  ByClassGroup = 'BY_CLASS_GROUP'
+}
+
+export type EnrollmentIre_AutoAssignCoreMembershipInput = {
+  yearGroupEnrollmentId: Scalars['Long'];
 };
 
 /** ###  ire enrollment */
@@ -1633,8 +1659,10 @@ export type Mutation = {
   communications_sendSms?: Maybe<Scalars['String']>;
   communications_smsTopUp?: Maybe<SmsTopUpResponse>;
   communications_starred?: Maybe<Scalars['String']>;
+  core_enableBlockRotations?: Maybe<Success>;
   core_setActiveActiveAcademicNamespace?: Maybe<AcademicNamespace>;
   core_updateClassGroups?: Maybe<Success>;
+  core_updateStudentContactRelationships?: Maybe<Success>;
   core_updateStudents?: Maybe<Success>;
   core_updateSubjectGroups?: Maybe<Success>;
   core_updateYearGroupEnrollments?: Maybe<Success>;
@@ -1642,9 +1670,10 @@ export type Mutation = {
   core_upsertRooms: Array<Room>;
   core_upsertStaff?: Maybe<Array<Maybe<Staff>>>;
   core_upsertStudentContact: StudentContact;
-  core_upsertStudentContactRelationships?: Maybe<Success>;
   createProfileForGlobalUser?: Maybe<Profile>;
   createRole?: Maybe<SecurityRole>;
+  enrollment_ire_autoAssignBlocks: EnrollmentIre_CoreMemberships;
+  enrollment_ire_autoAssignCore: EnrollmentIre_CoreMemberships;
   enrollment_ire_changeProgrammeStage: Success;
   enrollment_ire_upsertBlockMemberships: EnrollmentIre_BlockMemberships;
   enrollment_ire_upsertCoreMemberships: EnrollmentIre_CoreMemberships;
@@ -1657,7 +1686,9 @@ export type Mutation = {
   staffWork_upsertAbsence: Array<StaffAbsence>;
   tt_cloneTimetable: TtTimetable;
   tt_editLessonInstance: Array<TtIndividualViewLesson>;
+  tt_publish: Success;
   tt_swap: Success;
+  tt_updateTimetableGroup: Success;
   users_inviteUsers?: Maybe<Array<Maybe<UserInvitation>>>;
   users_savePermissionGroup?: Maybe<PermissionGroup>;
   wellbeing_savePriorityStudent?: Maybe<PriorityStudent>;
@@ -1784,6 +1815,11 @@ export type MutationCommunications_StarredArgs = {
 };
 
 
+export type MutationCore_EnableBlockRotationsArgs = {
+  input?: InputMaybe<Core_EnableBlockRotationInput>;
+};
+
+
 export type MutationCore_SetActiveActiveAcademicNamespaceArgs = {
   input?: InputMaybe<SetActiveAcademicNamespace>;
 };
@@ -1791,6 +1827,11 @@ export type MutationCore_SetActiveActiveAcademicNamespaceArgs = {
 
 export type MutationCore_UpdateClassGroupsArgs = {
   input?: InputMaybe<Array<InputMaybe<UpdateClassGroupGroupInput>>>;
+};
+
+
+export type MutationCore_UpdateStudentContactRelationshipsArgs = {
+  input?: InputMaybe<Array<InputMaybe<Core_UpdateStudentContactRelationshipInput>>>;
 };
 
 
@@ -1829,11 +1870,6 @@ export type MutationCore_UpsertStudentContactArgs = {
 };
 
 
-export type MutationCore_UpsertStudentContactRelationshipsArgs = {
-  input?: InputMaybe<Array<InputMaybe<Core_UpsertStudentContactRelationshipInput>>>;
-};
-
-
 export type MutationCreateProfileForGlobalUserArgs = {
   input?: InputMaybe<CreateProfileForGlobalUserInput>;
 };
@@ -1841,6 +1877,16 @@ export type MutationCreateProfileForGlobalUserArgs = {
 
 export type MutationCreateRoleArgs = {
   input?: InputMaybe<CreateRoleInput>;
+};
+
+
+export type MutationEnrollment_Ire_AutoAssignBlocksArgs = {
+  input: EnrollmentIre_AutoAssignBlockMembershipInput;
+};
+
+
+export type MutationEnrollment_Ire_AutoAssignCoreArgs = {
+  input: EnrollmentIre_AutoAssignCoreMembershipInput;
 };
 
 
@@ -1899,8 +1945,18 @@ export type MutationTt_EditLessonInstanceArgs = {
 };
 
 
+export type MutationTt_PublishArgs = {
+  input: TtPublishTimetableInput;
+};
+
+
 export type MutationTt_SwapArgs = {
   input: TtSwapsInput;
+};
+
+
+export type MutationTt_UpdateTimetableGroupArgs = {
+  input: Tt_UpdateTimetableGroupInput;
 };
 
 
@@ -2470,9 +2526,12 @@ export type ProgrammeStage = {
   yearGroupId: Scalars['Int'];
 };
 
-export type ProgrammeStageEnrollment = {
+export type ProgrammeStageEnrollment = Party & PartyGroup & {
   __typename?: 'ProgrammeStageEnrollment';
   academicNamespaceId: Scalars['Int'];
+  avatarUrl?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  partyId: Scalars['Long'];
   programmeId: Scalars['Int'];
   programmeStage?: Maybe<ProgrammeStage>;
   programmeStageEnrollmentPartyId: Scalars['Long'];
@@ -2555,6 +2614,7 @@ export type Query = {
   staffWork_absences: Array<StaffAbsence>;
   staffWork_substitutions: Array<Substitution>;
   subjectGroups?: Maybe<Array<SubjectGroup>>;
+  tt_groups: Array<Tt_Groups>;
   tt_individualLessons: Array<TtIndividualViewLesson>;
   tt_resourceTimetableView: TtResourceTimetableView;
   tt_swapRoomOptions: TtSwapRoomOptions;
@@ -2839,6 +2899,11 @@ export type QueryStaffWork_SubstitutionsArgs = {
 
 export type QuerySubjectGroupsArgs = {
   filter?: InputMaybe<SubjectGroupFilter>;
+};
+
+
+export type QueryTt_GroupsArgs = {
+  filter: Tt_GroupsFilter;
 };
 
 
@@ -4223,6 +4288,7 @@ export type SubjectGroupStudentMembershipType = {
   __typename?: 'SubjectGroupStudentMembershipType';
   blockId?: Maybe<Scalars['String']>;
   classGroupId?: Maybe<Scalars['Long']>;
+  classGroupName?: Maybe<Scalars['String']>;
   type: SubjectGroupStudentMembershipTypeEnum;
 };
 
@@ -4443,14 +4509,6 @@ export type TtIndividualViewLessonId = {
   timetableGroupId: Scalars['Long'];
 };
 
-export type TtLiveTimetableStatus = {
-  __typename?: 'TTLiveTimetableStatus';
-  lastPublishedDate?: Maybe<Scalars['DateTime']>;
-  lessonChanges: Scalars['Int'];
-  publishDiff?: Maybe<TtPublishDiff>;
-  timetableId: Scalars['Int'];
-};
-
 export type TtPublishDiff = {
   __typename?: 'TTPublishDiff';
   lessonDiffs: Array<TtPublishDiffLesson>;
@@ -4581,7 +4639,7 @@ export type TtTimetable = {
   clonedFromId?: Maybe<Scalars['Int']>;
   clonedFromName?: Maybe<Scalars['Int']>;
   created: Scalars['DateTime'];
-  liveTimetableStatusStatus?: Maybe<TtLiveTimetableStatus>;
+  liveStatus?: Maybe<Tt_LiveStatus>;
   name: Scalars['String'];
   readOnly: Scalars['Boolean'];
   readOnlyReplicaAtCreationId: Scalars['Int'];
@@ -4664,6 +4722,41 @@ export type TtUpsertTimetableGroups = {
   membershipType: TtGroupStudentMembershipTypeEnum;
   teachersPartyIds: Array<Scalars['Long']>;
   /**  Can timetable different types of groups such as a subject group or a staff group for meetings */
+  timetableGroupPartyId: Scalars['Long'];
+};
+
+export type Tt_Groups = {
+  __typename?: 'TT_Groups';
+  lessons: Array<TtIndividualViewLesson>;
+  partyGroup: PartyGroup;
+  partyId: Scalars['Long'];
+  teachers: Array<Staff>;
+  teachersIds: Array<Scalars['Long']>;
+};
+
+export type Tt_GroupsFilter = {
+  partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  timetableId: Scalars['Int'];
+};
+
+export type Tt_LiveStatus = {
+  __typename?: 'TT_LiveStatus';
+  lastPublishedDate?: Maybe<Scalars['DateTime']>;
+  lessonChanges: Scalars['Int'];
+  publishDiff?: Maybe<TtPublishDiff>;
+  timetableGroupChanges: Scalars['Int'];
+  timetableId: Scalars['Int'];
+  totalChanges: Scalars['Int'];
+};
+
+export type Tt_UpdateTimetableGroupInput = {
+  timetableId: Scalars['Int'];
+  /**  defaults to false. This will delete all existing timetable lessons in calendar and republish them */
+  updates: Array<Tt_UpdateTimetableGroupRowInput>;
+};
+
+export type Tt_UpdateTimetableGroupRowInput = {
+  teachersPartyIds: Array<Scalars['Long']>;
   timetableGroupPartyId: Scalars['Long'];
 };
 
@@ -4998,12 +5091,14 @@ export type YearGroup = {
   yearGroupId: Scalars['Int'];
 };
 
-export type YearGroupEnrollment = {
+export type YearGroupEnrollment = Party & PartyGroup & {
   __typename?: 'YearGroupEnrollment';
   academicNamespaceId: Scalars['Int'];
+  avatarUrl?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   nationalCode: Scalars['String'];
+  partyId: Scalars['Long'];
   shortName: Scalars['String'];
   studentMembers: Group;
   students: Array<Student>;
@@ -5150,14 +5245,14 @@ export type Calendar_CalendarEventsQueryVariables = Exact<{
 }>;
 
 
-export type Calendar_CalendarEventsQuery = { __typename?: 'Query', calendar_calendarEvents?: { __typename?: 'ResourceCalendarWrapper', resources: Array<{ __typename: 'PartyCalendar', resourceId: number, partyInfo?: { __typename: 'GeneralGroup', name: string, avatarUrl?: string | null } | { __typename: 'Staff', person: { __typename?: 'Person', avatarUrl?: string | null, firstName?: string | null, lastName?: string | null } } | { __typename: 'Student', person: { __typename?: 'Person', avatarUrl?: string | null, firstName?: string | null, lastName?: string | null } } | { __typename: 'StudentContact', person: { __typename?: 'Person', avatarUrl?: string | null, firstName?: string | null, lastName?: string | null } } | { __typename: 'SubjectGroup', name: string, avatarUrl?: string | null } | null, events: Array<{ __typename?: 'CalendarEvent', name: string, eventId: number, calendarIds: Array<number | null>, startTime: string, endTime: string, type: CalendarEventType, colour?: Colour | null, description?: string | null, allDayEvent: boolean, lessonInfo?: { __typename?: 'CalendarEventLessonRaw', subjectGroupId: number, lessonId?: number | null } | null, exclusions: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType }>, attendees: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType, partyInfo?: { __typename: 'GeneralGroup', name: string, avatarUrl?: string | null, partyId: number } | { __typename: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'StudentContact', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'SubjectGroup', name: string, avatarUrl?: string | null, partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', roomId: number, name: string }> }> } | { __typename?: 'RoomCalendar', resourceId: number, room?: { __typename?: 'Room', name: string } | null, events: Array<{ __typename?: 'CalendarEvent', name: string, eventId: number, calendarIds: Array<number | null>, startTime: string, endTime: string, type: CalendarEventType, colour?: Colour | null, description?: string | null, allDayEvent: boolean, lessonInfo?: { __typename?: 'CalendarEventLessonRaw', subjectGroupId: number, lessonId?: number | null } | null, exclusions: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType }>, attendees: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType, partyInfo?: { __typename: 'GeneralGroup', name: string, avatarUrl?: string | null, partyId: number } | { __typename: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'StudentContact', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'SubjectGroup', name: string, avatarUrl?: string | null, partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', roomId: number, name: string }> }> }> } | null };
+export type Calendar_CalendarEventsQuery = { __typename?: 'Query', calendar_calendarEvents?: { __typename?: 'ResourceCalendarWrapper', resources: Array<{ __typename: 'PartyCalendar', resourceId: number, partyInfo?: { __typename: 'GeneralGroup', name: string, avatarUrl?: string | null } | { __typename: 'ProgrammeStageEnrollment', name: string, avatarUrl?: string | null } | { __typename: 'Staff', person: { __typename?: 'Person', avatarUrl?: string | null, firstName?: string | null, lastName?: string | null } } | { __typename: 'Student', person: { __typename?: 'Person', avatarUrl?: string | null, firstName?: string | null, lastName?: string | null } } | { __typename: 'StudentContact', person: { __typename?: 'Person', avatarUrl?: string | null, firstName?: string | null, lastName?: string | null } } | { __typename: 'SubjectGroup', name: string, avatarUrl?: string | null } | { __typename: 'YearGroupEnrollment', name: string, avatarUrl?: string | null } | null, events: Array<{ __typename?: 'CalendarEvent', name: string, eventId: number, calendarIds: Array<number | null>, startTime: string, endTime: string, type: CalendarEventType, colour?: Colour | null, description?: string | null, allDayEvent: boolean, lessonInfo?: { __typename?: 'CalendarEventLessonRaw', subjectGroupId: number, lessonId?: number | null } | null, exclusions: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType }>, attendees: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType, partyInfo?: { __typename: 'GeneralGroup', name: string, avatarUrl?: string | null, partyId: number } | { __typename: 'ProgrammeStageEnrollment', name: string, avatarUrl?: string | null, partyId: number } | { __typename: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'StudentContact', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'SubjectGroup', name: string, avatarUrl?: string | null, partyId: number } | { __typename: 'YearGroupEnrollment', name: string, avatarUrl?: string | null, partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', roomId: number, name: string }> }> } | { __typename?: 'RoomCalendar', resourceId: number, room?: { __typename?: 'Room', name: string } | null, events: Array<{ __typename?: 'CalendarEvent', name: string, eventId: number, calendarIds: Array<number | null>, startTime: string, endTime: string, type: CalendarEventType, colour?: Colour | null, description?: string | null, allDayEvent: boolean, lessonInfo?: { __typename?: 'CalendarEventLessonRaw', subjectGroupId: number, lessonId?: number | null } | null, exclusions: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType }>, attendees: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType, partyInfo?: { __typename: 'GeneralGroup', name: string, avatarUrl?: string | null, partyId: number } | { __typename: 'ProgrammeStageEnrollment', name: string, avatarUrl?: string | null, partyId: number } | { __typename: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'StudentContact', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'SubjectGroup', name: string, avatarUrl?: string | null, partyId: number } | { __typename: 'YearGroupEnrollment', name: string, avatarUrl?: string | null, partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', roomId: number, name: string }> }> }> } | null };
 
 export type Calendar_PartyTimetableQueryVariables = Exact<{
   filter: CalendarEventFilter;
 }>;
 
 
-export type Calendar_PartyTimetableQuery = { __typename?: 'Query', calendar_calendarEvents?: { __typename?: 'ResourceCalendarWrapper', resources: Array<{ __typename?: 'PartyCalendar', resourceId: number, events: Array<{ __typename?: 'CalendarEvent', eventId: number, startTime: string, endTime: string, type: CalendarEventType, attendees: Array<{ __typename?: 'CalendarEventAttendee', type: CalendarEventAttendeeType, partyInfo?: { __typename: 'GeneralGroup', partyId: number } | { __typename: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student', partyId: number } | { __typename: 'StudentContact', partyId: number } | { __typename: 'SubjectGroup', name: string, partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', name: string }> }> } | { __typename?: 'RoomCalendar', resourceId: number, events: Array<{ __typename?: 'CalendarEvent', eventId: number, startTime: string, endTime: string, type: CalendarEventType, attendees: Array<{ __typename?: 'CalendarEventAttendee', type: CalendarEventAttendeeType, partyInfo?: { __typename: 'GeneralGroup', partyId: number } | { __typename: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student', partyId: number } | { __typename: 'StudentContact', partyId: number } | { __typename: 'SubjectGroup', name: string, partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', name: string }> }> }> } | null };
+export type Calendar_PartyTimetableQuery = { __typename?: 'Query', calendar_calendarEvents?: { __typename?: 'ResourceCalendarWrapper', resources: Array<{ __typename?: 'PartyCalendar', resourceId: number, events: Array<{ __typename?: 'CalendarEvent', eventId: number, startTime: string, endTime: string, type: CalendarEventType, attendees: Array<{ __typename?: 'CalendarEventAttendee', type: CalendarEventAttendeeType, partyInfo?: { __typename: 'GeneralGroup', partyId: number } | { __typename: 'ProgrammeStageEnrollment', partyId: number } | { __typename: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student', partyId: number } | { __typename: 'StudentContact', partyId: number } | { __typename: 'SubjectGroup', name: string, partyId: number } | { __typename: 'YearGroupEnrollment', partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', name: string }> }> } | { __typename?: 'RoomCalendar', resourceId: number, events: Array<{ __typename?: 'CalendarEvent', eventId: number, startTime: string, endTime: string, type: CalendarEventType, attendees: Array<{ __typename?: 'CalendarEventAttendee', type: CalendarEventAttendeeType, partyInfo?: { __typename: 'GeneralGroup', partyId: number } | { __typename: 'ProgrammeStageEnrollment', partyId: number } | { __typename: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student', partyId: number } | { __typename: 'StudentContact', partyId: number } | { __typename: 'SubjectGroup', name: string, partyId: number } | { __typename: 'YearGroupEnrollment', partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', name: string }> }> }> } | null };
 
 export type TimetableInfoQueryVariables = Exact<{
   filter?: InputMaybe<CalendarDayInfoFilter>;
@@ -5241,7 +5336,7 @@ export type Calendar_CalendarEventsIteratorQueryVariables = Exact<{
 }>;
 
 
-export type Calendar_CalendarEventsIteratorQuery = { __typename?: 'Query', calendar_calendarEventsIterator?: { __typename?: 'CalendarEvent', eventId: number, calendarIds: Array<number | null>, startTime: string, endTime: string, type: CalendarEventType, attendees: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType, partyInfo?: { __typename?: 'GeneralGroup', partyId: number } | { __typename?: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null } } | { __typename?: 'Student', partyId: number } | { __typename?: 'StudentContact', partyId: number } | { __typename?: 'SubjectGroup', partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', name: string }>, extensions?: { __typename?: 'CalendarEventExtension', eventAttendance?: Array<{ __typename?: 'EventAttendance', eventId: number, attendanceCodeId: number, personPartyId: number } | null> | null } | null } | null };
+export type Calendar_CalendarEventsIteratorQuery = { __typename?: 'Query', calendar_calendarEventsIterator?: { __typename?: 'CalendarEvent', eventId: number, calendarIds: Array<number | null>, startTime: string, endTime: string, type: CalendarEventType, attendees: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType, partyInfo?: { __typename?: 'GeneralGroup', partyId: number } | { __typename?: 'ProgrammeStageEnrollment', partyId: number } | { __typename?: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null } } | { __typename?: 'Student', partyId: number } | { __typename?: 'StudentContact', partyId: number } | { __typename?: 'SubjectGroup', partyId: number } | { __typename?: 'YearGroupEnrollment', partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', name: string }>, extensions?: { __typename?: 'CalendarEventExtension', eventAttendance?: Array<{ __typename?: 'EventAttendance', eventId: number, attendanceCodeId: number, personPartyId: number } | null> | null } | null } | null };
 
 export type SubjectGroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -5597,26 +5692,40 @@ export type StaffWork_UpsertAbsenceMutationVariables = Exact<{
 
 export type StaffWork_UpsertAbsenceMutation = { __typename?: 'Mutation', staffWork_upsertAbsence: Array<{ __typename?: 'StaffAbsence', staffPartyId: number, absenceTypeId: number, fromDate?: string | null, toDate?: string | null, fromAbsenceRequestId?: number | null, absenceReasonText?: string | null }> };
 
+export type Tt_TimetablesQueryVariables = Exact<{
+  filter?: InputMaybe<TtTimetableFilter>;
+}>;
+
+
+export type Tt_TimetablesQuery = { __typename?: 'Query', tt_timetables: Array<{ __typename?: 'TTTimetable', timetableId: number, name: string }> };
+
 export type Tt_SwapTeacherOptionsQueryVariables = Exact<{
   filter: TtSwapTeacherFilter;
 }>;
 
 
-export type Tt_SwapTeacherOptionsQuery = { __typename?: 'Query', tt_swapTeacherOptions: { __typename?: 'TTSwapTeacherOptions', timeslots: Array<{ __typename?: 'TTTimeslot', id: { __typename?: 'TTTimeslotId', gridIdx: number, dayIdx: number, periodIdx: number }, info: { __typename?: 'TTTimeslotInfo', dayOfWeek: number, startTime: string, endTime: string } }>, teachers: Array<{ __typename?: 'TTSwapTeacherTeacherInfo', staffId: number, teacher: { __typename?: 'Staff', person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, nameTextId: number, name: string } | null } }, lessonOnTimeslots: Array<{ __typename?: 'TTIndividualViewLesson', id: { __typename?: 'TTIndividualViewLessonId', lessonIdx: number, lessonInstanceIdx: number, timetableGroupId: number }, partyGroup: { __typename?: 'GeneralGroup', name: string } | { __typename?: 'SubjectGroup', name: string } } | null> }> } };
+export type Tt_SwapTeacherOptionsQuery = { __typename?: 'Query', tt_swapTeacherOptions: { __typename?: 'TTSwapTeacherOptions', timeslots: Array<{ __typename?: 'TTTimeslot', id: { __typename?: 'TTTimeslotId', gridIdx: number, dayIdx: number, periodIdx: number }, info: { __typename?: 'TTTimeslotInfo', dayOfWeek: number, startTime: string, endTime: string } }>, teachers: Array<{ __typename?: 'TTSwapTeacherTeacherInfo', staffId: number, teacher: { __typename?: 'Staff', person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, nameTextId: number, name: string } | null } }, lessonOnTimeslots: Array<{ __typename?: 'TTIndividualViewLesson', id: { __typename?: 'TTIndividualViewLessonId', lessonIdx: number, lessonInstanceIdx: number, timetableGroupId: number }, partyGroup: { __typename?: 'GeneralGroup', name: string } | { __typename?: 'ProgrammeStageEnrollment', name: string } | { __typename?: 'SubjectGroup', name: string } | { __typename?: 'YearGroupEnrollment', name: string } } | null> }> } };
 
 export type Tt_SwapRoomOptionsQueryVariables = Exact<{
   filter: TtSwapRoomFilter;
 }>;
 
 
-export type Tt_SwapRoomOptionsQuery = { __typename?: 'Query', tt_swapRoomOptions: { __typename?: 'TTSwapRoomOptions', timeslots: Array<{ __typename?: 'TTTimeslot', id: { __typename?: 'TTTimeslotId', gridIdx: number, dayIdx: number, periodIdx: number }, info: { __typename?: 'TTTimeslotInfo', dayOfWeek: number, startTime: string, endTime: string } }>, rooms: Array<{ __typename?: 'TTSwapRoomRoomInfo', roomId: number, room: { __typename?: 'Room', name: string, capacity?: number | null, description?: string | null, pools: Array<string> }, lessonOnTimeslots: Array<{ __typename?: 'TTIndividualViewLesson', id: { __typename?: 'TTIndividualViewLessonId', lessonIdx: number, lessonInstanceIdx: number, timetableGroupId: number }, partyGroup: { __typename?: 'GeneralGroup', name: string } | { __typename?: 'SubjectGroup', name: string } } | null> }> } };
+export type Tt_SwapRoomOptionsQuery = { __typename?: 'Query', tt_swapRoomOptions: { __typename?: 'TTSwapRoomOptions', timeslots: Array<{ __typename?: 'TTTimeslot', id: { __typename?: 'TTTimeslotId', gridIdx: number, dayIdx: number, periodIdx: number }, info: { __typename?: 'TTTimeslotInfo', dayOfWeek: number, startTime: string, endTime: string } }>, rooms: Array<{ __typename?: 'TTSwapRoomRoomInfo', roomId: number, room: { __typename?: 'Room', name: string, capacity?: number | null, description?: string | null, pools: Array<string> }, lessonOnTimeslots: Array<{ __typename?: 'TTIndividualViewLesson', id: { __typename?: 'TTIndividualViewLessonId', lessonIdx: number, lessonInstanceIdx: number, timetableGroupId: number }, partyGroup: { __typename?: 'GeneralGroup', name: string } | { __typename?: 'ProgrammeStageEnrollment', name: string } | { __typename?: 'SubjectGroup', name: string } | { __typename?: 'YearGroupEnrollment', name: string } } | null> }> } };
 
 export type Tt_ResourceTimetableViewQueryVariables = Exact<{
   filter: TtResourceTimetableViewFilter;
 }>;
 
 
-export type Tt_ResourceTimetableViewQuery = { __typename?: 'Query', tt_resourceTimetableView: { __typename?: 'TTResourceTimetableView', timeslots: Array<{ __typename?: 'TTResourceTimeslotView', timeslotIds?: { __typename?: 'TTTimeslotId', gridIdx: number, dayIdx: number, periodIdx: number } | null, timeslots?: { __typename?: 'TTTimeslotInfo', dayOfWeek: number, startTime: string, endTime: string, periodType: TtGridPeriodType } | null, lessons: Array<{ __typename?: 'TTIndividualViewLesson', spread: number, id: { __typename?: 'TTIndividualViewLessonId', lessonIdx: number, lessonInstanceIdx: number, timetableGroupId: number }, timeslotId?: { __typename?: 'TTTimeslotId', gridIdx: number, dayIdx: number, periodIdx: number } | null, timeslotInfo?: { __typename?: 'TTTimeslotInfo', startTime: string, endTime: string } | null, partyGroup: { __typename: 'GeneralGroup', partyId: number, name: string, avatarUrl?: string | null } | { __typename: 'SubjectGroup', partyId: number, name: string, avatarUrl?: string | null, subjects: Array<{ __typename?: 'Subject', name: string, colour?: Colour | null }> }, room?: { __typename?: 'Room', roomId: number, name: string } | null, teachers: Array<{ __typename?: 'Staff', person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } }> }> }> } };
+export type Tt_ResourceTimetableViewQuery = { __typename?: 'Query', tt_resourceTimetableView: { __typename?: 'TTResourceTimetableView', timeslots: Array<{ __typename?: 'TTResourceTimeslotView', timeslotIds?: { __typename?: 'TTTimeslotId', gridIdx: number, dayIdx: number, periodIdx: number } | null, timeslots?: { __typename?: 'TTTimeslotInfo', dayOfWeek: number, startTime: string, endTime: string, periodType: TtGridPeriodType } | null, lessons: Array<{ __typename?: 'TTIndividualViewLesson', spread: number, id: { __typename?: 'TTIndividualViewLessonId', lessonIdx: number, lessonInstanceIdx: number, timetableGroupId: number }, timeslotId?: { __typename?: 'TTTimeslotId', gridIdx: number, dayIdx: number, periodIdx: number } | null, timeslotInfo?: { __typename?: 'TTTimeslotInfo', startTime: string, endTime: string } | null, partyGroup: { __typename: 'GeneralGroup', partyId: number, name: string, avatarUrl?: string | null } | { __typename: 'ProgrammeStageEnrollment', partyId: number, name: string, avatarUrl?: string | null } | { __typename: 'SubjectGroup', partyId: number, name: string, avatarUrl?: string | null, subjects: Array<{ __typename?: 'Subject', name: string, colour?: Colour | null }> } | { __typename: 'YearGroupEnrollment', partyId: number, name: string, avatarUrl?: string | null }, room?: { __typename?: 'Room', roomId: number, name: string } | null, teachers: Array<{ __typename?: 'Staff', person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } }> }> }> } };
+
+export type Tt_GroupsQueryVariables = Exact<{
+  filter: Tt_GroupsFilter;
+}>;
+
+
+export type Tt_GroupsQuery = { __typename?: 'Query', tt_groups: Array<{ __typename?: 'TT_Groups', partyGroup: { __typename: 'GeneralGroup', name: string, partyId: number, avatarUrl?: string | null } | { __typename: 'ProgrammeStageEnrollment', name: string, partyId: number, avatarUrl?: string | null } | { __typename: 'SubjectGroup', name: string, partyId: number, avatarUrl?: string | null, yearGroups: Array<{ __typename?: 'YearGroupEnrollment', name: string }>, subjects: Array<{ __typename?: 'Subject', colour?: Colour | null }>, studentMembershipType?: { __typename?: 'SubjectGroupStudentMembershipType', type: SubjectGroupStudentMembershipTypeEnum, classGroupId?: number | null, blockId?: string | null, classGroupName?: string | null } | null } | { __typename: 'YearGroupEnrollment', name: string, partyId: number, avatarUrl?: string | null }, teachers: Array<{ __typename?: 'Staff', person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, nameTextId: number, name: string } | null } }>, lessons: Array<{ __typename?: 'TTIndividualViewLesson', spread: number, id: { __typename?: 'TTIndividualViewLessonId', lessonIdx: number, lessonInstanceIdx: number, timetableGroupId: number }, timeslotId?: { __typename?: 'TTTimeslotId', gridIdx: number, dayIdx: number, periodIdx: number } | null, timeslotInfo?: { __typename?: 'TTTimeslotInfo', startTime: string, endTime: string } | null, partyGroup: { __typename: 'GeneralGroup', partyId: number, name: string, avatarUrl?: string | null } | { __typename: 'ProgrammeStageEnrollment', partyId: number, name: string, avatarUrl?: string | null } | { __typename: 'SubjectGroup', partyId: number, name: string, avatarUrl?: string | null, subjects: Array<{ __typename?: 'Subject', name: string, colour?: Colour | null }> } | { __typename: 'YearGroupEnrollment', partyId: number, name: string, avatarUrl?: string | null }, room?: { __typename?: 'Room', roomId: number, name: string } | null, teachers: Array<{ __typename?: 'Staff', person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } }> }> }> };
 
 export type Tt_SwapMutationVariables = Exact<{
   input: TtSwapsInput;
@@ -5624,13 +5733,6 @@ export type Tt_SwapMutationVariables = Exact<{
 
 
 export type Tt_SwapMutation = { __typename?: 'Mutation', tt_swap: { __typename?: 'Success', success?: boolean | null } };
-
-export type Tt_TimetablesQueryVariables = Exact<{
-  filter?: InputMaybe<TtTimetableFilter>;
-}>;
-
-
-export type Tt_TimetablesQuery = { __typename?: 'Query', tt_timetables: Array<{ __typename?: 'TTTimetable', timetableId: number, name: string }> };
 
 export type Admin__Party_PeopleQueryVariables = Exact<{
   tenant: Scalars['Int'];
@@ -5747,11 +5849,12 @@ export const Communications_SmsTopUpDocument = {"kind":"Document","definitions":
 export const StaffWork_AbsenceTypesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"staffWork_absenceTypes"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StaffAbsenceTypeFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staffWork_absenceTypes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"absenceTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"descriptionTextId"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"availableForRequests"}}]}}]}}]} as unknown as DocumentNode<StaffWork_AbsenceTypesQuery, StaffWork_AbsenceTypesQueryVariables>;
 export const Staff_Work_AbsencesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"staff_work_absences"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StaffAbsenceFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staffWork_absences"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"absenceId"}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"absenceType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fromDate"}},{"kind":"Field","name":{"kind":"Name","value":"toDate"}}]}}]}}]} as unknown as DocumentNode<Staff_Work_AbsencesQuery, Staff_Work_AbsencesQueryVariables>;
 export const StaffWork_UpsertAbsenceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"staffWork_upsertAbsence"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpsertStaffAbsence"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staffWork_upsertAbsence"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staffPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"absenceTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"fromDate"}},{"kind":"Field","name":{"kind":"Name","value":"toDate"}},{"kind":"Field","name":{"kind":"Name","value":"fromAbsenceRequestId"}},{"kind":"Field","name":{"kind":"Name","value":"absenceReasonText"}}]}}]}}]} as unknown as DocumentNode<StaffWork_UpsertAbsenceMutation, StaffWork_UpsertAbsenceMutationVariables>;
+export const Tt_TimetablesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"tt_timetables"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"TTTimetableFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tt_timetables"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"timetableId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<Tt_TimetablesQuery, Tt_TimetablesQueryVariables>;
 export const Tt_SwapTeacherOptionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"tt_swapTeacherOptions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TTSwapTeacherFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tt_swapTeacherOptions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"timeslots"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gridIdx"}},{"kind":"Field","name":{"kind":"Name","value":"dayIdx"}},{"kind":"Field","name":{"kind":"Name","value":"periodIdx"}}]}},{"kind":"Field","name":{"kind":"Name","value":"info"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dayOfWeek"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"teachers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staffId"}},{"kind":"Field","name":{"kind":"Name","value":"teacher"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"lessonOnTimeslots"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lessonIdx"}},{"kind":"Field","name":{"kind":"Name","value":"lessonInstanceIdx"}},{"kind":"Field","name":{"kind":"Name","value":"timetableGroupId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"partyGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<Tt_SwapTeacherOptionsQuery, Tt_SwapTeacherOptionsQueryVariables>;
 export const Tt_SwapRoomOptionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"tt_swapRoomOptions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TTSwapRoomFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tt_swapRoomOptions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"timeslots"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gridIdx"}},{"kind":"Field","name":{"kind":"Name","value":"dayIdx"}},{"kind":"Field","name":{"kind":"Name","value":"periodIdx"}}]}},{"kind":"Field","name":{"kind":"Name","value":"info"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dayOfWeek"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}},{"kind":"Field","name":{"kind":"Name","value":"room"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"capacity"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"pools"}}]}},{"kind":"Field","name":{"kind":"Name","value":"lessonOnTimeslots"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lessonIdx"}},{"kind":"Field","name":{"kind":"Name","value":"lessonInstanceIdx"}},{"kind":"Field","name":{"kind":"Name","value":"timetableGroupId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"partyGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<Tt_SwapRoomOptionsQuery, Tt_SwapRoomOptionsQueryVariables>;
 export const Tt_ResourceTimetableViewDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"tt_resourceTimetableView"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TTResourceTimetableViewFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tt_resourceTimetableView"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"timeslots"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"timeslotIds"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gridIdx"}},{"kind":"Field","name":{"kind":"Name","value":"dayIdx"}},{"kind":"Field","name":{"kind":"Name","value":"periodIdx"}}]}},{"kind":"Field","name":{"kind":"Name","value":"timeslots"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dayOfWeek"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"periodType"}}]}},{"kind":"Field","name":{"kind":"Name","value":"lessons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lessonIdx"}},{"kind":"Field","name":{"kind":"Name","value":"lessonInstanceIdx"}},{"kind":"Field","name":{"kind":"Name","value":"timetableGroupId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"timeslotId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gridIdx"}},{"kind":"Field","name":{"kind":"Name","value":"dayIdx"}},{"kind":"Field","name":{"kind":"Name","value":"periodIdx"}}]}},{"kind":"Field","name":{"kind":"Name","value":"timeslotInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}}]}},{"kind":"Field","name":{"kind":"Name","value":"partyGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SubjectGroup"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"room"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"teachers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"spread"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Tt_ResourceTimetableViewQuery, Tt_ResourceTimetableViewQueryVariables>;
+export const Tt_GroupsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"tt_groups"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TT_GroupsFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tt_groups"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SubjectGroup"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"yearGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}},{"kind":"Field","name":{"kind":"Name","value":"studentMembershipType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"classGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"blockId"}},{"kind":"Field","name":{"kind":"Name","value":"classGroupName"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"teachers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"lessons"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lessonIdx"}},{"kind":"Field","name":{"kind":"Name","value":"lessonInstanceIdx"}},{"kind":"Field","name":{"kind":"Name","value":"timetableGroupId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"timeslotId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gridIdx"}},{"kind":"Field","name":{"kind":"Name","value":"dayIdx"}},{"kind":"Field","name":{"kind":"Name","value":"periodIdx"}}]}},{"kind":"Field","name":{"kind":"Name","value":"timeslotInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}}]}},{"kind":"Field","name":{"kind":"Name","value":"partyGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SubjectGroup"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"room"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"teachers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"spread"}}]}}]}}]}}]} as unknown as DocumentNode<Tt_GroupsQuery, Tt_GroupsQueryVariables>;
 export const Tt_SwapDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"tt_swap"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TTSwapsInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tt_swap"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Tt_SwapMutation, Tt_SwapMutationVariables>;
-export const Tt_TimetablesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"tt_timetables"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"TTTimetableFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tt_timetables"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"timetableId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<Tt_TimetablesQuery, Tt_TimetablesQueryVariables>;
 export const Admin__Party_PeopleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"admin__party_people"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"admin__party_people"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"tenant"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]} as unknown as DocumentNode<Admin__Party_PeopleQuery, Admin__Party_PeopleQueryVariables>;
 export const Admin__TenantsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"admin__tenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"admin__tenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"imgUrl"}}]}}]}}]} as unknown as DocumentNode<Admin__TenantsQuery, Admin__TenantsQueryVariables>;
 export const Core_AcademicNamespacesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_academicNamespaces"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_academicNamespaces"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"academicNamespaceId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActiveDefaultNamespace"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}}]}}]}}]} as unknown as DocumentNode<Core_AcademicNamespacesQuery, Core_AcademicNamespacesQueryVariables>;

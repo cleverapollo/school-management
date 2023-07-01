@@ -4,6 +4,7 @@ import {
   TtSwapRoomFilter,
   TtSwapTeacherFilter,
   TtTimetableFilter,
+  Tt_GroupsFilter,
 } from '@tyro/api';
 
 export const timetableKeys = {
@@ -19,4 +20,6 @@ export const timetableKeys = {
     [...timetableKeys.all, 'teachersForResource', filter] as const,
   availableRoomsForResource: (filter: TtSwapRoomFilter) =>
     [...timetableKeys.all, 'roomsForResource', filter] as const,
+  subjectGroups: (filter: Tt_GroupsFilter) =>
+    [...timetableKeys.all, 'ttSubjectGroups', filter] as const,
 };
