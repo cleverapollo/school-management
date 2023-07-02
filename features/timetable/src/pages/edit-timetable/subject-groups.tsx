@@ -1,17 +1,22 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import {
+  BulkEditedRows,
   GridOptions,
   ICellRendererParams,
   ReturnTypeDisplayNames,
   sortStartNumberFirst,
   Table,
   TableAvatar,
+  useDebouncedValue,
   usePreferredNameLayout,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Chip, Stack, Tooltip } from '@mui/material';
+import set from 'lodash/set';
+import { TableStaffMultipleAutocomplete } from '@tyro/people';
+import { Tt_UpdateTimetableGroupRowInput } from '@tyro/api';
 import {
   ReturnTypeFromUseTimetableSubjectGroups,
   useTimetableSubjectGroups,
@@ -19,6 +24,7 @@ import {
 import { useLiveTimetableId } from '../../api/common/timetables';
 import { Lesson } from '../../hooks/use-resource-table';
 import { SwapTeacherRoomModal } from '../../components/edit-timetable/swap-teacher-room-modal';
+import { useTtUpdateTimetableGroup } from '../../api/edit-timetable/update-group';
 
 dayjs.extend(LocalizedFormat);
 
@@ -48,7 +54,7 @@ function getLessonLabels(
     label: `${teacherNames} - ${roomName}${formattedDayTime}`,
     tooltip: t('timetable:lessonDetailTooltip', {
       teacher: teacherNames,
-      room: lesson.room?.name ?? t('common:noRoomSet'),
+      room: lesson.room?.name ?? `(${t('common:noRoomSet')})`,
       day,
       time,
     }),
@@ -117,11 +123,19 @@ const getSubjectGroupsColumns = (
     field: 'partyGroup.studentMembershipType.blockId',
   },
   {
+    headerName: t('common:teachers'),
     field: 'teachers',
-    headerName: t('common:teacher'),
-    valueGetter: ({ data }) =>
-      displayNames(data?.teachers.map(({ person }) => person) ?? []),
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     enableRowGroup: true,
+    valueSetter: ({ data, newValue }) => {
+      set(data, 'teachers', newValue);
+      return true;
+    },
+    valueFormatter: ({ data }) => displayNames(data?.teachers ?? []),
+    editable: true,
+    cellEditor: TableStaffMultipleAutocomplete,
+    suppressKeyboardEvent: ({ editing, event }) =>
+      editing && event.key === 'Enter',
   },
   {
     field: 'lessons',
@@ -148,13 +162,13 @@ const getSubjectGroupsColumns = (
 
             return (
               <Tooltip
+                key={JSON.stringify(lesson.id)}
                 title={tooltip}
                 describeChild
                 enterDelay={1000}
                 enterNextDelay={1000}
               >
                 <Chip
-                  key={JSON.stringify(lesson.id)}
                   label={label}
                   color={color}
                   variant="soft"
@@ -175,16 +189,41 @@ const getSubjectGroupsColumns = (
 export default function TimetableSubjectGroups() {
   const { t } = useTranslation(['timetable', 'timetable']);
   const { displayNames } = usePreferredNameLayout();
-  const [openedLessonToEdit, setOpenedLessonToEdit] = useState<Lesson[] | null>(
-    null
-  );
+  const {
+    value: openedLessonToEdit,
+    debouncedValue: debouncedOpenedLessonToEdit,
+    setValue: setOpenedLessonToEdit,
+  } = useDebouncedValue<Lesson[] | null>({ defaultValue: null });
   const { data: liveTimetableId = 0 } = useLiveTimetableId();
   const { data: subjectGroupsData } = useTimetableSubjectGroups({
     timetableId: liveTimetableId,
   });
+  const { mutateAsync: updateTimetableGroup } = useTtUpdateTimetableGroup();
 
   const onLessonClick = (lesson: Lesson) => {
     setOpenedLessonToEdit([lesson]);
+  };
+
+  const onBulkSave = (
+    changes: BulkEditedRows<ReturnTypeFromUseTimetableSubjectGroups, 'teachers'>
+  ) => {
+    const updates = Object.entries(changes).reduce<
+      Tt_UpdateTimetableGroupRowInput[]
+    >((acc, [id, { teachers }]) => {
+      const newValue = teachers?.newValue ?? [];
+
+      acc.push({
+        timetableGroupPartyId: Number(id),
+        teachersPartyIds: newValue.map((teacher) => teacher.partyId),
+      });
+
+      return acc;
+    }, []);
+
+    return updateTimetableGroup({
+      timetableId: liveTimetableId,
+      updates,
+    });
   };
 
   const subjectGroupsColumns = useMemo(
@@ -198,12 +237,13 @@ export default function TimetableSubjectGroups() {
         rowData={subjectGroupsData ?? []}
         columnDefs={subjectGroupsColumns}
         getRowId={({ data }) => String(data?.partyGroup.partyId)}
+        onBulkSave={onBulkSave}
       />
       <SwapTeacherRoomModal
         isOpen={!!openedLessonToEdit}
         onClose={() => setOpenedLessonToEdit(null)}
         timetableId={liveTimetableId}
-        lessons={openedLessonToEdit}
+        lessons={openedLessonToEdit || debouncedOpenedLessonToEdit}
       />
     </>
   );

@@ -36,6 +36,21 @@ export const TableStaffMultipleAutocomplete = forwardRef(
         optionIdKey="partyId"
         optionTextKey="firstName"
         fullWidth
+        sx={{
+          width: '100%',
+          height: '100%',
+          '& fieldset': {
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'transparent',
+            outline: 'none',
+            border: 'none',
+            fontFamily: 'inherit',
+            fontSize: 'inherit',
+            color: 'inherit',
+            paddingX: 1,
+          },
+        }}
         value={localSelectedValue ?? []}
         onChange={(_, value) => {
           setLocalSelectedValue(value as ReturnTypeFromUseStaffForSelect[]);
@@ -50,7 +65,7 @@ export const TableStaffMultipleAutocomplete = forwardRef(
         }
         renderAvatarTags={(option, renderTag) =>
           renderTag({
-            name: option.firstName || undefined,
+            name: displayName(option) || undefined,
             src: option.avatarUrl,
           })
         }

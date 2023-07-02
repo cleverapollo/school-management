@@ -60,7 +60,7 @@ const getYearGroupsColumns = (
   {
     headerName: t('common:yearhead'),
     field: 'yearGroupLeads',
-    cellClass: 'disable-cell-edit-style',
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     enableRowGroup: true,
     valueSetter: ({ data, newValue }) => {
       set(data, 'yearGroupLeads', newValue);

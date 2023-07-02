@@ -39,8 +39,9 @@ export function TeacherSwapTable({
   const { displayName } = usePreferredNameLayout();
   const { data: availableTeachers, isLoading } =
     useAvailableTeachersForResource(isOpen, filter);
-  const [hoveredLessonChangeState, setHoveredLessonChangeState] =
-    useState<LessonChangeState>(changeState[0]);
+  const [hoveredLessonChangeState, setHoveredLessonChangeState] = useState<
+    LessonChangeState | undefined
+  >(changeState[0]);
 
   const hoveredLessonIndex = useMemo(
     () =>
@@ -49,7 +50,8 @@ export function TeacherSwapTable({
   );
   const teacherIdsOfHoveredLesson = useMemo(
     () =>
-      hoveredLessonChangeState?.teachers.map(({ person }) => person.partyId),
+      hoveredLessonChangeState?.teachers.map(({ person }) => person.partyId) ??
+      [],
     [hoveredLessonChangeState]
   );
 
@@ -164,7 +166,7 @@ export function TeacherSwapTable({
                     );
                     const setHoveredToCurrentState = () => {
                       if (
-                        lessonChangeState.id !== hoveredLessonChangeState.id
+                        lessonChangeState.id !== hoveredLessonChangeState?.id
                       ) {
                         setHoveredLessonChangeState(lessonChangeState);
                       }

@@ -4,8 +4,10 @@ import {
   graphql,
   queryClient,
   Tt_GroupsFilter,
+  Tt_GroupsQuery,
   UseQueryReturnType,
 } from '@tyro/api';
+import { useCallback } from 'react';
 import { timetableKeys } from '../keys';
 
 const ttSubjectGroups = graphql(/* GraphQL */ `
@@ -109,7 +111,14 @@ export function useTimetableSubjectGroups(filter: Tt_GroupsFilter) {
   return useQuery({
     ...ttSubjectGroupQuery(filter),
     enabled: filter.timetableId !== 0,
-    select: ({ tt_groups }) => tt_groups,
+    select: useCallback(
+      ({ tt_groups }: Tt_GroupsQuery) =>
+        tt_groups.map((group) => ({
+          ...group,
+          teachers: group.teachers.map(({ person }) => person),
+        })),
+      []
+    ),
   });
 }
 
