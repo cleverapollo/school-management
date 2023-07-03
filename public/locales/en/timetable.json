@@ -21,6 +21,8 @@
   "noTimetablePublishedForYear": "There is no timetable published for this academic year.",
   "selectIfYouWantSwapTeachersOrRooms": "Select if you want to swap teachers or rooms.",
   "lessonDetailTooltip": "{{teacher}} in {{room}} on {{day}} at {{time}}",
+  "timetablePublishedSuccessfully": "Timetable published successfully.",
+  "timetableFailedToPublish": "Timetable failed to publish.",
   "status": {
     "free": "Free",
     "busy": "Busy",

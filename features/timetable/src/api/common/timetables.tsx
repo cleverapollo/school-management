@@ -19,6 +19,13 @@ const timetables = graphql(/* GraphQL */ `
   }
 `);
 
+// liveStatus {
+//   totalChanges
+//   lessonChanges
+//   timetableGroupChanges
+//   lastPublishedDate
+// }
+
 const timeTablesQuery = (filter: TtTimetableFilter) => ({
   queryKey: timetableKeys.timetableList(filter),
   queryFn: async () => gqlClient.request(timetables, { filter }),

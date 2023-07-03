@@ -7,6 +7,7 @@ import {
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useLiveTimetableId } from '../api/common/timetables';
+import { EditTimetableStatusBar } from './edit-timetable/status-bar';
 
 export default function EditTimetableContainer() {
   const { t } = useTranslation(['common', 'navigation', 'groups', 'timetable']);
@@ -19,6 +20,7 @@ export default function EditTimetableContainer() {
       sx={{ maxWidth: 1980 }}
     >
       <PageHeading title={t('navigation:management.timetable.editTimetable')} />
+      <EditTimetableStatusBar />
       {liveTimetableId !== 0 ? (
         <TabPageContainer
           links={[
