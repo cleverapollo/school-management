@@ -37,97 +37,99 @@ export function SubjectGroupStatusBar({
   };
 
   return (
-    <Card variant="outlined" sx={{ p: 1.25 }}>
-      <Stack
-        direction="row"
-        sx={{ flexWrap: 'wrap', gap: 2, alignItems: 'flex-start' }}
-      >
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <Box p={1}>
-            <Avatar
-              src={subjectGroupData?.avatarUrl}
-              name={subjectGroupData?.name}
-            />
-          </Box>
+    <Box>
+      <Card variant="outlined" sx={{ p: 1.25, display: 'inline-block' }}>
+        <Stack
+          direction="row"
+          sx={{ flexWrap: 'wrap', gap: 2, alignItems: 'flex-start' }}
+        >
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Box p={1}>
+              <Avatar
+                src={subjectGroupData?.avatarUrl}
+                name={subjectGroupData?.name}
+              />
+            </Box>
 
-          <Stack>
-            <Typography variant="subtitle1" component="h2">
-              {subjectGroupData?.name}
+            <Stack>
+              <Typography variant="subtitle1" component="h2">
+                {subjectGroupData?.name}
+              </Typography>
+              {[
+                {
+                  label: t('common:subject'),
+                  value: subjectGroupData?.subjects
+                    ?.map((subject) => subject?.name)
+                    .join(', '),
+                },
+                {
+                  label: t('common:year'),
+                  value: yearGroupsNames,
+                },
+              ].map(({ label, value }) => (
+                <Stack key={label} direction="row" spacing={1}>
+                  <Typography component="dt" sx={{ ...labelStyle }}>
+                    {label}
+                  </Typography>
+                  <Typography component="dd" sx={{ ...textValueStyle }}>
+                    {value}
+                  </Typography>
+                </Stack>
+              ))}
+            </Stack>
+          </Stack>
+
+          <SubjectGroupOverviewNextLesson groupId={groupId!} />
+
+          <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+
+          <Stack direction="column">
+            <Typography
+              component="dt"
+              variant="body1"
+              sx={{
+                ...labelStyle,
+                py: 0.5,
+                mb: 0.5,
+              }}
+            >
+              {t('groups:teachersInGroup')}
             </Typography>
-            {[
-              {
-                label: t('common:subject'),
-                value: subjectGroupData?.subjects
-                  ?.map((subject) => subject?.name)
-                  .join(', '),
-              },
-              {
-                label: t('common:year'),
-                value: yearGroupsNames,
-              },
-            ].map(({ label, value }) => (
-              <Stack key={label} direction="row" spacing={1}>
-                <Typography component="dt" sx={{ ...labelStyle }}>
-                  {label}
-                </Typography>
-                <Typography component="dd" sx={{ ...textValueStyle }}>
-                  {value}
-                </Typography>
-              </Stack>
-            ))}
+            <Typography
+              component="dd"
+              sx={{
+                ...textValueStyle,
+                py: 0.5,
+              }}
+            >
+              {teachersNames || '-'}
+            </Typography>
+          </Stack>
+
+          <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+
+          <Stack direction="column">
+            <Typography
+              component="dt"
+              variant="body1"
+              sx={{
+                ...labelStyle,
+                px: 1,
+                py: 0.5,
+                mb: 0.5,
+              }}
+            >
+              {t('common:tyroId')}
+            </Typography>
+            <CopyClipboardButton
+              aria-label={t('common:tyroIdClickToCopy', { id: groupId })}
+              textToCopy={String(groupId)}
+              successMessage={t('common:tyroIdCopied')}
+              errorMessage={t('common:issueCopyingTyroId')}
+            />
           </Stack>
         </Stack>
-
-        <SubjectGroupOverviewNextLesson groupId={groupId!} />
-
-        <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-
-        <Stack direction="column">
-          <Typography
-            component="dt"
-            variant="body1"
-            sx={{
-              ...labelStyle,
-              py: 0.5,
-              mb: 0.5,
-            }}
-          >
-            {t('groups:teachersInGroup')}
-          </Typography>
-          <Typography
-            component="dd"
-            sx={{
-              ...textValueStyle,
-              py: 0.5,
-            }}
-          >
-            {teachersNames || '-'}
-          </Typography>
-        </Stack>
-
-        <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-
-        <Stack direction="column">
-          <Typography
-            component="dt"
-            variant="body1"
-            sx={{
-              ...labelStyle,
-              px: 1,
-              py: 0.5,
-              mb: 0.5,
-            }}
-          >
-            {t('common:tyroId')}
-          </Typography>
-          <CopyClipboardButton
-            aria-label={t('common:tyroIdClickToCopy', { id: groupId })}
-            textToCopy={String(groupId)}
-            successMessage={t('common:tyroIdCopied')}
-            errorMessage={t('common:issueCopyingTyroId')}
-          />
-        </Stack>
-      </Stack>
-    </Card>
+      </Card>
+    </Box>
   );
 }
