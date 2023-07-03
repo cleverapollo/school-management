@@ -3,6 +3,7 @@ import { UseQueryReturnType } from '../@types';
 import { graphql } from '../gql';
 import { gqlClient } from '../clients';
 import { queryClient } from '../query-client';
+import { coreApiKeys } from './keys';
 
 export type ReturnTypeFromUseCoreAcademicNamespace = UseQueryReturnType<
   typeof useCoreAcademicNamespace
@@ -23,12 +24,8 @@ const coreAcademicNamespaces = graphql(/* GraphQL */ `
   }
 `);
 
-export const coreAcademicNamespaceKeys = {
-  all: ['coreAcademicNamespace'] as const,
-};
-
 const coreAcademicNamespaceQuery = {
-  queryKey: coreAcademicNamespaceKeys.all,
+  queryKey: coreApiKeys.academicNamespaces.all(),
   queryFn: async () => gqlClient.request(coreAcademicNamespaces),
 };
 

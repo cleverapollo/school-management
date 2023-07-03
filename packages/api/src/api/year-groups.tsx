@@ -4,6 +4,7 @@ import { gqlClient } from '../clients';
 import { queryClient } from '../query-client';
 import { YearGroupFilter } from '../gql/graphql';
 import { UseQueryReturnType } from '../@types';
+import { coreApiKeys } from './keys';
 
 const yearGroups = graphql(/* GraphQL */ `
   query years($filter: YearGroupFilter) {
@@ -14,12 +15,8 @@ const yearGroups = graphql(/* GraphQL */ `
   }
 `);
 
-export const yearGroupsKey = {
-  list: ['yearGroups'] as const,
-};
-
 const yearGroupsQuery = (filter: YearGroupFilter) => ({
-  queryKey: yearGroupsKey.list,
+  queryKey: coreApiKeys.yearGroups.all(),
   queryFn: () => gqlClient.request(yearGroups, { filter }),
 });
 

@@ -4,7 +4,7 @@ import {
   gqlClient,
   queryClient,
   graphql,
-  coreAcademicNamespaceKeys,
+  coreApiKeys,
   SaveAcademicNamespaceInput,
 } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
@@ -36,7 +36,7 @@ export function useCreateOrUpdateAcademicYear() {
       } else {
         toast(t('common:snackbarMessages.createSuccess'));
       }
-      queryClient.invalidateQueries(coreAcademicNamespaceKeys.all);
+      queryClient.invalidateQueries(coreApiKeys.academicNamespaces.all());
     },
   });
 }
