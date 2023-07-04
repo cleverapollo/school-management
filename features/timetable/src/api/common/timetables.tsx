@@ -15,16 +15,15 @@ const timetables = graphql(/* GraphQL */ `
     tt_timetables(filter: $filter) {
       timetableId
       name
+      liveStatus {
+        totalChanges
+        lessonChanges
+        timetableGroupChanges
+        lastPublishedDate
+      }
     }
   }
 `);
-
-// liveStatus {
-//   totalChanges
-//   lessonChanges
-//   timetableGroupChanges
-//   lastPublishedDate
-// }
 
 const timeTablesQuery = (filter: TtTimetableFilter) => ({
   queryKey: timetableKeys.timetableList(filter),

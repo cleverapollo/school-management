@@ -149,10 +149,7 @@ const getSubjectGroupsColumns = (
       const partyGroup = data?.partyGroup;
       if (!partyGroup || partyGroup.__typename !== 'SubjectGroup') return null;
 
-      const subject =
-        partyGroup?.__typename === 'SubjectGroup'
-          ? partyGroup?.subjects?.[0]
-          : {};
+      const subject = partyGroup?.subjects?.[0];
       const color = subject?.colour ?? 'default';
 
       return (

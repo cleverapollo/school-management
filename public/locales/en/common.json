@@ -128,6 +128,7 @@
   "changes": "Changes",
   "unsavedChanges_one": "{{count}} unsaved change",
   "unsavedChanges_other": "{{count}} unsaved changes",
+  "noChangesMade": "No changes made",
   "tyroId": "Tyro ID",
   "tyroIdClickToCopy": "Tyro ID is {{id}}. Click to copy.",
   "tyroIdCopied": "Tyro ID copied to clipboard.",

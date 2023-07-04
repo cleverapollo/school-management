@@ -48,7 +48,7 @@ export function CurrentLocation({ studentPartyId }: CurrentLocationProps) {
       component="dl"
       display="grid"
       gridTemplateColumns="repeat(4, auto)"
-      gridTemplateRows="repeat(2, 1fr)"
+      gridTemplateRows="repeat(2, auto)"
       alignItems="strech"
       sx={{ my: 0 }}
     >
@@ -61,7 +61,7 @@ export function CurrentLocation({ studentPartyId }: CurrentLocationProps) {
             sx={{
               fontSize: '0.75rem',
               px: 2,
-              py: 0.5,
+              py: 1,
               color: 'slate.600',
               display: 'flex',
               alignItems: 'center',
@@ -79,6 +79,7 @@ export function CurrentLocation({ studentPartyId }: CurrentLocationProps) {
               backgroundColor: 'blue.50',
               py: 0.5,
               px: 2,
+              my: 0.5,
               display: 'flex',
               alignItems: 'center',
               ...(index === 0 && { borderRadius: '17px 0 0 17px' }),

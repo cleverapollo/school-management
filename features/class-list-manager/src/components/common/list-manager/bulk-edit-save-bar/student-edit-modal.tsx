@@ -154,7 +154,7 @@ export function StudentEditsModal({ open, onClose }: StudentEditsModalProps) {
               variant="body2"
               sx={{ color: 'text.secondary' }}
             >
-              {t('classListManager:noChangesMade')}
+              {t('common:noChangesMade')}
             </Typography>
           </Box>
         )}
