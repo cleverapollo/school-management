@@ -148,20 +148,20 @@ export function CalendarToolbar({
         >
           {t('calendar:filterCalendar')}
         </Button>
-        <Button
-          size="small"
-          color="primary"
-          variant="text"
-          onClick={onAddEvent}
-          sx={{
-            '& .MuiButton-startIcon': {
-              mr: 0.25,
-            },
-          }}
-          startIcon={<AddIcon sx={{ width: 24, height: 24 }} />}
-        >
-          {t('calendar:addEvent')}
-        </Button>
+        {/* <Button */}
+        {/*  size="small" */}
+        {/*  color="primary" */}
+        {/*  variant="text" */}
+        {/*  onClick={onAddEvent} */}
+        {/*  sx={{ */}
+        {/*    '& .MuiButton-startIcon': { */}
+        {/*      mr: 0.25, */}
+        {/*    }, */}
+        {/*  }} */}
+        {/*  startIcon={<AddIcon sx={{ width: 24, height: 24 }} />} */}
+        {/* > */}
+        {/*  {t('calendar:addEvent')} */}
+        {/* </Button> */}
       </Stack>
     </RootStyle>
   );

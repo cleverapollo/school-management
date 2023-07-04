@@ -41,7 +41,7 @@ export function ClassGroupStatusBar({ groupId }: ClassGroupOverviewBarProps) {
 
   return (
     <Box>
-      <Card variant="outlined" sx={{ p: 1.25 }}>
+      <Card variant="outlined" sx={{ p: 1.25, display: 'inline-block' }}>
         <Stack
           direction="row"
           sx={{ flexWrap: 'wrap', gap: 2, alignItems: 'flex-start' }}
