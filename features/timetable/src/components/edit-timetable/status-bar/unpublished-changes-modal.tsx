@@ -186,6 +186,7 @@ export function UnpublishedChangesModal({
                     spacing={1}
                     alignItems="center"
                     sx={{
+                      py: 1,
                       px: 2,
                       borderRadius: 1.5,
                       justifyContent: 'space-between',
@@ -196,7 +197,6 @@ export function UnpublishedChangesModal({
                         name={partyGroup?.name}
                         src={partyGroup?.avatarUrl}
                         sx={{
-                          my: 1,
                           mr: 1,
                           borderRadius: 1,
                           ...bgColorStyle,
