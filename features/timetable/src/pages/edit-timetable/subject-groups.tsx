@@ -25,6 +25,7 @@ import { useLiveTimetableId } from '../../api/common/timetables';
 import { Lesson } from '../../hooks/use-resource-table';
 import { SwapTeacherRoomModal } from '../../components/edit-timetable/swap-teacher-room-modal';
 import { useTtUpdateTimetableGroup } from '../../api/edit-timetable/update-group';
+import { getLessonDayAndTime } from '../../utils/get-lesson-day-time';
 
 dayjs.extend(LocalizedFormat);
 
@@ -40,22 +41,16 @@ function getLessonLabels(
   const teachers = lesson.teachers.map(({ person }) => person);
   const teacherNames = displayNames(teachers, ' & ');
   const roomName = lesson.room?.name ? `${lesson.room.name} - ` : '';
-  const day = dayjs()
-    .set('day', lesson.timeslotId?.dayIdx ?? 0)
-    .format('ddd');
-  const [hour, minute] = lesson.timeslotInfo?.startTime.split(':') ?? [];
-  const time =
-    hour && minute
-      ? dayjs().hour(Number(hour)).minute(Number(minute)).format('LT')
-      : '';
-  const formattedDayTime = day && time ? `${day}, ${time}` : '';
+  const { day, time } = getLessonDayAndTime(lesson);
+  const formattedDay = day.format('ddd');
+  const formattedDayTime = day && time ? `${formattedDay}, ${time}` : '';
 
   return {
     label: `${teacherNames} - ${roomName}${formattedDayTime}`,
     tooltip: t('timetable:lessonDetailTooltip', {
       teacher: teacherNames,
       room: lesson.room?.name ?? `(${t('common:noRoomSet')})`,
-      day,
+      day: formattedDay,
       time,
     }),
   };

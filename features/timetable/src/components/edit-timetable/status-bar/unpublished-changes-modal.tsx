@@ -11,17 +11,19 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { Avatar } from '@tyro/core';
+import {
+  Avatar,
+  LoadingPlaceholder,
+  usePreferredNameLayout,
+  ReturnTypeDisplayNames,
+} from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import dayjs from 'dayjs';
-import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { UndoIcon } from '@tyro/icons';
 import {
   ReturnTypeFromUseUnpublishedTimetableChanges,
   useUnpublishedTimetableChanges,
 } from '../../../api/edit-timetable/unpublished-timetable-changes';
-
-dayjs.extend(LocalizedFormat);
+import { getShortLessonDayTime } from '../../../utils/get-lesson-day-time';
 
 interface UnpublishedChangesModalProps {
   open: boolean;
@@ -40,15 +42,7 @@ function getLessonTitle(
   }: ReturnTypeFromUseUnpublishedTimetableChanges['lessonDiffs'][number]
 ) {
   const lesson = oldLesson ?? newLesson;
-  const day = dayjs()
-    .set('day', lesson.timeslotId?.dayIdx ?? 0)
-    .format('ddd');
-  const [hour, minute] = lesson.timeslotInfo?.startTime.split(':') ?? [];
-  const time =
-    hour && minute
-      ? dayjs().hour(Number(hour)).minute(Number(minute)).format('LT')
-      : '';
-  const dayAndTime = day && time ? `${day}, ${time}` : undefined;
+  const dayAndTime = getShortLessonDayTime(lesson);
 
   return dayAndTime
     ? t('timetable:subjectGroupAtDayAndTime', {
@@ -56,6 +50,57 @@ function getLessonTitle(
         dayAndTime,
       })
     : lesson.partyGroup?.name;
+}
+
+function getChangeList(
+  t: TFunction<
+    ('common' | 'timetable')[],
+    undefined,
+    ('common' | 'timetable')[]
+  >,
+  displayNames: ReturnTypeDisplayNames,
+  lessonDiff: ReturnTypeFromUseUnpublishedTimetableChanges['lessonDiffs'][number]
+) {
+  const changes: string[] = [];
+  const { oldLesson, newLesson } = lessonDiff;
+
+  if (lessonDiff.timeslotChanged) {
+    const oldDayAndTime = getShortLessonDayTime(oldLesson);
+    const newDayAndTime = getShortLessonDayTime(newLesson);
+    changes.push(
+      `${t('common:dayAndTime')}: ${oldDayAndTime ?? '-'} → ${
+        newDayAndTime ?? '-'
+      }`
+    );
+  }
+
+  if (lessonDiff.roomChanged) {
+    changes.push(
+      `${t('common:room')}: ${oldLesson?.room?.name ?? '-'} → ${
+        newLesson?.room?.name ?? '-'
+      }`
+    );
+  }
+
+  if (lessonDiff.teachersChanged) {
+    const oldTeachers = oldLesson?.teachers
+      ? displayNames(
+          oldLesson.teachers.map(({ person }) => person),
+          ' & '
+        )
+      : '-';
+    const newTeachers = newLesson?.teachers
+      ? displayNames(
+          newLesson.teachers.map(({ person }) => person),
+          ' & '
+        )
+      : '-';
+    changes.push(
+      `${t('common:teachers')}: ${oldTeachers} → ${newTeachers ?? '-'}`
+    );
+  }
+
+  return changes;
 }
 
 const SectionHeader = styled(Typography)(({ theme: { palette, spacing } }) => ({
@@ -73,6 +118,7 @@ export function UnpublishedChangesModal({
   onClose,
 }: UnpublishedChangesModalProps) {
   const { t } = useTranslation(['common', 'timetable']);
+  const { displayNames } = usePreferredNameLayout();
   const { data: publishDiff, isLoading } = useUnpublishedTimetableChanges(
     { liveTimetable: true },
     open
@@ -86,10 +132,11 @@ export function UnpublishedChangesModal({
       onClose={onClose}
       scroll="paper"
       fullWidth
-      maxWidth="xs"
+      maxWidth="sm"
     >
       <DialogTitle>{t('timetable:unpublishedChanges')}</DialogTitle>
       <DialogContent sx={{ p: 0 }}>
+        {isLoading && <LoadingPlaceholder sx={{ minHeight: 200 }} />}
         {lessonDiffs.length > 0 && (
           <>
             <SectionHeader variant="subtitle1">
@@ -119,17 +166,12 @@ export function UnpublishedChangesModal({
                 const { newLesson, oldLesson } = lessonDiff;
                 const lessonAlwaysWithValues = newLesson ?? oldLesson ?? {};
                 const id = JSON.stringify(lessonAlwaysWithValues.id);
-
-                console.log({
-                  newLesson,
-                  oldLesson,
-                  lessonAlwaysWithValues,
-                });
+                const changeList = getChangeList(t, displayNames, lessonDiff);
+                const { partyGroup } = lessonAlwaysWithValues;
 
                 const subject =
-                  lessonAlwaysWithValues.partyGroup?.__typename ===
-                  'SubjectGroup'
-                    ? lessonAlwaysWithValues.partyGroup?.subjects?.[0]
+                  partyGroup?.__typename === 'SubjectGroup'
+                    ? partyGroup?.subjects?.[0]
                     : { colour: 'default' };
 
                 const bgColorStyle = subject?.colour
@@ -151,8 +193,8 @@ export function UnpublishedChangesModal({
                   >
                     <Box display="flex" alignItems="center">
                       <Avatar
-                        name={lessonAlwaysWithValues.partyGroup?.name}
-                        src={lessonAlwaysWithValues.partyGroup?.avatarUrl}
+                        name={partyGroup?.name}
+                        src={partyGroup?.avatarUrl}
                         sx={{
                           my: 1,
                           mr: 1,
@@ -164,13 +206,16 @@ export function UnpublishedChangesModal({
                         <Typography variant="subtitle2" color="text.primary">
                           {getLessonTitle(t, lessonDiff)}
                         </Typography>
-                        {/* <Typography
-                          component="span"
-                          variant="body2"
-                          color="text.secondary"
-                        >
-                          {getChangeStatus(editedStudent, t)}
-                        </Typography> */}
+                        {changeList.map((change) => (
+                          <Typography
+                            key={change}
+                            component="span"
+                            variant="body2"
+                            color="text.secondary"
+                          >
+                            {change}
+                          </Typography>
+                        ))}
                       </Stack>
                     </Box>
                     <Tooltip title={t('common:actions.undo')}>

@@ -70,6 +70,7 @@
   "guardian": "Guardian",
   "date": "Date",
   "dateAndTime": "Date & time",
+  "dayAndTime": "Day & time",
   "phone": "Phone",
   "email": "Email",
   "academicYear": "Academic year",

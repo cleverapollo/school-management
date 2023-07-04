@@ -2,7 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { TtSwapTeacherFilter } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
-import { TablePersonAvatar, usePreferredNameLayout } from '@tyro/core';
+import {
+  LoadingPlaceholder,
+  TablePersonAvatar,
+  usePreferredNameLayout,
+} from '@tyro/core';
 import {
   LessonChangeState,
   ReturnTypeOfUseSwapTeacherAndRoom,
@@ -11,7 +15,6 @@ import { useAvailableTeachersForResource } from '../../../api/edit-timetable/ava
 import { SwapStyledTable } from './table-style';
 import { SwapButton, UndoSwapButton } from './swap-button';
 import { StatusChip } from './status-chip';
-import { LoadingPlaceholder } from './loading-placeholder';
 import {
   getFixedRowStyles,
   TableHeaderRow,
