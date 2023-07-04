@@ -137,7 +137,7 @@ export const CardEditableForm = <TField extends FieldValues>({
           display: 'grid',
           gridRowGap: '2rem',
           gridColumnGap: '4rem',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
         }}
       >
         {fields.map(
