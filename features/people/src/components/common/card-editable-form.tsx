@@ -137,7 +137,7 @@ export const CardEditableForm = <TField extends FieldValues>({
           display: 'grid',
           gridRowGap: '2rem',
           gridColumnGap: '4rem',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
         }}
       >
         {fields.map(
@@ -160,7 +160,7 @@ export const CardEditableForm = <TField extends FieldValues>({
             return (
               <Box key={`${label}-${index}`}>
                 <Stack gap={0.5} flexDirection="row" alignItems="center">
-                  <Typography component="dt" variant="subtitle1">
+                  <Typography flexShrink={0} component="dt" variant="subtitle1">
                     {label}
                   </Typography>
                   {tooltipInfo && (
