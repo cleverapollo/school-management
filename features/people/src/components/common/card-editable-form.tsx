@@ -160,7 +160,7 @@ export const CardEditableForm = <TField extends FieldValues>({
             return (
               <Box key={`${label}-${index}`}>
                 <Stack gap={0.5} flexDirection="row" alignItems="center">
-                  <Typography component="dt" variant="subtitle1">
+                  <Typography flexShrink={0} component="dt" variant="subtitle1">
                     {label}
                   </Typography>
                   {tooltipInfo && (
