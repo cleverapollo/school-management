@@ -373,6 +373,8 @@ export type CalendarEventRaw = {
   lessonInfo?: Maybe<CalendarEventLessonRaw>;
   name: Scalars['String'];
   schedule: Array<CalendarEventRawSchedule>;
+  source?: Maybe<CalendarEventSource>;
+  sourceId?: Maybe<Scalars['String']>;
   type: CalendarEventType;
 };
 
@@ -401,6 +403,7 @@ export type CalendarEventRawExcludedAttendee = {
 export type CalendarEventRawFilter = {
   calendarId?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   eventId?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  eventSources?: InputMaybe<Array<Calender_EventSourceInput>>;
 };
 
 export type CalendarEventRawRoom = {
@@ -425,6 +428,7 @@ export type CalendarEventRawSchedule = {
   /**  iCal/rfc5545 recurrence rule for event. Null means single */
   recurrenceRule?: Maybe<Scalars['String']>;
   rooms?: Maybe<Array<Maybe<CalendarEventRawRoom>>>;
+  scheduleId: Scalars['Int'];
   startDate: Scalars['Date'];
   startTime: Scalars['Time'];
 };
@@ -573,6 +577,50 @@ export type Calendar_CreateSchoolDayTypeInput = {
   name: Scalars['String'];
 };
 
+export type Calendar_EditEvent = {
+  /**  if present will replace existing values else no update */
+  attendees?: InputMaybe<Array<CreateCalendarEventAttendeeInput>>;
+  /**  either eventId or eventSource and eventSourceId must be provided */
+  eventId?: InputMaybe<Scalars['Int']>;
+  /**  if present will replace existing values else no update */
+  exclusions?: InputMaybe<Array<CreateCalendarEventAttendeeInput>>;
+  /**  if present will replace existing values else no update */
+  rooms?: InputMaybe<Array<CreateCalendarEventRoomInput>>;
+  /**  if present will replace existing values else no update */
+  schedule?: InputMaybe<Calendar_EditEventSchedule>;
+  sourceId?: InputMaybe<Calender_EventSourceInput>;
+};
+
+export type Calendar_EditEventSchedule = {
+  /**  end date of the recurrence. This is set Or occurrences is set */
+  endDate?: InputMaybe<Scalars['Date']>;
+  endTime: Scalars['Time'];
+  /**  number of occurrences. This is set Or endDate is set */
+  occurrences?: InputMaybe<Scalars['Int']>;
+  /**  Tyro Enum for iCal/rfc5545 recurrence rule for event. Null means single. Set either this or recurrenceRule */
+  recurrenceEnum?: InputMaybe<RecurrenceEnum>;
+  /**  iCal/rfc5545 recurrence rule for event. Null means single. Set either this or recurrenceEnum */
+  recurrenceRule?: InputMaybe<Scalars['String']>;
+  /**
+   *  this should take into account the effective start date and the day of the week of the event
+   *  the date has to be set here there may ne multi week timetables and we cannot infer the date from nextOrSame day after the effective from date
+   */
+  startDate: Scalars['Date'];
+  startTime: Scalars['Time'];
+};
+
+export enum Calendar_EditEventSource {
+  Timetable = 'TIMETABLE'
+}
+
+export type Calendar_EditEvents = {
+  calendarId: Scalars['Int'];
+  editSource: Calendar_EditEventSource;
+  /**  defaults to tomorrow if not present */
+  effectiveFromDate?: InputMaybe<Scalars['Date']>;
+  events: Array<Calendar_EditEvent>;
+};
+
 export type Calendar_SchoolDayType = {
   __typename?: 'Calendar_SchoolDayType';
   bellTimeIds: Array<Scalars['Int']>;
@@ -581,6 +629,11 @@ export type Calendar_SchoolDayType = {
   id: Scalars['Int'];
   name?: Maybe<Scalars['String']>;
   time: Scalars['Time'];
+};
+
+export type Calender_EventSourceInput = {
+  source: CalendarEventSource;
+  sourceId: Scalars['String'];
 };
 
 export type CatalogueSuccess = {
@@ -696,6 +749,17 @@ export type CoreBlock = {
   subjectGroupIds: Array<Scalars['Long']>;
   subjectGroupNamesJoined?: Maybe<Scalars['String']>;
   yearGroupIds: Array<Scalars['Int']>;
+};
+
+export type Core_EnableBlockRotationInput = {
+  blockId: Scalars['String'];
+  iterations: Array<Core_EnableBlockRotationIterationInput>;
+  rotationName: Scalars['String'];
+};
+
+export type Core_EnableBlockRotationIterationInput = {
+  endDate?: InputMaybe<Scalars['Date']>;
+  startDate?: InputMaybe<Scalars['Date']>;
 };
 
 export type Core_NonEnrolledSibling = {
@@ -1113,6 +1177,19 @@ export type EnrollmentHistory = {
   classGroupId: Scalars['Long'];
   classGroupName: Scalars['String'];
   studentPartyId: Scalars['Long'];
+};
+
+export type EnrollmentIre_AutoAssignBlockMembershipInput = {
+  assignmentType: EnrollmentIre_AutoAssignBlockMembershipType;
+  blockId: Scalars['String'];
+};
+
+export enum EnrollmentIre_AutoAssignBlockMembershipType {
+  ByClassGroup = 'BY_CLASS_GROUP'
+}
+
+export type EnrollmentIre_AutoAssignCoreMembershipInput = {
+  yearGroupEnrollmentId: Scalars['Long'];
 };
 
 /** ###  ire enrollment */
@@ -1635,6 +1712,7 @@ export type Mutation = {
   communications_sendSms?: Maybe<Scalars['String']>;
   communications_smsTopUp?: Maybe<SmsTopUpResponse>;
   communications_starred?: Maybe<Scalars['String']>;
+  core_enableBlockRotations?: Maybe<Success>;
   core_setActiveActiveAcademicNamespace?: Maybe<AcademicNamespace>;
   core_updateClassGroups?: Maybe<Success>;
   core_updateStudentContactRelationships?: Maybe<Success>;
@@ -1647,6 +1725,8 @@ export type Mutation = {
   core_upsertStudentContact: StudentContact;
   createProfileForGlobalUser?: Maybe<Profile>;
   createRole?: Maybe<SecurityRole>;
+  enrollment_ire_autoAssignBlocks: EnrollmentIre_CoreMemberships;
+  enrollment_ire_autoAssignCore: EnrollmentIre_CoreMemberships;
   enrollment_ire_changeProgrammeStage: Success;
   enrollment_ire_upsertBlockMemberships: EnrollmentIre_BlockMemberships;
   enrollment_ire_upsertCoreMemberships: EnrollmentIre_CoreMemberships;
@@ -1659,7 +1739,10 @@ export type Mutation = {
   staffWork_upsertAbsence: Array<StaffAbsence>;
   tt_cloneTimetable: TtTimetable;
   tt_editLessonInstance: Array<TtIndividualViewLesson>;
+  tt_publish: Tt_PublishResult;
+  tt_resetLessons: Success;
   tt_swap: Success;
+  tt_updateTimetableGroup: Success;
   users_inviteUsers?: Maybe<Array<Maybe<UserInvitation>>>;
   users_savePermissionGroup?: Maybe<PermissionGroup>;
   wellbeing_savePriorityStudent?: Maybe<PriorityStudent>;
@@ -1786,6 +1869,11 @@ export type MutationCommunications_StarredArgs = {
 };
 
 
+export type MutationCore_EnableBlockRotationsArgs = {
+  input?: InputMaybe<Core_EnableBlockRotationInput>;
+};
+
+
 export type MutationCore_SetActiveActiveAcademicNamespaceArgs = {
   input?: InputMaybe<SetActiveAcademicNamespace>;
 };
@@ -1846,6 +1934,16 @@ export type MutationCreateRoleArgs = {
 };
 
 
+export type MutationEnrollment_Ire_AutoAssignBlocksArgs = {
+  input: EnrollmentIre_AutoAssignBlockMembershipInput;
+};
+
+
+export type MutationEnrollment_Ire_AutoAssignCoreArgs = {
+  input: EnrollmentIre_AutoAssignCoreMembershipInput;
+};
+
+
 export type MutationEnrollment_Ire_ChangeProgrammeStageArgs = {
   input: Array<EnrollmentIre_ChangeProgrammeStage>;
 };
@@ -1901,8 +1999,23 @@ export type MutationTt_EditLessonInstanceArgs = {
 };
 
 
+export type MutationTt_PublishArgs = {
+  input: TtPublishTimetableInput;
+};
+
+
+export type MutationTt_ResetLessonsArgs = {
+  input: Tt_ResetLessons;
+};
+
+
 export type MutationTt_SwapArgs = {
   input: TtSwapsInput;
+};
+
+
+export type MutationTt_UpdateTimetableGroupArgs = {
+  input: Tt_UpdateTimetableGroupInput;
 };
 
 
@@ -2472,9 +2585,12 @@ export type ProgrammeStage = {
   yearGroupId: Scalars['Int'];
 };
 
-export type ProgrammeStageEnrollment = {
+export type ProgrammeStageEnrollment = Party & PartyGroup & {
   __typename?: 'ProgrammeStageEnrollment';
   academicNamespaceId: Scalars['Int'];
+  avatarUrl?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  partyId: Scalars['Long'];
   programmeId: Scalars['Int'];
   programmeStage?: Maybe<ProgrammeStage>;
   programmeStageEnrollmentPartyId: Scalars['Long'];
@@ -2545,7 +2661,6 @@ export type Query = {
   fees_fees?: Maybe<Array<Maybe<Fee>>>;
   generalGroups?: Maybe<Array<GeneralGroup>>;
   myAuthDetails?: Maybe<GlobalUser>;
-  notes_studentMedical?: Maybe<StudentMedical>;
   permissions?: Maybe<Array<Maybe<Permission>>>;
   ppod_PPODCredentials?: Maybe<PpodCredentials>;
   ppod_syncRequests: Array<SyncRequest>;
@@ -2557,7 +2672,7 @@ export type Query = {
   staffWork_absences: Array<StaffAbsence>;
   staffWork_substitutions: Array<Substitution>;
   subjectGroups?: Maybe<Array<SubjectGroup>>;
-  tt_groups: Tt_Groups;
+  tt_groups: Array<Tt_Groups>;
   tt_individualLessons: Array<TtIndividualViewLesson>;
   tt_resourceTimetableView: TtResourceTimetableView;
   tt_swapRoomOptions: TtSwapRoomOptions;
@@ -2569,6 +2684,7 @@ export type Query = {
   users_userInvitations?: Maybe<Array<Maybe<UserInvitation>>>;
   wellbeing_activeSupportPlan?: Maybe<Array<Maybe<ActivePlan>>>;
   wellbeing_priorityStudent?: Maybe<Array<Maybe<PriorityStudent>>>;
+  wellbeing_studentMedical?: Maybe<StudentMedical>;
   wellbeing_studentSupportFile?: Maybe<Array<Maybe<StudentSupportFile>>>;
   wellbeing_studentSupportPlan?: Maybe<Array<Maybe<StudentSupportPlan>>>;
   wellbeing_studentSupportPlanReview?: Maybe<Array<Maybe<StudentSupportPlanReview>>>;
@@ -2795,11 +2911,6 @@ export type QueryGeneralGroupsArgs = {
 };
 
 
-export type QueryNotes_StudentMedicalArgs = {
-  filter?: InputMaybe<StudentMedicalFilter>;
-};
-
-
 export type QueryPpod_SyncRequestsArgs = {
   filter?: InputMaybe<SyncRequestsFilter>;
 };
@@ -2897,6 +3008,11 @@ export type QueryWellbeing_ActiveSupportPlanArgs = {
 
 export type QueryWellbeing_PriorityStudentArgs = {
   filter?: InputMaybe<PriorityStudentFilter>;
+};
+
+
+export type QueryWellbeing_StudentMedicalArgs = {
+  filter?: InputMaybe<StudentMedicalFilter>;
 };
 
 
@@ -3881,6 +3997,7 @@ export enum StudentContactType {
 }
 
 export type StudentFilter = {
+  examNumbers?: InputMaybe<Array<Scalars['String']>>;
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
 
@@ -4452,26 +4569,33 @@ export type TtIndividualViewLessonId = {
   timetableGroupId: Scalars['Long'];
 };
 
-export type TtLiveTimetableStatus = {
-  __typename?: 'TTLiveTimetableStatus';
-  lastPublishedDate?: Maybe<Scalars['DateTime']>;
-  lessonChanges: Scalars['Int'];
-  publishDiff?: Maybe<TtPublishDiff>;
-  timetableId: Scalars['Int'];
-};
-
 export type TtPublishDiff = {
   __typename?: 'TTPublishDiff';
+  groupDiffs: Array<TtPublishDiffGroup>;
   lessonDiffs: Array<TtPublishDiffLesson>;
+};
+
+export type TtPublishDiffGroup = {
+  __typename?: 'TTPublishDiffGroup';
+  newGroup: Tt_Groups;
+  oldGroup: Tt_Groups;
+  teachersChanged: Scalars['Boolean'];
+  type: Tt_DiffType;
 };
 
 export type TtPublishDiffLesson = {
   __typename?: 'TTPublishDiffLesson';
   newLesson: TtIndividualViewLesson;
   oldLesson: TtIndividualViewLesson;
+  roomChanged: Scalars['Boolean'];
+  teachersChanged: Scalars['Boolean'];
+  timeslotChanged: Scalars['Boolean'];
+  type: Tt_DiffType;
 };
 
 export type TtPublishTimetableInput = {
+  /**  date from which the timetable is valid. Defaults to tomorrow. Must not be today or before */
+  effectiveFromDate?: InputMaybe<Scalars['Date']>;
   /**  defaults to false. This will delete all existing timetable lessons in calendar and republish them */
   fullRepublish?: InputMaybe<Scalars['Boolean']>;
   timetableId: Scalars['Int'];
@@ -4590,7 +4714,7 @@ export type TtTimetable = {
   clonedFromId?: Maybe<Scalars['Int']>;
   clonedFromName?: Maybe<Scalars['Int']>;
   created: Scalars['DateTime'];
-  liveTimetableStatusStatus?: Maybe<TtLiveTimetableStatus>;
+  liveStatus?: Maybe<Tt_LiveStatus>;
   name: Scalars['String'];
   readOnly: Scalars['Boolean'];
   readOnlyReplicaAtCreationId: Scalars['Int'];
@@ -4601,17 +4725,6 @@ export type TtTimetable = {
 export type TtTimetableFilter = {
   liveTimetable?: InputMaybe<Scalars['Boolean']>;
   timetableId?: InputMaybe<Scalars['Int']>;
-};
-
-export type TtTimetablePublishHistory = {
-  __typename?: 'TTTimetablePublishHistory';
-  published: Array<TtTimetablePublished>;
-  timetableId: Scalars['Int'];
-};
-
-export type TtTimetablePublished = {
-  __typename?: 'TTTimetablePublished';
-  datetime: Scalars['DateTime'];
 };
 
 export type TtUpsertBlockClassGroupLink = {
@@ -4676,16 +4789,72 @@ export type TtUpsertTimetableGroups = {
   timetableGroupPartyId: Scalars['Long'];
 };
 
+export enum Tt_DiffType {
+  Deleted = 'DELETED',
+  New = 'NEW',
+  Updated = 'UPDATED'
+}
+
 export type Tt_Groups = {
   __typename?: 'TT_Groups';
   lessons: Array<TtIndividualViewLesson>;
   partyGroup: PartyGroup;
   partyId: Scalars['Long'];
+  teachers: Array<Staff>;
+  teachersIds: Array<Scalars['Long']>;
 };
 
 export type Tt_GroupsFilter = {
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   timetableId: Scalars['Int'];
+};
+
+export type Tt_LiveStatus = {
+  __typename?: 'TT_LiveStatus';
+  lastPublishedDate?: Maybe<Scalars['DateTime']>;
+  lessonChanges: Scalars['Int'];
+  publishDiff?: Maybe<TtPublishDiff>;
+  publishHistory: Array<Tt_Published>;
+  timetableGroupChanges: Scalars['Int'];
+  timetableId: Scalars['Int'];
+  totalChanges: Scalars['Int'];
+};
+
+export type Tt_PublishResult = {
+  __typename?: 'TT_PublishResult';
+  lessonsUpdated: Scalars['Int'];
+  success: Scalars['Boolean'];
+  teachingGroupsUpdated: Scalars['Int'];
+};
+
+export type Tt_Published = {
+  __typename?: 'TT_Published';
+  cloneId: Scalars['Int'];
+  datetime: Scalars['DateTime'];
+  lessonChanges: Scalars['Int'];
+  readOnlyReplicaOfTimetableCreationBeforeChanges: Scalars['Int'];
+  timetableGroupChanges: Scalars['Int'];
+  timetableId: Scalars['Int'];
+};
+
+export type Tt_ResetLesson = {
+  lessonId: TtEditLessonPeriodInstanceId;
+};
+
+export type Tt_ResetLessons = {
+  lessons: Array<Tt_ResetLesson>;
+  timetableId: Scalars['Int'];
+};
+
+export type Tt_UpdateTimetableGroupInput = {
+  timetableId: Scalars['Int'];
+  /**  defaults to false. This will delete all existing timetable lessons in calendar and republish them */
+  updates: Array<Tt_UpdateTimetableGroupRowInput>;
+};
+
+export type Tt_UpdateTimetableGroupRowInput = {
+  teachersPartyIds: Array<Scalars['Long']>;
+  timetableGroupPartyId: Scalars['Long'];
 };
 
 export enum TargetStatus {
@@ -5019,12 +5188,14 @@ export type YearGroup = {
   yearGroupId: Scalars['Int'];
 };
 
-export type YearGroupEnrollment = {
+export type YearGroupEnrollment = Party & PartyGroup & {
   __typename?: 'YearGroupEnrollment';
   academicNamespaceId: Scalars['Int'];
+  avatarUrl?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   nationalCode: Scalars['String'];
+  partyId: Scalars['Long'];
   shortName: Scalars['String'];
   studentMembers: Group;
   students: Array<Student>;
@@ -5171,14 +5342,14 @@ export type Calendar_CalendarEventsQueryVariables = Exact<{
 }>;
 
 
-export type Calendar_CalendarEventsQuery = { __typename?: 'Query', calendar_calendarEvents?: { __typename?: 'ResourceCalendarWrapper', resources: Array<{ __typename: 'PartyCalendar', resourceId: number, partyInfo?: { __typename: 'GeneralGroup', name: string, avatarUrl?: string | null } | { __typename: 'Staff', person: { __typename?: 'Person', avatarUrl?: string | null, firstName?: string | null, lastName?: string | null } } | { __typename: 'Student', person: { __typename?: 'Person', avatarUrl?: string | null, firstName?: string | null, lastName?: string | null } } | { __typename: 'StudentContact', person: { __typename?: 'Person', avatarUrl?: string | null, firstName?: string | null, lastName?: string | null } } | { __typename: 'SubjectGroup', name: string, avatarUrl?: string | null } | null, events: Array<{ __typename?: 'CalendarEvent', name: string, eventId: number, calendarIds: Array<number | null>, startTime: string, endTime: string, type: CalendarEventType, colour?: Colour | null, description?: string | null, allDayEvent: boolean, lessonInfo?: { __typename?: 'CalendarEventLessonRaw', subjectGroupId: number, lessonId?: number | null } | null, exclusions: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType }>, attendees: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType, partyInfo?: { __typename: 'GeneralGroup', name: string, avatarUrl?: string | null, partyId: number } | { __typename: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'StudentContact', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'SubjectGroup', name: string, avatarUrl?: string | null, partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', roomId: number, name: string }> }> } | { __typename?: 'RoomCalendar', resourceId: number, room?: { __typename?: 'Room', name: string } | null, events: Array<{ __typename?: 'CalendarEvent', name: string, eventId: number, calendarIds: Array<number | null>, startTime: string, endTime: string, type: CalendarEventType, colour?: Colour | null, description?: string | null, allDayEvent: boolean, lessonInfo?: { __typename?: 'CalendarEventLessonRaw', subjectGroupId: number, lessonId?: number | null } | null, exclusions: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType }>, attendees: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType, partyInfo?: { __typename: 'GeneralGroup', name: string, avatarUrl?: string | null, partyId: number } | { __typename: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'StudentContact', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'SubjectGroup', name: string, avatarUrl?: string | null, partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', roomId: number, name: string }> }> }> } | null };
+export type Calendar_CalendarEventsQuery = { __typename?: 'Query', calendar_calendarEvents?: { __typename?: 'ResourceCalendarWrapper', resources: Array<{ __typename: 'PartyCalendar', resourceId: number, partyInfo?: { __typename: 'GeneralGroup', name: string, avatarUrl?: string | null } | { __typename: 'ProgrammeStageEnrollment', name: string, avatarUrl?: string | null } | { __typename: 'Staff', person: { __typename?: 'Person', avatarUrl?: string | null, firstName?: string | null, lastName?: string | null } } | { __typename: 'Student', person: { __typename?: 'Person', avatarUrl?: string | null, firstName?: string | null, lastName?: string | null } } | { __typename: 'StudentContact', person: { __typename?: 'Person', avatarUrl?: string | null, firstName?: string | null, lastName?: string | null } } | { __typename: 'SubjectGroup', name: string, avatarUrl?: string | null } | { __typename: 'YearGroupEnrollment', name: string, avatarUrl?: string | null } | null, events: Array<{ __typename?: 'CalendarEvent', name: string, eventId: number, calendarIds: Array<number | null>, startTime: string, endTime: string, type: CalendarEventType, colour?: Colour | null, description?: string | null, allDayEvent: boolean, lessonInfo?: { __typename?: 'CalendarEventLessonRaw', subjectGroupId: number, lessonId?: number | null } | null, exclusions: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType }>, attendees: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType, partyInfo?: { __typename: 'GeneralGroup', name: string, avatarUrl?: string | null, partyId: number } | { __typename: 'ProgrammeStageEnrollment', name: string, avatarUrl?: string | null, partyId: number } | { __typename: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'StudentContact', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'SubjectGroup', name: string, avatarUrl?: string | null, partyId: number } | { __typename: 'YearGroupEnrollment', name: string, avatarUrl?: string | null, partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', roomId: number, name: string }> }> } | { __typename?: 'RoomCalendar', resourceId: number, room?: { __typename?: 'Room', name: string } | null, events: Array<{ __typename?: 'CalendarEvent', name: string, eventId: number, calendarIds: Array<number | null>, startTime: string, endTime: string, type: CalendarEventType, colour?: Colour | null, description?: string | null, allDayEvent: boolean, lessonInfo?: { __typename?: 'CalendarEventLessonRaw', subjectGroupId: number, lessonId?: number | null } | null, exclusions: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType }>, attendees: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType, partyInfo?: { __typename: 'GeneralGroup', name: string, avatarUrl?: string | null, partyId: number } | { __typename: 'ProgrammeStageEnrollment', name: string, avatarUrl?: string | null, partyId: number } | { __typename: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'StudentContact', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'SubjectGroup', name: string, avatarUrl?: string | null, partyId: number } | { __typename: 'YearGroupEnrollment', name: string, avatarUrl?: string | null, partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', roomId: number, name: string }> }> }> } | null };
 
 export type Calendar_PartyTimetableQueryVariables = Exact<{
   filter: CalendarEventFilter;
 }>;
 
 
-export type Calendar_PartyTimetableQuery = { __typename?: 'Query', calendar_calendarEvents?: { __typename?: 'ResourceCalendarWrapper', resources: Array<{ __typename?: 'PartyCalendar', resourceId: number, events: Array<{ __typename?: 'CalendarEvent', eventId: number, startTime: string, endTime: string, type: CalendarEventType, attendees: Array<{ __typename?: 'CalendarEventAttendee', type: CalendarEventAttendeeType, partyInfo?: { __typename: 'GeneralGroup', partyId: number } | { __typename: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student', partyId: number } | { __typename: 'StudentContact', partyId: number } | { __typename: 'SubjectGroup', name: string, partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', name: string }> }> } | { __typename?: 'RoomCalendar', resourceId: number, events: Array<{ __typename?: 'CalendarEvent', eventId: number, startTime: string, endTime: string, type: CalendarEventType, attendees: Array<{ __typename?: 'CalendarEventAttendee', type: CalendarEventAttendeeType, partyInfo?: { __typename: 'GeneralGroup', partyId: number } | { __typename: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student', partyId: number } | { __typename: 'StudentContact', partyId: number } | { __typename: 'SubjectGroup', name: string, partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', name: string }> }> }> } | null };
+export type Calendar_PartyTimetableQuery = { __typename?: 'Query', calendar_calendarEvents?: { __typename?: 'ResourceCalendarWrapper', resources: Array<{ __typename?: 'PartyCalendar', resourceId: number, events: Array<{ __typename?: 'CalendarEvent', eventId: number, startTime: string, endTime: string, type: CalendarEventType, attendees: Array<{ __typename?: 'CalendarEventAttendee', type: CalendarEventAttendeeType, partyInfo?: { __typename: 'GeneralGroup', partyId: number } | { __typename: 'ProgrammeStageEnrollment', partyId: number } | { __typename: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student', partyId: number } | { __typename: 'StudentContact', partyId: number } | { __typename: 'SubjectGroup', name: string, partyId: number } | { __typename: 'YearGroupEnrollment', partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', name: string }> }> } | { __typename?: 'RoomCalendar', resourceId: number, events: Array<{ __typename?: 'CalendarEvent', eventId: number, startTime: string, endTime: string, type: CalendarEventType, attendees: Array<{ __typename?: 'CalendarEventAttendee', type: CalendarEventAttendeeType, partyInfo?: { __typename: 'GeneralGroup', partyId: number } | { __typename: 'ProgrammeStageEnrollment', partyId: number } | { __typename: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student', partyId: number } | { __typename: 'StudentContact', partyId: number } | { __typename: 'SubjectGroup', name: string, partyId: number } | { __typename: 'YearGroupEnrollment', partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', name: string }> }> }> } | null };
 
 export type TimetableInfoQueryVariables = Exact<{
   filter?: InputMaybe<CalendarDayInfoFilter>;
@@ -5262,7 +5433,7 @@ export type Calendar_CalendarEventsIteratorQueryVariables = Exact<{
 }>;
 
 
-export type Calendar_CalendarEventsIteratorQuery = { __typename?: 'Query', calendar_calendarEventsIterator?: { __typename?: 'CalendarEvent', eventId: number, calendarIds: Array<number | null>, startTime: string, endTime: string, type: CalendarEventType, attendees: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType, partyInfo?: { __typename?: 'GeneralGroup', partyId: number } | { __typename?: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null } } | { __typename?: 'Student', partyId: number } | { __typename?: 'StudentContact', partyId: number } | { __typename?: 'SubjectGroup', partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', name: string }>, extensions?: { __typename?: 'CalendarEventExtension', eventAttendance?: Array<{ __typename?: 'EventAttendance', eventId: number, attendanceCodeId: number, personPartyId: number } | null> | null } | null } | null };
+export type Calendar_CalendarEventsIteratorQuery = { __typename?: 'Query', calendar_calendarEventsIterator?: { __typename?: 'CalendarEvent', eventId: number, calendarIds: Array<number | null>, startTime: string, endTime: string, type: CalendarEventType, attendees: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType, partyInfo?: { __typename?: 'GeneralGroup', partyId: number } | { __typename?: 'ProgrammeStageEnrollment', partyId: number } | { __typename?: 'Staff', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null } } | { __typename?: 'Student', partyId: number } | { __typename?: 'StudentContact', partyId: number } | { __typename?: 'SubjectGroup', partyId: number } | { __typename?: 'YearGroupEnrollment', partyId: number } | null }>, rooms: Array<{ __typename?: 'Room', name: string }>, extensions?: { __typename?: 'CalendarEventExtension', eventAttendance?: Array<{ __typename?: 'EventAttendance', eventId: number, attendanceCodeId: number, personPartyId: number } | null> | null } | null } | null };
 
 export type SubjectGroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -5637,21 +5808,21 @@ export type Tt_SwapTeacherOptionsQueryVariables = Exact<{
 }>;
 
 
-export type Tt_SwapTeacherOptionsQuery = { __typename?: 'Query', tt_swapTeacherOptions: { __typename?: 'TTSwapTeacherOptions', timeslots: Array<{ __typename?: 'TTTimeslot', id: { __typename?: 'TTTimeslotId', gridIdx: number, dayIdx: number, periodIdx: number }, info: { __typename?: 'TTTimeslotInfo', dayOfWeek: number, startTime: string, endTime: string } }>, teachers: Array<{ __typename?: 'TTSwapTeacherTeacherInfo', staffId: number, teacher: { __typename?: 'Staff', person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, nameTextId: number, name: string } | null } }, lessonOnTimeslots: Array<{ __typename?: 'TTIndividualViewLesson', id: { __typename?: 'TTIndividualViewLessonId', lessonIdx: number, lessonInstanceIdx: number, timetableGroupId: number }, partyGroup: { __typename?: 'GeneralGroup', name: string } | { __typename?: 'SubjectGroup', name: string } } | null> }> } };
+export type Tt_SwapTeacherOptionsQuery = { __typename?: 'Query', tt_swapTeacherOptions: { __typename?: 'TTSwapTeacherOptions', timeslots: Array<{ __typename?: 'TTTimeslot', id: { __typename?: 'TTTimeslotId', gridIdx: number, dayIdx: number, periodIdx: number }, info: { __typename?: 'TTTimeslotInfo', dayOfWeek: number, startTime: string, endTime: string } }>, teachers: Array<{ __typename?: 'TTSwapTeacherTeacherInfo', staffId: number, teacher: { __typename?: 'Staff', person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, nameTextId: number, name: string } | null } }, lessonOnTimeslots: Array<{ __typename?: 'TTIndividualViewLesson', id: { __typename?: 'TTIndividualViewLessonId', lessonIdx: number, lessonInstanceIdx: number, timetableGroupId: number }, partyGroup: { __typename?: 'GeneralGroup', name: string } | { __typename?: 'ProgrammeStageEnrollment', name: string } | { __typename?: 'SubjectGroup', name: string } | { __typename?: 'YearGroupEnrollment', name: string } } | null> }> } };
 
 export type Tt_SwapRoomOptionsQueryVariables = Exact<{
   filter: TtSwapRoomFilter;
 }>;
 
 
-export type Tt_SwapRoomOptionsQuery = { __typename?: 'Query', tt_swapRoomOptions: { __typename?: 'TTSwapRoomOptions', timeslots: Array<{ __typename?: 'TTTimeslot', id: { __typename?: 'TTTimeslotId', gridIdx: number, dayIdx: number, periodIdx: number }, info: { __typename?: 'TTTimeslotInfo', dayOfWeek: number, startTime: string, endTime: string } }>, rooms: Array<{ __typename?: 'TTSwapRoomRoomInfo', roomId: number, room: { __typename?: 'Room', name: string, capacity?: number | null, description?: string | null, pools: Array<string> }, lessonOnTimeslots: Array<{ __typename?: 'TTIndividualViewLesson', id: { __typename?: 'TTIndividualViewLessonId', lessonIdx: number, lessonInstanceIdx: number, timetableGroupId: number }, partyGroup: { __typename?: 'GeneralGroup', name: string } | { __typename?: 'SubjectGroup', name: string } } | null> }> } };
+export type Tt_SwapRoomOptionsQuery = { __typename?: 'Query', tt_swapRoomOptions: { __typename?: 'TTSwapRoomOptions', timeslots: Array<{ __typename?: 'TTTimeslot', id: { __typename?: 'TTTimeslotId', gridIdx: number, dayIdx: number, periodIdx: number }, info: { __typename?: 'TTTimeslotInfo', dayOfWeek: number, startTime: string, endTime: string } }>, rooms: Array<{ __typename?: 'TTSwapRoomRoomInfo', roomId: number, room: { __typename?: 'Room', name: string, capacity?: number | null, description?: string | null, pools: Array<string> }, lessonOnTimeslots: Array<{ __typename?: 'TTIndividualViewLesson', id: { __typename?: 'TTIndividualViewLessonId', lessonIdx: number, lessonInstanceIdx: number, timetableGroupId: number }, partyGroup: { __typename?: 'GeneralGroup', name: string } | { __typename?: 'ProgrammeStageEnrollment', name: string } | { __typename?: 'SubjectGroup', name: string } | { __typename?: 'YearGroupEnrollment', name: string } } | null> }> } };
 
 export type Tt_ResourceTimetableViewQueryVariables = Exact<{
   filter: TtResourceTimetableViewFilter;
 }>;
 
 
-export type Tt_ResourceTimetableViewQuery = { __typename?: 'Query', tt_resourceTimetableView: { __typename?: 'TTResourceTimetableView', timeslots: Array<{ __typename?: 'TTResourceTimeslotView', timeslotIds?: { __typename?: 'TTTimeslotId', gridIdx: number, dayIdx: number, periodIdx: number } | null, timeslots?: { __typename?: 'TTTimeslotInfo', dayOfWeek: number, startTime: string, endTime: string, periodType: TtGridPeriodType } | null, lessons: Array<{ __typename?: 'TTIndividualViewLesson', spread: number, id: { __typename?: 'TTIndividualViewLessonId', lessonIdx: number, lessonInstanceIdx: number, timetableGroupId: number }, timeslotId?: { __typename?: 'TTTimeslotId', gridIdx: number, dayIdx: number, periodIdx: number } | null, timeslotInfo?: { __typename?: 'TTTimeslotInfo', startTime: string, endTime: string } | null, partyGroup: { __typename: 'GeneralGroup', partyId: number, name: string, avatarUrl?: string | null } | { __typename: 'SubjectGroup', partyId: number, name: string, avatarUrl?: string | null, subjects: Array<{ __typename?: 'Subject', name: string, colour?: Colour | null }> }, room?: { __typename?: 'Room', roomId: number, name: string } | null, teachers: Array<{ __typename?: 'Staff', person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } }> }> }> } };
+export type Tt_ResourceTimetableViewQuery = { __typename?: 'Query', tt_resourceTimetableView: { __typename?: 'TTResourceTimetableView', timeslots: Array<{ __typename?: 'TTResourceTimeslotView', timeslotIds?: { __typename?: 'TTTimeslotId', gridIdx: number, dayIdx: number, periodIdx: number } | null, timeslots?: { __typename?: 'TTTimeslotInfo', dayOfWeek: number, startTime: string, endTime: string, periodType: TtGridPeriodType } | null, lessons: Array<{ __typename?: 'TTIndividualViewLesson', spread: number, id: { __typename?: 'TTIndividualViewLessonId', lessonIdx: number, lessonInstanceIdx: number, timetableGroupId: number }, timeslotId?: { __typename?: 'TTTimeslotId', gridIdx: number, dayIdx: number, periodIdx: number } | null, timeslotInfo?: { __typename?: 'TTTimeslotInfo', startTime: string, endTime: string } | null, partyGroup: { __typename: 'GeneralGroup', partyId: number, name: string, avatarUrl?: string | null } | { __typename: 'ProgrammeStageEnrollment', partyId: number, name: string, avatarUrl?: string | null } | { __typename: 'SubjectGroup', partyId: number, name: string, avatarUrl?: string | null, subjects: Array<{ __typename?: 'Subject', name: string, colour?: Colour | null }> } | { __typename: 'YearGroupEnrollment', partyId: number, name: string, avatarUrl?: string | null }, room?: { __typename?: 'Room', roomId: number, name: string } | null, teachers: Array<{ __typename?: 'Staff', person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } }> }> }> } };
 
 export type Tt_SwapMutationVariables = Exact<{
   input: TtSwapsInput;

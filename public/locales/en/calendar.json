@@ -71,6 +71,8 @@
     "SubjectGroup": "Subject group",
     "Student": "Student",
     "StudentContact": "Contact",
-    "Staff": "Staff"
+    "Staff": "Staff",
+    "YearGroupEnrollment": "Year group",
+    "ProgrammeStageEnrollment": "Programme stage"
   }
 }
