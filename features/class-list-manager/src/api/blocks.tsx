@@ -117,7 +117,16 @@ const upsertBlockMemberships = graphql(/* GraphQL */ `
 
 const blocksQuery = (filter: BlockFilter) => ({
   queryKey: classListManagerKeys.blocksList(filter),
-  queryFn: () => gqlClient.request(blocks, { filter }),
+  queryFn: async () => {
+    const { core_blocks: coreBlocks } = await gqlClient.request(blocks, {
+      filter,
+    });
+    return {
+      core_blocks: coreBlocks.sort((prev, next) =>
+        prev.blockId.localeCompare(next.blockId)
+      ),
+    };
+  },
 });
 
 export function useBlocksList(yearGroupId: number) {
