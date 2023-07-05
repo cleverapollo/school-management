@@ -12,6 +12,7 @@ import { timetableKeys } from '../keys';
 const unpublishedTimetableEdits = graphql(/* GraphQL */ `
   query tt_unpublishedChanges($filter: TTTimetableFilter) {
     tt_timetables(filter: $filter) {
+      timetableId
       liveStatus {
         publishDiff {
           lessonDiffs {
@@ -114,6 +115,68 @@ const unpublishedTimetableEdits = graphql(/* GraphQL */ `
             teachersChanged
             timeslotChanged
           }
+          groupDiffs {
+            newGroup {
+              partyGroup {
+                __typename
+                partyId
+                name
+                avatarUrl
+                ... on SubjectGroup {
+                  subjects {
+                    name
+                    colour
+                  }
+                }
+              }
+              partyId
+              teachers {
+                person {
+                  partyId
+                  title {
+                    id
+                    name
+                    nameTextId
+                  }
+                  firstName
+                  lastName
+                  avatarUrl
+                  type
+                }
+              }
+            }
+            oldGroup {
+              partyGroup {
+                __typename
+                partyId
+                name
+                avatarUrl
+                ... on SubjectGroup {
+                  subjects {
+                    name
+                    colour
+                  }
+                }
+              }
+              partyId
+              teachers {
+                person {
+                  partyId
+                  title {
+                    id
+                    name
+                    nameTextId
+                  }
+                  firstName
+                  lastName
+                  avatarUrl
+                  type
+                }
+              }
+            }
+            type
+            teachersChanged
+          }
         }
       }
     }
@@ -132,7 +195,15 @@ export function useUnpublishedTimetableChanges(
   return useQuery({
     ...unpublishedChangesQuery(filter),
     enabled,
-    select: ({ tt_timetables }) => tt_timetables?.[0]?.liveStatus?.publishDiff,
+    select: ({ tt_timetables }) => {
+      const { timetableId, liveStatus } = tt_timetables[0];
+
+      return {
+        timetableId,
+        lessonDiffs: liveStatus?.publishDiff?.lessonDiffs ?? [],
+        groupDiffs: liveStatus?.publishDiff?.groupDiffs ?? [],
+      };
+    },
   });
 }
 

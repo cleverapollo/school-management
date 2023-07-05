@@ -32,6 +32,10 @@
   "groupUpdates": "Group updates",
   "lastPublished": "Last published",
   "totalChanges": "Total changes",
+  "successfullyRevertedChangesForLesson_one": "Successfully reverted changes for lesson",
+  "successfullyRevertedChangesForLesson_other": "Successfully reverted changes for lessons",
+  "failedToRevertChangesForLesson_one": "Failed to revert changes for lesson",
+  "failedToRevertChangesForLesson_other": "Failed to revert changes for lessons",
   "status": {
     "free": "Free",
     "busy": "Busy",

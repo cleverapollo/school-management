@@ -17,6 +17,7 @@ import { Chip, Stack, Tooltip } from '@mui/material';
 import set from 'lodash/set';
 import { TableStaffMultipleAutocomplete } from '@tyro/people';
 import { Tt_UpdateTimetableGroupRowInput } from '@tyro/api';
+import { EditIcon } from '@tyro/icons';
 import {
   ReturnTypeFromUseTimetableSubjectGroups,
   useTimetableSubjectGroups,
@@ -63,7 +64,7 @@ const getSubjectGroupsColumns = (
     ('common' | 'timetable')[]
   >,
   displayNames: ReturnTypeDisplayNames,
-  onLessonClick: (lesson: Lesson) => void
+  onLessonClick: (lesson: Lesson[]) => void
 ): GridOptions<ReturnTypeFromUseTimetableSubjectGroups>['columnDefs'] => [
   {
     field: 'name',
@@ -165,12 +166,23 @@ const getSubjectGroupsColumns = (
                   color={color}
                   variant="soft"
                   onClick={() => {
-                    onLessonClick(lesson);
+                    onLessonClick([lesson]);
                   }}
                 />
               </Tooltip>
             );
           })}
+          {data?.lessons.length > 1 && (
+            <Chip
+              label="Edit all"
+              color={color}
+              variant="soft"
+              icon={<EditIcon />}
+              onClick={() => {
+                onLessonClick(data?.lessons);
+              }}
+            />
+          )}
         </Stack>
       );
     },
@@ -192,8 +204,8 @@ export default function TimetableSubjectGroups() {
   });
   const { mutateAsync: updateTimetableGroup } = useTtUpdateTimetableGroup();
 
-  const onLessonClick = (lesson: Lesson) => {
-    setOpenedLessonToEdit([lesson]);
+  const onLessonClick = (lesson: Lesson[]) => {
+    setOpenedLessonToEdit(lesson);
   };
 
   const onBulkSave = (

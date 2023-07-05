@@ -19,6 +19,7 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { UndoIcon } from '@tyro/icons';
+import { useTtResetLessonsChanges } from '../../../api/edit-timetable/reset-lessons';
 import {
   ReturnTypeFromUseUnpublishedTimetableChanges,
   useUnpublishedTimetableChanges,
@@ -124,7 +125,13 @@ export function UnpublishedChangesModal({
     open
   );
 
-  const { lessonDiffs } = publishDiff ?? { lessonDiffs: [] };
+  const { timetableId, lessonDiffs, groupDiffs } = publishDiff ?? {
+    timetableId: 0,
+    lessonDiffs: [],
+    groupDiffs: [],
+  };
+
+  const { mutateAsync: resetLessonChanges } = useTtResetLessonsChanges();
 
   return (
     <Dialog
@@ -221,7 +228,16 @@ export function UnpublishedChangesModal({
                     <Tooltip title={t('common:actions.undo')}>
                       <IconButton
                         aria-label={t('common:actions.undo')}
-                        onClick={() => console.log('undo')}
+                        onClick={() =>
+                          resetLessonChanges({
+                            timetableId,
+                            lessons: [
+                              {
+                                lessonId: lessonAlwaysWithValues.id,
+                              },
+                            ],
+                          })
+                        }
                         color="primary"
                       >
                         <UndoIcon />
@@ -233,7 +249,7 @@ export function UnpublishedChangesModal({
             </Stack>
           </>
         )}
-        {!isLoading && lessonDiffs.length === 0 && (
+        {!isLoading && lessonDiffs.length === 0 && groupDiffs.length === 0 && (
           <Box
             sx={{
               display: 'flex',
