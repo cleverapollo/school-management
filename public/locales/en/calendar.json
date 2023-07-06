@@ -72,7 +72,7 @@
     "Student": "Student",
     "StudentContact": "Contact",
     "Staff": "Staff",
-    "YearGroupEnrollment": "Year group",
-    "ProgrammeStageEnrollment": "Programme stage"
+    "ProgrammeStageEnrollment": "Programme",
+    "YearGroupEnrollment": "Year group"
   }
 }

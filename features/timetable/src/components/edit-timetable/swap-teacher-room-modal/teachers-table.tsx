@@ -2,16 +2,19 @@ import { useEffect, useMemo, useState } from 'react';
 import { TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { TtSwapTeacherFilter } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
-import { TablePersonAvatar, usePreferredNameLayout } from '@tyro/core';
+import {
+  LoadingPlaceholder,
+  TablePersonAvatar,
+  usePreferredNameLayout,
+} from '@tyro/core';
 import {
   LessonChangeState,
   ReturnTypeOfUseSwapTeacherAndRoom,
 } from '../../../hooks/use-swap-teacher-and-room-modal';
-import { useAvailableTeachersForResource } from '../../../api/available-resource-options';
+import { useAvailableTeachersForResource } from '../../../api/edit-timetable/available-resource-options';
 import { SwapStyledTable } from './table-style';
 import { SwapButton, UndoSwapButton } from './swap-button';
 import { StatusChip } from './status-chip';
-import { LoadingPlaceholder } from './loading-placeholder';
 import {
   getFixedRowStyles,
   TableHeaderRow,
@@ -39,8 +42,9 @@ export function TeacherSwapTable({
   const { displayName } = usePreferredNameLayout();
   const { data: availableTeachers, isLoading } =
     useAvailableTeachersForResource(isOpen, filter);
-  const [hoveredLessonChangeState, setHoveredLessonChangeState] =
-    useState<LessonChangeState>(changeState[0]);
+  const [hoveredLessonChangeState, setHoveredLessonChangeState] = useState<
+    LessonChangeState | undefined
+  >(changeState[0]);
 
   const hoveredLessonIndex = useMemo(
     () =>
@@ -49,7 +53,8 @@ export function TeacherSwapTable({
   );
   const teacherIdsOfHoveredLesson = useMemo(
     () =>
-      hoveredLessonChangeState?.teachers.map(({ person }) => person.partyId),
+      hoveredLessonChangeState?.teachers.map(({ person }) => person.partyId) ??
+      [],
     [hoveredLessonChangeState]
   );
 
@@ -164,7 +169,7 @@ export function TeacherSwapTable({
                     );
                     const setHoveredToCurrentState = () => {
                       if (
-                        lessonChangeState.id !== hoveredLessonChangeState.id
+                        lessonChangeState.id !== hoveredLessonChangeState?.id
                       ) {
                         setHoveredLessonChangeState(lessonChangeState);
                       }

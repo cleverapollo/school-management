@@ -30,10 +30,10 @@ export default i18n
     },
   });
 
-const dayjsLocaleMapping = {
+export const dayjsLocaleMapping = {
   en: 'en-ie',
   ga: 'ga',
-};
+} as const;
 
 i18n.on('languageChanged', (language: (typeof availableLanguages)[number]) => {
   const locale = dayjsLocaleMapping[language];

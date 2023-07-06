@@ -1,9 +1,4 @@
-import {
-  TimePicker,
-  TimePickerProps,
-  LocalizationProvider,
-} from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { TimePicker, TimePickerProps } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 
@@ -41,23 +36,21 @@ export const RHFTimePicker = <
   } = useController(controlProps);
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <TimePicker
-        {...timePickerProps}
-        onChange={onChange}
-        value={value ?? null}
-        label={label}
-        inputRef={ref}
-        slotProps={{
-          textField: {
-            ...inputProps,
-            onBlur,
-            name,
-            error: !!error,
-            helperText: error?.message,
-          },
-        }}
-      />
-    </LocalizationProvider>
+    <TimePicker
+      {...timePickerProps}
+      onChange={onChange}
+      value={value ?? null}
+      label={label}
+      inputRef={ref}
+      slotProps={{
+        textField: {
+          ...inputProps,
+          onBlur,
+          name,
+          error: !!error,
+          helperText: error?.message,
+        },
+      }}
+    />
   );
 };

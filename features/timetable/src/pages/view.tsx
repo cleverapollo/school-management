@@ -48,7 +48,7 @@ const weekdays: string[] = Array.from({ length: 5 }, (_, index) =>
 //     },
 //     filter: true,
 //     editable: true,
-//     cellClass: 'disable-cell-edit-style',
+//     cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
 //     cellEditorSelector: DaySelector(),
 //     suppressKeyboardEvent: ({ editing, event }) =>
 //       editing && event.key === 'Enter',
@@ -63,7 +63,7 @@ const weekdays: string[] = Array.from({ length: 5 }, (_, index) =>
 //     },
 //     filter: true,
 //     editable: true,
-//     cellClass: 'disable-cell-edit-style',
+//     cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
 //     cellEditorSelector: PeriodSelector(),
 //     suppressKeyboardEvent: ({ editing, event }) =>
 //       editing && event.key === 'Enter',
@@ -71,7 +71,7 @@ const weekdays: string[] = Array.from({ length: 5 }, (_, index) =>
 //   {
 //     headerName: t('timetable:room'),
 //     field: 'room',
-//     cellClass: 'disable-cell-edit-style',
+//     cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
 //     valueFormatter: ({ data }) => data?.room?.name ?? '',
 //     valueSetter: ({ data, newValue }) => {
 //       set(data, 'room', newValue ?? []);
@@ -85,7 +85,7 @@ const weekdays: string[] = Array.from({ length: 5 }, (_, index) =>
 //   {
 //     headerName: t('timetable:teacher'),
 //     field: 'teachers',
-//     cellClass: 'disable-cell-edit-style',
+//     cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
 //     valueFormatter: ({ data }) => displayNames(data?.teachers),
 //     valueSetter: ({ data, newValue }) => {
 //       set(data, 'teachers', newValue ?? []);

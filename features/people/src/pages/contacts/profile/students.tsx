@@ -84,7 +84,7 @@ const getContactStudentsColumns = (
     field: 'legalGuardian',
     headerName: t('people:legalGuardian'),
     editable: true,
-    cellClass: 'disable-cell-edit-style',
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellEditor: TableSwitch,
     valueFormatter: ({ data }) =>
       data?.legalGuardian ? t('common:yes') : t('common:no'),
@@ -98,7 +98,7 @@ const getContactStudentsColumns = (
     field: 'pickupRights',
     headerName: t('people:pickupPermission'),
     editable: true,
-    cellClass: 'disable-cell-edit-style',
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellEditor: TableSwitch,
     valueFormatter: ({ data }) =>
       data?.pickupRights ? t('common:yes') : t('common:no'),
@@ -112,7 +112,7 @@ const getContactStudentsColumns = (
     field: 'allowAccessToStudentData',
     headerName: t('people:allowAccessToStudentData'),
     editable: true,
-    cellClass: 'disable-cell-edit-style',
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellEditor: TableSwitch,
     valueFormatter: ({ data }) =>
       data?.allowAccessToStudentData ? t('common:yes') : t('common:no'),
@@ -126,7 +126,7 @@ const getContactStudentsColumns = (
     field: 'allowedToContact',
     headerName: t('people:allowedToContact'),
     editable: true,
-    cellClass: 'disable-cell-edit-style',
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellEditor: TableSwitch,
     valueFormatter: ({ data }) =>
       data?.allowedToContact ? t('common:yes') : t('common:no'),
@@ -140,7 +140,7 @@ const getContactStudentsColumns = (
     field: 'includeInSms',
     headerName: t('people:includeInSms'),
     editable: ({ data }) => !!data?.allowedToContact,
-    cellClass: 'disable-cell-edit-style',
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellEditor: TableSwitch,
     valueFormatter: ({ data }) =>
       data?.includeInSms ? t('common:yes') : t('common:no'),
@@ -157,7 +157,7 @@ const getContactStudentsColumns = (
     field: 'includeInTmail',
     headerName: t('people:includeInTmail'),
     editable: ({ data }) => !!data?.allowedToContact,
-    cellClass: 'disable-cell-edit-style',
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellEditor: TableSwitch,
     valueFormatter: ({ data }) =>
       data?.includeInTmail ? t('common:yes') : t('common:no'),

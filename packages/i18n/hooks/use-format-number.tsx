@@ -1,12 +1,8 @@
 import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import { availableLanguages } from '../index';
-
-type AvailableLanguages = (typeof availableLanguages)[number];
+import { useCurrentLanguage, AvailableLanguages } from './use-current-language';
 
 export function useFormatNumber() {
-  const { i18n } = useTranslation();
-  const currentLanguageCode = i18n.language as AvailableLanguages;
+  const { languageCode } = useCurrentLanguage();
 
   return useMemo(
     () => ({
@@ -15,13 +11,13 @@ export function useFormatNumber() {
         options?: Intl.NumberFormatOptions & { language?: AvailableLanguages }
       ) => {
         const { language, ...intlOptions } = options ?? {};
-        return new Intl.NumberFormat(language ?? currentLanguageCode, {
+        return new Intl.NumberFormat(language ?? languageCode, {
           style: 'currency',
           currency: 'EUR',
           ...intlOptions,
         }).format(value);
       },
     }),
-    [currentLanguageCode]
+    [languageCode]
   );
 }

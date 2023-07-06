@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
+import { getLessonDayAndTime } from '../../../utils/get-lesson-day-time';
 import { ReturnTypeOfUseSwapTeacherAndRoom } from '../../../hooks/use-swap-teacher-and-room-modal';
 
 interface TableHeaderRowProps {
@@ -56,7 +57,7 @@ export function TableHeaderRow({
     <TableRow>
       <TableCell>{firstRowLabel}</TableCell>
       {changeState?.map((lesson) => {
-        const day = dayjs().set('day', lesson.timeslotId?.dayIdx ?? 0);
+        const { day, time } = getLessonDayAndTime(lesson);
 
         return (
           <TableCell key={JSON.stringify(lesson.id)}>
@@ -66,7 +67,7 @@ export function TableHeaderRow({
                 <Tooltip
                   title={t('timetable:dayAtTime', {
                     day: day.format('dddd'),
-                    time: lesson.timeslotInfo?.startTime,
+                    time,
                   })}
                 >
                   <Stack

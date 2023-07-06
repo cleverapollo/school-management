@@ -17,6 +17,7 @@ export * from './calendar-month';
 export * from './calendar-month-alt';
 export * from './calendar-schedule';
 export * from './calendar-timeline';
+export * from './calendar-upload';
 export * from './calendar-vertical';
 export * from './checkmark';
 export * from './checkmark-circle';

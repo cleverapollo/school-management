@@ -6,7 +6,7 @@ import {
   wasMultiSelectKeyUsed,
   wasToggleInSelectionGroupKeyUsed,
 } from '@tyro/core';
-import { ReturnTypeFromUseTimetableResourceView } from '../api/resource-view';
+import { ReturnTypeFromUseTimetableResourceView } from '../api/edit-timetable/resource-view';
 import { getResourceName } from '../utils/get-resource-name';
 
 export type Lesson =
