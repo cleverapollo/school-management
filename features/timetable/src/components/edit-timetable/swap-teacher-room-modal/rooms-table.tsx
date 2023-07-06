@@ -155,9 +155,8 @@ export function RoomSwapTable({
                       {isCurrentRoomForCell ? (
                         <UndoSwapButton
                           isSwapped={isSwapped}
-                          lesson={
-                            newRoomForCurrentRoom?.lesson ?? lessonOnTimeslot
-                          }
+                          newLesson={newRoomForCurrentRoom?.lesson}
+                          originalLesson={lessonOnTimeslot}
                           onClick={() => {
                             if (changeForCell) {
                               swapRoom(changeForCell);
