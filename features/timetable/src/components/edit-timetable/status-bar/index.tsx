@@ -21,9 +21,10 @@ export function EditTimetableStatusBar() {
     onOpen: openPublishModal,
     onClose: closePublishModal,
   } = useDisclosure();
-  const liveTimetable = useMemo(() => timetables?.[0], [timetables]);
+  const liveTimetable = timetables?.[0];
 
   const hasNoChanges = !liveTimetable?.liveStatus?.totalChanges;
+  const tooltip = hasNoChanges ? t('timetable:thereAreNoChangesAvailable') : '';
 
   return (
     <>
@@ -51,13 +52,7 @@ export function EditTimetableStatusBar() {
                   my: 0.25,
                 }}
               >
-                <Tooltip
-                  title={
-                    hasNoChanges
-                      ? t('timetable:thereAreNoChangesAvailable')
-                      : ''
-                  }
-                >
+                <Tooltip title={tooltip}>
                   <span>
                     <Button
                       size="small"
@@ -81,11 +76,7 @@ export function EditTimetableStatusBar() {
             <Divider orientation="vertical" flexItem sx={{ ml: 1, mr: 2.5 }} />
             <TimetableStatusDetails {...(liveTimetable?.liveStatus ?? {})} />
             <Divider orientation="vertical" flexItem sx={{ mx: 2.5 }} />
-            <Tooltip
-              title={
-                hasNoChanges ? t('timetable:thereAreNoChangesAvailable') : ''
-              }
-            >
+            <Tooltip title={tooltip}>
               <span>
                 <Button
                   variant="contained"

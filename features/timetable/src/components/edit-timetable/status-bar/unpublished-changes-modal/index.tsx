@@ -43,8 +43,9 @@ export function UnpublishedChangesModal({
     >
       <DialogTitle>{t('timetable:unpublishedChanges')}</DialogTitle>
       <DialogContent sx={{ p: 0 }}>
-        {isLoading && <LoadingPlaceholder sx={{ minHeight: 200 }} />}
-        {!isLoading && (
+        {isLoading ? (
+          <LoadingPlaceholder sx={{ minHeight: 200 }} />
+        ) : (
           <Stack spacing={2}>
             <GroupUpdatesList
               timetableId={timetableId}

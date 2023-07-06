@@ -123,10 +123,6 @@ const getSubjectGroupsColumns = (
     field: 'teachers',
     cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     enableRowGroup: true,
-    valueSetter: ({ data, newValue }) => {
-      set(data, 'teachers', newValue);
-      return true;
-    },
     valueFormatter: ({ data }) => displayNames(data?.teachers ?? []),
     editable: true,
     cellEditor: TableStaffMultipleAutocomplete,
