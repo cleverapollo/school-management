@@ -1,9 +1,4 @@
-import {
-  DatePicker,
-  DatePickerProps,
-  LocalizationProvider,
-} from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker, DatePickerProps } from '@mui/x-date-pickers';
 
 import { TextFieldProps } from '@mui/material';
 import {
@@ -38,24 +33,21 @@ export const RHFDatePicker = <
   } = useController(controlProps);
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DatePicker
-        format="DD/MM/YYYY"
-        {...datePickerProps}
-        onChange={onChange}
-        value={value ?? null}
-        label={label}
-        inputRef={ref}
-        slotProps={{
-          textField: {
-            ...inputProps,
-            onBlur,
-            name,
-            error: !!error,
-            helperText: error?.message,
-          },
-        }}
-      />
-    </LocalizationProvider>
+    <DatePicker
+      {...datePickerProps}
+      onChange={onChange}
+      value={value ?? null}
+      label={label}
+      inputRef={ref}
+      slotProps={{
+        textField: {
+          ...inputProps,
+          onBlur,
+          name,
+          error: !!error,
+          helperText: error?.message,
+        },
+      }}
+    />
   );
 };

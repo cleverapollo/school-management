@@ -1,8 +1,6 @@
 import { Dispatch, RefObject, SetStateAction, useRef } from 'react';
 import { styled } from '@mui/material/styles';
 import { Stack, Button, IconButton, Box, Popover } from '@mui/material';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { useDisclosure, useResponsive } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
@@ -121,16 +119,14 @@ export function CalendarToolbar({
             horizontal: 'center',
           }}
         >
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateCalendar
-              value={currentDate}
-              onChange={(newValue) => {
-                if (newValue) {
-                  onChangeDate(newValue);
-                }
-              }}
-            />
-          </LocalizationProvider>
+          <DateCalendar
+            value={currentDate}
+            onChange={(newValue) => {
+              if (newValue) {
+                onChangeDate(newValue);
+              }
+            }}
+          />
         </Popover>
 
         <IconButton onClick={onNextDateClick}>

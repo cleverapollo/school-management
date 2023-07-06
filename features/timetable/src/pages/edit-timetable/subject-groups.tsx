@@ -174,7 +174,7 @@ const getSubjectGroupsColumns = (
           })}
           {data?.lessons.length > 1 && (
             <Chip
-              label="Edit all"
+              label={t('common:actions.editAll')}
               color={color}
               variant="soft"
               icon={<EditIcon />}
