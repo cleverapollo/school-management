@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogTitle,
   Stack,
+  Tooltip,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import { LoadingPlaceholder } from '@tyro/core';
@@ -31,11 +32,15 @@ export function PublishModal({ open, onClose }: UnpublishedChangesModalProps) {
     open
   );
 
-  const { timetableId, lessonDiffs, groupDiffs } = publishDiff ?? {
-    timetableId: 0,
-    lessonDiffs: [],
-    groupDiffs: [],
-  };
+  const { timetableId, totalChanges, lessonDiffs, groupDiffs } =
+    publishDiff ?? {
+      timetableId: 0,
+      totalChanges: 0,
+      lessonDiffs: [],
+      groupDiffs: [],
+    };
+
+  const hasNoChanges = !totalChanges;
 
   const { mutateAsync: publishTimetable } = useTtPublishTimetable();
 
@@ -84,20 +89,33 @@ export function PublishModal({ open, onClose }: UnpublishedChangesModalProps) {
       </DialogContent>
 
       <DialogActions>
-        <Button variant="soft" onClick={onClose}>
-          {t('common:actions.cancel')}
-        </Button>
         <Button
-          variant="contained"
-          onClick={() => {
-            publishTimetable({
-              timetableId,
-              effectiveFromDate: publishFromDate.format('YYYY-MM-DD'),
-            });
+          variant="soft"
+          onClick={onClose}
+          sx={{
+            mr: 2,
           }}
         >
-          {t('common:actions.confirm')}
+          {t('common:actions.cancel')}
         </Button>
+        <Tooltip
+          title={hasNoChanges ? t('timetable:thereAreNoChangesAvailable') : ''}
+        >
+          <span>
+            <Button
+              variant="contained"
+              onClick={() => {
+                publishTimetable({
+                  timetableId,
+                  effectiveFromDate: publishFromDate.format('YYYY-MM-DD'),
+                });
+              }}
+              disabled={hasNoChanges}
+            >
+              {t('common:actions.confirm')}
+            </Button>
+          </span>
+        </Tooltip>
       </DialogActions>
     </Dialog>
   );

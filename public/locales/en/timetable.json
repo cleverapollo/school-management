@@ -35,6 +35,7 @@
   "effectiveFrom": "Effective from",
   "successfullyRevertedTimetableChanges": "Successfully reverted timetable changes",
   "failedToRevertTimetableChanges": "Failed to revert timetable changes",
+  "thereAreNoChangesAvailable": "There are no changes available",
   "whenWouldYouLikeTheFollowingChangesToBeEffectiveFrom": "When would you like the following changes to be effective from?",
   "status": {
     "free": "Free",

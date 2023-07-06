@@ -14,6 +14,7 @@ const unpublishedTimetableEdits = graphql(/* GraphQL */ `
     tt_timetables(filter: $filter) {
       timetableId
       liveStatus {
+        totalChanges
         publishDiff {
           lessonDiffs {
             newLesson {
@@ -200,6 +201,7 @@ export function useUnpublishedTimetableChanges(
 
       return {
         timetableId,
+        totalChanges: liveStatus?.totalChanges ?? 0,
         lessonDiffs: liveStatus?.publishDiff?.lessonDiffs ?? [],
         groupDiffs: liveStatus?.publishDiff?.groupDiffs ?? [],
       };

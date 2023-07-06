@@ -1,4 +1,4 @@
-import { Box, Button, Card, Divider, Stack } from '@mui/material';
+import { Box, Button, Card, Divider, Stack, Tooltip } from '@mui/material';
 import { useMemo } from 'react';
 import { useTranslation } from '@tyro/i18n';
 import { CalendarUploadIcon } from '@tyro/icons';
@@ -22,6 +22,8 @@ export function EditTimetableStatusBar() {
     onClose: closePublishModal,
   } = useDisclosure();
   const liveTimetable = useMemo(() => timetables?.[0], [timetables]);
+
+  const hasNoChanges = !liveTimetable?.liveStatus?.totalChanges;
 
   return (
     <>
@@ -49,32 +51,52 @@ export function EditTimetableStatusBar() {
                   my: 0.25,
                 }}
               >
-                <Button
-                  size="small"
-                  sx={{
-                    fontSize: '0.75rem',
-                    justifyContent: 'flex-start',
-                    minWidth: 'auto',
-                    px: 1,
-                  }}
-                  onClick={() => openUnpublishedChangesModal()}
+                <Tooltip
+                  title={
+                    hasNoChanges
+                      ? t('timetable:thereAreNoChangesAvailable')
+                      : ''
+                  }
                 >
-                  {t('timetable:unpublishedChanges', {
-                    count: liveTimetable?.liveStatus?.totalChanges || 0,
-                  })}
-                </Button>
+                  <span>
+                    <Button
+                      size="small"
+                      sx={{
+                        fontSize: '0.75rem',
+                        justifyContent: 'flex-start',
+                        minWidth: 'auto',
+                        px: 1,
+                      }}
+                      onClick={() => openUnpublishedChangesModal()}
+                      disabled={hasNoChanges}
+                    >
+                      {t('timetable:unpublishedChanges', {
+                        count: liveTimetable?.liveStatus?.totalChanges || 0,
+                      })}
+                    </Button>
+                  </span>
+                </Tooltip>
               </Box>
             </Stack>
             <Divider orientation="vertical" flexItem sx={{ ml: 1, mr: 2.5 }} />
             <TimetableStatusDetails {...(liveTimetable?.liveStatus ?? {})} />
             <Divider orientation="vertical" flexItem sx={{ mx: 2.5 }} />
-            <Button
-              variant="contained"
-              startIcon={<CalendarUploadIcon />}
-              onClick={openPublishModal}
+            <Tooltip
+              title={
+                hasNoChanges ? t('timetable:thereAreNoChangesAvailable') : ''
+              }
             >
-              {t('timetable:publish')}
-            </Button>
+              <span>
+                <Button
+                  variant="contained"
+                  startIcon={<CalendarUploadIcon />}
+                  onClick={openPublishModal}
+                  disabled={hasNoChanges}
+                >
+                  {t('timetable:publish')}
+                </Button>
+              </span>
+            </Tooltip>
           </Stack>
         </Card>
       </Box>
