@@ -195,10 +195,8 @@ export function TeacherSwapTable({
                         {isCurrentTeacherForCell ? (
                           <UndoSwapButton
                             isSwapped={isSwapped}
-                            lesson={
-                              newLessonForCurrentTeacher?.lesson ??
-                              lessonOnTimeslot
-                            }
+                            newLesson={newLessonForCurrentTeacher?.lesson}
+                            originalLesson={lessonOnTimeslot}
                             onClick={() => {
                               if (changeForCell) {
                                 swapTeacher(changeForCell);
