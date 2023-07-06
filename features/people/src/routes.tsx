@@ -71,6 +71,9 @@ const StudentProfileClassesPage = lazy(
 const StudentProfileSettingsPage = lazy(
   () => import('./pages/students/profile/settings')
 );
+const StudentProfileMedicalPage = lazy(
+  () => import('./pages/students/profile/medical')
+);
 
 // Contact pages
 const ContactsListPage = lazy(() => import('./pages/contacts'));
@@ -265,6 +268,11 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'settings',
                 element: <StudentProfileSettingsPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'medical',
+                element: <StudentProfileMedicalPage />,
               },
             ],
           },

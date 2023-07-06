@@ -214,13 +214,13 @@ export function StudentContactsWidget({
                     </Button>
                   </Box>
                 </Tooltip>
-                <Button
+                {/* <Button
                   variant="contained"
                   sx={{ flex: 1 }}
                   onClick={() => console.log('open send mail popup')}
                 >
                   {t('mail:sendMail')}
-                </Button>
+                </Button> */}
               </Stack>
               <Box
                 component="dl"

@@ -12,6 +12,7 @@ interface SiblingsChipsProps {
 export function SiblingsChips({ siblings }: SiblingsChipsProps) {
   const { t } = useTranslation(['common']);
   const { displayName } = usePreferredNameLayout();
+  console.log(siblings, 'siblings');
 
   if (
     siblings?.enrolledSiblings.length === 0 &&
@@ -25,7 +26,10 @@ export function SiblingsChips({ siblings }: SiblingsChipsProps) {
       {siblings?.enrolledSiblings.map(({ partyId, person }) => {
         const name = displayName(person);
         const color = stringToColor(name);
+        console.log(color, 'color');
+
         const colorKey = color.split('.')[0] as Colour;
+        console.log(colorKey, 'colorKey');
 
         return (
           <Chip
