@@ -1,7 +1,7 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { PersonalInformation, UpdateStudentInput } from '@tyro/api';
 import { RHFTextField } from '@tyro/core';
-import {  Stack, Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import { UserGroupTwoIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';

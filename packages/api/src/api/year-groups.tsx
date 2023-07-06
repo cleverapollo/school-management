@@ -3,6 +3,7 @@ import { graphql } from '../gql';
 import { gqlClient } from '../clients';
 import { queryClient } from '../query-client';
 import { YearGroupFilter } from '../gql/graphql';
+import { UseQueryReturnType } from '../@types';
 import { coreApiKeys } from './keys';
 
 const yearGroups = graphql(/* GraphQL */ `
@@ -33,3 +34,7 @@ export function useYearGroups(filter: YearGroupFilter) {
     },
   });
 }
+
+export type ReturnTypeFromUseYearGroups = UseQueryReturnType<
+  typeof useYearGroups
+>[number];

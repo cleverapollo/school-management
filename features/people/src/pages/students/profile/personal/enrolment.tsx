@@ -174,7 +174,7 @@ export const ProfileEnrolment = ({
             label: t('people:personal.enrolmentHistory.dateOfLeaving'),
             value: endDate ? dayjs(endDate).format('l') : '-',
           },
-          {
+          leftEarly && {
             label: t('people:personal.enrolmentHistory.reasonOfDeparture'),
             value: reasonForLeaving || '-',
           },

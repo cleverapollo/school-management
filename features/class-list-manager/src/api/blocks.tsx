@@ -7,6 +7,7 @@ import {
   graphql,
   queryClient,
   UseQueryReturnType,
+  BlockFilter,
 } from '@tyro/api';
 import { usePreferredNameLayout, useToast } from '@tyro/core';
 import { groupsKeys } from '@tyro/groups';
@@ -114,20 +115,30 @@ const upsertBlockMemberships = graphql(/* GraphQL */ `
   }
 `);
 
-const blocksQuery = () => ({
-  queryKey: classListManagerKeys.blocksList(),
-  queryFn: () => gqlClient.request(blocks, { filter: {} }),
+const blocksQuery = (filter: BlockFilter) => ({
+  queryKey: classListManagerKeys.blocksList(filter),
+  queryFn: async () => {
+    const { core_blocks: coreBlocks } = await gqlClient.request(blocks, {
+      filter,
+    });
+    return {
+      core_blocks: coreBlocks.sort((prev, next) =>
+        prev.blockId.localeCompare(next.blockId)
+      ),
+    };
+  },
 });
 
-export function useBlocksList() {
+export function useBlocksList(yearGroupId: number) {
   return useQuery({
-    ...blocksQuery(),
+    ...blocksQuery({ yearGroupIds: [yearGroupId] }),
+    enabled: !!yearGroupId,
     select: ({ core_blocks }) => core_blocks,
   });
 }
 
-export function getBlocksList() {
-  return queryClient.fetchQuery(blocksQuery());
+export function getBlocksList(yearGroupId: number) {
+  return queryClient.fetchQuery(blocksQuery({ yearGroupIds: [yearGroupId] }));
 }
 
 const blockMembershipsQuery = (
