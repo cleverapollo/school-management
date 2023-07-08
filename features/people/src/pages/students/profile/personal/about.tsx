@@ -1,16 +1,17 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { PersonalInformation, UpdateStudentInput } from '@tyro/api';
-import { RHFTextField } from '@tyro/core';
+import { RHFTextField, useNumber } from '@tyro/core';
 import { Stack, Typography } from '@mui/material';
 import { UserGroupTwoIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import { useParams } from 'react-router-dom';
 import {
   CardEditableForm,
   CardEditableFormProps,
 } from '../../../../components/common/card-editable-form';
 import { useStudentPersonal } from '../../../../api/student/personal';
-import { SiblingsChips } from '../../../../components/students/siblings-chips';
+import { SiblingsChips } from '../../../../components/students/sibling-chips';
 
 dayjs.extend(LocalizedFormat);
 
@@ -139,6 +140,8 @@ export const ProfileAbout = ({
   onSave,
 }: ProfileAboutProps) => {
   const { t } = useTranslation(['common', 'people']);
+  const { id } = useParams();
+  const idNumber = useNumber(id);
 
   const aboutDataWithLabels = getAboutDataWithLabels(studentData, t);
 
@@ -154,7 +157,10 @@ export const ProfileAbout = ({
         <Typography variant="body1" color="text.primary">
           {t('common:siblings')}
         </Typography>
-        <SiblingsChips siblings={studentData?.siblings} />
+        <SiblingsChips
+          studentId={idNumber ?? 0}
+          siblings={studentData?.siblings}
+        />
       </Stack>
     </CardEditableForm>
   );

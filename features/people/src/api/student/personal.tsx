@@ -99,6 +99,7 @@ const studentsPersonalById = graphql(/* GraphQL */ `
         enrolledSiblings {
           partyId
           person {
+            partyId
             title {
               id
               nameTextId
@@ -107,7 +108,9 @@ const studentsPersonalById = graphql(/* GraphQL */ `
             firstName
             lastName
             avatarUrl
-            type
+          }
+          classGroup {
+            name
           }
         }
         nonEnrolledSiblings {

@@ -1,17 +1,27 @@
-import { alpha, Chip } from '@mui/material';
+import { alpha, Chip, Tooltip } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { Avatar, usePreferredNameLayout, stringToColor } from '@tyro/core';
+import {
+  Avatar,
+  usePreferredNameLayout,
+  stringToColor,
+  IconChip,
+  useDisclosure,
+} from '@tyro/core';
 import { Link } from 'react-router-dom';
 import { Colour } from '@tyro/api';
-import { ReturnTypeFromUseStudentPersonal } from '../../api/student/personal';
+import { GearIcon } from '@tyro/icons';
+import { ReturnTypeFromUseStudentPersonal } from '../../../api/student/personal';
+import { ManageSiblingModal } from '../manage-sibling-modal';
 
 interface SiblingsChipsProps {
+  studentId: number;
   siblings: ReturnTypeFromUseStudentPersonal['siblings'];
 }
 
-export function SiblingsChips({ siblings }: SiblingsChipsProps) {
-  const { t } = useTranslation(['common']);
+export function SiblingsChips({ studentId, siblings }: SiblingsChipsProps) {
+  const { t } = useTranslation(['common', 'people']);
   const { displayName } = usePreferredNameLayout();
+  const { isOpen, onClose, onOpen } = useDisclosure();
 
   if (
     siblings?.enrolledSiblings.length === 0 &&
@@ -37,6 +47,7 @@ export function SiblingsChips({ siblings }: SiblingsChipsProps) {
             variant="soft"
             sx={({ palette }) => ({
               color: 'text.primary',
+              cursor: 'pointer',
               backgroundColor: alpha(palette[colorKey][500], 0.16),
               '&:hover': {
                 backgroundColor: alpha(palette[colorKey][500], 0.32),
@@ -66,6 +77,21 @@ export function SiblingsChips({ siblings }: SiblingsChipsProps) {
           />
         );
       })}
+      <Tooltip title={t('people:manageSiblings')}>
+        <IconChip
+          aria-label={t('people:manageSiblings')}
+          icon={<GearIcon />}
+          onClick={() => onOpen()}
+        />
+      </Tooltip>
+      <ManageSiblingModal
+        open={isOpen}
+        onClose={() => onClose()}
+        studentId={studentId}
+        currentSiblings={
+          siblings ?? { enrolledSiblings: [], nonEnrolledSiblings: [] }
+        }
+      />
     </>
   );
 }
