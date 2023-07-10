@@ -186,5 +186,8 @@
   "youMustHaveAtLeastOneStudent": "You must have at least one student",
   "manageSiblings": "Manage siblings",
   "enrolledSiblings": "Enrolled sibling(s)",
-  "nonEnrolledSiblings": "Non-enrolled sibling(s)"
+  "nonEnrolledSiblings": "Non-enrolled sibling(s)",
+  "searchForNewSibling": "Search for new sibling",
+  "linkAdditionalContacts": "Link additional contacts",
+  "contactsOfNewSiblings": "Contacts of new siblings"
 }

@@ -17,7 +17,7 @@ export function NewContactSelect({
   watch,
 }: NewContactSelectProps) {
   const { displayName } = usePreferredNameLayout();
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'people']);
 
   const newContacts = watch('newContacts');
   const newContactIds = Object.keys(newContacts);
@@ -39,7 +39,7 @@ export function NewContactSelect({
       </Typography>
 
       <Typography component="h3" variant="subtitle1" sx={{ mt: 3 }}>
-        Contacts of new siblings
+        {t('people:contactsOfNewSiblings')}
       </Typography>
       <Stack
         component="ul"

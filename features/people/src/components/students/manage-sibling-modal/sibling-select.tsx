@@ -39,7 +39,7 @@ export function SiblingSelect({
   return (
     <Box sx={{ px: 3, pt: 1 }}>
       <Autocomplete
-        label="Search for a sibling"
+        label={t('people:searchForNewSibling')}
         loading={isLoading}
         options={students ?? []}
         value={null}

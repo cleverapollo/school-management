@@ -42,7 +42,7 @@ export function ManageSiblingModal({
   studentId,
   currentSiblings,
 }: ManageSiblingModalProps) {
-  const { t } = useTranslation(['common', 'timetable']);
+  const { t } = useTranslation(['common', 'timetable', 'people']);
   const [step, setStep] = useState(1);
   const { data: studentsCurrentContact } = useStudentsContacts(studentId, open);
   const { mutateAsync: updateSiblingsAndContacts, isLoading } =
@@ -141,7 +141,9 @@ export function ManageSiblingModal({
   return (
     <Dialog open={open} onClose={closeAndResetModal} fullWidth maxWidth="sm">
       <DialogTitle>
-        {step === 1 ? 'Select siblings' : 'Select additional contacts'}
+        {step === 1
+          ? t('people:manageSiblings')
+          : t('people:linkAdditionalContacts')}
       </DialogTitle>
       <DialogContent sx={{ p: 0, position: 'relative' }}>
         <AnimatePresence initial={false} custom={step}>
