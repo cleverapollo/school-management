@@ -38,8 +38,8 @@
     },
     "substitution": {
       "title": "Substitution",
-      "overview": "Overview",
-      "management": "Management"
+      "absences": "Absences",
+      "cover": "Cover"
     },
     "settings": {
       "title": "Settings",
