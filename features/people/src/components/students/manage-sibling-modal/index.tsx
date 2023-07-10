@@ -39,12 +39,15 @@ const animationVariants: Variants = {
 export function ManageSiblingModal({
   open,
   onClose,
-  studentId,
+  currentStudent,
   currentSiblings,
 }: ManageSiblingModalProps) {
   const { t } = useTranslation(['common', 'timetable', 'people']);
   const [step, setStep] = useState(1);
-  const { data: studentsCurrentContact } = useStudentsContacts(studentId, open);
+  const { data: studentsCurrentContact } = useStudentsContacts(
+    currentStudent.partyId,
+    open
+  );
   const { mutateAsync: updateSiblingsAndContacts, isLoading } =
     useUpdateSiblingsAndContacts();
 
@@ -123,7 +126,7 @@ export function ManageSiblingModal({
 
     updateSiblingsAndContacts(
       {
-        studentPartyId: studentId,
+        studentPartyId: currentStudent.partyId,
         linkSiblings,
         unlinkSiblings,
         linkContacts,
@@ -143,7 +146,7 @@ export function ManageSiblingModal({
       <DialogTitle>
         {step === 1
           ? t('people:manageSiblings')
-          : t('people:linkAdditionalContacts')}
+          : t('people:associateContacts')}
       </DialogTitle>
       <DialogContent sx={{ p: 0, position: 'relative' }}>
         <AnimatePresence initial={false} custom={step}>
@@ -168,6 +171,7 @@ export function ManageSiblingModal({
               />
             ) : (
               <NewContactSelect
+                currentStudent={currentStudent}
                 additionalContacts={additionalContacts}
                 watch={watch}
                 setValue={setValue}

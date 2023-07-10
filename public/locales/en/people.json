@@ -188,6 +188,8 @@
   "enrolledSiblings": "Enrolled sibling(s)",
   "nonEnrolledSiblings": "Non-enrolled sibling(s)",
   "searchForNewSibling": "Search for new sibling",
-  "linkAdditionalContacts": "Link additional contacts",
-  "contactsOfNewSiblings": "Contacts of new siblings"
+  "associateContacts": "Associate contacts",
+  "foundAssociatedContact_one": "We've found a contact associated with the selected student(s). Would you like to associate any of these with {{studentName}}?",
+  "foundAssociatedContact_other": "We've found {{count}} contacts associated with the selected student(s). Would you like to associate any of these with {{studentName}}?",
+  "selectContactsToAssociateWithStudent": "Select contacts to associate with {{studentName}}"
 }

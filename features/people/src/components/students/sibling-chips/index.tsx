@@ -14,11 +14,14 @@ import { ReturnTypeFromUseStudentPersonal } from '../../../api/student/personal'
 import { ManageSiblingModal } from '../manage-sibling-modal';
 
 interface SiblingsChipsProps {
-  studentId: number;
+  currentStudent: ReturnTypeFromUseStudentPersonal['person'];
   siblings: ReturnTypeFromUseStudentPersonal['siblings'];
 }
 
-export function SiblingsChips({ studentId, siblings }: SiblingsChipsProps) {
+export function SiblingsChips({
+  currentStudent,
+  siblings,
+}: SiblingsChipsProps) {
   const { t } = useTranslation(['common', 'people']);
   const { displayName } = usePreferredNameLayout();
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -89,7 +92,7 @@ export function SiblingsChips({ studentId, siblings }: SiblingsChipsProps) {
       <ManageSiblingModal
         open={isOpen}
         onClose={() => onClose()}
-        studentId={studentId}
+        currentStudent={currentStudent}
         currentSiblings={
           siblings ?? { enrolledSiblings: [], nonEnrolledSiblings: [] }
         }

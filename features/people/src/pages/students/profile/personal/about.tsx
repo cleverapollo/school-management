@@ -140,8 +140,6 @@ export const ProfileAbout = ({
   onSave,
 }: ProfileAboutProps) => {
   const { t } = useTranslation(['common', 'people']);
-  const { id } = useParams();
-  const idNumber = useNumber(id);
 
   const aboutDataWithLabels = getAboutDataWithLabels(studentData, t);
 
@@ -158,7 +156,7 @@ export const ProfileAbout = ({
           {t('common:siblings')}
         </Typography>
         <SiblingsChips
-          studentId={idNumber ?? 0}
+          currentStudent={studentData?.person ?? { partyId: 0 }}
           siblings={studentData?.siblings}
         />
       </Stack>

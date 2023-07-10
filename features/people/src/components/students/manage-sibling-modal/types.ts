@@ -5,7 +5,7 @@ import { ReturnTypeFromUseStudentPersonal } from '../../../api/student/personal'
 export interface ManageSiblingModalProps {
   open: boolean;
   onClose: () => void;
-  studentId: number;
+  currentStudent: ReturnTypeFromUseStudentPersonal['person'];
   currentSiblings: NonNullable<ReturnTypeFromUseStudentPersonal['siblings']>;
 }
 

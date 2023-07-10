@@ -4,17 +4,20 @@ import { StudentContactType } from '@tyro/api';
 import { UseFormSetValue, UseFormWatch } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
 import { ManageSiblingFormValues } from './types';
+import { ReturnTypeFromUseStudentPersonal } from '../../../api/student/personal';
 
 interface NewContactSelectProps {
   additionalContacts: ManageSiblingFormValues['enrolledSiblings'][number]['contacts'];
   setValue: UseFormSetValue<ManageSiblingFormValues>;
   watch: UseFormWatch<ManageSiblingFormValues>;
+  currentStudent: ReturnTypeFromUseStudentPersonal['person'];
 }
 
 export function NewContactSelect({
   additionalContacts,
   setValue,
   watch,
+  currentStudent,
 }: NewContactSelectProps) {
   const { displayName } = usePreferredNameLayout();
   const { t } = useTranslation(['common', 'people']);
@@ -30,16 +33,16 @@ export function NewContactSelect({
   return (
     <Box sx={{ px: 3 }}>
       <Typography variant="body2">
-        Contacts below are linked to the selected siblings, but not linked to
-        this user.
-      </Typography>
-      <Typography variant="body2" sx={{ mt: 1 }}>
-        You can select below which of these contacts you would like to link to
-        this student.
+        {t('people:foundAssociatedContact', {
+          count: additionalContacts?.length ?? 0,
+          studentName: displayName(currentStudent),
+        })}
       </Typography>
 
       <Typography component="h3" variant="subtitle1" sx={{ mt: 3 }}>
-        {t('people:contactsOfNewSiblings')}
+        {t('people:selectContactsToAssociateWithStudent', {
+          studentName: displayName(currentStudent),
+        })}
       </Typography>
       <Stack
         component="ul"
