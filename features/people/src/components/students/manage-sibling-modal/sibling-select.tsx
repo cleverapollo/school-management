@@ -2,6 +2,7 @@ import { Box, Typography } from '@mui/material';
 import { Autocomplete, usePreferredNameLayout } from '@tyro/core';
 import { UseFormSetValue } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
+import { useCallback } from 'react';
 import { useStudentsForSiblingSearch } from '../../../api/student/students-for-sibling-search';
 import { ManageSiblingFormValues } from './types';
 import { SiblingListContainer, SiblingListItem } from './sibling-list';
@@ -23,18 +24,24 @@ export function SiblingSelect({
   const hasEnrolledSiblings = enrolledSiblings?.length > 0;
   const hasNonEnrolledSiblings = nonEnrolledSiblings?.length > 0;
 
-  const removeEnrolledSibling = (partyId: number) => {
-    const newEnrolledSiblings = enrolledSiblings.filter(
-      (sibling) => sibling.partyId !== partyId
-    );
-    setValue('enrolledSiblings', newEnrolledSiblings);
-  };
-  const removeNonEnrolledSibling = (partyId: number) => {
-    const newNonEnrolledSiblings = nonEnrolledSiblings.filter(
-      (sibling) => sibling.partyId !== partyId
-    );
-    setValue('nonEnrolledSiblings', newNonEnrolledSiblings);
-  };
+  const removeEnrolledSibling = useCallback(
+    (partyId: number) => {
+      const newEnrolledSiblings = enrolledSiblings.filter(
+        (sibling) => sibling.partyId !== partyId
+      );
+      setValue('enrolledSiblings', newEnrolledSiblings);
+    },
+    [enrolledSiblings, setValue]
+  );
+  const removeNonEnrolledSibling = useCallback(
+    (partyId: number) => {
+      const newNonEnrolledSiblings = nonEnrolledSiblings.filter(
+        (sibling) => sibling.partyId !== partyId
+      );
+      setValue('nonEnrolledSiblings', newNonEnrolledSiblings);
+    },
+    [nonEnrolledSiblings, setValue]
+  );
 
   return (
     <Box sx={{ px: 3, pt: 1 }}>
@@ -69,9 +76,9 @@ export function SiblingSelect({
       {hasEnrolledSiblings && (
         <>
           <Typography component="h3" variant="subtitle1" sx={{ mt: 3 }}>
-            {!hasNonEnrolledSiblings
-              ? t('common:siblings')
-              : t('people:enrolledSiblings')}
+            {hasNonEnrolledSiblings
+              ? t('people:enrolledSiblings')
+              : t('common:siblings')}
           </Typography>
           <SiblingListContainer>
             {enrolledSiblings.map((sibling) => (
@@ -104,9 +111,9 @@ export function SiblingSelect({
       {hasNonEnrolledSiblings && (
         <>
           <Typography component="h3" variant="subtitle1" sx={{ mt: 3 }}>
-            {!hasEnrolledSiblings
-              ? t('common:siblings')
-              : t('people:nonEnrolledSiblings')}
+            {hasEnrolledSiblings
+              ? t('people:nonEnrolledSiblings')
+              : t('common:siblings')}
           </Typography>
           <SiblingListContainer>
             {nonEnrolledSiblings.map((sibling) => {

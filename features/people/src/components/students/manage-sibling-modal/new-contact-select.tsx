@@ -1,7 +1,7 @@
 import { Box, Checkbox, Fade, Stack, Typography } from '@mui/material';
 import { Avatar, Select, usePreferredNameLayout } from '@tyro/core';
 import { StudentContactType } from '@tyro/api';
-import { UseFormSetValue, UseFormWatch } from 'react-hook-form';
+import { UseFormSetValue } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
 import { ManageSiblingFormValues } from './types';
 import { ReturnTypeFromUseStudentPersonal } from '../../../api/student/personal';
@@ -9,20 +9,19 @@ import { ReturnTypeFromUseStudentPersonal } from '../../../api/student/personal'
 interface NewContactSelectProps {
   additionalContacts: ManageSiblingFormValues['enrolledSiblings'][number]['contacts'];
   setValue: UseFormSetValue<ManageSiblingFormValues>;
-  watch: UseFormWatch<ManageSiblingFormValues>;
+  newContacts: ManageSiblingFormValues['newContacts'];
   currentStudent: ReturnTypeFromUseStudentPersonal['person'];
 }
 
 export function NewContactSelect({
   additionalContacts,
   setValue,
-  watch,
+  newContacts,
   currentStudent,
 }: NewContactSelectProps) {
   const { displayName } = usePreferredNameLayout();
   const { t } = useTranslation(['common', 'people']);
 
-  const newContacts = watch('newContacts');
   const newContactIds = Object.keys(newContacts);
 
   const options = Object.values(StudentContactType).map((option) => ({
@@ -84,8 +83,8 @@ export function NewContactSelect({
               <Checkbox
                 sx={{ p: 0, mr: 1 }}
                 checked={isSelected}
-                onChange={(event) => {
-                  if (event.target.checked) {
+                onChange={(_event, checked) => {
+                  if (checked) {
                     setValue(`newContacts`, {
                       ...newContacts,
                       [partyId]: StudentContactType.Aunty,

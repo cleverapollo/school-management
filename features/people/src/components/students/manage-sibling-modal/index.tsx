@@ -68,9 +68,10 @@ export function ManageSiblingModal({
     }, 300);
   };
 
-  const [enrolledSiblings, nonEnrolledSiblings] = watch([
+  const [enrolledSiblings, nonEnrolledSiblings, newContacts] = watch([
     'enrolledSiblings',
     'nonEnrolledSiblings',
+    'newContacts',
   ]);
 
   const additionalContacts = useMemo(() => {
@@ -139,14 +140,13 @@ export function ManageSiblingModal({
     );
   });
 
-  const hasAStep2 = step === 1 && additionalContacts.length > 0;
+  const isStep1 = step === 1;
+  const nextIsStep2 = isStep1 && additionalContacts.length > 0;
 
   return (
     <Dialog open={open} onClose={closeAndResetModal} fullWidth maxWidth="sm">
       <DialogTitle>
-        {step === 1
-          ? t('people:manageSiblings')
-          : t('people:associateContacts')}
+        {isStep1 ? t('people:manageSiblings') : t('people:associateContacts')}
       </DialogTitle>
       <DialogContent sx={{ p: 0, position: 'relative' }}>
         <AnimatePresence initial={false} custom={step}>
@@ -163,7 +163,7 @@ export function ManageSiblingModal({
               width: '100%',
             }}
           >
-            {step === 1 ? (
+            {isStep1 ? (
               <SiblingSelect
                 enrolledSiblings={enrolledSiblings}
                 nonEnrolledSiblings={nonEnrolledSiblings}
@@ -173,7 +173,7 @@ export function ManageSiblingModal({
               <NewContactSelect
                 currentStudent={currentStudent}
                 additionalContacts={additionalContacts}
-                watch={watch}
+                newContacts={newContacts}
                 setValue={setValue}
               />
             )}
@@ -184,9 +184,9 @@ export function ManageSiblingModal({
       <DialogActions>
         <Button
           variant="soft"
-          startIcon={step === 2 ? <ArrowLeftIcon /> : undefined}
+          startIcon={!isStep1 ? <ArrowLeftIcon /> : undefined}
           onClick={() => {
-            if (step === 1) {
+            if (isStep1) {
               closeAndResetModal();
             } else {
               setStep(step - 1);
@@ -196,21 +196,21 @@ export function ManageSiblingModal({
             }
           }}
         >
-          {step === 1 ? t('common:actions.cancel') : t('common:actions.back')}
+          {isStep1 ? t('common:actions.cancel') : t('common:actions.back')}
         </Button>
         <LoadingButton
           loading={isLoading}
           variant="contained"
-          endIcon={hasAStep2 ? <ArrowRightIcon /> : undefined}
+          endIcon={nextIsStep2 ? <ArrowRightIcon /> : undefined}
           onClick={() => {
-            if (hasAStep2) {
+            if (nextIsStep2) {
               setStep(step + 1);
             } else {
               onSubmit();
             }
           }}
         >
-          {hasAStep2 ? t('common:actions.next') : t('common:actions.save')}
+          {nextIsStep2 ? t('common:actions.next') : t('common:actions.save')}
         </LoadingButton>
       </DialogActions>
     </Dialog>
