@@ -225,12 +225,7 @@ export function useCreateOrUpdateBlockRotation() {
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     },
-    onSuccess: (_, variables) => {
-      // if (code?.id) {
-      //   toast(t('common:snackbarMessages.updateSuccess'));
-      // } else {
-      //   toast(t('common:snackbarMessages.createSuccess'));
-      // }
+    onSuccess: (_, __) => {
       toast(t('common:snackbarMessages.createSuccess'));
       queryClient.invalidateQueries(classListManagerKeys.all);
     },

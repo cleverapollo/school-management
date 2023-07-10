@@ -10,20 +10,16 @@ import {
   IconButton,
   Divider,
 } from '@mui/material';
-import { RHFDatePicker, RHFTextField, useFormValidator } from '@tyro/core';
+import { RHFDatePicker, RHFTextField } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import {
-  AttendanceCodeType,
-  Core_EnableBlockRotationInput,
-  Core_EnableBlockRotationIterationInput,
-  SaveAttendanceCodeInput,
-  TuslaCode,
-} from '@tyro/api';
-import React, { useEffect, useState } from 'react';
-import { AddIcon, CloseIcon, InfoCircleIcon, TrashIcon } from '@tyro/icons';
+import { Core_EnableBlockRotationInput } from '@tyro/api';
+import { useEffect, useState } from 'react';
+import { AddIcon, TrashIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import {
   ReturnTypeOfUseBlockList,
   useCreateOrUpdateBlockRotation,
@@ -53,7 +49,7 @@ export const CreateBlockRotationModal = ({
   initialCreateBlockRotationState,
   onClose,
 }: CreateBlockRotationViewProps) => {
-  const { t } = useTranslation(['common', 'attendance']);
+  const { t } = useTranslation(['common', 'classListManager']);
 
   const [iterations, setIterations] = useState<BlockRotationIterationInput[]>(
     []
@@ -64,11 +60,9 @@ export const CreateBlockRotationModal = ({
     isSuccess: isSubmitSuccessful,
   } = useCreateOrUpdateBlockRotation();
 
-  const { resolver, rules } = useFormValidator<CreateBlockRotationFormState>();
-
   const defaultFormStateValues: Partial<CreateBlockRotationFormState> = {
     blockId: initialCreateBlockRotationState?.blockId,
-    rotationName: 'Test Name',
+    rotationName: '',
     iterations: initialCreateBlockRotationState?.rotations?.map((item) => ({
       startDate: item.startDate ? dayjs(item.startDate) : undefined,
       endDate: item.endDate ? dayjs(item.endDate) : undefined,
@@ -76,30 +70,38 @@ export const CreateBlockRotationModal = ({
     })),
   };
 
-  // const attendanceCodesWithoutSelf = attendanceCodes.filter(
-  //   (attendanceCode) =>
-  //     attendanceCode?.code !== initialAttendanceCodeState?.code
-  // );
+  const schema = yup.object().shape<any>({
+    rotationName: yup.string().required(),
+    iterations: yup.array().of(
+      yup.object().shape({
+        startDate: yup.date().typeError('').required(''),
+        endDate: yup.date().typeError('').required(''),
+      })
+    ),
+  });
 
-  const { control, handleSubmit, reset, watch, setValue } =
+  const { control, handleSubmit, reset } =
     useForm<CreateBlockRotationFormState>({
-      resolver: resolver({}),
+      resolver: yupResolver(schema),
       defaultValues: defaultFormStateValues,
       mode: 'onChange',
     });
 
-  const onSubmit = ({ ...restData }: CreateBlockRotationFormState) => {
+  const onSubmit = ({
+    blockId,
+    rotationName,
+    ...restData
+  }: CreateBlockRotationFormState) => {
     console.log('restData', restData);
-    const iterations = restData.iterations.map((item) => ({
+    const iterationsInput = restData.iterations.map((item) => ({
       startDate: item.startDate?.format('YYYY-MM-DD'),
       endDate: dayjs(item.endDate)?.format('YYYY-MM-DD'),
     }));
-    console.log('iterations', iterations);
     createOrUpdateBlockRotationMutation(
       {
-        blockId: restData.blockId,
-        iterations,
-        rotationName: 'Test Name',
+        blockId,
+        iterations: iterationsInput,
+        rotationName,
       },
       {
         onSuccess: onClose,
@@ -132,22 +134,12 @@ export const CreateBlockRotationModal = ({
     reset();
   };
 
-  // const [iterations] = watch(['iterations']);
-
-  // useEffect(() => {
-  //   if (code) {
-  //     setValue('description', t(`attendance:tuslaCodeDescription.${code}`));
-  //   } else {
-  //     setValue('description', undefined);
-  //   }
-  // }, [code]);
-
   const handleAddNewRotationIteration = () => {
     const newIterations = [...iterations];
     newIterations.push({
       startDate: undefined,
       endDate: undefined,
-      iteration: newIterations.length + 1,
+      iteration: iterations.length + 1,
     });
     setIterations(newIterations);
   };
@@ -172,19 +164,18 @@ export const CreateBlockRotationModal = ({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>
+      <DialogTitle sx={{ textTransform: 'capitalize' }}>
         {initialCreateBlockRotationState?.rotations &&
         initialCreateBlockRotationState?.rotations.length > 0
-          ? 'Update Rotation'
-          : 'Create Rotation'}
+          ? t('classListManager:updateRotation')
+          : t('classListManager:createRotation')}
       </DialogTitle>
       <Stack direction="column" px={3}>
         <Typography variant="body2" color="text.secondary">
-          You are making this block of classes a rotating block based on dates
-          set here.
+          {t('classListManager:youAreMakingThisBlockRotating')}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Add Students to the rotations after setting Rotation dates.
+          {t('classListManager:addStudentsToRotation')}
         </Typography>
       </Stack>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -221,7 +212,7 @@ export const CreateBlockRotationModal = ({
                 variant="body1"
                 color="text.secondary"
               >
-                Rotation {rotation?.iteration}
+                {t('classListManager:rotation')} {rotation?.iteration}
               </Typography>
               <Divider
                 orientation="vertical"
@@ -264,11 +255,18 @@ export const CreateBlockRotationModal = ({
                   opacity: rotation?.iteration > 2 ? 1 : 0,
                 }}
               />
-              <Tooltip title={rotation?.iteration > 2 ? 'Create Rotation' : ''}>
+              <Tooltip
+                sx={{ textTransform: 'capitalize' }}
+                title={
+                  rotation?.iteration > 2
+                    ? t('classListManager:createRotation')
+                    : ''
+                }
+              >
                 <span>
                   <IconButton
                     sx={{ opacity: rotation?.iteration > 2 ? 1 : 0 }}
-                    aria-label="Delete Rotation"
+                    aria-label={t('classListManager:deleteRotation')}
                     onClick={() =>
                       handleDeleteRotationIteration(rotation.iteration ?? 0)
                     }
@@ -287,7 +285,7 @@ export const CreateBlockRotationModal = ({
               onClick={handleAddNewRotationIteration}
               startIcon={<AddIcon />}
             >
-              Add Another Rotation
+              {t('classListManager:addAnotherRotation')}
             </Button>
           </Box>
         </Stack>
@@ -297,7 +295,11 @@ export const CreateBlockRotationModal = ({
             {t('common:actions.cancel')}
           </Button>
 
-          <LoadingButton type="submit" variant="contained" loading={false}>
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            loading={isSubmitting}
+          >
             {t('common:actions.save')}
           </LoadingButton>
         </DialogActions>

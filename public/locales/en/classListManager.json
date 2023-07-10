@@ -24,5 +24,11 @@
   "changeRotation": "Change rotation",
   "changeYear": "Change year",
   "activateGenderView": "Activate gender view",
-  "deactivateGenderView": "Deactivate gender view"
+  "deactivateGenderView": "Deactivate gender view",
+  "createRotation": "Create rotation",
+  "updateRotation": "Update rotation",
+  "deleteRotation": "Delete rotation",
+  "addAnotherRotation": "Add another rotation",
+  "youAreMakingThisBlockRotating": "You are making this block of classes a rotating block based on dates set here.",
+  "addStudentsToRotation": "Add Students to the rotations after setting Rotation dates."
 }
