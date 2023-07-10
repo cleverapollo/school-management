@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { LoadingButton } from '@mui/lab';
 import { AnimatePresence, m, Variants } from 'framer-motion';
 import { ArrowLeftIcon, ArrowRightIcon } from '@tyro/icons';
@@ -51,7 +51,7 @@ export function ManageSiblingModal({
   const { mutateAsync: updateSiblingsAndContacts, isLoading } =
     useUpdateSiblingsAndContacts();
 
-  const { reset, handleSubmit, setValue, watch } =
+  const { reset, handleSubmit, setValue, control, watch } =
     useForm<ManageSiblingFormValues>({
       defaultValues: {
         enrolledSiblings: currentSiblings?.enrolledSiblings ?? [],
@@ -63,7 +63,6 @@ export function ManageSiblingModal({
   const closeAndResetModal = () => {
     onClose();
     setTimeout(() => {
-      reset();
       setStep(1);
     }, 300);
   };
@@ -140,6 +139,16 @@ export function ManageSiblingModal({
     );
   });
 
+  useEffect(() => {
+    if (open) {
+      reset({
+        enrolledSiblings: currentSiblings?.enrolledSiblings ?? [],
+        nonEnrolledSiblings: currentSiblings?.nonEnrolledSiblings ?? [],
+        newContacts: {},
+      });
+    }
+  }, [open]);
+
   const isStep1 = step === 1;
   const nextIsStep2 = isStep1 && additionalContacts.length > 0;
 
@@ -167,6 +176,7 @@ export function ManageSiblingModal({
               <SiblingSelect
                 enrolledSiblings={enrolledSiblings}
                 nonEnrolledSiblings={nonEnrolledSiblings}
+                control={control}
                 setValue={setValue}
               />
             ) : (
