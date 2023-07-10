@@ -24,7 +24,10 @@ import {
 import React, { useEffect, useState } from 'react';
 import { AddIcon, CloseIcon, InfoCircleIcon, TrashIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
-import { ReturnTypeOfUseBlockList } from '../../api/blocks';
+import {
+  ReturnTypeOfUseBlockList,
+  useCreateOrUpdateBlockRotation,
+} from '../../api/blocks';
 
 export type BlockRotationIterationInput = {
   startDate?: dayjs.Dayjs;
@@ -55,11 +58,11 @@ export const CreateBlockRotationModal = ({
   const [iterations, setIterations] = useState<BlockRotationIterationInput[]>(
     []
   );
-  // const {
-  //   mutate: createOrUpdateAttendanceCodeMutation,
-  //   isLoading: isSubmitting,
-  //   isSuccess: isSubmitSuccessful,
-  // } = useCreateOrUpdateAttendanceCode();
+  const {
+    mutate: createOrUpdateBlockRotationMutation,
+    isLoading: isSubmitting,
+    isSuccess: isSubmitSuccessful,
+  } = useCreateOrUpdateBlockRotation();
 
   const { resolver, rules } = useFormValidator<CreateBlockRotationFormState>();
 
@@ -87,19 +90,21 @@ export const CreateBlockRotationModal = ({
 
   const onSubmit = ({ ...restData }: CreateBlockRotationFormState) => {
     console.log('restData', restData);
-    // createOrUpdateAttendanceCodeMutation(
-    //   [
-    //     {
-    //       name: [{ locale: currentLanguageCode, value: name }],
-    //       description: [{ locale: currentLanguageCode, value: description }],
-    //       isActive: true,
-    //       ...restData,
-    //     },
-    //   ],
-    //   {
-    //     onSuccess: onClose,
-    //   }
-    // );
+    const iterations = restData.iterations.map((item) => ({
+      startDate: item.startDate?.format('YYYY-MM-DD'),
+      endDate: dayjs(item.endDate)?.format('YYYY-MM-DD'),
+    }));
+    console.log('iterations', iterations);
+    createOrUpdateBlockRotationMutation(
+      {
+        blockId: restData.blockId,
+        iterations,
+        rotationName: 'Test Name',
+      },
+      {
+        onSuccess: onClose,
+      }
+    );
   };
 
   useEffect(() => {
@@ -118,9 +123,9 @@ export const CreateBlockRotationModal = ({
     }
   }, [initialCreateBlockRotationState]);
 
-  // useEffect(() => {
-  //   reset();
-  // }, [isSubmitSuccessful]);
+  useEffect(() => {
+    reset();
+  }, [isSubmitSuccessful]);
 
   const handleClose = () => {
     onClose();
