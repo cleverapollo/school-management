@@ -59,7 +59,7 @@ export function useUpdateTimetableLessons() {
       toast(t('common:snackbarMessages.updateSuccess'));
     },
     onError: () => {
-      toast(t('common:snackbarMessages.errorFailed'));
+      toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     },
   });
 }

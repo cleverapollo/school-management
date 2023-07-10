@@ -27,7 +27,15 @@ const ViewYearGroupPage = lazy(() => import('./pages/year/view'));
 const CustomGroups = lazy(() => import('./pages/custom'));
 const ViewCustomGroupPage = lazy(() => import('./pages/custom/view'));
 const ClassGroups = lazy(() => import('./pages/class'));
-const ViewClassGroupPage = lazy(() => import('./pages/class/view'));
+const ClassGroupContainer = lazy(
+  () => import('./components/class-group/container')
+);
+const ClassGroupProfileTimetablePage = lazy(
+  () => import('./pages/class/timetable')
+);
+const ClassGroupsStudentsPage = lazy(() => import('./pages/class/students'));
+const ClassGroupAttendancePage = lazy(() => import('./pages/class/attendance'));
+const SubjectGroupsPage = lazy(() => import('./pages/class/subject-groups'));
 const SubjectGroups = lazy(() => import('./pages/subject'));
 
 const SubjectGroupProfileStudentsPage = lazy(
@@ -98,11 +106,42 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: ':groupId',
+                element: <ClassGroupContainer />,
                 loader: ({ params }) => {
                   const groupId = getNumber(params?.groupId);
+                  if (!groupId) {
+                    throw404Error();
+                  }
+
                   return getClassGroupsById(groupId);
                 },
-                element: <ViewClassGroupPage />,
+                children: [
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    index: true,
+                    loader: () => redirect('./students'),
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'students',
+                    element: <ClassGroupsStudentsPage />,
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'subject-groups',
+                    element: <SubjectGroupsPage />,
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'timetable',
+                    element: <ClassGroupProfileTimetablePage />,
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'attendance',
+                    element: <ClassGroupAttendancePage />,
+                  },
+                ],
               },
             ],
           },

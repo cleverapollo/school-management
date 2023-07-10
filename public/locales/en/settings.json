@@ -13,7 +13,6 @@
   "subjectType": "Subject type",
   "rooms": "Rooms",
   "capacity": "Capacity",
-  "namespaces": "Namespaces",
   "active": "Active",
   "roomPool": "Room pool",
   "addRoom": "Add room",
@@ -29,6 +28,7 @@
   "failedChangingYear": "Failed changing year to {{name}}",
   "actions": {
     "makeActive": "Activate academic year for all users",
+    "changeAcademicYear": "Change academic year for just me",
     "addNewRoom": "Add new room",
     "editRoom": "Edit room",
     "linkToViewRoomTimetable": "Link to view room timetable"
@@ -63,11 +63,14 @@
     "syncFromPpod": "Sync from PPOD",
     "syncSuccessful": "Sync successful",
     "syncUnsuccessful": "Sync unsuccessful",
+    "unableToSyncData": "Unable to sync data",
+    "incorrectCredentials": "Incorrect credentials"
+  },
+  "ppodSyncStatus": {
     "SUCCESS": "Success",
     "FAIL": "Fail",
     "ERROR": "Error",
-    "unableToSyncData": "Unable to sync data",
-    "incorrectCredentials": "Incorrect credentials"
+    "IN_PROGRESS": "In progress"
   },
   "schoolDetails": {
     "contact": "Contact",

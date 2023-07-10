@@ -5,15 +5,33 @@ export type DisplayNamePersonProps =
   | undefined
   | null;
 
-const displayName = (person: DisplayNamePersonProps): string => {
+export enum PreferredNameFormat {
+  'FirstnameSurname' = 'FIRST_NAME_SURNAME',
+  'SurnameFirstname' = 'SURNAME_FIRST_NAME',
+}
+
+const displayName = (
+  person: DisplayNamePersonProps,
+  options?: {
+    format: PreferredNameFormat;
+  }
+): string => {
   if (!person) {
     return '';
   }
-  return `${person.firstName ?? ''} ${person.lastName ?? ''}`;
+
+  switch (options?.format) {
+    case PreferredNameFormat.FirstnameSurname:
+      return `${person.firstName ?? ''} ${person.lastName ?? ''}`;
+    case PreferredNameFormat.SurnameFirstname:
+    default:
+      return `${person.lastName ?? ''}, ${person.firstName ?? ''}`;
+  }
 };
 
 const displayNames = (
-  persons: DisplayNamePersonProps[] | undefined | null
+  persons: DisplayNamePersonProps[] | undefined | null,
+  separator = ', '
 ): string => {
   if (!persons) {
     return '';
@@ -21,7 +39,7 @@ const displayNames = (
   return persons
     .map((person) => displayName(person))
     .filter(Boolean)
-    .join(', ');
+    .join(separator);
 };
 
 export function sortByDisplayName(

@@ -1,7 +1,7 @@
-import React from 'react';
 import { DraggableLocation } from 'react-beautiful-dnd';
 import cloneDeep from 'lodash/cloneDeep';
 import { nanoid } from 'nanoid';
+import { ReturnTypeDisplayName } from '@tyro/core';
 import { ListManagerState } from './types';
 
 interface DragArguments {
@@ -230,19 +230,6 @@ export const multiDragAwareReorder = (args: DragArguments) => {
   return singleDrag(args);
 };
 
-// Determines if the platform specific toggle selection in group key was used
-export const wasToggleInSelectionGroupKeyUsed = (
-  event: React.MouseEvent | React.KeyboardEvent | React.TouchEvent
-) => {
-  const isUsingWindows = navigator.platform.indexOf('Win') >= 0;
-  return isUsingWindows ? event.ctrlKey : event.metaKey;
-};
-
-// Determines if the multiSelect key was used
-export const wasMultiSelectKeyUsed = (
-  event: React.MouseEvent | React.KeyboardEvent | React.TouchEvent
-) => event.shiftKey;
-
 export const toggleSelection = (
   studentId: string,
   selectedStudentIds: string[]
@@ -278,11 +265,24 @@ const getStudentsGroup = (groups: ListManagerState[], studentId: string) =>
     group.students.some((student) => student.id === studentId)
   );
 
+const filterStudentsFromUnassignedGroup = (
+  groupId: ListManagerState['id'],
+  unassignedSearch: string,
+  displayName: ReturnTypeDisplayName,
+  student: ListManagerState['students'][number]
+) =>
+  String(groupId) !== 'unassigned' ||
+  displayName(student.person)
+    .toLowerCase()
+    .includes(unassignedSearch.toLowerCase());
+
 // This behaviour matches the MacOSX finder selection
 export const multiSelectTo = (
   studentId: string,
   selectedStudentIds: string[],
-  groups: ListManagerState[]
+  groups: ListManagerState[],
+  unassignedSearch: string,
+  displayName: ReturnTypeDisplayName
 ) => {
   // Nothing already selected
   if (!selectedStudentIds.length) {
@@ -307,7 +307,17 @@ export const multiSelectTo = (
   // multi selecting to another column
   // select everything up to the index of the current item
   if (groupOfNew.id !== groupOfLast.id) {
-    return groupOfNew.students.slice(0, indexOfNew + 1).map(({ id }) => id);
+    return groupOfNew.students
+      .slice(0, indexOfNew + 1)
+      .filter((student) =>
+        filterStudentsFromUnassignedGroup(
+          groupOfNew.id,
+          unassignedSearch,
+          displayName,
+          student
+        )
+      )
+      .map(({ id }) => id);
   }
 
   // multi selecting in the same column
@@ -324,6 +334,14 @@ export const multiSelectTo = (
 
   const studentIdsBetween = groupOfNew.students
     .slice(start, end + 1)
+    .filter((student) =>
+      filterStudentsFromUnassignedGroup(
+        groupOfNew.id,
+        unassignedSearch,
+        displayName,
+        student
+      )
+    )
     .map(({ id }) => id);
 
   // everything inbetween needs to have it's selection toggled.

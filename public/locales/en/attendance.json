@@ -1,4 +1,25 @@
 {
+  "pageTitle": {
+    "attendance": "Attendance"
+  },
+  "pageHeading": {
+    "attendance": "Attendance"
+  },
+  "attendance": "Attendance",
+  "attendanceCodes": "Attendance codes",
+  "createAttendanceCode": "Create attendance code",
+  "reportAs": "Report as",
+  "tuslaCode": "Tusla code",
+  "attendanceCodeName": "Attendance code name",
+  "availableToTeachers": "Available to teachers",
+  "availableToContacts": "Available to contacts",
+  "editAttendanceCode": "Edit attendance code",
+  "attendanceCodeNameShouldBeUnique": "Attendance code name should be unique",
+  "availableTo": "Available to",
+  "selectUserGroups": "Select user groups that will use this attendance code",
+  "teachers": "Teachers",
+  "contacts": "Contacts",
+  "administrationStaffAccessAllAttendanceCodesByDefault": "Administration staff access all attendance codes by default",
   "attendanceNotTaken": "Attendance not taken",
   "attendanceTaken": "Attendance taken",
   "sessionAttendanceYear": "Session attendance {{year}}",
@@ -11,5 +32,15 @@
     "LATE": "Late",
     "EXPLAINED_ABSENCE": "In school",
     "UNEXPLAINED_ABSENCE": "Unknown"
+  },
+  "tuslaCodeDescription": {
+    "A": "Student illness",
+    "B": "Urgent family matter",
+    "C": "Expelled from school",
+    "D": "Suspended from school",
+    "E": "Other explained absence",
+    "F": "Unexplained absence",
+    "G": "Transferred to another school",
+    "H": "Student on holiday"
   }
 }

@@ -1,16 +1,22 @@
 import { lazy } from 'react';
-import {
-  getNumber,
-  NavObjectFunction,
-  NavObjectType,
-  throw404Error,
-} from '@tyro/core';
+import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { EditCalendarIcon } from '@tyro/icons';
-import { getTimetables } from './api/timetable-list';
-import { getTimetableLesson } from './api/timetable-lessons';
+import { getYearGroups } from '@tyro/groups';
+import { redirect } from 'react-router-dom';
+import { getLiveTimetableId, getTimetables } from './api/common/timetables';
+import { getTimetableResourceView } from './api/edit-timetable/resource-view';
+import { getTimetableSubjectGroups } from './api/edit-timetable/subject-groups';
 
-const TimetableList = lazy(() => import('./pages/index'));
-const ViewTimetable = lazy(() => import('./pages/view'));
+// const TimetableList = lazy(() => import('./pages/index'));
+// const ViewTimetable = lazy(() => import('./pages/view'));
+
+const EditTimetableContainer = lazy(
+  () => import('./components/edit-timetable-container')
+);
+const Timetable = lazy(() => import('./pages/edit-timetable/timetable'));
+const TimetableSubjectGroups = lazy(
+  () => import('./pages/edit-timetable/subject-groups')
+);
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -20,26 +26,79 @@ export const getRoutes: NavObjectFunction = (t) => [
       {
         type: NavObjectType.RootGroup,
         icon: <EditCalendarIcon />,
-        title: t('navigation:general.timetable'),
+        title: t('navigation:management.timetable.title'),
+        path: 'timetable',
         children: [
+          // {
+          //   type: NavObjectType.MenuLink,
+          //   title: t('navigation:management.timetable.timetables'),
+          //   path: 'timetables',
+          //   loader: async () => getTimetableLesson(),
+          //   element: <TimetableList />,
+          // },
+          // {
+          //   type: NavObjectType.NonMenuLink,
+          //   path: ':timetableId',
+          //   loader: ({ params }) => {
+          //     const timetableId = getNumber(params?.timetableId);
+          //     if (!timetableId) {
+          //       throw404Error();
+          //     }
+          //     return getTimetables(timetableId);
+          //   },
+          //   element: <ViewTimetable />,
+          // },
           {
             type: NavObjectType.MenuLink,
-            title: t('navigation:general.timetable'),
-            path: 'timetables',
-            loader: async () => getTimetableLesson(),
-            element: <TimetableList />,
-          },
-          {
-            type: NavObjectType.NonMenuLink,
-            path: ':timetableId',
-            loader: ({ params }) => {
-              const timetableId = getNumber(params?.timetableId);
-              if (!timetableId) {
-                throw404Error();
-              }
-              return getTimetables(timetableId);
-            },
-            element: <ViewTimetable />,
+            title: t('navigation:management.timetable.editTimetable'),
+            path: 'edit-timetable',
+            element: <EditTimetableContainer />,
+            loader: () => getLiveTimetableId(),
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                index: true,
+                loader: () => redirect('./timetable'),
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'timetable',
+                loader: async () => {
+                  const [liveTimetableId, yearGroups] = await Promise.all([
+                    getLiveTimetableId(),
+                    getYearGroups(),
+                  ]);
+                  const sixthYearGroup =
+                    yearGroups.core_yearGroupEnrollments.find(
+                      ({ yearGroupId }) => yearGroupId === 6
+                    );
+
+                  if (liveTimetableId && sixthYearGroup) {
+                    return getTimetableResourceView({
+                      timetableId: liveTimetableId,
+                      partyIds: [sixthYearGroup.yearGroupEnrollmentPartyId],
+                      roomIds: [],
+                    });
+                  }
+
+                  return null;
+                },
+                element: <Timetable />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'subject-groups',
+                loader: async () => {
+                  const liveTimetableId = await getLiveTimetableId();
+                  return liveTimetableId
+                    ? getTimetableSubjectGroups({
+                        timetableId: liveTimetableId,
+                      })
+                    : null;
+                },
+                element: <TimetableSubjectGroups />,
+              },
+            ],
           },
         ],
       },

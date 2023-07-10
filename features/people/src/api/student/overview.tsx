@@ -1,6 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient } from '@tyro/api';
-import { peopleStudentsKeys } from './keys';
+import {
+  Core_Student_ContactsQuery,
+  gqlClient,
+  graphql,
+  queryClient,
+} from '@tyro/api';
+import { useCallback } from 'react';
+import { peopleKeys } from '../keys';
 
 const studentsContacts = graphql(/* GraphQL */ `
   query core_student_contacts($filter: StudentFilter!) {
@@ -39,6 +45,10 @@ const studentsContacts = graphql(/* GraphQL */ `
           priority
           allowedToContact
           includeInSms
+          includeInTmail
+          pickupRights
+          legalGuardian
+          allowAccessToStudentData
         }
       }
     }
@@ -71,7 +81,7 @@ const studentsSubjectGroups = graphql(/* GraphQL */ `
 `);
 
 const studentsContactsQuery = (studentId: number | undefined) => ({
-  queryKey: peopleStudentsKeys.contacts(studentId),
+  queryKey: peopleKeys.students.contacts(studentId),
   queryFn: async () =>
     gqlClient.request(studentsContacts, {
       filter: { partyIds: [studentId ?? 0] },
@@ -85,15 +95,20 @@ export function getStudentsContacts(studentId: number | undefined) {
 export function useStudentsContacts(studentId: number | undefined) {
   return useQuery({
     ...studentsContactsQuery(studentId),
-    select: ({ core_students }) =>
-      Array.isArray(core_students) && core_students.length > 0
-        ? core_students[0]?.contacts ?? []
-        : [],
+    select: useCallback(({ core_students }: Core_Student_ContactsQuery) => {
+      const [contact] = core_students;
+      if (!Array.isArray(contact.contacts)) return [];
+
+      return contact.contacts.map(({ relationships, ...restData }) => ({
+        ...restData,
+        ...relationships?.[0],
+      }));
+    }, []),
   });
 }
 
 const studentsSubjectGroupsQuery = (studentId: number | undefined) => ({
-  queryKey: peopleStudentsKeys.subjectGroups(studentId),
+  queryKey: peopleKeys.students.subjectGroups(studentId),
   queryFn: async () =>
     gqlClient.request(studentsSubjectGroups, {
       filter: { partyIds: [studentId ?? 0] },

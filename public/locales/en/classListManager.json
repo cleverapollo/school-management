@@ -17,11 +17,12 @@
   "weveTidiedStudentsInGroup": "We've tidied up one or more students as they're already in the group.",
   "duplicateRemovedFromGroup": "Duplicate removed from {{group}}",
   "duplicateAddedToGroup": "Duplicate added to {{group}}",
-  "noChangesMade": "No changes made",
   "areYouSureYouWantToChangeBlock": "Are you sure you want to change block?",
   "areYouSureYouWantToChangeRotation": "Are you sure you want to change rotation?",
   "areYouSureYouWantToChangeYear": "Are you sure you want to change year?",
   "changeBlock": "Change block",
   "changeRotation": "Change rotation",
-  "changeYear": "Change year"
+  "changeYear": "Change year",
+  "activateGenderView": "Activate gender view",
+  "deactivateGenderView": "Deactivate gender view"
 }

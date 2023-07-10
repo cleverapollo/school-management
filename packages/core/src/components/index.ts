@@ -11,6 +11,7 @@ export * from './copy-clipboard-button';
 export * from './current-attendance-icon';
 export * from './form';
 export * from './lazy-loader';
+export * from './loading-placeholder';
 export * from './page';
 export * from './page-container';
 export * from './page-heading';

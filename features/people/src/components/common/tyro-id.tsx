@@ -10,7 +10,7 @@ export function TyroId({ id }: TyroIdProps) {
   const { t } = useTranslation(['common']);
 
   return (
-    <Stack spacing={0.25}>
+    <Stack>
       <Box
         component="dt"
         sx={{
@@ -25,6 +25,7 @@ export function TyroId({ id }: TyroIdProps) {
       <Box
         sx={{
           px: 1,
+          my: 0.25,
         }}
       >
         <CopyClipboardButton

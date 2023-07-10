@@ -1,3 +1,3 @@
 export const peopleCommonKeys = {
-  personalTitles: ['personalTitles'] as const,
+  personalTitles: ['personal', 'titles'] as const,
 };

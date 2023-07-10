@@ -5,7 +5,10 @@ import {
   queryClient,
   UpdateYearGroupEnrollmentInput,
   UseQueryReturnType,
+  YearGroupsListQuery,
 } from '@tyro/api';
+import { useCallback } from 'react';
+import { groupsKeys } from './keys';
 
 const yearGroupsList = graphql(/* GraphQL */ `
   query yearGroupsList($filter: YearGroupEnrollmentFilter) {
@@ -27,6 +30,9 @@ const yearGroupsList = graphql(/* GraphQL */ `
         lastName
         avatarUrl
         type
+      }
+      studentMembers {
+        memberCount
       }
     }
   }
@@ -80,14 +86,18 @@ const updateYearGroupLeads = graphql(/* GraphQL */ `
   }
 `);
 
-export const yearGroupsKeys = {
-  list: ['groups', 'year'] as const,
-  details: (id: number | undefined) => [...yearGroupsKeys.list, id] as const,
-};
-
 const yearGroupsQuery = {
-  queryKey: yearGroupsKeys.list,
-  queryFn: async () => gqlClient.request(yearGroupsList, { filter: {} }),
+  queryKey: groupsKeys.year.groups(),
+  queryFn: async () => {
+    const { core_yearGroupEnrollments: yearGroupEnrollments } =
+      await gqlClient.request(yearGroupsList, { filter: {} });
+
+    return {
+      core_yearGroupEnrollments: yearGroupEnrollments.sort((prev, next) =>
+        prev.name.localeCompare(next.name)
+      ),
+    };
+  },
 };
 
 export function getYearGroups() {
@@ -102,7 +112,7 @@ export function useYearGroups() {
 }
 
 const yearGroupByIdQuery = (id: number | undefined) => ({
-  queryKey: yearGroupsKeys.details(id),
+  queryKey: groupsKeys.year.details(id),
   queryFn: async () =>
     gqlClient.request(yearGroupById, {
       filter: {
@@ -133,7 +143,7 @@ export function useUpdateYearGroupLeads() {
     mutationFn: (input: UpdateYearGroupEnrollmentInput[]) =>
       gqlClient.request(updateYearGroupLeads, { input }),
     onSuccess: () => {
-      queryClient.invalidateQueries(yearGroupsKeys.list);
+      queryClient.invalidateQueries(groupsKeys.year.all());
     },
   });
 }

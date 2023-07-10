@@ -9,6 +9,7 @@ import {
   UpdateClassGroupGroupInput,
   ClassGroupsListQuery,
 } from '@tyro/api';
+import { groupsKeys } from './keys';
 
 const classGroupsList = graphql(/* GraphQL */ `
   query classGroupsList($filter: GeneralGroupFilter!) {
@@ -74,6 +75,37 @@ const classGroupById = graphql(/* GraphQL */ `
           type
         }
       }
+      relatedSubjectGroups {
+        name
+        partyId
+        avatarUrl
+        studentMembershipType {
+          type
+        }
+        subjects {
+          name
+          colour
+        }
+        programmeStages {
+          name
+        }
+        staff {
+          title {
+            id
+            nameTextId
+            name
+          }
+          type
+          firstName
+          lastName
+        }
+        irePP {
+          level
+        }
+        studentMembers {
+          memberCount
+        }
+      }
     }
   }
 `);
@@ -86,13 +118,8 @@ const updateClassGroups = graphql(/* GraphQL */ `
   }
 `);
 
-export const classGroupsKeys = {
-  list: ['groups', 'class'] as const,
-  details: (id: number | undefined) => [...classGroupsKeys.list, id] as const,
-};
-
 const classGroupsQuery = {
-  queryKey: classGroupsKeys.list,
+  queryKey: groupsKeys.class.groups(),
   queryFn: async () =>
     gqlClient.request(classGroupsList, {
       filter: {
@@ -116,7 +143,7 @@ export function useClassGroups() {
 }
 
 const classGroupsByIdQuery = (id: number | undefined) => ({
-  queryKey: classGroupsKeys.details(id),
+  queryKey: groupsKeys.class.details(id),
   queryFn: async () =>
     gqlClient.request(classGroupById, {
       filter: {
@@ -135,11 +162,7 @@ export function useClassGroupById(id: number | undefined) {
     select: ({ generalGroups }) => {
       if (!generalGroups) return null;
       const group = generalGroups[0];
-
-      return {
-        name: group?.name,
-        members: group?.students ?? [],
-      };
+      return group;
     },
   });
 }
@@ -149,7 +172,7 @@ export function useSaveClassGroupEdits() {
     mutationFn: (input: UpdateClassGroupGroupInput[]) =>
       gqlClient.request(updateClassGroups, { input }),
     onSuccess: () => {
-      queryClient.invalidateQueries(classGroupsKeys.list);
+      queryClient.invalidateQueries(groupsKeys.class.all());
     },
   });
 }

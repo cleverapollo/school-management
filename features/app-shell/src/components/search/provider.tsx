@@ -123,7 +123,8 @@ export function SearchProvider({ children, data }: SearchFocusProps) {
       const url = ref?.node ? ref.node.children[0].getAttribute('href') : null;
 
       if (ref?.data) {
-        addSearchToRecentSearch(ref.data.partyId, ref?.data);
+        // Need to move logic to backend rather than localstorage
+        // addSearchToRecentSearch(ref.data.partyId, ref?.data);
       }
 
       if (url) {

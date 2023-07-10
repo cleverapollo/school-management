@@ -14,7 +14,7 @@ import {
 
 type ContactFormState = {
   primaryNumber: MobileNumberData | string | null;
-  additionalNumber: MobileNumberData | string | null;
+  additionalNumber: string | null;
   primaryEmail: InputEmailAddress['email'];
   additionalEmail: InputEmailAddress['email'];
 };
@@ -35,40 +35,31 @@ const getContactDataWithLabels = (
   );
   const additionalEmail = emails?.find((email) => !email?.primaryEmail);
 
-  const isPrimaryNumberAMobile = Boolean(primaryPhoneNumber?.countryCode);
-  const isAdditionalNumberAMobile = Boolean(additionalNumber?.countryCode);
+  const isBasicNumber =
+    primaryPhoneNumber?.number && !primaryPhoneNumber?.countryCode;
 
   return [
     {
       label: t('people:personal.about.primaryNumber'),
-      value: isPrimaryNumberAMobile
-        ? primaryPhoneNumber
-        : primaryPhoneNumber?.number,
+      value: isBasicNumber ? primaryPhoneNumber?.number : primaryPhoneNumber,
       valueRenderer: formatPhoneNumber(primaryPhoneNumber),
-      valueEditor: isPrimaryNumberAMobile ? (
-        <MobileNumber
-          variant="standard"
+      valueEditor: isBasicNumber ? (
+        <RHFTextField
+          textFieldProps={{ variant: 'standard' }}
           controlProps={{ name: 'primaryNumber' }}
         />
       ) : (
-        <RHFTextField
-          textFieldProps={{ variant: 'standard' }}
+        <MobileNumber
+          variant="standard"
           controlProps={{ name: 'primaryNumber' }}
         />
       ),
     },
     {
       label: t('people:personal.about.additionalNumber'),
-      value: isAdditionalNumberAMobile
-        ? additionalNumber
-        : additionalNumber?.number,
+      value: additionalNumber?.number,
       valueRenderer: formatPhoneNumber(additionalNumber),
-      valueEditor: isAdditionalNumberAMobile ? (
-        <MobileNumber
-          variant="standard"
-          controlProps={{ name: 'additionalNumber' }}
-        />
-      ) : (
+      valueEditor: (
         <RHFTextField
           textFieldProps={{ variant: 'standard' }}
           controlProps={{ name: 'additionalNumber' }}
@@ -168,14 +159,8 @@ export const ProfileContact = ({
                 phoneNumberId: currentAdditionalNumber?.phoneNumberId,
                 primaryPhoneNumber: false,
                 active: true,
-                number:
-                  typeof additionalNumber === 'string'
-                    ? additionalNumber
-                    : additionalNumber.number,
-                countryCode:
-                  typeof additionalNumber === 'string'
-                    ? undefined
-                    : additionalNumber.countryCode,
+                number: additionalNumber,
+                countryCode: undefined,
               }
             : null,
         ].filter(Boolean),

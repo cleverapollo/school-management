@@ -35,7 +35,7 @@ export default function PpodLogin() {
       },
       {
         onSuccess: () => {
-          navigate('./sync-data/sync');
+          navigate('/settings/ppod/sync', { replace: true });
         },
         onError: () => {
           reset();
@@ -66,6 +66,7 @@ export default function PpodLogin() {
 
         <RHFTextField
           label={t('settings:ppodSync.password')}
+          textFieldProps={{ type: 'password' }}
           controlProps={{
             name: 'password',
             control,

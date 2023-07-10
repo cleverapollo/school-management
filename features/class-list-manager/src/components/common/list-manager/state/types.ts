@@ -1,4 +1,4 @@
-import { Person } from '@tyro/api';
+import { Gender, Person } from '@tyro/api';
 
 type ListManagerPerson = Pick<
   Person,
@@ -8,6 +8,8 @@ type ListManagerPerson = Pick<
 export type ListManagerStudent = {
   id: string;
   isDuplicate?: boolean;
+  classGroupName?: string | null | undefined;
+  gender?: Gender | null;
   person: ListManagerPerson;
 };
 

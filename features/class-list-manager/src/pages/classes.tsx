@@ -10,7 +10,7 @@ import { useClassMemberships, useUpdateClassMemberships } from '../api/classes';
 import {
   YearGroupsAutocomplete,
   YearGroupsAutocompleteProps,
-} from '../components/classes/year-groups-autocomplete';
+} from '../components/common/list-manager/year-groups-autocomplete';
 import { ListManager } from '../components/common/list-manager';
 import { EditedStudent } from '../components/common/list-manager/state/edited-state';
 import { useContainerMargin } from '../hooks/use-container-margin';

@@ -2,11 +2,21 @@ import { LicenseManager } from 'ag-grid-enterprise';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
 
 import 'ag-grid-community/styles/ag-grid.css';
-import { forwardRef, MutableRefObject, useCallback, useState } from 'react';
+import {
+  ForwardedRef,
+  forwardRef,
+  MutableRefObject,
+  useCallback,
+  useState,
+} from 'react';
 import { Box, BoxProps, Card, CardProps, Stack } from '@mui/material';
 
 import './styles.css';
-import { ColDef, FirstDataRenderedEvent } from 'ag-grid-community';
+import {
+  ColDef,
+  ColumnRowGroupChangedEvent,
+  FirstDataRenderedEvent,
+} from 'ag-grid-community';
 import { useEnsuredForwardedRef, useMeasure } from 'react-use';
 import {
   useEditableState,
@@ -22,6 +32,8 @@ export type {
   CellValueChangedEvent,
   ICellEditorParams,
 } from 'ag-grid-community';
+
+export type { AgGridReact } from 'ag-grid-react';
 
 if (process.env.AG_GRID_KEY) {
   LicenseManager.setLicenseKey(process.env.AG_GRID_KEY);
@@ -111,6 +123,24 @@ function TableInner<T extends object>(
         }
       : undefined;
 
+  const onColumnRowGroupChanged = useCallback(
+    ({ column, columnApi }: ColumnRowGroupChangedEvent) => {
+      if (column) {
+        const colDef = column.getColDef();
+        const sort = column.getSort();
+        const colId = column.getColId();
+
+        if (colDef.sortable && sort === undefined) {
+          columnApi.applyColumnState({
+            state: [{ colId, sort: 'asc' }],
+            defaultState: { sort: null },
+          });
+        }
+      }
+    },
+    []
+  );
+
   return (
     <>
       <Card
@@ -164,7 +194,10 @@ function TableInner<T extends object>(
               groupSelectsFiltered={rowSelection === 'multiple'}
               stopEditingWhenCellsLoseFocus
               {...props}
-              onCellValueChanged={onCellValueChanged}
+              onCellValueChanged={(args) => {
+                onCellValueChanged(args);
+                props.onCellValueChanged?.(args);
+              }}
               onFirstDataRendered={(params: FirstDataRenderedEvent<T>) => {
                 params?.columnApi?.autoSizeAllColumns(false);
                 applyUpdatesToTable('newValue');
@@ -180,6 +213,7 @@ function TableInner<T extends object>(
                   onColumnEverythingChanged(params);
                 }
               }}
+              onColumnRowGroupChanged={onColumnRowGroupChanged}
             />
           </Box>
         </Box>
@@ -196,5 +230,5 @@ function TableInner<T extends object>(
 }
 
 export const Table = forwardRef(TableInner) as <T>(
-  props: TableProps<T> & { ref?: React.Ref<AgGridReact<T>> }
+  props: TableProps<T> & { ref?: ForwardedRef<AgGridReact<T>> | null }
 ) => ReturnType<typeof TableInner>;

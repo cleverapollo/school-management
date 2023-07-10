@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, queryClient } from '@tyro/api';
-import { peopleContactsKeys } from './keys';
+import { peopleKeys } from '../keys';
 
 const contacts = graphql(/* GraphQL */ `
   query core_studentContacts {
@@ -60,7 +60,7 @@ const contactsInfoForSelect = graphql(/* GraphQL */ `
 `);
 
 const contactsQuery = {
-  queryKey: peopleContactsKeys.all,
+  queryKey: peopleKeys.contacts.all(),
   queryFn: async () => gqlClient.request(contacts),
 };
 
@@ -76,7 +76,7 @@ export function useContacts() {
 }
 
 const contactsForSelectQuery = () => ({
-  queryKey: peopleContactsKeys.forSelect(),
+  queryKey: peopleKeys.contacts.forSelect(),
   queryFn: async () => gqlClient.request(contactsInfoForSelect),
 });
 

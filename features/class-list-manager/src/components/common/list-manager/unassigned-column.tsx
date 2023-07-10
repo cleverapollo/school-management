@@ -2,11 +2,11 @@ import { Box, Stack, Theme, Typography, useTheme } from '@mui/material';
 import { Droppable } from 'react-beautiful-dnd';
 import { useTranslation } from '@tyro/i18n';
 import { SearchInput, usePreferredNameLayout } from '@tyro/core';
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { DraggableCard } from './draggable-card';
 import { EmptyGroupPlaceholder } from './empty-group-placeholder';
 import { ListManagerState } from './state/types';
-import { ReturnTypeOfUseListManagerState } from './state';
+import { useListManagerState } from './state';
 
 const getListStyle = ({ customShadows }: Theme, isDraggingOver: boolean) =>
   ({
@@ -19,35 +19,35 @@ const getListStyle = ({ customShadows }: Theme, isDraggingOver: boolean) =>
 
 interface UnassignedColumnProps {
   group: ListManagerState;
-  cardProps: ReturnTypeOfUseListManagerState['cardProps'];
-  enableDuplicateStudents?: boolean;
 }
 
-export function UnassignedColumn({
-  group,
-  cardProps,
-  enableDuplicateStudents,
-}: UnassignedColumnProps) {
+export function UnassignedColumn({ group }: UnassignedColumnProps) {
   const theme = useTheme();
   const { t } = useTranslation(['common', 'classListManager']);
   const { displayName } = usePreferredNameLayout();
-  const [search, setSearch] = useState('');
+  const { includeClassGroupName, unassignedSearch, setUnassignedSearch } =
+    useListManagerState();
 
   const filteredGroup = useMemo(() => {
     if (!group?.students) return [];
-    if (!search)
+    if (!unassignedSearch)
       return group?.students?.map((student, index) => ({ student, index }));
 
-    const lowerCaseSearch = search.toLowerCase();
+    const lowerCaseSearch = unassignedSearch.toLowerCase();
     return group?.students
       ?.map((student, index) => ({ student, index }))
       ?.filter(({ student }) => {
         const name = displayName(student?.person);
-        return name.toLowerCase().includes(lowerCaseSearch);
-      });
-  }, [search, group?.students]);
 
-  const showNoSearchResults = search.length > 0 && filteredGroup.length === 0;
+        return [
+          name,
+          includeClassGroupName ? student?.classGroupName ?? '' : '',
+        ].some((toSearch) => toSearch.toLowerCase().includes(lowerCaseSearch));
+      });
+  }, [unassignedSearch, group?.students, includeClassGroupName]);
+
+  const showNoSearchResults =
+    unassignedSearch.length > 0 && filteredGroup.length === 0;
   const showEmptyGroupPlaceholder =
     !showNoSearchResults && group?.students?.length === 0;
 
@@ -75,8 +75,8 @@ export function UnassignedColumn({
               </Typography>
             </Stack>
             <SearchInput
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={unassignedSearch}
+              onChange={(e) => setUnassignedSearch(e.target.value)}
               sx={{ fontSize: '0.875rem' }}
               containerProps={{ sx: { my: 1 } }}
             />
@@ -87,8 +87,6 @@ export function UnassignedColumn({
                   index={index}
                   student={student}
                   groupId={group.id}
-                  enableDuplicateStudents={enableDuplicateStudents}
-                  {...cardProps}
                 />
               ))}
               {showNoSearchResults && (

@@ -6,7 +6,11 @@ import { useContainerMargin } from '../../../hooks/use-container-margin';
 import { BulkEditSaveBar } from './bulk-edit-save-bar';
 import { GroupColumn } from './group-column';
 import { NavConfirmDialog } from './nav-confirm-dialog';
-import { useListManagerState, UseListManagerStateProps } from './state';
+import {
+  ListManagerProvider,
+  useListManagerState,
+  UseListManagerStateProps,
+} from './state';
 import { UnassignedColumn } from './unassigned-column';
 
 interface ListManagerProps {
@@ -15,6 +19,7 @@ interface ListManagerProps {
   groups: UseListManagerStateProps['groups'];
   onBulkSave: UseListManagerStateProps['onBulkSave'];
   enableDuplicateStudents?: boolean;
+  includeClassGroupName?: boolean;
   onIsDirtyChange?: (isDirty: boolean) => void;
 }
 
@@ -30,22 +35,11 @@ function ListEndSpacer() {
   );
 }
 
-export function ListManager({
-  listKey,
-  unassignedStudents,
-  groups,
-  onBulkSave,
-  enableDuplicateStudents = false,
+export function ListManagerInner({
   onIsDirtyChange,
-}: ListManagerProps) {
+}: Pick<ListManagerProps, 'onIsDirtyChange'>) {
   const containerMargin = useContainerMargin();
-  const { state, onDragStart, onDragEnd, cardProps, editedState } =
-    useListManagerState({
-      listKey,
-      unassignedStudents,
-      groups,
-      onBulkSave,
-    });
+  const { state, onDragStart, onDragEnd, editedState } = useListManagerState();
 
   useEffect(() => {
     onIsDirtyChange?.(editedState.isEditing);
@@ -70,19 +64,9 @@ export function ListManager({
             >
               {state.map((group) =>
                 group.id === 'unassigned' ? (
-                  <UnassignedColumn
-                    cardProps={cardProps}
-                    key={group.id}
-                    group={group}
-                    enableDuplicateStudents={enableDuplicateStudents}
-                  />
+                  <UnassignedColumn key={group.id} group={group} />
                 ) : (
-                  <GroupColumn
-                    cardProps={cardProps}
-                    key={group.id}
-                    group={group}
-                    enableDuplicateStudents={enableDuplicateStudents}
-                  />
+                  <GroupColumn key={group.id} group={group} />
                 )
               )}
               <ListEndSpacer />
@@ -90,8 +74,31 @@ export function ListManager({
           </Box>
         </Box>
       </DragDropContext>
-      <BulkEditSaveBar {...editedState} />
+      <BulkEditSaveBar />
       <NavConfirmDialog isDirty={editedState.isEditing} />
     </>
+  );
+}
+
+export function ListManager({
+  listKey,
+  unassignedStudents,
+  groups,
+  onBulkSave,
+  enableDuplicateStudents = false,
+  includeClassGroupName = false,
+  onIsDirtyChange,
+}: ListManagerProps) {
+  return (
+    <ListManagerProvider
+      listKey={listKey}
+      unassignedStudents={unassignedStudents}
+      groups={groups}
+      onBulkSave={onBulkSave}
+      enableDuplicateStudents={enableDuplicateStudents}
+      includeClassGroupName={includeClassGroupName}
+    >
+      <ListManagerInner onIsDirtyChange={onIsDirtyChange} />
+    </ListManagerProvider>
   );
 }

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, queryClient, StaffFilter } from '@tyro/api';
-import { peopleStaffKeys } from './keys';
+import { peopleKeys } from '../keys';
 
 const staffPersonal = graphql(/* GraphQL */ `
   query core_staff_personal($filter: StaffFilter) {
@@ -100,7 +100,7 @@ const staffPersonal = graphql(/* GraphQL */ `
 `);
 
 const staffPersonalQuery = (filter: StaffFilter) => ({
-  queryKey: peopleStaffKeys.personalDetails(filter),
+  queryKey: peopleKeys.staff.personalDetails(filter),
   queryFn: () => gqlClient.request(staffPersonal, { filter }),
 });
 

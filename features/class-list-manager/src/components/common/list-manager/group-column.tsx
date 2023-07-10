@@ -5,7 +5,6 @@ import { DraggableCard } from './draggable-card';
 import { EmptyGroupPlaceholder } from './empty-group-placeholder';
 import { TeacherCards } from './teacher-cards';
 import { ListManagerState } from './state/types';
-import { ReturnTypeOfUseListManagerState } from './state';
 
 const getListStyle = (isDraggingOver: boolean) =>
   ({
@@ -18,15 +17,9 @@ const getListStyle = (isDraggingOver: boolean) =>
 
 interface GroupColumnProps {
   group: ListManagerState;
-  cardProps: ReturnTypeOfUseListManagerState['cardProps'];
-  enableDuplicateStudents?: boolean;
 }
 
-export function GroupColumn({
-  group,
-  cardProps,
-  enableDuplicateStudents,
-}: GroupColumnProps) {
+export function GroupColumn({ group }: GroupColumnProps) {
   const { t } = useTranslation(['common']);
   const { spacing } = useTheme();
   const showEmptyGroupPlaceholder = group?.students?.length === 0;
@@ -61,8 +54,6 @@ export function GroupColumn({
                   index={index}
                   student={student}
                   groupId={group.id}
-                  enableDuplicateStudents={enableDuplicateStudents}
-                  {...cardProps}
                 />
               ))}
               {showEmptyGroupPlaceholder && (

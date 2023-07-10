@@ -10,19 +10,17 @@ import {
 import { TFunction, useTranslation } from '@tyro/i18n';
 
 import {
-  useTimetableLesson,
-  ReturnTypeFromUseTimeTableLesson,
-} from '../api/timetable-lessons';
+  useTimetables,
+  ReturnTypeFromUseTimeTables,
+} from '../api/common/timetables';
 
-const getColumnDefs = (
-  t: TFunction<'timetable'[], undefined, 'timetable'[]>
-) => [
+const getColumnDefs = (t: TFunction<('common' | 'timetable')[]>) => [
   {
     field: 'timetableId',
-    headerName: t('timetable:timetable'),
+    headerName: t('common:timetable'),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseTimeTableLesson>) =>
+    }: ICellRendererParams<ReturnTypeFromUseTimeTables>) =>
       data && (
         <RouterLink sx={{ fontWeight: 600 }} to={`./${data?.timetableId}`}>
           {data.timetableId}
@@ -34,14 +32,14 @@ const getColumnDefs = (
 ];
 
 export default function Timetables() {
-  const { t } = useTranslation(['timetable', 'navigation']);
-  const { data: timetables = [] } = useTimetableLesson();
+  const { t } = useTranslation(['common', 'timetable', 'navigation']);
+  const { data: timetables = [] } = useTimetables({});
   const columnDefs = useMemo(() => getColumnDefs(t), [t]);
 
   return (
-    <PageContainer title={t('navigation:general.timetable')}>
+    <PageContainer title={t('navigation:management.timetable.timetables')}>
       <PageHeading
-        title={t('navigation:general.timetable')}
+        title={t('navigation:management.timetable.timetables')}
         titleProps={{ variant: 'h3' }}
       />
       <Table

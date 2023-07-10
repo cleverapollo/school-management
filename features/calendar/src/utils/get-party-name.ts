@@ -11,6 +11,8 @@ export function getPartyName(
   switch (partyInfo.__typename) {
     case 'GeneralGroup':
     case 'SubjectGroup':
+    case 'YearGroupEnrollment':
+    case 'ProgrammeStageEnrollment':
       return partyInfo.name;
     case 'Staff':
     case 'Student':

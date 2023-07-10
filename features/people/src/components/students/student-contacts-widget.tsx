@@ -8,32 +8,45 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { AnimatePresence, m } from 'framer-motion';
+import { AnimatePresence, m, Variants, wrap } from 'framer-motion';
 import {
+  ChevronLeftIcon,
   ChevronRightIcon,
   ExternalLinkIcon,
-  HouseLocationIcon,
-  LabelsIcon,
   MailIcon,
   PhoneIcon,
 } from '@tyro/icons';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@tyro/i18n';
-import { Avatar, usePreferredNameLayout } from '@tyro/core';
+import { Avatar, usePreferredNameLayout, formatPhoneNumber } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { SmsRecipientType } from '@tyro/api';
 import { useStudentsContacts } from '../../api/student/overview';
-import { joinAddress } from '../../utils/join-address';
 
 interface StudentContactsWidgetProps {
   studentId: number | undefined;
 }
 
+const animationVariants: Variants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? '100%' : '-100%',
+    position: 'absolute',
+  }),
+  center: {
+    x: '0%',
+    position: 'relative',
+  },
+  exit: (direction: number) => ({
+    x: direction > 0 ? '-100%' : '100%',
+    position: 'absolute',
+  }),
+};
+
 export function StudentContactsWidget({
   studentId,
 }: StudentContactsWidgetProps) {
-  const [contactIndex, setContactIndex] = useState(0);
+  const [[contactIndex, direction], setContactIndex] = useState([0, 0]);
   const { t } = useTranslation(['common', 'people', 'mail', 'sms']);
   const { displayName } = usePreferredNameLayout();
   const { data: contacts, isLoading } = useStudentsContacts(studentId);
@@ -41,14 +54,16 @@ export function StudentContactsWidget({
     useState<RecipientsForSmsModal>([]);
 
   const numberOfContacts = contacts?.length ?? 0;
-  const contact = contacts?.[contactIndex];
-  const contactsRelationshipType =
-    contact?.relationships?.[0]?.relationshipType;
+  const clampedIndex = wrap(0, numberOfContacts, contactIndex);
+  const contact = contacts?.[clampedIndex];
+  const isButtonsDisabled = isLoading || numberOfContacts <= 1;
+  const buttonTooltipTitle = isButtonsDisabled
+    ? t('people:nextContactDisabled', { count: numberOfContacts })
+    : '';
+  const contactsRelationshipType = contact?.relationshipType;
 
-  const nextContact = () => {
-    const nextContactIndex =
-      contactIndex + 1 >= numberOfContacts ? 0 : contactIndex + 1;
-    setContactIndex(nextContactIndex);
+  const paginate = (newDirection: number) => {
+    setContactIndex([contactIndex + newDirection, newDirection]);
   };
 
   return (
@@ -56,7 +71,7 @@ export function StudentContactsWidget({
       <Card variant="outlined" sx={{ height: '100%', flex: 1 }}>
         <CardHeader
           component="h3"
-          title={t('people:guardianContactInformation')}
+          title={t('people:contactInformation')}
           {...(contact?.partyId && {
             action: (
               <IconButton
@@ -73,48 +88,63 @@ export function StudentContactsWidget({
           sx={{
             alignItems: 'center',
             justifyContent: 'space-between',
-            pl: 3,
-            pr: 2,
-            py: 1.5,
+            px: 2,
+            py: 1,
             borderBottom: '1px solid',
             borderColor: 'divider',
           }}
         >
-          <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-            <>
-              {t('common:guardian')}{' '}
-              <Box component="span" fontWeight={600}>
-                {contactIndex + 1}/{contacts?.length}
-              </Box>
-            </>
-          </Typography>
-          <Tooltip
-            title={
-              isLoading || numberOfContacts <= 1
-                ? t('people:nextContactDisabled', { count: numberOfContacts })
-                : ''
-            }
-          >
+          <Tooltip title={buttonTooltipTitle}>
             <span>
-              <Button
-                disabled={isLoading || numberOfContacts <= 1}
-                onClick={nextContact}
-                endIcon={<ChevronRightIcon />}
+              <IconButton
                 size="small"
+                color="primary"
+                disabled={isButtonsDisabled}
+                onClick={() => paginate(-1)}
               >
-                {t('people:nextContact')}
-              </Button>
+                <ChevronLeftIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+          <Box sx={{ flex: 1, overflowX: 'hidden' }}>
+            <Typography
+              component="h4"
+              variant="subtitle2"
+              noWrap
+              px={2}
+              textOverflow="ellipsis"
+              textAlign="center"
+            >
+              {t('common:contact')}{' '}
+              <Box component="span" fontWeight={600}>
+                {clampedIndex + 1}/{contacts?.length}
+              </Box>
+            </Typography>
+          </Box>
+
+          <Tooltip title={buttonTooltipTitle}>
+            <span>
+              <IconButton
+                size="small"
+                color="primary"
+                disabled={isButtonsDisabled}
+                onClick={() => paginate(1)}
+              >
+                <ChevronRightIcon />
+              </IconButton>
             </span>
           </Tooltip>
         </Stack>
 
-        <AnimatePresence initial={false}>
+        <AnimatePresence initial={false} custom={direction}>
           <Box
             component={m.div}
-            key={contact?.partyId}
-            initial={{ x: '100%', position: 'absolute' }}
-            animate={{ x: '0%', position: 'relative' }}
-            exit={{ x: '-100%', position: 'absolute' }}
+            key={contactIndex}
+            custom={direction}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            variants={animationVariants}
             transition={{ ease: 'easeInOut', duration: 0.3 }}
             sx={{
               width: '100%',
@@ -153,12 +183,6 @@ export function StudentContactsWidget({
                           )
                         : '-'}
                     </Box>
-                    <Box component="dt" sx={{ color: 'slate.600' }}>
-                      {t('common:language')}
-                    </Box>
-                    <Box component="dd" sx={{ m: 0 }}>
-                      -
-                    </Box>
                   </Box>
                 </Stack>
               </Stack>
@@ -166,7 +190,7 @@ export function StudentContactsWidget({
                 <Tooltip
                   describeChild
                   title={
-                    !contact?.relationships?.[0]?.includeInSms &&
+                    !contact?.includeInSms &&
                     t('sms:recipientNotIncludedInSms', { count: 1 })
                   }
                 >
@@ -174,7 +198,7 @@ export function StudentContactsWidget({
                     <Button
                       variant="contained"
                       sx={{ flex: 1 }}
-                      disabled={!contact?.relationships?.[0]?.includeInSms}
+                      disabled={!contact?.includeInSms}
                       onClick={() =>
                         setContactToSendSmsTo([
                           {
@@ -222,8 +246,9 @@ export function StudentContactsWidget({
                     </Box>
                   </Stack>
                   <Box component="dd" sx={{ m: 0 }}>
-                    {contact?.personalInformation?.primaryPhoneNumber?.number ??
-                      '-'}
+                    {formatPhoneNumber(
+                      contact?.personalInformation?.primaryPhoneNumber
+                    )}
                   </Box>
 
                   <Stack direction="row" spacing={0.75} alignItems="center">
@@ -238,42 +263,6 @@ export function StudentContactsWidget({
                     {contact?.personalInformation?.primaryEmail?.email ?? '-'}
                   </Box>
                 </Box>
-
-                <Stack>
-                  <Stack
-                    direction="row"
-                    spacing={0.75}
-                    alignItems="center"
-                    mt={2}
-                  >
-                    <HouseLocationIcon
-                      sx={{ color: 'slate.400', width: 20, height: 20 }}
-                    />
-                    <Box component="dt" sx={{ color: 'slate.600' }}>
-                      {t('people:addressLocation')}
-                    </Box>
-                  </Stack>
-                  <Box component="dd" sx={{ m: 0 }}>
-                    {joinAddress(contact?.personalInformation?.primaryAddress)}
-                  </Box>
-
-                  <Stack
-                    direction="row"
-                    spacing={0.75}
-                    alignItems="center"
-                    mt={2}
-                  >
-                    <LabelsIcon
-                      sx={{ color: 'slate.400', width: 20, height: 20 }}
-                    />
-                    <Box component="dt" sx={{ color: 'slate.600' }}>
-                      {t('common:groups')}
-                    </Box>
-                  </Stack>
-                  <Box component="dd" sx={{ m: 0 }}>
-                    -
-                  </Box>
-                </Stack>
               </Box>
             </Box>
           </Box>
