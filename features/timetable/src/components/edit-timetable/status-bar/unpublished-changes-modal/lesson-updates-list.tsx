@@ -114,7 +114,7 @@ export function LessonsUpdatesList({
       <ListHeader variant="subtitle1">
         {t('timetable:lessonUpdates')}
       </ListHeader>
-      {sortedDiffs.length > 1 ? (
+      {sortedDiffs.length > 0 ? (
         <Stack
           component="ul"
           sx={{
