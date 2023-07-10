@@ -115,6 +115,14 @@ const upsertBlockMemberships = graphql(/* GraphQL */ `
   }
 `);
 
+const enableBlockRotations = graphql(/* GraphQL */ `
+  mutation core_enableBlockRotations($input: Core_EnableBlockRotationInput!) {
+    core_enableBlockRotations(input: $input) {
+      success
+    }
+  }
+`);
+
 const blocksQuery = (filter: BlockFilter) => ({
   queryKey: classListManagerKeys.blocksList(filter),
   queryFn: async () => {
@@ -204,6 +212,28 @@ export function useUpdateBlockMemberships() {
     },
   });
 }
+
+// export function useCreateOrUpdateBlockRotation() {
+//   const { toast } = useToast();
+//   const { t } = useTranslation(['common']);
+
+//   return useMutation({
+//     mutationKey: classListManagerKeys.createOrUpdateBlockRotation(),
+//     mutationFn: async (input: SaveAttendanceCodeInput[]) =>
+//       gqlClient.request(enableBlockRotations, { input }),
+//     onError: () => {
+//       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
+//     },
+//     onSuccess: (_, [code]) => {
+//       if (code?.id) {
+//         toast(t('common:snackbarMessages.updateSuccess'));
+//       } else {
+//         toast(t('common:snackbarMessages.createSuccess'));
+//       }
+//       queryClient.invalidateQueries(attendanceCodesKeys.list);
+//     },
+//   });
+// }
 
 export type ReturnTypeOfUseBlockList = UseQueryReturnType<typeof useBlocksList>;
 

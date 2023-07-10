@@ -91,3 +91,4 @@ export * from './user-profile-card';
 export * from './vertical-dots';
 export * from './warning';
 export * from './person-checkmark';
+export * from './rotation';

@@ -24,6 +24,7 @@ import {
   YearGroupsAutocomplete,
   YearGroupsAutocompleteProps,
 } from '../components/common/list-manager/year-groups-autocomplete';
+import { useClassListSettings } from '../store/class-list-settings';
 
 interface ConfirmDialogSettings {
   proceed: () => void;
@@ -156,8 +157,15 @@ export default function ClassListManagerBlocks() {
     });
   };
 
+  const { setIsBlockView } = useClassListSettings();
+
+  useEffect(() => {
+    setIsBlockView(true, selectedBlock ?? undefined);
+  }, []);
+
   useEffect(() => {
     setSelectedRotationIndex(0);
+    setIsBlockView(true, selectedBlock ?? undefined);
   }, [selectedBlock]);
 
   return (
