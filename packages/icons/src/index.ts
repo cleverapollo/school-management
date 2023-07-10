@@ -4,6 +4,8 @@ export * from './add-photo';
 export * from './add-user';
 export * from './archive';
 export * from './archive-alt';
+export * from './arrow-left-icon';
+export * from './arrow-right-icon';
 export * from './attachment';
 export * from './bell';
 export * from './blank-file';

@@ -10,6 +10,18 @@ const studentsPersonalById = graphql(/* GraphQL */ `
       leftEarly
       endDate
       guardianshipNote
+      person {
+        partyId
+        title {
+          id
+          name
+          nameTextId
+        }
+        firstName
+        lastName
+        avatarUrl
+        type
+      }
       personalInformation {
         firstName
         lastName
@@ -99,6 +111,7 @@ const studentsPersonalById = graphql(/* GraphQL */ `
         enrolledSiblings {
           partyId
           person {
+            partyId
             title {
               id
               nameTextId
@@ -107,7 +120,9 @@ const studentsPersonalById = graphql(/* GraphQL */ `
             firstName
             lastName
             avatarUrl
-            type
+          }
+          classGroup {
+            name
           }
         }
         nonEnrolledSiblings {

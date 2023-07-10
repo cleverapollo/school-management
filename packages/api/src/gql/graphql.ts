@@ -781,6 +781,12 @@ export type CoreBlock = {
   yearGroupIds: Array<Scalars['Int']>;
 };
 
+export type Core_ContactInput = {
+  contactPartyId: Scalars['Long'];
+  relationshipType: StudentContactType;
+  studentPartyId: Scalars['Long'];
+};
+
 export type Core_EnableBlockRotationInput = {
   blockId: Scalars['String'];
   iterations: Array<Core_EnableBlockRotationIterationInput>;
@@ -792,11 +798,38 @@ export type Core_EnableBlockRotationIterationInput = {
   startDate?: InputMaybe<Scalars['Date']>;
 };
 
+export type Core_LinkContacts = {
+  upsert?: InputMaybe<Array<InputMaybe<Core_ContactInput>>>;
+};
+
+export type Core_LinkSiblings = {
+  delete?: InputMaybe<Array<InputMaybe<Core_SiblingInput>>>;
+  upsert?: InputMaybe<Array<InputMaybe<Core_SiblingInput>>>;
+};
+
+export type Core_LinkSiblingsAndContacts = {
+  /**  add these contacts with default permissions if they are not already linked */
+  linkContacts: Array<Core_LinkSiblingsAndContactsContactInfo>;
+  linkSiblings: Array<Scalars['Long']>;
+  studentPartyId: Scalars['Long'];
+  unlinkSiblings: Array<Scalars['Long']>;
+};
+
+export type Core_LinkSiblingsAndContactsContactInfo = {
+  contactPartyId?: InputMaybe<Scalars['Long']>;
+  relationshipType?: InputMaybe<StudentContactType>;
+};
+
 export type Core_NonEnrolledSibling = {
   __typename?: 'Core_NonEnrolledSibling';
   firstName?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
   partyId: Scalars['Long'];
+};
+
+export type Core_SiblingInput = {
+  studentPartyId1: Scalars['Long'];
+  studentPartyId2: Scalars['Long'];
 };
 
 export type Core_Siblings = {
@@ -959,11 +992,6 @@ export type CreateRoleInput = {
   name: Array<InputMaybe<TranslationInput>>;
   permissions: Array<InputMaybe<PermissionForGroup>>;
   uniqueName: Scalars['String'];
-};
-
-export type CreateSiblingRelationship = {
-  studentPartyId1: Scalars['Long'];
-  studentPartyId2: Scalars['Long'];
 };
 
 export type CreateStaffGroupMembershipInput = {
@@ -1141,11 +1169,6 @@ export type DeleteFeeInput = {
 };
 
 export type DeleteStudentMedicalConditionInput = {
-  id: Scalars['Int'];
-  studentPartyId: Scalars['Long'];
-};
-
-export type DeleteStudentMedicalContactInput = {
   id: Scalars['Int'];
   studentPartyId: Scalars['Long'];
 };
@@ -1743,9 +1766,10 @@ export type Mutation = {
   communications_smsTopUp?: Maybe<SmsTopUpResponse>;
   communications_starred?: Maybe<Scalars['String']>;
   core_enableBlockRotations?: Maybe<Success>;
+  core_linkSiblingsAndContacts: Success;
   core_setActiveActiveAcademicNamespace?: Maybe<AcademicNamespace>;
   core_updateClassGroups?: Maybe<Success>;
-  /**     core_linkStudentsAndContacts(input: UpsertStudentContactInput!): StudentContact! */
+  core_updateStaff: Success;
   core_updateStudentContactRelationships?: Maybe<Success>;
   core_updateStudents?: Maybe<Success>;
   core_updateSubjectGroups?: Maybe<Success>;
@@ -1766,8 +1790,8 @@ export type Mutation = {
   fees_saveDiscount?: Maybe<Discount>;
   fees_saveFee?: Maybe<Fee>;
   ppod_savePPODCredentials: PpodCredentials;
-  /**  staff_work_upsert_absence_type(input: [UpsertStaffAbsenceType]): [StaffAbsenceType!]! */
-  staffWork_upsertAbsence: Array<StaffAbsence>;
+  swm_upsertAbsence: Array<Swm_StaffAbsence>;
+  swm_upsertAbsenceType: Array<Swm_StaffAbsenceType>;
   tt_cloneTimetable: TtTimetable;
   tt_editLessonInstance: Array<TtIndividualViewLesson>;
   tt_publish: Tt_PublishResult;
@@ -1776,6 +1800,7 @@ export type Mutation = {
   tt_updateTimetableGroup: Success;
   users_inviteUsers?: Maybe<Array<Maybe<UserInvitation>>>;
   users_savePermissionGroup?: Maybe<PermissionGroup>;
+  wellbeing_deleteStudentMedicalCondition: StudentMedical;
   wellbeing_savePriorityStudent?: Maybe<PriorityStudent>;
   wellbeing_saveStudentSupportFile?: Maybe<StudentSupportFile>;
   wellbeing_saveStudentSupportPlan?: Maybe<StudentSupportPlan>;
@@ -1905,6 +1930,11 @@ export type MutationCore_EnableBlockRotationsArgs = {
 };
 
 
+export type MutationCore_LinkSiblingsAndContactsArgs = {
+  input: Core_LinkSiblingsAndContacts;
+};
+
+
 export type MutationCore_SetActiveActiveAcademicNamespaceArgs = {
   input?: InputMaybe<SetActiveAcademicNamespace>;
 };
@@ -1912,6 +1942,11 @@ export type MutationCore_SetActiveActiveAcademicNamespaceArgs = {
 
 export type MutationCore_UpdateClassGroupsArgs = {
   input?: InputMaybe<Array<InputMaybe<UpdateClassGroupGroupInput>>>;
+};
+
+
+export type MutationCore_UpdateStaffArgs = {
+  input: Array<UpdateStaffInput>;
 };
 
 
@@ -2015,8 +2050,13 @@ export type MutationPpod_SavePpodCredentialsArgs = {
 };
 
 
-export type MutationStaffWork_UpsertAbsenceArgs = {
-  input: Array<UpsertStaffAbsence>;
+export type MutationSwm_UpsertAbsenceArgs = {
+  input: Array<Swm_UpsertStaffAbsence>;
+};
+
+
+export type MutationSwm_UpsertAbsenceTypeArgs = {
+  input?: InputMaybe<Array<InputMaybe<Swm_UpsertStaffAbsenceType>>>;
 };
 
 
@@ -2057,6 +2097,11 @@ export type MutationUsers_InviteUsersArgs = {
 
 export type MutationUsers_SavePermissionGroupArgs = {
   input?: InputMaybe<SavePermissionGroup>;
+};
+
+
+export type MutationWellbeing_DeleteStudentMedicalConditionArgs = {
+  input: DeleteStudentMedicalConditionInput;
 };
 
 
@@ -2700,10 +2745,10 @@ export type Query = {
   profiles?: Maybe<Array<Maybe<ProfileType>>>;
   roles?: Maybe<Array<Maybe<SecurityRole>>>;
   search_search: Array<Search>;
-  staffWork_absenceTypes: Array<StaffAbsenceType>;
-  staffWork_absences: Array<StaffAbsence>;
-  staffWork_substitutions: Array<Substitution>;
   subjectGroups?: Maybe<Array<SubjectGroup>>;
+  swm_absenceTypes: Array<Swm_StaffAbsenceType>;
+  swm_absences: Array<Swm_StaffAbsence>;
+  swm_substitutions: Array<Swm_Substitution>;
   tt_groups: Array<Tt_Groups>;
   tt_individualLessons: Array<TtIndividualViewLesson>;
   tt_resourceTimetableView: TtResourceTimetableView;
@@ -2973,23 +3018,23 @@ export type QuerySearch_SearchArgs = {
 };
 
 
-export type QueryStaffWork_AbsenceTypesArgs = {
-  filter?: InputMaybe<StaffAbsenceTypeFilter>;
-};
-
-
-export type QueryStaffWork_AbsencesArgs = {
-  filter?: InputMaybe<StaffAbsenceFilter>;
-};
-
-
-export type QueryStaffWork_SubstitutionsArgs = {
-  filter?: InputMaybe<SubstitutionsFilter>;
-};
-
-
 export type QuerySubjectGroupsArgs = {
   filter?: InputMaybe<SubjectGroupFilter>;
+};
+
+
+export type QuerySwm_AbsenceTypesArgs = {
+  filter?: InputMaybe<Swm_StaffAbsenceTypeFilter>;
+};
+
+
+export type QuerySwm_AbsencesArgs = {
+  filter?: InputMaybe<Swm_StaffAbsenceFilter>;
+};
+
+
+export type QuerySwm_SubstitutionsArgs = {
+  filter?: InputMaybe<Swm_SubstitutionsFilter>;
 };
 
 
@@ -3156,6 +3201,150 @@ export enum RoomState {
   SetBySolver = 'SET_BY_SOLVER',
   SetByUser = 'SET_BY_USER'
 }
+
+export type Swm_StaffAbsence = {
+  __typename?: 'SWM_StaffAbsence';
+  absenceId: Scalars['Int'];
+  absenceReasonText?: Maybe<Scalars['String']>;
+  absenceType: Swm_StaffAbsenceType;
+  absenceTypeId: Scalars['Int'];
+  dates: Array<Swm_StaffAbsenceDate>;
+  fromAbsenceRequestId?: Maybe<Scalars['Int']>;
+  staff?: Maybe<Person>;
+  staffPartyId: Scalars['Long'];
+  substitutionRequired?: Maybe<Scalars['Boolean']>;
+};
+
+export type Swm_StaffAbsenceDate = {
+  __typename?: 'SWM_StaffAbsenceDate';
+  continuousEndDate?: Maybe<Scalars['Date']>;
+  continuousStartDate?: Maybe<Scalars['Date']>;
+  individualDates?: Maybe<Array<Scalars['Date']>>;
+  partialAbsence: Scalars['Boolean'];
+  partialEndTime?: Maybe<Scalars['Time']>;
+  partialStartTime?: Maybe<Scalars['Time']>;
+};
+
+export type Swm_StaffAbsenceFilter = {
+  fromDate?: InputMaybe<Scalars['Date']>;
+  staffAbsenceIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  staffPartyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  toDate?: InputMaybe<Scalars['Date']>;
+};
+
+export type Swm_StaffAbsenceRequest = {
+  __typename?: 'SWM_StaffAbsenceRequest';
+  absenceReasonText?: Maybe<Scalars['String']>;
+  absenceRequestStatus?: Maybe<Swm_StaffAbsenceRequestStatusEnum>;
+  absenceTypeId: Scalars['Int'];
+  fromAbsenceRequestId?: Maybe<Scalars['Int']>;
+  fromDate?: Maybe<Scalars['Date']>;
+  rejectionReasonText?: Maybe<Scalars['String']>;
+  staffPartyId: Scalars['Long'];
+  toDate?: Maybe<Scalars['Date']>;
+};
+
+export type Swm_StaffAbsenceRequestFilter = {
+  fromDate?: InputMaybe<Scalars['Date']>;
+  staffPartyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  staffRequestIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  toDate?: InputMaybe<Scalars['Date']>;
+};
+
+export enum Swm_StaffAbsenceRequestStatusEnum {
+  Approved = 'APPROVED',
+  Pending = 'PENDING',
+  Rejected = 'REJECTED'
+}
+
+export type Swm_StaffAbsenceType = {
+  __typename?: 'SWM_StaffAbsenceType';
+  absenceTypeId: Scalars['Int'];
+  availableForRequests: Scalars['Boolean'];
+  code: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  descriptionTextId?: Maybe<Scalars['Int']>;
+  name: Scalars['String'];
+  nameTextId?: Maybe<Scalars['Int']>;
+};
+
+export type Swm_StaffAbsenceTypeFilter = {
+  absenceTypeIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
+export type Swm_Substitution = {
+  __typename?: 'SWM_Substitution';
+  canSplitByDate: Scalars['Boolean'];
+  canSplitByTime: Scalars['Boolean'];
+  coverType?: Maybe<Scalars['String']>;
+  eventCount: Scalars['Int'];
+  eventType: CalendarEventType;
+  events: Array<CalendarEvent>;
+  fromDate: Scalars['Date'];
+  name: Scalars['String'];
+  originalStaff: Person;
+  originalStaffPartyId: Scalars['Long'];
+  subjectGroup?: Maybe<SubjectGroup>;
+  subjectGroupId?: Maybe<Scalars['Long']>;
+  substituteStaff?: Maybe<Person>;
+  substituteStaffId?: Maybe<Scalars['Long']>;
+  substitutionId?: Maybe<Scalars['Int']>;
+  times: Array<Swm_SubstitutionTime>;
+  toDate: Scalars['Date'];
+};
+
+export type Swm_SubstitutionTime = {
+  __typename?: 'SWM_SubstitutionTime';
+  endTime: Scalars['Time'];
+  isoDayOfWeek: Scalars['Int'];
+  startTime: Scalars['Time'];
+};
+
+/**  Either search for an absence or a party between dates */
+export type Swm_SubstitutionsFilter = {
+  /**  request Required Substitutions for an absence */
+  absenceId?: InputMaybe<Scalars['Int']>;
+  calendarEventFilter?: InputMaybe<CalendarEventFilter>;
+};
+
+export type Swm_UpsertStaffAbsence = {
+  absenceReasonText?: InputMaybe<Scalars['String']>;
+  absenceTypeId: Scalars['Int'];
+  dates: Array<Swm_UpsertStaffAbsenceDate>;
+  fromAbsenceRequestId?: InputMaybe<Scalars['Int']>;
+  staffAbsenceId?: InputMaybe<Scalars['Int']>;
+  staffPartyId: Scalars['Long'];
+  substitutionRequired?: InputMaybe<Scalars['Boolean']>;
+};
+
+export type Swm_UpsertStaffAbsenceDate = {
+  continuousEndDate?: InputMaybe<Scalars['Date']>;
+  continuousStartDate?: InputMaybe<Scalars['Date']>;
+  individualDates?: InputMaybe<Array<Scalars['Date']>>;
+  partialAbsence: Scalars['Boolean'];
+  partialEndTime?: InputMaybe<Scalars['Time']>;
+  partialStartTime?: InputMaybe<Scalars['Time']>;
+};
+
+export type Swm_UpsertStaffAbsenceRequest = {
+  absenceReasonText?: InputMaybe<Scalars['String']>;
+  absenceRequestStatus?: InputMaybe<Swm_StaffAbsenceRequestStatusEnum>;
+  absenceTypeId: Scalars['Int'];
+  fromAbsenceRequestId?: InputMaybe<Scalars['Int']>;
+  fromDate?: InputMaybe<Scalars['Date']>;
+  rejectionReasonText?: InputMaybe<Scalars['String']>;
+  staffAbsenceRequestId?: InputMaybe<Scalars['Int']>;
+  status?: InputMaybe<Swm_StaffAbsenceRequestStatusEnum>;
+  toDate?: InputMaybe<Scalars['Date']>;
+};
+
+export type Swm_UpsertStaffAbsenceType = {
+  absenceTypeId?: InputMaybe<Scalars['Int']>;
+  availableForRequests: Scalars['Boolean'];
+  code: Scalars['String'];
+  description: Array<InputMaybe<TranslationInput>>;
+  name: Array<InputMaybe<TranslationInput>>;
+};
 
 /**    -------------- Inputs --------------- */
 export type SaveAcademicNamespaceInput = {
@@ -3691,15 +3880,6 @@ export type SessionAttendanceStatus = {
   studentPartyId: Scalars['Long'];
 };
 
-/**
- * input Core_LinkStudentsAndContacts {
- *     studentAllContacts
- * }
- * input Core_LinkStudentsAllContacts {
- *     studentPartyId: Long!
- *     contactPartyIds: [Long!]
- * }
- */
 export type SetActiveAcademicNamespace = {
   academicNamespaceId: Scalars['Int'];
 };
@@ -3833,67 +4013,6 @@ export type Staff = Party & PartyPerson & {
   subjectGroups: Array<SubjectGroup>;
 };
 
-export type StaffAbsence = {
-  __typename?: 'StaffAbsence';
-  absenceId: Scalars['Int'];
-  absenceReasonText?: Maybe<Scalars['String']>;
-  absenceType: StaffAbsenceType;
-  absenceTypeId: Scalars['Int'];
-  fromAbsenceRequestId?: Maybe<Scalars['Int']>;
-  fromDate?: Maybe<Scalars['Date']>;
-  staff?: Maybe<Person>;
-  staffPartyId: Scalars['Long'];
-  substitutionRequired?: Maybe<Scalars['Boolean']>;
-  toDate?: Maybe<Scalars['Date']>;
-};
-
-export type StaffAbsenceFilter = {
-  fromDate?: InputMaybe<Scalars['Date']>;
-  staffAbsenceIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  staffPartyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-  toDate?: InputMaybe<Scalars['Date']>;
-};
-
-export type StaffAbsenceRequest = {
-  __typename?: 'StaffAbsenceRequest';
-  absenceReasonText?: Maybe<Scalars['String']>;
-  absenceRequestStatus?: Maybe<StaffAbsenceRequestStatusEnum>;
-  absenceTypeId: Scalars['Int'];
-  fromAbsenceRequestId?: Maybe<Scalars['Int']>;
-  fromDate?: Maybe<Scalars['Date']>;
-  rejectionReasonText?: Maybe<Scalars['String']>;
-  staffPartyId: Scalars['Long'];
-  toDate?: Maybe<Scalars['Date']>;
-};
-
-export type StaffAbsenceRequestFilter = {
-  fromDate?: InputMaybe<Scalars['Date']>;
-  staffPartyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-  staffRequestIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  toDate?: InputMaybe<Scalars['Date']>;
-};
-
-export enum StaffAbsenceRequestStatusEnum {
-  Approved = 'APPROVED',
-  Pending = 'PENDING',
-  Rejected = 'REJECTED'
-}
-
-export type StaffAbsenceType = {
-  __typename?: 'StaffAbsenceType';
-  absenceTypeId: Scalars['Int'];
-  availableForRequests: Scalars['Boolean'];
-  code: Scalars['String'];
-  description?: Maybe<Scalars['String']>;
-  descriptionTextId?: Maybe<Scalars['Int']>;
-  name: Scalars['String'];
-  nameTextId?: Maybe<Scalars['Int']>;
-};
-
-export type StaffAbsenceTypeFilter = {
-  absenceTypeIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-};
-
 export type StaffCapacity = {
   __typename?: 'StaffCapacity';
   id: Scalars['String'];
@@ -3930,8 +4049,17 @@ export enum StaffGroupMembershipRoles {
 
 export type StaffIre = {
   __typename?: 'StaffIre';
+  includeDtrReturns?: Maybe<Scalars['Boolean']>;
+  otherSchool1?: Maybe<Scalars['String']>;
+  otherSchool2?: Maybe<Scalars['String']>;
+  previousSchool1?: Maybe<Scalars['String']>;
+  previousSchool2?: Maybe<Scalars['String']>;
+  qualifications2?: Maybe<Scalars['String']>;
+  qualifications3?: Maybe<Scalars['String']>;
+  qualifications4?: Maybe<Scalars['String']>;
   staffPost?: Maybe<StaffPost>;
   teacherCouncilNumber?: Maybe<Scalars['String']>;
+  teacherReferenceNumber?: Maybe<Scalars['String']>;
 };
 
 export type StaffPost = {
@@ -4402,41 +4530,6 @@ export enum SubjectUsage {
   All = 'ALL',
   Historic = 'HISTORIC'
 }
-
-export type Substitution = {
-  __typename?: 'Substitution';
-  canSplitByDate: Scalars['Boolean'];
-  canSplitByTime: Scalars['Boolean'];
-  coverType?: Maybe<Scalars['String']>;
-  eventCount: Scalars['Int'];
-  eventType: CalendarEventType;
-  events: Array<CalendarEvent>;
-  fromDate: Scalars['Date'];
-  name: Scalars['String'];
-  originalStaff: Person;
-  originalStaffPartyId: Scalars['Long'];
-  subjectGroup?: Maybe<SubjectGroup>;
-  subjectGroupId?: Maybe<Scalars['Long']>;
-  substituteStaff?: Maybe<Person>;
-  substituteStaffId?: Maybe<Scalars['Long']>;
-  substitutionId?: Maybe<Scalars['Int']>;
-  times: Array<SubstitutionTime>;
-  toDate: Scalars['Date'];
-};
-
-export type SubstitutionTime = {
-  __typename?: 'SubstitutionTime';
-  endTime: Scalars['Time'];
-  isoDayOfWeek: Scalars['Int'];
-  startTime: Scalars['Time'];
-};
-
-/**  Either search for an absence or a party between dates */
-export type SubstitutionsFilter = {
-  /**  request Required Substitutions for an absence */
-  absenceId?: InputMaybe<Scalars['Int']>;
-  calendarEventFilter?: InputMaybe<CalendarEventFilter>;
-};
 
 export type Success = {
   __typename?: 'Success';
@@ -4968,6 +5061,33 @@ export type UpdateClassGroupGroupInput = {
   tutor?: InputMaybe<Scalars['Long']>;
 };
 
+export type UpdateStaffInput = {
+  availableForSubstitution?: InputMaybe<Scalars['Boolean']>;
+  availableForSupportClasses?: InputMaybe<Scalars['Boolean']>;
+  availableForTeaching?: InputMaybe<Scalars['Boolean']>;
+  carRegistrationNumber?: InputMaybe<Scalars['String']>;
+  displayCode?: InputMaybe<Scalars['String']>;
+  employmentCapacity?: InputMaybe<Scalars['String']>;
+  includeDtrReturns?: InputMaybe<Scalars['Boolean']>;
+  jobSharing?: InputMaybe<Scalars['Boolean']>;
+  makeAndModel?: InputMaybe<Scalars['String']>;
+  noLongerStaffMember?: InputMaybe<Scalars['Boolean']>;
+  otherSchool1?: InputMaybe<Scalars['String']>;
+  otherSchool2?: InputMaybe<Scalars['String']>;
+  parking?: InputMaybe<Scalars['String']>;
+  position?: InputMaybe<Scalars['String']>;
+  previousSchool1?: InputMaybe<Scalars['String']>;
+  previousSchool2?: InputMaybe<Scalars['String']>;
+  qualifications?: InputMaybe<Scalars['String']>;
+  qualifications2?: InputMaybe<Scalars['String']>;
+  qualifications3?: InputMaybe<Scalars['String']>;
+  qualifications4?: InputMaybe<Scalars['String']>;
+  staffPartyId: Scalars['Long'];
+  staffPost?: InputMaybe<Scalars['Int']>;
+  teacherCouncilNumber?: InputMaybe<Scalars['String']>;
+  teacherReferenceNumber?: InputMaybe<Scalars['String']>;
+};
+
 export type UpdateStudentInput = {
   examNumber?: InputMaybe<Scalars['String']>;
   guardianshipNote?: InputMaybe<Scalars['String']>;
@@ -5036,37 +5156,6 @@ export type UpsertRoomInput = {
   name?: InputMaybe<Scalars['String']>;
   pools?: InputMaybe<Array<Scalars['String']>>;
   roomId?: InputMaybe<Scalars['Int']>;
-};
-
-export type UpsertStaffAbsence = {
-  absenceReasonText?: InputMaybe<Scalars['String']>;
-  absenceTypeId: Scalars['Int'];
-  fromAbsenceRequestId?: InputMaybe<Scalars['Int']>;
-  fromDate: Scalars['Date'];
-  staffAbsenceId?: InputMaybe<Scalars['Int']>;
-  staffPartyId: Scalars['Long'];
-  substitutionRequired?: InputMaybe<Scalars['Boolean']>;
-  toDate: Scalars['Date'];
-};
-
-export type UpsertStaffAbsenceRequest = {
-  absenceReasonText?: InputMaybe<Scalars['String']>;
-  absenceRequestStatus?: InputMaybe<StaffAbsenceRequestStatusEnum>;
-  absenceTypeId: Scalars['Int'];
-  fromAbsenceRequestId?: InputMaybe<Scalars['Int']>;
-  fromDate?: InputMaybe<Scalars['Date']>;
-  rejectionReasonText?: InputMaybe<Scalars['String']>;
-  staffAbsenceRequestId?: InputMaybe<Scalars['Int']>;
-  status?: InputMaybe<StaffAbsenceRequestStatusEnum>;
-  toDate?: InputMaybe<Scalars['Date']>;
-};
-
-export type UpsertStaffAbsenceType = {
-  absenceTypeId?: InputMaybe<Scalars['Int']>;
-  availableForRequests: Scalars['Boolean'];
-  code: Scalars['String'];
-  description: Array<InputMaybe<TranslationInput>>;
-  name: Array<InputMaybe<TranslationInput>>;
 };
 
 export type UpsertStaffInput = {
@@ -5679,7 +5768,7 @@ export type Core_Student_PersonalQueryVariables = Exact<{
 }>;
 
 
-export type Core_Student_PersonalQuery = { __typename?: 'Query', core_students: Array<{ __typename?: 'Student', partyId: number, startDate?: string | null, leftEarly?: boolean | null, endDate?: string | null, guardianshipNote?: string | null, personalInformation?: { __typename?: 'PersonalInformation', firstName: string, lastName: string, preferredFirstName?: string | null, preferredLastName?: string | null, middleName?: string | null, gender?: Gender | null, dateOfBirth?: string | null, birthCertFirstName?: string | null, birthCertLastName?: string | null, nationality?: string | null, mothersMaidenName?: string | null, ire?: { __typename?: 'PersonalInformationIre', ppsNumber?: string | null, religion?: string | null, countryOfBirth?: string | null } | null, primaryAddress?: { __typename?: 'Address', line1?: string | null, line2?: string | null, line3?: string | null, city?: string | null, country?: string | null, postCode?: string | null } | null, addresses?: Array<{ __typename?: 'Address', line1?: string | null, line2?: string | null, line3?: string | null, city?: string | null, country?: string | null, postCode?: string | null, primaryAddress?: boolean | null } | null> | null, primaryPhoneNumber?: { __typename?: 'PhoneNumber', number?: string | null, areaCode?: string | null, countryCode?: string | null } | null, primaryEmail?: { __typename?: 'EmailAddress', email?: string | null } | null } | null, studentIrePP?: { __typename?: 'StudentIrePP', medicalCard?: boolean | null, travellerHeritage?: boolean | null, languageSupportApplicant?: boolean | null, borderIndicator?: boolean | null, examNumber?: string | null, lockerNumber?: string | null, previousSchoolRollNumber?: string | null, dpin?: number | null, examEntrant?: boolean | null, repeatYear?: boolean | null, boardingDays?: string | null, shortTermPupil?: boolean | null, shortTermPupilNumWeeks?: number | null, reasonForLeaving?: string | null, destinationRollNo?: string | null, previousSchoolType?: string | null } | null, classGroup?: { __typename?: 'GeneralGroup', name: string } | null, tutors: Array<{ __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null }>, yearGroupLeads: Array<{ __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null }>, yearGroups: Array<{ __typename?: 'YearGroupEnrollment', name: string }>, programmeStages?: Array<{ __typename?: 'ProgrammeStage', name: string, programme?: { __typename?: 'Programme', name: string } | null }> | null, siblings?: { __typename?: 'Core_Siblings', enrolledSiblings: Array<{ __typename?: 'Student', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, nameTextId: number, name: string } | null } }>, nonEnrolledSiblings: Array<{ __typename?: 'Core_NonEnrolledSibling', partyId: number, firstName?: string | null, lastName?: string | null }> } | null }> };
+export type Core_Student_PersonalQuery = { __typename?: 'Query', core_students: Array<{ __typename?: 'Student', partyId: number, startDate?: string | null, leftEarly?: boolean | null, endDate?: string | null, guardianshipNote?: string | null, person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null }, personalInformation?: { __typename?: 'PersonalInformation', firstName: string, lastName: string, preferredFirstName?: string | null, preferredLastName?: string | null, middleName?: string | null, gender?: Gender | null, dateOfBirth?: string | null, birthCertFirstName?: string | null, birthCertLastName?: string | null, nationality?: string | null, mothersMaidenName?: string | null, ire?: { __typename?: 'PersonalInformationIre', ppsNumber?: string | null, religion?: string | null, countryOfBirth?: string | null } | null, primaryAddress?: { __typename?: 'Address', line1?: string | null, line2?: string | null, line3?: string | null, city?: string | null, country?: string | null, postCode?: string | null } | null, addresses?: Array<{ __typename?: 'Address', line1?: string | null, line2?: string | null, line3?: string | null, city?: string | null, country?: string | null, postCode?: string | null, primaryAddress?: boolean | null } | null> | null, primaryPhoneNumber?: { __typename?: 'PhoneNumber', number?: string | null, areaCode?: string | null, countryCode?: string | null } | null, primaryEmail?: { __typename?: 'EmailAddress', email?: string | null } | null } | null, studentIrePP?: { __typename?: 'StudentIrePP', medicalCard?: boolean | null, travellerHeritage?: boolean | null, languageSupportApplicant?: boolean | null, borderIndicator?: boolean | null, examNumber?: string | null, lockerNumber?: string | null, previousSchoolRollNumber?: string | null, dpin?: number | null, examEntrant?: boolean | null, repeatYear?: boolean | null, boardingDays?: string | null, shortTermPupil?: boolean | null, shortTermPupilNumWeeks?: number | null, reasonForLeaving?: string | null, destinationRollNo?: string | null, previousSchoolType?: string | null } | null, classGroup?: { __typename?: 'GeneralGroup', name: string } | null, tutors: Array<{ __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null }>, yearGroupLeads: Array<{ __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null }>, yearGroups: Array<{ __typename?: 'YearGroupEnrollment', name: string }>, programmeStages?: Array<{ __typename?: 'ProgrammeStage', name: string, programme?: { __typename?: 'Programme', name: string } | null }> | null, siblings?: { __typename?: 'Core_Siblings', enrolledSiblings: Array<{ __typename?: 'Student', partyId: number, person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, nameTextId: number, name: string } | null }, classGroup?: { __typename?: 'GeneralGroup', name: string } | null }>, nonEnrolledSiblings: Array<{ __typename?: 'Core_NonEnrolledSibling', partyId: number, firstName?: string | null, lastName?: string | null }> } | null }> };
 
 export type QQueryVariables = Exact<{
   filter?: InputMaybe<StudentStatusFilter>;
@@ -5687,6 +5776,11 @@ export type QQueryVariables = Exact<{
 
 
 export type QQuery = { __typename?: 'Query', composite_studentStatus: { __typename?: 'StudentStatus', studentPartyId: number, priorityStudent?: boolean | null, activeSupportPlan?: boolean | null, sessionAttendance?: Array<{ __typename?: 'SessionAttendanceStatus', name?: string | null, status?: string | null } | null> | null, currentLocation?: { __typename?: 'CurrentStudentLocation', studentPartyId?: number | null, eventId?: number | null, lesson?: string | null, teacher?: string | null, room?: Array<{ __typename?: 'Room', roomId: number, name: string, capacity?: number | null } | null> | null, currentAttendance?: { __typename?: 'CurrentAttendance', attendanceCodeName?: string | null, codeType?: AttendanceCodeType | null } | null } | null } };
+
+export type StudentsForSiblingSearchQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type StudentsForSiblingSearchQuery = { __typename?: 'Query', core_students: Array<{ __typename?: 'Student', partyId: number, person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, nameTextId: number, name: string } | null }, classGroup?: { __typename?: 'GeneralGroup', name: string } | null, contacts?: Array<{ __typename?: 'StudentContact', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null } }> | null }> };
 
 export type Core_StudentsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -5713,6 +5807,13 @@ export type UpdateCoreStudentsMutationVariables = Exact<{
 
 
 export type UpdateCoreStudentsMutation = { __typename?: 'Mutation', core_updateStudents?: { __typename?: 'Success', success?: boolean | null } | null };
+
+export type Core_LinkSiblingsAndContactsMutationVariables = Exact<{
+  input: Core_LinkSiblingsAndContacts;
+}>;
+
+
+export type Core_LinkSiblingsAndContactsMutation = { __typename?: 'Mutation', core_linkSiblingsAndContacts: { __typename?: 'Success', success?: boolean | null } };
 
 export type Core_UpdateStudentContactRelationshipsMutationVariables = Exact<{
   input?: InputMaybe<Array<InputMaybe<Core_UpdateStudentContactRelationshipInput>> | InputMaybe<Core_UpdateStudentContactRelationshipInput>>;
@@ -5828,26 +5929,26 @@ export type Communications_SmsTopUpMutationVariables = Exact<{
 
 export type Communications_SmsTopUpMutation = { __typename?: 'Mutation', communications_smsTopUp?: { __typename?: 'SmsTopUpResponse', smsCredit: number } | null };
 
-export type StaffWork_AbsenceTypesQueryVariables = Exact<{
-  filter?: InputMaybe<StaffAbsenceTypeFilter>;
+export type Swm_AbsenceTypesQueryVariables = Exact<{
+  filter?: InputMaybe<Swm_StaffAbsenceTypeFilter>;
 }>;
 
 
-export type StaffWork_AbsenceTypesQuery = { __typename?: 'Query', staffWork_absenceTypes: Array<{ __typename?: 'StaffAbsenceType', absenceTypeId: number, name: string, nameTextId?: number | null, description?: string | null, descriptionTextId?: number | null, code: string, availableForRequests: boolean }> };
+export type Swm_AbsenceTypesQuery = { __typename?: 'Query', swm_absenceTypes: Array<{ __typename?: 'SWM_StaffAbsenceType', absenceTypeId: number, name: string, nameTextId?: number | null, description?: string | null, descriptionTextId?: number | null, code: string, availableForRequests: boolean }> };
 
-export type Staff_Work_AbsencesQueryVariables = Exact<{
-  filter?: InputMaybe<StaffAbsenceFilter>;
+export type Swm_AbsencesQueryVariables = Exact<{
+  filter?: InputMaybe<Swm_StaffAbsenceFilter>;
 }>;
 
 
-export type Staff_Work_AbsencesQuery = { __typename?: 'Query', staffWork_absences: Array<{ __typename?: 'StaffAbsence', absenceId: number, fromDate?: string | null, toDate?: string | null, staff?: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } | null, absenceType: { __typename?: 'StaffAbsenceType', name: string } }> };
+export type Swm_AbsencesQuery = { __typename?: 'Query', swm_absences: Array<{ __typename?: 'SWM_StaffAbsence', absenceId: number, staff?: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } | null, absenceType: { __typename?: 'SWM_StaffAbsenceType', name: string }, dates: Array<{ __typename?: 'SWM_StaffAbsenceDate', continuousStartDate?: string | null, continuousEndDate?: string | null, individualDates?: Array<string> | null, partialAbsence: boolean, partialStartTime?: string | null, partialEndTime?: string | null }> }> };
 
-export type StaffWork_UpsertAbsenceMutationVariables = Exact<{
-  input: Array<UpsertStaffAbsence> | UpsertStaffAbsence;
+export type Swm_UpsertAbsenceMutationVariables = Exact<{
+  input: Array<Swm_UpsertStaffAbsence> | Swm_UpsertStaffAbsence;
 }>;
 
 
-export type StaffWork_UpsertAbsenceMutation = { __typename?: 'Mutation', staffWork_upsertAbsence: Array<{ __typename?: 'StaffAbsence', staffPartyId: number, absenceTypeId: number, fromDate?: string | null, toDate?: string | null, fromAbsenceRequestId?: number | null, absenceReasonText?: string | null }> };
+export type Swm_UpsertAbsenceMutation = { __typename?: 'Mutation', swm_upsertAbsence: Array<{ __typename?: 'SWM_StaffAbsence', staffPartyId: number, absenceTypeId: number, fromAbsenceRequestId?: number | null, absenceReasonText?: string | null }> };
 
 export type Tt_TimetablesQueryVariables = Exact<{
   filter?: InputMaybe<TtTimetableFilter>;
@@ -6015,12 +6116,14 @@ export const Core_UpsertStaffDocument = {"kind":"Document","definitions":[{"kind
 export const Enrollment_Ire_ChangeProgrammeStageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"enrollment_ire_changeProgrammeStage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EnrollmentIre_ChangeProgrammeStage"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollment_ire_changeProgrammeStage"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Enrollment_Ire_ChangeProgrammeStageMutation, Enrollment_Ire_ChangeProgrammeStageMutationVariables>;
 export const Core_Student_ContactsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_student_contacts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StudentFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_students"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"contacts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"personalInformation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gender"}},{"kind":"Field","name":{"kind":"Name","value":"nationality"}},{"kind":"Field","name":{"kind":"Name","value":"primaryAddress"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"line1"}},{"kind":"Field","name":{"kind":"Name","value":"line2"}},{"kind":"Field","name":{"kind":"Name","value":"line3"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"postCode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryPhoneNumber"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"areaCode"}},{"kind":"Field","name":{"kind":"Name","value":"countryCode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryEmail"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"relationships"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"relationshipType"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"allowedToContact"}},{"kind":"Field","name":{"kind":"Name","value":"includeInSms"}},{"kind":"Field","name":{"kind":"Name","value":"includeInTmail"}},{"kind":"Field","name":{"kind":"Name","value":"pickupRights"}},{"kind":"Field","name":{"kind":"Name","value":"legalGuardian"}},{"kind":"Field","name":{"kind":"Name","value":"allowAccessToStudentData"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Core_Student_ContactsQuery, Core_Student_ContactsQueryVariables>;
 export const Core_Student_SubjectGroupsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_student_subjectGroups"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StudentFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_students"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"subjectGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"irePP"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"level"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Core_Student_SubjectGroupsQuery, Core_Student_SubjectGroupsQueryVariables>;
-export const Core_Student_PersonalDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_student_personal"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StudentFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_students"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"leftEarly"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"guardianshipNote"}},{"kind":"Field","name":{"kind":"Name","value":"personalInformation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"preferredFirstName"}},{"kind":"Field","name":{"kind":"Name","value":"preferredLastName"}},{"kind":"Field","name":{"kind":"Name","value":"middleName"}},{"kind":"Field","name":{"kind":"Name","value":"gender"}},{"kind":"Field","name":{"kind":"Name","value":"dateOfBirth"}},{"kind":"Field","name":{"kind":"Name","value":"birthCertFirstName"}},{"kind":"Field","name":{"kind":"Name","value":"birthCertLastName"}},{"kind":"Field","name":{"kind":"Name","value":"ire"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ppsNumber"}},{"kind":"Field","name":{"kind":"Name","value":"religion"}},{"kind":"Field","name":{"kind":"Name","value":"countryOfBirth"}}]}},{"kind":"Field","name":{"kind":"Name","value":"nationality"}},{"kind":"Field","name":{"kind":"Name","value":"mothersMaidenName"}},{"kind":"Field","name":{"kind":"Name","value":"primaryAddress"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"line1"}},{"kind":"Field","name":{"kind":"Name","value":"line2"}},{"kind":"Field","name":{"kind":"Name","value":"line3"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"postCode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"addresses"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"line1"}},{"kind":"Field","name":{"kind":"Name","value":"line2"}},{"kind":"Field","name":{"kind":"Name","value":"line3"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"postCode"}},{"kind":"Field","name":{"kind":"Name","value":"primaryAddress"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryPhoneNumber"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"areaCode"}},{"kind":"Field","name":{"kind":"Name","value":"countryCode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryEmail"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"studentIrePP"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"medicalCard"}},{"kind":"Field","name":{"kind":"Name","value":"travellerHeritage"}},{"kind":"Field","name":{"kind":"Name","value":"languageSupportApplicant"}},{"kind":"Field","name":{"kind":"Name","value":"borderIndicator"}},{"kind":"Field","name":{"kind":"Name","value":"examNumber"}},{"kind":"Field","name":{"kind":"Name","value":"lockerNumber"}},{"kind":"Field","name":{"kind":"Name","value":"previousSchoolRollNumber"}},{"kind":"Field","name":{"kind":"Name","value":"dpin"}},{"kind":"Field","name":{"kind":"Name","value":"examEntrant"}},{"kind":"Field","name":{"kind":"Name","value":"repeatYear"}},{"kind":"Field","name":{"kind":"Name","value":"boardingDays"}},{"kind":"Field","name":{"kind":"Name","value":"shortTermPupil"}},{"kind":"Field","name":{"kind":"Name","value":"shortTermPupilNumWeeks"}},{"kind":"Field","name":{"kind":"Name","value":"reasonForLeaving"}},{"kind":"Field","name":{"kind":"Name","value":"destinationRollNo"}},{"kind":"Field","name":{"kind":"Name","value":"previousSchoolType"}}]}},{"kind":"Field","name":{"kind":"Name","value":"classGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tutors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearGroupLeads"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"programmeStages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"programme"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"siblings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrolledSiblings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"nonEnrolledSiblings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Core_Student_PersonalQuery, Core_Student_PersonalQueryVariables>;
+export const Core_Student_PersonalDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_student_personal"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StudentFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_students"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"leftEarly"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"guardianshipNote"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"personalInformation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"preferredFirstName"}},{"kind":"Field","name":{"kind":"Name","value":"preferredLastName"}},{"kind":"Field","name":{"kind":"Name","value":"middleName"}},{"kind":"Field","name":{"kind":"Name","value":"gender"}},{"kind":"Field","name":{"kind":"Name","value":"dateOfBirth"}},{"kind":"Field","name":{"kind":"Name","value":"birthCertFirstName"}},{"kind":"Field","name":{"kind":"Name","value":"birthCertLastName"}},{"kind":"Field","name":{"kind":"Name","value":"ire"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ppsNumber"}},{"kind":"Field","name":{"kind":"Name","value":"religion"}},{"kind":"Field","name":{"kind":"Name","value":"countryOfBirth"}}]}},{"kind":"Field","name":{"kind":"Name","value":"nationality"}},{"kind":"Field","name":{"kind":"Name","value":"mothersMaidenName"}},{"kind":"Field","name":{"kind":"Name","value":"primaryAddress"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"line1"}},{"kind":"Field","name":{"kind":"Name","value":"line2"}},{"kind":"Field","name":{"kind":"Name","value":"line3"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"postCode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"addresses"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"line1"}},{"kind":"Field","name":{"kind":"Name","value":"line2"}},{"kind":"Field","name":{"kind":"Name","value":"line3"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"postCode"}},{"kind":"Field","name":{"kind":"Name","value":"primaryAddress"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryPhoneNumber"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"areaCode"}},{"kind":"Field","name":{"kind":"Name","value":"countryCode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryEmail"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"studentIrePP"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"medicalCard"}},{"kind":"Field","name":{"kind":"Name","value":"travellerHeritage"}},{"kind":"Field","name":{"kind":"Name","value":"languageSupportApplicant"}},{"kind":"Field","name":{"kind":"Name","value":"borderIndicator"}},{"kind":"Field","name":{"kind":"Name","value":"examNumber"}},{"kind":"Field","name":{"kind":"Name","value":"lockerNumber"}},{"kind":"Field","name":{"kind":"Name","value":"previousSchoolRollNumber"}},{"kind":"Field","name":{"kind":"Name","value":"dpin"}},{"kind":"Field","name":{"kind":"Name","value":"examEntrant"}},{"kind":"Field","name":{"kind":"Name","value":"repeatYear"}},{"kind":"Field","name":{"kind":"Name","value":"boardingDays"}},{"kind":"Field","name":{"kind":"Name","value":"shortTermPupil"}},{"kind":"Field","name":{"kind":"Name","value":"shortTermPupilNumWeeks"}},{"kind":"Field","name":{"kind":"Name","value":"reasonForLeaving"}},{"kind":"Field","name":{"kind":"Name","value":"destinationRollNo"}},{"kind":"Field","name":{"kind":"Name","value":"previousSchoolType"}}]}},{"kind":"Field","name":{"kind":"Name","value":"classGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tutors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearGroupLeads"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"programmeStages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"programme"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"siblings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrolledSiblings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"classGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"nonEnrolledSiblings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Core_Student_PersonalQuery, Core_Student_PersonalQueryVariables>;
 export const QDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"q"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StudentStatusFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"composite_studentStatus"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"sessionAttendance"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"Field","name":{"kind":"Name","value":"currentLocation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"eventId"}},{"kind":"Field","name":{"kind":"Name","value":"room"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"capacity"}}]}},{"kind":"Field","name":{"kind":"Name","value":"lesson"}},{"kind":"Field","name":{"kind":"Name","value":"teacher"}},{"kind":"Field","name":{"kind":"Name","value":"currentAttendance"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"attendanceCodeName"}},{"kind":"Field","name":{"kind":"Name","value":"codeType"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"priorityStudent"}},{"kind":"Field","name":{"kind":"Name","value":"activeSupportPlan"}}]}}]}}]} as unknown as DocumentNode<QQuery, QQueryVariables>;
+export const StudentsForSiblingSearchDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"studentsForSiblingSearch"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_students"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"classGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"contacts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]}}]} as unknown as DocumentNode<StudentsForSiblingSearchQuery, StudentsForSiblingSearchQueryVariables>;
 export const Core_StudentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_students"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_students"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"classGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"personalInformation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"preferredFirstName"}},{"kind":"Field","name":{"kind":"Name","value":"primaryPhoneNumber"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"number"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryEmail"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"studentIrePP"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"examNumber"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tutors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearGroupLeads"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"programmeStages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"programme"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Core_StudentsQuery, Core_StudentsQueryVariables>;
 export const Core_StudentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_student"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StudentFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_students"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"classGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearGroupLeads"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shortName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tutors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]} as unknown as DocumentNode<Core_StudentQuery, Core_StudentQueryVariables>;
 export const Core_StudentsInfoForSelectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_studentsInfoForSelect"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StudentFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_students"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]} as unknown as DocumentNode<Core_StudentsInfoForSelectQuery, Core_StudentsInfoForSelectQueryVariables>;
 export const UpdateCoreStudentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateCoreStudents"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateStudentInput"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_updateStudents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<UpdateCoreStudentsMutation, UpdateCoreStudentsMutationVariables>;
+export const Core_LinkSiblingsAndContactsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_linkSiblingsAndContacts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Core_LinkSiblingsAndContacts"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_linkSiblingsAndContacts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Core_LinkSiblingsAndContactsMutation, Core_LinkSiblingsAndContactsMutationVariables>;
 export const Core_UpdateStudentContactRelationshipsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_updateStudentContactRelationships"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Core_UpdateStudentContactRelationshipInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_updateStudentContactRelationships"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Core_UpdateStudentContactRelationshipsMutation, Core_UpdateStudentContactRelationshipsMutationVariables>;
 export const UpdateStudentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateStudent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateStudentInput"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_updateStudents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<UpdateStudentMutation, UpdateStudentMutationVariables>;
 export const Core_UpsertAcademicNamespaceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_upsertAcademicNamespace"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SaveAcademicNamespaceInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_upsertAcademicNamespace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"academicNamespaceId"}}]}}]}}]} as unknown as DocumentNode<Core_UpsertAcademicNamespaceMutation, Core_UpsertAcademicNamespaceMutationVariables>;
@@ -6039,9 +6142,9 @@ export const Communications_SmsCostDocument = {"kind":"Document","definitions":[
 export const Communications_SmsCreditDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_smsCredit"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_smsCredit"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"smsCredit"}}]}}]}}]} as unknown as DocumentNode<Communications_SmsCreditQuery, Communications_SmsCreditQueryVariables>;
 export const Communications_SmsXeroItemDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_smsXeroItem"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_smsXeroItem"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"cost"}}]}}]}}]} as unknown as DocumentNode<Communications_SmsXeroItemQuery, Communications_SmsXeroItemQueryVariables>;
 export const Communications_SmsTopUpDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"communications_smsTopUp"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SmsTopUpInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_smsTopUp"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"smsCredit"}}]}}]}}]} as unknown as DocumentNode<Communications_SmsTopUpMutation, Communications_SmsTopUpMutationVariables>;
-export const StaffWork_AbsenceTypesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"staffWork_absenceTypes"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StaffAbsenceTypeFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staffWork_absenceTypes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"absenceTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"descriptionTextId"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"availableForRequests"}}]}}]}}]} as unknown as DocumentNode<StaffWork_AbsenceTypesQuery, StaffWork_AbsenceTypesQueryVariables>;
-export const Staff_Work_AbsencesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"staff_work_absences"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StaffAbsenceFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staffWork_absences"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"absenceId"}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"absenceType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fromDate"}},{"kind":"Field","name":{"kind":"Name","value":"toDate"}}]}}]}}]} as unknown as DocumentNode<Staff_Work_AbsencesQuery, Staff_Work_AbsencesQueryVariables>;
-export const StaffWork_UpsertAbsenceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"staffWork_upsertAbsence"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpsertStaffAbsence"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staffWork_upsertAbsence"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staffPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"absenceTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"fromDate"}},{"kind":"Field","name":{"kind":"Name","value":"toDate"}},{"kind":"Field","name":{"kind":"Name","value":"fromAbsenceRequestId"}},{"kind":"Field","name":{"kind":"Name","value":"absenceReasonText"}}]}}]}}]} as unknown as DocumentNode<StaffWork_UpsertAbsenceMutation, StaffWork_UpsertAbsenceMutationVariables>;
+export const Swm_AbsenceTypesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"swm_absenceTypes"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_StaffAbsenceTypeFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_absenceTypes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"absenceTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"descriptionTextId"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"availableForRequests"}}]}}]}}]} as unknown as DocumentNode<Swm_AbsenceTypesQuery, Swm_AbsenceTypesQueryVariables>;
+export const Swm_AbsencesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"swm_absences"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_StaffAbsenceFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_absences"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"absenceId"}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"absenceType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"dates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"continuousStartDate"}},{"kind":"Field","name":{"kind":"Name","value":"continuousEndDate"}},{"kind":"Field","name":{"kind":"Name","value":"individualDates"}},{"kind":"Field","name":{"kind":"Name","value":"partialAbsence"}},{"kind":"Field","name":{"kind":"Name","value":"partialStartTime"}},{"kind":"Field","name":{"kind":"Name","value":"partialEndTime"}}]}}]}}]}}]} as unknown as DocumentNode<Swm_AbsencesQuery, Swm_AbsencesQueryVariables>;
+export const Swm_UpsertAbsenceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"swm_upsertAbsence"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_UpsertStaffAbsence"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_upsertAbsence"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staffPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"absenceTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"fromAbsenceRequestId"}},{"kind":"Field","name":{"kind":"Name","value":"absenceReasonText"}}]}}]}}]} as unknown as DocumentNode<Swm_UpsertAbsenceMutation, Swm_UpsertAbsenceMutationVariables>;
 export const Tt_TimetablesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"tt_timetables"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"TTTimetableFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tt_timetables"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"timetableId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"liveStatus"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalChanges"}},{"kind":"Field","name":{"kind":"Name","value":"lessonChanges"}},{"kind":"Field","name":{"kind":"Name","value":"timetableGroupChanges"}},{"kind":"Field","name":{"kind":"Name","value":"lastPublishedDate"}}]}}]}}]}}]} as unknown as DocumentNode<Tt_TimetablesQuery, Tt_TimetablesQueryVariables>;
 export const Tt_SwapTeacherOptionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"tt_swapTeacherOptions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TTSwapTeacherFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tt_swapTeacherOptions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"timeslots"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gridIdx"}},{"kind":"Field","name":{"kind":"Name","value":"dayIdx"}},{"kind":"Field","name":{"kind":"Name","value":"periodIdx"}}]}},{"kind":"Field","name":{"kind":"Name","value":"info"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dayOfWeek"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"teachers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staffId"}},{"kind":"Field","name":{"kind":"Name","value":"teacher"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"lessonOnTimeslots"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lessonIdx"}},{"kind":"Field","name":{"kind":"Name","value":"lessonInstanceIdx"}},{"kind":"Field","name":{"kind":"Name","value":"timetableGroupId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"partyGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<Tt_SwapTeacherOptionsQuery, Tt_SwapTeacherOptionsQueryVariables>;
 export const Tt_SwapRoomOptionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"tt_swapRoomOptions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TTSwapRoomFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tt_swapRoomOptions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"timeslots"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gridIdx"}},{"kind":"Field","name":{"kind":"Name","value":"dayIdx"}},{"kind":"Field","name":{"kind":"Name","value":"periodIdx"}}]}},{"kind":"Field","name":{"kind":"Name","value":"info"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dayOfWeek"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}},{"kind":"Field","name":{"kind":"Name","value":"room"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"capacity"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"pools"}}]}},{"kind":"Field","name":{"kind":"Name","value":"lessonOnTimeslots"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lessonIdx"}},{"kind":"Field","name":{"kind":"Name","value":"lessonInstanceIdx"}},{"kind":"Field","name":{"kind":"Name","value":"timetableGroupId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"partyGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<Tt_SwapRoomOptionsQuery, Tt_SwapRoomOptionsQueryVariables>;
