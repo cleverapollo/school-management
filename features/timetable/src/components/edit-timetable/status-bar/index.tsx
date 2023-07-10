@@ -52,7 +52,7 @@ export function EditTimetableStatusBar() {
                   my: 0.25,
                 }}
               >
-                <Tooltip title={tooltip}>
+                <Tooltip describeChild title={tooltip}>
                   <span>
                     <Button
                       size="small"
@@ -76,7 +76,7 @@ export function EditTimetableStatusBar() {
             <Divider orientation="vertical" flexItem sx={{ ml: 1, mr: 2.5 }} />
             <TimetableStatusDetails {...(liveTimetable?.liveStatus ?? {})} />
             <Divider orientation="vertical" flexItem sx={{ mx: 2.5 }} />
-            <Tooltip title={tooltip}>
+            <Tooltip describeChild title={tooltip}>
               <span>
                 <Button
                   variant="contained"

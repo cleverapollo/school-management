@@ -4,12 +4,12 @@ import {
   gqlClient,
   graphql,
   queryClient,
-  StaffAbsenceTypeFilter,
+  Swm_StaffAbsenceTypeFilter,
 } from '@tyro/api';
 
 const staffWorkAbsenceTypes = graphql(/* GraphQL */ `
-  query staffWork_absenceTypes($filter: StaffAbsenceTypeFilter) {
-    staffWork_absenceTypes(filter: $filter) {
+  query swm_absenceTypes($filter: SWM_StaffAbsenceTypeFilter) {
+    swm_absenceTypes(filter: $filter) {
       absenceTypeId
       name
       nameTextId
@@ -25,22 +25,22 @@ export const staffWorkAbsenceTypesKeys = {
   list: ['staffWork', 'absenceTypes'] as const,
 };
 
-const staffWorkAbsenceTypesQuery = (filter: StaffAbsenceTypeFilter) => ({
+const staffWorkAbsenceTypesQuery = (filter: Swm_StaffAbsenceTypeFilter) => ({
   queryKey: staffWorkAbsenceTypesKeys.list,
   queryFn: () => gqlClient.request(staffWorkAbsenceTypes, { filter }),
 });
 
-export function getStaffWorkAbsenceTypes(filter: StaffAbsenceTypeFilter) {
+export function getStaffWorkAbsenceTypes(filter: Swm_StaffAbsenceTypeFilter) {
   return queryClient.fetchQuery(staffWorkAbsenceTypesQuery(filter));
 }
 
-export function useStaffWorkAbsenceTypes(filter: StaffAbsenceTypeFilter) {
+export function useStaffWorkAbsenceTypes(filter: Swm_StaffAbsenceTypeFilter) {
   return useQuery({
     ...staffWorkAbsenceTypesQuery(filter),
-    select: ({ staffWork_absenceTypes }) => {
-      if (!Array.isArray(staffWork_absenceTypes)) return [];
+    select: ({ swm_absenceTypes }) => {
+      if (!Array.isArray(swm_absenceTypes)) return [];
 
-      return staffWork_absenceTypes;
+      return swm_absenceTypes;
     },
   });
 }

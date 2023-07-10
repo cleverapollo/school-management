@@ -56,8 +56,9 @@ export function PublishModal({ open, onClose }: UnpublishedChangesModalProps) {
         {t('timetable:whenWouldYouLikeTheFollowingChangesToBeEffectiveFrom')}
       </DialogTitle>
       <DialogContent sx={{ p: 0 }}>
-        {isLoading && <LoadingPlaceholder sx={{ minHeight: 200 }} />}
-        {!isLoading && (
+        {isLoading ? (
+          <LoadingPlaceholder sx={{ minHeight: 200 }} />
+        ) : (
           <>
             <DatePicker
               label={t('timetable:effectiveFrom')}
@@ -99,6 +100,7 @@ export function PublishModal({ open, onClose }: UnpublishedChangesModalProps) {
           {t('common:actions.cancel')}
         </Button>
         <Tooltip
+          describeChild
           title={hasNoChanges ? t('timetable:thereAreNoChangesAvailable') : ''}
         >
           <span>
