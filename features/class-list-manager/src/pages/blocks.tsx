@@ -157,15 +157,15 @@ export default function ClassListManagerBlocks() {
     });
   };
 
-  const { setIsBlockView } = useClassListSettings();
+  const { setCurrentBlock } = useClassListSettings();
 
   useEffect(() => {
-    setIsBlockView(true, selectedBlock ?? undefined);
+    setCurrentBlock(selectedBlock ?? undefined);
   }, []);
 
   useEffect(() => {
     setSelectedRotationIndex(0);
-    setIsBlockView(true, selectedBlock ?? undefined);
+    setCurrentBlock(selectedBlock ?? undefined);
   }, [selectedBlock]);
 
   return (

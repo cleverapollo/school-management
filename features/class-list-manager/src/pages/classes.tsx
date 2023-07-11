@@ -36,10 +36,10 @@ export default function ClassListManagerClasses() {
   );
   const { mutateAsync: saveClassMemberships } = useUpdateClassMemberships();
 
-  const { setIsBlockView } = useClassListSettings();
+  const { setCurrentBlock } = useClassListSettings();
 
   useEffect(() => {
-    setIsBlockView(false, undefined);
+    setCurrentBlock(undefined);
   }, []);
 
   const requestSetSelectedYearGroup = (

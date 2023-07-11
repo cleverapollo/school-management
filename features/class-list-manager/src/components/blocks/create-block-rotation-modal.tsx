@@ -9,21 +9,17 @@ import {
   Tooltip,
   IconButton,
   Divider,
+  Grid,
 } from '@mui/material';
-import { RHFDatePicker, RHFTextField } from '@tyro/core';
+import { RHFDatePicker, RHFTextField, useFormValidator } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import { Core_EnableBlockRotationInput } from '@tyro/api';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { AddIcon, TrashIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import {
-  ReturnTypeOfUseBlockList,
-  useCreateOrUpdateBlockRotation,
-} from '../../api/blocks';
+import { useCreateOrUpdateBlockRotation } from '../../api/blocks';
 
 export type BlockRotationIterationInput = {
   startDate?: dayjs.Dayjs;
@@ -39,9 +35,7 @@ export type CreateBlockRotationFormState = Pick<
 };
 
 export type CreateBlockRotationViewProps = {
-  initialCreateBlockRotationState?:
-    | NonNullable<ReturnTypeOfUseBlockList>[number]
-    | undefined;
+  initialCreateBlockRotationState?: CreateBlockRotationFormState | undefined;
   onClose: () => void;
 };
 
@@ -51,48 +45,34 @@ export const CreateBlockRotationModal = ({
 }: CreateBlockRotationViewProps) => {
   const { t } = useTranslation(['common', 'classListManager']);
 
-  const [iterations, setIterations] = useState<BlockRotationIterationInput[]>(
-    []
-  );
   const {
     mutate: createOrUpdateBlockRotationMutation,
     isLoading: isSubmitting,
     isSuccess: isSubmitSuccessful,
   } = useCreateOrUpdateBlockRotation();
 
-  const defaultFormStateValues: Partial<CreateBlockRotationFormState> = {
-    blockId: initialCreateBlockRotationState?.blockId,
-    rotationName: '',
-    iterations: initialCreateBlockRotationState?.rotations?.map((item) => ({
-      startDate: item.startDate ? dayjs(item.startDate) : undefined,
-      endDate: item.endDate ? dayjs(item.endDate) : undefined,
-      iteration: item.iteration,
-    })),
-  };
-
-  const schema = yup.object().shape<any>({
-    rotationName: yup.string().required(),
-    iterations: yup.array().of(
-      yup.object().shape({
-        startDate: yup.date().typeError('').required(''),
-        endDate: yup.date().typeError('').required(''),
-      })
-    ),
-  });
+  const { resolver, rules } = useFormValidator<CreateBlockRotationFormState>();
 
   const { control, handleSubmit, reset } =
     useForm<CreateBlockRotationFormState>({
-      resolver: yupResolver(schema),
-      defaultValues: defaultFormStateValues,
+      resolver: resolver({
+        rotationName: rules.required(),
+        iterations: rules.minLength(2),
+      }),
+      defaultValues: {},
       mode: 'onChange',
     });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'iterations',
+  });
 
   const onSubmit = ({
     blockId,
     rotationName,
     ...restData
   }: CreateBlockRotationFormState) => {
-    console.log('restData', restData);
     const iterationsInput = restData.iterations.map((item) => ({
       startDate: item.startDate?.format('YYYY-MM-DD'),
       endDate: dayjs(item.endDate)?.format('YYYY-MM-DD'),
@@ -109,52 +89,36 @@ export const CreateBlockRotationModal = ({
     );
   };
 
-  useEffect(() => {
-    if (initialCreateBlockRotationState) {
-      reset({
-        ...defaultFormStateValues,
-        ...initialCreateBlockRotationState,
-      });
-      setIterations(
-        initialCreateBlockRotationState?.rotations?.map((item) => ({
-          startDate: item.startDate ? dayjs(item.startDate) : undefined,
-          endDate: item.endDate ? dayjs(item.endDate) : undefined,
-          iteration: item.iteration,
-        }))
-      );
-    }
-  }, [initialCreateBlockRotationState]);
-
-  useEffect(() => {
-    reset();
-  }, [isSubmitSuccessful]);
-
   const handleClose = () => {
     onClose();
     reset();
   };
 
   const handleAddNewRotationIteration = () => {
-    const newIterations = [...iterations];
-    newIterations.push({
-      startDate: undefined,
-      endDate: undefined,
-      iteration: iterations.length + 1,
-    });
-    setIterations(newIterations);
+    append({ iteration: fields.length + 1 } as BlockRotationIterationInput);
   };
 
-  const handleDeleteRotationIteration = (iteration: number) => {
-    let newIterations = [...iterations];
-    newIterations = newIterations.filter(
-      (item) => item.iteration !== iteration
-    );
-    newIterations = newIterations.map((item, index) => ({
-      ...item,
-      iteration: index + 1,
-    }));
-    setIterations(newIterations);
+  const handleDeleteRotationIteration = (index: number) => {
+    remove(index);
   };
+
+  useEffect(() => {
+    if (initialCreateBlockRotationState) {
+      const defaultFormStateValues: Partial<CreateBlockRotationFormState> = {
+        blockId: initialCreateBlockRotationState?.blockId,
+        rotationName: '',
+        iterations: initialCreateBlockRotationState?.iterations,
+      };
+      reset({
+        ...defaultFormStateValues,
+        ...initialCreateBlockRotationState,
+      });
+    }
+  }, [initialCreateBlockRotationState]);
+
+  useEffect(() => {
+    reset();
+  }, [isSubmitSuccessful]);
 
   return (
     <Dialog
@@ -164,9 +128,9 @@ export const CreateBlockRotationModal = ({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle sx={{ textTransform: 'capitalize' }}>
-        {initialCreateBlockRotationState?.rotations &&
-        initialCreateBlockRotationState?.rotations.length > 0
+      <DialogTitle>
+        {initialCreateBlockRotationState?.iterations &&
+        initialCreateBlockRotationState?.iterations.length > 0
           ? t('classListManager:updateRotation')
           : t('classListManager:createRotation')}
       </DialogTitle>
@@ -179,8 +143,8 @@ export const CreateBlockRotationModal = ({
         </Typography>
       </Stack>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack gap={3} p={3}>
-          <Box sx={{ width: '50%' }}>
+        <Grid container spacing={2} p={3}>
+          <Grid item xs={6}>
             <RHFTextField<CreateBlockRotationFormState>
               label={t('common:name')}
               controlProps={{
@@ -191,104 +155,99 @@ export const CreateBlockRotationModal = ({
                 fullWidth: true,
               }}
             />
-          </Box>
+          </Grid>
 
-          {iterations?.map((rotation, index) => (
-            <Stack
-              direction="row"
-              gap={1}
-              sx={{
-                borderRadius: 1,
-                backgroundColor: 'slate.50',
-                border: 1,
-                borderColor: 'slate.200',
-                p: 1,
-                alignItems: 'center',
-                height: 50,
-              }}
-            >
-              <Typography
-                sx={{ width: '50%' }}
-                variant="body1"
-                color="text.secondary"
-              >
-                {t('classListManager:rotation')} {rotation?.iteration}
-              </Typography>
-              <Divider
-                orientation="vertical"
+          {fields?.map((rotation, index) => (
+            <Grid item xs={12} key={rotation.id}>
+              <Stack
+                direction="row"
+                gap={1}
                 sx={{
-                  height: 40,
-                  borderRight: 1,
+                  borderRadius: 1,
+                  backgroundColor: 'slate.50',
+                  border: 1,
                   borderColor: 'slate.200',
+                  p: 1,
+                  alignItems: 'center',
+                  height: 50,
                 }}
-              />
-              <RHFDatePicker<CreateBlockRotationFormState>
-                label={t('common:startDate')}
-                inputProps={{
-                  fullWidth: true,
-                  size: 'small',
-                  sx: { backgroundColor: 'white' },
-                }}
-                controlProps={{
-                  name: `iterations.${index}.startDate`,
-                  control,
-                }}
-              />
-              <RHFDatePicker<CreateBlockRotationFormState>
-                label={t('common:endDate')}
-                inputProps={{
-                  fullWidth: true,
-                  size: 'small',
-                  sx: { backgroundColor: 'white' },
-                }}
-                controlProps={{
-                  name: `iterations.${index}.endDate`,
-                  control,
-                }}
-              />
-              <Divider
-                orientation="vertical"
-                sx={{
-                  height: 40,
-                  borderRight: 1,
-                  borderColor: 'slate.200',
-                  opacity: rotation?.iteration > 2 ? 1 : 0,
-                }}
-              />
-              <Tooltip
-                sx={{ textTransform: 'capitalize' }}
-                title={
-                  rotation?.iteration > 2
-                    ? t('classListManager:createRotation')
-                    : ''
-                }
               >
-                <span>
-                  <IconButton
-                    sx={{ opacity: rotation?.iteration > 2 ? 1 : 0 }}
-                    aria-label={t('classListManager:deleteRotation')}
-                    onClick={() =>
-                      handleDeleteRotationIteration(rotation.iteration ?? 0)
-                    }
-                    disabled={rotation?.iteration <= 2}
-                    color="default"
-                  >
-                    <TrashIcon />
-                  </IconButton>
-                </span>
-              </Tooltip>
-            </Stack>
+                <Typography
+                  sx={{ width: '50%' }}
+                  variant="body1"
+                  color="text.secondary"
+                >
+                  {t('classListManager:rotation')} {index + 1}
+                </Typography>
+                <Divider
+                  orientation="vertical"
+                  sx={{
+                    height: 40,
+                    color: 'slate.200',
+                  }}
+                />
+                <RHFDatePicker<CreateBlockRotationFormState>
+                  label={t('common:startDate')}
+                  inputProps={{
+                    fullWidth: true,
+                    size: 'small',
+                    sx: { backgroundColor: 'white' },
+                  }}
+                  controlProps={{
+                    name: `iterations.${index}.startDate`,
+                    control,
+                  }}
+                />
+                <RHFDatePicker<CreateBlockRotationFormState>
+                  label={t('common:endDate')}
+                  inputProps={{
+                    fullWidth: true,
+                    size: 'small',
+                    sx: { backgroundColor: 'white' },
+                  }}
+                  controlProps={{
+                    name: `iterations.${index}.endDate`,
+                    control,
+                  }}
+                />
+                <Divider
+                  orientation="vertical"
+                  sx={{
+                    height: 40,
+                    color: 'slate.200',
+                    opacity: index > 1 ? 1 : 0,
+                  }}
+                />
+                <Tooltip
+                  title={index > 1 ? t('classListManager:createRotation') : ''}
+                >
+                  <span>
+                    <IconButton
+                      sx={{ opacity: index > 1 ? 1 : 0 }}
+                      aria-label={t('classListManager:deleteRotation')}
+                      onClick={() => handleDeleteRotationIteration(index)}
+                      disabled={index <= 1}
+                      color="default"
+                    >
+                      <TrashIcon />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              </Stack>
+            </Grid>
           ))}
-          <Box display="flex" alignItems="center">
-            <Button
-              variant="text"
-              onClick={handleAddNewRotationIteration}
-              startIcon={<AddIcon />}
-            >
-              {t('classListManager:addAnotherRotation')}
-            </Button>
-          </Box>
-        </Stack>
+          <Grid item xs={12}>
+            <Box display="flex" alignItems="center">
+              <Button
+                variant="text"
+                onClick={handleAddNewRotationIteration}
+                startIcon={<AddIcon />}
+              >
+                {t('classListManager:addAnotherRotation')}
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
 
         <DialogActions>
           <Button variant="outlined" color="inherit" onClick={handleClose}>

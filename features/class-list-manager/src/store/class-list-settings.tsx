@@ -3,9 +3,7 @@ import { ReturnTypeOfUseBlockList } from '../api/blocks';
 
 export type ClassListSettingsContextValue = {
   showGender: boolean;
-  isBlockView: boolean;
-  setIsBlockView: (
-    value: boolean,
+  setCurrentBlock: (
     data?: NonNullable<ReturnTypeOfUseBlockList>[number]
   ) => void;
 };
