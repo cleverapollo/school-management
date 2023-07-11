@@ -17,7 +17,7 @@ import { useSwapTeacherAndRoomModal } from '../../../hooks/use-swap-teacher-and-
 import { Lesson } from '../../../hooks/use-resource-table';
 import { TeacherSwapTable } from './teachers-table';
 import { RoomSwapTable } from './rooms-table';
-import { useSwapTeachersAndRooms } from '../../../api/swap-teachers-and-rooms';
+import { useSwapTeachersAndRooms } from '../../../api/edit-timetable/swap-teachers-and-rooms';
 
 interface SwapTeacherRoomModalProps {
   timetableId: number;

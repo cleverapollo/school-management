@@ -27,7 +27,8 @@ interface SwapButtonProps extends StyledSwapButtonProps {
 
 interface UndoSwapButtonProps extends StyledSwapButtonProps {
   onClick: () => void;
-  lesson: SwapChangeWithOptionalLesson['lesson'];
+  newLesson: SwapChangeWithOptionalLesson['lesson'] | undefined;
+  originalLesson: SwapChangeWithOptionalLesson['lesson'] | undefined;
 }
 
 const StyledSwapButton = styled(Button)<StyledSwapButtonProps>(
@@ -161,9 +162,14 @@ export function SwapButton({
 
 export function UndoSwapButton({
   isSwapped,
-  lesson,
+  newLesson,
+  originalLesson,
   ...props
 }: UndoSwapButtonProps) {
+  const label = isSwapped
+    ? newLesson?.partyGroup.name
+    : originalLesson?.partyGroup.name;
+
   return (
     <StyledSwapButton
       {...props}
@@ -171,7 +177,7 @@ export function UndoSwapButton({
       disabled={!isSwapped}
       endIcon={isSwapped ? <SwapIcon /> : undefined}
     >
-      {lesson?.partyGroup.name || '-'}
+      {label || '-'}
     </StyledSwapButton>
   );
 }

@@ -294,6 +294,7 @@ export const Calendar = function Calendar({
                     border: (theme) => `solid 1px ${theme.palette.divider}`,
                     backdropFilter: 'blur(6px)',
                     backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                    zIndex: 5,
                   }}
                   onClick={onCloseFilterCalendar}
                 >

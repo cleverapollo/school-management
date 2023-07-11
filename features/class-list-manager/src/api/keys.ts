@@ -1,11 +1,13 @@
 import {
+  BlockFilter,
   EnrollmentIre_BlockEnrollmentFilter,
   EnrollmentIre_CoreEnrollmentFilter,
 } from '@tyro/api';
 
 export const classListManagerKeys = {
   all: ['classListManager'] as const,
-  blocksList: () => [...classListManagerKeys.all, 'blocksList'] as const,
+  blocksList: (filter: BlockFilter) =>
+    [...classListManagerKeys.all, 'blocksList', filter] as const,
   allBlockMemberships: () =>
     [...classListManagerKeys.all, 'blockMemberships'] as const,
   blockMemberships: (filter: EnrollmentIre_BlockEnrollmentFilter) =>

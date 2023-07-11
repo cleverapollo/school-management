@@ -78,7 +78,7 @@ const getClassGroupColumns = (
   {
     headerName: t('common:tutor'),
     field: 'tutors',
-    cellClass: 'disable-cell-edit-style',
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     valueFormatter: ({ data }) => displayNames(data?.tutors),
     valueSetter: ({ data, newValue }) => {
       set(data, 'tutors', newValue ?? []);

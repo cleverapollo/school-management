@@ -12,7 +12,7 @@ import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import { SearchInput, useDebouncedValue } from '@tyro/core';
 import { useCallback, useState } from 'react';
-import { ReturnTypeFromUseTimetableResourceView } from '../../api/resource-view';
+import { ReturnTypeFromUseTimetableResourceView } from '../../api/edit-timetable/resource-view';
 import { Lesson, useResourceTable } from '../../hooks/use-resource-table';
 import { ResourceTableCard } from './resource-table-card';
 import { SwapTeacherRoomModal } from './swap-teacher-room-modal';

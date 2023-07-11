@@ -116,8 +116,9 @@ export default function ManagementPage() {
       {
         staffPartyId: staff.partyId,
         absenceTypeId: absenceType.absenceTypeId,
-        fromDate: dayjs(fromDate).format('YYYY-MM-DD'),
-        toDate: dayjs(toDate).format('YYYY-MM-DD'),
+        dates: [],
+        // fromDate: dayjs(fromDate).format('YYYY-MM-DD'),
+        // toDate: dayjs(toDate).format('YYYY-MM-DD'),
         absenceReasonText: typeNote,
         substitutionRequired: !!substitutionRequired,
       },

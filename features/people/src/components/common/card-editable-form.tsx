@@ -158,9 +158,17 @@ export const CardEditableForm = <TField extends FieldValues>({
             if (showOnlyOnEdition && !isEditMode) return null;
 
             return (
-              <Box key={`${label}-${index}`}>
-                <Stack gap={0.5} flexDirection="row" alignItems="center">
-                  <Typography component="dt" variant="subtitle1">
+              <Box
+                key={`${label}-${index}`}
+                component={canBeEdited ? 'label' : 'div'}
+              >
+                <Stack
+                  component="span"
+                  gap={0.5}
+                  flexDirection="row"
+                  alignItems="center"
+                >
+                  <Typography flexShrink={0} component="dt" variant="subtitle1">
                     {label}
                   </Typography>
                   {tooltipInfo && (

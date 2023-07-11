@@ -12,7 +12,7 @@
   --ag-tyro-slate-200: #e2e8f0;
   --ag-tyro-slate-500: #64748b;
   --ag-tyro-slate-800: #1e293b;
-  
+
   --ag-tyro-indigo-500: #6366f1;
 
 
@@ -43,7 +43,7 @@
   --ag-checkbox-indeterminate-color: var(--ag-tyro-primary-color);
   --ag-value-change-value-highlight-background-color: #00acc1;
   --ag-side-button-selected-background-color: transparent;
-  --ag-range-selection-border-color:  var(--ag-tyro-primary-color);
+  --ag-range-selection-border-color: var(--ag-tyro-primary-color);
   --ag-readonly-range-selection-border-color: rgba(122, 134, 203, 0.5);
   --ag-checkbox-checked-color: var(--ag-tyro-primary-color);
   --ag-borders: none;
@@ -362,7 +362,7 @@
     opacity: 0;
     transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1);
   }
-  
+
   .ag-theme-tyro .ag-row-hover .ag-show-on-row-interaction,
   .ag-theme-tyro .ag-row-focus .ag-show-on-row-interaction {
     opacity: 1;
@@ -376,4 +376,3 @@
 .ag-theme-tyro .ag-right-aligned-cell {
   justify-content: flex-end;
 }
-

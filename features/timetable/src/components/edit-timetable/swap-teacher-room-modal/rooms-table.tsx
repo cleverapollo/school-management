@@ -1,16 +1,16 @@
 import { TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { TtSwapTeacherFilter } from '@tyro/api';
+import { LoadingPlaceholder } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useEffect, useMemo, useState } from 'react';
 import {
   LessonChangeState,
   ReturnTypeOfUseSwapTeacherAndRoom,
 } from '../../../hooks/use-swap-teacher-and-room-modal';
-import { useAvailableRoomsForResource } from '../../../api/available-resource-options';
+import { useAvailableRoomsForResource } from '../../../api/edit-timetable/available-resource-options';
 import { SwapStyledTable } from './table-style';
 import { SwapButton, UndoSwapButton } from './swap-button';
 import { StatusChip } from './status-chip';
-import { LoadingPlaceholder } from './loading-placeholder';
 import {
   getFixedRowStyles,
   TableHeaderRow,
@@ -37,8 +37,9 @@ export function RoomSwapTable({
     isOpen,
     filter
   );
-  const [hoveredLessonChangeState, setHoveredLessonChangeState] =
-    useState<LessonChangeState>(changeState[0]);
+  const [hoveredLessonChangeState, setHoveredLessonChangeState] = useState<
+    LessonChangeState | undefined
+  >(changeState[0]);
   const hoveredLessonIndex = useMemo(
     () =>
       changeState.findIndex(({ id }) => id === hoveredLessonChangeState?.id),
@@ -56,11 +57,11 @@ export function RoomSwapTable({
             { roomId: roomIdA, room: { name: nameA } },
             { roomId: roomIdB, room: { name: nameB } }
           ) => {
-            if (roomIdA === hoveredLessonChangeState.room?.roomId) {
+            if (roomIdA === hoveredLessonChangeState?.room?.roomId) {
               return -1;
             }
 
-            if (roomIdB === hoveredLessonChangeState.room?.roomId) {
+            if (roomIdB === hoveredLessonChangeState?.room?.roomId) {
               return 1;
             }
 
@@ -91,7 +92,7 @@ export function RoomSwapTable({
       <TableBody sx={getFixedRowStyles(hoveredLessonIndex + 2, 1)}>
         {filteredRooms.map(({ roomId, room, lessonOnTimeslots }) => {
           const isCurrentRoom =
-            roomId === hoveredLessonChangeState.room?.roomId;
+            roomId === hoveredLessonChangeState?.room?.roomId;
           const stickyTop = TABLE_HEADER_ROW_HEIGHT;
 
           return (
@@ -128,7 +129,7 @@ export function RoomSwapTable({
                   );
                   const isSwapped = Boolean(changeForCell);
                   const setHoveredToCurrentState = () => {
-                    if (lessonChangeState.id !== hoveredLessonChangeState.id) {
+                    if (lessonChangeState.id !== hoveredLessonChangeState?.id) {
                       setHoveredLessonChangeState(lessonChangeState);
                     }
                   };
@@ -154,9 +155,8 @@ export function RoomSwapTable({
                       {isCurrentRoomForCell ? (
                         <UndoSwapButton
                           isSwapped={isSwapped}
-                          lesson={
-                            newRoomForCurrentRoom?.lesson ?? lessonOnTimeslot
-                          }
+                          newLesson={newRoomForCurrentRoom?.lesson}
+                          originalLesson={lessonOnTimeslot}
                           onClick={() => {
                             if (changeForCell) {
                               swapRoom(changeForCell);

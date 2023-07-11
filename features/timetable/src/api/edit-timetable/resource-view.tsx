@@ -6,7 +6,7 @@ import {
   TtResourceTimetableViewFilter,
   UseQueryReturnType,
 } from '@tyro/api';
-import { timetableKeys } from './keys';
+import { timetableKeys } from '../keys';
 
 const timetableResourceView = graphql(/* GraphQL */ `
   query tt_resourceTimetableView($filter: TTResourceTimetableViewFilter!) {

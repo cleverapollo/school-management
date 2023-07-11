@@ -1,13 +1,22 @@
 import { lazy } from 'react';
-import { getNumber, NavObjectFunction, NavObjectType } from '@tyro/core';
+import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { EditCalendarIcon } from '@tyro/icons';
 import { getYearGroups } from '@tyro/groups';
-import { getTimetables } from './api/timetables';
-import { getTimetableResourceView } from './api/resource-view';
+import { redirect } from 'react-router-dom';
+import { getLiveTimetableId, getTimetables } from './api/common/timetables';
+import { getTimetableResourceView } from './api/edit-timetable/resource-view';
+import { getTimetableSubjectGroups } from './api/edit-timetable/subject-groups';
 
-const TimetableList = lazy(() => import('./pages/index'));
-const ViewTimetable = lazy(() => import('./pages/view'));
-const EditTimetable = lazy(() => import('./pages/edit-timetable'));
+// const TimetableList = lazy(() => import('./pages/index'));
+// const ViewTimetable = lazy(() => import('./pages/view'));
+
+const EditTimetableContainer = lazy(
+  () => import('./components/edit-timetable-container')
+);
+const Timetable = lazy(() => import('./pages/edit-timetable/timetable'));
+const TimetableSubjectGroups = lazy(
+  () => import('./pages/edit-timetable/subject-groups')
+);
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -43,27 +52,53 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             title: t('navigation:management.timetable.editTimetable'),
             path: 'edit-timetable',
-            loader: async () => {
-              const [activeTimetables, yearGroups] = await Promise.all([
-                getTimetables({ liveTimetable: true }),
-                getYearGroups(),
-              ]);
-              const activeTimetable = activeTimetables.tt_timetables[0];
-              const sixthYearGroup = yearGroups.core_yearGroupEnrollments.find(
-                ({ yearGroupId }) => yearGroupId === 6
-              );
+            element: <EditTimetableContainer />,
+            loader: () => getLiveTimetableId(),
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                index: true,
+                loader: () => redirect('./timetable'),
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'timetable',
+                loader: async () => {
+                  const [liveTimetableId, yearGroups] = await Promise.all([
+                    getLiveTimetableId(),
+                    getYearGroups(),
+                  ]);
+                  const sixthYearGroup =
+                    yearGroups.core_yearGroupEnrollments.find(
+                      ({ yearGroupId }) => yearGroupId === 6
+                    );
 
-              if (activeTimetable && sixthYearGroup) {
-                return getTimetableResourceView({
-                  timetableId: activeTimetable.timetableId,
-                  partyIds: [sixthYearGroup.yearGroupEnrollmentPartyId],
-                  roomIds: [],
-                });
-              }
+                  if (liveTimetableId && sixthYearGroup) {
+                    return getTimetableResourceView({
+                      timetableId: liveTimetableId,
+                      partyIds: [sixthYearGroup.yearGroupEnrollmentPartyId],
+                      roomIds: [],
+                    });
+                  }
 
-              return null;
-            },
-            element: <EditTimetable />,
+                  return null;
+                },
+                element: <Timetable />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'subject-groups',
+                loader: async () => {
+                  const liveTimetableId = await getLiveTimetableId();
+                  return liveTimetableId
+                    ? getTimetableSubjectGroups({
+                        timetableId: liveTimetableId,
+                      })
+                    : null;
+                },
+                element: <TimetableSubjectGroups />,
+              },
+            ],
           },
         ],
       },

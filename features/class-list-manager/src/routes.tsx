@@ -38,7 +38,11 @@ export const getRoutes: NavObjectFunction = (t) => [
           {
             type: NavObjectType.NonMenuLink,
             path: 'blocks',
-            loader: () => getBlocksList(),
+            loader: async () => {
+              const { core_yearGroupEnrollments } = await getYearGroups();
+              const [yearGroup] = core_yearGroupEnrollments;
+              return getBlocksList(yearGroup?.yearGroupId ?? 0);
+            },
             element: <ClassListManagerBlocks />,
           },
         ],

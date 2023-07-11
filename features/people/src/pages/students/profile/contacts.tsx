@@ -99,7 +99,7 @@ const getStudentContactColumns = (
     field: 'legalGuardian',
     headerName: translate('people:legalGuardian'),
     editable: true,
-    cellClass: 'disable-cell-edit-style',
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellEditor: TableSwitch,
     valueFormatter: ({ data }) =>
       data?.legalGuardian ? translate('common:yes') : translate('common:no'),
@@ -113,7 +113,7 @@ const getStudentContactColumns = (
     field: 'pickupRights',
     headerName: translate('people:pickupPermission'),
     editable: true,
-    cellClass: 'disable-cell-edit-style',
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellEditor: TableSwitch,
     valueFormatter: ({ data }) =>
       data?.pickupRights ? translate('common:yes') : translate('common:no'),
@@ -127,7 +127,7 @@ const getStudentContactColumns = (
     field: 'allowAccessToStudentData',
     headerName: translate('people:allowAccessToStudentData'),
     editable: true,
-    cellClass: 'disable-cell-edit-style',
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellEditor: TableSwitch,
     valueFormatter: ({ data }) =>
       data?.allowAccessToStudentData
@@ -143,7 +143,7 @@ const getStudentContactColumns = (
     field: 'allowedToContact',
     headerName: translate('people:allowedToContact'),
     editable: true,
-    cellClass: 'disable-cell-edit-style',
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellEditor: TableSwitch,
     valueFormatter: ({ data }) =>
       data?.allowedToContact ? translate('common:yes') : translate('common:no'),
@@ -157,7 +157,7 @@ const getStudentContactColumns = (
     field: 'includeInSms',
     headerName: translate('people:includedInSms'),
     editable: true,
-    cellClass: 'disable-cell-edit-style',
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellEditor: TableSwitch,
     valueGetter: ({ data }) => data?.allowedToContact && data?.includeInSms,
     valueFormatter: ({ data }) =>
@@ -174,7 +174,7 @@ const getStudentContactColumns = (
     field: 'includeInTmail',
     headerName: translate('people:includeInTmail'),
     editable: true,
-    cellClass: 'disable-cell-edit-style',
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellEditor: TableSwitch,
     valueGetter: ({ data }) => data?.allowedToContact && data?.includeInTmail,
     valueFormatter: ({ data }) =>
