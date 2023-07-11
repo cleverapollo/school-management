@@ -46,6 +46,18 @@ const getColumnDefs = (
     headerName: translate('substitution:reason'),
     valueGetter: ({ data }) => data?.absenceType.name,
   },
+  // {
+  //   field: 'fromDate',
+  //   headerName: translate('substitution:startDate'),
+  //   // TODO: check if this should be DateTime
+  //   valueGetter: ({ data }) => dayjs(data?.fromDate).format('LL'),
+  // },
+  // {
+  //   field: 'toDate',
+  //   headerName: translate('substitution:endDate'),
+  //   // TODO: check if this should be DateTime
+  //   valueGetter: ({ data }) => dayjs(data?.toDate).format('LL'),
+  // },
   // TODO: check how can map these values
   {
     field: 'substitute',

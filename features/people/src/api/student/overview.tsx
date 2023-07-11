@@ -92,9 +92,13 @@ export function getStudentsContacts(studentId: number | undefined) {
   return queryClient.fetchQuery(studentsContactsQuery(studentId));
 }
 
-export function useStudentsContacts(studentId: number | undefined) {
+export function useStudentsContacts(
+  studentId: number | undefined,
+  enabled = true
+) {
   return useQuery({
     ...studentsContactsQuery(studentId),
+    enabled,
     select: useCallback(({ core_students }: Core_Student_ContactsQuery) => {
       const [contact] = core_students;
       if (!Array.isArray(contact.contacts)) return [];

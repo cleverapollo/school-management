@@ -11,6 +11,7 @@
     "remove": "Remove",
     "cancel": "Cancel",
     "add": "Add",
+    "back": "Back",
     "newEvent": "New Event",
     "compose": "Compose",
     "markEmail": "Mark Email Read",
@@ -24,7 +25,8 @@
     "undo": "Undo",
     "continue": "Continue",
     "stayLoggedIn": "Stay logged in",
-    "logMeOut": "Log me out"
+    "logMeOut": "Log me out",
+    "next": "Next"
   },
   "snackbarMessages": {
     "createSuccess": "Create success!",

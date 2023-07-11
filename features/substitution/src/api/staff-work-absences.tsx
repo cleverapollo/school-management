@@ -25,6 +25,14 @@ const staffWorkAbsences = graphql(/* GraphQL */ `
       absenceType {
         name
       }
+      dates {
+        continuousStartDate
+        continuousEndDate
+        individualDates
+        partialAbsence
+        partialStartTime
+        partialEndTime
+      }
     }
   }
 `);

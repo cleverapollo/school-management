@@ -45,5 +45,7 @@ export const peopleKeys = {
       [...peopleKeys.students.all(), 'classes', studentId] as const,
     updateStudent: () =>
       [...peopleKeys.students.all(), 'updateStudent'] as const,
+    studentsForSiblingSearch: () =>
+      [...peopleKeys.students.all(), 'studentsForSiblingSearch'] as const,
   },
 };

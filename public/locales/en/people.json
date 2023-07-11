@@ -183,5 +183,13 @@
   "changeProgrammeYearModalDescription": "Select a new programme year to move the student. This action will also remove them from existing class and subject groups within class list manager.",
   "moveStudent_one": "Move student",
   "moveStudent_other": "Move students",
-  "youMustHaveAtLeastOneStudent": "You must have at least one student"
+  "youMustHaveAtLeastOneStudent": "You must have at least one student",
+  "manageSiblings": "Manage siblings",
+  "enrolledSiblings": "Enrolled sibling(s)",
+  "nonEnrolledSiblings": "Non-enrolled sibling(s)",
+  "searchForNewSibling": "Search for new sibling",
+  "associateContacts": "Associate contacts",
+  "foundAssociatedContact_one": "We've found a contact associated with the selected student(s). Would you like to associate any of these with {{studentName}}?",
+  "foundAssociatedContact_other": "We've found {{count}} contacts associated with the selected student(s). Would you like to associate any of these with {{studentName}}?",
+  "selectContactsToAssociateWithStudent": "Select contacts to associate with {{studentName}}"
 }
