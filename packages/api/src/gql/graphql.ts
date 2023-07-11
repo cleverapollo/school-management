@@ -1734,6 +1734,7 @@ export type MailStarredInput = {
 };
 
 export enum MemberType {
+  Admin = 'ADMIN',
   Contact = 'CONTACT',
   Staff = 'STAFF',
   Student = 'STUDENT'
@@ -1766,7 +1767,6 @@ export type Mutation = {
   communications_smsTopUp?: Maybe<SmsTopUpResponse>;
   communications_starred?: Maybe<Scalars['String']>;
   core_enableBlockRotations?: Maybe<Success>;
-  /**     core_linkStudentsAndContacts(input: UpsertStudentContactInput!): StudentContact! */
   core_linkSiblingsAndContacts: Success;
   core_setActiveActiveAcademicNamespace?: Maybe<AcademicNamespace>;
   core_updateClassGroups?: Maybe<Success>;
@@ -1779,8 +1779,6 @@ export type Mutation = {
   core_upsertRooms: Array<Room>;
   core_upsertStaff?: Maybe<Array<Maybe<Staff>>>;
   core_upsertStudentContact: StudentContact;
-  createProfileForGlobalUser?: Maybe<Profile>;
-  createRole?: Maybe<SecurityRole>;
   enrollment_ire_autoAssignBlocks: EnrollmentIre_CoreMemberships;
   enrollment_ire_autoAssignCore: EnrollmentIre_CoreMemberships;
   enrollment_ire_changeProgrammeStage: Success;
@@ -1799,6 +1797,7 @@ export type Mutation = {
   tt_reset: Success;
   tt_swap: Success;
   tt_updateTimetableGroup: Success;
+  users_createProfileForGlobalUser?: Maybe<Profile>;
   users_inviteUsers?: Maybe<Array<Maybe<UserInvitation>>>;
   users_savePermissionGroup?: Maybe<PermissionGroup>;
   wellbeing_deleteStudentMedicalCondition: StudentMedical;
@@ -1991,16 +1990,6 @@ export type MutationCore_UpsertStudentContactArgs = {
 };
 
 
-export type MutationCreateProfileForGlobalUserArgs = {
-  input?: InputMaybe<CreateProfileForGlobalUserInput>;
-};
-
-
-export type MutationCreateRoleArgs = {
-  input?: InputMaybe<CreateRoleInput>;
-};
-
-
 export type MutationEnrollment_Ire_AutoAssignBlocksArgs = {
   input: EnrollmentIre_AutoAssignBlockMembershipInput;
 };
@@ -2088,6 +2077,11 @@ export type MutationTt_SwapArgs = {
 
 export type MutationTt_UpdateTimetableGroupArgs = {
   input: Tt_UpdateTimetableGroupInput;
+};
+
+
+export type MutationUsers_CreateProfileForGlobalUserArgs = {
+  input?: InputMaybe<CreateProfileForGlobalUserInput>;
 };
 
 
@@ -2467,6 +2461,7 @@ export type PermissionGroupFilter = {
 
 export type PermissionSet = {
   __typename?: 'PermissionSet';
+  contact: Scalars['Boolean'];
   description: Scalars['String'];
   descriptionTextId: Scalars['Int'];
   id: Scalars['Int'];
@@ -2474,11 +2469,16 @@ export type PermissionSet = {
   nameTextId: Scalars['Int'];
   permissionType?: Maybe<PermissionType>;
   permissions?: Maybe<Array<Permission>>;
+  staff: Scalars['Boolean'];
+  student: Scalars['Boolean'];
   toggle?: Maybe<Scalars['Boolean']>;
 };
 
 export type PermissionSetFilter = {
+  contact?: InputMaybe<Scalars['Boolean']>;
   ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  staff?: InputMaybe<Scalars['Boolean']>;
+  student?: InputMaybe<Scalars['Boolean']>;
 };
 
 export enum PermissionType {
@@ -2602,7 +2602,6 @@ export type Profile = {
   permissions?: Maybe<Array<Permission>>;
   profileType?: Maybe<ProfileType>;
   profileTypeId?: Maybe<Scalars['Int']>;
-  securityRoleIds?: Maybe<Array<Maybe<Scalars['Int']>>>;
   tenant: Tenant;
   tenantId?: Maybe<Scalars['Int']>;
 };
@@ -2614,8 +2613,6 @@ export type ProfileFilter = {
 
 export type ProfileType = {
   __typename?: 'ProfileType';
-  defaultRoleIds?: Maybe<Array<Maybe<Scalars['Int']>>>;
-  defaultRoles: Array<Maybe<SecurityRole>>;
   description: Scalars['String'];
   descriptionTextId?: Maybe<Scalars['Int']>;
   id: Scalars['Int'];
@@ -2744,7 +2741,6 @@ export type Query = {
   ppod_syncRequests: Array<SyncRequest>;
   profileTypes?: Maybe<Array<Maybe<ProfileType>>>;
   profiles?: Maybe<Array<Maybe<ProfileType>>>;
-  roles?: Maybe<Array<Maybe<SecurityRole>>>;
   search_search: Array<Search>;
   subjectGroups?: Maybe<Array<SubjectGroup>>;
   swm_absenceTypes: Array<Swm_StaffAbsenceType>;
@@ -3006,11 +3002,6 @@ export type QueryProfileTypesArgs = {
 
 export type QueryProfilesArgs = {
   filter?: InputMaybe<ProfileFilter>;
-};
-
-
-export type QueryRolesArgs = {
-  filter?: InputMaybe<SecurityRoleFilter>;
 };
 
 
@@ -3881,15 +3872,6 @@ export type SessionAttendanceStatus = {
   studentPartyId: Scalars['Long'];
 };
 
-/**
- * input Core_LinkStudentsAndContacts {
- *     studentAllContacts
- * }
- * input Core_LinkStudentsAllContacts {
- *     studentPartyId: Long!
- *     contactPartyIds: [Long!]
- * }
- */
 export type SetActiveAcademicNamespace = {
   academicNamespaceId: Scalars['Int'];
 };
@@ -5289,6 +5271,12 @@ export type UserInvitationFilter = {
   ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
 
+export type UserPermission = {
+  __typename?: 'UserPermission';
+  id: Scalars['String'];
+  permissionType?: Maybe<PermissionType>;
+};
+
 export enum UserType {
   Admin = 'ADMIN',
   Contact = 'CONTACT',
@@ -5759,6 +5747,13 @@ export type Wellbeing_StudentMedicalQueryVariables = Exact<{
 
 export type Wellbeing_StudentMedicalQuery = { __typename?: 'Query', wellbeing_studentMedical?: { __typename?: 'StudentMedical', studentPartyId: number, student?: { __typename?: 'Student', contacts?: Array<{ __typename?: 'StudentContact', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null }, personalInformation?: { __typename?: 'PersonalInformation', preferredFirstName?: string | null, preferredLastName?: string | null, primaryPhoneNumber?: { __typename?: 'PhoneNumber', number?: string | null } | null } | null, relationships?: Array<{ __typename?: 'StudentContactRelationshipInfo', relationshipType: StudentContactType } | null> | null }> | null, siblings?: { __typename?: 'Core_Siblings', enrolledSiblings: Array<{ __typename?: 'Student', partyId: number, person: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, nameTextId: number, name: string } | null }, classGroup?: { __typename?: 'GeneralGroup', name: string } | null }>, nonEnrolledSiblings: Array<{ __typename?: 'Core_NonEnrolledSibling', partyId: number, firstName?: string | null, lastName?: string | null }> } | null } | null, conditions: Array<{ __typename?: 'StudentMedicalCondition', id: number, name: string, description?: string | null, emergencyPlan?: string | null, equipment: Array<{ __typename?: 'StudentMedicalConditionEquipment', id: number, name: string, expiryDate?: string | null, location?: string | null, notes?: string | null }> }>, medicalContacts: Array<{ __typename?: 'StudentMedicalContact', id?: number | null, personalTitle?: string | null, firstName?: string | null, lastName?: string | null, occupation?: string | null, addressLine1?: string | null, addressLine2?: string | null, addressLine3?: string | null, county?: string | null, postcode?: string | null, primaryPhone?: string | null, email?: string | null }> } | null };
 
+export type Wellbeing_DeleteStudentMedicalConditionMutationVariables = Exact<{
+  input: DeleteStudentMedicalConditionInput;
+}>;
+
+
+export type Wellbeing_DeleteStudentMedicalConditionMutation = { __typename?: 'Mutation', wellbeing_deleteStudentMedicalCondition: { __typename?: 'StudentMedical', studentPartyId: number, conditions: Array<{ __typename?: 'StudentMedicalCondition', id: number, name: string, description?: string | null }> } };
+
 export type Wellbeing_UpsertStudentMedicalConditionMutationVariables = Exact<{
   input: UpsertStudentMedicalConditionInput;
 }>;
@@ -6131,6 +6126,7 @@ export const Core_Staff_SubjectGroupsDocument = {"kind":"Document","definitions"
 export const Core_UpsertStaffDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_upsertStaff"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpsertStaffInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_upsertStaff"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}}]}}]}}]} as unknown as DocumentNode<Core_UpsertStaffMutation, Core_UpsertStaffMutationVariables>;
 export const Enrollment_Ire_ChangeProgrammeStageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"enrollment_ire_changeProgrammeStage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EnrollmentIre_ChangeProgrammeStage"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollment_ire_changeProgrammeStage"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Enrollment_Ire_ChangeProgrammeStageMutation, Enrollment_Ire_ChangeProgrammeStageMutationVariables>;
 export const Wellbeing_StudentMedicalDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"wellbeing_studentMedical"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StudentMedicalFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"wellbeing_studentMedical"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"student"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"contacts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"personalInformation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"preferredFirstName"}},{"kind":"Field","name":{"kind":"Name","value":"preferredLastName"}},{"kind":"Field","name":{"kind":"Name","value":"primaryPhoneNumber"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"number"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"relationships"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"relationshipType"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"siblings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrolledSiblings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"classGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"nonEnrolledSiblings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"conditions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"equipment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"expiryDate"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}}]}},{"kind":"Field","name":{"kind":"Name","value":"emergencyPlan"}}]}},{"kind":"Field","name":{"kind":"Name","value":"medicalContacts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"personalTitle"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"occupation"}},{"kind":"Field","name":{"kind":"Name","value":"addressLine1"}},{"kind":"Field","name":{"kind":"Name","value":"addressLine2"}},{"kind":"Field","name":{"kind":"Name","value":"addressLine3"}},{"kind":"Field","name":{"kind":"Name","value":"county"}},{"kind":"Field","name":{"kind":"Name","value":"postcode"}},{"kind":"Field","name":{"kind":"Name","value":"primaryPhone"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]}}]} as unknown as DocumentNode<Wellbeing_StudentMedicalQuery, Wellbeing_StudentMedicalQueryVariables>;
+export const Wellbeing_DeleteStudentMedicalConditionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"wellbeing_deleteStudentMedicalCondition"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteStudentMedicalConditionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"wellbeing_deleteStudentMedicalCondition"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]}}]} as unknown as DocumentNode<Wellbeing_DeleteStudentMedicalConditionMutation, Wellbeing_DeleteStudentMedicalConditionMutationVariables>;
 export const Wellbeing_UpsertStudentMedicalConditionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"wellbeing_upsertStudentMedicalCondition"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpsertStudentMedicalConditionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"wellbeing_upsertStudentMedicalCondition"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"equipment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"location"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Wellbeing_UpsertStudentMedicalConditionMutation, Wellbeing_UpsertStudentMedicalConditionMutationVariables>;
 export const Core_Student_ContactsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_student_contacts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StudentFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_students"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"contacts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"personalInformation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gender"}},{"kind":"Field","name":{"kind":"Name","value":"nationality"}},{"kind":"Field","name":{"kind":"Name","value":"primaryAddress"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"line1"}},{"kind":"Field","name":{"kind":"Name","value":"line2"}},{"kind":"Field","name":{"kind":"Name","value":"line3"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"postCode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryPhoneNumber"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"number"}},{"kind":"Field","name":{"kind":"Name","value":"areaCode"}},{"kind":"Field","name":{"kind":"Name","value":"countryCode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryEmail"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"relationships"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"relationshipType"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"allowedToContact"}},{"kind":"Field","name":{"kind":"Name","value":"includeInSms"}},{"kind":"Field","name":{"kind":"Name","value":"includeInTmail"}},{"kind":"Field","name":{"kind":"Name","value":"pickupRights"}},{"kind":"Field","name":{"kind":"Name","value":"legalGuardian"}},{"kind":"Field","name":{"kind":"Name","value":"allowAccessToStudentData"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Core_Student_ContactsQuery, Core_Student_ContactsQueryVariables>;
 export const Core_Student_SubjectGroupsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_student_subjectGroups"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StudentFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_students"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"subjectGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"irePP"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"level"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Core_Student_SubjectGroupsQuery, Core_Student_SubjectGroupsQueryVariables>;

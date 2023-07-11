@@ -20,6 +20,7 @@ import {
   getStudentsForSelect,
 } from './api/student/students';
 import { getStudentStatus } from './api/student/status';
+import { getStudentMedicalData } from './api/student/medicals/student-medical-data';
 import {
   getStudentsContacts,
   getStudentsSubjectGroups,
@@ -164,6 +165,8 @@ export const getRoutes: NavObjectFunction = (t) => [
                 path: 'overview',
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
+                  console.log('studentId', studentId);
+
                   const formattedDate = dayjs().format('YYYY-MM-DD');
 
                   if (!studentId) {
@@ -273,6 +276,15 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'medical',
                 element: <StudentProfileMedicalPage />,
+                loader: ({ params }) => {
+                  const studentId = getNumber(params.id);
+
+                  if (!studentId) {
+                    throw404Error();
+                  }
+
+                  return getStudentMedicalData(studentId);
+                },
               },
             ],
           },

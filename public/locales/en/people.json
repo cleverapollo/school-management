@@ -187,10 +187,6 @@
   "moveStudent_other": "Move students",
   "youMustHaveAtLeastOneStudent": "You must have at least one student",
   "medicalConditions": "Medical conditions",
-  "addMedicalConditions": "Add medical condition",
-  "editMedicalConditions": "Edit medical condition",
-  "deleteMedicalConditions": "Delete medical condition",
-  "equipment": "Equipment",
   "manageSiblings": "Manage siblings",
   "enrolledSiblings": "Enrolled sibling(s)",
   "nonEnrolledSiblings": "Non-enrolled sibling(s)",
@@ -198,5 +194,14 @@
   "associateContacts": "Associate contacts",
   "foundAssociatedContact_one": "We've found a contact associated with the selected student(s). Would you like to associate any of these with {{studentName}}?",
   "foundAssociatedContact_other": "We've found {{count}} contacts associated with the selected student(s). Would you like to associate any of these with {{studentName}}?",
-  "selectContactsToAssociateWithStudent": "Select contacts to associate with {{studentName}}"
+  "selectContactsToAssociateWithStudent": "Select contacts to associate with {{studentName}}",
+  "editCondition": "Edit condition",
+  "deleteCondition": "Delete condition",
+  "viewCondition": "View condition",
+  "condition": "Condition",
+  "conditions": "Conditions",
+  "equipment": "Equipment",
+  "locationOfEquipment": "Location of equipment",
+  "siblingsInSchool": "Siblings in school",
+  "noMedicalContacts": "No medical contacts added"
 }

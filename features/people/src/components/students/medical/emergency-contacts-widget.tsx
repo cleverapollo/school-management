@@ -24,7 +24,7 @@ import {
   usePreferredNameLayout,
   formatPhoneNumber,
 } from '@tyro/core';
-import { useStudentMedical } from '../../../api/student/medical';
+import { useStudentMedical } from '../../../api/student/medicals/student-medical-data';
 
 export function EmergencyContactsWidget() {
   const { t } = useTranslation(['common', 'people']);

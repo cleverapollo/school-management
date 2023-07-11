@@ -6,17 +6,20 @@ import {
   DialogActions,
   Dialog,
 } from '@mui/material';
-import { RHFSwitch, RHFTextField, useFormValidator } from '@tyro/core';
+import { RHFTextField, useFormValidator } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import { UpsertStudentMedicalConditionInput } from '@tyro/api';
-import { useCreateOrUpdateCondition } from '../../../api/student/medicals/medical-conditions';
+import {
+  UpsertStudentMedicalConditionInput,
+  UpsertStudentMedicalConditionEquipmentInput,
+} from '@tyro/api';
+import { useCreateOrUpdateCondition } from '../../../api/student/medicals/upsert-medical-conditions';
 import { ReturnTypeFromUseStudentMedical } from './conditions-table';
 
 export type EditConditionsFormState = Pick<
   UpsertStudentMedicalConditionInput,
-  'id' | 'name' | 'description' | 'equipment'
+  'id' | 'name' | 'description' | 'equipment' | 'studentPartyId'
 >;
 
 export type EditConditionsProps = {
@@ -50,22 +53,27 @@ export const EditConditionsModal = ({
     resolver: resolver({
       name: [rules.required()],
       description: [rules.required()],
-      // equipment: [rules.required()],
     }),
     defaultValues: defaultFormStateValues,
     mode: 'onChange',
   });
 
-  const onSubmit = ({ ...restData }: EditConditionsFormState) => {
-    createOrUpdateConditionsMutation(
-      {
-        ...restData,
-        studentPartyId: studentId ?? 0,
-      },
-      {
-        onSuccess: onClose,
-      }
-    );
+  const onSubmit = ({
+    equipment,
+    ...restData
+  }: UpsertStudentMedicalConditionInput) => {
+    const transformedEquipment: UpsertStudentMedicalConditionEquipmentInput[] =
+      (equipment ?? []).map(({ name, location }) => ({ name, location }));
+
+    const transformedData: UpsertStudentMedicalConditionInput = {
+      ...restData,
+      equipment: transformedEquipment,
+      studentPartyId: studentId ?? 0,
+    };
+
+    createOrUpdateConditionsMutation(transformedData, {
+      onSuccess: onClose,
+    });
   };
 
   useEffect(() => {
@@ -76,7 +84,7 @@ export const EditConditionsModal = ({
 
   useEffect(() => {
     reset();
-  }, [isSubmitSuccessful]);
+  }, [isSubmitSuccessful, onClose]);
 
   const handleClose = () => {
     onClose();
@@ -93,11 +101,16 @@ export const EditConditionsModal = ({
     >
       <DialogTitle>
         {initialConditionsState?.id
-          ? t('people:editMedicalConditions')
-          : t('people:addMedicalConditions')}
+          ? t('people:editCondition')
+          : t('people:addCondition')}
       </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack spacing={3} sx={{ p: 3 }}>
+        <Stack
+          spacing={3}
+          sx={{
+            p: 3,
+          }}
+        >
           <RHFTextField<EditConditionsFormState>
             label={t('common:name')}
             controlProps={{
@@ -118,14 +131,30 @@ export const EditConditionsModal = ({
             }}
           />
 
-          <RHFTextField<EditConditionsFormState>
-            label="Equipment"
-            controlProps={{
-              name: 'equipment',
-              control,
+          <Stack
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gridTemplateRows: '1fr',
+              gap: '16px',
             }}
-          />
+          >
+            <RHFTextField<EditConditionsFormState>
+              label="Equipment"
+              controlProps={{
+                name: 'equipment.0.name',
+                control,
+              }}
+            />
 
+            <RHFTextField<EditConditionsFormState>
+              label="Location"
+              controlProps={{
+                name: 'equipment.0.location',
+                control,
+              }}
+            />
+          </Stack>
           <DialogActions>
             <Button variant="outlined" color="inherit" onClick={handleClose}>
               {t('common:actions.cancel')}
@@ -136,7 +165,9 @@ export const EditConditionsModal = ({
               variant="contained"
               loading={isSubmitting}
             >
-              Edit Conditions
+              {initialConditionsState?.id
+                ? t('people:editCondition')
+                : t('people:addCondition')}
             </LoadingButton>
           </DialogActions>
         </Stack>

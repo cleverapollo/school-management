@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, queryClient, UseQueryReturnType } from '@tyro/api';
-import { peopleKeys } from '../keys';
+import { peopleKeys } from '../../keys';
 
-const studentMedical = graphql(/* GraphQL */ `
+const studentMedicalData = graphql(/* GraphQL */ `
   query wellbeing_studentMedical($filter: StudentMedicalFilter) {
     wellbeing_studentMedical(filter: $filter) {
       studentPartyId
@@ -80,25 +80,25 @@ const studentMedical = graphql(/* GraphQL */ `
   }
 `);
 
-const studentMedicalQuery = (studentId: number) => ({
+const studentMedicalDataQuery = (studentId: number) => ({
   queryKey: peopleKeys.students.medical(studentId),
   queryFn: async () =>
-    gqlClient.request(studentMedical, {
+    gqlClient.request(studentMedicalData, {
       filter: { studentPartyId: studentId ?? 0 },
     }),
 });
 
-export function getStudentMedical(studentId: number) {
-  return queryClient.fetchQuery(studentMedicalQuery(studentId));
+export function getStudentMedicalData(studentId: number) {
+  return queryClient.fetchQuery(studentMedicalDataQuery(studentId));
 }
 
-export function useStudentMedical(studentId: number) {
+export function useStudentMedicalData(studentId: number) {
   return useQuery({
-    ...studentMedicalQuery(studentId),
+    ...studentMedicalDataQuery(studentId),
     select: ({ wellbeing_studentMedical }) => wellbeing_studentMedical,
   });
 }
 
 export type ReturnTypeFromUseStudentMedical = UseQueryReturnType<
-  typeof useStudentMedical
+  typeof useStudentMedicalData
 >;

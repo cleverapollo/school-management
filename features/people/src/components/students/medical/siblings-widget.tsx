@@ -1,16 +1,18 @@
 import {
+  Box,
   Card,
   CardHeader,
   Chip,
   Stack,
   Typography,
   alpha,
+  Link as MuiLink,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { Avatar, stringToColor, usePreferredNameLayout } from '@tyro/core';
 import { Colour } from '@tyro/api';
 import { Link } from 'react-router-dom';
-import { useStudentMedical } from '../../../api/student/medical';
+import { useStudentMedicalData } from '../../../api/student/medicals/student-medical-data';
 
 interface StudentContactsWidgetProps {
   studentId: number | undefined;
@@ -19,84 +21,100 @@ interface StudentContactsWidgetProps {
 export function SiblingsWidget({ studentId }: StudentContactsWidgetProps) {
   const { t } = useTranslation(['common', 'people']);
   const { displayName } = usePreferredNameLayout();
+  const { data: medicalData } = useStudentMedicalData(studentId ?? 0);
 
-  const { data: medicalData } = useStudentMedical(studentId ?? 0);
+  const numberOfSiblings =
+    medicalData?.student?.siblings?.enrolledSiblings?.length;
 
   return (
     <Card variant="outlined" sx={{ height: '100%', flex: 1 }}>
-      <CardHeader component="h3" title="Siblings in school" />
-
-      <>
+      <CardHeader component="h3" title={t('people:siblingsInSchool')} />
+      {!numberOfSiblings || numberOfSiblings === 0 ? (
         <Stack
           direction="row"
           sx={{
             alignItems: 'center',
             justifyContent: 'space-between',
             px: 3,
-            py: 2,
-            borderBottom: '1px solid',
+            py: 1.75,
+            borderBottom: 'none',
+
             borderColor: 'divider',
           }}
         >
-          <Typography component="h4" variant="subtitle2" noWrap>
-            {t('common:name')}
-          </Typography>
-          <Typography component="h4" variant="subtitle2" noWrap>
-            {t('common:classGroup')}
-          </Typography>
+          <Chip label={t('common:noSiblingsRegisteredAtThisSchool')} />
         </Stack>
+      ) : (
+        <>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              px: 3,
+              py: 1.75,
+              borderBottom: '1px solid',
+              borderColor: 'divider',
+            }}
+          >
+            <Typography component="h4" variant="subtitle2" noWrap>
+              {t('common:name')}
+            </Typography>
+            <Typography component="h4" variant="subtitle2" noWrap>
+              {t('common:classGroup')}
+            </Typography>
+          </Stack>
 
-        <Stack
-          direction="row"
-          sx={{
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            px: 3,
-            py: 2,
-          }}
-        >
-          {!medicalData?.student?.siblings?.enrolledSiblings ||
-          medicalData?.student?.siblings?.enrolledSiblings.length === 0 ? (
-            <Chip label={t('common:noSiblingsRegisteredAtThisSchool')} />
-          ) : (
-            medicalData?.student?.siblings?.enrolledSiblings.map(
+          <Box>
+            {medicalData?.student?.siblings?.enrolledSiblings.map(
               ({ partyId, person, classGroup }) => {
                 const name = displayName(person);
-                const color = stringToColor(name);
-                const colorKey = color.split('.')[0] as Colour;
 
                 return (
-                  <>
-                    <Chip
-                      avatar={<Avatar name={name} src={person.avatarUrl} />}
+                  <Stack
+                    direction="row"
+                    sx={{
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      px: 3,
+                      py: 2,
+                    }}
+                    key={partyId}
+                  >
+                    <Box
                       component={Link}
                       to={`/people/students/${partyId}`}
-                      key={partyId}
-                      label={name}
-                      variant="soft"
-                      sx={({ palette }) => ({
-                        color: 'text.primary',
-                        backgroundColor: alpha(palette[colorKey][500], 0.16),
-                        '&:hover': {
-                          backgroundColor: alpha(palette[colorKey][500], 0.32),
-                        },
+                      sx={{
+                        display: 'flex',
+                        direction: 'row',
+                        alignItems: 'center',
 
-                        '& .MuiChip-avatar': {
-                          color: 'white',
-                          backgroundColor: color,
-                        },
-                      })}
-                    />
+                        textDecoration: 'none',
+                      }}
+                    >
+                      <Avatar name={name} src={person.avatarUrl} />
+                      <Typography
+                        component="h4"
+                        variant="subtitle2"
+                        sx={{
+                          ml: 1,
+                          color: 'text.primary',
+                        }}
+                      >
+                        {name}
+                      </Typography>
+                    </Box>
+
                     <Typography component="h4" variant="subtitle2" noWrap>
                       {classGroup?.name}
                     </Typography>
-                  </>
+                  </Stack>
                 );
               }
-            )
-          )}
-        </Stack>
-      </>
+            )}
+          </Box>
+        </>
+      )}
     </Card>
   );
 }

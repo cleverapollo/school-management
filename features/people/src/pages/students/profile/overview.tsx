@@ -14,86 +14,86 @@ export default function StudentProfileOverviewPage() {
     md: 'row',
   });
 
-  return (
-    <Stack direction={direction} spacing={3}>
-      <StudentContactsWidget studentId={studentId} />
-      <TimetableWidget
-        partyId={studentId}
-        heading="Student's timetable"
-        to="../timetable"
-      />
-    </Stack>
-  );
+  // return (
+  //   <Stack direction={direction} spacing={3}>
+  //     <StudentContactsWidget studentId={studentId} />
+  //     <TimetableWidget
+  //       partyId={studentId}
+  //       heading="Student's timetable"
+  //       to="../timetable"
+  //     />
+  //   </Stack>
+  // );
 
   // Hide till we have data for all widgets
-  // return (
-  //   <Box
-  //     sx={(theme) => ({
-  //       display: 'grid',
-  //       gap: 3,
-  //       maxWidth: 'xl',
-  //       gridTemplateRows: 'repeat(4, auto)',
-  //       gridTemplateColumns: 'repeat(2, 1fr)',
-  //       [theme.breakpoints.up('md')]: {
-  //         gridTemplateRows: 'repeat(3, auto)',
-  //         gridTemplateColumns: 'repeat(4, 1fr)',
-  //       },
-  //       [theme.breakpoints.up('xl')]: {
-  //         gridTemplateRows: 'repeat(2, auto)',
-  //         gridTemplateColumns: 'repeat(7, 1fr)',
-  //       },
-  //     })}
-  //   >
-  //     <Box
-  //       sx={{
-  //         gridColumn: 'span 2',
-  //         gridRow: 'span 1',
-  //       }}
-  //     >
-  //       <StudentContactsWidget studentId={studentId} />
-  //     </Box>
-  //     <Box
-  //       sx={{
-  //         gridColumn: 'span 2',
-  //         gridRow: 'span 1',
-  //       }}
-  //     >
-  //       <StudentAssessmentWidget studentId={studentId} />
-  //     </Box>
-  //     <Box
-  //       sx={(theme) => ({
-  //         gridColumn: 'span 2',
-  //         gridRow: 'span 1',
-  //         [theme.breakpoints.up('md')]: {
-  //           gridColumn: 'span 4',
-  //           gridRow: 'span 1',
-  //         },
-  //         [theme.breakpoints.up('xl')]: {
-  //           gridColumn: 'span 3',
-  //           gridRow: 'span 2',
-  //         },
-  //       })}
-  //     >
-  //       <Box>
-  //         <TimetableWidget
-  //           partyId={studentId}
-  //           heading="Student's timetable"
-  //           to="../timetable"
-  //         />
-  //       </Box>
-  //     </Box>
-  //     <Box
-  //       sx={(theme) => ({
-  //         gridColumn: 'span 2',
-  //         gridRow: 'span 1',
-  //         [theme.breakpoints.up('md')]: {
-  //           gridColumn: 'span 4',
-  //           gridRow: 'span 1',
-  //         },
-  //       })}
-  //     >
-  //       <StudentSessionAttendanceChart studentId={studentId} />
-  //     </Box>
-  //   </Box>
-  // );
+  return (
+    <Box
+      sx={(theme) => ({
+        display: 'grid',
+        gap: 3,
+        maxWidth: 'xl',
+        gridTemplateRows: 'repeat(4, auto)',
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        [theme.breakpoints.up('md')]: {
+          gridTemplateRows: 'repeat(3, auto)',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+        },
+        [theme.breakpoints.up('xl')]: {
+          gridTemplateRows: 'repeat(2, auto)',
+          gridTemplateColumns: 'repeat(7, 1fr)',
+        },
+      })}
+    >
+      <Box
+        sx={{
+          gridColumn: 'span 2',
+          gridRow: 'span 1',
+        }}
+      >
+        <StudentContactsWidget studentId={studentId} />
+      </Box>
+      <Box
+        sx={{
+          gridColumn: 'span 2',
+          gridRow: 'span 1',
+        }}
+      >
+        <StudentAssessmentWidget studentId={studentId} />
+      </Box>
+      <Box
+        sx={(theme) => ({
+          gridColumn: 'span 2',
+          gridRow: 'span 1',
+          [theme.breakpoints.up('md')]: {
+            gridColumn: 'span 4',
+            gridRow: 'span 1',
+          },
+          [theme.breakpoints.up('xl')]: {
+            gridColumn: 'span 3',
+            gridRow: 'span 2',
+          },
+        })}
+      >
+        <Box>
+          <TimetableWidget
+            partyId={studentId}
+            heading="Student's timetable"
+            to="../timetable"
+          />
+        </Box>
+      </Box>
+      <Box
+        sx={(theme) => ({
+          gridColumn: 'span 2',
+          gridRow: 'span 1',
+          [theme.breakpoints.up('md')]: {
+            gridColumn: 'span 4',
+            gridRow: 'span 1',
+          },
+        })}
+      >
+        <StudentSessionAttendanceChart studentId={studentId} />
+      </Box>
+    </Box>
+  );
 }
