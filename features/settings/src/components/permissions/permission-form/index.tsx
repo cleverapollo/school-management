@@ -1,5 +1,5 @@
 import { Grid, Tab, Card, CardHeader, Button, Stack } from '@mui/material';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { LoadingButton, TabContext, TabList, TabPanel } from '@mui/lab';
 import { useTranslation } from '@tyro/i18n';
 import { useEffect, useState } from 'react';
@@ -45,7 +45,6 @@ export const PermissionForm = ({ initialState }: PermissionFormProps) => {
 
   const {
     control,
-    watch,
     handleSubmit,
     setFocus,
     setValue,
@@ -53,7 +52,9 @@ export const PermissionForm = ({ initialState }: PermissionFormProps) => {
     reset,
     formState: { isDirty },
   } = useForm<PermissionFormState>({
-    defaultValues: defaultFormStateValues,
+    defaultValues: {
+      members: [],
+    },
     resolver: resolver({
       name: rules.required(),
       description: rules.required(),
@@ -61,7 +62,7 @@ export const PermissionForm = ({ initialState }: PermissionFormProps) => {
     }),
   });
 
-  const [memberType, members] = watch(['memberType', 'members']);
+  const memberType = useWatch({ name: 'memberType', control });
 
   const goBack = () => {
     navigate('/settings/permissions');
@@ -76,14 +77,12 @@ export const PermissionForm = ({ initialState }: PermissionFormProps) => {
   };
 
   useEffect(() => {
-    if (initialState) {
-      reset({ ...defaultFormStateValues, ...initialState });
-    }
-  }, [initialState]);
-
-  useEffect(() => {
-    reset({ ...defaultFormStateValues, ...initialState, memberType });
-  }, [memberType]);
+    reset({
+      ...defaultFormStateValues,
+      ...initialState,
+      ...(memberType && { memberType }),
+    });
+  }, [initialState, memberType]);
 
   const onSubmit = handleSubmit(
     ({
@@ -169,7 +168,6 @@ export const PermissionForm = ({ initialState }: PermissionFormProps) => {
               <AssignMembers
                 control={control}
                 memberType={memberType}
-                members={members}
                 setFocus={setFocus}
                 setValue={setValue}
               />

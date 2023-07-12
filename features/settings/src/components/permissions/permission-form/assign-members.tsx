@@ -13,7 +13,12 @@ import {
   Stack,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { Control, UseFormSetFocus, UseFormSetValue } from 'react-hook-form';
+import {
+  Control,
+  UseFormSetFocus,
+  UseFormSetValue,
+  useWatch,
+} from 'react-hook-form';
 import {
   Avatar,
   PlaceholderCard,
@@ -32,7 +37,6 @@ import { PermissionFormState } from './types';
 
 type AssignMembersProps = {
   memberType: MemberType;
-  members: MemberOption[];
   control: Control<PermissionFormState>;
   setFocus: UseFormSetFocus<PermissionFormState>;
   setValue: UseFormSetValue<PermissionFormState>;
@@ -42,7 +46,6 @@ const ROWS_PER_PAGE = 10;
 
 export const AssignMembers = ({
   memberType,
-  members,
   setValue,
   setFocus,
   control,
@@ -54,6 +57,8 @@ export const AssignMembers = ({
   const [page, setPage] = useState(1);
 
   const { getMembersByMemberType } = useMembersByPermissionType();
+
+  const members = useWatch({ control, name: 'members' });
 
   const filteredMembers = useMemo(
     () =>
