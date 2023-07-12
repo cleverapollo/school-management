@@ -3,30 +3,31 @@ import { useForm } from 'react-hook-form';
 import { LoadingButton, TabContext, TabList, TabPanel } from '@mui/lab';
 import { useTranslation } from '@tyro/i18n';
 import { useEffect, useState } from 'react';
-import { MemberType } from '@tyro/api';
+import { Feature, MemberType, SavePermissionGroupSet } from '@tyro/api';
 import { ConfirmDialog, useDisclosure, useFormValidator } from '@tyro/core';
 import { useNavigate } from 'react-router-dom';
-import {
-  GeneralInformation,
-  GeneralInformationFormState,
-} from './general-information';
-import {
-  SelectPermissions,
-  SelectPermissionsFormState,
-} from './select-permissions';
-import { AssignMembers, AssignMembersFormState } from './assign-members';
-
-type PermissionFormState = GeneralInformationFormState &
-  SelectPermissionsFormState &
-  AssignMembersFormState;
+import { GeneralInformation } from './general-information';
+import { SelectPermissions } from './select-permissions';
+import { AssignMembers } from './assign-members';
+import { PermissionFormState } from './types';
+import { useSavePermissionGroup } from '../../../api/permissions/save-permissions';
 
 enum TabOption {
   PERMISSIONS = 'permissions',
   MEMBERS = 'members',
 }
 
-export const PermissionForm = () => {
-  const { t } = useTranslation(['settings', 'common']);
+type PermissionFormProps = {
+  initialState?: Partial<PermissionFormState>;
+};
+
+const defaultFormStateValues: Partial<PermissionFormState> = {
+  members: [],
+  memberType: MemberType.Staff,
+};
+
+export const PermissionForm = ({ initialState }: PermissionFormProps) => {
+  const { t, i18n } = useTranslation(['settings', 'common']);
   const navigate = useNavigate();
 
   const {
@@ -34,6 +35,9 @@ export const PermissionForm = () => {
     onOpen: onOpenCancelModal,
     onClose: onCloseCancelModal,
   } = useDisclosure();
+
+  const { mutate: savePermissionGroupMutation, isLoading } =
+    useSavePermissionGroup();
 
   const [tab, setTab] = useState<TabOption>(TabOption.PERMISSIONS);
 
@@ -45,12 +49,11 @@ export const PermissionForm = () => {
     handleSubmit,
     setFocus,
     setValue,
+    register,
+    reset,
     formState: { isDirty },
   } = useForm<PermissionFormState>({
-    defaultValues: {
-      memberType: MemberType.Staff,
-      members: [],
-    },
+    defaultValues: defaultFormStateValues,
     resolver: resolver({
       name: rules.required(),
       description: rules.required(),
@@ -59,10 +62,6 @@ export const PermissionForm = () => {
   });
 
   const [memberType, members] = watch(['memberType', 'members']);
-
-  const onSubmit = (data: PermissionFormState) => {
-    console.log(data);
-  };
 
   const goBack = () => {
     navigate('/settings/permissions');
@@ -77,11 +76,66 @@ export const PermissionForm = () => {
   };
 
   useEffect(() => {
-    setValue('members', []);
-  }, [setValue, memberType]);
+    if (initialState) {
+      reset({ ...defaultFormStateValues, ...initialState });
+    }
+  }, [initialState]);
+
+  useEffect(() => {
+    reset({ ...defaultFormStateValues, ...initialState, memberType });
+  }, [memberType]);
+
+  const onSubmit = handleSubmit(
+    ({
+      id,
+      name,
+      description,
+      memberType: memberTypeValue,
+      members: memberParties,
+      permissionSets,
+    }) => {
+      const locale = i18n.language;
+
+      savePermissionGroupMutation(
+        {
+          id,
+          name: [
+            {
+              value: name,
+              locale,
+            },
+          ],
+          description: [
+            {
+              value: description,
+              locale,
+            },
+          ],
+          memberType: memberTypeValue,
+          memberPartyIds: memberParties.map(
+            (memberParty) => memberParty.partyId
+          ),
+          permissionSets: Object.keys(permissionSets).reduce(
+            (permissions, featureKey) => [
+              ...permissions,
+              ...permissionSets[featureKey as Feature].filter(
+                (permission) =>
+                  permission.permissionType ||
+                  typeof permission.toggle === 'boolean'
+              ),
+            ],
+            [] as SavePermissionGroupSet[]
+          ),
+        },
+        {
+          onSuccess: goBack,
+        }
+      );
+    }
+  );
 
   return (
-    <Grid container gap={3} component="form" onSubmit={handleSubmit(onSubmit)}>
+    <Grid container gap={3} component="form" onSubmit={onSubmit}>
       <Grid item xs={12} lg={10}>
         <GeneralInformation control={control} />
       </Grid>
@@ -104,7 +158,12 @@ export const PermissionForm = () => {
               }
             />
             <TabPanel value={TabOption.PERMISSIONS}>
-              <SelectPermissions control={control} setValue={setValue} />
+              <SelectPermissions
+                register={register}
+                setValue={setValue}
+                control={control}
+                memberType={memberType}
+              />
             </TabPanel>
             <TabPanel value={TabOption.MEMBERS}>
               <AssignMembers
@@ -125,10 +184,16 @@ export const PermissionForm = () => {
             size="large"
             color="primary"
             onClick={handleCancelForm}
+            disabled={isLoading}
           >
             {t('common:actions.cancel')}
           </Button>
-          <LoadingButton variant="contained" size="large" type="submit">
+          <LoadingButton
+            loading={isLoading}
+            variant="contained"
+            size="large"
+            type="submit"
+          >
             {t('settings:permissions.savePermissionsGroup')}
           </LoadingButton>
         </Stack>

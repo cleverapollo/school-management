@@ -8,23 +8,23 @@ import {
 import { PermissionGroup } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 
 type PermissionGroupCardProps = Partial<PermissionGroup> & {
   icon?: ReactNode;
-  onClick: () => void;
 };
 
 export const PermissionGroupCard = ({
+  id,
   name,
   description,
   memberPartyIds,
   icon,
-  onClick,
 }: PermissionGroupCardProps) => {
   const { t } = useTranslation(['settings']);
   return (
-    <Card variant="outlined">
-      <CardActionArea onClick={onClick}>
+    <Card variant="outlined" sx={{ height: '100%' }}>
+      <CardActionArea to={`./edit/${id || ''}`} component={Link}>
         <CardContent>
           <Stack direction="row" alignItems="center" gap={2}>
             {icon}

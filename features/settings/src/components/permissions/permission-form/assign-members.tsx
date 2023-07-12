@@ -28,39 +28,32 @@ import {
   MemberOption,
   useMembersByPermissionType,
 } from '../../../hooks/use-members-by-permission-type';
+import { PermissionFormState } from './types';
 
-export type AssignMembersFormState = {
-  members: MemberOption[];
-};
-
-type AssignMembersProps<TField extends AssignMembersFormState> = {
+type AssignMembersProps = {
   memberType: MemberType;
   members: MemberOption[];
-  control: TField extends AssignMembersFormState ? Control<TField> : never;
-  setFocus: TField extends AssignMembersFormState
-    ? UseFormSetFocus<TField>
-    : never;
-  setValue: TField extends AssignMembersFormState
-    ? UseFormSetValue<TField>
-    : never;
+  control: Control<PermissionFormState>;
+  setFocus: UseFormSetFocus<PermissionFormState>;
+  setValue: UseFormSetValue<PermissionFormState>;
 };
 
-const ROWS_PER_PAGE = 5;
+const ROWS_PER_PAGE = 10;
 
-export const AssignMembers = <TField extends AssignMembersFormState>({
+export const AssignMembers = ({
   memberType,
   members,
   setValue,
   setFocus,
   control,
-}: AssignMembersProps<TField>) => {
+}: AssignMembersProps) => {
   const { t } = useTranslation(['settings']);
   const { displayName } = usePreferredNameLayout();
 
   const [searchMember, setSearchMember] = useState('');
   const [page, setPage] = useState(1);
 
-  const membersByPermission = useMembersByPermissionType(memberType);
+  const { getMembersByMemberType } = useMembersByPermissionType();
 
   const filteredMembers = useMemo(
     () =>
@@ -88,16 +81,17 @@ export const AssignMembers = <TField extends AssignMembersFormState>({
 
   const paginationCount = Math.ceil(filteredMembers.length / ROWS_PER_PAGE);
 
+  const options = getMembersByMemberType(memberType);
+
   return (
     <Grid container gap={2}>
       <Grid item xs={12}>
-        <RHFAutocomplete<AssignMembersFormState, MemberOption>
+        <RHFAutocomplete<PermissionFormState, MemberOption>
           fullWidth
           multiple
-          openOnFocus
           filterSelectedOptions
           label={t(`settings:permissions.searchByMemberType.${memberType}`)}
-          options={membersByPermission}
+          options={options}
           optionIdKey="partyId"
           getOptionLabel={(option) => displayName(option)}
           renderTags={() => null}

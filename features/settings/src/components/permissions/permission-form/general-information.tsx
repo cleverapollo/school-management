@@ -1,24 +1,17 @@
 import { Card, CardHeader, Grid, Typography } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { MemberType, PermissionGroup } from '@tyro/api';
+import { MemberType } from '@tyro/api';
 import { Control } from 'react-hook-form';
 import { RHFSelect, RHFTextField } from '@tyro/core';
+import { PermissionFormState } from './types';
 
 const memberTypeOptions = Object.values(MemberType);
 
-export type GeneralInformationFormState = {
-  name: PermissionGroup['name'];
-  memberType: PermissionGroup['memberType'];
-  description: PermissionGroup['description'];
+type GeneralInformationProps = {
+  control: Control<PermissionFormState>;
 };
 
-type GeneralInformationProps<TField extends GeneralInformationFormState> = {
-  control: TField extends GeneralInformationFormState ? Control<TField> : never;
-};
-
-export const GeneralInformation = <TField extends GeneralInformationFormState>({
-  control,
-}: GeneralInformationProps<TField>) => {
+export const GeneralInformation = ({ control }: GeneralInformationProps) => {
   const { t } = useTranslation(['settings', 'common']);
 
   return (

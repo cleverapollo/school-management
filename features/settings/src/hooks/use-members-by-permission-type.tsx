@@ -4,24 +4,35 @@ import {
   useStudentsForSelect,
 } from '@tyro/people';
 import { MemberType } from '@tyro/api';
+import { useCallback } from 'react';
 
-export const useMembersByPermissionType = (memberType: MemberType) => {
+export const useMembersByPermissionType = () => {
   const { data: studentsData = [] } = useStudentsForSelect({});
   const { data: contactsData = [] } = useContactsForSelect();
   const { data: staffData = [] } = useStaffForSelect({});
 
-  switch (memberType) {
-    case MemberType.Student:
-      return studentsData;
-    case MemberType.Contact:
-      return contactsData;
-    case MemberType.Staff:
-      return staffData;
-    default:
-      return [];
-  }
+  const getMembersByMemberType = useCallback(
+    (memberType: MemberType) => {
+      switch (memberType) {
+        case MemberType.Student:
+          return studentsData;
+        case MemberType.Contact:
+          return contactsData;
+        case MemberType.Staff:
+        case MemberType.Admin:
+          return staffData;
+        default:
+          return [];
+      }
+    },
+    [studentsData, contactsData, staffData]
+  );
+
+  return {
+    getMembersByMemberType,
+  };
 };
 
 export type MemberOption = ReturnType<
-  typeof useMembersByPermissionType
+  ReturnType<typeof useMembersByPermissionType>['getMembersByMemberType']
 >[number];

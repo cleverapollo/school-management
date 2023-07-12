@@ -1,41 +1,52 @@
 import {
   Accordion,
-  AccordionActions,
   AccordionDetails,
   AccordionSummary,
-  AccordionSummaryProps,
   Box,
   Card,
   Paper,
-  Stack,
   Typography,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { ChevronDownIcon } from '@tyro/icons';
+import { Feature } from '@tyro/api';
 import { PropsWithChildren } from 'react';
+import { Control, useWatch } from 'react-hook-form';
+import { PermissionFormState } from './types';
 
 type PermissionAccordionCardProps = PropsWithChildren<{
-  name: string;
-  description?: string;
+  feature: Feature;
   totalPermissions: number;
-  permissionsEnabled: number;
+  control: Control<PermissionFormState>;
 }>;
 
 export const PermissionAccordionCard = ({
-  name,
-  description,
+  feature,
   totalPermissions,
-  permissionsEnabled,
   children,
+  control,
 }: PermissionAccordionCardProps) => {
   const { t } = useTranslation(['settings', 'common']);
+
+  const permissionsByFeature = useWatch({
+    control,
+    name: `permissionSets.${feature}`,
+  }) as PermissionFormState['permissionSets'][Feature];
+
+  const permissions = permissionsByFeature || [];
+
+  const permissionsEnabled = permissions.filter(
+    (permission) => permission.toggle || permission.permissionType
+  ).length;
+
+  const title = t(`settings:permissions.features.${feature}`);
 
   return (
     <Card variant="outlined" sx={{ width: '100%' }}>
       <Accordion sx={{ p: 2 }}>
         <AccordionSummary
           sx={{
-            alignItems: 'start',
+            alignItems: 'center',
             p: 0,
             '&.Mui-expanded .MuiAccordionSummary-content, .MuiAccordionSummary-content':
               {
@@ -76,17 +87,12 @@ export const PermissionAccordionCard = ({
               </Paper>
             </Box>
           }
-          aria-controls={name}
-          id={name}
+          aria-controls={title}
+          id={feature}
         >
-          <Stack>
-            <Typography component="h3" variant="subtitle2">
-              {name}
-            </Typography>
-            <Typography variant="body2" component="p" color="text.secondary">
-              {description}
-            </Typography>
-          </Stack>
+          <Typography component="h3" variant="subtitle2">
+            {title}
+          </Typography>
         </AccordionSummary>
         <AccordionDetails>{children}</AccordionDetails>
       </Accordion>

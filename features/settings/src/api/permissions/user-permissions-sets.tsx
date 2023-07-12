@@ -1,5 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, PermissionSetFilter } from '@tyro/api';
+import {
+  gqlClient,
+  graphql,
+  PermissionSetFilter,
+  queryClient,
+} from '@tyro/api';
 import { permissionsKeys } from './keys';
 
 const permissionSets = graphql(/* GraphQL */ `
@@ -10,11 +15,7 @@ const permissionSets = graphql(/* GraphQL */ `
       description
       permissionType
       toggle
-      permissions {
-        id
-        name
-        description
-      }
+      feature
     }
   }
 `);
@@ -24,9 +25,14 @@ const permissionSetsQuery = (filter: PermissionSetFilter) => ({
   queryFn: () => gqlClient.request(permissionSets, { filter }),
 });
 
+export function getPermissionSets(filter: PermissionSetFilter) {
+  return queryClient.fetchQuery(permissionSetsQuery(filter));
+}
+
 export function usePermissionSets(filter: PermissionSetFilter) {
   return useQuery({
     ...permissionSetsQuery(filter),
+    enabled: !!filter,
     select: ({ users_permissionSets }) =>
       Array.isArray(users_permissionSets) ? users_permissionSets : [],
   });
