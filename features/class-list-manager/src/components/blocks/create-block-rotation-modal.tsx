@@ -57,7 +57,11 @@ export const CreateBlockRotationModal = ({
     useForm<CreateBlockRotationFormState>({
       resolver: resolver({
         rotationName: rules.required(),
-        iterations: rules.minLength(2),
+        iterations: {
+          startDate: [rules.required(''), rules.date('')],
+          endDate: [rules.required(''), rules.date('')],
+          iteration: rules.minLength(2),
+        },
       }),
       defaultValues: {},
       mode: 'onChange',
@@ -96,10 +100,6 @@ export const CreateBlockRotationModal = ({
 
   const handleAddNewRotationIteration = () => {
     append({ iteration: fields.length + 1 } as BlockRotationIterationInput);
-  };
-
-  const handleDeleteRotationIteration = (index: number) => {
-    remove(index);
   };
 
   useEffect(() => {
@@ -210,29 +210,40 @@ export const CreateBlockRotationModal = ({
                     control,
                   }}
                 />
-                <Divider
-                  orientation="vertical"
-                  sx={{
-                    height: 40,
-                    color: 'slate.200',
-                    opacity: index > 1 ? 1 : 0,
-                  }}
-                />
-                <Tooltip
-                  title={index > 1 ? t('classListManager:createRotation') : ''}
-                >
-                  <span>
-                    <IconButton
-                      sx={{ opacity: index > 1 ? 1 : 0 }}
-                      aria-label={t('classListManager:deleteRotation')}
-                      onClick={() => handleDeleteRotationIteration(index)}
-                      disabled={index <= 1}
-                      color="default"
+                {index > 1 ? (
+                  <Stack
+                    sx={{
+                      width: 50,
+                      justifyContent: 'flex-end',
+                    }}
+                    direction="row"
+                  >
+                    <Divider
+                      orientation="vertical"
+                      sx={{
+                        height: 40,
+                        color: 'slate.200',
+                      }}
+                    />
+                    <Tooltip
+                      title={
+                        index > 1 ? t('classListManager:createRotation') : ''
+                      }
                     >
-                      <TrashIcon />
-                    </IconButton>
-                  </span>
-                </Tooltip>
+                      <span>
+                        <IconButton
+                          aria-label={t('classListManager:deleteRotation')}
+                          onClick={() => remove(index)}
+                          color="default"
+                        >
+                          <TrashIcon />
+                        </IconButton>
+                      </span>
+                    </Tooltip>
+                  </Stack>
+                ) : (
+                  <Box mr={5} />
+                )}
               </Stack>
             </Grid>
           ))}

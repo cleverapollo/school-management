@@ -17,5 +17,5 @@ export const classListManagerKeys = {
   classMemberships: (filter: EnrollmentIre_CoreEnrollmentFilter) =>
     [...classListManagerKeys.allClassMemberships(), filter] as const,
   createOrUpdateBlockRotation: () =>
-    [...classListManagerKeys.all, 'createOrUpdateBloclRotation'] as const,
+    [...classListManagerKeys.all, 'createOrUpdateBlockRotation'] as const,
 };
