@@ -24,7 +24,7 @@ export default function ClassListManagerContainer() {
   const { t } = useTranslation(['navigation', 'classListManager']);
   const { pathname } = useLocation();
   const containerMargin = useContainerMargin();
-  const [isCreateRation, setIsCreateRation] = useState(false);
+  const [isCreateRotation, setIsCreateRotation] = useState(false);
   const { value: selectedBlock, setValue: setSelectedBlock } =
     useDebouncedValue<
       NonNullable<ReturnTypeOfUseBlockList>[number] | undefined
@@ -46,11 +46,11 @@ export default function ClassListManagerContainer() {
   };
 
   const createRotation = () => {
-    setIsCreateRation(true);
+    setIsCreateRotation(true);
   };
 
   const handleCloseModal = () => {
-    setIsCreateRation(false);
+    setIsCreateRotation(false);
   };
 
   const menuItems = [
@@ -103,7 +103,7 @@ export default function ClassListManagerContainer() {
         </Box>
         <CreateBlockRotationModal
           initialCreateBlockRotationState={
-            isCreateRation
+            isCreateRotation
               ? ({
                   blockId: selectedBlock?.blockId,
                   rotationName: '',
