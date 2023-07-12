@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 type PermissionGroupCardProps = Partial<PermissionGroup> & {
   icon?: ReactNode;
 };
-
+// Write parental attendance requests
 export const PermissionGroupCard = ({
   id,
   name,
@@ -24,7 +24,11 @@ export const PermissionGroupCard = ({
   const { t } = useTranslation(['settings']);
   return (
     <Card variant="outlined" sx={{ height: '100%' }}>
-      <CardActionArea to={`./edit/${id || ''}`} component={Link}>
+      <CardActionArea
+        sx={{ height: '100%' }}
+        to={`./edit/${id || ''}`}
+        component={Link}
+      >
         <CardContent>
           <Stack direction="row" alignItems="center" gap={2}>
             {icon}
