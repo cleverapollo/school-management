@@ -206,17 +206,17 @@ export default function ContactProfileStudentsPage() {
           onClick: () => {},
         },
       ],
-      [
-        {
-          label: t('people:unlinkStudent'),
-          icon: <PersonHeartIcon />,
-          onClick: () => {
-            setIsShowAlertUnlink(true);
-          },
-          disabled: selectedContacts.length !== 1,
-          disabledTooltip: t('people:unlinkStudent'),
-        },
-      ],
+      // [
+      //   {
+      //     label: t('people:unlinkStudent'),
+      //     icon: <PersonHeartIcon />,
+      //     onClick: () => {
+      //       setIsShowAlertUnlink(true);
+      //     },
+      //     disabled: selectedContacts.length !== 1,
+      //     disabledTooltip: t('people:unlinkStudent'),
+      //   },
+      // ],
     ],
     [selectedContacts]
   );
