@@ -4,14 +4,14 @@ import {
   TabPageContainer,
   ActionMenu,
   useDebouncedValue,
+  ActionMenuProps,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useLocation } from 'react-router-dom';
 import { Box } from '@mui/material';
-import { useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { MaleFemaleIcon, RotationIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
-import { MenuItemConfig } from '@tyro/core/src/components/action-menu/menu-item-list';
 import { useContainerMargin } from '../hooks/use-container-margin';
 import { ClassListSettingsProvider } from '../store/class-list-settings';
 import { ReturnTypeOfUseBlockList } from '../api/blocks';
@@ -24,18 +24,25 @@ export default function ClassListManagerContainer() {
   const { t } = useTranslation(['navigation', 'classListManager']);
   const { pathname } = useLocation();
   const containerMargin = useContainerMargin();
-  const [isCreateRotation, setIsCreateRotation] = useState(false);
-  const { value: selectedBlock, setValue: setSelectedBlock } =
-    useDebouncedValue<
-      NonNullable<ReturnTypeOfUseBlockList>[number] | undefined
-    >({
-      defaultValue: undefined,
-    });
 
-  const isBlockView = pathname.includes('class-list-manager/blocks') ?? false;
+  const currenBlockRef = useRef<
+    NonNullable<ReturnTypeOfUseBlockList>[number] | undefined
+  >(undefined);
+
+  const {
+    value: blockForCreateRotation,
+    debouncedValue: debouncedBlockForCreateRotation,
+    setValue: setBlockForCreateRotation,
+  } = useDebouncedValue<CreateBlockRotationFormState | undefined>({
+    defaultValue: undefined,
+  });
+
+  const isBlockView = pathname.includes('blocks');
   const [classListSettings, setClassListSettings] = useState({
     showGender: false,
-    setCurrentBlock: setSelectedBlock,
+    setCurrentBlock: (
+      currenBlock?: NonNullable<ReturnTypeOfUseBlockList>[number]
+    ) => (currenBlockRef.current = currenBlock),
   });
 
   const toggleShowGender = () => {
@@ -46,27 +53,42 @@ export default function ClassListManagerContainer() {
   };
 
   const createRotation = () => {
-    setIsCreateRotation(true);
+    setBlockForCreateRotation({
+      blockId: currenBlockRef?.current?.blockId,
+      rotationName: '',
+      iterations: currenBlockRef?.current?.rotations?.map((item) => ({
+        startDate: item.startDate ? dayjs(item.startDate) : undefined,
+        endDate: item.endDate ? dayjs(item.endDate) : undefined,
+        iteration: item.iteration,
+      })),
+    } as CreateBlockRotationFormState);
   };
 
   const handleCloseModal = () => {
-    setIsCreateRotation(false);
+    setBlockForCreateRotation(undefined);
   };
 
-  const menuItems = [
-    {
-      label: classListSettings.showGender
-        ? t('classListManager:deactivateGenderView')
-        : t('classListManager:activateGenderView'),
-      icon: <MaleFemaleIcon />,
-      onClick: toggleShowGender,
-    },
-    isBlockView && {
-      label: t('classListManager:createARotation'),
-      icon: <RotationIcon />,
-      onClick: createRotation,
-    },
-  ].filter(Boolean) as MenuItemConfig[];
+  const menuItems = useMemo<ActionMenuProps['menuItems']>(
+    () => [
+      {
+        label: classListSettings.showGender
+          ? t('classListManager:deactivateGenderView')
+          : t('classListManager:activateGenderView'),
+        icon: <MaleFemaleIcon />,
+        onClick: toggleShowGender,
+      },
+      ...(isBlockView
+        ? [
+            {
+              label: t('classListManager:createARotation'),
+              icon: <RotationIcon />,
+              onClick: createRotation,
+            },
+          ]
+        : []),
+    ],
+    [isBlockView]
+  );
 
   return (
     <ClassListSettingsProvider {...classListSettings}>
@@ -103,19 +125,7 @@ export default function ClassListManagerContainer() {
         </Box>
         <CreateBlockRotationModal
           initialCreateBlockRotationState={
-            isCreateRotation
-              ? ({
-                  blockId: selectedBlock?.blockId,
-                  rotationName: '',
-                  iterations: selectedBlock?.rotations?.map((item) => ({
-                    startDate: item.startDate
-                      ? dayjs(item.startDate)
-                      : undefined,
-                    endDate: item.endDate ? dayjs(item.endDate) : undefined,
-                    iteration: item.iteration,
-                  })),
-                } as CreateBlockRotationFormState)
-              : undefined
+            blockForCreateRotation || debouncedBlockForCreateRotation
           }
           onClose={handleCloseModal}
         />

@@ -173,7 +173,7 @@ export const CreateBlockRotationModal = ({
                   variant="body1"
                   color="text.secondary"
                 >
-                  {t('classListManager:rotation')} {index + 1}
+                  {t('classListManager:rotationX', { number: index + 1 })}
                 </Typography>
                 <Divider
                   orientation="vertical"
@@ -205,7 +205,7 @@ export const CreateBlockRotationModal = ({
                     control,
                   }}
                 />
-                {index > 1 ? (
+                {index > 1 && (
                   <Stack
                     sx={{
                       width: 50,
@@ -235,8 +235,6 @@ export const CreateBlockRotationModal = ({
                       </span>
                     </Tooltip>
                   </Stack>
-                ) : (
-                  <Box mr={5} />
                 )}
               </Stack>
             </Grid>

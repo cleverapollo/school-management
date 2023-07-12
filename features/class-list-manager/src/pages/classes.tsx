@@ -5,7 +5,7 @@ import {
   EnrollmentIre_MembershipChangeEnum,
   EnrollmentIre_CoreMembershipChange,
 } from '@tyro/api';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useClassMemberships, useUpdateClassMemberships } from '../api/classes';
 import {
   YearGroupsAutocomplete,
@@ -14,7 +14,6 @@ import {
 import { ListManager } from '../components/common/list-manager';
 import { EditedStudent } from '../components/common/list-manager/state/edited-state';
 import { useContainerMargin } from '../hooks/use-container-margin';
-import { useClassListSettings } from '../store/class-list-settings';
 
 interface ConfirmDialogSettings {
   proceed: () => void;
@@ -35,12 +34,6 @@ export default function ClassListManagerClasses() {
     selectedYearGroup?.yearGroupEnrollmentPartyId
   );
   const { mutateAsync: saveClassMemberships } = useUpdateClassMemberships();
-
-  const { setCurrentBlock } = useClassListSettings();
-
-  useEffect(() => {
-    setCurrentBlock(undefined);
-  }, []);
 
   const requestSetSelectedYearGroup = (
     block: YearGroupsAutocompleteProps['value']
