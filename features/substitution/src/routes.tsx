@@ -2,13 +2,10 @@ import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { lazy } from 'react';
 import { GraduateHatLoadingIcon } from '@tyro/icons';
 import { getStaff } from '@tyro/people';
-import { getStaffWorkAbsences, getStaffWorkAbsenceTypes } from './api';
+import { getStaffWorkAbsences } from './api/staff-work-absences';
+import { getStaffWorkAbsenceTypes } from './api/staff-work-absence-types';
 
-const ManagementContainer = lazy(
-  () => import('./components/management-container')
-);
-
-const AbsentStaffPage = lazy(() => import('./pages/absent-staff'));
+const Absences = lazy(() => import('./pages/absences'));
 
 const CreateStaffAbsencePage = lazy(
   () => import('./pages/create-staff-absence')
@@ -29,30 +26,30 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'absences',
             title: t('navigation:management.substitution.absences'),
-            element: <AbsentStaffPage />,
+            element: <Absences />,
             loader: () => getStaffWorkAbsences({}),
           },
-          {
-            type: NavObjectType.MenuLink,
-            path: 'cover',
-            title: t('navigation:management.substitution.cover'),
-            element: <ManagementContainer />,
-            children: [
-              {
-                type: NavObjectType.NonMenuLink,
-                index: true,
-                element: <AbsentStaffPage />,
-                loader: () => getStaffWorkAbsences({}),
-              },
-              {
-                type: NavObjectType.NonMenuLink,
-                path: 'create',
-                element: <CreateStaffAbsencePage />,
-                loader: () =>
-                  Promise.all([getStaffWorkAbsenceTypes({}), getStaff({})]),
-              },
-            ],
-          },
+          // {
+          //   type: NavObjectType.MenuLink,
+          //   path: 'cover',
+          //   title: t('navigation:management.substitution.cover'),
+          //   element: <ManagementContainer />,
+          //   children: [
+          //     {
+          //       type: NavObjectType.NonMenuLink,
+          //       index: true,
+          //       element: <AbsentStaffPage />,
+          //       loader: () => getStaffWorkAbsences({}),
+          //     },
+          //     {
+          //       type: NavObjectType.NonMenuLink,
+          //       path: 'create',
+          //       element: <CreateStaffAbsencePage />,
+          //       loader: () =>
+          //         Promise.all([getStaffWorkAbsenceTypes({}), getStaff({})]),
+          //     },
+          //   ],
+          // },
         ],
       },
     ],

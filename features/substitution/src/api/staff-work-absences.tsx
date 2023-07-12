@@ -6,13 +6,21 @@ import {
   queryClient,
   Swm_StaffAbsenceFilter,
   Swm_UpsertStaffAbsence,
+  UseQueryReturnType,
 } from '@tyro/api';
+import { substitutionKeys } from './keys';
 
 const staffWorkAbsences = graphql(/* GraphQL */ `
   query swm_absences($filter: SWM_StaffAbsenceFilter) {
     swm_absences(filter: $filter) {
       absenceId
+      staffPartyId
+      absenceType {
+        name
+        code
+      }
       staff {
+        partyId
         title {
           id
           name
@@ -21,10 +29,10 @@ const staffWorkAbsences = graphql(/* GraphQL */ `
         firstName
         lastName
         avatarUrl
+        type
       }
-      absenceType {
-        name
-      }
+      absenceReasonText
+      substitutionRequired
       dates {
         continuousStartDate
         continuousEndDate
@@ -48,12 +56,8 @@ const saveStaffAbsence = graphql(/* GraphQL */ `
   }
 `);
 
-export const staffWorkAbsencesKeys = {
-  list: ['staffWork', 'absences'] as const,
-};
-
 const staffWorkAbsencesQuery = (filter: Swm_StaffAbsenceFilter) => ({
-  queryKey: staffWorkAbsencesKeys.list,
+  queryKey: substitutionKeys.absences(filter),
   queryFn: () => gqlClient.request(staffWorkAbsences, { filter }),
 });
 
@@ -64,18 +68,20 @@ export function getStaffWorkAbsences(filter: Swm_StaffAbsenceFilter) {
 export function useStaffWorkAbsences(filter: Swm_StaffAbsenceFilter) {
   return useQuery({
     ...staffWorkAbsencesQuery(filter),
-    select: ({ swm_absences }) => {
-      if (!Array.isArray(swm_absences)) return [];
-
-      return swm_absences;
-    },
+    select: ({ swm_absences }) => swm_absences ?? [],
   });
 }
 
 export function useSaveStaffAbsence() {
   return useMutation({
-    mutationKey: ['staffWork', 'createAbsence'],
     mutationFn: (input: Swm_UpsertStaffAbsence) =>
       gqlClient.request(saveStaffAbsence, { input }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(substitutionKeys.all);
+    },
   });
 }
+
+export type ReturnTypeFromUseStaffWorkAbsences = UseQueryReturnType<
+  typeof useStaffWorkAbsences
+>[number];

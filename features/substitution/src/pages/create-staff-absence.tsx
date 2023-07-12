@@ -30,11 +30,9 @@ import { useNavigate } from 'react-router-dom';
 import { queryClient } from '@tyro/api';
 import dayjs from 'dayjs';
 
-import {
-  staffWorkAbsencesKeys,
-  useSaveStaffAbsence,
-  useStaffWorkAbsenceTypes,
-} from '../api';
+import { useSaveStaffAbsence } from '../api/staff-work-absences';
+import { useStaffWorkAbsenceTypes } from '../api/staff-work-absence-types';
+import { substitutionKeys } from '../api/keys';
 
 type StaffOption = NonNullable<
   NonNullable<ReturnType<typeof useStaff>['data']>
@@ -125,7 +123,7 @@ export default function ManagementPage() {
       {
         onSuccess: () => {
           queryClient.invalidateQueries({
-            queryKey: [...staffWorkAbsencesKeys.list],
+            queryKey: substitutionKeys.all,
           });
           toast(t('common:snackbarMessages.createSuccess'));
           navigate('./..');

@@ -14,6 +14,7 @@
   "reasonForAbsence": "Reason for Absence",
   "internalNote": "Add an internal note (Admin viewing only)",
   "saveStaffAbsence": "Save Staff Absence",
+  "note": "Note",
   "labels": {
     "staffName": "Staff Name",
     "startDate": "Start Date",

@@ -155,6 +155,7 @@
   },
   "administration": "Administration",
   "staff": "Staff",
+  "staffMember": "Staff member",
   "overview": "Overview",
   "errorMessages": {
     "required": "This field is required",
@@ -228,6 +229,7 @@
   "wellEmailWhenLive": "We'll email you once this feature is live.",
   "phoneNumber": "Phone number",
   "additionalNumber": "Additional number",
+  "dates": "Date(s)",
   "contact": "Contact",
   "weeks_one": "{{count}} week",
   "weeks_other": "{{count}} weeks",

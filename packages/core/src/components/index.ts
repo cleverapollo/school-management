@@ -13,6 +13,7 @@ export * from './form';
 export * from './icon-chip';
 export * from './lazy-loader';
 export * from './loading-placeholder';
+export * from './multi-date-picker';
 export * from './page';
 export * from './page-container';
 export * from './page-heading';
