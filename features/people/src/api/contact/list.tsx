@@ -80,6 +80,10 @@ const contactsForSelectQuery = () => ({
   queryFn: async () => gqlClient.request(contactsInfoForSelect),
 });
 
+export function getContactsForSelect() {
+  return queryClient.fetchQuery(contactsForSelectQuery());
+}
+
 export function useContactsForSelect() {
   return useQuery({
     ...contactsForSelectQuery(),
