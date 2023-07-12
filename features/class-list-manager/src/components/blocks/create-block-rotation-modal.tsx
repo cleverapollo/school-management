@@ -116,10 +116,6 @@ export const CreateBlockRotationModal = ({
     }
   }, [initialCreateBlockRotationState]);
 
-  useEffect(() => {
-    reset();
-  }, [isSubmitSuccessful]);
-
   return (
     <Dialog
       open={!!initialCreateBlockRotationState}
@@ -164,7 +160,7 @@ export const CreateBlockRotationModal = ({
                 gap={1}
                 sx={{
                   borderRadius: 1,
-                  backgroundColor: 'slate.50',
+                  backgroundColor: 'background.neutral',
                   border: 1,
                   borderColor: 'slate.200',
                   p: 1,
@@ -183,7 +179,6 @@ export const CreateBlockRotationModal = ({
                   orientation="vertical"
                   sx={{
                     height: 40,
-                    color: 'slate.200',
                   }}
                 />
                 <RHFDatePicker<CreateBlockRotationFormState>
@@ -222,7 +217,6 @@ export const CreateBlockRotationModal = ({
                       orientation="vertical"
                       sx={{
                         height: 40,
-                        color: 'slate.200',
                       }}
                     />
                     <Tooltip

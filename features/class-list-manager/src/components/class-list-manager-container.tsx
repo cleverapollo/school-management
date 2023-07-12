@@ -11,6 +11,7 @@ import { Box } from '@mui/material';
 import { useState } from 'react';
 import { MaleFemaleIcon, RotationIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
+import { MenuItemConfig } from '@tyro/core/src/components/action-menu/menu-item-list';
 import { useContainerMargin } from '../hooks/use-container-margin';
 import { ClassListSettingsProvider } from '../store/class-list-settings';
 import { ReturnTypeOfUseBlockList } from '../api/blocks';
@@ -52,6 +53,21 @@ export default function ClassListManagerContainer() {
     setIsCreateRation(false);
   };
 
+  const menuItems = [
+    {
+      label: classListSettings.showGender
+        ? t('classListManager:deactivateGenderView')
+        : t('classListManager:activateGenderView'),
+      icon: <MaleFemaleIcon />,
+      onClick: toggleShowGender,
+    },
+    isBlockView && {
+      label: t('classListManager:createARotation'),
+      icon: <RotationIcon />,
+      onClick: createRotation,
+    },
+  ].filter(Boolean) as MenuItemConfig[];
+
   return (
     <ClassListSettingsProvider {...classListSettings}>
       <Page title={t('navigation:management.classListManager')} sx={{ px: 0 }}>
@@ -65,36 +81,7 @@ export default function ClassListManagerContainer() {
           <PageHeading
             title={t('navigation:management.classListManager')}
             sx={{ px: containerMargin }}
-            rightAdornment={
-              <ActionMenu
-                menuItems={
-                  isBlockView
-                    ? [
-                        {
-                          label: classListSettings.showGender
-                            ? t('classListManager:deactivateGenderView')
-                            : t('classListManager:activateGenderView'),
-                          icon: <MaleFemaleIcon />,
-                          onClick: toggleShowGender,
-                        },
-                        {
-                          label: t('classListManager:createARotation'),
-                          icon: <RotationIcon />,
-                          onClick: createRotation,
-                        },
-                      ]
-                    : [
-                        {
-                          label: classListSettings.showGender
-                            ? t('classListManager:deactivateGenderView')
-                            : t('classListManager:activateGenderView'),
-                          icon: <MaleFemaleIcon />,
-                          onClick: toggleShowGender,
-                        },
-                      ]
-                }
-              />
-            }
+            rightAdornment={<ActionMenu menuItems={menuItems} />}
           />
           <TabPageContainer
             TabProps={{
