@@ -15,27 +15,24 @@ import {
   DeleteStudentMedicalConditionInput,
 } from '@tyro/api';
 import { useDeleteCondition } from '../../../api/student/medicals/delete-condition';
-import { ReturnTypeFromUseStudentMedical } from './conditions-table';
 
 export type DeleteConditionsState = Pick<
   UpsertStudentMedicalConditionInput,
-  'id' | 'name' | 'description' | 'equipment' | 'studentPartyId'
+  'id' | 'studentPartyId'
 >;
 
 export type DeleteConditionsProps = {
   studentId: number | undefined;
   initialConditionsState?: Partial<DeleteConditionsState> | null;
-  conditions: ReturnTypeFromUseStudentMedical[];
   onClose: () => void;
 };
 
 export const DeleteConditionsModal = ({
   studentId,
   initialConditionsState,
-  conditions,
   onClose,
 }: DeleteConditionsProps) => {
-  const { t } = useTranslation(['settings', 'people', 'common']);
+  const { t } = useTranslation(['people', 'common']);
 
   const {
     mutate: deleteStudentMedicalCondition,
@@ -45,13 +42,13 @@ export const DeleteConditionsModal = ({
 
   const { handleSubmit, reset } = useForm();
 
-  const test: DeleteStudentMedicalConditionInput = {
-    id: initialConditionsState?.id ?? 0,
-    studentPartyId: studentId ?? 0,
-  };
-
   const onSubmit = () => {
-    deleteStudentMedicalCondition(test, {
+    const data: DeleteStudentMedicalConditionInput = {
+      id: initialConditionsState?.id ?? 0,
+      studentPartyId: studentId ?? 0,
+    };
+
+    deleteStudentMedicalCondition(data, {
       onSuccess: onClose,
     });
   };
@@ -84,7 +81,7 @@ export const DeleteConditionsModal = ({
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack sx={{ p: 3, backgroundColor: 'slate.50' }}>
-          Are you sure you want to delete this condition?
+          {t('people:deleteConditionConfirmation')}
         </Stack>
         <Stack>
           <DialogActions>
@@ -97,7 +94,7 @@ export const DeleteConditionsModal = ({
               variant="contained"
               loading={isSubmitting}
             >
-              Delete
+              {t('common:actions.delete')}
             </LoadingButton>
           </DialogActions>
         </Stack>

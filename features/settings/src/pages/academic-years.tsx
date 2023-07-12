@@ -175,7 +175,7 @@ export default function AcademicNamespaceList() {
         rowSelection="single"
         getRowId={({ data }) => String(data?.academicNamespaceId)}
       />
-      {/* <ConfirmDialog
+      <ConfirmDialog
         open={!!selectedNamespace}
         title={t('settings:namespacesDialog.title', {
           name: selectedRow?.name,
@@ -192,7 +192,7 @@ export default function AcademicNamespaceList() {
             setActiveNamespace(selectedNamespace);
           }
         }}
-      /> */}
+      />
       <EditAcademicYearModal
         academicYears={namespaces ?? []}
         initialAcademicYearState={editAcademicYearInitialState}

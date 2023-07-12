@@ -6,16 +6,16 @@ import {
   DialogActions,
   Dialog,
 } from '@mui/material';
-import { RHFTextField, useFormValidator } from '@tyro/core';
+import { RHFTextField, RHFAutocomplete, useFormValidator } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import {
-  UpsertStudentMedicalConditionInput,
-  UpsertStudentMedicalConditionEquipmentInput,
-} from '@tyro/api';
+import { UpsertStudentMedicalConditionInput } from '@tyro/api';
 import { useCreateOrUpdateCondition } from '../../../api/student/medicals/upsert-medical-conditions';
-import { ReturnTypeFromUseStudentMedical } from './conditions-table';
+import {
+  useMedicalConditionNamesQuery,
+  MedicalConditionNamesType,
+} from '../../../api/student/medicals/medical-condition-lookup';
 
 export type EditConditionsFormState = Pick<
   UpsertStudentMedicalConditionInput,
@@ -25,17 +25,16 @@ export type EditConditionsFormState = Pick<
 export type EditConditionsProps = {
   studentId: number | undefined;
   initialConditionsState?: Partial<EditConditionsFormState> | null;
-  conditions: ReturnTypeFromUseStudentMedical[];
   onClose: () => void;
 };
 
 export const EditConditionsModal = ({
   studentId,
   initialConditionsState,
-  conditions,
   onClose,
 }: EditConditionsProps) => {
-  const { t } = useTranslation(['settings', 'people', 'common']);
+  const { t } = useTranslation(['people', 'common']);
+  const { data: medicalConditionNames } = useMedicalConditionNamesQuery();
 
   const {
     mutate: createOrUpdateConditionsMutation,
@@ -62,16 +61,16 @@ export const EditConditionsModal = ({
     equipment,
     ...restData
   }: UpsertStudentMedicalConditionInput) => {
-    const transformedEquipment: UpsertStudentMedicalConditionEquipmentInput[] =
-      (equipment ?? []).map(({ name, location }) => ({ name, location }));
-
-    const transformedData: UpsertStudentMedicalConditionInput = {
+    const equipmentValues: UpsertStudentMedicalConditionInput['equipment'] = (
+      equipment ?? []
+    ).map(({ name, location }) => ({ name, location }));
+    const data: UpsertStudentMedicalConditionInput = {
       ...restData,
-      equipment: transformedEquipment,
+      equipment: equipmentValues,
       studentPartyId: studentId ?? 0,
     };
 
-    createOrUpdateConditionsMutation(transformedData, {
+    createOrUpdateConditionsMutation(data, {
       onSuccess: onClose,
     });
   };
@@ -111,14 +110,25 @@ export const EditConditionsModal = ({
             p: 3,
           }}
         >
-          <RHFTextField<EditConditionsFormState>
+          <RHFAutocomplete<
+            EditConditionsFormState,
+            MedicalConditionNamesType,
+            true
+          >
+            fullWidth
+            freeSolo
+            autoSelect
             label={t('common:name')}
+            options={medicalConditionNames ?? []}
+            optionIdKey="id"
+            getOptionLabel={(option) =>
+              typeof option !== 'string' ? option.name : option
+            }
             controlProps={{
-              name: 'name',
+              name: `name`,
               control,
             }}
           />
-
           <RHFTextField<EditConditionsFormState>
             label={t('common:description')}
             controlProps={{
@@ -146,7 +156,6 @@ export const EditConditionsModal = ({
                 control,
               }}
             />
-
             <RHFTextField<EditConditionsFormState>
               label="Location"
               controlProps={{
@@ -155,6 +164,7 @@ export const EditConditionsModal = ({
               }}
             />
           </Stack>
+
           <DialogActions>
             <Button variant="outlined" color="inherit" onClick={handleClose}>
               {t('common:actions.cancel')}

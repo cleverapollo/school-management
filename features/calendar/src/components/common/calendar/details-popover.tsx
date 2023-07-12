@@ -299,7 +299,7 @@ export function CalendarDetailsPopover({
                       </Typography>
                       {partyInfo?.__typename && (
                         <Typography variant="caption" color="text.secondary">
-                          {/* {t(`calendar:attendeeType.${partyInfo.__typename}`)} */}
+                          {t(`calendar:attendeeType.${partyInfo.__typename}`)}
                         </Typography>
                       )}
                     </Stack>

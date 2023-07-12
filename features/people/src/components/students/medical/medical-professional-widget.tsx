@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   Box,
-  Button,
   Card,
   CardHeader,
   Chip,
@@ -10,10 +9,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import {
-  UseQueryReturnType,
-  UpsertStudentMedicalConditionInput,
-} from '@tyro/api';
+import { UpsertStudentMedicalConditionInput } from '@tyro/api';
 import { AnimatePresence, m, Variants, wrap } from 'framer-motion';
 import {
   ChevronLeftIcon,
@@ -33,7 +29,7 @@ export type EditConditionsFormState = Pick<
   active?: boolean;
 };
 
-type StudentContactsWidgetProps = {
+type StudentMedicalProfessionalWidgetProps = {
   studentId: number | undefined;
 };
 
@@ -54,9 +50,9 @@ const animationVariants: Variants = {
 
 export function StudentMedicalProfessionalWidget({
   studentId,
-}: StudentContactsWidgetProps) {
+}: StudentMedicalProfessionalWidgetProps) {
   const [[contactIndex, direction], setContactIndex] = useState([0, 0]);
-  const { t } = useTranslation(['common', 'people']);
+  const { t } = useTranslation(['people']);
   const { displayName } = usePreferredNameLayout();
 
   const { data: medicalData, isLoading } = useStudentMedicalData(
@@ -65,7 +61,6 @@ export function StudentMedicalProfessionalWidget({
 
   const numberOfContacts = medicalData?.medicalContacts?.length ?? 0;
   const clampedIndex = wrap(0, numberOfContacts, contactIndex);
-  console.log(clampedIndex, 'clampedIndex');
 
   const medicalContact = medicalData?.medicalContacts?.[clampedIndex];
   const isButtonsDisabled = isLoading || numberOfContacts <= 1;
@@ -161,7 +156,6 @@ export function StudentMedicalProfessionalWidget({
               }}
             >
               <Box sx={{ px: 3, py: 1 }}>
-                {/* Avatar, name, title */}
                 <Stack direction="row" spacing={2} sx={{ py: 1 }}>
                   <Avatar
                     name={displayName(medicalContact)}
@@ -177,7 +171,7 @@ export function StudentMedicalProfessionalWidget({
                     </Typography>
                   </Stack>
                 </Stack>
-                {/* Address */}
+
                 <Stack direction="row" spacing={2} sx={{ py: 1 }}>
                   <LocationIcon
                     sx={{ color: 'slate.400', width: 20, height: 20 }}
@@ -195,7 +189,7 @@ export function StudentMedicalProfessionalWidget({
                     </Typography>
                   </Stack>
                 </Stack>
-                {/* Phone */}
+
                 <Stack direction="row" spacing={2} sx={{ py: 1 }}>
                   <PhoneIcon
                     sx={{ color: 'slate.400', width: 20, height: 20 }}
@@ -206,7 +200,7 @@ export function StudentMedicalProfessionalWidget({
                     </Typography>
                   </Stack>
                 </Stack>
-                {/* Email */}
+
                 <Stack direction="row" spacing={2} sx={{ py: 1 }}>
                   <MailIcon
                     sx={{ color: 'slate.400', width: 20, height: 20 }}

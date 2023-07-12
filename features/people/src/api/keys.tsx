@@ -46,6 +46,8 @@ export const peopleKeys = {
       [...peopleKeys.students.all(), 'updateStudent'] as const,
     medical: (studentId: number | undefined) =>
       [...peopleKeys.students.all(), 'medical', studentId] as const,
+    medicalConditions: () =>
+      [...peopleKeys.students.all(), 'medicalConditions'] as const,
     upsertStudentMedicalCondition: () =>
       [...peopleKeys.students.all(), 'upsertStudentMedicalCondition'] as const,
     deleteStudentMedicalCondition: () =>

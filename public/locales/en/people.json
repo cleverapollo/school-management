@@ -197,6 +197,7 @@
   "selectContactsToAssociateWithStudent": "Select contacts to associate with {{studentName}}",
   "editCondition": "Edit condition",
   "deleteCondition": "Delete condition",
+  "deleteConditionConfirmation": "You are about to delete this condition. Are you sure you want to continue?",
   "viewCondition": "View condition",
   "condition": "Condition",
   "conditions": "Conditions",

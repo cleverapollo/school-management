@@ -1,24 +1,14 @@
-import {
-  Box,
-  Card,
-  CardHeader,
-  Chip,
-  Stack,
-  Typography,
-  alpha,
-  Link as MuiLink,
-} from '@mui/material';
+import { Box, Card, CardHeader, Chip, Stack, Typography } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { Avatar, stringToColor, usePreferredNameLayout } from '@tyro/core';
-import { Colour } from '@tyro/api';
+import { Avatar, usePreferredNameLayout } from '@tyro/core';
 import { Link } from 'react-router-dom';
 import { useStudentMedicalData } from '../../../api/student/medicals/student-medical-data';
 
-interface StudentContactsWidgetProps {
+type StudentSiblingsWidgetProps = {
   studentId: number | undefined;
-}
+};
 
-export function SiblingsWidget({ studentId }: StudentContactsWidgetProps) {
+export function SiblingsWidget({ studentId }: StudentSiblingsWidgetProps) {
   const { t } = useTranslation(['common', 'people']);
   const { displayName } = usePreferredNameLayout();
   const { data: medicalData } = useStudentMedicalData(studentId ?? 0);
@@ -88,7 +78,6 @@ export function SiblingsWidget({ studentId }: StudentContactsWidgetProps) {
                         display: 'flex',
                         direction: 'row',
                         alignItems: 'center',
-
                         textDecoration: 'none',
                       }}
                     >

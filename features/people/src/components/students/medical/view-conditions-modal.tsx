@@ -10,7 +10,6 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { PersonHeartIcon } from '@tyro/icons';
 import { UpsertStudentMedicalConditionInput } from '@tyro/api';
-import { ReturnTypeFromUseStudentMedical } from './conditions-table';
 
 export type ViewConditionsState = Pick<
   UpsertStudentMedicalConditionInput,
@@ -18,19 +17,15 @@ export type ViewConditionsState = Pick<
 >;
 
 export type ViewConditionsProps = {
-  studentId: number | undefined;
   initialConditionsState?: Partial<ViewConditionsState> | null;
-  conditions: ReturnTypeFromUseStudentMedical[];
   onClose: () => void;
 };
 
 export const ViewConditionsModal = ({
-  studentId,
   initialConditionsState,
-  conditions,
   onClose,
 }: ViewConditionsProps) => {
-  const { t } = useTranslation(['settings', 'people', 'common']);
+  const { t } = useTranslation(['people', 'common']);
 
   const handleClose = () => {
     onClose();

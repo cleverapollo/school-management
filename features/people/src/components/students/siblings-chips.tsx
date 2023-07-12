@@ -12,7 +12,6 @@ interface SiblingsChipsProps {
 export function SiblingsChips({ siblings }: SiblingsChipsProps) {
   const { t } = useTranslation(['common']);
   const { displayName } = usePreferredNameLayout();
-  console.log(siblings, 'siblings');
 
   if (
     siblings?.enrolledSiblings.length === 0 &&

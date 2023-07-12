@@ -15,7 +15,6 @@ import {
   ICellRendererParams,
   Table,
 } from '@tyro/core';
-import { log } from 'console';
 import { useStudentMedicalData } from '../../../api/student/medicals/student-medical-data';
 import {
   EditConditionsModal,
@@ -30,7 +29,7 @@ import {
   DeleteConditionsProps,
 } from './delete-conditions-modal';
 
-type ConditionsTableProps = {
+export type ConditionsTableProps = {
   studentId: number | undefined;
 };
 
@@ -65,11 +64,13 @@ const getColumns = (
   {
     headerName: t('people:equipment'),
     field: 'equipment',
+    // For this version of the app, we are only displaying one equipment per condition
     valueGetter: (data) => data?.data?.equipment[0]?.name,
   },
   {
     headerName: t('common:location'),
     field: 'location',
+    // For this version of the app, we are only displaying one equipment per condition
     valueGetter: (data) => data?.data?.equipment[0]?.location,
   },
   {
@@ -87,7 +88,6 @@ const getColumns = (
             {
               label: t('people:editCondition'),
               icon: <EditIcon />,
-
               onClick: () => onClickEdit(data),
             },
             {
@@ -164,20 +164,16 @@ export function ConditionsTable({ studentId }: ConditionsTableProps) {
       />
       <EditConditionsModal
         studentId={studentId}
-        conditions={conditions}
         initialConditionsState={editConditions}
         onClose={handleCloseEditModal}
       />
       <ViewConditionsModal
-        studentId={studentId}
-        conditions={conditions}
         initialConditionsState={viewConditions}
         onClose={handleCloseViewModal}
       />
       <DeleteConditionsModal
         studentId={studentId}
         initialConditionsState={deleteConditions}
-        conditions={conditions}
         onClose={handleCloseDeleteModal}
       />
     </>
