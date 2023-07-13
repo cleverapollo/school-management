@@ -15,7 +15,7 @@ export default function EditPermissionPage() {
     ids: [groupId ?? 0],
   });
 
-  const { getMembersByMemberType } = useMembersByPermissionType();
+  const { getMembersByMemberType, isLoading } = useMembersByPermissionType();
 
   const initialState = useMemo<Partial<PermissionFormState>>(() => {
     const [groupData] = permissionGroupData;
@@ -30,19 +30,18 @@ export default function EditPermissionPage() {
       permissionSets,
       id,
     } = groupData;
+
     const members = getMembersByMemberType(memberType);
 
     return {
-      permissionSets: permissionSets.reduce(
-        (permissionsByFeature, permission) => {
-          if (!permission.feature) return permissionsByFeature;
-
-          permissionsByFeature[permission.feature] ??= [];
-          permissionsByFeature[permission.feature].push(permission);
-
-          return permissionsByFeature;
-        },
-        {} as PermissionFormState['permissionSets']
+      permissionsFieldsByIds: permissionSets.reduce<
+        PermissionFormState['permissionsFieldsByIds']
+      >(
+        (permissionsByIds, permission) => ({
+          ...permissionsByIds,
+          [permission.id]: permission,
+        }),
+        {} as PermissionFormState['permissionsFieldsByIds']
       ),
       memberType,
       ...(custom && {
@@ -54,7 +53,7 @@ export default function EditPermissionPage() {
         ),
       }),
     };
-  }, [permissionGroupData]);
+  }, [permissionGroupData, isLoading]);
 
   return (
     <PermissionContainer>

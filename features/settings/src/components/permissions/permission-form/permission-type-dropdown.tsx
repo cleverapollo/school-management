@@ -1,6 +1,6 @@
 import { useTranslation } from '@tyro/i18n';
-import { Feature, PermissionType } from '@tyro/api';
-import { Control, Path, UseFormSetValue, useWatch } from 'react-hook-form';
+import { PermissionType } from '@tyro/api';
+import { Control, Path, useWatch } from 'react-hook-form';
 import { RHFSelect } from '@tyro/core';
 import { CloseIcon } from '@tyro/icons';
 import { IconButton } from '@mui/material';
@@ -11,20 +11,20 @@ const permissionTypeOptions = Object.values(PermissionType);
 type PermissionTypeDropdownProps = {
   name: Path<PermissionFormState>;
   control: Control<PermissionFormState>;
-  setValue: UseFormSetValue<PermissionFormState>;
+  onRemovePermissionType: () => void;
 };
 
 export const PermissionTypeDropdown = ({
   name,
   control,
-  setValue,
+  onRemovePermissionType,
 }: PermissionTypeDropdownProps) => {
   const { t } = useTranslation(['settings']);
 
   const currentPermissionType = useWatch({
     control,
     name,
-  }) as PermissionFormState['permissionSets'][Feature][number]['permissionType'];
+  });
 
   return (
     <RHFSelect
@@ -43,15 +43,16 @@ export const PermissionTypeDropdown = ({
             size="small"
             sx={{ mr: 2.5 }}
             type="button"
-            onClick={() => {
-              setValue(name, '');
-            }}
+            onClick={onRemovePermissionType}
           >
             <CloseIcon />
           </IconButton>
         ),
       }}
-      controlProps={{ name, control }}
+      controlProps={{
+        name,
+        control,
+      }}
     />
   );
 };

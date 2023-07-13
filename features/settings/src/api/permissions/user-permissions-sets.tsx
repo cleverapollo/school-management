@@ -34,6 +34,10 @@ export function usePermissionSets(filter: PermissionSetFilter) {
     ...permissionSetsQuery(filter),
     enabled: !!filter,
     select: ({ users_permissionSets }) =>
-      Array.isArray(users_permissionSets) ? users_permissionSets : [],
+      Array.isArray(users_permissionSets)
+        ? users_permissionSets.flatMap((permission) =>
+            permission ? [permission] : []
+          )
+        : [],
   });
 }

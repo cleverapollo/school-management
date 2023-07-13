@@ -1,8 +1,4 @@
-import {
-  Feature,
-  PermissionGroup,
-  PermissionGroupPermissionSet,
-} from '@tyro/api';
+import { PermissionGroup, PermissionSet } from '@tyro/api';
 
 import { MemberOption } from '../../../hooks/use-members-by-permission-type';
 
@@ -12,5 +8,10 @@ export type PermissionFormState = {
   memberType: PermissionGroup['memberType'];
   description: PermissionGroup['description'];
   members: MemberOption[];
-  permissionSets: Record<Feature, Array<PermissionGroupPermissionSet>>;
+  permissionsFieldsByIds: Array<{
+    id: PermissionSet['id'];
+    feature?: PermissionSet['feature'];
+    toggle?: PermissionSet['toggle'] | null;
+    permissionType?: PermissionSet['permissionType'] | null;
+  }>;
 };

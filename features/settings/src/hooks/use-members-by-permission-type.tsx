@@ -7,9 +7,13 @@ import { MemberType } from '@tyro/api';
 import { useCallback } from 'react';
 
 export const useMembersByPermissionType = () => {
-  const { data: studentsData = [] } = useStudentsForSelect({});
-  const { data: contactsData = [] } = useContactsForSelect();
-  const { data: staffData = [] } = useStaffForSelect({});
+  const { data: studentsData = [], isLoading: isStudentsLoading } =
+    useStudentsForSelect({});
+  const { data: contactsData = [], isLoading: isContactsLoading } =
+    useContactsForSelect();
+  const { data: staffData = [], isLoading: isStaffLoading } = useStaffForSelect(
+    {}
+  );
 
   const getMembersByMemberType = useCallback(
     (memberType: MemberType) => {
@@ -29,6 +33,7 @@ export const useMembersByPermissionType = () => {
   );
 
   return {
+    isLoading: isStudentsLoading || isContactsLoading || isStaffLoading,
     getMembersByMemberType,
   };
 };

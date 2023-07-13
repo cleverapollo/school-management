@@ -1,25 +1,25 @@
 import { Grid, Paper, Stack, Tooltip, Typography } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { Control, UseFormRegister, UseFormSetValue } from 'react-hook-form';
+import { Control, UseFormSetValue } from 'react-hook-form';
 import { InfoCircleIcon } from '@tyro/icons';
+import { RHFSwitch } from '@tyro/core';
+import { useEffect, useMemo } from 'react';
 import {
   Feature,
   MemberType,
   PermissionSet,
   PermissionSetFilter,
 } from '@tyro/api';
-import { RHFSwitch } from '@tyro/core';
-import { useMemo } from 'react';
 import { PermissionAccordionCard } from './permission-accordion-card';
-import { PermissionTypeDropdown } from './permission-type-dropdown';
 import { usePermissionSets } from '../../../api/permissions/user-permissions-sets';
 import { PermissionFormState } from './types';
+import { PermissionTypeDropdown } from './permission-type-dropdown';
 
 type SelectPermissionsProps = {
-  memberType: MemberType;
   control: Control<PermissionFormState>;
   setValue: UseFormSetValue<PermissionFormState>;
-  register: UseFormRegister<PermissionFormState>;
+  memberType: MemberType;
+  isFormDirty: boolean;
 };
 
 const filters: Record<MemberType, PermissionSetFilter> = {
@@ -37,125 +37,159 @@ const filters: Record<MemberType, PermissionSetFilter> = {
   },
 };
 
-type PermissionByFeature = Record<Feature, Array<Partial<PermissionSet>>>;
+type PermissionsByFeatures = Array<{
+  feature: Feature;
+  permissions: Array<
+    Pick<
+      PermissionSet,
+      'id' | 'name' | 'description' | 'feature' | 'toggle' | 'permissionType'
+    >
+  >;
+}>;
 
 export const SelectPermissions = ({
+  isFormDirty,
   memberType,
   control,
   setValue,
-  register,
 }: SelectPermissionsProps) => {
   const { t } = useTranslation(['settings', 'common']);
+
   const { data: permissionData = [] } = usePermissionSets(filters[memberType]);
 
-  const permissionsByFeature = useMemo<PermissionByFeature>(
-    () =>
-      permissionData.reduce((acc, permissionSet) => {
-        if (!permissionSet?.feature) return acc;
+  const permissionsByFeatures = useMemo(() => {
+    const availableFeatures = Array.from(
+      new Set([
+        ...permissionData.flatMap<Feature>((permission) =>
+          permission ? [permission.feature!] : []
+        ),
+      ])
+    );
 
-        acc[permissionSet.feature] ??= [];
-        acc[permissionSet.feature].push(permissionSet);
+    return availableFeatures.reduce<PermissionsByFeatures>(
+      (permissionsFieldsByFeature, feature) => {
+        permissionsFieldsByFeature.push({
+          feature,
+          permissions: permissionData.filter(
+            (permission) => permission.feature === feature
+          ),
+        });
 
-        return acc;
-      }, {} as PermissionByFeature),
-    [permissionData]
-  );
+        return permissionsFieldsByFeature;
+      },
+      []
+    );
+  }, [permissionData]);
+
+  useEffect(() => {
+    if (isFormDirty) {
+      setValue('permissionsFieldsByIds', []);
+
+      permissionData.forEach(({ id, feature, toggle, permissionType }) => {
+        setValue(`permissionsFieldsByIds.${id}`, {
+          id,
+          feature,
+          toggle,
+          permissionType: permissionType ?? null,
+        });
+      });
+    }
+  }, [memberType, permissionData]);
+
+  useEffect(() => {
+    permissionData.forEach(({ id, feature }) => {
+      setValue(`permissionsFieldsByIds.${id}.id`, id);
+      setValue(`permissionsFieldsByIds.${id}.feature`, feature);
+    });
+  }, [permissionData]);
 
   return (
     <Grid container gap={3}>
-      {Object.keys(permissionsByFeature).map((featureKey) => {
-        const featureKeyAsEnum = featureKey as Feature;
-        const permissions = permissionsByFeature[featureKeyAsEnum];
-
-        return (
-          <PermissionAccordionCard
-            key={`${memberType}-${featureKey}`}
-            feature={featureKeyAsEnum}
-            totalPermissions={permissions.length}
-            control={control}
-          >
-            <Stack gap={1}>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                fontWeight="600"
-                textTransform="uppercase"
+      {permissionsByFeatures.map((field) => (
+        <PermissionAccordionCard
+          key={`${memberType}-${field.feature}`}
+          feature={field.feature}
+          control={control}
+        >
+          <Stack gap={1}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight="600"
+              textTransform="uppercase"
+            >
+              {t('settings:permissions.permissionSet')}
+            </Typography>
+            {field.permissions.map((permission) => (
+              <Paper
+                variant="elevation"
+                key={permission.id}
+                sx={{
+                  px: 2,
+                  py: 1,
+                  backgroundColor: 'slate.50',
+                }}
               >
-                {t('settings:permissions.permissionSet')}
-              </Typography>
-              {permissions.map((permission, permissionIndex) => (
-                <Paper
-                  variant="elevation"
-                  key={permission.id}
-                  sx={{
-                    px: 2,
-                    py: 1,
-                    backgroundColor: 'slate.50',
-                  }}
+                <Stack
+                  direction="row"
+                  gap={2}
+                  alignItems="center"
+                  justifyContent="space-between"
                 >
                   <Stack
                     direction="row"
-                    gap={2}
                     alignItems="center"
-                    justifyContent="space-between"
+                    gap={1}
+                    width="100%"
                   >
-                    <Stack
-                      direction="row"
-                      alignItems="center"
-                      gap={1}
-                      width="100%"
-                    >
-                      <Typography variant="body2">
-                        {permission.name}
+                    <Typography variant="body2">
+                      {permission.name}
 
-                        <Tooltip
-                          title={permission.description}
-                          placement="top"
-                          arrow
-                        >
-                          <InfoCircleIcon
-                            sx={{
-                              width: 18,
-                              height: 18,
-                              ml: 0.5,
-                              verticalAlign: 'middle',
-                            }}
-                          />
-                        </Tooltip>
-                      </Typography>
-                    </Stack>
-                    <input
-                      type="hidden"
-                      {...register(
-                        `permissionSets.${featureKeyAsEnum}.${permissionIndex}.id`
-                      )}
-                      value={permission.id}
-                    />
-                    {permission.toggle ? (
-                      <RHFSwitch
-                        label={t('common:enabled')}
-                        switchProps={{
-                          color: 'success',
-                        }}
-                        controlProps={{
-                          name: `permissionSets.${featureKeyAsEnum}.${permissionIndex}.toggle`,
-                          control,
-                        }}
-                      />
-                    ) : (
-                      <PermissionTypeDropdown
-                        control={control}
-                        setValue={setValue}
-                        name={`permissionSets.${featureKeyAsEnum}.${permissionIndex}.permissionType`}
-                      />
-                    )}
+                      <Tooltip
+                        title={permission.description}
+                        placement="top"
+                        arrow
+                      >
+                        <InfoCircleIcon
+                          sx={{
+                            width: 18,
+                            height: 18,
+                            ml: 0.5,
+                            verticalAlign: 'middle',
+                          }}
+                        />
+                      </Tooltip>
+                    </Typography>
                   </Stack>
-                </Paper>
-              ))}
-            </Stack>
-          </PermissionAccordionCard>
-        );
-      })}
+                  {typeof permission.toggle === 'boolean' ? (
+                    <RHFSwitch
+                      label={t('common:enabled')}
+                      switchProps={{
+                        color: 'success',
+                      }}
+                      controlProps={{
+                        name: `permissionsFieldsByIds.${permission.id}.toggle`,
+                        control,
+                      }}
+                    />
+                  ) : (
+                    <PermissionTypeDropdown
+                      name={`permissionsFieldsByIds.${permission.id}.permissionType`}
+                      onRemovePermissionType={() =>
+                        setValue(
+                          `permissionsFieldsByIds.${permission.id}.permissionType`,
+                          null
+                        )
+                      }
+                      control={control}
+                    />
+                  )}
+                </Stack>
+              </Paper>
+            ))}
+          </Stack>
+        </PermissionAccordionCard>
+      ))}
     </Grid>
   );
 };

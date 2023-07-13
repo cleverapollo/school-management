@@ -10,36 +10,42 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { ChevronDownIcon } from '@tyro/icons';
 import { Feature } from '@tyro/api';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useMemo } from 'react';
 import { Control, useWatch } from 'react-hook-form';
 import { PermissionFormState } from './types';
 
 type PermissionAccordionCardProps = PropsWithChildren<{
   feature: Feature;
-  totalPermissions: number;
   control: Control<PermissionFormState>;
 }>;
 
 export const PermissionAccordionCard = ({
   feature,
-  totalPermissions,
-  children,
   control,
+  children,
 }: PermissionAccordionCardProps) => {
-  const { t } = useTranslation(['settings', 'common']);
+  const { t } = useTranslation(['common', 'settings']);
 
-  const permissionsByFeature = useWatch({
+  const permissionSetsFields = useWatch({
     control,
-    name: `permissionSets.${feature}`,
-  }) as PermissionFormState['permissionSets'][Feature];
+    name: 'permissionsFieldsByIds',
+  });
 
-  const permissions = permissionsByFeature || [];
+  const permissionsPerFeature = useMemo(
+    () =>
+      Object.values(permissionSetsFields).filter(
+        (permission) => permission.feature === feature
+      ),
+    [permissionSetsFields, feature]
+  );
 
-  const permissionsEnabled = permissions.filter(
-    (permission) => permission.toggle || permission.permissionType
-  ).length;
-
-  const title = t(`settings:permissions.features.${feature}`);
+  const enabledPermissions = useMemo(
+    () =>
+      permissionsPerFeature.filter(
+        (permission) => permission.toggle || permission.permissionType
+      ),
+    [permissionsPerFeature]
+  );
 
   return (
     <Card variant="outlined" sx={{ width: '100%' }}>
@@ -80,18 +86,18 @@ export const PermissionAccordionCard = ({
                 <Typography
                   variant="body2"
                   component="p"
-                  color={permissionsEnabled ? 'text.primary' : 'text.disabled'}
+                  color={enabledPermissions ? 'text.primary' : 'text.disabled'}
                 >
-                  {`${permissionsEnabled ?? 0}/${totalPermissions ?? 0}`}
+                  {`${enabledPermissions.length}/${permissionsPerFeature.length}`}
                 </Typography>
               </Paper>
             </Box>
           }
-          aria-controls={title}
+          aria-controls={feature}
           id={feature}
         >
           <Typography component="h3" variant="subtitle2">
-            {title}
+            {t(`settings:permissions.features.${feature}`)}
           </Typography>
         </AccordionSummary>
         <AccordionDetails>{children}</AccordionDetails>
