@@ -89,10 +89,10 @@ export const AssignMembers = ({
   const options = getMembersByMemberType(memberType);
 
   useEffect(() => {
-    if (page > paginationCount) {
+    if (paginationCount > 0 && page > paginationCount) {
       setPage(paginationCount);
     }
-  }, [paginationCount, page]);
+  }, [members]);
 
   return (
     <Grid container gap={2}>
