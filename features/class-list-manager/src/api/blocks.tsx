@@ -214,7 +214,7 @@ export function useUpdateBlockMemberships() {
   });
 }
 
-export function useCreateOrUpdateBlockRotation() {
+export function useCreateOrUpdateBlockRotation(isEdit: boolean) {
   const { toast } = useToast();
   const { t } = useTranslation(['common']);
 
@@ -226,7 +226,11 @@ export function useCreateOrUpdateBlockRotation() {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     },
     onSuccess: (_, __) => {
-      toast(t('common:snackbarMessages.createSuccess'));
+      if (isEdit) {
+        toast(t('common:snackbarMessages.updateSuccess'));
+      } else {
+        toast(t('common:snackbarMessages.createSuccess'));
+      }
       queryClient.invalidateQueries(classListManagerKeys.all);
     },
   });

@@ -56,7 +56,9 @@ export const CreateBlockRotationModal = ({
     mutate: createOrUpdateBlockRotationMutation,
     isLoading: isSubmitting,
     isSuccess: isSubmitSuccessful,
-  } = useCreateOrUpdateBlockRotation();
+  } = useCreateOrUpdateBlockRotation(
+    Boolean(blockForCreateRotation?.isRotation)
+  );
 
   const { resolver, rules } = useFormValidator<CreateBlockRotationFormState>();
 
@@ -140,8 +142,7 @@ export const CreateBlockRotationModal = ({
       maxWidth="sm"
     >
       <DialogTitle>
-        {blockForCreateRotation?.rotations &&
-        blockForCreateRotation?.rotations.length > 0
+        {blockForCreateRotation?.isRotation
           ? t('classListManager:updateRotation')
           : t('classListManager:createRotation')}
       </DialogTitle>
