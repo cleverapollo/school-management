@@ -19,7 +19,10 @@ import { Core_EnableBlockRotationInput } from '@tyro/api';
 import { useEffect } from 'react';
 import { AddIcon, TrashIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
-import { useCreateOrUpdateBlockRotation } from '../../api/blocks';
+import {
+  ReturnTypeOfUseBlockList,
+  useCreateOrUpdateBlockRotation,
+} from '../../api/blocks';
 
 export type BlockRotationIterationInput = {
   startDate?: dayjs.Dayjs;
@@ -35,12 +38,16 @@ export type CreateBlockRotationFormState = Pick<
 };
 
 export type CreateBlockRotationViewProps = {
-  initialCreateBlockRotationState?: CreateBlockRotationFormState | undefined;
+  open: NonNullable<ReturnTypeOfUseBlockList>[number] | undefined;
+  blockForCreateRotation?:
+    | NonNullable<ReturnTypeOfUseBlockList>[number]
+    | undefined;
   onClose: () => void;
 };
 
 export const CreateBlockRotationModal = ({
-  initialCreateBlockRotationState,
+  open,
+  blockForCreateRotation,
   onClose,
 }: CreateBlockRotationViewProps) => {
   const { t } = useTranslation(['common', 'classListManager']);
@@ -107,30 +114,34 @@ export const CreateBlockRotationModal = ({
   };
 
   useEffect(() => {
-    if (initialCreateBlockRotationState) {
+    if (blockForCreateRotation) {
       const defaultFormStateValues: Partial<CreateBlockRotationFormState> = {
-        blockId: initialCreateBlockRotationState?.blockId,
+        blockId: blockForCreateRotation?.blockId,
         rotationName: '',
-        iterations: initialCreateBlockRotationState?.iterations,
+        iterations: blockForCreateRotation?.rotations?.map((item) => ({
+          startDate: item.startDate ? dayjs(item.startDate) : undefined,
+          endDate: item.endDate ? dayjs(item.endDate) : undefined,
+          iteration: item.iteration,
+        })),
       };
       reset({
         ...defaultFormStateValues,
-        ...initialCreateBlockRotationState,
+        ...blockForCreateRotation,
       });
     }
-  }, [initialCreateBlockRotationState]);
+  }, [blockForCreateRotation]);
 
   return (
     <Dialog
-      open={!!initialCreateBlockRotationState}
+      open={!!open}
       onClose={handleClose}
       scroll="paper"
       fullWidth
       maxWidth="sm"
     >
       <DialogTitle>
-        {initialCreateBlockRotationState?.iterations &&
-        initialCreateBlockRotationState?.iterations.length > 0
+        {blockForCreateRotation?.rotations &&
+        blockForCreateRotation?.rotations.length > 0
           ? t('classListManager:updateRotation')
           : t('classListManager:createRotation')}
       </DialogTitle>

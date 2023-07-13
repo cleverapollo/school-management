@@ -11,14 +11,10 @@ import { useLocation } from 'react-router-dom';
 import { Box } from '@mui/material';
 import { useMemo, useRef, useState } from 'react';
 import { MaleFemaleIcon, RotationIcon } from '@tyro/icons';
-import dayjs from 'dayjs';
 import { useContainerMargin } from '../hooks/use-container-margin';
 import { ClassListSettingsProvider } from '../store/class-list-settings';
 import { ReturnTypeOfUseBlockList } from '../api/blocks';
-import {
-  CreateBlockRotationFormState,
-  CreateBlockRotationModal,
-} from './blocks/create-block-rotation-modal';
+import { CreateBlockRotationModal } from './blocks/create-block-rotation-modal';
 
 export default function ClassListManagerContainer() {
   const { t } = useTranslation(['navigation', 'classListManager']);
@@ -33,7 +29,9 @@ export default function ClassListManagerContainer() {
     value: blockForCreateRotation,
     debouncedValue: debouncedBlockForCreateRotation,
     setValue: setBlockForCreateRotation,
-  } = useDebouncedValue<CreateBlockRotationFormState | undefined>({
+  } = useDebouncedValue<
+    NonNullable<ReturnTypeOfUseBlockList>[number] | undefined
+  >({
     defaultValue: undefined,
   });
 
@@ -53,15 +51,7 @@ export default function ClassListManagerContainer() {
   };
 
   const createRotation = () => {
-    setBlockForCreateRotation({
-      blockId: currenBlockRef?.current?.blockId,
-      rotationName: '',
-      iterations: currenBlockRef?.current?.rotations?.map((item) => ({
-        startDate: item.startDate ? dayjs(item.startDate) : undefined,
-        endDate: item.endDate ? dayjs(item.endDate) : undefined,
-        iteration: item.iteration,
-      })),
-    } as CreateBlockRotationFormState);
+    setBlockForCreateRotation(currenBlockRef?.current);
   };
 
   const handleCloseModal = () => {
@@ -124,7 +114,8 @@ export default function ClassListManagerContainer() {
           />
         </Box>
         <CreateBlockRotationModal
-          initialCreateBlockRotationState={
+          open={blockForCreateRotation}
+          blockForCreateRotation={
             blockForCreateRotation || debouncedBlockForCreateRotation
           }
           onClose={handleCloseModal}
