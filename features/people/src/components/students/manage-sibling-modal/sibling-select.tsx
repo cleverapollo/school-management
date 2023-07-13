@@ -55,6 +55,20 @@ export function SiblingSelect({
         multiple
         openOnFocus
         filterSelectedOptions
+        filterOptions={(options, { inputValue }) => {
+          if (!inputValue) {
+            return options;
+          }
+
+          const splitInputValue = inputValue.toLowerCase().split(' ');
+
+          return options.filter((option) => {
+            const studentName = displayName(option.person).toLowerCase();
+            return splitInputValue.every((string) =>
+              studentName.includes(string)
+            );
+          });
+        }}
         loading={isLoading}
         options={students ?? []}
         optionIdKey="partyId"

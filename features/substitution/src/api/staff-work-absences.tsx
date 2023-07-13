@@ -30,8 +30,6 @@ const staffWorkAbsences = graphql(/* GraphQL */ `
         continuousEndDate
         individualDates
         partialAbsence
-        returnsAt
-        leavesAt
       }
     }
   }
