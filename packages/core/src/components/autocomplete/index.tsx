@@ -139,8 +139,8 @@ export const Autocomplete = <
               component="li"
               direction="row"
               spacing={1}
-              key={String(optionIdKey ? option[optionIdKey] : option)}
               {...props}
+              key={String(optionIdKey ? option[optionIdKey] : option)}
             >
               <Avatar
                 sx={{ width: 32, height: 32, fontSize: '0.75rem' }}
