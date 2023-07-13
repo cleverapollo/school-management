@@ -98,5 +98,8 @@
     "boardOfManagementChairPerson": "Board of management chairperson",
     "octoberReturnsContact": "October returns contact person",
     "dataUnavailable": "Data unavailable."
+  },
+  "dtrReturns": {
+    "downloadFile": "Download file"
   }
 }

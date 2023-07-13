@@ -15,6 +15,7 @@ const Ppod = lazy(() => import('./pages/ppod/ppod'));
 const Login = lazy(() => import('./pages/ppod/login'));
 const Sync = lazy(() => import('./pages/ppod/sync'));
 const SchoolDetails = lazy(() => import('./pages/ppod/school-details'));
+const DTRReturns = lazy(() => import('./pages/dtr-returns'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -94,6 +95,13 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'ppod/login',
             hasAccess: (permissions) => permissions.isStaffUser,
             element: <Login />,
+          },
+          {
+            type: NavObjectType.MenuLink,
+            title: t('navigation:management.settings.dtrReturns'),
+            path: 'dtr-returns',
+            loader: () => getCoreAcademicNamespace(),
+            element: <DTRReturns />,
           },
         ],
       },

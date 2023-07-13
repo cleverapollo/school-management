@@ -48,7 +48,8 @@
       "subjects": "Subjects",
       "ppod": "PPOD",
       "schoolDetails": "School details",
-      "login": "Login"
+      "login": "Login",
+      "dtrReturns": "DTR Returns"
     },
     "timetable": {
       "title": "Timetable",
