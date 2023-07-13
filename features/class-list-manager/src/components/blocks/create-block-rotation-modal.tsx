@@ -58,8 +58,12 @@ export const CreateBlockRotationModal = ({
       resolver: resolver({
         rotationName: rules.required(),
         iterations: {
-          startDate: [rules.required(''), rules.date('')],
-          endDate: [rules.required(''), rules.date('')],
+          startDate: [rules.required(), rules.date()],
+          endDate: [
+            rules.required(),
+            rules.date(),
+            rules.afterStartDate(`iterations.0.startDate`),
+          ],
           iteration: rules.minLength(2),
         },
       }),
@@ -165,7 +169,6 @@ export const CreateBlockRotationModal = ({
                   borderColor: 'slate.200',
                   p: 1,
                   alignItems: 'center',
-                  height: 50,
                 }}
               >
                 <Typography
