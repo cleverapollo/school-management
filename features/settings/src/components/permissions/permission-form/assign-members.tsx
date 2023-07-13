@@ -26,7 +26,7 @@ import {
   SearchInput,
   usePreferredNameLayout,
 } from '@tyro/core';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { TrashIcon } from '@tyro/icons';
 import { MemberType } from '@tyro/api';
 import {
@@ -87,6 +87,12 @@ export const AssignMembers = ({
   const paginationCount = Math.ceil(filteredMembers.length / ROWS_PER_PAGE);
 
   const options = getMembersByMemberType(memberType);
+
+  useEffect(() => {
+    if (page > paginationCount) {
+      setPage(paginationCount);
+    }
+  }, [paginationCount, page]);
 
   return (
     <Grid container gap={2}>
