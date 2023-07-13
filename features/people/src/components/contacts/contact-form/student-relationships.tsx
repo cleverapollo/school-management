@@ -16,13 +16,7 @@ import {
   UpsertStudentContactRelationshipInfoInput,
   StudentContactType,
 } from '@tyro/api';
-import {
-  RHFAutocomplete,
-  RHFCheckbox,
-  RHFSelect,
-  RHFSwitch,
-  usePreferredNameLayout,
-} from '@tyro/core';
+import { RHFAutocomplete, RHFCheckbox, RHFSelect, RHFSwitch } from '@tyro/core';
 import {
   Control,
   UseFormSetValue,
@@ -41,6 +35,7 @@ import {
   StudentSelectOption,
   useStudentsForSelect,
 } from '../../../api/student/students';
+import { usePeopleAutocompleteProps } from '../../common/use-people-autocomplete-props';
 
 const relationshipTypeOptions = Object.values(StudentContactType);
 export const priorityOptions = Array.from({ length: 5 }, (_v, k) => k + 1);
@@ -79,7 +74,9 @@ export const StudentRelationships = <
 }: StudentRelationshipsProps<TField>) => {
   const { t } = useTranslation(['common', 'people']);
 
-  const { displayName } = usePreferredNameLayout();
+  const peopleAutocompleteProps =
+    usePeopleAutocompleteProps<StudentSelectOption>();
+
   const { spacing } = useTheme();
 
   const { fields, append, remove } = useFieldArray({
@@ -201,29 +198,12 @@ export const StudentRelationships = <
               <Grid item xs={12} sm={12} md={6}>
                 <RHFAutocomplete<
                   StudentRelationshipsFormState,
-                  StudentSelectOption,
-                  true
+                  StudentSelectOption
                 >
+                  {...peopleAutocompleteProps}
                   fullWidth
-                  freeSolo
                   label={t('common:student')}
                   options={studentsData}
-                  optionIdKey="partyId"
-                  getOptionLabel={(option) =>
-                    typeof option === 'string' ? option : displayName(option)
-                  }
-                  renderAvatarAdornment={(value, renderAdornment) =>
-                    renderAdornment({
-                      name: displayName(value),
-                      src: value.avatarUrl,
-                    })
-                  }
-                  renderAvatarOption={(option, renderOption) =>
-                    renderOption({
-                      name: displayName(option),
-                      src: option.avatarUrl,
-                    })
-                  }
                   controlProps={{
                     name: `studentRelationships.${index}.student`,
                     control,

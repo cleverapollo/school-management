@@ -29,6 +29,7 @@ import {
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { TrashIcon } from '@tyro/icons';
 import { MemberType } from '@tyro/api';
+import { usePeopleAutocompleteProps } from '@tyro/people';
 import {
   MemberOption,
   useMembersByPermissionType,
@@ -57,6 +58,7 @@ export const AssignMembers = ({
   const [page, setPage] = useState(1);
 
   const { getMembersByMemberType } = useMembersByPermissionType();
+  const peopleAutocompleteProps = usePeopleAutocompleteProps<MemberOption>();
 
   const members = useWatch({ control, name: 'members' });
 
@@ -98,20 +100,13 @@ export const AssignMembers = ({
     <Grid container gap={2}>
       <Grid item xs={12}>
         <RHFAutocomplete<PermissionFormState, MemberOption>
+          {...peopleAutocompleteProps}
           fullWidth
           multiple
           filterSelectedOptions
           label={t(`settings:permissions.searchByMemberType.${memberType}`)}
           options={options}
-          optionIdKey="partyId"
-          getOptionLabel={(option) => displayName(option)}
-          renderTags={() => null}
-          renderAvatarOption={(option, renderOption) =>
-            renderOption({
-              name: displayName(option),
-              src: option.avatarUrl,
-            })
-          }
+          renderAvatarTags={() => null}
           controlProps={{
             control,
             name: 'members',

@@ -9,6 +9,7 @@ import { forwardRef, ForwardedRef, useImperativeHandle, useRef } from 'react';
 import { UseQueryReturnType } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useStaffForSelect } from '../../api/staff';
+import { usePeopleAutocompleteProps } from './use-people-autocomplete-props';
 
 type ReturnTypeFromUseStaffForSelect = UseQueryReturnType<
   typeof useStaffForSelect
@@ -35,6 +36,9 @@ export const TableStaffAutocomplete = forwardRef(
       },
     }));
 
+    const { getOptionLabel, optionIdKey, filterOptions } =
+      usePeopleAutocompleteProps<ReturnTypeFromUseStaffForSelect>();
+
     return (
       <TableAutocomplete
         ref={autoCompleteRef}
@@ -45,9 +49,10 @@ export const TableStaffAutocomplete = forwardRef(
             : null
         }
         options={data ?? []}
-        getOptionLabel={(option) => displayName(option)}
-        optionIdKey="partyId"
+        getOptionLabel={getOptionLabel}
+        optionIdKey={optionIdKey}
         AutocompleteProps={{
+          filterOptions,
           autoHighlight: true,
           loading: isLoading,
           loadingText: t('common:loading'),

@@ -2,10 +2,11 @@ import { Box, Typography } from '@mui/material';
 import { RHFAutocomplete, usePreferredNameLayout } from '@tyro/core';
 import { Control, UseFormSetValue } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useStudentsForSiblingSearch } from '../../../api/student/students-for-sibling-search';
 import { ManageSiblingFormValues } from './types';
 import { SiblingListContainer, SiblingListItem } from './sibling-list';
+import { usePeopleAutocompleteProps } from '../../common/use-people-autocomplete-props';
 
 interface SiblingSelectProps {
   enrolledSiblings: ManageSiblingFormValues['enrolledSiblings'];
@@ -13,6 +14,11 @@ interface SiblingSelectProps {
   setValue: UseFormSetValue<ManageSiblingFormValues>;
   control: Control<ManageSiblingFormValues>;
 }
+
+type SibilingOption = Omit<
+  NonNullable<ReturnType<typeof useStudentsForSiblingSearch>['data']>[number],
+  '__typename'
+>;
 
 export function SiblingSelect({
   enrolledSiblings,
@@ -26,6 +32,8 @@ export function SiblingSelect({
   const hasEnrolledSiblings = enrolledSiblings?.length > 0;
   const hasNonEnrolledSiblings = nonEnrolledSiblings?.length > 0;
 
+  const peopleAutocompleteProps = usePeopleAutocompleteProps<SibilingOption>();
+
   const removeEnrolledSibling = useCallback(
     (partyId: number) => {
       const newEnrolledSiblings = enrolledSiblings.filter(
@@ -35,6 +43,7 @@ export function SiblingSelect({
     },
     [enrolledSiblings, setValue]
   );
+
   const removeNonEnrolledSibling = useCallback(
     (partyId: number) => {
       const newNonEnrolledSiblings = nonEnrolledSiblings.filter(
@@ -45,42 +54,28 @@ export function SiblingSelect({
     [nonEnrolledSiblings, setValue]
   );
 
+  const sibilingOptions = useMemo(
+    () =>
+      students?.map((student) => ({
+        person: student.person,
+        classGroup: student.classGroup,
+        caption: student.classGroup?.name,
+        ...student.person,
+      })) ?? [],
+    [students]
+  );
+
   return (
     <Box sx={{ px: 3, pt: 1 }}>
-      <RHFAutocomplete<
-        ManageSiblingFormValues,
-        NonNullable<typeof students>[number]
-      >
+      <RHFAutocomplete<ManageSiblingFormValues, SibilingOption>
+        {...peopleAutocompleteProps}
         label={t('people:searchForNewSibling')}
         multiple
         openOnFocus
         filterSelectedOptions
-        filterOptions={(options, { inputValue }) => {
-          if (!inputValue) {
-            return options;
-          }
-
-          const splitInputValue = inputValue.toLowerCase().split(' ');
-
-          return options.filter((option) => {
-            const studentName = displayName(option.person).toLowerCase();
-            return splitInputValue.every((string) =>
-              studentName.includes(string)
-            );
-          });
-        }}
         loading={isLoading}
-        options={students ?? []}
-        optionIdKey="partyId"
-        renderTags={() => null}
-        getOptionLabel={(option) => displayName(option.person)}
-        renderAvatarOption={(option, renderOption) =>
-          renderOption({
-            name: displayName(option.person),
-            src: option.person.avatarUrl ?? undefined,
-            caption: option.classGroup?.name ?? '',
-          })
-        }
+        options={sibilingOptions}
+        renderAvatarTags={() => null}
         controlProps={{
           control,
           name: 'enrolledSiblings',

@@ -31,7 +31,7 @@ export type AutocompleteProps<
   label?: TextFieldProps['label'];
   placeholder?: TextFieldProps['placeholder'];
   inputProps?: TextfieldCustomProps;
-  optionIdKey?: T extends object ? keyof T : never;
+  optionIdKey?: keyof T;
   optionTextKey?: T extends object ? keyof T : never;
   customRef?: ForwardedRef<unknown>;
   renderAvatarAdornment?: (
@@ -106,16 +106,20 @@ export const Autocomplete = <
             InputProps: {
               ...params.InputProps,
               ...inputProps?.InputProps,
-              startAdornment: value
-                ? renderAvatarAdornment(value as T, (avatarProps) => (
-                    <InputAdornment position="start" sx={{ ml: 0.75, mr: 0 }}>
-                      <Avatar
-                        sx={{ width: 24, height: 24, fontSize: '0.7rem' }}
-                        {...avatarProps}
-                      />
-                    </InputAdornment>
-                  ))
-                : null,
+              ...(!restAutocompleteProps.multiple &&
+                value && {
+                  startAdornment: renderAvatarAdornment(
+                    value as T,
+                    (avatarProps) => (
+                      <InputAdornment position="start" sx={{ ml: 0.75, mr: 0 }}>
+                        <Avatar
+                          sx={{ width: 24, height: 24, fontSize: '0.7rem' }}
+                          {...avatarProps}
+                        />
+                      </InputAdornment>
+                    )
+                  ),
+                }),
             },
           })}
           sx={{
