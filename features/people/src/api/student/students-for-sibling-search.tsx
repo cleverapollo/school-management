@@ -1,5 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, UseQueryReturnType } from '@tyro/api';
+import {
+  gqlClient,
+  graphql,
+  UseQueryReturnType,
+  StudentsForSiblingSearchQuery,
+} from '@tyro/api';
+import { usePreferredNameLayout } from '@tyro/core';
+import { useCallback } from 'react';
 import { peopleKeys } from '../keys';
 
 const studentsForSiblingSearch = graphql(/* GraphQL */ `
@@ -40,9 +47,19 @@ const studentsForSiblingSearchQuery = () => ({
 });
 
 export function useStudentsForSiblingSearch() {
+  const { displayName } = usePreferredNameLayout();
+
   return useQuery({
     ...studentsForSiblingSearchQuery(),
-    select: ({ core_students }) => core_students,
+    select: useCallback(
+      ({ core_students }: StudentsForSiblingSearchQuery) =>
+        core_students.sort((studentA, studentB) =>
+          displayName(studentA.person).localeCompare(
+            displayName(studentB.person)
+          )
+        ),
+      [displayName]
+    ),
   });
 }
 
