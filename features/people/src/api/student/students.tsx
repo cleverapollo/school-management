@@ -37,6 +37,7 @@ const students = graphql(/* GraphQL */ `
       }
       studentIrePP {
         examNumber
+        previousSchoolName
       }
       tutors {
         partyId

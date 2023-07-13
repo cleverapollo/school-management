@@ -1,3 +1,4 @@
+import { LoadingButton } from '@mui/lab';
 import {
   Button,
   Dialog,
@@ -42,7 +43,22 @@ export function PublishModal({ open, onClose }: UnpublishedChangesModalProps) {
 
   const hasNoChanges = !totalChanges;
 
-  const { mutateAsync: publishTimetable } = useTtPublishTimetable();
+  const { mutateAsync: publishTimetable, isLoading: isPublishing } =
+    useTtPublishTimetable();
+
+  const onPublish = () => {
+    publishTimetable(
+      {
+        timetableId,
+        effectiveFromDate: publishFromDate.format('YYYY-MM-DD'),
+      },
+      {
+        onSuccess: () => {
+          onClose();
+        },
+      }
+    );
+  };
 
   return (
     <Dialog
@@ -104,18 +120,14 @@ export function PublishModal({ open, onClose }: UnpublishedChangesModalProps) {
           title={hasNoChanges ? t('timetable:thereAreNoChangesAvailable') : ''}
         >
           <span>
-            <Button
+            <LoadingButton
               variant="contained"
-              onClick={() => {
-                publishTimetable({
-                  timetableId,
-                  effectiveFromDate: publishFromDate.format('YYYY-MM-DD'),
-                });
-              }}
+              loading={isPublishing}
+              onClick={onPublish}
               disabled={hasNoChanges}
             >
               {t('common:actions.confirm')}
-            </Button>
+            </LoadingButton>
           </span>
         </Tooltip>
       </DialogActions>
