@@ -49,15 +49,7 @@ export function sortByDisplayName(
   const nameA = displayName(studentA);
   const nameB = displayName(studentB);
 
-  if (nameA < nameB) {
-    return -1;
-  }
-
-  if (nameA > nameB) {
-    return 1;
-  }
-
-  return 0;
+  return nameA.localeCompare(nameB);
 }
 
 export function usePreferredNameLayout() {

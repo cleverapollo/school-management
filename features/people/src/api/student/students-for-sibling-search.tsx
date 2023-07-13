@@ -47,18 +47,16 @@ const studentsForSiblingSearchQuery = () => ({
 });
 
 export function useStudentsForSiblingSearch() {
-  const { displayName } = usePreferredNameLayout();
+  const { sortByDisplayName } = usePreferredNameLayout();
 
   return useQuery({
     ...studentsForSiblingSearchQuery(),
     select: useCallback(
       ({ core_students }: StudentsForSiblingSearchQuery) =>
         core_students.sort((studentA, studentB) =>
-          displayName(studentA.person).localeCompare(
-            displayName(studentB.person)
-          )
+          sortByDisplayName(studentA.person, studentB.person)
         ),
-      [displayName]
+      [sortByDisplayName]
     ),
   });
 }
