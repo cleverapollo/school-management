@@ -2357,6 +2357,7 @@ export type PpodStudent = {
   mothersMaidenName?: InputMaybe<Scalars['String']>;
   nationality?: InputMaybe<Scalars['String']>;
   ppsn?: InputMaybe<Scalars['String']>;
+  previousSchoolRollNum?: InputMaybe<Scalars['String']>;
   previousSchoolType?: InputMaybe<Scalars['String']>;
   shortTermPupil?: InputMaybe<Scalars['Boolean']>;
   shortTermPupilNumWeeks?: InputMaybe<Scalars['Int']>;
@@ -2497,6 +2498,7 @@ export type PermissionGroupFilter = {
 
 export type PermissionGroupPermissionSet = {
   __typename?: 'PermissionGroupPermissionSet';
+  feature?: Maybe<Feature>;
   id: Scalars['Int'];
   permissionType?: Maybe<PermissionType>;
   toggle?: Maybe<Scalars['Boolean']>;
@@ -2618,6 +2620,16 @@ export type PhoneNumber = {
   partyId: Scalars['Long'];
   phoneNumberId?: Maybe<Scalars['Int']>;
   primaryPhoneNumber?: Maybe<Scalars['Boolean']>;
+};
+
+export type PrimarySchoolIre = {
+  __typename?: 'PrimarySchoolIre';
+  rollNumber: Scalars['String'];
+  schoolName: Scalars['String'];
+};
+
+export type PrimarySchoolIreFilter = {
+  rollNumbers?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
 export type PriorityStudent = {
@@ -4263,6 +4275,7 @@ export type StudentIrePp = {
   languageSupportApplicant?: Maybe<Scalars['Boolean']>;
   lockerNumber?: Maybe<Scalars['String']>;
   medicalCard?: Maybe<Scalars['Boolean']>;
+  previousSchoolName?: Maybe<Scalars['String']>;
   previousSchoolRollNumber?: Maybe<Scalars['String']>;
   previousSchoolType?: Maybe<Scalars['String']>;
   reasonForLeaving?: Maybe<Scalars['String']>;
