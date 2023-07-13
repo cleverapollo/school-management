@@ -167,14 +167,16 @@ export const CardEditableForm = <TField extends FieldValues>({
                   gap={0.5}
                   flexDirection="row"
                   alignItems="center"
-                >
-                  <Typography component="dt" variant="subtitle1">
+                >                 
+                  <Typography flex="1 0 0%" component="dt" variant="subtitle1">
                     {label}
                   </Typography>
                   {tooltipInfo && (
-                    <Tooltip title={tooltipInfo}>
-                      <InfoCircleIcon sx={{ width: 18, height: 18 }} />
-                    </Tooltip>
+                    <Box display="flex" flex="1" justifyContent="flex-start">
+                      <Tooltip title={tooltipInfo}>
+                        <InfoCircleIcon sx={{ width: 18, height: 18 }} />
+                      </Tooltip>
+                    </Box>
                   )}
                 </Stack>
 
