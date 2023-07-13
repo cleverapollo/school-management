@@ -71,7 +71,19 @@ export const CreateBlockRotationModal = ({
           endDate: [
             rules.required(),
             rules.date(),
-            rules.afterStartDate(`iterations.0.startDate`),
+            rules.validate<dayjs.Dayjs>(
+              (endDate, throwError, { iterations }) => {
+                iterations.forEach((iteration) => {
+                  if (
+                    iteration.startDate &&
+                    iteration.endDate &&
+                    iteration.startDate?.isAfter(iteration.endDate)
+                  ) {
+                    throwError(t('common:errorMessages.afterStartDate'));
+                  }
+                });
+              }
+            ),
           ],
           iteration: rules.minLength(2),
         },
