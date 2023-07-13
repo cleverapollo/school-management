@@ -50,6 +50,7 @@ export const PermissionForm = ({ initialState }: PermissionFormProps) => {
     setFocus,
     setValue,
     reset,
+    getFieldState,
     formState: { isDirty },
   } = useForm<PermissionFormState>({
     defaultValues: defaultFormStateValues,
@@ -134,6 +135,8 @@ export const PermissionForm = ({ initialState }: PermissionFormProps) => {
     }
   }, [memberType]);
 
+  const { isDirty: isMemberTypeDirty } = getFieldState('memberType');
+
   return (
     <Grid container gap={3} component="form" onSubmit={onSubmit}>
       <Grid item xs={12} lg={10}>
@@ -159,7 +162,7 @@ export const PermissionForm = ({ initialState }: PermissionFormProps) => {
             />
             <TabPanel value={TabOption.PERMISSIONS}>
               <SelectPermissions
-                isFormDirty={isDirty}
+                isMemberTypeDirty={isMemberTypeDirty}
                 memberType={memberType}
                 control={control}
                 setValue={setValue}

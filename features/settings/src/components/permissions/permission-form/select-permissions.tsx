@@ -19,7 +19,7 @@ type SelectPermissionsProps = {
   control: Control<PermissionFormState>;
   setValue: UseFormSetValue<PermissionFormState>;
   memberType: MemberType;
-  isFormDirty: boolean;
+  isMemberTypeDirty: boolean;
 };
 
 const filters: Record<MemberType, PermissionSetFilter> = {
@@ -48,7 +48,7 @@ type PermissionsByFeatures = Array<{
 }>;
 
 export const SelectPermissions = ({
-  isFormDirty,
+  isMemberTypeDirty,
   memberType,
   control,
   setValue,
@@ -82,7 +82,7 @@ export const SelectPermissions = ({
   }, [permissionData]);
 
   useEffect(() => {
-    if (isFormDirty) {
+    if (isMemberTypeDirty) {
       setValue('permissionsFieldsByIds', []);
 
       permissionData.forEach(({ id, feature, toggle, permissionType }) => {
