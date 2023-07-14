@@ -14,23 +14,13 @@ export const usePeopleAutocompleteProps = <
   | 'renderAvatarOption'
   | 'renderAvatarAdornment'
 > => {
-  const { displayName } = usePreferredNameLayout();
+  const { displayName, searchDisplayName } = usePreferredNameLayout();
 
   return {
     optionIdKey: 'partyId',
     getOptionLabel: (option) => displayName(option),
-    filterOptions: (options, { inputValue }) => {
-      if (!inputValue) {
-        return options;
-      }
-
-      const splitInputValue = inputValue.toLowerCase().split(' ');
-
-      return options.filter((option) => {
-        const studentName = displayName(option).toLowerCase();
-        return splitInputValue.every((string) => studentName.includes(string));
-      });
-    },
+    filterOptions: (options, { inputValue }) =>
+      searchDisplayName(options, inputValue),
     renderAvatarAdornment: (value, renderAdornment) =>
       renderAdornment({
         name: displayName(value),

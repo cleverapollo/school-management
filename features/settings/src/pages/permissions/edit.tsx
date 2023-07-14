@@ -1,4 +1,4 @@
-import { useNumber } from '@tyro/core';
+import { useNumber, usePreferredNameLayout } from '@tyro/core';
 import { useParams } from 'react-router-dom';
 import { useMemo } from 'react';
 import { PermissionForm } from '../../components/permissions/permission-form';
@@ -14,6 +14,7 @@ export default function EditPermissionPage() {
   const { data: permissionGroupData = [] } = usePermissionGroups({
     ids: [groupId ?? 0],
   });
+  const { sortByDisplayName } = usePreferredNameLayout();
 
   const { getMembersByMemberType, isLoading } = useMembersByPermissionType();
 
@@ -48,9 +49,9 @@ export default function EditPermissionPage() {
         id,
         name,
         description,
-        members: members.filter((member) =>
-          memberPartyIds.includes(member.partyId)
-        ),
+        members: members
+          .filter((member) => memberPartyIds.includes(member.partyId))
+          .sort(sortByDisplayName),
       }),
     };
   }, [permissionGroupData, isLoading]);

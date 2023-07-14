@@ -44,6 +44,7 @@ type AssignMembersProps = {
 };
 
 const ROWS_PER_PAGE = 10;
+const INITIAL_PAGE = 1;
 
 export const AssignMembers = ({
   memberType,
@@ -52,10 +53,10 @@ export const AssignMembers = ({
   control,
 }: AssignMembersProps) => {
   const { t } = useTranslation(['settings']);
-  const { displayName } = usePreferredNameLayout();
+  const { displayName, searchDisplayName } = usePreferredNameLayout();
 
   const [searchMember, setSearchMember] = useState('');
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(INITIAL_PAGE);
 
   const { getMembersByMemberType } = useMembersByPermissionType();
   const peopleAutocompleteProps = usePeopleAutocompleteProps<MemberOption>();
@@ -63,13 +64,8 @@ export const AssignMembers = ({
   const members = useWatch({ control, name: 'members' });
 
   const filteredMembers = useMemo(
-    () =>
-      members
-        .filter((member) =>
-          displayName(member).toLowerCase().includes(searchMember.toLowerCase())
-        )
-        .reverse(),
-    [members, page, searchMember, displayName]
+    () => searchDisplayName(members, searchMember),
+    [members, searchMember]
   );
 
   const removeMember = useCallback(
@@ -94,6 +90,10 @@ export const AssignMembers = ({
     if (paginationCount > 0 && page > paginationCount) {
       setPage(paginationCount);
     }
+  }, [filteredMembers]);
+
+  useEffect(() => {
+    setPage(INITIAL_PAGE);
   }, [members]);
 
   return (
@@ -103,6 +103,7 @@ export const AssignMembers = ({
           {...peopleAutocompleteProps}
           fullWidth
           multiple
+          unshiftMode
           filterSelectedOptions
           label={t(`settings:permissions.searchByMemberType.${memberType}`)}
           options={options}
