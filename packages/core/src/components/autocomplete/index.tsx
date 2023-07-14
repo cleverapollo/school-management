@@ -34,6 +34,7 @@ export type AutocompleteProps<
   optionIdKey?: keyof T;
   optionTextKey?: T extends object ? keyof T : never;
   customRef?: ForwardedRef<unknown>;
+  unshiftMode?: boolean;
   renderAvatarAdornment?: (
     value: T,
     renderAdornment: (avatarProps: AvatarProps) => React.ReactNode
@@ -67,7 +68,9 @@ export const Autocomplete = <
   renderAvatarAdornment,
   renderAvatarOption,
   renderAvatarTags,
+  unshiftMode,
   customRef,
+  multiple,
   ...restAutocompleteProps
 }: AutocompleteProps<T, FreeSolo>) => {
   const { spacing, palette } = useTheme();
@@ -86,6 +89,7 @@ export const Autocomplete = <
 
         return option === newValue;
       }}
+      multiple={multiple}
       options={options}
       {...(optionTextKey && {
         getOptionLabel: (option) =>
@@ -95,6 +99,22 @@ export const Autocomplete = <
       })}
       popupIcon={null}
       {...restAutocompleteProps}
+      {...(unshiftMode &&
+        multiple && {
+          onChange: (event, newValue, ...restParams) => {
+            if (Array.isArray(newValue)) {
+              const lastItem = newValue.at(newValue.length - 1) as T;
+              newValue.pop();
+              restAutocompleteProps.onChange?.(
+                event,
+                [lastItem, ...newValue],
+                ...restParams
+              );
+            } else {
+              restAutocompleteProps.onChange?.(event, newValue, ...restParams);
+            }
+          },
+        })}
       renderInput={(params) => (
         <TextField
           label={label}
@@ -106,7 +126,7 @@ export const Autocomplete = <
             InputProps: {
               ...params.InputProps,
               ...inputProps?.InputProps,
-              ...(!restAutocompleteProps.multiple &&
+              ...(!multiple &&
                 value && {
                   startAdornment: renderAvatarAdornment(
                     value as T,
