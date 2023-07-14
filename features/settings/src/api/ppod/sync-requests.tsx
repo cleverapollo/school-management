@@ -26,6 +26,7 @@ const syncRequests = graphql(/* GraphQL */ `
         avatarUrl
         type
       }
+      failureReason
       requestedOn
     }
   }
