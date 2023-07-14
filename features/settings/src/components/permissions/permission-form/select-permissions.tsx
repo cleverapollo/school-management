@@ -121,7 +121,7 @@ export const SelectPermissions = ({
                 sx={{
                   px: 2,
                   py: 1,
-                  backgroundColor: 'slate.50',
+                  backgroundColor: 'background.neutral',
                 }}
               >
                 <Stack

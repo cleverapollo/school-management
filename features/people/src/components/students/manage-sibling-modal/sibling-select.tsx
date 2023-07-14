@@ -57,10 +57,10 @@ export function SiblingSelect({
   const sibilingOptions = useMemo(
     () =>
       students?.map((student) => ({
-        person: student.person,
-        classGroup: student.classGroup,
-        caption: student.classGroup?.name,
+        ...student,
+        // These are for the autocomplete
         ...student.person,
+        caption: student.classGroup?.name,
       })) ?? [],
     [students]
   );

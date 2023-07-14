@@ -12,6 +12,7 @@ export * from './current-attendance-icon';
 export * from './form';
 export * from './icon-chip';
 export * from './lazy-loader';
+export * from './link';
 export * from './loading-placeholder';
 export * from './page';
 export * from './page-container';

@@ -1,13 +1,6 @@
 import { useTranslation } from '@tyro/i18n';
-import {
-  Typography,
-  Grid,
-  Link as MuiLink,
-  Box,
-  Button,
-  Stack,
-} from '@mui/material';
-import { PlaceholderCard } from '@tyro/core';
+import { Typography, Grid, Box, Button, Stack } from '@mui/material';
+import { PlaceholderCard, Link as CoreLink } from '@tyro/core';
 import { Link } from 'react-router-dom';
 import { EditPenCheckmark } from '@tyro/icons';
 import { usePermissionGroups } from '../../api/permissions/user-permissions-groups';
@@ -54,9 +47,9 @@ export const CustomPermissionsList = () => {
               <Typography component="h4" variant="subtitle1">
                 {t('settings:permissions.emptyCustomPermissionsGroups')}
               </Typography>
-              <MuiLink component={Link} variant="body2" to="./create">
+              <CoreLink variant="body2" to="./create">
                 {t('settings:permissions.createNewGroup')}
-              </MuiLink>
+              </CoreLink>
             </Box>
           </PlaceholderCard>
         </Grid>
