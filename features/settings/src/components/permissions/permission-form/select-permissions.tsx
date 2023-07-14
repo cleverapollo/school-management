@@ -2,7 +2,7 @@ import { Grid, Paper, Stack, Tooltip, Typography } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { Control, UseFormSetValue } from 'react-hook-form';
 import { InfoCircleIcon } from '@tyro/icons';
-import { RHFSwitch } from '@tyro/core';
+import { RHFSwitch, RHFTextField, VisuallyHidden } from '@tyro/core';
 import { useEffect, useMemo } from 'react';
 import {
   Feature,
@@ -96,13 +96,6 @@ export const SelectPermissions = ({
     }
   }, [memberType, permissionData]);
 
-  useEffect(() => {
-    permissionData.forEach(({ id, feature }) => {
-      setValue(`permissionsFieldsByIds.${id}.id`, id);
-      setValue(`permissionsFieldsByIds.${id}.feature`, feature);
-    });
-  }, [permissionData]);
-
   return (
     <Grid container gap={3}>
       {permissionsByFeatures.map((field) => (
@@ -110,6 +103,7 @@ export const SelectPermissions = ({
           key={`${memberType}-${field.feature}`}
           feature={field.feature}
           control={control}
+          totalPermissions={field.permissions.length}
         >
           <Stack gap={1}>
             <Typography
@@ -161,6 +155,24 @@ export const SelectPermissions = ({
                       </Tooltip>
                     </Typography>
                   </Stack>
+                  <VisuallyHidden>
+                    <RHFTextField
+                      textFieldProps={{ type: 'hidden' }}
+                      controlProps={{
+                        name: `permissionsFieldsByIds.${permission.id}.id`,
+                        control,
+                        defaultValue: permission.id,
+                      }}
+                    />
+                    <RHFTextField
+                      textFieldProps={{ type: 'hidden' }}
+                      controlProps={{
+                        name: `permissionsFieldsByIds.${permission.id}.feature`,
+                        control,
+                        defaultValue: permission.feature,
+                      }}
+                    />
+                  </VisuallyHidden>
                   {typeof permission.toggle === 'boolean' ? (
                     <RHFSwitch
                       label={t('common:enabled')}

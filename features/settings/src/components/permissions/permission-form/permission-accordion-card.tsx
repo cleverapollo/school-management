@@ -17,11 +17,13 @@ import { PermissionFormState } from './types';
 type PermissionAccordionCardProps = PropsWithChildren<{
   feature: Feature;
   control: Control<PermissionFormState>;
+  totalPermissions: number;
 }>;
 
 export const PermissionAccordionCard = ({
   feature,
   control,
+  totalPermissions,
   children,
 }: PermissionAccordionCardProps) => {
   const { t } = useTranslation(['common', 'settings']);
@@ -31,20 +33,14 @@ export const PermissionAccordionCard = ({
     name: 'permissionsFieldsByIds',
   });
 
-  const permissionsPerFeature = useMemo(
-    () =>
-      Object.values(permissionSetsFields).filter(
-        (permission) => permission.feature === feature
-      ),
-    [permissionSetsFields, feature]
-  );
-
   const enabledPermissions = useMemo(
     () =>
-      permissionsPerFeature.filter(
-        (permission) => permission.toggle || permission.permissionType
+      Object.values(permissionSetsFields).filter(
+        (permission) =>
+          permission.feature === feature &&
+          (permission.toggle || permission.permissionType)
       ),
-    [permissionsPerFeature]
+    [permissionSetsFields]
   );
 
   return (
@@ -88,7 +84,7 @@ export const PermissionAccordionCard = ({
                   component="p"
                   color={enabledPermissions ? 'text.primary' : 'text.disabled'}
                 >
-                  {`${enabledPermissions.length}/${permissionsPerFeature.length}`}
+                  {`${enabledPermissions.length}/${totalPermissions}`}
                 </Typography>
               </Paper>
             </Box>
