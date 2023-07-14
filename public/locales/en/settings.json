@@ -64,7 +64,8 @@
     "syncSuccessful": "Sync successful",
     "syncUnsuccessful": "Sync unsuccessful",
     "unableToSyncData": "Unable to sync data",
-    "incorrectCredentials": "Incorrect credentials"
+    "incorrectCredentials": "Incorrect credentials",
+    "failureReason": "Failure reason"
   },
   "ppodSyncStatus": {
     "SUCCESS": "Success",
