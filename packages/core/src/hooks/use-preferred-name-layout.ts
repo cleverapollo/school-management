@@ -52,11 +52,26 @@ export function sortByDisplayName(
   return nameA.localeCompare(nameB);
 }
 
+export function searchDisplayName<T extends DisplayNamePersonProps>(
+  options: T[],
+  toSearch: string
+) {
+  if (!toSearch) return options;
+
+  const splitInputValue = toSearch.toLowerCase().split(' ');
+
+  return options.filter((option) => {
+    const studentName = displayName(option).toLowerCase();
+    return splitInputValue.every((string) => studentName.includes(string));
+  });
+}
+
 export function usePreferredNameLayout() {
   return {
     displayName,
     displayNames,
     sortByDisplayName,
+    searchDisplayName,
   };
 }
 

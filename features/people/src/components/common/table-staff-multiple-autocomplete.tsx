@@ -1,12 +1,9 @@
-import {
-  ICellEditorParams,
-  Autocomplete,
-  usePreferredNameLayout,
-} from '@tyro/core';
+import { ICellEditorParams, Autocomplete } from '@tyro/core';
 
 import { forwardRef, ForwardedRef, useImperativeHandle, useState } from 'react';
 import { UseQueryReturnType } from '@tyro/api';
 import { useStaffForSelect } from '../../api/staff';
+import { usePeopleAutocompleteProps } from './use-people-autocomplete-props';
 
 type ReturnTypeFromUseStaffForSelect = UseQueryReturnType<
   typeof useStaffForSelect
@@ -18,9 +15,10 @@ export const TableStaffMultipleAutocomplete = forwardRef(
     ref: ForwardedRef<unknown>
   ) => {
     const { data, isLoading } = useStaffForSelect({});
-    const { displayName } = usePreferredNameLayout();
 
     const [localSelectedValue, setLocalSelectedValue] = useState(props.value);
+    const peopleAutocompleteProps =
+      usePeopleAutocompleteProps<ReturnTypeFromUseStaffForSelect>();
 
     useImperativeHandle(ref, () => ({
       getValue() {
@@ -30,11 +28,10 @@ export const TableStaffMultipleAutocomplete = forwardRef(
 
     return (
       <Autocomplete<ReturnTypeFromUseStaffForSelect>
+        {...peopleAutocompleteProps}
         loading={isLoading}
         multiple
         customRef={ref}
-        optionIdKey="partyId"
-        optionTextKey="firstName"
         fullWidth
         sx={{
           width: '100%',
@@ -58,17 +55,6 @@ export const TableStaffMultipleAutocomplete = forwardRef(
         inputProps={{ autoFocus: true }}
         openOnFocus
         options={data ?? []}
-        renderAvatarOption={(option, renderOption) =>
-          renderOption({
-            name: displayName(option),
-          })
-        }
-        renderAvatarTags={(option, renderTag) =>
-          renderTag({
-            name: displayName(option) || undefined,
-            src: option.avatarUrl,
-          })
-        }
       />
     );
   }

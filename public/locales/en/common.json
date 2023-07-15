@@ -216,6 +216,7 @@
   "enableAll": "Enable all",
   "all": "All",
   "someEnabled": "Some enabled",
+  "enabled": "Enabled",
   "confirmDialog": {
     "areYouSureYouWantToChangePage": "Are you sure you want to change page?",
     "youHaveUnsavedChanges": "You have unsaved changes that will be lost if you continue."

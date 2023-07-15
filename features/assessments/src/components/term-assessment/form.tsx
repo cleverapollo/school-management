@@ -178,18 +178,7 @@ export function TermAssessmentForm({
 
   return (
     <Card variant="outlined" component="form" onSubmit={handleSubmit(onSubmit)}>
-      <CardHeader
-        component="h2"
-        title={title}
-        sx={{
-          p: 3,
-          pt: 2.25,
-          pb: 1.25,
-          m: 0,
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-        }}
-      />
+      <CardHeader component="h2" title={title} />
       <Stack direction="column" gap={3} p={3}>
         <Stack direction="column" gap={2.5}>
           <Typography variant="subtitle1" color="text.secondary">
