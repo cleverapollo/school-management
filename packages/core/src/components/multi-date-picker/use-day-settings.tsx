@@ -1,36 +1,68 @@
-import { Dayjs } from 'dayjs';
-import { MultiDatePickerProps } from './types';
+import dayjs, { Dayjs } from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
+import { MutableRefObject } from 'react';
 
-function findIndexInValue<TInputDate extends Dayjs>(
-  date: TInputDate,
-  value: Array<TInputDate>
-) {
-  return value.findIndex((d) => d.isSame(date, 'day'));
-}
+dayjs.extend(isBetween);
+
+export const dayKeyFormat = 'YYYY-MM-DD';
 
 interface UseDaySettingsProps<TInputDate> {
   day: TInputDate;
-  pickerValue: MultiDatePickerProps<TInputDate>['value'];
+  lastSelectedDayRef: MutableRefObject<TInputDate | undefined>;
+  rangePreviewDay: TInputDate | undefined;
+  showRangePreview: boolean;
+  pickerValue: Map<string, TInputDate>;
+  isOutsideMonth: boolean;
 }
 
 export function useDaySettings<TInputDate extends Dayjs>({
   day,
+  showRangePreview,
+  lastSelectedDayRef,
+  rangePreviewDay,
   pickerValue,
+  isOutsideMonth,
 }: UseDaySettingsProps<TInputDate>) {
-  const valueIndex = findIndexInValue(day, pickerValue);
+  const dayKey = day.format(dayKeyFormat);
+  const lastSelectedDay = lastSelectedDayRef.current;
 
-  const isSelected = valueIndex !== -1;
+  const isSelected = pickerValue.has(dayKey);
   const isHighlightLeft =
+    !isOutsideMonth &&
     isSelected &&
-    pickerValue[valueIndex - 1]?.isSame(day.subtract(1, 'day'), 'day');
+    pickerValue.has(day.subtract(1, 'day').format(dayKeyFormat));
   const isHighlightRight =
-    isSelected && pickerValue[valueIndex + 1]?.isSame(day.add(1, 'day'), 'day');
+    !isOutsideMonth &&
+    isSelected &&
+    pickerValue.has(day.add(1, 'day').format(dayKeyFormat));
+
+  const showPreviewRange =
+    !isOutsideMonth && showRangePreview && lastSelectedDay && rangePreviewDay;
+  const startOfPreviewRange =
+    showPreviewRange && lastSelectedDay.isBefore(rangePreviewDay)
+      ? lastSelectedDay
+      : rangePreviewDay;
+  const endOfPreviewRange =
+    showPreviewRange && lastSelectedDay.isBefore(rangePreviewDay)
+      ? rangePreviewDay
+      : lastSelectedDay;
 
   return {
     isSelected,
     showSelectionCircle: isSelected && !(isHighlightLeft && isHighlightRight),
     isHighlightLeft,
     isHighlightRight,
+    isFirstDayOfWeek: day.isSame(day.startOf('week'), 'day'),
+    isLastDayOfWeek: day.isSame(day.endOf('week'), 'day'),
+    isFirstDayOfMonth: day.isSame(day.startOf('month'), 'day'),
+    isLastDayOfMonth: day.isSame(day.endOf('month'), 'day'),
+    isStartOfPreviewRange:
+      showPreviewRange && day.isSame(startOfPreviewRange, 'day'),
+    isEndOfPreviewRange:
+      showPreviewRange && day.isSame(endOfPreviewRange, 'day'),
+    isInPreviewRange:
+      showPreviewRange &&
+      day.isBetween(startOfPreviewRange, endOfPreviewRange, 'day', '[]'),
   };
 }
 
