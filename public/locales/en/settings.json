@@ -100,6 +100,7 @@
     "dataUnavailable": "Data unavailable."
   },
   "dtrReturns": {
-    "downloadFile": "Download file"
+    "downloadFile": "Download file",
+    "form": "Form"
   }
 }

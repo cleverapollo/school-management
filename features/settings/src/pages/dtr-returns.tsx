@@ -19,7 +19,7 @@ import { useAcademicNamespace, UseQueryReturnType } from '@tyro/api';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 // import { useAssessments } from '../api/assessments';
-// import { AcademicYearDropdown } from '../components/list-assessments/academic-year-dropdown';
+import { FormTypeDropdown } from '../components/dtr-returns/form-type-dropdown';
 // import { getAssessmentSubjectGroupsLink } from '../utils/get-assessment-subject-groups-link';
 // import { AssessmentActionMenu } from '../components/list-assessments/assessment-action-menu';
 
@@ -112,9 +112,7 @@ export default function DTRReturnsPage() {
   //   const { activeAcademicNamespace } = useAcademicNamespace();
   //   const { displayName } = usePreferredNameLayout();
 
-  //   const [academicNameSpaceId, setAcademicNameSpaceId] = useState<number | null>(
-  //     activeAcademicNamespace?.academicNamespaceId ?? null
-  //   );
+  const [formTypeId, setFormTypeId] = useState<number>(1);
 
   //   const { data: assessmentsData = [] } = useAssessments({
   //     academicNameSpaceId: academicNameSpaceId ?? 0,
@@ -134,8 +132,7 @@ export default function DTRReturnsPage() {
           <Box display="flex" alignItems="center">
             <Button
               variant="contained"
-              component={Link}
-              to="./term-assessments/create"
+              onClick={() => {}}
               startIcon={<DownloadArrowCircleIcon />}
             >
               {t('settings:dtrReturns.downloadFile')}
@@ -143,12 +140,10 @@ export default function DTRReturnsPage() {
           </Box>
         }
       />
-      {/* {academicNameSpaceId && (
-        <AcademicYearDropdown
-          academicNamespaceId={academicNameSpaceId}
-          onChangeAcademicNamespace={setAcademicNameSpaceId}
-        />
-      )} */}
+      <FormTypeDropdown
+        formTypeId={formTypeId}
+        onChangeFormType={setFormTypeId}
+      />
       {/* <Table
         rowData={assessmentsData || []}
         columnDefs={columnDefs}
