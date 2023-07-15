@@ -11,7 +11,13 @@ import {
   Divider,
   Grid,
 } from '@mui/material';
-import { RHFDatePicker, RHFTextField, useFormValidator } from '@tyro/core';
+import {
+  RHFDatePicker,
+  RHFTextField,
+  ValidationError,
+  useFormValidator,
+  validations,
+} from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
@@ -77,9 +83,18 @@ export const CreateBlockRotationModal = ({
                   if (
                     iteration.startDate &&
                     iteration.endDate &&
+                    endDate.isSame(iteration.endDate) &&
                     iteration.startDate?.isAfter(iteration.endDate)
                   ) {
-                    throwError(t('common:errorMessages.afterStartDate'));
+                    try {
+                      validations.afterStartDate(
+                        endDate,
+                        iteration.startDate,
+                        t('common:errorMessages.afterStartDate')
+                      );
+                    } catch (error) {
+                      throwError((error as ValidationError).message);
+                    }
                   }
                 });
               }
@@ -214,7 +229,12 @@ export const CreateBlockRotationModal = ({
                   inputProps={{
                     fullWidth: true,
                     size: 'small',
-                    sx: { backgroundColor: 'white' },
+                    InputLabelProps: {
+                      sx: { backgroundColor: 'transparent' },
+                    },
+                    InputProps: {
+                      sx: { backgroundColor: 'white' },
+                    },
                   }}
                   controlProps={{
                     name: `iterations.${index}.startDate`,
@@ -226,7 +246,12 @@ export const CreateBlockRotationModal = ({
                   inputProps={{
                     fullWidth: true,
                     size: 'small',
-                    sx: { backgroundColor: 'white' },
+                    InputLabelProps: {
+                      sx: { backgroundColor: 'transparent' },
+                    },
+                    InputProps: {
+                      sx: { backgroundColor: 'white' },
+                    },
                   }}
                   controlProps={{
                     name: `iterations.${index}.endDate`,
