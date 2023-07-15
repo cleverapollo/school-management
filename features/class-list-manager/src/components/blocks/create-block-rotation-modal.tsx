@@ -88,7 +88,6 @@ export const CreateBlockRotationModal = ({
           iteration: rules.minLength(2),
         },
       }),
-      defaultValues: {},
       mode: 'onChange',
     });
 
@@ -132,11 +131,13 @@ export const CreateBlockRotationModal = ({
       const defaultFormStateValues: Partial<CreateBlockRotationFormState> = {
         blockId: blockForCreateRotation?.blockId,
         rotationName: '',
-        iterations: blockForCreateRotation?.rotations?.map((item) => ({
-          startDate: item.startDate ? dayjs(item.startDate) : undefined,
-          endDate: item.endDate ? dayjs(item.endDate) : undefined,
-          iteration: item.iteration,
-        })),
+        iterations: blockForCreateRotation?.rotations?.map(
+          ({ startDate, endDate, iteration }) => ({
+            startDate: startDate ? dayjs(startDate) : undefined,
+            endDate: endDate ? dayjs(endDate) : undefined,
+            iteration,
+          })
+        ),
       };
       reset({
         ...defaultFormStateValues,
@@ -208,7 +209,7 @@ export const CreateBlockRotationModal = ({
                     height: 40,
                   }}
                 />
-                <RHFDatePicker<CreateBlockRotationFormState>
+                <RHFDatePicker
                   label={t('common:startDate')}
                   inputProps={{
                     fullWidth: true,
@@ -220,7 +221,7 @@ export const CreateBlockRotationModal = ({
                     control,
                   }}
                 />
-                <RHFDatePicker<CreateBlockRotationFormState>
+                <RHFDatePicker
                   label={t('common:endDate')}
                   inputProps={{
                     fullWidth: true,
@@ -246,20 +247,14 @@ export const CreateBlockRotationModal = ({
                         height: 40,
                       }}
                     />
-                    <Tooltip
-                      title={
-                        index > 1 ? t('classListManager:createRotation') : ''
-                      }
-                    >
-                      <span>
-                        <IconButton
-                          aria-label={t('classListManager:deleteRotation')}
-                          onClick={() => remove(index)}
-                          color="default"
-                        >
-                          <TrashIcon />
-                        </IconButton>
-                      </span>
+                    <Tooltip title={t('classListManager:createRotation')}>
+                      <IconButton
+                        aria-label={t('classListManager:deleteRotation')}
+                        onClick={() => remove(index)}
+                        color="default"
+                      >
+                        <TrashIcon />
+                      </IconButton>
                     </Tooltip>
                   </Stack>
                 )}

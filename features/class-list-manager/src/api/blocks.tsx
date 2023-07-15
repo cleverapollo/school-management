@@ -225,12 +225,12 @@ export function useCreateOrUpdateBlockRotation(isEdit: boolean) {
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     },
-    onSuccess: (_, __) => {
-      if (isEdit) {
-        toast(t('common:snackbarMessages.updateSuccess'));
-      } else {
-        toast(t('common:snackbarMessages.createSuccess'));
-      }
+    onSuccess: () => {
+      toast(
+        isEdit
+          ? t('common:snackbarMessages.updateSuccess')
+          : t('common:snackbarMessages.createSuccess')
+      );
       queryClient.invalidateQueries(classListManagerKeys.all);
     },
   });
