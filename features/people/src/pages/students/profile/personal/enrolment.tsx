@@ -88,6 +88,10 @@ const getEnrolmentDataWithLabels = (
       value: studentIrePP?.previousSchoolType,
     },
     {
+      label: t('people:personal.enrolmentHistory.previousSchoolName'),
+      value: studentIrePP?.previousSchoolName,
+    },
+    {
       label: t('people:personal.enrolmentHistory.previousSchoolRollNumber'),
       value: studentIrePP?.previousSchoolRollNumber,
     },

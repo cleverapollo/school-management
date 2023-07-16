@@ -1,12 +1,4 @@
-import {
-  Card,
-  CardHeader,
-  Typography,
-  Stack,
-  Box,
-  SxProps,
-  Button,
-} from '@mui/material';
+import { Card, CardHeader, Typography, Stack, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
 import {
@@ -15,8 +7,6 @@ import {
   RHFTextField,
   RHFDatePicker,
   RHFSwitch,
-  Avatar,
-  usePreferredNameLayout,
   useToast,
   useFormValidator,
   useDisclosure,
@@ -24,8 +14,7 @@ import {
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
-import { CheckmarkIcon } from '@tyro/icons';
-import { useStaff } from '@tyro/people';
+import { usePeopleAutocompleteProps, useStaffForSelect } from '@tyro/people';
 import { useNavigate } from 'react-router-dom';
 import { queryClient } from '@tyro/api';
 import dayjs from 'dayjs';
@@ -37,7 +26,7 @@ import {
 } from '../api';
 
 type StaffOption = NonNullable<
-  NonNullable<ReturnType<typeof useStaff>['data']>
+  NonNullable<ReturnType<typeof useStaffForSelect>['data']>
 >[number];
 
 type AbsenceTypeOption = NonNullable<
@@ -58,7 +47,6 @@ export default function ManagementPage() {
   const navigate = useNavigate();
 
   const { t } = useTranslation(['substitution', 'common']);
-  const { displayName } = usePreferredNameLayout();
 
   const {
     isOpen: isCancelModalOpen,
@@ -66,7 +54,7 @@ export default function ManagementPage() {
     onClose: onCloseCancelModal,
   } = useDisclosure();
 
-  const { data: staffData = [] } = useStaff({});
+  const { data: staffData = [] } = useStaffForSelect({});
   const { data: absenceTypesData = [] } = useStaffWorkAbsenceTypes({});
   const {
     mutate: saveStaffAbsenceMutation,
@@ -140,6 +128,8 @@ export default function ManagementPage() {
     width: '100%',
   };
 
+  const peopleAutocompleteProps = usePeopleAutocompleteProps<StaffOption>();
+
   return (
     <>
       <PageHeading
@@ -171,61 +161,14 @@ export default function ManagementPage() {
               {t('substitution:details')}
             </Typography>
             <RHFAutocomplete<FormValues, StaffOption>
+              {...peopleAutocompleteProps}
               label={t('substitution:labels.staffName')}
-              optionIdKey="partyId"
               controlProps={{
                 name: 'staff',
                 control,
               }}
               sx={textFieldStyle}
               options={staffData}
-              getOptionLabel={({ person }) => displayName(person)}
-              renderOption={(props, { person }, { selected }) => (
-                <Box
-                  component="li"
-                  {...props}
-                  gap={2}
-                  sx={{
-                    '&.MuiAutocomplete-option': {
-                      px: 1,
-                    },
-                  }}
-                >
-                  {selected && (
-                    <Box
-                      position="absolute"
-                      display="flex"
-                      justifyContent="center"
-                      alignItems="center"
-                      width={32}
-                      zIndex={1}
-                    >
-                      <CheckmarkIcon color="success" fontSize="small" />
-                    </Box>
-                  )}
-                  <Avatar
-                    sx={{
-                      width: 32,
-                      height: 32,
-                      ...((selected && {
-                        '&:after': {
-                          content: '""',
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          width: '100%',
-                          height: '100%',
-                          bgcolor: 'common.black',
-                          opacity: 0.6,
-                        },
-                      }) as SxProps),
-                    }}
-                    name={displayName(person)}
-                    src={person.avatarUrl}
-                  />
-                  {displayName(person)}
-                </Box>
-              )}
             />
           </Stack>
 

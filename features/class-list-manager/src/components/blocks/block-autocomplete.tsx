@@ -47,6 +47,15 @@ export const BlockAutocomplete = ({
         variant: 'white-filled',
       }}
       sx={sx}
+      componentsProps={{
+        popper: {
+          placement: 'bottom-start',
+          sx: {
+            width: 'auto !important',
+            maxWidth: 'calc(100vw - 32px)',
+          },
+        },
+      }}
       renderOption={(optionProps, { blockId, subjectGroupNamesJoined }) => (
         <Box component="li" {...optionProps}>
           <Typography noWrap component="span" variant="subtitle2">

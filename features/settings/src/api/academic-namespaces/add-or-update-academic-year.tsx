@@ -9,7 +9,7 @@ import {
 } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
-import { academicNamspaceKeys } from '../keys';
+import { academicNamspaceKeys } from './keys';
 
 const createAcademicNamespace = graphql(/* GraphQL */ `
   mutation core_upsertAcademicNamespace($input: SaveAcademicNamespaceInput) {

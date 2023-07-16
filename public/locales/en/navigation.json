@@ -49,7 +49,8 @@
       "ppod": "PPOD",
       "schoolDetails": "School details",
       "login": "Login",
-      "dtrReturns": "DTR Returns"
+      "dtrReturns": "DTR Returns",
+      "permissions": "Permissions"
     },
     "timetable": {
       "title": "Timetable",

@@ -127,6 +127,13 @@ const getStudentColumns = (
       return true;
     },
   },
+  {
+    field: 'studentIrePP.previousSchoolName',
+    headerName: translate(
+      'people:personal.enrolmentHistory.previousSchoolName'
+    ),
+    hide: true,
+  },
 ];
 
 export default function StudentsListPage() {

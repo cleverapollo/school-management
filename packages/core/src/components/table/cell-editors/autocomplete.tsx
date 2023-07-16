@@ -5,7 +5,7 @@ import { Autocomplete, AutocompleteProps, Box } from '@mui/material';
 export interface TableAutocompleteProps<TOption>
   extends ICellEditorParams<unknown, TOption | null> {
   options: TOption[];
-  getOptionLabel: (option: TOption) => string;
+  getOptionLabel?: (option: TOption) => string;
   optionIdKey?: TOption extends string | number ? never : keyof TOption;
   AutocompleteProps: Omit<
     AutocompleteProps<TOption, false, false, false>,

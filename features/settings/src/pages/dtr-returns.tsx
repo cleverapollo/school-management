@@ -11,117 +11,171 @@ import {
   TableBooleanValue,
   usePreferredNameLayout,
   PageContainer,
+  TableSwitch,
 } from '@tyro/core';
 import { Link } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { DownloadArrowCircleIcon } from '@tyro/icons';
-import { useAcademicNamespace, UseQueryReturnType } from '@tyro/api';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-// import { useAssessments } from '../api/assessments';
 import { FormTypeDropdown } from '../components/dtr-returns/form-type-dropdown';
-// import { getAssessmentSubjectGroupsLink } from '../utils/get-assessment-subject-groups-link';
-// import { AssessmentActionMenu } from '../components/list-assessments/assessment-action-menu';
+import {
+  ReturnTypeFromUseFormB,
+  useFormB,
+} from '../api/dtr-returns/user-form-b';
 
 dayjs.extend(LocalizedFormat);
 
-// type ReturnTypeFromUseAssessments = UseQueryReturnType<
-//   typeof useAssessments
-// >[number];
-
-// const getColumnDefs = (
-//   translate: TFunction<
-//     ('assessments' | 'common')[],
-//     undefined,
-//     ('assessments' | 'common')[]
-//   >,
-//   displayName: ReturnTypeDisplayName
-// ): GridOptions<ReturnTypeFromUseAssessments>['columnDefs'] => [
-//   {
-//     field: 'name',
-//     headerName: translate('common:name'),
-//     cellRenderer: ({
-//       data,
-//     }: ICellRendererParams<ReturnTypeFromUseAssessments>) =>
-//       data && (
-//         <RouterLink
-//           to={getAssessmentSubjectGroupsLink(
-//             data.id,
-//             data.assessmentType,
-//             data.academicNamespaceId
-//           )}
-//         >
-//           {data.name}
-//         </RouterLink>
-//       ),
-//   },
-//   {
-//     field: 'assessmentType',
-//     headerName: translate('common:type'),
-//     enableRowGroup: true,
-//     valueGetter: ({ data }) =>
-//       data?.assessmentType
-//         ? translate(`assessments:assessmentTypes.${data.assessmentType}`)
-//         : null,
-//   },
-//   {
-//     field: 'createdBy',
-//     headerName: translate('common:createdBy'),
-//     valueGetter: ({ data }) => (data ? displayName(data.createdBy) : null),
-//   },
-//   {
-//     field: 'startDate',
-//     headerName: translate('common:startDate'),
-//     valueGetter: ({ data }) =>
-//       data ? dayjs(data.startDate).format('LL') : null,
-//     sort: 'desc',
-//     comparator: (dateA: string, dateB: string) =>
-//       dayjs(dateA).unix() - dayjs(dateB).unix(),
-//   },
-//   {
-//     field: 'endDate',
-//     headerName: translate('common:endDate'),
-//     valueGetter: ({ data }) => (data ? dayjs(data.endDate).format('LL') : null),
-//     comparator: (dateA: string, dateB: string) =>
-//       dayjs(dateA).unix() - dayjs(dateB).unix(),
-//   },
-//   {
-//     field: 'publish',
-//     headerName: translate('assessments:publishedOnline'),
-//     valueGetter: ({ data }) =>
-//       data?.publish ? translate('common:yes') : translate('common:no'),
-//     cellRenderer: ({
-//       data,
-//     }: ICellRendererParams<ReturnTypeFromUseAssessments>) =>
-//       data && <TableBooleanValue value={!!data?.publish} />,
-//   },
-//   {
-//     suppressColumnsToolPanel: true,
-//     sortable: false,
-//     cellClass: 'ag-show-on-row-interaction',
-//     cellRenderer: ({
-//       data,
-//     }: ICellRendererParams<ReturnTypeFromUseAssessments>) =>
-//       data && <AssessmentActionMenu {...data} />,
-//   },
-// ];
+const getColumnFormBDefs = (
+  translate: TFunction<
+    ('settings' | 'people' | 'common')[],
+    undefined,
+    ('settings' | 'people' | 'common')[]
+  >,
+  displayName: ReturnTypeDisplayName
+): GridOptions<ReturnTypeFromUseFormB>['columnDefs'] => [
+  {
+    field: 'includeInDtrReturn',
+    headerName: translate('settings:dtrReturns.formB.includeInDTR'),
+    valueFormatter: ({ data }) => translate('common:yes'),
+    cellEditor: TableSwitch,
+    editable: true,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseFormB, any>) => (
+      <TableBooleanValue value />
+    ),
+  },
+  {
+    field: 'name',
+    headerName: translate('common:name'),
+    cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFormB>) =>
+      data && <RouterLink to="./">{displayName(data.person)}</RouterLink>,
+  },
+  {
+    field: 'dtrReference',
+    headerName: translate('settings:dtrReturns.formB.dtrReference'),
+    valueGetter: ({ data }) => data?.staffIre?.teacherReferenceNumber ?? null,
+  },
+  {
+    field: 'gender',
+    headerName: translate('settings:dtrReturns.formB.gender'),
+    valueGetter: ({ data }) =>
+      data?.personalInformation?.gender
+        ? translate(`people:gender.${data?.personalInformation?.gender}`)
+        : translate('people:gender.UNKNOWN'),
+  },
+  {
+    field: 'ppsNumber',
+    headerName: translate('settings:dtrReturns.formB.ppsNumber'),
+    valueGetter: ({ data }) =>
+      data?.personalInformation?.ire?.ppsNumber ?? null,
+  },
+  {
+    field: 'payrollNumber',
+    headerName: translate('settings:dtrReturns.formB.payrollNumber'),
+    valueGetter: ({ data }) => data?.payrollNumber ?? '-',
+  },
+  {
+    field: 'post',
+    headerName: translate('settings:dtrReturns.formB.post'),
+    valueGetter: ({ data }) => data?.staffIre?.staffPost?.name ?? '-',
+  },
+  {
+    field: 'capacity',
+    headerName: translate('settings:capacity'),
+    valueGetter: ({ data }) => data?.employmentCapacity?.name ?? null,
+  },
+  {
+    field: 'jobSharer',
+    headerName: translate('settings:dtrReturns.formB.jobSharer'),
+    valueGetter: ({ data }) => Boolean(data?.jobSharing),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseFormB, any>) => (
+      <TableBooleanValue value={Boolean(data?.jobSharing)} />
+    ),
+  },
+  {
+    field: 'qualification1',
+    headerName: translate('settings:dtrReturns.formB.qualificationX', { X: 1 }),
+    valueGetter: ({ data }) => data?.qualifications ?? '-',
+  },
+  {
+    field: 'qualification2',
+    headerName: translate('settings:dtrReturns.formB.qualificationX', { X: 2 }),
+    valueGetter: ({ data }) => data?.staffIre?.qualifications2 ?? '-',
+  },
+  {
+    field: 'qualification3',
+    headerName: translate('settings:dtrReturns.formB.qualificationX', { X: 3 }),
+    valueGetter: ({ data }) => data?.staffIre?.qualifications3 ?? '-',
+  },
+  {
+    field: 'qualification4',
+    headerName: translate('settings:dtrReturns.formB.qualificationX', { X: 4 }),
+    valueGetter: ({ data }) => data?.staffIre?.qualifications4 ?? '-',
+  },
+  {
+    field: 'currentTeachingSchool1',
+    headerName: translate('settings:dtrReturns.formB.currentTeachingSchoolX', {
+      X: 1,
+    }),
+    valueGetter: ({ data }) => data?.staffIre?.otherSchool1 ?? '-',
+  },
+  {
+    field: 'currentTeachingSchool2',
+    headerName: translate('settings:dtrReturns.formB.currentTeachingSchoolX', {
+      X: 2,
+    }),
+    valueGetter: ({ data }) => data?.staffIre?.otherSchool2 ?? '-',
+  },
+  {
+    field: 'previousTeachingSchool1',
+    headerName: translate('settings:dtrReturns.formB.previousTeachingSchoolX', {
+      X: 1,
+    }),
+    valueGetter: ({ data }) => data?.staffIre?.previousSchool1 ?? '-',
+  },
+  {
+    field: 'previousTeachingSchool2',
+    headerName: translate('settings:dtrReturns.formB.previousTeachingSchoolX', {
+      X: 2,
+    }),
+    valueGetter: ({ data }) => data?.staffIre?.previousSchool2 ?? '-',
+  },
+];
 
 export default function DTRReturnsPage() {
-  const { t } = useTranslation(['navigation', 'settings', 'common']);
+  const { t } = useTranslation(['navigation', 'settings', 'people', 'common']);
 
-  //   const { activeAcademicNamespace } = useAcademicNamespace();
-  //   const { displayName } = usePreferredNameLayout();
+  const { displayName } = usePreferredNameLayout();
 
-  const [formTypeId, setFormTypeId] = useState<number>(1);
+  const [formTypeId, setFormTypeId] = useState<number>(2);
 
-  //   const { data: assessmentsData = [] } = useAssessments({
-  //     academicNameSpaceId: academicNameSpaceId ?? 0,
-  //   });
+  const { data: staffFormB = [] } = useFormB({});
 
-  //   const columnDefs = useMemo(
-  //     () => getColumnDefs(t, displayName),
-  //     [t, displayName]
-  //   );
+  const columnDefs = useMemo(() => {
+    switch (formTypeId) {
+      case 1:
+        break;
+      case 2:
+        return getColumnFormBDefs(t, displayName);
+      default:
+        return null;
+    }
+  }, [t, displayName, formTypeId]);
+
+  const dataForTable = useMemo(() => {
+    switch (formTypeId) {
+      case 1:
+        break;
+      case 2:
+        return staffFormB;
+      default:
+        return [];
+    }
+  }, [formTypeId, staffFormB]);
 
   return (
     <PageContainer title={t('navigation:management.settings.dtrReturns')}>
@@ -144,11 +198,11 @@ export default function DTRReturnsPage() {
         formTypeId={formTypeId}
         onChangeFormType={setFormTypeId}
       />
-      {/* <Table
-        rowData={assessmentsData || []}
+      <Table
+        rowData={dataForTable || []}
         columnDefs={columnDefs}
-        getRowId={({ data }) => String(data?.id)}
-      /> */}
+        getRowId={({ data }) => String(data?.partyId)}
+      />
     </PageContainer>
   );
 }

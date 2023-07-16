@@ -60,6 +60,12 @@ const getColumnDefs = (
         <SyncStatusChip status={data.syncRequestStatus} />
       ) : null,
   },
+  {
+    field: 'failureReason',
+    headerName: t('settings:ppodSync.failureReason'),
+    enableRowGroup: true,
+    sortable: true,
+  },
 ];
 
 export default function Sync() {
