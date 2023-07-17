@@ -41,7 +41,7 @@ export default function EditPermissionPage() {
       id,
       name,
       description,
-      isExistingGroup: !custom,
+      custom,
       memberType: isMemberTypeAdmin ? MemberType.Staff : memberType,
       isMemberTypeAdmin,
       members: members

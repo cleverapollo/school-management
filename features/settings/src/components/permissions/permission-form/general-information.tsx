@@ -18,7 +18,10 @@ type GeneralInformationProps = {
 export const GeneralInformation = ({ control }: GeneralInformationProps) => {
   const { t } = useTranslation(['settings', 'common']);
 
-  const isExistingGroup = useWatch({ control, name: 'isExistingGroup' });
+  const isCustomGroup = useWatch({ control, name: 'custom' });
+  const isEditingGroup = useWatch({ control, name: 'id' });
+
+  const isPresetGroup = Boolean(isEditingGroup && !isCustomGroup);
 
   return (
     <Card variant="outlined">
@@ -38,7 +41,7 @@ export const GeneralInformation = ({ control }: GeneralInformationProps) => {
             textFieldProps={{
               fullWidth: true,
               placeholder: t('settings:permissions.namePermissionsPlaceholder'),
-              disabled: isExistingGroup,
+              disabled: isPresetGroup,
             }}
             controlProps={{
               name: 'name',
@@ -54,7 +57,7 @@ export const GeneralInformation = ({ control }: GeneralInformationProps) => {
             getOptionLabel={(option) =>
               t(`settings:permissions.memberTypeOption.${option}`)
             }
-            disabled={isExistingGroup}
+            disabled={Boolean(isEditingGroup)}
             controlProps={{
               name: 'memberType',
               control,
@@ -72,7 +75,7 @@ export const GeneralInformation = ({ control }: GeneralInformationProps) => {
               placeholder: t(
                 'settings:permissions.groupDescriptionPlaceholder'
               ),
-              disabled: isExistingGroup,
+              disabled: isPresetGroup,
             }}
             controlProps={{
               name: 'description',
