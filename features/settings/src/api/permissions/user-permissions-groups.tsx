@@ -38,6 +38,9 @@ export function getPermissionGroups(filter: PermissionGroupFilter) {
 export function usePermissionGroups(filter: PermissionGroupFilter) {
   return useQuery({
     ...permissionGroupsQuery(filter),
-    select: ({ users_permissionGroups }) => users_permissionGroups ?? [],
+    select: ({ users_permissionGroups }) =>
+      (users_permissionGroups ?? []).sort((a, b) =>
+        a!.name.localeCompare(b!.name)
+      ),
   });
 }

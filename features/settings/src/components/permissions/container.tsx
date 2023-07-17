@@ -2,10 +2,25 @@ import { useTranslation } from '@tyro/i18n';
 import { PageHeading, PageContainer } from '@tyro/core';
 import { PropsWithChildren } from 'react';
 
-type PermissionContainerProps = PropsWithChildren<unknown>;
+type PermissionMode = 'create' | 'edit' | 'clone';
 
-export const PermissionContainer = ({ children }: PermissionContainerProps) => {
+type PermissionContainerProps = PropsWithChildren<{
+  mode: PermissionMode;
+  groupName?: string;
+}>;
+
+export const PermissionContainer = ({
+  children,
+  mode,
+  groupName,
+}: PermissionContainerProps) => {
   const { t } = useTranslation(['settings']);
+
+  const breadcrumbLabels: Record<PermissionMode, string> = {
+    create: t('settings:permissions.createNewGroup'),
+    edit: t('settings:permissions.editGroup', { name: groupName }),
+    clone: t('settings:permissions.cloneGroup', { name: groupName }),
+  };
 
   return (
     <PageContainer title={t('settings:permissions.permissionManagement')}>
@@ -18,7 +33,7 @@ export const PermissionContainer = ({ children }: PermissionContainerProps) => {
               href: '/settings/permissions',
             },
             {
-              name: t('settings:permissions.permissionManagement'),
+              name: breadcrumbLabels[mode],
             },
           ],
         }}

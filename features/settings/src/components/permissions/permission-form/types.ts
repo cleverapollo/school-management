@@ -6,6 +6,7 @@ export type PermissionFormState = {
   id: PermissionGroup['id'];
   name: PermissionGroup['name'];
   memberType: Exclude<MemberType, MemberType.Admin>;
+  isMemberTypeAdmin?: boolean;
   description: PermissionGroup['description'];
   isExistingGroup?: boolean;
   members: MemberOption[];
