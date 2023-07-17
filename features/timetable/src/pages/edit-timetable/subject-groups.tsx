@@ -83,7 +83,7 @@ const getSubjectGroupsColumns = (
       return (
         <TableAvatar
           name={partyGroup.name ?? ''}
-          to={`./${partyGroup.partyId ?? ''}`}
+          to={`/groups/subject/${partyGroup.partyId ?? ''}`}
           avatarUrl={partyGroup.avatarUrl}
           AvatarProps={{
             sx: {

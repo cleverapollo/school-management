@@ -49,15 +49,21 @@ export function sortByDisplayName(
   const nameA = displayName(studentA);
   const nameB = displayName(studentB);
 
-  if (nameA < nameB) {
-    return -1;
-  }
+  return nameA.localeCompare(nameB);
+}
 
-  if (nameA > nameB) {
-    return 1;
-  }
+export function searchDisplayName<T extends DisplayNamePersonProps>(
+  options: T[],
+  toSearch: string
+) {
+  if (!toSearch) return options;
 
-  return 0;
+  const splitInputValue = toSearch.toLowerCase().split(' ');
+
+  return options.filter((option) => {
+    const studentName = displayName(option).toLowerCase();
+    return splitInputValue.every((string) => studentName.includes(string));
+  });
 }
 
 export function usePreferredNameLayout() {
@@ -65,6 +71,7 @@ export function usePreferredNameLayout() {
     displayName,
     displayNames,
     sortByDisplayName,
+    searchDisplayName,
   };
 }
 

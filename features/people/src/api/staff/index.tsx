@@ -95,6 +95,10 @@ const staffForSelectQuery = (filter: StaffFilter) => ({
   queryFn: async () => gqlClient.request(staffInfoForSelect, { filter }),
 });
 
+export function getStaffForSelect(filter: StaffFilter) {
+  return queryClient.fetchQuery(staffForSelectQuery(filter));
+}
+
 export function useStaffForSelect(filter: StaffFilter) {
   const { sortByDisplayName } = usePreferredNameLayout();
 
