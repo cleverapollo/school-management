@@ -1,6 +1,13 @@
 import { Box, Button, Typography } from '@mui/material';
 import { UseQueryReturnType } from '@tyro/api';
-import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useMemo } from 'react';
+import {
+  useDebouncedValue,
+  ActionMenu,
+  GridOptions,
+  ICellRendererParams,
+  Table,
+} from '@tyro/core';
 import {
   AddIcon,
   EyeIcon,
@@ -9,12 +16,6 @@ import {
   VerticalDotsIcon,
 } from '@tyro/icons';
 import { useTranslation, TFunction } from '@tyro/i18n';
-import {
-  ActionMenu,
-  GridOptions,
-  ICellRendererParams,
-  Table,
-} from '@tyro/core';
 import { useStudentMedicalData } from '../../../api/student/medicals/student-medical-data';
 import {
   EditConditionsModal,
@@ -109,41 +110,36 @@ const getColumns = (
 export function ConditionsTable({ studentId }: ConditionsTableProps) {
   const { t } = useTranslation(['common', 'people', 'settings']);
   const { data: medicalData } = useStudentMedicalData(studentId ?? 0);
-  const [editConditions, setEditConditions] =
-    useState<EditConditionsProps['initialConditionsState']>(null);
-  const [viewConditions, setViewConditions] =
-    useState<ViewConditionsProps['initialConditionsState']>(null);
-  const [deleteConditions, setDeleteConditions] =
-    useState<DeleteConditionsProps['initialConditionsState']>(null);
+  const {
+    value: editConditions,
+    setValue: setEditConditions,
+    debouncedValue: debouncedEditConditions,
+  } = useDebouncedValue<EditConditionsProps['initialConditionsState']>({
+    defaultValue: null,
+  });
+  const { value: viewConditions, setValue: setViewConditions } =
+    useDebouncedValue<ViewConditionsProps['initialConditionsState']>({
+      defaultValue: null,
+    });
+  const { value: deleteConditions, setValue: setDeleteConditions } =
+    useDebouncedValue<DeleteConditionsProps['initialConditionsState']>({
+      defaultValue: null,
+    });
 
   const handleAddCondition = () => {
     setEditConditions({});
   };
 
-  const conditions = useMemo(() => {
-    if (!medicalData?.conditions) {
-      return [];
-    }
-    return medicalData?.conditions;
-  }, [medicalData?.conditions]);
+  const conditions =
+    Array.isArray(medicalData?.conditions) && medicalData?.conditions
+      ? medicalData?.conditions
+      : [];
 
   const columns = useMemo(
     () =>
       getColumns(setEditConditions, t, setViewConditions, setDeleteConditions),
     [setEditConditions, t, viewConditions, setDeleteConditions]
   );
-
-  const handleCloseEditModal = () => {
-    setEditConditions(null);
-  };
-
-  const handleCloseViewModal = () => {
-    setViewConditions(null);
-  };
-
-  const handleCloseDeleteModal = () => {
-    setDeleteConditions(null);
-  };
 
   return (
     <>
@@ -165,16 +161,16 @@ export function ConditionsTable({ studentId }: ConditionsTableProps) {
       <EditConditionsModal
         studentId={studentId}
         initialConditionsState={editConditions}
-        onClose={handleCloseEditModal}
+        onClose={() => setEditConditions(null)}
       />
       <ViewConditionsModal
         initialConditionsState={viewConditions}
-        onClose={handleCloseViewModal}
+        onClose={() => setViewConditions(null)}
       />
       <DeleteConditionsModal
         studentId={studentId}
         initialConditionsState={deleteConditions}
-        onClose={handleCloseDeleteModal}
+        onClose={() => setDeleteConditions(null)}
       />
     </>
   );

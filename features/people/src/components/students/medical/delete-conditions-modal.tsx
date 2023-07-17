@@ -80,9 +80,7 @@ export const DeleteConditionsModal = ({
       </DialogTitle>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack sx={{ p: 3, backgroundColor: 'slate.50' }}>
-          {t('people:deleteConditionConfirmation')}
-        </Stack>
+        <Stack sx={{ p: 3 }}>{t('people:deleteConditionConfirmation')}</Stack>
         <Stack>
           <DialogActions>
             <Button variant="outlined" color="inherit" onClick={handleClose}>
@@ -93,6 +91,13 @@ export const DeleteConditionsModal = ({
               type="submit"
               variant="contained"
               loading={isSubmitting}
+              sx={{
+                backgroundColor: 'error.main',
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: 'error.dark',
+                },
+              }}
             >
               {t('common:actions.delete')}
             </LoadingButton>

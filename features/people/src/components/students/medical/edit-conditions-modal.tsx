@@ -57,33 +57,27 @@ export const EditConditionsModal = ({
     mode: 'onChange',
   });
 
-  const onSubmit = ({
-    equipment,
-    ...restData
-  }: UpsertStudentMedicalConditionInput) => {
-    const equipmentValues: UpsertStudentMedicalConditionInput['equipment'] = (
-      equipment ?? []
-    ).map(({ name, location }) => ({ name, location }));
-    const data: UpsertStudentMedicalConditionInput = {
-      ...restData,
-      equipment: equipmentValues,
-      studentPartyId: studentId ?? 0,
-    };
-
-    createOrUpdateConditionsMutation(data, {
-      onSuccess: onClose,
-    });
-  };
+  const onSubmit = handleSubmit(({ equipment, ...restData }) => {
+    createOrUpdateConditionsMutation(
+      {
+        ...restData,
+        equipment: (equipment ?? []).map(({ name, location }) => ({
+          name,
+          location,
+        })),
+        studentPartyId: studentId ?? 0,
+      },
+      { onSuccess: onClose }
+    );
+  });
 
   useEffect(() => {
     if (initialConditionsState) {
       reset({ ...defaultFormStateValues, ...initialConditionsState });
+    } else {
+      reset(defaultFormStateValues);
     }
   }, [initialConditionsState]);
-
-  useEffect(() => {
-    reset();
-  }, [isSubmitSuccessful, onClose]);
 
   const handleClose = () => {
     onClose();
@@ -103,7 +97,7 @@ export const EditConditionsModal = ({
           ? t('people:editCondition')
           : t('people:addCondition')}
       </DialogTitle>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={onSubmit}>
         <Stack
           spacing={3}
           sx={{
@@ -143,21 +137,23 @@ export const EditConditionsModal = ({
 
           <Stack
             sx={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gridTemplateRows: '1fr',
-              gap: '16px',
+              display: 'flex',
+              flexDirection: ['column', 'row'],
+              gap: 2,
+              '& > *': {
+                flex: '1 1 50%',
+              },
             }}
           >
             <RHFTextField<EditConditionsFormState>
-              label="Equipment"
+              label={t('people:equipment')}
               controlProps={{
                 name: 'equipment.0.name',
                 control,
               }}
             />
             <RHFTextField<EditConditionsFormState>
-              label="Location"
+              label={t('people:location')}
               controlProps={{
                 name: 'equipment.0.location',
                 control,

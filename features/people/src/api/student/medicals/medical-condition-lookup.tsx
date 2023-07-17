@@ -21,7 +21,7 @@ export function getMedicalConditionNamesQuery() {
 
 export type MedicalConditionNamesType = {
   name: string;
-  id: number;
+  id: string;
 };
 
 export function useMedicalConditionNamesQuery() {
@@ -29,16 +29,14 @@ export function useMedicalConditionNamesQuery() {
     ...medicalConditionNamesQuery,
     select: ({ wellbeing_studentMedicalConditionLookup }) => {
       const medicalConditionNamesArray =
-        wellbeing_studentMedicalConditionLookup?.values?.reduce(
-          (acc, item, index) => {
-            acc.push({
-              name: item,
-              id: index + 1,
-            });
-            return acc;
-          },
-          [] as MedicalConditionNamesType[]
-        );
+        wellbeing_studentMedicalConditionLookup?.values?.reduce((acc, item) => {
+          acc.push({
+            name: item,
+            id: item,
+          });
+
+          return acc;
+        }, [] as MedicalConditionNamesType[]);
 
       return medicalConditionNamesArray;
     },

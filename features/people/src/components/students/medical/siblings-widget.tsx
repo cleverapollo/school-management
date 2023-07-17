@@ -88,6 +88,9 @@ export function SiblingsWidget({ studentId }: StudentSiblingsWidgetProps) {
                         sx={{
                           ml: 1,
                           color: 'text.primary',
+                          '&:hover': {
+                            textDecoration: 'underline',
+                          },
                         }}
                       >
                         {name}

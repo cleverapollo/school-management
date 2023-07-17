@@ -39,11 +39,11 @@ export function useCreateOrUpdateCondition() {
     mutationFn: async (input: UpsertStudentMedicalConditionInput) =>
       gqlClient.request(upsertStudentMedicalCondition, { input }),
     onSuccess: (_, variables) => {
-      if (variables?.id) {
-        toast(t('common:snackbarMessages.updateSuccess'));
-      } else {
-        toast(t('common:snackbarMessages.createSuccess'));
-      }
+      toast(
+        variables?.id
+          ? t('common:snackbarMessages.updateSuccess')
+          : t('common:snackbarMessages.createSuccess')
+      );
       queryClient.invalidateQueries(peopleKeys.all);
     },
     onError: () => {

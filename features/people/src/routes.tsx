@@ -165,8 +165,6 @@ export const getRoutes: NavObjectFunction = (t) => [
                 path: 'overview',
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
-                  console.log('studentId', studentId);
-
                   const formattedDate = dayjs().format('YYYY-MM-DD');
 
                   if (!studentId) {

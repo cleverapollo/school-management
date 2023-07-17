@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   Box,
   Card,
@@ -62,7 +62,7 @@ export function StudentMedicalProfessionalWidget({
   const numberOfContacts = medicalData?.medicalContacts?.length ?? 0;
   const clampedIndex = wrap(0, numberOfContacts, contactIndex);
 
-  const medicalContact = medicalData?.medicalContacts?.[clampedIndex];
+  const medicalContact = medicalData?.medicalContacts?.[clampedIndex] ?? {};
   const isButtonsDisabled = isLoading || numberOfContacts <= 1;
   const buttonTooltipTitle = isButtonsDisabled
     ? t('people:nextContactDisabled', { count: numberOfContacts })
@@ -71,6 +71,21 @@ export function StudentMedicalProfessionalWidget({
   const paginate = (newDirection: number) => {
     setContactIndex([contactIndex + newDirection, newDirection]);
   };
+
+  const medicalAddress = useMemo(() => {
+    const addressKeys: Array<keyof typeof medicalContact> = [
+      'addressLine2',
+      'addressLine3',
+      'county',
+      'postcode',
+    ];
+
+    return addressKeys.reduce((address, currentKey) => {
+      const currentValue = medicalContact?.[currentKey];
+      if (!currentValue) return address;
+      return address ? `${address}, ${currentValue}` : `${currentValue}`;
+    }, medicalContact?.addressLine1);
+  }, [medicalContact]);
 
   return (
     <Card variant="outlined" sx={{ height: '100%', flex: 1 }}>
@@ -177,16 +192,7 @@ export function StudentMedicalProfessionalWidget({
                     sx={{ color: 'slate.400', width: 20, height: 20 }}
                   />
                   <Stack>
-                    <Typography variant="body1">
-                      {medicalContact?.addressLine1}
-                      {medicalContact?.addressLine2 &&
-                        `, ${medicalContact?.addressLine2}`}
-                      {medicalContact?.addressLine3 &&
-                        `, ${medicalContact?.addressLine3}`}
-                      {medicalContact?.county && `, ${medicalContact?.county}`}
-                      {medicalContact?.postcode &&
-                        `, ${medicalContact?.postcode}`}
-                    </Typography>
+                    <Typography variant="body1">{medicalAddress}</Typography>
                   </Stack>
                 </Stack>
 

@@ -61,14 +61,18 @@ export const ViewConditionsModal = ({
         }}
       >
         <Stack sx={{ px: 1, py: 1 }}>
-          <Typography variant="h6">{t('common:name')}</Typography>
+          <Typography variant="h6" component="h3">
+            {t('common:name')}
+          </Typography>
           <Typography variant="body1" color="text.primary">
             {initialConditionsState?.name}
           </Typography>
         </Stack>
 
         <Stack sx={{ px: 1, py: 1 }}>
-          <Typography variant="h6">{t('common:description')}</Typography>
+          <Typography variant="h6" component="h3">
+            {t('common:description')}
+          </Typography>
           <Typography variant="body1">
             {initialConditionsState?.description}
           </Typography>
@@ -76,22 +80,25 @@ export const ViewConditionsModal = ({
 
         <Stack
           sx={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gridTemplateRows: '1fr',
-            px: 1,
-            py: 1,
+            display: 'flex',
+            flexDirection: ['column', 'row'],
+            gap: 2,
+            '& > *': {
+              flex: '1 1 50%',
+            },
           }}
         >
           <Stack>
-            <Typography variant="h6">{t('people:equipment')}</Typography>
+            <Typography variant="h6" component="h3">
+              {t('people:equipment')}
+            </Typography>
             <Typography variant="body1">
               {initialConditionsState?.equipment &&
                 initialConditionsState?.equipment[0].location}
             </Typography>
           </Stack>
           <Stack>
-            <Typography variant="h6">
+            <Typography variant="h6" component="h3">
               {t('people:locationOfEquipment')}
             </Typography>
             <Typography variant="body1">
@@ -102,11 +109,7 @@ export const ViewConditionsModal = ({
         </Stack>
       </Box>
       <DialogActions>
-        <Button
-          variant="outlined"
-          color="inherit"
-          onClick={() => handleClose()}
-        >
+        <Button variant="outlined" color="inherit" onClick={handleClose}>
           {t('common:actions.close')}
         </Button>
       </DialogActions>

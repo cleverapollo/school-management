@@ -167,7 +167,7 @@ export const CardEditableForm = <TField extends FieldValues>({
                   gap={0.5}
                   flexDirection="row"
                   alignItems="center"
-                >                 
+                >
                   <Typography flex="1 0 0%" component="dt" variant="subtitle1">
                     {label}
                   </Typography>
@@ -193,7 +193,7 @@ export const CardEditableForm = <TField extends FieldValues>({
                     paddingY={0.5}
                     component="dd"
                     variant="body1"
-                    color="slate.500"
+                    color="text.secondary"
                   >
                     {valueRenderer || value || '-'}
                   </Typography>
