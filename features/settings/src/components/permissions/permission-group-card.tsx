@@ -3,7 +3,6 @@ import { PermissionGroup } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { ActionMenu } from '@tyro/core';
 import { ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { CopyIcon, EditIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
 
 type PermissionGroupCardProps = Partial<PermissionGroup> & {
@@ -18,7 +17,6 @@ export const PermissionGroupCard = ({
   icon,
 }: PermissionGroupCardProps) => {
   const { t } = useTranslation(['settings', 'common']);
-  const navigate = useNavigate();
 
   return (
     <Card variant="outlined" sx={{ height: '100%' }}>
@@ -53,16 +51,12 @@ export const PermissionGroupCard = ({
               {
                 label: t('common:actions.edit'),
                 icon: <EditIcon />,
-                onClick: () => {
-                  navigate(`./edit/${id || ''}`);
-                },
+                navigateTo: `./edit/${id || ''}`,
               },
               {
                 label: t('common:actions.clone'),
                 icon: <CopyIcon />,
-                onClick: () => {
-                  navigate(`./clone/${id || ''}`);
-                },
+                navigateTo: `./clone/${id || ''}`,
               },
               // TODO: add logic when BE supports it
               // {
