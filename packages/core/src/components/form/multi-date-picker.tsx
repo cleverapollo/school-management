@@ -17,7 +17,7 @@ type RHFMultiDatePickerProps<TField extends FieldValues, TInputDate> = {
   inputProps?: TextFieldProps;
 };
 
-export const RHFDatePicker = <
+export const RHFMultiDatePicker = <
   TField extends FieldValues,
   TInputDate extends Dayjs
 >({

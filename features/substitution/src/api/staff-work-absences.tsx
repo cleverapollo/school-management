@@ -8,6 +8,8 @@ import {
   Swm_UpsertStaffAbsence,
   UseQueryReturnType,
 } from '@tyro/api';
+import { useToast } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 import { substitutionKeys } from './keys';
 
 const staffWorkAbsences = graphql(/* GraphQL */ `
@@ -38,8 +40,8 @@ const staffWorkAbsences = graphql(/* GraphQL */ `
         continuousEndDate
         individualDates
         partialAbsence
-        partialStartTime
-        partialEndTime
+        leavesAt
+        returnsAt
       }
     }
   }
@@ -52,6 +54,14 @@ const saveStaffAbsence = graphql(/* GraphQL */ `
       absenceTypeId
       fromAbsenceRequestId
       absenceReasonText
+    }
+  }
+`);
+
+const deleteStaffAbsence = graphql(/* GraphQL */ `
+  mutation swm_deleteAbsence($input: [Int!]!) {
+    swm_deleteAbsence(input: $input) {
+      success
     }
   }
 `);
@@ -74,10 +84,27 @@ export function useStaffWorkAbsences(filter: Swm_StaffAbsenceFilter) {
 
 export function useSaveStaffAbsence() {
   return useMutation({
-    mutationFn: (input: Swm_UpsertStaffAbsence) =>
+    mutationFn: (input: Swm_UpsertStaffAbsence[]) =>
       gqlClient.request(saveStaffAbsence, { input }),
     onSuccess: () => {
       queryClient.invalidateQueries(substitutionKeys.all);
+    },
+  });
+}
+
+export function useDeleteStaffAbsence() {
+  const { t } = useTranslation(['common']);
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: (input: number[]) =>
+      gqlClient.request(deleteStaffAbsence, { input }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(substitutionKeys.all);
+      toast(t('common:snackbarMessages.deleteSuccess'));
+    },
+    onError: () => {
+      toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     },
   });
 }

@@ -29,10 +29,7 @@
   },
   "inputLabels": {
     "title": "Title",
-    "allDay": "All day",
     "startDate": "Start date",
-    "startTime": "Start time",
-    "endTime": "End time",
     "schedule": "Schedule",
     "recurrenceEnum": {
       "NO_RECURRENCE": "Does not repeat",

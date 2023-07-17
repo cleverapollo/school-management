@@ -4,6 +4,7 @@ export * from './color-picker';
 export * from './checkbox';
 export * from './date-picker';
 export * from './date-time-picker';
+export * from './multi-date-picker';
 export * from './radio-group';
 export * from './select';
 export * from './selection-list';

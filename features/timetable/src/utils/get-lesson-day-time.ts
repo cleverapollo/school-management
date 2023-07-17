@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import { getLocaleTimestamp } from '@tyro/core';
 import { Lesson } from '../hooks/use-resource-table';
 
 dayjs.extend(LocalizedFormat);
@@ -11,11 +12,7 @@ export function getLessonDayAndTime({
   timeslotInfo,
 }: DayAndTimeArgs) {
   const day = dayjs().set('day', timeslotId?.dayIdx ?? 0);
-  const [hour, minute] = timeslotInfo?.startTime.split(':') ?? [];
-  const time =
-    hour && minute
-      ? dayjs().hour(Number(hour)).minute(Number(minute)).format('LT')
-      : '';
+  const time = getLocaleTimestamp(timeslotInfo?.startTime);
   return {
     day,
     time,
