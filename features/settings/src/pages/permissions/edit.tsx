@@ -1,6 +1,7 @@
 import { useNumber, usePreferredNameLayout } from '@tyro/core';
 import { useParams } from 'react-router-dom';
 import { useMemo } from 'react';
+import { MemberType } from '@tyro/api';
 import { PermissionForm } from '../../components/permissions/permission-form';
 import { usePermissionGroups } from '../../api/permissions/user-permissions-groups';
 import { PermissionFormState } from '../../components/permissions/permission-form/types';
@@ -35,6 +36,15 @@ export default function EditPermissionPage() {
     const members = getMembersByMemberType(memberType);
 
     return {
+      id,
+      name,
+      description,
+      isExistingGroup: !custom,
+      memberType:
+        memberType === MemberType.Admin ? MemberType.Staff : memberType,
+      members: members
+        .filter((member) => memberPartyIds.includes(member.partyId))
+        .sort(sortByDisplayName),
       permissionsFieldsByIds: permissionSets.reduce<
         PermissionFormState['permissionsFieldsByIds']
       >(
@@ -44,15 +54,6 @@ export default function EditPermissionPage() {
         }),
         {} as PermissionFormState['permissionsFieldsByIds']
       ),
-      memberType,
-      ...(custom && {
-        id,
-        name,
-        description,
-        members: members
-          .filter((member) => memberPartyIds.includes(member.partyId))
-          .sort(sortByDisplayName),
-      }),
     };
   }, [permissionGroupData, isLoading]);
 
