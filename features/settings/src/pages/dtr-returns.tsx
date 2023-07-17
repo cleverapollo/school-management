@@ -12,8 +12,8 @@ import {
   usePreferredNameLayout,
   PageContainer,
   TableSwitch,
+  GenderSelectCellEditor,
 } from '@tyro/core';
-import { Link } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { DownloadArrowCircleIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
@@ -35,61 +35,78 @@ const getColumnFormBDefs = (
   displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseFormB>['columnDefs'] => [
   {
-    field: 'includeInDtrReturn',
+    field: 'staffIre.includeDtrReturns',
     headerName: translate('settings:dtrReturns.formB.includeInDTR'),
-    valueFormatter: ({ data }) => translate('common:yes'),
+    valueFormatter: ({ data }) =>
+      data?.staffIre?.includeDtrReturns
+        ? translate('common:yes')
+        : translate('common:no'),
     cellEditor: TableSwitch,
     editable: true,
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseFormB, any>) => (
-      <TableBooleanValue value />
+      <TableBooleanValue value={Boolean(data?.staffIre?.includeDtrReturns)} />
     ),
   },
   {
     field: 'name',
     headerName: translate('common:name'),
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFormB>) =>
-      data && <RouterLink to="./">{displayName(data.person)}</RouterLink>,
+      data && (
+        <RouterLink to={`/people/staff/${data.partyId}`}>
+          {displayName(data.person)}
+        </RouterLink>
+      ),
   },
   {
-    field: 'dtrReference',
+    field: 'staffIre.teacherReferenceNumber',
+    editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
     headerName: translate('settings:dtrReturns.formB.dtrReference'),
     valueGetter: ({ data }) => data?.staffIre?.teacherReferenceNumber ?? null,
   },
   {
-    field: 'gender',
+    field: 'personalInformation.gender',
     headerName: translate('settings:dtrReturns.formB.gender'),
+    cellEditorSelector: GenderSelectCellEditor(),
     valueGetter: ({ data }) =>
       data?.personalInformation?.gender
         ? translate(`people:gender.${data?.personalInformation?.gender}`)
         : translate('people:gender.UNKNOWN'),
+    editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
   },
   {
-    field: 'ppsNumber',
+    field: 'personalInformation.ire.ppsNumber',
     headerName: translate('settings:dtrReturns.formB.ppsNumber'),
+    editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
     valueGetter: ({ data }) =>
       data?.personalInformation?.ire?.ppsNumber ?? null,
   },
   {
     field: 'payrollNumber',
     headerName: translate('settings:dtrReturns.formB.payrollNumber'),
+    editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
     valueGetter: ({ data }) => data?.payrollNumber ?? '-',
   },
   {
-    field: 'post',
+    field: 'staffIre.staffPost.name',
     headerName: translate('settings:dtrReturns.formB.post'),
+    editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
     valueGetter: ({ data }) => data?.staffIre?.staffPost?.name ?? '-',
   },
   {
-    field: 'capacity',
+    field: 'employmentCapacity.name',
     headerName: translate('settings:capacity'),
+    editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
     valueGetter: ({ data }) => data?.employmentCapacity?.name ?? null,
   },
   {
-    field: 'jobSharer',
+    field: 'jobSharing',
     headerName: translate('settings:dtrReturns.formB.jobSharer'),
     valueGetter: ({ data }) => Boolean(data?.jobSharing),
+    cellEditor: TableSwitch,
+    editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseFormB, any>) => (
@@ -97,51 +114,59 @@ const getColumnFormBDefs = (
     ),
   },
   {
-    field: 'qualification1',
+    field: 'qualifications',
     headerName: translate('settings:dtrReturns.formB.qualificationX', { X: 1 }),
+    editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
     valueGetter: ({ data }) => data?.qualifications ?? '-',
   },
   {
-    field: 'qualification2',
+    field: 'staffIre.qualifications2',
     headerName: translate('settings:dtrReturns.formB.qualificationX', { X: 2 }),
+    editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
     valueGetter: ({ data }) => data?.staffIre?.qualifications2 ?? '-',
   },
   {
-    field: 'qualification3',
+    field: 'staffIre.qualifications3',
     headerName: translate('settings:dtrReturns.formB.qualificationX', { X: 3 }),
+    editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
     valueGetter: ({ data }) => data?.staffIre?.qualifications3 ?? '-',
   },
   {
-    field: 'qualification4',
+    field: 'staffIre.qualifications4',
     headerName: translate('settings:dtrReturns.formB.qualificationX', { X: 4 }),
+    editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
     valueGetter: ({ data }) => data?.staffIre?.qualifications4 ?? '-',
   },
   {
-    field: 'currentTeachingSchool1',
+    field: 'staffIre.otherSchool1',
     headerName: translate('settings:dtrReturns.formB.currentTeachingSchoolX', {
       X: 1,
     }),
+    editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
     valueGetter: ({ data }) => data?.staffIre?.otherSchool1 ?? '-',
   },
   {
-    field: 'currentTeachingSchool2',
+    field: 'staffIre.otherSchool2',
     headerName: translate('settings:dtrReturns.formB.currentTeachingSchoolX', {
       X: 2,
     }),
+    editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
     valueGetter: ({ data }) => data?.staffIre?.otherSchool2 ?? '-',
   },
   {
-    field: 'previousTeachingSchool1',
+    field: 'staffIre.previousSchool1',
     headerName: translate('settings:dtrReturns.formB.previousTeachingSchoolX', {
       X: 1,
     }),
+    editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
     valueGetter: ({ data }) => data?.staffIre?.previousSchool1 ?? '-',
   },
   {
-    field: 'previousTeachingSchool2',
+    field: 'staffIre.previousSchool2',
     headerName: translate('settings:dtrReturns.formB.previousTeachingSchoolX', {
       X: 2,
     }),
+    editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
     valueGetter: ({ data }) => data?.staffIre?.previousSchool2 ?? '-',
   },
 ];
