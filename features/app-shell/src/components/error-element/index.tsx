@@ -22,10 +22,13 @@ const errorIllustation = {
 
 function useErrorStatus(error: unknown): keyof typeof errorIllustation {
   const knownErrorKeys = Object.keys(errorIllustation);
+  const typedError = isRouteErrorResponse(error)
+    ? { response: error }
+    : (error as { response: Response });
+  const status = typedError.response?.status;
 
-  return isRouteErrorResponse(error) &&
-    knownErrorKeys.includes(String(error.status))
-    ? (String(error.status) as keyof typeof errorIllustation)
+  return status && knownErrorKeys.includes(String(status))
+    ? (String(status) as keyof typeof errorIllustation)
     : 'unknown';
 }
 
@@ -86,7 +89,7 @@ export function ErrorElement() {
     </Page>
   );
 
-  if (status === '503') {
+  if (['500', '503', 'unknown'].includes(status)) {
     return (
       <Box
         sx={{

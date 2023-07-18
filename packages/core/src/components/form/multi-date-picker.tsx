@@ -1,20 +1,16 @@
-import { TimePicker, TimePickerProps } from '@mui/x-date-pickers';
-import dayjs from 'dayjs';
-import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-
 import { TextFieldProps, useTheme } from '@mui/material';
 import {
   FieldValues,
   useController,
   UseControllerProps,
 } from 'react-hook-form';
+import { Dayjs } from 'dayjs';
+import { MultiDatePicker, MultiDatePickerProps } from '../multi-date-picker';
 
-dayjs.extend(LocalizedFormat);
-
-type RHFDatePickerProps<TField extends FieldValues, TInputDate> = {
+type RHFMultiDatePickerProps<TField extends FieldValues, TInputDate> = {
   label?: string;
-  timePickerProps?: Omit<
-    TimePickerProps<TInputDate>,
+  datePickerProps?: Omit<
+    MultiDatePickerProps<TInputDate>,
     'onChange' | 'value' | 'renderInput'
   >;
   controlProps: UseControllerProps<TField>;
@@ -23,15 +19,15 @@ type RHFDatePickerProps<TField extends FieldValues, TInputDate> = {
   };
 };
 
-export const RHFTimePicker = <
+export const RHFMultiDatePicker = <
   TField extends FieldValues,
-  TInputDate = dayjs.Dayjs
+  TInputDate extends Dayjs
 >({
   label,
-  timePickerProps,
+  datePickerProps,
   controlProps,
   inputProps,
-}: RHFDatePickerProps<TField, TInputDate>) => {
+}: RHFMultiDatePickerProps<TField, TInputDate>) => {
   const {
     field: { ref, onBlur, name, value, onChange },
     fieldState: { error },
@@ -42,10 +38,10 @@ export const RHFTimePicker = <
   const isWhiteFilledVariant = variant === 'white-filled';
 
   return (
-    <TimePicker
-      {...timePickerProps}
+    <MultiDatePicker
+      {...datePickerProps}
       onChange={onChange}
-      value={value ?? null}
+      value={value}
       label={label}
       inputRef={ref}
       slotProps={{

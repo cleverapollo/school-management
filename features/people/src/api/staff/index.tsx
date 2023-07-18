@@ -1,5 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient, StaffFilter } from '@tyro/api';
+import {
+  Core_StaffInfoForSelectQuery,
+  gqlClient,
+  graphql,
+  queryClient,
+  StaffFilter,
+} from '@tyro/api';
+import { usePreferredNameLayout } from '@tyro/core';
+import { useCallback } from 'react';
 import { peopleKeys } from '../keys';
 
 const staff = graphql(/* GraphQL */ `
@@ -92,8 +100,14 @@ export function getStaffForSelect(filter: StaffFilter) {
 }
 
 export function useStaffForSelect(filter: StaffFilter) {
+  const { sortByDisplayName } = usePreferredNameLayout();
+
   return useQuery({
     ...staffForSelectQuery(filter),
-    select: ({ core_staff }) => core_staff.map(({ person }) => person),
+    select: useCallback(
+      ({ core_staff }: Core_StaffInfoForSelectQuery) =>
+        core_staff.map(({ person }) => person).sort(sortByDisplayName),
+      [sortByDisplayName]
+    ),
   });
 }

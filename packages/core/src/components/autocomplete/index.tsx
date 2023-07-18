@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import React, { ForwardedRef } from 'react';
 import { getColorBasedOnIndex } from '@tyro/api';
+import { useTranslation } from '@tyro/i18n';
 import { Avatar, AvatarProps } from '../avatar';
 
 type TextfieldCustomProps = Omit<
@@ -74,6 +75,7 @@ export const Autocomplete = <
   ...restAutocompleteProps
 }: AutocompleteProps<T, FreeSolo>) => {
   const { spacing, palette } = useTheme();
+  const { t } = useTranslation(['common']);
 
   const { variant } = inputProps ?? {};
   const isWhiteFilledVariant = variant === 'white-filled';
@@ -89,6 +91,7 @@ export const Autocomplete = <
 
         return option === newValue;
       }}
+      loadingText={t('common:loading')}
       multiple={multiple}
       options={options}
       {...(optionTextKey && {
@@ -133,7 +136,7 @@ export const Autocomplete = <
                     (avatarProps) => (
                       <InputAdornment position="start" sx={{ ml: 0.75, mr: 0 }}>
                         <Avatar
-                          sx={{ width: 24, height: 24, fontSize: '0.7rem' }}
+                          sx={{ width: 24, height: 24, fontSize: '0.625rem' }}
                           {...avatarProps}
                         />
                       </InputAdornment>
