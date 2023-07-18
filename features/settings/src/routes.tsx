@@ -30,6 +30,7 @@ const SchoolDetails = lazy(() => import('./pages/ppod/school-details'));
 const Permissions = lazy(() => import('./pages/permissions'));
 const CreatePermission = lazy(() => import('./pages/permissions/create'));
 const EditPermission = lazy(() => import('./pages/permissions/edit'));
+const ClonePermission = lazy(() => import('./pages/permissions/clone'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -105,6 +106,19 @@ export const getRoutes: NavObjectFunction = (t) => [
               return getPermissionGroups({ ids: [permissionGroupId] });
             },
             element: <EditPermission />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: 'permissions/clone/:permissionGroupId',
+            loader: ({ params }) => {
+              const permissionGroupId = getNumber(params?.permissionGroupId);
+              if (!permissionGroupId) {
+                throw404Error();
+              }
+
+              return getPermissionGroups({ ids: [permissionGroupId] });
+            },
+            element: <ClonePermission />,
           },
           {
             type: NavObjectType.MenuLink,

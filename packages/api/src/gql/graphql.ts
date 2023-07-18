@@ -836,6 +836,17 @@ export type Core_NonEnrolledSibling = {
   partyId: Scalars['Long'];
 };
 
+export type Core_PartyInAcademicNamespace = {
+  __typename?: 'Core_PartyInAcademicNamespace';
+  academicNamespaceId: Scalars['Int'];
+  partyId: Scalars['Long'];
+};
+
+export type Core_PartyInAcademicNamespaceFilter = {
+  academicNamespaceId?: InputMaybe<Scalars['Int']>;
+  partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+};
+
 export type Core_SiblingInput = {
   studentPartyId1: Scalars['Long'];
   studentPartyId2: Scalars['Long'];
@@ -2797,6 +2808,7 @@ export type Query = {
   communications_smsCredit?: Maybe<SmsCredit>;
   communications_smsXeroItem: Array<XeroItem>;
   communications_unreadCount?: Maybe<Array<Maybe<UnreadCount>>>;
+  composite_permissionGroups: Array<Maybe<PermissionGroup>>;
   composite_studentStatus: StudentStatus;
   core_academicNamespaces?: Maybe<Array<AcademicNamespace>>;
   core_blocks: Array<CoreBlock>;
@@ -2824,6 +2836,7 @@ export type Query = {
   swm_absenceTypes: Array<Swm_StaffAbsenceType>;
   swm_absences: Array<Swm_StaffAbsence>;
   swm_eventsForSubstitutions: Array<Swm_CalendarSubstitution>;
+  swm_substitutionLookup: Swm_SubstitutionLookup;
   swm_substitutions: Array<Swm_Substitution>;
   tt_groups: Array<Tt_Groups>;
   tt_individualLessons: Array<TtIndividualViewLesson>;
@@ -2831,7 +2844,6 @@ export type Query = {
   tt_swapRoomOptions: TtSwapRoomOptions;
   tt_swapTeacherOptions: TtSwapTeacherOptions;
   tt_timetables: Array<TtTimetable>;
-  users_permissionGroups?: Maybe<Array<Maybe<PermissionGroup>>>;
   users_permissionSets?: Maybe<Array<Maybe<PermissionSet>>>;
   users_schoolInfo?: Maybe<SchoolInfo>;
   users_userInvitations?: Maybe<Array<Maybe<UserAccess>>>;
@@ -2995,6 +3007,11 @@ export type QueryCommunications_UnreadCountArgs = {
 };
 
 
+export type QueryComposite_PermissionGroupsArgs = {
+  filter?: InputMaybe<PermissionGroupFilter>;
+};
+
+
 export type QueryComposite_StudentStatusArgs = {
   filter?: InputMaybe<StudentStatusFilter>;
 };
@@ -3115,6 +3132,11 @@ export type QuerySwm_EventsForSubstitutionsArgs = {
 };
 
 
+export type QuerySwm_SubstitutionLookupArgs = {
+  filter?: InputMaybe<Swm_SubstitutionLookupFilter>;
+};
+
+
 export type QuerySwm_SubstitutionsArgs = {
   filter?: InputMaybe<Swm_SubstitutionsFilter>;
 };
@@ -3147,11 +3169,6 @@ export type QueryTt_SwapTeacherOptionsArgs = {
 
 export type QueryTt_TimetablesArgs = {
   filter?: InputMaybe<TtTimetableFilter>;
-};
-
-
-export type QueryUsers_PermissionGroupsArgs = {
-  filter?: InputMaybe<PermissionGroupFilter>;
 };
 
 
@@ -3383,6 +3400,46 @@ export type Swm_Substitution = {
   substitutionId?: Maybe<Scalars['Int']>;
   substitutionType: Swm_SubstitutionType;
   substitutionTypeId: Scalars['Int'];
+};
+
+export type Swm_SubstitutionLookup = {
+  __typename?: 'SWM_SubstitutionLookup';
+  clashingRooms: Array<ClashingRooms>;
+  freeRooms: Array<Room>;
+  staff: Array<Swm_SubstitutionLookupStaff>;
+};
+
+export type Swm_SubstitutionLookupFilter = {
+  staffPartyIds?: InputMaybe<Array<Scalars['Long']>>;
+  times: Array<FindFreeResourcesTime>;
+};
+
+export type Swm_SubstitutionLookupRoom = {
+  __typename?: 'SWM_SubstitutionLookupRoom';
+  available: Scalars['Boolean'];
+  clashingEvents?: Maybe<Array<Scalars['String']>>;
+  room: Room;
+  roomId: Scalars['Int'];
+};
+
+export type Swm_SubstitutionLookupStaff = {
+  __typename?: 'SWM_SubstitutionLookupStaff';
+  available: Scalars['Boolean'];
+  clashingEvents?: Maybe<Array<Scalars['String']>>;
+  staff: Staff;
+  staffPartyId: Scalars['Long'];
+};
+
+export type Swm_SubstitutionSummary = {
+  __typename?: 'SWM_SubstitutionSummary';
+  substitutionCountThisWeek: Scalars['Int'];
+  substitutionCountThisYear: Scalars['Int'];
+  substitutionTimeThisWeekMinutes: Scalars['Int'];
+  substitutionTimeThisYearMinutes: Scalars['Int'];
+};
+
+export type Swm_SubstitutionSummaryFilter = {
+  staffPartyIds?: InputMaybe<Array<Scalars['Long']>>;
 };
 
 export type Swm_SubstitutionTime = {
@@ -4109,6 +4166,7 @@ export type Staff = Party & PartyPerson & {
   emergencyContact?: Maybe<StaffEmergencyContact>;
   employmentCapacity?: Maybe<StaffCapacity>;
   endDate?: Maybe<Scalars['Date']>;
+  extensions?: Maybe<StaffGraphqlExtension>;
   jobSharing?: Maybe<Scalars['Boolean']>;
   makeAndModel?: Maybe<Scalars['String']>;
   noLongerStaffMember?: Maybe<Scalars['Boolean']>;
@@ -4140,8 +4198,17 @@ export type StaffEmergencyContact = {
 };
 
 export type StaffFilter = {
+  availableForSubstitution?: InputMaybe<Scalars['Boolean']>;
   availableForTeaching?: InputMaybe<Scalars['Boolean']>;
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+};
+
+export type StaffGraphqlExtension = {
+  __typename?: 'StaffGraphqlExtension';
+  doeNotUser?: Maybe<Scalars['String']>;
+  substitutionSummary?: Maybe<Swm_SubstitutionSummary>;
+  /**  Gives a summary of the timetable for a particular teacher */
+  timetableSummary?: Maybe<Tt_TeacherTimetableSummary>;
 };
 
 export type StaffGroupMembershipInput = {
@@ -4963,7 +5030,10 @@ export type TtTimetable = {
 };
 
 export type TtTimetableFilter = {
+  /**  the live timetable in timetable edit with unpublished changed */
   liveTimetable?: InputMaybe<Scalars['Boolean']>;
+  /**  the last published version of the timetable */
+  publishedTimetable?: InputMaybe<Scalars['Boolean']>;
   timetableId?: InputMaybe<Scalars['Int']>;
 };
 
@@ -5089,6 +5159,17 @@ export type Tt_ResetGroup = {
 
 export type Tt_ResetLesson = {
   lessonId: TtEditLessonPeriodInstanceId;
+};
+
+export type Tt_TeacherTimetableSummary = {
+  __typename?: 'TT_TeacherTimetableSummary';
+  fulltimePeriods: Scalars['Int'];
+  staffId: Scalars['Long'];
+};
+
+export type Tt_TeacherTimetableSummaryFilter = {
+  staffIds?: InputMaybe<Array<Scalars['Long']>>;
+  timetableFilter: TtTimetableFilter;
 };
 
 export type Tt_UpdateTimetableGroupInput = {
@@ -5989,12 +6070,12 @@ export type SavePermissionGroupMutationVariables = Exact<{
 
 export type SavePermissionGroupMutation = { __typename?: 'Mutation', users_savePermissionGroup?: { __typename?: 'PermissionGroup', id: number } | null };
 
-export type Users_PermissionGroupsQueryVariables = Exact<{
+export type Composite_PermissionGroupsQueryVariables = Exact<{
   filter: PermissionGroupFilter;
 }>;
 
 
-export type Users_PermissionGroupsQuery = { __typename?: 'Query', users_permissionGroups?: Array<{ __typename?: 'PermissionGroup', id: number, name: string, description: string, memberType: MemberType, memberPartyIds: Array<number>, custom?: boolean | null, permissionSets: Array<{ __typename?: 'PermissionGroupPermissionSet', id: number, toggle?: boolean | null, permissionType?: PermissionType | null, feature?: Feature | null }> } | null> | null };
+export type Composite_PermissionGroupsQuery = { __typename?: 'Query', composite_permissionGroups: Array<{ __typename?: 'PermissionGroup', id: number, name: string, description: string, memberType: MemberType, memberPartyIds: Array<number>, custom?: boolean | null, permissionSets: Array<{ __typename?: 'PermissionGroupPermissionSet', id: number, toggle?: boolean | null, permissionType?: PermissionType | null, feature?: Feature | null }> } | null> };
 
 export type Users_PermissionSetsQueryVariables = Exact<{
   filter: PermissionSetFilter;
@@ -6290,7 +6371,7 @@ export const Core_UpsertAcademicNamespaceDocument = {"kind":"Document","definiti
 export const Core_SetActiveActiveAcademicNamespaceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_setActiveActiveAcademicNamespace"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SetActiveAcademicNamespace"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_setActiveActiveAcademicNamespace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"academicNamespaceId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActiveDefaultNamespace"}}]}}]}}]} as unknown as DocumentNode<Core_SetActiveActiveAcademicNamespaceMutation, Core_SetActiveActiveAcademicNamespaceMutationVariables>;
 export const Core_UpsertRoomsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_upsertRooms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpsertRoomInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_upsertRooms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}}]}}]}}]} as unknown as DocumentNode<Core_UpsertRoomsMutation, Core_UpsertRoomsMutationVariables>;
 export const SavePermissionGroupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"savePermissionGroup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SavePermissionGroup"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users_savePermissionGroup"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<SavePermissionGroupMutation, SavePermissionGroupMutationVariables>;
-export const Users_PermissionGroupsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"users_permissionGroups"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PermissionGroupFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users_permissionGroups"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"memberType"}},{"kind":"Field","name":{"kind":"Name","value":"memberPartyIds"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}},{"kind":"Field","name":{"kind":"Name","value":"permissionSets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"toggle"}},{"kind":"Field","name":{"kind":"Name","value":"permissionType"}},{"kind":"Field","name":{"kind":"Name","value":"feature"}}]}}]}}]}}]} as unknown as DocumentNode<Users_PermissionGroupsQuery, Users_PermissionGroupsQueryVariables>;
+export const Composite_PermissionGroupsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"composite_permissionGroups"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PermissionGroupFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"composite_permissionGroups"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"memberType"}},{"kind":"Field","name":{"kind":"Name","value":"memberPartyIds"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}},{"kind":"Field","name":{"kind":"Name","value":"permissionSets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"toggle"}},{"kind":"Field","name":{"kind":"Name","value":"permissionType"}},{"kind":"Field","name":{"kind":"Name","value":"feature"}}]}}]}}]}}]} as unknown as DocumentNode<Composite_PermissionGroupsQuery, Composite_PermissionGroupsQueryVariables>;
 export const Users_PermissionSetsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"users_permissionSets"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PermissionSetFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users_permissionSets"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"permissionType"}},{"kind":"Field","name":{"kind":"Name","value":"toggle"}},{"kind":"Field","name":{"kind":"Name","value":"feature"}}]}}]}}]} as unknown as DocumentNode<Users_PermissionSetsQuery, Users_PermissionSetsQueryVariables>;
 export const Ppod_PpodCredentialsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ppod_PPODCredentials"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ppod_PPODCredentials"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"password"}},{"kind":"Field","name":{"kind":"Name","value":"lastSyncSuccessful"}}]}}]}}]} as unknown as DocumentNode<Ppod_PpodCredentialsQuery, Ppod_PpodCredentialsQueryVariables>;
 export const Ppod_SavePpodCredentialsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ppod_savePPODCredentials"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SavePPODCredentials"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ppod_savePPODCredentials"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"password"}}]}}]}}]} as unknown as DocumentNode<Ppod_SavePpodCredentialsMutation, Ppod_SavePpodCredentialsMutationVariables>;

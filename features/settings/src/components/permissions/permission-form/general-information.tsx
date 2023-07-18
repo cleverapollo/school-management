@@ -1,11 +1,15 @@
 import { Card, CardHeader, Grid, Typography } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { MemberType } from '@tyro/api';
-import { Control } from 'react-hook-form';
+import { Control, useWatch } from 'react-hook-form';
 import { RHFSelect, RHFTextField } from '@tyro/core';
 import { PermissionFormState } from './types';
 
-const memberTypeOptions = Object.values(MemberType);
+const memberTypeOptions: PermissionFormState['memberType'][] = [
+  MemberType.Staff,
+  MemberType.Contact,
+  MemberType.Student,
+];
 
 type GeneralInformationProps = {
   control: Control<PermissionFormState>;
@@ -13,6 +17,11 @@ type GeneralInformationProps = {
 
 export const GeneralInformation = ({ control }: GeneralInformationProps) => {
   const { t } = useTranslation(['settings', 'common']);
+
+  const isCustomGroup = useWatch({ control, name: 'custom' });
+  const isEditingGroup = useWatch({ control, name: 'id' });
+
+  const isPresetGroup = Boolean(isEditingGroup && !isCustomGroup);
 
   return (
     <Card variant="outlined">
@@ -32,6 +41,7 @@ export const GeneralInformation = ({ control }: GeneralInformationProps) => {
             textFieldProps={{
               fullWidth: true,
               placeholder: t('settings:permissions.namePermissionsPlaceholder'),
+              disabled: isPresetGroup,
             }}
             controlProps={{
               name: 'name',
@@ -47,6 +57,7 @@ export const GeneralInformation = ({ control }: GeneralInformationProps) => {
             getOptionLabel={(option) =>
               t(`settings:permissions.memberTypeOption.${option}`)
             }
+            disabled={Boolean(isEditingGroup)}
             controlProps={{
               name: 'memberType',
               control,
@@ -64,6 +75,7 @@ export const GeneralInformation = ({ control }: GeneralInformationProps) => {
               placeholder: t(
                 'settings:permissions.groupDescriptionPlaceholder'
               ),
+              disabled: isPresetGroup,
             }}
             controlProps={{
               name: 'description',

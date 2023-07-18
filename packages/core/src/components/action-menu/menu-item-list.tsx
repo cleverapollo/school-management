@@ -1,9 +1,11 @@
 import { MenuItem, styled, Tooltip } from '@mui/material';
+import { Link, LinkProps } from 'react-router-dom';
 
 export interface MenuItemConfig {
   label: string;
   icon?: React.ReactNode;
-  onClick: () => void;
+  onClick?: () => void;
+  navigateTo?: LinkProps['to'];
   disabled?: boolean;
   disabledTooltip?: string;
 }
@@ -27,14 +29,24 @@ export const ActionMenuIconWrapper = styled('span')(({ theme }) => ({
 
 export function getMenuItemList({ menuItems, onClose }: MenuItemListProps) {
   return menuItems.map(
-    ({ label, icon, onClick, disabled, disabledTooltip }, index) => {
+    (
+      { label, icon, navigateTo, onClick, disabled, disabledTooltip },
+      index
+    ) => {
       const Item = (
         <MenuItem
           key={`${label}-${index}`}
-          onClick={() => {
-            onClick();
-            onClose();
-          }}
+          {...(navigateTo
+            ? {
+                component: Link,
+                to: navigateTo,
+              }
+            : {
+                onClick: () => {
+                  onClick?.();
+                  onClose();
+                },
+              })}
           disabled={disabled}
           title={disabledTooltip}
           sx={{
