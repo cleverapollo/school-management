@@ -8,7 +8,6 @@ import {
   CheckmarkCircleIcon,
   VerticalDotsIcon,
 } from '@tyro/icons';
-import { useNavigate } from 'react-router-dom';
 import { getAssessmentSubjectGroupsLink } from '../../utils/get-assessment-subject-groups-link';
 
 type AssessmentActionMenuProps = {
@@ -25,7 +24,6 @@ export const AssessmentActionMenu = ({
   academicNamespaceId,
 }: AssessmentActionMenuProps) => {
   const { t } = useTranslation(['assessments']);
-  const navigate = useNavigate();
 
   const assessmentPath = getAssessmentSubjectGroupsLink(
     id,
@@ -43,12 +41,12 @@ export const AssessmentActionMenu = ({
               {
                 label: t('assessments:actions.view'),
                 icon: <EyeIcon />,
-                onClick: () => navigate(assessmentPath),
+                navigateTo: assessmentPath,
               },
               {
                 label: t('assessments:actions.edit'),
                 icon: <EditIcon />,
-                onClick: () => navigate(`${assessmentPath}/edit`),
+                navigateTo: `${assessmentPath}/edit`,
               },
               publish
                 ? {

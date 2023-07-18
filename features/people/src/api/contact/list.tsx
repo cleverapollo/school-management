@@ -40,6 +40,25 @@ const contacts = graphql(/* GraphQL */ `
   }
 `);
 
+const contactsInfoForSelect = graphql(/* GraphQL */ `
+  query core_studentContactsForSelect {
+    core_studentContacts {
+      person {
+        partyId
+        title {
+          nameTextId
+          id
+          name
+        }
+        firstName
+        lastName
+        avatarUrl
+        type
+      }
+    }
+  }
+`);
+
 const contactsQuery = {
   queryKey: peopleKeys.contacts.all(),
   queryFn: async () => gqlClient.request(contacts),
@@ -53,5 +72,22 @@ export function useContacts() {
   return useQuery({
     ...contactsQuery,
     select: ({ core_studentContacts }) => core_studentContacts,
+  });
+}
+
+const contactsForSelectQuery = () => ({
+  queryKey: peopleKeys.contacts.forSelect(),
+  queryFn: async () => gqlClient.request(contactsInfoForSelect),
+});
+
+export function getContactsForSelect() {
+  return queryClient.fetchQuery(contactsForSelectQuery());
+}
+
+export function useContactsForSelect() {
+  return useQuery({
+    ...contactsForSelectQuery(),
+    select: ({ core_studentContacts }) =>
+      (core_studentContacts || []).map(({ person }) => person),
   });
 }

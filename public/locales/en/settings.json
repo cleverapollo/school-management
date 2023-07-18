@@ -99,5 +99,65 @@
     "boardOfManagementChairPerson": "Board of management chairperson",
     "octoberReturnsContact": "October returns contact person",
     "dataUnavailable": "Data unavailable."
+  },
+  "permissions": {
+    "title": "Permissions",
+    "permissionManagement": "Permission management",
+    "permissionsGroups": "Permissions groups",
+    "presetPermissionsOptions": "Preset permissions options",
+    "createNewGroup": "Create permission group",
+    "editGroup": "Edit {{name}}'s permission group",
+    "cloneGroup": "Clone {{name}}'s permission group",
+    "membersCount_one": "{{count}} member",
+    "membersCount_other": "{{count}} members",
+    "customPermissionsGroups": "Custom permissions groups",
+    "emptyCustomPermissionsGroups": "There aren't any custom permission groups created yet.",
+    "creatingNewGroup": "Creating a new permissions group",
+    "memberType": "Member type",
+    "groupDescription": "Group description",
+    "groupDescriptionPlaceholder": "Add a brief description of the actions taken or goals for this permissions group.",
+    "namePermissionsPlaceholder": "New permission group name",
+    "memberTypeOption": {
+      "CONTACT": "Contacts",
+      "STAFF": "Staff",
+      "STUDENT": "Students",
+      "ADMIN": "Admin"
+    },
+    "selectPermissions": "Select permissions",
+    "permissionSet": "Permission set",
+    "assignMembers": "Assign members",
+    "permissionType": "Permission type",
+    "permissionTypeOption": {
+      "ALL": "Everyone",
+      "GROUP_ADMIN": "Groups they administer",
+      "MEMBER_OF_GROUP": "Groups they are in",
+      "SELF": "Themselves"
+    },
+    "searchByMemberType": {
+      "CONTACT": "Search by contact name",
+      "STAFF": "Search by staff name",
+      "STUDENT": "Search by student name",
+      "ADMIN": "Search by staff name"
+    },
+    "removeMember": "Remove member",
+    "savePermissionsGroup": "Save permissions group",
+    "emptyMembers": "There aren't any members assigned yet.",
+    "emptyMembersCta": "Search for a member and assign to the group",
+    "noMembersFound": "No members found",
+    "features": {
+      "ASSESSMENT": "Assessment",
+      "ATTENDANCE": "Attendance",
+      "CALENDAR": "Calendar",
+      "COMMUNICATIONS": "Communications",
+      "FEES": "Fees",
+      "GROUPS": "Groups",
+      "NOTES": "Notes",
+      "SEARCH": "Search",
+      "SETTINGS": "Settings",
+      "SUBSTITUTION": "Substitution",
+      "TIMETABLE": "Timetable",
+      "USERS": "Users",
+      "WELLBEING": "Wellbeing"
+    }
   }
 }

@@ -44,7 +44,7 @@ type ScheduleEventProps<TField extends ScheduleEventFormState> = {
 export const ScheduleEvent = <TField extends ScheduleEventFormState>({
   control,
 }: ScheduleEventProps<TField>) => {
-  const { t } = useTranslation(['calendar']);
+  const { t } = useTranslation(['common', 'calendar']);
 
   const { allDayEvent, startDate, startTime, recurrenceEnum, ends } = useWatch({
     control,
@@ -54,7 +54,7 @@ export const ScheduleEvent = <TField extends ScheduleEventFormState>({
     <>
       <Stack direction="column" gap={1.5}>
         {/* <RHFSwitch<ScheduleEventFormState>
-          label={t('calendar:inputLabels.allDay')}
+          label={t('common:allDay')}
           switchProps={{ color: 'primary' }}
           controlProps={{ name: 'allDayEvent', control }}
         /> */}
@@ -69,11 +69,11 @@ export const ScheduleEvent = <TField extends ScheduleEventFormState>({
           {!allDayEvent && (
             <Stack direction="row" gap={1} width="100%">
               <RHFTimePicker<ScheduleEventFormState>
-                label={t('calendar:inputLabels.startTime')}
+                label={t('common:startTime')}
                 controlProps={{ name: 'startTime', control }}
               />
               <RHFTimePicker<ScheduleEventFormState>
-                label={t('calendar:inputLabels.endTime')}
+                label={t('common:endTime')}
                 timePickerProps={{
                   minTime: dayjs(startTime as dayjs.Dayjs).add(
                     MINIMUM_EVENT_DURATION,

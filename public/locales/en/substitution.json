@@ -14,12 +14,12 @@
   "reasonForAbsence": "Reason for Absence",
   "internalNote": "Add an internal note (Admin viewing only)",
   "saveStaffAbsence": "Save Staff Absence",
-  "labels": {
-    "staffName": "Staff Name",
-    "startDate": "Start Date",
-    "endDate": "End Date",
-    "absenceType": "Absence Type",
-    "internalNote": "Type Note",
-    "requireSubstitution": "Require substitution for this absence"
-  }
+  "note": "Note",
+  "coverRequired": "Cover Required",
+  "rangeOfPartialDays": "{{startDate}} - {{endDate}} from {{startTime}} to {{endTime}}",
+  "rangeOfFullDays": "{{startDate}} - {{endDate}}",
+  "datesPartialDay": "{{dates}} from {{startTime}} to {{endTime}}",
+  "deleteStaffAbsence": "Delete staff absence",
+  "youAreAboutToDeleteStaffAbsence": "You are about to delete an absence for {{staffName}}. All associated details including applied cover will be removed. Are you sure you want to continue?",
+  "yesDeleteAbsence": "Yes, delete absence"
 }

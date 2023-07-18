@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import React, { ForwardedRef } from 'react';
 import { getColorBasedOnIndex } from '@tyro/api';
+import { useTranslation } from '@tyro/i18n';
 import { Avatar, AvatarProps } from '../avatar';
 
 type TextfieldCustomProps = Omit<
@@ -31,9 +32,10 @@ export type AutocompleteProps<
   label?: TextFieldProps['label'];
   placeholder?: TextFieldProps['placeholder'];
   inputProps?: TextfieldCustomProps;
-  optionIdKey?: T extends object ? keyof T : never;
+  optionIdKey?: keyof T;
   optionTextKey?: T extends object ? keyof T : never;
   customRef?: ForwardedRef<unknown>;
+  unshiftMode?: boolean;
   renderAvatarAdornment?: (
     value: T,
     renderAdornment: (avatarProps: AvatarProps) => React.ReactNode
@@ -67,10 +69,13 @@ export const Autocomplete = <
   renderAvatarAdornment,
   renderAvatarOption,
   renderAvatarTags,
+  unshiftMode,
   customRef,
+  multiple,
   ...restAutocompleteProps
 }: AutocompleteProps<T, FreeSolo>) => {
   const { spacing, palette } = useTheme();
+  const { t } = useTranslation(['common']);
 
   const { variant } = inputProps ?? {};
   const isWhiteFilledVariant = variant === 'white-filled';
@@ -86,6 +91,8 @@ export const Autocomplete = <
 
         return option === newValue;
       }}
+      loadingText={t('common:loading')}
+      multiple={multiple}
       options={options}
       {...(optionTextKey && {
         getOptionLabel: (option) =>
@@ -95,6 +102,22 @@ export const Autocomplete = <
       })}
       popupIcon={null}
       {...restAutocompleteProps}
+      {...(unshiftMode &&
+        multiple && {
+          onChange: (event, newValue, ...restParams) => {
+            if (Array.isArray(newValue)) {
+              const lastItem = newValue.at(newValue.length - 1) as T;
+              newValue.pop();
+              restAutocompleteProps.onChange?.(
+                event,
+                [lastItem, ...newValue],
+                ...restParams
+              );
+            } else {
+              restAutocompleteProps.onChange?.(event, newValue, ...restParams);
+            }
+          },
+        })}
       renderInput={(params) => (
         <TextField
           label={label}
@@ -106,16 +129,20 @@ export const Autocomplete = <
             InputProps: {
               ...params.InputProps,
               ...inputProps?.InputProps,
-              startAdornment: value
-                ? renderAvatarAdornment(value as T, (avatarProps) => (
-                    <InputAdornment position="start" sx={{ ml: 0.75, mr: 0 }}>
-                      <Avatar
-                        sx={{ width: 24, height: 24, fontSize: '0.7rem' }}
-                        {...avatarProps}
-                      />
-                    </InputAdornment>
-                  ))
-                : null,
+              ...(!multiple &&
+                value && {
+                  startAdornment: renderAvatarAdornment(
+                    value as T,
+                    (avatarProps) => (
+                      <InputAdornment position="start" sx={{ ml: 0.75, mr: 0 }}>
+                        <Avatar
+                          sx={{ width: 24, height: 24, fontSize: '0.625rem' }}
+                          {...avatarProps}
+                        />
+                      </InputAdornment>
+                    )
+                  ),
+                }),
             },
           })}
           sx={{
