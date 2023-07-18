@@ -208,11 +208,14 @@ export const CreateBlockRotationModal = ({
                   border: 1,
                   borderColor: 'slate.200',
                   p: 1,
-                  alignItems: 'center',
+                  alignItems: 'flex-start',
                 }}
               >
                 <Typography
-                  sx={{ width: '50%' }}
+                  sx={{
+                    width: 100,
+                    alignSelf: 'center',
+                  }}
                   variant="body1"
                   color="text.secondary"
                 >
@@ -227,8 +230,10 @@ export const CreateBlockRotationModal = ({
                 <RHFDatePicker
                   label={t('common:startDate')}
                   inputProps={{
-                    fullWidth: true,
                     size: 'small',
+                    sx: {
+                      flex: 1,
+                    },
                     InputLabelProps: {
                       sx: { backgroundColor: 'transparent' },
                     },
@@ -244,8 +249,10 @@ export const CreateBlockRotationModal = ({
                 <RHFDatePicker
                   label={t('common:endDate')}
                   inputProps={{
-                    fullWidth: true,
                     size: 'small',
+                    sx: {
+                      flex: 1,
+                    },
                     InputLabelProps: {
                       sx: { backgroundColor: 'transparent' },
                     },
