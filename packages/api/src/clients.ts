@@ -7,9 +7,17 @@ import {
 import { getToken } from './utils/jwt';
 import { acquireMsalToken } from './utils/msal-configs';
 
-export const getEndpoint = () =>
-  process.env.REACT_APP_GRAPHQL_API_URI ||
-  `${window.location.origin}/api/tyrogql`;
+export const getEndpoint = () => {
+  if (process.env.REACT_APP_GRAPHQL_API_URI) {
+    return process.env.REACT_APP_GRAPHQL_API_URI;
+  }
+
+  const { origin } = window.location;
+
+  return origin.includes('localhost') || origin.includes('app.tyro')
+    ? `${origin}/api/tyrogql`
+    : 'https://app.tyro-dev.com/api/tyrogql';
+};
 
 type FetchArguments = Parameters<typeof fetch>;
 

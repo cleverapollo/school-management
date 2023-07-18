@@ -46,10 +46,11 @@ export const Select = <TSelectOption extends string | number | object>({
       sx={{
         ...sx,
         ...(isWhiteFilledVariant && {
-          '& .MuiSelect-filled, & .MuiSelect-filled:focus': {
-            backgroundColor: palette.background.default,
-            borderRadius: spacing(1),
-          },
+          '& .MuiFilledInput-root, & .MuiFilledInput-root:focus, & .MuiFilledInput-root.Mui-focused, & .MuiFilledInput-root:hover, & .MuiFilledInput-root, & .MuiFilledInput-input:focus, & .MuiFilledInput-input.Mui-focused, & .MuiFilledInput-input:hover':
+            {
+              backgroundColor: palette.background.default,
+              borderRadius: spacing(1),
+            },
           '& .MuiSelect-icon': {
             color: palette.primary.main,
           },

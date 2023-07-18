@@ -10,6 +10,7 @@ export const peopleKeys = {
       [...peopleKeys.contacts.all(), 'students', contactId] as const,
     upsertContact: () =>
       [...peopleKeys.contacts.all(), 'upsertContact'] as const,
+    forSelect: () => [...peopleKeys.contacts.all(), 'select'] as const,
   },
   staff: {
     all: () => [...peopleKeys.all, 'staff'] as const,
