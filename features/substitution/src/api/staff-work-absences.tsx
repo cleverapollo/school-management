@@ -4,6 +4,7 @@ import {
   gqlClient,
   graphql,
   queryClient,
+  Swm_DeleteStaffAbsence,
   Swm_StaffAbsenceFilter,
   Swm_UpsertStaffAbsence,
   UseQueryReturnType,
@@ -59,7 +60,7 @@ const saveStaffAbsence = graphql(/* GraphQL */ `
 `);
 
 const deleteStaffAbsence = graphql(/* GraphQL */ `
-  mutation swm_deleteAbsence($input: [Int!]!) {
+  mutation swm_deleteAbsence($input: SWM_DeleteStaffAbsence!) {
     swm_deleteAbsence(input: $input) {
       success
     }
@@ -97,7 +98,7 @@ export function useDeleteStaffAbsence() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: (input: number[]) =>
+    mutationFn: (input: Swm_DeleteStaffAbsence) =>
       gqlClient.request(deleteStaffAbsence, { input }),
     onSuccess: () => {
       queryClient.invalidateQueries(substitutionKeys.all);

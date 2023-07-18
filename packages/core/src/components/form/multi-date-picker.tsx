@@ -1,4 +1,4 @@
-import { TextFieldProps } from '@mui/material';
+import { TextFieldProps, useTheme } from '@mui/material';
 import {
   FieldValues,
   useController,
@@ -14,7 +14,9 @@ type RHFMultiDatePickerProps<TField extends FieldValues, TInputDate> = {
     'onChange' | 'value' | 'renderInput'
   >;
   controlProps: UseControllerProps<TField>;
-  inputProps?: TextFieldProps;
+  inputProps?: Omit<TextFieldProps, 'variant'> & {
+    variant?: TextFieldProps['variant'] | 'white-filled';
+  };
 };
 
 export const RHFMultiDatePicker = <
@@ -30,6 +32,10 @@ export const RHFMultiDatePicker = <
     field: { ref, onBlur, name, value, onChange },
     fieldState: { error },
   } = useController(controlProps);
+  const { spacing, palette } = useTheme();
+
+  const { variant } = inputProps ?? {};
+  const isWhiteFilledVariant = variant === 'white-filled';
 
   return (
     <MultiDatePicker
@@ -41,6 +47,19 @@ export const RHFMultiDatePicker = <
       slotProps={{
         textField: {
           ...inputProps,
+          variant: isWhiteFilledVariant ? 'filled' : variant,
+          sx: {
+            ...inputProps?.sx,
+            ...(isWhiteFilledVariant && {
+              '& .MuiInputBase-root, & .MuiInputBase-root.Mui-focused': {
+                backgroundColor: palette.background.default,
+                borderRadius: spacing(1),
+              },
+              '& .MuiInputBase-root:hover': {
+                backgroundColor: palette.primary.lighter,
+              },
+            }),
+          },
           onBlur,
           name,
           error: !!error,

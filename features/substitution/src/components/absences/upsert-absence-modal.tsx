@@ -242,12 +242,13 @@ export function UpsertAbsenceModal({
               return (
                 <Stack
                   key={field.id}
-                  sx={{
+                  sx={({ palette }) => ({
                     backgroundColor: 'background.neutral',
                     p: 2,
                     pt: 1,
                     borderRadius: 1,
-                  }}
+                    border: `1px solid ${palette.divider}`,
+                  })}
                   spacing={2}
                 >
                   <Stack direction="row" justifyContent="space-between">
@@ -278,6 +279,7 @@ export function UpsertAbsenceModal({
                     label={t('common:dates')}
                     inputProps={{
                       fullWidth: true,
+                      variant: 'white-filled',
                     }}
                     controlProps={{
                       name: `dates.${index}.dates`,
@@ -291,6 +293,7 @@ export function UpsertAbsenceModal({
                         label={t('common:startTime')}
                         inputProps={{
                           fullWidth: true,
+                          variant: 'white-filled',
                         }}
                         controlProps={{
                           name: `dates.${index}.startTime`,
@@ -304,6 +307,7 @@ export function UpsertAbsenceModal({
                         }}
                         inputProps={{
                           fullWidth: true,
+                          variant: 'white-filled',
                         }}
                         controlProps={{
                           name: `dates.${index}.endTime`,
@@ -318,7 +322,6 @@ export function UpsertAbsenceModal({
             <Box
               sx={{
                 display: 'flex',
-                justifyContent: 'flex-end',
               }}
             >
               <Button
