@@ -130,10 +130,7 @@ export function ConditionsTable({ studentId }: ConditionsTableProps) {
     setEditConditions({});
   };
 
-  const conditions =
-    Array.isArray(medicalData?.conditions) && medicalData?.conditions
-      ? medicalData?.conditions
-      : [];
+  const conditions = medicalData?.conditions || [];
 
   const columns = useMemo(
     () =>

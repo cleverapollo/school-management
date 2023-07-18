@@ -35,7 +35,6 @@ export function useCreateOrUpdateCondition() {
   const { t } = useTranslation(['common']);
 
   return useMutation({
-    mutationKey: peopleKeys.students.upsertStudentMedicalCondition(),
     mutationFn: async (input: UpsertStudentMedicalConditionInput) =>
       gqlClient.request(upsertStudentMedicalCondition, { input }),
     onSuccess: (_, variables) => {

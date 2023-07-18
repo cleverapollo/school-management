@@ -1,10 +1,9 @@
 import {
-  Box,
   Button,
-  DialogTitle,
-  Stack,
-  DialogActions,
   Dialog,
+  DialogTitle,
+  DialogActions,
+  Grid,
   Typography,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
@@ -45,74 +44,60 @@ export const ViewConditionsModal = ({
           alignItems: 'center',
           borderBottom: '1px solid',
           borderColor: 'divider',
+          mb: 3,
         }}
       >
         <PersonHeartIcon sx={{ mr: 1 }} />
         {t('people:condition')}
       </DialogTitle>
-
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: '1fr',
-          gap: '16px',
-          padding: '16px',
-          backgroundColor: 'slate.50',
-        }}
+      <Grid
+        container
+        rowSpacing={3}
+        columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+        sx={{ backgroundColor: 'slate.50', pb: 3, px: 3 }}
       >
-        <Stack sx={{ px: 1, py: 1 }}>
+        <Grid item xs={12}>
           <Typography variant="h6" component="h3">
             {t('common:name')}
           </Typography>
           <Typography variant="body1" color="text.primary">
             {initialConditionsState?.name}
           </Typography>
-        </Stack>
-
-        <Stack sx={{ px: 1, py: 1 }}>
+        </Grid>
+        <Grid item xs={12}>
           <Typography variant="h6" component="h3">
             {t('common:description')}
           </Typography>
           <Typography variant="body1">
             {initialConditionsState?.description}
           </Typography>
-        </Stack>
-
-        <Stack
-          sx={{
-            display: 'flex',
-            flexDirection: ['column', 'row'],
-            gap: 2,
-            '& > *': {
-              flex: '1 1 50%',
-            },
-          }}
-        >
-          <Stack>
-            <Typography variant="h6" component="h3">
-              {t('people:equipment')}
-            </Typography>
-            <Typography variant="body1">
-              {initialConditionsState?.equipment &&
-                initialConditionsState?.equipment[0].location}
-            </Typography>
-          </Stack>
-          <Stack>
-            <Typography variant="h6" component="h3">
-              {t('people:locationOfEquipment')}
-            </Typography>
-            <Typography variant="body1">
-              {initialConditionsState?.equipment &&
-                initialConditionsState?.equipment[0].location}
-            </Typography>
-          </Stack>
-        </Stack>
-      </Box>
-      <DialogActions>
-        <Button variant="outlined" color="inherit" onClick={handleClose}>
-          {t('common:actions.close')}
-        </Button>
-      </DialogActions>
+        </Grid>
+        <Grid item xs={12} sm={12} md={6}>
+          <Typography variant="h6" component="h3">
+            {t('people:equipment')}
+          </Typography>
+          <Typography variant="body1">
+            {initialConditionsState?.equipment &&
+              initialConditionsState?.equipment[0].location}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} sm={12} md={6}>
+          <Typography variant="h6" component="h3">
+            {t('people:locationOfEquipment')}
+          </Typography>
+          <Typography variant="body1">
+            {initialConditionsState?.equipment &&
+              initialConditionsState?.equipment[0].location}
+          </Typography>
+        </Grid>
+      </Grid>
+      <Grid item xs={12}>
+        <DialogActions sx={{ px: 3, py: 3, backgroundColor: 'white' }}>
+          <Button variant="outlined" color="inherit" onClick={handleClose}>
+            {t('common:actions.close')}
+          </Button>
+        </DialogActions>
+      </Grid>
     </Dialog>
   );
 };

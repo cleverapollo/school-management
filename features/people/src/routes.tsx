@@ -33,6 +33,7 @@ import { getStaff } from './api/staff';
 import { getStaffStatus } from './api/staff/status';
 import { getStaffSubjectGroups } from './api/staff/subject-groups';
 import { getStaffPersonal } from './api/staff/personal';
+import { getMedicalConditionNamesQuery } from './api/student/medicals/medical-condition-lookup';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
 // Student profile pages
@@ -274,14 +275,17 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'medical',
                 element: <StudentProfileMedicalPage />,
-                loader: ({ params }) => {
+                loader: async ({ params }) => {
                   const studentId = getNumber(params.id);
 
                   if (!studentId) {
                     throw404Error();
                   }
 
-                  return getStudentMedicalData(studentId);
+                  return Promise.all([
+                    getStudentMedicalData(studentId),
+                    getMedicalConditionNamesQuery(),
+                  ]);
                 },
               },
             ],

@@ -30,7 +30,6 @@ export function useDeleteCondition() {
   const { t } = useTranslation(['common']);
 
   return useMutation({
-    mutationKey: peopleKeys.students.deleteStudentMedicalCondition(),
     mutationFn: async (input: DeleteStudentMedicalConditionInput) =>
       gqlClient.request(deleteStudentMedicalCondition, { input }),
     onSuccess: () => {

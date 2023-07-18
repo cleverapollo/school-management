@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import {
   Button,
   DialogTitle,
-  Stack,
+  Grid,
   DialogActions,
   Dialog,
 } from '@mui/material';
@@ -12,10 +12,7 @@ import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import { UpsertStudentMedicalConditionInput } from '@tyro/api';
 import { useCreateOrUpdateCondition } from '../../../api/student/medicals/upsert-medical-conditions';
-import {
-  useMedicalConditionNamesQuery,
-  MedicalConditionNamesType,
-} from '../../../api/student/medicals/medical-condition-lookup';
+import { useMedicalConditionNamesQuery } from '../../../api/student/medicals/medical-condition-lookup';
 
 export type EditConditionsFormState = Pick<
   UpsertStudentMedicalConditionInput,
@@ -72,11 +69,10 @@ export const EditConditionsModal = ({
   });
 
   useEffect(() => {
-    if (initialConditionsState) {
-      reset({ ...defaultFormStateValues, ...initialConditionsState });
-    } else {
-      reset(defaultFormStateValues);
-    }
+    reset({
+      ...defaultFormStateValues,
+      ...(initialConditionsState ?? {}),
+    });
   }, [initialConditionsState]);
 
   const handleClose = () => {
@@ -97,32 +93,29 @@ export const EditConditionsModal = ({
           ? t('people:editCondition')
           : t('people:addCondition')}
       </DialogTitle>
-      <form onSubmit={onSubmit}>
-        <Stack
-          spacing={3}
-          sx={{
-            p: 3,
-          }}
-        >
-          <RHFAutocomplete<
-            EditConditionsFormState,
-            MedicalConditionNamesType,
-            true
-          >
+
+      <Grid
+        component="form"
+        onSubmit={onSubmit}
+        container
+        rowSpacing={3}
+        columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+        sx={{ pb: 3, px: 3 }}
+      >
+        <Grid item xs={12}>
+          <RHFAutocomplete<EditConditionsFormState, string, true>
             fullWidth
             freeSolo
             autoSelect
             label={t('common:name')}
-            options={medicalConditionNames ?? []}
-            optionIdKey="id"
-            getOptionLabel={(option) =>
-              typeof option !== 'string' ? option.name : option
-            }
+            options={medicalConditionNames?.values ?? []}
             controlProps={{
               name: `name`,
               control,
             }}
           />
+        </Grid>
+        <Grid item xs={12}>
           <RHFTextField<EditConditionsFormState>
             label={t('common:description')}
             controlProps={{
@@ -132,36 +125,32 @@ export const EditConditionsModal = ({
             textFieldProps={{
               multiline: true,
               rows: 4,
+              fullWidth: true,
             }}
           />
-
-          <Stack
-            sx={{
-              display: 'flex',
-              flexDirection: ['column', 'row'],
-              gap: 2,
-              '& > *': {
-                flex: '1 1 50%',
-              },
+        </Grid>
+        <Grid item xs={12} sm={12} md={6}>
+          <RHFTextField<EditConditionsFormState>
+            label={t('people:equipment')}
+            textFieldProps={{ fullWidth: true }}
+            controlProps={{
+              name: 'equipment.0.name',
+              control,
             }}
-          >
-            <RHFTextField<EditConditionsFormState>
-              label={t('people:equipment')}
-              controlProps={{
-                name: 'equipment.0.name',
-                control,
-              }}
-            />
-            <RHFTextField<EditConditionsFormState>
-              label={t('people:location')}
-              controlProps={{
-                name: 'equipment.0.location',
-                control,
-              }}
-            />
-          </Stack>
-
-          <DialogActions>
+          />
+        </Grid>
+        <Grid item xs={12} sm={12} md={6}>
+          <RHFTextField<EditConditionsFormState>
+            label={t('people:location')}
+            textFieldProps={{ fullWidth: true }}
+            controlProps={{
+              name: 'equipment.0.location',
+              control,
+            }}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <DialogActions sx={{ padding: '0!important' }}>
             <Button variant="outlined" color="inherit" onClick={handleClose}>
               {t('common:actions.cancel')}
             </Button>
@@ -176,8 +165,8 @@ export const EditConditionsModal = ({
                 : t('people:addCondition')}
             </LoadingButton>
           </DialogActions>
-        </Stack>
-      </form>
+        </Grid>
+      </Grid>
     </Dialog>
   );
 };

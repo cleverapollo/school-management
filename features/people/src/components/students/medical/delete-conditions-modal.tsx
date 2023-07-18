@@ -91,13 +91,7 @@ export const DeleteConditionsModal = ({
               type="submit"
               variant="contained"
               loading={isSubmitting}
-              sx={{
-                backgroundColor: 'error.main',
-                color: 'white',
-                '&:hover': {
-                  backgroundColor: 'error.dark',
-                },
-              }}
+              color="error"
             >
               {t('common:actions.delete')}
             </LoadingButton>
