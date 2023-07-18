@@ -26,7 +26,8 @@
     "continue": "Continue",
     "stayLoggedIn": "Stay logged in",
     "logMeOut": "Log me out",
-    "next": "Next"
+    "next": "Next",
+    "clone": "Clone"
   },
   "snackbarMessages": {
     "createSuccess": "Create success!",

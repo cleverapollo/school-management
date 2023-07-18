@@ -1,13 +1,11 @@
 import { useMemo } from 'react';
-import { Box, Fade, Stack } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Box, Fade } from '@mui/material';
 import {
   ActionMenu,
   ActionMenuProps,
   GridOptions,
   ICellRendererParams,
   Table,
-  TablePersonAvatar,
 } from '@tyro/core';
 import { EditIcon } from '@tyro/icons';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -70,7 +68,6 @@ const getColumnDefs = (
 
 export default function Sync() {
   const { t } = useTranslation(['common', 'settings']);
-  const navigate = useNavigate();
 
   const { data: syncRequests } = useSyncRequests({});
 
@@ -81,9 +78,7 @@ export default function Sync() {
       {
         label: t('settings:ppodSync.enterSyncCredentials'),
         icon: <EditIcon />,
-        onClick: () => {
-          navigate('/settings/ppod/login');
-        },
+        navigateTo: '/settings/ppod/login',
       },
     ];
 
