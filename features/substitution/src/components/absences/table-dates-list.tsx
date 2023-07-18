@@ -15,6 +15,66 @@ interface TableDatesListProps {
 export function TableDatesList({ dates }: TableDatesListProps) {
   const { t } = useTranslation(['substitution']);
 
+  const mappedCellValues = dates?.map(
+    (
+      {
+        continuousStartDate,
+        continuousEndDate,
+        individualDates,
+        partialAbsence,
+        leavesAt,
+        returnsAt,
+      },
+      index
+    ) => {
+      const suffix =
+        index + 1 !== dates.length ? (
+          <>
+            ,<br />
+          </>
+        ) : (
+          ''
+        );
+
+      if (continuousStartDate && continuousEndDate) {
+        const rangeString = partialAbsence
+          ? t('substitution:rangeOfPartialDays', {
+              startDate: dayjs(continuousStartDate).format('L'),
+              endDate: dayjs(continuousEndDate).format('L'),
+              startTime: getLocaleTimestamp(leavesAt),
+              endTime: getLocaleTimestamp(returnsAt),
+            })
+          : t('substitution:rangeOfFullDays', {
+              startDate: dayjs(continuousStartDate).format('L'),
+              endDate: dayjs(continuousEndDate).format('L'),
+            });
+
+        return {
+          key: `${continuousStartDate}-${continuousEndDate}`,
+          value: rangeString,
+          suffix,
+        };
+      }
+
+      const mappedIndividualDates = individualDates
+        ?.map((date) => dayjs(date).format('L'))
+        .join(', ');
+      const datesString = partialAbsence
+        ? t('substitution:datesPartialDay', {
+            dates: mappedIndividualDates,
+            startTime: getLocaleTimestamp(leavesAt),
+            endTime: getLocaleTimestamp(returnsAt),
+          })
+        : mappedIndividualDates;
+
+      return {
+        key: mappedIndividualDates,
+        value: datesString,
+        suffix,
+      };
+    }
+  );
+
   return (
     <Box
       component="span"
@@ -24,65 +84,12 @@ export function TableDatesList({ dates }: TableDatesListProps) {
         py: 1.5,
       }}
     >
-      {dates?.map(
-        (
-          {
-            continuousStartDate,
-            continuousEndDate,
-            individualDates,
-            partialAbsence,
-            leavesAt,
-            returnsAt,
-          },
-          index
-        ) => {
-          const suffix =
-            index + 1 !== dates.length ? (
-              <>
-                ,<br />
-              </>
-            ) : (
-              ''
-            );
-          if (continuousStartDate && continuousEndDate) {
-            const rangeString = partialAbsence
-              ? t('substitution:rangeOfPartialDays', {
-                  startDate: dayjs(continuousStartDate).format('L'),
-                  endDate: dayjs(continuousEndDate).format('L'),
-                  startTime: getLocaleTimestamp(leavesAt),
-                  endTime: getLocaleTimestamp(returnsAt),
-                })
-              : t('substitution:rangeOfFullDays', {
-                  startDate: dayjs(continuousStartDate).format('L'),
-                  endDate: dayjs(continuousEndDate).format('L'),
-                });
-
-            return (
-              <Fragment key={`${continuousStartDate}-${continuousEndDate}`}>
-                {rangeString}
-                {suffix}
-              </Fragment>
-            );
-          }
-          const mappedIndividualDates = individualDates
-            ?.map((date) => dayjs(date).format('L'))
-            .join(', ');
-          const datesString = partialAbsence
-            ? t('substitution:datesPartialDay', {
-                dates: mappedIndividualDates,
-                startTime: getLocaleTimestamp(leavesAt),
-                endTime: getLocaleTimestamp(returnsAt),
-              })
-            : mappedIndividualDates;
-
-          return (
-            <Fragment key={mappedIndividualDates}>
-              {datesString}
-              {suffix}
-            </Fragment>
-          );
-        }
-      )}
+      {mappedCellValues.map(({ key, value, suffix }) => (
+        <Fragment key={key}>
+          {value}
+          {suffix}
+        </Fragment>
+      ))}
     </Box>
   );
 }

@@ -22,9 +22,7 @@ export const AbsenceTypeAutoComplete = <TField extends FieldValues>(
       optionIdKey="absenceTypeId"
       options={absenceTypesData ?? []}
       loading={isLoading}
-      getOptionLabel={(option) =>
-        typeof option === 'string' ? option : option.name
-      }
+      optionTextKey="name"
       fullWidth
       {...props}
     />

@@ -16,7 +16,7 @@ export function DeleteAbsenceConfirmModal({
   onClose,
   absenceDetails,
 }: DeleteAbsenceConfirmModalProps) {
-  const { t } = useTranslation(['common', 'substitution']);
+  const { t } = useTranslation(['substitution']);
   const { displayName } = usePreferredNameLayout();
   const staffName = displayName(absenceDetails?.staff);
 

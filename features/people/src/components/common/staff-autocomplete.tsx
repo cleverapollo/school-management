@@ -7,6 +7,7 @@ import {
 import { UseQueryReturnType } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useStaffForSelect } from '../../api/staff';
+import { usePeopleAutocompleteProps } from './use-people-autocomplete-props';
 
 type StaffSelectOption = UseQueryReturnType<typeof useStaffForSelect>[number];
 
@@ -20,27 +21,13 @@ export const StaffAutocomplete = <TField extends FieldValues>(
 ) => {
   const { t } = useTranslation(['common']);
   const { data: teacherData, isLoading } = useStaffForSelect({});
-  const { displayName } = usePreferredNameLayout();
+  const peopleAutocompleteProps =
+    usePeopleAutocompleteProps<StaffSelectOption>();
 
   return (
     <RHFAutocomplete<TField, StaffSelectOption>
       label={t('common:staffMember')}
-      optionIdKey="partyId"
-      getOptionLabel={(option) =>
-        typeof option === 'string' ? option : displayName(option)
-      }
-      renderAvatarAdornment={(value, renderAdornment) =>
-        renderAdornment({
-          name: displayName(value),
-          src: value.avatarUrl,
-        })
-      }
-      renderAvatarOption={(option, renderOption) =>
-        renderOption({
-          name: displayName(option),
-          src: option.avatarUrl,
-        })
-      }
+      {...peopleAutocompleteProps}
       fullWidth
       loading={isLoading}
       options={teacherData ?? []}

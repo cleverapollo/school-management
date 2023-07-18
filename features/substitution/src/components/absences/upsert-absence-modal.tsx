@@ -66,7 +66,6 @@ function mapAbsenceDates(datesToMap: Array<AbsenceDate>) {
       dates
         .sort((a, b) => a.unix() - b.unix())
         .forEach((date, index) => {
-          console.log();
           const previousDate = dates[index - 1];
           const nextDate = dates[index + 1];
           const isPreviousDateJustBefore = previousDate?.isSame(
@@ -186,9 +185,7 @@ export function UpsertAbsenceModal({
         },
       ],
       {
-        onSuccess: () => {
-          onClose();
-        },
+        onSuccess: onClose,
       }
     );
   });
@@ -204,18 +201,18 @@ export function UpsertAbsenceModal({
   const dates = watch('dates');
 
   return (
-    <Dialog open={!!open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Add Absence</DialogTitle>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle>{t('substitution:createStaffAbsence')}</DialogTitle>
       <form onSubmit={onSubmit}>
         <Stack spacing={3} sx={{ p: 3 }}>
           <Stack direction="row" spacing={2}>
-            <StaffAutocomplete<UpsertAbsenceFormState>
+            <StaffAutocomplete
               controlProps={{
                 name: 'staff',
                 control,
               }}
             />
-            <AbsenceTypeAutoComplete<UpsertAbsenceFormState>
+            <AbsenceTypeAutoComplete
               label={t('substitution:reason')}
               controlProps={{
                 name: 'absenceType',
@@ -224,7 +221,7 @@ export function UpsertAbsenceModal({
             />
           </Stack>
 
-          <RHFTextField<UpsertAbsenceFormState>
+          <RHFTextField
             label={t('substitution:note')}
             controlProps={{
               name: 'note',
@@ -275,7 +272,7 @@ export function UpsertAbsenceModal({
                     )}
                   </Stack>
 
-                  <RHFMultiDatePicker<UpsertAbsenceFormState, Dayjs>
+                  <RHFMultiDatePicker
                     label={t('common:dates')}
                     inputProps={{
                       fullWidth: true,
@@ -289,7 +286,7 @@ export function UpsertAbsenceModal({
 
                   <Collapse in={!isFullDay}>
                     <Stack direction="row" gap={1} width="100%">
-                      <RHFTimePicker<UpsertAbsenceFormState>
+                      <RHFTimePicker
                         label={t('common:startTime')}
                         inputProps={{
                           fullWidth: true,
@@ -300,7 +297,7 @@ export function UpsertAbsenceModal({
                           control,
                         }}
                       />
-                      <RHFTimePicker<UpsertAbsenceFormState>
+                      <RHFTimePicker
                         label={t('common:endTime')}
                         timePickerProps={{
                           minTime: startTime ? dayjs(startTime) : undefined,
