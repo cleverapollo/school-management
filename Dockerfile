@@ -1,5 +1,4 @@
 FROM nginx:alpine
-
 #!/bin/sh
 
 COPY ./.deployment/nginx.conf /etc/nginx/nginx.conf

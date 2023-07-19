@@ -53,9 +53,15 @@ export function StudentContactsWidget({
   const [contactToSendSmsTo, setContactToSendSmsTo] =
     useState<RecipientsForSmsModal>([]);
 
-  const numberOfContacts = contacts?.length ?? 0;
+  const contactsAllowedToContact = contacts
+    ?.filter((contact) => contact.allowedToContact)
+    .sort();
+
+  const numberOfContacts = contactsAllowedToContact?.length ?? 0;
   const clampedIndex = wrap(0, numberOfContacts, contactIndex);
-  const contact = contacts?.[clampedIndex];
+
+  const contact = contactsAllowedToContact?.[clampedIndex];
+
   const isButtonsDisabled = isLoading || numberOfContacts <= 1;
   const buttonTooltipTitle = isButtonsDisabled
     ? t('people:nextContactDisabled', { count: numberOfContacts })
@@ -115,9 +121,8 @@ export function StudentContactsWidget({
               textOverflow="ellipsis"
               textAlign="center"
             >
-              {t('common:contact')}{' '}
               <Box component="span" fontWeight={600}>
-                {clampedIndex + 1}/{contacts?.length}
+                {clampedIndex + 1}/{numberOfContacts}
               </Box>
             </Typography>
           </Box>
@@ -214,13 +219,13 @@ export function StudentContactsWidget({
                     </Button>
                   </Box>
                 </Tooltip>
-                <Button
+                {/* <Button
                   variant="contained"
                   sx={{ flex: 1 }}
                   onClick={() => console.log('open send mail popup')}
                 >
                   {t('mail:sendMail')}
-                </Button>
+                </Button> */}
               </Stack>
               <Box
                 component="dl"

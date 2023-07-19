@@ -29,6 +29,8 @@
   "carRegistration": "Car registration",
   "ppsNumber": "PPS number",
   "teacherCouncilNumber": "Teacher council number",
+  "doctorName": "Doctor name",
+  "addCondition": "Add condition",
   "gender": {
     "title": "Gender",
     "MALE": "Male",
@@ -184,6 +186,7 @@
   "moveStudent_one": "Move student",
   "moveStudent_other": "Move students",
   "youMustHaveAtLeastOneStudent": "You must have at least one student",
+  "medicalConditions": "Medical conditions",
   "manageSiblings": "Manage siblings",
   "enrolledSiblings": "Enrolled sibling(s)",
   "nonEnrolledSiblings": "Non-enrolled sibling(s)",
@@ -191,5 +194,16 @@
   "associateContacts": "Associate contacts",
   "foundAssociatedContact_one": "We've found a contact associated with the selected student(s). Would you like to associate any of these with {{studentName}}?",
   "foundAssociatedContact_other": "We've found {{count}} contacts associated with the selected student(s). Would you like to associate any of these with {{studentName}}?",
-  "selectContactsToAssociateWithStudent": "Select contacts to associate with {{studentName}}"
+  "selectContactsToAssociateWithStudent": "Select contacts to associate with {{studentName}}",
+  "editCondition": "Edit condition",
+  "deleteCondition": "Delete condition",
+  "deleteConditionConfirmation": "You are about to delete this condition. Are you sure you want to continue?",
+  "viewCondition": "View condition",
+  "condition": "Condition",
+  "conditions": "Conditions",
+  "equipment": "Equipment",
+  "location": "Location",
+  "locationOfEquipment": "Location of equipment",
+  "siblingsInSchool": "Siblings in school",
+  "noMedicalContacts": "No medical contacts added"
 }

@@ -189,7 +189,12 @@ export const CardEditableForm = <TField extends FieldValues>({
                     },
                   })
                 ) : (
-                  <Typography paddingY={0.5} component="dd" variant="body1">
+                  <Typography
+                    paddingY={0.5}
+                    component="dd"
+                    variant="body1"
+                    color="text.secondary"
+                  >
                     {valueRenderer || value || '-'}
                   </Typography>
                 )}
