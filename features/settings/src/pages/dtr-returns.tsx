@@ -42,13 +42,13 @@ dayjs.extend(LocalizedFormat);
 
 const getColumnFormBDefs = (
   translate: TFunction<
-    ('settings' | 'people' | 'common')[],
+    ('settings' | 'common')[],
     undefined,
-    ('settings' | 'people' | 'common')[]
+    ('settings' | 'common')[]
   >,
-  displayName: ReturnTypeDisplayName,
+  postsData: StaffPostsOption[],
   capacitiesData: EmploymentCapacityOption[],
-  postsData: StaffPostsOption[]
+  displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseFormB>['columnDefs'] => [
   {
     field: 'staffIre.includeDtrReturns',
@@ -292,14 +292,14 @@ const getColumnFormBDefs = (
 ];
 
 export default function DTRReturnsPage() {
-  const { t } = useTranslation(['navigation', 'settings', 'people', 'common']);
+  const { t } = useTranslation(['navigation', 'settings', 'common']);
 
   const { displayName } = usePreferredNameLayout();
   const { mutateAsync: updateStaffFormB } = useSaveBulkUpdateStaffFormB();
   const { data: capacitiesData = [] } = useEmploymentCapacities();
   const { data: postsData = [] } = useStaffPosts();
 
-  const [formTypeId, setFormTypeId] = useState<number>(1);
+  const [formTypeId, setFormTypeId] = useState<number>(2);
 
   const { data: staffFormB = [] } = useFormB({});
 
@@ -308,7 +308,7 @@ export default function DTRReturnsPage() {
       case 1:
         break;
       case 2:
-        return getColumnFormBDefs(t, displayName, capacitiesData, postsData);
+        return getColumnFormBDefs(t, postsData, capacitiesData, displayName);
       default:
         return [];
     }
@@ -347,7 +347,6 @@ export default function DTRReturnsPage() {
       | 'staffIre.previousSchool2'
     >
   ) => {
-    console.log('data', data);
     const updates = Object.entries(data).reduce<UpdateStaffInput[]>(
       (acc, [partyId, changes]) => {
         const changeKeys = Object.keys(changes) as Array<keyof typeof changes>;
