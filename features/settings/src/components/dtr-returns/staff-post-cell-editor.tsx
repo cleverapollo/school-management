@@ -1,12 +1,10 @@
 import { TableSelect } from '@tyro/core';
-import { useStaffPosts } from '@tyro/people/src/api/staff/staff-posts';
+import { StaffPostsOption } from '@tyro/people/src/api/staff/staff-posts';
 
-export function StaffPostSelectCellEditor() {
-  const { data: postsData = [] } = useStaffPosts();
-
+export function StaffPostSelectCellEditor(postsData: StaffPostsOption[]) {
   const options = postsData.map((staffPost) => ({
     value: staffPost,
-    label: staffPost.name,
+    label: staffPost?.name,
   }));
 
   return () =>

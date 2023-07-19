@@ -1,10 +1,13 @@
 import { TableSelect } from '@tyro/core';
-import { useEmploymentCapacities } from '@tyro/people/src/api/staff/employment-capacities';
+import {
+  EmploymentCapacityOption,
+  useEmploymentCapacities,
+} from '@tyro/people/src/api/staff/employment-capacities';
 
-export function EmploymentCapacitySelectCellEditor() {
-  const { data: capacitiesData = [] } = useEmploymentCapacities();
-
-  const options = capacitiesData.map((capacity) => ({
+export function EmploymentCapacitySelectCellEditor(
+  capacitiesData: EmploymentCapacityOption[]
+) {
+  const options = capacitiesData?.map((capacity) => ({
     value: capacity,
     label: capacity.name,
   }));

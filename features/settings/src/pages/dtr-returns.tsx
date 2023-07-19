@@ -21,6 +21,14 @@ import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import set from 'lodash/set';
 import { UpdateStaffInput } from '@tyro/api';
+import {
+  EmploymentCapacityOption,
+  useEmploymentCapacities,
+} from '@tyro/people/src/api/staff/employment-capacities';
+import {
+  StaffPostsOption,
+  useStaffPosts,
+} from '@tyro/people/src/api/staff/staff-posts';
 import { FormTypeDropdown } from '../components/dtr-returns/form-type-dropdown';
 import {
   ReturnTypeFromUseFormB,
@@ -38,7 +46,9 @@ const getColumnFormBDefs = (
     undefined,
     ('settings' | 'people' | 'common')[]
   >,
-  displayName: ReturnTypeDisplayName
+  displayName: ReturnTypeDisplayName,
+  capacitiesData: EmploymentCapacityOption[],
+  postsData: StaffPostsOption[]
 ): GridOptions<ReturnTypeFromUseFormB>['columnDefs'] => [
   {
     field: 'staffIre.includeDtrReturns',
@@ -124,7 +134,7 @@ const getColumnFormBDefs = (
     valueGetter: ({ data }) => data?.staffIre?.staffPost,
     valueFormatter: ({ data }) =>
       data?.staffIre?.staffPost ? data?.staffIre?.staffPost?.name : '-',
-    cellEditorSelector: StaffPostSelectCellEditor(),
+    cellEditorSelector: StaffPostSelectCellEditor(postsData),
     valueSetter: ({ data, newValue }) => {
       set(data ?? {}, 'staffIre.staffPost', newValue);
       return true;
@@ -137,7 +147,7 @@ const getColumnFormBDefs = (
     valueGetter: ({ data }) => data?.employmentCapacity,
     valueFormatter: ({ data }) =>
       data?.employmentCapacity ? data?.employmentCapacity?.name : '-',
-    cellEditorSelector: EmploymentCapacitySelectCellEditor(),
+    cellEditorSelector: EmploymentCapacitySelectCellEditor(capacitiesData),
     valueSetter: ({ data, newValue }) => {
       set(data ?? {}, 'employmentCapacity', newValue);
       return true;
@@ -286,8 +296,10 @@ export default function DTRReturnsPage() {
 
   const { displayName } = usePreferredNameLayout();
   const { mutateAsync: updateStaffFormB } = useSaveBulkUpdateStaffFormB();
+  const { data: capacitiesData = [] } = useEmploymentCapacities();
+  const { data: postsData = [] } = useStaffPosts();
 
-  const [formTypeId, setFormTypeId] = useState<number>(2);
+  const [formTypeId, setFormTypeId] = useState<number>(1);
 
   const { data: staffFormB = [] } = useFormB({});
 
@@ -296,11 +308,11 @@ export default function DTRReturnsPage() {
       case 1:
         break;
       case 2:
-        return getColumnFormBDefs(t, displayName);
+        return getColumnFormBDefs(t, displayName, capacitiesData, postsData);
       default:
         return [];
     }
-  }, [t, displayName, formTypeId]);
+  }, [t, displayName, formTypeId, capacitiesData, postsData]);
 
   const dataForTable = useMemo(() => {
     switch (formTypeId) {
