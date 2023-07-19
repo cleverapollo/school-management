@@ -8,6 +8,7 @@ import {
   queryClient,
   UseQueryReturnType,
   BlockFilter,
+  Core_EnableBlockRotationInput,
 } from '@tyro/api';
 import { usePreferredNameLayout, useToast } from '@tyro/core';
 import { groupsKeys } from '@tyro/groups';
@@ -24,6 +25,7 @@ const blocks = graphql(/* GraphQL */ `
       name
       description
       subjectGroupNamesJoined
+      subjectGroupIds
       isRotation
       rotations {
         iteration
@@ -115,6 +117,14 @@ const upsertBlockMemberships = graphql(/* GraphQL */ `
   }
 `);
 
+const enableBlockRotations = graphql(/* GraphQL */ `
+  mutation core_enableBlockRotations($input: Core_EnableBlockRotationInput!) {
+    core_enableBlockRotations(input: $input) {
+      success
+    }
+  }
+`);
+
 const blocksQuery = (filter: BlockFilter) => ({
   queryKey: classListManagerKeys.blocksList(filter),
   queryFn: async () => {
@@ -201,6 +211,28 @@ export function useUpdateBlockMemberships() {
       toast(t('common:snackbarMessages.errorFailed'), {
         variant: 'error',
       });
+    },
+  });
+}
+
+export function useCreateOrUpdateBlockRotation(isEdit: boolean) {
+  const { toast } = useToast();
+  const { t } = useTranslation(['common']);
+
+  return useMutation({
+    mutationKey: classListManagerKeys.createOrUpdateBlockRotation(),
+    mutationFn: async (input: Core_EnableBlockRotationInput) =>
+      gqlClient.request(enableBlockRotations, { input }),
+    onError: () => {
+      toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
+    },
+    onSuccess: () => {
+      toast(
+        isEdit
+          ? t('common:snackbarMessages.updateSuccess')
+          : t('common:snackbarMessages.createSuccess')
+      );
+      queryClient.invalidateQueries(classListManagerKeys.all);
     },
   });
 }

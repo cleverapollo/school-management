@@ -1,7 +1,11 @@
 import { useContext, createContext, ReactNode } from 'react';
+import { ReturnTypeOfUseBlockList } from '../api/blocks';
 
 export type ClassListSettingsContextValue = {
   showGender: boolean;
+  setCurrentBlock: (
+    data?: NonNullable<ReturnTypeOfUseBlockList>[number]
+  ) => void;
 };
 
 const ClassListSettingsContext = createContext<
