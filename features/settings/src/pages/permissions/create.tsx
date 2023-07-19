@@ -3,7 +3,7 @@ import { PermissionContainer } from '../../components/permissions/container';
 
 export default function CreatePermissionPage() {
   return (
-    <PermissionContainer>
+    <PermissionContainer mode="create">
       <PermissionForm />
     </PermissionContainer>
   );

@@ -91,6 +91,7 @@ export const PermissionForm = ({ initialState }: PermissionFormProps) => {
       description,
       memberType: memberTypeValue,
       members: memberParties,
+      isMemberTypeAdmin,
       permissionsFieldsByIds,
     }) => {
       const locale = i18n.language;
@@ -110,8 +111,7 @@ export const PermissionForm = ({ initialState }: PermissionFormProps) => {
               locale,
             },
           ],
-
-          memberType: memberTypeValue,
+          memberType: isMemberTypeAdmin ? MemberType.Admin : memberTypeValue,
           memberPartyIds: memberParties.map(
             (memberParty) => memberParty.partyId
           ),

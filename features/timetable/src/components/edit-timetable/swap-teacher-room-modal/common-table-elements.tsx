@@ -8,7 +8,6 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import dayjs from 'dayjs';
 import { getLessonDayAndTime } from '../../../utils/get-lesson-day-time';
 import { ReturnTypeOfUseSwapTeacherAndRoom } from '../../../hooks/use-swap-teacher-and-room-modal';
 

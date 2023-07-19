@@ -123,6 +123,8 @@
     "permissionsGroups": "Permissions groups",
     "presetPermissionsOptions": "Preset permissions options",
     "createNewGroup": "Create permission group",
+    "editGroup": "Edit {{name}}'s permission group",
+    "cloneGroup": "Clone {{name}}'s permission group",
     "membersCount_one": "{{count}} member",
     "membersCount_other": "{{count}} members",
     "customPermissionsGroups": "Custom permissions groups",
@@ -143,10 +145,10 @@
     "assignMembers": "Assign members",
     "permissionType": "Permission type",
     "permissionTypeOption": {
-      "ALL": "All members",
-      "GROUP_ADMIN": "Group admin",
-      "MEMBER_OF_GROUP": "Member of group",
-      "SELF": "Self"
+      "ALL": "Everyone",
+      "GROUP_ADMIN": "Groups they administer",
+      "MEMBER_OF_GROUP": "Groups they are in",
+      "SELF": "Themselves"
     },
     "searchByMemberType": {
       "CONTACT": "Search by contact name",

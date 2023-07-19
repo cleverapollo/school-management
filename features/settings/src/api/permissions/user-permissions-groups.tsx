@@ -8,8 +8,8 @@ import {
 import { permissionsKeys } from './keys';
 
 const permissionGroups = graphql(/* GraphQL */ `
-  query users_permissionGroups($filter: PermissionGroupFilter!) {
-    users_permissionGroups(filter: $filter) {
+  query composite_permissionGroups($filter: PermissionGroupFilter!) {
+    composite_permissionGroups(filter: $filter) {
       id
       name
       description
@@ -38,6 +38,9 @@ export function getPermissionGroups(filter: PermissionGroupFilter) {
 export function usePermissionGroups(filter: PermissionGroupFilter) {
   return useQuery({
     ...permissionGroupsQuery(filter),
-    select: ({ users_permissionGroups }) => users_permissionGroups ?? [],
+    select: ({ composite_permissionGroups }) =>
+      (composite_permissionGroups ?? []).sort((a, b) =>
+        a!.name.localeCompare(b!.name)
+      ),
   });
 }

@@ -26,7 +26,8 @@
     "continue": "Continue",
     "stayLoggedIn": "Stay logged in",
     "logMeOut": "Log me out",
-    "next": "Next"
+    "next": "Next",
+    "clone": "Clone"
   },
   "snackbarMessages": {
     "createSuccess": "Create success!",
@@ -155,6 +156,7 @@
   },
   "administration": "Administration",
   "staff": "Staff",
+  "staffMember": "Staff member",
   "overview": "Overview",
   "errorMessages": {
     "required": "This field is required",
@@ -233,10 +235,18 @@
   "wellEmailWhenLive": "We'll email you once this feature is live.",
   "phoneNumber": "Phone number",
   "additionalNumber": "Additional number",
+  "dates": "Date(s)",
   "contact": "Contact",
   "weeks_one": "{{count}} week",
   "weeks_other": "{{count}} weeks",
   "helloAnyoneHome": "👋 Hello, anyone home?",
   "itLooksLikeYouveBeenIdle": "It's looks like you've been idle for a while. We will automatically log you out in {{count}} seconds.",
-  "programmeYear": "Programme year"
+  "programmeYear": "Programme year",
+  "dateAndXOthers_zero": "{{date}}",
+  "dateAndXOthers_one": "{{date}} and 1 other date",
+  "dateAndXOthers_other": "{{date}} and {{count}} other dates",
+  "allDay": "All day",
+  "addDate": "Add date",
+  "startTime": "Start time",
+  "endTime": "End time"
 }

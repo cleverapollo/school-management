@@ -1,19 +1,14 @@
-import {
-  Card,
-  CardActionArea,
-  CardContent,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Card, CardHeader, Stack, Typography } from '@mui/material';
 import { PermissionGroup } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
+import { ActionMenu } from '@tyro/core';
 import { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import { CopyIcon, EditIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
 
 type PermissionGroupCardProps = Partial<PermissionGroup> & {
   icon?: ReactNode;
 };
-// Write parental attendance requests
+
 export const PermissionGroupCard = ({
   id,
   name,
@@ -21,38 +16,58 @@ export const PermissionGroupCard = ({
   memberPartyIds,
   icon,
 }: PermissionGroupCardProps) => {
-  const { t } = useTranslation(['settings']);
+  const { t } = useTranslation(['settings', 'common']);
+
   return (
     <Card variant="outlined" sx={{ height: '100%' }}>
-      <CardActionArea
-        sx={{ height: '100%' }}
-        to={`./edit/${id || ''}`}
-        component={Link}
-      >
-        <CardContent>
-          <Stack direction="row" alignItems="center" gap={2}>
-            {icon}
-            <Stack overflow="hidden">
-              <Typography component="h4" variant="subtitle2">
-                {name}
-              </Typography>
-              <Typography
-                variant="body2"
-                component="p"
-                color="text.secondary"
-                noWrap
-              >
-                {description}
-              </Typography>
-              <Typography variant="caption" component="p" color="text.disabled">
-                {t('settings:permissions.membersCount', {
-                  count: memberPartyIds?.length,
-                })}
-              </Typography>
-            </Stack>
+      <CardHeader
+        avatar={icon}
+        sx={{
+          borderBottom: 0,
+          padding: 3,
+        }}
+        title={
+          <Typography component="h4" variant="subtitle2">
+            {name}
+          </Typography>
+        }
+        subheader={
+          <Stack>
+            <Typography variant="body2" component="p" color="text.secondary">
+              {description}
+            </Typography>
+            <Typography variant="caption" component="p" color="text.disabled">
+              {t('settings:permissions.membersCount', {
+                count: memberPartyIds?.length,
+              })}
+            </Typography>
           </Stack>
-        </CardContent>
-      </CardActionArea>
+        }
+        action={
+          <ActionMenu
+            iconOnly
+            buttonIcon={<VerticalDotsIcon />}
+            menuItems={[
+              {
+                label: t('common:actions.edit'),
+                icon: <EditIcon />,
+                navigateTo: `./edit/${id || ''}`,
+              },
+              {
+                label: t('common:actions.clone'),
+                icon: <CopyIcon />,
+                navigateTo: `./clone/${id || ''}`,
+              },
+              // TODO: add logic when BE supports it
+              // {
+              //   label: t('common:actions.remove'),
+              //   icon: <TrashIcon />,
+              //   onClick: console.log,
+              // },
+            ]}
+          />
+        }
+      />
     </Card>
   );
 };
