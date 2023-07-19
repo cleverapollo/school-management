@@ -2,9 +2,10 @@ import { useEffect } from 'react';
 import {
   Button,
   DialogTitle,
-  Grid,
   DialogActions,
   Dialog,
+  DialogContent,
+  Stack,
 } from '@mui/material';
 import { RHFTextField, RHFAutocomplete, useFormValidator } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
@@ -86,87 +87,80 @@ export const EditConditionsModal = ({
       onClose={handleClose}
       scroll="paper"
       fullWidth
-      maxWidth="md"
+      maxWidth="sm"
     >
       <DialogTitle>
         {initialConditionsState?.id
           ? t('people:editCondition')
           : t('people:addCondition')}
       </DialogTitle>
+      <form onSubmit={onSubmit}>
+        <DialogContent>
+          <Stack spacing={{ xs: 3 }}>
+            <RHFAutocomplete<EditConditionsFormState, string, true>
+              fullWidth
+              freeSolo
+              autoSelect
+              label={t('common:name')}
+              options={medicalConditionNames?.values ?? []}
+              controlProps={{
+                name: `name`,
+                control,
+              }}
+              sx={{ pt: 1 }}
+            />
+            <RHFTextField<EditConditionsFormState>
+              label={t('common:description')}
+              controlProps={{
+                name: 'description',
+                control,
+              }}
+              textFieldProps={{
+                multiline: true,
+                rows: 4,
+                fullWidth: true,
+              }}
+            />
+          </Stack>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={{ xs: 3 }}
+            mt={{ xs: 3 }}
+          >
+            <RHFTextField<EditConditionsFormState>
+              label={t('people:equipment')}
+              textFieldProps={{ fullWidth: true }}
+              controlProps={{
+                name: 'equipment.0.name',
+                control,
+              }}
+            />
+            <RHFTextField<EditConditionsFormState>
+              label={t('people:location')}
+              textFieldProps={{ fullWidth: true }}
+              controlProps={{
+                name: 'equipment.0.location',
+                control,
+              }}
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" color="inherit" onClick={handleClose}>
+            {t('common:actions.cancel')}
+          </Button>
 
-      <Grid
-        component="form"
-        onSubmit={onSubmit}
-        container
-        rowSpacing={3}
-        columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-        sx={{ pb: 3, px: 3 }}
-      >
-        <Grid item xs={12}>
-          <RHFAutocomplete<EditConditionsFormState, string, true>
-            fullWidth
-            freeSolo
-            autoSelect
-            label={t('common:name')}
-            options={medicalConditionNames?.values ?? []}
-            controlProps={{
-              name: `name`,
-              control,
-            }}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <RHFTextField<EditConditionsFormState>
-            label={t('common:description')}
-            controlProps={{
-              name: 'description',
-              control,
-            }}
-            textFieldProps={{
-              multiline: true,
-              rows: 4,
-              fullWidth: true,
-            }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={6}>
-          <RHFTextField<EditConditionsFormState>
-            label={t('people:equipment')}
-            textFieldProps={{ fullWidth: true }}
-            controlProps={{
-              name: 'equipment.0.name',
-              control,
-            }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={6}>
-          <RHFTextField<EditConditionsFormState>
-            label={t('people:location')}
-            textFieldProps={{ fullWidth: true }}
-            controlProps={{
-              name: 'equipment.0.location',
-              control,
-            }}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <DialogActions sx={{ padding: '0!important' }}>
-            <Button variant="outlined" color="inherit" onClick={handleClose}>
-              {t('common:actions.cancel')}
-            </Button>
-
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              loading={isSubmitting}
-            >
-              {initialConditionsState?.id
-                ? t('people:editCondition')
-                : t('people:addCondition')}
-            </LoadingButton>
-          </DialogActions>
-        </Grid>
-      </Grid>
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            loading={isSubmitting}
+          >
+            {initialConditionsState?.id
+              ? t('people:editCondition')
+              : t('people:addCondition')}
+          </LoadingButton>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 };
