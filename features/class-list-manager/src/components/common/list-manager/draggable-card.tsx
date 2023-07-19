@@ -200,7 +200,7 @@ export function DraggableCard({ index, student, groupId }: DraggableCardProps) {
                 <Avatar
                   src={student?.person.avatarUrl}
                   name={name}
-                  sx={{ width: 30, height: 30, fontSize: '0.6875rem' }}
+                  sx={{ width: 30, height: 30, fontSize: '0.625rem' }}
                 />
                 <Box
                   aria-hidden

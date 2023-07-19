@@ -52,7 +52,7 @@ const TeacherCard = forwardRef<HTMLDivElement, TeacherCardProps>(
                 mr: 1,
                 width: 30,
                 height: 30,
-                fontSize: '0.6875rem',
+                fontSize: '0.625rem',
               }}
             />
             <Stack alignItems="flex-start">

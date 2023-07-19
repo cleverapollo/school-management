@@ -55,6 +55,15 @@ declare module '@mui/material/styles' {
   }
 }
 
+declare module '@mui/material/Alert' {
+  interface AlertPropsColorOverrides {
+    primary: true;
+  }
+  interface AlertPropsSeverityOverrides {
+    primary: true;
+  }
+}
+
 declare module '@mui/material/Button' {
   interface ButtonPropsVariantOverrides {
     soft: true;
@@ -65,6 +74,7 @@ declare module '@mui/material/Chip' {
   interface ChipPropsVariantOverrides {
     soft: true;
   }
+
   interface ChipPropsColorOverrides {
     red: true;
     orange: true;

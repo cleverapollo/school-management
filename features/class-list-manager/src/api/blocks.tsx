@@ -25,6 +25,7 @@ const blocks = graphql(/* GraphQL */ `
       name
       description
       subjectGroupNamesJoined
+      subjectGroupIds
       isRotation
       rotations {
         iteration

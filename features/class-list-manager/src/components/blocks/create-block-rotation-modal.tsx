@@ -10,13 +10,16 @@ import {
   IconButton,
   Divider,
   Grid,
+  DialogContent,
+  Alert,
+  Collapse,
+  AlertTitle,
 } from '@mui/material';
 import {
   RHFDatePicker,
   RHFTextField,
-  ValidationError,
   useFormValidator,
-  validations,
+  useDisclosure,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -51,17 +54,30 @@ export type CreateBlockRotationViewProps = {
   onClose: () => void;
 };
 
+const getDefaultRotations = (amount: number) =>
+  Array.from({ length: amount }, (_, index) => ({
+    iteration: index + 1,
+    startDate: undefined,
+    endDate: undefined,
+  }));
+
 export const CreateBlockRotationModal = ({
   open,
   blockForCreateRotation,
   onClose,
 }: CreateBlockRotationViewProps) => {
   const { t } = useTranslation(['common', 'classListManager']);
+  const {
+    isOpen: isTipOpen,
+    onClose: onCloseTip,
+    onOpen: onOpenTip,
+  } = useDisclosure({
+    defaultIsOpen: true,
+  });
 
   const {
     mutate: createOrUpdateBlockRotationMutation,
     isLoading: isSubmitting,
-    isSuccess: isSubmitSuccessful,
   } = useCreateOrUpdateBlockRotation(
     Boolean(blockForCreateRotation?.isRotation)
   );
@@ -73,37 +89,51 @@ export const CreateBlockRotationModal = ({
       resolver: resolver({
         rotationName: rules.required(),
         iterations: {
-          startDate: [rules.required(), rules.date()],
-          endDate: [
-            rules.required(),
-            rules.date(),
-            rules.validate<dayjs.Dayjs>(
-              (endDate, throwError, { iterations }) => {
-                iterations.forEach((iteration) => {
-                  if (
-                    iteration.startDate &&
-                    iteration.endDate &&
-                    endDate.isSame(iteration.endDate) &&
-                    iteration.startDate?.isAfter(iteration.endDate)
-                  ) {
-                    try {
-                      validations.afterStartDate(
-                        endDate,
-                        iteration.startDate,
-                        t('common:errorMessages.afterStartDate')
-                      );
-                    } catch (error) {
-                      throwError((error as ValidationError).message);
-                    }
-                  }
-                });
+          startDate: rules.validate<
+            CreateBlockRotationFormState['iterations'][number]['startDate']
+          >((value, throwError, formValues, index) => {
+            if (index !== undefined && index > 0) {
+              if (!value) {
+                throwError(t('common:errorMessages.required'));
               }
-            ),
-          ],
-          iteration: rules.minLength(2),
+
+              const endDateFromPreviousIteration =
+                formValues.iterations?.[index - 1].endDate;
+              if (
+                endDateFromPreviousIteration &&
+                !dayjs(value).isSame(
+                  dayjs(endDateFromPreviousIteration).add(1, 'day')
+                )
+              ) {
+                throwError(
+                  t(
+                    'classListManager:errorMessages.startDateMustBeTheDayAfterThePreviousEndDate'
+                  )
+                );
+              }
+            }
+          }),
+          endDate: rules.validate<
+            CreateBlockRotationFormState['iterations'][number]['endDate']
+          >((value, throwError, formValues, index) => {
+            if (index !== undefined) {
+              if (index + 1 < formValues.iterations.length && !value) {
+                throwError(t('common:errorMessages.required'));
+              }
+
+              const iterationsStartDate =
+                formValues.iterations?.[index].startDate;
+              if (
+                value &&
+                iterationsStartDate &&
+                !dayjs(value).isAfter(dayjs(iterationsStartDate))
+              ) {
+                throwError(t('common:errorMessages.afterStartDate'));
+              }
+            }
+          }),
         },
       }),
-      mode: 'onChange',
     });
 
   const { fields, append, remove } = useFieldArray({
@@ -142,17 +172,23 @@ export const CreateBlockRotationModal = ({
   };
 
   useEffect(() => {
+    onOpenTip();
     if (blockForCreateRotation) {
-      const defaultFormStateValues: Partial<CreateBlockRotationFormState> = {
+      const rotations = blockForCreateRotation?.rotations?.length
+        ? blockForCreateRotation.rotations
+        : getDefaultRotations(
+            blockForCreateRotation.subjectGroupIds.length > 2
+              ? blockForCreateRotation.subjectGroupIds.length
+              : 2
+          );
+      const defaultFormStateValues = {
         blockId: blockForCreateRotation?.blockId,
         rotationName: '',
-        iterations: blockForCreateRotation?.rotations?.map(
-          ({ startDate, endDate, iteration }) => ({
-            startDate: startDate ? dayjs(startDate) : undefined,
-            endDate: endDate ? dayjs(endDate) : undefined,
-            iteration,
-          })
-        ),
+        iterations: rotations?.map(({ startDate, endDate, iteration }) => ({
+          startDate: startDate ? dayjs(startDate) : undefined,
+          endDate: endDate ? dayjs(endDate) : undefined,
+          iteration,
+        })),
       };
       reset({
         ...defaultFormStateValues,
@@ -169,145 +205,155 @@ export const CreateBlockRotationModal = ({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>
-        {blockForCreateRotation?.isRotation
-          ? t('classListManager:updateRotation')
-          : t('classListManager:createRotation')}
-      </DialogTitle>
-      <Stack direction="column" px={3}>
-        <Typography variant="body2" color="text.secondary">
-          {t('classListManager:youAreMakingThisBlockRotating')}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {t('classListManager:addStudentsToRotation')}
-        </Typography>
-      </Stack>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={2} p={3}>
-          <Grid item xs={6}>
-            <RHFTextField<CreateBlockRotationFormState>
-              label={t('common:name')}
-              controlProps={{
-                name: 'rotationName',
-                control,
-              }}
-              textFieldProps={{
-                fullWidth: true,
-              }}
-            />
-          </Grid>
+        <DialogTitle>
+          {blockForCreateRotation?.isRotation
+            ? t('classListManager:updateRotation')
+            : t('classListManager:createRotation')}
+        </DialogTitle>
 
-          {fields?.map((rotation, index) => (
-            <Grid item xs={12} key={rotation.id}>
-              <Stack
-                direction="row"
-                gap={1}
-                sx={{
-                  borderRadius: 1,
-                  backgroundColor: 'background.neutral',
-                  border: 1,
-                  borderColor: 'slate.200',
-                  p: 1,
-                  alignItems: 'flex-start',
-                }}
-              >
-                <Typography
+        <DialogContent>
+          <Collapse in={isTipOpen}>
+            {/* @ts-expect-error */}
+            <Alert severity="primary" onClose={onCloseTip} sx={{ mb: 3 }}>
+              <AlertTitle>
+                {t('classListManager:classListManagerTip')}
+              </AlertTitle>
+              {t('classListManager:classListManagerTipDescription')}
+            </Alert>
+          </Collapse>
+
+          <Typography variant="body2" color="text.secondary" mb={2}>
+            {t('classListManager:youAreMakingThisBlockRotating')}
+          </Typography>
+
+          <RHFTextField
+            label={t('common:name')}
+            controlProps={{
+              name: 'rotationName',
+              control,
+            }}
+            textFieldProps={{
+              fullWidth: true,
+              sx: {
+                maxWidth: 360,
+              },
+            }}
+          />
+
+          <Typography variant="body2" color="text.secondary" mt={3} mb={2}>
+            {t('classListManager:youMustSetMinimumOfTwoRotations')}
+          </Typography>
+
+          <Grid container spacing={2}>
+            {fields?.map((rotation, index) => (
+              <Grid item xs={12} key={rotation.id}>
+                <Stack
+                  direction="row"
+                  gap={1}
                   sx={{
-                    width: 100,
-                    alignSelf: 'center',
+                    borderRadius: 1,
+                    backgroundColor: 'background.neutral',
+                    border: 1,
+                    borderColor: 'divider',
+                    p: 1,
+                    alignItems: 'flex-start',
                   }}
-                  variant="body1"
-                  color="text.secondary"
                 >
-                  {t('classListManager:rotationX', { number: index + 1 })}
-                </Typography>
-                <Divider
-                  orientation="vertical"
-                  sx={{
-                    height: 40,
-                  }}
-                />
-                <RHFDatePicker
-                  label={t('common:startDate')}
-                  inputProps={{
-                    size: 'small',
-                    sx: {
-                      flex: 1,
-                    },
-                    InputLabelProps: {
-                      sx: { backgroundColor: 'transparent' },
-                    },
-                    InputProps: {
-                      sx: { backgroundColor: 'white' },
-                    },
-                  }}
-                  controlProps={{
-                    name: `iterations.${index}.startDate`,
-                    control,
-                  }}
-                />
-                <RHFDatePicker
-                  label={t('common:endDate')}
-                  inputProps={{
-                    size: 'small',
-                    sx: {
-                      flex: 1,
-                    },
-                    InputLabelProps: {
-                      sx: { backgroundColor: 'transparent' },
-                    },
-                    InputProps: {
-                      sx: { backgroundColor: 'white' },
-                    },
-                  }}
-                  controlProps={{
-                    name: `iterations.${index}.endDate`,
-                    control,
-                  }}
-                />
-                {index > 1 && (
+                  <Typography
+                    sx={{
+                      width: 100,
+                      my: 1.5,
+                    }}
+                    variant="body1"
+                    color="text.secondary"
+                  >
+                    {t('classListManager:rotationX', { number: index + 1 })}
+                  </Typography>
+                  <Divider
+                    orientation="vertical"
+                    sx={{
+                      height: 40,
+                      my: 0.5,
+                    }}
+                  />
+                  <RHFDatePicker
+                    label={t('common:startDate')}
+                    inputProps={{
+                      size: 'small',
+                      variant: 'white-filled',
+                      sx: {
+                        flex: 1,
+                      },
+                    }}
+                    controlProps={{
+                      name: `iterations.${index}.startDate`,
+                      control,
+                    }}
+                  />
+                  <RHFDatePicker
+                    label={t('common:endDate')}
+                    inputProps={{
+                      size: 'small',
+                      variant: 'white-filled',
+                      sx: {
+                        flex: 1,
+                      },
+                    }}
+                    controlProps={{
+                      name: `iterations.${index}.endDate`,
+                      control,
+                    }}
+                  />
+
                   <Stack
                     sx={{
                       width: 50,
                       justifyContent: 'flex-end',
+                      alignItems: 'center',
                     }}
                     direction="row"
                   >
-                    <Divider
-                      orientation="vertical"
-                      sx={{
-                        height: 40,
-                      }}
-                    />
-                    <Tooltip title={t('classListManager:createRotation')}>
-                      <IconButton
-                        aria-label={t('classListManager:deleteRotation')}
-                        onClick={() => remove(index)}
-                        color="default"
-                      >
-                        <TrashIcon />
-                      </IconButton>
-                    </Tooltip>
+                    {index > 1 && (
+                      <>
+                        <Divider
+                          orientation="vertical"
+                          sx={{
+                            height: 40,
+                            my: 0.5,
+                            mx: 1,
+                          }}
+                        />
+                        <Tooltip title={t('classListManager:deleteRotation')}>
+                          <IconButton
+                            aria-label={t('classListManager:deleteRotation')}
+                            onClick={() => remove(index)}
+                          >
+                            <TrashIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </>
+                    )}
                   </Stack>
-                )}
-              </Stack>
+                </Stack>
+              </Grid>
+            ))}
+            <Grid item xs={12}>
+              <Box display="flex" alignItems="center">
+                <Button
+                  variant="text"
+                  onClick={handleAddNewRotationIteration}
+                  startIcon={<AddIcon />}
+                >
+                  {t('classListManager:addAnotherRotation')}
+                </Button>
+              </Box>
             </Grid>
-          ))}
-          <Grid item xs={12}>
-            <Box display="flex" alignItems="center">
-              <Button
-                variant="text"
-                onClick={handleAddNewRotationIteration}
-                startIcon={<AddIcon />}
-              >
-                {t('classListManager:addAnotherRotation')}
-              </Button>
-            </Box>
           </Grid>
-        </Grid>
+        </DialogContent>
 
         <DialogActions>
-          <Button variant="outlined" color="inherit" onClick={handleClose}>
+          <Button variant="soft" onClick={handleClose}>
             {t('common:actions.cancel')}
           </Button>
 

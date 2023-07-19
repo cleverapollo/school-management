@@ -56,6 +56,7 @@ export * from './info-circle';
 export * from './label';
 export * from './labels';
 export * from './letter';
+export * from './light-bulb';
 export * from './link';
 export * from './location';
 export * from './mail';

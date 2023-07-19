@@ -136,7 +136,7 @@ class Rules<TField extends FieldValues> {
       value: V,
       throwError: (errorMessage: string) => ValidationError,
       formValues: TField,
-      fieldArrayIndex: string | undefined
+      fieldArrayIndex: number | undefined
     ) => void
   ) {
     return (
@@ -150,7 +150,7 @@ class Rules<TField extends FieldValues> {
           throw new ValidationError('validate', errorMessage);
         },
         formValues,
-        fieldArrayIndex
+        fieldArrayIndex !== undefined ? Number(fieldArrayIndex) : undefined
       );
     };
   }

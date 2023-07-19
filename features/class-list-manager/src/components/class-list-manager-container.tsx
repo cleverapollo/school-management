@@ -9,7 +9,7 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { useLocation } from 'react-router-dom';
 import { Box } from '@mui/material';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { MaleFemaleIcon, RotationIcon } from '@tyro/icons';
 import { useContainerMargin } from '../hooks/use-container-margin';
 import { ClassListSettingsProvider } from '../store/class-list-settings';
@@ -21,9 +21,9 @@ export default function ClassListManagerContainer() {
   const { pathname } = useLocation();
   const containerMargin = useContainerMargin();
 
-  const currenBlockRef = useRef<
-    NonNullable<ReturnTypeOfUseBlockList>[number] | undefined
-  >(undefined);
+  const [currentBlock, setCurrentBlock] =
+    useState<NonNullable<ReturnTypeOfUseBlockList>[number]>();
+  const blockHasRotations = !!currentBlock?.isRotation;
 
   const {
     value: blockForCreateRotation,
@@ -38,24 +38,18 @@ export default function ClassListManagerContainer() {
   const isBlockView = pathname.includes('blocks');
   const [classListSettings, setClassListSettings] = useState({
     showGender: false,
-    setCurrentBlock: (
-      currenBlock?: NonNullable<ReturnTypeOfUseBlockList>[number]
-    ) => (currenBlockRef.current = currenBlock),
+    setCurrentBlock,
   });
 
   const toggleShowGender = () => {
-    setClassListSettings({
-      ...classListSettings,
-      showGender: !classListSettings.showGender,
-    });
+    setClassListSettings((prevState) => ({
+      ...prevState,
+      showGender: !prevState.showGender,
+    }));
   };
 
   const createRotation = () => {
-    setBlockForCreateRotation(currenBlockRef?.current);
-  };
-
-  const handleCloseModal = () => {
-    setBlockForCreateRotation(undefined);
+    setBlockForCreateRotation(currentBlock);
   };
 
   const menuItems = useMemo<ActionMenuProps['menuItems']>(
@@ -67,17 +61,19 @@ export default function ClassListManagerContainer() {
         icon: <MaleFemaleIcon />,
         onClick: toggleShowGender,
       },
-      ...(isBlockView
+      ...(isBlockView && !blockHasRotations
         ? [
             {
-              label: t('classListManager:createARotation'),
+              label: blockHasRotations
+                ? t('classListManager:updateRotation')
+                : t('classListManager:createRotation'),
               icon: <RotationIcon />,
               onClick: createRotation,
             },
           ]
         : []),
     ],
-    [isBlockView]
+    [isBlockView, blockHasRotations, classListSettings, t, currentBlock]
   );
 
   return (
@@ -118,7 +114,7 @@ export default function ClassListManagerContainer() {
           blockForCreateRotation={
             blockForCreateRotation || debouncedBlockForCreateRotation
           }
-          onClose={handleCloseModal}
+          onClose={() => setBlockForCreateRotation(undefined)}
         />
       </Page>
     </ClassListSettingsProvider>
