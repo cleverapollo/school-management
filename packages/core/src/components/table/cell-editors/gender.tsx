@@ -5,7 +5,7 @@ const genders = [...Object.keys(Gender)];
 
 export function GenderSelectCellEditor() {
   const options = genders.map((gender) => ({
-    value: gender,
+    value: gender.toUpperCase(),
     label: gender,
   }));
 

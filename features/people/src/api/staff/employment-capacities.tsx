@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { UseQueryReturnType, gqlClient, graphql } from '@tyro/api';
+import { UseQueryReturnType, gqlClient, graphql, queryClient } from '@tyro/api';
 import { peopleKeys } from '../keys';
 
 const employmentCapacities = graphql(/* GraphQL */ `
@@ -15,6 +15,10 @@ const capacitiesQuery = () => ({
   queryKey: peopleKeys.staff.employmentCapacities(),
   queryFn: () => gqlClient.request(employmentCapacities),
 });
+
+export function getEmploymentCapacities() {
+  return queryClient.fetchQuery(capacitiesQuery());
+}
 
 export function useEmploymentCapacities() {
   return useQuery({

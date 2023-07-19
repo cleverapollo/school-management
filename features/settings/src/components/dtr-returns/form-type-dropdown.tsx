@@ -8,6 +8,29 @@ type FormTypeDropdownProps = {
   onChangeFormType: (formTypeId: number) => void;
 };
 
+const allFormTypes = [
+  {
+    id: 1,
+    name: 'A File',
+  },
+  {
+    id: 2,
+    name: 'B File',
+  },
+  {
+    id: 3,
+    name: 'C File',
+  },
+  {
+    id: 4,
+    name: 'D File',
+  },
+  {
+    id: 5,
+    name: 'E File',
+  },
+];
+
 export const FormTypeDropdown = ({
   formTypeId,
   onChangeFormType,
@@ -16,29 +39,6 @@ export const FormTypeDropdown = ({
 
   const { spacing } = useTheme();
   const MAX_WIDTH = spacing(34);
-
-  const allFormTypes = [
-    {
-      id: 1,
-      name: 'A File',
-    },
-    {
-      id: 2,
-      name: 'B File',
-    },
-    {
-      id: 3,
-      name: 'C File',
-    },
-    {
-      id: 4,
-      name: 'D File',
-    },
-    {
-      id: 5,
-      name: 'E File',
-    },
-  ];
 
   const options = useMemo(
     () =>

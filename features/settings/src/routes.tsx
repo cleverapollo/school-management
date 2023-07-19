@@ -14,6 +14,8 @@ import {
   getStaffForSelect,
   getStudentsForSelect,
 } from '@tyro/people';
+import { getStaffPosts } from '@tyro/people/src/api/staff/staff-posts';
+import { getEmploymentCapacities } from '@tyro/people/src/api/staff/employment-capacities';
 import { getCoreRooms } from './api/rooms';
 import { getCatalogueSubjects } from './api/subjects';
 import { getPpodCredentialsStatus } from './api/ppod/ppod-credentials-status';
@@ -150,7 +152,8 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             title: t('navigation:management.settings.dtrReturns'),
             path: 'dtr-returns',
-            loader: () => getCoreAcademicNamespace(),
+            loader: () =>
+              Promise.all([getStaffPosts(), getEmploymentCapacities()]),
             element: <DTRReturns />,
           },
         ],
