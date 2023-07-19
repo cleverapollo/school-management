@@ -96,7 +96,7 @@ export const EditConditionsModal = ({
       </DialogTitle>
       <form onSubmit={onSubmit}>
         <DialogContent>
-          <Stack spacing={{ xs: 3 }}>
+          <Stack spacing={3}>
             <RHFAutocomplete<EditConditionsFormState, string, true>
               fullWidth
               freeSolo
@@ -107,7 +107,7 @@ export const EditConditionsModal = ({
                 name: `name`,
                 control,
               }}
-              sx={{ pt: 1 }}
+              sx={{ mt: 1 }}
             />
             <RHFTextField<EditConditionsFormState>
               label={t('common:description')}
@@ -121,28 +121,24 @@ export const EditConditionsModal = ({
                 fullWidth: true,
               }}
             />
-          </Stack>
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={{ xs: 3 }}
-            mt={{ xs: 3 }}
-          >
-            <RHFTextField<EditConditionsFormState>
-              label={t('people:equipment')}
-              textFieldProps={{ fullWidth: true }}
-              controlProps={{
-                name: 'equipment.0.name',
-                control,
-              }}
-            />
-            <RHFTextField<EditConditionsFormState>
-              label={t('people:location')}
-              textFieldProps={{ fullWidth: true }}
-              controlProps={{
-                name: 'equipment.0.location',
-                control,
-              }}
-            />
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
+              <RHFTextField<EditConditionsFormState>
+                label={t('people:equipment')}
+                textFieldProps={{ fullWidth: true }}
+                controlProps={{
+                  name: 'equipment.0.name',
+                  control,
+                }}
+              />
+              <RHFTextField<EditConditionsFormState>
+                label={t('people:location')}
+                textFieldProps={{ fullWidth: true }}
+                controlProps={{
+                  name: 'equipment.0.location',
+                  control,
+                }}
+              />
+            </Stack>
           </Stack>
         </DialogContent>
         <DialogActions>

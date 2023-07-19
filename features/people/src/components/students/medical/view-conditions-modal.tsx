@@ -53,7 +53,7 @@ export const ViewConditionsModal = ({
         {t('people:condition')}
       </DialogTitle>
       <DialogContent>
-        <Stack spacing={{ xs: 3 }}>
+        <Stack spacing={3}>
           <Box>
             <Typography variant="h6" component="h3">
               {t('common:name')}
@@ -71,30 +71,26 @@ export const ViewConditionsModal = ({
               {initialConditionsState?.description}
             </Typography>
           </Box>
-        </Stack>
-        <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          spacing={{ xs: 3 }}
-          mt={{ xs: 3 }}
-        >
-          <Box flexGrow={1}>
-            <Typography variant="h6" component="h3">
-              {t('people:equipment')}
-            </Typography>
-            <Typography variant="body1">
-              {initialConditionsState?.equipment &&
-                initialConditionsState?.equipment[0].location}
-            </Typography>
-          </Box>
-          <Box flexGrow={1}>
-            <Typography variant="h6" component="h3">
-              {t('people:locationOfEquipment')}
-            </Typography>
-            <Typography variant="body1">
-              {initialConditionsState?.equipment &&
-                initialConditionsState?.equipment[0].location}
-            </Typography>
-          </Box>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
+            <Box flexGrow={1}>
+              <Typography variant="h6" component="h3">
+                {t('people:equipment')}
+              </Typography>
+              <Typography variant="body1">
+                {initialConditionsState?.equipment &&
+                  initialConditionsState?.equipment[0].location}
+              </Typography>
+            </Box>
+            <Box flexGrow={1}>
+              <Typography variant="h6" component="h3">
+                {t('people:locationOfEquipment')}
+              </Typography>
+              <Typography variant="body1">
+                {initialConditionsState?.equipment &&
+                  initialConditionsState?.equipment[0].location}
+              </Typography>
+            </Box>
+          </Stack>
         </Stack>
       </DialogContent>
       <DialogActions>
