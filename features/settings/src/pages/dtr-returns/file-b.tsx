@@ -29,6 +29,7 @@ import {
   StaffPostsOption,
   useStaffPosts,
 } from '@tyro/people/src/api/staff/staff-posts';
+import { LoadingButton } from '@mui/lab';
 import {
   ReturnTypeFromUseFormB,
   useFormB,
@@ -36,6 +37,7 @@ import {
 } from '../../api/dtr-returns/form-b';
 import { StaffPostSelectCellEditor } from '../../components/dtr-returns/staff-post-cell-editor';
 import { EmploymentCapacitySelectCellEditor } from '../../components/dtr-returns/employment-capacity-cell-editor';
+import { useDownloadFileB } from '../../api/dtr-returns/dowload-file';
 
 dayjs.extend(LocalizedFormat);
 
@@ -299,11 +301,48 @@ export default function DTRReturnsPage() {
   const { data: postsData = [] } = useStaffPosts();
 
   const { data: staffFormB = [] } = useFormB({});
+  const { mutateAsync: downloadFileB, isLoading: isDownloadLoading } =
+    useDownloadFileB();
 
   const columnDefs = useMemo(
     () => getColumnFormBDefs(t, postsData, capacitiesData, displayName),
     [t, displayName, capacitiesData, postsData]
   );
+
+  const isEnableDownload = () => {
+    const staffIncludeInDTRReturns = staffFormB.filter(
+      (staff) => staff?.staffIre?.includeDtrReturns
+    );
+    const hasEmptyName = staffIncludeInDTRReturns.some(
+      (staff) => !displayName(staff?.person)
+    );
+    const hasEmptyDTRReference = staffIncludeInDTRReturns.some(
+      (staff) => !staff?.staffIre?.teacherReferenceNumber
+    );
+    const hasEmptyGender = staffIncludeInDTRReturns.some(
+      (staff) => !staff?.personalInformation?.gender
+    );
+    const hasEmptyCapacity = staffIncludeInDTRReturns.some(
+      (staff) => !staff?.employmentCapacity
+    );
+    const hasEmptyJobSharing = staffIncludeInDTRReturns.some(
+      (staff) => !staff?.jobSharing
+    );
+    const hasEmptyQualifications = staffIncludeInDTRReturns.some(
+      (staff) => !staff?.qualifications
+    );
+    if (
+      hasEmptyName ||
+      hasEmptyDTRReference ||
+      hasEmptyGender ||
+      hasEmptyCapacity ||
+      hasEmptyJobSharing ||
+      hasEmptyQualifications
+    ) {
+      return false;
+    }
+    return true;
+  };
 
   const saveBulkResult = (
     data: BulkEditedRows<
@@ -417,13 +456,15 @@ export default function DTRReturnsPage() {
         }}
         rightAdornment={
           <Box display="flex" alignItems="center">
-            <Button
+            <LoadingButton
+              disabled={!isEnableDownload()}
               variant="contained"
-              onClick={() => {}}
+              loading={isDownloadLoading}
+              onClick={() => downloadFileB()}
               startIcon={<DownloadArrowCircleIcon />}
             >
               {t('settings:dtrReturns.downloadFile')}
-            </Button>
+            </LoadingButton>
           </Box>
         }
       />

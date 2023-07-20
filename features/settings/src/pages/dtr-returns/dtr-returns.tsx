@@ -19,7 +19,8 @@ type DtrReturn = {
   name: string;
   description: string;
   textAction: string;
-  linkAction: string;
+  linkAction?: string;
+  clickAction?: () => void;
 };
 
 const getColumnDefs = (
@@ -44,7 +45,7 @@ const getColumnDefs = (
         <Button
           className="ag-show-on-row-interaction"
           component={Link}
-          to={data.linkAction}
+          to={data?.linkAction ?? ''}
         >
           {data?.textAction}
         </Button>
@@ -60,7 +61,6 @@ export default function DTRReturnsPage() {
       name: t('settings:dtrReturns.fileA'),
       description: t('settings:dtrReturns.descriptionA'),
       textAction: t('settings:dtrReturns.downloadFile'),
-      linkAction: '',
     },
     {
       name: t('settings:dtrReturns.fileB'),
@@ -72,25 +72,21 @@ export default function DTRReturnsPage() {
       name: t('settings:dtrReturns.fileC'),
       description: t('settings:dtrReturns.descriptionC'),
       textAction: t('settings:dtrReturns.downloadFile'),
-      linkAction: '',
     },
     {
       name: t('settings:dtrReturns.fileD'),
       description: t('settings:dtrReturns.descriptionD'),
       textAction: t('settings:dtrReturns.downloadFile'),
-      linkAction: '',
     },
     {
       name: t('settings:dtrReturns.fileE'),
       description: t('settings:dtrReturns.descriptionE'),
       textAction: t('settings:dtrReturns.downloadFile'),
-      linkAction: '',
     },
     {
       name: t('settings:dtrReturns.dtrSummary'),
       description: t('settings:dtrReturns.descriptionDtrSummary'),
       textAction: t('settings:dtrReturns.downloadFile'),
-      linkAction: '',
     },
   ];
 
