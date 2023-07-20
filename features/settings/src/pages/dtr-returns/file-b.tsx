@@ -15,7 +15,7 @@ import {
   GenderSelectCellEditor,
   BulkEditedRows,
 } from '@tyro/core';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { DownloadArrowCircleIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
@@ -29,14 +29,13 @@ import {
   StaffPostsOption,
   useStaffPosts,
 } from '@tyro/people/src/api/staff/staff-posts';
-import { FormTypeDropdown } from '../components/dtr-returns/form-type-dropdown';
 import {
   ReturnTypeFromUseFormB,
   useFormB,
   useSaveBulkUpdateStaffFormB,
-} from '../api/dtr-returns/form-b';
-import { StaffPostSelectCellEditor } from '../components/dtr-returns/staff-post-cell-editor';
-import { EmploymentCapacitySelectCellEditor } from '../components/dtr-returns/employment-capacity-cell-editor';
+} from '../../api/dtr-returns/form-b';
+import { StaffPostSelectCellEditor } from '../../components/dtr-returns/staff-post-cell-editor';
+import { EmploymentCapacitySelectCellEditor } from '../../components/dtr-returns/employment-capacity-cell-editor';
 
 dayjs.extend(LocalizedFormat);
 
@@ -299,31 +298,12 @@ export default function DTRReturnsPage() {
   const { data: capacitiesData = [] } = useEmploymentCapacities();
   const { data: postsData = [] } = useStaffPosts();
 
-  const [formTypeId, setFormTypeId] = useState<number>(2);
-
   const { data: staffFormB = [] } = useFormB({});
 
-  const columnDefs = useMemo(() => {
-    switch (formTypeId) {
-      case 1:
-        break;
-      case 2:
-        return getColumnFormBDefs(t, postsData, capacitiesData, displayName);
-      default:
-        return [];
-    }
-  }, [t, displayName, formTypeId, capacitiesData, postsData]);
-
-  const dataForTable = useMemo(() => {
-    switch (formTypeId) {
-      case 1:
-        break;
-      case 2:
-        return staffFormB;
-      default:
-        return [];
-    }
-  }, [formTypeId, staffFormB]);
+  const columnDefs = useMemo(
+    () => getColumnFormBDefs(t, postsData, capacitiesData, displayName),
+    [t, displayName, capacitiesData, postsData]
+  );
 
   const saveBulkResult = (
     data: BulkEditedRows<
@@ -424,6 +404,17 @@ export default function DTRReturnsPage() {
       <PageHeading
         title={t('navigation:management.settings.dtrReturns')}
         titleProps={{ variant: 'h3' }}
+        breadcrumbs={{
+          links: [
+            {
+              name: t('navigation:management.settings.dtrReturns'),
+              href: '/settings/dtr-returns',
+            },
+            {
+              name: t('settings:dtrReturns.fileB'),
+            },
+          ],
+        }}
         rightAdornment={
           <Box display="flex" alignItems="center">
             <Button
@@ -436,12 +427,8 @@ export default function DTRReturnsPage() {
           </Box>
         }
       />
-      <FormTypeDropdown
-        formTypeId={formTypeId}
-        onChangeFormType={setFormTypeId}
-      />
       <Table
-        rowData={dataForTable || []}
+        rowData={staffFormB || []}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.partyId)}
         onBulkSave={saveBulkResult}
