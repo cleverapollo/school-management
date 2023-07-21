@@ -2,11 +2,12 @@ import { lazy } from 'react';
 import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { GearIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
-import { getCoreAcademicNamespace } from '@tyro/api';
+import { getCoreAcademicNamespace, AccessUserType } from '@tyro/api';
 import { AttendanceCodes, getAttendanceCodes } from '@tyro/attendance';
 import { getCoreRooms } from './api/rooms';
 import { getCatalogueSubjects } from './api/subjects';
 import { getPpodCredentialsStatus } from './api/ppod/ppod-credentials-status';
+import { getUserAccess } from './api/user-access/user-access';
 
 const Rooms = lazy(() => import('./pages/rooms'));
 const AcademicYearsList = lazy(() => import('./pages/academic-years'));
@@ -15,6 +16,18 @@ const Ppod = lazy(() => import('./pages/ppod/ppod'));
 const Login = lazy(() => import('./pages/ppod/login'));
 const Sync = lazy(() => import('./pages/ppod/sync'));
 const SchoolDetails = lazy(() => import('./pages/ppod/school-details'));
+const UserAccessContainer = lazy(
+  () => import('./components/user-access/user-access-container')
+);
+const UserAccessStaffPage = lazy(
+  () => import('./pages/user-access/user-access-staff-page')
+);
+const UserAccessStudentsPage = lazy(
+  () => import('./pages/user-access/user-access-students-page')
+);
+const UserAccessContactsPage = lazy(
+  () => import('./pages/user-access/user-access-contacts-page')
+);
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -55,6 +68,38 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'academic-years',
             loader: () => getCoreAcademicNamespace(),
             element: <AcademicYearsList />,
+          },
+          {
+            type: NavObjectType.MenuLink,
+            title: t('navigation:management.settings.userAccess'),
+            path: 'user-access',
+            loader: () => {
+              const userType = AccessUserType.Staff;
+              return getUserAccess({ userType });
+            },
+            element: <UserAccessContainer />,
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                index: true,
+                loader: () => redirect('./staff'),
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'staff',
+                element: <UserAccessStaffPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'contacts',
+                element: <UserAccessContactsPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'students',
+                element: <UserAccessStudentsPage />,
+              },
+            ],
           },
           {
             type: NavObjectType.MenuLink,

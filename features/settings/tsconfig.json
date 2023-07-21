@@ -3,7 +3,8 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "../../@types/**/*.ts"
+    "../../@types/**/*.ts",
+    "src/api/user-access"
   ],
   "exclude": [
     "node_modules"

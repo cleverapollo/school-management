@@ -45,6 +45,12 @@ export enum AcademicNamespaceType {
   Year = 'YEAR'
 }
 
+export enum AccessUserType {
+  Contact = 'CONTACT',
+  Staff = 'STAFF',
+  Student = 'STUDENT'
+}
+
 export type ActivePlan = {
   __typename?: 'ActivePlan';
   active?: Maybe<Scalars['Boolean']>;
@@ -367,6 +373,7 @@ export type CalendarEventFilter = {
   calendarIds?: InputMaybe<Array<Scalars['Int']>>;
   datetimeOrCondition?: InputMaybe<Array<Calendar_DatetimeFilterCondition>>;
   endDate: Scalars['Date'];
+  eventIds?: InputMaybe<Array<Scalars['Int']>>;
   resources: CalendarResourceFilter;
   startDate: Scalars['Date'];
 };
@@ -392,12 +399,14 @@ export type CalendarEventLessonRaw = {
 
 export type CalendarEventRaw = {
   __typename?: 'CalendarEventRaw';
+  attendeeAugments: Array<Calendar_EventAttendeeAugment>;
   calendarIds: Array<Scalars['Int']>;
   colour?: Maybe<Colour>;
   description?: Maybe<Scalars['String']>;
   eventId: Scalars['Int'];
   lessonInfo?: Maybe<CalendarEventLessonRaw>;
   name: Scalars['String'];
+  roomAugments: Array<Calendar_EventRoomAugment>;
   schedule: Array<CalendarEventRawSchedule>;
   source?: Maybe<CalendarEventSource>;
   sourceId?: Maybe<Scalars['String']>;
@@ -419,10 +428,23 @@ export type CalendarEventRawAttendee = {
 export type CalendarEventRawExcludedAttendee = {
   __typename?: 'CalendarEventRawExcludedAttendee';
   endDate?: Maybe<Scalars['Date']>;
+  /**  either this or other date fields can be set */
+  individualDates?: Maybe<Array<Maybe<Scalars['Date']>>>;
   partyId: Scalars['Long'];
   /**  ... Defaults to event Recurrence Rule.  Used in cases where attendee will not excluded from all events */
   recurrenceRule?: Maybe<Scalars['String']>;
   /**  ... Defaults to event Start Date. Used in cases where attendee will not excluded from all events */
+  startDate?: Maybe<Scalars['Date']>;
+};
+
+export type CalendarEventRawExcludedRoom = {
+  __typename?: 'CalendarEventRawExcludedRoom';
+  /**  ... Defaults to event End Date. Used in cases where attendee will not be attending all events */
+  endDate?: Maybe<Scalars['Date']>;
+  /**  ... Defaults to event Recurrence Rule. Used in cases where attendee will not be attending all events */
+  recurrenceRule?: Maybe<Scalars['String']>;
+  roomId: Scalars['Int'];
+  /**  ... Defaults to event Start Date. Used in cases where attendee will not be attending all events */
   startDate?: Maybe<Scalars['Date']>;
 };
 
@@ -450,9 +472,11 @@ export type CalendarEventRawSchedule = {
   /**  end date of the recurrence */
   endDate?: Maybe<Scalars['Date']>;
   endTime: Scalars['Time'];
+  eventId: Scalars['Int'];
   exclusions: Array<CalendarEventRawExcludedAttendee>;
   /**  iCal/rfc5545 recurrence rule for event. Null means single */
   recurrenceRule?: Maybe<Scalars['String']>;
+  roomExclusions: Array<CalendarEventRawExcludedRoom>;
   rooms?: Maybe<Array<Maybe<CalendarEventRawRoom>>>;
   scheduleId: Scalars['Int'];
   startDate: Scalars['Date'];
@@ -568,12 +592,50 @@ export enum CalendarResourceTypeEnum {
 export type CalendarTag = {
   __typename?: 'CalendarTag';
   context?: Maybe<Scalars['String']>;
+  display: Scalars['Boolean'];
   label: Scalars['String'];
 };
 
 export type CalendarTagInput = {
   context?: InputMaybe<Scalars['String']>;
   label: Scalars['String'];
+};
+
+export type Calendar_AugmentEvent = {
+  addAttendees?: InputMaybe<Array<InputMaybe<Calendar_AugmentEventAddAttendee>>>;
+  addRooms?: InputMaybe<Array<InputMaybe<Calendar_AugmentEventAddRoom>>>;
+  augmentId: Scalars['String'];
+  augmentType: Scalars['String'];
+  eventId: Scalars['Int'];
+  excludeAttendees?: InputMaybe<Array<InputMaybe<Calendar_AugmentEventExcludeAttendee>>>;
+  excludeRooms?: InputMaybe<Array<InputMaybe<Calendar_AugmentEventExcludeRoom>>>;
+  scheduleId: Scalars['Int'];
+  tags?: InputMaybe<Array<CalendarTagInput>>;
+};
+
+export type Calendar_AugmentEventAddAttendee = {
+  dates: Array<Scalars['Date']>;
+  partyId: Scalars['Long'];
+  type: CalendarEventAttendeeType;
+};
+
+export type Calendar_AugmentEventAddRoom = {
+  dates: Array<Scalars['Date']>;
+  roomId: Scalars['Int'];
+};
+
+export type Calendar_AugmentEventExcludeAttendee = {
+  dates: Array<Scalars['Date']>;
+  partyId: Scalars['Long'];
+};
+
+export type Calendar_AugmentEventExcludeRoom = {
+  dates: Array<Scalars['Date']>;
+  roomId: Scalars['Int'];
+};
+
+export type Calendar_AugmentEvents = {
+  augments: Array<Calendar_AugmentEvent>;
 };
 
 export type Calendar_BellTime = {
@@ -609,6 +671,7 @@ export type Calendar_DatetimeFilterCondition = {
   beforeTime?: InputMaybe<Scalars['Time']>;
   /**  filters for only these dates within the range */
   dateArray?: InputMaybe<Array<Scalars['Date']>>;
+  eventIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 export type Calendar_EditEvent = {
@@ -654,6 +717,30 @@ export type Calendar_EditEvents = {
   effectiveFromDate?: InputMaybe<Scalars['Date']>;
   events: Array<Calendar_EditEvent>;
 };
+
+export type Calendar_EventAttendeeAugment = {
+  __typename?: 'Calendar_EventAttendeeAugment';
+  endDate?: Maybe<Scalars['Date']>;
+  inclusionType: Calendar_InclusionType;
+  individualDates: Array<Scalars['Date']>;
+  partyId: Scalars['Long'];
+  startDate?: Maybe<Scalars['Date']>;
+  type: CalendarEventAttendeeType;
+};
+
+export type Calendar_EventRoomAugment = {
+  __typename?: 'Calendar_EventRoomAugment';
+  endDate?: Maybe<Scalars['Date']>;
+  inclusionType: Calendar_InclusionType;
+  individualDates: Array<Scalars['Date']>;
+  roomId: Scalars['Int'];
+  startDate?: Maybe<Scalars['Date']>;
+};
+
+export enum Calendar_InclusionType {
+  Exclude = 'EXCLUDE',
+  Include = 'INCLUDE'
+}
 
 export type Calendar_SchoolDayType = {
   __typename?: 'Calendar_SchoolDayType';
@@ -834,6 +921,39 @@ export type Core_NonEnrolledSibling = {
   firstName?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
   partyId: Scalars['Long'];
+};
+
+/**
+ * type Core_UserAccess {
+ *     personPartyId: Long!
+ *     #deep linked
+ *     person: Person!
+ *     email: String
+ *     webLastLogin: DateTime
+ *     mobileLastLogin: DateTime
+ *     status: UserAccessStatus
+ *     invitationId: Long
+ *     invitingPersonPartyId: Long
+ *     #deep linked
+ *     invitingPerson: Person
+ *     invitedOn: DateTime
+ * }
+ */
+export type Core_PartyInAcademicNamespace = {
+  __typename?: 'Core_PartyInAcademicNamespace';
+  academicNamespaceId: Scalars['Int'];
+  partyId: Scalars['Long'];
+};
+
+/**
+ * input Core_UserAccessFilter {
+ *     partyIds: [Long]
+ *     userType: UserType!
+ * }
+ */
+export type Core_PartyInAcademicNamespaceFilter = {
+  academicNamespaceId?: InputMaybe<Scalars['Int']>;
+  partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
 
 export type Core_SiblingInput = {
@@ -1177,6 +1297,11 @@ export type DeleteFeeInput = {
   id: Scalars['Int'];
 };
 
+export type DeleteFileTransferInput = {
+  feature: FileTransferFeature;
+  id: Scalars['Int'];
+};
+
 export type DeleteStudentMedicalConditionInput = {
   id: Scalars['Int'];
   studentPartyId: Scalars['Long'];
@@ -1457,6 +1582,24 @@ export enum FeeType {
   Voluntary = 'VOLUNTARY'
 }
 
+export enum FileTransferFeature {
+  StudentDocs = 'STUDENT_DOCS'
+}
+
+export type FileTransferFilter = {
+  feature?: InputMaybe<FileTransferFeature>;
+  referenceId?: InputMaybe<Scalars['String']>;
+};
+
+export type FileTransferResponse = {
+  __typename?: 'FileTransferResponse';
+  feature: FileTransferFeature;
+  fileName: Scalars['String'];
+  fileUrl: Scalars['String'];
+  id: Scalars['Int'];
+  referenceId: Scalars['String'];
+};
+
 export type FindFreeResourcesFilter = {
   allRooms?: InputMaybe<Scalars['Boolean']>;
   /**  Optionally search for in particular calendars. If not specified, all calendars will be searched. */
@@ -1684,8 +1827,15 @@ export type InviteUser = {
   email: Scalars['String'];
   givenName: Scalars['String'];
   personPartyId: Scalars['Long'];
+  resend: Scalars['Boolean'];
   surname: Scalars['String'];
   userType: UserType;
+};
+
+export type InviteUsersResponse = {
+  __typename?: 'InviteUsersResponse';
+  userAccesses: Array<UserAccess>;
+  validations: Array<Scalars['String']>;
 };
 
 export enum Iterator {
@@ -1731,10 +1881,10 @@ export type Mail = {
   body?: Maybe<Scalars['String']>;
   canReply: Scalars['Boolean'];
   id: Scalars['Long'];
-  labels?: Maybe<Array<Maybe<Label>>>;
+  labels: Array<Label>;
   latestMessage?: Maybe<Scalars['DateTime']>;
   readOn?: Maybe<Scalars['DateTime']>;
-  recipients?: Maybe<Array<Maybe<Recipient>>>;
+  recipients: Array<Recipient>;
   rootMailId: Scalars['Long'];
   senderPartyId: Scalars['Long'];
   sentOn: Scalars['DateTime'];
@@ -1802,6 +1952,7 @@ export type Mutation = {
   core_updateClassGroups?: Maybe<Success>;
   core_updateStaff: Success;
   core_updateStudentContactRelationships?: Maybe<Success>;
+  core_updateStudentContacts: Success;
   core_updateStudents?: Maybe<Success>;
   core_updateSubjectGroups?: Maybe<Success>;
   core_updateYearGroupEnrollments?: Maybe<Success>;
@@ -1809,6 +1960,7 @@ export type Mutation = {
   core_upsertRooms: Array<Room>;
   core_upsertStaff?: Maybe<Array<Maybe<Staff>>>;
   core_upsertStudentContact: StudentContact;
+  delete_file_transfer?: Maybe<Success>;
   enrollment_ire_autoAssignBlocks: EnrollmentIre_CoreMemberships;
   enrollment_ire_autoAssignCore: EnrollmentIre_CoreMemberships;
   enrollment_ire_changeProgrammeStage: Success;
@@ -1829,7 +1981,7 @@ export type Mutation = {
   tt_swap: Success;
   tt_updateTimetableGroup: Success;
   users_createProfileForGlobalUser?: Maybe<Profile>;
-  users_inviteUsers?: Maybe<Array<Maybe<UserInvitation>>>;
+  users_inviteUsers?: Maybe<InviteUsersResponse>;
   users_savePermissionGroup?: Maybe<PermissionGroup>;
   wellbeing_deleteStudentMedicalCondition: StudentMedical;
   wellbeing_savePriorityStudent?: Maybe<PriorityStudent>;
@@ -1986,6 +2138,11 @@ export type MutationCore_UpdateStudentContactRelationshipsArgs = {
 };
 
 
+export type MutationCore_UpdateStudentContactsArgs = {
+  input: Array<UpdateStaffInput>;
+};
+
+
 export type MutationCore_UpdateStudentsArgs = {
   input?: InputMaybe<Array<InputMaybe<UpdateStudentInput>>>;
 };
@@ -2018,6 +2175,11 @@ export type MutationCore_UpsertStaffArgs = {
 
 export type MutationCore_UpsertStudentContactArgs = {
   input: UpsertStudentContactInput;
+};
+
+
+export type MutationDelete_File_TransferArgs = {
+  input: DeleteFileTransferInput;
 };
 
 
@@ -2072,7 +2234,7 @@ export type MutationPpod_SavePpodCredentialsArgs = {
 
 
 export type MutationSwm_DeleteAbsenceArgs = {
-  input: Array<Scalars['Int']>;
+  input: Swm_DeleteStaffAbsence;
 };
 
 
@@ -2776,6 +2938,7 @@ export type Query = {
   communications_smsCredit?: Maybe<SmsCredit>;
   communications_smsXeroItem: Array<XeroItem>;
   communications_unreadCount?: Maybe<Array<Maybe<UnreadCount>>>;
+  composite_permissionGroups: Array<Maybe<PermissionGroup>>;
   composite_studentStatus: StudentStatus;
   core_academicNamespaces?: Maybe<Array<AcademicNamespace>>;
   core_blocks: Array<CoreBlock>;
@@ -2790,6 +2953,7 @@ export type Query = {
   enrollment_ire_coreMemberships: EnrollmentIre_CoreMemberships;
   fees_discounts?: Maybe<Array<Maybe<Discount>>>;
   fees_fees?: Maybe<Array<Maybe<Fee>>>;
+  file_transfer_list?: Maybe<Array<FileTransferResponse>>;
   generalGroups?: Maybe<Array<GeneralGroup>>;
   myAuthDetails?: Maybe<GlobalUser>;
   permissions?: Maybe<Array<Maybe<Permission>>>;
@@ -2801,7 +2965,8 @@ export type Query = {
   subjectGroups?: Maybe<Array<SubjectGroup>>;
   swm_absenceTypes: Array<Swm_StaffAbsenceType>;
   swm_absences: Array<Swm_StaffAbsence>;
-  swm_eventsForSubstitutions: Array<Swm_CalendarSubstitution>;
+  swm_eventsForSubstitutions: Swm_EventsForSubstitution;
+  swm_substitutionLookup: Swm_SubstitutionLookup;
   swm_substitutions: Array<Swm_Substitution>;
   tt_groups: Array<Tt_Groups>;
   tt_individualLessons: Array<TtIndividualViewLesson>;
@@ -2812,7 +2977,7 @@ export type Query = {
   users_permissionGroups?: Maybe<Array<Maybe<PermissionGroup>>>;
   users_permissionSets?: Maybe<Array<Maybe<PermissionSet>>>;
   users_schoolInfo?: Maybe<SchoolInfo>;
-  users_userInvitations?: Maybe<Array<Maybe<UserInvitation>>>;
+  users_userAccess: Array<UserAccess>;
   wellbeing_activeSupportPlan?: Maybe<Array<Maybe<ActivePlan>>>;
   wellbeing_priorityStudent?: Maybe<Array<Maybe<PriorityStudent>>>;
   wellbeing_studentMedical?: Maybe<StudentMedical>;
@@ -2973,6 +3138,11 @@ export type QueryCommunications_UnreadCountArgs = {
 };
 
 
+export type QueryComposite_PermissionGroupsArgs = {
+  filter?: InputMaybe<PermissionGroupFilter>;
+};
+
+
 export type QueryComposite_StudentStatusArgs = {
   filter?: InputMaybe<StudentStatusFilter>;
 };
@@ -3043,6 +3213,11 @@ export type QueryFees_FeesArgs = {
 };
 
 
+export type QueryFile_Transfer_ListArgs = {
+  filter?: InputMaybe<FileTransferFilter>;
+};
+
+
 export type QueryGeneralGroupsArgs = {
   filter?: InputMaybe<GeneralGroupFilter>;
 };
@@ -3085,6 +3260,11 @@ export type QuerySwm_AbsencesArgs = {
 
 export type QuerySwm_EventsForSubstitutionsArgs = {
   filter?: InputMaybe<Swm_EventsForSubstitutionFilter>;
+};
+
+
+export type QuerySwm_SubstitutionLookupArgs = {
+  filter?: InputMaybe<Swm_SubstitutionLookupFilter>;
 };
 
 
@@ -3133,8 +3313,8 @@ export type QueryUsers_PermissionSetsArgs = {
 };
 
 
-export type QueryUsers_UserInvitationsArgs = {
-  filter?: InputMaybe<UserInvitationFilter>;
+export type QueryUsers_UserAccessArgs = {
+  filter?: InputMaybe<UserAccessFilter>;
 };
 
 
@@ -3263,10 +3443,47 @@ export type Swm_CalendarSubstitution = {
   substitution?: Maybe<Swm_Substitution>;
 };
 
+export type Swm_DeleteStaffAbsence = {
+  staffAbsenceIds: Array<InputMaybe<Scalars['Int']>>;
+};
+
+export type Swm_EventsForSubstitution = {
+  __typename?: 'SWM_EventsForSubstitution';
+  eventsByStaff: Array<Swm_EventsForSubstitutionStaff>;
+};
+
 export type Swm_EventsForSubstitutionFilter = {
   fromDate: Scalars['Date'];
   staffPartyIds?: InputMaybe<Array<Scalars['Long']>>;
   toDate: Scalars['Date'];
+};
+
+export type Swm_EventsForSubstitutionStaff = {
+  __typename?: 'SWM_EventsForSubstitutionStaff';
+  staff: Staff;
+  substitutionEventsByDay: Array<Swm_EventsForSubstitutionStaffByDay>;
+};
+
+export type Swm_EventsForSubstitutionStaffByDay = {
+  __typename?: 'SWM_EventsForSubstitutionStaffByDay';
+  date?: Maybe<Scalars['Date']>;
+  periods?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  substitutionEventsByPeriod: Array<Swm_CalendarSubstitution>;
+};
+
+export type Swm_InsertSubstitution = {
+  events: Array<Swm_InsertSubstitutionEvent>;
+};
+
+export type Swm_InsertSubstitutionEvent = {
+  absenceId?: InputMaybe<Scalars['Int']>;
+  date: Scalars['Date'];
+  eventId: Scalars['Int'];
+  note?: InputMaybe<Scalars['String']>;
+  originalStaffId: Scalars['Long'];
+  substituteRoomId?: InputMaybe<Scalars['Int']>;
+  substituteStaffId: Scalars['Long'];
+  substitutionTypeId: Scalars['Int'];
 };
 
 export type Swm_StaffAbsence = {
@@ -3344,6 +3561,10 @@ export type Swm_StaffAbsenceTypeFilter = {
   absenceTypeIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
+export type Swm_StaffSubstitutionTypeFilter = {
+  substitutionTypeIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
 export type Swm_Substitution = {
   __typename?: 'SWM_Substitution';
   note?: Maybe<Scalars['String']>;
@@ -3356,6 +3577,46 @@ export type Swm_Substitution = {
   substitutionId?: Maybe<Scalars['Int']>;
   substitutionType: Swm_SubstitutionType;
   substitutionTypeId: Scalars['Int'];
+};
+
+export type Swm_SubstitutionLookup = {
+  __typename?: 'SWM_SubstitutionLookup';
+  clashingRooms: Array<ClashingRooms>;
+  freeRooms: Array<Room>;
+  staff: Array<Swm_SubstitutionLookupStaff>;
+};
+
+export type Swm_SubstitutionLookupFilter = {
+  staffPartyIds?: InputMaybe<Array<Scalars['Long']>>;
+  times: Array<FindFreeResourcesTime>;
+};
+
+export type Swm_SubstitutionLookupRoom = {
+  __typename?: 'SWM_SubstitutionLookupRoom';
+  available: Scalars['Boolean'];
+  clashingEvents?: Maybe<Array<Scalars['String']>>;
+  room: Room;
+  roomId: Scalars['Int'];
+};
+
+export type Swm_SubstitutionLookupStaff = {
+  __typename?: 'SWM_SubstitutionLookupStaff';
+  available: Scalars['Boolean'];
+  clashingEvents?: Maybe<Array<Scalars['String']>>;
+  staff: Staff;
+  staffPartyId: Scalars['Long'];
+};
+
+export type Swm_SubstitutionSummary = {
+  __typename?: 'SWM_SubstitutionSummary';
+  substitutionCountThisWeek: Scalars['Int'];
+  substitutionCountThisYear: Scalars['Int'];
+  substitutionTimeThisWeekMinutes: Scalars['Int'];
+  substitutionTimeThisYearMinutes: Scalars['Int'];
+};
+
+export type Swm_SubstitutionSummaryFilter = {
+  staffPartyIds?: InputMaybe<Array<Scalars['Long']>>;
 };
 
 export type Swm_SubstitutionTime = {
@@ -3372,6 +3633,7 @@ export type Swm_SubstitutionType = {
   descriptionTextId?: Maybe<Scalars['Int']>;
   name: Scalars['String'];
   nameTextId: Scalars['Int'];
+  substitutionTypeId: Scalars['Int'];
 };
 
 export type Swm_SubstitutionsFilter = {
@@ -3422,6 +3684,13 @@ export type Swm_UpsertStaffAbsenceType = {
   code: Scalars['String'];
   description: Array<InputMaybe<TranslationInput>>;
   name: Array<InputMaybe<TranslationInput>>;
+};
+
+export type Swm_UpsertStaffSubstitutionType = {
+  code: Scalars['String'];
+  description: Array<InputMaybe<TranslationInput>>;
+  name: Array<InputMaybe<TranslationInput>>;
+  substitutionTypeId?: InputMaybe<Scalars['Int']>;
 };
 
 /**    -------------- Inputs --------------- */
@@ -4082,6 +4351,7 @@ export type Staff = Party & PartyPerson & {
   emergencyContact?: Maybe<StaffEmergencyContact>;
   employmentCapacity?: Maybe<StaffCapacity>;
   endDate?: Maybe<Scalars['Date']>;
+  extensions?: Maybe<StaffGraphqlExtension>;
   jobSharing?: Maybe<Scalars['Boolean']>;
   makeAndModel?: Maybe<Scalars['String']>;
   noLongerStaffMember?: Maybe<Scalars['Boolean']>;
@@ -4113,8 +4383,17 @@ export type StaffEmergencyContact = {
 };
 
 export type StaffFilter = {
+  availableForSubstitution?: InputMaybe<Scalars['Boolean']>;
   availableForTeaching?: InputMaybe<Scalars['Boolean']>;
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+};
+
+export type StaffGraphqlExtension = {
+  __typename?: 'StaffGraphqlExtension';
+  doeNotUser?: Maybe<Scalars['String']>;
+  substitutionSummary?: Maybe<Swm_SubstitutionSummary>;
+  /**  Gives a summary of the timetable for a particular teacher */
+  timetableSummary?: Maybe<Tt_TeacherTimetableSummary>;
 };
 
 export type StaffGroupMembershipInput = {
@@ -4623,6 +4902,7 @@ export type Success = {
 
 export type SyncRequest = {
   __typename?: 'SyncRequest';
+  failureReason?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
   requestedOn: Scalars['DateTime'];
   /** deep linked */
@@ -4935,7 +5215,10 @@ export type TtTimetable = {
 };
 
 export type TtTimetableFilter = {
+  /**  the live timetable in timetable edit with unpublished changed */
   liveTimetable?: InputMaybe<Scalars['Boolean']>;
+  /**  the last published version of the timetable */
+  publishedTimetable?: InputMaybe<Scalars['Boolean']>;
   timetableId?: InputMaybe<Scalars['Int']>;
 };
 
@@ -5063,6 +5346,17 @@ export type Tt_ResetLesson = {
   lessonId: TtEditLessonPeriodInstanceId;
 };
 
+export type Tt_TeacherTimetableSummary = {
+  __typename?: 'TT_TeacherTimetableSummary';
+  fulltimePeriods: Scalars['Int'];
+  staffId: Scalars['Long'];
+};
+
+export type Tt_TeacherTimetableSummaryFilter = {
+  staffIds?: InputMaybe<Array<Scalars['Long']>>;
+  timetableFilter: TtTimetableFilter;
+};
+
 export type Tt_UpdateTimetableGroupInput = {
   timetableId: Scalars['Int'];
   /**  defaults to false. This will delete all existing timetable lessons in calendar and republish them */
@@ -5153,6 +5447,7 @@ export type UpdateStaffInput = {
   carRegistrationNumber?: InputMaybe<Scalars['String']>;
   displayCode?: InputMaybe<Scalars['String']>;
   employmentCapacity?: InputMaybe<Scalars['String']>;
+  gender?: InputMaybe<Gender>;
   includeDtrReturns?: InputMaybe<Scalars['Boolean']>;
   jobSharing?: InputMaybe<Scalars['Boolean']>;
   makeAndModel?: InputMaybe<Scalars['String']>;
@@ -5160,9 +5455,12 @@ export type UpdateStaffInput = {
   otherSchool1?: InputMaybe<Scalars['String']>;
   otherSchool2?: InputMaybe<Scalars['String']>;
   parking?: InputMaybe<Scalars['String']>;
+  payrollNumber?: InputMaybe<Scalars['String']>;
   position?: InputMaybe<Scalars['String']>;
+  ppsNumber?: InputMaybe<Scalars['String']>;
   previousSchool1?: InputMaybe<Scalars['String']>;
   previousSchool2?: InputMaybe<Scalars['String']>;
+  primaryEmail?: InputMaybe<Scalars['String']>;
   qualifications?: InputMaybe<Scalars['String']>;
   qualifications2?: InputMaybe<Scalars['String']>;
   qualifications3?: InputMaybe<Scalars['String']>;
@@ -5171,6 +5469,11 @@ export type UpdateStaffInput = {
   staffPost?: InputMaybe<Scalars['Int']>;
   teacherCouncilNumber?: InputMaybe<Scalars['String']>;
   teacherReferenceNumber?: InputMaybe<Scalars['String']>;
+};
+
+export type UpdateStudentContactInput = {
+  contactPartyId: Scalars['Long'];
+  primaryEmail?: InputMaybe<Scalars['String']>;
 };
 
 export type UpdateStudentInput = {
@@ -5187,10 +5490,16 @@ export type UpdateStudentInput = {
 export type UpdateSubjectGroupInput = {
   irePP?: InputMaybe<UpdateSubjectGroupIrePpInput>;
   subjectGroupPartyId: Scalars['Long'];
+  teachers?: InputMaybe<Array<UpdateSubjectGroupTeachersInput>>;
 };
 
 export type UpdateSubjectGroupIrePpInput = {
   level?: InputMaybe<StudyLevel>;
+};
+
+export type UpdateSubjectGroupTeachersInput = {
+  roles: Array<StaffGroupMembershipRoles>;
+  staffPartyId: Scalars['Long'];
 };
 
 export type UpdateYearGroupEnrollmentInput = {
@@ -5351,18 +5660,29 @@ export type UpsertSubject = {
   subjectId?: InputMaybe<Scalars['Int']>;
 };
 
-export type UserInvitation = {
-  __typename?: 'UserInvitation';
-  hasAccepted: Scalars['Boolean'];
-  id: Scalars['Long'];
-  invitedOn: Scalars['DateTime'];
-  invitedPersonPartyId: Scalars['Long'];
-  invitingPersonPartyId: Scalars['Long'];
+export type UserAccess = {
+  __typename?: 'UserAccess';
+  invitationId?: Maybe<Scalars['Long']>;
+  invitedOn?: Maybe<Scalars['DateTime']>;
+  invitingPersonPartyId?: Maybe<Scalars['Long']>;
+  invitingPersonalInfo?: Maybe<PersonalInformation>;
+  mobileLastLogin?: Maybe<Scalars['DateTime']>;
+  personPartyId: Scalars['Long'];
+  personalInfo: PersonalInformation;
+  status?: Maybe<UserAccessStatus>;
+  webLastLogin?: Maybe<Scalars['DateTime']>;
 };
 
-export type UserInvitationFilter = {
-  ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+export type UserAccessFilter = {
+  partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  userType: AccessUserType;
 };
+
+export enum UserAccessStatus {
+  Active = 'ACTIVE',
+  Disabled = 'DISABLED',
+  InviteSent = 'INVITE_SENT'
+}
 
 export type UserPermission = {
   __typename?: 'UserPermission';
@@ -5720,21 +6040,21 @@ export type Communications_AssignLabelMutationVariables = Exact<{
 }>;
 
 
-export type Communications_AssignLabelMutation = { __typename?: 'Mutation', communications_assignLabel?: { __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients?: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null } | null> | null, threads?: Array<{ __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients?: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null } | null> | null } | null> | null } | null };
+export type Communications_AssignLabelMutation = { __typename?: 'Mutation', communications_assignLabel?: { __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null }>, labels: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null }>, threads?: Array<{ __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null }>, labels: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null }> } | null> | null } | null };
 
 export type Communications_MailQueryVariables = Exact<{
   filter?: InputMaybe<MailFilter>;
 }>;
 
 
-export type Communications_MailQuery = { __typename?: 'Query', communications_mail?: Array<{ __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients?: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null } | null> | null, threads?: Array<{ __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients?: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null } | null> | null } | null> | null } | null> | null };
+export type Communications_MailQuery = { __typename?: 'Query', communications_mail?: Array<{ __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null }>, labels: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null }>, threads?: Array<{ __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null }>, labels: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null }> } | null> | null } | null> | null };
 
 export type Communications_SendMailMutationVariables = Exact<{
   input?: InputMaybe<SendMailInput>;
 }>;
 
 
-export type Communications_SendMailMutation = { __typename?: 'Mutation', communications_sendMail?: { __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients?: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null } | null> | null, threads?: Array<{ __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients?: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null } | null> | null, labels?: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null } | null> | null } | null> | null } | null };
+export type Communications_SendMailMutation = { __typename?: 'Mutation', communications_sendMail?: { __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null }>, labels: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null }>, threads?: Array<{ __typename?: 'Mail', id: number, rootMailId: number, threadId: number, subject: string, body?: string | null, senderPartyId: number, sentOn: string, latestMessage?: string | null, canReply: boolean, starred?: boolean | null, readOn?: string | null, recipients: Array<{ __typename?: 'Recipient', id: number, recipientPartyId: number, recipientType: RecipientType, name?: string | null }>, labels: Array<{ __typename?: 'Label', id: number, name: string, personPartyId: number, colour?: Colour | null, custom?: boolean | null }> } | null> | null } | null };
 
 export type Communications_StarredMutationVariables = Exact<{
   input?: InputMaybe<MailStarredInput>;
@@ -5974,6 +6294,27 @@ export type Catalogue_UpsertSubjectsMutationVariables = Exact<{
 
 
 export type Catalogue_UpsertSubjectsMutation = { __typename?: 'Mutation', catalogue_upsertSubjects?: { __typename?: 'CatalogueSuccess', success: boolean, message?: string | null } | null };
+
+export type Users_InviteUsersMutationVariables = Exact<{
+  input?: InputMaybe<Array<InputMaybe<InviteUser>> | InputMaybe<InviteUser>>;
+}>;
+
+
+export type Users_InviteUsersMutation = { __typename?: 'Mutation', users_inviteUsers?: { __typename?: 'InviteUsersResponse', validations: Array<string>, userAccesses: Array<{ __typename?: 'UserAccess', personPartyId: number, webLastLogin?: string | null, mobileLastLogin?: string | null, status?: UserAccessStatus | null, invitationId?: number | null, invitingPersonPartyId?: number | null, invitedOn?: string | null }> } | null };
+
+export type Core_UpdateStaffMutationVariables = Exact<{
+  input: Array<UpdateStaffInput> | UpdateStaffInput;
+}>;
+
+
+export type Core_UpdateStaffMutation = { __typename?: 'Mutation', core_updateStaff: { __typename?: 'Success', success?: boolean | null } };
+
+export type Users_UserAccessQueryVariables = Exact<{
+  filter?: InputMaybe<UserAccessFilter>;
+}>;
+
+
+export type Users_UserAccessQuery = { __typename?: 'Query', users_userAccess: Array<{ __typename?: 'UserAccess', personPartyId: number, webLastLogin?: string | null, mobileLastLogin?: string | null, status?: UserAccessStatus | null, invitedOn?: string | null, personalInfo: { __typename?: 'PersonalInformation', firstName: string, lastName: string, primaryEmail?: { __typename?: 'EmailAddress', email?: string | null } | null } }> };
 
 export type SendSmsMutationVariables = Exact<{
   input?: InputMaybe<SendSmsInput>;
@@ -6219,6 +6560,9 @@ export const Ppod_SyncRequestsDocument = {"kind":"Document","definitions":[{"kin
 export const Core_RoomsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"capacity"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"pools"}},{"kind":"Field","name":{"kind":"Name","value":"includeInTimetable"}},{"kind":"Field","name":{"kind":"Name","value":"externalSystemId"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"disabled"}}]}}]}}]} as unknown as DocumentNode<Core_RoomsQuery, Core_RoomsQueryVariables>;
 export const CatalogueSubjectsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"catalogueSubjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"catalogue_subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"shortCode"}},{"kind":"Field","name":{"kind":"Name","value":"nationalCode"}},{"kind":"Field","name":{"kind":"Name","value":"subjectSource"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}}]}}]}}]} as unknown as DocumentNode<CatalogueSubjectsQuery, CatalogueSubjectsQueryVariables>;
 export const Catalogue_UpsertSubjectsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"catalogue_upsertSubjects"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpsertSubject"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"catalogue_upsertSubjects"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]} as unknown as DocumentNode<Catalogue_UpsertSubjectsMutation, Catalogue_UpsertSubjectsMutationVariables>;
+export const Users_InviteUsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"users_inviteUsers"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"InviteUser"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users_inviteUsers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userAccesses"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"webLastLogin"}},{"kind":"Field","name":{"kind":"Name","value":"mobileLastLogin"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"invitationId"}},{"kind":"Field","name":{"kind":"Name","value":"invitingPersonPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"invitedOn"}}]}},{"kind":"Field","name":{"kind":"Name","value":"validations"}}]}}]}}]} as unknown as DocumentNode<Users_InviteUsersMutation, Users_InviteUsersMutationVariables>;
+export const Core_UpdateStaffDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_updateStaff"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateStaffInput"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_updateStaff"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Core_UpdateStaffMutation, Core_UpdateStaffMutationVariables>;
+export const Users_UserAccessDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"users_userAccess"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"UserAccessFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users_userAccess"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"personalInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"primaryEmail"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"webLastLogin"}},{"kind":"Field","name":{"kind":"Name","value":"mobileLastLogin"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"invitedOn"}}]}}]}}]} as unknown as DocumentNode<Users_UserAccessQuery, Users_UserAccessQueryVariables>;
 export const SendSmsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"sendSms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SendSmsInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_sendSms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<SendSmsMutation, SendSmsMutationVariables>;
 export const Communications_SmsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_sms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SmsFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_sms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"sender"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"sentOn"}},{"kind":"Field","name":{"kind":"Name","value":"canReply"}},{"kind":"Field","name":{"kind":"Name","value":"numRecipients"}},{"kind":"Field","name":{"kind":"Name","value":"totalCost"}},{"kind":"Field","name":{"kind":"Name","value":"recipients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"smsId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientPartyId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"recipient"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"recipientPhoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"smsStatus"}}]}}]}}]}}]} as unknown as DocumentNode<Communications_SmsQuery, Communications_SmsQueryVariables>;
 export const Communications_SmsCostDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_smsCost"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SmsCostFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_smsCost"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]} as unknown as DocumentNode<Communications_SmsCostQuery, Communications_SmsCostQueryVariables>;
