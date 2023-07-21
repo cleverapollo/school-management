@@ -1,5 +1,6 @@
 export * from './format-phone-number';
 export * from './get-classes-from-object';
+export * from './get-locale-timestamp';
 export * from './keyboard';
 export * from './navigation';
 export * from './order-by-value';

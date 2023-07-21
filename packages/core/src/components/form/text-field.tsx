@@ -17,18 +17,19 @@ export const RHFTextField = <TField extends FieldValues>({
   controlProps,
 }: RHFTextFieldProps<TField>) => {
   const {
-    field,
+    field: { ref, value, ...restField },
     fieldState: { error },
   } = useController(controlProps);
 
   return (
     <TextField
       {...textFieldProps}
-      {...field}
-      value={field.value ?? ''}
+      {...restField}
+      value={value ?? ''}
       label={label}
       error={!!error}
       helperText={error?.message}
+      inputRef={ref}
     />
   );
 };

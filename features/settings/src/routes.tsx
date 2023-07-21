@@ -1,13 +1,25 @@
 import { lazy } from 'react';
-import { NavObjectFunction, NavObjectType } from '@tyro/core';
+import {
+  getNumber,
+  NavObjectFunction,
+  NavObjectType,
+  throw404Error,
+} from '@tyro/core';
 import { GearIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
 import { getCoreAcademicNamespace, AccessUserType } from '@tyro/api';
 import { AttendanceCodes, getAttendanceCodes } from '@tyro/attendance';
+import {
+  getContactsForSelect,
+  getStaffForSelect,
+  getStudentsForSelect,
+} from '@tyro/people';
 import { getCoreRooms } from './api/rooms';
 import { getCatalogueSubjects } from './api/subjects';
 import { getPpodCredentialsStatus } from './api/ppod/ppod-credentials-status';
 import { getUserAccess } from './api/user-access/user-access';
+import { getPermissionGroups } from './api/permissions/user-permissions-groups';
+import { getPermissionSets } from './api/permissions/user-permissions-sets';
 
 const Rooms = lazy(() => import('./pages/rooms'));
 const AcademicYearsList = lazy(() => import('./pages/academic-years'));
@@ -28,6 +40,10 @@ const UserAccessStudentsPage = lazy(
 const UserAccessContactsPage = lazy(
   () => import('./pages/user-access/user-access-contacts-page')
 );
+const Permissions = lazy(() => import('./pages/permissions'));
+const CreatePermission = lazy(() => import('./pages/permissions/create'));
+const EditPermission = lazy(() => import('./pages/permissions/edit'));
+const ClonePermission = lazy(() => import('./pages/permissions/clone'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -100,6 +116,54 @@ export const getRoutes: NavObjectFunction = (t) => [
                 element: <UserAccessStudentsPage />,
               },
             ],
+          },
+          {
+            type: NavObjectType.MenuLink,
+            title: t('navigation:management.settings.permissions'),
+            path: 'permissions',
+            loader: () =>
+              Promise.all([
+                getPermissionGroups({ custom: true }),
+                getPermissionGroups({ custom: false }),
+                getStudentsForSelect({}),
+                getContactsForSelect(),
+                getStaffForSelect({}),
+                getPermissionSets({ student: true }),
+                getPermissionSets({ contact: true }),
+                getPermissionSets({ staff: true }),
+              ]),
+            element: <Permissions />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: 'permissions/create',
+            element: <CreatePermission />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: 'permissions/edit/:permissionGroupId',
+            loader: ({ params }) => {
+              const permissionGroupId = getNumber(params?.permissionGroupId);
+              if (!permissionGroupId) {
+                throw404Error();
+              }
+
+              return getPermissionGroups({ ids: [permissionGroupId] });
+            },
+            element: <EditPermission />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: 'permissions/clone/:permissionGroupId',
+            loader: ({ params }) => {
+              const permissionGroupId = getNumber(params?.permissionGroupId);
+              if (!permissionGroupId) {
+                throw404Error();
+              }
+
+              return getPermissionGroups({ ids: [permissionGroupId] });
+            },
+            element: <ClonePermission />,
           },
           {
             type: NavObjectType.MenuLink,

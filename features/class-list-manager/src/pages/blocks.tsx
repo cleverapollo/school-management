@@ -24,6 +24,7 @@ import {
   YearGroupsAutocomplete,
   YearGroupsAutocompleteProps,
 } from '../components/common/list-manager/year-groups-autocomplete';
+import { useClassListSettings } from '../store/class-list-settings';
 
 interface ConfirmDialogSettings {
   proceed: () => void;
@@ -50,6 +51,7 @@ export default function ClassListManagerBlocks() {
   } = useDebouncedValue<ConfirmDialogSettings | null>({ defaultValue: null });
   const [isDirty, setIsDirty] = useState(false);
   const containerMargin = useContainerMargin();
+  const { setCurrentBlock } = useClassListSettings();
   const dropdownDirection = useBreakpointValue<'column' | 'row'>({
     base: 'column',
     sm: 'row',
@@ -158,6 +160,11 @@ export default function ClassListManagerBlocks() {
 
   useEffect(() => {
     setSelectedRotationIndex(0);
+    setCurrentBlock(selectedBlock ?? undefined);
+
+    return () => {
+      setCurrentBlock(undefined);
+    };
   }, [selectedBlock]);
 
   return (

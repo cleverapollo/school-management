@@ -10,6 +10,7 @@ export const peopleKeys = {
       [...peopleKeys.contacts.all(), 'students', contactId] as const,
     upsertContact: () =>
       [...peopleKeys.contacts.all(), 'upsertContact'] as const,
+    forSelect: () => [...peopleKeys.contacts.all(), 'select'] as const,
   },
   staff: {
     all: () => [...peopleKeys.all, 'staff'] as const,
@@ -44,6 +45,10 @@ export const peopleKeys = {
       [...peopleKeys.students.all(), 'classes', studentId] as const,
     updateStudent: () =>
       [...peopleKeys.students.all(), 'updateStudent'] as const,
+    medical: (studentId: number | undefined) =>
+      [...peopleKeys.students.all(), 'medical', studentId] as const,
+    medicalConditions: () =>
+      [...peopleKeys.students.all(), 'medicalConditions'] as const,
     studentsForSiblingSearch: () =>
       [...peopleKeys.students.all(), 'studentsForSiblingSearch'] as const,
   },

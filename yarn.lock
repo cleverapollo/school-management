@@ -5678,11 +5678,13 @@ __metadata:
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
     "@tyro/people": "*"
+    dayjs: ^1.11.7
     lodash: ^4.17.21
     nanoid: ^4.0.2
     react: ^18.2.0
     react-beautiful-dnd: ^13.1.1
     react-dom: ^18.2.0
+    react-hook-form: ^7.43.9
     react-router: ^6.11.1
     react-router-dom: ^6.11.1
     react-use: ^17.4.0
@@ -5900,6 +5902,7 @@ __metadata:
     "@tyro/core": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    "@tyro/people": "*"
     dayjs: ^1.11.7
     react: ^18.2.0
     react-dom: ^18.2.0

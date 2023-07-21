@@ -135,16 +135,22 @@ class Rules<TField extends FieldValues> {
     validateFn: (
       value: V,
       throwError: (errorMessage: string) => ValidationError,
-      formValues: TField
+      formValues: TField,
+      fieldArrayIndex: number | undefined
     ) => void
   ) {
-    return (value: FieldValue<TField>, formValues: TField) => {
+    return (
+      value: FieldValue<TField>,
+      formValues: TField,
+      fieldArrayIndex: string | undefined
+    ) => {
       validateFn(
         value,
         (errorMessage) => {
           throw new ValidationError('validate', errorMessage);
         },
-        formValues
+        formValues,
+        fieldArrayIndex !== undefined ? Number(fieldArrayIndex) : undefined
       );
     };
   }
@@ -213,9 +219,15 @@ export const useFormValidator = <TField extends FieldValues>(): {
           const fieldValue = itemField ? nestedValue : currentValue;
 
           if (Array.isArray(field.ruleFn)) {
-            field.ruleFn.forEach((ruleFn) => ruleFn(fieldValue, fieldValues));
+            field.ruleFn.forEach((ruleFn) =>
+              ruleFn(fieldValue, fieldValues, itemField ? index : undefined)
+            );
           } else if (typeof field.ruleFn === 'function') {
-            field.ruleFn(fieldValue, fieldValues);
+            field.ruleFn(
+              fieldValue,
+              fieldValues,
+              itemField ? index : undefined
+            );
           }
         } catch (error) {
           const isKnownError = error instanceof ValidationError;

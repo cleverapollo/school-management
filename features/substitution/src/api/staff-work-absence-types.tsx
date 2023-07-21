@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-
 import {
   gqlClient,
   graphql,
   queryClient,
   Swm_StaffAbsenceTypeFilter,
 } from '@tyro/api';
+import { substitutionKeys } from './keys';
 
 const staffWorkAbsenceTypes = graphql(/* GraphQL */ `
   query swm_absenceTypes($filter: SWM_StaffAbsenceTypeFilter) {
@@ -21,12 +21,8 @@ const staffWorkAbsenceTypes = graphql(/* GraphQL */ `
   }
 `);
 
-export const staffWorkAbsenceTypesKeys = {
-  list: ['staffWork', 'absenceTypes'] as const,
-};
-
 const staffWorkAbsenceTypesQuery = (filter: Swm_StaffAbsenceTypeFilter) => ({
-  queryKey: staffWorkAbsenceTypesKeys.list,
+  queryKey: substitutionKeys.absenceTypes(filter),
   queryFn: () => gqlClient.request(staffWorkAbsenceTypes, { filter }),
 });
 
@@ -37,10 +33,6 @@ export function getStaffWorkAbsenceTypes(filter: Swm_StaffAbsenceTypeFilter) {
 export function useStaffWorkAbsenceTypes(filter: Swm_StaffAbsenceTypeFilter) {
   return useQuery({
     ...staffWorkAbsenceTypesQuery(filter),
-    select: ({ swm_absenceTypes }) => {
-      if (!Array.isArray(swm_absenceTypes)) return [];
-
-      return swm_absenceTypes;
-    },
+    select: ({ swm_absenceTypes }) => swm_absenceTypes ?? [],
   });
 }

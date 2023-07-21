@@ -4,15 +4,26 @@ import {
   gqlClient,
   graphql,
   queryClient,
+  Swm_DeleteStaffAbsence,
   Swm_StaffAbsenceFilter,
   Swm_UpsertStaffAbsence,
+  UseQueryReturnType,
 } from '@tyro/api';
+import { useToast } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
+import { substitutionKeys } from './keys';
 
 const staffWorkAbsences = graphql(/* GraphQL */ `
   query swm_absences($filter: SWM_StaffAbsenceFilter) {
     swm_absences(filter: $filter) {
       absenceId
+      staffPartyId
+      absenceType {
+        name
+        code
+      }
       staff {
+        partyId
         title {
           id
           name
@@ -21,15 +32,17 @@ const staffWorkAbsences = graphql(/* GraphQL */ `
         firstName
         lastName
         avatarUrl
+        type
       }
-      absenceType {
-        name
-      }
+      absenceReasonText
+      substitutionRequired
       dates {
         continuousStartDate
         continuousEndDate
         individualDates
         partialAbsence
+        leavesAt
+        returnsAt
       }
     }
   }
@@ -46,12 +59,16 @@ const saveStaffAbsence = graphql(/* GraphQL */ `
   }
 `);
 
-export const staffWorkAbsencesKeys = {
-  list: ['staffWork', 'absences'] as const,
-};
+const deleteStaffAbsence = graphql(/* GraphQL */ `
+  mutation swm_deleteAbsence($input: SWM_DeleteStaffAbsence!) {
+    swm_deleteAbsence(input: $input) {
+      success
+    }
+  }
+`);
 
 const staffWorkAbsencesQuery = (filter: Swm_StaffAbsenceFilter) => ({
-  queryKey: staffWorkAbsencesKeys.list,
+  queryKey: substitutionKeys.absences(filter),
   queryFn: () => gqlClient.request(staffWorkAbsences, { filter }),
 });
 
@@ -62,18 +79,37 @@ export function getStaffWorkAbsences(filter: Swm_StaffAbsenceFilter) {
 export function useStaffWorkAbsences(filter: Swm_StaffAbsenceFilter) {
   return useQuery({
     ...staffWorkAbsencesQuery(filter),
-    select: ({ swm_absences }) => {
-      if (!Array.isArray(swm_absences)) return [];
-
-      return swm_absences;
-    },
+    select: ({ swm_absences }) => swm_absences ?? [],
   });
 }
 
 export function useSaveStaffAbsence() {
   return useMutation({
-    mutationKey: ['staffWork', 'createAbsence'],
-    mutationFn: (input: Swm_UpsertStaffAbsence) =>
+    mutationFn: (input: Swm_UpsertStaffAbsence[]) =>
       gqlClient.request(saveStaffAbsence, { input }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(substitutionKeys.all);
+    },
   });
 }
+
+export function useDeleteStaffAbsence() {
+  const { t } = useTranslation(['common']);
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: (input: Swm_DeleteStaffAbsence) =>
+      gqlClient.request(deleteStaffAbsence, { input }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(substitutionKeys.all);
+      toast(t('common:snackbarMessages.deleteSuccess'));
+    },
+    onError: () => {
+      toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
+    },
+  });
+}
+
+export type ReturnTypeFromUseStaffWorkAbsences = UseQueryReturnType<
+  typeof useStaffWorkAbsences
+>[number];

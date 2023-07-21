@@ -20,6 +20,7 @@ import {
   getStudentsForSelect,
 } from './api/student/students';
 import { getStudentStatus } from './api/student/status';
+import { getStudentMedicalData } from './api/student/medicals/student-medical-data';
 import {
   getStudentsContacts,
   getStudentsSubjectGroups,
@@ -32,6 +33,7 @@ import { getStaff } from './api/staff';
 import { getStaffStatus } from './api/staff/status';
 import { getStaffSubjectGroups } from './api/staff/subject-groups';
 import { getStaffPersonal } from './api/staff/personal';
+import { getMedicalConditionNamesQuery } from './api/student/medicals/medical-condition-lookup';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
 // Student profile pages
@@ -70,6 +72,9 @@ const StudentProfileClassesPage = lazy(
 );
 const StudentProfileSettingsPage = lazy(
   () => import('./pages/students/profile/settings')
+);
+const StudentProfileMedicalPage = lazy(
+  () => import('./pages/students/profile/medical')
 );
 
 // Contact pages
@@ -265,6 +270,23 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'settings',
                 element: <StudentProfileSettingsPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'medical',
+                element: <StudentProfileMedicalPage />,
+                loader: async ({ params }) => {
+                  const studentId = getNumber(params.id);
+
+                  if (!studentId) {
+                    throw404Error();
+                  }
+
+                  return Promise.all([
+                    getStudentMedicalData(studentId),
+                    getMedicalConditionNamesQuery(),
+                  ]);
+                },
               },
             ],
           },

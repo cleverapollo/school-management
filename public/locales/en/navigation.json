@@ -38,8 +38,8 @@
     },
     "substitution": {
       "title": "Substitution",
-      "overview": "Overview",
-      "management": "Management"
+      "absences": "Absences",
+      "cover": "Cover"
     },
     "settings": {
       "title": "Settings",
@@ -49,7 +49,8 @@
       "ppod": "PPOD",
       "schoolDetails": "School details",
       "login": "Login",
-      "userAccess": "User access"
+      "userAccess": "User access",
+      "permissions": "Permissions"
     },
     "timetable": {
       "title": "Timetable",
