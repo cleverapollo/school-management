@@ -10,6 +10,11 @@
       "overview": "Overview",
       "codes": "Attendance codes"
     },
+    "absence": {
+      "title": "Absence",
+      "overview": "Overview",
+      "codes": "Staff Absence Types"
+    },
     "groups": {
       "title": "Groups",
       "class": "Class",

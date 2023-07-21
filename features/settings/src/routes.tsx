@@ -9,6 +9,7 @@ import { GearIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
 import { getCoreAcademicNamespace, AccessUserType } from '@tyro/api';
 import { AttendanceCodes, getAttendanceCodes } from '@tyro/attendance';
+import { AbsenceCodes, getAbsenceCodes } from '@tyro/absence';
 import {
   getContactsForSelect,
   getStaffForSelect,
@@ -67,6 +68,13 @@ export const getRoutes: NavObjectFunction = (t) => [
                 'ps:1:attendance:view_attendance_codes'
               ),
             element: <AttendanceCodes />,
+          },
+          {
+            type: NavObjectType.MenuLink,
+            path: 'absence-types',
+            title: t('navigation:general.absence.codes'),
+            loader: () => getAbsenceCodes({}),
+            element: <AbsenceCodes />,
           },
           {
             type: NavObjectType.MenuLink,

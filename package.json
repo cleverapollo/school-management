@@ -13,7 +13,7 @@
   "scripts": {
     "lint": "TIMING=1 eslint --ext .ts,.tsx ./features",
     "lint:fix": "eslint --fix --ext .ts,.tsx ./src",
-    "start": "set PORT=6420 && node scripts/start.js",
+    "start": "PORT=6420 && node scripts/start.js",
     "start:mac": "PORT=6420 && node scripts/start.js",
     "build": "CI=false node scripts/build.js",
     "clear-all": "rm -rf build node_modules",

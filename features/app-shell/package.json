@@ -7,6 +7,7 @@
     "@mui/material": "^5.13.2",
     "@mui/system": "^5.13.2",
     "@tanstack/react-query": "^4.29.7",
+    "@tyro/absence": "*",
     "@tyro/api": "*",
     "@tyro/assessments": "*",
     "@tyro/attendance": "*",

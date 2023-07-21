@@ -1,0 +1,46 @@
+{
+  "pageTitle": {
+    "absence": "Absence"
+  },
+  "pageHeading": {
+    "absence": "Absence"
+  },
+  "absence": "Absence",
+  "absenceCodes": "Absence Types",
+  "createAbsenceCode": "Create absence type",
+  "reportAs": "Report as",
+  "tuslaCode": "Tusla code",
+  "absenceCodeName": "Absence type name",
+  "availableToTeachers": "Available to teachers",
+  "availableToContacts": "Available to contacts",
+  "editAbsenceCode": "Edit Absence code",
+  "absenceCodeNameShouldBeUnique": "Absence code name should be unique",
+  "availableTo": "Available to",
+  "selectUserGroups": "Select user groups that will use this absence code",
+  "teachers": "Teachers",
+  "contacts": "Contacts",
+  "administrationStaffAccessAllAbsenceCodesByDefault": "Administration staff access all absence codes by default",
+  "absenceNotTaken": "Absence not taken",
+  "absenceTaken": "Absence taken",
+  "sessionAbsenceYear": "Session absence {{year}}",
+  "absenceType": "Absence type",
+  "totalDays": "Total days {{count}}",
+  "noSessionAbsenceForYear": "No session absence data available for this year.",
+  "absent": "Absent",
+  "nameByCodeType": {
+    "PRESENT": "Present",
+    "LATE": "Late",
+    "EXPLAINED_ABSENCE": "In school",
+    "UNEXPLAINED_ABSENCE": "Unknown"
+  },
+  "tuslaCodeDescription": {
+    "A": "Student illness",
+    "B": "Urgent family matter",
+    "C": "Expelled from school",
+    "D": "Suspended from school",
+    "E": "Other explained absence",
+    "F": "Unexplained absence",
+    "G": "Transferred to another school",
+    "H": "Student on holiday"
+  }
+}
