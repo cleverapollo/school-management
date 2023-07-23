@@ -12,13 +12,13 @@ import { Box, Button } from '@mui/material';
 import { AddIcon, VerticalDotsIcon } from '@tyro/icons';
 import { TuslaCode } from '@tyro/api';
 import { useMemo } from 'react';
-import { ReturnTypeFromUseAbsenceCodes, useAbsenceCodes } from '../api';
+import { ReturnTypeFromUseAbsenceTypes, useAbsenceTypes } from '../api';
 
 const tuslaCodes = Object.values(TuslaCode);
 
 const getAbsenceCodeColumns = (
   t: TFunction<('common' | 'absence')[], undefined, ('absence' | 'absence')[]>
-): GridOptions<ReturnTypeFromUseAbsenceCodes>['columnDefs'] => [
+): GridOptions<ReturnTypeFromUseAbsenceTypes>['columnDefs'] => [
   {
     field: 'code',
     headerName: t('absence:tuslaCode'),
@@ -55,7 +55,7 @@ const getAbsenceCodeColumns = (
     cellClass: 'ag-show-on-row-interaction',
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseAbsenceCodes>) =>
+    }: ICellRendererParams<ReturnTypeFromUseAbsenceTypes>) =>
       data && (
         <ActionMenu
           iconOnly
@@ -70,10 +70,10 @@ const getAbsenceCodeColumns = (
   },
 ];
 
-export default function Codes() {
+export default function AbsenceTypes() {
   const { t, i18n } = useTranslation(['common', 'absence']);
   const currentLanguageCode = i18n.language;
-  const { data: absenceCodes } = useAbsenceCodes({});
+  const { data: absenceCodes } = useAbsenceTypes({});
 
   const absenceCodeColumns = useMemo(() => getAbsenceCodeColumns(t), [t]);
 

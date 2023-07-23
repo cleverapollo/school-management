@@ -1,9 +1,9 @@
 import { lazy } from 'react';
 import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { PersonCheckmarkIcon } from '@tyro/icons';
-import { getAbsenceCodes } from './api';
+import { getAbsenceTypes } from './api';
 
-const AbsenceCodes = lazy(() => import('./pages/codes'));
+const AbsenceTypes = lazy(() => import('./pages/absence-types'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -25,8 +25,8 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 index: true,
-                loader: () => getAbsenceCodes({}),
-                element: <AbsenceCodes />,
+                loader: () => getAbsenceTypes({}),
+                element: <AbsenceTypes />,
               },
             ],
           },

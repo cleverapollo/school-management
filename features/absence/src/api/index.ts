@@ -1,1 +1,1 @@
-export * from './absence-codes';
+export * from './absence-types';
