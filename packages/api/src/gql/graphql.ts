@@ -1554,6 +1554,7 @@ export enum Feature {
   Fees = 'FEES',
   Groups = 'GROUPS',
   Notes = 'NOTES',
+  People = 'PEOPLE',
   Search = 'SEARCH',
   Settings = 'SETTINGS',
   Substitution = 'SUBSTITUTION',
@@ -1583,6 +1584,7 @@ export enum FeeType {
 }
 
 export enum FileTransferFeature {
+  PartyPhotos = 'PARTY_PHOTOS',
   StudentDocs = 'STUDENT_DOCS'
 }
 
@@ -4456,6 +4458,7 @@ export enum StaffYearGroupMembershipRoles {
 
 export type Student = Party & PartyPerson & {
   __typename?: 'Student';
+  avatarUrl?: Maybe<Scalars['String']>;
   /**  deep linked */
   classGroup?: Maybe<GeneralGroup>;
   /**  deep linked */
@@ -4464,6 +4467,7 @@ export type Student = Party & PartyPerson & {
   /**  deep linked */
   enrolmentHistory?: Maybe<Array<EnrollmentHistory>>;
   extensions?: Maybe<StudentGraphqlExtension>;
+  externalSystemId?: Maybe<Scalars['String']>;
   guardianshipNote?: Maybe<Scalars['String']>;
   leftEarly?: Maybe<Scalars['Boolean']>;
   partyId: Scalars['Long'];
@@ -4533,6 +4537,7 @@ export enum StudentContactType {
 
 export type StudentFilter = {
   examNumbers?: InputMaybe<Array<Scalars['String']>>;
+  externalSystemIds?: InputMaybe<Array<Scalars['String']>>;
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
 
@@ -5487,6 +5492,7 @@ export type UpdateStudentContactInput = {
 };
 
 export type UpdateStudentInput = {
+  avatarUrl?: InputMaybe<Scalars['String']>;
   examNumber?: InputMaybe<Scalars['String']>;
   guardianshipNote?: InputMaybe<Scalars['String']>;
   lockerNumber?: InputMaybe<Scalars['String']>;

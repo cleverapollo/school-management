@@ -33,7 +33,6 @@ export const getRoutes: NavObjectFunction = (t) => [
         type: NavObjectType.RootLink,
         path: 'assessments',
         icon: <SchoolExamACircleIcon />,
-        hasAccess: ({ isStaffUser }) => isStaffUser,
         title: t('navigation:general.assessments.title'),
         hasAccess: (permissions) =>
           permissions.hasPermission('ps:1:assessment:read_assessments'),
