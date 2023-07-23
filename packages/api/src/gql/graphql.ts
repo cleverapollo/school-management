@@ -45,6 +45,12 @@ export enum AcademicNamespaceType {
   Year = 'YEAR'
 }
 
+export enum AccessUserType {
+  Contact = 'CONTACT',
+  Staff = 'STAFF',
+  Student = 'STUDENT'
+}
+
 export type ActivePlan = {
   __typename?: 'ActivePlan';
   active?: Maybe<Scalars['Boolean']>;
@@ -367,6 +373,7 @@ export type CalendarEventFilter = {
   calendarIds?: InputMaybe<Array<Scalars['Int']>>;
   datetimeOrCondition?: InputMaybe<Array<Calendar_DatetimeFilterCondition>>;
   endDate: Scalars['Date'];
+  eventIds?: InputMaybe<Array<Scalars['Int']>>;
   resources: CalendarResourceFilter;
   startDate: Scalars['Date'];
 };
@@ -392,12 +399,14 @@ export type CalendarEventLessonRaw = {
 
 export type CalendarEventRaw = {
   __typename?: 'CalendarEventRaw';
+  attendeeAugments: Array<Calendar_EventAttendeeAugment>;
   calendarIds: Array<Scalars['Int']>;
   colour?: Maybe<Colour>;
   description?: Maybe<Scalars['String']>;
   eventId: Scalars['Int'];
   lessonInfo?: Maybe<CalendarEventLessonRaw>;
   name: Scalars['String'];
+  roomAugments: Array<Calendar_EventRoomAugment>;
   schedule: Array<CalendarEventRawSchedule>;
   source?: Maybe<CalendarEventSource>;
   sourceId?: Maybe<Scalars['String']>;
@@ -419,10 +428,23 @@ export type CalendarEventRawAttendee = {
 export type CalendarEventRawExcludedAttendee = {
   __typename?: 'CalendarEventRawExcludedAttendee';
   endDate?: Maybe<Scalars['Date']>;
+  /**  either this or other date fields can be set */
+  individualDates?: Maybe<Array<Maybe<Scalars['Date']>>>;
   partyId: Scalars['Long'];
   /**  ... Defaults to event Recurrence Rule.  Used in cases where attendee will not excluded from all events */
   recurrenceRule?: Maybe<Scalars['String']>;
   /**  ... Defaults to event Start Date. Used in cases where attendee will not excluded from all events */
+  startDate?: Maybe<Scalars['Date']>;
+};
+
+export type CalendarEventRawExcludedRoom = {
+  __typename?: 'CalendarEventRawExcludedRoom';
+  /**  ... Defaults to event End Date. Used in cases where attendee will not be attending all events */
+  endDate?: Maybe<Scalars['Date']>;
+  /**  ... Defaults to event Recurrence Rule. Used in cases where attendee will not be attending all events */
+  recurrenceRule?: Maybe<Scalars['String']>;
+  roomId: Scalars['Int'];
+  /**  ... Defaults to event Start Date. Used in cases where attendee will not be attending all events */
   startDate?: Maybe<Scalars['Date']>;
 };
 
@@ -450,9 +472,11 @@ export type CalendarEventRawSchedule = {
   /**  end date of the recurrence */
   endDate?: Maybe<Scalars['Date']>;
   endTime: Scalars['Time'];
+  eventId: Scalars['Int'];
   exclusions: Array<CalendarEventRawExcludedAttendee>;
   /**  iCal/rfc5545 recurrence rule for event. Null means single */
   recurrenceRule?: Maybe<Scalars['String']>;
+  roomExclusions: Array<CalendarEventRawExcludedRoom>;
   rooms?: Maybe<Array<Maybe<CalendarEventRawRoom>>>;
   scheduleId: Scalars['Int'];
   startDate: Scalars['Date'];
@@ -568,12 +592,50 @@ export enum CalendarResourceTypeEnum {
 export type CalendarTag = {
   __typename?: 'CalendarTag';
   context?: Maybe<Scalars['String']>;
+  display: Scalars['Boolean'];
   label: Scalars['String'];
 };
 
 export type CalendarTagInput = {
   context?: InputMaybe<Scalars['String']>;
   label: Scalars['String'];
+};
+
+export type Calendar_AugmentEvent = {
+  addAttendees?: InputMaybe<Array<InputMaybe<Calendar_AugmentEventAddAttendee>>>;
+  addRooms?: InputMaybe<Array<InputMaybe<Calendar_AugmentEventAddRoom>>>;
+  augmentId: Scalars['String'];
+  augmentType: Scalars['String'];
+  eventId: Scalars['Int'];
+  excludeAttendees?: InputMaybe<Array<InputMaybe<Calendar_AugmentEventExcludeAttendee>>>;
+  excludeRooms?: InputMaybe<Array<InputMaybe<Calendar_AugmentEventExcludeRoom>>>;
+  scheduleId: Scalars['Int'];
+  tags?: InputMaybe<Array<CalendarTagInput>>;
+};
+
+export type Calendar_AugmentEventAddAttendee = {
+  dates: Array<Scalars['Date']>;
+  partyId: Scalars['Long'];
+  type: CalendarEventAttendeeType;
+};
+
+export type Calendar_AugmentEventAddRoom = {
+  dates: Array<Scalars['Date']>;
+  roomId: Scalars['Int'];
+};
+
+export type Calendar_AugmentEventExcludeAttendee = {
+  dates: Array<Scalars['Date']>;
+  partyId: Scalars['Long'];
+};
+
+export type Calendar_AugmentEventExcludeRoom = {
+  dates: Array<Scalars['Date']>;
+  roomId: Scalars['Int'];
+};
+
+export type Calendar_AugmentEvents = {
+  augments: Array<Calendar_AugmentEvent>;
 };
 
 export type Calendar_BellTime = {
@@ -609,6 +671,7 @@ export type Calendar_DatetimeFilterCondition = {
   beforeTime?: InputMaybe<Scalars['Time']>;
   /**  filters for only these dates within the range */
   dateArray?: InputMaybe<Array<Scalars['Date']>>;
+  eventIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 export type Calendar_EditEvent = {
@@ -654,6 +717,30 @@ export type Calendar_EditEvents = {
   effectiveFromDate?: InputMaybe<Scalars['Date']>;
   events: Array<Calendar_EditEvent>;
 };
+
+export type Calendar_EventAttendeeAugment = {
+  __typename?: 'Calendar_EventAttendeeAugment';
+  endDate?: Maybe<Scalars['Date']>;
+  inclusionType: Calendar_InclusionType;
+  individualDates: Array<Scalars['Date']>;
+  partyId: Scalars['Long'];
+  startDate?: Maybe<Scalars['Date']>;
+  type: CalendarEventAttendeeType;
+};
+
+export type Calendar_EventRoomAugment = {
+  __typename?: 'Calendar_EventRoomAugment';
+  endDate?: Maybe<Scalars['Date']>;
+  inclusionType: Calendar_InclusionType;
+  individualDates: Array<Scalars['Date']>;
+  roomId: Scalars['Int'];
+  startDate?: Maybe<Scalars['Date']>;
+};
+
+export enum Calendar_InclusionType {
+  Exclude = 'EXCLUDE',
+  Include = 'INCLUDE'
+}
 
 export type Calendar_SchoolDayType = {
   __typename?: 'Calendar_SchoolDayType';
@@ -836,12 +923,34 @@ export type Core_NonEnrolledSibling = {
   partyId: Scalars['Long'];
 };
 
+/**
+ * type Core_UserAccess {
+ *     personPartyId: Long!
+ *     #deep linked
+ *     person: Person!
+ *     email: String
+ *     webLastLogin: DateTime
+ *     mobileLastLogin: DateTime
+ *     status: UserAccessStatus
+ *     invitationId: Long
+ *     invitingPersonPartyId: Long
+ *     #deep linked
+ *     invitingPerson: Person
+ *     invitedOn: DateTime
+ * }
+ */
 export type Core_PartyInAcademicNamespace = {
   __typename?: 'Core_PartyInAcademicNamespace';
   academicNamespaceId: Scalars['Int'];
   partyId: Scalars['Long'];
 };
 
+/**
+ * input Core_UserAccessFilter {
+ *     partyIds: [Long]
+ *     userType: UserType!
+ * }
+ */
 export type Core_PartyInAcademicNamespaceFilter = {
   academicNamespaceId?: InputMaybe<Scalars['Int']>;
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
@@ -875,27 +984,6 @@ export type Core_UpdateStudentContactRelationshipInput = {
   priority?: InputMaybe<Scalars['Int']>;
   relationshipType?: InputMaybe<StudentContactType>;
   studentPartyId: Scalars['Long'];
-};
-
-export type Core_UserAccess = {
-  __typename?: 'Core_UserAccess';
-  email?: Maybe<Scalars['String']>;
-  invitationId?: Maybe<Scalars['Long']>;
-  invitedOn?: Maybe<Scalars['DateTime']>;
-  /** deep linked */
-  invitingPerson?: Maybe<Person>;
-  invitingPersonPartyId?: Maybe<Scalars['Long']>;
-  mobileLastLogin?: Maybe<Scalars['DateTime']>;
-  /** deep linked */
-  person: Person;
-  personPartyId: Scalars['Long'];
-  status?: Maybe<UserAccessStatus>;
-  webLastLogin?: Maybe<Scalars['DateTime']>;
-};
-
-export type Core_UserAccessFilter = {
-  partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-  userType: UserType;
 };
 
 export type CreateCalendarEventAttendeeInput = {
@@ -1209,6 +1297,11 @@ export type DeleteFeeInput = {
   id: Scalars['Int'];
 };
 
+export type DeleteFileTransferInput = {
+  feature: FileTransferFeature;
+  id: Scalars['Int'];
+};
+
 export type DeleteStudentMedicalConditionInput = {
   id: Scalars['Int'];
   studentPartyId: Scalars['Long'];
@@ -1489,6 +1582,24 @@ export enum FeeType {
   Voluntary = 'VOLUNTARY'
 }
 
+export enum FileTransferFeature {
+  StudentDocs = 'STUDENT_DOCS'
+}
+
+export type FileTransferFilter = {
+  feature?: InputMaybe<FileTransferFeature>;
+  referenceId?: InputMaybe<Scalars['String']>;
+};
+
+export type FileTransferResponse = {
+  __typename?: 'FileTransferResponse';
+  feature: FileTransferFeature;
+  fileName: Scalars['String'];
+  fileUrl: Scalars['String'];
+  id: Scalars['Int'];
+  referenceId: Scalars['String'];
+};
+
 export type FindFreeResourcesFilter = {
   allRooms?: InputMaybe<Scalars['Boolean']>;
   /**  Optionally search for in particular calendars. If not specified, all calendars will be searched. */
@@ -1716,8 +1827,15 @@ export type InviteUser = {
   email: Scalars['String'];
   givenName: Scalars['String'];
   personPartyId: Scalars['Long'];
+  resend: Scalars['Boolean'];
   surname: Scalars['String'];
   userType: UserType;
+};
+
+export type InviteUsersResponse = {
+  __typename?: 'InviteUsersResponse';
+  userAccesses: Array<UserAccess>;
+  validations: Array<Scalars['String']>;
 };
 
 export enum Iterator {
@@ -1834,6 +1952,7 @@ export type Mutation = {
   core_updateClassGroups?: Maybe<Success>;
   core_updateStaff: Success;
   core_updateStudentContactRelationships?: Maybe<Success>;
+  core_updateStudentContacts: Success;
   core_updateStudents?: Maybe<Success>;
   core_updateSubjectGroups?: Maybe<Success>;
   core_updateYearGroupEnrollments?: Maybe<Success>;
@@ -1841,6 +1960,7 @@ export type Mutation = {
   core_upsertRooms: Array<Room>;
   core_upsertStaff?: Maybe<Array<Maybe<Staff>>>;
   core_upsertStudentContact: StudentContact;
+  delete_file_transfer?: Maybe<Success>;
   enrollment_ire_autoAssignBlocks: EnrollmentIre_CoreMemberships;
   enrollment_ire_autoAssignCore: EnrollmentIre_CoreMemberships;
   enrollment_ire_changeProgrammeStage: Success;
@@ -1861,7 +1981,7 @@ export type Mutation = {
   tt_swap: Success;
   tt_updateTimetableGroup: Success;
   users_createProfileForGlobalUser?: Maybe<Profile>;
-  users_inviteUsers?: Maybe<Array<Maybe<UserAccess>>>;
+  users_inviteUsers?: Maybe<InviteUsersResponse>;
   users_savePermissionGroup?: Maybe<PermissionGroup>;
   wellbeing_deleteStudentMedicalCondition: StudentMedical;
   wellbeing_savePriorityStudent?: Maybe<PriorityStudent>;
@@ -2018,6 +2138,11 @@ export type MutationCore_UpdateStudentContactRelationshipsArgs = {
 };
 
 
+export type MutationCore_UpdateStudentContactsArgs = {
+  input: Array<UpdateStaffInput>;
+};
+
+
 export type MutationCore_UpdateStudentsArgs = {
   input?: InputMaybe<Array<InputMaybe<UpdateStudentInput>>>;
 };
@@ -2050,6 +2175,11 @@ export type MutationCore_UpsertStaffArgs = {
 
 export type MutationCore_UpsertStudentContactArgs = {
   input: UpsertStudentContactInput;
+};
+
+
+export type MutationDelete_File_TransferArgs = {
+  input: DeleteFileTransferInput;
 };
 
 
@@ -2531,7 +2661,7 @@ export type PermissionGroupFilter = {
 export type PermissionGroupPermissionSet = {
   __typename?: 'PermissionGroupPermissionSet';
   feature?: Maybe<Feature>;
-  id: Scalars['Int'];
+  id: Scalars['String'];
   permissionType?: Maybe<PermissionType>;
   toggle?: Maybe<Scalars['Boolean']>;
 };
@@ -2542,7 +2672,7 @@ export type PermissionSet = {
   description: Scalars['String'];
   descriptionTextId: Scalars['Int'];
   feature?: Maybe<Feature>;
-  id: Scalars['Int'];
+  id: Scalars['String'];
   name: Scalars['String'];
   nameTextId: Scalars['Int'];
   permissionType?: Maybe<PermissionType>;
@@ -2554,7 +2684,7 @@ export type PermissionSet = {
 
 export type PermissionSetFilter = {
   contact?: InputMaybe<Scalars['Boolean']>;
-  ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   staff?: InputMaybe<Scalars['Boolean']>;
   student?: InputMaybe<Scalars['Boolean']>;
 };
@@ -2818,12 +2948,12 @@ export type Query = {
   core_studentContacts?: Maybe<Array<StudentContact>>;
   core_students: Array<Student>;
   core_subjectGroupStudents?: Maybe<SubjectGroupStudent>;
-  core_userAccess: Array<Core_UserAccess>;
   core_yearGroupEnrollments: Array<YearGroupEnrollment>;
   enrollment_ire_blockMemberships: EnrollmentIre_BlockMemberships;
   enrollment_ire_coreMemberships: EnrollmentIre_CoreMemberships;
   fees_discounts?: Maybe<Array<Maybe<Discount>>>;
   fees_fees?: Maybe<Array<Maybe<Fee>>>;
+  file_transfer_list?: Maybe<Array<FileTransferResponse>>;
   generalGroups?: Maybe<Array<GeneralGroup>>;
   myAuthDetails?: Maybe<GlobalUser>;
   permissions?: Maybe<Array<Maybe<Permission>>>;
@@ -2835,7 +2965,10 @@ export type Query = {
   subjectGroups?: Maybe<Array<SubjectGroup>>;
   swm_absenceTypes: Array<Swm_StaffAbsenceType>;
   swm_absences: Array<Swm_StaffAbsence>;
+  /**  note will return all events that require substitution */
   swm_eventsForSubstitutions: Array<Swm_CalendarSubstitution>;
+  /**  note will only return timetabled lessons that occur on the grid */
+  swm_eventsForSubstitutionsByStaffByPeriod: Swm_StaffSubstitutionEventByDay;
   swm_substitutionLookup: Swm_SubstitutionLookup;
   swm_substitutions: Array<Swm_Substitution>;
   tt_groups: Array<Tt_Groups>;
@@ -2844,9 +2977,10 @@ export type Query = {
   tt_swapRoomOptions: TtSwapRoomOptions;
   tt_swapTeacherOptions: TtSwapTeacherOptions;
   tt_timetables: Array<TtTimetable>;
+  users_permissionGroups?: Maybe<Array<Maybe<PermissionGroup>>>;
   users_permissionSets?: Maybe<Array<Maybe<PermissionSet>>>;
   users_schoolInfo?: Maybe<SchoolInfo>;
-  users_userInvitations?: Maybe<Array<Maybe<UserAccess>>>;
+  users_userAccess: Array<UserAccess>;
   wellbeing_activeSupportPlan?: Maybe<Array<Maybe<ActivePlan>>>;
   wellbeing_priorityStudent?: Maybe<Array<Maybe<PriorityStudent>>>;
   wellbeing_studentMedical?: Maybe<StudentMedical>;
@@ -3057,11 +3191,6 @@ export type QueryCore_SubjectGroupStudentsArgs = {
 };
 
 
-export type QueryCore_UserAccessArgs = {
-  filter?: InputMaybe<Core_UserAccessFilter>;
-};
-
-
 export type QueryCore_YearGroupEnrollmentsArgs = {
   filter?: InputMaybe<YearGroupEnrollmentFilter>;
 };
@@ -3084,6 +3213,11 @@ export type QueryFees_DiscountsArgs = {
 
 export type QueryFees_FeesArgs = {
   filter?: InputMaybe<FeeFilter>;
+};
+
+
+export type QueryFile_Transfer_ListArgs = {
+  filter?: InputMaybe<FileTransferFilter>;
 };
 
 
@@ -3132,6 +3266,11 @@ export type QuerySwm_EventsForSubstitutionsArgs = {
 };
 
 
+export type QuerySwm_EventsForSubstitutionsByStaffByPeriodArgs = {
+  filter?: InputMaybe<Swm_EventsForSubstitutionFilter>;
+};
+
+
 export type QuerySwm_SubstitutionLookupArgs = {
   filter?: InputMaybe<Swm_SubstitutionLookupFilter>;
 };
@@ -3172,12 +3311,17 @@ export type QueryTt_TimetablesArgs = {
 };
 
 
+export type QueryUsers_PermissionGroupsArgs = {
+  filter?: InputMaybe<PermissionGroupFilter>;
+};
+
+
 export type QueryUsers_PermissionSetsArgs = {
   filter?: InputMaybe<PermissionSetFilter>;
 };
 
 
-export type QueryUsers_UserInvitationsArgs = {
+export type QueryUsers_UserAccessArgs = {
   filter?: InputMaybe<UserAccessFilter>;
 };
 
@@ -3304,6 +3448,7 @@ export enum RoomState {
 export type Swm_CalendarSubstitution = {
   __typename?: 'SWM_CalendarSubstitution';
   event: CalendarEvent;
+  staffPartyId: Scalars['Long'];
   substitution?: Maybe<Swm_Substitution>;
 };
 
@@ -3315,6 +3460,35 @@ export type Swm_EventsForSubstitutionFilter = {
   fromDate: Scalars['Date'];
   staffPartyIds?: InputMaybe<Array<Scalars['Long']>>;
   toDate: Scalars['Date'];
+};
+
+export type Swm_EventsForSubstitutionStaff = {
+  __typename?: 'SWM_EventsForSubstitutionStaff';
+  staff: Staff;
+  substitutionEventsByDay: Array<Swm_EventsForSubstitutionStaffByDay>;
+};
+
+export type Swm_EventsForSubstitutionStaffByDay = {
+  __typename?: 'SWM_EventsForSubstitutionStaffByDay';
+  date?: Maybe<Scalars['Date']>;
+  dayInfo: CalendarDayInfo;
+  staffPartyId: Scalars['Long'];
+  substitutionEventsByPeriod: Array<Swm_CalendarSubstitution>;
+};
+
+export type Swm_InsertSubstitution = {
+  events: Array<Swm_InsertSubstitutionEvent>;
+};
+
+export type Swm_InsertSubstitutionEvent = {
+  absenceId?: InputMaybe<Scalars['Int']>;
+  date: Scalars['Date'];
+  eventId: Scalars['Int'];
+  note?: InputMaybe<Scalars['String']>;
+  originalStaffId: Scalars['Long'];
+  substituteRoomId?: InputMaybe<Scalars['Int']>;
+  substituteStaffId: Scalars['Long'];
+  substitutionTypeId: Scalars['Int'];
 };
 
 export type Swm_StaffAbsence = {
@@ -3392,6 +3566,15 @@ export type Swm_StaffAbsenceTypeFilter = {
   absenceTypeIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
+export type Swm_StaffSubstitutionEventByDay = {
+  __typename?: 'SWM_StaffSubstitutionEventByDay';
+  eventsByStaff: Array<Swm_EventsForSubstitutionStaff>;
+};
+
+export type Swm_StaffSubstitutionTypeFilter = {
+  substitutionTypeIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
 export type Swm_Substitution = {
   __typename?: 'SWM_Substitution';
   note?: Maybe<Scalars['String']>;
@@ -3460,6 +3643,7 @@ export type Swm_SubstitutionType = {
   descriptionTextId?: Maybe<Scalars['Int']>;
   name: Scalars['String'];
   nameTextId: Scalars['Int'];
+  substitutionTypeId: Scalars['Int'];
 };
 
 export type Swm_SubstitutionsFilter = {
@@ -3510,6 +3694,13 @@ export type Swm_UpsertStaffAbsenceType = {
   code: Scalars['String'];
   description: Array<InputMaybe<TranslationInput>>;
   name: Array<InputMaybe<TranslationInput>>;
+};
+
+export type Swm_UpsertStaffSubstitutionType = {
+  code: Scalars['String'];
+  description: Array<InputMaybe<TranslationInput>>;
+  name: Array<InputMaybe<TranslationInput>>;
+  substitutionTypeId?: InputMaybe<Scalars['Int']>;
 };
 
 /**    -------------- Inputs --------------- */
@@ -3751,7 +3942,7 @@ export type SavePermissionGroup = {
 };
 
 export type SavePermissionGroupSet = {
-  id: Scalars['Int'];
+  id: Scalars['String'];
   permissionType?: InputMaybe<PermissionType>;
   toggle?: InputMaybe<Scalars['Boolean']>;
 };
@@ -5266,6 +5457,7 @@ export type UpdateStaffInput = {
   carRegistrationNumber?: InputMaybe<Scalars['String']>;
   displayCode?: InputMaybe<Scalars['String']>;
   employmentCapacity?: InputMaybe<Scalars['String']>;
+  gender?: InputMaybe<Gender>;
   includeDtrReturns?: InputMaybe<Scalars['Boolean']>;
   jobSharing?: InputMaybe<Scalars['Boolean']>;
   makeAndModel?: InputMaybe<Scalars['String']>;
@@ -5273,9 +5465,12 @@ export type UpdateStaffInput = {
   otherSchool1?: InputMaybe<Scalars['String']>;
   otherSchool2?: InputMaybe<Scalars['String']>;
   parking?: InputMaybe<Scalars['String']>;
+  payrollNumber?: InputMaybe<Scalars['String']>;
   position?: InputMaybe<Scalars['String']>;
+  ppsNumber?: InputMaybe<Scalars['String']>;
   previousSchool1?: InputMaybe<Scalars['String']>;
   previousSchool2?: InputMaybe<Scalars['String']>;
+  primaryEmail?: InputMaybe<Scalars['String']>;
   qualifications?: InputMaybe<Scalars['String']>;
   qualifications2?: InputMaybe<Scalars['String']>;
   qualifications3?: InputMaybe<Scalars['String']>;
@@ -5284,6 +5479,11 @@ export type UpdateStaffInput = {
   staffPost?: InputMaybe<Scalars['Int']>;
   teacherCouncilNumber?: InputMaybe<Scalars['String']>;
   teacherReferenceNumber?: InputMaybe<Scalars['String']>;
+};
+
+export type UpdateStudentContactInput = {
+  contactPartyId: Scalars['Long'];
+  primaryEmail?: InputMaybe<Scalars['String']>;
 };
 
 export type UpdateStudentInput = {
@@ -5475,15 +5675,17 @@ export type UserAccess = {
   invitationId?: Maybe<Scalars['Long']>;
   invitedOn?: Maybe<Scalars['DateTime']>;
   invitingPersonPartyId?: Maybe<Scalars['Long']>;
+  invitingPersonalInfo?: Maybe<PersonalInformation>;
   mobileLastLogin?: Maybe<Scalars['DateTime']>;
   personPartyId: Scalars['Long'];
+  personalInfo: PersonalInformation;
   status?: Maybe<UserAccessStatus>;
   webLastLogin?: Maybe<Scalars['DateTime']>;
 };
 
 export type UserAccessFilter = {
-  ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  userType: AccessUserType;
 };
 
 export enum UserAccessStatus {
@@ -6112,14 +6314,14 @@ export type Composite_PermissionGroupsQueryVariables = Exact<{
 }>;
 
 
-export type Composite_PermissionGroupsQuery = { __typename?: 'Query', composite_permissionGroups: Array<{ __typename?: 'PermissionGroup', id: number, name: string, description: string, memberType: MemberType, memberPartyIds: Array<number>, custom?: boolean | null, permissionSets: Array<{ __typename?: 'PermissionGroupPermissionSet', id: number, toggle?: boolean | null, permissionType?: PermissionType | null, feature?: Feature | null }> } | null> };
+export type Composite_PermissionGroupsQuery = { __typename?: 'Query', composite_permissionGroups: Array<{ __typename?: 'PermissionGroup', id: number, name: string, description: string, memberType: MemberType, memberPartyIds: Array<number>, custom?: boolean | null, permissionSets: Array<{ __typename?: 'PermissionGroupPermissionSet', id: string, toggle?: boolean | null, permissionType?: PermissionType | null, feature?: Feature | null }> } | null> };
 
 export type Users_PermissionSetsQueryVariables = Exact<{
   filter: PermissionSetFilter;
 }>;
 
 
-export type Users_PermissionSetsQuery = { __typename?: 'Query', users_permissionSets?: Array<{ __typename?: 'PermissionSet', id: number, name: string, description: string, permissionType?: PermissionType | null, toggle?: boolean | null, feature?: Feature | null } | null> | null };
+export type Users_PermissionSetsQuery = { __typename?: 'Query', users_permissionSets?: Array<{ __typename?: 'PermissionSet', id: string, name: string, description: string, permissionType?: PermissionType | null, toggle?: boolean | null, feature?: Feature | null } | null> | null };
 
 export type Ppod_PpodCredentialsQueryVariables = Exact<{ [key: string]: never; }>;
 

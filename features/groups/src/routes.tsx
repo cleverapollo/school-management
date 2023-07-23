@@ -70,6 +70,8 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'year',
             title: t('navigation:general.groups.year'),
+            hasAccess: (permissions) =>
+              permissions.hasPermission('ps:1:groups:view_year_groups'),
             children: [
               {
                 type: NavObjectType.NonMenuLink,
@@ -96,6 +98,8 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'class',
             title: t('navigation:general.groups.class'),
+            hasAccess: (permissions) =>
+              permissions.hasPermission('ps:1:groups:view_class_groups'),
             children: [
               {
                 type: NavObjectType.NonMenuLink,
@@ -150,6 +154,8 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'subject',
             title: t('navigation:general.groups.subject'),
             loader: () => getSubjectGroups(),
+            hasAccess: (permissions) =>
+              permissions.hasPermission('ps:1:groups:view_subject_groups'),
             children: [
               {
                 type: NavObjectType.NonMenuLink,
@@ -236,11 +242,15 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'custom',
             title: t('navigation:general.groups.custom'),
+            hasAccess: (permissions) =>
+              permissions.hasPermission('ps:1:groups:view_custom_groups'),
             children: [
               {
                 type: NavObjectType.NonMenuLink,
                 index: true,
+
                 loader: () => getCustomGroups(),
+
                 element: <CustomGroups />,
               },
               {

@@ -19,7 +19,8 @@ export const getRoutes: NavObjectFunction = (t) => [
       {
         type: NavObjectType.RootLink,
         path: 'class-list-manager',
-        hasAccess: (permissions) => !permissions.isTyroTenantAndUser,
+        hasAccess: (permissions) =>
+          permissions.hasPermission('ps:1:groups:view_class_list_manager'),
         title: t('navigation:management.classListManager'),
         icon: <MoveGroupIcon />,
         element: <ClassListManagerContainer />,
