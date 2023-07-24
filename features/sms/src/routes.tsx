@@ -14,7 +14,8 @@ export const getRoutes: NavObjectFunction = (t) => [
       {
         type: NavObjectType.RootLink,
         path: 'sms',
-        hasAccess: (permissions) => !permissions.isTyroTenantAndUser,
+        hasAccess: (permissions) =>
+          permissions.hasPermission('ps:1:communications:read_sms_receipts'),
         title: t('navigation:management.sms'),
         icon: <MobileIcon />,
         element: <Sms />,

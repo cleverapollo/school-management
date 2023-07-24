@@ -23,15 +23,13 @@ export default function ClonePermissionPage() {
     const { memberType, permissionSets } = groupData;
 
     return {
-      permissionsFieldsByIds: permissionSets.reduce<
-        PermissionFormState['permissionsFieldsByIds']
-      >(
-        (permissionsByIds, permission) => ({
-          ...permissionsByIds,
-          [permission.id]: permission,
-        }),
-        {} as PermissionFormState['permissionsFieldsByIds']
-      ),
+      permissionsFieldsBySetId: permissionSets.reduce<
+        PermissionFormState['permissionsFieldsBySetId']
+      >((permissionsFieldsBySetId, permission) => {
+        permissionsFieldsBySetId[permission.id] = permission;
+
+        return permissionsFieldsBySetId;
+      }, {}),
       memberType:
         memberType === MemberType.Admin ? MemberType.Staff : memberType,
     };
