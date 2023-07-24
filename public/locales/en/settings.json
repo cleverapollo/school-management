@@ -158,7 +158,9 @@
       "TIMETABLE": "Timetable",
       "USERS": "Users",
       "WELLBEING": "Wellbeing",
-      "PEOPLE": "People"
+      "PEOPLE": "People",
+      "GENERAL_ADMIN": "General admin",
+      "TIMETABLE_CONSTRUCTION": "Timetable construction"
     }
   }
 }

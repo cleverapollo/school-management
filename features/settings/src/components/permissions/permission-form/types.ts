@@ -10,10 +10,13 @@ export type PermissionFormState = {
   description: PermissionGroup['description'];
   custom: PermissionGroup['custom'];
   members: MemberOption[];
-  permissionsFieldsByIds: Array<{
-    id: PermissionSet['id'];
-    feature?: PermissionSet['feature'];
-    toggle?: PermissionSet['toggle'] | null;
-    permissionType?: PermissionSet['permissionType'] | null;
-  }>;
+  permissionsFieldsBySetId: Record<
+    string,
+    {
+      id: PermissionSet['id'];
+      feature?: PermissionSet['feature'];
+      toggle?: PermissionSet['toggle'] | null;
+      permissionType?: PermissionSet['permissionType'] | null;
+    }
+  >;
 };
