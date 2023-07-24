@@ -923,34 +923,12 @@ export type Core_NonEnrolledSibling = {
   partyId: Scalars['Long'];
 };
 
-/**
- * type Core_UserAccess {
- *     personPartyId: Long!
- *     #deep linked
- *     person: Person!
- *     email: String
- *     webLastLogin: DateTime
- *     mobileLastLogin: DateTime
- *     status: UserAccessStatus
- *     invitationId: Long
- *     invitingPersonPartyId: Long
- *     #deep linked
- *     invitingPerson: Person
- *     invitedOn: DateTime
- * }
- */
 export type Core_PartyInAcademicNamespace = {
   __typename?: 'Core_PartyInAcademicNamespace';
   academicNamespaceId: Scalars['Int'];
   partyId: Scalars['Long'];
 };
 
-/**
- * input Core_UserAccessFilter {
- *     partyIds: [Long]
- *     userType: UserType!
- * }
- */
 export type Core_PartyInAcademicNamespaceFilter = {
   academicNamespaceId?: InputMaybe<Scalars['Int']>;
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
@@ -984,27 +962,6 @@ export type Core_UpdateStudentContactRelationshipInput = {
   priority?: InputMaybe<Scalars['Int']>;
   relationshipType?: InputMaybe<StudentContactType>;
   studentPartyId: Scalars['Long'];
-};
-
-export type Core_UserAccess = {
-  __typename?: 'Core_UserAccess';
-  email?: Maybe<Scalars['String']>;
-  invitationId?: Maybe<Scalars['Long']>;
-  invitedOn?: Maybe<Scalars['DateTime']>;
-  /** deep linked */
-  invitingPerson?: Maybe<Person>;
-  invitingPersonPartyId?: Maybe<Scalars['Long']>;
-  mobileLastLogin?: Maybe<Scalars['DateTime']>;
-  /** deep linked */
-  person: Person;
-  personPartyId: Scalars['Long'];
-  status?: Maybe<UserAccessStatus>;
-  webLastLogin?: Maybe<Scalars['DateTime']>;
-};
-
-export type Core_UserAccessFilter = {
-  partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-  userType: UserType;
 };
 
 export type CreateCalendarEventAttendeeInput = {
@@ -2969,7 +2926,6 @@ export type Query = {
   core_studentContacts?: Maybe<Array<StudentContact>>;
   core_students: Array<Student>;
   core_subjectGroupStudents?: Maybe<SubjectGroupStudent>;
-  core_userAccess: Array<Core_UserAccess>;
   core_yearGroupEnrollments: Array<YearGroupEnrollment>;
   enrollment_ire_blockMemberships: EnrollmentIre_BlockMemberships;
   enrollment_ire_coreMemberships: EnrollmentIre_CoreMemberships;
@@ -2987,7 +2943,10 @@ export type Query = {
   subjectGroups?: Maybe<Array<SubjectGroup>>;
   swm_absenceTypes: Array<Swm_StaffAbsenceType>;
   swm_absences: Array<Swm_StaffAbsence>;
-  swm_eventsForSubstitutions: Swm_EventsForSubstitution;
+  /**  note will return all events that require substitution */
+  swm_eventsForSubstitutions: Array<Swm_CalendarSubstitution>;
+  /**  note will only return timetabled lessons that occur on the grid */
+  swm_eventsForSubstitutionsByStaffByPeriod: Swm_StaffSubstitutionEventByDay;
   swm_substitutionLookup: Swm_SubstitutionLookup;
   swm_substitutions: Array<Swm_Substitution>;
   tt_groups: Array<Tt_Groups>;
@@ -2996,6 +2955,7 @@ export type Query = {
   tt_swapRoomOptions: TtSwapRoomOptions;
   tt_swapTeacherOptions: TtSwapTeacherOptions;
   tt_timetables: Array<TtTimetable>;
+  users_permissionGroups?: Maybe<Array<Maybe<PermissionGroup>>>;
   users_permissionSets?: Maybe<Array<Maybe<PermissionSet>>>;
   users_schoolInfo?: Maybe<SchoolInfo>;
   users_userAccess: Array<UserAccess>;
@@ -3209,11 +3169,6 @@ export type QueryCore_SubjectGroupStudentsArgs = {
 };
 
 
-export type QueryCore_UserAccessArgs = {
-  filter?: InputMaybe<Core_UserAccessFilter>;
-};
-
-
 export type QueryCore_YearGroupEnrollmentsArgs = {
   filter?: InputMaybe<YearGroupEnrollmentFilter>;
 };
@@ -3289,6 +3244,11 @@ export type QuerySwm_EventsForSubstitutionsArgs = {
 };
 
 
+export type QuerySwm_EventsForSubstitutionsByStaffByPeriodArgs = {
+  filter?: InputMaybe<Swm_EventsForSubstitutionFilter>;
+};
+
+
 export type QuerySwm_SubstitutionLookupArgs = {
   filter?: InputMaybe<Swm_SubstitutionLookupFilter>;
 };
@@ -3326,6 +3286,11 @@ export type QueryTt_SwapTeacherOptionsArgs = {
 
 export type QueryTt_TimetablesArgs = {
   filter?: InputMaybe<TtTimetableFilter>;
+};
+
+
+export type QueryUsers_PermissionGroupsArgs = {
+  filter?: InputMaybe<PermissionGroupFilter>;
 };
 
 
@@ -3461,16 +3426,12 @@ export enum RoomState {
 export type Swm_CalendarSubstitution = {
   __typename?: 'SWM_CalendarSubstitution';
   event: CalendarEvent;
+  staffPartyId: Scalars['Long'];
   substitution?: Maybe<Swm_Substitution>;
 };
 
 export type Swm_DeleteStaffAbsence = {
   staffAbsenceIds: Array<InputMaybe<Scalars['Int']>>;
-};
-
-export type Swm_EventsForSubstitution = {
-  __typename?: 'SWM_EventsForSubstitution';
-  eventsByStaff: Array<Swm_EventsForSubstitutionStaff>;
 };
 
 export type Swm_EventsForSubstitutionFilter = {
@@ -3488,7 +3449,8 @@ export type Swm_EventsForSubstitutionStaff = {
 export type Swm_EventsForSubstitutionStaffByDay = {
   __typename?: 'SWM_EventsForSubstitutionStaffByDay';
   date?: Maybe<Scalars['Date']>;
-  periods?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  dayInfo: CalendarDayInfo;
+  staffPartyId: Scalars['Long'];
   substitutionEventsByPeriod: Array<Swm_CalendarSubstitution>;
 };
 
@@ -3580,6 +3542,11 @@ export type Swm_StaffAbsenceType = {
 
 export type Swm_StaffAbsenceTypeFilter = {
   absenceTypeIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
+export type Swm_StaffSubstitutionEventByDay = {
+  __typename?: 'SWM_StaffSubstitutionEventByDay';
+  eventsByStaff: Array<Swm_EventsForSubstitutionStaff>;
 };
 
 export type Swm_StaffSubstitutionTypeFilter = {
@@ -5695,9 +5662,8 @@ export type UserAccess = {
 };
 
 export type UserAccessFilter = {
-  userType: AccessUserType;
-  ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  userType: AccessUserType;
 };
 
 export enum UserAccessStatus {
