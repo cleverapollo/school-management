@@ -47,15 +47,13 @@ export default function EditPermissionPage() {
       members: members
         .filter((member) => memberPartyIds.includes(member.partyId))
         .sort(sortByDisplayName),
-      permissionsFieldsByIds: permissionSets.reduce<
-        PermissionFormState['permissionsFieldsByIds']
-      >(
-        (permissionsByIds, permission) => ({
-          ...permissionsByIds,
-          [permission.id]: permission,
-        }),
-        {} as PermissionFormState['permissionsFieldsByIds']
-      ),
+      permissionsFieldsBySetId: permissionSets.reduce<
+        PermissionFormState['permissionsFieldsBySetId']
+      >((permissionsFieldsBySetId, permission) => {
+        permissionsFieldsBySetId[permission.id] = permission;
+
+        return permissionsFieldsBySetId;
+      }, {}),
     };
   }, [groupData, isLoading]);
 
