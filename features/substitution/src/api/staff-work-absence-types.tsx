@@ -1,11 +1,19 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   gqlClient,
   graphql,
   queryClient,
+  UseQueryReturnType,
   Swm_StaffAbsenceTypeFilter,
+  Swm_UpsertStaffAbsenceType,
 } from '@tyro/api';
+import { useToast } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 import { substitutionKeys } from './keys';
+
+export type ReturnTypeFromUseAbsenceTypes = UseQueryReturnType<
+  typeof useStaffWorkAbsenceTypes
+>[number];
 
 const staffWorkAbsenceTypes = graphql(/* GraphQL */ `
   query swm_absenceTypes($filter: SWM_StaffAbsenceTypeFilter) {
@@ -21,8 +29,16 @@ const staffWorkAbsenceTypes = graphql(/* GraphQL */ `
   }
 `);
 
+const createAbsenceType = graphql(/* GraphQL */ `
+  mutation swm_upsertAbsenceType($input: [SWM_UpsertStaffAbsenceType]) {
+    swm_upsertAbsenceType(input: $input) {
+      absenceTypeId
+    }
+  }
+`);
+
 const staffWorkAbsenceTypesQuery = (filter: Swm_StaffAbsenceTypeFilter) => ({
-  queryKey: substitutionKeys.absenceTypes(filter),
+  queryKey: substitutionKeys.absenceTypes.list(filter),
   queryFn: () => gqlClient.request(staffWorkAbsenceTypes, { filter }),
 });
 
@@ -34,5 +50,27 @@ export function useStaffWorkAbsenceTypes(filter: Swm_StaffAbsenceTypeFilter) {
   return useQuery({
     ...staffWorkAbsenceTypesQuery(filter),
     select: ({ swm_absenceTypes }) => swm_absenceTypes ?? [],
+  });
+}
+
+export function useCreateOrUpdateAbsenceType() {
+  const { toast } = useToast();
+  const { t } = useTranslation(['common']);
+
+  return useMutation({
+    mutationKey: substitutionKeys.absenceTypes.createOrUpdateAbsenceType(),
+    mutationFn: async (input: Swm_UpsertStaffAbsenceType[]) =>
+      gqlClient.request(createAbsenceType, { input }),
+    onError: () => {
+      toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
+    },
+    onSuccess: (_, [code]) => {
+      toast(
+        code?.absenceTypeId
+          ? t('common:snackbarMessages.updateSuccess')
+          : t('common:snackbarMessages.createSuccess')
+      );
+      queryClient.invalidateQueries(substitutionKeys.absenceTypes.list({}));
+    },
   });
 }

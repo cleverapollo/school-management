@@ -1,9 +1,7 @@
 import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { lazy } from 'react';
 import { GraduateHatLoadingIcon } from '@tyro/icons';
-import { getStaff } from '@tyro/people';
 import { getStaffWorkAbsences } from './api/staff-work-absences';
-import { getStaffWorkAbsenceTypes } from './api/staff-work-absence-types';
 
 const Absences = lazy(() => import('./pages/absences'));
 

@@ -12,8 +12,7 @@
     },
     "absence": {
       "title": "Absence",
-      "overview": "Overview",
-      "codes": "Staff Absence Types"
+      "types": "Staff absence types"
     },
     "groups": {
       "title": "Groups",

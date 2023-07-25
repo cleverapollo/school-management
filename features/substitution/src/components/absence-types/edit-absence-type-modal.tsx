@@ -4,35 +4,25 @@ import {
   Stack,
   DialogActions,
   Dialog,
-  IconButton,
-  Tooltip,
-  Box,
 } from '@mui/material';
-import {
-  RHFCheckbox,
-  RHFSelect,
-  RHFTextField,
-  useFormValidator,
-} from '@tyro/core';
+import { RHFTextField, useFormValidator } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import { Swm_UpsertStaffAbsenceType, TuslaCode } from '@tyro/api';
+import { Swm_UpsertStaffAbsenceType } from '@tyro/api';
 import React, { useEffect } from 'react';
-import { CloseIcon, InfoCircleIcon } from '@tyro/icons';
 import {
   ReturnTypeFromUseAbsenceTypes,
   useCreateOrUpdateAbsenceType,
-} from '../../api';
+} from '../../api/staff-work-absence-types';
 
 export type EditAbsenceTypeFormState = Pick<
   Swm_UpsertStaffAbsenceType,
-  'absenceTypeId' | 'availableForRequests' | 'code' | 'description' | 'name'
+  'absenceTypeId' | 'code'
 > & {
   name: string;
   description?: string | null;
   visibleForAdmin?: boolean;
-  availableForRequests: boolean;
 };
 
 export type EditAbsenceTypeViewProps = {
@@ -65,29 +55,26 @@ export const EditAbsenceTypeModal = ({
     (absenceType) => absenceType?.code !== initialAbsenceTypeState?.code
   );
 
-  const { control, handleSubmit, reset, watch, setValue } =
-    useForm<EditAbsenceTypeFormState>({
-      resolver: resolver({
-        name: [
-          rules.required(),
-          rules.max(20),
-          rules.isUniqueByKey(
-            absenceTypesWithoutSelf as [],
-            'name',
-            t('absence:absenceTypeNameShouldBeUnique') ?? ''
-          ),
-        ],
-        description: [rules.required(), rules.max(20)],
-        availableForRequests: [rules.required()],
-      }),
-      defaultValues: defaultFormStateValues,
-      mode: 'onChange',
-    });
+  const { control, handleSubmit, reset } = useForm<EditAbsenceTypeFormState>({
+    resolver: resolver({
+      name: [
+        rules.required(),
+        rules.max(20),
+        rules.isUniqueByKey(
+          absenceTypesWithoutSelf as [],
+          'name',
+          t('absence:absenceTypeNameShouldBeUnique') ?? ''
+        ),
+      ],
+      code: [rules.required()],
+      description: [rules.required()],
+    }),
+    defaultValues: defaultFormStateValues,
+  });
 
   const onSubmit = ({
     name,
     description,
-    availableForRequests,
     ...restData
   }: EditAbsenceTypeFormState) => {
     createOrUpdateAbsenceTypeMutation(
@@ -95,7 +82,7 @@ export const EditAbsenceTypeModal = ({
         {
           name: [{ locale: currentLanguageCode, value: name }],
           description: [{ locale: currentLanguageCode, value: description }],
-          availableForRequests,
+          availableForRequests: true,
           ...restData,
         },
       ],
@@ -121,22 +108,6 @@ export const EditAbsenceTypeModal = ({
   const handleClose = () => {
     onClose();
     reset();
-  };
-
-  const [code] = watch(['code']);
-
-  useEffect(() => {
-    if (code) {
-      // @ts-ignore
-      setValue('description', t(`absence:tuslaCodeDescription.${code}`));
-    } else {
-      // @ts-ignore
-      setValue('description', '');
-    }
-  }, [code]);
-
-  const handleClearCode = () => {
-    setValue('code', '');
   };
 
   return (
@@ -165,25 +136,14 @@ export const EditAbsenceTypeModal = ({
                 fullWidth: true,
               }}
             />
-            <RHFSelect<EditAbsenceTypeFormState, TuslaCode>
-              fullWidth
-              options={Object.values(TuslaCode)}
-              label={t('absence:tuslaCode')}
-              getOptionLabel={(option) => option}
-              InputProps={{
-                endAdornment: code && (
-                  <IconButton
-                    sx={{ mr: 2 }}
-                    type="button"
-                    onClick={handleClearCode}
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                ),
-              }}
+            <RHFTextField<EditAbsenceTypeFormState>
+              label={t('absence:absenceCode') ?? ''}
               controlProps={{
                 name: 'code',
                 control,
+              }}
+              textFieldProps={{
+                fullWidth: true,
               }}
             />
           </Stack>
@@ -196,34 +156,11 @@ export const EditAbsenceTypeModal = ({
               }}
               textFieldProps={{
                 fullWidth: true,
-                disabled: Boolean(code),
-                inputProps: {
-                  readOnly: Boolean(code),
-                },
+                minRows: 3,
               }}
             />
           </Stack>
         </Stack>
-        <Box
-          sx={{
-            borderRadius: 1,
-            backgroundColor: 'slate.50',
-            border: 1,
-            borderColor: 'slate.200',
-            width: '60%',
-            p: 1,
-            ml: 3,
-          }}
-        >
-          <RHFCheckbox
-            label={t('absence:availableForRequests')}
-            controlLabelProps={{
-              sx: { width: '100%', ml: 0, height: '100%' },
-            }}
-            checkboxProps={{ color: 'primary' }}
-            controlProps={{ name: 'availableForRequests', control }}
-          />
-        </Box>
 
         <DialogActions>
           <Button variant="outlined" color="inherit" onClick={handleClose}>

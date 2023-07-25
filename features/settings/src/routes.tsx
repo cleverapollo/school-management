@@ -9,12 +9,12 @@ import { GearIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
 import { getCoreAcademicNamespace, AccessUserType } from '@tyro/api';
 import { AttendanceCodes, getAttendanceCodes } from '@tyro/attendance';
-import { AbsenceTypes, getAbsenceTypes } from '@tyro/absence';
 import {
   getContactsForSelect,
   getStaffForSelect,
   getStudentsForSelect,
 } from '@tyro/people';
+import { AbsenceTypes, getStaffWorkAbsenceTypes } from '@tyro/substitution';
 import { getCoreRooms } from './api/rooms';
 import { getCatalogueSubjects } from './api/subjects';
 import { getPpodCredentialsStatus } from './api/ppod/ppod-credentials-status';
@@ -72,8 +72,8 @@ export const getRoutes: NavObjectFunction = (t) => [
           {
             type: NavObjectType.MenuLink,
             path: 'absence-types',
-            title: t('navigation:general.absence.codes'),
-            loader: () => getAbsenceTypes({}),
+            title: t('navigation:general.absence.types'),
+            loader: () => getStaffWorkAbsenceTypes({}),
             element: <AbsenceTypes />,
           },
           {
