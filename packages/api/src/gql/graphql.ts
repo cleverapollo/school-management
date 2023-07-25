@@ -923,12 +923,34 @@ export type Core_NonEnrolledSibling = {
   partyId: Scalars['Long'];
 };
 
+/**
+ * type Core_UserAccess {
+ *     personPartyId: Long!
+ *     #deep linked
+ *     person: Person!
+ *     email: String
+ *     webLastLogin: DateTime
+ *     mobileLastLogin: DateTime
+ *     status: UserAccessStatus
+ *     invitationId: Long
+ *     invitingPersonPartyId: Long
+ *     #deep linked
+ *     invitingPerson: Person
+ *     invitedOn: DateTime
+ * }
+ */
 export type Core_PartyInAcademicNamespace = {
   __typename?: 'Core_PartyInAcademicNamespace';
   academicNamespaceId: Scalars['Int'];
   partyId: Scalars['Long'];
 };
 
+/**
+ * input Core_UserAccessFilter {
+ *     partyIds: [Long]
+ *     userType: UserType!
+ * }
+ */
 export type Core_PartyInAcademicNamespaceFilter = {
   academicNamespaceId?: InputMaybe<Scalars['Int']>;
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
@@ -1530,12 +1552,15 @@ export enum Feature {
   Calendar = 'CALENDAR',
   Communications = 'COMMUNICATIONS',
   Fees = 'FEES',
+  GeneralAdmin = 'GENERAL_ADMIN',
   Groups = 'GROUPS',
   Notes = 'NOTES',
+  People = 'PEOPLE',
   Search = 'SEARCH',
   Settings = 'SETTINGS',
   Substitution = 'SUBSTITUTION',
   Timetable = 'TIMETABLE',
+  TimetableConstruction = 'TIMETABLE_CONSTRUCTION',
   Users = 'USERS',
   Wellbeing = 'WELLBEING'
 }
@@ -1561,6 +1586,7 @@ export enum FeeType {
 }
 
 export enum FileTransferFeature {
+  PartyPhotos = 'PARTY_PHOTOS',
   StudentDocs = 'STUDENT_DOCS'
 }
 
@@ -2639,7 +2665,7 @@ export type PermissionGroupFilter = {
 export type PermissionGroupPermissionSet = {
   __typename?: 'PermissionGroupPermissionSet';
   feature?: Maybe<Feature>;
-  id: Scalars['Int'];
+  id: Scalars['String'];
   permissionType?: Maybe<PermissionType>;
   toggle?: Maybe<Scalars['Boolean']>;
 };
@@ -2650,7 +2676,7 @@ export type PermissionSet = {
   description: Scalars['String'];
   descriptionTextId: Scalars['Int'];
   feature?: Maybe<Feature>;
-  id: Scalars['Int'];
+  id: Scalars['String'];
   name: Scalars['String'];
   nameTextId: Scalars['Int'];
   permissionType?: Maybe<PermissionType>;
@@ -2662,7 +2688,7 @@ export type PermissionSet = {
 
 export type PermissionSetFilter = {
   contact?: InputMaybe<Scalars['Boolean']>;
-  ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  ids?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   staff?: InputMaybe<Scalars['Boolean']>;
   student?: InputMaybe<Scalars['Boolean']>;
 };
@@ -3920,7 +3946,7 @@ export type SavePermissionGroup = {
 };
 
 export type SavePermissionGroupSet = {
-  id: Scalars['Int'];
+  id: Scalars['String'];
   permissionType?: InputMaybe<PermissionType>;
   toggle?: InputMaybe<Scalars['Boolean']>;
 };
@@ -4434,6 +4460,7 @@ export enum StaffYearGroupMembershipRoles {
 
 export type Student = Party & PartyPerson & {
   __typename?: 'Student';
+  avatarUrl?: Maybe<Scalars['String']>;
   /**  deep linked */
   classGroup?: Maybe<GeneralGroup>;
   /**  deep linked */
@@ -4442,6 +4469,7 @@ export type Student = Party & PartyPerson & {
   /**  deep linked */
   enrolmentHistory?: Maybe<Array<EnrollmentHistory>>;
   extensions?: Maybe<StudentGraphqlExtension>;
+  externalSystemId?: Maybe<Scalars['String']>;
   guardianshipNote?: Maybe<Scalars['String']>;
   leftEarly?: Maybe<Scalars['Boolean']>;
   partyId: Scalars['Long'];
@@ -4511,6 +4539,7 @@ export enum StudentContactType {
 
 export type StudentFilter = {
   examNumbers?: InputMaybe<Array<Scalars['String']>>;
+  externalSystemIds?: InputMaybe<Array<Scalars['String']>>;
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
 
@@ -5465,6 +5494,7 @@ export type UpdateStudentContactInput = {
 };
 
 export type UpdateStudentInput = {
+  avatarUrl?: InputMaybe<Scalars['String']>;
   examNumber?: InputMaybe<Scalars['String']>;
   guardianshipNote?: InputMaybe<Scalars['String']>;
   lockerNumber?: InputMaybe<Scalars['String']>;
@@ -6292,14 +6322,14 @@ export type Composite_PermissionGroupsQueryVariables = Exact<{
 }>;
 
 
-export type Composite_PermissionGroupsQuery = { __typename?: 'Query', composite_permissionGroups: Array<{ __typename?: 'PermissionGroup', id: number, name: string, description: string, memberType: MemberType, memberPartyIds: Array<number>, custom?: boolean | null, permissionSets: Array<{ __typename?: 'PermissionGroupPermissionSet', id: number, toggle?: boolean | null, permissionType?: PermissionType | null, feature?: Feature | null }> } | null> };
+export type Composite_PermissionGroupsQuery = { __typename?: 'Query', composite_permissionGroups: Array<{ __typename?: 'PermissionGroup', id: number, name: string, description: string, memberType: MemberType, memberPartyIds: Array<number>, custom?: boolean | null, permissionSets: Array<{ __typename?: 'PermissionGroupPermissionSet', id: string, toggle?: boolean | null, permissionType?: PermissionType | null, feature?: Feature | null }> } | null> };
 
 export type Users_PermissionSetsQueryVariables = Exact<{
   filter: PermissionSetFilter;
 }>;
 
 
-export type Users_PermissionSetsQuery = { __typename?: 'Query', users_permissionSets?: Array<{ __typename?: 'PermissionSet', id: number, name: string, description: string, permissionType?: PermissionType | null, toggle?: boolean | null, feature?: Feature | null } | null> | null };
+export type Users_PermissionSetsQuery = { __typename?: 'Query', users_permissionSets?: Array<{ __typename?: 'PermissionSet', id: string, name: string, description: string, permissionType?: PermissionType | null, toggle?: boolean | null, feature?: Feature | null } | null> | null };
 
 export type Ppod_PpodCredentialsQueryVariables = Exact<{ [key: string]: never; }>;
 

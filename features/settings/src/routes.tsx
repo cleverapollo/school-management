@@ -62,6 +62,10 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'attendance-codes',
             title: t('navigation:general.attendance.codes'),
             loader: () => getAttendanceCodes({}),
+            hasAccess: (permissions) =>
+              permissions.hasPermission(
+                'ps:1:attendance:view_attendance_codes'
+              ),
             element: <AttendanceCodes />,
           },
           {
@@ -69,6 +73,9 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.settings.subjects'),
             path: 'subjects',
             loader: () => getCatalogueSubjects(),
+            hasAccess: (permissions) =>
+              permissions.hasPermission('ps:1:general_admin:read_subjects'),
+
             element: <Subjects />,
           },
           {
@@ -76,6 +83,8 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.settings.rooms'),
             path: 'rooms',
             loader: () => getCoreRooms(),
+            hasAccess: (permissions) =>
+              permissions.hasPermission('ps:1:general_admin:read_rooms'),
             element: <Rooms />,
           },
           {
@@ -83,6 +92,10 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.settings.academicYears'),
             path: 'academic-years',
             loader: () => getCoreAcademicNamespace(),
+            hasAccess: (permissions) =>
+              permissions.hasPermission(
+                'ps:1:general_admin:read_academic_namespaces'
+              ),
             element: <AcademicYearsList />,
           },
           {
@@ -121,6 +134,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             title: t('navigation:management.settings.permissions'),
             path: 'permissions',
+            hasAccess: (permissions) => permissions.isTyroUser,
             loader: () =>
               Promise.all([
                 getPermissionGroups({ custom: true }),
@@ -169,7 +183,8 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             title: t('navigation:management.settings.ppod'),
             path: 'ppod',
-            hasAccess: (permissions) => permissions.isStaffUser,
+            hasAccess: (permissions) =>
+              permissions.hasPermission('ps:1:general_admin:ppod_sync'),
             loader: () => getPpodCredentialsStatus(),
             element: <Ppod />,
             children: [
@@ -201,7 +216,8 @@ export const getRoutes: NavObjectFunction = (t) => [
           {
             type: NavObjectType.NonMenuLink,
             path: 'ppod/login',
-            hasAccess: (permissions) => permissions.isStaffUser,
+            hasAccess: (permissions) =>
+              permissions.hasPermission('ps:1:general_admin:ppod_set_password'),
             element: <Login />,
           },
         ],
