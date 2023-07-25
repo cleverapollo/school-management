@@ -28,6 +28,10 @@ export const getRoutes: NavObjectFunction = (t) => [
         icon: <EditCalendarIcon />,
         title: t('navigation:management.timetable.title'),
         path: 'timetable',
+        hasAccess: (permissions) =>
+          permissions.hasPermission(
+            'ps:1:timetable_construction:view_timetable_edit'
+          ),
         children: [
           // {
           //   type: NavObjectType.MenuLink,

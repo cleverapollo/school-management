@@ -1552,6 +1552,7 @@ export enum Feature {
   Calendar = 'CALENDAR',
   Communications = 'COMMUNICATIONS',
   Fees = 'FEES',
+  GeneralAdmin = 'GENERAL_ADMIN',
   Groups = 'GROUPS',
   Notes = 'NOTES',
   People = 'PEOPLE',
@@ -1559,6 +1560,7 @@ export enum Feature {
   Settings = 'SETTINGS',
   Substitution = 'SUBSTITUTION',
   Timetable = 'TIMETABLE',
+  TimetableConstruction = 'TIMETABLE_CONSTRUCTION',
   Users = 'USERS',
   Wellbeing = 'WELLBEING'
 }
