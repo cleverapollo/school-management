@@ -216,7 +216,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                       }
 
                       return Promise.all([
-                        getAttendanceCodes({ custom: false }),
+                        getAttendanceCodes({ teachingGroupCodes: true }),
                         getSubjectGroupLesson({
                           partyId: groupId,
                           iterator: Iterator.Closest,

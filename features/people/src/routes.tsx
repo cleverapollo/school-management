@@ -339,6 +339,11 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'personal',
+                // todo tab should be visible only if user has permission to view student personal information
+                hasAccess: (permissions) =>
+                  permissions.hasPermission(
+                    'ps:1:people:view_contact_personal_information'
+                  ),
                 loader: ({ params }) => {
                   const contactId = getNumber(params.id);
 
@@ -423,6 +428,10 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'personal',
+                hasAccess: (permissions) =>
+                  permissions.hasPermission(
+                    'ps:1:people:view_staff_personal_information'
+                  ),
                 loader: ({ params }) => {
                   const staffId = getNumber(params.id);
 
