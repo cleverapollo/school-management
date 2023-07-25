@@ -7,17 +7,29 @@ import {
   PageContainer,
   PageHeading,
   TuslaCodeSelectCellEditor,
+  BulkEditedRows,
 } from '@tyro/core';
 import { Box, Button } from '@mui/material';
 import { AddIcon, VerticalDotsIcon } from '@tyro/icons';
-import { TuslaCode } from '@tyro/api';
-import { useMemo } from 'react';
-import { ReturnTypeFromUseAbsenceTypes, useAbsenceTypes } from '../api';
+import { Swm_UpsertStaffAbsenceType, TuslaCode } from '@tyro/api';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import {
+  ReturnTypeFromUseAbsenceTypes,
+  useAbsenceTypes,
+  useCreateOrUpdateAbsenceType,
+} from '../api';
+import {
+  EditAbsenceTypeModal,
+  EditAbsenceTypeViewProps,
+} from '../components/edit-absence-type-modal';
 
 const tuslaCodes = Object.values(TuslaCode);
 
 const getAbsenceCodeColumns = (
-  t: TFunction<('common' | 'absence')[], undefined, ('absence' | 'absence')[]>
+  t: TFunction<('common' | 'absence')[], undefined, ('absence' | 'absence')[]>,
+  onClickEdit: Dispatch<
+    SetStateAction<EditAbsenceTypeViewProps['initialAbsenceTypeState']>
+  >
 ): GridOptions<ReturnTypeFromUseAbsenceTypes>['columnDefs'] => [
   {
     field: 'code',
@@ -41,7 +53,7 @@ const getAbsenceCodeColumns = (
   {
     field: 'name',
     editable: true,
-    headerName: t('absence:absenceCodeName'),
+    headerName: t('absence:absenceTypeName'),
   },
   {
     field: 'description',
@@ -62,7 +74,9 @@ const getAbsenceCodeColumns = (
           buttonIcon={<VerticalDotsIcon />}
           menuItems={[
             {
-              label: t('absence:editAbsenceCode'),
+              label: t('absence:editAbsenceType'),
+              // @ts-ignore
+              onClick: () => onClickEdit(data),
             },
           ]}
         />
@@ -73,32 +87,101 @@ const getAbsenceCodeColumns = (
 export default function AbsenceTypes() {
   const { t, i18n } = useTranslation(['common', 'absence']);
   const currentLanguageCode = i18n.language;
-  const { data: absenceCodes } = useAbsenceTypes({});
 
-  const absenceCodeColumns = useMemo(() => getAbsenceCodeColumns(t), [t]);
+  const { mutateAsync: saveBulkAbsenceType } = useCreateOrUpdateAbsenceType();
+
+  const [editAbsenceTypeInitialState, setEditAbsenceTypeInitialState] =
+    useState<EditAbsenceTypeViewProps['initialAbsenceTypeState']>();
+
+  const { data: absenceTypes } = useAbsenceTypes({});
+
+  const absenceTypeColumns = useMemo(
+    () => getAbsenceCodeColumns(t, setEditAbsenceTypeInitialState),
+    [t, setEditAbsenceTypeInitialState]
+  );
+
+  const handleCreateAbsenceType = () => {
+    setEditAbsenceTypeInitialState(
+      {} as EditAbsenceTypeViewProps['initialAbsenceTypeState']
+    );
+  };
+
+  const handleCloseModal = () => {
+    setEditAbsenceTypeInitialState(undefined);
+  };
+
+  const handleBulkSave = (
+    data: BulkEditedRows<
+      ReturnTypeFromUseAbsenceTypes,
+      | 'absenceTypeId'
+      | 'name'
+      | 'nameTextId'
+      | 'description'
+      | 'descriptionTextId'
+      | 'code'
+      | 'availableForRequests'
+    >
+  ) => {
+    const dataForEndpoint = Object.keys(data).map<Swm_UpsertStaffAbsenceType>(
+      // @ts-ignore
+      (id) => {
+        const currentData = absenceTypes?.find(
+          (item) => item?.absenceTypeId === Number(id)
+        );
+        return {
+          absenceTypeId: Number(id),
+          code: data[id].code?.newValue ?? currentData?.code,
+          name: data[id].name?.newValue
+            ? [{ locale: currentLanguageCode, value: data[id].name?.newValue }]
+            : [{ locale: currentLanguageCode, value: currentData?.name }],
+          description: data[id].description?.newValue
+            ? [
+                {
+                  locale: currentLanguageCode,
+                  value: data[id].description?.newValue,
+                },
+              ]
+            : [
+                {
+                  locale: currentLanguageCode,
+                  value: currentData?.description,
+                },
+              ],
+          nameTextId: currentData?.nameTextId,
+        };
+      }
+    );
+    return saveBulkAbsenceType(dataForEndpoint);
+  };
 
   return (
-    <PageContainer title={t('absence:absenceCodes')}>
+    <PageContainer title={t('absence:absenceTypes')}>
       <PageHeading
-        title={t('absence:absenceCodes')}
+        title={t('absence:absenceTypes')}
         titleProps={{ variant: 'h3' }}
         rightAdornment={
           <Box display="flex" alignItems="center">
             <Button
               variant="contained"
-              onClick={() => {}}
+              onClick={handleCreateAbsenceType}
               startIcon={<AddIcon />}
             >
-              {t('absence:createAbsenceCode')}
+              {t('absence:createAbsenceType')}
             </Button>
           </Box>
         }
       />
       <Table
-        rowData={absenceCodes ?? []}
-        columnDefs={absenceCodeColumns}
+        rowData={absenceTypes ?? []}
+        columnDefs={absenceTypeColumns}
         rowSelection="multiple"
         getRowId={({ data }) => String(data?.absenceTypeId)}
+        onBulkSave={handleBulkSave}
+      />
+      <EditAbsenceTypeModal
+        absenceTypes={absenceTypes ?? []}
+        initialAbsenceTypeState={editAbsenceTypeInitialState}
+        onClose={handleCloseModal}
       />
     </PageContainer>
   );
