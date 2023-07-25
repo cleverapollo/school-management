@@ -28,7 +28,9 @@ export function AttendanceToggle({
   const [isAbsentMenuOpen, setIsAbsentMenuOpen] = useState(false);
   const [codeType, setCodeType] = useState<AttendanceCodeType>();
 
-  const { data: codesData, isLoading } = useAttendanceCodes({ custom: false });
+  const { data: codesData, isLoading } = useAttendanceCodes({
+    teachingGroupCodes: true,
+  });
 
   const handleAttendanceCodeChange = (code: AttendanceCodeType | number) => {
     const currentCode = codesData?.find((attendanceCode) => {
