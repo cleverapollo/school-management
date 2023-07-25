@@ -45,9 +45,13 @@ const coverLookupQuery = (filter: Swm_SubstitutionLookupFilter) => ({
   queryFn: () => gqlClient.request(coverLookup, { filter }),
 });
 
-export function useCoverLookup(filter: Swm_SubstitutionLookupFilter) {
+export function useCoverLookup(
+  filter: Swm_SubstitutionLookupFilter,
+  enabled = true
+) {
   return useQuery({
     ...coverLookupQuery(filter),
+    enabled,
     select: ({ swm_substitutionLookup }) => swm_substitutionLookup,
   });
 }

@@ -112,9 +112,13 @@ export function getEventsForCover(filter: Swm_EventsForSubstitutionFilter) {
   return queryClient.fetchQuery(eventsForCoverQuery(filter));
 }
 
-export function useEventsForCover(filter: Swm_EventsForSubstitutionFilter) {
+export function useEventsForCover(
+  filter: Swm_EventsForSubstitutionFilter,
+  enabled = true
+) {
   return useQuery({
     ...eventsForCoverQuery(filter),
+    enabled,
     select: ({ swm_eventsForSubstitutionsByStaffByPeriod }) =>
       swm_eventsForSubstitutionsByStaffByPeriod?.eventsByStaff ?? [],
   });

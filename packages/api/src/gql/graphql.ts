@@ -229,8 +229,8 @@ export type AttendanceCode = {
 
 export type AttendanceCodeFilter = {
   active?: InputMaybe<Scalars['Boolean']>;
-  custom?: InputMaybe<Scalars['Boolean']>;
   ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  teachingGroupCodes?: InputMaybe<Scalars['Boolean']>;
   visibleForContacts?: InputMaybe<Scalars['Boolean']>;
   visibleForTeachers?: InputMaybe<Scalars['Boolean']>;
 };
@@ -381,6 +381,11 @@ export type CalendarEventFilter = {
 export type CalendarEventId = {
   __typename?: 'CalendarEventId';
   date?: Maybe<Scalars['Date']>;
+  eventId: Scalars['Int'];
+};
+
+export type CalendarEventIdInput = {
+  date: Scalars['Date'];
   eventId: Scalars['Int'];
 };
 
@@ -861,6 +866,7 @@ export enum Context {
   All = 'ALL',
   Calendar = 'CALENDAR',
   Mail = 'MAIL',
+  SessionAttendance = 'SESSION_ATTENDANCE',
   Sms = 'SMS'
 }
 
@@ -1604,8 +1610,10 @@ export type FileTransferResponse = {
   referenceId: Scalars['String'];
 };
 
+/**  set either times OR recurrence OR atTimesOfEvents */
 export type FindFreeResourcesFilter = {
   allRooms?: InputMaybe<Scalars['Boolean']>;
+  atTimesOfEvents?: InputMaybe<Array<CalendarEventIdInput>>;
   /**  Optionally search for in particular calendars. If not specified, all calendars will be searched. */
   calendarIds?: InputMaybe<Array<Scalars['Int']>>;
   /**  Check against recurrence rules whether the resources are free or not. Times is set OR recurrence is set. */
@@ -2143,7 +2151,7 @@ export type MutationCore_UpdateStudentContactRelationshipsArgs = {
 
 
 export type MutationCore_UpdateStudentContactsArgs = {
-  input: Array<UpdateStaffInput>;
+  input: Array<UpdateStudentContactInput>;
 };
 
 
@@ -3600,9 +3608,11 @@ export type Swm_SubstitutionLookup = {
   staff: Array<Swm_SubstitutionLookupStaff>;
 };
 
+/** either times or substitutionEvents must be set */
 export type Swm_SubstitutionLookupFilter = {
   staffPartyIds?: InputMaybe<Array<Scalars['Long']>>;
-  times: Array<FindFreeResourcesTime>;
+  substitutionEventIds?: InputMaybe<Array<CalendarEventIdInput>>;
+  times?: InputMaybe<Array<FindFreeResourcesTime>>;
 };
 
 export type Swm_SubstitutionLookupRoom = {
@@ -4488,6 +4498,12 @@ export type Student = Party & PartyPerson & {
   yearGroups: Array<YearGroupEnrollment>;
 };
 
+export type StudentBellTimeAttendance = {
+  __typename?: 'StudentBellTimeAttendance';
+  attendanceCode?: Maybe<AttendanceCode>;
+  bellTimeId: Scalars['Int'];
+};
+
 export type StudentContact = Party & PartyPerson & {
   __typename?: 'StudentContact';
   occupation?: Maybe<Scalars['String']>;
@@ -4536,6 +4552,12 @@ export enum StudentContactType {
   StepMother = 'STEP_MOTHER',
   Uncle = 'UNCLE'
 }
+
+export type StudentDateAttendance = {
+  __typename?: 'StudentDateAttendance';
+  bellTimeAttendance?: Maybe<Array<Maybe<StudentBellTimeAttendance>>>;
+  date: Scalars['Date'];
+};
 
 export type StudentFilter = {
   examNumbers?: InputMaybe<Array<Scalars['String']>>;
@@ -4634,17 +4656,17 @@ export type StudentMedicalFilter = {
 
 export type StudentSessionAttendance = {
   __typename?: 'StudentSessionAttendance';
-  attendanceCodeId: Scalars['Int'];
-  date: Scalars['Date'];
-  id: Scalars['Long'];
-  sessionAttendanceId: Scalars['Int'];
+  classGroup?: Maybe<GeneralGroup>;
+  dateAttendance?: Maybe<Array<Maybe<StudentDateAttendance>>>;
+  student: Person;
   studentPartyId: Scalars['Long'];
 };
 
 export type StudentSessionAttendanceFilter = {
-  date?: InputMaybe<Scalars['Date']>;
-  ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  from: Scalars['Date'];
+  groupPartyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   studentPartyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  to: Scalars['Date'];
 };
 
 export type StudentStatus = {

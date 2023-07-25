@@ -72,7 +72,11 @@ export default function Cover() {
         )}
       </Stack>
 
-      {viewType === 'day' ? <DayCoverTable /> : <StaffCoverTable />}
+      {viewType === 'day' ? (
+        <DayCoverTable />
+      ) : (
+        <StaffCoverTable staffPartyId={selectedStaff?.partyId} />
+      )}
     </PageContainer>
   );
 }
