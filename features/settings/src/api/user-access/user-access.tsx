@@ -39,10 +39,7 @@ export function getUserAccess(filter: UserAccessFilter) {
 export function useUserAccess(filter: UserAccessFilter) {
   return useQuery({
     ...userAccessQuery(filter),
-    select: ({ users_userAccess }) => {
-      if (!Array.isArray(users_userAccess)) return [];
-      return users_userAccess;
-    },
+    select: ({ users_userAccess }) => users_userAccess ?? [],
   });
 }
 

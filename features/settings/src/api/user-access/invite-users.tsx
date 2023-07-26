@@ -28,18 +28,19 @@ export function useInviteUsers() {
   const { t } = useTranslation(['common', 'settings']);
   const { toast } = useToast();
   return useMutation({
-    mutationFn: async (input: InviteUser[]) =>
+    mutationFn: (input: InviteUser[]) =>
       gqlClient.request(inviteUsers, {
         input,
       }),
     onSuccess: () => {
       toast(t('common:snackbarMessages.inviteSent'));
-      queryClient.invalidateQueries(userAccessKeys.all);
     },
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), {
         variant: 'error',
       });
+    },
+    onSettled: () => {
       queryClient.invalidateQueries(userAccessKeys.all);
     },
   });

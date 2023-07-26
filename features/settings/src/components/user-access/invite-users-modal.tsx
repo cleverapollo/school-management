@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   Button,
@@ -16,6 +16,10 @@ import { useTranslation } from '@tyro/i18n';
 import { useLocation } from 'react-router';
 import { ReturnTypeFromUseUserAccess } from '../../api/user-access/user-access';
 import { useInviteUsers } from '../../api/user-access/invite-users';
+import {
+  useUserTypeFromPathname,
+  OriginPath,
+} from '../../utils/get-user-type-from-pathname';
 
 type InviteUsersModalProps = {
   isOpen: boolean;
@@ -23,26 +27,13 @@ type InviteUsersModalProps = {
   recipients?: ReturnTypeFromUseUserAccess[];
 };
 
-function getUserTypeFromPathname(pathname: string) {
-  if (pathname.includes('staff')) {
-    return UserType.Teacher;
-  }
-  if (pathname.includes('contacts')) {
-    return UserType.Contact;
-  }
-  if (pathname.includes('students')) {
-    return UserType.Student;
-  }
-  return UserType.Teacher;
-}
-
 export function InviteUsersModal({
   isOpen,
   onClose,
   recipients,
 }: InviteUsersModalProps) {
   const { t } = useTranslation(['common', 'settings']);
-  const currentUrl = useLocation();
+  const userType = useUserTypeFromPathname(OriginPath.modal) as UserType;
 
   const {
     mutate: inviteUsers,
@@ -73,8 +64,6 @@ export function InviteUsersModal({
   const { handleSubmit } = useForm();
 
   const onSubmit = handleSubmit(() => {
-    const userType: UserType = getUserTypeFromPathname(currentUrl?.pathname);
-
     const data = recipients?.map((recipient) => ({
       personPartyId: recipient.personPartyId,
       givenName: recipient.personalInfo?.firstName,
@@ -121,11 +110,20 @@ export function InviteUsersModal({
             </Collapse>
           )}
           {!showError && !submittedSuccessfully && (
-            <Typography component="dd" variant="body1" mt={2}>
-              {t('settings:inviteUsersConfirmation', {
-                count: recipients?.length,
-              })}
-            </Typography>
+            <>
+              <Typography component="dd" variant="body1" mb={2}>
+                {t('settings:inviteUsersConfirmation', {
+                  count: recipients?.length,
+                })}
+              </Typography>
+
+              {recipients?.map((recipient) => (
+                <Typography component="dd" variant="body2">
+                  {recipient.personalInfo?.firstName}{' '}
+                  {recipient.personalInfo?.lastName}
+                </Typography>
+              ))}
+            </>
           )}
         </DialogContent>
         <DialogActions>
@@ -138,7 +136,7 @@ export function InviteUsersModal({
               variant="contained"
               loading={isSubmitting}
             >
-              {t('common:actions.confirm')}
+              {t('settings:sendInvite')}
             </LoadingButton>
           )}
         </DialogActions>

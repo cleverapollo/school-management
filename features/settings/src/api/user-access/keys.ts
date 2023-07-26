@@ -5,4 +5,5 @@ export const userAccessKeys = {
   userAccess: (filter: UserAccessFilter) =>
     [...userAccessKeys.all, filter] as const,
   inviteUsers: () => [...userAccessKeys.all, 'inviteUsers'] as const,
+  studentContacts: () => [...userAccessKeys.all, 'studentContacts'] as const,
 };

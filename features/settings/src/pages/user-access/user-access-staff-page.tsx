@@ -3,7 +3,9 @@ import { Box, Fade } from '@mui/material';
 import {
   BulkEditedRows,
   GridOptions,
+  ICellRendererParams,
   Table,
+  TableAvatar,
   usePreferredNameLayout,
   ActionMenu,
   useDisclosure,
@@ -11,12 +13,15 @@ import {
 } from '@tyro/core';
 import { AccessUserType, UpdateStaffInput } from '@tyro/api';
 import { MailIcon, StopIcon } from '@tyro/icons';
-import { useLocation } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import set from 'lodash/set';
 import { useUpdateStaffEmail } from '../../api/user-access/update-staff-email';
+import {
+  OriginPath,
+  useUserTypeFromPathname,
+} from '../../utils/get-user-type-from-pathname';
 
 import {
   useUserAccess,
@@ -43,6 +48,19 @@ const getColumns = (
       };
       return displayName(person);
     },
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseUserAccess>) =>
+      data ? (
+        <TableAvatar
+          name={`${data?.personalInfo?.firstName} ${data?.personalInfo?.lastName}`}
+          AvatarProps={{
+            sx: {
+              borderRadius: 1,
+            },
+          }}
+        />
+      ) : null,
     checkboxSelection: ({ data }) => Boolean(data),
   },
   {
@@ -90,19 +108,6 @@ const getColumns = (
   },
 ];
 
-function getUserTypeFromPathname(pathname: string) {
-  if (pathname.includes('staff')) {
-    return AccessUserType.Staff;
-  }
-  if (pathname.includes('contacts')) {
-    return AccessUserType.Contact;
-  }
-  if (pathname.includes('students')) {
-    return AccessUserType.Student;
-  }
-  return AccessUserType.Staff;
-}
-
 export default function UserAccessStaffPage() {
   const { t } = useTranslation(['common', 'people', 'settings']);
   const [selectedInvites, setSelectedInvites] =
@@ -110,13 +115,12 @@ export default function UserAccessStaffPage() {
 
   const { displayName } = usePreferredNameLayout();
 
-  const currentUrl = useLocation();
+  const userType = useUserTypeFromPathname(OriginPath.access) as AccessUserType;
 
-  const userType: AccessUserType = getUserTypeFromPathname(
-    currentUrl?.pathname
-  );
+  const { data: userAccess } = useUserAccess({
+    userType,
+  });
 
-  const { data: userAccess } = useUserAccess({ userType });
   const { mutateAsync: updateStaffEmail } = useUpdateStaffEmail();
 
   const columns = useMemo(() => getColumns(t, displayName), [t, displayName]);
@@ -165,7 +169,7 @@ export default function UserAccessStaffPage() {
                     onClick: onOpenInviteUsers,
                   },
                   {
-                    label: t('settings:disable'),
+                    label: t('settings:deactivateUsers'),
                     icon: <StopIcon />,
                     disabled: true,
                     onClick: () => 'disabled',
