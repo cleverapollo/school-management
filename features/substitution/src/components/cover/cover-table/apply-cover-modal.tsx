@@ -7,23 +7,28 @@ import {
   DialogContent,
   DialogTitle,
 } from '@mui/material';
-import { LoadingPlaceholder } from '@tyro/core';
+import { LoadingPlaceholder, RHFAutocomplete } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
+import { useForm } from 'react-hook-form';
 import { ReturnTypeOfUseCoverTable } from '../../../hooks/use-cover-table';
 import { useCoverLookup } from '../../../api/staff-work-cover-lookup';
 
-interface CoverSwapRoomModalProps {
+interface ApplyCoverFormState {
+  room: string;
+}
+
+interface ApplyCoverModalProps {
   open: boolean;
   onClose: () => void;
   eventsMap: ReturnTypeOfUseCoverTable['selectedEventsMap'] | null;
 }
 
-export function CoverSwapRoomModal({
+export function ApplyCoverModal({
   open,
   onClose,
   eventsMap,
-}: CoverSwapRoomModalProps) {
+}: ApplyCoverModalProps) {
   const { t } = useTranslation(['common', 'substitution']);
 
   const substitutionEventIds = useMemo(() => {
@@ -40,9 +45,22 @@ export function CoverSwapRoomModal({
     !!substitutionEventIds.length
   );
 
-  console.log({
-    data,
-  });
+  const rooms = useMemo(() => {
+    if (!data) return [];
+
+    return [
+      ...data.freeRooms.map((room) => ({
+        ...room,
+        group: t('substitution:freeRooms'),
+      })),
+      ...data.clashingRooms.map(({ room }) => ({
+        ...room,
+        group: t('substitution:clashingRooms'),
+      })),
+    ];
+  }, [data, t]);
+
+  const { reset, control, handleSubmit } = useForm<ApplyCoverFormState>();
 
   const onSave = () => {
     console.log('save');
@@ -57,22 +75,25 @@ export function CoverSwapRoomModal({
       maxWidth="sm"
     >
       <DialogTitle>Swap room</DialogTitle>
-      <DialogContent sx={{ p: 0 }}>
+      <DialogContent>
         {isLoading ? (
           <LoadingPlaceholder sx={{ minHeight: 200 }} />
         ) : (
-          <>Loaded</>
+          <RHFAutocomplete
+            label={t('common:room')}
+            options={rooms}
+            groupBy={(option) => option.group}
+            getOptionLabel={(option) => option.name}
+            controlProps={{
+              name: 'room',
+              control,
+            }}
+          />
         )}
       </DialogContent>
 
       <DialogActions>
-        <Button
-          variant="soft"
-          onClick={onClose}
-          sx={{
-            mr: 2,
-          }}
-        >
+        <Button variant="soft" onClick={onClose}>
           {t('common:actions.cancel')}
         </Button>
         <LoadingButton

@@ -17,8 +17,7 @@ interface EventCoverCardProps {
     event: React.MouseEvent,
     subEvent: SubstitutionEvent['event']
   ) => void;
-  onOpenReplaceTeacher: (anchorEvent: SubstitutionEvent['event']) => void;
-  onOpenSwapRoom: (anchorEvent: SubstitutionEvent['event']) => void;
+  applyCover: (anchorEvent: SubstitutionEvent['event']) => void;
 }
 
 export function EventCoverCard({
@@ -27,8 +26,7 @@ export function EventCoverCard({
   substitution,
   isEventSelected,
   toggleEventSelection,
-  onOpenReplaceTeacher,
-  onOpenSwapRoom,
+  applyCover,
 }: EventCoverCardProps) {
   const { displayName } = usePreferredNameLayout();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -129,8 +127,7 @@ export function EventCoverCard({
         anchorEl={anchorEl}
         open={isContextMenuOpen}
         onClose={() => setAnchorEl(null)}
-        onOpenReplaceTeacher={() => onOpenReplaceTeacher(event)}
-        onOpenSwapRoom={() => onOpenSwapRoom(event)}
+        applyCover={() => applyCover(event)}
         isSelected={isSelected}
       />
     </>

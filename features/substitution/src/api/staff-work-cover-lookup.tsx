@@ -1,5 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, Swm_SubstitutionLookupFilter } from '@tyro/api';
+import {
+  gqlClient,
+  graphql,
+  Swm_SubstitutionLookupFilter,
+  UseQueryReturnType,
+} from '@tyro/api';
 import { substitutionKeys } from './keys';
 
 const coverLookup = graphql(/* GraphQL */ `
@@ -18,6 +23,17 @@ const coverLookup = graphql(/* GraphQL */ `
             lastName
             avatarUrl
             type
+          }
+          extensions {
+            timetableSummary {
+              fulltimePeriods
+            }
+            substitutionSummary {
+              substitutionCountThisWeek
+              substitutionTimeThisWeekMinutes
+              substitutionCountThisYear
+              substitutionTimeThisYearMinutes
+            }
           }
         }
         available
@@ -55,3 +71,7 @@ export function useCoverLookup(
     select: ({ swm_substitutionLookup }) => swm_substitutionLookup,
   });
 }
+
+export type ReturnTypeFromUseCoverLookup = UseQueryReturnType<
+  typeof useCoverLookup
+>;

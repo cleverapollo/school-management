@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Stack, useTheme } from '@mui/material';
 import {
   PageContainer,
@@ -6,18 +7,24 @@ import {
   useBreakpointValue,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { StaffAutocomplete, StaffSelectOption } from '@tyro/people';
-import { useState } from 'react';
+import {
+  StaffAutocomplete,
+  StaffSelectOption,
+  useStaffForSelect,
+} from '@tyro/people';
+import dayjs, { Dayjs } from 'dayjs';
 import { DayCoverTable } from '../components/cover/day-cover-table';
 import { StaffCoverTable } from '../components/cover/staff-cover-table';
 
 export default function Cover() {
+  const [date, setDate] = useState(dayjs());
   const { t } = useTranslation(['common', 'navigation', 'substitution']);
   const { spacing } = useTheme();
   const [viewType, setViewType] = useState<'day' | 'staff'>('day');
   const [selectedStaff, setSelectedStaff] = useState<StaffSelectOption | null>(
     null
   );
+  const { data: teacherData } = useStaffForSelect({});
   const dropdownDirection = useBreakpointValue<'column' | 'row'>({
     base: 'column',
     sm: 'row',
@@ -33,6 +40,22 @@ export default function Cover() {
       name: t('common:staff'),
     },
   ];
+
+  const goToStaffMembersView = (staff: StaffSelectOption) => {
+    setSelectedStaff(staff);
+    setViewType('staff');
+  };
+
+  const goToDateOnDayView = (newDate: Dayjs) => {
+    setViewType('day');
+    setDate(newDate);
+  };
+
+  useEffect(() => {
+    if (teacherData && !selectedStaff) {
+      setSelectedStaff(teacherData[0]);
+    }
+  }, [teacherData]);
 
   return (
     <PageContainer
@@ -73,9 +96,18 @@ export default function Cover() {
       </Stack>
 
       {viewType === 'day' ? (
-        <DayCoverTable />
+        <DayCoverTable
+          goToStaffMembersView={goToStaffMembersView}
+          date={date}
+          setDate={setDate}
+        />
       ) : (
-        <StaffCoverTable staffPartyId={selectedStaff?.partyId} />
+        <StaffCoverTable
+          goToDateOnDayView={goToDateOnDayView}
+          staffPartyId={selectedStaff?.partyId}
+          date={date}
+          setDate={setDate}
+        />
       )}
     </PageContainer>
   );

@@ -1,19 +1,27 @@
-import dayjs, { Dayjs } from 'dayjs';
-import { useState, useMemo } from 'react';
+import { Dayjs } from 'dayjs';
+import { useState, useMemo, useEffect } from 'react';
 import { useEventsForCover } from '../../api/staff-work-events-for-cover';
 import { CoverTable } from './cover-table';
 import { DateRangeSwitcher } from './date-range-switcher';
 
-export function StaffCoverTable({
-  staffPartyId,
-}: {
+interface StaffCoverTableProps {
+  goToDateOnDayView: (date: Dayjs) => void;
   staffPartyId: number | undefined;
-}) {
-  const [date, setDate] = useState<[Dayjs, Dayjs]>([
-    dayjs(),
-    dayjs().add(3, 'month'),
+  date: Dayjs;
+  setDate: (date: Dayjs) => void;
+}
+
+export function StaffCoverTable({
+  goToDateOnDayView,
+  staffPartyId,
+  date,
+  setDate,
+}: StaffCoverTableProps) {
+  const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([
+    date,
+    date.add(3, 'month'),
   ]);
-  const [fromDate, toDate] = date;
+  const [fromDate, toDate] = dateRange;
 
   const { data, isLoading } = useEventsForCover(
     {
@@ -38,14 +46,18 @@ export function StaffCoverTable({
     [data]
   );
 
+  useEffect(() => {
+    if (!date.isSame(fromDate, 'day')) {
+      setDate(fromDate);
+    }
+  }, [fromDate]);
+
   return (
     <CoverTable
       isLoading={isLoading}
+      onLinkClick={(_staff, newDate) => goToDateOnDayView(newDate)}
       datepicker={
-        <DateRangeSwitcher
-          dateRange={date}
-          onChangeRange={(newDate) => setDate(newDate)}
-        />
+        <DateRangeSwitcher dateRange={dateRange} onChangeRange={setDateRange} />
       }
       data={mappedData}
     />

@@ -1,17 +1,15 @@
 import { Menu, MenuItem, MenuProps } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { ActionMenuIconWrapper } from '@tyro/core';
-import { RoomSwapIcon, UserSwapIcon } from '@tyro/icons';
+import { UserSwapIcon } from '@tyro/icons';
 
 interface ResourceContextMenuProps extends MenuProps {
-  onOpenReplaceTeacher: () => void;
-  onOpenSwapRoom: () => void;
+  applyCover: () => void;
   isSelected: boolean;
 }
 
 export function EventCoverContextMenu({
-  onOpenReplaceTeacher,
-  onOpenSwapRoom,
+  applyCover,
   isSelected,
   ...props
 }: ResourceContextMenuProps) {
@@ -52,7 +50,7 @@ export function EventCoverContextMenu({
       <MenuItem
         onClick={(event) => {
           event.preventDefault();
-          onOpenReplaceTeacher();
+          applyCover();
           handleClose();
         }}
       >
@@ -60,21 +58,7 @@ export function EventCoverContextMenu({
           <ActionMenuIconWrapper>
             <UserSwapIcon />
           </ActionMenuIconWrapper>
-          {t('substitution:selectCoverTeacher')}
-        </>
-      </MenuItem>
-      <MenuItem
-        onClick={(event) => {
-          event.preventDefault();
-          onOpenSwapRoom();
-          handleClose();
-        }}
-      >
-        <>
-          <ActionMenuIconWrapper>
-            <RoomSwapIcon />
-          </ActionMenuIconWrapper>
-          {t('substitution:swapRoom')}
+          {t('substitution:applyCover')}
         </>
       </MenuItem>
     </Menu>

@@ -1,12 +1,21 @@
-import { useMemo, useState } from 'react';
-import dayjs from 'dayjs';
+import { useMemo } from 'react';
+import { Dayjs } from 'dayjs';
 import { DateSwitcher } from '@tyro/calendar';
+import { StaffSelectOption } from '@tyro/people';
 import { CoverTable } from './cover-table';
 import { useEventsForCover } from '../../api/staff-work-events-for-cover';
 
-export function DayCoverTable() {
-  const [date, setDate] = useState(dayjs());
+interface DayCoverTableProps {
+  goToStaffMembersView: (staff: StaffSelectOption) => void;
+  date: Dayjs;
+  setDate: (date: Dayjs) => void;
+}
 
+export function DayCoverTable({
+  goToStaffMembersView,
+  date,
+  setDate,
+}: DayCoverTableProps) {
   const { data, isLoading } = useEventsForCover({
     fromDate: date.format('YYYY-MM-DD'),
     toDate: date.format('YYYY-MM-DD'),
@@ -25,7 +34,7 @@ export function DayCoverTable() {
   return (
     <CoverTable
       userAsFirstColumn
-      onLinkClick={(staff) => console.log(staff)}
+      onLinkClick={(staff) => goToStaffMembersView(staff)}
       isLoading={isLoading}
       datepicker={
         <DateSwitcher

@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { Avatar, useDebouncedValue, usePreferredNameLayout } from '@tyro/core';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { CalendarGridPeriodType } from '@tyro/api';
 import { useMemo } from 'react';
 import { ReturnTypeFromUseEventsForCover } from '../../../api/staff-work-events-for-cover';
@@ -19,12 +19,13 @@ import { CoverBreakOrFinished } from './cover-break-or-finished';
 import { EventCoverCard } from './event-card';
 import { EmptyStateContainer } from './empty-state-container';
 import { useCoverTable, CoverTableRow } from '../../../hooks/use-cover-table';
-import { CoverSwapRoomModal } from './swap-room-modal';
+import { ApplyCoverModal } from './apply-cover-modal';
 
 interface CoverTableProps {
   userAsFirstColumn?: boolean;
   onLinkClick?: (
-    staff: ReturnTypeFromUseEventsForCover[number]['staff']['person']
+    staff: ReturnTypeFromUseEventsForCover[number]['staff']['person'],
+    date: Dayjs
   ) => void;
   datepicker: React.ReactNode;
   data: CoverTableRow[];
@@ -43,16 +44,9 @@ export function CoverTable({
   const { onSelectEvent, isEventSelected, selectedEventsMap } =
     useCoverTable(data);
   const {
-    value: eventsForReplaceTeacher,
-    debouncedValue: debouncedEventsForReplaceTeacher,
-    setValue: setEventsForReplaceTeacher,
-  } = useDebouncedValue<typeof selectedEventsMap | null>({
-    defaultValue: null,
-  });
-  const {
-    value: eventsForRoomSwap,
-    debouncedValue: debouncedEventsForRoomSwap,
-    setValue: setEventsForRoomSwap,
+    value: eventsForApplyCover,
+    debouncedValue: debouncedEventsForApplyCover,
+    setValue: setEventsForApplyCover,
   } = useDebouncedValue<typeof selectedEventsMap | null>({
     defaultValue: null,
   });
@@ -148,7 +142,9 @@ export function CoverTable({
                           {onLinkClick ? (
                             <Link
                               component="button"
-                              onClick={() => onLinkClick(staff)}
+                              onClick={() =>
+                                onLinkClick(staff, dayjs(dayInfo.date))
+                              }
                             >
                               {label}
                             </Link>
@@ -180,11 +176,13 @@ export function CoverTable({
                                 substitution={eventInfo.substitution}
                                 isEventSelected={isEventSelected}
                                 toggleEventSelection={onSelectEvent}
-                                onOpenReplaceTeacher={() =>
-                                  setEventsForReplaceTeacher(selectedEventsMap)
-                                }
-                                onOpenSwapRoom={() =>
-                                  setEventsForRoomSwap(selectedEventsMap)
+                                applyCover={(anchorEvent) =>
+                                  setEventsForApplyCover(
+                                    new Map([
+                                      ...selectedEventsMap.entries(),
+                                      [anchorEvent.eventId, anchorEvent],
+                                    ])
+                                  )
                                 }
                               />
                             )}
@@ -199,10 +197,10 @@ export function CoverTable({
           </TableContainer>
         </EmptyStateContainer>
       </Card>
-      <CoverSwapRoomModal
-        open={!!eventsForRoomSwap}
-        onClose={() => setEventsForRoomSwap(null)}
-        eventsMap={eventsForRoomSwap ?? debouncedEventsForRoomSwap}
+      <ApplyCoverModal
+        open={!!eventsForApplyCover}
+        onClose={() => setEventsForApplyCover(null)}
+        eventsMap={eventsForApplyCover ?? debouncedEventsForApplyCover}
       />
     </>
   );

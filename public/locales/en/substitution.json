@@ -23,6 +23,7 @@
   "youAreAboutToDeleteStaffAbsence": "You are about to delete an absence for {{staffName}}. All associated details including applied cover will be removed. Are you sure you want to continue?",
   "yesDeleteAbsence": "Yes, delete absence",
   "day": "Day",
-  "selectCoverTeacher": "Select cover teacher",
-  "swapRoom": "Swap room"
+  "applyCover": "Apply cover",
+  "freeRooms": "Free rooms",
+  "clashingRooms": "Clashing rooms"
 }
