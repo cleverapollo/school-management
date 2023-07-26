@@ -2,10 +2,11 @@ import { Theme } from '@mui/material/styles';
 import { AlertProps } from '@mui/material';
 //
 import { ErrorIcon, InfoIcon, SuccessIcon, WarningIcon } from './CustomIcons';
+import { LightBulbIcon } from '@tyro/icons';
 
 // ----------------------------------------------------------------------
 
-const COLORS = ['info', 'success', 'warning', 'error'] as const;
+const COLORS = ['info', 'success', 'warning', 'error', 'primary'] as const;
 
 export default function Alert(theme: Theme) {
   const isLight = theme.palette.mode === 'light';
@@ -54,6 +55,7 @@ export default function Alert(theme: Theme) {
           success: <SuccessIcon />,
           warning: <WarningIcon />,
           error: <ErrorIcon />,
+          primary: <LightBulbIcon />,
         },
       },
 

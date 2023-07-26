@@ -20,6 +20,7 @@ import {
   getStudentsForSelect,
 } from './api/student/students';
 import { getStudentStatus } from './api/student/status';
+import { getStudentMedicalData } from './api/student/medicals/student-medical-data';
 import {
   getStudentsContacts,
   getStudentsSubjectGroups,
@@ -32,6 +33,7 @@ import { getStaff } from './api/staff';
 import { getStaffStatus } from './api/staff/status';
 import { getStaffSubjectGroups } from './api/staff/subject-groups';
 import { getStaffPersonal } from './api/staff/personal';
+import { getMedicalConditionNamesQuery } from './api/student/medicals/medical-condition-lookup';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
 // Student profile pages
@@ -70,6 +72,9 @@ const StudentProfileClassesPage = lazy(
 );
 const StudentProfileSettingsPage = lazy(
   () => import('./pages/students/profile/settings')
+);
+const StudentProfileMedicalPage = lazy(
+  () => import('./pages/students/profile/medical')
 );
 
 // Contact pages
@@ -132,12 +137,16 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'students',
             title: t('navigation:management.people.students'),
             loader: () => getStudents(),
+            hasAccess: (permissions) =>
+              permissions.hasPermission('ps:1:people:view_student_list'),
             element: <StudentsListPage />,
           },
           {
             type: NavObjectType.NonMenuLink,
             path: 'students/:id',
             element: <StudentProfileContainer />,
+            hasAccess: (permissions) =>
+              permissions.hasPermission('ps:1:people:view_student_profile'),
             loader: ({ params }) => {
               const studentId = getNumber(params.id);
 
@@ -188,6 +197,11 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'personal',
+                // todo tab should be visible only if user has permission to view student personal information
+                hasAccess: (permissions) =>
+                  permissions.hasPermission(
+                    'ps:1:people:view_student_personal_information'
+                  ),
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
 
@@ -266,6 +280,23 @@ export const getRoutes: NavObjectFunction = (t) => [
                 path: 'settings',
                 element: <StudentProfileSettingsPage />,
               },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'medical',
+                element: <StudentProfileMedicalPage />,
+                loader: async ({ params }) => {
+                  const studentId = getNumber(params.id);
+
+                  if (!studentId) {
+                    throw404Error();
+                  }
+
+                  return Promise.all([
+                    getStudentMedicalData(studentId),
+                    getMedicalConditionNamesQuery(),
+                  ]);
+                },
+              },
             ],
           },
           {
@@ -273,6 +304,8 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'contacts',
             title: t('navigation:management.people.contacts'),
             loader: () => getContacts(),
+            hasAccess: (permissions) =>
+              permissions.hasPermission('ps:1:people:view_contact_list'),
             element: <ContactsListPage />,
           },
           {
@@ -285,6 +318,9 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.NonMenuLink,
             path: 'contacts/:id',
             element: <ContactProfileContainer />,
+            // todo issue here where were user needs to
+            hasAccess: (permissions) =>
+              permissions.hasPermission('ps:1:people:view_contact_profile'),
             loader: ({ params }) => {
               const contactId = getNumber(params.id);
 
@@ -303,6 +339,11 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'personal',
+                // todo tab should be visible only if user has permission to view student personal information
+                hasAccess: (permissions) =>
+                  permissions.hasPermission(
+                    'ps:1:people:view_contact_personal_information'
+                  ),
                 loader: ({ params }) => {
                   const contactId = getNumber(params.id);
 
@@ -345,6 +386,8 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'staff',
             title: t('navigation:management.people.staff'),
             loader: () => getStaff({}),
+            hasAccess: (permissions) =>
+              permissions.hasPermission('ps:1:people:view_staff_list'),
             element: <StaffListPage />,
           },
           {
@@ -357,6 +400,8 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.NonMenuLink,
             path: 'staff/:id',
             element: <StaffProfileContainer />,
+            hasAccess: (permissions) =>
+              permissions.hasPermission('ps:1:people:view_staff_profile'),
             loader: ({ params }) => {
               const staffId = getNumber(params.id);
 
@@ -383,6 +428,10 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'personal',
+                hasAccess: (permissions) =>
+                  permissions.hasPermission(
+                    'ps:1:people:view_staff_personal_information'
+                  ),
                 loader: ({ params }) => {
                   const staffId = getNumber(params.id);
 

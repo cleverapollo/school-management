@@ -83,18 +83,15 @@ export const SelectPermissions = ({
 
   useEffect(() => {
     if (isMemberTypeDirty) {
-      setValue('permissionsFieldsByIds', []);
+      setValue('permissionsFieldsBySetId', {});
 
-      permissionData.forEach(({ id, feature, toggle, permissionType }) => {
-        setValue(`permissionsFieldsByIds.${id}`, {
-          id,
-          feature,
-          toggle,
-          permissionType: permissionType ?? null,
+      permissionsByFeatures.forEach(({ permissions }) => {
+        permissions.forEach((permission) => {
+          setValue(`permissionsFieldsBySetId.${permission.id}`, permission);
         });
       });
     }
-  }, [memberType, permissionData]);
+  }, [memberType, permissionsByFeatures]);
 
   return (
     <Grid container gap={3}>
@@ -159,7 +156,7 @@ export const SelectPermissions = ({
                     <RHFTextField
                       textFieldProps={{ type: 'hidden' }}
                       controlProps={{
-                        name: `permissionsFieldsByIds.${permission.id}.id`,
+                        name: `permissionsFieldsBySetId.${permission.id}.id`,
                         control,
                         defaultValue: permission.id,
                       }}
@@ -167,7 +164,7 @@ export const SelectPermissions = ({
                     <RHFTextField
                       textFieldProps={{ type: 'hidden' }}
                       controlProps={{
-                        name: `permissionsFieldsByIds.${permission.id}.feature`,
+                        name: `permissionsFieldsBySetId.${permission.id}.feature`,
                         control,
                         defaultValue: permission.feature,
                       }}
@@ -180,16 +177,16 @@ export const SelectPermissions = ({
                         color: 'success',
                       }}
                       controlProps={{
-                        name: `permissionsFieldsByIds.${permission.id}.toggle`,
+                        name: `permissionsFieldsBySetId.${permission.id}.toggle`,
                         control,
                       }}
                     />
                   ) : (
                     <PermissionTypeDropdown
-                      name={`permissionsFieldsByIds.${permission.id}.permissionType`}
+                      name={`permissionsFieldsBySetId.${permission.id}.permissionType`}
                       onRemovePermissionType={() =>
                         setValue(
-                          `permissionsFieldsByIds.${permission.id}.permissionType`,
+                          `permissionsFieldsBySetId.${permission.id}.permissionType`,
                           null
                         )
                       }

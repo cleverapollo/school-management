@@ -90,6 +90,10 @@ export default function StudentProfileContainer() {
             label: 'Settings',
             value: 'settings',
           },
+          {
+            label: 'Medical',
+            value: 'medical',
+          },
         ]}
       />
     </PageContainer>

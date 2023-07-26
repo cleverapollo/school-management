@@ -14,6 +14,11 @@ export const getRoutes: NavObjectFunction = (t) => [
       {
         type: NavObjectType.RootLink,
         path: 'calendar',
+        hasAccess: (permissions) =>
+          permissions.hasAtLeastOnePermission([
+            'ps:1:calendar:view_own_calendar',
+            'ps:1:calendar:view_calendar',
+          ]),
         icon: <Calendar31Icon />,
         title: t('navigation:general.calendar'),
         loader: async () => {

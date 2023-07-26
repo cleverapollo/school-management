@@ -39,9 +39,8 @@ type Props = {
 export function Header({ isNavExpanded, onOpenNav }: Props) {
   const { activeProfile } = useUser();
   const queryClient = useQueryClient();
-  const { userType } = usePermissions();
+  const { userType, hasPermission } = usePermissions();
   const navigate = useNavigate();
-
   const emulationMode = useMemo(() => checkEmulationMode(), [activeProfile]);
 
   const isDesktop = useResponsive('up', 'lg');
@@ -56,7 +55,7 @@ export function Header({ isNavExpanded, onOpenNav }: Props) {
         </IconButton>
       )}
 
-      <Searchbar />
+      {hasPermission('ps:1:search:search') && <Searchbar />}
 
       {emulationMode !== EmulationMode.None && (
         <Button

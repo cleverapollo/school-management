@@ -22,7 +22,7 @@ type PermissionFormProps = {
 };
 
 const defaultFormStateValues: Partial<PermissionFormState> = {
-  permissionsFieldsByIds: [],
+  permissionsFieldsBySetId: {},
   members: [],
   memberType: MemberType.Staff,
 };
@@ -92,7 +92,7 @@ export const PermissionForm = ({ initialState }: PermissionFormProps) => {
       memberType: memberTypeValue,
       members: memberParties,
       isMemberTypeAdmin,
-      permissionsFieldsByIds,
+      permissionsFieldsBySetId,
     }) => {
       const locale = i18n.language;
 
@@ -115,7 +115,7 @@ export const PermissionForm = ({ initialState }: PermissionFormProps) => {
           memberPartyIds: memberParties.map(
             (memberParty) => memberParty.partyId
           ),
-          permissionSets: Object.values(permissionsFieldsByIds).filter(
+          permissionSets: Object.values(permissionsFieldsBySetId).filter(
             (permission) =>
               typeof permission.toggle === 'boolean' ||
               permission.permissionType

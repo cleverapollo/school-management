@@ -28,19 +28,19 @@ export const PermissionAccordionCard = ({
 }: PermissionAccordionCardProps) => {
   const { t } = useTranslation(['common', 'settings']);
 
-  const permissionSetsFields = useWatch({
+  const permissionsFieldsBySetId = useWatch({
     control,
-    name: 'permissionsFieldsByIds',
+    name: 'permissionsFieldsBySetId',
   });
 
   const enabledPermissions = useMemo(
     () =>
-      Object.values(permissionSetsFields).filter(
+      Object.values(permissionsFieldsBySetId || {}).filter(
         (permission) =>
           permission.feature === feature &&
           (permission.toggle || permission.permissionType)
       ),
-    [permissionSetsFields]
+    [permissionsFieldsBySetId]
   );
 
   return (

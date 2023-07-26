@@ -187,7 +187,10 @@
       "SUBSTITUTION": "Substitution",
       "TIMETABLE": "Timetable",
       "USERS": "Users",
-      "WELLBEING": "Wellbeing"
+      "WELLBEING": "Wellbeing",
+      "PEOPLE": "People",
+      "GENERAL_ADMIN": "General admin",
+      "TIMETABLE_CONSTRUCTION": "Timetable construction"
     }
   }
 }

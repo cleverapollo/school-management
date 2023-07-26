@@ -9,10 +9,10 @@ export default function Tooltip(theme: Theme) {
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
-          backgroundColor: theme.palette.grey[isLight ? 800 : 700],
+          backgroundColor: theme.palette.blue[isLight ? 900 : 800],
         },
         arrow: {
-          color: theme.palette.grey[isLight ? 800 : 700],
+          color: theme.palette.blue[isLight ? 900 : 800],
         },
       },
     },
