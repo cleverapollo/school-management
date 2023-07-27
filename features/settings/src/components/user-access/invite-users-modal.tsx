@@ -12,7 +12,6 @@ import {
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { UserType } from '@tyro/api';
-import { useForm } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
 import { ReturnTypeFromUseUserAccess } from '../../api/user-access/user-access';
 import { useInviteUsers } from '../../api/user-access/invite-users';
@@ -61,9 +60,9 @@ export function InviteUsersModal({
     }
   }, [submittedSuccessfully, response]);
 
-  const { handleSubmit } = useForm();
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  const onSubmit = handleSubmit(() => {
     const data = recipients?.map((recipient) => {
       const resendStatus = Boolean(recipient?.status === 'INVITE_SENT');
 
@@ -87,7 +86,7 @@ export function InviteUsersModal({
         },
       });
     }
-  });
+  };
 
   return (
     <Dialog
@@ -98,7 +97,7 @@ export function InviteUsersModal({
       maxWidth="sm"
     >
       <DialogTitle>{t('settings:inviteUsers')}</DialogTitle>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleSubmit}>
         <DialogContent>
           {showError && (
             <Collapse in>

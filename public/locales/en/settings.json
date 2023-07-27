@@ -32,7 +32,6 @@
   "inviteUsers": "Invite users",
   "inviteUsersConfirmation_one": "You are about to invite the following user to Tyro:",
   "inviteUsersConfirmation_other": "You are about to invite the following users to Tyro:",
-  "accountExistsWithEmail": "{{error}}",
   "invitedBy": "Invited by",
   "firstName": "First name",
   "lastName": "Last name",
@@ -40,6 +39,11 @@
   "lastActiveWeb": "Last login - web",
   "lastActiveMobile": "Last login - mobile",
   "deactivateUsers": "Deactivate users",
+  "userAccessStatus": {
+    "ACTIVE": "Active",
+    "INVITE_SENT": "Invite sent",
+    "DISABLED": "Disabled"
+  },
   "actions": {
     "makeActive": "Activate academic year for all users",
     "changeAcademicYear": "Change academic year for just me",

@@ -41,19 +41,13 @@ const getColumns = (
     sort: 'asc',
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
-    valueGetter: ({ data }) => {
-      const person = {
-        firstName: data?.personalInfo.firstName,
-        lastName: data?.personalInfo.lastName,
-      };
-      return displayName(person);
-    },
+    valueGetter: ({ data }) => displayName(data?.personalInfo),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseUserAccess>) =>
       data ? (
         <TableAvatar
-          name={`${data?.personalInfo?.firstName} ${data?.personalInfo?.lastName}`}
+          name={displayName(data?.personalInfo)}
           AvatarProps={{
             sx: {
               borderRadius: 1,
@@ -80,8 +74,7 @@ const getColumns = (
     field: 'status',
     valueFormatter: ({ data }) =>
       data && data?.status
-        ? `${data?.status.charAt(0).toUpperCase()}` +
-          `${data?.status.slice(1).toLowerCase()}`
+        ? t(`settings:userAccessStatus.${data?.status}`)
         : '-',
   },
   {

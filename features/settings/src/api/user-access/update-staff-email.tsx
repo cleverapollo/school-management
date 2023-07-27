@@ -19,7 +19,7 @@ export function useUpdateStaffEmail() {
   const { t } = useTranslation(['common']);
   const { toast } = useToast();
   return useMutation({
-    mutationFn: (input: UpdateStaffInput | UpdateStaffInput[]) =>
+    mutationFn: (input: UpdateStaffInput[]) =>
       gqlClient.request(updateStaffEmail, {
         input,
       }),

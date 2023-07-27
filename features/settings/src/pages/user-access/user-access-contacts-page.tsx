@@ -33,12 +33,6 @@ import { InviteUsersModal } from '../../components/user-access/invite-users-moda
 
 dayjs.extend(LocalizedFormat);
 
-const userAccessStatus = {
-  ACTIVE: 'Active',
-  INVITE_SENT: 'Invite sent',
-  DISABLED: 'Disabled',
-};
-
 const getColumns = (
   t: TFunction<('common' | 'settings')[]>,
   displayName: ReturnTypeDisplayName,
@@ -50,19 +44,13 @@ const getColumns = (
     sort: 'asc',
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
-    valueGetter: ({ data }) => {
-      const person = {
-        firstName: data?.personalInfo.firstName,
-        lastName: data?.personalInfo.lastName,
-      };
-      return displayName(person);
-    },
+    valueGetter: ({ data }) => displayName(data?.personalInfo),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseUserAccess>) =>
       data ? (
         <TableAvatar
-          name={`${data?.personalInfo?.firstName} ${data?.personalInfo?.lastName}`}
+          name={displayName(data?.personalInfo)}
           AvatarProps={{
             sx: {
               borderRadius: 1,
@@ -94,7 +82,9 @@ const getColumns = (
     headerName: t('common:status'),
     field: 'status',
     valueFormatter: ({ data }) =>
-      data && data?.status ? userAccessStatus[`${data?.status}`] : '-',
+      data && data?.status
+        ? t(`settings:userAccessStatus.${data?.status}`)
+        : '-',
   },
   {
     headerName: t('settings:inviteSentOn'),
