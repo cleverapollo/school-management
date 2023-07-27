@@ -121,7 +121,7 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getCalendarRoutes(t),
   ...getClassListManagerRoutes(t),
   ...getGroupRoutes(t),
-  // ...getAttendanceRoutes(t),
+  ...getAttendanceRoutes(t),
   // ...getMailRoutes(t),
   ...getAssessmentRoutes(t),
   ...getPeopleRoutes(t),
@@ -193,6 +193,7 @@ function useAppRouter() {
 
 export function Router() {
   const appRouter = useAppRouter();
+  console.log('appRouter :>> ', appRouter);
 
   return (
     <RouterProvider router={appRouter} fallbackElement={<LoadingScreen />} />
