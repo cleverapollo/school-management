@@ -10,6 +10,7 @@ import {
   ActionMenu,
   useDisclosure,
   ReturnTypeDisplayName,
+  ReturnTypeDisplayNames,
 } from '@tyro/core';
 import { AccessUserType, UpdateStudentContactInput } from '@tyro/api';
 import { MailIcon, StopIcon } from '@tyro/icons';
@@ -40,7 +41,8 @@ const userAccessStatus = {
 
 const getColumns = (
   t: TFunction<('common' | 'settings')[]>,
-  displayName: ReturnTypeDisplayName
+  displayName: ReturnTypeDisplayName,
+  displayNames: ReturnTypeDisplayNames
 ): GridOptions<ReturnTypeFromUseUserAccess>['columnDefs'] => [
   {
     headerName: t('common:name'),
@@ -69,6 +71,12 @@ const getColumns = (
         />
       ) : null,
     checkboxSelection: ({ data }) => Boolean(data),
+  },
+  {
+    field: 'contactStudents',
+    headerName: t('common:students'),
+    valueGetter: ({ data }) =>
+      displayNames(data?.contactStudents?.map((student) => student)),
   },
   {
     headerName: t('common:email'),
@@ -117,7 +125,7 @@ export default function UserAccessContactsPage() {
   const [selectedInvites, setSelectedInvites] =
     useState<ReturnTypeFromUseUserAccess[]>();
 
-  const { displayName } = usePreferredNameLayout();
+  const { displayName, displayNames } = usePreferredNameLayout();
 
   const userType = useUserTypeFromPathname(OriginPath.access) as AccessUserType;
 
@@ -128,7 +136,10 @@ export default function UserAccessContactsPage() {
   const { mutateAsync: updateStudentContactsEmail } =
     useUpdateStudentContactsEmail();
 
-  const columns = useMemo(() => getColumns(t, displayName), [t, displayName]);
+  const columns = useMemo(
+    () => getColumns(t, displayName, displayNames),
+    [t, displayName, displayNames]
+  );
 
   const {
     isOpen: isInviteUsersOpen,

@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Alert,
+  AlertTitle,
   Button,
   Collapse,
   Dialog,
@@ -13,7 +14,6 @@ import { LoadingButton } from '@mui/lab';
 import { UserType } from '@tyro/api';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
-import { useLocation } from 'react-router';
 import { ReturnTypeFromUseUserAccess } from '../../api/user-access/user-access';
 import { useInviteUsers } from '../../api/user-access/invite-users';
 import {
@@ -64,14 +64,18 @@ export function InviteUsersModal({
   const { handleSubmit } = useForm();
 
   const onSubmit = handleSubmit(() => {
-    const data = recipients?.map((recipient) => ({
-      personPartyId: recipient.personPartyId,
-      givenName: recipient.personalInfo?.firstName,
-      surname: recipient.personalInfo?.lastName,
-      email: recipient.personalInfo?.primaryEmail?.email ?? '',
-      userType,
-      resend: true,
-    }));
+    const data = recipients?.map((recipient) => {
+      const resendStatus = Boolean(recipient?.status === 'INVITE_SENT');
+
+      return {
+        personPartyId: recipient.personPartyId,
+        givenName: recipient.personalInfo?.firstName,
+        surname: recipient.personalInfo?.lastName,
+        email: recipient.personalInfo?.primaryEmail?.email ?? '',
+        userType,
+        resend: resendStatus,
+      };
+    });
 
     if (Array.isArray(data)) {
       inviteUsers(data, {
@@ -98,15 +102,17 @@ export function InviteUsersModal({
         <DialogContent>
           {showError && (
             <Collapse in>
-              <Alert severity="error" sx={{ alignItems: 'center' }}>
-                {response?.users_inviteUsers?.validations?.map((error) => (
-                  <Typography component="dd" variant="body2">
-                    {t('settings:accountExistsWithEmail', {
-                      error,
-                    })}
-                  </Typography>
-                ))}
-              </Alert>
+              {response?.users_inviteUsers?.validations?.map((error) => (
+                <Alert severity="error" sx={{ alignItems: 'top' }}>
+                  <AlertTitle> {error?.message}</AlertTitle>
+
+                  {error?.associatedUsers?.map((user) => (
+                    <Typography component="dd" variant="body2">
+                      {user}
+                    </Typography>
+                  ))}
+                </Alert>
+              ))}
             </Collapse>
           )}
           {!showError && !submittedSuccessfully && (

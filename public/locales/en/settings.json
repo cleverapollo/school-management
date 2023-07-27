@@ -37,8 +37,8 @@
   "firstName": "First name",
   "lastName": "Last name",
   "inviteSentOn": "Invite sent on",
-  "lastActiveWeb": "Last active web",
-  "lastActiveMobile": "Last active mobile",
+  "lastActiveWeb": "Last login - web",
+  "lastActiveMobile": "Last login - mobile",
   "deactivateUsers": "Deactivate users",
   "actions": {
     "makeActive": "Activate academic year for all users",

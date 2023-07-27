@@ -19,7 +19,10 @@ const inviteUsers = graphql(/* GraphQL */ `
         invitingPersonPartyId
         invitedOn
       }
-      validations
+      validations {
+        message
+        associatedUsers
+      }
     }
   }
 `);

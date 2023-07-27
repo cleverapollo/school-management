@@ -19,6 +19,10 @@ const userAccess = graphql(/* GraphQL */ `
           email
         }
       }
+      contactStudents {
+        firstName
+        lastName
+      }
       webLastLogin
       mobileLastLogin
       status

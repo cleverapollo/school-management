@@ -116,11 +116,19 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'staff',
+                loader: () => {
+                  const userType = AccessUserType.Staff;
+                  return getUserAccess({ userType });
+                },
                 element: <UserAccessStaffPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'contacts',
+                loader: () => {
+                  const userType = AccessUserType.Contact;
+                  return getUserAccess({ userType });
+                },
                 element: <UserAccessContactsPage />,
               },
               {
