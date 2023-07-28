@@ -102,6 +102,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             title: t('navigation:management.settings.userAccess'),
             path: 'user-access',
+            hasAccess: (permissions) => permissions.isTyroUser,
             loader: () => {
               const userType = AccessUserType.Staff;
               return getUserAccess({ userType });
