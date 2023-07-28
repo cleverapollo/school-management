@@ -48,16 +48,7 @@ const getColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseUserAccess>) =>
-      data ? (
-        <TableAvatar
-          name={displayName(data?.personalInfo)}
-          AvatarProps={{
-            sx: {
-              borderRadius: 1,
-            },
-          }}
-        />
-      ) : null,
+      data ? <TableAvatar name={displayName(data?.personalInfo)} /> : null,
     checkboxSelection: ({ data }) => Boolean(data),
   },
   {
