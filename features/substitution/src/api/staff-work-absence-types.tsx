@@ -38,7 +38,7 @@ const createAbsenceType = graphql(/* GraphQL */ `
 `);
 
 const staffWorkAbsenceTypesQuery = (filter: Swm_StaffAbsenceTypeFilter) => ({
-  queryKey: substitutionKeys.absenceTypes.list(filter),
+  queryKey: substitutionKeys.absenceTypes(filter),
   queryFn: () => gqlClient.request(staffWorkAbsenceTypes, { filter }),
 });
 
@@ -58,7 +58,6 @@ export function useCreateOrUpdateAbsenceType() {
   const { t } = useTranslation(['common']);
 
   return useMutation({
-    mutationKey: substitutionKeys.absenceTypes.createOrUpdateAbsenceType(),
     mutationFn: async (input: Swm_UpsertStaffAbsenceType[]) =>
       gqlClient.request(createAbsenceType, { input }),
     onError: () => {
@@ -70,7 +69,7 @@ export function useCreateOrUpdateAbsenceType() {
           ? t('common:snackbarMessages.updateSuccess')
           : t('common:snackbarMessages.createSuccess')
       );
-      queryClient.invalidateQueries(substitutionKeys.absenceTypes.list({}));
+      queryClient.invalidateQueries(substitutionKeys.absenceTypes({}));
     },
   });
 }

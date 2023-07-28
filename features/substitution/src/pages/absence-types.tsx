@@ -20,13 +20,13 @@ import {
 } from '../api/staff-work-absence-types';
 import {
   EditAbsenceTypeModal,
-  EditAbsenceTypeViewProps,
+  EditAbsenceTypeModalProps,
 } from '../components/absence-types/edit-absence-type-modal';
 
 const getAbsenceCodeColumns = (
-  t: TFunction<('common' | 'absence')[], undefined, ('absence' | 'absence')[]>,
+  t: TFunction<('common' | 'absence')[]>,
   onClickEdit: Dispatch<
-    SetStateAction<EditAbsenceTypeViewProps['initialAbsenceTypeState']>
+    SetStateAction<EditAbsenceTypeModalProps['initialAbsenceTypeState']>
   >
 ): GridOptions<ReturnTypeFromUseAbsenceTypes>['columnDefs'] => [
   {
@@ -76,7 +76,7 @@ export default function AbsenceTypes() {
   const { mutateAsync: saveBulkAbsenceType } = useCreateOrUpdateAbsenceType();
 
   const [editAbsenceTypeInitialState, setEditAbsenceTypeInitialState] =
-    useState<EditAbsenceTypeViewProps['initialAbsenceTypeState']>();
+    useState<EditAbsenceTypeModalProps['initialAbsenceTypeState']>();
 
   const { data: absenceTypes } = useStaffWorkAbsenceTypes({});
 
@@ -86,21 +86,13 @@ export default function AbsenceTypes() {
   );
 
   const handleCreateAbsenceType = () => {
-    setEditAbsenceTypeInitialState(
-      {} as EditAbsenceTypeViewProps['initialAbsenceTypeState']
-    );
+    setEditAbsenceTypeInitialState({});
   };
 
   const handleBulkSave = (
     data: BulkEditedRows<
       ReturnTypeFromUseAbsenceTypes,
-      | 'absenceTypeId'
-      | 'name'
-      | 'nameTextId'
-      | 'description'
-      | 'descriptionTextId'
-      | 'code'
-      | 'availableForRequests'
+      'absenceTypeId' | 'name' | 'description' | 'code' | 'availableForRequests'
     >
   ) => {
     const dataForEndpoint = Object.keys(data).map<Swm_UpsertStaffAbsenceType>(
@@ -108,30 +100,37 @@ export default function AbsenceTypes() {
         const currentData = absenceTypes?.find(
           (item) => item?.absenceTypeId === Number(id)
         );
+        const updatedName = data[id].name?.newValue;
+        const updatedDescription = data[id].description?.newValue;
+
         return {
           absenceTypeId: Number(id),
           code: data[id].code?.newValue ?? currentData?.code ?? '',
-          name: data[id].name?.newValue
-            ? [{ locale: currentLanguageCode, value: data[id].name?.newValue }]
-            : [{ locale: currentLanguageCode, value: currentData?.name }],
-          description: data[id].description?.newValue
-            ? [
-                {
+          // TODO: update schema to make locale field as optional
+          name: [
+            updatedName
+              ? {
                   locale: currentLanguageCode,
-                  value: data[id].description?.newValue,
+                  value: updatedName,
+                }
+              : {
+                  value: currentData?.name,
                 },
-              ]
-            : [
-                {
+          ],
+          description: [
+            updatedDescription
+              ? {
                   locale: currentLanguageCode,
+                  value: updatedDescription,
+                }
+              : {
                   value: currentData?.description,
                 },
-              ],
-          nameTextId: currentData?.nameTextId,
-          availableForRequests:
+          ],
+          availableForRequests: Boolean(
             data[id].availableForRequests?.newValue ??
-            currentData?.availableForRequests ??
-            false,
+              currentData?.availableForRequests
+          ),
         };
       }
     );

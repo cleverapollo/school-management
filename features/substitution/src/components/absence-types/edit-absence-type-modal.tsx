@@ -22,11 +22,10 @@ export type EditAbsenceTypeFormState = Pick<
 > & {
   name: string;
   description?: string | null;
-  visibleForAdmin?: boolean;
 };
 
-export type EditAbsenceTypeViewProps = {
-  initialAbsenceTypeState?: EditAbsenceTypeFormState | undefined;
+export type EditAbsenceTypeModalProps = {
+  initialAbsenceTypeState?: Partial<EditAbsenceTypeFormState> | undefined;
   absenceTypes: ReturnTypeFromUseAbsenceTypes[];
   onClose: () => void;
 };
@@ -35,7 +34,7 @@ export const EditAbsenceTypeModal = ({
   initialAbsenceTypeState,
   absenceTypes,
   onClose,
-}: EditAbsenceTypeViewProps) => {
+}: EditAbsenceTypeModalProps) => {
   const { t, i18n } = useTranslation(['common', 'absence']);
   const currentLanguageCode = i18n.language;
   const {
@@ -45,11 +44,6 @@ export const EditAbsenceTypeModal = ({
   } = useCreateOrUpdateAbsenceType();
 
   const { resolver, rules } = useFormValidator<EditAbsenceTypeFormState>();
-
-  const defaultFormStateValues: Partial<EditAbsenceTypeFormState> = {
-    ...initialAbsenceTypeState,
-    visibleForAdmin: true,
-  };
 
   const absenceTypesWithoutSelf = absenceTypes.filter(
     (absenceType) => absenceType?.code !== initialAbsenceTypeState?.code
@@ -61,15 +55,15 @@ export const EditAbsenceTypeModal = ({
         rules.required(),
         rules.max(20),
         rules.isUniqueByKey(
-          absenceTypesWithoutSelf as [],
+          absenceTypesWithoutSelf,
           'name',
-          t('absence:absenceTypeNameShouldBeUnique') ?? ''
+          t('absence:absenceTypeNameShouldBeUnique')
         ),
       ],
       code: [rules.required()],
       description: [rules.required()],
     }),
-    defaultValues: defaultFormStateValues,
+    defaultValues: initialAbsenceTypeState,
   });
 
   const onSubmit = ({
@@ -77,11 +71,28 @@ export const EditAbsenceTypeModal = ({
     description,
     ...restData
   }: EditAbsenceTypeFormState) => {
+    const nameUpdated =
+      !!initialAbsenceTypeState && initialAbsenceTypeState?.name !== name;
+    const descriptionUpdated =
+      !!initialAbsenceTypeState &&
+      initialAbsenceTypeState?.description !== description;
+
     createOrUpdateAbsenceTypeMutation(
       [
         {
-          name: [{ locale: currentLanguageCode, value: name }],
-          description: [{ locale: currentLanguageCode, value: description }],
+          // TODO: update schema to make locale field as optional
+          name: [
+            {
+              ...(nameUpdated ? { locale: currentLanguageCode } : {}),
+              value: name,
+            },
+          ],
+          description: [
+            {
+              ...(descriptionUpdated ? { locale: currentLanguageCode } : {}),
+              value: description,
+            },
+          ],
           availableForRequests: true,
           ...restData,
         },
@@ -94,10 +105,7 @@ export const EditAbsenceTypeModal = ({
 
   useEffect(() => {
     if (initialAbsenceTypeState) {
-      reset({
-        ...defaultFormStateValues,
-        ...initialAbsenceTypeState,
-      });
+      reset(initialAbsenceTypeState);
     }
   }, [initialAbsenceTypeState]);
 
@@ -126,8 +134,8 @@ export const EditAbsenceTypeModal = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack gap={3} p={3}>
           <Stack direction="row" gap={2}>
-            <RHFTextField<EditAbsenceTypeFormState>
-              label={t('absence:absenceTypeName') ?? ''}
+            <RHFTextField
+              label={t('absence:absenceTypeName')}
               controlProps={{
                 name: 'name',
                 control,
@@ -136,8 +144,8 @@ export const EditAbsenceTypeModal = ({
                 fullWidth: true,
               }}
             />
-            <RHFTextField<EditAbsenceTypeFormState>
-              label={t('absence:absenceCode') ?? ''}
+            <RHFTextField
+              label={t('absence:absenceCode')}
               controlProps={{
                 name: 'code',
                 control,
@@ -148,14 +156,15 @@ export const EditAbsenceTypeModal = ({
             />
           </Stack>
           <Stack direction="row" gap={2}>
-            <RHFTextField<EditAbsenceTypeFormState>
-              label={t('common:description') ?? ''}
+            <RHFTextField
+              label={t('common:description')}
               controlProps={{
                 name: 'description',
                 control,
               }}
               textFieldProps={{
                 fullWidth: true,
+                multiline: true,
                 minRows: 3,
               }}
             />
