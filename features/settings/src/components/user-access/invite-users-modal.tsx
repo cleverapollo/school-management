@@ -60,9 +60,7 @@ export function InviteUsersModal({
     }
   }, [submittedSuccessfully, response]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const handleSubmit = () => {
     const data = recipients?.map((recipient) => {
       const resendStatus = Boolean(recipient?.status === 'INVITE_SENT');
 
@@ -97,55 +95,54 @@ export function InviteUsersModal({
       maxWidth="sm"
     >
       <DialogTitle>{t('settings:inviteUsers')}</DialogTitle>
-      <form onSubmit={handleSubmit}>
-        <DialogContent>
-          {showError && (
-            <Collapse in>
-              {response?.users_inviteUsers?.validations?.map((error) => (
-                <Alert severity="error" sx={{ alignItems: 'top' }}>
-                  <AlertTitle> {error?.message}</AlertTitle>
+      <DialogContent>
+        {showError && (
+          <Collapse in>
+            {response?.users_inviteUsers?.validations?.map((error) => (
+              <Alert severity="error" sx={{ alignItems: 'top' }}>
+                <AlertTitle> {error?.message}</AlertTitle>
 
-                  {error?.associatedUsers?.map((user) => (
-                    <Typography component="dd" variant="body2">
-                      {user}
-                    </Typography>
-                  ))}
-                </Alert>
-              ))}
-            </Collapse>
-          )}
-          {!showError && !submittedSuccessfully && (
-            <>
-              <Typography component="dd" variant="body1" mb={2}>
-                {t('settings:inviteUsersConfirmation', {
-                  count: recipients?.length,
-                })}
+                {error?.associatedUsers?.map((user) => (
+                  <Typography component="dd" variant="body2">
+                    {user}
+                  </Typography>
+                ))}
+              </Alert>
+            ))}
+          </Collapse>
+        )}
+        {!showError && !submittedSuccessfully && (
+          <>
+            <Typography component="dd" variant="body1" mb={2}>
+              {t('settings:inviteUsersConfirmation', {
+                count: recipients?.length,
+              })}
+            </Typography>
+
+            {recipients?.map((recipient) => (
+              <Typography component="dd" variant="body2">
+                {recipient.personalInfo?.firstName}{' '}
+                {recipient.personalInfo?.lastName}
               </Typography>
-
-              {recipients?.map((recipient) => (
-                <Typography component="dd" variant="body2">
-                  {recipient.personalInfo?.firstName}{' '}
-                  {recipient.personalInfo?.lastName}
-                </Typography>
-              ))}
-            </>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button variant="outlined" color="inherit" onClick={onCancel}>
-            {t('common:actions.cancel')}
-          </Button>
-          {!showError && !submittedSuccessfully && (
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              loading={isSubmitting}
-            >
-              {t('settings:sendInvite')}
-            </LoadingButton>
-          )}
-        </DialogActions>
-      </form>
+            ))}
+          </>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button variant="outlined" color="inherit" onClick={onCancel}>
+          {t('common:actions.cancel')}
+        </Button>
+        {!showError && !submittedSuccessfully && (
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            loading={isSubmitting}
+            onClick={handleSubmit}
+          >
+            {t('settings:sendInvite')}
+          </LoadingButton>
+        )}
+      </DialogActions>
     </Dialog>
   );
 }
