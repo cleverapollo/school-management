@@ -5,6 +5,7 @@ import {
   Swm_SubstitutionLookupFilter,
   UseQueryReturnType,
 } from '@tyro/api';
+import { usePreferredNameLayout } from '@tyro/core';
 import { substitutionKeys } from './keys';
 
 const coverLookup = graphql(/* GraphQL */ `
@@ -65,10 +66,18 @@ export function useCoverLookup(
   filter: Swm_SubstitutionLookupFilter,
   enabled = true
 ) {
+  const { sortByDisplayName } = usePreferredNameLayout();
   return useQuery({
     ...coverLookupQuery(filter),
     enabled,
-    select: ({ swm_substitutionLookup }) => swm_substitutionLookup,
+    select: ({ swm_substitutionLookup }) => ({
+      ...swm_substitutionLookup,
+      staff: swm_substitutionLookup.staff.sort((staffA, staffB) => {
+        const { person: personA } = staffA.staff;
+        const { person: personB } = staffB.staff;
+        return sortByDisplayName(personA, personB);
+      }),
+    }),
   });
 }
 

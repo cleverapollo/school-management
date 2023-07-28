@@ -25,5 +25,19 @@
   "day": "Day",
   "applyCover": "Apply cover",
   "freeRooms": "Free rooms",
-  "clashingRooms": "Clashing rooms"
+  "clashingRooms": "Clashing rooms",
+  "coverType": "Cover type",
+  "noteForSelectedTeacher": "Note for selected teacher",
+  "sAndSWeek": "S&S week",
+  "sAndSYear": "S&S year",
+  "casualWeek": "Casual week",
+  "fullTimePeriods": "Full time periods",
+  "youMustSelectACoverStaffMember": "You must select a cover staff member",
+  "currentRoom_zero": "Current room",
+  "currentRoom_one": "Current room",
+  "currentRoom_other": "Current rooms",
+  "changeRoom": "Change room",
+  "applyCoverForList": "Apply cover for {{list}}",
+  "coverAppliedSuccessfully": "Cover applied successfully",
+  "applyingCoverFailed": "Applying cover failed"
 }

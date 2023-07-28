@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { wasToggleInSelectionGroupKeyUsed } from '@tyro/core';
+import { useEffect, useState } from 'react';
 import { ReturnTypeFromUseEventsForCover } from '../api/staff-work-events-for-cover';
 
 type SubstitutionEventsByDay =
   ReturnTypeFromUseEventsForCover[number]['substitutionEventsByDay'];
 
 export type CoverEvent =
-  SubstitutionEventsByDay[number]['substitutionEventsByPeriod'][number]['event'];
+  SubstitutionEventsByDay[number]['substitutionEventsByPeriod'][number];
 
 export interface CoverTableRow {
   staff: ReturnTypeFromUseEventsForCover[number]['staff']['person'];
@@ -22,24 +21,22 @@ export function useCoverTable(data: CoverTableRow[]) {
     new Map()
   );
 
-  const onSelectEvent = (
-    e: React.MouseEvent<Element, MouseEvent>,
-    event: CoverEvent
-  ) => {
+  const onSelectEvent = (eventInfo: CoverEvent) => {
     setSelectedEvents((prev) => {
       const newMap = new Map(prev);
+      const { eventId } = eventInfo.event;
 
-      if (newMap.has(event.eventId)) {
-        newMap.delete(event.eventId);
+      if (newMap.has(eventId)) {
+        newMap.delete(eventId);
       } else {
-        newMap.set(event.eventId, event);
+        newMap.set(eventId, eventInfo);
       }
 
       return newMap;
     });
   };
 
-  const isEventSelected = (event: CoverEvent) =>
+  const isEventSelected = ({ event }: CoverEvent) =>
     selectedEvents?.has(event.eventId) ?? false;
 
   const resetSelectedEvents = () => {

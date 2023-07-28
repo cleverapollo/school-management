@@ -19,7 +19,7 @@ import { CoverBreakOrFinished } from './cover-break-or-finished';
 import { EventCoverCard } from './event-card';
 import { EmptyStateContainer } from './empty-state-container';
 import { useCoverTable, CoverTableRow } from '../../../hooks/use-cover-table';
-import { ApplyCoverModal } from './apply-cover-modal';
+import { ApplyCoverModal } from '../apply-cover-modal';
 
 interface CoverTableProps {
   userAsFirstColumn?: boolean;
@@ -171,16 +171,15 @@ export function CoverTable({
                             )}
                             {eventInfo && (
                               <EventCoverCard
-                                event={eventInfo.event}
+                                eventInfo={eventInfo}
                                 staff={staff}
-                                substitution={eventInfo.substitution}
                                 isEventSelected={isEventSelected}
                                 toggleEventSelection={onSelectEvent}
                                 applyCover={(anchorEvent) =>
                                   setEventsForApplyCover(
                                     new Map([
                                       ...selectedEventsMap.entries(),
-                                      [anchorEvent.eventId, anchorEvent],
+                                      [anchorEvent.event.eventId, anchorEvent],
                                     ])
                                   )
                                 }

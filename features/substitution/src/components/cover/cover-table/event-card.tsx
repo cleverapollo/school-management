@@ -1,39 +1,34 @@
 import { Box, Stack, Typography } from '@mui/material';
 import { usePreferredNameLayout } from '@tyro/core';
 import { useState } from 'react';
+import { CoverEvent } from '../../../hooks/use-cover-table';
 import { ReturnTypeFromUseEventsForCover } from '../../../api/staff-work-events-for-cover';
 import { CoverCardTooltip } from './cover-card-tooltip';
 import { EventCoverContextMenu } from './event-context-menu';
-
-type SubstitutionEvent =
-  ReturnTypeFromUseEventsForCover[number]['substitutionEventsByDay'][number]['substitutionEventsByPeriod'][number];
+import { getCurrentCoverRoom } from '../../../utils/cover-utils';
 
 interface EventCoverCardProps {
-  event: SubstitutionEvent['event'];
+  eventInfo: CoverEvent;
   staff: ReturnTypeFromUseEventsForCover[number]['staff']['person'];
-  substitution: SubstitutionEvent['substitution'];
-  isEventSelected: (event: SubstitutionEvent['event']) => boolean;
-  toggleEventSelection: (
-    event: React.MouseEvent,
-    subEvent: SubstitutionEvent['event']
-  ) => void;
-  applyCover: (anchorEvent: SubstitutionEvent['event']) => void;
+  isEventSelected: (eventInfo: CoverEvent) => boolean;
+  toggleEventSelection: (eventInfo: CoverEvent) => void;
+  applyCover: (anchorEvent: CoverEvent) => void;
 }
 
 export function EventCoverCard({
-  event,
+  eventInfo,
   staff,
-  substitution,
   isEventSelected,
   toggleEventSelection,
   applyCover,
 }: EventCoverCardProps) {
+  const { event, substitution } = eventInfo;
   const { displayName } = usePreferredNameLayout();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const isSelected = isEventSelected(event);
+  const isSelected = isEventSelected(eventInfo);
   const isContextMenuOpen = Boolean(anchorEl);
 
-  const rooms = (event.rooms ?? []).map(({ name }) => name).join(', ');
+  const rooms = getCurrentCoverRoom(eventInfo);
 
   const needsSubstitution = Boolean(substitution);
 
@@ -68,7 +63,7 @@ export function EventCoverCard({
           tabIndex={0}
           onClick={(e) => {
             e.preventDefault();
-            toggleEventSelection(e, event);
+            toggleEventSelection(eventInfo);
           }}
           onContextMenu={(e) => {
             e.preventDefault();
@@ -127,7 +122,7 @@ export function EventCoverCard({
         anchorEl={anchorEl}
         open={isContextMenuOpen}
         onClose={() => setAnchorEl(null)}
-        applyCover={() => applyCover(event)}
+        applyCover={() => applyCover(eventInfo)}
         isSelected={isSelected}
       />
     </>

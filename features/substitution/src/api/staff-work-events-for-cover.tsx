@@ -41,6 +41,8 @@ const eventsForCover = graphql(/* GraphQL */ `
             }
           }
           substitutionEventsByPeriod {
+            absenceId
+            staffPartyId
             event {
               eventId
               startTime
