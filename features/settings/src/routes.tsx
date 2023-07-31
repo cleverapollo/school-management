@@ -14,6 +14,7 @@ import {
   getStaffForSelect,
   getStudentsForSelect,
 } from '@tyro/people';
+import { AbsenceTypes, getStaffWorkAbsenceTypes } from '@tyro/substitution';
 import { getCoreRooms } from './api/rooms';
 import { getCatalogueSubjects } from './api/subjects';
 import { getPpodCredentialsStatus } from './api/ppod/ppod-credentials-status';
@@ -67,6 +68,13 @@ export const getRoutes: NavObjectFunction = (t) => [
                 'ps:1:attendance:view_attendance_codes'
               ),
             element: <AttendanceCodes />,
+          },
+          {
+            type: NavObjectType.MenuLink,
+            path: 'absence-types',
+            title: t('navigation:general.absence.types'),
+            loader: () => getStaffWorkAbsenceTypes({}),
+            element: <AbsenceTypes />,
           },
           {
             type: NavObjectType.MenuLink,

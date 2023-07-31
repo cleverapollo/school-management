@@ -5903,6 +5903,7 @@ __metadata:
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
     "@tyro/people": "*"
+    "@tyro/substitution": "*"
     dayjs: ^1.11.7
     lodash: ^4.17.21
     react: ^18.2.0
