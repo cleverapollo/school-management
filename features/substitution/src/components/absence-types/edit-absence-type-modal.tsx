@@ -71,28 +71,11 @@ export const EditAbsenceTypeModal = ({
     description,
     ...restData
   }: EditAbsenceTypeFormState) => {
-    const nameUpdated =
-      !!initialAbsenceTypeState && initialAbsenceTypeState?.name !== name;
-    const descriptionUpdated =
-      !!initialAbsenceTypeState &&
-      initialAbsenceTypeState?.description !== description;
-
     createOrUpdateAbsenceTypeMutation(
       [
         {
-          // TODO: update schema to make locale field as optional
-          name: [
-            {
-              ...(nameUpdated ? { locale: currentLanguageCode } : {}),
-              value: name,
-            },
-          ],
-          description: [
-            {
-              ...(descriptionUpdated ? { locale: currentLanguageCode } : {}),
-              value: description,
-            },
-          ],
+          name: [{ locale: currentLanguageCode, value: name }],
+          description: [{ locale: currentLanguageCode, value: description }],
           availableForRequests: true,
           ...restData,
         },

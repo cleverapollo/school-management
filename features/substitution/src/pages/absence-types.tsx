@@ -100,32 +100,21 @@ export default function AbsenceTypes() {
         const currentData = absenceTypes?.find(
           (item) => item?.absenceTypeId === Number(id)
         );
-        const updatedName = data[id].name?.newValue;
-        const updatedDescription = data[id].description?.newValue;
 
         return {
           absenceTypeId: Number(id),
           code: data[id].code?.newValue ?? currentData?.code ?? '',
-          // TODO: update schema to make locale field as optional
           name: [
-            updatedName
-              ? {
-                  locale: currentLanguageCode,
-                  value: updatedName,
-                }
-              : {
-                  value: currentData?.name,
-                },
+            {
+              locale: currentLanguageCode,
+              value: data[id].name?.newValue ?? currentData?.name,
+            },
           ],
           description: [
-            updatedDescription
-              ? {
-                  locale: currentLanguageCode,
-                  value: updatedDescription,
-                }
-              : {
-                  value: currentData?.description,
-                },
+            {
+              locale: currentLanguageCode,
+              value: data[id].description?.newValue ?? currentData?.description,
+            },
           ],
           availableForRequests: Boolean(
             data[id].availableForRequests?.newValue ??
