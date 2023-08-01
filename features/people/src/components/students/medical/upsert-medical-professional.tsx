@@ -102,7 +102,7 @@ export function UpsertMedicalProfessionalModal({
       </DialogTitle>
       <form onSubmit={onSubmit}>
         <DialogContent>
-          <Stack gap={3} p={3}>
+          <Stack gap={3}>
             <Stack
               direction={{ xs: 'column', sm: 'row' }}
               spacing={3}

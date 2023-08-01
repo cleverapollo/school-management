@@ -1,5 +1,7 @@
 import {
   Button,
+  DialogContent,
+  DialogContentText,
   DialogTitle,
   Stack,
   DialogActions,
@@ -46,9 +48,11 @@ export const DeleteMedicalProfessionalModal = ({
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>{t('people:deleteMedicalProfessional')}</DialogTitle>
 
-      <Stack sx={{ p: 3 }}>
-        {t('people:deleteMedicalProfessionalConfirmation')}
-      </Stack>
+      <DialogContent>
+        <DialogContentText>
+          {t('people:deleteMedicalProfessionalConfirmation')}
+        </DialogContentText>
+      </DialogContent>
       <Stack spacing={2}>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
