@@ -178,7 +178,8 @@
       "WELLBEING": "Wellbeing",
       "PEOPLE": "People",
       "GENERAL_ADMIN": "General admin",
-      "TIMETABLE_CONSTRUCTION": "Timetable construction"
+      "TIMETABLE_CONSTRUCTION": "Timetable construction",
+      "STAFF_WORK_MANAGEMENT": "Staff Work Management"
     }
   }
 }
