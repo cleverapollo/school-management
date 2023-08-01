@@ -1,0 +1,9 @@
+{
+  "absenceTypes": "Absence types",
+  "createAbsenceType": "Create absence type",
+  "absenceCode": "Absence code",
+  "absenceTypeName": "Absence type name",
+  "editAbsenceType": "Edit absence type",
+  "absenceTypeNameShouldBeUnique": "Absence type name should be unique",
+  "availableForRequests": "Available for requests"
+}
