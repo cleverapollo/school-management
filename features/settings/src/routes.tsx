@@ -74,6 +74,10 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'absence-types',
             title: t('navigation:general.absence.types'),
             loader: () => getStaffWorkAbsenceTypes({}),
+            hasAccess: (permissions) =>
+              permissions.hasPermission(
+                'ps:1:staff_work_management:absences_codes_write'
+              ),
             element: <AbsenceTypes />,
           },
           {
