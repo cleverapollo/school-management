@@ -5,7 +5,7 @@ import { getAttendanceCodes } from './api';
 
 const Overview = lazy(() => import('./pages/overview'));
 const AttendanceCodes = lazy(() => import('./pages/codes'));
-const AbsentRequest = lazy(() => import('./pages/absent-request'));
+const AbsentRequests = lazy(() => import('./pages/absent-requests'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -46,15 +46,13 @@ export const getRoutes: NavObjectFunction = (t) => [
           },
           {
             type: NavObjectType.MenuLink,
-            path: 'absent-request',
-            // title: t('navigation:general.attendance.request'),
-            title: 'Absent Request',
+            path: 'absent-requests',
+            title: t('navigation:general.attendance.absentRequests'),
             children: [
               {
                 type: NavObjectType.NonMenuLink,
                 index: true,
-                loader: () => getAttendanceCodes({}),
-                element: <AbsentRequest />,
+                element: <AbsentRequests />,
               },
             ],
           },

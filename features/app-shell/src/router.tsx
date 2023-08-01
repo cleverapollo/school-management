@@ -193,7 +193,6 @@ function useAppRouter() {
 
 export function Router() {
   const appRouter = useAppRouter();
-  console.log('appRouter :>> ', appRouter);
 
   return (
     <RouterProvider router={appRouter} fallbackElement={<LoadingScreen />} />
