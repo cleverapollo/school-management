@@ -205,5 +205,12 @@
   "location": "Location",
   "locationOfEquipment": "Location of equipment",
   "siblingsInSchool": "Siblings in school",
-  "noMedicalContacts": "No medical contacts added"
+  "noMedicalContacts": "No medical contacts added",
+  "firstName": "First name",
+  "lastName": "Last name",
+  "medicalProfessional": "Medical professional",
+  "addMedicalProfessional": "Add medical professional",
+  "editMedicalProfessional": "Edit medical professional",
+  "deleteMedicalProfessional": "Delete medical professional",
+  "deleteMedicalProfessionalConfirmation": "You are about to delete this medical professional. Are you sure you want to continue?"
 }

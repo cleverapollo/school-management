@@ -34,6 +34,7 @@ import { getStaffStatus } from './api/staff/status';
 import { getStaffSubjectGroups } from './api/staff/subject-groups';
 import { getStaffPersonal } from './api/staff/personal';
 import { getMedicalConditionNamesQuery } from './api/student/medicals/medical-condition-lookup';
+import { getPersonalTitlesQuery } from './api/student/medicals/personal-titles';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
 // Student profile pages
@@ -294,6 +295,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                   return Promise.all([
                     getStudentMedicalData(studentId),
                     getMedicalConditionNamesQuery(),
+                    getPersonalTitlesQuery(),
                   ]);
                 },
               },
