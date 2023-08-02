@@ -7,17 +7,17 @@ import {
 import { useCreateOrUpdateAbsentRequest } from '../../api';
 
 export interface ApproveAbsentRequestConfirmModalProps {
-  open: boolean;
+  isOpen: boolean;
   onClose: () => void;
   onApprove: () => void;
-  absentRequestDetails?: SaveParentalAttendanceRequest | undefined;
+  initialAbsentRequestState?: SaveParentalAttendanceRequest | undefined;
 }
 
 export function ApproveAbsentRequestConfirmModal({
-  open,
+  isOpen,
   onClose,
   onApprove,
-  absentRequestDetails,
+  initialAbsentRequestState,
 }: ApproveAbsentRequestConfirmModalProps) {
   const { t } = useTranslation(['attendance']);
 
@@ -25,10 +25,10 @@ export function ApproveAbsentRequestConfirmModal({
     useCreateOrUpdateAbsentRequest();
 
   const onSubmit = async () => {
-    if (absentRequestDetails) {
+    if (initialAbsentRequestState) {
       await saveBulkAbsentRequest([
         {
-          ...absentRequestDetails,
+          ...initialAbsentRequestState,
           status: ParentalAttendanceRequestStatus.Approved,
         },
       ]);
@@ -38,7 +38,7 @@ export function ApproveAbsentRequestConfirmModal({
 
   return (
     <ConfirmDialog
-      open={open}
+      open={isOpen}
       onClose={onClose}
       onConfirm={onSubmit}
       title={t('attendance:approveAbsentRequest')}

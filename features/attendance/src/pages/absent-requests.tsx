@@ -6,24 +6,19 @@ import {
   ActionMenu,
   PageContainer,
   PageHeading,
-  BulkEditedRows,
-  TableAvatar,
   sortStartNumberFirst,
+  TablePersonAvatar,
+  useDisclosure,
 } from '@tyro/core';
-import { Button } from '@mui/material';
+import { Box, Button, Fade, Typography } from '@mui/material';
 import { VerticalDotsIcon } from '@tyro/icons';
 import {
-  ParentalAttendanceRequestStatus,
-  ParentalAttendanceRequestType,
+  ParentalAttendanceRequest,
   SaveParentalAttendanceRequest,
-  usePermissions,
 } from '@tyro/api';
+import dayjs from 'dayjs';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
-import {
-  ReturnTypeFromUseAbsentRequests,
-  useAbsentRequests,
-  useCreateOrUpdateAbsentRequest,
-} from '../api';
+import { ReturnTypeFromUseAbsentRequests, useAbsentRequests } from '../api';
 import {
   EditAbsentRequestModal,
   EditAbsentRequestModalProps,
@@ -32,63 +27,72 @@ import {
   ViewAbsentRequestModal,
   ViewAbsentRequestModalProps,
 } from '../components/view-absent-request-modal';
+import { ApproveAbsentRequestsConfirmModal } from '../components/approve-absent-requests-confirm-modal';
+import { DeclineAbsentRequestsConfirmModal } from '../components/decline-absent-requests-confirm-modal';
 
 const getAbsentRequestColumns = (
   t: TFunction<('common' | 'attendance')[]>,
-  isStaffUser: boolean,
   onClickEdit: Dispatch<
     SetStateAction<EditAbsentRequestModalProps['initialAbsentRequestState']>
   >,
   onClickView: Dispatch<
-    SetStateAction<ViewAbsentRequestModalProps['absentRequestDetails']>
+    SetStateAction<ViewAbsentRequestModalProps['initialAbsentRequestState']>
   >
 ): GridOptions<ReturnTypeFromUseAbsentRequests>['columnDefs'] => [
   {
-    field: 'contactPartyId',
+    field: 'student',
     headerName: t('common:name'),
-    headerCheckboxSelection: isStaffUser,
-    headerCheckboxSelectionFilteredOnly: isStaffUser,
-    checkboxSelection: ({ data }) => Boolean(data) && isStaffUser,
+    checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
     editable: true,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
       data ? (
-        <TableAvatar
-          name={data?.from ?? ''}
+        <TablePersonAvatar
+          person={data?.student}
           to={`./${data?.studentPartyId ?? ''}`}
-          avatarUrl=""
-          AvatarProps={{
-            sx: {
-              borderRadius: 1,
-            },
-          }}
         />
       ) : null,
     comparator: sortStartNumberFirst,
   },
   {
-    field: 'studentPartyId',
+    field: 'classGroup',
     headerName: t('common:class'),
     editable: true,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
+      data ? <Typography>{data?.classGroup?.name ?? '-'}</Typography> : null,
   },
   {
-    field: 'requestType',
+    field: 'attendanceCodeId',
     headerName: t('attendance:absentType'),
     filter: true,
-    editable: true,
   },
   {
-    field: 'from',
+    field: 'createdOn',
     headerName: t('common:created'),
     editable: true,
     sort: 'asc',
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
+      data ? (
+        <Typography>{dayjs(data?.createdOn).format('D MMMM YYYY')}</Typography>
+      ) : null,
   },
   {
     field: 'status',
     headerName: t('common:status'),
-    editable: true,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
+      data ? (
+        <Typography sx={{ textTransform: 'lowercase' }}>
+          {data?.status}
+        </Typography>
+      ) : null,
   },
   {
     suppressColumnsToolPanel: true,
@@ -97,7 +101,11 @@ const getAbsentRequestColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
-      data && <Button onClick={() => onClickView(data)}>View</Button>,
+      data && (
+        <Button onClick={() => onClickView(data as ParentalAttendanceRequest)}>
+          View
+        </Button>
+      ),
   },
   {
     suppressColumnsToolPanel: true,
@@ -125,25 +133,35 @@ export default function AbsentRequests() {
   const { t } = useTranslation(['common', 'attendance']);
   const { data: absentRequests } = useAbsentRequests({});
 
-  const { mutateAsync: saveBulkAbsentRequest } =
-    useCreateOrUpdateAbsentRequest();
-  const { isStaffUser } = usePermissions();
-
   const [editAbsentRequestInitialState, setEditAbsentRequestInitialState] =
     useState<EditAbsentRequestModalProps['initialAbsentRequestState']>();
   const [viewAbsentRequestInitialState, setViewAbsentRequestInitialState] =
-    useState<ViewAbsentRequestModalProps['absentRequestDetails']>();
+    useState<ViewAbsentRequestModalProps['initialAbsentRequestState']>();
+  const [selectedAbsentRequests, setSelectedAbsentRequests] = useState<
+    SaveParentalAttendanceRequest[]
+  >([]);
 
   const absentRequestColumns = useMemo(
     () =>
       getAbsentRequestColumns(
         t,
-        isStaffUser,
         setEditAbsentRequestInitialState,
         setViewAbsentRequestInitialState
       ),
     [t, setEditAbsentRequestInitialState]
   );
+
+  const {
+    isOpen: isApproveAbsentRequestsModalOpen,
+    onOpen: onOpenApproveAbsentRequestsModal,
+    onClose: onCloseApproveAbsentRequestsModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isDeclineAbsentRequestsModalOpen,
+    onOpen: onOpenDeclineAbsentRequestsModal,
+    onClose: onCloseDeclineAbsentRequestsModal,
+  } = useDisclosure();
 
   const handleCloseEditAbsentRequestModal = () => {
     setEditAbsentRequestInitialState(undefined);
@@ -151,57 +169,6 @@ export default function AbsentRequests() {
 
   const handleCloseViewAbsentRequestModal = () => {
     setViewAbsentRequestInitialState(undefined);
-  };
-
-  const handleBulkSave = (
-    data: BulkEditedRows<
-      ReturnTypeFromUseAbsentRequests,
-      | 'id'
-      | 'contactPartyId'
-      | 'studentPartyId'
-      | 'requestType'
-      | 'from'
-      | 'status'
-      | 'parentNote'
-      | 'attendanceCodeId'
-      | 'to'
-    >
-  ) => {
-    const dataForEndpoint = Object.keys(
-      data
-    ).map<SaveParentalAttendanceRequest>((id) => {
-      const currentData = absentRequests?.find(
-        (item) => item?.id === Number(id)
-      );
-      return {
-        id: Number(id),
-        contactPartyId:
-          data[id].contactPartyId?.newValue ??
-          currentData?.contactPartyId ??
-          -1,
-        studentPartyId:
-          data[id].studentPartyId?.newValue ??
-          currentData?.studentPartyId ??
-          -1,
-        requestType:
-          data[id].requestType?.newValue ??
-          currentData?.requestType ??
-          ParentalAttendanceRequestType.MultiDay,
-        from: data[id].from?.newValue ?? currentData?.from ?? '',
-        status:
-          data[id].status?.newValue ??
-          currentData?.status ??
-          ParentalAttendanceRequestStatus.Approved,
-        parentNote:
-          data[id].parentNote?.newValue ?? currentData?.parentNote ?? '',
-        attendanceCodeId:
-          data[id].attendanceCodeId?.newValue ??
-          currentData?.attendanceCodeId ??
-          -1,
-        to: data[id].to?.newValue ?? currentData?.to ?? '',
-      };
-    });
-    return saveBulkAbsentRequest(dataForEndpoint);
   };
 
   return (
@@ -215,15 +182,57 @@ export default function AbsentRequests() {
         columnDefs={absentRequestColumns}
         rowSelection="multiple"
         getRowId={({ data }) => String(data?.id)}
-        onBulkSave={handleBulkSave}
+        rightAdornment={
+          <Fade in={selectedAbsentRequests.length > 0} unmountOnExit>
+            <Box>
+              <ActionMenu
+                menuItems={[
+                  {
+                    label: t('attendance:approveRequests'),
+                    onClick: onOpenApproveAbsentRequestsModal,
+                  },
+                  {
+                    label: t('attendance:declineRequests'),
+                    onClick: onOpenDeclineAbsentRequestsModal,
+                  },
+                ]}
+              />
+            </Box>
+          </Fade>
+        }
+        onRowSelection={(newSelectedAbsentRequests) =>
+          setSelectedAbsentRequests(
+            newSelectedAbsentRequests.map((absentRequest) => ({
+              adminNote: absentRequest.adminNote,
+              attendanceCodeId: absentRequest.attendanceCodeId,
+              from: absentRequest.from,
+              id: absentRequest.id,
+              parentNote: absentRequest.parentNote,
+              requestType: absentRequest.requestType,
+              status: absentRequest.status,
+              studentPartyId: absentRequest.studentPartyId,
+              to: absentRequest.to,
+            }))
+          )
+        }
       />
       <EditAbsentRequestModal
         initialAbsentRequestState={editAbsentRequestInitialState}
         onClose={handleCloseEditAbsentRequestModal}
       />
       <ViewAbsentRequestModal
-        absentRequestDetails={viewAbsentRequestInitialState}
+        initialAbsentRequestState={viewAbsentRequestInitialState}
         onClose={handleCloseViewAbsentRequestModal}
+      />
+      <ApproveAbsentRequestsConfirmModal
+        isOpen={isApproveAbsentRequestsModalOpen}
+        onClose={onCloseApproveAbsentRequestsModal}
+        absentRequests={selectedAbsentRequests}
+      />
+      <DeclineAbsentRequestsConfirmModal
+        isOpen={isDeclineAbsentRequestsModalOpen}
+        onClose={onCloseDeclineAbsentRequestsModal}
+        absentRequests={selectedAbsentRequests}
       />
     </PageContainer>
   );
