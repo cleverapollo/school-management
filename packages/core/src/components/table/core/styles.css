@@ -376,3 +376,13 @@
 .ag-theme-tyro .ag-right-aligned-cell {
   justify-content: flex-end;
 }
+
+.ag-theme-tyro .ag-center-aligned-cell {
+  justify-content: center;
+}
+
+.ag-theme-tyro .ag-center-aligned-cell,
+.ag-theme-tyro .ag-center-aligned-cell .ag-header-cell-label,
+.ag-theme-tyro .ag-center-aligned-cell .ag-header-group-cell-label {
+  justify-content: center;
+}

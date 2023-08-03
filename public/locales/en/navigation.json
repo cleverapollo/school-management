@@ -8,7 +8,8 @@
     "attendance": {
       "title": "Attendance",
       "overview": "Overview",
-      "codes": "Attendance codes"
+      "codes": "Attendance codes",
+      "session": "Session"
     },
     "groups": {
       "title": "Groups",

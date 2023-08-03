@@ -1,14 +1,15 @@
-import { LicenseManager } from 'ag-grid-enterprise';
-import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
-
-import 'ag-grid-community/styles/ag-grid.css';
 import {
+  useMemo,
   ForwardedRef,
   forwardRef,
   MutableRefObject,
   useCallback,
   useState,
 } from 'react';
+import { LicenseManager } from 'ag-grid-enterprise';
+import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
+
+import 'ag-grid-community/styles/ag-grid.css';
 import { Box, BoxProps, Card, CardProps, Stack } from '@mui/material';
 
 import './styles.css';
@@ -31,6 +32,7 @@ export type {
   ValueSetterParams,
   CellValueChangedEvent,
   ICellEditorParams,
+  ValueGetterParams,
 } from 'ag-grid-community';
 
 export type { AgGridReact } from 'ag-grid-react';
@@ -47,6 +49,7 @@ export interface TableProps<T> extends AgGridReactProps<T> {
   sx?: CardProps['sx'];
   tableContainerSx?: BoxProps['sx'];
   rightAdornment?: React.ReactNode;
+  toolbar?: React.ReactNode;
 }
 
 const defaultColDef: ColDef = {
@@ -77,6 +80,7 @@ function TableInner<T extends object>(
     rowHeight = 56,
     rowSelection,
     onColumnEverythingChanged,
+    toolbar,
     ...props
   }: TableProps<T>,
   ref: React.Ref<AgGridReact<T>>
@@ -106,6 +110,14 @@ function TableInner<T extends object>(
     tableRef,
     onBulkSave,
   });
+
+  const colDefs = useMemo(
+    () => ({
+      ...defaultColDef,
+      ...props.defaultColDef,
+    }),
+    [props.defaultColDef]
+  );
 
   const onSelectionChanged = useCallback(() => {
     const selectedRows = tableRef.current.api.getSelectedRows();
@@ -153,13 +165,20 @@ function TableInner<T extends object>(
           ...sx,
         }}
       >
-        <Stack direction="row" justifyContent="space-between" spacing={2} p={2}>
-          <SearchInput
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-          />
-          {rightAdornment}
-        </Stack>
+        {toolbar || (
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            spacing={2}
+            p={2}
+          >
+            <SearchInput
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
+            {rightAdornment}
+          </Stack>
+        )}
         <Box
           ref={tableContainerRef}
           className="ag-theme-tyro"
@@ -174,7 +193,6 @@ function TableInner<T extends object>(
           >
             <AgGridReact<(typeof props.rowData)[number]>
               ref={tableRef}
-              defaultColDef={defaultColDef}
               quickFilterText={searchValue}
               undoRedoCellEditing
               undoRedoCellEditingLimit={20}
@@ -194,6 +212,7 @@ function TableInner<T extends object>(
               groupSelectsFiltered={rowSelection === 'multiple'}
               stopEditingWhenCellsLoseFocus
               {...props}
+              defaultColDef={colDefs}
               onCellValueChanged={(args) => {
                 onCellValueChanged(args);
                 props.onCellValueChanged?.(args);
