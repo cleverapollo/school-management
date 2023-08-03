@@ -91,6 +91,7 @@ const getColumns = (
         headerName: name,
         headerTooltip: getLocaleTimestamp(time),
         headerClass: 'ag-center-aligned-cell',
+        width: 100,
         cellStyle: {
           justifyContent: 'center',
         },
