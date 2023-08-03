@@ -1,28 +1,50 @@
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
   DialogTitle,
+  Divider,
   Stack,
   Typography,
 } from '@mui/material';
-import { useTranslation } from '@tyro/i18n';
+import { TFunction, useTranslation } from '@tyro/i18n';
 import {
+  AttendanceCode,
   GeneralGroup,
   ParentalAttendanceRequest,
   ParentalAttendanceRequestStatus,
+  Person,
+  StudentContactRelationshipInfo,
 } from '@tyro/api';
 import React from 'react';
-import { Avatar, useDisclosure, usePreferredNameLayout } from '@tyro/core';
+import {
+  Avatar,
+  DisplayNamePersonProps,
+  PreferredNameFormat,
+  RHFSelect,
+  RHFTextField,
+  useDisclosure,
+  useFormValidator,
+  usePreferredNameLayout,
+} from '@tyro/core';
 import dayjs from 'dayjs';
-import { ApproveAbsentRequestConfirmModal } from '../approve-absent-request-confirm-modal';
+import {
+  CardEditableForm,
+  CardEditableFormProps,
+} from '@tyro/people/src/components/common/card-editable-form';
 import { DeclineAbsentRequestConfirmModal } from '../decline-absent-request-confirm-modal';
+import { ApproveAbsentRequestConfirmModal } from '../approve-absent-request-confirm-modal';
+import {
+  getAbsentRequests,
+  useAttendanceCodes,
+  useCreateOrUpdateAbsentRequest,
+} from '../../api';
 
 export type ViewAbsentRequestFormState = Pick<
   ParentalAttendanceRequest,
   | 'adminNote'
   | 'attendanceCodeId'
-  | 'contact'
   | 'contactPartyId'
   | 'createdOn'
   | 'from'
@@ -30,16 +52,94 @@ export type ViewAbsentRequestFormState = Pick<
   | 'parentNote'
   | 'requestType'
   | 'status'
-  | 'student'
   | 'studentPartyId'
   | 'to'
 > & {
-  classGroup: Pick<GeneralGroup, 'name'>;
+  classGroup?: Pick<GeneralGroup, 'name'> | null;
+  contact?: {
+    person: Omit<Person, 'partyId'>;
+    relationships?:
+      | (Pick<
+          StudentContactRelationshipInfo,
+          'relationshipType' | 'studentPartyId'
+        > | null)[]
+      | null;
+  } | null;
+  student?: Omit<Person, 'partyId'> | null;
+  attendanceCode: Pick<AttendanceCode, 'code' | 'name' | 'id'>;
 };
 
 export type ViewAbsentRequestModalProps = {
-  initialAbsentRequestState?: ParentalAttendanceRequest | undefined;
+  initialAbsentRequestState?: ViewAbsentRequestFormState | undefined;
   onClose: () => void;
+};
+
+const getAbsentRequestDataWithLabels = (
+  data: ViewAbsentRequestFormState | undefined,
+  t: TFunction<('common' | 'attendance')[]>,
+  displayName: (
+    person: DisplayNamePersonProps,
+    options?: {
+      format: PreferredNameFormat;
+    }
+  ) => string,
+  attendanceCodes: AttendanceCode[] | undefined
+): CardEditableFormProps<ViewAbsentRequestFormState>['fields'] => {
+  const { from, contact, attendanceCode, parentNote } = data || {};
+
+  return [
+    {
+      label: t('attendance:dateOfAbsence'),
+      value: dayjs(from).format('D MMMM YYYY'),
+    },
+    {
+      label: t('common:createdBy'),
+      value: contact,
+      valueRenderer:
+        `${displayName(contact?.person, {
+          format: PreferredNameFormat.FirstnameSurname,
+        })}, ${
+          contact?.relationships?.length &&
+          contact?.relationships?.[0]?.relationshipType
+            ? t(
+                `common:relationshipType.${contact?.relationships?.[0]?.relationshipType}`
+              )
+            : ''
+        }` ?? '-',
+    },
+    {
+      label: t('attendance:absenceType'),
+      value: attendanceCode?.name,
+      valueEditor: (
+        <RHFSelect
+          fullWidth
+          options={(attendanceCodes ?? [])
+            .filter(({ code }) => code !== undefined)
+            .map(({ name }) => name)}
+          getOptionLabel={(option) => option || ''}
+          controlProps={{
+            name: 'attendanceCode.code',
+          }}
+        />
+      ),
+    },
+    {
+      label: t('common:details'),
+      value: parentNote,
+      valueEditor: (
+        <RHFTextField
+          controlProps={{
+            name: 'parentNote',
+          }}
+          textFieldProps={{
+            fullWidth: true,
+            multiline: true,
+            minRows: 3,
+          }}
+        />
+      ),
+    },
+  ];
 };
 
 export const ViewAbsentRequestModal = ({
@@ -47,6 +147,11 @@ export const ViewAbsentRequestModal = ({
   onClose,
 }: ViewAbsentRequestModalProps) => {
   const { t } = useTranslation(['common', 'attendance']);
+
+  const { data: attendanceCodes } = useAttendanceCodes({});
+
+  const { mutate: createOrUpdateAbsentRequestMutation } =
+    useCreateOrUpdateAbsentRequest();
 
   const {
     isOpen: isApproveAbsentRequestModalOpen,
@@ -62,6 +167,43 @@ export const ViewAbsentRequestModal = ({
 
   const { displayName } = usePreferredNameLayout();
 
+  const absentRequestDataWithLabels = getAbsentRequestDataWithLabels(
+    initialAbsentRequestState,
+    t,
+    displayName,
+    attendanceCodes
+  );
+  const { resolver, rules } = useFormValidator<ViewAbsentRequestFormState>();
+
+  const absentRequestFormResolver = resolver({
+    attendanceCode: rules.required(),
+  });
+
+  const handleEdit = ({
+    attendanceCode,
+    parentNote,
+  }: ViewAbsentRequestFormState) => {
+    if (initialAbsentRequestState) {
+      createOrUpdateAbsentRequestMutation([
+        {
+          attendanceCodeId:
+            attendanceCode?.id ?? initialAbsentRequestState?.attendanceCode?.id,
+          parentNote,
+          adminNote: initialAbsentRequestState?.adminNote,
+          from: initialAbsentRequestState?.from,
+          id: initialAbsentRequestState?.id,
+          requestType: initialAbsentRequestState?.requestType,
+          status: initialAbsentRequestState?.status,
+          studentPartyId: initialAbsentRequestState?.studentPartyId,
+          to: initialAbsentRequestState?.to,
+        },
+      ]);
+
+      getAbsentRequests({});
+      onClose();
+    }
+  };
+
   return (
     <Dialog
       open={!!initialAbsentRequestState}
@@ -71,38 +213,43 @@ export const ViewAbsentRequestModal = ({
       maxWidth="sm"
     >
       <DialogTitle>{t('attendance:viewAbsentRequest')}</DialogTitle>
-      <Stack
-        gap={3}
-        p={3}
-        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-      >
-        <Avatar
-          name={displayName(initialAbsentRequestState?.student)}
-          src={initialAbsentRequestState?.student?.avatarUrl}
-        />
-        <Typography component="span" variant="subtitle2">
-          {displayName(initialAbsentRequestState?.student)}
-        </Typography>
+      <Stack direction="row" gap={2} px={3} pb={3} pt={1} alignItems="center">
+        <Box
+          sx={{
+            width: 40,
+            height: 40,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Avatar
+            name={displayName(initialAbsentRequestState?.student)}
+            src={initialAbsentRequestState?.student?.avatarUrl}
+          />
+        </Box>
+        <Stack>
+          <Typography component="span" variant="subtitle2">
+            {displayName(initialAbsentRequestState?.student)}
+          </Typography>
+          <Typography component="span" variant="body2" sx={{ flex: 1 }}>
+            {initialAbsentRequestState?.classGroup?.name ?? '-'}
+          </Typography>
+        </Stack>
       </Stack>
-      <Stack px={3}>
-        <Typography component="span" variant="body2">
-          Class: <b>{initialAbsentRequestState?.classGroup?.name ?? '-'}</b>
-        </Typography>
-        <Typography component="span" variant="body2">
-          Date of absent request:{' '}
-          <b>{dayjs(initialAbsentRequestState?.from).format('D MMMM YYYY')}</b>
-        </Typography>
-        <Typography component="span" variant="body2">
-          Absent type: <b>{initialAbsentRequestState?.attendanceCodeId}</b>
-        </Typography>
-        <Typography component="span" variant="body2">
-          Details: <b>-</b>
-        </Typography>
-        <Typography component="span" variant="body2">
-          Created by:{' '}
-          <b>{displayName(initialAbsentRequestState?.contact) ?? '-'}</b>
-        </Typography>
-      </Stack>
+      <Divider flexItem sx={{ mx: 3 }} />
+
+      <CardEditableForm
+        title={t('common:details')}
+        editable
+        fields={absentRequestDataWithLabels}
+        resolver={absentRequestFormResolver}
+        onSave={handleEdit}
+        sx={{
+          border: 'none',
+          '.MuiCardHeader-root': { borderBottom: 'none !important' },
+        }}
+      />
       <DialogActions>
         <Button variant="outlined" color="inherit" onClick={onClose}>
           {t('common:actions.cancel')}

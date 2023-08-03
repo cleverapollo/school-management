@@ -11,18 +11,10 @@ import {
   useDisclosure,
 } from '@tyro/core';
 import { Box, Button, Fade, Typography } from '@mui/material';
-import { VerticalDotsIcon } from '@tyro/icons';
-import {
-  ParentalAttendanceRequest,
-  SaveParentalAttendanceRequest,
-} from '@tyro/api';
+import { SaveParentalAttendanceRequest } from '@tyro/api';
 import dayjs from 'dayjs';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { ReturnTypeFromUseAbsentRequests, useAbsentRequests } from '../api';
-import {
-  EditAbsentRequestModal,
-  EditAbsentRequestModalProps,
-} from '../components/edit-absent-request-modal';
 import {
   ViewAbsentRequestModal,
   ViewAbsentRequestModalProps,
@@ -32,9 +24,6 @@ import { DeclineAbsentRequestsConfirmModal } from '../components/decline-absent-
 
 const getAbsentRequestColumns = (
   t: TFunction<('common' | 'attendance')[]>,
-  onClickEdit: Dispatch<
-    SetStateAction<EditAbsentRequestModalProps['initialAbsentRequestState']>
-  >,
   onClickView: Dispatch<
     SetStateAction<ViewAbsentRequestModalProps['initialAbsentRequestState']>
   >
@@ -44,7 +33,6 @@ const getAbsentRequestColumns = (
     headerName: t('common:name'),
     checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
-    editable: true,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
@@ -59,21 +47,25 @@ const getAbsentRequestColumns = (
   {
     field: 'classGroup',
     headerName: t('common:class'),
-    editable: true,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
       data ? <Typography>{data?.classGroup?.name ?? '-'}</Typography> : null,
   },
   {
-    field: 'attendanceCodeId',
+    field: 'attendanceCode.name',
     headerName: t('attendance:absentType'),
     filter: true,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
+      data ? (
+        <Typography>{data?.attendanceCode?.name ?? '-'}</Typography>
+      ) : null,
   },
   {
     field: 'createdOn',
     headerName: t('common:created'),
-    editable: true,
     sort: 'asc',
     cellRenderer: ({
       data,
@@ -101,31 +93,7 @@ const getAbsentRequestColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
-      data && (
-        <Button onClick={() => onClickView(data as ParentalAttendanceRequest)}>
-          View
-        </Button>
-      ),
-  },
-  {
-    suppressColumnsToolPanel: true,
-    sortable: false,
-    cellClass: 'ag-show-on-row-interaction',
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
-      data && (
-        <ActionMenu
-          iconOnly
-          buttonIcon={<VerticalDotsIcon />}
-          menuItems={[
-            {
-              label: t('attendance:editAbsentRequest'),
-              onClick: () => onClickEdit(data),
-            },
-          ]}
-        />
-      ),
+      data && <Button onClick={() => onClickView(data)}>View</Button>,
   },
 ];
 
@@ -133,8 +101,6 @@ export default function AbsentRequests() {
   const { t } = useTranslation(['common', 'attendance']);
   const { data: absentRequests } = useAbsentRequests({});
 
-  const [editAbsentRequestInitialState, setEditAbsentRequestInitialState] =
-    useState<EditAbsentRequestModalProps['initialAbsentRequestState']>();
   const [viewAbsentRequestInitialState, setViewAbsentRequestInitialState] =
     useState<ViewAbsentRequestModalProps['initialAbsentRequestState']>();
   const [selectedAbsentRequests, setSelectedAbsentRequests] = useState<
@@ -142,13 +108,8 @@ export default function AbsentRequests() {
   >([]);
 
   const absentRequestColumns = useMemo(
-    () =>
-      getAbsentRequestColumns(
-        t,
-        setEditAbsentRequestInitialState,
-        setViewAbsentRequestInitialState
-      ),
-    [t, setEditAbsentRequestInitialState]
+    () => getAbsentRequestColumns(t, setViewAbsentRequestInitialState),
+    [t, setViewAbsentRequestInitialState]
   );
 
   const {
@@ -162,10 +123,6 @@ export default function AbsentRequests() {
     onOpen: onOpenDeclineAbsentRequestsModal,
     onClose: onCloseDeclineAbsentRequestsModal,
   } = useDisclosure();
-
-  const handleCloseEditAbsentRequestModal = () => {
-    setEditAbsentRequestInitialState(undefined);
-  };
 
   const handleCloseViewAbsentRequestModal = () => {
     setViewAbsentRequestInitialState(undefined);
@@ -215,10 +172,6 @@ export default function AbsentRequests() {
             }))
           )
         }
-      />
-      <EditAbsentRequestModal
-        initialAbsentRequestState={editAbsentRequestInitialState}
-        onClose={handleCloseEditAbsentRequestModal}
       />
       <ViewAbsentRequestModal
         initialAbsentRequestState={viewAbsentRequestInitialState}

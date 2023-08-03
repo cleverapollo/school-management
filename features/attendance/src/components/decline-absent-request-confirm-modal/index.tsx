@@ -16,7 +16,6 @@ import { useForm } from 'react-hook-form';
 import React, { useEffect } from 'react';
 import { LoadingButton } from '@mui/lab';
 import { useCreateOrUpdateAbsentRequest } from '../../api';
-import { EditAbsentRequestFormState } from '../edit-absent-request-modal';
 
 export type DeclineAbsentRequestFormState = Pick<
   SaveParentalAttendanceRequest,
@@ -53,18 +52,19 @@ export function DeclineAbsentRequestConfirmModal({
     isSuccess: isSubmitSuccessful,
   } = useCreateOrUpdateAbsentRequest();
 
-  const { resolver, rules } = useFormValidator<EditAbsentRequestFormState>();
+  const { resolver, rules } = useFormValidator<DeclineAbsentRequestFormState>();
 
-  const { control, handleSubmit, reset } = useForm<EditAbsentRequestFormState>({
-    resolver: resolver({
-      parentNote: [rules.maxLength(100)],
-    }),
-    defaultValues: {
-      ...initialAbsentRequestState,
-      adminNote: initialAbsentRequestState?.adminNote ?? '',
-    },
-    mode: 'onChange',
-  });
+  const { control, handleSubmit, reset } =
+    useForm<DeclineAbsentRequestFormState>({
+      resolver: resolver({
+        adminNote: [rules.maxLength(100)],
+      }),
+      defaultValues: {
+        ...initialAbsentRequestState,
+        adminNote: initialAbsentRequestState?.adminNote ?? '',
+      },
+      mode: 'onChange',
+    });
 
   const onSubmit = ({
     adminNote,
@@ -82,6 +82,7 @@ export function DeclineAbsentRequestConfirmModal({
         onSuccess: onClose,
       }
     );
+    onClose();
     onDecline();
   };
 

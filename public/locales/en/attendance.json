@@ -48,6 +48,7 @@
   "yesDeclineAbsentRequests": "Yes, decline {{count}} requests",
   "approveRequests": "Approve requests",
   "declineRequests": "Decline requests",
+  "dateOfAbsence": "Date of absence",
   "nameByCodeType": {
     "PRESENT": "Present",
     "LATE": "Late",

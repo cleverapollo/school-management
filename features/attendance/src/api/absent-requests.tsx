@@ -22,6 +22,11 @@ const absentRequests = graphql(/* GraphQL */ `
     attendance_parentalAttendanceRequests(filter: $filter) {
       id
       adminNote
+      attendanceCode {
+        id
+        code
+        name
+      }
       attendanceCodeId
       contactPartyId
       from
@@ -34,9 +39,15 @@ const absentRequests = graphql(/* GraphQL */ `
         name
       }
       contact {
-        avatarUrl
-        firstName
-        lastName
+        person {
+          avatarUrl
+          firstName
+          lastName
+        }
+        relationships {
+          relationshipType
+          studentPartyId
+        }
       }
       createdOn
       student {
