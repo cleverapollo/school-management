@@ -49,7 +49,8 @@ export function getStaffWorkAbsenceTypes(filter: Swm_StaffAbsenceTypeFilter) {
 export function useStaffWorkAbsenceTypes(filter: Swm_StaffAbsenceTypeFilter) {
   return useQuery({
     ...staffWorkAbsenceTypesQuery(filter),
-    select: ({ swm_absenceTypes }) => swm_absenceTypes ?? [],
+    select: ({ swm_absenceTypes }) =>
+      swm_absenceTypes.sort((a, b) => a.name.localeCompare(b.name)) ?? [],
   });
 }
 
