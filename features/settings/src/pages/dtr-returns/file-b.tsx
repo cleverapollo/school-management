@@ -1,4 +1,5 @@
-import { Box, Button } from '@mui/material';
+import React, { useMemo } from 'react';
+import { Box } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 
 import {
@@ -15,7 +16,6 @@ import {
   GenderSelectCellEditor,
   BulkEditedRows,
 } from '@tyro/core';
-import { useMemo } from 'react';
 import { DownloadArrowCircleIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
@@ -37,7 +37,7 @@ import {
 } from '../../api/dtr-returns/form-b';
 import { StaffPostSelectCellEditor } from '../../components/dtr-returns/staff-post-cell-editor';
 import { EmploymentCapacitySelectCellEditor } from '../../components/dtr-returns/employment-capacity-cell-editor';
-import { useDownloadFileB } from '../../api/dtr-returns/dowload-file';
+import { useDownloadFileB } from '../../api/dtr-returns/download-file';
 
 dayjs.extend(LocalizedFormat);
 
@@ -81,7 +81,6 @@ const getColumnFormBDefs = (
     field: 'staffIre.teacherReferenceNumber',
     editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
     headerName: translate('settings:dtrReturns.formB.dtrReference'),
-    valueGetter: ({ data }) => data?.staffIre?.teacherReferenceNumber ?? '-',
     valueSetter: ({ data, newValue }) => {
       const value = !newValue ? undefined : Number(newValue);
       set(
@@ -93,26 +92,35 @@ const getColumnFormBDefs = (
       );
       return true;
     },
+    cellClassRules: {
+      'failed-cell': ({ data }) =>
+        Boolean(
+          data?.staffIre?.includeDtrReturns &&
+            !data?.staffIre?.teacherReferenceNumber
+        ),
+    },
   },
   {
     field: 'personalInformation.gender',
     headerName: translate('settings:dtrReturns.formB.gender'),
     cellEditorSelector: GenderSelectCellEditor(),
-    valueGetter: ({ data }) =>
+    valueFormatter: ({ data }) =>
       data?.personalInformation?.gender
         ? translate(`common:gender.${data?.personalInformation?.gender}`)
         : '-',
-    valueSetter: ({ data, newValue }) => {
-      set(data ?? {}, 'personalInformation.gender', newValue);
-      return true;
-    },
     editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
+    cellClassRules: {
+      'failed-cell': ({ data }) =>
+        Boolean(
+          data?.staffIre?.includeDtrReturns &&
+            !data?.personalInformation?.gender
+        ),
+    },
   },
   {
     field: 'personalInformation.ire.ppsNumber',
     headerName: translate('settings:dtrReturns.formB.ppsNumber'),
     editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
-    valueGetter: ({ data }) => data?.personalInformation?.ire?.ppsNumber ?? '-',
     valueSetter: ({ data, newValue, oldValue }) => {
       set(
         data ?? {},
@@ -121,43 +129,51 @@ const getColumnFormBDefs = (
       );
       return true;
     },
+    cellClassRules: {
+      'failed-cell': ({ data }) =>
+        Boolean(
+          data?.staffIre?.includeDtrReturns &&
+            !data?.personalInformation?.ire?.ppsNumber
+        ),
+    },
   },
   {
     field: 'payrollNumber',
     headerName: translate('settings:dtrReturns.formB.payrollNumber'),
     editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
-    valueGetter: ({ data }) => data?.payrollNumber ?? '-',
+    valueGetter: ({ data }) => data?.payrollNumber,
   },
   {
     field: 'staffIre.staffPost',
     headerName: translate('settings:dtrReturns.formB.post'),
     editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
-    valueGetter: ({ data }) => data?.staffIre?.staffPost,
     valueFormatter: ({ data }) =>
       data?.staffIre?.staffPost ? data?.staffIre?.staffPost?.name : '-',
     cellEditorSelector: StaffPostSelectCellEditor(postsData),
-    valueSetter: ({ data, newValue }) => {
-      set(data ?? {}, 'staffIre.staffPost', newValue);
-      return true;
+    cellClassRules: {
+      'failed-cell': ({ data }) =>
+        Boolean(
+          data?.staffIre?.includeDtrReturns && !data?.staffIre?.staffPost?.name
+        ),
     },
   },
   {
     field: 'employmentCapacity',
     headerName: translate('settings:capacity'),
     editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
-    valueGetter: ({ data }) => data?.employmentCapacity,
     valueFormatter: ({ data }) =>
       data?.employmentCapacity ? data?.employmentCapacity?.name : '-',
     cellEditorSelector: EmploymentCapacitySelectCellEditor(capacitiesData),
-    valueSetter: ({ data, newValue }) => {
-      set(data ?? {}, 'employmentCapacity', newValue);
-      return true;
+    cellClassRules: {
+      'failed-cell': ({ data }) =>
+        Boolean(
+          data?.staffIre?.includeDtrReturns && !data?.employmentCapacity?.name
+        ),
     },
   },
   {
     field: 'jobSharing',
     headerName: translate('settings:dtrReturns.formB.jobSharer'),
-    valueGetter: ({ data }) => Boolean(data?.jobSharing),
     cellEditor: TableSwitch,
     editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
     valueFormatter: ({ data }) =>
@@ -172,9 +188,10 @@ const getColumnFormBDefs = (
   },
   {
     field: 'qualifications',
-    headerName: translate('settings:dtrReturns.formB.qualificationX', { X: 1 }),
+    headerName: translate('settings:dtrReturns.formB.qualificationX', {
+      number: 1,
+    }),
     editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
-    valueGetter: ({ data }) => data?.qualifications ?? '-',
     valueSetter: ({ data, newValue, oldValue }) => {
       set(
         data ?? {},
@@ -183,12 +200,17 @@ const getColumnFormBDefs = (
       );
       return true;
     },
+    cellClassRules: {
+      'failed-cell': ({ data }) =>
+        Boolean(data?.staffIre?.includeDtrReturns && !data?.qualifications),
+    },
   },
   {
     field: 'staffIre.qualifications2',
-    headerName: translate('settings:dtrReturns.formB.qualificationX', { X: 2 }),
+    headerName: translate('settings:dtrReturns.formB.qualificationX', {
+      number: 2,
+    }),
     editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
-    valueGetter: ({ data }) => data?.staffIre?.qualifications2 ?? '-',
     valueSetter: ({ data, newValue, oldValue }) => {
       set(
         data ?? {},
@@ -200,9 +222,10 @@ const getColumnFormBDefs = (
   },
   {
     field: 'staffIre.qualifications3',
-    headerName: translate('settings:dtrReturns.formB.qualificationX', { X: 3 }),
+    headerName: translate('settings:dtrReturns.formB.qualificationX', {
+      number: 3,
+    }),
     editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
-    valueGetter: ({ data }) => data?.staffIre?.qualifications3 ?? '-',
     valueSetter: ({ data, newValue, oldValue }) => {
       set(
         data ?? {},
@@ -214,9 +237,10 @@ const getColumnFormBDefs = (
   },
   {
     field: 'staffIre.qualifications4',
-    headerName: translate('settings:dtrReturns.formB.qualificationX', { X: 4 }),
+    headerName: translate('settings:dtrReturns.formB.qualificationX', {
+      number: 4,
+    }),
     editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
-    valueGetter: ({ data }) => data?.staffIre?.qualifications4 ?? '-',
     valueSetter: ({ data, newValue, oldValue }) => {
       set(
         data ?? {},
@@ -229,10 +253,9 @@ const getColumnFormBDefs = (
   {
     field: 'staffIre.otherSchool1',
     headerName: translate('settings:dtrReturns.formB.currentTeachingSchoolX', {
-      X: 1,
+      number: 1,
     }),
     editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
-    valueGetter: ({ data }) => data?.staffIre?.otherSchool1 ?? '-',
     valueSetter: ({ data, newValue, oldValue }) => {
       set(
         data ?? {},
@@ -248,7 +271,6 @@ const getColumnFormBDefs = (
       X: 2,
     }),
     editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
-    valueGetter: ({ data }) => data?.staffIre?.otherSchool2 ?? '-',
     valueSetter: ({ data, newValue, oldValue }) => {
       set(
         data ?? {},
@@ -264,7 +286,6 @@ const getColumnFormBDefs = (
       X: 1,
     }),
     editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
-    valueGetter: ({ data }) => data?.staffIre?.previousSchool1 ?? '-',
     valueSetter: ({ data, newValue, oldValue }) => {
       set(
         data ?? {},
@@ -280,7 +301,6 @@ const getColumnFormBDefs = (
       X: 2,
     }),
     editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
-    valueGetter: ({ data }) => data?.staffIre?.previousSchool2 ?? '-',
     valueSetter: ({ data, newValue, oldValue }) => {
       set(
         data ?? {},
@@ -301,6 +321,7 @@ export default function DTRReturnsPage() {
   const { data: postsData = [] } = useStaffPosts();
 
   const { data: staffFormB = [] } = useFormB({});
+
   const { mutateAsync: downloadFileB, isLoading: isDownloadLoading } =
     useDownloadFileB();
 
@@ -313,116 +334,63 @@ export default function DTRReturnsPage() {
     const staffIncludeInDTRReturns = staffFormB.filter(
       (staff) => staff?.staffIre?.includeDtrReturns
     );
-    const hasEmptyName = staffIncludeInDTRReturns.some(
-      (staff) => !displayName(staff?.person)
+
+    return staffIncludeInDTRReturns.every(
+      (staff) =>
+        displayName(staff?.person) &&
+        staff?.staffIre?.teacherReferenceNumber &&
+        staff?.personalInformation?.gender &&
+        staff?.employmentCapacity &&
+        staff?.qualifications &&
+        staff?.staffIre?.otherSchool1
     );
-    const hasEmptyDTRReference = staffIncludeInDTRReturns.some(
-      (staff) => !staff?.staffIre?.teacherReferenceNumber
-    );
-    const hasEmptyGender = staffIncludeInDTRReturns.some(
-      (staff) => !staff?.personalInformation?.gender
-    );
-    const hasEmptyCapacity = staffIncludeInDTRReturns.some(
-      (staff) => !staff?.employmentCapacity
-    );
-    const hasEmptyJobSharing = staffIncludeInDTRReturns.some(
-      (staff) => !staff?.jobSharing
-    );
-    const hasEmptyQualifications = staffIncludeInDTRReturns.some(
-      (staff) => !staff?.qualifications
-    );
-    if (
-      hasEmptyName ||
-      hasEmptyDTRReference ||
-      hasEmptyGender ||
-      hasEmptyCapacity ||
-      hasEmptyJobSharing ||
-      hasEmptyQualifications
-    ) {
-      return false;
-    }
-    return true;
+  };
+
+  const UpdateStaffKeys = {
+    'staffIre.staffPost': 'staffPost',
+    'personalInformation.gender': 'gender',
+    // 'staffIre.includeDtrReturns': 'includeDtrReturns',
+    'staffIre.teacherReferenceNumber': 'teacherReferenceNumber',
+    'personalInformation.ire.ppsNumber': 'ppsNumber',
+    payrollNumber: 'payrollNumber',
+    employmentCapacity: 'employmentCapacity',
+    jobSharing: 'jobSharing',
+    qualifications: 'qualifications',
+    'staffIre.qualifications2': 'qualifications2',
+    'staffIre.qualifications3': 'qualifications3',
+    'staffIre.qualifications4': 'qualifications4',
+    'staffIre.otherSchool1': 'otherSchool1',
+    'staffIre.otherSchool2': 'otherSchool2',
+    'staffIre.previousSchool1': 'previousSchool1',
+    'staffIre.previousSchool2': 'previousSchool2',
   };
 
   const saveBulkResult = (
-    data: BulkEditedRows<
-      ReturnTypeFromUseFormB,
-      | 'staffIre.includeDtrReturns'
-      | 'person'
-      | 'staffIre.teacherReferenceNumber'
-      | 'personalInformation.gender'
-      | 'personalInformation.ire.ppsNumber'
-      | 'payrollNumber'
-      | 'staffIre.staffPost'
-      | 'employmentCapacity'
-      | 'jobSharing'
-      | 'qualifications'
-      | 'staffIre.qualifications2'
-      | 'staffIre.qualifications3'
-      | 'staffIre.qualifications4'
-      | 'staffIre.otherSchool1'
-      | 'staffIre.otherSchool2'
-      | 'staffIre.previousSchool1'
-      | 'staffIre.previousSchool2'
-    >
+    data: BulkEditedRows<ReturnTypeFromUseFormB, keyof typeof UpdateStaffKeys>
   ) => {
     const updates = Object.entries(data).reduce<UpdateStaffInput[]>(
       (acc, [partyId, changes]) => {
         const changeKeys = Object.keys(changes) as Array<keyof typeof changes>;
         const changesByKey = changeKeys.reduce<UpdateStaffInput>(
           (changeAcc, key) => {
-            if (key === 'staffIre.includeDtrReturns') {
-              changeAcc.includeDtrReturns =
-                changes['staffIre.includeDtrReturns']?.newValue;
-            }
-            if (key === 'staffIre.teacherReferenceNumber') {
-              changeAcc.teacherReferenceNumber =
-                changes['staffIre.teacherReferenceNumber']?.newValue;
-            }
-            // missing gender/ppsNumber/payrollNumber
+            const keyToUpdate = UpdateStaffKeys[key];
+            let newData = { ...changeAcc };
+
             if (key === 'staffIre.staffPost') {
-              changeAcc.staffPost = changes['staffIre.staffPost']?.newValue?.id;
-            }
-            if (key === 'employmentCapacity') {
-              changeAcc.employmentCapacity =
-                changes.employmentCapacity?.newValue?.name;
-            }
-            if (key === 'jobSharing') {
-              changeAcc.jobSharing = changes.jobSharing?.newValue;
-            }
-            if (key === 'qualifications') {
-              changeAcc.qualifications = changes.qualifications?.newValue;
-            }
-            if (key === 'staffIre.qualifications2') {
-              changeAcc.qualifications2 =
-                changes['staffIre.qualifications2']?.newValue;
-            }
-            if (key === 'staffIre.qualifications3') {
-              changeAcc.qualifications3 =
-                changes['staffIre.qualifications3']?.newValue;
-            }
-            if (key === 'staffIre.qualifications4') {
-              changeAcc.qualifications4 =
-                changes['staffIre.qualifications4']?.newValue;
-            }
-            if (key === 'staffIre.otherSchool1') {
-              changeAcc.otherSchool1 =
-                changes['staffIre.otherSchool1']?.newValue;
-            }
-            if (key === 'staffIre.otherSchool2') {
-              changeAcc.otherSchool2 =
-                changes['staffIre.otherSchool2']?.newValue;
-            }
-            if (key === 'staffIre.previousSchool1') {
-              changeAcc.previousSchool1 =
-                changes['staffIre.previousSchool1']?.newValue;
-            }
-            if (key === 'staffIre.previousSchool2') {
-              changeAcc.previousSchool2 =
-                changes['staffIre.previousSchool2']?.newValue;
+              newData.staffPost = changes?.[key]?.newValue?.id;
+            } else if (key === 'personalInformation.gender') {
+              const newGender = changes?.[key]?.newValue;
+              newData.gender = newGender;
+            } else if (key === 'employmentCapacity') {
+              newData.employmentCapacity = changes?.[key]?.newValue?.id;
+            } else {
+              newData = {
+                ...newData,
+                [keyToUpdate]: changes?.[key]?.newValue,
+              };
             }
 
-            return changeAcc;
+            return newData;
           },
           {
             staffPartyId: Number(partyId),
@@ -460,7 +428,7 @@ export default function DTRReturnsPage() {
               disabled={!isEnableDownload()}
               variant="contained"
               loading={isDownloadLoading}
-              onClick={() => downloadFileB()}
+              onClick={() => downloadFileB('FILE_B')}
               startIcon={<DownloadArrowCircleIcon />}
             >
               {t('settings:dtrReturns.downloadFile')}
@@ -473,6 +441,11 @@ export default function DTRReturnsPage() {
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.partyId)}
         onBulkSave={saveBulkResult}
+        tableContainerSx={{
+          '& .failed-cell': {
+            backgroundColor: 'red.100',
+          },
+        }}
       />
     </PageContainer>
   );

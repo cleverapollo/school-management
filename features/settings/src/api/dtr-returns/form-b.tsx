@@ -78,8 +78,8 @@ export function useSaveBulkUpdateStaffFormB() {
   return useMutation({
     mutationFn: (input: UpdateStaffInput[]) =>
       gqlClient.request(updateStaffFormB, { input }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(dtrReturnsKeys.formB({}));
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(dtrReturnsKeys.formB({}));
     },
   });
 }

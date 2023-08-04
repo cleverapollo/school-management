@@ -116,6 +116,8 @@
     "descriptionE": "Timetable grid details",
     "dtrSummary": "DTR summary",
     "descriptionDtrSummary": "A summary of files A, B, C, D and E. This PDF is for your review and is not required by the Department",
+    "formT1": "Form T1",
+    "descriptionFormT1": "A completed T1 form, duly certified by the Principal / Management Authority, which provides basic school details. The form should be completed in Black Ink and in Block Capitals. This must be retained in a secure manner in the school until requested.",
     "formB": {
       "title": "Form B",
       "includeInDTR": "Include in DTR",
@@ -125,9 +127,9 @@
       "payrollNumber": "Payroll number",
       "post": "Post",
       "jobSharer": "Job sharer",
-      "qualificationX": "Qualification {{X}}",
-      "currentTeachingSchoolX": "Current teaching school {{X}}",
-      "previousTeachingSchoolX": "Previous teaching school {{X}}"
+      "qualificationX": "Qualification {{number}}",
+      "currentTeachingSchoolX": "Current teaching school {{number}}",
+      "previousTeachingSchoolX": "Previous teaching school {{number}}"
     }
   },
   "permissions": {

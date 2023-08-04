@@ -9,24 +9,34 @@ export function useDownloadFileB() {
   const { activeProfile } = useUser();
   const { activeAcademicNamespace } = useAcademicNamespace();
 
-  return useMutation({
-    mutationFn: () =>
-      fetchClientText<string>('/api/returns/FILE_B', { method: 'GET' }),
-    onSuccess: (data) => {
+  const downloadFileB = async (file: string) => {
+    try {
+      const data = await fetchClientText<string>(`/api/returns/${file}`, {
+        method: 'GET',
+      });
+
       const tenant = activeProfile?.tenant?.tenant ?? '';
       const twoDigitYear = (activeAcademicNamespace?.year ?? 0) % 100;
+      const fileName = `TF${tenant}.${twoDigitYear}B`;
+
       const blob = new Blob([data], { type: 'text/plain;charset=utf-8' });
+
       const url = URL.createObjectURL(blob);
+
       const anchor = document.createElement('a');
       anchor.href = url;
-      anchor.download = `TF${tenant}.${twoDigitYear}B`;
+      anchor.download = fileName;
       document.body.appendChild(anchor);
       anchor.click();
       document.body.removeChild(anchor);
+
       URL.revokeObjectURL(url);
-    },
-    onError: () => {
+    } catch (error) {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
-    },
+    }
+  };
+
+  return useMutation({
+    mutationFn: downloadFileB,
   });
 }
