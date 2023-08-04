@@ -46,5 +46,5 @@ export const isStudent = (permission: Pick<PermissionUtils, 'userType'>) => {
 
 export const isContact = (permission: Pick<PermissionUtils, 'userType'>) => {
   const { userType } = permission;
-  return !!userType && userType === UserType.Student;
+  return !!userType && userType === UserType.Contact;
 };

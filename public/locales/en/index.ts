@@ -1,5 +1,6 @@
 import admin from './admin.json';
 import assessments from './assessments.json';
+import absence from './absence.json';
 import attendance from './attendance.json';
 import authentication from './authentication.json';
 import calendar from './calendar.json';
@@ -18,6 +19,7 @@ import userAccounts from './userAccounts.json';
 export const en = {
   admin,
   assessments,
+  absence,
   attendance,
   authentication,
   calendar,

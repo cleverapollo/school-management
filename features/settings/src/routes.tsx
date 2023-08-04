@@ -7,7 +7,7 @@ import {
 } from '@tyro/core';
 import { GearIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
-import { getCoreAcademicNamespace } from '@tyro/api';
+import { getCoreAcademicNamespace, AccessUserType } from '@tyro/api';
 import { AttendanceCodes, getAttendanceCodes } from '@tyro/attendance';
 import {
   getContactsForSelect,
@@ -16,9 +16,11 @@ import {
 } from '@tyro/people';
 import { getStaffPosts } from '@tyro/people/src/api/staff/staff-posts';
 import { getEmploymentCapacities } from '@tyro/people/src/api/staff/employment-capacities';
+import { AbsenceTypes, getStaffWorkAbsenceTypes } from '@tyro/substitution';
 import { getCoreRooms } from './api/rooms';
 import { getCatalogueSubjects } from './api/subjects';
 import { getPpodCredentialsStatus } from './api/ppod/ppod-credentials-status';
+import { getUserAccess } from './api/user-access/user-access';
 import { getPermissionGroups } from './api/permissions/user-permissions-groups';
 import { getPermissionSets } from './api/permissions/user-permissions-sets';
 import { getFormB } from './api/dtr-returns/form-b';
@@ -32,6 +34,18 @@ const Sync = lazy(() => import('./pages/ppod/sync'));
 const SchoolDetails = lazy(() => import('./pages/ppod/school-details'));
 const DTRReturns = lazy(() => import('./pages/dtr-returns/dtr-returns'));
 const DTRReturnsFileB = lazy(() => import('./pages/dtr-returns/file-b'));
+const UserAccessContainer = lazy(
+  () => import('./components/user-access/user-access-container')
+);
+const UserAccessStaffPage = lazy(
+  () => import('./pages/user-access/user-access-staff-page')
+);
+const UserAccessStudentsPage = lazy(
+  () => import('./pages/user-access/user-access-students-page')
+);
+const UserAccessContactsPage = lazy(
+  () => import('./pages/user-access/user-access-contacts-page')
+);
 const Permissions = lazy(() => import('./pages/permissions'));
 const CreatePermission = lazy(() => import('./pages/permissions/create'));
 const EditPermission = lazy(() => import('./pages/permissions/edit'));
@@ -62,6 +76,17 @@ export const getRoutes: NavObjectFunction = (t) => [
           },
           {
             type: NavObjectType.MenuLink,
+            path: 'absence-types',
+            title: t('navigation:general.absence.types'),
+            loader: () => getStaffWorkAbsenceTypes({}),
+            hasAccess: (permissions) =>
+              permissions.hasPermission(
+                'ps:1:staff_work_management:absences_codes_write'
+              ),
+            element: <AbsenceTypes />,
+          },
+          {
+            type: NavObjectType.MenuLink,
             title: t('navigation:management.settings.subjects'),
             path: 'subjects',
             loader: () => getCatalogueSubjects(),
@@ -89,6 +114,47 @@ export const getRoutes: NavObjectFunction = (t) => [
                 'ps:1:general_admin:read_academic_namespaces'
               ),
             element: <AcademicYearsList />,
+          },
+          {
+            type: NavObjectType.MenuLink,
+            title: t('navigation:management.settings.userAccess'),
+            path: 'user-access',
+            hasAccess: (permissions) => permissions.isTyroUser,
+            loader: () => {
+              const userType = AccessUserType.Staff;
+              return getUserAccess({ userType });
+            },
+            element: <UserAccessContainer />,
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                index: true,
+                loader: () => redirect('./staff'),
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'staff',
+                loader: () => {
+                  const userType = AccessUserType.Staff;
+                  return getUserAccess({ userType });
+                },
+                element: <UserAccessStaffPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'contacts',
+                loader: () => {
+                  const userType = AccessUserType.Contact;
+                  return getUserAccess({ userType });
+                },
+                element: <UserAccessContactsPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'students',
+                element: <UserAccessStudentsPage />,
+              },
+            ],
           },
           {
             type: NavObjectType.MenuLink,

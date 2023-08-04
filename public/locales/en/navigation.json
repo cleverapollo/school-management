@@ -10,6 +10,10 @@
       "overview": "Overview",
       "codes": "Attendance codes"
     },
+    "absence": {
+      "title": "Absence",
+      "types": "Staff absence types"
+    },
     "groups": {
       "title": "Groups",
       "class": "Class",
@@ -50,6 +54,7 @@
       "schoolDetails": "School details",
       "login": "Login",
       "dtrReturns": "DTR Returns",
+      "userAccess": "User access",
       "permissions": "Permissions"
     },
     "timetable": {
