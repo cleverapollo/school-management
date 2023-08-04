@@ -2,11 +2,16 @@ import { useState, PropsWithChildren, ComponentProps, useEffect } from 'react';
 import { useMatches, Outlet } from 'react-router-dom';
 import { Box, CircularProgress, Stack } from '@mui/material';
 
+import { PermissionUtils, usePermissions } from '@tyro/api';
 import { LazyLoader } from '../lazy-loader';
 
 import { LinkTab, Tabs } from '../tabs';
 
-type TabLink = { label: string; value: string };
+type TabLink = {
+  label: string;
+  value: string;
+  hasAccess?: (permissions: PermissionUtils) => boolean;
+};
 
 type TabNavigationProps = PropsWithChildren<{
   links: TabLink[];
@@ -25,7 +30,7 @@ function getInitialTabValue(
 
 export const TabPageContainer = ({ links, TabProps }: TabNavigationProps) => {
   const matches = useMatches();
-
+  const permissions = usePermissions();
   const [value, setValue] = useState<string>(() =>
     getInitialTabValue(matches, links)
   );
@@ -40,9 +45,16 @@ export const TabPageContainer = ({ links, TabProps }: TabNavigationProps) => {
   return (
     <Stack flexDirection="column" gap={3} flex={1}>
       <Tabs value={value} {...TabProps}>
-        {links.map((tab) => (
-          <LinkTab key={tab.value} {...tab} to={`./${tab.value}`} />
-        ))}
+        {links
+          .filter((tab) => {
+            if (tab.hasAccess != null) {
+              return tab.hasAccess(permissions);
+            }
+            return true;
+          })
+          .map((tab) => (
+            <LinkTab key={tab.value} {...tab} to={`./${tab.value}`} />
+          ))}
       </Tabs>
       <LazyLoader
         fallback={
