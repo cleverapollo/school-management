@@ -6,6 +6,7 @@ import { ReturnTypeFromUseEventsForCover } from '../../../api/staff-work-events-
 import { CoverCardTooltip } from './cover-card-tooltip';
 import { EventCoverContextMenu } from './event-context-menu';
 import { getCurrentCoverRoom } from '../../../utils/cover-utils';
+import { SubIcon } from './sub-icon';
 
 interface EventCoverCardProps {
   eventInfo: CoverEvent;
@@ -30,10 +31,12 @@ export function EventCoverCard({
 
   const rooms = getCurrentCoverRoom(eventInfo);
 
-  const needsSubstitution = Boolean(substitution);
+  const needsSubstitution = Boolean(!substitution);
 
-  const opacity = !needsSubstitution ? 1 : 0.2;
-  const color = !needsSubstitution && event.colour ? event.colour : 'slate';
+  const { substitutionType, substituteStaff, substituteRoom } =
+    substitution ?? {};
+
+  const color = event.colour ? event.colour : 'slate';
   const borderColor =
     isSelected || isContextMenuOpen ? `${color}.600` : 'white';
 
@@ -47,8 +50,7 @@ export function EventCoverCard({
       >
         <Box
           sx={{
-            backgroundColor: `${color}.100`,
-            opacity,
+            backgroundColor: needsSubstitution ? `${color}.100` : 'transparent',
             borderRadius: 0.75,
             width: 240,
             transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
@@ -92,9 +94,14 @@ export function EventCoverCard({
                 alignItems="center"
                 spacing={1}
               >
-                <Typography variant="subtitle2" noWrap sx={{ flex: 1 }}>
-                  {event.name}
-                </Typography>
+                <Stack direction="row" alignItems="center" spacing={0.75}>
+                  <Typography variant="subtitle2" noWrap sx={{ flex: 1 }}>
+                    {event.name}
+                  </Typography>
+                  {substitutionType && (
+                    <SubIcon substitutionType={substitutionType} />
+                  )}
+                </Stack>
                 <Typography variant="subtitle2" noWrap>
                   {rooms}
                 </Typography>
@@ -111,7 +118,7 @@ export function EventCoverCard({
                   noWrap
                   sx={{ flex: 1 }}
                 >
-                  {displayName(staff)}
+                  {displayName(substituteStaff ?? staff)}
                 </Typography>
               </Stack>
             </Stack>

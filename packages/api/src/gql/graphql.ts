@@ -1295,6 +1295,10 @@ export enum DayType {
   StaffDay = 'STAFF_DAY'
 }
 
+export type DeactivateProfiles = {
+  partyIds: Array<Scalars['Long']>;
+};
+
 export type DeleteDiscountInput = {
   id: Scalars['Int'];
 };
@@ -1569,6 +1573,7 @@ export enum Feature {
   People = 'PEOPLE',
   Search = 'SEARCH',
   Settings = 'SETTINGS',
+  StaffWorkManagement = 'STAFF_WORK_MANAGEMENT',
   Substitution = 'SUBSTITUTION',
   Timetable = 'TIMETABLE',
   TimetableConstruction = 'TIMETABLE_CONSTRUCTION',
@@ -1987,6 +1992,9 @@ export type Mutation = {
   fees_deleteFee?: Maybe<Scalars['String']>;
   fees_saveDiscount?: Maybe<Discount>;
   fees_saveFee?: Maybe<Fee>;
+  notes_upsertBehaviourTags?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  notes_upsertNotes?: Maybe<Array<Maybe<Scalars['Long']>>>;
+  notes_upsertNotesTags?: Maybe<Array<Maybe<Scalars['Int']>>>;
   ppod_savePPODCredentials: PpodCredentials;
   swm_applySubstitutions: Success;
   swm_deleteAbsence: Success;
@@ -1999,6 +2007,7 @@ export type Mutation = {
   tt_swap: Success;
   tt_updateTimetableGroup: Success;
   users_createProfileForGlobalUser?: Maybe<Profile>;
+  users_deactivateProfiles?: Maybe<Success>;
   users_inviteUsers?: Maybe<InviteUsersResponse>;
   users_savePermissionGroup?: Maybe<PermissionGroup>;
   wellbeing_deleteStudentMedicalCondition: StudentMedical;
@@ -2247,6 +2256,21 @@ export type MutationFees_SaveFeeArgs = {
 };
 
 
+export type MutationNotes_UpsertBehaviourTagsArgs = {
+  input?: InputMaybe<Array<InputMaybe<Notes_UpsertBehaviourTagInput>>>;
+};
+
+
+export type MutationNotes_UpsertNotesArgs = {
+  input?: InputMaybe<Array<InputMaybe<Notes_UpsertNote>>>;
+};
+
+
+export type MutationNotes_UpsertNotesTagsArgs = {
+  input?: InputMaybe<Array<InputMaybe<Notes_UpsertNotesTagInput>>>;
+};
+
+
 export type MutationPpod_SavePpodCredentialsArgs = {
   input?: InputMaybe<SavePpodCredentials>;
 };
@@ -2304,6 +2328,11 @@ export type MutationTt_UpdateTimetableGroupArgs = {
 
 export type MutationUsers_CreateProfileForGlobalUserArgs = {
   input?: InputMaybe<CreateProfileForGlobalUserInput>;
+};
+
+
+export type MutationUsers_DeactivateProfilesArgs = {
+  input?: InputMaybe<DeactivateProfiles>;
 };
 
 
@@ -2373,30 +2402,6 @@ export enum Notes_BehaviourType {
   Positive = 'POSITIVE'
 }
 
-export type Notes_CreateBehaviourTagInput = {
-  behaviourType?: InputMaybe<Notes_BehaviourType>;
-  description?: InputMaybe<Array<InputMaybe<TranslationInput>>>;
-  name?: InputMaybe<Array<InputMaybe<TranslationInput>>>;
-  tag_l2: Scalars['String'];
-  tag_l3?: InputMaybe<Scalars['String']>;
-};
-
-export type Notes_CreateNote = {
-  createdBy?: InputMaybe<Scalars['Long']>;
-  createdOn?: InputMaybe<Scalars['DateTime']>;
-  note?: InputMaybe<Scalars['String']>;
-  referencedParties?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-  tags: Array<Scalars['Int']>;
-};
-
-export type Notes_CreateNotesTagInput = {
-  description?: InputMaybe<Array<InputMaybe<TranslationInput>>>;
-  name?: InputMaybe<Array<InputMaybe<TranslationInput>>>;
-  tag_l1: Scalars['String'];
-  tag_l2?: InputMaybe<Scalars['String']>;
-  tag_l3?: InputMaybe<Scalars['String']>;
-};
-
 export type Notes_Note = {
   __typename?: 'Notes_Note';
   createdBy: Scalars['Long'];
@@ -2411,6 +2416,7 @@ export type Notes_Note = {
 };
 
 export type Notes_NotesFilter = {
+  noteIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
 
@@ -2435,6 +2441,34 @@ export enum Notes_TagCategory {
 
 export type Notes_TagFilter = {
   categories?: InputMaybe<Array<InputMaybe<Notes_TagCategory>>>;
+  tagIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
+export type Notes_UpsertBehaviourTagInput = {
+  behaviourType?: InputMaybe<Notes_BehaviourType>;
+  description?: InputMaybe<Array<InputMaybe<TranslationInput>>>;
+  id?: InputMaybe<Scalars['Int']>;
+  name?: InputMaybe<Array<InputMaybe<TranslationInput>>>;
+  tag_l2: Scalars['String'];
+  tag_l3?: InputMaybe<Scalars['String']>;
+};
+
+export type Notes_UpsertNote = {
+  createdBy?: InputMaybe<Scalars['Long']>;
+  createdOn?: InputMaybe<Scalars['DateTime']>;
+  id?: InputMaybe<Scalars['Long']>;
+  note?: InputMaybe<Scalars['String']>;
+  referencedParties?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  tags: Array<Scalars['Int']>;
+};
+
+export type Notes_UpsertNotesTagInput = {
+  description?: InputMaybe<Array<InputMaybe<TranslationInput>>>;
+  id?: InputMaybe<Scalars['Int']>;
+  name?: InputMaybe<Array<InputMaybe<TranslationInput>>>;
+  tag_l1: Scalars['String'];
+  tag_l2?: InputMaybe<Scalars['String']>;
+  tag_l3?: InputMaybe<Scalars['String']>;
 };
 
 export type Notification = {
@@ -2580,13 +2614,19 @@ export type Pagination = {
 export type ParentalAttendanceRequest = {
   __typename?: 'ParentalAttendanceRequest';
   adminNote?: Maybe<Scalars['String']>;
+  attendanceCode: AttendanceCode;
   attendanceCodeId: Scalars['Int'];
+  classGroup?: Maybe<GeneralGroup>;
+  /**     contact: Person! */
+  contact?: Maybe<StudentContact>;
   contactPartyId: Scalars['Long'];
+  createdOn: Scalars['DateTime'];
   from: Scalars['DateTime'];
   id: Scalars['Long'];
   parentNote: Scalars['String'];
   requestType: ParentalAttendanceRequestType;
   status: ParentalAttendanceRequestStatus;
+  student: Person;
   studentPartyId: Scalars['Long'];
   to: Scalars['DateTime'];
 };
@@ -2990,7 +3030,8 @@ export type Query = {
   file_transfer_list?: Maybe<Array<FileTransferResponse>>;
   generalGroups?: Maybe<Array<GeneralGroup>>;
   myAuthDetails?: Maybe<GlobalUser>;
-  notes_notes?: Maybe<Notes_Note>;
+  notes_notes?: Maybe<Array<Maybe<Notes_Note>>>;
+  notes_tags?: Maybe<Array<Maybe<Notes_Tag>>>;
   permissions?: Maybe<Array<Maybe<Permission>>>;
   ppod_PPODCredentials?: Maybe<PpodCredentials>;
   ppod_syncRequests: Array<SyncRequest>;
@@ -3267,6 +3308,11 @@ export type QueryNotes_NotesArgs = {
 };
 
 
+export type QueryNotes_TagsArgs = {
+  filter?: InputMaybe<Notes_TagFilter>;
+};
+
+
 export type QueryPpod_SyncRequestsArgs = {
   filter?: InputMaybe<SyncRequestsFilter>;
 };
@@ -3495,8 +3541,15 @@ export type Swm_CalendarSubstitution = {
   __typename?: 'SWM_CalendarSubstitution';
   absenceId?: Maybe<Scalars['Int']>;
   event: CalendarEvent;
+  key: Swm_CalendarSubstitutionKey;
   staffPartyId: Scalars['Long'];
   substitution?: Maybe<Swm_Substitution>;
+};
+
+export type Swm_CalendarSubstitutionKey = {
+  __typename?: 'SWM_CalendarSubstitutionKey';
+  date: Scalars['Date'];
+  eventId: Scalars['Int'];
 };
 
 export type Swm_DeleteStaffAbsence = {
@@ -3624,6 +3677,8 @@ export type Swm_StaffSubstitutionTypeFilter = {
 
 export type Swm_Substitution = {
   __typename?: 'SWM_Substitution';
+  eventDate: Scalars['Date'];
+  eventId: Scalars['Int'];
   note?: Maybe<Scalars['String']>;
   originalStaff: Person;
   originalStaffPartyId: Scalars['Long'];
@@ -4017,6 +4072,7 @@ export type SaveStudentSessionAttendanceInput = {
   bellTimeId: Scalars['Int'];
   date: Scalars['Date'];
   id?: InputMaybe<Scalars['Long']>;
+  note?: InputMaybe<Scalars['String']>;
   studentPartyId: Scalars['Long'];
 };
 
@@ -4538,6 +4594,7 @@ export type StudentBellTimeAttendance = {
   __typename?: 'StudentBellTimeAttendance';
   attendanceCode?: Maybe<AttendanceCode>;
   bellTimeId: Scalars['Int'];
+  note?: Maybe<Scalars['String']>;
 };
 
 export type StudentContact = Party & PartyPerson & {
