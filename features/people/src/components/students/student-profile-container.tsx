@@ -102,7 +102,7 @@ export default function StudentProfileContainer() {
             label: 'Classes',
             value: 'classes',
             hasAccess: (permissions: PermissionUtils) =>
-              permissions.hasPermission('ps:1:groups:view_subject_groups'),
+              permissions.hasPermission('ps:1:groups:student_view_groups'),
           },
           {
             label: 'Settings',
