@@ -161,9 +161,7 @@ export default function AbsentRequests() {
             </Box>
           </Fade>
         }
-        onRowSelection={(newSelectedAbsentRequests) =>
-          setSelectedAbsentRequests(newSelectedAbsentRequests)
-        }
+        onRowSelection={setSelectedAbsentRequests}
       />
       <ViewAbsentRequestModal
         initialAbsentRequestState={debouncedViewAbsentRequestInitialState}

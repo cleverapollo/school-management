@@ -9,14 +9,7 @@ import {
   Typography,
 } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import {
-  AttendanceCode,
-  GeneralGroup,
-  ParentalAttendanceRequest,
-  ParentalAttendanceRequestStatus,
-  Person,
-  StudentContactRelationshipInfo,
-} from '@tyro/api';
+import { AttendanceCode, ParentalAttendanceRequestStatus } from '@tyro/api';
 import React from 'react';
 import {
   Avatar,
@@ -34,52 +27,24 @@ import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { DeclineAbsentRequestConfirmModal } from './decline-absent-request-confirm-modal';
 import { ApproveAbsentRequestConfirmModal } from './approve-absent-request-confirm-modal';
 import {
-  getAbsentRequests,
+  ReturnTypeFromUseAbsentRequests,
   useAttendanceCodes,
   useCreateOrUpdateAbsentRequest,
 } from '../../api';
 
 dayjs.extend(LocalizedFormat);
 
-export type ViewAbsentRequestFormState = Pick<
-  ParentalAttendanceRequest,
-  | 'adminNote'
-  | 'attendanceCodeId'
-  | 'contactPartyId'
-  | 'createdOn'
-  | 'from'
-  | 'id'
-  | 'parentNote'
-  | 'requestType'
-  | 'status'
-  | 'studentPartyId'
-  | 'to'
-> & {
-  classGroup?: Pick<GeneralGroup, 'name'> | null;
-  contact?: {
-    person: Omit<Person, 'partyId'>;
-    relationships?:
-      | (Pick<
-          StudentContactRelationshipInfo,
-          'relationshipType' | 'studentPartyId'
-        > | null)[]
-      | null;
-  } | null;
-  student?: Omit<Person, 'partyId'> | null;
-  attendanceCode: Pick<AttendanceCode, 'code' | 'name' | 'id'>;
-};
-
 export type ViewAbsentRequestModalProps = {
-  initialAbsentRequestState?: ViewAbsentRequestFormState | undefined;
+  initialAbsentRequestState?: ReturnTypeFromUseAbsentRequests | undefined;
   onClose: () => void;
 };
 
 const getAbsentRequestDataWithLabels = (
-  data: ViewAbsentRequestFormState | undefined,
+  data: ReturnTypeFromUseAbsentRequests | undefined,
   t: TFunction<('common' | 'attendance')[]>,
   displayName: ReturnTypeDisplayName,
   attendanceCodes: AttendanceCode[] | undefined
-): CardEditableFormProps<ViewAbsentRequestFormState>['fields'] => {
+): CardEditableFormProps<ReturnTypeFromUseAbsentRequests>['fields'] => {
   const { from, contact, attendanceCode, parentNote } = data || {};
 
   const contactName = displayName(contact?.person);
@@ -167,7 +132,8 @@ export const ViewAbsentRequestModal = ({
     displayName,
     attendanceCodes
   );
-  const { resolver, rules } = useFormValidator<ViewAbsentRequestFormState>();
+  const { resolver, rules } =
+    useFormValidator<ReturnTypeFromUseAbsentRequests>();
 
   const absentRequestFormResolver = resolver({
     attendanceCode: rules.required(),
@@ -176,24 +142,17 @@ export const ViewAbsentRequestModal = ({
   const handleEdit = ({
     attendanceCode,
     parentNote,
-  }: ViewAbsentRequestFormState) => {
+  }: ReturnTypeFromUseAbsentRequests) => {
     if (initialAbsentRequestState) {
       createOrUpdateAbsentRequestMutation([
         {
+          ...initialAbsentRequestState,
           attendanceCodeId:
             attendanceCode?.id ?? initialAbsentRequestState?.attendanceCode?.id,
           parentNote,
-          adminNote: initialAbsentRequestState?.adminNote,
-          from: initialAbsentRequestState?.from,
-          id: initialAbsentRequestState?.id,
-          requestType: initialAbsentRequestState?.requestType,
-          status: initialAbsentRequestState?.status,
-          studentPartyId: initialAbsentRequestState?.studentPartyId,
-          to: initialAbsentRequestState?.to,
         },
       ]);
 
-      getAbsentRequests({});
       onClose();
     }
   };
