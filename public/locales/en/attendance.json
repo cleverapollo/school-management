@@ -64,5 +64,10 @@
     "F": "Unexplained absence",
     "G": "Transferred to another school",
     "H": "Student on holiday"
+  },
+  "attendanceRequestStatus": {
+    "APPROVED": "approved",
+    "DENIED": "denied",
+    "PENDING": "pending"
   }
 }

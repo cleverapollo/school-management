@@ -6,85 +6,80 @@ import {
   ActionMenu,
   PageContainer,
   PageHeading,
-  sortStartNumberFirst,
   TablePersonAvatar,
   useDisclosure,
+  usePreferredNameLayout,
+  ReturnTypeDisplayName,
+  useDebouncedValue,
 } from '@tyro/core';
-import { Box, Button, Fade, Typography } from '@mui/material';
-import { SaveParentalAttendanceRequest } from '@tyro/api';
+import { Box, Button, Fade } from '@mui/material';
+import {
+  ParentalAttendanceRequestStatus,
+  SaveParentalAttendanceRequest,
+} from '@tyro/api';
 import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { ReturnTypeFromUseAbsentRequests, useAbsentRequests } from '../api';
 import {
   ViewAbsentRequestModal,
   ViewAbsentRequestModalProps,
-} from '../components/view-absent-request-modal';
-import { ApproveAbsentRequestsConfirmModal } from '../components/approve-absent-requests-confirm-modal';
-import { DeclineAbsentRequestsConfirmModal } from '../components/decline-absent-requests-confirm-modal';
+} from '../components/absent-requests/view-absent-request-modal';
+import { ApproveAbsentRequestConfirmModal } from '../components/absent-requests/approve-absent-request-confirm-modal';
+import { DeclineAbsentRequestConfirmModal } from '../components/absent-requests/decline-absent-request-confirm-modal';
+
+dayjs.extend(LocalizedFormat);
 
 const getAbsentRequestColumns = (
   t: TFunction<('common' | 'attendance')[]>,
+  displayName: ReturnTypeDisplayName,
   onClickView: Dispatch<
     SetStateAction<ViewAbsentRequestModalProps['initialAbsentRequestState']>
   >
 ): GridOptions<ReturnTypeFromUseAbsentRequests>['columnDefs'] => [
   {
-    field: 'student',
+    field: 'classGroup.name',
     headerName: t('common:name'),
     checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
+    valueGetter: ({ data }) => displayName(data?.student),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
       data ? (
         <TablePersonAvatar
           person={data?.student}
-          to={`./${data?.studentPartyId ?? ''}`}
+          to={`/people/students/${data?.studentPartyId ?? ''}/overview`}
         />
       ) : null,
-    comparator: sortStartNumberFirst,
   },
   {
     field: 'classGroup',
     headerName: t('common:class'),
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
-      data ? <Typography>{data?.classGroup?.name ?? '-'}</Typography> : null,
+    valueGetter: ({ data }) => data?.classGroup?.name ?? '-',
   },
   {
     field: 'attendanceCode.name',
     headerName: t('attendance:absentType'),
     filter: true,
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
-      data ? (
-        <Typography>{data?.attendanceCode?.name ?? '-'}</Typography>
-      ) : null,
+    valueGetter: ({ data }) => data?.attendanceCode?.name ?? '-',
   },
   {
     field: 'createdOn',
     headerName: t('common:created'),
-    sort: 'asc',
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
-      data ? (
-        <Typography>{dayjs(data?.createdOn).format('D MMMM YYYY')}</Typography>
-      ) : null,
+    comparator: (dateA: string, dateB: string) =>
+      dayjs(dateA).unix() - dayjs(dateB).unix(),
+    valueGetter: ({ data }) => dayjs(data?.createdOn).format('LL'),
   },
   {
     field: 'status',
     headerName: t('common:status'),
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
-      data ? (
-        <Typography sx={{ textTransform: 'lowercase' }}>
-          {data?.status}
-        </Typography>
-      ) : null,
+    valueGetter: ({ data }) =>
+      t(
+        `attendance:attendanceRequestStatus.${
+          data?.status ?? ParentalAttendanceRequestStatus.Approved
+        }`
+      ),
   },
   {
     suppressColumnsToolPanel: true,
@@ -93,7 +88,11 @@ const getAbsentRequestColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
-      data && <Button onClick={() => onClickView(data)}>View</Button>,
+      data && (
+        <Button onClick={() => onClickView(data)}>
+          {t('common:actions.view')}
+        </Button>
+      ),
   },
 ];
 
@@ -101,14 +100,23 @@ export default function AbsentRequests() {
   const { t } = useTranslation(['common', 'attendance']);
   const { data: absentRequests } = useAbsentRequests({});
 
-  const [viewAbsentRequestInitialState, setViewAbsentRequestInitialState] =
-    useState<ViewAbsentRequestModalProps['initialAbsentRequestState']>();
   const [selectedAbsentRequests, setSelectedAbsentRequests] = useState<
     SaveParentalAttendanceRequest[]
   >([]);
+  const {
+    setValue: setViewAbsentRequestInitialState,
+    debouncedValue: debouncedViewAbsentRequestInitialState,
+  } = useDebouncedValue<
+    ViewAbsentRequestModalProps['initialAbsentRequestState']
+  >({
+    defaultValue: undefined,
+  });
+
+  const { displayName } = usePreferredNameLayout();
 
   const absentRequestColumns = useMemo(
-    () => getAbsentRequestColumns(t, setViewAbsentRequestInitialState),
+    () =>
+      getAbsentRequestColumns(t, displayName, setViewAbsentRequestInitialState),
     [t, setViewAbsentRequestInitialState]
   );
 
@@ -123,10 +131,6 @@ export default function AbsentRequests() {
     onOpen: onOpenDeclineAbsentRequestsModal,
     onClose: onCloseDeclineAbsentRequestsModal,
   } = useDisclosure();
-
-  const handleCloseViewAbsentRequestModal = () => {
-    setViewAbsentRequestInitialState(undefined);
-  };
 
   return (
     <PageContainer title={t('attendance:absentRequests')}>
@@ -158,34 +162,22 @@ export default function AbsentRequests() {
           </Fade>
         }
         onRowSelection={(newSelectedAbsentRequests) =>
-          setSelectedAbsentRequests(
-            newSelectedAbsentRequests.map((absentRequest) => ({
-              adminNote: absentRequest.adminNote,
-              attendanceCodeId: absentRequest.attendanceCodeId,
-              from: absentRequest.from,
-              id: absentRequest.id,
-              parentNote: absentRequest.parentNote,
-              requestType: absentRequest.requestType,
-              status: absentRequest.status,
-              studentPartyId: absentRequest.studentPartyId,
-              to: absentRequest.to,
-            }))
-          )
+          setSelectedAbsentRequests(newSelectedAbsentRequests)
         }
       />
       <ViewAbsentRequestModal
-        initialAbsentRequestState={viewAbsentRequestInitialState}
-        onClose={handleCloseViewAbsentRequestModal}
+        initialAbsentRequestState={debouncedViewAbsentRequestInitialState}
+        onClose={() => setViewAbsentRequestInitialState(undefined)}
       />
-      <ApproveAbsentRequestsConfirmModal
+      <ApproveAbsentRequestConfirmModal
         isOpen={isApproveAbsentRequestsModalOpen}
         onClose={onCloseApproveAbsentRequestsModal}
-        absentRequests={selectedAbsentRequests}
+        absentRequestState={selectedAbsentRequests}
       />
-      <DeclineAbsentRequestsConfirmModal
+      <DeclineAbsentRequestConfirmModal
         isOpen={isDeclineAbsentRequestsModalOpen}
         onClose={onCloseDeclineAbsentRequestsModal}
-        absentRequests={selectedAbsentRequests}
+        absentRequestState={selectedAbsentRequests}
       />
     </PageContainer>
   );

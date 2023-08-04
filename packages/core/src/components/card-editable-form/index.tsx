@@ -36,6 +36,7 @@ type CardEditableField<TField extends FieldValues> = {
 export type CardEditableFormProps<TField extends FieldValues> = CardProps & {
   title: string;
   editable?: boolean;
+  hideBorder?: boolean;
   fields: Array<CardEditableField<TField>>;
   resolver?: Resolver<TField>;
   onSave: (data: TField, onSuccess: () => void) => void;
@@ -47,6 +48,7 @@ export const CardEditableForm = <TField extends FieldValues>({
   fields,
   resolver,
   onSave,
+  hideBorder,
   sx,
   children,
   ...cardProps
@@ -87,7 +89,15 @@ export const CardEditableForm = <TField extends FieldValues>({
   return (
     <Card
       variant="outlined"
-      sx={{ position: 'static', overflow: 'inherit', ...sx }}
+      sx={{
+        ...{ position: 'static', overflow: 'inherit', ...sx },
+        ...(hideBorder
+          ? {
+              border: 'none',
+              '.MuiCardHeader-root': { borderBottom: 'none !important' },
+            }
+          : {}),
+      }}
       component="form"
       onSubmit={handleSubmit(handleSave)}
       {...cardProps}

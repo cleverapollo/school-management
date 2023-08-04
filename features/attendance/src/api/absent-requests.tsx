@@ -97,11 +97,11 @@ export function useCreateOrUpdateAbsentRequest() {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     },
     onSuccess: (_, [code]) => {
-      if (code?.id) {
-        toast(t('common:snackbarMessages.updateSuccess'));
-      } else {
-        toast(t('common:snackbarMessages.createSuccess'));
-      }
+      toast(
+        code?.id
+          ? t('common:snackbarMessages.updateSuccess')
+          : t('common:snackbarMessages.createSuccess')
+      );
       queryClient.invalidateQueries(attendanceKeys.absentRequests({}));
     },
   });

@@ -1,8 +1,8 @@
 import {
-  Box,
   Button,
   Dialog,
   DialogActions,
+  DialogContent,
   DialogTitle,
   Divider,
   Stack,
@@ -20,26 +20,26 @@ import {
 import React from 'react';
 import {
   Avatar,
-  DisplayNamePersonProps,
-  PreferredNameFormat,
+  ReturnTypeDisplayName,
   RHFSelect,
   RHFTextField,
   useDisclosure,
   useFormValidator,
   usePreferredNameLayout,
-} from '@tyro/core';
-import dayjs from 'dayjs';
-import {
   CardEditableForm,
   CardEditableFormProps,
-} from '@tyro/people/src/components/common/card-editable-form';
-import { DeclineAbsentRequestConfirmModal } from '../decline-absent-request-confirm-modal';
-import { ApproveAbsentRequestConfirmModal } from '../approve-absent-request-confirm-modal';
+} from '@tyro/core';
+import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import { DeclineAbsentRequestConfirmModal } from './decline-absent-request-confirm-modal';
+import { ApproveAbsentRequestConfirmModal } from './approve-absent-request-confirm-modal';
 import {
   getAbsentRequests,
   useAttendanceCodes,
   useCreateOrUpdateAbsentRequest,
 } from '../../api';
+
+dayjs.extend(LocalizedFormat);
 
 export type ViewAbsentRequestFormState = Pick<
   ParentalAttendanceRequest,
@@ -77,35 +77,29 @@ export type ViewAbsentRequestModalProps = {
 const getAbsentRequestDataWithLabels = (
   data: ViewAbsentRequestFormState | undefined,
   t: TFunction<('common' | 'attendance')[]>,
-  displayName: (
-    person: DisplayNamePersonProps,
-    options?: {
-      format: PreferredNameFormat;
-    }
-  ) => string,
+  displayName: ReturnTypeDisplayName,
   attendanceCodes: AttendanceCode[] | undefined
 ): CardEditableFormProps<ViewAbsentRequestFormState>['fields'] => {
   const { from, contact, attendanceCode, parentNote } = data || {};
 
+  const contactName = displayName(contact?.person);
+  const relationShip =
+    Boolean(contact?.relationships?.length) &&
+    contact?.relationships?.[0]?.relationshipType
+      ? t(
+          `common:relationshipType.${contact?.relationships?.[0]?.relationshipType}`
+        )
+      : '';
+
   return [
     {
       label: t('attendance:dateOfAbsence'),
-      value: dayjs(from).format('D MMMM YYYY'),
+      value: dayjs(from).format('LL'),
     },
     {
       label: t('common:createdBy'),
       value: contact,
-      valueRenderer:
-        `${displayName(contact?.person, {
-          format: PreferredNameFormat.FirstnameSurname,
-        })}, ${
-          contact?.relationships?.length &&
-          contact?.relationships?.[0]?.relationshipType
-            ? t(
-                `common:relationshipType.${contact?.relationships?.[0]?.relationshipType}`
-              )
-            : ''
-        }` ?? '-',
+      valueRenderer: `${contactName}, ${relationShip}`,
     },
     {
       label: t('attendance:absenceType'),
@@ -213,43 +207,32 @@ export const ViewAbsentRequestModal = ({
       maxWidth="sm"
     >
       <DialogTitle>{t('attendance:viewAbsentRequest')}</DialogTitle>
-      <Stack direction="row" gap={2} px={3} pb={3} pt={1} alignItems="center">
-        <Box
-          sx={{
-            width: 40,
-            height: 40,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
+      <DialogContent>
+        <Stack direction="row" gap={2} alignItems="center">
           <Avatar
             name={displayName(initialAbsentRequestState?.student)}
             src={initialAbsentRequestState?.student?.avatarUrl}
           />
-        </Box>
-        <Stack>
-          <Typography component="span" variant="subtitle2">
-            {displayName(initialAbsentRequestState?.student)}
-          </Typography>
-          <Typography component="span" variant="body2" sx={{ flex: 1 }}>
-            {initialAbsentRequestState?.classGroup?.name ?? '-'}
-          </Typography>
+          <Stack>
+            <Typography component="span" variant="subtitle2">
+              {displayName(initialAbsentRequestState?.student)}
+            </Typography>
+            <Typography component="span" variant="body2">
+              {initialAbsentRequestState?.classGroup?.name || '-'}
+            </Typography>
+          </Stack>
         </Stack>
-      </Stack>
-      <Divider flexItem sx={{ mx: 3 }} />
+        <Divider flexItem sx={{ mt: 3 }} />
 
-      <CardEditableForm
-        title={t('common:details')}
-        editable
-        fields={absentRequestDataWithLabels}
-        resolver={absentRequestFormResolver}
-        onSave={handleEdit}
-        sx={{
-          border: 'none',
-          '.MuiCardHeader-root': { borderBottom: 'none !important' },
-        }}
-      />
+        <CardEditableForm
+          title={t('common:details')}
+          editable
+          fields={absentRequestDataWithLabels}
+          resolver={absentRequestFormResolver}
+          onSave={handleEdit}
+          hideBorder
+        />
+      </DialogContent>
       <DialogActions>
         <Button variant="outlined" color="inherit" onClick={onClose}>
           {t('common:actions.cancel')}
@@ -283,13 +266,13 @@ export const ViewAbsentRequestModal = ({
         isOpen={isApproveAbsentRequestModalOpen}
         onClose={onCloseApproveAbsentRequestModal}
         onApprove={onClose}
-        initialAbsentRequestState={initialAbsentRequestState}
+        absentRequestState={initialAbsentRequestState}
       />
       <DeclineAbsentRequestConfirmModal
         isOpen={isDeclineAbsentRequestModalOpen}
         onClose={onCloseDeclineAbsentRequestModal}
         onDecline={onClose}
-        initialAbsentRequestState={initialAbsentRequestState}
+        absentRequestState={initialAbsentRequestState}
       />
     </Dialog>
   );
