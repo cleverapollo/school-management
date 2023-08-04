@@ -46,12 +46,9 @@ export const TabPageContainer = ({ links, TabProps }: TabNavigationProps) => {
     <Stack flexDirection="column" gap={3} flex={1}>
       <Tabs value={value} {...TabProps}>
         {links
-          .filter((tab) => {
-            if (tab.hasAccess != null) {
-              return tab.hasAccess(permissions);
-            }
-            return true;
-          })
+          .filter((tab) =>
+            tab.hasAccess != null ? tab.hasAccess(permissions) : true
+          )
           .map((tab) => (
             <LinkTab key={tab.value} {...tab} to={`./${tab.value}`} />
           ))}
