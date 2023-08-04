@@ -32,15 +32,12 @@ export const fileNames = {
   FileC: 'FILE_C',
   FileD: 'FILE_D',
   FileE: 'FILE_E',
-  Summary: 'DTR summary',
 };
 
 const getColumnDefs = (
   t: TFunction<('settings' | 'common')[], undefined, ('settings' | 'common')[]>,
   downloadFileB: (test: string) => void,
-  isSubmitting: boolean,
-  isError: boolean,
-  isSuccess: boolean
+  isSubmitting: boolean
 ): GridOptions<DtrReturn>['columnDefs'] => [
   {
     field: 'name',
@@ -58,7 +55,7 @@ const getColumnDefs = (
         fileNames[data?.name?.split(' ')?.join('') as keyof typeof fileNames] ||
         '';
 
-      return data?.name === 'File B' ? (
+      return fileName === fileNames.FileB ? (
         <Button
           className="ag-show-on-row-interaction"
           component={Link}
@@ -119,23 +116,14 @@ export default function DTRReturnsPage() {
       description: t('settings:dtrReturns.descriptionDtrSummary'),
       textAction: t('settings:dtrReturns.downloadFile'),
     },
-    {
-      name: t('settings:dtrReturns.formT1'),
-      description: t('settings:dtrReturns.descriptionFormT1'),
-      textAction: t('settings:dtrReturns.downloadFile'),
-    },
   ];
 
-  const {
-    mutateAsync: downloadFileB,
-    isLoading: isSubmitting,
-    isError,
-    isSuccess,
-  } = useDownloadFileB();
+  const { mutateAsync: downloadFileB, isLoading: isSubmitting } =
+    useDownloadFileB();
 
   const columnDefs = useMemo(
-    () => getColumnDefs(t, downloadFileB, isSubmitting, isError, isSuccess),
-    [t]
+    () => getColumnDefs(t, downloadFileB, isSubmitting),
+    [t, isSubmitting, downloadFileB]
   );
 
   return (

@@ -54,13 +54,13 @@ const getColumnFormBDefs = (
   {
     field: 'staffIre.includeDtrReturns',
     headerName: translate('settings:dtrReturns.formB.includeInDTR'),
+    cellEditor: TableSwitch,
+    editable: true,
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     valueFormatter: ({ data }) =>
       data?.staffIre?.includeDtrReturns
         ? translate('common:yes')
         : translate('common:no'),
-    cellEditor: TableSwitch,
-    editable: true,
-    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseFormB, any>) => (
@@ -104,11 +104,11 @@ const getColumnFormBDefs = (
     field: 'personalInformation.gender',
     headerName: translate('settings:dtrReturns.formB.gender'),
     cellEditorSelector: GenderSelectCellEditor(),
+    editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
     valueFormatter: ({ data }) =>
       data?.personalInformation?.gender
         ? translate(`common:gender.${data?.personalInformation?.gender}`)
         : '-',
-    editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
     cellClassRules: {
       'failed-cell': ({ data }) =>
         Boolean(
@@ -129,13 +129,6 @@ const getColumnFormBDefs = (
       );
       return true;
     },
-    cellClassRules: {
-      'failed-cell': ({ data }) =>
-        Boolean(
-          data?.staffIre?.includeDtrReturns &&
-            !data?.personalInformation?.ire?.ppsNumber
-        ),
-    },
   },
   {
     field: 'payrollNumber',
@@ -150,12 +143,6 @@ const getColumnFormBDefs = (
     valueFormatter: ({ data }) =>
       data?.staffIre?.staffPost ? data?.staffIre?.staffPost?.name : '-',
     cellEditorSelector: StaffPostSelectCellEditor(postsData),
-    cellClassRules: {
-      'failed-cell': ({ data }) =>
-        Boolean(
-          data?.staffIre?.includeDtrReturns && !data?.staffIre?.staffPost?.name
-        ),
-    },
   },
   {
     field: 'employmentCapacity',
@@ -192,6 +179,7 @@ const getColumnFormBDefs = (
       number: 1,
     }),
     editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
+    valueGetter: ({ data }) => data?.qualifications ?? '-',
     valueSetter: ({ data, newValue, oldValue }) => {
       set(
         data ?? {},
@@ -341,15 +329,14 @@ export default function DTRReturnsPage() {
         staff?.staffIre?.teacherReferenceNumber &&
         staff?.personalInformation?.gender &&
         staff?.employmentCapacity &&
-        staff?.qualifications &&
-        staff?.staffIre?.otherSchool1
+        staff?.qualifications
     );
   };
 
   const UpdateStaffKeys = {
     'staffIre.staffPost': 'staffPost',
     'personalInformation.gender': 'gender',
-    // 'staffIre.includeDtrReturns': 'includeDtrReturns',
+    'staffIre.includeDtrReturns': 'includeDtrReturns',
     'staffIre.teacherReferenceNumber': 'teacherReferenceNumber',
     'personalInformation.ire.ppsNumber': 'ppsNumber',
     payrollNumber: 'payrollNumber',
