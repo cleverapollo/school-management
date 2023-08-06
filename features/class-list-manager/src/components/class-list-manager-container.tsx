@@ -5,26 +5,27 @@ import {
   ActionMenu,
   useDebouncedValue,
   ActionMenuProps,
+  ConfirmDialog,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useLocation } from 'react-router-dom';
 import { Box } from '@mui/material';
 import { useMemo, useState } from 'react';
-import { MaleFemaleIcon, RotationIcon } from '@tyro/icons';
+import { MaleFemaleIcon, PersonTickIcon, RotationIcon } from '@tyro/icons';
 import { useContainerMargin } from '../hooks/use-container-margin';
 import { ClassListSettingsProvider } from '../store/class-list-settings';
-import { ReturnTypeOfUseBlockList } from '../api/blocks';
+import { ReturnTypeOfUseBlockList, useAutoAssignBlock } from '../api/blocks';
 import { CreateBlockRotationModal } from './blocks/create-block-rotation-modal';
 
 export default function ClassListManagerContainer() {
   const { t } = useTranslation(['navigation', 'classListManager']);
   const { pathname } = useLocation();
   const containerMargin = useContainerMargin();
-
+  const { mutateAsync: autoAssignBlock } = useAutoAssignBlock();
   const [currentBlock, setCurrentBlock] =
     useState<NonNullable<ReturnTypeOfUseBlockList>[number]>();
   const blockHasRotations = !!currentBlock?.isRotation;
-
+  const [autoAssignConfirmation, setAutoAssignConfirmation] = useState(false);
   const {
     value: blockForCreateRotation,
     debouncedValue: debouncedBlockForCreateRotation,
@@ -61,6 +62,15 @@ export default function ClassListManagerContainer() {
         icon: <MaleFemaleIcon />,
         onClick: toggleShowGender,
       },
+      ...(!blockHasRotations
+        ? [
+            {
+              label: 'Auto assign',
+              icon: <PersonTickIcon />,
+              onClick: () => setAutoAssignConfirmation(true),
+            },
+          ]
+        : []),
       ...(isBlockView && !blockHasRotations
         ? [
             {
@@ -115,6 +125,20 @@ export default function ClassListManagerContainer() {
             blockForCreateRotation || debouncedBlockForCreateRotation
           }
           onClose={() => setBlockForCreateRotation(undefined)}
+        />
+
+        <ConfirmDialog
+          open={!!autoAssignConfirmation}
+          title={t('classListManager:autoAssign')}
+          description={t('classListManager:autoAssignDescription')}
+          confirmText={t('classListManager:autoAssignConfirm')}
+          onClose={() => setAutoAssignConfirmation(false)}
+          onConfirm={() => {
+            if (isBlockView && currentBlock) {
+              autoAssignBlock({ blockId: currentBlock.blockId });
+              setAutoAssignConfirmation(false);
+            }
+          }}
         />
       </Page>
     </ClassListSettingsProvider>

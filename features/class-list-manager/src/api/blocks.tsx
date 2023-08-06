@@ -9,6 +9,7 @@ import {
   UseQueryReturnType,
   BlockFilter,
   Core_EnableBlockRotationInput,
+  EnrollmentIre_AutoAssignBlockMembershipInput,
 } from '@tyro/api';
 import { usePreferredNameLayout, useToast } from '@tyro/core';
 import { groupsKeys } from '@tyro/groups';
@@ -125,6 +126,15 @@ const enableBlockRotations = graphql(/* GraphQL */ `
   }
 `);
 
+const autoAssignBlock = graphql(/* GraphQL */ `
+  mutation enrollment_ire_autoAssignBlocks(
+    $input: EnrollmentIre_AutoAssignBlockMembershipInput!
+  ) {
+    enrollment_ire_autoAssignBlocks(input: $input) {
+      success
+    }
+  }
+`);
 const blocksQuery = (filter: BlockFilter) => ({
   queryKey: classListManagerKeys.blocksList(filter),
   queryFn: async () => {
@@ -204,6 +214,27 @@ export function useUpdateBlockMemberships() {
     onSuccess: () => {
       toast(t('common:snackbarMessages.updateSuccess'));
       queryClient.invalidateQueries(classListManagerKeys.allBlockMemberships());
+      queryClient.invalidateQueries(groupsKeys.all);
+      queryClient.invalidateQueries(peopleKeys.all);
+    },
+    onError: () => {
+      toast(t('common:snackbarMessages.errorFailed'), {
+        variant: 'error',
+      });
+    },
+  });
+}
+
+export function useAutoAssignBlock() {
+  const { toast } = useToast();
+  const { t } = useTranslation(['common']);
+
+  return useMutation({
+    mutationFn: async (input: EnrollmentIre_AutoAssignBlockMembershipInput) =>
+      gqlClient.request(autoAssignBlock, { input }),
+    onSuccess: () => {
+      toast(t('common:snackbarMessages.updateSuccess'));
+      queryClient.invalidateQueries(classListManagerKeys.all);
       queryClient.invalidateQueries(groupsKeys.all);
       queryClient.invalidateQueries(peopleKeys.all);
     },

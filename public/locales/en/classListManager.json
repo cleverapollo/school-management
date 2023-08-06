@@ -33,6 +33,9 @@
   "youMustSetMinimumOfTwoRotations": "You must set a minimum of two rotations.",
   "classListManagerTip": "Class list manager tip!",
   "classListManagerTipDescription": "We recommend populating your class list before adding a rotation so we can auto populate your rotations as a starting point for you.",
+  "autoAssign": "Auto assign",
+  "autoAssignDescription": "Assign all the unassigned students automatically.",
+  "autoAssignConfirm": "Assign Students",
   "errorMessages": {
     "startDateMustBeTheDayAfterThePreviousEndDate": "Start date must be the day after the previous end date."
   }
