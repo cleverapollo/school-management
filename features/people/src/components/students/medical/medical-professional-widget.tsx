@@ -126,7 +126,7 @@ export function StudentMedicalProfessionalWidget({
       <Card variant="outlined" sx={{ height: '100%', flex: 1 }}>
         <CardHeader
           component="h3"
-          title={t('people:medicalProfessional')}
+          // title={t('people:medicalProfessional')}
           action={
             <ActionMenu
               iconOnly

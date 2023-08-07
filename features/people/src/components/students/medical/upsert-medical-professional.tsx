@@ -96,9 +96,9 @@ export function UpsertMedicalProfessionalModal({
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>
-        {medicalContact?.id
-          ? t('people:editMedicalProfessional')
-          : t('people:addMedicalProfessional')}
+        {/*{medicalContact?.id*/}
+        {/*  ? t('people:editMedicalProfessional')*/}
+        {/*  : t('people:addMedicalProfessional')}*/}
       </DialogTitle>
       <form onSubmit={onSubmit}>
         <DialogContent>
@@ -123,7 +123,7 @@ export function UpsertMedicalProfessionalModal({
                 }}
               />
               <RHFTextField<UpsertMedicalProfessionalFormState>
-                label={t('people:firstName')}
+                // label={t('people:firstName')}
                 textFieldProps={{ fullWidth: true }}
                 controlProps={{
                   name: 'firstName',
@@ -131,7 +131,7 @@ export function UpsertMedicalProfessionalModal({
                 }}
               />
               <RHFTextField<UpsertMedicalProfessionalFormState>
-                label={t('people:lastName')}
+                // label={t('people:lastName')}
                 textFieldProps={{ fullWidth: true }}
                 controlProps={{
                   name: 'lastName',
