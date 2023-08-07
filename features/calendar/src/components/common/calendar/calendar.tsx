@@ -44,11 +44,13 @@ import {
 export interface CalendarProps {
   defaultPartys?: CalendarParty[];
   defaultDate?: Date;
+  editable?: boolean;
 }
 
 export const Calendar = function Calendar({
   defaultPartys = [],
   defaultDate = dayjs().startOf('week').toDate(),
+  editable,
 }: CalendarProps) {
   const { userType } = usePermissions();
   const { isNavExpanded } = useAppShellConfig();
@@ -58,8 +60,7 @@ export const Calendar = function Calendar({
   >(Object.values(CalendarEventType));
 
   // ToDO: implement isEditable with permissions
-  const isEditable =
-    userType === UserType.Admin || userType === UserType.Teacher;
+  const isEditable = editable ?? false;
   const calendarRef = useRef<FullCalendar>(null);
   const [date, setDate] = useState(defaultDate);
 

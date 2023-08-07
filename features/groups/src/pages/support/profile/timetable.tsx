@@ -26,5 +26,5 @@ export default function SubjectGroupProfileTimetablePage() {
     [subjectGroupData]
   );
 
-  return <Calendar defaultPartys={defaultPartys} />;
+  return <Calendar defaultPartys={defaultPartys} editable />;
 }

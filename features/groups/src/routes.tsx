@@ -21,7 +21,7 @@ import {
   getSubjectGroupLesson,
 } from './api';
 import { getYearGroups, getYearGroupById } from './api/year-groups';
-import { getSupportGroups } from './api/support-groups';
+import { getSupportGroupById, getSupportGroups } from './api/support-groups';
 
 const YearGroups = lazy(() => import('./pages/year'));
 const ViewYearGroupPage = lazy(() => import('./pages/year/view'));
@@ -44,16 +44,30 @@ const SubjectGroupProfileStudentsPage = lazy(
   () => import('./pages/subject/profile/students')
 );
 
+const SupportGroupProfileStudentsPage = lazy(
+  () => import('./pages/support/profile/students')
+);
+
 const SubjectGroupProfileAttendancePage = lazy(
   () => import('./pages/subject/profile/attendance')
+);
+
+const SupportGroupProfileAttendancePage = lazy(
+  () => import('./pages/support/profile/attendance')
 );
 
 const SubjectGroupProfileTimetablePage = lazy(
   () => import('./pages/subject/profile/timetable')
 );
 
+const SupportGroupProfileTimetablePage = lazy(
+  () => import('./pages/support/profile/timetable')
+);
 const SubjectGroupContainer = lazy(
   () => import('./components/subject-group/container')
+);
+const SupportGroupContainer = lazy(
+  () => import('./components/support-group/container')
 );
 
 export const getRoutes: NavObjectFunction = (t) => [
@@ -243,10 +257,9 @@ export const getRoutes: NavObjectFunction = (t) => [
           {
             type: NavObjectType.MenuLink,
             path: 'support',
-            title: t('navigation:general.groups.subject'),
+            title: t('navigation:general.groups.support'),
             loader: () => getSupportGroups(),
-            hasAccess: (permissions) =>
-              permissions.hasPermission('ps:1:groups:view_subject_groups'),
+            hasAccess: ({ isTyroUser }) => isTyroUser,
             children: [
               {
                 type: NavObjectType.NonMenuLink,
@@ -257,7 +270,7 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: ':groupId',
-                element: <SubjectGroupContainer />,
+                element: <SupportGroupContainer />,
                 loader: async ({ params }) => {
                   const groupId = getNumber(params.groupId);
 
@@ -272,7 +285,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                     });
 
                   return Promise.all([
-                    getSubjectGroupById(groupId),
+                    getSupportGroupById(groupId),
                     ...(closestLesson
                       ? [
                           getSubjectGroupLesson({
@@ -293,12 +306,12 @@ export const getRoutes: NavObjectFunction = (t) => [
                   {
                     type: NavObjectType.NonMenuLink,
                     path: 'students',
-                    element: <SubjectGroupProfileStudentsPage />,
+                    element: <SupportGroupProfileStudentsPage />,
                   },
                   {
                     type: NavObjectType.NonMenuLink,
                     path: 'attendance',
-                    element: <SubjectGroupProfileAttendancePage />,
+                    element: <SupportGroupProfileAttendancePage />,
                     loader: async ({ params }) => {
                       const groupId = getNumber(params.groupId);
 
@@ -318,7 +331,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                   {
                     type: NavObjectType.NonMenuLink,
                     path: 'timetable',
-                    element: <SubjectGroupProfileTimetablePage />,
+                    element: <SupportGroupProfileTimetablePage />,
                     loader: ({ params }) => {
                       const groupId = getNumber(params.groupId);
 

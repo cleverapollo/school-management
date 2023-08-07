@@ -93,7 +93,7 @@ const subjectGroupsQuery = {
     queryKey: groupsKeys.subject.groups(),
     queryFn: async () =>
       gqlClient.request(subjectGroupsList, {
-        filter: {},
+        filter: { partyIds: [] as number[], type: ['SUBJECT_GROUP'] },
       }),
   },
   details: (id?: number) => ({

@@ -92,24 +92,6 @@ const getSubjectGroupsColumns = (
       data?.yearGroups?.map((year) => year?.name).join(', '),
   },
   {
-    field: 'irePP.level',
-    headerName: t('common:level'),
-    filter: true,
-    editable: true,
-    valueSetter: (params) => {
-      set(params.data ?? {}, 'irePP.level', params.newValue);
-      return true;
-    },
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseSupportGroups, any>) =>
-      data?.irePP?.level ? (
-        <TableStudyLevelChip level={data.irePP.level} />
-      ) : null,
-    cellEditorSelector: StudyLevelSelectCellEditor(t),
-    enableRowGroup: true,
-  },
-  {
     field: 'staff',
     headerName: t('common:teacher'),
     valueGetter: ({ data }) => displayNames(data?.staff),
@@ -173,10 +155,10 @@ export default function SupportGroups() {
 
   return (
     <>
-      <Page title={t('groups:subjectGroups')}>
+      <Page title={t('groups:supportGroups')}>
         <Container maxWidth="xl">
           <Typography variant="h3" component="h1" paragraph>
-            {t('groups:subjectGroups')}
+            {t('groups:supportGroups')}
           </Typography>
           <Table
             rowData={subjectGroupsData ?? []}
