@@ -51,7 +51,7 @@ export default function ClassListManagerBlocks() {
   } = useDebouncedValue<ConfirmDialogSettings | null>({ defaultValue: null });
   const [isDirty, setIsDirty] = useState(false);
   const containerMargin = useContainerMargin();
-  const { setCurrentBlock } = useClassListSettings();
+  const { setCurrentBlock, setCurrentYearGroup } = useClassListSettings();
   const dropdownDirection = useBreakpointValue<'column' | 'row'>({
     base: 'column',
     sm: 'row',
@@ -72,6 +72,7 @@ export default function ClassListManagerBlocks() {
     yearGroup: YearGroupsAutocompleteProps['value']
   ) => {
     setSelectedYearGroup(yearGroup);
+    setCurrentYearGroup(yearGroup);
     setSelectedBlock(null);
   };
 

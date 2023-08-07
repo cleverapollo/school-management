@@ -14,6 +14,7 @@ import {
 import { ListManager } from '../components/common/list-manager';
 import { EditedStudent } from '../components/common/list-manager/state/edited-state';
 import { useContainerMargin } from '../hooks/use-container-margin';
+import { useClassListSettings } from '../store/class-list-settings';
 
 interface ConfirmDialogSettings {
   proceed: () => void;
@@ -23,6 +24,8 @@ interface ConfirmDialogSettings {
 export default function ClassListManagerClasses() {
   const { spacing } = useTheme();
   const { t } = useTranslation(['common', 'classListManager']);
+
+  const { setCurrentYearGroup } = useClassListSettings();
   const [selectedYearGroup, setSelectedYearGroup] =
     useState<YearGroupsAutocompleteProps['value']>(null);
   const [isDirty, setIsDirty] = useState(false);
@@ -34,7 +37,8 @@ export default function ClassListManagerClasses() {
     selectedYearGroup?.yearGroupEnrollmentPartyId
   );
   const { mutateAsync: saveClassMemberships } = useUpdateClassMemberships();
-
+  console.log('selectedYearGroup');
+  console.log(selectedYearGroup);
   const requestSetSelectedYearGroup = (
     block: YearGroupsAutocompleteProps['value']
   ) => {
@@ -42,6 +46,7 @@ export default function ClassListManagerClasses() {
       setConfirmDialogSettings({
         proceed: () => {
           setSelectedYearGroup(block);
+          setCurrentYearGroup(block);
         },
         reset: () => {
           setConfirmDialogSettings(null);
@@ -49,6 +54,7 @@ export default function ClassListManagerClasses() {
       });
     } else {
       setSelectedYearGroup(block);
+      setCurrentYearGroup(block);
     }
   };
 

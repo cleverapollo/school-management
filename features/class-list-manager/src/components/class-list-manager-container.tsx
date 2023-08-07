@@ -13,15 +13,23 @@ import { Box } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { MaleFemaleIcon, PersonTickIcon, RotationIcon } from '@tyro/icons';
 import { useContainerMargin } from '../hooks/use-container-margin';
-import { ClassListSettingsProvider } from '../store/class-list-settings';
+import {
+  ClassListSettingsProvider,
+  useClassListSettings,
+} from '../store/class-list-settings';
 import { ReturnTypeOfUseBlockList, useAutoAssignBlock } from '../api/blocks';
 import { CreateBlockRotationModal } from './blocks/create-block-rotation-modal';
+import { useAutoAssignCore } from '../api/classes';
+import { YearGroupsAutocompleteProps } from './common/list-manager/year-groups-autocomplete';
 
 export default function ClassListManagerContainer() {
   const { t } = useTranslation(['navigation', 'classListManager']);
   const { pathname } = useLocation();
   const containerMargin = useContainerMargin();
   const { mutateAsync: autoAssignBlock } = useAutoAssignBlock();
+  const { mutateAsync: autoAssignCore } = useAutoAssignCore();
+  const [currentYearGroup, setCurrentYearGroup] =
+    useState<YearGroupsAutocompleteProps['value']>();
   const [currentBlock, setCurrentBlock] =
     useState<NonNullable<ReturnTypeOfUseBlockList>[number]>();
   const blockHasRotations = !!currentBlock?.isRotation;
@@ -40,8 +48,8 @@ export default function ClassListManagerContainer() {
   const [classListSettings, setClassListSettings] = useState({
     showGender: false,
     setCurrentBlock,
+    setCurrentYearGroup,
   });
-
   const toggleShowGender = () => {
     setClassListSettings((prevState) => ({
       ...prevState,
@@ -135,8 +143,15 @@ export default function ClassListManagerContainer() {
           onClose={() => setAutoAssignConfirmation(false)}
           onConfirm={() => {
             if (isBlockView && currentBlock) {
-              autoAssignBlock({ blockId: currentBlock.blockId });
-              setAutoAssignConfirmation(false);
+              autoAssignBlock({ blockId: currentBlock.blockId }).then(() => {
+                setAutoAssignConfirmation(false);
+              });
+            }
+            if (!isBlockView && currentYearGroup) {
+              autoAssignCore({
+                yearGroupEnrollmentId:
+                  currentYearGroup.yearGroupEnrollmentPartyId,
+              }).then(() => setAutoAssignConfirmation(false));
             }
           }}
         />

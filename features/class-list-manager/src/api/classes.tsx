@@ -7,6 +7,8 @@ import {
   graphql,
   queryClient,
   UseQueryReturnType,
+  EnrollmentIre_AutoAssignBlockMembershipInput,
+  EnrollmentIre_AutoAssignCoreMembershipInput,
 } from '@tyro/api';
 import { usePreferredNameLayout, useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
@@ -14,6 +16,7 @@ import { groupsKeys } from '@tyro/groups';
 import { useCallback } from 'react';
 import { peopleKeys } from '@tyro/people';
 import { classListManagerKeys } from './keys';
+import { useBlocksList } from './blocks';
 
 const classMemberships = graphql(/* GraphQL */ `
   query enrollment_ire_coreMemberships(
@@ -90,6 +93,16 @@ const upsertClassMemberships = graphql(/* GraphQL */ `
   }
 `);
 
+const autoAssignCore = graphql(/* GraphQL */ `
+  mutation enrollment_ire_autoAssignCore(
+    $input: EnrollmentIre_AutoAssignCoreMembershipInput!
+  ) {
+    enrollment_ire_autoAssignCore(input: $input) {
+      success
+    }
+  }
+`);
+
 const classMembershipsQuery = (filter: EnrollmentIre_CoreEnrollmentFilter) => ({
   queryKey: classListManagerKeys.classMemberships(filter),
   queryFn: () => gqlClient.request(classMemberships, { filter }),
@@ -143,6 +156,27 @@ export function useUpdateClassMemberships() {
       toast(t('common:snackbarMessages.updateSuccess'));
       queryClient.invalidateQueries(classListManagerKeys.allClassMemberships());
       queryClient.invalidateQueries(classListManagerKeys.allBlockMemberships());
+      queryClient.invalidateQueries(groupsKeys.all);
+      queryClient.invalidateQueries(peopleKeys.all);
+    },
+    onError: () => {
+      toast(t('common:snackbarMessages.errorFailed'), {
+        variant: 'error',
+      });
+    },
+  });
+}
+
+export function useAutoAssignCore() {
+  const { toast } = useToast();
+  const { t } = useTranslation(['common']);
+
+  return useMutation({
+    mutationFn: async (input: EnrollmentIre_AutoAssignCoreMembershipInput) =>
+      gqlClient.request(autoAssignCore, { input }),
+    onSuccess: () => {
+      toast(t('common:snackbarMessages.updateSuccess'));
+      queryClient.invalidateQueries(classListManagerKeys.all);
       queryClient.invalidateQueries(groupsKeys.all);
       queryClient.invalidateQueries(peopleKeys.all);
     },
