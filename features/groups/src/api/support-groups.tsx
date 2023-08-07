@@ -10,7 +10,7 @@ import { groupsKeys } from './keys';
 import { useClassGroups } from './class-groups';
 
 const subjectGroupsList = graphql(/* GraphQL */ `
-  query subjectGroups($filter: SubjectGroupFilter!) {
+  query supportGroups($filter: SubjectGroupFilter!) {
     subjectGroups(filter: $filter) {
       partyId
       name
@@ -43,7 +43,7 @@ const subjectGroupsList = graphql(/* GraphQL */ `
 `);
 
 const subjectGroupById = graphql(/* GraphQL */ `
-  query subjectGroupById($filter: SubjectGroupFilter!) {
+  query supportGroupById($filter: SubjectGroupFilter!) {
     subjectGroups(filter: $filter) {
       partyId
       name
@@ -90,37 +90,37 @@ const updateSubjectGroups = graphql(/* GraphQL */ `
 
 const subjectGroupsQuery = {
   list: {
-    queryKey: groupsKeys.subject.groups(),
+    queryKey: groupsKeys.support.groups(),
     queryFn: async () =>
       gqlClient.request(subjectGroupsList, {
-        filter: {},
+        filter: { partyIds: [] as number[], type: ['SUPPORT_GROUP'] },
       }),
   },
   details: (id?: number) => ({
-    queryKey: groupsKeys.subject.details(id),
+    queryKey: groupsKeys.support.details(id),
     queryFn: () =>
       gqlClient.request(subjectGroupById, {
-        filter: { partyIds: [id ?? 0] },
+        filter: { partyIds: [id ?? 0], type: ['SUPPORT_GROUP'] },
       }),
   }),
 };
 
-export function getSubjectGroups() {
+export function getSupportGroups() {
   return queryClient.fetchQuery(subjectGroupsQuery.list);
 }
 
-export function getSubjectGroupById(id?: number) {
+export function getSupportGroupById(id?: number) {
   return queryClient.fetchQuery(subjectGroupsQuery.details(id));
 }
 
-export function useSubjectGroups() {
+export function useSupportGroups() {
   return useQuery({
     ...subjectGroupsQuery.list,
     select: ({ subjectGroups }) => subjectGroups,
   });
 }
 
-export function useSubjectGroupById(id?: number) {
+export function useSupportGroupById(id?: number) {
   return useQuery({
     ...subjectGroupsQuery.details(id),
     select: ({ subjectGroups }) => {
@@ -138,7 +138,7 @@ export function useSaveSubjectGroupEdits() {
     mutationFn: (input: UpdateSubjectGroupInput[]) =>
       gqlClient.request(updateSubjectGroups, { input }),
     onSuccess: () => {
-      queryClient.invalidateQueries(groupsKeys.subject.all());
+      queryClient.invalidateQueries(groupsKeys.support.all());
     },
   });
 }

@@ -21,6 +21,7 @@ import {
   getSubjectGroupLesson,
 } from './api';
 import { getYearGroups, getYearGroupById } from './api/year-groups';
+import { getSupportGroups } from './api/support-groups';
 
 const YearGroups = lazy(() => import('./pages/year'));
 const ViewYearGroupPage = lazy(() => import('./pages/year/view'));
@@ -37,6 +38,7 @@ const ClassGroupsStudentsPage = lazy(() => import('./pages/class/students'));
 const ClassGroupAttendancePage = lazy(() => import('./pages/class/attendance'));
 const SubjectGroupsPage = lazy(() => import('./pages/class/subject-groups'));
 const SubjectGroups = lazy(() => import('./pages/subject'));
+const SupportGroups = lazy(() => import('./pages/support'));
 
 const SubjectGroupProfileStudentsPage = lazy(
   () => import('./pages/subject/profile/students')
@@ -162,6 +164,95 @@ export const getRoutes: NavObjectFunction = (t) => [
                 index: true,
                 loader: () => getSubjectGroups(),
                 element: <SubjectGroups />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: ':groupId',
+                element: <SubjectGroupContainer />,
+                loader: async ({ params }) => {
+                  const groupId = getNumber(params.groupId);
+
+                  if (!groupId) {
+                    throw404Error();
+                  }
+
+                  const { calendar_calendarEventsIterator: closestLesson } =
+                    await getSubjectGroupLesson({
+                      partyId: groupId,
+                      iterator: Iterator.Closest,
+                    });
+
+                  return Promise.all([
+                    getSubjectGroupById(groupId),
+                    ...(closestLesson
+                      ? [
+                          getSubjectGroupLesson({
+                            partyId: groupId,
+                            eventStartTime: closestLesson.startTime,
+                            iterator: Iterator.Next,
+                          }),
+                        ]
+                      : []),
+                  ]);
+                },
+                children: [
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    index: true,
+                    loader: () => redirect('./students'),
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'students',
+                    element: <SubjectGroupProfileStudentsPage />,
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'attendance',
+                    element: <SubjectGroupProfileAttendancePage />,
+                    loader: async ({ params }) => {
+                      const groupId = getNumber(params.groupId);
+
+                      if (!groupId) {
+                        throw404Error();
+                      }
+
+                      return Promise.all([
+                        getAttendanceCodes({ teachingGroupCodes: true }),
+                        getSubjectGroupLesson({
+                          partyId: groupId,
+                          iterator: Iterator.Closest,
+                        }),
+                      ]);
+                    },
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'timetable',
+                    element: <SubjectGroupProfileTimetablePage />,
+                    loader: ({ params }) => {
+                      const groupId = getNumber(params.groupId);
+
+                      return getTodayTimetableEvents(groupId);
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            type: NavObjectType.MenuLink,
+            path: 'support',
+            title: t('navigation:general.groups.subject'),
+            loader: () => getSupportGroups(),
+            hasAccess: (permissions) =>
+              permissions.hasPermission('ps:1:groups:view_subject_groups'),
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                index: true,
+                loader: () => getSupportGroups(),
+                element: <SupportGroups />,
               },
               {
                 type: NavObjectType.NonMenuLink,
