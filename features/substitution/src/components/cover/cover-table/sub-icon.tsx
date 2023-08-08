@@ -6,12 +6,11 @@ interface SubIconProps {
   substitutionType: NonNullable<CoverEvent['substitution']>['substitutionType'];
 }
 
-const colorsBySubstitutionType = {
+export const colorsBySubstitutionType = {
   'S&S': 'green',
   'Casual (Paid)': 'red',
   'Personal (Unpaid)': 'yellow',
   'Windfall (Unpaid i.e. class away)': 'blue',
-  'Covid-19 related': 'purple',
   'Emergency 35 hours': 'orange',
 } as const;
 

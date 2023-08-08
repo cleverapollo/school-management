@@ -49,6 +49,25 @@ const eventsForCover = graphql(/* GraphQL */ `
               endTime
               type
               allDayEvent
+              attendees {
+                partyInfo {
+                  __typename
+                  ... on Staff {
+                    person {
+                      partyId
+                      title {
+                        id
+                        name
+                        nameTextId
+                      }
+                      firstName
+                      lastName
+                      avatarUrl
+                      type
+                    }
+                  }
+                }
+              }
               rooms {
                 name
                 roomId
@@ -56,7 +75,6 @@ const eventsForCover = graphql(/* GraphQL */ `
               tags {
                 label
                 context
-                display
               }
               colour
               name

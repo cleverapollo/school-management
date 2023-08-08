@@ -1,12 +1,15 @@
+import { useMemo, useState } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import { usePreferredNameLayout } from '@tyro/core';
-import { useState } from 'react';
 import { CoverEvent } from '../../../hooks/use-cover-table';
 import { ReturnTypeFromUseEventsForCover } from '../../../api/staff-work-events-for-cover';
 import { CoverCardTooltip } from './cover-card-tooltip';
 import { EventCoverContextMenu } from './event-context-menu';
-import { getCurrentCoverRoom } from '../../../utils/cover-utils';
-import { SubIcon } from './sub-icon';
+import {
+  getCurrentCoverRoom,
+  getAdditionalStaff,
+} from '../../../utils/cover-utils';
+import { SubIcon, colorsBySubstitutionType } from './sub-icon';
 
 interface EventCoverCardProps {
   eventInfo: CoverEvent;
@@ -31,12 +34,17 @@ export function EventCoverCard({
 
   const rooms = getCurrentCoverRoom(eventInfo);
 
-  const needsSubstitution = Boolean(!substitution);
+  const { substitutionType, substituteStaff } = substitution ?? {};
+  const additionalTeachers = useMemo(
+    () => getAdditionalStaff(eventInfo),
+    [event?.attendees, staff, substituteStaff]
+  );
 
-  const { substitutionType, substituteStaff, substituteRoom } =
-    substitution ?? {};
-
-  const color = event.colour ? event.colour : 'slate';
+  const color = substitutionType
+    ? colorsBySubstitutionType[
+        substitutionType.code as keyof typeof colorsBySubstitutionType
+      ]
+    : 'slate';
   const borderColor =
     isSelected || isContextMenuOpen ? `${color}.600` : 'white';
 
@@ -47,10 +55,11 @@ export function EventCoverCard({
           startTime: event.startTime,
           endTime: event.endTime,
         }}
+        additionalTeachers={additionalTeachers}
       >
         <Box
           sx={{
-            backgroundColor: needsSubstitution ? `${color}.100` : 'transparent',
+            backgroundColor: `${color}.100`,
             borderRadius: 0.75,
             width: 240,
             transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
@@ -119,6 +128,9 @@ export function EventCoverCard({
                   sx={{ flex: 1 }}
                 >
                   {displayName(substituteStaff ?? staff)}
+                  {additionalTeachers.length > 0
+                    ? ` +${additionalTeachers.length}`
+                    : ''}
                 </Typography>
               </Stack>
             </Stack>

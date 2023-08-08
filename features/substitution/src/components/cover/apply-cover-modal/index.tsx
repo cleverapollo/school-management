@@ -29,6 +29,7 @@ import { ApplyCoverRoomOption, RoomsAutocomplete } from './rooms-autocomplete';
 import { CoverSelectionTable } from './cover-selection-table';
 import { getCurrentCoverRoom } from '../../../utils/cover-utils';
 import { useApplyCover } from '../../../api/apply-cover';
+import { AdditionalTeacherList } from './additional-teacher-list';
 
 interface ApplyCoverFormState {
   substituteStaff: ReturnTypeFromUseCoverLookup['staff'][number]['staff']['person'];
@@ -85,13 +86,13 @@ export function ApplyCoverModal({
         .join(', '),
     [eventsMap]
   );
-  const rooms = useMemo(
-    () =>
-      Array.from(eventsMap?.values() ?? []).map((eventInfo) =>
-        getCurrentCoverRoom(eventInfo)
-      ),
-    [eventsMap]
-  );
+  const rooms = useMemo(() => {
+    const roomList = Array.from(eventsMap?.values() ?? []).map((eventInfo) =>
+      getCurrentCoverRoom(eventInfo)
+    );
+
+    return Array.from(new Set(roomList));
+  }, [eventsMap]);
 
   const onSave = handleSubmit(({ substituteStaff, room, coverType, note }) => {
     const events = Array.from(eventsMap?.values() ?? []).map(
@@ -146,6 +147,7 @@ export function ApplyCoverModal({
                 <Typography variant="body2">
                   {t('substitution:applyCoverForList', { list: eventList })}
                 </Typography>
+                <AdditionalTeacherList eventsMap={eventsMap} />
               </Box>
               <CoverSelectionTable
                 staffList={data?.staff ?? []}
@@ -173,11 +175,9 @@ export function ApplyCoverModal({
                 <RoomsAutocomplete
                   data={data}
                   inputProps={{
-                    helperText: `${
-                      t('substitution:currentRoom', {
-                        count: rooms.length,
-                      }) as string
-                    }: ${rooms.join(', ')}`,
+                    helperText: `${t('substitution:currentRoom', {
+                      count: rooms.length,
+                    })}: ${rooms.join(', ')}`,
                   }}
                   controlProps={{
                     name: 'room',
