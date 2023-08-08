@@ -1,0 +1,39 @@
+import { gqlClient, graphql, Notes_NotesQuery, queryClient } from '@tyro/api';
+import { useQuery } from '@tanstack/react-query';
+import { useCallback } from 'react';
+import { peopleKeys } from '../keys';
+
+const notes = graphql(/* GraphQL */ `
+  query notes_notes($filter: Notes_NotesFilter!) {
+    notes_notes(filter: $filter) {
+      id
+      note
+      createdOn
+      createdBy
+      tags {
+        name
+        category
+      }
+    }
+  }
+`);
+
+const notesQuery = (studentId: number | undefined) => ({
+  queryKey: peopleKeys.students.notes(studentId),
+  queryFn: async () =>
+    gqlClient.request(notes, {
+      filter: { partyIds: [studentId ?? 0] },
+    }),
+});
+
+export function getNotes(studentId: number | undefined) {
+  return queryClient.fetchQuery(notesQuery(studentId));
+}
+
+export function useNotes(studentId: number | undefined, enabled = true) {
+  return useQuery({
+    ...notesQuery(studentId),
+    enabled,
+    select: useCallback(({ notes_notes }: Notes_NotesQuery) => notes_notes, []),
+  });
+}

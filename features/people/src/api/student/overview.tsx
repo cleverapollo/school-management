@@ -3,7 +3,6 @@ import {
   Core_Student_ContactsQuery,
   gqlClient,
   graphql,
-  Notes_NotesQuery,
   queryClient,
 } from '@tyro/api';
 import { useCallback } from 'react';
@@ -51,21 +50,6 @@ const studentsContacts = graphql(/* GraphQL */ `
           legalGuardian
           allowAccessToStudentData
         }
-      }
-    }
-  }
-`);
-
-const studentsNotes = graphql(/* GraphQL */ `
-  query notes_notes($filter: Notes_NotesFilter!) {
-    notes_notes(filter: $filter) {
-      id
-      note
-      createdOn
-      createdBy
-      tags {
-        name
-        category
       }
     }
   }
@@ -124,29 +108,6 @@ export function useStudentsContacts(
         ...relationships?.[0],
       }));
     }, []),
-  });
-}
-
-const studentsNotesQuery = (studentId: number | undefined) => ({
-  queryKey: peopleKeys.students.notes(studentId),
-  queryFn: async () =>
-    gqlClient.request(studentsNotes, {
-      filter: { partyIds: [studentId ?? 0] },
-    }),
-});
-
-export function getStudentsNotes(studentId: number | undefined) {
-  return queryClient.fetchQuery(studentsNotesQuery(studentId));
-}
-
-export function useStudentsNotes(
-  studentId: number | undefined,
-  enabled = true
-) {
-  return useQuery({
-    ...studentsNotesQuery(studentId),
-    enabled,
-    select: useCallback(({ notes_notes }: Notes_NotesQuery) => notes_notes, []),
   });
 }
 

@@ -122,6 +122,7 @@
   "messageUnlinkContact": "You are about to unlink this contact from the student. Are you sure you want to continue?",
   "yesUnlink": "Yes, Unlink",
   "createContact": "Create contact",
+  "createNote": "Create note",
   "pageTitle": {
     "contacts": "List of contacts",
     "createContact": "Add a new contact",

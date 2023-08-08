@@ -23,11 +23,12 @@ import {
 import { getStudentStatus } from './api/student/status';
 import { getStudentMedicalData } from './api/student/medicals/student-medical-data';
 import {
-  getStudentsContacts, getStudentsNotes,
+  getStudentsContacts,
   getStudentsSubjectGroups,
 } from './api/student/overview';
 import { getStudentPersonal } from './api/student/personal';
 import { getContacts } from './api/contact/list';
+import { getNotes } from './api/note/list';
 import { getContactPersonal } from './api/contact/personal';
 import { getContactStudents } from './api/contact/students';
 import { getStaff } from './api/staff';
@@ -313,7 +314,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                 path: 'notes',
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
-                  return getStudentsNotes(studentId);
+                  return getNotes(studentId);
                 },
                 element: <StudentProfileNotesPage />,
               },

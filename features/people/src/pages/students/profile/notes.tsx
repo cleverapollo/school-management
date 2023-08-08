@@ -1,12 +1,23 @@
 import { useParams } from 'react-router-dom';
 import { useMemo, useState } from 'react';
-import { getNumber, GridOptions, ICellRendererParams, Table } from '@tyro/core';
+import {
+  getNumber,
+  GridOptions,
+  ICellRendererParams,
+  PageHeading,
+  Table,
+} from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { Chip } from '@mui/material';
-import { useStudentsNotes } from '../../../api/student/overview';
+import { Box, Button, Chip } from '@mui/material';
+import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import { AddIcon } from '@tyro/icons';
+import { useNotes } from '../../../api/note/list';
+
+dayjs.extend(LocalizedFormat);
 
 type ReturnTypeFromUseNotes = NonNullable<
-  ReturnType<typeof useStudentsNotes>['data']
+  ReturnType<typeof useNotes>['data']
 >[number];
 
 const getStudentNoteColumns = (
@@ -14,15 +25,15 @@ const getStudentNoteColumns = (
 ): GridOptions<ReturnTypeFromUseNotes>['columnDefs'] => [
   {
     field: 'note',
-    headerName: translate('common:note'),
+    headerName: translate('people:note'),
   },
   {
     field: 'tags',
-    headerName: translate('common:labelsAndTags'),
+    headerName: translate('people:labelsAndTags'),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseNotes, any>) =>
-      data.tags.map((tag, idx) => (
+      data?.tags?.map((tag, idx) => (
         <Chip
           key={`note${data.id}-tag${idx}`}
           label={translate(`common:noteTagCategory.${tag.category}`)}
@@ -30,14 +41,23 @@ const getStudentNoteColumns = (
         />
       )),
   },
+  {
+    field: 'createdOn',
+    headerName: translate('common:date'),
+    valueGetter: ({ data }) => dayjs(data?.createdOn).format('LL'),
+  },
+  {
+    field: 'createdBy',
+    headerName: translate('common:createdBy'),
+  },
 ];
 
 export default function StudentProfileNotesPage() {
   const { id } = useParams();
-  const { t } = useTranslation(['common', 'people', 'mail', 'sms']);
+  const { t } = useTranslation(['common', 'people']);
 
   const studentId = getNumber(id);
-  const { data: notes = [] } = useStudentsNotes(studentId);
+  const { data: notes = [] } = useNotes(studentId);
 
   const [selectedNotes, setSelectedNotes] = useState<ReturnTypeFromUseNotes[]>(
     []
@@ -45,16 +65,35 @@ export default function StudentProfileNotesPage() {
 
   const studentNoteColumns = useMemo(() => getStudentNoteColumns(t), [t]);
 
+  const handleCreateNote = () => {};
+
   return (
-    <Table
-      rowData={notes ?? []}
-      columnDefs={studentNoteColumns}
-      tableContainerSx={{ height: 300 }}
-      rowSelection="multiple"
-      getRowId={({ data }) => String(data?.id)}
-      onRowSelection={(rows) => {
-        setSelectedNotes(rows);
-      }}
-    />
+    <>
+      <PageHeading
+        title=""
+        titleProps={{ variant: 'h3' }}
+        rightAdornment={
+          <Box display="flex" alignItems="center">
+            <Button
+              variant="contained"
+              onClick={handleCreateNote}
+              startIcon={<AddIcon />}
+            >
+              {t('people:createNote')}
+            </Button>
+          </Box>
+        }
+      />
+      <Table
+        rowData={notes ?? []}
+        columnDefs={studentNoteColumns}
+        tableContainerSx={{ height: 300 }}
+        rowSelection="multiple"
+        getRowId={({ data }) => String(data?.id)}
+        onRowSelection={(rows) => {
+          setSelectedNotes(rows);
+        }}
+      />
+    </>
   );
 }
