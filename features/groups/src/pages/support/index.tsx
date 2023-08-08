@@ -132,7 +132,7 @@ export default function SupportGroups() {
       onClick: onOpenSendSms,
     },
     {
-      label: t('groups:subjectGroup.switchToSupportClass.action'),
+      label: t('groups:supportGroup.switchToSubjectGroup.action'),
       icon: <MoveGroupIcon />,
       onClick: () => setSwitchGroupTypeConfirmation(true),
     },
@@ -225,11 +225,11 @@ export default function SupportGroups() {
 
       <ConfirmDialog
         open={!!switchGroupTypeConfirmation}
-        title={t('groups:subjectGroup.switchToSupportClass.modalTitle')}
+        title={t('groups:supportGroup.switchToSubjectGroup.modalTitle')}
         description={t(
-          'groups:subjectGroup.switchToSupportClass.modalDescription'
+          'groups:supportGroup.switchToSubjectGroup.modalDescription'
         )}
-        confirmText={t('groups:subjectGroup.switchToSupportClass.confim')}
+        confirmText={t('groups:supportGroup.switchToSubjectGroup.confim')}
         onClose={() => setSwitchGroupTypeConfirmation(false)}
         onConfirm={() => {
           const partyIds = selectedGroups.map((sg) => sg.id);

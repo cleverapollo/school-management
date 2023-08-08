@@ -31,9 +31,9 @@
     }
   },
   "supportGroup": {
-    "switchToSupportClass": {
+    "switchToSubjectGroup": {
       "action": "Switch to subject class",
-      "modalTitle": "Switch these support groups to be a sbject groups?",
+      "modalTitle": "Switch these support groups to be a subject groups?",
       "modalDescription": "Subject groups are standard classes. Such as an English or Maths class.",
       "confim": "Switch to subject group"
     }
