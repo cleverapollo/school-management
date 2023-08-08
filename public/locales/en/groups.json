@@ -29,5 +29,13 @@
       "modalDescription": "Support classes are used to give students a helping hand in a particular subject.",
       "confim": "Switch to support class"
     }
+  },
+  "supportGroup": {
+    "switchToSupportClass": {
+      "action": "Switch to subject class",
+      "modalTitle": "Switch these support groups to be a sbject groups?",
+      "modalDescription": "Subject groups are standard classes. Such as an English or Maths class.",
+      "confim": "Switch to subject group"
+    }
   }
 }

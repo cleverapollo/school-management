@@ -1,5 +1,9 @@
 import { Box, Fade, Container, Typography } from '@mui/material';
-import { SmsRecipientType, UpdateSubjectGroupInput } from '@tyro/api';
+import {
+  SmsRecipientType,
+  SubjectGroupType,
+  UpdateSubjectGroupInput,
+} from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -14,9 +18,10 @@ import {
   TableAvatar,
   useDisclosure,
   sortStartNumberFirst,
+  ConfirmDialog,
 } from '@tyro/core';
 
-import { MobileIcon, SendMailIcon } from '@tyro/icons';
+import { MobileIcon, MoveGroupIcon, SendMailIcon } from '@tyro/icons';
 
 import set from 'lodash/set';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
@@ -24,6 +29,7 @@ import {
   useSaveSupportGroupEdits,
   useSupportGroups,
 } from '../../api/support-groups';
+import { useSwitchSubjectGroupType } from '../../api';
 
 type ReturnTypeFromUseSupportGroups = NonNullable<
   ReturnType<typeof useSupportGroups>['data']
@@ -102,6 +108,8 @@ export default function SupportGroups() {
   const { displayNames } = usePreferredNameLayout();
   const { data: subjectGroupsData } = useSupportGroups();
   const { mutateAsync: updateSubjectGroup } = useSaveSupportGroupEdits();
+  const { mutateAsync: switchSubjectGroupType } = useSwitchSubjectGroupType();
+
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
@@ -110,7 +118,8 @@ export default function SupportGroups() {
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
-
+  const [switchGroupTypeConfirmation, setSwitchGroupTypeConfirmation] =
+    useState(false);
   const studentColumns = useMemo(
     () => getSubjectGroupsColumns(t, displayNames),
     [t, displayNames]
@@ -121,6 +130,11 @@ export default function SupportGroups() {
       label: t('people:sendSms'),
       icon: <MobileIcon />,
       onClick: onOpenSendSms,
+    },
+    {
+      label: t('groups:subjectGroup.switchToSupportClass.action'),
+      icon: <MoveGroupIcon />,
+      onClick: () => setSwitchGroupTypeConfirmation(true),
     },
     // {
     //   label: t('mail:sendMail'),
@@ -207,6 +221,23 @@ export default function SupportGroups() {
             type: SmsRecipientType.YearGroupStaff,
           },
         ]}
+      />
+
+      <ConfirmDialog
+        open={!!switchGroupTypeConfirmation}
+        title={t('groups:subjectGroup.switchToSupportClass.modalTitle')}
+        description={t(
+          'groups:subjectGroup.switchToSupportClass.modalDescription'
+        )}
+        confirmText={t('groups:subjectGroup.switchToSupportClass.confim')}
+        onClose={() => setSwitchGroupTypeConfirmation(false)}
+        onConfirm={() => {
+          const partyIds = selectedGroups.map((sg) => sg.id);
+          switchSubjectGroupType({
+            subjectGroupPartyId: partyIds,
+            type: SubjectGroupType.SubjectGroup,
+          }).then(() => setSwitchGroupTypeConfirmation(false));
+        }}
       />
     </>
   );
