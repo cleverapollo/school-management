@@ -1,8 +1,10 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import {
+  Core_SwitchSubjectGroupType,
   gqlClient,
   graphql,
   queryClient,
+  SubjectGroupType,
   UpdateSubjectGroupInput,
   UseQueryReturnType,
 } from '@tyro/api';
@@ -88,12 +90,23 @@ const updateSubjectGroups = graphql(/* GraphQL */ `
   }
 `);
 
+const switchSubjectGroupType = graphql(/* GraphQL */ `
+  mutation core_switchSubjectGroupType($input: Core_SwitchSubjectGroupType!) {
+    core_switchSubjectGroupType(input: $input) {
+      success
+    }
+  }
+`);
+
 const subjectGroupsQuery = {
   list: {
     queryKey: groupsKeys.subject.groups(),
     queryFn: async () =>
       gqlClient.request(subjectGroupsList, {
-        filter: { partyIds: [] as number[], type: ['SUBJECT_GROUP'] },
+        filter: {
+          partyIds: [] as number[],
+          type: [SubjectGroupType.SubjectGroup],
+        },
       }),
   },
   details: (id?: number) => ({
@@ -139,6 +152,17 @@ export function useSaveSubjectGroupEdits() {
       gqlClient.request(updateSubjectGroups, { input }),
     onSuccess: () => {
       queryClient.invalidateQueries(groupsKeys.subject.all());
+    },
+  });
+}
+
+export function useSwitchSubjectGroupType() {
+  return useMutation({
+    mutationFn: (input: Core_SwitchSubjectGroupType) =>
+      gqlClient.request(switchSubjectGroupType, { input }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(groupsKeys.subject.all());
+      queryClient.invalidateQueries(groupsKeys.support.all());
     },
   });
 }

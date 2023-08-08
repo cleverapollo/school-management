@@ -3,6 +3,7 @@ import {
   gqlClient,
   graphql,
   queryClient,
+  SubjectGroupType,
   UpdateSubjectGroupInput,
   UseQueryReturnType,
 } from '@tyro/api';
@@ -93,14 +94,17 @@ const subjectGroupsQuery = {
     queryKey: groupsKeys.support.groups(),
     queryFn: async () =>
       gqlClient.request(subjectGroupsList, {
-        filter: { partyIds: [] as number[], type: ['SUPPORT_GROUP'] },
+        filter: {
+          partyIds: [] as number[],
+          type: [SubjectGroupType.SupportGroup],
+        },
       }),
   },
   details: (id?: number) => ({
     queryKey: groupsKeys.support.details(id),
     queryFn: () =>
       gqlClient.request(subjectGroupById, {
-        filter: { partyIds: [id ?? 0], type: ['SUPPORT_GROUP'] },
+        filter: { partyIds: [id ?? 0] },
       }),
   }),
 };
@@ -133,7 +137,7 @@ export function useSupportGroupById(id?: number) {
   });
 }
 
-export function useSaveSubjectGroupEdits() {
+export function useSaveSupportGroupEdits() {
   return useMutation({
     mutationFn: (input: UpdateSubjectGroupInput[]) =>
       gqlClient.request(updateSubjectGroups, { input }),

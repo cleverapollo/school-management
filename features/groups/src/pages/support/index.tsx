@@ -10,8 +10,6 @@ import {
   ActionMenu,
   usePreferredNameLayout,
   ReturnTypeDisplayNames,
-  TableStudyLevelChip,
-  StudyLevelSelectCellEditor,
   BulkEditedRows,
   TableAvatar,
   useDisclosure,
@@ -23,7 +21,7 @@ import { MobileIcon, SendMailIcon } from '@tyro/icons';
 import set from 'lodash/set';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import {
-  useSaveSubjectGroupEdits,
+  useSaveSupportGroupEdits,
   useSupportGroups,
 } from '../../api/support-groups';
 
@@ -103,7 +101,7 @@ export default function SupportGroups() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
   const { displayNames } = usePreferredNameLayout();
   const { data: subjectGroupsData } = useSupportGroups();
-  const { mutateAsync: updateSubjectGroup } = useSaveSubjectGroupEdits();
+  const { mutateAsync: updateSubjectGroup } = useSaveSupportGroupEdits();
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );

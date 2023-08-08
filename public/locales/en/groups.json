@@ -21,5 +21,13 @@
   "tutor_one": "Tutor",
   "tutor_other": "Tutors",
   "yearHead_one": "Year head",
-  "yearHead_other": "Year heads"
+  "yearHead_other": "Year heads",
+  "subjectGroup": {
+    "switchToSupportClass": {
+      "action": "Switch to support class",
+      "modalTitle": "Switch these subject groups to be a  support class?",
+      "modalDescription": "Support classes are used to give students a helping hand in a particular subject.",
+      "confim": "Switch to support class"
+    }
+  }
 }
