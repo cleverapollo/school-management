@@ -89,10 +89,15 @@ export function useEditableState<T extends object>({
       const { node, colDef } = params ?? {};
 
       setEditedRows((previousEditedRows) => {
+        console.log({ previousEditedRows, node, colDef });
         if (node.id && colDef.field) {
           const previousRowChanges = previousEditedRows[node.id] ?? {};
 
           if (!previousRowChanges[colDef.field]) {
+            console.log({
+              oldValue: params?.oldValue,
+              newValue: params?.newValue,
+            });
             // Don't update if the value hasn't changed. Needed for objects passed by reference
             if (isEqual(params?.oldValue, params?.newValue)) {
               return previousEditedRows;

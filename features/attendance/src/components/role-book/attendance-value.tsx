@@ -15,9 +15,10 @@ interface RolebookAttendanceValueProps {
   attendanceCodeType: AttendanceCodeType;
   code: string;
   hasNote: boolean;
+  includedInFilter: boolean;
 }
 
-const iconBasedOnCodeType = {
+export const iconBasedOnCodeType = {
   [AttendanceCodeType.Present]: <CheckmarkIcon />,
   [AttendanceCodeType.ExplainedAbsence]: <CloseIcon />,
   [AttendanceCodeType.Late]: <ClockIcon />,
@@ -31,7 +32,7 @@ const iconWithNoteBasedOnCodeType = {
   [AttendanceCodeType.UnexplainedAbsence]: <CloseCircleWithWarningIcon />,
 } as const;
 
-const colorsBasedOnCodeType = {
+export const colorsBasedOnCodeType = {
   [AttendanceCodeType.Present]: 'success',
   [AttendanceCodeType.ExplainedAbsence]: 'warning',
   [AttendanceCodeType.Late]: 'info',
@@ -43,6 +44,7 @@ export function RolebookAttendanceValue({
   view,
   code,
   hasNote,
+  includedInFilter,
 }: RolebookAttendanceValueProps) {
   if (attendanceCodeType === AttendanceCodeType.NotTaken) return null;
 
@@ -53,8 +55,9 @@ export function RolebookAttendanceValue({
       <Box
         component="span"
         sx={{
+          color: includedInFilter ? `${attendanceColor}.main` : 'text.disabled',
+          opacity: includedInFilter ? 1 : 0.2,
           fontWeight: 'bold',
-          color: `${attendanceColor}.main`,
         }}
       >
         {code}
@@ -69,7 +72,8 @@ export function RolebookAttendanceValue({
     <Tooltip title={code}>
       <Box
         sx={{
-          color: `${attendanceColor}.main`,
+          color: includedInFilter ? `${attendanceColor}.main` : 'text.disabled',
+          opacity: includedInFilter ? 1 : 0.2,
           display: 'flex',
         }}
       >

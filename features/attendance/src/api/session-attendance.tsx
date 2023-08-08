@@ -55,31 +55,23 @@ export function useSessionAttendance(filter: StudentSessionAttendanceFilter) {
     ...sessionAttendanceQuery(filter),
     select: (data) =>
       (data.attendance_studentSessionAttendance ?? []).map((attendance) => {
-        const attendanceMap = attendance?.dateAttendance?.reduce(
-          (acc, dateAttendance) => {
-            const { date, bellTimeAttendance = [] } = dateAttendance ?? {};
-            bellTimeAttendance?.forEach((bellTimeAttendanceValue) => {
-              const { bellTimeId, attendanceCode } =
-                bellTimeAttendanceValue ?? {};
-              if (date && bellTimeId && attendanceCode?.id) {
-                acc.set(`${date}-${bellTimeId}`, attendanceCode);
-              }
-            });
-            return acc;
-          },
-          new Map<
-            string,
-            {
-              id: number;
-              name: string;
-              codeType: AttendanceCodeType;
+        const attendanceByKey = attendance?.dateAttendance?.reduce<
+          Record<string, string | null>
+        >((acc, dateAttendance) => {
+          const { date, bellTimeAttendance = [] } = dateAttendance ?? {};
+          bellTimeAttendance?.forEach((bellTimeAttendanceValue) => {
+            const { bellTimeId, attendanceCode } =
+              bellTimeAttendanceValue ?? {};
+            if (date && bellTimeId && attendanceCode?.id) {
+              acc[`${date}-${bellTimeId}`] = attendanceCode.name;
             }
-          >()
-        );
+          });
+          return acc;
+        }, {});
 
         return {
           ...attendance,
-          attendanceMap,
+          attendanceByKey,
         };
       }),
   });

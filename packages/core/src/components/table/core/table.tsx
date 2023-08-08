@@ -17,6 +17,7 @@ import {
   ColDef,
   ColumnRowGroupChangedEvent,
   FirstDataRenderedEvent,
+  ValueSetterParams as AGValueSetterParams,
 } from 'ag-grid-community';
 import { useEnsuredForwardedRef, useMeasure } from 'react-use';
 import {
@@ -29,11 +30,16 @@ import { SearchInput } from '../../search-input';
 export type {
   GridOptions,
   ICellRendererParams,
-  ValueSetterParams,
   CellValueChangedEvent,
   ICellEditorParams,
   ValueGetterParams,
 } from 'ag-grid-community';
+
+export interface ValueSetterParams<TData = any, CellValue = any>
+  extends AGValueSetterParams<TData> {
+  newValue: CellValue;
+  oldValue: CellValue;
+}
 
 export type { AgGridReact } from 'ag-grid-react';
 

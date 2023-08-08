@@ -383,6 +383,7 @@
 
 .ag-theme-tyro .ag-center-aligned-cell,
 .ag-theme-tyro .ag-center-aligned-cell .ag-header-cell-label,
-.ag-theme-tyro .ag-center-aligned-cell .ag-header-group-cell-label {
+.ag-theme-tyro .ag-center-aligned-cell .ag-header-group-cell-label,
+.ag-theme-tyro .ag-center-aligned-cell .ag-header-cell-comp-wrapper {
   justify-content: center;
 }

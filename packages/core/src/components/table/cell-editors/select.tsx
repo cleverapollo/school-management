@@ -1,11 +1,17 @@
-import { ForwardedRef, forwardRef, useImperativeHandle, useRef } from 'react';
+import React, {
+  ForwardedRef,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+} from 'react';
 import { ICellEditorParams } from 'ag-grid-community';
 import { ClickAwayListener, MenuItem, MenuList } from '@mui/material';
 
 export interface TableSelectProps<TSelectOption>
   extends ICellEditorParams<unknown, string | number> {
   options: TSelectOption[];
-  getOptionLabel: (option: TSelectOption) => string;
+  getOptionLabel?: (option: TSelectOption) => string;
+  renderOption?: (option: TSelectOption) => React.ReactNode;
   optionIdKey?: TSelectOption extends string | number
     ? never
     : keyof TSelectOption;
@@ -23,9 +29,12 @@ function checkTableSelectorProps<TSelectOption>(
       );
     }
 
-    if (typeof props.getOptionLabel !== 'function') {
+    if (
+      typeof props.getOptionLabel !== 'function' &&
+      typeof props.renderOption !== 'function'
+    ) {
       throw new Error(
-        `Please provide a getOptionLabel function to cellEditorSelector.params.getOptionLabel for the TableSelect component in the ${
+        `Please provide a getOptionLabel or renderOption function to cellEditorSelector.params.getOptionLabel/renderOption for the TableSelect component in the ${
           props?.colDef?.headerName ?? ''
         } column`
       );
@@ -51,6 +60,7 @@ function TableSelectInner<TSelectOption>(
     options = [],
     optionIdKey,
     getOptionLabel,
+    renderOption,
   } = props;
   const selectedValue = useRef(originalValue);
 
@@ -84,7 +94,8 @@ function TableSelectInner<TSelectOption>(
                 stopEditing(false);
               }}
             >
-              {getOptionLabel(option)}
+              {renderOption && renderOption(option)}
+              {getOptionLabel && getOptionLabel(option)}
             </MenuItem>
           );
         })}
