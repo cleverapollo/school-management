@@ -35,10 +35,7 @@ export interface DeclineAbsentRequestConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
   onDecline?: () => void;
-  absentRequestState?:
-    | SaveParentalAttendanceRequest[]
-    | DeclineAbsentRequestFormState
-    | undefined;
+  absentRequestState?: SaveParentalAttendanceRequest[] | undefined;
 }
 
 export function DeclineAbsentRequestConfirmModal({
@@ -50,14 +47,12 @@ export function DeclineAbsentRequestConfirmModal({
   const { t } = useTranslation(['common', 'attendance']);
   const { resolver, rules } = useFormValidator<DeclineAbsentRequestFormState>();
 
-  const isBulkAction = Array.isArray(absentRequestState);
-
   const { control, handleSubmit, reset } =
     useForm<DeclineAbsentRequestFormState>({
       resolver: resolver({
         adminNote: [rules.maxLength(100)],
       }),
-      defaultValues: isBulkAction ? absentRequestState[0] : absentRequestState,
+      defaultValues: absentRequestState?.[0],
     });
 
   const {
@@ -70,35 +65,37 @@ export function DeclineAbsentRequestConfirmModal({
     adminNote,
     ...restData
   }: DeclineAbsentRequestFormState) => {
-    createOrUpdateAbsentRequestMutation(
-      isBulkAction
-        ? absentRequestState.map((absentRequest) => ({
-            ...absentRequest,
-            status: ParentalAttendanceRequestStatus.Denied,
-          }))
-        : [
-            {
-              ...restData,
-              adminNote,
+    if (absentRequestState !== undefined) {
+      createOrUpdateAbsentRequestMutation(
+        absentRequestState?.length === 1
+          ? [
+              {
+                ...restData,
+                adminNote,
+                status: ParentalAttendanceRequestStatus.Denied,
+              },
+            ]
+          : absentRequestState.map((absentRequest) => ({
+              ...absentRequest,
               status: ParentalAttendanceRequestStatus.Denied,
-            },
-          ],
-      {
-        onSuccess: onClose,
-      }
-    );
+            })),
+        {
+          onSuccess: onClose,
+        }
+      );
+    }
   };
 
   useEffect(() => {
-    if (!isBulkAction) {
-      reset(absentRequestState);
+    if (absentRequestState?.length === 1) {
+      reset(absentRequestState[0]);
     }
-  }, [absentRequestState, isBulkAction]);
+  }, [absentRequestState]);
 
   useEffect(() => {
     if (isSubmitSuccessful) {
       onClose();
-      onDecline && onDecline();
+      onDecline?.();
     }
   }, [isSubmitSuccessful, onDecline]);
 
@@ -106,14 +103,14 @@ export function DeclineAbsentRequestConfirmModal({
     <Dialog open={isOpen} onClose={onClose}>
       <DialogTitle>
         {t('attendance:declineAbsentRequest', {
-          count: isBulkAction ? absentRequestState.length : 1,
+          count: absentRequestState?.length,
         })}
       </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
           <DialogContentText>
             {t('attendance:youAreAboutToDeclineAbsentRequest', {
-              count: isBulkAction ? absentRequestState.length : 1,
+              count: absentRequestState?.length,
             })}
           </DialogContentText>
           <RHFTextField
@@ -136,7 +133,7 @@ export function DeclineAbsentRequestConfirmModal({
           </Button>
           <LoadingButton variant="soft" type="submit" loading={isSubmitting}>
             {t('attendance:yesDeclineAbsentRequest', {
-              count: isBulkAction ? absentRequestState.length : 1,
+              count: absentRequestState?.length,
             })}
           </LoadingButton>
         </DialogActions>

@@ -19,10 +19,7 @@ export interface ApproveAbsentRequestConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
   onApprove?: () => void;
-  absentRequestState:
-    | SaveParentalAttendanceRequest[]
-    | SaveParentalAttendanceRequest
-    | undefined;
+  absentRequestState: SaveParentalAttendanceRequest[] | undefined;
 }
 
 export function ApproveAbsentRequestConfirmModal({
@@ -39,17 +36,13 @@ export function ApproveAbsentRequestConfirmModal({
     isSuccess: isSubmitSuccessful,
   } = useCreateOrUpdateAbsentRequest();
 
-  const isBulkAction = Array.isArray(absentRequestState);
-
   const onSubmit = async () => {
     if (absentRequestState !== undefined) {
       await createOrUpdateAbsentRequestMutation(
-        (isBulkAction ? absentRequestState : [absentRequestState]).map(
-          (absentRequest) => ({
-            ...absentRequest,
-            status: ParentalAttendanceRequestStatus.Approved,
-          })
-        )
+        absentRequestState.map((absentRequest) => ({
+          ...absentRequest,
+          status: ParentalAttendanceRequestStatus.Approved,
+        }))
       );
     }
   };
@@ -57,7 +50,7 @@ export function ApproveAbsentRequestConfirmModal({
   useEffect(() => {
     if (isSubmitSuccessful) {
       onClose();
-      onApprove && onApprove();
+      onApprove?.();
     }
   }, [isSubmitSuccessful, onApprove]);
 
@@ -65,13 +58,13 @@ export function ApproveAbsentRequestConfirmModal({
     <Dialog open={isOpen} onClose={onClose}>
       <DialogTitle>
         {t('attendance:approveAbsentRequest', {
-          count: isBulkAction ? absentRequestState.length : 1,
+          count: absentRequestState?.length,
         })}
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
           {t('attendance:youAreAboutToApproveAbsentRequest', {
-            count: isBulkAction ? absentRequestState.length : 1,
+            count: absentRequestState?.length,
           })}
         </DialogContentText>
       </DialogContent>
@@ -81,7 +74,7 @@ export function ApproveAbsentRequestConfirmModal({
         </Button>
         <LoadingButton variant="soft" loading={isSubmitting} onClick={onSubmit}>
           {t('attendance:yesApproveAbsentRequest', {
-            count: isBulkAction ? absentRequestState.length : 1,
+            count: absentRequestState?.length,
           })}
         </LoadingButton>
       </DialogActions>

@@ -91,12 +91,10 @@ export const CardEditableForm = <TField extends FieldValues>({
       variant="outlined"
       sx={{
         ...{ position: 'static', overflow: 'inherit', ...sx },
-        ...(hideBorder
-          ? {
-              border: 'none',
-              '.MuiCardHeader-root': { borderBottom: 'none !important' },
-            }
-          : {}),
+        ...(hideBorder && {
+          border: 'none',
+          '.MuiCardHeader-root': { borderBottom: 'none !important' },
+        }),
       }}
       component="form"
       onSubmit={handleSubmit(handleSave)}

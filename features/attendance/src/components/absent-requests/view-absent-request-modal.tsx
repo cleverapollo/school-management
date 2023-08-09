@@ -226,13 +226,21 @@ export const ViewAbsentRequestModal = ({
         isOpen={isApproveAbsentRequestModalOpen}
         onClose={onCloseApproveAbsentRequestModal}
         onApprove={onClose}
-        absentRequestState={initialAbsentRequestState}
+        absentRequestState={
+          initialAbsentRequestState === undefined
+            ? []
+            : [initialAbsentRequestState]
+        }
       />
       <DeclineAbsentRequestConfirmModal
         isOpen={isDeclineAbsentRequestModalOpen}
         onClose={onCloseDeclineAbsentRequestModal}
         onDecline={onClose}
-        absentRequestState={initialAbsentRequestState}
+        absentRequestState={
+          initialAbsentRequestState === undefined
+            ? []
+            : [initialAbsentRequestState]
+        }
       />
     </Dialog>
   );
