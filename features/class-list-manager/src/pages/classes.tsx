@@ -93,9 +93,9 @@ export default function ClassListManagerClasses() {
         />
         {classData && (
           <ListManager
-            listKey={`${String(
-              selectedYearGroup?.yearGroupEnrollmentPartyId
-            )}-${classData?.id ?? ''}`}
+            listKey={`${selectedYearGroup?.yearGroupEnrollmentPartyId ?? ''}-${
+              classData?.id ?? ''
+            }`}
             unassignedStudents={classData.unenrolledStudents}
             groups={classData.classGroups}
             onBulkSave={onBulkSave}

@@ -256,7 +256,6 @@ export function ListManagerProvider({
       }
 
       return toggleSelectionInGroup(studentId, selectedIds);
-      // return toggleSelection(studentId, selectedIds);
     });
   };
 

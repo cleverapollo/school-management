@@ -212,9 +212,11 @@ export function useUpdateBlockMemberships() {
   return useMutation({
     mutationFn: async (input: EnrollmentIre_UpsertBlockMembership) =>
       gqlClient.request(upsertBlockMemberships, { input }),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast(t('common:snackbarMessages.updateSuccess'));
-      queryClient.invalidateQueries(classListManagerKeys.allBlockMemberships());
+      await queryClient.invalidateQueries(
+        classListManagerKeys.allBlockMemberships()
+      );
       queryClient.invalidateQueries(groupsKeys.all);
       queryClient.invalidateQueries(peopleKeys.all);
     },
@@ -233,9 +235,9 @@ export function useAutoAssignBlock() {
   return useMutation({
     mutationFn: async (input: EnrollmentIre_AutoAssignBlockMembershipInput) =>
       gqlClient.request(autoAssignBlock, { input }),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast(t('common:snackbarMessages.updateSuccess'));
-      queryClient.invalidateQueries(classListManagerKeys.all);
+      await queryClient.invalidateQueries(classListManagerKeys.all);
       queryClient.invalidateQueries(groupsKeys.all);
       queryClient.invalidateQueries(peopleKeys.all);
     },

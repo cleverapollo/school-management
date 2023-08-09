@@ -42,14 +42,12 @@ export default function ClassListManagerContainer() {
     value: blockForCreateRotation,
     debouncedValue: debouncedBlockForCreateRotation,
     setValue: setBlockForCreateRotation,
-  } = useDebouncedValue<
-    NonNullable<ReturnTypeOfUseBlockList>[number] | undefined
-  >({
-    defaultValue: undefined,
+  } = useDebouncedValue<NonNullable<ReturnTypeOfUseBlockList>[number] | null>({
+    defaultValue: null,
   });
 
   const createRotation = () => {
-    setBlockForCreateRotation(selectedBlock ?? undefined);
+    setBlockForCreateRotation(selectedBlock);
   };
 
   const menuItems = useMemo<ActionMenuProps['menuItems']>(
@@ -61,15 +59,15 @@ export default function ClassListManagerContainer() {
         icon: <MaleFemaleIcon />,
         onClick: () => setShowGender((prevState) => !prevState),
       },
-      ...(!blockHasRotations
-        ? [
+      ...(blockHasRotations
+        ? []
+        : [
             {
-              label: 'Auto assign',
+              label: t('classListManager:autoAssign'),
               icon: <PersonTickIcon />,
               onClick: onOpenAutoAssign,
             },
-          ]
-        : []),
+          ]),
       ...(isBlockView && !blockHasRotations
         ? [
             {
@@ -143,11 +141,11 @@ export default function ClassListManagerContainer() {
           />
         </Box>
         <CreateBlockRotationModal
-          open={blockForCreateRotation}
+          open={!!blockForCreateRotation}
           blockForCreateRotation={
             blockForCreateRotation || debouncedBlockForCreateRotation
           }
-          onClose={() => setBlockForCreateRotation(undefined)}
+          onClose={() => setBlockForCreateRotation(null)}
         />
         <AutoAssignConfirmDialog
           open={isAutoAssignOpen}

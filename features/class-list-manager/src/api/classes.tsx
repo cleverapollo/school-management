@@ -174,9 +174,9 @@ export function useAutoAssignCore() {
   return useMutation({
     mutationFn: async (input: EnrollmentIre_AutoAssignCoreMembershipInput) =>
       gqlClient.request(autoAssignCore, { input }),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast(t('common:snackbarMessages.updateSuccess'));
-      queryClient.invalidateQueries(classListManagerKeys.all);
+      await queryClient.invalidateQueries(classListManagerKeys.all);
       queryClient.invalidateQueries(groupsKeys.all);
       queryClient.invalidateQueries(peopleKeys.all);
     },
