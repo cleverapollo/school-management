@@ -5605,6 +5605,7 @@ __metadata:
     "@tyro/core": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    dayjs: ^1.11.7
     react: ^18.2.0
     react-dom: ^18.2.0
     react-hook-form: ^7.43.9

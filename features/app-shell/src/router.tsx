@@ -121,7 +121,7 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getCalendarRoutes(t),
   ...getClassListManagerRoutes(t),
   ...getGroupRoutes(t),
-  // ...getAttendanceRoutes(t),
+  ...getAttendanceRoutes(t),
   // ...getMailRoutes(t),
   ...getAssessmentRoutes(t),
   ...getPeopleRoutes(t),
