@@ -48,14 +48,17 @@ export default function StudentProfileContainer() {
           {
             label: 'Overview',
             value: t('common:overview'),
+            hasAccess: ({ isStaffUser }) => isStaffUser,
           },
           {
             label: t('people:personal.title'),
             value: 'personal',
+            hasAccess: ({ isStaffUser }) => isStaffUser,
           },
           {
             label: t('people:contacts'),
             value: 'contacts',
+            hasAccess: ({ isStaffUser }) => isStaffUser,
           },
           {
             label: t('common:attendance'),
@@ -73,22 +76,32 @@ export default function StudentProfileContainer() {
           {
             label: 'Timetable',
             value: 'timetable',
+            hasAccess: ({ hasAtLeastOnePermission }) =>
+              hasAtLeastOnePermission([
+                'ps:1:calendar:view_own_calendar',
+                'ps:1:calendar:view_calendar',
+              ]),
           },
           {
             label: t('people:behaviour'),
             value: 'behaviour',
+            hasAccess: ({ isStaffUser }) => isStaffUser,
           },
           {
             label: 'AEN',
             value: 'aen',
+            hasAccess: ({ isStaffUser }) => isStaffUser,
           },
           {
             label: 'Classes',
             value: 'classes',
+            hasAccess: ({ hasPermission }) =>
+              hasPermission('ps:1:groups:student_view_groups'),
           },
           {
             label: 'Settings',
             value: 'settings',
+            hasAccess: ({ isTyroUser }) => isTyroUser,
           },
           {
             label: 'Medical',

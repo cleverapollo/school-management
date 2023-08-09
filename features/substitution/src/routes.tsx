@@ -16,10 +16,16 @@ export const getRoutes: NavObjectFunction = (t) => [
         path: 'substitution',
         icon: <GraduateHatLoadingIcon />,
         title: t('navigation:management.substitution.title'),
+        hasAccess: (permissions) =>
+          permissions.hasPermission('ps:1:staff_work_management:absences_read'),
         children: [
           {
             type: NavObjectType.MenuLink,
             path: 'absences',
+            hasAccess: (permissions) =>
+              permissions.hasPermission(
+                'ps:1:staff_work_management:absences_read'
+              ),
             title: t('navigation:management.substitution.absences'),
             element: <Absences />,
             loader: () => getStaffWorkAbsences({}),

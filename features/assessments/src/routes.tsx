@@ -35,7 +35,9 @@ export const getRoutes: NavObjectFunction = (t) => [
         icon: <SchoolExamACircleIcon />,
         title: t('navigation:general.assessments.title'),
         hasAccess: (permissions) =>
-          permissions.hasPermission('ps:1:assessment:read_assessments'),
+          permissions.isStaffUserHasWithPermission(
+            'ps:1:assessment:read_assessments'
+          ),
         children: [
           {
             type: NavObjectType.NonMenuLink,
