@@ -9,6 +9,7 @@ import {
   UseQueryReturnType,
   BlockFilter,
   Core_EnableBlockRotationInput,
+  EnrollmentIre_AutoAssignBlockMembershipInput,
 } from '@tyro/api';
 import { usePreferredNameLayout, useToast } from '@tyro/core';
 import { groupsKeys } from '@tyro/groups';
@@ -125,6 +126,15 @@ const enableBlockRotations = graphql(/* GraphQL */ `
   }
 `);
 
+const autoAssignBlock = graphql(/* GraphQL */ `
+  mutation enrollment_ire_autoAssignBlocks(
+    $input: EnrollmentIre_AutoAssignBlockMembershipInput!
+  ) {
+    enrollment_ire_autoAssignBlocks(input: $input) {
+      success
+    }
+  }
+`);
 const blocksQuery = (filter: BlockFilter) => ({
   queryKey: classListManagerKeys.blocksList(filter),
   queryFn: async () => {
@@ -168,6 +178,7 @@ export function useBlockMemberships(blockId: string | null) {
         enrollment_ire_blockMemberships,
       }: Enrollment_Ire_BlockMembershipsQuery) => ({
         ...enrollment_ire_blockMemberships,
+        id: nanoid(4),
         groups: enrollment_ire_blockMemberships.groups.map((group) => ({
           ...group,
           unenrolledStudents: group.unenrolledStudents
@@ -201,9 +212,32 @@ export function useUpdateBlockMemberships() {
   return useMutation({
     mutationFn: async (input: EnrollmentIre_UpsertBlockMembership) =>
       gqlClient.request(upsertBlockMemberships, { input }),
-    onSuccess: () => {
+    onSuccess: async () => {
       toast(t('common:snackbarMessages.updateSuccess'));
-      queryClient.invalidateQueries(classListManagerKeys.allBlockMemberships());
+      await queryClient.invalidateQueries(
+        classListManagerKeys.allBlockMemberships()
+      );
+      queryClient.invalidateQueries(groupsKeys.all);
+      queryClient.invalidateQueries(peopleKeys.all);
+    },
+    onError: () => {
+      toast(t('common:snackbarMessages.errorFailed'), {
+        variant: 'error',
+      });
+    },
+  });
+}
+
+export function useAutoAssignBlock() {
+  const { toast } = useToast();
+  const { t } = useTranslation(['common']);
+
+  return useMutation({
+    mutationFn: async (input: EnrollmentIre_AutoAssignBlockMembershipInput) =>
+      gqlClient.request(autoAssignBlock, { input }),
+    onSuccess: async () => {
+      toast(t('common:snackbarMessages.updateSuccess'));
+      await queryClient.invalidateQueries(classListManagerKeys.all);
       queryClient.invalidateQueries(groupsKeys.all);
       queryClient.invalidateQueries(peopleKeys.all);
     },

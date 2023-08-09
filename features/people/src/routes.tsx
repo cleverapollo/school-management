@@ -131,7 +131,6 @@ export const getRoutes: NavObjectFunction = (t) => [
         path: 'people',
         title: t('navigation:management.people.title'),
         icon: <UserGroupIcon />,
-        hasAccess: (permissions) => permissions.isStaffUser,
         children: [
           {
             type: NavObjectType.MenuLink,
@@ -307,7 +306,9 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.people.contacts'),
             loader: () => getContacts(),
             hasAccess: (permissions) =>
-              permissions.hasPermission('ps:1:people:view_contact_list'),
+              permissions.isStaffUserHasWithPermission(
+                'ps:1:people:view_contact_list'
+              ),
             element: <ContactsListPage />,
           },
           {

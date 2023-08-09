@@ -14,6 +14,7 @@ import {
 import { ListManager } from '../components/common/list-manager';
 import { EditedStudent } from '../components/common/list-manager/state/edited-state';
 import { useContainerMargin } from '../hooks/use-container-margin';
+import { useClassListSettings } from '../store/class-list-settings';
 
 interface ConfirmDialogSettings {
   proceed: () => void;
@@ -23,8 +24,8 @@ interface ConfirmDialogSettings {
 export default function ClassListManagerClasses() {
   const { spacing } = useTheme();
   const { t } = useTranslation(['common', 'classListManager']);
-  const [selectedYearGroup, setSelectedYearGroup] =
-    useState<YearGroupsAutocompleteProps['value']>(null);
+
+  const { selectedYearGroup, setSelectedYearGroup } = useClassListSettings();
   const [isDirty, setIsDirty] = useState(false);
   const containerMargin = useContainerMargin();
   const [confirmDialogSettings, setConfirmDialogSettings] =
@@ -36,19 +37,19 @@ export default function ClassListManagerClasses() {
   const { mutateAsync: saveClassMemberships } = useUpdateClassMemberships();
 
   const requestSetSelectedYearGroup = (
-    block: YearGroupsAutocompleteProps['value']
+    year: YearGroupsAutocompleteProps['value']
   ) => {
     if (isDirty) {
       setConfirmDialogSettings({
         proceed: () => {
-          setSelectedYearGroup(block);
+          setSelectedYearGroup(year);
         },
         reset: () => {
           setConfirmDialogSettings(null);
         },
       });
     } else {
-      setSelectedYearGroup(block);
+      setSelectedYearGroup(year);
     }
   };
 
@@ -92,7 +93,9 @@ export default function ClassListManagerClasses() {
         />
         {classData && (
           <ListManager
-            listKey={String(selectedYearGroup?.yearGroupEnrollmentPartyId)}
+            listKey={`${selectedYearGroup?.yearGroupEnrollmentPartyId ?? ''}-${
+              classData?.id ?? ''
+            }`}
             unassignedStudents={classData.unenrolledStudents}
             groups={classData.classGroups}
             onBulkSave={onBulkSave}
