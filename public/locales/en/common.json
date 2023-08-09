@@ -188,10 +188,6 @@
     "UNEXPLAINED_ABSENCE": "Absence unexplained",
     "NOT_TAKEN": "Not taken"
   },
-  "gender": {
-    "MALE": "Male",
-    "FEMALE": "Female"
-  },
   "colors": {
     "amber": "Amber",
     "blue": "Blue",

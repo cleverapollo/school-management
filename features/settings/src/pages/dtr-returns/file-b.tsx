@@ -37,15 +37,34 @@ import {
 } from '../../api/dtr-returns/form-b';
 import { StaffPostSelectCellEditor } from '../../components/dtr-returns/staff-post-cell-editor';
 import { EmploymentCapacitySelectCellEditor } from '../../components/dtr-returns/employment-capacity-cell-editor';
-import { useDownloadFileB } from '../../api/dtr-returns/download-file';
+import { useDownloadFile } from '../../api/dtr-returns/download-file';
 
 dayjs.extend(LocalizedFormat);
 
+const UpdateStaffKeys = {
+  'staffIre.staffPost': 'staffPost',
+  'personalInformation.gender': 'gender',
+  'staffIre.includeDtrReturns': 'includeDtrReturns',
+  'staffIre.teacherReferenceNumber': 'teacherReferenceNumber',
+  'personalInformation.ire.ppsNumber': 'ppsNumber',
+  payrollNumber: 'payrollNumber',
+  employmentCapacity: 'employmentCapacity',
+  jobSharing: 'jobSharing',
+  qualifications: 'qualifications',
+  'staffIre.qualifications2': 'qualifications2',
+  'staffIre.qualifications3': 'qualifications3',
+  'staffIre.qualifications4': 'qualifications4',
+  'staffIre.otherSchool1': 'otherSchool1',
+  'staffIre.otherSchool2': 'otherSchool2',
+  'staffIre.previousSchool1': 'previousSchool1',
+  'staffIre.previousSchool2': 'previousSchool2',
+};
+
 const getColumnFormBDefs = (
   translate: TFunction<
-    ('settings' | 'common')[],
+    ('settings' | 'common' | 'people')[],
     undefined,
-    ('settings' | 'common')[]
+    ('settings' | 'common' | 'people')[]
   >,
   postsData: StaffPostsOption[],
   capacitiesData: EmploymentCapacityOption[],
@@ -103,11 +122,11 @@ const getColumnFormBDefs = (
   {
     field: 'personalInformation.gender',
     headerName: translate('settings:dtrReturns.formB.gender'),
-    cellEditorSelector: GenderSelectCellEditor(),
+    cellEditorSelector: GenderSelectCellEditor(translate),
     editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
     valueFormatter: ({ data }) =>
       data?.personalInformation?.gender
-        ? translate(`common:gender.${data?.personalInformation?.gender}`)
+        ? translate(`people:gender.${data?.personalInformation?.gender}`)
         : '-',
     cellClassRules: {
       'failed-cell': ({ data }) =>
@@ -300,18 +319,18 @@ const getColumnFormBDefs = (
   },
 ];
 
-export default function DTRReturnsPage() {
-  const { t } = useTranslation(['navigation', 'settings', 'common']);
+export default function DTRReturnsFileB() {
+  const { t } = useTranslation(['navigation', 'settings', 'common', 'people']);
 
   const { displayName } = usePreferredNameLayout();
   const { mutateAsync: updateStaffFormB } = useSaveBulkUpdateStaffFormB();
   const { data: capacitiesData = [] } = useEmploymentCapacities();
   const { data: postsData = [] } = useStaffPosts();
 
-  const { data: staffFormB = [] } = useFormB({});
+  const { data: staffFormB } = useFormB({});
 
-  const { mutateAsync: downloadFileB, isLoading: isDownloadLoading } =
-    useDownloadFileB();
+  const { mutateAsync: downloadFile, isLoading: isDownloadLoading } =
+    useDownloadFile();
 
   const columnDefs = useMemo(
     () => getColumnFormBDefs(t, postsData, capacitiesData, displayName),
@@ -319,6 +338,8 @@ export default function DTRReturnsPage() {
   );
 
   const isEnableDownload = () => {
+    if (!staffFormB) return false;
+
     const staffIncludeInDTRReturns = staffFormB.filter(
       (staff) => staff?.staffIre?.includeDtrReturns
     );
@@ -329,27 +350,9 @@ export default function DTRReturnsPage() {
         staff?.staffIre?.teacherReferenceNumber &&
         staff?.personalInformation?.gender &&
         staff?.employmentCapacity &&
-        staff?.qualifications
+        staff?.qualifications &&
+        staff?.staffIre?.includeDtrReturns
     );
-  };
-
-  const UpdateStaffKeys = {
-    'staffIre.staffPost': 'staffPost',
-    'personalInformation.gender': 'gender',
-    'staffIre.includeDtrReturns': 'includeDtrReturns',
-    'staffIre.teacherReferenceNumber': 'teacherReferenceNumber',
-    'personalInformation.ire.ppsNumber': 'ppsNumber',
-    payrollNumber: 'payrollNumber',
-    employmentCapacity: 'employmentCapacity',
-    jobSharing: 'jobSharing',
-    qualifications: 'qualifications',
-    'staffIre.qualifications2': 'qualifications2',
-    'staffIre.qualifications3': 'qualifications3',
-    'staffIre.qualifications4': 'qualifications4',
-    'staffIre.otherSchool1': 'otherSchool1',
-    'staffIre.otherSchool2': 'otherSchool2',
-    'staffIre.previousSchool1': 'previousSchool1',
-    'staffIre.previousSchool2': 'previousSchool2',
   };
 
   const saveBulkResult = (
@@ -415,7 +418,7 @@ export default function DTRReturnsPage() {
               disabled={!isEnableDownload()}
               variant="contained"
               loading={isDownloadLoading}
-              onClick={() => downloadFileB('FILE_B')}
+              onClick={() => downloadFile('FILE_B')}
               startIcon={<DownloadArrowCircleIcon />}
             >
               {t('settings:dtrReturns.downloadFile')}

@@ -15,7 +15,10 @@ export function useSyncFromPpodQuery() {
 
   return useMutation({
     mutationFn: () =>
-      fetchClient<SyncRequest>('/api/ppod/sync', { method: 'POST' }),
+      fetchClient<SyncRequest>('/api/ppod/sync', {
+        method: 'POST',
+        bodyType: 'json',
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries(ppodSyncKeys.all);
       toast(t('settings:ppodSync.syncSuccessful'), {

@@ -14,11 +14,12 @@ import { DownloadArrowCircleIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Link } from 'react-router-dom';
-import { useDownloadFileB } from '../../api/dtr-returns/download-file';
+import { useDownloadFile } from '../../api/dtr-returns/download-file';
 
 dayjs.extend(LocalizedFormat);
 
 type DtrReturn = {
+  id: number;
   name: string;
   description: string;
   textAction: string;
@@ -34,11 +35,54 @@ export const fileNames = {
   FileE: 'FILE_E',
 };
 
+const formTypeOptions = (
+  t: TFunction<'settings'[], undefined, 'settings'[]>
+) => [
+  {
+    id: 0,
+    name: t('settings:dtrReturns.fileA'),
+    description: t('settings:dtrReturns.descriptionA'),
+    textAction: t('settings:dtrReturns.downloadFile'),
+  },
+  {
+    id: 1,
+    name: t('settings:dtrReturns.fileB'),
+    description: t('settings:dtrReturns.descriptionB'),
+    textAction: t('settings:dtrReturns.viewFile'),
+    linkAction: './file-b',
+  },
+  {
+    id: 2,
+    name: t('settings:dtrReturns.fileC'),
+    description: t('settings:dtrReturns.descriptionC'),
+    textAction: t('settings:dtrReturns.downloadFile'),
+  },
+  {
+    id: 3,
+    name: t('settings:dtrReturns.fileD'),
+    description: t('settings:dtrReturns.descriptionD'),
+    textAction: t('settings:dtrReturns.downloadFile'),
+  },
+  {
+    id: 4,
+    name: t('settings:dtrReturns.fileE'),
+    description: t('settings:dtrReturns.descriptionE'),
+    textAction: t('settings:dtrReturns.downloadFile'),
+  },
+  {
+    id: 5,
+    name: t('settings:dtrReturns.dtrSummary'),
+    description: t('settings:dtrReturns.descriptionDtrSummary'),
+    textAction: t('settings:dtrReturns.downloadFile'),
+  },
+];
+
 const getColumnDefs = (
   t: TFunction<('settings' | 'common')[], undefined, ('settings' | 'common')[]>,
-  downloadFileB: (test: string) => void,
+  downloadFile: (fileName: string) => void,
   isSubmitting: boolean
 ): GridOptions<DtrReturn>['columnDefs'] => [
+  { field: 'id', hide: true },
   {
     field: 'name',
     headerName: t('common:name'),
@@ -51,11 +95,9 @@ const getColumnDefs = (
   },
   {
     cellRenderer: ({ data }: ICellRendererParams<DtrReturn, any>) => {
-      const fileName =
-        fileNames[data?.name?.split(' ')?.join('') as keyof typeof fileNames] ||
-        '';
+      const fileName = Object.keys(fileNames)[data?.id as number];
 
-      return fileName === fileNames.FileB ? (
+      return data?.id === 1 ? (
         <Button
           className="ag-show-on-row-interaction"
           component={Link}
@@ -71,7 +113,7 @@ const getColumnDefs = (
           loading={isSubmitting}
           startIcon={<DownloadArrowCircleIcon />}
           onClick={() => {
-            downloadFileB(fileName);
+            downloadFile(fileName);
           }}
         >
           {data?.textAction}
@@ -84,67 +126,24 @@ const getColumnDefs = (
 export default function DTRReturnsPage() {
   const { t } = useTranslation(['navigation', 'settings', 'common']);
 
-  const formTypeOptions: DtrReturn[] = [
-    {
-      name: t('settings:dtrReturns.fileA'),
-      description: t('settings:dtrReturns.descriptionA'),
-      textAction: t('settings:dtrReturns.downloadFile'),
-    },
-    {
-      name: t('settings:dtrReturns.fileB'),
-      description: t('settings:dtrReturns.descriptionB'),
-      textAction: t('settings:dtrReturns.viewFile'),
-      linkAction: './file-b',
-    },
-    {
-      name: t('settings:dtrReturns.fileC'),
-      description: t('settings:dtrReturns.descriptionC'),
-      textAction: t('settings:dtrReturns.downloadFile'),
-    },
-    {
-      name: t('settings:dtrReturns.fileD'),
-      description: t('settings:dtrReturns.descriptionD'),
-      textAction: t('settings:dtrReturns.downloadFile'),
-    },
-    {
-      name: t('settings:dtrReturns.fileE'),
-      description: t('settings:dtrReturns.descriptionE'),
-      textAction: t('settings:dtrReturns.downloadFile'),
-    },
-    {
-      name: t('settings:dtrReturns.dtrSummary'),
-      description: t('settings:dtrReturns.descriptionDtrSummary'),
-      textAction: t('settings:dtrReturns.downloadFile'),
-    },
-  ];
-
-  const { mutateAsync: downloadFileB, isLoading: isSubmitting } =
-    useDownloadFileB();
+  const { mutateAsync: downloadFile, isLoading: isSubmitting } =
+    useDownloadFile();
 
   const columnDefs = useMemo(
-    () => getColumnDefs(t, downloadFileB, isSubmitting),
-    [t, isSubmitting, downloadFileB]
+    () => getColumnDefs(t, downloadFile, isSubmitting),
+    [t, isSubmitting, downloadFile]
   );
+
+  const rowData = useMemo(() => formTypeOptions(t), [t]);
 
   return (
     <PageContainer title={t('navigation:management.settings.dtrReturns')}>
       <PageHeading
         title={t('navigation:management.settings.dtrReturns')}
         titleProps={{ variant: 'h3' }}
-        breadcrumbs={{
-          links: [
-            {
-              name: t('navigation:management.settings.dtrReturns'),
-              href: '.',
-            },
-            {
-              name: t('common:overview'),
-            },
-          ],
-        }}
       />
       <Table
-        rowData={formTypeOptions || []}
+        rowData={rowData || []}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.name)}
       />

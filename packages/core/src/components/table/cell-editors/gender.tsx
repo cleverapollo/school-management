@@ -1,11 +1,14 @@
 import { Gender } from '@tyro/api';
+import { TFunction } from '@tyro/i18n';
 import { TableSelect } from './select';
 
-const genders = [...Object.keys(Gender)];
+const genders = Object.values(Gender);
 
-export function GenderSelectCellEditor() {
+export function GenderSelectCellEditor(
+  translate: TFunction<'people'[], undefined, 'people'[]>
+) {
   const options = genders.map((gender) => ({
-    value: gender.toUpperCase(),
+    value: gender,
     label: gender,
   }));
 
@@ -17,7 +20,8 @@ export function GenderSelectCellEditor() {
       params: {
         options,
         optionIdKey: 'value',
-        getOptionLabel: (option: (typeof options)[number]) => option.label,
+        getOptionLabel: (option: (typeof options)[number]) =>
+          translate(`people:gender.${option.label}`),
       },
     } as const);
 }

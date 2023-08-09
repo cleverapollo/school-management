@@ -91,10 +91,14 @@ async function fetchInstance(...args: FetchArguments) {
   return response;
 }
 
+type BodyType = keyof Omit<Body, 'body' | 'bodyUsed'>;
+
 export async function fetchClient<TResponse = unknown>(
   url: string,
-  options?: RequestInit
+  options?: RequestInit & { bodyType: BodyType }
 ) {
+  const bodyType: BodyType = options?.bodyType || 'json';
+
   try {
     const endpoint = new URL(url, getEndpoint());
     const response = await fetchInstance(endpoint, {
@@ -102,32 +106,11 @@ export async function fetchClient<TResponse = unknown>(
     });
 
     if (!response.ok) {
-      const error = (await response.json()) as unknown;
+      const error = (await response[bodyType]()) as unknown;
       return await Promise.reject(error);
     }
 
-    return (await response.json()) as TResponse;
-  } catch (error) {
-    return Promise.reject(error);
-  }
-}
-
-export async function fetchClientText<TResponse = unknown>(
-  url: string,
-  options?: RequestInit
-) {
-  try {
-    const endpoint = new URL(url, getEndpoint());
-    const response = await fetchInstance(endpoint, {
-      ...options,
-    });
-
-    if (!response.ok) {
-      const error = (await response.text()) as unknown;
-      return await Promise.reject(error);
-    }
-
-    return (await response.text()) as TResponse;
+    return (await response[bodyType]()) as TResponse;
   } catch (error) {
     return Promise.reject(error);
   }

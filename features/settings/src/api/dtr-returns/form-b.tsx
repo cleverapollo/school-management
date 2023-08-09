@@ -7,6 +7,8 @@ import {
   graphql,
   queryClient,
 } from '@tyro/api';
+import { useToast } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 import { dtrReturnsKeys } from './keys';
 
 const formB = graphql(/* GraphQL */ `
@@ -59,7 +61,7 @@ const updateStaffFormB = graphql(/* GraphQL */ `
 `);
 
 const formBQuery = (filter: StaffFilter) => ({
-  queryKey: dtrReturnsKeys.formB(filter),
+  queryKey: dtrReturnsKeys.dtrReturns(filter),
   queryFn: () => gqlClient.request(formB, { filter }),
 });
 
@@ -70,16 +72,22 @@ export function getFormB(filter: StaffFilter) {
 export function useFormB(filter: StaffFilter) {
   return useQuery({
     ...formBQuery(filter),
-    select: ({ core_staff }) => core_staff ?? [],
+    select: ({ core_staff }) => core_staff,
   });
 }
 
 export function useSaveBulkUpdateStaffFormB() {
+  const { t } = useTranslation(['common']);
+  const { toast } = useToast();
   return useMutation({
     mutationFn: (input: UpdateStaffInput[]) =>
       gqlClient.request(updateStaffFormB, { input }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries(dtrReturnsKeys.formB({}));
+      toast(t('common:snackbarMessages.updateSuccess'));
+      await queryClient.invalidateQueries(dtrReturnsKeys.all);
+    },
+    onError: () => {
+      toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     },
   });
 }

@@ -1,5 +1,7 @@
 import { StaffFilter } from '@tyro/api';
 
 export const dtrReturnsKeys = {
-  formB: (filter: StaffFilter) => ['dtrReturns', 'formB', filter] as const,
+  all: ['dtrReturns'] as const,
+  dtrReturns: (filter: StaffFilter) => [...dtrReturnsKeys.all, filter] as const,
+  formB: () => [...dtrReturnsKeys.all, 'formB'] as const,
 };

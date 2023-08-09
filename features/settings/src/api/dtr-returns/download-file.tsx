@@ -1,42 +1,37 @@
 import { useMutation } from '@tanstack/react-query';
-import { fetchClientText, useAcademicNamespace, useUser } from '@tyro/api';
+import { fetchClient, useUser } from '@tyro/api';
 import { useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
+import dayjs from 'dayjs';
+import { saveAs } from 'file-saver';
 
-export function useDownloadFileB() {
+export function useDownloadFile() {
   const { toast } = useToast();
   const { t } = useTranslation(['common']);
   const { activeProfile } = useUser();
-  const { activeAcademicNamespace } = useAcademicNamespace();
 
-  const downloadFileB = async (file: string) => {
+  const downloadFile = async (file: string) => {
     try {
-      const data = await fetchClientText<string>(`/api/returns/${file}`, {
+      const data = await fetchClient<string>(`/api/returns/${file}`, {
         method: 'GET',
+        bodyType: 'text',
       });
 
       const tenant = activeProfile?.tenant?.tenant ?? '';
-      const twoDigitYear = (activeAcademicNamespace?.year ?? 0) % 100;
-      const fileName = `TF${tenant}.${twoDigitYear}B`;
+      const twoDigitYear = dayjs().format('YY');
+      const prefix = `TF`;
+      const fileLetter = file.charAt(file.length - 1);
+      const fileExtension = `${twoDigitYear}${fileLetter}`;
+      const fileName = `${prefix}${tenant}.${fileExtension}`;
 
       const blob = new Blob([data], { type: 'text/plain;charset=utf-8' });
-
-      const url = URL.createObjectURL(blob);
-
-      const anchor = document.createElement('a');
-      anchor.href = url;
-      anchor.download = fileName;
-      document.body.appendChild(anchor);
-      anchor.click();
-      document.body.removeChild(anchor);
-
-      URL.revokeObjectURL(url);
+      saveAs(blob, fileName);
     } catch (error) {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     }
   };
 
   return useMutation({
-    mutationFn: downloadFileB,
+    mutationFn: downloadFile,
   });
 }
