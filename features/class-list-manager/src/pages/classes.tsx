@@ -25,9 +25,7 @@ export default function ClassListManagerClasses() {
   const { spacing } = useTheme();
   const { t } = useTranslation(['common', 'classListManager']);
 
-  const { setCurrentYearGroup } = useClassListSettings();
-  const [selectedYearGroup, setSelectedYearGroup] =
-    useState<YearGroupsAutocompleteProps['value']>(null);
+  const { selectedYearGroup, setSelectedYearGroup } = useClassListSettings();
   const [isDirty, setIsDirty] = useState(false);
   const containerMargin = useContainerMargin();
   const [confirmDialogSettings, setConfirmDialogSettings] =
@@ -37,24 +35,21 @@ export default function ClassListManagerClasses() {
     selectedYearGroup?.yearGroupEnrollmentPartyId
   );
   const { mutateAsync: saveClassMemberships } = useUpdateClassMemberships();
-  console.log('selectedYearGroup');
-  console.log(selectedYearGroup);
+
   const requestSetSelectedYearGroup = (
-    block: YearGroupsAutocompleteProps['value']
+    year: YearGroupsAutocompleteProps['value']
   ) => {
     if (isDirty) {
       setConfirmDialogSettings({
         proceed: () => {
-          setSelectedYearGroup(block);
-          setCurrentYearGroup(block);
+          setSelectedYearGroup(year);
         },
         reset: () => {
           setConfirmDialogSettings(null);
         },
       });
     } else {
-      setSelectedYearGroup(block);
-      setCurrentYearGroup(block);
+      setSelectedYearGroup(year);
     }
   };
 
@@ -98,7 +93,9 @@ export default function ClassListManagerClasses() {
         />
         {classData && (
           <ListManager
-            listKey={String(selectedYearGroup?.yearGroupEnrollmentPartyId)}
+            listKey={`${String(
+              selectedYearGroup?.yearGroupEnrollmentPartyId
+            )}-${classData?.id ?? ''}`}
             unassignedStudents={classData.unenrolledStudents}
             groups={classData.classGroups}
             onBulkSave={onBulkSave}

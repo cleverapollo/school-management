@@ -21,7 +21,6 @@ import {
   usePreferredNameLayout,
   useToast,
   wasMultiSelectKeyUsed,
-  wasToggleInSelectionGroupKeyUsed,
 } from '@tyro/core';
 import {
   ListManagerGroup,
@@ -33,7 +32,6 @@ import {
   getGroupsWithDuplicates,
   multiDragAwareReorder,
   multiSelectTo,
-  toggleSelection,
   toggleSelectionInGroup,
 } from './utils';
 import {
@@ -247,10 +245,6 @@ export function ListManagerProvider({
     studentId: string
   ) => {
     setSelectedStudentIds((selectedIds) => {
-      if (wasToggleInSelectionGroupKeyUsed(event)) {
-        return toggleSelectionInGroup(studentId, selectedIds);
-      }
-
       if (wasMultiSelectKeyUsed(event)) {
         return multiSelectTo(
           studentId,
@@ -261,7 +255,8 @@ export function ListManagerProvider({
         );
       }
 
-      return toggleSelection(studentId, selectedIds);
+      return toggleSelectionInGroup(studentId, selectedIds);
+      // return toggleSelection(studentId, selectedIds);
     });
   };
 

@@ -7,7 +7,6 @@ import {
   graphql,
   queryClient,
   UseQueryReturnType,
-  EnrollmentIre_AutoAssignBlockMembershipInput,
   EnrollmentIre_AutoAssignCoreMembershipInput,
 } from '@tyro/api';
 import { usePreferredNameLayout, useToast } from '@tyro/core';
@@ -15,8 +14,8 @@ import { useTranslation } from '@tyro/i18n';
 import { groupsKeys } from '@tyro/groups';
 import { useCallback } from 'react';
 import { peopleKeys } from '@tyro/people';
+import { nanoid } from 'nanoid';
 import { classListManagerKeys } from './keys';
-import { useBlocksList } from './blocks';
 
 const classMemberships = graphql(/* GraphQL */ `
   query enrollment_ire_coreMemberships(
@@ -120,6 +119,7 @@ export function useClassMemberships(yearGroupEnrollmentId: number | undefined) {
         enrollment_ire_coreMemberships,
       }: Enrollment_Ire_CoreMembershipsQuery) => ({
         ...enrollment_ire_coreMemberships,
+        id: nanoid(4),
         unenrolledStudents: enrollment_ire_coreMemberships.unenrolledStudents
           .sort((a, b) => sortByDisplayName(a.person, b.person))
           .map((student) => ({

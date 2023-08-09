@@ -5,7 +5,7 @@ import {
   ActionMenu,
   useDebouncedValue,
   ActionMenuProps,
-  ConfirmDialog,
+  useDisclosure,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useLocation } from 'react-router-dom';
@@ -13,27 +13,31 @@ import { Box } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { MaleFemaleIcon, PersonTickIcon, RotationIcon } from '@tyro/icons';
 import { useContainerMargin } from '../hooks/use-container-margin';
-import {
-  ClassListSettingsProvider,
-  useClassListSettings,
-} from '../store/class-list-settings';
-import { ReturnTypeOfUseBlockList, useAutoAssignBlock } from '../api/blocks';
+import { ClassListSettingsProvider } from '../store/class-list-settings';
+import { ReturnTypeOfUseBlockList } from '../api/blocks';
 import { CreateBlockRotationModal } from './blocks/create-block-rotation-modal';
-import { useAutoAssignCore } from '../api/classes';
 import { YearGroupsAutocompleteProps } from './common/list-manager/year-groups-autocomplete';
+import { AutoAssignConfirmDialog } from './common/auto-assign-confirm-dialog';
 
 export default function ClassListManagerContainer() {
   const { t } = useTranslation(['navigation', 'classListManager']);
   const { pathname } = useLocation();
+  const isBlockView = pathname.includes('blocks');
   const containerMargin = useContainerMargin();
-  const { mutateAsync: autoAssignBlock } = useAutoAssignBlock();
-  const { mutateAsync: autoAssignCore } = useAutoAssignCore();
-  const [currentYearGroup, setCurrentYearGroup] =
-    useState<YearGroupsAutocompleteProps['value']>();
-  const [currentBlock, setCurrentBlock] =
-    useState<NonNullable<ReturnTypeOfUseBlockList>[number]>();
-  const blockHasRotations = !!currentBlock?.isRotation;
-  const [autoAssignConfirmation, setAutoAssignConfirmation] = useState(false);
+
+  const [showGender, setShowGender] = useState(false);
+  const [selectedYearGroup, setSelectedYearGroup] =
+    useState<YearGroupsAutocompleteProps['value']>(null);
+  const [selectedBlock, setSelectedBlock] = useState<
+    ReturnTypeOfUseBlockList[number] | null
+  >(null);
+
+  const blockHasRotations = !!selectedBlock?.isRotation;
+  const {
+    isOpen: isAutoAssignOpen,
+    onOpen: onOpenAutoAssign,
+    onClose: onCloseAutoAssign,
+  } = useDisclosure({ defaultIsOpen: false });
   const {
     value: blockForCreateRotation,
     debouncedValue: debouncedBlockForCreateRotation,
@@ -44,38 +48,25 @@ export default function ClassListManagerContainer() {
     defaultValue: undefined,
   });
 
-  const isBlockView = pathname.includes('blocks');
-  const [classListSettings, setClassListSettings] = useState({
-    showGender: false,
-    setCurrentBlock,
-    setCurrentYearGroup,
-  });
-  const toggleShowGender = () => {
-    setClassListSettings((prevState) => ({
-      ...prevState,
-      showGender: !prevState.showGender,
-    }));
-  };
-
   const createRotation = () => {
-    setBlockForCreateRotation(currentBlock);
+    setBlockForCreateRotation(selectedBlock ?? undefined);
   };
 
   const menuItems = useMemo<ActionMenuProps['menuItems']>(
     () => [
       {
-        label: classListSettings.showGender
+        label: showGender
           ? t('classListManager:deactivateGenderView')
           : t('classListManager:activateGenderView'),
         icon: <MaleFemaleIcon />,
-        onClick: toggleShowGender,
+        onClick: () => setShowGender((prevState) => !prevState),
       },
       ...(!blockHasRotations
         ? [
             {
               label: 'Auto assign',
               icon: <PersonTickIcon />,
-              onClick: () => setAutoAssignConfirmation(true),
+              onClick: onOpenAutoAssign,
             },
           ]
         : []),
@@ -91,7 +82,31 @@ export default function ClassListManagerContainer() {
           ]
         : []),
     ],
-    [isBlockView, blockHasRotations, classListSettings, t, currentBlock]
+    [
+      isBlockView,
+      blockHasRotations,
+      showGender,
+      setShowGender,
+      t,
+      onOpenAutoAssign,
+    ]
+  );
+
+  const classListSettings = useMemo(
+    () => ({
+      showGender,
+      selectedYearGroup,
+      selectedBlock,
+      setSelectedBlock,
+      setSelectedYearGroup,
+    }),
+    [
+      showGender,
+      selectedYearGroup,
+      selectedBlock,
+      setSelectedBlock,
+      setSelectedYearGroup,
+    ]
   );
 
   return (
@@ -134,26 +149,12 @@ export default function ClassListManagerContainer() {
           }
           onClose={() => setBlockForCreateRotation(undefined)}
         />
-
-        <ConfirmDialog
-          open={!!autoAssignConfirmation}
-          title={t('classListManager:autoAssign')}
-          description={t('classListManager:autoAssignDescription')}
-          confirmText={t('classListManager:autoAssignConfirm')}
-          onClose={() => setAutoAssignConfirmation(false)}
-          onConfirm={() => {
-            if (isBlockView && currentBlock) {
-              autoAssignBlock({ blockId: currentBlock.blockId }).then(() => {
-                setAutoAssignConfirmation(false);
-              });
-            }
-            if (!isBlockView && currentYearGroup) {
-              autoAssignCore({
-                yearGroupEnrollmentId:
-                  currentYearGroup.yearGroupEnrollmentPartyId,
-              }).then(() => setAutoAssignConfirmation(false));
-            }
-          }}
+        <AutoAssignConfirmDialog
+          open={isAutoAssignOpen}
+          onClose={onCloseAutoAssign}
+          isBlockView={isBlockView}
+          currentBlock={selectedBlock}
+          currentYearGroup={selectedYearGroup}
         />
       </Page>
     </ClassListSettingsProvider>

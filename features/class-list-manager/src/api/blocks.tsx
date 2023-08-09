@@ -178,6 +178,7 @@ export function useBlockMemberships(blockId: string | null) {
         enrollment_ire_blockMemberships,
       }: Enrollment_Ire_BlockMembershipsQuery) => ({
         ...enrollment_ire_blockMemberships,
+        id: nanoid(4),
         groups: enrollment_ire_blockMemberships.groups.map((group) => ({
           ...group,
           unenrolledStudents: group.unenrolledStudents
