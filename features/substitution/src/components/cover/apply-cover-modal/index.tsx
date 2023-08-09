@@ -61,7 +61,7 @@ export function ApplyCoverModal({
     }));
   }, [eventsMap]);
 
-  const { mutateAsync: applyCover } = useApplyCover();
+  const { mutateAsync: applyCover, isLoading: isSaving } = useApplyCover();
   const { data, isLoading } = useCoverLookup(
     { substitutionEventIds },
     !!substitutionEventIds.length
@@ -103,12 +103,10 @@ export function ApplyCoverModal({
         absenceId,
         substitutionTypeId: coverType,
         date: dayjs(event.startTime).format('YYYY-MM-DD'),
-        ...(note ? { note } : {}),
-        ...(room
-          ? {
-              substituteRoomId: room.roomId,
-            }
-          : {}),
+        ...(note && { note }),
+        ...(room && {
+          substituteRoomId: room.roomId,
+        }),
       })
     );
 
@@ -200,11 +198,7 @@ export function ApplyCoverModal({
           <Button variant="soft" onClick={onClose}>
             {t('common:actions.cancel')}
           </Button>
-          <LoadingButton
-            variant="contained"
-            type="submit"
-            // loading={isPublishing}
-          >
+          <LoadingButton variant="contained" type="submit" loading={isSaving}>
             {t('common:actions.save')}
           </LoadingButton>
         </DialogActions>

@@ -25,8 +25,8 @@ export function useApplyCover() {
   return useMutation({
     mutationFn: (input: Swm_InsertSubstitution) =>
       gqlClient.request(applyCover, { input }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(substitutionKeys.all);
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(substitutionKeys.all);
       queryClient.invalidateQueries(calendarKeys.all);
       toast(t('substitution:coverAppliedSuccessfully'));
     },

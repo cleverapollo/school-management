@@ -139,6 +139,7 @@ export function useEventsForCover(
   return useQuery({
     ...eventsForCoverQuery(filter),
     enabled,
+    keepPreviousData: true,
     select: ({ swm_eventsForSubstitutionsByStaffByPeriod }) =>
       swm_eventsForSubstitutionsByStaffByPeriod?.eventsByStaff ?? [],
   });

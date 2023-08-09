@@ -9,7 +9,10 @@ import {
   getCurrentCoverRoom,
   getAdditionalStaff,
 } from '../../../utils/cover-utils';
-import { SubIcon, colorsBySubstitutionType } from './sub-icon';
+import {
+  SubIconWithType,
+  colorsBySubstitutionType,
+} from './sub-icon-with-type';
 
 interface EventCoverCardProps {
   eventInfo: CoverEvent;
@@ -108,7 +111,7 @@ export function EventCoverCard({
                     {event.name}
                   </Typography>
                   {substitutionType && (
-                    <SubIcon substitutionType={substitutionType} />
+                    <SubIconWithType substitutionType={substitutionType} />
                   )}
                 </Stack>
                 <Typography variant="subtitle2" noWrap>

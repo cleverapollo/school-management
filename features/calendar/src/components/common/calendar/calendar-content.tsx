@@ -3,6 +3,7 @@ import { Box, Stack, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { SwapHorizontalIcon } from '@tyro/icons';
+import { SubIcon } from '@tyro/substitution';
 
 dayjs.extend(LocalizedFormat);
 
@@ -50,31 +51,7 @@ export function getCalendarContent(eventInfo: EventContentArg) {
                 <Typography variant="subtitle2" noWrap>
                   {eventInfo.event.title}
                 </Typography>
-                {isSubstitution && (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'white',
-                      backgroundColor: `green.main`,
-                      borderRadius: '50%',
-                      width: 16,
-                      height: 16,
-
-                      '& svg': {
-                        width: 14,
-                        height: 14,
-                        transform: 'rotate(-45deg)',
-                        '& path': {
-                          strokeWidth: 2,
-                        },
-                      },
-                    }}
-                  >
-                    <SwapHorizontalIcon />
-                  </Box>
-                )}
+                {isSubstitution && <SubIcon />}
               </Stack>
               {!eventInfo.event.allDay && (
                 <Typography variant="caption" noWrap sx={{ mr: 0.5 }}>
@@ -112,31 +89,7 @@ export function getCalendarContent(eventInfo: EventContentArg) {
             <Typography variant="subtitle2" noWrap sx={{ fontSize: '0.75rem' }}>
               {eventInfo.event.title}
             </Typography>
-            {isSubstitution && (
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  backgroundColor: `green.main`,
-                  borderRadius: '50%',
-                  width: 14,
-                  height: 14,
-
-                  '& svg': {
-                    width: 12,
-                    height: 12,
-                    transform: 'rotate(-45deg)',
-                    '& path': {
-                      strokeWidth: 2,
-                    },
-                  },
-                }}
-              >
-                <SwapHorizontalIcon />
-              </Box>
-            )}
+            {isSubstitution && <SubIcon size="small" />}
           </Stack>
         </Stack>
       );
@@ -152,31 +105,7 @@ export function getCalendarContent(eventInfo: EventContentArg) {
             flex={1}
           >
             <i>{eventInfo.event.title}</i>
-            {isSubstitution && (
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  backgroundColor: `green.main`,
-                  borderRadius: '50%',
-                  width: 14,
-                  height: 14,
-
-                  '& svg': {
-                    width: 12,
-                    height: 12,
-                    transform: 'rotate(-45deg)',
-                    '& path': {
-                      strokeWidth: 2,
-                    },
-                  },
-                }}
-              >
-                <SwapHorizontalIcon />
-              </Box>
-            )}
+            {isSubstitution && <SubIcon size="small" />}
           </Stack>
         </>
       );
