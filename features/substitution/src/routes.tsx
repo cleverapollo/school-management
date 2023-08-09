@@ -4,6 +4,7 @@ import { GraduateHatLoadingIcon } from '@tyro/icons';
 import { getStaffWorkAbsences } from './api/staff-work-absences';
 
 const Absences = lazy(() => import('./pages/absences'));
+const Cover = lazy(() => import('./pages/cover'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -28,6 +29,12 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.substitution.absences'),
             element: <Absences />,
             loader: () => getStaffWorkAbsences({}),
+          },
+          {
+            type: NavObjectType.MenuLink,
+            path: 'cover',
+            title: t('navigation:management.substitution.cover'),
+            element: <Cover />,
           },
         ],
       },

@@ -21,7 +21,7 @@ import {
   useFormValidator,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { StaffAutocomplete } from '@tyro/people';
+import { RHFStaffAutocomplete } from '@tyro/people';
 import { AddIcon, TrashIcon } from '@tyro/icons';
 import { Swm_UpsertStaffAbsenceDate } from '@tyro/api';
 import {
@@ -206,7 +206,7 @@ export function UpsertAbsenceModal({
       <form onSubmit={onSubmit}>
         <Stack spacing={3} sx={{ p: 3 }}>
           <Stack direction="row" spacing={2}>
-            <StaffAutocomplete
+            <RHFStaffAutocomplete
               controlProps={{
                 name: 'staff',
                 control,

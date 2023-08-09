@@ -26,6 +26,7 @@
     "continue": "Continue",
     "stayLoggedIn": "Stay logged in",
     "logMeOut": "Log me out",
+    "previous": "Previous",
     "next": "Next",
     "clone": "Clone"
   },
@@ -58,6 +59,7 @@
   "result": "Result",
   "noResultsFound": "No results found",
   "name": "Name",
+  "selectDateRange": "Select date range",
   "colour": "Colour",
   "icon": "Icon",
   "teacher": "Teacher",

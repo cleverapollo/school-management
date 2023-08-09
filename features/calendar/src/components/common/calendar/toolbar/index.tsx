@@ -1,21 +1,16 @@
-import { Dispatch, RefObject, SetStateAction, useRef } from 'react';
+import { Dispatch, RefObject, SetStateAction } from 'react';
 import { styled } from '@mui/material/styles';
-import { Stack, Button, IconButton, Box, Popover } from '@mui/material';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { useDisclosure, useResponsive } from '@tyro/core';
+import { Stack, Button, Box } from '@mui/material';
+import { useResponsive } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  AddIcon,
-  EditCalendarIcon,
-} from '@tyro/icons';
+import { AddIcon, EditCalendarIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import FullCalendar from '@fullcalendar/react';
 import { usePermissions } from '@tyro/api';
 import { CalendarView } from '../../../../types';
 import { CalendarViewSwitcher } from './view-switcher';
+import { DateSwitcher } from './date-switcher';
 
 dayjs.extend(LocalizedFormat);
 
@@ -53,8 +48,6 @@ export function CalendarToolbar({
 }: CalendarToolbarProps) {
   const isDesktop = useResponsive('up', 'sm');
   const { t } = useTranslation(['calendar']);
-  const dateButtonRef = useRef<HTMLButtonElement>(null);
-  const { getButtonProps, getDisclosureProps } = useDisclosure();
   const currentDate = dayjs(date);
   const { isTyroUser } = usePermissions();
   const onPreviousDateClick = () => {
@@ -94,46 +87,12 @@ export function CalendarToolbar({
         />
       )}
 
-      <Stack direction="row" alignItems="center" spacing={2}>
-        <IconButton onClick={onPreviousDateClick}>
-          <ChevronLeftIcon />
-        </IconButton>
-
-        <Button
-          ref={dateButtonRef}
-          variant="text"
-          color="inherit"
-          sx={{ fontWeight: 600 }}
-          {...getButtonProps()}
-        >
-          {currentDate.format('LL')}
-        </Button>
-        <Popover
-          {...getDisclosureProps()}
-          anchorEl={dateButtonRef.current}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'center',
-          }}
-        >
-          <DateCalendar
-            value={currentDate}
-            onChange={(newValue) => {
-              if (newValue) {
-                onChangeDate(newValue);
-              }
-            }}
-          />
-        </Popover>
-
-        <IconButton onClick={onNextDateClick}>
-          <ChevronRightIcon />
-        </IconButton>
-      </Stack>
+      <DateSwitcher
+        onPreviousDateClick={onPreviousDateClick}
+        onNextDateClick={onNextDateClick}
+        date={currentDate}
+        onChangeDate={onChangeDate}
+      />
 
       <Stack direction="row" spacing={1}>
         <Button
