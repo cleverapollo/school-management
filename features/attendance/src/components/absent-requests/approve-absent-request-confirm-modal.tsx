@@ -19,7 +19,7 @@ export interface ApproveAbsentRequestConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
   onApprove?: () => void;
-  absentRequestState?:
+  absentRequestState:
     | SaveParentalAttendanceRequest[]
     | SaveParentalAttendanceRequest
     | undefined;
@@ -42,12 +42,7 @@ export function ApproveAbsentRequestConfirmModal({
   const isBulkAction = Array.isArray(absentRequestState);
 
   const onSubmit = async () => {
-    if (
-      absentRequestState !== undefined &&
-      (isBulkAction
-        ? absentRequestState?.length
-        : absentRequestState !== undefined)
-    ) {
+    if (absentRequestState !== undefined) {
       await createOrUpdateAbsentRequestMutation(
         (isBulkAction ? absentRequestState : [absentRequestState]).map(
           (absentRequest) => ({
@@ -69,17 +64,15 @@ export function ApproveAbsentRequestConfirmModal({
   return (
     <Dialog open={isOpen} onClose={onClose}>
       <DialogTitle>
-        {isBulkAction
-          ? t('attendance:approveAbsentRequests')
-          : t('attendance:approveAbsentRequest')}
+        {t('attendance:approveAbsentRequest', {
+          count: isBulkAction ? absentRequestState.length : 1,
+        })}
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {isBulkAction
-            ? t('attendance:youAreAboutToApproveAbsentRequests', {
-                count: absentRequestState.length,
-              })
-            : t('attendance:youAreAboutToApproveAbsentRequest')}
+          {t('attendance:youAreAboutToApproveAbsentRequest', {
+            count: isBulkAction ? absentRequestState.length : 1,
+          })}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -87,11 +80,9 @@ export function ApproveAbsentRequestConfirmModal({
           {t('common:actions.cancel')}
         </Button>
         <LoadingButton variant="soft" loading={isSubmitting} onClick={onSubmit}>
-          {isBulkAction
-            ? t('attendance:yesApproveAbsentRequests', {
-                count: absentRequestState.length,
-              })
-            : t('attendance:yesApproveAbsentRequest')}
+          {t('attendance:yesApproveAbsentRequest', {
+            count: isBulkAction ? absentRequestState.length : 1,
+          })}
         </LoadingButton>
       </DialogActions>
     </Dialog>

@@ -1,4 +1,4 @@
-import { TFunction, useTranslation } from '@tyro/i18n';
+import { useTranslation } from '@tyro/i18n';
 import {
   ParentalAttendanceRequestStatus,
   SaveParentalAttendanceRequest,
@@ -31,15 +31,6 @@ export type DeclineAbsentRequestFormState = Pick<
   adminNote?: string | null;
 };
 
-interface DeclineAbsentRequestFormProps {
-  onSubmit: (formState: DeclineAbsentRequestFormState) => void;
-  onCancel: () => void;
-  initialAbsentRequestState: DeclineAbsentRequestFormState | undefined;
-  isSubmitting: boolean;
-  isSubmitSuccessful: boolean;
-  translate: TFunction<('common' | 'attendance')[]>;
-}
-
 export interface DeclineAbsentRequestConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -50,76 +41,6 @@ export interface DeclineAbsentRequestConfirmModalProps {
     | undefined;
 }
 
-const DeclineAbsentRequestForm = ({
-  onSubmit,
-  onCancel,
-  initialAbsentRequestState,
-  isSubmitSuccessful,
-  translate,
-  isSubmitting,
-}: DeclineAbsentRequestFormProps) => {
-  const { resolver, rules } = useFormValidator<DeclineAbsentRequestFormState>();
-
-  const { control, handleSubmit, reset } =
-    useForm<DeclineAbsentRequestFormState>({
-      resolver: resolver({
-        adminNote: [rules.maxLength(100)],
-      }),
-      defaultValues: {
-        ...initialAbsentRequestState,
-        adminNote: initialAbsentRequestState?.adminNote ?? '',
-      },
-      mode: 'onChange',
-    });
-
-  const handleCancel = () => {
-    onCancel();
-    reset();
-  };
-
-  useEffect(() => {
-    if (initialAbsentRequestState) {
-      reset(initialAbsentRequestState);
-    }
-  }, [initialAbsentRequestState]);
-
-  useEffect(() => {
-    reset();
-  }, [isSubmitSuccessful]);
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <DialogContent>
-        <DialogContentText>
-          {translate('attendance:youAreAboutToDeclineAbsentRequest')}
-        </DialogContentText>
-        <RHFTextField
-          controlProps={{
-            name: 'adminNote',
-            control,
-          }}
-          textFieldProps={{
-            fullWidth: true,
-            multiline: true,
-            minRows: 3,
-            sx: { mt: 3 },
-            autoFocus: true,
-          }}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button autoFocus onClick={handleCancel}>
-          {translate('common:actions.cancel')}
-        </Button>
-
-        <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-          {translate('attendance:yesDeclineAbsentRequest')}
-        </LoadingButton>
-      </DialogActions>
-    </form>
-  );
-};
-
 export function DeclineAbsentRequestConfirmModal({
   isOpen,
   onClose,
@@ -127,6 +48,17 @@ export function DeclineAbsentRequestConfirmModal({
   absentRequestState,
 }: DeclineAbsentRequestConfirmModalProps) {
   const { t } = useTranslation(['common', 'attendance']);
+  const { resolver, rules } = useFormValidator<DeclineAbsentRequestFormState>();
+
+  const isBulkAction = Array.isArray(absentRequestState);
+
+  const { control, handleSubmit, reset } =
+    useForm<DeclineAbsentRequestFormState>({
+      resolver: resolver({
+        adminNote: [rules.maxLength(100)],
+      }),
+      defaultValues: isBulkAction ? absentRequestState[0] : absentRequestState,
+    });
 
   const {
     mutateAsync: createOrUpdateAbsentRequestMutation,
@@ -134,36 +66,34 @@ export function DeclineAbsentRequestConfirmModal({
     isSuccess: isSubmitSuccessful,
   } = useCreateOrUpdateAbsentRequest();
 
-  const isBulkAction = Array.isArray(absentRequestState);
-
   const onSubmit = ({
     adminNote,
     ...restData
   }: DeclineAbsentRequestFormState) => {
     createOrUpdateAbsentRequestMutation(
-      [
-        {
-          adminNote,
-          ...restData,
-          status: ParentalAttendanceRequestStatus.Denied,
-        },
-      ],
+      isBulkAction
+        ? absentRequestState.map((absentRequest) => ({
+            ...absentRequest,
+            status: ParentalAttendanceRequestStatus.Denied,
+          }))
+        : [
+            {
+              ...restData,
+              adminNote,
+              status: ParentalAttendanceRequestStatus.Denied,
+            },
+          ],
       {
         onSuccess: onClose,
       }
     );
   };
 
-  const onBulkSubmit = () => {
-    if (Array.isArray(absentRequestState)) {
-      createOrUpdateAbsentRequestMutation(
-        absentRequestState.map((absentRequest) => ({
-          ...absentRequest,
-          status: ParentalAttendanceRequestStatus.Denied,
-        }))
-      );
+  useEffect(() => {
+    if (!isBulkAction) {
+      reset(absentRequestState);
     }
-  };
+  }, [absentRequestState, isBulkAction]);
 
   useEffect(() => {
     if (isSubmitSuccessful) {
@@ -175,44 +105,42 @@ export function DeclineAbsentRequestConfirmModal({
   return (
     <Dialog open={isOpen} onClose={onClose}>
       <DialogTitle>
-        {isBulkAction
-          ? t('attendance:declineAbsentRequests')
-          : t('attendance:declineAbsentRequest')}
+        {t('attendance:declineAbsentRequest', {
+          count: isBulkAction ? absentRequestState.length : 1,
+        })}
       </DialogTitle>
-      {isBulkAction ? (
-        <>
-          <DialogContent>
-            <DialogContentText>
-              {t('attendance:youAreAboutToDeclineAbsentRequests', {
-                count: absentRequestState.length,
-              })}
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button autoFocus onClick={onClose}>
-              {t('common:actions.cancel')}
-            </Button>
-            <LoadingButton
-              variant="soft"
-              loading={isSubmitting}
-              onClick={onBulkSubmit}
-            >
-              {t('attendance:yesDeclineAbsentRequests', {
-                count: absentRequestState.length,
-              })}
-            </LoadingButton>
-          </DialogActions>
-        </>
-      ) : (
-        <DeclineAbsentRequestForm
-          isSubmitSuccessful={isSubmitSuccessful}
-          isSubmitting={isSubmitting}
-          initialAbsentRequestState={absentRequestState}
-          onCancel={onClose}
-          onSubmit={onSubmit}
-          translate={t}
-        />
-      )}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DialogContent>
+          <DialogContentText>
+            {t('attendance:youAreAboutToDeclineAbsentRequest', {
+              count: isBulkAction ? absentRequestState.length : 1,
+            })}
+          </DialogContentText>
+          <RHFTextField
+            controlProps={{
+              name: 'adminNote',
+              control,
+            }}
+            textFieldProps={{
+              fullWidth: true,
+              multiline: true,
+              minRows: 3,
+              sx: { mt: 3 },
+              autoFocus: true,
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={onClose}>
+            {t('common:actions.cancel')}
+          </Button>
+          <LoadingButton variant="soft" type="submit" loading={isSubmitting}>
+            {t('attendance:yesDeclineAbsentRequest', {
+              count: isBulkAction ? absentRequestState.length : 1,
+            })}
+          </LoadingButton>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 }

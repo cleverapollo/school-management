@@ -96,13 +96,13 @@ export function useCreateOrUpdateAbsentRequest() {
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     },
-    onSuccess: (_, [code]) => {
+    onSuccess: async (_, [code]) => {
+      await queryClient.invalidateQueries(attendanceKeys.absentRequests({}));
       toast(
         code?.id
           ? t('common:snackbarMessages.updateSuccess')
           : t('common:snackbarMessages.createSuccess')
       );
-      queryClient.invalidateQueries(attendanceKeys.absentRequests({}));
     },
   });
 }

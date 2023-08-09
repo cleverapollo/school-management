@@ -59,7 +59,8 @@ const getAbsentRequestDataWithLabels = (
   return [
     {
       label: t('attendance:dateOfAbsence'),
-      value: dayjs(from).format('LL'),
+      value: from,
+      valueRenderer: dayjs(from).format('LL'),
     },
     {
       label: t('common:createdBy'),
