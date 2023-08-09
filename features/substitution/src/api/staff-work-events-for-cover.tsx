@@ -56,7 +56,6 @@ const eventsForCover = graphql(/* GraphQL */ `
               tags {
                 label
                 context
-                display
               }
               colour
               name

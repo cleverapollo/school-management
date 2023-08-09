@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import {
-  AttendanceCodeType,
   gqlClient,
   graphql,
   queryClient,
@@ -39,6 +38,7 @@ const sessionAttendance = graphql(/* GraphQL */ `
             name
             codeType
           }
+          note
         }
       }
     }
