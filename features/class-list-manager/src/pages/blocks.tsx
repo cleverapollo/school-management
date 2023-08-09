@@ -39,8 +39,6 @@ export default function ClassListManagerBlocks() {
 
   const [selectedYearGroup, setSelectedYearGroup] =
     useState<YearGroupsAutocompleteProps['value']>(null);
-  const [selectedBlock, setSelectedBlock] =
-    useState<BlockAutocompleteProps['value']>(null);
   const [selectedRotationIndex, setSelectedRotationIndex] = useState<
     number | string
   >(0);
@@ -51,7 +49,7 @@ export default function ClassListManagerBlocks() {
   } = useDebouncedValue<ConfirmDialogSettings | null>({ defaultValue: null });
   const [isDirty, setIsDirty] = useState(false);
   const containerMargin = useContainerMargin();
-  const { setCurrentBlock } = useClassListSettings();
+  const { selectedBlock, setSelectedBlock } = useClassListSettings();
   const dropdownDirection = useBreakpointValue<'column' | 'row'>({
     base: 'column',
     sm: 'row',
@@ -160,10 +158,10 @@ export default function ClassListManagerBlocks() {
 
   useEffect(() => {
     setSelectedRotationIndex(0);
-    setCurrentBlock(selectedBlock ?? undefined);
+    setSelectedBlock(selectedBlock ?? null);
 
     return () => {
-      setCurrentBlock(undefined);
+      setSelectedBlock(null);
     };
   }, [selectedBlock]);
 
@@ -203,7 +201,7 @@ export default function ClassListManagerBlocks() {
           <ListManager
             listKey={`${selectedBlock?.blockId ?? ''}-${
               selectedRotationIndex ?? ''
-            }`}
+            }-${data?.id ?? ''}`}
             unassignedStudents={blockData.unenrolledStudents}
             groups={blockData.subjectGroups}
             onBulkSave={onBulkSave}
