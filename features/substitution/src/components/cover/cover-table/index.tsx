@@ -145,6 +145,7 @@ export function CoverTable({
                               onClick={() =>
                                 onLinkClick(staff, dayjs(dayInfo.date))
                               }
+                              noWrap
                             >
                               {label}
                             </Link>

@@ -49,6 +49,25 @@ const eventsForCover = graphql(/* GraphQL */ `
               endTime
               type
               allDayEvent
+              attendees {
+                partyInfo {
+                  __typename
+                  ... on Staff {
+                    person {
+                      partyId
+                      title {
+                        id
+                        name
+                        nameTextId
+                      }
+                      firstName
+                      lastName
+                      avatarUrl
+                      type
+                    }
+                  }
+                }
+              }
               rooms {
                 name
                 roomId
@@ -120,6 +139,7 @@ export function useEventsForCover(
   return useQuery({
     ...eventsForCoverQuery(filter),
     enabled,
+    keepPreviousData: true,
     select: ({ swm_eventsForSubstitutionsByStaffByPeriod }) =>
       swm_eventsForSubstitutionsByStaffByPeriod?.eventsByStaff ?? [],
   });

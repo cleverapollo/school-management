@@ -1,6 +1,7 @@
 import {
   AttendanceCodeFilter,
   StudentSessionAttendanceFilter,
+  ParentalAttendanceRequestFilter,
 } from '@tyro/api';
 
 export const attendanceKeys = {
@@ -11,4 +12,8 @@ export const attendanceKeys = {
     [...attendanceKeys.all, 'sessionPartySearch', query] as const,
   sessionAttendance: (filter: StudentSessionAttendanceFilter) =>
     [...attendanceKeys.all, 'sessionAttendance', filter] as const,
+  absentRequests: (filter: ParentalAttendanceRequestFilter) =>
+    [...attendanceKeys.all, 'absentRequests', filter] as const,
 };
+
+

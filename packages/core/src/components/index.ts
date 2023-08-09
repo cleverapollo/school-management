@@ -30,3 +30,4 @@ export * from './tab-page-container';
 export * from './table';
 export * from './tabs';
 export * from './visually-hidden';
+export * from './card-editable-form';

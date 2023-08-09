@@ -7,6 +7,7 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
 import { useMutation } from '@tanstack/react-query';
+import { calendarKeys } from '@tyro/calendar';
 import { substitutionKeys } from './keys';
 
 const applyCover = graphql(/* GraphQL */ `
@@ -24,8 +25,9 @@ export function useApplyCover() {
   return useMutation({
     mutationFn: (input: Swm_InsertSubstitution) =>
       gqlClient.request(applyCover, { input }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(substitutionKeys.all);
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(substitutionKeys.all);
+      queryClient.invalidateQueries(calendarKeys.all);
       toast(t('substitution:coverAppliedSuccessfully'));
     },
     onError: () => {

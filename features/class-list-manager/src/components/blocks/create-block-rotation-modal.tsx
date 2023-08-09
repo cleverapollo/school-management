@@ -47,10 +47,8 @@ export type CreateBlockRotationFormState = Pick<
 };
 
 export type CreateBlockRotationViewProps = {
-  open: NonNullable<ReturnTypeOfUseBlockList>[number] | undefined;
-  blockForCreateRotation?:
-    | NonNullable<ReturnTypeOfUseBlockList>[number]
-    | undefined;
+  open: boolean;
+  blockForCreateRotation?: NonNullable<ReturnTypeOfUseBlockList>[number] | null;
   onClose: () => void;
 };
 
@@ -199,7 +197,7 @@ export const CreateBlockRotationModal = ({
 
   return (
     <Dialog
-      open={!!open}
+      open={open}
       onClose={handleClose}
       scroll="paper"
       fullWidth

@@ -14,6 +14,7 @@ import {
   getTodayTimetableEvents,
 } from '@tyro/calendar';
 import dayjs from 'dayjs';
+import { getPermissionUtils } from '@tyro/api';
 import {
   getStudent,
   getStudents,
@@ -163,7 +164,13 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 index: true,
-                loader: () => redirect('./overview'),
+                loader: async () => {
+                  const permissions = await getPermissionUtils();
+                  if (permissions.isContact || permissions.isStudent) {
+                    return redirect('./classes');
+                  }
+                  return redirect('./overview');
+                },
               },
               {
                 type: NavObjectType.NonMenuLink,
@@ -306,7 +313,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.people.contacts'),
             loader: () => getContacts(),
             hasAccess: (permissions) =>
-              permissions.isStaffUserHasWithPermission(
+              permissions.isStaffUserWithPermission(
                 'ps:1:people:view_contact_list'
               ),
             element: <ContactsListPage />,

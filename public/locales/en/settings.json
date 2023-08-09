@@ -118,6 +118,38 @@
     "octoberReturnsContact": "October returns contact person",
     "dataUnavailable": "Data unavailable."
   },
+  "dtrReturns": {
+    "downloadFile": "Download file",
+    "viewFile": "View file",
+    "form": "Form",
+    "fileA": "File A",
+    "descriptionA": "School roll number and Tyro software details",
+    "fileB": "File B",
+    "descriptionB": "Teacher personal data",
+    "fileC": "File C",
+    "descriptionC": "Class contract data",
+    "fileD": "File D",
+    "descriptionD": "Non-class contract data",
+    "fileE": "File E",
+    "descriptionE": "Timetable grid details",
+    "dtrSummary": "DTR summary",
+    "descriptionDtrSummary": "A summary of files A, B, C, D and E. This PDF is for your review and is not required by the Department",
+    "formT1": "Form T1",
+    "descriptionFormT1": "A completed T1 form, duly certified by the Principal / Management Authority, which provides basic school details. The form should be completed in Black Ink and in Block Capitals. This must be retained in a secure manner in the school until requested.",
+    "formB": {
+      "title": "Form B",
+      "includeInDTR": "Include in DTR",
+      "dtrReference": "DTR reference",
+      "gender": "Gender",
+      "ppsNumber": "PPS number",
+      "payrollNumber": "Payroll number",
+      "post": "Post",
+      "jobSharer": "Job sharer",
+      "qualificationX": "Qualification {{number}}",
+      "currentTeachingSchoolX": "Current teaching school {{number}}",
+      "previousTeachingSchoolX": "Previous teaching school {{number}}"
+    }
+  },
   "permissions": {
     "title": "Permissions",
     "permissionManagement": "Permission management",

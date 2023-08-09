@@ -23,7 +23,7 @@ export function StaffCoverTable({
   ]);
   const [fromDate, toDate] = dateRange;
 
-  const { data, isLoading } = useEventsForCover(
+  const { data, isFetching } = useEventsForCover(
     {
       staffPartyIds: staffPartyId ? [staffPartyId] : undefined,
       fromDate: fromDate.format('YYYY-MM-DD'),
@@ -54,7 +54,7 @@ export function StaffCoverTable({
 
   return (
     <CoverTable
-      isLoading={isLoading}
+      isLoading={isFetching}
       onLinkClick={(_staff, newDate) => goToDateOnDayView(newDate)}
       datepicker={
         <DateRangeSwitcher dateRange={dateRange} onChangeRange={setDateRange} />

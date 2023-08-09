@@ -3,6 +3,7 @@ import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { PersonCheckmarkIcon } from '@tyro/icons';
 
 const SessionAttendance = lazy(() => import('./pages/session'));
+const AbsentRequests = lazy(() => import('./pages/absent-requests'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -20,13 +21,13 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'session',
             title: t('navigation:general.attendance.session'),
-            children: [
-              {
-                type: NavObjectType.NonMenuLink,
-                index: true,
-                element: <SessionAttendance />,
-              },
-            ],
+            element: <SessionAttendance />,
+          },
+          {
+            type: NavObjectType.MenuLink,
+            path: 'absent-requests',
+            title: t('navigation:general.attendance.absentRequests'),
+            element: <AbsentRequests />,
           },
         ],
       },

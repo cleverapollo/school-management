@@ -7,11 +7,16 @@ import {
   styled,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { getLocaleTimestampFromDateString } from '@tyro/core';
+import {
+  getLocaleTimestampFromDateString,
+  usePreferredNameLayout,
+} from '@tyro/core';
+import { StaffAttendee } from '../../../utils/cover-utils';
 
 interface CoverCardTooltipProps {
   timeslotInfo: { startTime: string; endTime: string } | null;
   children: React.ReactElement;
+  additionalTeachers?: StaffAttendee['partyInfo']['person'][];
 }
 
 const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
@@ -26,8 +31,10 @@ const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
 
 function CoverCardTooltipContent({
   timeslotInfo,
-}: Pick<CoverCardTooltipProps, 'timeslotInfo'>) {
+  additionalTeachers,
+}: Pick<CoverCardTooltipProps, 'timeslotInfo' | 'additionalTeachers'>) {
   const { t } = useTranslation(['common']);
+  const { displayName } = usePreferredNameLayout();
 
   return (
     <Stack component="dl" direction="row" spacing={2} m={0.5}>
@@ -47,6 +54,27 @@ function CoverCardTooltipContent({
           </Typography>
         </Stack>
       )}
+      {Array.isArray(additionalTeachers) && additionalTeachers.length > 0 && (
+        <Stack>
+          <>
+            <Typography
+              variant="caption"
+              component="dt"
+              color="text.secondary"
+              fontWeight="600"
+            >
+              {t('common:additionalTeacher', {
+                count: additionalTeachers.length,
+              })}
+            </Typography>
+            {additionalTeachers.map((person) => (
+              <Typography key={person.partyId} variant="caption" component="dt">
+                {displayName(person)}
+              </Typography>
+            ))}
+          </>
+        </Stack>
+      )}
     </Stack>
   );
 }
@@ -54,6 +82,7 @@ function CoverCardTooltipContent({
 export function CoverCardTooltip({
   timeslotInfo,
   children,
+  additionalTeachers,
 }: CoverCardTooltipProps) {
   if (!timeslotInfo) {
     return children;
@@ -61,7 +90,12 @@ export function CoverCardTooltip({
 
   return (
     <LightTooltip
-      title={<CoverCardTooltipContent timeslotInfo={timeslotInfo} />}
+      title={
+        <CoverCardTooltipContent
+          timeslotInfo={timeslotInfo}
+          additionalTeachers={additionalTeachers}
+        />
+      }
       describeChild
       enterDelay={1000}
       enterNextDelay={1000}

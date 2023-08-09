@@ -9,7 +9,8 @@
       "title": "Attendance",
       "overview": "Overview",
       "codes": "Attendance codes",
-      "session": "Session"
+      "session": "Session",
+      "absentRequests": "Absent requests"
     },
     "absence": {
       "title": "Absence",
@@ -54,6 +55,7 @@
       "ppod": "PPOD",
       "schoolDetails": "School details",
       "login": "Login",
+      "dtrReturns": "DTR Returns",
       "userAccess": "User access",
       "permissions": "Permissions"
     },

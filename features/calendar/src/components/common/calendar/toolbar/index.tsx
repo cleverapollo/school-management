@@ -3,10 +3,11 @@ import { styled } from '@mui/material/styles';
 import { Stack, Button, Box } from '@mui/material';
 import { useResponsive } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { EditCalendarIcon } from '@tyro/icons';
+import { AddIcon, EditCalendarIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import FullCalendar from '@fullcalendar/react';
+import { usePermissions } from '@tyro/api';
 import { CalendarView } from '../../../../types';
 import { CalendarViewSwitcher } from './view-switcher';
 import { DateSwitcher } from './date-switcher';
@@ -48,7 +49,7 @@ export function CalendarToolbar({
   const isDesktop = useResponsive('up', 'sm');
   const { t } = useTranslation(['calendar']);
   const currentDate = dayjs(date);
-
+  const { isTyroUser } = usePermissions();
   const onPreviousDateClick = () => {
     const calendarEl = calendarRef.current;
     if (calendarEl) {
@@ -103,20 +104,22 @@ export function CalendarToolbar({
         >
           {t('calendar:filterCalendar')}
         </Button>
-        {/* <Button */}
-        {/*  size="small" */}
-        {/*  color="primary" */}
-        {/*  variant="text" */}
-        {/*  onClick={onAddEvent} */}
-        {/*  sx={{ */}
-        {/*    '& .MuiButton-startIcon': { */}
-        {/*      mr: 0.25, */}
-        {/*    }, */}
-        {/*  }} */}
-        {/*  startIcon={<AddIcon sx={{ width: 24, height: 24 }} />} */}
-        {/* > */}
-        {/*  {t('calendar:addEvent')} */}
-        {/* </Button> */}
+        {isTyroUser && (
+          <Button
+            size="small"
+            color="primary"
+            variant="text"
+            onClick={onAddEvent}
+            sx={{
+              '& .MuiButton-startIcon': {
+                mr: 0.25,
+              },
+            }}
+            startIcon={<AddIcon sx={{ width: 24, height: 24 }} />}
+          >
+            {t('calendar:addEvent')}
+          </Button>
+        )}
       </Stack>
     </RootStyle>
   );

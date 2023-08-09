@@ -5,6 +5,8 @@ import {
   RHFDatePicker,
   RHFSwitch,
   useFormValidator,
+  CardEditableForm,
+  CardEditableFormProps,
 } from '@tyro/core';
 import dayjs from 'dayjs';
 
@@ -13,10 +15,6 @@ import { CatalogueSubjectOption } from '@tyro/settings';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { EmploymentCapacityAutocomplete } from '../../../../components/common/employment-capacity-autocomplete';
 import { useStaffPersonal } from '../../../../api/staff/personal';
-import {
-  CardEditableForm,
-  CardEditableFormProps,
-} from '../../../../components/common/card-editable-form';
 import { StaffPostsAutocomplete } from '../../../../components/common/staff-posts-autocomplete';
 import { CompetencySubjectsAutocomplete } from '../../../../components/common/competency-subjects-autocomplete';
 import { StaffPostsOption } from '../../../../api/staff/staff-posts';

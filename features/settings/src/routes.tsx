@@ -14,6 +14,8 @@ import {
   getStaffForSelect,
   getStudentsForSelect,
 } from '@tyro/people';
+import { getStaffPosts } from '@tyro/people/src/api/staff/staff-posts';
+import { getEmploymentCapacities } from '@tyro/people/src/api/staff/employment-capacities';
 import { AbsenceTypes, getStaffWorkAbsenceTypes } from '@tyro/substitution';
 import { getCoreRooms } from './api/rooms';
 import { getCatalogueSubjects } from './api/subjects';
@@ -21,6 +23,7 @@ import { getPpodCredentialsStatus } from './api/ppod/ppod-credentials-status';
 import { getUserAccess } from './api/user-access/user-access';
 import { getPermissionGroups } from './api/permissions/user-permissions-groups';
 import { getPermissionSets } from './api/permissions/user-permissions-sets';
+import { getFormB } from './api/dtr-returns/form-b';
 
 const Rooms = lazy(() => import('./pages/rooms'));
 const AcademicYearsList = lazy(() => import('./pages/academic-years'));
@@ -29,6 +32,8 @@ const Ppod = lazy(() => import('./pages/ppod/ppod'));
 const Login = lazy(() => import('./pages/ppod/login'));
 const Sync = lazy(() => import('./pages/ppod/sync'));
 const SchoolDetails = lazy(() => import('./pages/ppod/school-details'));
+const DTRReturns = lazy(() => import('./pages/dtr-returns/dtr-returns'));
+const DTRReturnsFileB = lazy(() => import('./pages/dtr-returns/file-b'));
 const UserAccessContainer = lazy(
   () => import('./components/user-access/user-access-container')
 );
@@ -240,6 +245,25 @@ export const getRoutes: NavObjectFunction = (t) => [
             hasAccess: (permissions) =>
               permissions.hasPermission('ps:1:general_admin:ppod_set_password'),
             element: <Login />,
+          },
+          {
+            type: NavObjectType.MenuLink,
+            title: t('navigation:management.settings.dtrReturns'),
+            path: 'dtr-returns',
+            hasAccess: (permissions) => permissions.isStaffUser,
+            element: <DTRReturns />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: 'dtr-returns/file-b',
+            hasAccess: (permissions) => permissions.isStaffUser,
+            loader: () =>
+              Promise.all([
+                getFormB({}),
+                getStaffPosts(),
+                getEmploymentCapacities(),
+              ]),
+            element: <DTRReturnsFileB />,
           },
         ],
       },

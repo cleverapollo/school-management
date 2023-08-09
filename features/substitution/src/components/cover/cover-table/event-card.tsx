@@ -1,11 +1,18 @@
+import { useMemo, useState } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import { usePreferredNameLayout } from '@tyro/core';
-import { useState } from 'react';
 import { CoverEvent } from '../../../hooks/use-cover-table';
 import { ReturnTypeFromUseEventsForCover } from '../../../api/staff-work-events-for-cover';
 import { CoverCardTooltip } from './cover-card-tooltip';
 import { EventCoverContextMenu } from './event-context-menu';
-import { getCurrentCoverRoom } from '../../../utils/cover-utils';
+import {
+  getCurrentCoverRoom,
+  getAdditionalStaff,
+} from '../../../utils/cover-utils';
+import {
+  SubIconWithType,
+  colorsBySubstitutionType,
+} from './sub-icon-with-type';
 
 interface EventCoverCardProps {
   eventInfo: CoverEvent;
@@ -30,10 +37,17 @@ export function EventCoverCard({
 
   const rooms = getCurrentCoverRoom(eventInfo);
 
-  const needsSubstitution = Boolean(substitution);
+  const { substitutionType, substituteStaff } = substitution ?? {};
+  const additionalTeachers = useMemo(
+    () => getAdditionalStaff(eventInfo),
+    [event?.attendees, staff, substituteStaff]
+  );
 
-  const opacity = !needsSubstitution ? 1 : 0.2;
-  const color = !needsSubstitution && event.colour ? event.colour : 'slate';
+  const color = substitutionType
+    ? colorsBySubstitutionType[
+        substitutionType.code as keyof typeof colorsBySubstitutionType
+      ]
+    : 'slate';
   const borderColor =
     isSelected || isContextMenuOpen ? `${color}.600` : 'white';
 
@@ -44,11 +58,11 @@ export function EventCoverCard({
           startTime: event.startTime,
           endTime: event.endTime,
         }}
+        additionalTeachers={additionalTeachers}
       >
         <Box
           sx={{
             backgroundColor: `${color}.100`,
-            opacity,
             borderRadius: 0.75,
             width: 240,
             transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
@@ -92,9 +106,14 @@ export function EventCoverCard({
                 alignItems="center"
                 spacing={1}
               >
-                <Typography variant="subtitle2" noWrap sx={{ flex: 1 }}>
-                  {event.name}
-                </Typography>
+                <Stack direction="row" alignItems="center" spacing={0.75}>
+                  <Typography variant="subtitle2" noWrap sx={{ flex: 1 }}>
+                    {event.name}
+                  </Typography>
+                  {substitutionType && (
+                    <SubIconWithType substitutionType={substitutionType} />
+                  )}
+                </Stack>
                 <Typography variant="subtitle2" noWrap>
                   {rooms}
                 </Typography>
@@ -111,7 +130,10 @@ export function EventCoverCard({
                   noWrap
                   sx={{ flex: 1 }}
                 >
-                  {displayName(staff)}
+                  {displayName(substituteStaff ?? staff)}
+                  {additionalTeachers.length > 0
+                    ? ` +${additionalTeachers.length}`
+                    : ''}
                 </Typography>
               </Stack>
             </Stack>
