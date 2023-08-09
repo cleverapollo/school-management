@@ -49,6 +49,7 @@
   "approveRequests": "Approve requests",
   "declineRequests": "Decline requests",
   "dateOfAbsence": "Date of absence",
+  "feedback": "Feedback",
   "nameByCodeType": {
     "PRESENT": "Present",
     "LATE": "Late",

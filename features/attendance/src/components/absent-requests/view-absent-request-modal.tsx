@@ -35,7 +35,7 @@ import {
 dayjs.extend(LocalizedFormat);
 
 export type ViewAbsentRequestModalProps = {
-  initialAbsentRequestState?: ReturnTypeFromUseAbsentRequests | undefined;
+  initialAbsentRequestState?: ReturnTypeFromUseAbsentRequests;
   onClose: () => void;
 };
 

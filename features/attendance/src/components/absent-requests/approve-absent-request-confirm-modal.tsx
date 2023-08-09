@@ -19,7 +19,7 @@ export interface ApproveAbsentRequestConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
   onApprove?: () => void;
-  absentRequestState: SaveParentalAttendanceRequest[] | undefined;
+  absentRequestState?: SaveParentalAttendanceRequest[];
 }
 
 export function ApproveAbsentRequestConfirmModal({

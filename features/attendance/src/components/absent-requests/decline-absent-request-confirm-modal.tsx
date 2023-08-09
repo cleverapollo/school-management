@@ -35,7 +35,7 @@ export interface DeclineAbsentRequestConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
   onDecline?: () => void;
-  absentRequestState?: SaveParentalAttendanceRequest[] | undefined;
+  absentRequestState?: SaveParentalAttendanceRequest[];
 }
 
 export function DeclineAbsentRequestConfirmModal({
@@ -61,24 +61,14 @@ export function DeclineAbsentRequestConfirmModal({
     isSuccess: isSubmitSuccessful,
   } = useCreateOrUpdateAbsentRequest();
 
-  const onSubmit = ({
-    adminNote,
-    ...restData
-  }: DeclineAbsentRequestFormState) => {
+  const onSubmit = ({ adminNote }: DeclineAbsentRequestFormState) => {
     if (absentRequestState !== undefined) {
       createOrUpdateAbsentRequestMutation(
-        absentRequestState?.length === 1
-          ? [
-              {
-                ...restData,
-                adminNote,
-                status: ParentalAttendanceRequestStatus.Denied,
-              },
-            ]
-          : absentRequestState.map((absentRequest) => ({
-              ...absentRequest,
-              status: ParentalAttendanceRequestStatus.Denied,
-            })),
+        absentRequestState.map((absentRequest) => ({
+          ...absentRequest,
+          adminNote,
+          status: ParentalAttendanceRequestStatus.Denied,
+        })),
         {
           onSuccess: onClose,
         }
@@ -87,7 +77,7 @@ export function DeclineAbsentRequestConfirmModal({
   };
 
   useEffect(() => {
-    if (absentRequestState?.length === 1) {
+    if (absentRequestState !== undefined) {
       reset(absentRequestState[0]);
     }
   }, [absentRequestState]);
@@ -114,6 +104,7 @@ export function DeclineAbsentRequestConfirmModal({
             })}
           </DialogContentText>
           <RHFTextField
+            label={t('attendance:feedback')}
             controlProps={{
               name: 'adminNote',
               control,
