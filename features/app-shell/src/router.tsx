@@ -176,7 +176,13 @@ function useAppRouter() {
       children: [
         {
           path: '/',
-          loader: () => redirect('/groups/class'),
+          loader: async () => {
+            const permissions = await getPermissionUtils();
+            if (permissions.isStudent || permissions.isContact) {
+              return redirect('/people/students');
+            }
+            return redirect('/groups/class');
+          },
         },
         ...buildRouteTree(getNavCategories(mockTFunction)),
       ],

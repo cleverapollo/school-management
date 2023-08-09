@@ -184,11 +184,19 @@ export default function StudentsListPage() {
                         label: t('people:sendSms'),
                         icon: <MobileIcon />,
                         onClick: onOpenSendSms,
+                        hasAccess: ({ isStaffUserWithPermission }) =>
+                          isStaffUserWithPermission(
+                            'ps:1:communications:send_sms'
+                          ),
                       },
                       {
                         label: t('people:changeProgrammeYear'),
                         icon: <CalendarEditPenIcon />,
                         onClick: onOpenChangeYearGroup,
+                        hasAccess: ({ isStaffUserWithPermission }) =>
+                          isStaffUserWithPermission(
+                            'ps:1:groups:edit_class_list_manager'
+                          ),
                       },
                     ]}
                   />
