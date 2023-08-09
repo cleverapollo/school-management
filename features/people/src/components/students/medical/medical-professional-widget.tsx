@@ -136,12 +136,20 @@ export function StudentMedicalProfessionalWidget({
                   label: t('common:actions.add'),
                   icon: <AddIcon />,
                   onClick: handleAddCondition,
+                  hasAccess: ({ isStaffUserWithPermission }) =>
+                    isStaffUserWithPermission(
+                      'ps:1:wellbeing:write_student_medical'
+                    ),
                 },
                 {
                   label: t('common:actions.edit'),
                   icon: <EditIcon />,
                   onClick: handleEditCondition,
                   disabled: !numberOfContacts,
+                  hasAccess: ({ isStaffUserWithPermission }) =>
+                    isStaffUserWithPermission(
+                      'ps:1:wellbeing:write_student_medical'
+                    ),
                 },
 
                 {
@@ -149,6 +157,10 @@ export function StudentMedicalProfessionalWidget({
                   icon: <TrashIcon />,
                   onClick: handleDeleteCondition,
                   disabled: !numberOfContacts,
+                  hasAccess: ({ isStaffUserWithPermission }) =>
+                    isStaffUserWithPermission(
+                      'ps:1:wellbeing:write_student_medical'
+                    ),
                 },
               ]}
             />

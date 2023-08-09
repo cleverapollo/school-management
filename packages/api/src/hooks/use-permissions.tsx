@@ -15,7 +15,7 @@ export interface PermissionUtils {
   hasPermission: (permission: string) => boolean;
   hasAtLeastOnePermission: (permissions: Array<string>) => boolean;
   hasAllPermissions: (permissions: Array<string>) => boolean;
-  isStaffUserHasWithPermission: (permission: string) => boolean;
+  isStaffUserWithPermission: (permission: string) => boolean;
   isStaffUserHasWithAtLestOnePermission: (
     permissions: Array<string>
   ) => boolean;
@@ -48,7 +48,7 @@ export async function getPermissionUtils(): Promise<PermissionUtils> {
     ...getPermissionFunctions(usersPermissions),
     userType: activeProfile?.profileType?.userType,
     tenant: activeProfile?.tenant?.tenant,
-    isStaffUserHasWithPermission: (permission: string) =>
+    isStaffUserWithPermission: (permission: string) =>
       isStaffUser({ userType, tenant }) &&
       usersPermissions.includes(permission),
     isStaffUserHasWithAtLestOnePermission: (permissions: Array<string>) =>
@@ -81,7 +81,7 @@ export function usePermissions(): UsePermissionsReturn {
     hasAtLeastOnePermission,
     hasAllPermissions,
     userType,
-    isStaffUserHasWithPermission: (permission: string) =>
+    isStaffUserWithPermission: (permission: string) =>
       isStaffUser({ userType, tenant }) &&
       usersPermissions.includes(permission),
     isStaffUserHasWithAtLestOnePermission: (permissions: Array<string>) =>
