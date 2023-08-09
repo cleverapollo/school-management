@@ -28,6 +28,7 @@
   "post": "Post",
   "note": "Note",
   "notes": "Notes",
+  "noteType": "Note type",
   "labelsAndTags": "Labels / Tags",
   "carRegistration": "Car registration",
   "ppsNumber": "PPS number",
@@ -123,6 +124,9 @@
   "yesUnlink": "Yes, Unlink",
   "createContact": "Create contact",
   "createNote": "Create note",
+  "editNote": "Edit note",
+  "deleteNote": "Delete note",
+  "addNote": "Add note",
   "pageTitle": {
     "contacts": "List of contacts",
     "createContact": "Add a new contact",
@@ -216,5 +220,10 @@
   "addMedicalProfessional": "Add medical professional",
   "editMedicalProfessional": "Edit medical professional",
   "deleteMedicalProfessional": "Delete medical professional",
-  "deleteMedicalProfessionalConfirmation": "You are about to delete this medical professional. Are you sure you want to continue?"
+  "deleteMedicalProfessionalConfirmation": "You are about to delete this medical professional. Are you sure you want to continue?",
+  "noteCategory": {
+    "BEHAVIOUR": "Behaviour",
+    "MISC": "Misc",
+    "NOTE": "Note"
+  }
 }

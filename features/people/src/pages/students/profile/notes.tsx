@@ -1,18 +1,28 @@
 import { useParams } from 'react-router-dom';
-import { useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import {
+  ActionMenu,
   getNumber,
   GridOptions,
   ICellRendererParams,
   PageHeading,
   Table,
+  useDebouncedValue,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { Box, Button, Chip } from '@mui/material';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { AddIcon } from '@tyro/icons';
+import { AddIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
 import { useNotes } from '../../../api/note/list';
+import {
+  EditNoteModal,
+  EditNoteModalProps,
+} from '../../../components/students/note/edit-note-modal';
+import {
+  DeleteNoteConfirmModal,
+  DeleteNoteConfirmModalProps,
+} from '../../../components/students/note/delete-note-confirm-modal';
 
 dayjs.extend(LocalizedFormat);
 
@@ -21,7 +31,11 @@ type ReturnTypeFromUseNotes = NonNullable<
 >[number];
 
 const getStudentNoteColumns = (
-  translate: TFunction<('common' | 'people')[]>
+  translate: TFunction<('common' | 'people')[]>,
+  onClickEdit: Dispatch<SetStateAction<EditNoteModalProps['initialNoteState']>>,
+  setNoteToDelete: Dispatch<
+    SetStateAction<DeleteNoteConfirmModalProps['noteDetails']>
+  >
 ): GridOptions<ReturnTypeFromUseNotes>['columnDefs'] => [
   {
     field: 'note',
@@ -50,6 +64,31 @@ const getStudentNoteColumns = (
     field: 'createdBy',
     headerName: translate('common:createdBy'),
   },
+  {
+    suppressColumnsToolPanel: true,
+    sortable: false,
+    cellClass: 'ag-show-on-row-interaction',
+    cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseNotes>) =>
+      data && (
+        <ActionMenu
+          iconOnly
+          buttonIcon={<VerticalDotsIcon />}
+          menuItems={[
+            {
+              label: translate('people:editNote'),
+              onClick: () => onClickEdit(data),
+            },
+            {
+              label: translate('common:actions.delete'),
+              icon: <TrashIcon />,
+              onClick: () => {
+                setNoteToDelete(data);
+              },
+            },
+          ]}
+        />
+      ),
+  },
 ];
 
 export default function StudentProfileNotesPage() {
@@ -62,10 +101,29 @@ export default function StudentProfileNotesPage() {
   const [selectedNotes, setSelectedNotes] = useState<ReturnTypeFromUseNotes[]>(
     []
   );
+  const {
+    value: noteDetails,
+    debouncedValue: debouncedNoteDetails,
+    setValue: setNoteDetails,
+  } = useDebouncedValue<EditNoteModalProps['initialNoteState']>({
+    defaultValue: undefined,
+  });
+  const {
+    value: noteToDelete,
+    debouncedValue: debouncedNoteToDelete,
+    setValue: setNoteToDelete,
+  } = useDebouncedValue<DeleteNoteConfirmModalProps['noteDetails']>({
+    defaultValue: null,
+  });
 
-  const studentNoteColumns = useMemo(() => getStudentNoteColumns(t), [t]);
+  const studentNoteColumns = useMemo(
+    () => getStudentNoteColumns(t, setNoteDetails, setNoteToDelete),
+    [t]
+  );
 
-  const handleCreateNote = () => {};
+  const handleCreateNote = () => {
+    setNoteDetails({});
+  };
 
   return (
     <>
@@ -93,6 +151,15 @@ export default function StudentProfileNotesPage() {
         onRowSelection={(rows) => {
           setSelectedNotes(rows);
         }}
+      />
+      <EditNoteModal
+        initialNoteState={noteDetails}
+        onClose={() => setNoteDetails(undefined)}
+      />
+      <DeleteNoteConfirmModal
+        open={!!noteToDelete}
+        onClose={() => setNoteToDelete(null)}
+        noteDetails={noteToDelete || debouncedNoteToDelete}
       />
     </>
   );

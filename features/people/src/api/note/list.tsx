@@ -1,7 +1,17 @@
-import { gqlClient, graphql, Notes_NotesQuery, queryClient } from '@tyro/api';
+import {
+  gqlClient,
+  graphql,
+  Notes_NotesQuery,
+  queryClient,
+  UseQueryReturnType,
+} from '@tyro/api';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { peopleKeys } from '../keys';
+
+export type ReturnTypeFromUseNotes = UseQueryReturnType<
+  typeof useNotes
+>[number];
 
 const notes = graphql(/* GraphQL */ `
   query notes_notes($filter: Notes_NotesFilter!) {
@@ -11,8 +21,11 @@ const notes = graphql(/* GraphQL */ `
       createdOn
       createdBy
       tags {
+        id
         name
         category
+        descriptionTextId
+        nameTextId
       }
     }
   }

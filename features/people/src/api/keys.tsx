@@ -14,6 +14,7 @@ export const peopleKeys = {
   },
   notes: {
     all: () => [...peopleKeys.all, 'notes'] as const,
+    noteTags: () => [...peopleKeys.notes.all(), 'noteTags'] as const,
     upsertNote: () => [...peopleKeys.notes.all(), 'upsertNote'] as const,
   },
   staff: {

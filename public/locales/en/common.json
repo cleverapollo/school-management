@@ -237,6 +237,7 @@
     "title": "Cancel",
     "description": "Are you sure you want to cancel?"
   },
+  "areYouSure": "Are you sure",
   "launchingSoon": "Launching soon",
   "wellEmailWhenLive": "We'll email you once this feature is live.",
   "phoneNumber": "Phone number",
