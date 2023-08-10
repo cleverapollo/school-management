@@ -67,8 +67,8 @@
     "H": "Student on holiday"
   },
   "attendanceRequestStatus": {
-    "APPROVED": "approved",
-    "DENIED": "denied",
-    "PENDING": "pending"
+    "APPROVED": "Approved",
+    "DENIED": "Declined",
+    "PENDING": "Pending"
   }
 }

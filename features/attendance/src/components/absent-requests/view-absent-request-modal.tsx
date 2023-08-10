@@ -200,8 +200,8 @@ export const ViewAbsentRequestModal = ({
 
         <Button
           variant="contained"
-          color="error"
           onClick={onOpenDeclineAbsentRequestModal}
+          color="error"
           disabled={
             initialAbsentRequestState?.status ===
             ParentalAttendanceRequestStatus.Denied
@@ -212,8 +212,8 @@ export const ViewAbsentRequestModal = ({
 
         <Button
           variant="contained"
-          color="success"
           onClick={onOpenApproveAbsentRequestModal}
+          color="primary"
           disabled={
             initialAbsentRequestState?.status ===
             ParentalAttendanceRequestStatus.Approved

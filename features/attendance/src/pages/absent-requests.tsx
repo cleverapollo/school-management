@@ -41,6 +41,7 @@ const getAbsentRequestColumns = (
     field: 'classGroup.name',
     headerName: t('common:name'),
     checkboxSelection: ({ data }) => Boolean(data),
+    headerCheckboxSelection: true,
     lockVisible: true,
     valueGetter: ({ data }) => displayName(data?.student),
     cellRenderer: ({

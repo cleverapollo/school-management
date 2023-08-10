@@ -19,7 +19,7 @@ export const getRoutes: NavObjectFunction = (t) => [
           {
             type: NavObjectType.MenuLink,
             path: 'absent-requests',
-            title: t('navigation:general.attendance.absentRequests'),
+            title: t('navigation:general.attendance.absentRequest'),
             children: [
               {
                 type: NavObjectType.NonMenuLink,

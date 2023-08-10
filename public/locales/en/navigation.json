@@ -9,7 +9,7 @@
       "title": "Attendance",
       "overview": "Overview",
       "codes": "Attendance codes",
-      "absentRequests": "Absent requests"
+      "absentRequest": "Absent Request Management"
     },
     "absence": {
       "title": "Absence",
