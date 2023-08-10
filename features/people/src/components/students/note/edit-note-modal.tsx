@@ -6,12 +6,13 @@ import {
   DialogContent,
   Stack,
 } from '@mui/material';
-import { RHFAutocomplete, RHFTextField, useFormValidator } from '@tyro/core';
+import { getNumber, RHFAutocomplete, RHFTextField } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import { Notes_Tag, Notes_UpsertNote } from '@tyro/api';
 import React, { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { useUpsertNote } from '../../../api/note/upsert-note';
 import { useNoteTags } from '../../../api/note/note-tags';
 
@@ -32,15 +33,15 @@ export const EditNoteModal = ({
   initialNoteState,
   onClose,
 }: EditNoteModalProps) => {
+  const { id } = useParams();
   const { t } = useTranslation(['common', 'people']);
+  const studentId = getNumber(id);
   const {
     mutate: createOrUpdateNoteMutation,
     isLoading: isSubmitting,
     isSuccess: isSubmitSuccessful,
   } = useUpsertNote();
   const { data: noteTags = [] } = useNoteTags();
-
-  const { resolver, rules } = useFormValidator<Partial<EditNoteFormState>>();
 
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -57,18 +58,21 @@ export const EditNoteModal = ({
     tags,
     ...restData
   }: Partial<EditNoteFormState>) => {
-    createOrUpdateNoteMutation(
-      [
+    if (studentId) {
+      createOrUpdateNoteMutation(
+        [
+          {
+            note,
+            tags: (tags ?? []).map(({ id }) => id ?? 0),
+            referencedParties: [studentId],
+            ...restData,
+          },
+        ],
         {
-          note,
-          tags: (tags ?? []).map(({ id }) => id ?? 0),
-          ...restData,
-        },
-      ],
-      {
-        onSuccess: onClose,
-      }
-    );
+          onSuccess: onClose,
+        }
+      );
+    }
   };
 
   useEffect(() => {

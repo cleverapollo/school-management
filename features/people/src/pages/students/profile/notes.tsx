@@ -50,8 +50,9 @@ const getStudentNoteColumns = (
       data?.tags?.map((tag, idx) => (
         <Chip
           key={`note${data.id}-tag${idx}`}
-          label={translate(`common:noteTagCategory.${tag.category}`)}
+          label={tag.name}
           variant="soft"
+          sx={{ mr: 1 }}
         />
       )),
   },

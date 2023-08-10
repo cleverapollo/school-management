@@ -1,6 +1,7 @@
 import { ConfirmDialog } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { ReturnTypeFromUseNotes } from '../../../api/note/list';
+import { useDeleteNote } from '../../../api/note/delete-note';
 
 export interface DeleteNoteConfirmModalProps {
   open: boolean;
@@ -15,9 +16,11 @@ export function DeleteNoteConfirmModal({
 }: DeleteNoteConfirmModalProps) {
   const { t } = useTranslation(['common', 'people']);
 
+  const { mutateAsync: deleteNote } = useDeleteNote();
+
   const onSubmit = async () => {
-    if (noteDetails) {
-      // TODO: implement api integration
+    if (noteDetails && noteDetails.id) {
+      await deleteNote({ noteIds: [noteDetails.id] });
     }
   };
 

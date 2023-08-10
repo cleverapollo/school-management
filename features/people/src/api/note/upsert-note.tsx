@@ -7,7 +7,9 @@ import { peopleKeys } from '../keys';
 
 const upsertNote = graphql(/* GraphQL */ `
   mutation notes_upsertNotes($input: [Notes_UpsertNote]) {
-    notes_upsertNotes(input: $input)
+    notes_upsertNotes(input: $input) {
+      id
+    }
   }
 `);
 
