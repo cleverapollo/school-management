@@ -90,6 +90,7 @@ function getClientEnvironment(publicUrl) {
         FAST_REFRESH: process.env.FAST_REFRESH !== 'false',
         AG_GRID_KEY: process.env.AG_GRID_KEY,
         FULL_CALENDAR_KEY: process.env.FULL_CALENDAR_KEY,
+        SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
       }
     );
   // Stringify all values so we can feed into webpack DefinePlugin
