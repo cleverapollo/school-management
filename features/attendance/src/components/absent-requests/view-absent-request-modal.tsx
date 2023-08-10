@@ -65,7 +65,7 @@ const getAbsentRequestDataWithLabels = (
     {
       label: t('common:createdBy'),
       value: contact,
-      valueRenderer: `${contactName}, ${relationShip}`,
+      valueRenderer: contact ? `${contactName}, ${relationShip}` : '-',
     },
     {
       label: t('attendance:absenceType'),
@@ -190,6 +190,7 @@ export const ViewAbsentRequestModal = ({
           fields={absentRequestDataWithLabels}
           resolver={absentRequestFormResolver}
           onSave={handleEdit}
+          sx={{ mx: -3 }}
           hideBorder
         />
       </DialogContent>
