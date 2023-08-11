@@ -20,6 +20,10 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'absent-requests',
             title: t('navigation:general.attendance.absentRequests'),
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission(
+                'ps:1:staff_work_management:absences_read'
+              ),
             children: [
               {
                 type: NavObjectType.NonMenuLink,
