@@ -70,5 +70,10 @@
     "APPROVED": "Approved",
     "DENIED": "Declined",
     "PENDING": "Pending"
+  },
+  "absenceRequestFormatByType": {
+    "MULTI_DAY": "{{startDate}} - {{endDate}}",
+    "SINGLE_DAY": "{{startDate}}",
+    "PARTIAL_DAY": "{{startDate}} from {{startTime}} to {{endTime}}"
   }
 }
