@@ -15,7 +15,7 @@ export function useSyncFromPpodQuery() {
 
   return useMutation({
     mutationFn: () =>
-      fetchClient<SyncRequest>('/api/ppod/sync', {
+      §fetchClient<SyncRequest>('/api/ppod/sync', {
         method: 'POST',
         bodyType: 'json',
       }),
