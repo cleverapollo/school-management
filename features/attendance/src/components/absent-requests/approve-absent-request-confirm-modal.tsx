@@ -39,14 +39,10 @@ export function ApproveAbsentRequestConfirmModal({
   const onSubmit = () => {
     if (absentRequestState !== undefined) {
       createOrUpdateAbsentRequestMutation(
-        absentRequestState
-          .filter(
-            ({ status }) => status !== ParentalAttendanceRequestStatus.Approved
-          )
-          .map((absentRequest) => ({
-            ...absentRequest,
-            status: ParentalAttendanceRequestStatus.Approved,
-          }))
+        absentRequestState.map((absentRequest) => ({
+          ...absentRequest,
+          status: ParentalAttendanceRequestStatus.Approved,
+        }))
       );
     }
   };

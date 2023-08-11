@@ -64,15 +64,11 @@ export function DeclineAbsentRequestConfirmModal({
   const onSubmit = ({ adminNote }: DeclineAbsentRequestFormState) => {
     if (absentRequestState !== undefined) {
       createOrUpdateAbsentRequestMutation(
-        absentRequestState
-          .filter(
-            ({ status }) => status !== ParentalAttendanceRequestStatus.Denied
-          )
-          .map((absentRequest) => ({
-            ...absentRequest,
-            adminNote,
-            status: ParentalAttendanceRequestStatus.Denied,
-          }))
+        absentRequestState.map((absentRequest) => ({
+          ...absentRequest,
+          adminNote,
+          status: ParentalAttendanceRequestStatus.Denied,
+        }))
       );
     }
   };

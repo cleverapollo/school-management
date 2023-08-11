@@ -187,12 +187,16 @@ export default function AbsentRequests() {
       <ApproveAbsentRequestConfirmModal
         isOpen={isApproveAbsentRequestsModalOpen}
         onClose={onCloseApproveAbsentRequestsModal}
-        absentRequestState={selectedAbsentRequests}
+        absentRequestState={selectedAbsentRequests.filter(
+          ({ status }) => status !== ParentalAttendanceRequestStatus.Approved
+        )}
       />
       <DeclineAbsentRequestConfirmModal
         isOpen={isDeclineAbsentRequestsModalOpen}
         onClose={onCloseDeclineAbsentRequestsModal}
-        absentRequestState={selectedAbsentRequests}
+        absentRequestState={selectedAbsentRequests.filter(
+          ({ status }) => status !== ParentalAttendanceRequestStatus.Denied
+        )}
       />
     </PageContainer>
   );
