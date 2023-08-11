@@ -246,7 +246,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             title: t('navigation:management.settings.dtrReturns'),
             path: 'dtr-returns',
-            hasAccess: (permissions) => permissions.isStaffUser,
+            hasAccess: (permissions) => permissions.isTyroUser,
             element: <DTRReturns />,
           },
           {
