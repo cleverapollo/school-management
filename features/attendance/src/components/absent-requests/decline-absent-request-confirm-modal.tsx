@@ -68,10 +68,7 @@ export function DeclineAbsentRequestConfirmModal({
           ...absentRequest,
           adminNote,
           status: ParentalAttendanceRequestStatus.Denied,
-        })),
-        {
-          onSuccess: onClose,
-        }
+        }))
       );
     }
   };

@@ -31,6 +31,7 @@ import {
   useAttendanceCodes,
   useCreateOrUpdateAbsentRequest,
 } from '../../api';
+import { formatDateOfAbsence } from '../../utils/format-date-of-absence';
 
 dayjs.extend(LocalizedFormat);
 
@@ -45,7 +46,8 @@ const getAbsentRequestDataWithLabels = (
   displayName: ReturnTypeDisplayName,
   attendanceCodes: AttendanceCode[] | undefined
 ): CardEditableFormProps<ReturnTypeFromUseAbsentRequests>['fields'] => {
-  const { from, contact, attendanceCode, parentNote } = data || {};
+  if (data === undefined) return [];
+  const { contact, attendanceCode, parentNote, requestType } = data;
 
   const contactName = displayName(contact?.person);
   const relationShip =
@@ -59,13 +61,16 @@ const getAbsentRequestDataWithLabels = (
   return [
     {
       label: t('attendance:dateOfAbsence'),
-      value: from,
-      valueRenderer: dayjs(from).format('LL'),
+      value: t(
+        `attendance:absenceRequestFormatByType.${requestType}`,
+        formatDateOfAbsence(data)
+      ),
     },
     {
       label: t('common:createdBy'),
       value: contact,
-      valueRenderer: `${contactName}, ${relationShip}`,
+      valueRenderer:
+        [contactName, relationShip].filter(Boolean).join(', ') || '-',
     },
     {
       label: t('attendance:absenceType'),
@@ -190,6 +195,7 @@ export const ViewAbsentRequestModal = ({
           fields={absentRequestDataWithLabels}
           resolver={absentRequestFormResolver}
           onSave={handleEdit}
+          sx={{ mx: -3 }}
           hideBorder
         />
       </DialogContent>
@@ -212,8 +218,8 @@ export const ViewAbsentRequestModal = ({
 
         <Button
           variant="contained"
-          color="success"
           onClick={onOpenApproveAbsentRequestModal}
+          color="primary"
           disabled={
             initialAbsentRequestState?.status ===
             ParentalAttendanceRequestStatus.Approved
