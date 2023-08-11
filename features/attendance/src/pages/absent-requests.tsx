@@ -1,16 +1,16 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
-  Table,
+  ActionMenu,
   GridOptions,
   ICellRendererParams,
-  ActionMenu,
   PageContainer,
   PageHeading,
+  ReturnTypeDisplayName,
+  Table,
   TablePersonAvatar,
+  useDebouncedValue,
   useDisclosure,
   usePreferredNameLayout,
-  ReturnTypeDisplayName,
-  useDebouncedValue,
 } from '@tyro/core';
 import { Box, Button, Fade } from '@mui/material';
 import {
@@ -152,32 +152,26 @@ export default function AbsentRequests() {
                   {
                     label: t('attendance:approveRequests'),
                     onClick: onOpenApproveAbsentRequestsModal,
-                    disabled: !!selectedAbsentRequests.find(
-                      ({ status }) =>
-                        status === ParentalAttendanceRequestStatus.Approved
-                    ),
-                    disabledTooltip: selectedAbsentRequests.find(
+                    disabled: !selectedAbsentRequests.some(
                       ({ status }) =>
                         status === ParentalAttendanceRequestStatus.Pending ||
                         status === ParentalAttendanceRequestStatus.Denied
-                    )
-                      ? ''
-                      : 'You have not selected any "Pending" or "Declined" requests',
+                    ),
+                    disabledTooltip: t(
+                      'attendance:youHaveNotSelectedPendingAndDeclined'
+                    ),
                   },
                   {
                     label: t('attendance:declineRequests'),
                     onClick: onOpenDeclineAbsentRequestsModal,
-                    disabled: !!selectedAbsentRequests.find(
-                      ({ status }) =>
-                        status === ParentalAttendanceRequestStatus.Denied
-                    ),
-                    disabledTooltip: selectedAbsentRequests.find(
+                    disabled: !selectedAbsentRequests.some(
                       ({ status }) =>
                         status === ParentalAttendanceRequestStatus.Pending ||
                         status === ParentalAttendanceRequestStatus.Approved
-                    )
-                      ? ''
-                      : 'You have not selected any "Pending" or "Approved" requests',
+                    ),
+                    disabledTooltip: t(
+                      'attendance:youHaveNotSelectedPendingAndApproved'
+                    ),
                   },
                 ]}
               />
