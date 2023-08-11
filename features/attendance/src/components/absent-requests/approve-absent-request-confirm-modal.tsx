@@ -36,13 +36,17 @@ export function ApproveAbsentRequestConfirmModal({
     isSuccess: isSubmitSuccessful,
   } = useCreateOrUpdateAbsentRequest();
 
-  const onSubmit = async () => {
+  const onSubmit = () => {
     if (absentRequestState !== undefined) {
-      await createOrUpdateAbsentRequestMutation(
-        absentRequestState.map((absentRequest) => ({
-          ...absentRequest,
-          status: ParentalAttendanceRequestStatus.Approved,
-        }))
+      createOrUpdateAbsentRequestMutation(
+        absentRequestState
+          .filter(
+            ({ status }) => status !== ParentalAttendanceRequestStatus.Approved
+          )
+          .map((absentRequest) => ({
+            ...absentRequest,
+            status: ParentalAttendanceRequestStatus.Approved,
+          }))
       );
     }
   };
