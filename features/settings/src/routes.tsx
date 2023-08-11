@@ -24,6 +24,8 @@ import { getUserAccess } from './api/user-access/user-access';
 import { getPermissionGroups } from './api/permissions/user-permissions-groups';
 import { getPermissionSets } from './api/permissions/user-permissions-sets';
 import { getFormB } from './api/dtr-returns/form-b';
+import { getSyncRequests } from './api/ppod/sync-requests';
+import { getSchoolsInfo } from './api/ppod/school-details';
 
 const Rooms = lazy(() => import('./pages/rooms'));
 const AcademicYearsList = lazy(() => import('./pages/academic-years'));
@@ -217,25 +219,19 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 index: true,
-                loader: async () => {
-                  const ppodCredentialsStatus =
-                    await getPpodCredentialsStatus();
-
-                  return ppodCredentialsStatus?.ppod_PPODCredentials
-                    ?.lastSyncSuccessful
-                    ? redirect('./sync')
-                    : redirect('./login');
-                },
+                loader: () => redirect('./sync'),
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'sync',
                 element: <Sync />,
+                loader: () => getSyncRequests({}),
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'details',
                 element: <SchoolDetails />,
+                loader: () => getSchoolsInfo(),
               },
             ],
           },
