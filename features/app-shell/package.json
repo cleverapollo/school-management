@@ -19,6 +19,7 @@
     "@tyro/icons": "*",
     "@tyro/mail": "*",
     "@tyro/people": "*",
+    "@tyro/printing": "*",
     "@tyro/reporting": "*",
     "@tyro/settings": "*",
     "@tyro/sms": "*",
