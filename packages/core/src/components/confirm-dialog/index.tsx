@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import { useId } from 'react';
 import { useTranslation } from '@tyro/i18n';
+import { LoadingButton } from '@mui/lab';
 
 export interface ConfirmDialogProps {
   title: string;
@@ -49,15 +50,20 @@ export function ConfirmDialog({
         <Button autoFocus onClick={onClose}>
           {cancelText || t('common:actions.cancel')}
         </Button>
-        <Button
+        <LoadingButton
           variant="soft"
-          onClick={() => {
-            onConfirm();
+          loading={false}
+          onClick={async () => {
+            const f = async () => {
+              // eslint-disable-next-line @typescript-eslint/await-thenable
+              await onConfirm();
+            };
+            await f();
             onClose();
           }}
         >
           {confirmText || t('common:actions.confirm')}
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );

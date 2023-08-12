@@ -20,6 +20,8 @@ interface EventCoverCardProps {
   isEventSelected: (eventInfo: CoverEvent) => boolean;
   toggleEventSelection: (eventInfo: CoverEvent) => void;
   applyCover: (anchorEvent: CoverEvent) => void;
+  removeCover: (anchorEvent: CoverEvent) => void;
+  selectedEvents: CoverEvent[];
 }
 
 export function EventCoverCard({
@@ -28,6 +30,8 @@ export function EventCoverCard({
   isEventSelected,
   toggleEventSelection,
   applyCover,
+  removeCover,
+  selectedEvents,
 }: EventCoverCardProps) {
   const { event, substitution } = eventInfo;
   const { displayName } = usePreferredNameLayout();
@@ -145,6 +149,13 @@ export function EventCoverCard({
         open={isContextMenuOpen}
         onClose={() => setAnchorEl(null)}
         applyCover={() => applyCover(eventInfo)}
+        removeCover={() => removeCover(eventInfo)}
+        showApply={
+          selectedEvents.filter((e) => e.substitution != null).length === 0
+        }
+        showUndo={
+          selectedEvents.filter((e) => e.substitution != null).length > 0
+        }
         isSelected={isSelected}
       />
     </>

@@ -10,16 +10,23 @@ import {
   TableRow,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { Avatar, useDebouncedValue, usePreferredNameLayout } from '@tyro/core';
+import {
+  Avatar,
+  ConfirmDialog,
+  useDebouncedValue,
+  usePreferredNameLayout,
+} from '@tyro/core';
 import dayjs, { Dayjs } from 'dayjs';
 import { CalendarGridPeriodType } from '@tyro/api';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { ReturnTypeFromUseEventsForCover } from '../../../api/staff-work-events-for-cover';
 import { CoverBreakOrFinished } from './cover-break-or-finished';
 import { EventCoverCard } from './event-card';
 import { EmptyStateContainer } from './empty-state-container';
 import { useCoverTable, CoverTableRow } from '../../../hooks/use-cover-table';
 import { ApplyCoverModal } from '../apply-cover-modal';
+import { useApplyCover } from '../../../api/apply-cover';
+import { useDeleteCover } from '../../../api/remove-cover';
 
 interface CoverTableProps {
   userAsFirstColumn?: boolean;
@@ -39,10 +46,16 @@ export function CoverTable({
   data,
   isLoading = false,
 }: CoverTableProps) {
-  const { t } = useTranslation(['timetable']);
+  const { t } = useTranslation(['timetable', 'common', 'substitution']);
   const { displayName } = usePreferredNameLayout();
+  const { mutateAsync: deleteCover, isLoading: isSaving } = useDeleteCover();
   const { onSelectEvent, isEventSelected, selectedEventsMap } =
     useCoverTable(data);
+
+  const [applySubstitutionModal, setApplySubstitutionModal] =
+    useState<boolean>(false);
+  const [removeSubstitutionModal, setRemoveSubstitutionModal] =
+    useState<boolean>(false);
   const {
     value: eventsForApplyCover,
     debouncedValue: debouncedEventsForApplyCover,
@@ -50,6 +63,14 @@ export function CoverTable({
   } = useDebouncedValue<typeof selectedEventsMap | null>({
     defaultValue: null,
   });
+
+  // const {
+  //   value: eventsForApplyCover,
+  //   debouncedValue: debouncedeventsForApplyCover,
+  //   setValue: seteventsForApplyCover,
+  // } = useDebouncedValue<typeof selectedEventsMap | null>({
+  //   defaultValue: null,
+  // });
 
   const periods = useMemo(() => {
     const periodsLengthsPerRow =
@@ -176,14 +197,27 @@ export function CoverTable({
                                 staff={staff}
                                 isEventSelected={isEventSelected}
                                 toggleEventSelection={onSelectEvent}
-                                applyCover={(anchorEvent) =>
+                                selectedEvents={Array.from(
+                                  selectedEventsMap.values()
+                                )}
+                                applyCover={(anchorEvent) => {
                                   setEventsForApplyCover(
                                     new Map([
                                       ...selectedEventsMap.entries(),
                                       [anchorEvent.event.eventId, anchorEvent],
                                     ])
-                                  )
-                                }
+                                  );
+                                  setApplySubstitutionModal(true);
+                                }}
+                                removeCover={(anchorEvent) => {
+                                  setEventsForApplyCover(
+                                    new Map([
+                                      ...selectedEventsMap.entries(),
+                                      [anchorEvent.event.eventId, anchorEvent],
+                                    ])
+                                  );
+                                  setRemoveSubstitutionModal(true);
+                                }}
                               />
                             )}
                           </TableCell>
@@ -198,10 +232,40 @@ export function CoverTable({
         </EmptyStateContainer>
       </Card>
       <ApplyCoverModal
-        open={!!eventsForApplyCover}
-        onClose={() => setEventsForApplyCover(null)}
+        open={applySubstitutionModal}
+        onClose={() => {
+          setEventsForApplyCover(null);
+          setApplySubstitutionModal(false);
+        }}
         eventsMap={eventsForApplyCover ?? debouncedEventsForApplyCover}
+      />
+      <ConfirmDialog
+        open={removeSubstitutionModal}
+        title={t('substitution:removeCover')}
+        description={t('substitution:youAreAboutToRemoveCover', {
+          dates: Array.from(eventsForApplyCover?.values() || [])
+            .map((a) => dayjs(a.event.startTime))
+            .sort((a, b) => a.date() - b.date())
+            .map((a) => dayjs(a).format('DD/MM/YYYY'))
+            .filter((x, i, a) => a.indexOf(x) === i)
+            .join(', '),
+        })}
+        confirmText={t('substitution:removeCover')}
+        onConfirm={async () => {
+          console.log(eventsForApplyCover);
+          const substitutionIds = Array.from(
+            eventsForApplyCover?.values() || []
+          )
+            .map((s) => s.substitution?.substitutionId || -1)
+            .filter((s) => s !== -1);
+          await deleteCover({ substitutionIds });
+        }}
+        onClose={() => {
+          setEventsForApplyCover(null);
+          setRemoveSubstitutionModal(false);
+        }}
       />
     </>
   );
 }
+// deleteCover({ substitutionIds: [1]
