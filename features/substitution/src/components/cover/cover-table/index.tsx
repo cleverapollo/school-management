@@ -64,14 +64,6 @@ export function CoverTable({
     defaultValue: null,
   });
 
-  // const {
-  //   value: eventsForApplyCover,
-  //   debouncedValue: debouncedeventsForApplyCover,
-  //   setValue: seteventsForApplyCover,
-  // } = useDebouncedValue<typeof selectedEventsMap | null>({
-  //   defaultValue: null,
-  // });
-
   const periods = useMemo(() => {
     const periodsLengthsPerRow =
       data?.map(({ dayInfo }) => dayInfo.periods.length) ?? [];
@@ -252,7 +244,6 @@ export function CoverTable({
         })}
         confirmText={t('substitution:removeCover')}
         onConfirm={async () => {
-          console.log(eventsForApplyCover);
           const substitutionIds = Array.from(
             eventsForApplyCover?.values() || []
           )
