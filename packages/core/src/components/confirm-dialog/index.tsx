@@ -60,6 +60,7 @@ export function ConfirmDialog({
               await onConfirm();
             };
             await f();
+            setLoading(false);
             onClose();
           }}
         >
