@@ -6,7 +6,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from '@mui/material';
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import { useTranslation } from '@tyro/i18n';
 import { LoadingButton } from '@mui/lab';
 
@@ -32,7 +32,7 @@ export function ConfirmDialog({
   const id = useId();
   const titleId = `${id}-title`;
   const descriptionId = `${id}-description`;
-
+  const [loading, setLoading] = useState<boolean>(false);
   const { t } = useTranslation(['common']);
 
   return (
@@ -52,8 +52,9 @@ export function ConfirmDialog({
         </Button>
         <LoadingButton
           variant="soft"
-          loading={false}
+          loading={loading}
           onClick={async () => {
+            setLoading(true);
             const f = async () => {
               // eslint-disable-next-line @typescript-eslint/await-thenable
               await onConfirm();
