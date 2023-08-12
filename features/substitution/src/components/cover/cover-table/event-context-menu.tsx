@@ -1,15 +1,19 @@
 import { Menu, MenuItem, MenuProps } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { ActionMenuIconWrapper } from '@tyro/core';
-import { UserSwapIcon } from '@tyro/icons';
+import { UndoIcon, UserSwapIcon } from '@tyro/icons';
 
 interface ResourceContextMenuProps extends MenuProps {
   applyCover: () => void;
+  removeCover: () => void;
   isSelected: boolean;
+  showUndo: boolean;
+  showApply: boolean;
 }
 
 export function EventCoverContextMenu({
   applyCover,
+  removeCover,
   isSelected,
   ...props
 }: ResourceContextMenuProps) {
@@ -47,20 +51,38 @@ export function EventCoverContextMenu({
         },
       }}
     >
-      <MenuItem
-        onClick={(event) => {
-          event.preventDefault();
-          applyCover();
-          handleClose();
-        }}
-      >
-        <>
-          <ActionMenuIconWrapper>
-            <UserSwapIcon />
-          </ActionMenuIconWrapper>
-          {t('substitution:applyCover')}
-        </>
-      </MenuItem>
+      {props.showApply && (
+        <MenuItem
+          onClick={(event) => {
+            event.preventDefault();
+            applyCover();
+            handleClose();
+          }}
+        >
+          <>
+            <ActionMenuIconWrapper>
+              <UserSwapIcon />
+            </ActionMenuIconWrapper>
+            {t('substitution:applyCover')}
+          </>
+        </MenuItem>
+      )}
+      {props.showUndo && (
+        <MenuItem
+          onClick={(event) => {
+            event.preventDefault();
+            removeCover();
+            handleClose();
+          }}
+        >
+          <>
+            <ActionMenuIconWrapper>
+              <UndoIcon />
+            </ActionMenuIconWrapper>
+            {t('substitution:removeCover')}
+          </>
+        </MenuItem>
+      )}
     </Menu>
   );
 }

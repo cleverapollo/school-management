@@ -81,6 +81,7 @@ const eventsForCover = graphql(/* GraphQL */ `
               description
             }
             substitution {
+              substitutionId
               originalStaff {
                 partyId
                 title {

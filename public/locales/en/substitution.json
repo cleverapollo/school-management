@@ -24,6 +24,8 @@
   "yesDeleteAbsence": "Yes, delete absence",
   "day": "Day",
   "applyCover": "Apply cover",
+  "removeCover": "Remove Cover",
+  "youAreAboutToRemoveCover": "You are about to remove cover on dates {{dates}}. All associated details including applied cover will be removed. Are you sure you want to continue?",
   "freeRooms": "Free rooms",
   "clashingRooms": "Clashing rooms",
   "coverType": "Cover type",
