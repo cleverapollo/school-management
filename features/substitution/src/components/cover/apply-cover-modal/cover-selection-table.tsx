@@ -63,7 +63,11 @@ export const CoverSelectionTable = <TField extends FieldValues>({
           </TableHead>
           <TableBody>
             {staffList.map(
-              ({ staff: { person, extensions }, clashingEvents }) => {
+              ({
+                staff: { person, extensions },
+                clashingEvents,
+                substitutionStats,
+              }) => {
                 const { substitutionSummary, timetableSummary } =
                   extensions ?? {};
                 const {
@@ -136,18 +140,17 @@ export const CoverSelectionTable = <TField extends FieldValues>({
                       </Stack>
                     </TableCell>
                     <TableCell>
-                      {substitutionCountThisWeek &&
-                      substitutionTimeThisWeekMinutes
-                        ? `${substitutionCountThisWeek} (${substitutionTimeThisWeekMinutes})`
-                        : ''}
+                      {substitutionStats.sandsWeekCount > 0 &&
+                        `${substitutionStats.sandsWeekCount} (${substitutionStats.sandsWeekMinutes})`}
                     </TableCell>
                     <TableCell>
-                      {substitutionCountThisYear &&
-                      substitutionTimeThisYearMinutes
-                        ? `${substitutionCountThisYear} (${substitutionTimeThisYearMinutes})`
-                        : ''}
+                      {substitutionStats.sandsYearCount > 0 &&
+                        `${substitutionStats.sandsYearCount} (${substitutionStats.sandsWeekMinutes})`}
                     </TableCell>
-                    <TableCell />
+                    <TableCell>
+                      {substitutionStats.casualWeekCount > 0 &&
+                        `${substitutionStats.casualWeekCount} (${substitutionStats.casualWeekMinutes})`}
+                    </TableCell>
                     <TableCell>
                       {timetableSummary?.fulltimePeriods ?? ''}
                     </TableCell>
