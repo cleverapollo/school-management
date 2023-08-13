@@ -449,20 +449,17 @@ export function UpsertAbsenceModal({
               <>
                 <Stack direction="row" spacing={2}>
                   <RHFDatePicker
-                    label="Absent From"
+                    label={t('common:startDate')}
                     inputProps={{ fullWidth: true }}
                     controlProps={{ name: 'startDate', control }}
                   />
                   <RHFDatePicker
-                    label="Absenct To"
+                    label={t('common:endDate')}
                     inputProps={{ fullWidth: true }}
                     controlProps={{ name: 'endDate', control }}
                   />
                 </Stack>
 
-                <Typography variant="subtitle1" color="text.secondary">
-                  Select cover Teachers
-                </Typography>
                 <Stack
                   spacing={2}
                   sx={({ palette }) => ({
@@ -473,6 +470,9 @@ export function UpsertAbsenceModal({
                     border: `1px solid ${palette.divider}`,
                   })}
                 >
+                  <Typography variant="subtitle1" color="text.secondary">
+                    {t('substitution:selectCoverStaff')}
+                  </Typography>
                   {ltlGroups?.map((field, index) => {
                     const sg = subjectGroupsData[index];
                     return (
