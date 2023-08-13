@@ -28,10 +28,10 @@ export function useDeleteCover() {
     onSuccess: async () => {
       await queryClient.invalidateQueries(substitutionKeys.all);
       queryClient.invalidateQueries(calendarKeys.all);
-      toast(t('substitution:coverAppliedSuccessfully'));
+      toast(t('substitution:coverRemovedSuccessfully'));
     },
     onError: () => {
-      toast(t('substitution:applyingCoverFailed'), { variant: 'error' });
+      toast(t('substitution:removingCoverFailed'), { variant: 'error' });
     },
   });
 }
