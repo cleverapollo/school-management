@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { LoadingButton } from '@mui/lab';
 import { useFieldArray, useForm } from 'react-hook-form';
 import {
@@ -11,9 +11,12 @@ import {
   IconButton,
   Stack,
   Tooltip,
+  Typography,
 } from '@mui/material';
 import dayjs, { Dayjs } from 'dayjs';
 import {
+  RHFCheckbox,
+  RHFDatePicker,
   RHFMultiDatePicker,
   RHFSwitch,
   RHFTextField,
@@ -21,9 +24,13 @@ import {
   useFormValidator,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { RHFStaffAutocomplete } from '@tyro/people';
+import { RHFStaffAutocomplete, useStaffSubjectGroups } from '@tyro/people';
 import { AddIcon, TrashIcon } from '@tyro/icons';
-import { Swm_UpsertStaffAbsenceDate } from '@tyro/api';
+import {
+  Swm_UpsertStaffAbsenceDate,
+  Swm_UpsertStaffAbsenceLongTermLeaveGroupInput,
+  UseQueryReturnType,
+} from '@tyro/api';
 import {
   ReturnTypeFromUseStaffWorkAbsences,
   useSaveStaffAbsence,
@@ -32,6 +39,10 @@ import {
   AbsenceTypeAutoComplete,
   StaffWorkAbsenceTypeOption,
 } from './absence-type-autocomplete';
+
+type ReturnTypeFromUseStaffSubjectGroups = UseQueryReturnType<
+  typeof useStaffSubjectGroups
+>[number];
 
 export interface UpsertAbsenceModalProps {
   initialAbsenceData: Partial<ReturnTypeFromUseStaffWorkAbsences> | null;
@@ -51,6 +62,10 @@ interface UpsertAbsenceFormState {
   absenceType: StaffWorkAbsenceTypeOption;
   note: string;
   dates: Array<AbsenceDate>;
+  isLongTermLeave: boolean;
+  longTermLeaveGroups: Array<Swm_UpsertStaffAbsenceLongTermLeaveGroupInput>;
+  startDate: Dayjs;
+  endDate: Dayjs;
 }
 
 function mapAbsenceDates(datesToMap: Array<AbsenceDate>) {
@@ -128,6 +143,8 @@ export function UpsertAbsenceModal({
         staff: rules.required(),
         absenceType: rules.required(),
         note: rules.required(),
+        startDate: rules.required(),
+        endDate: [rules.required(), rules.afterStartDate('startDate')],
         dates: {
           dates: [rules.required(), rules.minLength(1)],
           startTime: rules.validate(
@@ -171,24 +188,78 @@ export function UpsertAbsenceModal({
     name: 'dates',
   });
 
-  const onSubmit = handleSubmit(({ staff, absenceType, note, dates }) => {
-    const mappedDates = mapAbsenceDates(dates);
+  const selectedStaff = watch('staff');
 
-    return saveStaffAbsence(
-      [
-        {
-          staffPartyId: staff.partyId,
-          dates: mappedDates,
-          absenceTypeId: absenceType.absenceTypeId,
-          absenceReasonText: note,
-          substitutionRequired: true,
-        },
-      ],
-      {
-        onSuccess: onClose,
-      }
-    );
+  const { data: subjectGroupsData } = useStaffSubjectGroups({
+    partyIds: [selectedStaff?.partyId || 0],
   });
+  const {
+    fields: ltlGroups,
+
+    replace: replaceLtlGroups,
+  } = useFieldArray({
+    control,
+    name: 'longTermLeaveGroups',
+  });
+
+  const onSubmit = handleSubmit(
+    ({
+      staff,
+      absenceType,
+      note,
+      dates,
+      isLongTermLeave,
+      longTermLeaveGroups,
+      startDate,
+      endDate,
+    }) => {
+      if (isLongTermLeave) {
+        const ltlValue = longTermLeaveGroups.map((g) => ({
+          groupId: g.groupId,
+          // @ts-expect-error
+          coveringStaffId: g?.coveringStaffId?.partyId,
+        }));
+        const ltlDates = [
+          {
+            continuousStartDate: startDate.format('YYYY-MM-DD'),
+            continuousEndDate: endDate.format('YYYY-MM-DD'),
+            partialAbsence: false,
+          },
+        ] as Swm_UpsertStaffAbsenceDate[];
+        return saveStaffAbsence(
+          [
+            {
+              staffPartyId: staff.partyId,
+              dates: ltlDates,
+              absenceTypeId: absenceType.absenceTypeId,
+              absenceReasonText: note,
+              substitutionRequired: true,
+              isLongTermLeave,
+              longTermLeaveGroups: ltlValue,
+            },
+          ],
+          {
+            onSuccess: onClose,
+          }
+        );
+      }
+      const mappedDates = mapAbsenceDates(dates);
+      return saveStaffAbsence(
+        [
+          {
+            staffPartyId: staff.partyId,
+            dates: mappedDates,
+            absenceTypeId: absenceType.absenceTypeId,
+            absenceReasonText: note,
+            substitutionRequired: true,
+          },
+        ],
+        {
+          onSuccess: onClose,
+        }
+      );
+    }
+  );
 
   useEffect(() => {
     if (initialAbsenceData) {
@@ -198,10 +269,28 @@ export function UpsertAbsenceModal({
     }
   }, [initialAbsenceData]);
 
+  useEffect(() => {
+    if (subjectGroupsData) {
+      const updatedPartyIds = subjectGroupsData.map(
+        (group) =>
+          ({
+            groupId: group.partyId,
+          } as Swm_UpsertStaffAbsenceLongTermLeaveGroupInput)
+      );
+      console.log('updatedPartyIds', updatedPartyIds);
+      console.log(updatedPartyIds);
+
+      replaceLtlGroups(updatedPartyIds);
+      console.log('---------------ltlGroups');
+      console.log(ltlGroups);
+    }
+  }, [subjectGroupsData]);
+
   const dates = watch('dates');
+  const isLongTermLeaveValue = watch('isLongTermLeave');
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle>{t('substitution:createStaffAbsence')}</DialogTitle>
       <form onSubmit={onSubmit}>
         <Stack spacing={3} sx={{ p: 3 }}>
@@ -220,7 +309,20 @@ export function UpsertAbsenceModal({
               }}
             />
           </Stack>
-
+          <RHFCheckbox
+            label={
+              <Stack direction="row" gap={2}>
+                {t('substitution:applyLongTermLeave')}
+              </Stack>
+            }
+            controlLabelProps={{
+              sx: { mb: 2 },
+            }}
+            checkboxProps={{
+              color: 'primary',
+            }}
+            controlProps={{ name: 'isLongTermLeave', control }}
+          />
           <RHFTextField
             label={t('substitution:note')}
             controlProps={{
@@ -233,12 +335,136 @@ export function UpsertAbsenceModal({
             }}
           />
 
-          <Stack spacing={2}>
-            {fields.map((field, index) => {
-              const { isFullDay, startTime } = dates[index];
-              return (
+          {!isLongTermLeaveValue && (
+            <Stack spacing={2}>
+              {fields.map((field, index) => {
+                const { isFullDay, startTime } = dates[index];
+                return (
+                  <Stack
+                    key={field.id}
+                    sx={({ palette }) => ({
+                      backgroundColor: 'background.neutral',
+                      p: 2,
+                      pt: 1,
+                      borderRadius: 1,
+                      border: `1px solid ${palette.divider}`,
+                    })}
+                    spacing={2}
+                  >
+                    <Stack direction="row" justifyContent="space-between">
+                      <RHFSwitch<UpsertAbsenceFormState>
+                        label={t('common:allDay')}
+                        switchProps={{ color: 'primary' }}
+                        controlProps={{
+                          name: `dates.${index}.isFullDay`,
+                          control,
+                        }}
+                      />
+                      {index > 0 && (
+                        <Tooltip
+                          describeChild
+                          title={t('common:actions.remove')}
+                        >
+                          <IconButton
+                            aria-label={t('common:actions.remove')}
+                            onClick={() => {
+                              remove(index);
+                            }}
+                            color="primary"
+                          >
+                            <TrashIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </Stack>
+
+                    <RHFMultiDatePicker
+                      label={t('common:dates')}
+                      inputProps={{
+                        fullWidth: true,
+                        variant: 'white-filled',
+                      }}
+                      controlProps={{
+                        name: `dates.${index}.dates`,
+                        control,
+                      }}
+                    />
+
+                    <Collapse in={!isFullDay}>
+                      <Stack direction="row" gap={1} width="100%">
+                        <RHFTimePicker
+                          label={t('common:startTime')}
+                          inputProps={{
+                            fullWidth: true,
+                            variant: 'white-filled',
+                          }}
+                          controlProps={{
+                            name: `dates.${index}.startTime`,
+                            control,
+                          }}
+                        />
+                        <RHFTimePicker
+                          label={t('common:endTime')}
+                          timePickerProps={{
+                            minTime: startTime ? dayjs(startTime) : undefined,
+                          }}
+                          inputProps={{
+                            fullWidth: true,
+                            variant: 'white-filled',
+                          }}
+                          controlProps={{
+                            name: `dates.${index}.endTime`,
+                            control,
+                          }}
+                        />
+                      </Stack>
+                    </Collapse>
+                  </Stack>
+                );
+              })}
+              <Box
+                sx={{
+                  display: 'flex',
+                }}
+              >
+                <Button
+                  variant="text"
+                  onClick={() => {
+                    append({
+                      isFullDay: true,
+                      dates: [],
+                    });
+                  }}
+                  startIcon={<AddIcon />}
+                >
+                  {t('common:addDate')}
+                </Button>
+              </Box>
+            </Stack>
+          )}
+
+          {isLongTermLeaveValue &&
+            subjectGroupsData &&
+            subjectGroupsData.length > 0 && (
+              <>
+                <Stack direction="row" spacing={2}>
+                  <RHFDatePicker
+                    label="Absent From"
+                    inputProps={{ fullWidth: true }}
+                    controlProps={{ name: 'startDate', control }}
+                  />
+                  <RHFDatePicker
+                    label="Absenct To"
+                    inputProps={{ fullWidth: true }}
+                    controlProps={{ name: 'endDate', control }}
+                  />
+                </Stack>
+
+                <Typography variant="subtitle1" color="text.secondary">
+                  Select cover Teachers
+                </Typography>
                 <Stack
-                  key={field.id}
+                  spacing={2}
                   sx={({ palette }) => ({
                     backgroundColor: 'background.neutral',
                     p: 2,
@@ -246,95 +472,38 @@ export function UpsertAbsenceModal({
                     borderRadius: 1,
                     border: `1px solid ${palette.divider}`,
                   })}
-                  spacing={2}
                 >
-                  <Stack direction="row" justifyContent="space-between">
-                    <RHFSwitch<UpsertAbsenceFormState>
-                      label={t('common:allDay')}
-                      switchProps={{ color: 'primary' }}
-                      controlProps={{
-                        name: `dates.${index}.isFullDay`,
-                        control,
-                      }}
-                    />
-                    {index > 0 && (
-                      <Tooltip describeChild title={t('common:actions.remove')}>
-                        <IconButton
-                          aria-label={t('common:actions.remove')}
-                          onClick={() => {
-                            remove(index);
+                  {ltlGroups?.map((field, index) => {
+                    const sg = subjectGroupsData[index];
+                    return (
+                      <Stack direction="row" justifyContent="space-evenly">
+                        <Typography
+                          variant="subtitle1"
+                          color="text.secondary"
+                          sx={{
+                            width: '50%',
+                            my: 1.5,
                           }}
-                          color="primary"
                         >
-                          <TrashIcon />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                  </Stack>
-
-                  <RHFMultiDatePicker
-                    label={t('common:dates')}
-                    inputProps={{
-                      fullWidth: true,
-                      variant: 'white-filled',
-                    }}
-                    controlProps={{
-                      name: `dates.${index}.dates`,
-                      control,
-                    }}
-                  />
-
-                  <Collapse in={!isFullDay}>
-                    <Stack direction="row" gap={1} width="100%">
-                      <RHFTimePicker
-                        label={t('common:startTime')}
-                        inputProps={{
-                          fullWidth: true,
-                          variant: 'white-filled',
-                        }}
-                        controlProps={{
-                          name: `dates.${index}.startTime`,
-                          control,
-                        }}
-                      />
-                      <RHFTimePicker
-                        label={t('common:endTime')}
-                        timePickerProps={{
-                          minTime: startTime ? dayjs(startTime) : undefined,
-                        }}
-                        inputProps={{
-                          fullWidth: true,
-                          variant: 'white-filled',
-                        }}
-                        controlProps={{
-                          name: `dates.${index}.endTime`,
-                          control,
-                        }}
-                      />
-                    </Stack>
-                  </Collapse>
+                          {sg?.name}
+                        </Typography>
+                        <RHFStaffAutocomplete
+                          key={field.id}
+                          label={<Stack direction="row">{sg?.name}</Stack>}
+                          sx={({ palette }) => ({
+                            backgroundColor: 'white',
+                          })}
+                          controlProps={{
+                            name: `longTermLeaveGroups.${index}.coveringStaffId`,
+                            control,
+                          }}
+                        />
+                      </Stack>
+                    );
+                  })}
                 </Stack>
-              );
-            })}
-            <Box
-              sx={{
-                display: 'flex',
-              }}
-            >
-              <Button
-                variant="text"
-                onClick={() => {
-                  append({
-                    isFullDay: true,
-                    dates: [],
-                  });
-                }}
-                startIcon={<AddIcon />}
-              >
-                {t('common:addDate')}
-              </Button>
-            </Box>
-          </Stack>
+              </>
+            )}
         </Stack>
 
         <DialogActions>

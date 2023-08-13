@@ -11,6 +11,7 @@ import {
   useDebouncedValue,
   TableBooleanValue,
   ActionMenu,
+  TableLinearProgress,
 } from '@tyro/core';
 import { Box, Button } from '@mui/material';
 
@@ -93,15 +94,23 @@ const getColumnDefs = (
     wrapText: true,
   },
   {
-    field: 'substitutionRequired',
-    headerName: t('substitution:coverRequired'),
+    field: 'isLongTermLeave',
+    headerName: t('substitution:longTermLeave'),
     valueGetter: ({ data }) =>
-      data?.substitutionRequired ? t('common:yes') : t('common:no'),
+      data?.isLongTermLeave ? t('common:yes') : t('common:no'),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseStaffWorkAbsences, any>) => (
-      <TableBooleanValue value={Boolean(data?.substitutionRequired)} />
-    ),
+    }: ICellRendererParams<ReturnTypeFromUseStaffWorkAbsences, any>) => {
+      if (data?.isLongTermLeave) {
+        return (
+          <TableLinearProgress
+            value={data?.longTermLeaveGroupsApplied}
+            total={data?.longTermLeaveGroupsRequired}
+          />
+        );
+      }
+      return <>-</>;
+    },
     sortable: true,
     filter: true,
   },
