@@ -22,6 +22,10 @@ const staffWorkAbsences = graphql(/* GraphQL */ `
         name
         code
       }
+      isLongTermLeave
+      longTermLeaveGroupsRequired
+      longTermLeaveGroupsApplied
+
       staff {
         partyId
         title {
