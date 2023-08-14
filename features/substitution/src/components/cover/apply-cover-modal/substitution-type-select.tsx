@@ -4,7 +4,7 @@ import { RHFSelect, RHFSelectProps } from '@tyro/core';
 import {
   ReturnTypeFromUseSubstitutionTypes,
   useSubstitutionTypes,
-} from '../../api/staff-work-substitution-types';
+} from '../../../api/staff-work-substitution-types';
 
 type SubstitutionTypeDropdownProps<TField extends FieldValues> = Omit<
   RHFSelectProps<TField, ReturnTypeFromUseSubstitutionTypes[number]>,

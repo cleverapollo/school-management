@@ -36,3 +36,6 @@ yarn-error.log*
 
 .eslintcache
 /.yarn/
+
+# Sentry Auth Token
+.env.sentry-build-plugin

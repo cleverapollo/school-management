@@ -39,6 +39,14 @@ const coverLookup = graphql(/* GraphQL */ `
         }
         available
         clashingEvents
+        substitutionStats {
+          sandsWeekCount
+          sandsWeekMinutes
+          sandsYearCount
+          sandsYearMinutes
+          casualWeekCount
+          casualWeekMinutes
+        }
       }
       freeRooms {
         roomId

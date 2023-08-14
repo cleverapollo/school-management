@@ -15,6 +15,10 @@ import {
   getCoreAcademicNamespace,
 } from '@tyro/api';
 import {
+  wrapCreateBrowserRouter,
+  setUser as setSentryUser,
+} from '@sentry/react';
+import {
   createBrowserRouter,
   Outlet,
   redirect,
@@ -133,19 +137,37 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getAdminRoutes(t),
 ];
 
-function useAppRouter() {
-  return createBrowserRouter([
-    {
-      loader: async () =>
-        Promise.all([getUser(), getCoreAcademicNamespace()]).catch(
-          (error: Error) => {
-            if (error?.message === 'Failed to fetch') {
-              throw new Response('Service Unavailable', { status: 503 });
-            }
+const sentryCreateBrowserRouter = wrapCreateBrowserRouter(createBrowserRouter);
 
-            throw error;
+function useAppRouter() {
+  return sentryCreateBrowserRouter([
+    {
+      loader: async () => {
+        try {
+          const responses = await Promise.all([
+            getUser(),
+            getCoreAcademicNamespace(),
+          ]);
+          const [user] = responses;
+
+          if (user.activeProfile?.partyId) {
+            const { activeProfile } = user;
+            setSentryUser({
+              id: String(activeProfile.partyId),
+              segment: activeProfile.profileType?.userType ?? 'unknown',
+              tenant: activeProfile.tenant?.tenant ?? 'unknown',
+            });
           }
-        ),
+
+          return responses;
+        } catch (error) {
+          if (error instanceof Error && error?.message === 'Failed to fetch') {
+            throw new Response('Service Unavailable', { status: 503 });
+          }
+
+          throw error;
+        }
+      },
       element: (
         <LazyLoader>
           <Shell>
@@ -181,7 +203,7 @@ function useAppRouter() {
             if (permissions.isStudent || permissions.isContact) {
               return redirect('/people/students');
             }
-            return redirect('/groups/class');
+            return redirect('/calendar');
           },
         },
         ...buildRouteTree(getNavCategories(mockTFunction)),

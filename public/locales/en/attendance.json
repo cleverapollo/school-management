@@ -73,8 +73,15 @@
     "H": "Student on holiday"
   },
   "attendanceRequestStatus": {
-    "APPROVED": "approved",
-    "DENIED": "denied",
-    "PENDING": "pending"
-  }
+    "APPROVED": "Approved",
+    "DENIED": "Declined",
+    "PENDING": "Pending"
+  },
+  "absenceRequestFormatByType": {
+    "MULTI_DAY": "{{startDate}} - {{endDate}}",
+    "SINGLE_DAY": "{{startDate}}",
+    "PARTIAL_DAY": "{{startDate}} from {{startTime}} to {{endTime}}"
+  },
+  "youHaveNotSelectedPendingAndApproved": "You have not selected any \"Pending\" or \"Approved\" requests",
+  "youHaveNotSelectedPendingAndDeclined": "You have not selected any \"Pending\" or \"Declined\" requests"
 }

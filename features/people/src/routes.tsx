@@ -169,7 +169,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                   if (permissions.isContact || permissions.isStudent) {
                     return redirect('./classes');
                   }
-                  return redirect('./overview');
+                  return redirect('./classes');
                 },
               },
               {

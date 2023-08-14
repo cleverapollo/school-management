@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ReturnTypeFromUseEventsForCover } from '../api/staff-work-events-for-cover';
+import { getEventId } from '../utils/cover-utils';
 
 type SubstitutionEventsByDay =
   ReturnTypeFromUseEventsForCover[number]['substitutionEventsByDay'];
@@ -17,27 +18,29 @@ export interface CoverTableRow {
 }
 
 export function useCoverTable(data: CoverTableRow[]) {
-  const [selectedEvents, setSelectedEvents] = useState<Map<number, CoverEvent>>(
+  const [selectedEvents, setSelectedEvents] = useState<Map<string, CoverEvent>>(
     new Map()
   );
 
   const onSelectEvent = (eventInfo: CoverEvent) => {
     setSelectedEvents((prev) => {
       const newMap = new Map(prev);
-      const { eventId } = eventInfo.event;
+      const id = getEventId(eventInfo);
 
-      if (newMap.has(eventId)) {
-        newMap.delete(eventId);
+      if (newMap.has(id)) {
+        newMap.delete(id);
       } else {
-        newMap.set(eventId, eventInfo);
+        newMap.set(id, eventInfo);
       }
 
       return newMap;
     });
   };
 
-  const isEventSelected = ({ event }: CoverEvent) =>
-    selectedEvents?.has(event.eventId) ?? false;
+  const isEventSelected = (event: CoverEvent) => {
+    const id = getEventId(event);
+    return selectedEvents?.has(id) ?? false;
+  };
 
   const resetSelectedEvents = () => {
     setSelectedEvents(new Map());

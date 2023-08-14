@@ -22,10 +22,10 @@ const displayName = (
 
   switch (options?.format) {
     case PreferredNameFormat.FirstnameSurname:
-      return `${person.firstName ?? ''} ${person.lastName ?? ''}`;
+      return [person.firstName, person.lastName].filter(Boolean).join(' ');
     case PreferredNameFormat.SurnameFirstname:
     default:
-      return `${person.lastName ?? ''}, ${person.firstName ?? ''}`;
+      return [person.lastName, person.firstName].filter(Boolean).join(', ');
   }
 };
 
