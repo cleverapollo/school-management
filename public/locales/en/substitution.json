@@ -17,6 +17,7 @@
   "selectCoverStaff": "Select cover staff",
   "saveStaffAbsence": "Save staff absence",
   "note": "Note",
+  "noCover": "No Cover",
   "coverRequired": "Cover required",
   "rangeOfPartialDays": "{{startDate}} - {{endDate}} from {{startTime}} to {{endTime}}",
   "rangeOfFullDays": "{{startDate}} - {{endDate}}",

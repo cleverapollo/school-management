@@ -13,7 +13,7 @@ import {
   ActionMenu,
   TableLinearProgress,
 } from '@tyro/core';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Tooltip } from '@mui/material';
 
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
@@ -28,6 +28,7 @@ import {
   UpsertAbsenceModal,
   UpsertAbsenceModalProps,
 } from '../components/absences/upsert-absence-modal';
+import { LongTermLeaveCell } from '../components/absences/long-term-leave-cell';
 import { TableDatesList } from '../components/absences/table-dates-list';
 import {
   DeleteAbsenceConfirmModal,
@@ -102,12 +103,7 @@ const getColumnDefs = (
       data,
     }: ICellRendererParams<ReturnTypeFromUseStaffWorkAbsences, any>) => {
       if (data?.isLongTermLeave) {
-        return (
-          <TableLinearProgress
-            value={data?.longTermLeaveGroupsApplied}
-            total={data?.longTermLeaveGroupsRequired}
-          />
-        );
+        return data && <LongTermLeaveCell absence={data} />;
       }
       return <>-</>;
     },
