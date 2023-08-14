@@ -1,6 +1,5 @@
 import { Box, Fade, Container, Typography } from '@mui/material';
 import {
-  PermissionUtils,
   SmsRecipientType,
   SubjectGroupType,
   UpdateSubjectGroupInput,
@@ -15,8 +14,6 @@ import {
   ActionMenu,
   usePreferredNameLayout,
   ReturnTypeDisplayNames,
-  TableStudyLevelChip,
-  StudyLevelSelectCellEditor,
   BulkEditedRows,
   TableAvatar,
   useDisclosure,
@@ -29,19 +26,19 @@ import { MobileIcon, MoveGroupIcon, SendMailIcon } from '@tyro/icons';
 import set from 'lodash/set';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import {
-  useSaveSubjectGroupEdits,
-  useSubjectGroups,
-  useSwitchSubjectGroupType,
-} from '../../api/subject-groups';
+  useSaveSupportGroupEdits,
+  useSupportGroups,
+} from '../../api/support-groups';
+import { useSwitchSubjectGroupType } from '../../api';
 
-type ReturnTypeFromUseSubjectGroups = NonNullable<
-  ReturnType<typeof useSubjectGroups>['data']
+type ReturnTypeFromUseSupportGroups = NonNullable<
+  ReturnType<typeof useSupportGroups>['data']
 >[number];
 
 const getSubjectGroupsColumns = (
   t: TFunction<'common'[], undefined, 'common'[]>,
   displayNames: ReturnTypeDisplayNames
-): GridOptions<ReturnTypeFromUseSubjectGroups>['columnDefs'] => [
+): GridOptions<ReturnTypeFromUseSupportGroups>['columnDefs'] => [
   {
     field: 'name',
     headerName: t('common:name'),
@@ -52,7 +49,7 @@ const getSubjectGroupsColumns = (
 
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseSubjectGroups>) => {
+    }: ICellRendererParams<ReturnTypeFromUseSupportGroups>) => {
       if (!data) return null;
 
       const subject = data?.subjects?.[0];
@@ -99,24 +96,6 @@ const getSubjectGroupsColumns = (
       data?.yearGroups?.map((year) => year?.name).join(', '),
   },
   {
-    field: 'irePP.level',
-    headerName: t('common:level'),
-    filter: true,
-    editable: true,
-    valueSetter: (params) => {
-      set(params.data ?? {}, 'irePP.level', params.newValue);
-      return true;
-    },
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseSubjectGroups, any>) =>
-      data?.irePP?.level ? (
-        <TableStudyLevelChip level={data.irePP.level} />
-      ) : null,
-    cellEditorSelector: StudyLevelSelectCellEditor(t),
-    enableRowGroup: true,
-  },
-  {
     field: 'staff',
     headerName: t('common:teacher'),
     valueGetter: ({ data }) => displayNames(data?.staff),
@@ -124,12 +103,13 @@ const getSubjectGroupsColumns = (
   },
 ];
 
-export default function SubjectGroups() {
+export default function SupportGroups() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
   const { displayNames } = usePreferredNameLayout();
-  const { data: subjectGroupsData } = useSubjectGroups();
-  const { mutateAsync: updateSubjectGroup } = useSaveSubjectGroupEdits();
+  const { data: subjectGroupsData } = useSupportGroups();
+  const { mutateAsync: updateSubjectGroup } = useSaveSupportGroupEdits();
   const { mutateAsync: switchSubjectGroupType } = useSwitchSubjectGroupType();
+
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
@@ -140,7 +120,6 @@ export default function SubjectGroups() {
   } = useDisclosure();
   const [switchGroupTypeConfirmation, setSwitchGroupTypeConfirmation] =
     useState(false);
-
   const studentColumns = useMemo(
     () => getSubjectGroupsColumns(t, displayNames),
     [t, displayNames]
@@ -151,14 +130,11 @@ export default function SubjectGroups() {
       label: t('people:sendSms'),
       icon: <MobileIcon />,
       onClick: onOpenSendSms,
-      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
-        isStaffUserWithPermission('ps:1:communications:send_sms'),
     },
     {
-      label: t('groups:subjectGroup.switchToSupportClass.action'),
+      label: t('groups:supportGroup.switchToSubjectGroup.action'),
       icon: <MoveGroupIcon />,
       onClick: () => setSwitchGroupTypeConfirmation(true),
-      hasAccess: ({ isTyroUser }: PermissionUtils) => isTyroUser,
     },
     // {
     //   label: t('mail:sendMail'),
@@ -168,7 +144,7 @@ export default function SubjectGroups() {
   ];
 
   const handleBulkSave = (
-    data: BulkEditedRows<ReturnTypeFromUseSubjectGroups, 'irePP.level'>
+    data: BulkEditedRows<ReturnTypeFromUseSupportGroups, 'irePP.level'>
   ) => {
     const updates = Object.entries(data).reduce<UpdateSubjectGroupInput[]>(
       (acc, [partyId, changes]) => {
@@ -191,10 +167,10 @@ export default function SubjectGroups() {
 
   return (
     <>
-      <Page title={t('groups:subjectGroups')}>
+      <Page title={t('groups:supportGroups')}>
         <Container maxWidth="xl">
           <Typography variant="h3" component="h1" paragraph>
-            {t('groups:subjectGroups')}
+            {t('groups:supportGroups')}
           </Typography>
           <Table
             rowData={subjectGroupsData ?? []}
@@ -246,19 +222,20 @@ export default function SubjectGroups() {
           },
         ]}
       />
+
       <ConfirmDialog
         open={!!switchGroupTypeConfirmation}
-        title={t('groups:subjectGroup.switchToSupportClass.modalTitle')}
+        title={t('groups:supportGroup.switchToSubjectGroup.modalTitle')}
         description={t(
-          'groups:subjectGroup.switchToSupportClass.modalDescription'
+          'groups:supportGroup.switchToSubjectGroup.modalDescription'
         )}
-        confirmText={t('groups:subjectGroup.switchToSupportClass.confim')}
+        confirmText={t('groups:supportGroup.switchToSubjectGroup.confim')}
         onClose={() => setSwitchGroupTypeConfirmation(false)}
         onConfirm={() => {
           const partyIds = selectedGroups.map((sg) => sg.id);
           switchSubjectGroupType({
             subjectGroupPartyId: partyIds,
-            type: SubjectGroupType.SupportGroup,
+            type: SubjectGroupType.SubjectGroup,
           }).then(() => setSwitchGroupTypeConfirmation(false));
         }}
       />
