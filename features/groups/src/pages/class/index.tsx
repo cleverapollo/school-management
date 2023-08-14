@@ -58,6 +58,7 @@ const getClassGroupColumns = (
         />
       ) : null,
     comparator: sortStartNumberFirst,
+    sort: 'asc',
   },
   {
     headerName: t('common:members'),
@@ -74,6 +75,7 @@ const getClassGroupColumns = (
         .map((year) => year?.name)
         .join(', '),
     sort: 'asc',
+    sortIndex: 0,
   },
   {
     headerName: t('common:tutor'),
