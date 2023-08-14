@@ -63,7 +63,7 @@ export default function StudentProfileContainer() {
             value: 'contacts',
             hasAccess: ({ isStaffUserWithPermission }) =>
               isStaffUserWithPermission(
-                'ps:1:contacts:view_contacts_for_student'
+                'ps:1:people:view_contacts_for_student'
               ),
           },
           {
