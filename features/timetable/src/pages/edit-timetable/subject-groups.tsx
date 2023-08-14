@@ -14,7 +14,6 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Chip, Stack, Tooltip } from '@mui/material';
-import set from 'lodash/set';
 import { TableStaffMultipleAutocomplete } from '@tyro/people';
 import { Tt_UpdateTimetableGroupRowInput } from '@tyro/api';
 import { EditIcon } from '@tyro/icons';

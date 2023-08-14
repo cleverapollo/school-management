@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { UseQueryReturnType, gqlClient, graphql } from '@tyro/api';
+import { UseQueryReturnType, gqlClient, graphql, queryClient } from '@tyro/api';
 import { peopleKeys } from '../keys';
 
 const staffPosts = graphql(/* GraphQL */ `
@@ -15,6 +15,10 @@ const staffPostsQuery = () => ({
   queryKey: peopleKeys.staff.staffPosts(),
   queryFn: () => gqlClient.request(staffPosts),
 });
+
+export function getStaffPosts() {
+  return queryClient.fetchQuery(staffPostsQuery());
+}
 
 export function useStaffPosts() {
   return useQuery({

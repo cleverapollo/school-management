@@ -35,7 +35,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         icon: <SchoolExamACircleIcon />,
         title: t('navigation:general.assessments.title'),
         hasAccess: (permissions) =>
-          permissions.isStaffUserHasWithPermission(
+          permissions.isStaffUserWithPermission(
             'ps:1:assessment:read_assessments'
           ),
         children: [

@@ -3,15 +3,13 @@ import {
   ReturnTypeDisplayNames,
   RHFTextField,
   usePreferredNameLayout,
+  CardEditableForm,
+  CardEditableFormProps,
 } from '@tyro/core';
 import { UpdateStudentInput } from '@tyro/api';
 import dayjs from 'dayjs';
 import { Stack, Typography } from '@mui/material';
 import { useStudentPersonal } from '../../../../api/student/personal';
-import {
-  CardEditableForm,
-  CardEditableFormProps,
-} from '../../../../components/common/card-editable-form';
 
 type EnrolmentFormState = {
   lockerNumber: UpdateStudentInput['lockerNumber'];

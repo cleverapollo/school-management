@@ -1,11 +1,17 @@
 import { useContext, createContext, ReactNode } from 'react';
 import { ReturnTypeOfUseBlockList } from '../api/blocks';
+import { YearGroupsAutocompleteProps } from '../components/common/list-manager/year-groups-autocomplete';
 
 export type ClassListSettingsContextValue = {
   showGender: boolean;
-  setCurrentBlock: (
-    data?: NonNullable<ReturnTypeOfUseBlockList>[number]
+  setSelectedBlock: (
+    data: NonNullable<ReturnTypeOfUseBlockList>[number] | null
   ) => void;
+  setSelectedYearGroup: (
+    data: NonNullable<YearGroupsAutocompleteProps>['value'] | null
+  ) => void;
+  selectedYearGroup: YearGroupsAutocompleteProps['value'] | null;
+  selectedBlock: NonNullable<ReturnTypeOfUseBlockList>[number] | null;
 };
 
 const ClassListSettingsContext = createContext<

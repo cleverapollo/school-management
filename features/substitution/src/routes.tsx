@@ -4,6 +4,7 @@ import { GraduateHatLoadingIcon } from '@tyro/icons';
 import { getStaffWorkAbsences } from './api/staff-work-absences';
 
 const Absences = lazy(() => import('./pages/absences'));
+const Cover = lazy(() => import('./pages/cover'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -15,19 +16,26 @@ export const getRoutes: NavObjectFunction = (t) => [
         path: 'substitution',
         icon: <GraduateHatLoadingIcon />,
         title: t('navigation:management.substitution.title'),
-        hasAccess: (permissions) =>
-          permissions.hasPermission('ps:1:staff_work_management:absences_read'),
+        hasAccess: ({ isStaffUserWithPermission }) =>
+          isStaffUserWithPermission('ps:1:staff_work_management:absences_read'),
         children: [
           {
             type: NavObjectType.MenuLink,
             path: 'absences',
-            hasAccess: (permissions) =>
-              permissions.hasPermission(
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission(
                 'ps:1:staff_work_management:absences_read'
               ),
             title: t('navigation:management.substitution.absences'),
             element: <Absences />,
             loader: () => getStaffWorkAbsences({}),
+          },
+          {
+            type: NavObjectType.MenuLink,
+            path: 'cover',
+            title: t('navigation:management.substitution.cover'),
+            hasAccess: ({ isTyroUser }) => isTyroUser,
+            element: <Cover />,
           },
         ],
       },

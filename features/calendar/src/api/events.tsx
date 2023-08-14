@@ -8,6 +8,7 @@ import {
   getColorBasedOnIndex,
   CalendarEventType,
   Calendar_CalendarEventsQuery,
+  Calendar_TagContext,
 } from '@tyro/api';
 import { EventInput } from '@fullcalendar/core';
 import { useTheme } from '@mui/material';
@@ -96,6 +97,10 @@ const calendarEvents = graphql(/* GraphQL */ `
           rooms {
             roomId
             name
+          }
+          tags {
+            label
+            context
           }
         }
       }
@@ -292,6 +297,9 @@ export function useCalendarEvents(
                     ? displayName(organizerInfo?.partyInfo?.person)
                     : '',
                 room: event?.rooms?.length ? event.rooms[0]?.name : '',
+                isSubstitution: event.tags.some(
+                  (tag) => tag.context === Calendar_TagContext.Substitution
+                ),
                 originalEvent: event,
                 // NOTE: enable when BE support edition
                 // editable: event.type !== CalendarEventType.Lesson,
