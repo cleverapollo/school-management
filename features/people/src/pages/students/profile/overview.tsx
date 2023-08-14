@@ -46,7 +46,7 @@ export default function StudentProfileOverviewPage() {
         },
       })}
     >
-      {hasPermission('sdf') && (
+      {hasPermission('ps:1:people:view_contacts_for_student') && (
         <Box
           sx={{
             gridColumn: 'span 2',
