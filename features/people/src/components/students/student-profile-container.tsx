@@ -48,7 +48,7 @@ export default function StudentProfileContainer() {
           {
             label: 'Overview',
             value: t('common:overview'),
-            hasAccess: ({ isStaffUser }) => isStaffUser,
+            hasAccess: ({ isTyroUser }) => isTyroUser,
           },
           {
             label: t('people:personal.title'),
@@ -104,11 +104,11 @@ export default function StudentProfileContainer() {
             hasAccess: ({ isStaffUser, hasPermission }) =>
               isStaffUser || hasPermission('ps:1:groups:student_view_groups'),
           },
-          {
-            label: 'Settings',
-            value: 'settings',
-            hasAccess: ({ isTyroUser }) => isTyroUser,
-          },
+          // {
+          //   label: 'Settings',
+          //   value: 'settings',
+          //   hasAccess: ({ isTyroUser }) => isTyroUser,
+          // },
           {
             label: 'Medical',
             value: 'medical',
