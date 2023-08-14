@@ -13,6 +13,7 @@ import {
 import { useMemo, useState } from 'react';
 import { sortBy } from 'lodash';
 import { CheckmarkIcon, CloseIcon } from '@tyro/icons';
+import { useTranslation } from '@tyro/i18n';
 import { ReturnTypeFromUseStaffWorkAbsences } from '../../api/staff-work-absences';
 
 interface LongTermLeaveCellProps {
@@ -24,6 +25,8 @@ export const LongTermLeaveCell = <TField extends FieldValues>({
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const theme = useTheme();
   const { displayName } = usePreferredNameLayout();
+  const { t } = useTranslation(['substitution']);
+
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -83,7 +86,7 @@ export const LongTermLeaveCell = <TField extends FieldValues>({
             <Typography variant="body2" color="text.secondary">
               {group.coveringStaff?.person
                 ? displayName(group.coveringStaff?.person)
-                : 'No cover'}
+                : t('substitution:noCover')}
             </Typography>
             {group.coveringStaff && (
               <CheckmarkIcon
