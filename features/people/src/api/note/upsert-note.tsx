@@ -13,7 +13,7 @@ const upsertNote = graphql(/* GraphQL */ `
   }
 `);
 
-export function useUpsertNote() {
+export function useUpsertNote(studentId: number | undefined) {
   const { toast } = useToast();
   const { t } = useTranslation(['common']);
 
@@ -22,7 +22,7 @@ export function useUpsertNote() {
     mutationFn: async (input: Notes_UpsertNote[]) =>
       gqlClient.request(upsertNote, { input }),
     onSuccess: async (_, [note]) => {
-      await queryClient.invalidateQueries(peopleKeys.notes.all());
+      await queryClient.invalidateQueries(peopleKeys.students.notes(studentId));
 
       toast(
         note

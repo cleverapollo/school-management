@@ -11,7 +11,7 @@ import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import { Notes_Tag, Notes_UpsertNote } from '@tyro/api';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useUpsertNote } from '../../../api/note/upsert-note';
 import { useNoteTags } from '../../../api/note/note-tags';
@@ -40,17 +40,22 @@ export const EditNoteModal = ({
     mutate: createOrUpdateNoteMutation,
     isLoading: isSubmitting,
     isSuccess: isSubmitSuccessful,
-  } = useUpsertNote();
+  } = useUpsertNote(studentId);
   const { data: noteTags = [] } = useNoteTags();
 
-  const { control, handleSubmit, reset } = useForm({
-    defaultValues: {
-      ...initialNoteState,
+  const initialFormState = useMemo(
+    () => ({
+      note: initialNoteState?.note,
       tags: (initialNoteState?.tags ?? []).map(({ id, name }) => ({
         id,
         name,
       })),
-    },
+    }),
+    [initialNoteState]
+  );
+
+  const { control, handleSubmit, reset } = useForm({
+    defaultValues: initialFormState,
   });
 
   const onSubmit = ({
@@ -77,7 +82,7 @@ export const EditNoteModal = ({
 
   useEffect(() => {
     if (initialNoteState) {
-      reset(initialNoteState);
+      reset(initialFormState);
     }
   }, [initialNoteState]);
 
@@ -114,6 +119,7 @@ export const EditNoteModal = ({
                 fullWidth: true,
                 multiline: true,
                 minRows: 3,
+                autoFocus: true,
               }}
             />
             <RHFAutocomplete

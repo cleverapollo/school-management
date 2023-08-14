@@ -40,10 +40,14 @@ const getStudentNoteColumns = (
   {
     field: 'note',
     headerName: translate('people:note'),
+    filter: true,
+    sortable: true,
   },
   {
     field: 'tags',
     headerName: translate('people:labelsAndTags'),
+    filter: true,
+    sortable: true,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseNotes, any>) =>
@@ -60,10 +64,14 @@ const getStudentNoteColumns = (
     field: 'createdOn',
     headerName: translate('common:date'),
     valueGetter: ({ data }) => dayjs(data?.createdOn).format('LL'),
+    filter: true,
+    sortable: true,
   },
   {
     field: 'createdBy',
     headerName: translate('common:createdBy'),
+    filter: true,
+    sortable: true,
   },
   {
     suppressColumnsToolPanel: true,

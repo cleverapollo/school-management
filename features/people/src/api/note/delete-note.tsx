@@ -1,9 +1,4 @@
-import {
-  gqlClient,
-  graphql,
-  Notes_DeleteNotes,
-  queryClient,
-} from '@tyro/api';
+import { gqlClient, graphql, Notes_DeleteNotes, queryClient } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
 import { useMutation } from '@tanstack/react-query';
@@ -17,15 +12,16 @@ const deleteNote = graphql(/* GraphQL */ `
   }
 `);
 
-export function useDeleteNote() {
+export function useDeleteNote(studentId: number | undefined) {
   const { t } = useTranslation(['common']);
   const { toast } = useToast();
 
   return useMutation({
     mutationFn: (input: Notes_DeleteNotes) =>
       gqlClient.request(deleteNote, { input }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(peopleKeys.notes.all());
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(peopleKeys.students.notes(studentId));
+
       toast(t('common:snackbarMessages.deleteSuccess'));
     },
     onError: () => {
