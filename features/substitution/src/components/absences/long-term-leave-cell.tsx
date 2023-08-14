@@ -92,9 +92,12 @@ export const LongTermLeaveCell = <TField extends FieldValues>({
               <CheckmarkIcon
                 sx={{
                   mx: 1,
+                  width: 18,
+                  height: 18,
+                  mt: 0.4,
                   color: 'green.500',
                   '& path': {
-                    strokeWidth: 1,
+                    strokeWidth: 2,
                   },
                 }}
               />
