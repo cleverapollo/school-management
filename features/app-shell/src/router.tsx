@@ -203,7 +203,7 @@ function useAppRouter() {
             if (permissions.isStudent || permissions.isContact) {
               return redirect('/people/students');
             }
-            return redirect('/groups/class');
+            return redirect('/calendar');
           },
         },
         ...buildRouteTree(getNavCategories(mockTFunction)),
