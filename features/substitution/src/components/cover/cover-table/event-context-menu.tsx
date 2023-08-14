@@ -7,14 +7,16 @@ interface ResourceContextMenuProps extends MenuProps {
   applyCover: () => void;
   removeCover: () => void;
   isSelected: boolean;
-  showUndo: boolean;
   showApply: boolean;
+  showRemove: boolean;
 }
 
 export function EventCoverContextMenu({
   applyCover,
   removeCover,
   isSelected,
+  showApply,
+  showRemove,
   ...props
 }: ResourceContextMenuProps) {
   const { t } = useTranslation(['substitution']);
@@ -51,7 +53,7 @@ export function EventCoverContextMenu({
         },
       }}
     >
-      {props.showApply && (
+      {showApply && (
         <MenuItem
           onClick={(event) => {
             event.preventDefault();
@@ -67,7 +69,7 @@ export function EventCoverContextMenu({
           </>
         </MenuItem>
       )}
-      {props.showUndo && (
+      {showRemove && (
         <MenuItem
           onClick={(event) => {
             event.preventDefault();

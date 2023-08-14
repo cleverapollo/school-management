@@ -150,12 +150,12 @@ export function EventCoverCard({
         onClose={() => setAnchorEl(null)}
         applyCover={() => applyCover(eventInfo)}
         removeCover={() => removeCover(eventInfo)}
-        showApply={
-          selectedEvents.filter((e) => e.substitution != null).length === 0
-        }
-        showUndo={
-          selectedEvents.filter((e) => e.substitution != null).length > 0
-        }
+        showApply={selectedEvents.some(
+          (selectedEvent) => !selectedEvent.substitution
+        )}
+        showRemove={selectedEvents.some(
+          (selectedEvent) => !!selectedEvent.substitution
+        )}
         isSelected={isSelected}
       />
     </>

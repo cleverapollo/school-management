@@ -38,3 +38,8 @@ export function getAdditionalStaff(eventInfo: CoverEvent) {
       return staffAttendee?.partyInfo?.person;
     });
 }
+
+export function getEventId(eventInfo: CoverEvent) {
+  const { eventId, startTime } = eventInfo.event;
+  return `${eventId}-${startTime}`;
+}

@@ -27,6 +27,8 @@ import { useCoverTable, CoverTableRow } from '../../../hooks/use-cover-table';
 import { ApplyCoverModal } from '../apply-cover-modal';
 import { useApplyCover } from '../../../api/apply-cover';
 import { useDeleteCover } from '../../../api/remove-cover';
+import { getEventId } from '../../../utils/cover-utils';
+import { RemoveCoverModal } from '../remove-cover-modal';
 
 interface CoverTableProps {
   userAsFirstColumn?: boolean;
@@ -48,18 +50,20 @@ export function CoverTable({
 }: CoverTableProps) {
   const { t } = useTranslation(['timetable', 'common', 'substitution']);
   const { displayName } = usePreferredNameLayout();
-  const { mutateAsync: deleteCover, isLoading: isSaving } = useDeleteCover();
   const { onSelectEvent, isEventSelected, selectedEventsMap } =
     useCoverTable(data);
 
-  const [applySubstitutionModal, setApplySubstitutionModal] =
-    useState<boolean>(false);
-  const [removeSubstitutionModal, setRemoveSubstitutionModal] =
-    useState<boolean>(false);
   const {
     value: eventsForApplyCover,
     debouncedValue: debouncedEventsForApplyCover,
     setValue: setEventsForApplyCover,
+  } = useDebouncedValue<typeof selectedEventsMap | null>({
+    defaultValue: null,
+  });
+  const {
+    value: eventsForDeleteCover,
+    debouncedValue: debouncedEventsForDeleteCover,
+    setValue: setEventsForDeleteCover,
   } = useDebouncedValue<typeof selectedEventsMap | null>({
     defaultValue: null,
   });
@@ -136,7 +140,7 @@ export function CoverTable({
                   const dateString = dayjs(dayInfo?.date).format('YYYY-MM-DD');
                   const label = userAsFirstColumn
                     ? displayName(staff)
-                    : dayjs(dayInfo.date).format('DD/MM/YYYY');
+                    : dayjs(dayInfo.date).format('L');
 
                   return (
                     <TableRow key={id}>
@@ -196,19 +200,17 @@ export function CoverTable({
                                   setEventsForApplyCover(
                                     new Map([
                                       ...selectedEventsMap.entries(),
-                                      [anchorEvent.event.eventId, anchorEvent],
+                                      [getEventId(anchorEvent), anchorEvent],
                                     ])
                                   );
-                                  setApplySubstitutionModal(true);
                                 }}
                                 removeCover={(anchorEvent) => {
-                                  setEventsForApplyCover(
+                                  setEventsForDeleteCover(
                                     new Map([
                                       ...selectedEventsMap.entries(),
-                                      [anchorEvent.event.eventId, anchorEvent],
+                                      [getEventId(anchorEvent), anchorEvent],
                                     ])
                                   );
-                                  setRemoveSubstitutionModal(true);
                                 }}
                               />
                             )}
@@ -224,39 +226,19 @@ export function CoverTable({
         </EmptyStateContainer>
       </Card>
       <ApplyCoverModal
-        open={applySubstitutionModal}
+        open={!!eventsForApplyCover}
         onClose={() => {
           setEventsForApplyCover(null);
-          setApplySubstitutionModal(false);
         }}
         eventsMap={eventsForApplyCover ?? debouncedEventsForApplyCover}
       />
-      <ConfirmDialog
-        open={removeSubstitutionModal}
-        title={t('substitution:removeCover')}
-        description={t('substitution:youAreAboutToRemoveCover', {
-          dates: Array.from(eventsForApplyCover?.values() || [])
-            .map((a) => dayjs(a.event.startTime))
-            .sort((a, b) => a.date() - b.date())
-            .map((a) => dayjs(a).format('DD/MM/YYYY'))
-            .filter((x, i, a) => a.indexOf(x) === i)
-            .join(', '),
-        })}
-        confirmText={t('substitution:removeCover')}
-        onConfirm={async () => {
-          const substitutionIds = Array.from(
-            eventsForApplyCover?.values() || []
-          )
-            .map((s) => s.substitution?.substitutionId || -1)
-            .filter((s) => s !== -1);
-          await deleteCover({ substitutionIds });
-        }}
+      <RemoveCoverModal
+        open={!!eventsForDeleteCover}
         onClose={() => {
-          setEventsForApplyCover(null);
-          setRemoveSubstitutionModal(false);
+          setEventsForDeleteCover(null);
         }}
+        eventsMap={eventsForDeleteCover ?? debouncedEventsForDeleteCover}
       />
     </>
   );
 }
-// deleteCover({ substitutionIds: [1]
