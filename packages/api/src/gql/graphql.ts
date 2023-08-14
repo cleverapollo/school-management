@@ -617,22 +617,34 @@ export type Calendar_AugmentEvent = {
 };
 
 export type Calendar_AugmentEventAddAttendee = {
+  continuousEndDate?: InputMaybe<Scalars['Date']>;
+  continuousStartDate?: InputMaybe<Scalars['Date']>;
+  /**   set either dates or continuousStartDate and continuousEndDate */
   dates: Array<Scalars['Date']>;
   partyId: Scalars['Long'];
   type: CalendarEventAttendeeType;
 };
 
 export type Calendar_AugmentEventAddRoom = {
+  continuousEndDate?: InputMaybe<Scalars['Date']>;
+  continuousStartDate?: InputMaybe<Scalars['Date']>;
+  /**   set either dates or continuousStartDate and continuousEndDate */
   dates: Array<Scalars['Date']>;
   roomId: Scalars['Int'];
 };
 
 export type Calendar_AugmentEventExcludeAttendee = {
+  continuousEndDate?: InputMaybe<Scalars['Date']>;
+  continuousStartDate?: InputMaybe<Scalars['Date']>;
+  /**   set either dates or continuousStartDate and continuousEndDate */
   dates: Array<Scalars['Date']>;
   partyId: Scalars['Long'];
 };
 
 export type Calendar_AugmentEventExcludeRoom = {
+  continuousEndDate?: InputMaybe<Scalars['Date']>;
+  continuousStartDate?: InputMaybe<Scalars['Date']>;
+  /**   set either dates or continuousStartDate and continuousEndDate */
   dates: Array<Scalars['Date']>;
   roomId: Scalars['Int'];
 };
@@ -930,6 +942,28 @@ export type Core_LinkSiblingsAndContacts = {
 export type Core_LinkSiblingsAndContactsContactInfo = {
   contactPartyId?: InputMaybe<Scalars['Long']>;
   relationshipType?: InputMaybe<StudentContactType>;
+};
+
+export enum Core_ModifyMembershipEnum {
+  Add = 'ADD',
+  Remove = 'REMOVE'
+}
+
+export type Core_ModifyMemberships = {
+  staffGroupMemberships?: InputMaybe<Array<Core_ModifyStaffSubjectGroupMembership>>;
+};
+
+export type Core_ModifyStaffSubjectGroupMembership = {
+  change: Core_ModifyMembershipEnum;
+  fromDate?: InputMaybe<Scalars['Date']>;
+  groupPartyId: Scalars['Long'];
+  /**
+   *  mandatory on adding a member
+   *  on delete will only remove if the role matches the existing role or will delete all if blank
+   */
+  roles?: InputMaybe<Array<InputMaybe<StaffGroupMembershipRoles>>>;
+  staffPartyId: Scalars['Long'];
+  toDate?: InputMaybe<Scalars['Date']>;
 };
 
 export type Core_NonEnrolledSibling = {
@@ -2014,16 +2048,10 @@ export type Mutation = {
   fees_deleteFee?: Maybe<Scalars['String']>;
   fees_saveDiscount?: Maybe<Discount>;
   fees_saveFee?: Maybe<Fee>;
-<<<<<<< HEAD
-  notes_upsertBehaviourTags?: Maybe<Array<Maybe<Scalars['Int']>>>;
-  notes_upsertNotes?: Maybe<Array<Maybe<Scalars['Long']>>>;
-  notes_upsertNotesTags?: Maybe<Array<Maybe<Scalars['Int']>>>;
-=======
   notes_deleteNote?: Maybe<Success>;
   notes_upsertBehaviourTags?: Maybe<Array<Maybe<Notes_Tag>>>;
   notes_upsertNotes?: Maybe<Array<Maybe<Notes_Note>>>;
   notes_upsertNotesTags?: Maybe<Array<Maybe<Notes_Tag>>>;
->>>>>>> 1da1198328771716062850bb330f7fa84e2ae403
   ppod_savePPODCredentials: PpodCredentials;
   swm_applySubstitutions: Success;
   swm_deleteAbsence: Success;
@@ -2291,14 +2319,11 @@ export type MutationFees_SaveFeeArgs = {
 };
 
 
-<<<<<<< HEAD
-=======
 export type MutationNotes_DeleteNoteArgs = {
   input?: InputMaybe<Notes_DeleteNotes>;
 };
 
 
->>>>>>> 1da1198328771716062850bb330f7fa84e2ae403
 export type MutationNotes_UpsertBehaviourTagsArgs = {
   input?: InputMaybe<Array<InputMaybe<Notes_UpsertBehaviourTagInput>>>;
 };
@@ -2450,13 +2475,10 @@ export enum Notes_BehaviourType {
   Positive = 'POSITIVE'
 }
 
-<<<<<<< HEAD
-=======
 export type Notes_DeleteNotes = {
   noteIds: Array<Scalars['Long']>;
 };
 
->>>>>>> 1da1198328771716062850bb330f7fa84e2ae403
 export type Notes_Note = {
   __typename?: 'Notes_Note';
   associatedGroups?: Maybe<Array<Maybe<PartyGroup>>>;
@@ -2512,19 +2534,12 @@ export type Notes_UpsertBehaviourTagInput = {
 };
 
 export type Notes_UpsertNote = {
-<<<<<<< HEAD
-=======
   associatedParties?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
->>>>>>> 1da1198328771716062850bb330f7fa84e2ae403
   createdBy?: InputMaybe<Scalars['Long']>;
   createdOn?: InputMaybe<Scalars['DateTime']>;
   id?: InputMaybe<Scalars['Long']>;
   note?: InputMaybe<Scalars['String']>;
-<<<<<<< HEAD
-  referencedParties?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-=======
   referencedParties: Array<Scalars['Long']>;
->>>>>>> 1da1198328771716062850bb330f7fa84e2ae403
   tags: Array<Scalars['Int']>;
 };
 
@@ -4630,6 +4645,8 @@ export type StaffGroupMembershipInput = {
 
 export enum StaffGroupMembershipRoles {
   GroupAdmin = 'GROUP_ADMIN',
+  LongTermSubstitute = 'LONG_TERM_SUBSTITUTE',
+  ShortTermSubstitute = 'SHORT_TERM_SUBSTITUTE',
   Support = 'SUPPORT',
   Teacher = 'TEACHER',
   Tutor = 'TUTOR'
