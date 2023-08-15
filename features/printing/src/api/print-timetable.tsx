@@ -14,6 +14,7 @@ const printTimetable = graphql(/* GraphQL */ `
   }
 `);
 const printTimetableQuery = (filter: Print_TimetableOptions) => ({
+  queryKey: ['print', 'timetable', filter],
   queryFn: async () =>
     gqlClient.request(printTimetable, {
       filter,
@@ -25,6 +26,12 @@ export function getPrintTimetable(filter: Print_TimetableOptions) {
 }
 
 export function usePrintTimetable(filter: Print_TimetableOptions) {
+  const defaultNonSendOptions = {
+    partyIds: [1],
+    daysXPeriodsY: true,
+    individual: true,
+  } as Print_TimetableOptions;
+  console.log(filter);
   return useQuery({
     ...printTimetableQuery(filter),
     select: ({ print_printTimetable }) => print_printTimetable.uuid,

@@ -7,20 +7,18 @@ import {
   SyncRequest,
 } from '@tyro/api';
 import { useToast } from '@tyro/core';
-import { ppodSyncKeys } from './keys';
 
-export function useSyncFromPpodQuery() {
+export function useDownloadHtml() {
   const { toast } = useToast();
   const { t } = useTranslation(['common', 'settings']);
 
   return useMutation({
-    mutationFn: () =>
-      fetchClient<SyncRequest>('/api/ppod/sync', {
-        method: 'POST',
-        bodyType: 'json',
+    mutationFn: (uuid: string) =>
+      fetchClient<string>(`/api/download/${uuid}`, {
+        method: 'GET',
+        bodyType: 'text',
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries(ppodSyncKeys.all);
       toast(t('settings:ppodSync.syncSuccessful'), {
         variant: 'success',
       });
@@ -34,5 +32,5 @@ export function useSyncFromPpodQuery() {
 }
 
 export type ReturnTypeFromUseSyncFromPpodQuery = UseQueryReturnType<
-  typeof useSyncFromPpodQuery
+  typeof useDownloadHtml
 >;
