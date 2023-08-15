@@ -3,6 +3,9 @@
     "title": "Print Timetables",
     "student": "Students",
     "teachers": "Teachers",
-    "years": "Years"
+    "years": "Years",
+    "teacherDisplayOptions": {
+      "FULL_NAME": "Full Name"
+    }
   }
 }

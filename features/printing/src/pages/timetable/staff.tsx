@@ -9,7 +9,12 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import React, { useEffect, useState } from 'react';
 import { Button, Stack, useTheme } from '@mui/material';
-import { RHFCheckbox, RHFSwitch, useFormValidator } from '@tyro/core';
+import {
+  RHFCheckbox,
+  RHFSelect,
+  RHFSwitch,
+  useFormValidator,
+} from '@tyro/core';
 import {
   Print_TimetableOptions,
   Swm_UpsertStaffAbsenceLongTermLeaveGroupInput,
@@ -19,9 +24,14 @@ import { useForm } from 'react-hook-form';
 import { usePrintTimetable } from '../../api/print-timetable';
 import { useDownloadHtml } from '../../api/download-html';
 
+enum TeacherDisplayOptions {
+  FULL_NAME = 'fullName',
+}
+
 interface PrintStaffTimetableFormState {
-  staff: NonNullable<StaffSelectOption>;
+  staff: NonNullable<StaffSelectOption[]>;
   showRooms: boolean;
+  teacherDisplayOption: TeacherDisplayOptions;
 }
 
 export default function StudentProfileContainer() {
@@ -55,46 +65,46 @@ export default function StudentProfileContainer() {
     }
   }, [printTimetableUrl]);
 
+  const onSubmit = handleSubmit(({ staff, showRooms }) => {
+    console.log(staff);
+    setFilter({
+      partyIds: staff.map((s) => s.partyId) ?? [],
+      daysXPeriodsY: true,
+      individual: true,
+    });
+  });
   return (
     <>
-      <form>
-        <Stack
-        <RHFStaffAutocomplete
-          controlProps={{
-            name: 'staff',
-            control,
-          }}
-        />
-        <RHFSwitch
-          label="Show Rooms"
-          controlLabelProps={{
-            sx: { ml: 0, height: '100%' },
-          }}
-          controlProps={{ name: 'showRooms', control }}
-        />
-        <Stack direction="row" spacing={2}>
-          <Button
-            size="large"
-            variant="contained"
-            onClick={async () => {
-              setFilter({
-                partyIds: selectedStaff.map((staff) => staff.partyId),
-                daysXPeriodsY: true,
-                individual: true,
-              });
-              if (printTimetableUrl) {
-                const response = await downloadHtml(printTimetableUrl);
-                setTimetableHtml(response);
-              }
-
-              // const result = q({
-              //   partyIds: selectedStaff.map((staff) => staff.partyId),
-              //   daysXPeriodsY: true,
-              //   individual: true,
-              // });
-              console.log('a');
+      <form onSubmit={onSubmit}>
+        <Stack direction="row">
+          <RHFStaffAutocomplete
+            multiple
+            controlProps={{
+              name: 'staff',
+              control,
             }}
-          >
+          />
+          <RHFSwitch
+            label="Show Rooms"
+            controlLabelProps={{
+              sx: { ml: 0, height: '100%' },
+            }}
+            controlProps={{ name: 'showRooms', control }}
+          />
+          <RHFSelect<PrintStaffTimetableFormState, TeacherDisplayOptions>
+            label="Teacher "
+            options={Object.values(TeacherDisplayOptions)}
+            getOptionLabel={(option) =>
+              t(`printing:timetable.teacherDisplayOptions.${option}`)
+            }
+            controlProps={{
+              name: 'teacherDisplayOption',
+              control,
+            }}
+          />
+        </Stack>
+        <Stack direction="row" spacing={2}>
+          <Button size="large" variant="contained" type="submit">
             {t('common:actions.view')}
           </Button>
           <Button
@@ -104,7 +114,7 @@ export default function StudentProfileContainer() {
               if (printTimetableUrl) {
                 downloadHtml(printTimetableUrl).then((r) => {
                   window.open(
-                    `${window.location.origin}/api/download/${printTimetableUrl}`,
+                    'data:text/html,%3Ch1%3EHello%2C%20World%21%3C%2Fh1%3E',
                     '_blank',
                     'noreferrer'
                   );
@@ -114,6 +124,13 @@ export default function StudentProfileContainer() {
           >
             {t('common:actions.print')}
           </Button>
+          <a
+            href="data:text/html,%3Ch1%3EHello%2C%20World%21%3C%2Fh1%3E"
+            target="_blank"
+            rel="noreferrer"
+          >
+            asdasd
+          </a>
         </Stack>
       </form>
       <div dangerouslySetInnerHTML={{ __html: timetableHtml }} />
