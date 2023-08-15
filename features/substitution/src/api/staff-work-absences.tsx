@@ -17,11 +17,16 @@ const staffWorkAbsences = graphql(/* GraphQL */ `
   query swm_absences($filter: SWM_StaffAbsenceFilter) {
     swm_absences(filter: $filter) {
       absenceId
+      absenceTypeId
       staffPartyId
       absenceType {
         name
         code
       }
+      isLongTermLeave
+      longTermLeaveGroupsRequired
+      longTermLeaveGroupsApplied
+
       staff {
         partyId
         title {
@@ -43,6 +48,20 @@ const staffWorkAbsences = graphql(/* GraphQL */ `
         partialAbsence
         leavesAt
         returnsAt
+      }
+      longTermLeaveGroups {
+        groupId
+        group {
+          name
+          avatarUrl
+        }
+        coveringStaffId
+        coveringStaff {
+          person {
+            firstName
+            lastName
+          }
+        }
       }
     }
   }

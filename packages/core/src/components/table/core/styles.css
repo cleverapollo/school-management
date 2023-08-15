@@ -376,3 +376,10 @@
 .ag-theme-tyro .ag-right-aligned-cell {
   justify-content: flex-end;
 }
+
+.ag-theme-tyro .ag-sort-order {
+  font-size: 0.7rem;
+  position: absolute;
+  transform: translate(18px, 1px);
+  color: var(--ag-tyro-slate-500);
+}

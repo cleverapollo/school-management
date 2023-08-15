@@ -1,16 +1,16 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
-  Table,
+  ActionMenu,
   GridOptions,
   ICellRendererParams,
-  ActionMenu,
   PageContainer,
   PageHeading,
+  ReturnTypeDisplayName,
+  Table,
   TablePersonAvatar,
+  useDebouncedValue,
   useDisclosure,
   usePreferredNameLayout,
-  ReturnTypeDisplayName,
-  useDebouncedValue,
 } from '@tyro/core';
 import { Box, Button, Fade } from '@mui/material';
 import {
@@ -27,6 +27,7 @@ import {
 } from '../components/absent-requests/view-absent-request-modal';
 import { ApproveAbsentRequestConfirmModal } from '../components/absent-requests/approve-absent-request-confirm-modal';
 import { DeclineAbsentRequestConfirmModal } from '../components/absent-requests/decline-absent-request-confirm-modal';
+import { AbsentRequestStatusChip } from '../components/absent-requests/absent-request-status-chip';
 
 dayjs.extend(LocalizedFormat);
 
@@ -41,6 +42,7 @@ const getAbsentRequestColumns = (
     field: 'classGroup.name',
     headerName: t('common:name'),
     checkboxSelection: ({ data }) => Boolean(data),
+    headerCheckboxSelection: true,
     lockVisible: true,
     valueGetter: ({ data }) => displayName(data?.student),
     cellRenderer: ({
@@ -74,12 +76,11 @@ const getAbsentRequestColumns = (
   {
     field: 'status',
     headerName: t('common:status'),
-    valueGetter: ({ data }) =>
-      t(
-        `attendance:attendanceRequestStatus.${
-          data?.status ?? ParentalAttendanceRequestStatus.Approved
-        }`
-      ),
+    sort: 'desc',
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
+      data ? <AbsentRequestStatusChip status={data.status} /> : null,
   },
   {
     suppressColumnsToolPanel: true,
@@ -151,10 +152,26 @@ export default function AbsentRequests() {
                   {
                     label: t('attendance:approveRequests'),
                     onClick: onOpenApproveAbsentRequestsModal,
+                    disabled: !selectedAbsentRequests.some(
+                      ({ status }) =>
+                        status === ParentalAttendanceRequestStatus.Pending ||
+                        status === ParentalAttendanceRequestStatus.Denied
+                    ),
+                    disabledTooltip: t(
+                      'attendance:youHaveNotSelectedPendingAndDeclined'
+                    ),
                   },
                   {
                     label: t('attendance:declineRequests'),
                     onClick: onOpenDeclineAbsentRequestsModal,
+                    disabled: !selectedAbsentRequests.some(
+                      ({ status }) =>
+                        status === ParentalAttendanceRequestStatus.Pending ||
+                        status === ParentalAttendanceRequestStatus.Approved
+                    ),
+                    disabledTooltip: t(
+                      'attendance:youHaveNotSelectedPendingAndApproved'
+                    ),
                   },
                 ]}
               />
@@ -170,12 +187,16 @@ export default function AbsentRequests() {
       <ApproveAbsentRequestConfirmModal
         isOpen={isApproveAbsentRequestsModalOpen}
         onClose={onCloseApproveAbsentRequestsModal}
-        absentRequestState={selectedAbsentRequests}
+        absentRequestState={selectedAbsentRequests.filter(
+          ({ status }) => status !== ParentalAttendanceRequestStatus.Approved
+        )}
       />
       <DeclineAbsentRequestConfirmModal
         isOpen={isDeclineAbsentRequestsModalOpen}
         onClose={onCloseDeclineAbsentRequestsModal}
-        absentRequestState={selectedAbsentRequests}
+        absentRequestState={selectedAbsentRequests.filter(
+          ({ status }) => status !== ParentalAttendanceRequestStatus.Denied
+        )}
       />
     </PageContainer>
   );

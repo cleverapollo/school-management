@@ -10,16 +10,25 @@ import {
   TableRow,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { Avatar, useDebouncedValue, usePreferredNameLayout } from '@tyro/core';
+import {
+  Avatar,
+  ConfirmDialog,
+  useDebouncedValue,
+  usePreferredNameLayout,
+} from '@tyro/core';
 import dayjs, { Dayjs } from 'dayjs';
 import { CalendarGridPeriodType } from '@tyro/api';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { ReturnTypeFromUseEventsForCover } from '../../../api/staff-work-events-for-cover';
 import { CoverBreakOrFinished } from './cover-break-or-finished';
 import { EventCoverCard } from './event-card';
 import { EmptyStateContainer } from './empty-state-container';
 import { useCoverTable, CoverTableRow } from '../../../hooks/use-cover-table';
 import { ApplyCoverModal } from '../apply-cover-modal';
+import { useApplyCover } from '../../../api/apply-cover';
+import { useDeleteCover } from '../../../api/remove-cover';
+import { getEventId } from '../../../utils/cover-utils';
+import { RemoveCoverModal } from '../remove-cover-modal';
 
 interface CoverTableProps {
   userAsFirstColumn?: boolean;
@@ -39,14 +48,22 @@ export function CoverTable({
   data,
   isLoading = false,
 }: CoverTableProps) {
-  const { t } = useTranslation(['timetable']);
+  const { t } = useTranslation(['timetable', 'common', 'substitution']);
   const { displayName } = usePreferredNameLayout();
   const { onSelectEvent, isEventSelected, selectedEventsMap } =
     useCoverTable(data);
+
   const {
     value: eventsForApplyCover,
     debouncedValue: debouncedEventsForApplyCover,
     setValue: setEventsForApplyCover,
+  } = useDebouncedValue<typeof selectedEventsMap | null>({
+    defaultValue: null,
+  });
+  const {
+    value: eventsForDeleteCover,
+    debouncedValue: debouncedEventsForDeleteCover,
+    setValue: setEventsForDeleteCover,
   } = useDebouncedValue<typeof selectedEventsMap | null>({
     defaultValue: null,
   });
@@ -123,7 +140,7 @@ export function CoverTable({
                   const dateString = dayjs(dayInfo?.date).format('YYYY-MM-DD');
                   const label = userAsFirstColumn
                     ? displayName(staff)
-                    : dayjs(dayInfo.date).format('DD/MM/YYYY');
+                    : dayjs(dayInfo.date).format('L');
 
                   return (
                     <TableRow key={id}>
@@ -176,14 +193,25 @@ export function CoverTable({
                                 staff={staff}
                                 isEventSelected={isEventSelected}
                                 toggleEventSelection={onSelectEvent}
-                                applyCover={(anchorEvent) =>
+                                selectedEvents={Array.from(
+                                  selectedEventsMap.values()
+                                )}
+                                applyCover={(anchorEvent) => {
                                   setEventsForApplyCover(
                                     new Map([
                                       ...selectedEventsMap.entries(),
-                                      [anchorEvent.event.eventId, anchorEvent],
+                                      [getEventId(anchorEvent), anchorEvent],
                                     ])
-                                  )
-                                }
+                                  );
+                                }}
+                                removeCover={(anchorEvent) => {
+                                  setEventsForDeleteCover(
+                                    new Map([
+                                      ...selectedEventsMap.entries(),
+                                      [getEventId(anchorEvent), anchorEvent],
+                                    ])
+                                  );
+                                }}
                               />
                             )}
                           </TableCell>
@@ -199,8 +227,17 @@ export function CoverTable({
       </Card>
       <ApplyCoverModal
         open={!!eventsForApplyCover}
-        onClose={() => setEventsForApplyCover(null)}
+        onClose={() => {
+          setEventsForApplyCover(null);
+        }}
         eventsMap={eventsForApplyCover ?? debouncedEventsForApplyCover}
+      />
+      <RemoveCoverModal
+        open={!!eventsForDeleteCover}
+        onClose={() => {
+          setEventsForDeleteCover(null);
+        }}
+        eventsMap={eventsForDeleteCover ?? debouncedEventsForDeleteCover}
       />
     </>
   );
