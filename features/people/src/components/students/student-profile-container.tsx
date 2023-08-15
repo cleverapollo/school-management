@@ -119,7 +119,8 @@ export default function StudentProfileContainer() {
           {
             label: t('people:notes'),
             value: 'notes',
-            hasAccess: ({ isStaffUser }) => isStaffUser,
+            hasAccess: ({ hasPermission }) =>
+              hasPermission('ps:1:notes:read_notes'),
           },
         ]}
       />

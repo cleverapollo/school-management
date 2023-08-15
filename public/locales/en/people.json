@@ -127,6 +127,7 @@
   "editNote": "Edit note",
   "deleteNote": "Delete note",
   "addNote": "Add note",
+  "areYouSure": "Are you sure you want to delete this note?",
   "pageTitle": {
     "contacts": "List of contacts",
     "createContact": "Add a new contact",

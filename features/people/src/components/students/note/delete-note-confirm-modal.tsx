@@ -22,7 +22,7 @@ export function DeleteNoteConfirmModal({
   const { mutateAsync: deleteNote } = useDeleteNote(studentId);
 
   const onSubmit = async () => {
-    if (noteDetails && noteDetails.id) {
+    if (noteDetails?.id) {
       await deleteNote({ noteIds: [noteDetails.id] });
     }
   };
@@ -33,7 +33,7 @@ export function DeleteNoteConfirmModal({
       onClose={onClose}
       onConfirm={onSubmit}
       title={t('people:deleteNote')}
-      description={t('common:areYouSure')}
+      description={t('people:areYouSure')}
       confirmText={t('common:delete')}
     />
   );

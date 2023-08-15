@@ -43,10 +43,9 @@ export function getNotes(studentId: number | undefined) {
   return queryClient.fetchQuery(notesQuery(studentId));
 }
 
-export function useNotes(studentId: number | undefined, enabled = true) {
+export function useNotes(studentId: number | undefined) {
   return useQuery({
     ...notesQuery(studentId),
-    enabled,
     select: useCallback(({ notes_notes }: Notes_NotesQuery) => notes_notes, []),
   });
 }

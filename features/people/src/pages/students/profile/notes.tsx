@@ -13,7 +13,7 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import { Box, Button, Chip } from '@mui/material';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { AddIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
+import { AddIcon, EditIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
 import { useNotes } from '../../../api/note/list';
 import {
   EditNoteModal,
@@ -85,6 +85,7 @@ const getStudentNoteColumns = (
           menuItems={[
             {
               label: translate('people:editNote'),
+              icon: <EditIcon />,
               onClick: () => onClickEdit(data),
             },
             {
@@ -107,14 +108,10 @@ export default function StudentProfileNotesPage() {
   const studentId = getNumber(id);
   const { data: notes = [] } = useNotes(studentId);
 
-  const [selectedNotes, setSelectedNotes] = useState<ReturnTypeFromUseNotes[]>(
-    []
-  );
-  const {
-    value: noteDetails,
-    debouncedValue: debouncedNoteDetails,
-    setValue: setNoteDetails,
-  } = useDebouncedValue<EditNoteModalProps['initialNoteState']>({
+  const [, setSelectedNotes] = useState<ReturnTypeFromUseNotes[]>([]);
+  const { value: noteDetails, setValue: setNoteDetails } = useDebouncedValue<
+    EditNoteModalProps['initialNoteState']
+  >({
     defaultValue: undefined,
   });
   const {

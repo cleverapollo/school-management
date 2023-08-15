@@ -11,7 +11,7 @@ import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import { Notes_Tag, Notes_UpsertNote } from '@tyro/api';
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useUpsertNote } from '../../../api/note/upsert-note';
 import { useNoteTags } from '../../../api/note/note-tags';
@@ -36,11 +36,8 @@ export const EditNoteModal = ({
   const { id } = useParams();
   const { t } = useTranslation(['common', 'people']);
   const studentId = getNumber(id);
-  const {
-    mutate: createOrUpdateNoteMutation,
-    isLoading: isSubmitting,
-    isSuccess: isSubmitSuccessful,
-  } = useUpsertNote(studentId);
+  const { mutate: createOrUpdateNoteMutation, isLoading: isSubmitting } =
+    useUpsertNote(studentId);
   const { data: noteTags = [] } = useNoteTags();
 
   const initialFormState = useMemo(
@@ -63,21 +60,24 @@ export const EditNoteModal = ({
     tags,
     ...restData
   }: Partial<EditNoteFormState>) => {
-    if (studentId) {
-      createOrUpdateNoteMutation(
-        [
-          {
-            note,
-            tags: (tags ?? []).map(({ id }) => id ?? 0),
-            referencedParties: [studentId],
-            ...restData,
-          },
-        ],
-        {
-          onSuccess: onClose,
-        }
-      );
+    if (!studentId) {
+      return;
     }
+
+    createOrUpdateNoteMutation(
+      [
+        {
+          note,
+          id: initialNoteState?.id,
+          tags: (tags ?? []).map(({ id }) => id ?? 0),
+          referencedParties: [studentId],
+          ...restData,
+        },
+      ],
+      {
+        onSuccess: onClose,
+      }
+    );
   };
 
   useEffect(() => {
@@ -86,12 +86,7 @@ export const EditNoteModal = ({
     }
   }, [initialNoteState]);
 
-  useEffect(() => {
-    reset();
-  }, [isSubmitSuccessful]);
-
   const handleClose = () => {
-    reset();
     onClose();
   };
 
@@ -128,9 +123,7 @@ export const EditNoteModal = ({
               optionIdKey="id"
               optionTextKey="name"
               controlProps={{ name: 'tags', control }}
-              options={(noteTags ?? [])
-                .filter((tag) => tag !== null)
-                .map((tag) => ({ id: tag?.id, name: tag?.name }))}
+              options={noteTags as { id: number; name: string }[]}
               sx={{ mt: 2 }}
             />
           </Stack>
