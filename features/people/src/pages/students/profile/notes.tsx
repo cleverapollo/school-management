@@ -44,7 +44,7 @@ const getStudentNoteColumns = (
   },
   {
     field: 'tags',
-    headerName: translate('people:labelsAndTags'),
+    headerName: translate('common:label'),
     filter: true,
     sortable: true,
     cellRenderer: ({

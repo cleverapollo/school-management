@@ -112,7 +112,7 @@ export const EditNoteModal = ({
             />
             <RHFAutocomplete
               multiple
-              label={t('people:noteType')}
+              label={t('common:label')}
               optionIdKey="id"
               optionTextKey="name"
               controlProps={{ name: 'tags', control }}

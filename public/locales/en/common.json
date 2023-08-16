@@ -249,5 +249,6 @@
   "allDay": "All day",
   "addDate": "Add date",
   "startTime": "Start time",
-  "endTime": "End time"
+  "endTime": "End time",
+  "label": "Label"
 }
