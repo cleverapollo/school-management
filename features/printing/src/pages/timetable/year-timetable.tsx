@@ -3,17 +3,20 @@ import React from 'react';
 import { Box, Card, Typography, Divider } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
+import { YearGroupSelect } from '@tyro/groups';
+
 import {
   defaultValues,
   PrintStaffTimetableFormState,
   TimetablePrintForm,
 } from '../../components/timetable/timetable-print-form';
 import { TimetablePrintStaffForm } from '../../components/timetable/timetable-print-staff-form';
+import { TimetablePrintYearGroupForm } from '../../components/timetable/timetable-print-year-form';
 
 function mapper(resources: any): number[] {
-  return (resources as StaffSelectOption[]).map((p) => p.partyId);
+  return (resources as YearGroupSelect[]).map((p) => p.partyId);
 }
-export default function StudentProfileContainer() {
+export default function PrintYearGroupTimetable() {
   const { t } = useTranslation(['printing']);
 
   const methods = useForm<PrintStaffTimetableFormState>({
@@ -23,7 +26,7 @@ export default function StudentProfileContainer() {
     <Box>
       <Card variant="outlined" sx={{ p: 1.25, display: 'inline-block' }}>
         <FormProvider {...methods}>
-          <TimetablePrintStaffForm />
+          <TimetablePrintYearGroupForm />
           <Divider textAlign="left" sx={{ py: 2 }}>
             <Typography variant="body2" color="text.secondary">
               {t('printing:timetable.printOptions')}

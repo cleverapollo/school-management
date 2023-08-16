@@ -1,10 +1,13 @@
 import { lazy } from 'react';
-import { NavObjectFunction, NavObjectType, LazyLoader } from '@tyro/core';
+import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { UserGroupIcon } from '@tyro/icons';
-import { getPermissionUtils, UserType } from '@tyro/api';
 import { redirect } from 'react-router-dom';
 
 import PrintTimetableContainer from './components/timetable/print-timetable-container';
+import PrintYearGroupTimetable from './pages/timetable/year-timetable';
+import PrintStudentTimetable from './pages/timetable/student-timetable';
+import { TimetablePrintRoomForm } from './components/timetable/timetable-print-rooms-form';
+import PrintRoomTimetable from './pages/timetable/rooms-timetable';
 
 const StaffTimetable = lazy(() => import('./pages/timetable/staff'));
 // Student profile pages
@@ -40,12 +43,17 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'students',
-                element: <StaffTimetable />,
+                element: <PrintStudentTimetable />,
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'years',
-                element: <StaffTimetable />,
+                element: <PrintYearGroupTimetable />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'rooms',
+                element: <PrintRoomTimetable />,
               },
             ],
           },

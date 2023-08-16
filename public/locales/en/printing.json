@@ -4,8 +4,45 @@
     "student": "Students",
     "teachers": "Teachers",
     "years": "Years",
+    "rooms": "Rooms",
+    "printOptions": "Print Options",
     "teacherDisplayOptions": {
-      "FULL_NAME": "Full Name"
+      "FULL":  "Full Name",
+      "DISPLAY_CODE":  "Display Code",
+      "HIDE": "Hide"
+    },
+    "layout": {
+      "PERIODS_ON_X_AXIS":  "Periods on X axis",
+      "DAYS_ON_X_AXIS":  "Days on X axis",
+      "COMBINED": "Combined"
+    },
+    "periodDisplayOnAxis": {
+      "PERIOD_NUMBER": "Period Number",
+      "TIME": "Time"
+    },
+    "periodDisplayInCell" : {
+      "PERIOD_NUMBER": "Period Number",
+      "TIME": "Time",
+      "HIDE": "Hide"
+    },
+    "teacherDisplayOption": {
+      "FULL": "Full Name",
+      "DISPLAY_CODE": "Display Code",
+      "HIDE": "Hide"
+    },
+    "subjectFormat": {
+      "FULL": "Full Name",
+      "CODE": "Code",
+      "SHORT": "Short"
+    },
+    "options" : {
+      "teacherDisplayFormat": "Teacher Display",
+      "layout": "Layout",
+      "periodDisplayOnAxis": "Period on Axis",
+      "periodDisplayInCell": "Period in Cell",
+      "subjectFormat": "Subject",
+      "showGroupNames": "Show Group Names",
+      "showRooms": "Show Rooms"
     }
   }
 }

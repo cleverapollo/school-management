@@ -4,12 +4,14 @@ import {
   graphql,
   Print_TimetableOptions,
   queryClient,
+  UseQueryReturnType,
 } from '@tyro/api';
 
 const printTimetable = graphql(/* GraphQL */ `
   query printTimetable($filter: Print_TimetableOptions!) {
     print_printTimetable(filter: $filter) {
-      uuid
+      url
+      html
     }
   }
 `);
@@ -26,14 +28,12 @@ export function getPrintTimetable(filter: Print_TimetableOptions) {
 }
 
 export function usePrintTimetable(filter: Print_TimetableOptions) {
-  const defaultNonSendOptions = {
-    partyIds: [1],
-    daysXPeriodsY: true,
-    individual: true,
-  } as Print_TimetableOptions;
-  console.log(filter);
   return useQuery({
     ...printTimetableQuery(filter),
-    select: ({ print_printTimetable }) => print_printTimetable.uuid,
+    select: ({ print_printTimetable }) => print_printTimetable,
   });
 }
+
+export type ReturnTypeFromUsePrintTimetable = UseQueryReturnType<
+  typeof usePrintTimetable
+>;
