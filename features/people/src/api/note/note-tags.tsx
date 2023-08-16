@@ -19,10 +19,6 @@ const noteTagsQuery = () => ({
     }),
 });
 
-export function getNoteTags() {
-  return queryClient.fetchQuery(noteTagsQuery());
-}
-
 export function useNoteTags() {
   return useQuery({
     ...noteTagsQuery(),
