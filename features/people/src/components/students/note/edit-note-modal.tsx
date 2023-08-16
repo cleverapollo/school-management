@@ -6,13 +6,12 @@ import {
   DialogContent,
   Stack,
 } from '@mui/material';
-import { getNumber, RHFAutocomplete, RHFTextField } from '@tyro/core';
+import { RHFAutocomplete, RHFTextField } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import { Notes_Tag, Notes_UpsertNote } from '@tyro/api';
-import { useEffect, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useUpsertNote } from '../../../api/note/upsert-note';
 import { useNoteTags } from '../../../api/note/note-tags';
 
@@ -27,15 +26,15 @@ export type EditNoteFormState = Pick<
 export type EditNoteModalProps = {
   initialNoteState?: Partial<EditNoteFormState> | undefined;
   onClose: () => void;
+  studentId?: number;
 };
 
 export const EditNoteModal = ({
   initialNoteState,
   onClose,
+  studentId,
 }: EditNoteModalProps) => {
-  const { id } = useParams();
   const { t } = useTranslation(['common', 'people']);
-  const studentId = getNumber(id);
   const { mutate: createOrUpdateNoteMutation, isLoading: isSubmitting } =
     useUpsertNote(studentId);
   const { data: noteTags = [] } = useNoteTags();

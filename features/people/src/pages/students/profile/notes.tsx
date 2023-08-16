@@ -153,6 +153,7 @@ export default function StudentProfileNotesPage() {
         onRowSelection={setSelectedNotes}
       />
       <EditNoteModal
+        studentId={studentId}
         initialNoteState={noteDetails}
         onClose={() => setNoteDetails(undefined)}
       />
