@@ -13,10 +13,6 @@ import {
 } from '../../api/student/students';
 import { usePeopleAutocompleteProps } from './use-people-autocomplete-props';
 
-// export type StudentSelectOption = UseQueryReturnType<
-//   typeof useStudentsForSelect
-// >[number];
-
 type RHFStudentAutocompleteProps<TField extends FieldValues> = Omit<
   RHFAutocompleteProps<TField, StudentSelectOption>,
   'options'
