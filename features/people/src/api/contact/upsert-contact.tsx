@@ -23,7 +23,6 @@ export function useUpsertContact() {
   const { t } = useTranslation(['people']);
 
   return useMutation({
-    mutationKey: peopleKeys.contacts.upsertContact(),
     mutationFn: async (input: UpsertStudentContactInput) =>
       gqlClient.request(upsertContact, { input }),
     onSuccess: async (_, contact) => {
