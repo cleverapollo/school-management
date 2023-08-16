@@ -46,11 +46,11 @@ export const DeleteMedicalProfessionalModal = ({
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      {/*<DialogTitle>{t('people:deleteMedicalProfessional')}</DialogTitle>*/}
+      <DialogTitle>{t('people:deleteMedicalProfessional')}</DialogTitle>
 
       <DialogContent>
         <DialogContentText>
-          {/*{t('people:deleteMedicalProfessionalConfirmation')}*/}
+          {t('people:deleteMedicalProfessionalConfirmation')}
         </DialogContentText>
       </DialogContent>
       <Stack spacing={2}>
