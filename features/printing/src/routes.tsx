@@ -22,7 +22,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         path: 'printing',
         title: t('navigation:management.printing.title'),
         icon: <UserGroupIcon />,
-        hasAccess: ({ userType }) => true,
+        hasAccess: ({ isTyroUser }) => isTyroUser,
         children: [
           {
             type: NavObjectType.MenuLink,
