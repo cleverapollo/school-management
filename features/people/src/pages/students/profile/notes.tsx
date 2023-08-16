@@ -47,6 +47,7 @@ const getStudentNoteColumns = (
     headerName: translate('common:label'),
     filter: true,
     sortable: true,
+    valueGetter: ({ data }) => data?.tags?.map(({ name }) => name),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseNotes, any>) =>
