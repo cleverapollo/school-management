@@ -1,6 +1,5 @@
 import { gqlClient, graphql, Notes_TagsQuery, queryClient } from '@tyro/api';
 import { useQuery } from '@tanstack/react-query';
-import { useCallback } from 'react';
 import { peopleKeys } from '../keys';
 
 const noteTags = graphql(/* GraphQL */ `
@@ -14,7 +13,7 @@ const noteTags = graphql(/* GraphQL */ `
 
 const noteTagsQuery = () => ({
   queryKey: peopleKeys.notes.noteTags(),
-  queryFn: async () =>
+  queryFn: () =>
     gqlClient.request(noteTags, {
       filter: {},
     }),
@@ -27,6 +26,6 @@ export function getNoteTags() {
 export function useNoteTags() {
   return useQuery({
     ...noteTagsQuery(),
-    select: useCallback(({ notes_tags }: Notes_TagsQuery) => notes_tags, []),
+    select: ({ notes_tags }: Notes_TagsQuery) => notes_tags,
   });
 }

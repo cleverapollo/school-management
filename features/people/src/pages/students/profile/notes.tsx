@@ -14,7 +14,7 @@ import { Box, Button, Chip } from '@mui/material';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { AddIcon, EditIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
-import { useNotes } from '../../../api/note/list';
+import { ReturnTypeFromUseNotes, useNotes } from '../../../api/note/list';
 import {
   EditNoteModal,
   EditNoteModalProps,
@@ -25,10 +25,6 @@ import {
 } from '../../../components/students/note/delete-note-confirm-modal';
 
 dayjs.extend(LocalizedFormat);
-
-type ReturnTypeFromUseNotes = NonNullable<
-  ReturnType<typeof useNotes>['data']
->[number];
 
 const getStudentNoteColumns = (
   translate: TFunction<('common' | 'people')[]>,
@@ -154,9 +150,7 @@ export default function StudentProfileNotesPage() {
         tableContainerSx={{ height: 300 }}
         rowSelection="multiple"
         getRowId={({ data }) => String(data?.id)}
-        onRowSelection={(rows) => {
-          setSelectedNotes(rows);
-        }}
+        onRowSelection={setSelectedNotes}
       />
       <EditNoteModal
         initialNoteState={noteDetails}
@@ -165,7 +159,7 @@ export default function StudentProfileNotesPage() {
       <DeleteNoteConfirmModal
         open={!!noteToDelete}
         onClose={() => setNoteToDelete(null)}
-        noteDetails={noteToDelete || debouncedNoteToDelete}
+        noteDetails={debouncedNoteToDelete}
       />
     </>
   );

@@ -6,7 +6,6 @@ import {
   UseQueryReturnType,
 } from '@tyro/api';
 import { useQuery } from '@tanstack/react-query';
-import { useCallback } from 'react';
 import { peopleKeys } from '../keys';
 
 export type ReturnTypeFromUseNotes = UseQueryReturnType<
@@ -46,6 +45,6 @@ export function getNotes(studentId: number | undefined) {
 export function useNotes(studentId: number | undefined) {
   return useQuery({
     ...notesQuery(studentId),
-    select: useCallback(({ notes_notes }: Notes_NotesQuery) => notes_notes, []),
+    select: ({ notes_notes }: Notes_NotesQuery) => notes_notes,
   });
 }

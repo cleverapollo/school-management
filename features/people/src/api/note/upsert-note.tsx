@@ -18,7 +18,6 @@ export function useUpsertNote(studentId: number | undefined) {
   const { t } = useTranslation(['common']);
 
   return useMutation({
-    mutationKey: peopleKeys.notes.upsertNote(),
     mutationFn: async (input: Notes_UpsertNote[]) =>
       gqlClient.request(upsertNote, { input }),
     onSuccess: async (_, [note]) => {

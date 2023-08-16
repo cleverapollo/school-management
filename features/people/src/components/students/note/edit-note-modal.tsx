@@ -40,16 +40,10 @@ export const EditNoteModal = ({
     useUpsertNote(studentId);
   const { data: noteTags = [] } = useNoteTags();
 
-  const initialFormState = useMemo(
-    () => ({
-      note: initialNoteState?.note,
-      tags: (initialNoteState?.tags ?? []).map(({ id, name }) => ({
-        id,
-        name,
-      })),
-    }),
-    [initialNoteState]
-  );
+  const initialFormState = {
+    note: initialNoteState?.note,
+    tags: initialNoteState?.tags ?? [],
+  };
 
   const { control, handleSubmit, reset } = useForm({
     defaultValues: initialFormState,
