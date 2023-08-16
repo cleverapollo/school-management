@@ -5,32 +5,28 @@ import {
   Dialog,
   DialogContent,
   Stack,
+  Chip,
 } from '@mui/material';
-import { RHFAutocomplete, RHFTextField } from '@tyro/core';
+import { RHFAutocomplete, RHFTextField, useFormValidator } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import { Notes_Tag, Notes_UpsertNote } from '@tyro/api';
 import { useEffect } from 'react';
+import { getColorBasedOnIndex } from '@tyro/api';
 import { useUpsertNote } from '../../../api/note/upsert-note';
 import { useNoteTags } from '../../../api/note/note-tags';
+import { ReturnTypeFromUseNotes } from '../../../api/note/list';
 
-export type EditNoteFormState = Pick<
-  Notes_UpsertNote,
-  'createdBy' | 'createdOn' | 'id' | 'referencedParties'
-> & {
-  note?: string | null;
-  tags: Partial<Notes_Tag>[];
-};
+type NoteFormState = NonNullable<ReturnTypeFromUseNotes>;
 
 export type EditNoteModalProps = {
-  initialNoteState?: Partial<EditNoteFormState> | undefined;
+  initialState: Partial<NoteFormState> | null;
   onClose: () => void;
-  studentId?: number;
+  studentId: number;
 };
 
 export const EditNoteModal = ({
-  initialNoteState,
+  initialState,
   onClose,
   studentId,
 }: EditNoteModalProps) => {
@@ -39,62 +35,45 @@ export const EditNoteModal = ({
     useUpsertNote(studentId);
   const { data: noteTags = [] } = useNoteTags();
 
-  const initialFormState = {
-    note: initialNoteState?.note,
-    tags: initialNoteState?.tags ?? [],
-  };
+  const { resolver, rules } = useFormValidator<NoteFormState>();
 
-  const { control, handleSubmit, reset } = useForm({
-    defaultValues: initialFormState,
+  const { control, handleSubmit } = useForm<NoteFormState>({
+    defaultValues: { ...initialState },
+    resolver: resolver({
+      note: rules.required(),
+      tags: rules.required(),
+    }),
   });
 
-  const onSubmit = ({
-    note,
-    tags,
-    ...restData
-  }: Partial<EditNoteFormState>) => {
-    if (!studentId) {
-      return;
-    }
-
+  const onSubmit = handleSubmit(({ note, tags, ...restData }) => {
     createOrUpdateNoteMutation(
       [
         {
-          note,
-          id: initialNoteState?.id,
-          tags: (tags ?? []).map(({ id }) => id ?? 0),
-          referencedParties: [studentId],
           ...restData,
+          id: initialState?.id,
+          note,
+          tags: tags.map(({ id }) => id),
+          referencedParties: [studentId],
         },
       ],
       {
         onSuccess: onClose,
       }
     );
-  };
-
-  useEffect(() => {
-    if (initialNoteState) {
-      reset(initialFormState);
-    }
-  }, [initialNoteState]);
-
-  const handleClose = () => {
-    onClose();
-  };
+  });
 
   return (
     <Dialog
-      open={!!initialNoteState}
-      onClose={handleClose}
+      open={!!initialState}
+      onClose={onClose}
       scroll="paper"
       fullWidth
       maxWidth="sm"
     >
       <DialogTitle>
-        {initialNoteState?.id ? t('people:editNote') : t('people:addNote')}
+        {initialState?.id ? t('people:editNote') : t('people:addNote')}
       </DialogTitle>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={onSubmit}>
         <DialogContent>
           <Stack py={1}>
             <RHFTextField
@@ -116,14 +95,25 @@ export const EditNoteModal = ({
               optionIdKey="id"
               optionTextKey="name"
               controlProps={{ name: 'tags', control }}
-              options={noteTags as { id: number; name: string }[]}
+              options={noteTags}
               sx={{ mt: 2 }}
+              renderTags={(tags, getTagProps) =>
+                tags.map((tag, index) => (
+                  <Chip
+                    {...getTagProps({ index })}
+                    size="small"
+                    variant="soft"
+                    color={getColorBasedOnIndex(tag.id)}
+                    label={tag.name}
+                  />
+                ))
+              }
             />
           </Stack>
         </DialogContent>
 
         <DialogActions>
-          <Button variant="outlined" color="inherit" onClick={handleClose}>
+          <Button variant="outlined" color="inherit" onClick={onClose}>
             {t('common:actions.cancel')}
           </Button>
 

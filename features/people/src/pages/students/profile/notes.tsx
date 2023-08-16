@@ -32,10 +32,8 @@ dayjs.extend(LocalizedFormat);
 const getStudentNoteColumns = (
   translate: TFunction<('common' | 'people')[]>,
   displayName: ReturnTypeDisplayName,
-  onClickEdit: Dispatch<SetStateAction<EditNoteModalProps['initialNoteState']>>,
-  setNoteToDelete: Dispatch<
-    SetStateAction<DeleteNoteConfirmModalProps['noteDetails']>
-  >
+  onEdit: Dispatch<SetStateAction<EditNoteModalProps['initialState']>>,
+  onDelete: Dispatch<SetStateAction<DeleteNoteConfirmModalProps['noteDetails']>>
 ): GridOptions<ReturnTypeFromUseNotes>['columnDefs'] => [
   {
     field: 'note',
@@ -90,14 +88,12 @@ const getStudentNoteColumns = (
             {
               label: translate('people:editNote'),
               icon: <EditIcon />,
-              onClick: () => onClickEdit(data),
+              onClick: () => onEdit(data),
             },
             {
               label: translate('common:actions.delete'),
               icon: <TrashIcon />,
-              onClick: () => {
-                setNoteToDelete(data);
-              },
+              onClick: () => onDelete(data),
             },
           ]}
         />
@@ -114,12 +110,9 @@ export default function StudentProfileNotesPage() {
   const studentId = getNumber(id);
   const { data: notes = [] } = useNotes(studentId);
 
-  const [, setSelectedNotes] = useState<ReturnTypeFromUseNotes[]>([]);
-  const { value: noteDetails, setValue: setNoteDetails } = useDebouncedValue<
-    EditNoteModalProps['initialNoteState']
-  >({
-    defaultValue: undefined,
-  });
+  const [noteDetails, setNoteDetails] =
+    useState<EditNoteModalProps['initialState']>(null);
+
   const {
     value: noteToDelete,
     debouncedValue: debouncedNoteToDelete,
@@ -134,10 +127,6 @@ export default function StudentProfileNotesPage() {
     [t]
   );
 
-  const handleCreateNote = () => {
-    setNoteDetails({});
-  };
-
   return (
     <>
       <PageHeading
@@ -147,7 +136,7 @@ export default function StudentProfileNotesPage() {
           <Box display="flex" alignItems="center">
             <Button
               variant="contained"
-              onClick={handleCreateNote}
+              onClick={() => setNoteDetails({})}
               startIcon={<AddIcon />}
             >
               {t('people:createNote')}
@@ -161,17 +150,18 @@ export default function StudentProfileNotesPage() {
         tableContainerSx={{ height: 300 }}
         rowSelection="multiple"
         getRowId={({ data }) => String(data?.id)}
-        onRowSelection={setSelectedNotes}
       />
-      <EditNoteModal
-        studentId={studentId}
-        initialNoteState={noteDetails}
-        onClose={() => setNoteDetails(undefined)}
-      />
+      {noteDetails && (
+        <EditNoteModal
+          studentId={studentId!}
+          initialState={noteDetails}
+          onClose={() => setNoteDetails(null)}
+        />
+      )}
       <DeleteNoteConfirmModal
         open={!!noteToDelete}
-        onClose={() => setNoteToDelete(null)}
         noteDetails={debouncedNoteToDelete}
+        onClose={() => setNoteToDelete(null)}
       />
     </>
   );

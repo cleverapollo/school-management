@@ -1,10 +1,4 @@
-import {
-  gqlClient,
-  graphql,
-  Notes_NotesQuery,
-  queryClient,
-  UseQueryReturnType,
-} from '@tyro/api';
+import { gqlClient, graphql, queryClient, UseQueryReturnType } from '@tyro/api';
 import { useQuery } from '@tanstack/react-query';
 import { peopleKeys } from '../keys';
 
@@ -18,6 +12,7 @@ const notes = graphql(/* GraphQL */ `
       id
       note
       createdOn
+      createdBy
       createdByPerson {
         title {
           id
@@ -53,6 +48,6 @@ export function getNotes(studentId: number | undefined) {
 export function useNotes(studentId: number | undefined) {
   return useQuery({
     ...notesQuery(studentId),
-    select: ({ notes_notes }: Notes_NotesQuery) => notes_notes,
+    select: ({ notes_notes }) => notes_notes,
   });
 }
