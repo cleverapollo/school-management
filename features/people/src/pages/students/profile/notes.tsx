@@ -16,6 +16,7 @@ import { Box, Button, Chip } from '@mui/material';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { AddIcon, EditIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
+import { getColorBasedOnIndex } from '@tyro/api';
 import { ReturnTypeFromUseNotes, useNotes } from '../../../api/note/list';
 import {
   EditNoteModal,
@@ -51,8 +52,14 @@ const getStudentNoteColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseNotes, any>) =>
-      data?.tags?.map((tag) => (
-        <Chip key={tag.id} label={tag.name} variant="soft" sx={{ mr: 1 }} />
+      data?.tags?.map(({ id, name }) => (
+        <Chip
+          key={id}
+          label={name}
+          variant="soft"
+          color={getColorBasedOnIndex(id)}
+          sx={{ mr: 1 }}
+        />
       )),
   },
   {
