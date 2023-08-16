@@ -18,7 +18,15 @@ const notes = graphql(/* GraphQL */ `
       id
       note
       createdOn
-      createdBy
+      createdByPerson {
+        title {
+          id
+          name
+          nameTextId
+        }
+        firstName
+        lastName
+      }
       tags {
         id
         name

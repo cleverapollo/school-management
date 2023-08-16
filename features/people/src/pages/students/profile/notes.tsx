@@ -8,6 +8,8 @@ import {
   PageHeading,
   Table,
   useDebouncedValue,
+  ReturnTypeDisplayName,
+  usePreferredNameLayout,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { Box, Button, Chip } from '@mui/material';
@@ -28,6 +30,7 @@ dayjs.extend(LocalizedFormat);
 
 const getStudentNoteColumns = (
   translate: TFunction<('common' | 'people')[]>,
+  displayName: ReturnTypeDisplayName,
   onClickEdit: Dispatch<SetStateAction<EditNoteModalProps['initialNoteState']>>,
   setNoteToDelete: Dispatch<
     SetStateAction<DeleteNoteConfirmModalProps['noteDetails']>
@@ -47,13 +50,8 @@ const getStudentNoteColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseNotes, any>) =>
-      data?.tags?.map((tag, idx) => (
-        <Chip
-          key={`note${data.id}-tag${idx}`}
-          label={tag.name}
-          variant="soft"
-          sx={{ mr: 1 }}
-        />
+      data?.tags?.map((tag) => (
+        <Chip key={tag.id} label={tag.name} variant="soft" sx={{ mr: 1 }} />
       )),
   },
   {
@@ -64,8 +62,10 @@ const getStudentNoteColumns = (
     sortable: true,
   },
   {
-    field: 'createdBy',
+    field: 'createdByPerson',
     headerName: translate('common:createdBy'),
+    valueGetter: ({ data }) =>
+      data ? displayName(data.createdByPerson) : null,
     filter: true,
     sortable: true,
   },
@@ -101,6 +101,8 @@ export default function StudentProfileNotesPage() {
   const { id } = useParams();
   const { t } = useTranslation(['common', 'people']);
 
+  const { displayName } = usePreferredNameLayout();
+
   const studentId = getNumber(id);
   const { data: notes = [] } = useNotes(studentId);
 
@@ -119,7 +121,8 @@ export default function StudentProfileNotesPage() {
   });
 
   const studentNoteColumns = useMemo(
-    () => getStudentNoteColumns(t, setNoteDetails, setNoteToDelete),
+    () =>
+      getStudentNoteColumns(t, displayName, setNoteDetails, setNoteToDelete),
     [t]
   );
 
