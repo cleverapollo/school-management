@@ -29,6 +29,10 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'timetable',
             element: <PrintTimetableContainer />,
             title: t('navigation:management.printing.timetable'),
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission(
+                'ps:1:printing_and_exporting:print_timetables'
+              ),
             children: [
               {
                 type: NavObjectType.NonMenuLink,
