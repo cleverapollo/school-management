@@ -14,6 +14,7 @@ export function TimetablePrintStaffForm() {
     <form>
       <RHFStaffAutocomplete
         multiple
+        disableCloseOnSelect
         sx={({ palette }) => ({
           backgroundColor: 'white',
           width: 300,

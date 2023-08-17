@@ -33,6 +33,7 @@ export interface PrintStaffTimetableFormState {
   periodDisplayOnAxis: Print_TimetablePeriodDisplayOnAxis;
   periodDisplayInCell: Print_TimetablePeriodDisplayInCell;
   subjectFormat: Print_TimetableSubjectFormat;
+  individualStudents: boolean;
 }
 
 export interface TimetablePrintFormProps {
@@ -61,12 +62,13 @@ export function TimetablePrintForm({
     periodDisplayOnAxis: Print_TimetablePeriodDisplayOnAxis.Time,
     periodDisplayInCell: Print_TimetablePeriodDisplayInCell.Hide,
     subjectFormat: Print_TimetableSubjectFormat.Full,
+    individualStudents: false,
   });
   const { control, handleSubmit, reset, watch } =
     useFormContext<PrintStaffTimetableFormState>();
   const { data: timetableData, isLoading } = usePrintTimetable(filter);
-  const partyIds = watch('partyIds');
-  const roomIds = watch('roomIds');
+  const partyIds = watch('partyIds') as number[];
+  const roomIds = watch('roomIds') as number[];
   const onSubmit = handleSubmit(
     ({
       showRooms,
@@ -76,6 +78,7 @@ export function TimetablePrintForm({
       periodDisplayOnAxis,
       periodDisplayInCell,
       subjectFormat,
+      individualStudents,
     }) => {
       setFilter({
         partyIds: translatePartyIds ? translatePartyIds(partyIds) : [],
@@ -87,6 +90,7 @@ export function TimetablePrintForm({
         periodDisplayOnAxis,
         periodDisplayInCell,
         subjectFormat,
+        individualStudents,
       });
     }
   );
@@ -100,6 +104,7 @@ export function TimetablePrintForm({
       periodDisplayOnAxis,
       periodDisplayInCell,
       subjectFormat,
+      individualStudents,
     }) => {
       const f = {
         partyIds: translatePartyIds ? translatePartyIds(partyIds) : [],
@@ -110,6 +115,7 @@ export function TimetablePrintForm({
         periodDisplayOnAxis,
         periodDisplayInCell,
         subjectFormat,
+        individualStudents,
       };
       const printResponse = await getPrintTimetable(f);
 
@@ -251,9 +257,14 @@ export function TimetablePrintForm({
           </LoadingButton>
         </Stack>
       </form>
-      {timetableData && timetableData.html && (
-        <div dangerouslySetInnerHTML={{ __html: timetableData.html }} />
-      )}
+      <Stack style={{ maxHeight: '100%', overflow: 'auto' }}>
+        {timetableData && timetableData.html && (
+          <div
+            style={{ maxHeight: '100%', overflow: 'auto' }}
+            dangerouslySetInnerHTML={{ __html: timetableData.html }}
+          />
+        )}
+      </Stack>
     </>
   );
 }
