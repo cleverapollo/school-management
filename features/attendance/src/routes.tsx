@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { PersonCheckmarkIcon } from '@tyro/icons';
+import AbsentRequestOverview from './pages/absent-requests-overview';
 
 const SessionAttendance = lazy(() => import('./pages/session'));
 const AbsentRequests = lazy(() => import('./pages/absent-requests'));
@@ -36,6 +37,19 @@ export const getRoutes: NavObjectFunction = (t) => [
                 'ps:1:staff_work_management:absences_read'
               ),
             element: <AbsentRequests />,
+          },
+          {
+            type: NavObjectType.MenuLink,
+            path: 'absent-requests-overview',
+            title: t('navigation:general.attendance.absentRequests'),
+            // hasAccess: ({ isContact }) => isContact,
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                index: true,
+                element: <AbsentRequestOverview />,
+              },
+            ],
           },
         ],
       },
