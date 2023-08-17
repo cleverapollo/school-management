@@ -284,7 +284,6 @@ export function TimetablePrintForm({
             variant="contained"
             type="submit"
             loading={isLoading}
-            disabled={partyIds.length > 0 || roomIds.length > 0}
           >
             {t('common:actions.view')}
           </LoadingButton>
@@ -293,7 +292,6 @@ export function TimetablePrintForm({
             variant="contained"
             loading={isLoading}
             onClick={handlePrint}
-            disabled={partyIds.length > 0 || roomIds.length > 0}
           >
             {t('common:actions.print')}
           </LoadingButton>
