@@ -34,6 +34,14 @@ export interface PrintStaffTimetableFormState {
   periodDisplayInCell: Print_TimetablePeriodDisplayInCell;
   subjectFormat: Print_TimetableSubjectFormat;
   individualStudents: boolean;
+  fontSize: FontSize;
+}
+
+enum FontSize {
+  EXCEEDINGLY_SMALL = 'EXCEEDINGLY_SMALL',
+  SMALL = 'SMALL',
+  MEDIUM = 'MEDIUM',
+  LARGE = 'LARGE',
 }
 
 export interface TimetablePrintFormProps {
@@ -43,6 +51,18 @@ export interface TimetablePrintFormProps {
   translateRoomIds?: (any) => number[];
 }
 
+function mapFontSize(fontSize: FontSize) {
+  switch (fontSize) {
+    case FontSize.EXCEEDINGLY_SMALL:
+      return 6;
+    case FontSize.SMALL:
+      return 10;
+    case FontSize.MEDIUM:
+      return 12;
+    case FontSize.LARGE:
+      return 18;
+  }
+}
 export function TimetablePrintForm({
   translatePartyIds,
   translateRoomIds,
@@ -63,6 +83,7 @@ export function TimetablePrintForm({
     periodDisplayInCell: Print_TimetablePeriodDisplayInCell.Hide,
     subjectFormat: Print_TimetableSubjectFormat.Full,
     individualStudents: false,
+    fontSize: 15,
   });
   const { control, handleSubmit, reset, watch } =
     useFormContext<PrintStaffTimetableFormState>();
@@ -79,6 +100,7 @@ export function TimetablePrintForm({
       periodDisplayInCell,
       subjectFormat,
       individualStudents,
+      fontSize,
     }) => {
       setFilter({
         partyIds: translatePartyIds ? translatePartyIds(partyIds) : [],
@@ -91,6 +113,7 @@ export function TimetablePrintForm({
         periodDisplayInCell,
         subjectFormat,
         individualStudents,
+        fontSize: mapFontSize(fontSize),
       });
     }
   );
@@ -105,6 +128,7 @@ export function TimetablePrintForm({
       periodDisplayInCell,
       subjectFormat,
       individualStudents,
+      fontSize,
     }) => {
       const f = {
         partyIds: translatePartyIds ? translatePartyIds(partyIds) : [],
@@ -116,6 +140,7 @@ export function TimetablePrintForm({
         periodDisplayInCell,
         subjectFormat,
         individualStudents,
+        fontSize: mapFontSize(fontSize),
       };
       const printResponse = await getPrintTimetable(f);
 
@@ -220,6 +245,21 @@ export function TimetablePrintForm({
             />
           </Grid>
           <Grid item>
+            <RHFSelect<PrintStaffTimetableFormState, FontSize>
+              fullWidth
+              sx={{ minWidth: 200 }}
+              label={t(`printing:timetable.options.fontSize`)}
+              options={Object.values(FontSize)}
+              getOptionLabel={(option) =>
+                t(`printing:timetable.fontSize.${option}`)
+              }
+              controlProps={{
+                name: 'fontSize',
+                control,
+              }}
+            />
+          </Grid>
+          <Grid item>
             <RHFSelect<
               PrintStaffTimetableFormState,
               Print_TimetableSubjectFormat
@@ -277,4 +317,5 @@ export const defaultValues = {
   periodDisplayOnAxis: Print_TimetablePeriodDisplayOnAxis.Time,
   periodDisplayInCell: Print_TimetablePeriodDisplayInCell.Hide,
   subjectFormat: Print_TimetableSubjectFormat.Full,
+  fontSize: FontSize.LARGE,
 } as PrintStaffTimetableFormState;
