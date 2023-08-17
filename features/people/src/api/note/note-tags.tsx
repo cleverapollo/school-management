@@ -1,4 +1,4 @@
-import { gqlClient, graphql, Notes_TagsQuery, queryClient } from '@tyro/api';
+import { gqlClient, graphql, UseQueryReturnType } from '@tyro/api';
 import { useQuery } from '@tanstack/react-query';
 import { peopleKeys } from '../keys';
 
@@ -22,6 +22,11 @@ const noteTagsQuery = () => ({
 export function useNoteTags() {
   return useQuery({
     ...noteTagsQuery(),
-    select: ({ notes_tags }: Notes_TagsQuery) => notes_tags,
+    select: ({ notes_tags }) =>
+      notes_tags?.flatMap((note) => (note ? [note] : [])),
   });
 }
+
+export type ReturnTypeFromUseNoteTags = UseQueryReturnType<
+  typeof useNoteTags
+>[number];
