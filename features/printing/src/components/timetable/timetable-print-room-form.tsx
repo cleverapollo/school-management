@@ -15,6 +15,7 @@ export function TimetablePrintRoomForm() {
     <form>
       <RHFRoomAutocomplete
         multiple
+        disableCloseOnSelect
         sx={({ palette }) => ({
           backgroundColor: 'white',
           width: 300,

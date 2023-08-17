@@ -14,6 +14,7 @@ export function TimetablePrintStudentForm() {
     <form>
       <RHFStudentAutocomplete
         multiple
+        disableCloseOnSelect
         sx={({ palette }) => ({
           backgroundColor: 'white',
           width: 300,

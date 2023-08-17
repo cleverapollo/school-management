@@ -65,8 +65,8 @@ export function TimetablePrintForm({
   const { control, handleSubmit, reset, watch } =
     useFormContext<PrintStaffTimetableFormState>();
   const { data: timetableData, isLoading } = usePrintTimetable(filter);
-  const partyIds = watch('partyIds');
-  const roomIds = watch('roomIds');
+  const partyIds = watch('partyIds') as number[];
+  const roomIds = watch('roomIds') as number[];
   const onSubmit = handleSubmit(
     ({
       showRooms,
@@ -251,9 +251,14 @@ export function TimetablePrintForm({
           </LoadingButton>
         </Stack>
       </form>
-      {timetableData && timetableData.html && (
-        <div dangerouslySetInnerHTML={{ __html: timetableData.html }} />
-      )}
+      <Stack style={{ maxHeight: '100%', overflow: 'auto' }}>
+        {timetableData && timetableData.html && (
+          <div
+            style={{ maxHeight: '100%', overflow: 'auto' }}
+            dangerouslySetInnerHTML={{ __html: timetableData.html }}
+          />
+        )}
+      </Stack>
     </>
   );
 }
