@@ -43,7 +43,14 @@
       "subjectFormat": "Subject",
       "showGroupNames": "Show Group Names",
       "showRooms": "Show Rooms",
-      "individualStudents": "Individual Students"
+      "individualStudents": "Individual Students",
+      "fontSize": "Font Size"
+    },
+    "fontSize": {
+      "EXCEEDINGLY_SMALL": "Exceedingly Small",
+      "SMALL" :"Small",
+      "MEDIUM" : "Medium",
+      "LARGE" : "Large"
     }
   }
 }

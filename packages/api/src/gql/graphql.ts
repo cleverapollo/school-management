@@ -2958,6 +2958,7 @@ export enum Print_TimetableLayout {
 }
 
 export type Print_TimetableOptions = {
+  fontSize?: InputMaybe<Scalars['Int']>;
   individualStudents: Scalars['Boolean'];
   layout: Print_TimetableLayout;
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
