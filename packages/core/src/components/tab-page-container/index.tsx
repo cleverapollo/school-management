@@ -49,8 +49,13 @@ export const TabPageContainer = ({ links, TabProps }: TabNavigationProps) => {
           .filter((tab) =>
             tab.hasAccess != null ? tab.hasAccess(permissions) : true
           )
-          .map((tab) => (
-            <LinkTab key={tab.value} {...tab} to={`./${tab.value}`} />
+          .map(({ label, value: tabValue }) => (
+            <LinkTab
+              key={tabValue}
+              label={label}
+              value={tabValue}
+              to={`./${tabValue}`}
+            />
           ))}
       </Tabs>
       <LazyLoader
