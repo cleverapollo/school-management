@@ -1,4 +1,4 @@
-import { Box, Tooltip } from '@mui/material';
+import { Box, Stack, Tooltip, Typography } from '@mui/material';
 import { AttendanceCodeType } from '@tyro/api';
 import {
   CheckmarkCircleWithPencilIcon,
@@ -9,12 +9,14 @@ import {
   CloseCircleWithWarningIcon,
   CloseIcon,
 } from '@tyro/icons';
+import { useTranslation } from '@tyro/i18n';
+import { TinyPencilIcon } from './tiny-pencil-icon';
 
 interface RolebookAttendanceValueProps {
   view: 'icons' | 'codes';
   attendanceCodeType: AttendanceCodeType;
   code: string;
-  hasNote: boolean;
+  note?: string | null | undefined;
   includedInFilter: boolean;
 }
 
@@ -43,25 +45,53 @@ export function RolebookAttendanceValue({
   attendanceCodeType,
   view,
   code,
-  hasNote,
+  note,
   includedInFilter,
 }: RolebookAttendanceValueProps) {
+  const { t } = useTranslation(['attendance']);
   if (attendanceCodeType === AttendanceCodeType.NotTaken) return null;
 
+  const hasNote = !!note;
   const attendanceColor = colorsBasedOnCodeType[attendanceCodeType];
 
   if (view === 'codes') {
     return (
-      <Box
-        component="span"
-        sx={{
-          color: includedInFilter ? `${attendanceColor}.main` : 'text.disabled',
-          opacity: includedInFilter ? 1 : 0.2,
-          fontWeight: 'bold',
-        }}
+      <Tooltip
+        title={
+          hasNote && (
+            <Typography variant="caption" color="inherit">
+              {t('attendance:note')}: {note}
+            </Typography>
+          )
+        }
       >
-        {code}
-      </Box>
+        <Box
+          component="span"
+          position="relative"
+          color={includedInFilter ? `${attendanceColor}.main` : 'text.disabled'}
+        >
+          <Box
+            component="span"
+            sx={{
+              opacity: includedInFilter ? 1 : 0.2,
+              fontWeight: 'bold',
+            }}
+          >
+            {code}
+          </Box>
+          {hasNote && (
+            <TinyPencilIcon
+              sx={{
+                width: 10,
+                height: 10,
+                position: 'absolute',
+                right: -10,
+                top: 'calc(50% - 15px)',
+              }}
+            />
+          )}
+        </Box>
+      </Tooltip>
     );
   }
 
@@ -69,7 +99,20 @@ export function RolebookAttendanceValue({
   const icon = icons[attendanceCodeType];
 
   return (
-    <Tooltip title={code}>
+    <Tooltip
+      title={
+        <Stack>
+          <Box component="span" fontWeight="bold">
+            {code}
+          </Box>
+          {hasNote && (
+            <Box component="span">
+              {t('attendance:note')}: {note}
+            </Box>
+          )}
+        </Stack>
+      }
+    >
       <Box
         sx={{
           color: includedInFilter ? `${attendanceColor}.main` : 'text.disabled',

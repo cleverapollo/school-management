@@ -1,11 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import {
+  Attendance_StudentSessionAttendanceQuery,
   gqlClient,
   graphql,
   queryClient,
   StudentSessionAttendanceFilter,
   UseQueryReturnType,
 } from '@tyro/api';
+import { useCallback } from 'react';
 import { attendanceKeys } from './keys';
 
 const sessionAttendance = graphql(/* GraphQL */ `
@@ -53,27 +55,39 @@ const sessionAttendanceQuery = (filter: StudentSessionAttendanceFilter) => ({
 export function useSessionAttendance(filter: StudentSessionAttendanceFilter) {
   return useQuery({
     ...sessionAttendanceQuery(filter),
-    select: (data) =>
-      (data.attendance_studentSessionAttendance ?? []).map((attendance) => {
-        const attendanceByKey = attendance?.dateAttendance?.reduce<
-          Record<string, string | null>
-        >((acc, dateAttendance) => {
-          const { date, bellTimeAttendance = [] } = dateAttendance ?? {};
-          bellTimeAttendance?.forEach((bellTimeAttendanceValue) => {
-            const { bellTimeId, attendanceCode } =
-              bellTimeAttendanceValue ?? {};
-            if (date && bellTimeId && attendanceCode?.id) {
-              acc[`${date}-${bellTimeId}`] = attendanceCode.name;
-            }
-          });
-          return acc;
-        }, {});
+    select: useCallback(
+      (data: Attendance_StudentSessionAttendanceQuery) =>
+        (data.attendance_studentSessionAttendance ?? []).map((attendance) => {
+          const noteByKey: Record<string, string | null> = {};
+          const attendanceByKey: Record<string, string | null> = {};
 
-        return {
-          ...attendance,
-          attendanceByKey,
-        };
-      }),
+          attendance?.dateAttendance?.forEach((dateAttendance) => {
+            const { date, bellTimeAttendance = [] } = dateAttendance ?? {};
+            bellTimeAttendance?.forEach((bellTimeAttendanceValue) => {
+              const { bellTimeId, attendanceCode } =
+                bellTimeAttendanceValue ?? {};
+              if (date && bellTimeId && attendanceCode?.id) {
+                if (attendanceCode?.id) {
+                  attendanceByKey[`${date}-${bellTimeId}`] =
+                    attendanceCode.name;
+                }
+
+                if (bellTimeAttendanceValue?.note) {
+                  noteByKey[`${date}-${bellTimeId}`] =
+                    bellTimeAttendanceValue.note;
+                }
+              }
+            });
+          });
+
+          return {
+            ...attendance,
+            attendanceByKey,
+            noteByKey,
+          };
+        }),
+      []
+    ),
   });
 }
 

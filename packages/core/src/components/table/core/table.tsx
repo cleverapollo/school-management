@@ -5,6 +5,7 @@ import {
   MutableRefObject,
   useCallback,
   useState,
+  useImperativeHandle,
 } from 'react';
 import { LicenseManager } from 'ag-grid-enterprise';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
@@ -21,6 +22,7 @@ import {
 } from 'ag-grid-community';
 import { useEnsuredForwardedRef, useMeasure } from 'react-use';
 import {
+  ReturnTypeUseEditableState,
   useEditableState,
   UseEditableStateProps,
 } from '../hooks/use-editable-state';
@@ -33,13 +35,13 @@ export type {
   CellValueChangedEvent,
   ICellEditorParams,
   ValueGetterParams,
+  NewValueParams,
+  ProcessCellForExportParams,
 } from 'ag-grid-community';
-
-export interface ValueSetterParams<TData = any, CellValue = any>
-  extends AGValueSetterParams<TData> {
-  newValue: CellValue;
-  oldValue: CellValue;
-}
+export type {
+  ReturnTypeUseEditableState as ReturnTypeTableUseEditableState,
+  ValueSetterParams,
+} from '../hooks/use-editable-state';
 
 export type { AgGridReact } from 'ag-grid-react';
 
@@ -56,6 +58,7 @@ export interface TableProps<T> extends AgGridReactProps<T> {
   tableContainerSx?: BoxProps['sx'];
   rightAdornment?: React.ReactNode;
   toolbar?: React.ReactNode;
+  editingStateRef?: React.Ref<ReturnTypeUseEditableState<T>>;
 }
 
 const defaultColDef: ColDef = {
@@ -87,6 +90,7 @@ function TableInner<T extends object>(
     rowSelection,
     onColumnEverythingChanged,
     toolbar,
+    editingStateRef,
     ...props
   }: TableProps<T>,
   ref: React.Ref<AgGridReact<T>>
@@ -104,6 +108,10 @@ function TableInner<T extends object>(
     MIN_TABLE_HEIGHT
   );
 
+  const editingUtils = useEditableState<T>({
+    tableRef,
+    onBulkSave,
+  });
   const {
     isEditing,
     editingState,
@@ -112,10 +120,9 @@ function TableInner<T extends object>(
     onCancel,
     onCellValueChanged,
     applyUpdatesToTable,
-  } = useEditableState<T>({
-    tableRef,
-    onBulkSave,
-  });
+  } = editingUtils;
+
+  useImperativeHandle(editingStateRef, () => editingUtils, [editingUtils]);
 
   const colDefs = useMemo(
     () => ({

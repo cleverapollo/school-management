@@ -83,5 +83,8 @@
     "PARTIAL_DAY": "{{startDate}} from {{startTime}} to {{endTime}}"
   },
   "youHaveNotSelectedPendingAndApproved": "You have not selected any \"Pending\" or \"Approved\" requests",
-  "youHaveNotSelectedPendingAndDeclined": "You have not selected any \"Pending\" or \"Declined\" requests"
+  "youHaveNotSelectedPendingAndDeclined": "You have not selected any \"Pending\" or \"Declined\" requests",
+  "note": "Note",
+  "addNote": "Add note",
+  "editNote": "Edit note"
 }

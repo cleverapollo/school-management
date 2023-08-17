@@ -20,12 +20,6 @@ export const DateRangeCalendar = <TInputDate extends Dayjs>({
     useState<DateRangeCalendarInternalValue<TInputDate>>(value);
   const [rangePreviewDay, setRangePreviewDay] = useState<TInputDate>();
 
-  const maxDate =
-    props.maxDate ??
-    (internalValue?.[0] && maxDateRange
-      ? maxDateRange(internalValue[0])
-      : undefined);
-
   const onDaySelect = useCallback(
     (_e: React.MouseEvent, day: TInputDate) => {
       let newValue = (internalValue ? [...internalValue] : []) as NonNullable<
@@ -91,7 +85,6 @@ export const DateRangeCalendar = <TInputDate extends Dayjs>({
       }}
       defaultCalendarMonth={internalValue?.[0]}
       {...props}
-      maxDate={maxDate}
     />
   );
 };

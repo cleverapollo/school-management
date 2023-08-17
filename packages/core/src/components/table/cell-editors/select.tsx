@@ -1,15 +1,16 @@
 import React, {
   ForwardedRef,
   forwardRef,
+  useCallback,
   useImperativeHandle,
   useRef,
 } from 'react';
 import { ICellEditorParams } from 'ag-grid-community';
-import { ClickAwayListener, MenuItem, MenuList } from '@mui/material';
+import { ClickAwayListener, Divider, MenuItem, MenuList } from '@mui/material';
 
 export interface TableSelectProps<TSelectOption>
   extends ICellEditorParams<unknown, string | number> {
-  options: TSelectOption[];
+  options: TSelectOption[] | TSelectOption[][];
   getOptionLabel?: (option: TSelectOption) => string;
   renderOption?: (option: TSelectOption) => React.ReactNode;
   optionIdKey?: TSelectOption extends string | number
@@ -70,34 +71,48 @@ function TableSelectInner<TSelectOption>(
     },
   }));
 
+  const getOption = useCallback(
+    (option: TSelectOption) => {
+      const value = optionIdKey
+        ? (option[optionIdKey] as string)
+        : String(option);
+
+      return (
+        <MenuItem
+          key={value}
+          value={value}
+          selected={value === originalValue}
+          autoFocus={value === originalValue}
+          onFocus={() => {
+            selectedValue.current = value;
+          }}
+          onClick={() => {
+            selectedValue.current = value;
+            stopEditing(false);
+          }}
+        >
+          {renderOption && renderOption(option)}
+          {getOptionLabel && getOptionLabel(option)}
+        </MenuItem>
+      );
+    },
+    [props]
+  );
+
   checkTableSelectorProps(props);
 
   return (
     <ClickAwayListener onClickAway={() => stopEditing(false)}>
       <MenuList autoFocus={!originalValue}>
-        {options?.map((option) => {
-          const value = optionIdKey
-            ? (option[optionIdKey] as string)
-            : String(option);
+        {options?.map((option, index) => {
+          if (Array.isArray(option)) {
+            return [
+              index > 0 && <Divider />,
+              option.map((singleOption) => getOption(singleOption)),
+            ];
+          }
 
-          return (
-            <MenuItem
-              key={value}
-              value={value}
-              selected={value === originalValue}
-              autoFocus={value === originalValue}
-              onFocus={() => {
-                selectedValue.current = value;
-              }}
-              onClick={() => {
-                selectedValue.current = value;
-                stopEditing(false);
-              }}
-            >
-              {renderOption && renderOption(option)}
-              {getOptionLabel && getOptionLabel(option)}
-            </MenuItem>
-          );
+          return getOption(option);
         })}
       </MenuList>
     </ClickAwayListener>

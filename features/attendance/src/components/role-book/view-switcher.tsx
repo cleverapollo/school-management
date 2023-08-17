@@ -1,16 +1,20 @@
 import { Stack, ToggleButton, Tooltip } from '@mui/material';
 
-import { Calendar22Icon, CalendarDatesIcon } from '@tyro/icons';
+import { HashtagSquareIcon, ShapeObjectsSquareIcon } from '@tyro/icons';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { useMemo } from 'react';
 
 const getViewOptions = (t: TFunction<'attendance'[]>) =>
   [
-    { value: 'icons', label: t('attendance:iconView'), icon: Calendar22Icon },
+    {
+      value: 'icons',
+      label: t('attendance:iconView'),
+      icon: ShapeObjectsSquareIcon,
+    },
     {
       value: 'codes',
       label: t('attendance:codeView'),
-      icon: CalendarDatesIcon,
+      icon: HashtagSquareIcon,
     },
   ] as const;
 
