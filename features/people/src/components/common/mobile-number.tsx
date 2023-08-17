@@ -107,6 +107,7 @@ export const MobileNumber = <TField extends FieldValues>({
         country={DEFAULT_COUNTRY}
         component={TextField}
         isValid={() => !error?.message}
+        enableLongNumbers
         inputProps={{
           name,
           ref,
