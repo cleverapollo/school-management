@@ -12,7 +12,7 @@ import {
   usePreferredNameLayout,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { Box, Button, Chip } from '@mui/material';
+import { Box, Button, Chip, Stack } from '@mui/material';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { AddIcon, EditIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
@@ -40,25 +40,35 @@ const getStudentNoteColumns = (
     headerName: translate('people:note'),
     filter: true,
     sortable: true,
+    autoHeight: true,
+    wrapText: true,
+    maxWidth: 400,
+    cellStyle: { lineHeight: 2, paddingTop: 12, paddingBottom: 12 },
   },
   {
     field: 'tags',
     headerName: translate('common:label'),
     filter: true,
     sortable: true,
+    autoHeight: true,
+    wrapText: true,
+    maxWidth: 500,
     valueGetter: ({ data }) => data?.tags?.map(({ name }) => name),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseNotes, any>) =>
-      data?.tags?.map(({ id, name }) => (
-        <Chip
-          key={id}
-          label={name}
-          variant="soft"
-          color={getColorBasedOnIndex(id)}
-          sx={{ mr: 1 }}
-        />
-      )),
+      data?.tags ? (
+        <Stack direction="row" gap={1} my={1} flexWrap="wrap">
+          {data.tags.map(({ id, name }) => (
+            <Chip
+              key={id}
+              label={name}
+              variant="soft"
+              color={getColorBasedOnIndex(id)}
+            />
+          ))}
+        </Stack>
+      ) : null,
   },
   {
     field: 'createdOn',
@@ -66,6 +76,7 @@ const getStudentNoteColumns = (
     valueGetter: ({ data }) => dayjs(data?.createdOn).format('LL'),
     filter: true,
     sortable: true,
+    suppressSizeToFit: true,
   },
   {
     field: 'createdByPerson',
@@ -74,11 +85,13 @@ const getStudentNoteColumns = (
       data ? displayName(data.createdByPerson) : null,
     filter: true,
     sortable: true,
+    suppressSizeToFit: true,
   },
   {
     suppressColumnsToolPanel: true,
-    sortable: false,
     cellClass: 'ag-show-on-row-interaction',
+    sortable: false,
+    suppressSizeToFit: true,
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseNotes>) =>
       data && (
         <ActionMenu
