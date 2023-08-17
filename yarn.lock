@@ -5693,6 +5693,7 @@ __metadata:
     "@tyro/icons": "*"
     "@tyro/mail": "*"
     "@tyro/people": "*"
+    "@tyro/printing": "*"
     "@tyro/reporting": "*"
     "@tyro/settings": "*"
     "@tyro/sms": "*"
@@ -6010,6 +6011,35 @@ __metadata:
     react-router: ^6.6.2
     react-router-dom: ^6.6.2
     react-use: ^17.4.0
+  languageName: unknown
+  linkType: soft
+
+"@tyro/printing@*, @tyro/printing@workspace:features/printing":
+  version: 0.0.0-use.local
+  resolution: "@tyro/printing@workspace:features/printing"
+  dependencies:
+    "@mui/material": ^5.13.2
+    "@mui/system": ^5.13.2
+    "@tanstack/react-query": ^4.29.7
+    "@tyro/api": "*"
+    "@tyro/configs": "*"
+    "@tyro/core": "*"
+    "@tyro/groups": "*"
+    "@tyro/i18n": "*"
+    "@tyro/icons": "*"
+    "@tyro/people": "*"
+    "@tyro/settings": "*"
+    apexcharts: ^3.37.0
+    dayjs: ^1.11.7
+    lodash: ^4.17.21
+    numeral: ^2.0.6
+    react: ^18.2.0
+    react-apexcharts: ^1.4.0
+    react-dom: ^18.2.0
+    react-hook-form: ^7.43.9
+    react-router: ^6.6.2
+    react-router-dom: ^6.6.2
+    recharts: ^2.3.2
   languageName: unknown
   linkType: soft
 

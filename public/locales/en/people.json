@@ -26,6 +26,8 @@
   "sendSms": "Send SMS",
   "makePrimaryContact": "Make primary contact",
   "post": "Post",
+  "note": "Note",
+  "notes": "Notes",
   "carRegistration": "Car registration",
   "ppsNumber": "PPS number",
   "teacherCouncilNumber": "Teacher council number",
@@ -119,6 +121,11 @@
   "messageUnlinkContact": "You are about to unlink this contact from the student. Are you sure you want to continue?",
   "yesUnlink": "Yes, Unlink",
   "createContact": "Create contact",
+  "createNote": "Create note",
+  "editNote": "Edit note",
+  "deleteNote": "Delete note",
+  "addNote": "Add note",
+  "areYouSure": "Are you sure you want to delete this note?",
   "pageTitle": {
     "contacts": "List of contacts",
     "createContact": "Add a new contact",
@@ -212,5 +219,10 @@
   "addMedicalProfessional": "Add medical professional",
   "editMedicalProfessional": "Edit medical professional",
   "deleteMedicalProfessional": "Delete medical professional",
-  "deleteMedicalProfessionalConfirmation": "You are about to delete this medical professional. Are you sure you want to continue?"
+  "deleteMedicalProfessionalConfirmation": "You are about to delete this medical professional. Are you sure you want to continue?",
+  "noteCategory": {
+    "BEHAVIOUR": "Behaviour",
+    "MISC": "Misc",
+    "NOTE": "Note"
+  }
 }

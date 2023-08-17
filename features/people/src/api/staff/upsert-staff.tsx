@@ -18,7 +18,6 @@ export function useUpsertStaff() {
   const { t } = useTranslation(['people']);
 
   return useMutation({
-    mutationKey: peopleKeys.staff.upsertStaff(),
     mutationFn: async (input: [UpsertStaffInput]) =>
       gqlClient.request(upsertStaff, { input }),
     onSuccess: async (_, [staff]) => {

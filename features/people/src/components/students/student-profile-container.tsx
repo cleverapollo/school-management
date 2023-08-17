@@ -61,10 +61,11 @@ export default function StudentProfileContainer() {
           {
             label: t('people:contacts'),
             value: 'contacts',
-            hasAccess: ({ isStaffUserWithPermission }) =>
-              isStaffUserWithPermission(
-                'ps:1:people:view_contacts_for_student'
-              ),
+            hasAccess: ({ isStaffUser }) =>
+              // isStaffUserWithPermission(
+              //   'ps:1:people:view_contacts_for_student'
+              // ),
+              isStaffUser,
           },
           {
             label: t('common:attendance'),
@@ -114,6 +115,12 @@ export default function StudentProfileContainer() {
             value: 'medical',
             hasAccess: ({ hasPermission }) =>
               hasPermission(' ps:1:wellbeing:read_student_medical'),
+          },
+          {
+            label: t('people:notes'),
+            value: 'notes',
+            hasAccess: ({ hasPermission }) =>
+              hasPermission('ps:1:notes:read_notes'),
           },
         ]}
       />

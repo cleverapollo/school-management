@@ -16,8 +16,6 @@ export const getRoutes: NavObjectFunction = (t) => [
         path: 'substitution',
         icon: <GraduateHatLoadingIcon />,
         title: t('navigation:management.substitution.title'),
-        hasAccess: ({ isStaffUserWithPermission }) =>
-          isStaffUserWithPermission('ps:1:staff_work_management:absences_read'),
         children: [
           {
             type: NavObjectType.MenuLink,
@@ -34,7 +32,10 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'cover',
             title: t('navigation:management.substitution.cover'),
-            hasAccess: ({ isTyroUser }) => isTyroUser,
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission(
+                'ps:1:staff_work_management:substitution_read'
+              ),
             element: <Cover />,
           },
         ],

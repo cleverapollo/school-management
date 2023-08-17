@@ -12,6 +12,7 @@
     "cancel": "Cancel",
     "decline": "Decline",
     "approve": "Approve",
+    "print": "Print",
     "add": "Add",
     "back": "Back",
     "newEvent": "New Event",
@@ -173,7 +174,7 @@
     "max": "You must enter a number less or equal than {{number}}",
     "minLength": "You must enter a minimum of {{count}} characters",
     "maxLength": "You have exceeded the maximum character length of {{count}}",
-    "invalidMobileNumber": "This is an invalid mobile number for this country",
+    "invalidMobileNumber": "This phone number is either invalid or is in the wrong format",
     "invalidEmail": "This is an invalid email",
     "invalidPhoneNumber": "This is an invalid phone number",
     "invalidUniqueByKey": "{{key}} should be unique"
@@ -249,5 +250,6 @@
   "allDay": "All day",
   "addDate": "Add date",
   "startTime": "Start time",
-  "endTime": "End time"
+  "endTime": "End time",
+  "label": "Label"
 }

@@ -15,7 +15,7 @@ import sms from './sms.json';
 import substitution from './substitution.json';
 import timetable from './timetable.json'
 import userAccounts from './userAccounts.json';
-
+import printing from './printing.json'
 export const en = {
   admin,
   assessments,
@@ -33,5 +33,6 @@ export const en = {
   sms,
   substitution,
   timetable,
-  userAccounts
+  userAccounts,
+  printing
 };
