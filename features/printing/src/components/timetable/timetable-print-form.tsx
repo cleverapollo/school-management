@@ -33,6 +33,7 @@ export interface PrintStaffTimetableFormState {
   periodDisplayOnAxis: Print_TimetablePeriodDisplayOnAxis;
   periodDisplayInCell: Print_TimetablePeriodDisplayInCell;
   subjectFormat: Print_TimetableSubjectFormat;
+  individualStudents: boolean;
 }
 
 export interface TimetablePrintFormProps {
@@ -61,6 +62,7 @@ export function TimetablePrintForm({
     periodDisplayOnAxis: Print_TimetablePeriodDisplayOnAxis.Time,
     periodDisplayInCell: Print_TimetablePeriodDisplayInCell.Hide,
     subjectFormat: Print_TimetableSubjectFormat.Full,
+    individualStudents: false,
   });
   const { control, handleSubmit, reset, watch } =
     useFormContext<PrintStaffTimetableFormState>();
@@ -76,6 +78,7 @@ export function TimetablePrintForm({
       periodDisplayOnAxis,
       periodDisplayInCell,
       subjectFormat,
+      individualStudents,
     }) => {
       setFilter({
         partyIds: translatePartyIds ? translatePartyIds(partyIds) : [],
@@ -87,6 +90,7 @@ export function TimetablePrintForm({
         periodDisplayOnAxis,
         periodDisplayInCell,
         subjectFormat,
+        individualStudents,
       });
     }
   );
@@ -100,6 +104,7 @@ export function TimetablePrintForm({
       periodDisplayOnAxis,
       periodDisplayInCell,
       subjectFormat,
+      individualStudents,
     }) => {
       const f = {
         partyIds: translatePartyIds ? translatePartyIds(partyIds) : [],
@@ -110,6 +115,7 @@ export function TimetablePrintForm({
         periodDisplayOnAxis,
         periodDisplayInCell,
         subjectFormat,
+        individualStudents,
       };
       const printResponse = await getPrintTimetable(f);
 

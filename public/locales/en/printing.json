@@ -42,7 +42,8 @@
       "periodDisplayInCell": "Period in Cell",
       "subjectFormat": "Subject",
       "showGroupNames": "Show Group Names",
-      "showRooms": "Show Rooms"
+      "showRooms": "Show Rooms",
+      "individualStudents": "Individual Students"
     }
   }
 }
