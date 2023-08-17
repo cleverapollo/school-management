@@ -60,7 +60,7 @@ export function AttendanceCodeCellEditor(
   t: TFunction<('common' | 'attendance')[]>,
   attendanceCodes: ReturnTypeFromUseAttendanceCodes[]
 ) {
-  const getOptions = (hasNote: boolean) => [
+  const getOptions = (hasNote: boolean, hasAttendanceCode: boolean) => [
     attendanceCodes,
     [
       {
@@ -69,6 +69,10 @@ export function AttendanceCodeCellEditor(
         description: hasNote
           ? t('attendance:editNote')
           : t('attendance:addNote'),
+        disabled: !hasAttendanceCode,
+        disabledTooltip: t(
+          'attendance:youMustSelectAttendanceCodeBeforeApplyingANote'
+        ),
       } as const,
     ],
   ];
@@ -79,7 +83,7 @@ export function AttendanceCodeCellEditor(
       popup: true,
       popupPosition: 'under',
       params: {
-        options: getOptions(!!data.noteByKey[key]),
+        options: getOptions(!!data.noteByKey[key], !!data.attendanceByKey[key]),
         optionIdKey: 'name',
         renderOption: renderSelectOption,
       },

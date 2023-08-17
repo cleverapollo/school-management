@@ -388,6 +388,20 @@
   justify-content: center;
 }
 
+.ag-theme-tyro .ag-left-cell-border {
+  border-left: solid 1px;
+  border-left-color: var(--ag-border-color);
+}
+
+.ag-theme-tyro .ag-right-cell-border {
+  border-right: solid 1px;
+  border-right-color: var(--ag-border-color);
+}
+
+.ag-theme-tyro .ag-right-cell-border+.ag-left-cell-border:not(.ag-cell-range-single-cell, .ag-editable-cell:hover) {
+  border-left-color: transparent;
+}
+
 .ag-theme-tyro .ag-sort-order {
   font-size: 0.7rem;
   position: absolute;

@@ -67,18 +67,16 @@ export function RolebookAttendanceValue({
       >
         <Box
           component="span"
-          position="relative"
-          color={includedInFilter ? `${attendanceColor}.main` : 'text.disabled'}
+          sx={{
+            position: 'relative',
+            color: includedInFilter
+              ? `${attendanceColor}.main`
+              : 'text.disabled',
+            opacity: includedInFilter ? 1 : 0.2,
+            fontWeight: 'bold',
+          }}
         >
-          <Box
-            component="span"
-            sx={{
-              opacity: includedInFilter ? 1 : 0.2,
-              fontWeight: 'bold',
-            }}
-          >
-            {code}
-          </Box>
+          {code}
           {hasNote && (
             <TinyPencilIcon
               sx={{

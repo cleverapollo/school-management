@@ -11,7 +11,11 @@ export default function SessionAttendance() {
   const [selectedPartys, setSelectedPartys] = useState<SessionParty[]>([]);
 
   return (
-    <PageContainer title={t('attendance:sessionAttendance')}>
+    <PageContainer
+      title={t('attendance:sessionAttendance')}
+      maxWidth={false}
+      sx={{ maxWidth: 1980 }}
+    >
       <PageHeading
         title={t('attendance:sessionAttendance')}
         titleProps={{ variant: 'h3' }}

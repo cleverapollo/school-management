@@ -17,6 +17,7 @@ import {
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs, { Dayjs } from 'dayjs';
 import { Box, Chip, Stack, Typography } from '@mui/material';
+import set from 'lodash/set';
 import {
   ReturnTypeFromCalendarDayBellTimes,
   useCalendarDayBellTimes,
@@ -98,20 +99,15 @@ const getColumns = (
     sort: 'asc',
   },
   {
-    headerName: t('attendance:absences'),
+    headerName: t('attendance:uneAbsences'),
+    headerTooltip: t('attendance:unexplainedAbsences'),
     field: 'attendanceByKey',
     valueGetter: ({ data }) =>
       Array.from(Object.values(data?.attendanceByKey ?? {})).filter((id) => {
         if (!id) return false;
         const codeType = attendanceCodesMap.get(id)?.codeType;
 
-        return (
-          codeType &&
-          [
-            AttendanceCodeType.ExplainedAbsence,
-            AttendanceCodeType.UnexplainedAbsence,
-          ].includes(codeType)
-        );
+        return codeType && codeType === AttendanceCodeType.UnexplainedAbsence;
       }).length,
     sortable: true,
   },
@@ -119,9 +115,15 @@ const getColumns = (
     .filter(({ bellTimes }) => bellTimes?.length)
     .map(({ date, bellTimes }) => ({
       headerName: dayjs(date).format('ddd D'),
-      headerClass: 'ag-center-aligned-cell',
+      headerClass: [
+        'ag-center-aligned-cell',
+        'ag-left-cell-border',
+        'ag-right-cell-border',
+      ],
       children: bellTimes?.flatMap(({ id, name, time }, index) => {
         const key = `${date}-${id}`;
+        const isFirstElement = index === 0;
+        const isLastElement = index === bellTimes.length - 1;
         return [
           {
             field: `attendanceByKey.${key}`,
@@ -135,11 +137,20 @@ const getColumns = (
               />
             ),
             headerTooltip: getLocaleTimestamp(time),
-            headerClass: 'ag-center-aligned-cell',
+            headerClass: [
+              'ag-center-aligned-cell',
+              isFirstElement ? 'ag-left-cell-border' : null,
+              isLastElement ? 'ag-right-cell-border' : null,
+            ],
             width: 100,
             cellStyle: {
               justifyContent: 'center',
             },
+            cellClass: [
+              'ag-editable-cell',
+              isFirstElement ? 'ag-left-cell-border' : null,
+              isLastElement ? 'ag-right-cell-border' : null,
+            ],
             cellRenderer: ({
               data,
             }: ICellRendererParams<ReturnTypeFromSessionAttendance, any>) => {
@@ -280,15 +291,17 @@ export function SessionAttendanceRoleBook({
     [codeFilter]
   );
 
-  const { data: bellTimes } = useCalendarDayBellTimes({
-    fromDate,
-    toDate,
-  });
-  const { data: sessionData } = useSessionAttendance({
-    partyIds,
-    from: fromDate,
-    to: toDate,
-  });
+  const { data: bellTimes, isLoading: isBellTimesLoading } =
+    useCalendarDayBellTimes({
+      fromDate,
+      toDate,
+    });
+  const { data: sessionData, isLoading: isAttendanceLoading } =
+    useSessionAttendance({
+      partyIds,
+      from: fromDate,
+      to: toDate,
+    });
   const { data: attendanceCodes } = useAttendanceCodes({});
 
   const attendanceCodesMap = useMemo(
@@ -320,14 +333,54 @@ export function SessionAttendanceRoleBook({
       'attendanceByKey' | 'noteByKey'
     >
   ) => {
-    console.log({ data });
-    const attendanceChanges: SaveStudentSessionAttendanceInput[] = [];
+    const attendanceChanges: Record<string, SaveStudentSessionAttendanceInput> =
+      {};
 
-    Object.values(data).forEach(([studentPartyId, changes]) => {
-      console.log({
-        studentPartyId,
-        changes,
+    Object.entries(data).forEach(([studentPartyId, changes]) => {
+      Object.entries(changes).forEach(([changeKey, value]) => {
+        const [key, dateAndBellId] = changeKey.split('.') as [string, string];
+        const [year, month, day, bellId] = dateAndBellId.split('-');
+
+        console.log({
+          changeKey,
+          key,
+          dateAndBellId,
+          year,
+          month,
+          day,
+          bellId,
+          value,
+        });
+
+        const studentChangeKey = `${studentPartyId}-${dateAndBellId}`;
+
+        if (!attendanceChanges[studentChangeKey]) {
+          // @ts-expect-error
+          attendanceChanges[studentChangeKey] = {
+            bellTimeId: Number(bellId),
+            studentPartyId: Number(studentPartyId),
+            date: `${year}-${month}-${day}`,
+          };
+        }
+
+        const newValue = value.newValue as unknown as string | null;
+
+        if (key === 'attendanceByKey') {
+          const attendanceCodeId =
+            attendanceCodesMap.get(newValue ?? '')?.id ?? null;
+          set(
+            attendanceChanges,
+            `${studentChangeKey}.attendanceCodeId`,
+            attendanceCodeId
+          );
+        } else if (key === 'noteByKey') {
+          set(attendanceChanges, `${studentChangeKey}.note`, newValue);
+        }
       });
+    });
+
+    console.log({
+      values: Object.values(attendanceChanges),
     });
 
     return new Promise((_resolve, reject) =>
@@ -344,6 +397,7 @@ export function SessionAttendanceRoleBook({
         rowData={sessionData ?? []}
         columnDefs={columns}
         getRowId={({ data }) => String(data?.studentPartyId)}
+        isLoading={isBellTimesLoading || isAttendanceLoading}
         toolbar={
           <RolebookToolbar
             dateRange={dateRange}

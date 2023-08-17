@@ -6,9 +6,21 @@ import React, {
   useRef,
 } from 'react';
 import { ICellEditorParams } from 'ag-grid-community';
-import { ClickAwayListener, Divider, MenuItem, MenuList } from '@mui/material';
+import {
+  ClickAwayListener,
+  Divider,
+  MenuItem,
+  MenuList,
+  Tooltip,
+} from '@mui/material';
 
-export interface TableSelectProps<TSelectOption>
+interface OptionProps {
+  disabled?: boolean;
+  disabledTooltip?: string;
+  [key: string]: unknown;
+}
+
+export interface TableSelectProps<TSelectOption extends OptionProps>
   extends ICellEditorParams<unknown, string | number> {
   options: TSelectOption[] | TSelectOption[][];
   getOptionLabel?: (option: TSelectOption) => string;
@@ -18,7 +30,7 @@ export interface TableSelectProps<TSelectOption>
     : keyof TSelectOption;
 }
 
-function checkTableSelectorProps<TSelectOption>(
+function checkTableSelectorProps<TSelectOption extends OptionProps>(
   props: TableSelectProps<TSelectOption>
 ): asserts props is TableSelectProps<TSelectOption> {
   if (process.env.NODE_ENV !== 'production') {
@@ -51,7 +63,7 @@ function checkTableSelectorProps<TSelectOption>(
   }
 }
 
-function TableSelectInner<TSelectOption>(
+function TableSelectInner<TSelectOption extends OptionProps>(
   props: TableSelectProps<TSelectOption>,
   ref: ForwardedRef<unknown>
 ) {
@@ -76,8 +88,13 @@ function TableSelectInner<TSelectOption>(
       const value = optionIdKey
         ? (option[optionIdKey] as string)
         : String(option);
+      const { disabled, disabledTooltip } = option;
 
-      return (
+      console.log({
+        option,
+      });
+
+      const menuItem = (
         <MenuItem
           key={value}
           value={value}
@@ -86,6 +103,7 @@ function TableSelectInner<TSelectOption>(
           onFocus={() => {
             selectedValue.current = value;
           }}
+          disabled={disabled}
           onClick={() => {
             selectedValue.current = value;
             stopEditing(false);
@@ -95,6 +113,14 @@ function TableSelectInner<TSelectOption>(
           {getOptionLabel && getOptionLabel(option)}
         </MenuItem>
       );
+
+      return disabled && disabledTooltip ? (
+        <Tooltip title={disabledTooltip}>
+          <span>{menuItem}</span>
+        </Tooltip>
+      ) : (
+        menuItem
+      );
     },
     [props]
   );
@@ -103,7 +129,13 @@ function TableSelectInner<TSelectOption>(
 
   return (
     <ClickAwayListener onClickAway={() => stopEditing(false)}>
-      <MenuList autoFocus={!originalValue}>
+      <MenuList
+        autoFocus={!originalValue}
+        sx={{
+          maxHeight: '50vh',
+          overflowY: 'auto',
+        }}
+      >
         {options?.map((option, index) => {
           if (Array.isArray(option)) {
             return [
@@ -119,7 +151,9 @@ function TableSelectInner<TSelectOption>(
   );
 }
 
-export const TableSelect = forwardRef(TableSelectInner) as <TSelectOption>(
+export const TableSelect = forwardRef(TableSelectInner) as <
+  TSelectOption extends OptionProps
+>(
   props: TableSelectProps<TSelectOption> & {
     ref?: React.ForwardedRef<unknown>;
   }

@@ -6,6 +6,7 @@ import {
   useCallback,
   useState,
   useImperativeHandle,
+  useRef,
 } from 'react';
 import { LicenseManager } from 'ag-grid-enterprise';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
@@ -18,9 +19,9 @@ import {
   ColDef,
   ColumnRowGroupChangedEvent,
   FirstDataRenderedEvent,
-  ValueSetterParams as AGValueSetterParams,
 } from 'ag-grid-community';
-import { useEnsuredForwardedRef, useMeasure } from 'react-use';
+import { useMeasure } from 'react-use';
+import { useMergeRefs } from '../../../hooks/use-merge-refs';
 import {
   ReturnTypeUseEditableState,
   useEditableState,
@@ -28,6 +29,7 @@ import {
 } from '../hooks/use-editable-state';
 import { BulkEditSaveBar } from './bulk-edit-save-bar';
 import { SearchInput } from '../../search-input';
+import { TableLoadingOverlay } from './loading-overlay';
 
 export type {
   GridOptions,
@@ -59,6 +61,7 @@ export interface TableProps<T> extends AgGridReactProps<T> {
   rightAdornment?: React.ReactNode;
   toolbar?: React.ReactNode;
   editingStateRef?: React.Ref<ReturnTypeUseEditableState<T>>;
+  isLoading?: boolean;
 }
 
 const defaultColDef: ColDef = {
@@ -91,14 +94,14 @@ function TableInner<T extends object>(
     onColumnEverythingChanged,
     toolbar,
     editingStateRef,
+    isLoading,
     ...props
   }: TableProps<T>,
   ref: React.Ref<AgGridReact<T>>
 ) {
   const [searchValue, setSearchValue] = useState('');
-  const tableRef = useEnsuredForwardedRef(
-    ref as MutableRefObject<AgGridReact<T>>
-  );
+  const tableRef = useRef<AgGridReact<T>>();
+  const refs = useMergeRefs(tableRef, ref);
   const [tableContainerRef, { height: tableContainerHeight }] = useMeasure();
 
   const spaceForTable = tableContainerHeight;
@@ -133,8 +136,8 @@ function TableInner<T extends object>(
   );
 
   const onSelectionChanged = useCallback(() => {
-    const selectedRows = tableRef.current.api.getSelectedRows();
-    if (onRowSelection) {
+    const selectedRows = tableRef?.current?.api?.getSelectedRows();
+    if (onRowSelection && selectedRows) {
       onRowSelection(selectedRows);
     }
   }, []);
@@ -204,49 +207,53 @@ function TableInner<T extends object>(
               height: innerContainerHeight,
             }}
           >
-            <AgGridReact<(typeof props.rowData)[number]>
-              ref={tableRef}
-              quickFilterText={searchValue}
-              undoRedoCellEditing
-              undoRedoCellEditingLimit={20}
-              popupParent={document.body}
-              suppressRowClickSelection
-              enableRangeSelection
-              enableFillHandle
-              fillHandleDirection="y"
-              allowContextMenuWithControlKey
-              onSelectionChanged={onSelectionChanged}
-              rowHeight={rowHeight}
-              rowSelection={rowSelection}
-              autoGroupColumnDef={
-                autoGroupColumnDef || defaultAutoGroupColumnDef
-              }
-              groupSelectsChildren={rowSelection === 'multiple'}
-              groupSelectsFiltered={rowSelection === 'multiple'}
-              stopEditingWhenCellsLoseFocus
-              {...props}
-              defaultColDef={colDefs}
-              onCellValueChanged={(args) => {
-                onCellValueChanged(args);
-                props.onCellValueChanged?.(args);
-              }}
-              onFirstDataRendered={(params: FirstDataRenderedEvent<T>) => {
-                params?.columnApi?.autoSizeAllColumns(false);
-                applyUpdatesToTable('newValue');
-
-                if (onFirstDataRendered) {
-                  onFirstDataRendered(params);
+            {isLoading ? (
+              <TableLoadingOverlay />
+            ) : (
+              <AgGridReact<(typeof props.rowData)[number]>
+                ref={refs}
+                quickFilterText={searchValue}
+                undoRedoCellEditing
+                undoRedoCellEditingLimit={20}
+                popupParent={document.body}
+                suppressRowClickSelection
+                enableRangeSelection
+                enableFillHandle
+                fillHandleDirection="y"
+                allowContextMenuWithControlKey
+                onSelectionChanged={onSelectionChanged}
+                rowHeight={rowHeight}
+                rowSelection={rowSelection}
+                autoGroupColumnDef={
+                  autoGroupColumnDef || defaultAutoGroupColumnDef
                 }
-              }}
-              onColumnEverythingChanged={(params) => {
-                applyUpdatesToTable('newValue');
+                groupSelectsChildren={rowSelection === 'multiple'}
+                groupSelectsFiltered={rowSelection === 'multiple'}
+                stopEditingWhenCellsLoseFocus
+                {...props}
+                defaultColDef={colDefs}
+                onCellValueChanged={(args) => {
+                  onCellValueChanged(args);
+                  props.onCellValueChanged?.(args);
+                }}
+                onFirstDataRendered={(params: FirstDataRenderedEvent<T>) => {
+                  params?.columnApi?.autoSizeAllColumns(false);
+                  applyUpdatesToTable('newValue');
 
-                if (onColumnEverythingChanged) {
-                  onColumnEverythingChanged(params);
-                }
-              }}
-              onColumnRowGroupChanged={onColumnRowGroupChanged}
-            />
+                  if (onFirstDataRendered) {
+                    onFirstDataRendered(params);
+                  }
+                }}
+                onColumnEverythingChanged={(params) => {
+                  applyUpdatesToTable('newValue');
+
+                  if (onColumnEverythingChanged) {
+                    onColumnEverythingChanged(params);
+                  }
+                }}
+                onColumnRowGroupChanged={onColumnRowGroupChanged}
+              />
+            )}
           </Box>
         </Box>
       </Card>

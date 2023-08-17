@@ -61,7 +61,7 @@ export type BulkEditedRows<
 >;
 
 export interface UseEditableStateProps<T> {
-  tableRef: MutableRefObject<AgGridReact<T>>;
+  tableRef: MutableRefObject<AgGridReact<T> | undefined>;
   onBulkSave:
     | ((data: BulkEditedRows<T, Path<T>>) => Promise<unknown>)
     | undefined;
@@ -179,9 +179,12 @@ export function useEditableState<T>({
 
   const applyUpdatesToTable = useCallback(
     (changeType: 'originalValue' | 'newValue') => {
+      const currentTableRef = tableRef?.current;
+      if (!currentTableRef) return;
+
       const rowsToUpdate = Object.entries(editedRows).reduce<T[]>(
         (acc, [id, changesForRow]) => {
-          const rowNode = tableRef.current.api.getRowNode(id);
+          const rowNode = currentTableRef.api.getRowNode(id);
           const rowWithCurrentValues = rowNode?.data;
 
           if (!rowNode || !rowWithCurrentValues) {
@@ -189,7 +192,7 @@ export function useEditableState<T>({
           }
 
           Object.entries(changesForRow).forEach(([field, change]) => {
-            const column = tableRef.current.columnApi.getColumn(field);
+            const column = currentTableRef.columnApi.getColumn(field);
             const colDef = column?.getColDef();
 
             if (
@@ -209,9 +212,9 @@ export function useEditableState<T>({
                 column,
                 node: rowNode,
                 data: rowWithCurrentValues,
-                api: tableRef.current.api,
-                columnApi: tableRef.current.columnApi,
-                context: tableRef.current.context,
+                api: currentTableRef.api,
+                columnApi: currentTableRef.columnApi,
+                context: currentTableRef.context,
               };
               colDef.valueSetter(valueSetterParams);
             } else {
@@ -225,10 +228,10 @@ export function useEditableState<T>({
         []
       );
 
-      tableRef.current.api.applyTransaction({
+      currentTableRef.api.applyTransaction({
         update: rowsToUpdate,
       });
-      tableRef.current.api.refreshCells({
+      currentTableRef.api.refreshCells({
         force: true,
       });
     },

@@ -36,6 +36,11 @@ export function NoteModal({
   const onSave = () => {
     const rowNode = getRowNode();
 
+    console.log({
+      rowNode,
+      tableRef,
+    });
+
     if (rowNode?.data && noteRowAndKey) {
       rowNode.setDataValue(`noteByKey.${noteRowAndKey.noteKey}`, note || null);
     }
