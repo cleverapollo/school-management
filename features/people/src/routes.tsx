@@ -28,6 +28,7 @@ import {
 } from './api/student/overview';
 import { getStudentPersonal } from './api/student/personal';
 import { getContacts } from './api/contact/list';
+import { getNotes } from './api/note/list';
 import { getContactPersonal } from './api/contact/personal';
 import { getContactStudents } from './api/contact/students';
 import { getStaff } from './api/staff';
@@ -77,6 +78,9 @@ const StudentProfileSettingsPage = lazy(
 );
 const StudentProfileMedicalPage = lazy(
   () => import('./pages/students/profile/medical')
+);
+const StudentProfileNotesPage = lazy(
+  () => import('./pages/students/profile/notes')
 );
 
 // Contact pages
@@ -304,6 +308,15 @@ export const getRoutes: NavObjectFunction = (t) => [
                     getPersonalTitlesQuery(),
                   ]);
                 },
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'notes',
+                loader: ({ params }) => {
+                  const studentId = getNumber(params.id);
+                  return getNotes(studentId);
+                },
+                element: <StudentProfileNotesPage />,
               },
             ],
           },
