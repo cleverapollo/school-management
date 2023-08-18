@@ -62,6 +62,7 @@ const getStudentContactColumns = (
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: true,
     lockVisible: true,
+    sort: 'asc',
   },
   {
     field: 'relationshipType',

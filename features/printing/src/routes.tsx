@@ -1,6 +1,6 @@
 import { lazy } from 'react';
 import { NavObjectFunction, NavObjectType } from '@tyro/core';
-import { PrintIcon } from '@tyro/icons';
+import { PrinterIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
 
 import PrintTimetableContainer from './components/timetable/print-timetable-container';
@@ -21,7 +21,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         type: NavObjectType.RootGroup,
         path: 'printing',
         title: t('navigation:management.printing.title'),
-        icon: <PrintIcon />,
+        icon: <PrinterIcon />,
         children: [
           {
             type: NavObjectType.MenuLink,

@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Dayjs } from 'dayjs';
 import { DateSwitcher } from '@tyro/calendar';
 import { StaffSelectOption } from '@tyro/people';
+import { usePreferredNameLayout } from '@tyro/core';
 import { CoverTable } from './cover-table';
 import { useEventsForCover } from '../../api/staff-work-events-for-cover';
 
@@ -16,6 +17,7 @@ export function DayCoverTable({
   date,
   setDate,
 }: DayCoverTableProps) {
+  const { sortByDisplayName } = usePreferredNameLayout();
   const { data, isLoading } = useEventsForCover({
     fromDate: date.format('YYYY-MM-DD'),
     toDate: date.format('YYYY-MM-DD'),
@@ -23,12 +25,14 @@ export function DayCoverTable({
 
   const mappedData = useMemo(
     () =>
-      data?.map(({ staff, substitutionEventsByDay }) => ({
-        staff: staff.person,
-        dayInfo: substitutionEventsByDay[0].dayInfo,
-        periods: substitutionEventsByDay[0].substitutionEventsByPeriod,
-      })) ?? [],
-    [data]
+      data
+        ?.map(({ staff, substitutionEventsByDay }) => ({
+          staff: staff.person,
+          dayInfo: substitutionEventsByDay[0].dayInfo,
+          periods: substitutionEventsByDay[0].substitutionEventsByPeriod,
+        }))
+        ?.sort((a, b) => sortByDisplayName(a.staff, b.staff)) ?? [],
+    [data, sortByDisplayName]
   );
 
   return (

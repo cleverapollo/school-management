@@ -237,7 +237,22 @@ function TableInner<T extends object>(
                   props.onCellValueChanged?.(args);
                 }}
                 onFirstDataRendered={(params: FirstDataRenderedEvent<T>) => {
-                  params?.columnApi?.autoSizeAllColumns(false);
+                  const { columnApi } = params;
+                  columnApi.autoSizeAllColumns(false);
+                  const columnWidths = props.columnDefs
+                    ?.filter(
+                      (column: ColDef<T>) =>
+                        column?.width && (column?.field || column?.colId)
+                    )
+                    ?.map((column: ColDef<T>) => ({
+                      key: (column.field || column.colId) as string,
+                      newWidth: column.width as number,
+                    }));
+
+                  if (columnWidths) {
+                    columnApi.setColumnWidths(columnWidths);
+                  }
+
                   applyUpdatesToTable('newValue');
 
                   if (onFirstDataRendered) {

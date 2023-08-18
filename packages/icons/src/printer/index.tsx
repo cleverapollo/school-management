@@ -1,14 +1,14 @@
 import { forwardRef } from 'react';
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-import { ReactComponent } from './print.svg';
+import { ReactComponent } from './printer.svg';
 
-export const PrintIcon = forwardRef<SVGSVGElement, SvgIconProps>(
+export const PrinterIcon = forwardRef<SVGSVGElement, SvgIconProps>(
   (props, ref) => (
     <SvgIcon ref={ref} component={ReactComponent} inheritViewBox {...props} />
   )
 );
 
 if (process.env.NODE_ENV !== 'production') {
-  PrintIcon.displayName = 'PrintIcon';
+  PrinterIcon.displayName = 'PrinterIcon';
 }

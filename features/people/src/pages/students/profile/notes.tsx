@@ -42,8 +42,13 @@ const getStudentNoteColumns = (
     sortable: true,
     autoHeight: true,
     wrapText: true,
-    maxWidth: 400,
-    cellStyle: { lineHeight: 2, paddingTop: 12, paddingBottom: 12 },
+    width: 400,
+    cellStyle: {
+      lineHeight: 2,
+      paddingTop: 12,
+      paddingBottom: 12,
+      wordBreak: 'break-word',
+    },
   },
   {
     field: 'tags',
@@ -52,7 +57,7 @@ const getStudentNoteColumns = (
     sortable: true,
     autoHeight: true,
     wrapText: true,
-    maxWidth: 500,
+    width: 300,
     valueGetter: ({ data }) => data?.tags?.map(({ name }) => name),
     cellRenderer: ({
       data,

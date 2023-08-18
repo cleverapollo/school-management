@@ -388,17 +388,17 @@
   justify-content: center;
 }
 
-.ag-theme-tyro .ag-left-cell-border {
+.ag-theme-tyro .ag-left-cell-border:not(.ag-cell-popup-editing, .ag-cell-range-single-cell) {
   border-left: solid 1px;
   border-left-color: var(--ag-border-color);
 }
 
-.ag-theme-tyro .ag-right-cell-border {
+.ag-theme-tyro .ag-right-cell-border:not(.ag-cell-popup-editing, .ag-cell-range-single-cell) {
   border-right: solid 1px;
   border-right-color: var(--ag-border-color);
 }
 
-.ag-theme-tyro .ag-right-cell-border+.ag-left-cell-border:not(.ag-cell-range-single-cell, .ag-editable-cell:hover) {
+.ag-theme-tyro .ag-right-cell-border+.ag-left-cell-border:not(.ag-cell-range-single-cell, .ag-editable-cell:hover, .ag-cell-popup-editing) {
   border-left-color: transparent;
 }
 

@@ -69,7 +69,11 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
                 <SupportPlanRing
                   hasSupportPlan={statusData?.activeSupportPlan ?? false}
                 >
-                  <Avatar src={studentData?.person?.avatarUrl} name={name} />
+                  <Avatar
+                    name={name}
+                    src={studentData?.person?.avatarUrl}
+                    sx={{ width: 62, height: 62, fontSize: 20 }}
+                  />
                 </SupportPlanRing>
               </Badge>
             </IconButton>

@@ -26,7 +26,7 @@ type ReturnTypeFromUseSubjectGroupById = UseQueryReturnType<
 >['relatedSubjectGroups'][number];
 
 const getSubjectGroupsColumns = (
-  t: TFunction<'common'[], undefined, 'common'[]>,
+  t: TFunction<('common' | 'groups')[]>,
   displayNames: ReturnTypeDisplayNames
 ): GridOptions<ReturnTypeFromUseSubjectGroupById>['columnDefs'] => [
   {
@@ -96,9 +96,14 @@ const getSubjectGroupsColumns = (
   },
   {
     field: 'studentGroupType',
-    headerName: 'Group type',
+    headerName: t('groups:groupType'),
     enableRowGroup: true,
-    valueGetter: ({ data }) => data && data?.studentMembershipType?.type,
+    valueGetter: ({ data }) =>
+      data?.studentMembershipType?.type
+        ? t(
+            `groups:subjectGroupStudentMembershipType.${data.studentMembershipType.type}`
+          )
+        : t('groups:subjectGroupStudentMembershipType.UNKNOWN'),
   },
 ];
 
