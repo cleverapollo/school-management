@@ -290,6 +290,28 @@ export type Calendar = {
   startDate: Scalars['Date'];
 };
 
+export type CalendarAttendance = {
+  __typename?: 'CalendarAttendance';
+  attendances: Array<CalendarAttendanceDay>;
+  totalAbsent: Scalars['Int'];
+  totalLate: Scalars['Int'];
+  totalNotTaken: Scalars['Int'];
+  totalPresent: Scalars['Int'];
+  totalUnexplained: Scalars['Int'];
+};
+
+export type CalendarAttendanceDay = {
+  __typename?: 'CalendarAttendanceDay';
+  date: Scalars['Date'];
+  status: AttendanceCodeType;
+};
+
+export type CalendarAttendanceFilter = {
+  from: Scalars['Date'];
+  partyId: Scalars['Long'];
+  to: Scalars['Date'];
+};
+
 export type CalendarDayBellTime = {
   __typename?: 'CalendarDayBellTime';
   bellTimeIds?: Maybe<Array<Scalars['Int']>>;
@@ -1562,9 +1584,12 @@ export type EnrolmentHistoryFilter = {
 export type EventAttendance = {
   __typename?: 'EventAttendance';
   attendanceCodeId: Scalars['Int'];
+  createdBy: Person;
+  createdByPartyId: Scalars['Long'];
   date: Scalars['Date'];
   eventId: Scalars['Int'];
   id: Scalars['Long'];
+  note?: Maybe<Scalars['String']>;
   personPartyId: Scalars['Long'];
 };
 
@@ -3124,6 +3149,7 @@ export type Query = {
   assessment_dashboardAssessment?: Maybe<Array<DashboardAssessment>>;
   assessment_gradeSet?: Maybe<Array<GradeSet>>;
   attendance_attendanceCodes: Array<AttendanceCode>;
+  attendance_calendarAttendance: CalendarAttendance;
   attendance_eventAttendance: Array<EventAttendance>;
   attendance_parentalAttendanceRequests: Array<ParentalAttendanceRequest>;
   attendance_studentSessionAttendance: Array<StudentSessionAttendance>;
@@ -3260,6 +3286,11 @@ export type QueryAssessment_GradeSetArgs = {
 
 export type QueryAttendance_AttendanceCodesArgs = {
   filter?: InputMaybe<AttendanceCodeFilter>;
+};
+
+
+export type QueryAttendance_CalendarAttendanceArgs = {
+  filter?: InputMaybe<CalendarAttendanceFilter>;
 };
 
 
@@ -4114,6 +4145,7 @@ export type SaveEventAttendanceInput = {
   date: Scalars['Date'];
   eventId: Scalars['Int'];
   id?: InputMaybe<Scalars['Long']>;
+  note?: InputMaybe<Scalars['String']>;
   personPartyId: Scalars['Long'];
 };
 
@@ -4794,7 +4826,10 @@ export type StudentAenFilter = {
 export type StudentBellTimeAttendance = {
   __typename?: 'StudentBellTimeAttendance';
   attendanceCode?: Maybe<AttendanceCode>;
+  bellTime: Calendar_BellTime;
   bellTimeId: Scalars['Int'];
+  createdBy: Person;
+  createdByPartyId: Scalars['Long'];
   note?: Maybe<Scalars['String']>;
 };
 
