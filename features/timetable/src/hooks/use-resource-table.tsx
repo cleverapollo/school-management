@@ -119,12 +119,6 @@ export function useResourceTable(
       setSelectedLessonIds((prev) => {
         const idString = JSON.stringify(lesson.id);
 
-        if (wasToggleInSelectionGroupKeyUsed(event)) {
-          return selectedLessonIds.includes(idString)
-            ? prev.filter((id) => id !== idString)
-            : [...prev, idString];
-        }
-
         if (wasMultiSelectKeyUsed(event) && prev.length > 0) {
           const lastLessonId = prev[prev.length - 1];
           const lastLesson = lessonsById.get(lastLessonId) as Lesson;
@@ -165,7 +159,9 @@ export function useResourceTable(
           }
         }
 
-        return [idString];
+        return selectedLessonIds.includes(idString)
+          ? prev.filter((id) => id !== idString)
+          : [...prev, idString];
       });
     },
     [selectedLessonIds]
