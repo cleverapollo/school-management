@@ -270,6 +270,8 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'aen',
+                hasAccess: ({ isStaffUserWithPermission }) =>
+                  isStaffUserWithPermission('ps:1:wellbeing:write_student_aen'),
                 element: <StudentProfileAenPage />,
               },
               {

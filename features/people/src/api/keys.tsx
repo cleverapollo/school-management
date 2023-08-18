@@ -48,6 +48,8 @@ export const peopleKeys = {
       [...peopleKeys.students.all(), 'classes', studentId] as const,
     medical: (studentId: number | undefined) =>
       [...peopleKeys.students.all(), 'medical', studentId] as const,
+    aen: (studentId: number | undefined) =>
+      [...peopleKeys.students.all(), 'aen', studentId] as const,
     medicalConditions: () =>
       [...peopleKeys.students.all(), 'medicalConditions'] as const,
     studentsForSiblingSearch: () =>

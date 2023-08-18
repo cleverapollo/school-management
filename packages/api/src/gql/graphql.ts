@@ -2070,12 +2070,14 @@ export type Mutation = {
   users_deactivateProfiles?: Maybe<Success>;
   users_inviteUsers?: Maybe<InviteUsersResponse>;
   users_savePermissionGroup?: Maybe<PermissionGroup>;
+  wellbeing_deleteStudentAen: Success;
   wellbeing_deleteStudentMedicalCondition: StudentMedical;
   wellbeing_deleteStudentMedicalContact: StudentMedical;
   wellbeing_savePriorityStudent?: Maybe<PriorityStudent>;
   wellbeing_saveStudentSupportFile?: Maybe<StudentSupportFile>;
   wellbeing_saveStudentSupportPlan?: Maybe<StudentSupportPlan>;
   wellbeing_saveStudentSupportPlanReview?: Maybe<StudentSupportPlanReview>;
+  wellbeing_upsertStudentAen: Success;
   wellbeing_upsertStudentMedicalCondition: StudentMedical;
   wellbeing_upsertStudentMedicalContact: StudentMedical;
 };
@@ -2421,6 +2423,11 @@ export type MutationUsers_SavePermissionGroupArgs = {
 };
 
 
+export type MutationWellbeing_DeleteStudentAenArgs = {
+  input: Wellbeing_DeleteStudentAenInput;
+};
+
+
 export type MutationWellbeing_DeleteStudentMedicalConditionArgs = {
   input: DeleteStudentMedicalConditionInput;
 };
@@ -2448,6 +2455,11 @@ export type MutationWellbeing_SaveStudentSupportPlanArgs = {
 
 export type MutationWellbeing_SaveStudentSupportPlanReviewArgs = {
   input?: InputMaybe<SaveStudentSupportPlanReviewInput>;
+};
+
+
+export type MutationWellbeing_UpsertStudentAenArgs = {
+  input: Wellbeing_UpsertStudentAenInput;
 };
 
 
@@ -3187,6 +3199,7 @@ export type Query = {
   users_userAccess: Array<UserAccess>;
   wellbeing_activeSupportPlan?: Maybe<Array<Maybe<ActivePlan>>>;
   wellbeing_priorityStudent?: Maybe<Array<Maybe<PriorityStudent>>>;
+  wellbeing_studentAen: Wellbeing_StudentAen;
   wellbeing_studentMedical?: Maybe<StudentMedical>;
   wellbeing_studentMedicalConditionLookup?: Maybe<ListString>;
   wellbeing_studentSupportFile?: Maybe<Array<Maybe<StudentSupportFile>>>;
@@ -3557,6 +3570,11 @@ export type QueryWellbeing_ActiveSupportPlanArgs = {
 
 export type QueryWellbeing_PriorityStudentArgs = {
   filter?: InputMaybe<PriorityStudentFilter>;
+};
+
+
+export type QueryWellbeing_StudentAenArgs = {
+  filter: StudentAenFilter;
 };
 
 
@@ -4767,6 +4785,10 @@ export type Student = Party & PartyPerson & {
   tutors: Array<Person>;
   yearGroupLeads: Array<Person>;
   yearGroups: Array<YearGroupEnrollment>;
+};
+
+export type StudentAenFilter = {
+  studentPartyId: Scalars['Long'];
 };
 
 export type StudentBellTimeAttendance = {
@@ -6044,6 +6066,45 @@ export enum ValidFor {
   Sibling = 'SIBLING'
 }
 
+export type Wellbeing_DeleteStudentAenInput = {
+  id: Scalars['Int'];
+  studentPartyId: Scalars['Long'];
+};
+
+export type Wellbeing_StudentAen = {
+  __typename?: 'Wellbeing_StudentAen';
+  entries: Array<Wellbeing_StudentAenEntry>;
+  student?: Maybe<Student>;
+  studentPartyId: Scalars['Long'];
+};
+
+export type Wellbeing_StudentAenEntry = {
+  __typename?: 'Wellbeing_StudentAenEntry';
+  contact?: Maybe<Scalars['String']>;
+  endDate?: Maybe<Scalars['Date']>;
+  id: Scalars['Int'];
+  note?: Maybe<Scalars['String']>;
+  provision?: Maybe<Scalars['String']>;
+  snaSupport?: Maybe<Scalars['String']>;
+  startDate?: Maybe<Scalars['Date']>;
+  studentPartyId: Scalars['Long'];
+  type?: Maybe<Scalars['String']>;
+  typeNote?: Maybe<Scalars['String']>;
+};
+
+export type Wellbeing_UpsertStudentAenInput = {
+  contact?: InputMaybe<Scalars['String']>;
+  endDate?: InputMaybe<Scalars['Date']>;
+  id?: InputMaybe<Scalars['Int']>;
+  note?: InputMaybe<Scalars['String']>;
+  provision?: InputMaybe<Scalars['String']>;
+  snaSupport?: InputMaybe<Scalars['String']>;
+  startDate?: InputMaybe<Scalars['Date']>;
+  studentPartyId: Scalars['Long'];
+  type?: InputMaybe<Scalars['String']>;
+  typeNote?: InputMaybe<Scalars['String']>;
+};
+
 export type XeroContact = {
   __typename?: 'XeroContact';
   smsCredit: Scalars['Float'];
@@ -6606,6 +6667,27 @@ export type Core_UpsertStaffMutationVariables = Exact<{
 
 export type Core_UpsertStaffMutation = { __typename?: 'Mutation', core_upsertStaff?: Array<{ __typename?: 'Staff', partyId: number } | null> | null };
 
+export type Wellbeing_DeleteStudentAenMutationVariables = Exact<{
+  input: Wellbeing_DeleteStudentAenInput;
+}>;
+
+
+export type Wellbeing_DeleteStudentAenMutation = { __typename?: 'Mutation', wellbeing_deleteStudentAen: { __typename?: 'Success', success?: boolean | null } };
+
+export type Wellbeing_StudentAenQueryVariables = Exact<{
+  filter: StudentAenFilter;
+}>;
+
+
+export type Wellbeing_StudentAenQuery = { __typename?: 'Query', wellbeing_studentAen: { __typename?: 'Wellbeing_StudentAen', studentPartyId: number, entries: Array<{ __typename?: 'Wellbeing_StudentAenEntry', id: number, studentPartyId: number, startDate?: string | null, endDate?: string | null, type?: string | null, typeNote?: string | null, contact?: string | null, snaSupport?: string | null, provision?: string | null, note?: string | null }> } };
+
+export type Wellbeing_UpsertStudentAenMutationVariables = Exact<{
+  input: Wellbeing_UpsertStudentAenInput;
+}>;
+
+
+export type Wellbeing_UpsertStudentAenMutation = { __typename?: 'Mutation', wellbeing_upsertStudentAen: { __typename?: 'Success', success?: boolean | null } };
+
 export type Enrollment_Ire_ChangeProgrammeStageMutationVariables = Exact<{
   input: Array<EnrollmentIre_ChangeProgrammeStage> | EnrollmentIre_ChangeProgrammeStage;
 }>;
@@ -7145,6 +7227,9 @@ export const Core_Staff_PersonalDocument = {"kind":"Document","definitions":[{"k
 export const Catalogue_StaffPostsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"catalogue_staffPosts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"catalogue_staffPosts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<Catalogue_StaffPostsQuery, Catalogue_StaffPostsQueryVariables>;
 export const Core_Staff_SubjectGroupsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_staff_subjectGroups"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StaffFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_staff"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}},{"kind":"Field","name":{"kind":"Name","value":"irePP"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"level"}}]}},{"kind":"Field","name":{"kind":"Name","value":"studentMembers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"memberCount"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Core_Staff_SubjectGroupsQuery, Core_Staff_SubjectGroupsQueryVariables>;
 export const Core_UpsertStaffDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_upsertStaff"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpsertStaffInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_upsertStaff"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}}]}}]}}]} as unknown as DocumentNode<Core_UpsertStaffMutation, Core_UpsertStaffMutationVariables>;
+export const Wellbeing_DeleteStudentAenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"wellbeing_deleteStudentAen"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Wellbeing_DeleteStudentAenInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"wellbeing_deleteStudentAen"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Wellbeing_DeleteStudentAenMutation, Wellbeing_DeleteStudentAenMutationVariables>;
+export const Wellbeing_StudentAenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"wellbeing_studentAen"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StudentAenFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"wellbeing_studentAen"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"entries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"studentPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"typeNote"}},{"kind":"Field","name":{"kind":"Name","value":"contact"}},{"kind":"Field","name":{"kind":"Name","value":"snaSupport"}},{"kind":"Field","name":{"kind":"Name","value":"provision"}},{"kind":"Field","name":{"kind":"Name","value":"note"}}]}}]}}]}}]} as unknown as DocumentNode<Wellbeing_StudentAenQuery, Wellbeing_StudentAenQueryVariables>;
+export const Wellbeing_UpsertStudentAenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"wellbeing_upsertStudentAen"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Wellbeing_UpsertStudentAenInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"wellbeing_upsertStudentAen"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Wellbeing_UpsertStudentAenMutation, Wellbeing_UpsertStudentAenMutationVariables>;
 export const Enrollment_Ire_ChangeProgrammeStageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"enrollment_ire_changeProgrammeStage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EnrollmentIre_ChangeProgrammeStage"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"enrollment_ire_changeProgrammeStage"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Enrollment_Ire_ChangeProgrammeStageMutation, Enrollment_Ire_ChangeProgrammeStageMutationVariables>;
 export const Wellbeing_DeleteStudentMedicalConditionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"wellbeing_deleteStudentMedicalCondition"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteStudentMedicalConditionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"wellbeing_deleteStudentMedicalCondition"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]}}]} as unknown as DocumentNode<Wellbeing_DeleteStudentMedicalConditionMutation, Wellbeing_DeleteStudentMedicalConditionMutationVariables>;
 export const Wellbeing_DeleteStudentMedicalContactDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"wellbeing_deleteStudentMedicalContact"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteStudentMedicalContactInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"wellbeing_deleteStudentMedicalContact"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"medicalContacts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<Wellbeing_DeleteStudentMedicalContactMutation, Wellbeing_DeleteStudentMedicalContactMutationVariables>;
