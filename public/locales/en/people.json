@@ -224,5 +224,18 @@
     "BEHAVIOUR": "Behaviour",
     "MISC": "Misc",
     "NOTE": "Note"
+  },
+  "editAen": "Edit AEN",
+  "createAen": "Create AEN",
+  "aen": {
+    "type": "Type",
+    "typeNote": "Type note",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "contact": "Contact",
+    "snaSupport": "SNA support",
+    "provision": "Provision",
+    "note": "Note"
   }
+
 }

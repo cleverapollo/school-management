@@ -97,7 +97,8 @@ export default function StudentProfileContainer() {
           {
             label: 'AEN',
             value: 'aen',
-            hasAccess: ({ isStaffUser }) => isStaffUser,
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission('ps:1:wellbeing:write_student_aen'),
           },
           {
             label: 'Classes',
