@@ -108,7 +108,8 @@
   },
   "actions": {
     "allowUsersToContact": "Allow users to contact",
-    "disallowUsersToContact": "Disallow users to contact"
+    "disallowUsersToContact": "Disallow users to contact",
+    "createBehaviour": "Create behaviour"
   },
   "feedback": {
     "moreThanOneSelectedForPrimaryContact": "You must only select one contact to set as a primary contact."
@@ -227,6 +228,16 @@
     "BEHAVIOUR": "Behaviour",
     "MISC": "Misc",
     "NOTE": "Note"
+  },
+  "associated": "Associated",
+  "occurredOn": "Occurred On",
+  "outcome": "Outcome",
+  "category": "Category",
+  "createBehaviour": "Create behaviour",
+  "categoryValues": {
+    "POSITIVE": "Positive",
+    "NEGATIVE": "Negative",
+    "NEUTRAL": "Neutral"
   },
   "editAen": "Edit AEN",
   "createAen": "Create AEN",
