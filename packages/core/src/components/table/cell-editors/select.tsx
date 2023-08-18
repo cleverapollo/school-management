@@ -90,10 +90,6 @@ function TableSelectInner<TSelectOption extends OptionProps>(
         : String(option);
       const { disabled, disabledTooltip } = option;
 
-      console.log({
-        option,
-      });
-
       const menuItem = (
         <MenuItem
           key={value}

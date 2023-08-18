@@ -28,6 +28,7 @@ import {
 } from '@tyro/api';
 import {
   ReturnTypeFromSessionAttendance,
+  useSaveSessionAttendance,
   useSessionAttendance,
 } from '../../api/session-attendance';
 import { RolebookToolbar } from './toolbar';
@@ -302,7 +303,9 @@ export function SessionAttendanceRoleBook({
       from: fromDate,
       to: toDate,
     });
-  const { data: attendanceCodes } = useAttendanceCodes({});
+  const { data: attendanceCodes, isLoading: isAttendanceCodesLoading } =
+    useAttendanceCodes({});
+  const { mutateAsync: saveSessionAttendance } = useSaveSessionAttendance();
 
   const attendanceCodesMap = useMemo(
     () =>
@@ -327,7 +330,7 @@ export function SessionAttendanceRoleBook({
     [t, displayName, bellTimes, view, codeFilterIds, setNoteRowAndKey]
   );
 
-  const saveSessionAttendance = (
+  const onBulkSave = (
     data: BulkEditedRows<
       ReturnTypeFromSessionAttendance,
       'attendanceByKey' | 'noteByKey'
@@ -341,21 +344,9 @@ export function SessionAttendanceRoleBook({
         const [key, dateAndBellId] = changeKey.split('.') as [string, string];
         const [year, month, day, bellId] = dateAndBellId.split('-');
 
-        console.log({
-          changeKey,
-          key,
-          dateAndBellId,
-          year,
-          month,
-          day,
-          bellId,
-          value,
-        });
-
         const studentChangeKey = `${studentPartyId}-${dateAndBellId}`;
 
         if (!attendanceChanges[studentChangeKey]) {
-          // @ts-expect-error
           attendanceChanges[studentChangeKey] = {
             bellTimeId: Number(bellId),
             studentPartyId: Number(studentPartyId),
@@ -379,14 +370,7 @@ export function SessionAttendanceRoleBook({
       });
     });
 
-    console.log({
-      values: Object.values(attendanceChanges),
-    });
-
-    return new Promise((_resolve, reject) =>
-      // console.log({ data });
-      reject(new Error('Not implemented'))
-    );
+    return saveSessionAttendance(Object.values(attendanceChanges));
   };
 
   return (
@@ -397,7 +381,9 @@ export function SessionAttendanceRoleBook({
         rowData={sessionData ?? []}
         columnDefs={columns}
         getRowId={({ data }) => String(data?.studentPartyId)}
-        isLoading={isBellTimesLoading || isAttendanceLoading}
+        isLoading={
+          isBellTimesLoading || isAttendanceLoading || isAttendanceCodesLoading
+        }
         toolbar={
           <RolebookToolbar
             dateRange={dateRange}
@@ -413,7 +399,7 @@ export function SessionAttendanceRoleBook({
           suppressMovable: true,
           suppressMenu: true,
         }}
-        onBulkSave={saveSessionAttendance}
+        onBulkSave={onBulkSave}
       />
       <NoteModal
         open={!!noteRowAndKey}

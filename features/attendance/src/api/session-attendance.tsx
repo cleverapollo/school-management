@@ -1,9 +1,10 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   Attendance_StudentSessionAttendanceQuery,
   gqlClient,
   graphql,
   queryClient,
+  SaveStudentSessionAttendanceInput,
   StudentSessionAttendanceFilter,
   UseQueryReturnType,
 } from '@tyro/api';
@@ -43,6 +44,16 @@ const sessionAttendance = graphql(/* GraphQL */ `
           note
         }
       }
+    }
+  }
+`);
+
+const saveSessionAttendance = graphql(/* GraphQL */ `
+  mutation attendance_saveStudentSessionAttendance(
+    $input: [SaveStudentSessionAttendanceInput]
+  ) {
+    attendance_saveStudentSessionAttendance(input: $input) {
+      studentPartyId
     }
   }
 `);
@@ -93,6 +104,16 @@ export function useSessionAttendance(filter: StudentSessionAttendanceFilter) {
 
 export function getSessionAttendance(filter: StudentSessionAttendanceFilter) {
   return queryClient.fetchQuery(sessionAttendanceQuery(filter));
+}
+
+export function useSaveSessionAttendance() {
+  return useMutation({
+    mutationFn: (input: SaveStudentSessionAttendanceInput[]) =>
+      gqlClient.request(saveSessionAttendance, { input }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(attendanceKeys.all);
+    },
+  });
 }
 
 export type ReturnTypeFromSessionAttendance = UseQueryReturnType<
