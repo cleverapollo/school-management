@@ -10,5 +10,5 @@ export const PrintIcon = forwardRef<SVGSVGElement, SvgIconProps>(
 );
 
 if (process.env.NODE_ENV !== 'production') {
-  PrintIcon.displayName = 'MailCheckmarkIcon';
+  PrintIcon.displayName = 'PrintIcon';
 }
