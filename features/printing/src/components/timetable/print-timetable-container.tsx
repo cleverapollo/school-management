@@ -31,6 +31,10 @@ export default function PrintTimetableContainer() {
             value: 'years',
           },
           {
+            label: t('printing:timetable.class'),
+            value: 'class',
+          },
+          {
             label: t('printing:timetable.rooms'),
             value: 'rooms',
           },

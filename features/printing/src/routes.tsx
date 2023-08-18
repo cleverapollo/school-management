@@ -1,12 +1,12 @@
 import { lazy } from 'react';
 import { NavObjectFunction, NavObjectType } from '@tyro/core';
-import { UserGroupIcon } from '@tyro/icons';
+import { PrintIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
 
 import PrintTimetableContainer from './components/timetable/print-timetable-container';
 import PrintYearGroupTimetable from './pages/timetable/year-timetable';
 import PrintStudentTimetable from './pages/timetable/student-timetable';
-import { TimetablePrintRoomForm } from './components/timetable/timetable-print-rooms-form';
+import PrintClassGroupTimetable from './pages/timetable/class-timetable';
 import PrintRoomTimetable from './pages/timetable/rooms-timetable';
 
 const StaffTimetable = lazy(() => import('./pages/timetable/staff'));
@@ -21,7 +21,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         type: NavObjectType.RootGroup,
         path: 'printing',
         title: t('navigation:management.printing.title'),
-        icon: <UserGroupIcon />,
+        icon: <PrintIcon />,
         children: [
           {
             type: NavObjectType.MenuLink,
@@ -52,6 +52,11 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'years',
                 element: <PrintYearGroupTimetable />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'class',
+                element: <PrintClassGroupTimetable />,
               },
               {
                 type: NavObjectType.NonMenuLink,

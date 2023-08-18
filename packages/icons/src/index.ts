@@ -102,3 +102,4 @@ export * from './user-swap';
 export * from './vertical-dots';
 export * from './warning';
 export * from './person-checkmark';
+export * from './print';
