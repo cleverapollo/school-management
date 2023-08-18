@@ -1,6 +1,7 @@
 import { Box, Chip, Stack, Typography } from '@mui/material';
 import { Autocomplete } from '@tyro/core';
 import { AttendanceCodeType } from '@tyro/api';
+import { useTranslation } from '@tyro/i18n';
 import {
   ReturnTypeFromUseAttendanceCodes,
   useAttendanceCodes,
@@ -21,26 +22,25 @@ export function AttendanceCodeFilter({
   value,
   onChange,
 }: AttendanceCodeFilterProps) {
+  const { t } = useTranslation(['attendance']);
   const { data, isLoading } = useAttendanceCodes({});
 
   return (
-    <Autocomplete<ReturnTypeFromUseAttendanceCodes, true>
+    <Autocomplete<ReturnTypeFromUseAttendanceCodes>
       value={value}
       onChange={(_, newValue) => {
         onChange((newValue as ReturnTypeFromUseAttendanceCodes[]) ?? []);
       }}
-      label="Attendance codes"
+      label={t('attendance:attendanceCodes')}
       fullWidth
       options={data ?? []}
       loading={isLoading}
       multiple
-      getOptionLabel={(option) =>
-        typeof option === 'string' ? option : option.name
-      }
       sx={{
         maxWidth: 300,
       }}
       optionIdKey="id"
+      optionTextKey="name"
       filterOptions={(options, { inputValue }) => {
         if (!inputValue) return options;
 

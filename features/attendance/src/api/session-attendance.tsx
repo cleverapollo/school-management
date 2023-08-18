@@ -78,10 +78,7 @@ export function useSessionAttendance(filter: StudentSessionAttendanceFilter) {
               const { bellTimeId, attendanceCode } =
                 bellTimeAttendanceValue ?? {};
               if (date && bellTimeId && attendanceCode?.id) {
-                if (attendanceCode?.id) {
-                  attendanceByKey[`${date}-${bellTimeId}`] =
-                    attendanceCode.name;
-                }
+                attendanceByKey[`${date}-${bellTimeId}`] = attendanceCode.name;
 
                 if (bellTimeAttendanceValue?.note) {
                   noteByKey[`${date}-${bellTimeId}`] =

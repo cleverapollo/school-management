@@ -111,14 +111,14 @@ export function useEditableState<T>({
       ) {
         newValue = get(node.data, colDef.field);
 
-        const dateForOldValue = cloneDeep(node.data);
+        const dataForOldValue = cloneDeep(node.data);
         const valueSetterParams: ValueSetterParams<T> = {
           oldValue: params.newValue,
           newValue: params.oldValue,
           colDef,
           column: params.column,
           node,
-          data: dateForOldValue,
+          data: dataForOldValue,
           api: params.api,
           columnApi: params.columnApi,
           context: params.context,
@@ -126,7 +126,7 @@ export function useEditableState<T>({
         };
         colDef.valueSetter(valueSetterParams);
 
-        oldValue = get(dateForOldValue, colDef.field);
+        oldValue = get(dataForOldValue, colDef.field);
       }
 
       setEditedRows((previousEditedRows) => {

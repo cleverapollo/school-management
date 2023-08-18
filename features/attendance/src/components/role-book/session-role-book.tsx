@@ -25,6 +25,8 @@ import {
 import {
   AttendanceCodeType,
   SaveStudentSessionAttendanceInput,
+  usePermissions,
+  UsePermissionsReturn,
 } from '@tyro/api';
 import {
   ReturnTypeFromSessionAttendance,
@@ -61,7 +63,8 @@ const getColumns = (
   view: 'icons' | 'codes',
   codeFilterIds: number[],
   attendanceCodesMap: Map<string, ReturnTypeFromUseAttendanceCodes>,
-  setNoteRowAndKey: (value: { rowId: string; noteKey: string }) => void
+  setNoteRowAndKey: (value: { rowId: string; noteKey: string }) => void,
+  { isStaffUserWithPermission }: UsePermissionsReturn
 ): GridOptions<ReturnTypeFromSessionAttendance>['columnDefs'] => [
   {
     headerName: t('common:student'),
@@ -148,7 +151,8 @@ const getColumns = (
               justifyContent: 'center',
             },
             cellClass: [
-              'ag-editable-cell',
+              isStaffUserWithPermission('ps:1:attendance:write_attendance') &&
+                'ag-editable-cell',
               isFirstElement ? 'ag-left-cell-border' : null,
               isLastElement ? 'ag-right-cell-border' : null,
             ],
@@ -222,12 +226,16 @@ const getColumns = (
               t,
               Array.from(attendanceCodesMap.values())
             ),
-            editable: true,
+            editable: isStaffUserWithPermission(
+              'ps:1:attendance:write_attendance'
+            ),
           },
           {
             field: `noteByKey.${key}`,
             headerName: `${name ?? ''} ${t('attendance:note')}`,
-            editable: true,
+            editable: isStaffUserWithPermission(
+              'ps:1:attendance:write_attendance'
+            ),
             valueSetter: ({
               newValue,
               data,
@@ -263,6 +271,7 @@ export function SessionAttendanceRoleBook({
 }: SessionAttendanceRoleBookProps) {
   const { t } = useTranslation(['common', 'attendance']);
   const tableRef = useRef<AgGridReact<ReturnTypeFromSessionAttendance>>(null);
+  const permissions = usePermissions();
   const editingStateRef =
     useRef<ReturnTypeTableUseEditableState<ReturnTypeFromSessionAttendance>>(
       null
@@ -325,9 +334,18 @@ export function SessionAttendanceRoleBook({
         view,
         codeFilterIds,
         attendanceCodesMap,
-        setNoteRowAndKey
+        setNoteRowAndKey,
+        permissions
       ),
-    [t, displayName, bellTimes, view, codeFilterIds, setNoteRowAndKey]
+    [
+      t,
+      displayName,
+      bellTimes,
+      view,
+      codeFilterIds,
+      setNoteRowAndKey,
+      permissions,
+    ]
   );
 
   const onBulkSave = (

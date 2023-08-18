@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { ICellEditorParams, TableSelect } from '@tyro/core';
 import { Box, Stack, Typography } from '@mui/material';
 import { AttendanceCodeType } from '@tyro/api';
-import { TFunction, useTranslation } from '@tyro/i18n';
+import { TFunction } from '@tyro/i18n';
 import { EditIcon } from '@tyro/icons';
 import { ReturnTypeFromUseAttendanceCodes } from '../../api/attendance-codes';
 import { colorsBasedOnCodeType, iconBasedOnCodeType } from './attendance-value';

@@ -118,7 +118,7 @@ function TableSelectInner<TSelectOption extends OptionProps>(
         menuItem
       );
     },
-    [props]
+    [originalValue, stopEditing, optionIdKey, getOptionLabel, renderOption]
   );
 
   checkTableSelectorProps(props);
