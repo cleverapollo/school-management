@@ -317,5 +317,5 @@ export const defaultValues = {
   periodDisplayOnAxis: Print_TimetablePeriodDisplayOnAxis.Time,
   periodDisplayInCell: Print_TimetablePeriodDisplayInCell.Hide,
   subjectFormat: Print_TimetableSubjectFormat.Full,
-  fontSize: FontSize.LARGE,
+  fontSize: FontSize.MEDIUM,
 } as PrintStaffTimetableFormState;

@@ -79,6 +79,7 @@ export * from './person-gear';
 export * from './person-heart';
 export * from './person-tick';
 export * from './phone';
+export * from './print';
 export * from './pie-chart';
 export * from './refresh';
 export * from './reply';
