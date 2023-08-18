@@ -11,6 +11,7 @@ export * from './copy-clipboard-button';
 export * from './current-attendance-icon';
 export * from './date-range-calendar';
 export * from './date-range-switcher';
+export * from './dialog';
 export * from './form';
 export * from './icon-chip';
 export * from './lazy-loader';

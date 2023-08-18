@@ -1,17 +1,16 @@
+import { Button, Stack, Chip } from '@mui/material';
 import {
-  Button,
+  RHFAutocomplete,
+  RHFTextField,
+  useFormValidator,
   DialogTitle,
   DialogActions,
   Dialog,
   DialogContent,
-  Stack,
-  Chip,
-} from '@mui/material';
-import { RHFAutocomplete, RHFTextField, useFormValidator } from '@tyro/core';
+} from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import { useEffect } from 'react';
 import { getColorBasedOnIndex } from '@tyro/api';
 import { useUpsertNote } from '../../../api/note/upsert-note';
 import { useNoteTags } from '../../../api/note/note-tags';

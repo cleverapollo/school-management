@@ -1,16 +1,12 @@
 import {
   Button,
-  DialogTitle,
   Stack,
-  DialogActions,
-  Dialog,
   Typography,
   Box,
   Tooltip,
   IconButton,
   Divider,
   Grid,
-  DialogContent,
   Alert,
   Collapse,
   AlertTitle,
@@ -20,6 +16,10 @@ import {
   RHFTextField,
   useFormValidator,
   useDisclosure,
+  DialogTitle,
+  DialogActions,
+  Dialog,
+  DialogContent,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm, useFieldArray } from 'react-hook-form';

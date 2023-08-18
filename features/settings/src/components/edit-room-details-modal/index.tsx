@@ -1,11 +1,12 @@
+import { Button, Stack } from '@mui/material';
 import {
-  Button,
-  DialogTitle,
-  Stack,
+  RHFSwitch,
+  RHFTextField,
+  useFormValidator,
   DialogActions,
   Dialog,
-} from '@mui/material';
-import { RHFSwitch, RHFTextField, useFormValidator } from '@tyro/core';
+  DialogTitle,
+} from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';

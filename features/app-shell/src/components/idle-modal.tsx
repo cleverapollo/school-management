@@ -1,15 +1,14 @@
-import { ConfirmDialog } from '@tyro/core';
-import { useAuth } from '@tyro/api';
-import { useEffect, useId, useRef, useState } from 'react';
-import { useTranslation } from '@tyro/i18n';
 import {
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-} from '@mui/material';
+} from '@tyro/core';
+import { useAuth } from '@tyro/api';
+import { useEffect, useId, useRef, useState } from 'react';
+import { useTranslation } from '@tyro/i18n';
+import { Button } from '@mui/material';
 import { useIdleTracker } from '../hooks/use-idle-tracker';
 
 export function IdleModal() {

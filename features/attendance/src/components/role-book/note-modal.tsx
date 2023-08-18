@@ -1,12 +1,11 @@
+import { Button, TextField } from '@mui/material';
 import {
-  Button,
+  AgGridReact,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField,
-} from '@mui/material';
-import { AgGridReact } from '@tyro/core';
+} from '@tyro/core';
 import { RefObject, useEffect, useState } from 'react';
 import { useTranslation } from '@tyro/i18n';
 import { ReturnTypeFromSessionAttendance } from '../../api/session-attendance';
