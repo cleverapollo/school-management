@@ -6,10 +6,8 @@ import {
   queryClient,
   SubjectGroupType,
   UpdateSubjectGroupInput,
-  UseQueryReturnType,
 } from '@tyro/api';
 import { groupsKeys } from './keys';
-import { useClassGroups } from './class-groups';
 
 const subjectGroupsList = graphql(/* GraphQL */ `
   query subjectGroups($filter: SubjectGroupFilter!) {
@@ -39,6 +37,9 @@ const subjectGroupsList = graphql(/* GraphQL */ `
       }
       yearGroups {
         name
+      }
+      studentMembershipType {
+        type
       }
     }
   }

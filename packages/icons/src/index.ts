@@ -74,6 +74,7 @@ export * from './person-heart';
 export * from './person-tick';
 export * from './phone';
 export * from './pie-chart';
+export * from './printer';
 export * from './refresh';
 export * from './reply';
 export * from './room-swap';

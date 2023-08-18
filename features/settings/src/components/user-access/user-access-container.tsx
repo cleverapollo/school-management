@@ -9,14 +9,7 @@ export default function UserAccessContainer() {
     <PageContainer title={t('settings:userAccess')}>
       <PageHeading
         title={t('settings:userAccess')}
-        breadcrumbs={{
-          links: [
-            {
-              name: t('settings:userAccess'),
-              href: './..',
-            },
-          ],
-        }}
+        titleProps={{ variant: 'h3' }}
       />
       <TabPageContainer
         links={[

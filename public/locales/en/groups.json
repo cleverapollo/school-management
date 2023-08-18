@@ -30,6 +30,11 @@
       "confim": "Switch to support class"
     }
   },
+  "subjectGroupStudentMembershipType": {
+    "BLOCK": "Block",
+    "CORE": "Core",
+    "UNKNOWN": "Unknown"
+  },
   "supportGroup": {
     "switchToSubjectGroup": {
       "action": "Switch to subject class",

@@ -39,7 +39,7 @@ type ReturnTypeFromUseSubjectGroups = NonNullable<
 >[number];
 
 const getSubjectGroupsColumns = (
-  t: TFunction<'common'[], undefined, 'common'[]>,
+  t: TFunction<('common' | 'groups')[]>,
   displayNames: ReturnTypeDisplayNames
 ): GridOptions<ReturnTypeFromUseSubjectGroups>['columnDefs'] => [
   {
@@ -121,6 +121,18 @@ const getSubjectGroupsColumns = (
     headerName: t('common:teacher'),
     valueGetter: ({ data }) => displayNames(data?.staff),
     enableRowGroup: true,
+  },
+  {
+    field: 'studentGroupType',
+    headerName: t('groups:groupType'),
+    enableRowGroup: true,
+    hide: true,
+    valueGetter: ({ data }) =>
+      data?.studentMembershipType?.type
+        ? t(
+            `groups:subjectGroupStudentMembershipType.${data.studentMembershipType.type}`
+          )
+        : t('groups:subjectGroupStudentMembershipType.UNKNOWN'),
   },
 ];
 
