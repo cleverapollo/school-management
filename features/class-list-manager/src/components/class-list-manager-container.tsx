@@ -87,6 +87,7 @@ export default function ClassListManagerContainer() {
       setShowGender,
       t,
       onOpenAutoAssign,
+      createRotation,
     ]
   );
 
