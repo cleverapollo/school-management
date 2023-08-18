@@ -6,6 +6,7 @@ import { redirect } from 'react-router-dom';
 import PrintTimetableContainer from './components/timetable/print-timetable-container';
 import PrintYearGroupTimetable from './pages/timetable/year-timetable';
 import PrintStudentTimetable from './pages/timetable/student-timetable';
+import PrintClassGroupTimetable from './pages/timetable/class-timetable';
 import PrintRoomTimetable from './pages/timetable/rooms-timetable';
 
 const StaffTimetable = lazy(() => import('./pages/timetable/staff'));
@@ -51,6 +52,11 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'years',
                 element: <PrintYearGroupTimetable />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'class',
+                element: <PrintClassGroupTimetable />,
               },
               {
                 type: NavObjectType.NonMenuLink,
