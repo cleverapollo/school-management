@@ -48,7 +48,7 @@ export const RHFClassGroupAutocomplete = <TField extends FieldValues>(
   // @ts-ignore
   return (
     <RHFAutocomplete<TField, ClassGroupSelect>
-      label={t('common:year')}
+      label={t('common:class')}
       {...props}
       fullWidth
       optionIdKey="partyId"
@@ -74,7 +74,7 @@ export const ClassGroupAutocomplete = (props: ClassGroupAutocompleteProps) => {
   // @ts-ignore
   return (
     <Autocomplete
-      label={t('common:year')}
+      label={t('common:class')}
       fullWidth
       optionIdKey="partyId"
       optionTextKey="name"
