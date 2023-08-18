@@ -11,4 +11,5 @@ export interface DateRangeCalendarProps<TInputDate>
   extends Omit<DateCalendarProps<TInputDate>, 'value' | 'onChange'> {
   value: DateRangeCalendarValue<TInputDate> | undefined;
   onChange: (value: DateRangeCalendarValue<TInputDate>) => void;
+  maxDateRange?: (firstSelectedValue: TInputDate) => TInputDate;
 }

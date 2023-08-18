@@ -12,6 +12,7 @@ import {
   usePreferredNameLayout,
   PageContainer,
   StudyLevelSelectCellEditor,
+  ValueSetterParams,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { useParams } from 'react-router-dom';
@@ -163,9 +164,13 @@ const getColumnDefs = (
     field: 'studentStudyLevel',
     headerName: t('common:level'),
     editable: true,
-    valueSetter: (params) => {
+    valueSetter: (
+      params: ValueSetterParams<ReturnTypeFromUseAssessmentResults>
+    ) => {
       set(params.data ?? {}, 'studentStudyLevel', params.newValue);
-      checkAndSetGrades(academicNamespaceId, params);
+      if (!params.isEditCheckCall) {
+        checkAndSetGrades(academicNamespaceId, params);
+      }
       return true;
     },
     cellRenderer: ({
@@ -182,7 +187,9 @@ const getColumnDefs = (
     editable: true,
     valueFormatter: ({ value }) =>
       typeof value === 'number' ? `${value}%` : '',
-    valueSetter: (params) => {
+    valueSetter: (
+      params: ValueSetterParams<ReturnTypeFromUseAssessmentResults>
+    ) => {
       const value = !params.newValue ? undefined : Number(params.newValue);
       set(
         params.data ?? {},
@@ -192,7 +199,9 @@ const getColumnDefs = (
           : Math.max(0, Math.min(100, value))
       );
 
-      checkAndSetGrades(academicNamespaceId, params);
+      if (!params.isEditCheckCall) {
+        checkAndSetGrades(academicNamespaceId, params);
+      }
       return true;
     },
   },
@@ -208,7 +217,9 @@ const getColumnDefs = (
     suppressColumnsToolPanel: !assessmentData?.captureTarget,
     valueFormatter: ({ value }) =>
       typeof value === 'number' ? `${value}%` : '',
-    valueSetter: (params) => {
+    valueSetter: (
+      params: ValueSetterParams<ReturnTypeFromUseAssessmentResults>
+    ) => {
       const value = !params.newValue ? undefined : Number(params.newValue);
       set(
         params.data ?? {},
@@ -218,7 +229,9 @@ const getColumnDefs = (
           : Math.max(0, Math.min(100, value))
       );
 
-      checkAndSetGrades(academicNamespaceId, params);
+      if (!params.isEditCheckCall) {
+        checkAndSetGrades(academicNamespaceId, params);
+      }
       return true;
     },
   },

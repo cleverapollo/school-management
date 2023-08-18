@@ -15,7 +15,6 @@ const saveAttendance = graphql(/* GraphQL */ `
 
 export function useSaveAttendance() {
   return useMutation({
-    mutationKey: ['attendance', 'createEvent'],
     mutationFn: (input: SaveEventAttendanceInput[]) =>
       gqlClient.request(saveAttendance, { input }),
   });

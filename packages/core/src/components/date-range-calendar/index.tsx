@@ -12,11 +12,12 @@ export type { DateRangeCalendarProps } from './types';
 export const DateRangeCalendar = <TInputDate extends Dayjs>({
   value,
   onChange,
+  maxDateRange,
   ...props
 }: DateRangeCalendarProps<TInputDate>) => {
   const lastSelectedDayIndex = useRef<number>(1);
   const [internalValue, setInternalValue] =
-    useState<DateRangeCalendarInternalValue<TInputDate>>();
+    useState<DateRangeCalendarInternalValue<TInputDate>>(value);
   const [rangePreviewDay, setRangePreviewDay] = useState<TInputDate>();
 
   const onDaySelect = useCallback(
@@ -32,6 +33,13 @@ export const DateRangeCalendar = <TInputDate extends Dayjs>({
           newValue = [day];
         } else {
           newValue[0] = day;
+
+          if (maxDateRange) {
+            const maxSecondDate = maxDateRange(day);
+            if (newValue[1] && newValue[1].isAfter(maxSecondDate, 'day')) {
+              newValue[1] = maxSecondDate;
+            }
+          }
         }
       } else if (newValue[0] && day.isBefore(newValue[0], 'day')) {
         lastSelectedDayIndex.current = 0;
@@ -75,6 +83,7 @@ export const DateRangeCalendar = <TInputDate extends Dayjs>({
       slots={{
         day: renderDay,
       }}
+      defaultCalendarMonth={internalValue?.[0]}
       {...props}
     />
   );

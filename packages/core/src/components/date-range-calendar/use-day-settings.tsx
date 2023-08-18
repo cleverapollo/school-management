@@ -36,12 +36,14 @@ export function useDaySettings<TInputDate extends Dayjs>({
     isHighlighted ||
     (!startAndEndOfRangeAreTheSameDay &&
       isRangeSelected &&
-      day.isSame(pickerValue[1], 'day'));
+      day.isSame(pickerValue[1], 'day') &&
+      !isOutsideMonth);
   const isHighlightRight =
     isHighlighted ||
     (!startAndEndOfRangeAreTheSameDay &&
       isRangeSelected &&
-      day.isSame(pickerValue[0], 'day'));
+      day.isSame(pickerValue[0], 'day') &&
+      !isOutsideMonth);
 
   let startOfPreviewRange: TInputDate | null = null;
   let endOfPreviewRange: TInputDate | null = null;
@@ -72,7 +74,7 @@ export function useDaySettings<TInputDate extends Dayjs>({
 
   return {
     isSelected,
-    showSelectionCircle: isSelected && !isHighlighted,
+    showSelectionCircle: isSelected && !isHighlighted && !isOutsideMonth,
     isHighlightLeft,
     isHighlightRight,
     isFirstDayOfWeek: day.isSame(day.startOf('week'), 'day'),
