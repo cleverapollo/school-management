@@ -1,10 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { CellValueChangedEvent } from 'ag-grid-community';
+import {
+  CellValueChangedEvent,
+  ValueSetterParams as AGValueSetterParams,
+} from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { MutableRefObject, useCallback, useMemo, useState } from 'react';
 import set from 'lodash/set';
 import isEqual from 'lodash/isEqual';
+import cloneDeep from 'lodash/cloneDeep';
+import get from 'lodash/get';
 import { useCacheWithExpiry } from '../../../hooks/use-cache-with-expiry';
+
+export interface ValueSetterParams<TData = any, CellValue = any>
+  extends AGValueSetterParams<TData> {
+  newValue: CellValue;
+  oldValue: CellValue;
+  isEditCheckCall?: boolean;
+}
 
 export enum EditState {
   Idle = 'IDLE',
@@ -49,7 +61,7 @@ export type BulkEditedRows<
 >;
 
 export interface UseEditableStateProps<T> {
-  tableRef: MutableRefObject<AgGridReact<T>>;
+  tableRef: MutableRefObject<AgGridReact<T> | undefined>;
   onBulkSave:
     | ((data: BulkEditedRows<T, Path<T>>) => Promise<unknown>)
     | undefined;
@@ -66,7 +78,7 @@ type EditedRow<T> = Record<
   >
 >;
 
-export function useEditableState<T extends object>({
+export function useEditableState<T>({
   tableRef,
   onBulkSave,
 }: UseEditableStateProps<T>) {
@@ -88,13 +100,42 @@ export function useEditableState<T extends object>({
     (params: CellValueChangedEvent<T>) => {
       const { node, colDef } = params ?? {};
 
+      let newValue = params?.newValue;
+      let oldValue = params?.oldValue;
+
+      if (
+        colDef?.valueSetter &&
+        typeof colDef.valueSetter === 'function' &&
+        colDef.field &&
+        node.data
+      ) {
+        newValue = get(node.data, colDef.field);
+
+        const dataForOldValue = cloneDeep(node.data);
+        const valueSetterParams: ValueSetterParams<T> = {
+          oldValue: params.newValue,
+          newValue: params.oldValue,
+          colDef,
+          column: params.column,
+          node,
+          data: dataForOldValue,
+          api: params.api,
+          columnApi: params.columnApi,
+          context: params.context,
+          isEditCheckCall: true,
+        };
+        colDef.valueSetter(valueSetterParams);
+
+        oldValue = get(dataForOldValue, colDef.field);
+      }
+
       setEditedRows((previousEditedRows) => {
         if (node.id && colDef.field) {
           const previousRowChanges = previousEditedRows[node.id] ?? {};
 
           if (!previousRowChanges[colDef.field]) {
             // Don't update if the value hasn't changed. Needed for objects passed by reference
-            if (isEqual(params?.oldValue, params?.newValue)) {
+            if (isEqual(oldValue, newValue)) {
               return previousEditedRows;
             }
 
@@ -103,19 +144,19 @@ export function useEditableState<T extends object>({
               [node.id]: {
                 ...previousRowChanges,
                 [colDef.field]: {
-                  originalValue: params?.oldValue ?? null,
-                  newValue: params?.newValue ?? null,
+                  originalValue: oldValue ?? null,
+                  newValue: newValue ?? null,
                 },
               },
             };
           }
 
-          previousRowChanges[colDef.field].newValue = params?.newValue;
+          previousRowChanges[colDef.field].newValue = newValue;
 
           if (
             isEqual(
               previousRowChanges[colDef.field].originalValue,
-              params?.newValue ?? null
+              newValue ?? null
             )
           ) {
             delete previousRowChanges[colDef.field];
@@ -138,17 +179,47 @@ export function useEditableState<T extends object>({
 
   const applyUpdatesToTable = useCallback(
     (changeType: 'originalValue' | 'newValue') => {
+      const currentTableRef = tableRef?.current;
+      if (!currentTableRef) return;
+
       const rowsToUpdate = Object.entries(editedRows).reduce<T[]>(
         (acc, [id, changesForRow]) => {
-          const rowWithCurrentValues =
-            tableRef.current.api.getRowNode(id)?.data;
+          const rowNode = currentTableRef.api.getRowNode(id);
+          const rowWithCurrentValues = rowNode?.data;
 
-          if (!rowWithCurrentValues) {
+          if (!rowNode || !rowWithCurrentValues) {
             return acc;
           }
 
           Object.entries(changesForRow).forEach(([field, change]) => {
-            set(rowWithCurrentValues, field, change[changeType]);
+            const column = currentTableRef.columnApi.getColumn(field);
+            const colDef = column?.getColDef();
+
+            if (
+              column &&
+              colDef?.valueSetter &&
+              typeof colDef.valueSetter === 'function'
+            ) {
+              const valueSetterParams: ValueSetterParams<T> = {
+                oldValue:
+                  change[
+                    changeType === 'originalValue'
+                      ? 'newValue'
+                      : 'originalValue'
+                  ],
+                newValue: change[changeType],
+                colDef,
+                column,
+                node: rowNode,
+                data: rowWithCurrentValues,
+                api: currentTableRef.api,
+                columnApi: currentTableRef.columnApi,
+                context: currentTableRef.context,
+              };
+              colDef.valueSetter(valueSetterParams);
+            } else {
+              set(rowWithCurrentValues, field, change[changeType]);
+            }
           });
 
           acc.push(rowWithCurrentValues);
@@ -157,8 +228,11 @@ export function useEditableState<T extends object>({
         []
       );
 
-      tableRef.current.api.applyTransaction({
+      currentTableRef.api.applyTransaction({
         update: rowsToUpdate,
+      });
+      currentTableRef.api.refreshCells({
+        force: true,
       });
     },
     [editedRows, tableRef]
@@ -197,3 +271,7 @@ export function useEditableState<T extends object>({
     applyUpdatesToTable,
   };
 }
+
+export type ReturnTypeUseEditableState<T> = ReturnType<
+  typeof useEditableState<T>
+>;

@@ -51,6 +51,8 @@ export default function ClassGroupContainer() {
           {
             value: 'attendance',
             label: t('common:attendance'),
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission('ps:1:attendance:read_attendance'),
           },
           {
             value: 'timetable',

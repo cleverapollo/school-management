@@ -1,14 +1,17 @@
-import { LicenseManager } from 'ag-grid-enterprise';
-import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
-
-import 'ag-grid-community/styles/ag-grid.css';
 import {
+  useMemo,
   ForwardedRef,
   forwardRef,
   MutableRefObject,
   useCallback,
   useState,
+  useImperativeHandle,
+  useRef,
 } from 'react';
+import { LicenseManager } from 'ag-grid-enterprise';
+import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
+
+import 'ag-grid-community/styles/ag-grid.css';
 import { Box, BoxProps, Card, CardProps, Stack } from '@mui/material';
 
 import './styles.css';
@@ -17,21 +20,30 @@ import {
   ColumnRowGroupChangedEvent,
   FirstDataRenderedEvent,
 } from 'ag-grid-community';
-import { useEnsuredForwardedRef, useMeasure } from 'react-use';
+import { useMeasure } from 'react-use';
+import { useMergeRefs } from '../../../hooks/use-merge-refs';
 import {
+  ReturnTypeUseEditableState,
   useEditableState,
   UseEditableStateProps,
 } from '../hooks/use-editable-state';
 import { BulkEditSaveBar } from './bulk-edit-save-bar';
 import { SearchInput } from '../../search-input';
+import { TableLoadingOverlay } from './loading-overlay';
 
 export type {
   GridOptions,
   ICellRendererParams,
-  ValueSetterParams,
   CellValueChangedEvent,
   ICellEditorParams,
+  ValueGetterParams,
+  NewValueParams,
+  ProcessCellForExportParams,
 } from 'ag-grid-community';
+export type {
+  ReturnTypeUseEditableState as ReturnTypeTableUseEditableState,
+  ValueSetterParams,
+} from '../hooks/use-editable-state';
 
 export type { AgGridReact } from 'ag-grid-react';
 
@@ -47,6 +59,9 @@ export interface TableProps<T> extends AgGridReactProps<T> {
   sx?: CardProps['sx'];
   tableContainerSx?: BoxProps['sx'];
   rightAdornment?: React.ReactNode;
+  toolbar?: React.ReactNode;
+  editingStateRef?: React.Ref<ReturnTypeUseEditableState<T>>;
+  isLoading?: boolean;
 }
 
 const defaultColDef: ColDef = {
@@ -77,14 +92,16 @@ function TableInner<T extends object>(
     rowHeight = 56,
     rowSelection,
     onColumnEverythingChanged,
+    toolbar,
+    editingStateRef,
+    isLoading,
     ...props
   }: TableProps<T>,
   ref: React.Ref<AgGridReact<T>>
 ) {
   const [searchValue, setSearchValue] = useState('');
-  const tableRef = useEnsuredForwardedRef(
-    ref as MutableRefObject<AgGridReact<T>>
-  );
+  const tableRef = useRef<AgGridReact<T>>();
+  const refs = useMergeRefs(tableRef, ref);
   const [tableContainerRef, { height: tableContainerHeight }] = useMeasure();
 
   const spaceForTable = tableContainerHeight;
@@ -94,6 +111,10 @@ function TableInner<T extends object>(
     MIN_TABLE_HEIGHT
   );
 
+  const editingUtils = useEditableState<T>({
+    tableRef,
+    onBulkSave,
+  });
   const {
     isEditing,
     editingState,
@@ -102,14 +123,21 @@ function TableInner<T extends object>(
     onCancel,
     onCellValueChanged,
     applyUpdatesToTable,
-  } = useEditableState<T>({
-    tableRef,
-    onBulkSave,
-  });
+  } = editingUtils;
+
+  useImperativeHandle(editingStateRef, () => editingUtils, [editingUtils]);
+
+  const colDefs = useMemo(
+    () => ({
+      ...defaultColDef,
+      ...props.defaultColDef,
+    }),
+    [props.defaultColDef]
+  );
 
   const onSelectionChanged = useCallback(() => {
-    const selectedRows = tableRef.current.api.getSelectedRows();
-    if (onRowSelection) {
+    const selectedRows = tableRef?.current?.api?.getSelectedRows();
+    if (onRowSelection && selectedRows) {
       onRowSelection(selectedRows);
     }
   }, []);
@@ -153,13 +181,20 @@ function TableInner<T extends object>(
           ...sx,
         }}
       >
-        <Stack direction="row" justifyContent="space-between" spacing={2} p={2}>
-          <SearchInput
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-          />
-          {rightAdornment}
-        </Stack>
+        {toolbar || (
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            spacing={2}
+            p={2}
+          >
+            <SearchInput
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
+            {rightAdornment}
+          </Stack>
+        )}
         <Box
           ref={tableContainerRef}
           className="ag-theme-tyro"
@@ -172,49 +207,53 @@ function TableInner<T extends object>(
               height: innerContainerHeight,
             }}
           >
-            <AgGridReact<(typeof props.rowData)[number]>
-              ref={tableRef}
-              defaultColDef={defaultColDef}
-              quickFilterText={searchValue}
-              undoRedoCellEditing
-              undoRedoCellEditingLimit={20}
-              popupParent={document.body}
-              suppressRowClickSelection
-              enableRangeSelection
-              enableFillHandle
-              fillHandleDirection="y"
-              allowContextMenuWithControlKey
-              onSelectionChanged={onSelectionChanged}
-              rowHeight={rowHeight}
-              rowSelection={rowSelection}
-              autoGroupColumnDef={
-                autoGroupColumnDef || defaultAutoGroupColumnDef
-              }
-              groupSelectsChildren={rowSelection === 'multiple'}
-              groupSelectsFiltered={rowSelection === 'multiple'}
-              stopEditingWhenCellsLoseFocus
-              {...props}
-              onCellValueChanged={(args) => {
-                onCellValueChanged(args);
-                props.onCellValueChanged?.(args);
-              }}
-              onFirstDataRendered={(params: FirstDataRenderedEvent<T>) => {
-                params?.columnApi?.autoSizeAllColumns(false);
-                applyUpdatesToTable('newValue');
-
-                if (onFirstDataRendered) {
-                  onFirstDataRendered(params);
+            {isLoading ? (
+              <TableLoadingOverlay />
+            ) : (
+              <AgGridReact<(typeof props.rowData)[number]>
+                ref={refs}
+                quickFilterText={searchValue}
+                undoRedoCellEditing
+                undoRedoCellEditingLimit={20}
+                popupParent={document.body}
+                suppressRowClickSelection
+                enableRangeSelection
+                enableFillHandle
+                fillHandleDirection="y"
+                allowContextMenuWithControlKey
+                onSelectionChanged={onSelectionChanged}
+                rowHeight={rowHeight}
+                rowSelection={rowSelection}
+                autoGroupColumnDef={
+                  autoGroupColumnDef || defaultAutoGroupColumnDef
                 }
-              }}
-              onColumnEverythingChanged={(params) => {
-                applyUpdatesToTable('newValue');
+                groupSelectsChildren={rowSelection === 'multiple'}
+                groupSelectsFiltered={rowSelection === 'multiple'}
+                stopEditingWhenCellsLoseFocus
+                {...props}
+                defaultColDef={colDefs}
+                onCellValueChanged={(args) => {
+                  onCellValueChanged(args);
+                  props.onCellValueChanged?.(args);
+                }}
+                onFirstDataRendered={(params: FirstDataRenderedEvent<T>) => {
+                  params?.columnApi?.autoSizeAllColumns(false);
+                  applyUpdatesToTable('newValue');
 
-                if (onColumnEverythingChanged) {
-                  onColumnEverythingChanged(params);
-                }
-              }}
-              onColumnRowGroupChanged={onColumnRowGroupChanged}
-            />
+                  if (onFirstDataRendered) {
+                    onFirstDataRendered(params);
+                  }
+                }}
+                onColumnEverythingChanged={(params) => {
+                  applyUpdatesToTable('newValue');
+
+                  if (onColumnEverythingChanged) {
+                    onColumnEverythingChanged(params);
+                  }
+                }}
+                onColumnRowGroupChanged={onColumnRowGroupChanged}
+              />
+            )}
           </Box>
         </Box>
       </Card>

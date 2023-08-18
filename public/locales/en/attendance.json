@@ -33,10 +33,19 @@
   "attendanceType": "Attendance type",
   "sessionAttendanceYear": "Session attendance {{year}}",
   "absenceType": "Absence type",
-  "absentType": "Absent type",
+  "absences": "Absences",
+  "unexplainedAbsences": "Unexplained absences",
+  "uneAbsences": "Une. absences",
+  "youMustSelectAttendanceCodeBeforeApplyingANote": "You must select an attendance code before applying a note",
   "totalDays": "Total days {{count}}",
   "noSessionAttendanceForYear": "No session attendance data available for this year.",
   "absent": "Absent",
+  "sessionAttendance": "Session attendance",
+  "studentsClassGroupsEtc": "Students, class groups, etc.",
+  "iconView": "Icon view",
+  "codeView": "Code view",
+  "changeRolebookView": "Change rolebook view",
+  "absentType": "Absent type",
   "studentName": "Student name",
   "youAreAboutToApproveAbsentRequest_one": "You are about to approve this absent request which will notify the associated contact. Are you sure you want to continue?",
   "youAreAboutToDeclineAbsentRequest_one": "You are about to decline this absent request which will notify the associated contact. Are you sure you want to continue?",
@@ -77,5 +86,8 @@
     "PARTIAL_DAY": "{{startDate}} from {{startTime}} to {{endTime}}"
   },
   "youHaveNotSelectedPendingAndApproved": "You have not selected any \"Pending\" or \"Approved\" requests",
-  "youHaveNotSelectedPendingAndDeclined": "You have not selected any \"Pending\" or \"Declined\" requests"
+  "youHaveNotSelectedPendingAndDeclined": "You have not selected any \"Pending\" or \"Declined\" requests",
+  "note": "Note",
+  "addNote": "Add note",
+  "editNote": "Edit note"
 }

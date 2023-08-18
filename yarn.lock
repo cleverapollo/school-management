@@ -5744,11 +5744,13 @@ __metadata:
     "@mui/material": ^5.13.2
     "@tanstack/react-query": ^4.29.7
     "@tyro/api": "*"
+    "@tyro/calendar": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
     dayjs: ^1.11.7
+    lodash: ^4.17.21
     react: ^18.2.0
     react-dom: ^18.2.0
     react-hook-form: ^7.43.9
