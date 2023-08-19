@@ -1,13 +1,4 @@
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Button, Divider, Stack, Typography } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { AttendanceCode, ParentalAttendanceRequestStatus } from '@tyro/api';
 import React from 'react';
@@ -21,6 +12,10 @@ import {
   usePreferredNameLayout,
   CardEditableForm,
   CardEditableFormProps,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from '@tyro/core';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';

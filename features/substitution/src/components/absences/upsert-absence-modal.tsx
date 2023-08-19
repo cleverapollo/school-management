@@ -5,9 +5,6 @@ import {
   Box,
   Button,
   Collapse,
-  Dialog,
-  DialogActions,
-  DialogTitle,
   IconButton,
   Stack,
   Tooltip,
@@ -22,6 +19,9 @@ import {
   RHFTextField,
   RHFTimePicker,
   useFormValidator,
+  Dialog,
+  DialogActions,
+  DialogTitle,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { RHFStaffAutocomplete, useStaffSubjectGroups } from '@tyro/people';

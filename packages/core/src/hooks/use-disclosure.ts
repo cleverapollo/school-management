@@ -1,5 +1,5 @@
 import { ButtonProps, DialogProps } from '@mui/material';
-import React, { useCallback, useState, useId } from 'react';
+import { useCallback, useState, useId } from 'react';
 import { useCallbackRef } from './use-callback-ref';
 
 export interface UseDisclosureProps {

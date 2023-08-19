@@ -3,10 +3,10 @@
 import { Stack, Box } from '@mui/material';
 import { NAV } from './config';
 import { hideScrollbarX } from '../../../../../../src/utils/cssStyles';
-import Logo from '../../../../../../src/components/Logo';
 import { NavSectionMini } from './nav-section';
 import { NavigationConfig } from '../../../hooks/use-navigation-config';
 import { ExpandButton } from './expanding-button';
+import { Logo } from '../../logo';
 
 interface NavMiniProps {
   onExpand: VoidFunction;
@@ -34,7 +34,7 @@ export default function NavMini({ onExpand, navConfig }: NavMiniProps) {
           ...hideScrollbarX,
         }}
       >
-        <Logo sx={{ mx: 'auto', my: 2 }} />
+        <Logo sx={{ mx: 'auto', my: 2, width: 50 }} />
 
         <NavSectionMini data={navConfig} />
       </Stack>

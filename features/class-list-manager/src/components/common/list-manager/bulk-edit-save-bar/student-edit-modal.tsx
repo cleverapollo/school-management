@@ -1,16 +1,19 @@
 import {
   Box,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   IconButton,
   Stack,
   Tooltip,
   Typography,
 } from '@mui/material';
-import { Avatar, usePreferredNameLayout } from '@tyro/core';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Avatar,
+  usePreferredNameLayout,
+} from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { UndoIcon } from '@tyro/icons';
 import { useListManagerState } from '../state';

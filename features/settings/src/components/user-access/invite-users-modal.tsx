@@ -1,15 +1,6 @@
 import { useEffect, useState } from 'react';
-import {
-  Alert,
-  AlertTitle,
-  Button,
-  Collapse,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Typography,
-} from '@mui/material';
+import { Alert, AlertTitle, Button, Collapse, Typography } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle } from '@tyro/core';
 import { LoadingButton } from '@mui/lab';
 import { UserType } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
