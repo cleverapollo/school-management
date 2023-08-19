@@ -1,20 +1,15 @@
 import { useMemo, useEffect } from 'react';
 import { LoadingButton } from '@mui/lab';
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
 import {
   LoadingPlaceholder,
   RHFTextField,
   useFormValidator,
   usePreferredNameLayout,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';

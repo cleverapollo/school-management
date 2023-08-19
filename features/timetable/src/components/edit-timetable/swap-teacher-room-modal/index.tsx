@@ -1,18 +1,16 @@
 import { LoadingButton } from '@mui/lab';
+import { Button, Stack, Tab, Tabs } from '@mui/material';
+import { useTranslation } from '@tyro/i18n';
+import { useState } from 'react';
+import { TtSwapsInput } from '@tyro/api';
 import {
-  Button,
+  SearchInput,
+  useToast,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Stack,
-  Tab,
-  Tabs,
-} from '@mui/material';
-import { useTranslation } from '@tyro/i18n';
-import { useState } from 'react';
-import { TtSwapsInput } from '@tyro/api';
-import { SearchInput, useToast } from '@tyro/core';
+} from '@tyro/core';
 import { useSwapTeacherAndRoomModal } from '../../../hooks/use-swap-teacher-and-room-modal';
 import { Lesson } from '../../../hooks/use-resource-table';
 import { TeacherSwapTable } from './teachers-table';

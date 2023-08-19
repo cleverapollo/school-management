@@ -1,14 +1,14 @@
+import { Button } from '@mui/material';
+import { useId, useState } from 'react';
+import { useTranslation } from '@tyro/i18n';
+import { LoadingButton } from '@mui/lab';
 import {
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-} from '@mui/material';
-import { useId, useState } from 'react';
-import { useTranslation } from '@tyro/i18n';
-import { LoadingButton } from '@mui/lab';
+} from '../dialog';
 
 export interface ConfirmDialogProps {
   title: string;

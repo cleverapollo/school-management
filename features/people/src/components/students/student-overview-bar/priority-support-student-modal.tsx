@@ -3,7 +3,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-} from '@mui/material';
+} from '@tyro/core';
 
 interface PrioritySupportStudentModalProps {
   id: string;

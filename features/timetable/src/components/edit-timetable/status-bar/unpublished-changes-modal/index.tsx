@@ -1,12 +1,11 @@
+import { Button, Stack } from '@mui/material';
 import {
-  Button,
+  LoadingPlaceholder,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Stack,
-} from '@mui/material';
-import { LoadingPlaceholder } from '@tyro/core';
+} from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useUnpublishedTimetableChanges } from '../../../../api/edit-timetable/unpublished-timetable-changes';
 import { GroupUpdatesList } from './groups-updates-list';

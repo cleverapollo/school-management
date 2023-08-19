@@ -3,16 +3,16 @@ import {
   ParentalAttendanceRequestStatus,
   SaveParentalAttendanceRequest,
 } from '@tyro/api';
+import { Button } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { useEffect } from 'react';
 import {
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-} from '@mui/material';
-import { LoadingButton } from '@mui/lab';
-import { useEffect } from 'react';
+} from '@tyro/core';
 import { useCreateOrUpdateAbsentRequest } from '../../api';
 
 export interface ApproveAbsentRequestConfirmModalProps {
