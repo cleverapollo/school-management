@@ -144,10 +144,12 @@ export function useEventsForCover(
     select: ({ swm_eventsForSubstitutionsByStaffByPeriod }) => {
       const eventsByStaff =
         swm_eventsForSubstitutionsByStaffByPeriod?.eventsByStaff ?? [];
+      // eslint-disable-next-line no-plusplus
       for (let i = 0; i < eventsByStaff.length; i++) {
         for (
           let j = 0;
           j < eventsByStaff[i].substitutionEventsByDay.length;
+          // eslint-disable-next-line no-plusplus
           j++
         ) {
           for (
@@ -155,6 +157,7 @@ export function useEventsForCover(
             k <
             eventsByStaff[i].substitutionEventsByDay[j]
               .substitutionEventsByPeriod.length;
+            // eslint-disable-next-line no-plusplus
             k++
           ) {
             const forPEriodForday =
