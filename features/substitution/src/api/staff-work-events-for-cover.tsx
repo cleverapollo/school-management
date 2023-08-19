@@ -141,8 +141,39 @@ export function useEventsForCover(
     ...eventsForCoverQuery(filter),
     enabled,
     keepPreviousData: true,
-    select: ({ swm_eventsForSubstitutionsByStaffByPeriod }) =>
-      swm_eventsForSubstitutionsByStaffByPeriod?.eventsByStaff ?? [],
+    select: ({ swm_eventsForSubstitutionsByStaffByPeriod }) => {
+      const eventsByStaff =
+        swm_eventsForSubstitutionsByStaffByPeriod?.eventsByStaff ?? [];
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < eventsByStaff.length; i++) {
+        for (
+          let j = 0;
+          j < eventsByStaff[i].substitutionEventsByDay.length;
+          // eslint-disable-next-line no-plusplus
+          j++
+        ) {
+          for (
+            let k = 0;
+            k <
+            eventsByStaff[i].substitutionEventsByDay[j]
+              .substitutionEventsByPeriod.length;
+            // eslint-disable-next-line no-plusplus
+            k++
+          ) {
+            const forPEriodForday =
+              eventsByStaff[i].substitutionEventsByDay[j]
+                .substitutionEventsByPeriod[k];
+            if (forPEriodForday == null || forPEriodForday.event == null) {
+              // @ts-ignore
+              eventsByStaff[i].substitutionEventsByDay[
+                j
+              ].substitutionEventsByPeriod[k] = null;
+            }
+          }
+        }
+      }
+      return eventsByStaff;
+    },
   });
 }
 
