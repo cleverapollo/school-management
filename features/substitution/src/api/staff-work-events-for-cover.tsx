@@ -169,7 +169,6 @@ export function useEventsForCover(
                 j
               ].substitutionEventsByPeriod[k] = null;
             }
-            console.log(forPEriodForday);
           }
         }
       }
