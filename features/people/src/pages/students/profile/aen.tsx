@@ -88,7 +88,7 @@ const getStudentNoteColumns = (
     field: 'endDate',
     headerName: translate('people:aen.endDate'),
     valueGetter: ({ data }) =>
-      data?.startDate ? dayjs(data?.endDate).format('LL') : null,
+      data?.endDate ? dayjs(data?.endDate).format('LL') : null,
     filter: true,
     sortable: true,
     suppressSizeToFit: true,
