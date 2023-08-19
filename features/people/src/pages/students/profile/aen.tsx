@@ -48,7 +48,6 @@ const getStudentNoteColumns = (
     sortable: true,
     autoHeight: true,
     wrapText: true,
-    width: 400,
   },
   {
     field: 'typeNote',
@@ -57,8 +56,23 @@ const getStudentNoteColumns = (
     sortable: true,
     autoHeight: true,
     wrapText: true,
+    width: 300,
+    cellStyle: {
+      lineHeight: 2,
+      paddingTop: 12,
+      paddingBottom: 12,
+      wordBreak: 'break-word',
+    },
   },
-
+  {
+    field: 'provision',
+    headerName: translate('people:aen.provision'),
+    filter: true,
+    sortable: true,
+    autoHeight: true,
+    wrapText: true,
+    suppressSizeToFit: true,
+  },
   {
     field: 'contact',
     headerName: translate('people:aen.contact'),
@@ -66,6 +80,7 @@ const getStudentNoteColumns = (
     sortable: true,
     autoHeight: true,
     wrapText: true,
+    suppressSizeToFit: true,
   },
   {
     field: 'snaSupport',
@@ -74,23 +89,6 @@ const getStudentNoteColumns = (
     sortable: true,
     autoHeight: true,
     wrapText: true,
-  },
-  {
-    field: 'startDate',
-    headerName: translate('people:aen.startDate'),
-    valueGetter: ({ data }) =>
-      data?.startDate ? dayjs(data?.startDate).format('LL') : null,
-    filter: true,
-    sortable: true,
-    suppressSizeToFit: true,
-  },
-  {
-    field: 'endDate',
-    headerName: translate('people:aen.endDate'),
-    valueGetter: ({ data }) =>
-      data?.endDate ? dayjs(data?.endDate).format('LL') : null,
-    filter: true,
-    sortable: true,
     suppressSizeToFit: true,
   },
   {
@@ -100,7 +98,7 @@ const getStudentNoteColumns = (
     sortable: true,
     autoHeight: true,
     wrapText: true,
-    width: 400,
+    width: 300,
     cellStyle: {
       lineHeight: 2,
       paddingTop: 12,
