@@ -1,4 +1,4 @@
-import { CalendarEventIteratorFilter } from '@tyro/api';
+import { BlockFilter, CalendarEventIteratorFilter } from '@tyro/api';
 
 export const groupsKeys = {
   all: ['groups'] as const,
@@ -41,5 +41,12 @@ export const groupsKeys = {
     groups: () => [...groupsKeys.year.all(), 'list'] as const,
     details: (id: number | undefined) =>
       [...groupsKeys.year.all(), 'details', id] as const,
+  },
+  blocks: {
+    filter: (filter: BlockFilter) => [
+      ...groupsKeys.support.all(),
+      'blocks',
+      filter,
+    ],
   },
 };

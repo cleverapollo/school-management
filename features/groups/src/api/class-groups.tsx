@@ -106,6 +106,9 @@ const classGroupById = graphql(/* GraphQL */ `
           memberCount
         }
       }
+      blocks {
+        blockId
+      }
     }
   }
 `);
@@ -180,3 +183,7 @@ export function useSaveClassGroupEdits() {
 export type ReturnTypeFromUseClassGroups = UseQueryReturnType<
   typeof useClassGroups
 >[number];
+
+export type ReturnTypeFromUseClassGroupById = UseQueryReturnType<
+  typeof useClassGroupById
+>;

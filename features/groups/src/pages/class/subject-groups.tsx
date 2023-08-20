@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Box, Fade } from '@mui/material';
+import { Box, Fade, Grid, Stack, Typography } from '@mui/material';
 import { SmsRecipientType, UseQueryReturnType } from '@tyro/api';
 import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -16,10 +16,11 @@ import {
   sortStartNumberFirst,
 } from '@tyro/core';
 
-import { MobileIcon } from '@tyro/icons';
+import { MobileIcon, UserGroupTwoIcon } from '@tyro/icons';
 
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { useClassGroupById } from '../../api/class-groups';
+import { BlocksChips } from '../../components/class-group/blocks-chips';
 
 type ReturnTypeFromUseSubjectGroupById = UseQueryReturnType<
   typeof useClassGroupById
@@ -140,6 +141,22 @@ export default function SubjectGroups() {
 
   return (
     <>
+      {subjectGroupData && (
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <UserGroupTwoIcon sx={{ color: 'text.secondary' }} />
+          <Typography variant="body1" color="text.primary">
+            {t('common:blocks')}
+          </Typography>
+          <Grid container direction="row" gap={1} alignItems="center">
+            {groupIdAsNumber && (
+              <BlocksChips
+                blocks={subjectGroupData.blocks}
+                classGroupId={groupIdAsNumber}
+              />
+            )}
+          </Grid>
+        </Stack>
+      )}
       <Table
         rowData={subjectGroupData?.relatedSubjectGroups ?? []}
         columnDefs={studentColumns}
