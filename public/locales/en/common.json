@@ -4,6 +4,7 @@
     "view": "View",
     "notify": "Notify",
     "archive": "Archive",
+
     "unarchive": "Unarchive",
     "delete": "Delete",
     "edit": "Edit",
@@ -164,6 +165,7 @@
   },
   "administration": "Administration",
   "staff": "Staff",
+  "blocks": "Blocks",
   "staffMember": "Staff member",
   "overview": "Overview",
   "errorMessages": {
