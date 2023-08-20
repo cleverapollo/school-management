@@ -1,6 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Box, Fade, Grid, Stack, Typography } from '@mui/material';
-import { SmsRecipientType, UseQueryReturnType } from '@tyro/api';
+import {
+  SmsRecipientType,
+  usePermissions,
+  UseQueryReturnType,
+} from '@tyro/api';
 import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -113,6 +117,7 @@ export default function SubjectGroups() {
   const { displayNames } = usePreferredNameLayout();
   const { groupId } = useParams();
   const groupIdAsNumber = useNumber(groupId);
+  const { isTyroUser } = usePermissions();
 
   const { data: subjectGroupData } = useClassGroupById(groupIdAsNumber);
 
@@ -141,7 +146,7 @@ export default function SubjectGroups() {
 
   return (
     <>
-      {subjectGroupData && (
+      {subjectGroupData && isTyroUser && (
         <Stack direction="row" alignItems="center" spacing={1}>
           <UserGroupTwoIcon sx={{ color: 'text.secondary' }} />
           <Typography variant="body1" color="text.primary">
