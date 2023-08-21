@@ -7,6 +7,7 @@ import {
   SubjectGroupType,
   UpdateSubjectGroupInput,
 } from '@tyro/api';
+import { sortByDisplayName } from '@tyro/core';
 import { groupsKeys } from './keys';
 
 const subjectGroupsList = graphql(/* GraphQL */ `
@@ -142,7 +143,13 @@ export function useSubjectGroupById(id?: number) {
 
       const [group] = subjectGroups || [];
 
-      return group;
+      return {
+        ...group,
+        staff: group.staff?.sort(sortByDisplayName),
+        students: group.students?.sort((studentA, studentB) =>
+          sortByDisplayName(studentA.person, studentB.person)
+        ),
+      };
     },
   });
 }
