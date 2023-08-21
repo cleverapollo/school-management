@@ -159,6 +159,10 @@ export const getRoutes: NavObjectFunction = (t) => [
                   {
                     type: NavObjectType.NonMenuLink,
                     path: 'attendance',
+                    hasAccess: (permissions) =>
+                      permissions.hasPermission(
+                        'ps:1:groups:read_session_attendance'
+                      ),
                     element: <ClassGroupAttendancePage />,
                   },
                 ],

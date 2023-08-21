@@ -23,7 +23,9 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:general.attendance.session'),
             element: <SessionAttendance />,
             hasAccess: ({ isStaffUserWithPermission }) =>
-              isStaffUserWithPermission('ps:1:attendance:read_attendance'),
+              isStaffUserWithPermission(
+                'ps:1:attendance:read_session_attendance'
+              ),
           },
           {
             type: NavObjectType.MenuLink,
