@@ -2554,6 +2554,7 @@ export type Notes_Note = {
 
 export type Notes_NotesFilter = {
   noteIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  noteType?: InputMaybe<Notes_TagCategory>;
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
 

@@ -1,4 +1,10 @@
-import { gqlClient, graphql, queryClient, UseQueryReturnType } from '@tyro/api';
+import {
+  gqlClient,
+  graphql,
+  Notes_TagCategory,
+  queryClient,
+  UseQueryReturnType,
+} from '@tyro/api';
 import { useQuery } from '@tanstack/react-query';
 import { peopleKeys } from '../keys';
 
@@ -37,7 +43,7 @@ const notesQuery = (studentId: number | undefined) => ({
   queryKey: peopleKeys.students.notes(studentId),
   queryFn: async () =>
     gqlClient.request(notes, {
-      filter: { partyIds: [studentId ?? 0] },
+      filter: { partyIds: [studentId ?? 0], noteType: Notes_TagCategory.Note },
     }),
 });
 
