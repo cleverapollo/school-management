@@ -30,27 +30,20 @@ import {
 } from '@tyro/icons';
 import { useNumber, Avatar, usePreferredNameLayout } from '@tyro/core';
 import { useParams } from 'react-router-dom';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useSubjectGroupById } from '../../../api/subject-groups';
 import { useHandleLessonAttendance } from '../../../hooks';
 
 export default function SubjectGroupProfileAttendancePage() {
   const { t } = useTranslation(['groups', 'common']);
+  const { displayName } = usePreferredNameLayout();
 
   const { groupId } = useParams();
   const groupIdNumber = useNumber(groupId);
   const { data: subjectGroupData } = useSubjectGroupById(groupIdNumber);
 
-  const { displayName, sortByDisplayName } = usePreferredNameLayout();
-
-  const sortedStudents = useMemo(() => {
-    if (!subjectGroupData?.students) return [];
-
-    return subjectGroupData.students.sort((a, b) =>
-      sortByDisplayName(a.person, b.person)
-    );
-  }, [subjectGroupData?.students, sortByDisplayName]);
+  const students = subjectGroupData?.students || [];
 
   const {
     lessonId,
@@ -67,7 +60,7 @@ export default function SubjectGroupProfileAttendancePage() {
     cancelAttendance,
   } = useHandleLessonAttendance({
     partyId: groupIdNumber!,
-    students: sortedStudents,
+    students,
   });
 
   const [showAlertSuccess, setAlertSuccess] = useState(false);
@@ -169,7 +162,7 @@ export default function SubjectGroupProfileAttendancePage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {sortedStudents.map((student) => (
+              {students.map((student) => (
                 <TableRow key={student?.partyId}>
                   <TableCell>
                     <Stack direction="row" spacing={2} alignItems="center">
