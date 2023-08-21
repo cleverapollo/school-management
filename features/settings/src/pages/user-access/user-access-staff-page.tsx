@@ -129,11 +129,7 @@ export default function UserAccessStaffPage() {
     >
   ) => {
     const input = Object.keys(data).map<UpdateStaffInput>((key) => {
-      console.log(data, 'data');
-
       const newEmail = data[key]['personalInfo.primaryEmail.email']?.newValue;
-      console.log(newEmail, 'newEmail');
-
       return {
         primaryEmail: newEmail,
         staffPartyId: Number(key),
