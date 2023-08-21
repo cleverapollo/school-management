@@ -66,7 +66,6 @@
   },
   "ppodSync": {
     "title": "PPOD sync information",
-    "completedBy": "Completed by",
     "date": "Date",
     "time": "Time",
     "status": "Status",
@@ -83,7 +82,8 @@
     "syncUnsuccessful": "Sync unsuccessful",
     "unableToSyncData": "Unable to sync data",
     "incorrectCredentials": "Incorrect credentials",
-    "failureReason": "Failure reason"
+    "failureReason": "Failure reason",
+    "performedBy": "Performed by"
   },
   "ppodSyncStatus": {
     "SUCCESS": "Success",
@@ -117,6 +117,38 @@
     "boardOfManagementChairPerson": "Board of management chairperson",
     "octoberReturnsContact": "October returns contact person",
     "dataUnavailable": "Data unavailable."
+  },
+  "dtrReturns": {
+    "downloadFile": "Download file",
+    "viewFile": "View file",
+    "form": "Form",
+    "fileA": "File A",
+    "descriptionA": "School roll number and Tyro software details",
+    "fileB": "File B",
+    "descriptionB": "Teacher personal data",
+    "fileC": "File C",
+    "descriptionC": "Class contract data",
+    "fileD": "File D",
+    "descriptionD": "Non-class contract data",
+    "fileE": "File E",
+    "descriptionE": "Timetable grid details",
+    "dtrSummary": "DTR summary",
+    "descriptionDtrSummary": "A summary of files A, B, C, D and E. This PDF is for your review and is not required by the Department",
+    "formT1": "Form T1",
+    "descriptionFormT1": "A completed T1 form, duly certified by the Principal / Management Authority, which provides basic school details. The form should be completed in Black Ink and in Block Capitals. This must be retained in a secure manner in the school until requested.",
+    "formB": {
+      "title": "Form B",
+      "includeInDTR": "Include in DTR",
+      "dtrReference": "DTR reference",
+      "gender": "Gender",
+      "ppsNumber": "PPS number",
+      "payrollNumber": "Payroll number",
+      "post": "Post",
+      "jobSharer": "Job sharer",
+      "qualificationX": "Qualification {{number}}",
+      "currentTeachingSchoolX": "Current teaching school {{number}}",
+      "previousTeachingSchoolX": "Previous teaching school {{number}}"
+    }
   },
   "permissions": {
     "title": "Permissions",
@@ -167,6 +199,7 @@
       "ATTENDANCE": "Attendance",
       "CALENDAR": "Calendar",
       "COMMUNICATIONS": "Communications",
+      "PRINTING_AND_EXPORTING": "Printing and exporting",
       "FEES": "Fees",
       "GROUPS": "Groups",
       "NOTES": "Notes",
@@ -178,7 +211,8 @@
       "WELLBEING": "Wellbeing",
       "PEOPLE": "People",
       "GENERAL_ADMIN": "General admin",
-      "TIMETABLE_CONSTRUCTION": "Timetable construction"
+      "TIMETABLE_CONSTRUCTION": "Timetable construction",
+      "STAFF_WORK_MANAGEMENT": "Staff Work Management"
     }
   }
 }

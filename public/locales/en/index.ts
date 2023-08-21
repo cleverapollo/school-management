@@ -1,5 +1,6 @@
 import admin from './admin.json';
 import assessments from './assessments.json';
+import absence from './absence.json';
 import attendance from './attendance.json';
 import authentication from './authentication.json';
 import calendar from './calendar.json';
@@ -14,10 +15,11 @@ import sms from './sms.json';
 import substitution from './substitution.json';
 import timetable from './timetable.json'
 import userAccounts from './userAccounts.json';
-
+import printing from './printing.json'
 export const en = {
   admin,
   assessments,
+  absence,
   attendance,
   authentication,
   calendar,
@@ -31,5 +33,6 @@ export const en = {
   sms,
   substitution,
   timetable,
-  userAccounts
+  userAccounts,
+  printing
 };

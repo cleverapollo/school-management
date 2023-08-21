@@ -1,10 +1,9 @@
 import { lazy } from 'react';
 import { NavObjectFunction, NavObjectType } from '@tyro/core';
 import { PersonCheckmarkIcon } from '@tyro/icons';
-import { getAttendanceCodes } from './api';
 
-const Overview = lazy(() => import('./pages/overview'));
-const AttendanceCodes = lazy(() => import('./pages/codes'));
+const SessionAttendance = lazy(() => import('./pages/session'));
+const AbsentRequests = lazy(() => import('./pages/absent-requests'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -20,28 +19,23 @@ export const getRoutes: NavObjectFunction = (t) => [
         children: [
           {
             type: NavObjectType.MenuLink,
-            path: 'overview',
-            title: t('navigation:general.attendance.overview'),
-            children: [
-              {
-                type: NavObjectType.NonMenuLink,
-                index: true,
-                element: <Overview />,
-              },
-            ],
+            path: 'session',
+            title: t('navigation:general.attendance.session'),
+            element: <SessionAttendance />,
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission(
+                'ps:1:attendance:read_session_attendance'
+              ),
           },
           {
             type: NavObjectType.MenuLink,
-            path: 'codes',
-            title: t('navigation:general.attendance.codes'),
-            children: [
-              {
-                type: NavObjectType.NonMenuLink,
-                index: true,
-                loader: () => getAttendanceCodes({}),
-                element: <AttendanceCodes />,
-              },
-            ],
+            path: 'absent-requests',
+            title: t('navigation:general.attendance.absentRequests'),
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission(
+                'ps:1:staff_work_management:absences_read'
+              ),
+            element: <AbsentRequests />,
           },
         ],
       },

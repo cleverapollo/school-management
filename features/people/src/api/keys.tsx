@@ -8,9 +8,11 @@ export const peopleKeys = {
       [...peopleKeys.contacts.all(), 'personal', contactId] as const,
     students: (contactId: number | undefined) =>
       [...peopleKeys.contacts.all(), 'students', contactId] as const,
-    upsertContact: () =>
-      [...peopleKeys.contacts.all(), 'upsertContact'] as const,
     forSelect: () => [...peopleKeys.contacts.all(), 'select'] as const,
+  },
+  notes: {
+    all: () => [...peopleKeys.all, 'notes'] as const,
+    noteTags: () => [...peopleKeys.notes.all(), 'noteTags'] as const,
   },
   staff: {
     all: () => [...peopleKeys.all, 'staff'] as const,
@@ -22,7 +24,6 @@ export const peopleKeys = {
       [...peopleKeys.staff.all(), 'status', staffId] as const,
     subjectGroups: (filter: StaffFilter) =>
       [...peopleKeys.staff.all(), 'classes', filter] as const,
-    upsertStaff: () => [...peopleKeys.staff.all(), 'upsertStaff'] as const,
     personalDetails: (filter: StaffFilter) =>
       [...peopleKeys.staff.all(), 'personal', filter] as const,
     employmentCapacities: () =>
@@ -41,15 +42,19 @@ export const peopleKeys = {
       [...peopleKeys.students.all(), 'status', studentId] as const,
     contacts: (studentId: number | undefined) =>
       [...peopleKeys.students.all(), 'contacts', studentId] as const,
+    notes: (studentId: number | undefined) =>
+      [...peopleKeys.students.all(), 'notes', studentId] as const,
     subjectGroups: (studentId: number | undefined) =>
       [...peopleKeys.students.all(), 'classes', studentId] as const,
-    updateStudent: () =>
-      [...peopleKeys.students.all(), 'updateStudent'] as const,
     medical: (studentId: number | undefined) =>
       [...peopleKeys.students.all(), 'medical', studentId] as const,
+    aen: (studentId: number | undefined) =>
+      [...peopleKeys.students.all(), 'aen', studentId] as const,
     medicalConditions: () =>
       [...peopleKeys.students.all(), 'medicalConditions'] as const,
     studentsForSiblingSearch: () =>
       [...peopleKeys.students.all(), 'studentsForSiblingSearch'] as const,
+    personalTitlesList: () =>
+      [...peopleKeys.students.all(), 'personalTitlesList'] as const,
   },
 };

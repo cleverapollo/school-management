@@ -20,7 +20,12 @@ import set from 'lodash/set';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { Box, Fade } from '@mui/material';
 import { MobileIcon } from '@tyro/icons';
-import { SmsRecipientType } from '@tyro/api';
+import {
+  PermissionUtils,
+  SmsRecipientType,
+  usePermissions,
+  UsePermissionsReturn,
+} from '@tyro/api';
 import { useStudentsSubjectGroups } from '../../../api/student/overview';
 
 type ReturnTypeFromUseStudentsSubjectGroups = NonNullable<
@@ -29,12 +34,13 @@ type ReturnTypeFromUseStudentsSubjectGroups = NonNullable<
 
 const getSubjectGroupsColumns = (
   t: TFunction<'common'[], undefined, 'common'[]>,
-  displayNames: ReturnTypeDisplayNames
+  displayNames: ReturnTypeDisplayNames,
+  permissions: PermissionUtils
 ): GridOptions<ReturnTypeFromUseStudentsSubjectGroups>['columnDefs'] => [
   {
     field: 'name',
     headerName: t('common:name'),
-    headerCheckboxSelection: true,
+    headerCheckboxSelection: permissions.isStaffUser,
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
@@ -47,10 +53,15 @@ const getSubjectGroupsColumns = (
       const bgColorStyle = subject?.colour
         ? { bgcolor: `${subject.colour}.500` }
         : {};
+      const link = permissions.isStaffUserWithPermission(
+        'ps:1:groups:view_subject_groups'
+      )
+        ? `/groups/subject/${data?.partyId ?? ''}`
+        : null;
       return (
         <TableAvatar
           name={data?.name ?? ''}
-          to={`/groups/subject/${data?.partyId ?? ''}`}
+          to={link}
           avatarUrl={data?.avatarUrl}
           AvatarProps={{
             sx: {
@@ -77,7 +88,9 @@ const getSubjectGroupsColumns = (
     field: 'irePP.level',
     headerName: t('common:level'),
     filter: true,
-    editable: true,
+    editable: permissions.isStaffUserWithPermission(
+      'ps:1:people:student_write'
+    ),
     valueSetter: (params) => {
       set(params.data ?? {}, 'irePP.level', params.newValue);
       return true;
@@ -102,6 +115,7 @@ const getSubjectGroupsColumns = (
 export default function StudentProfileClassesPage() {
   const { id } = useParams();
   const studentId = getNumber(id);
+  const permissions = usePermissions();
   const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
@@ -116,7 +130,7 @@ export default function StudentProfileClassesPage() {
   const { data: subjectGroupsData } = useStudentsSubjectGroups(studentId);
 
   const studentColumns = useMemo(
-    () => getSubjectGroupsColumns(t, displayNames),
+    () => getSubjectGroupsColumns(t, displayNames, permissions),
     [t, displayNames]
   );
 
@@ -126,6 +140,8 @@ export default function StudentProfileClassesPage() {
         label: t('people:sendSms'),
         icon: <MobileIcon />,
         onClick: onOpenSendSms,
+        hasAccess: ({ isStaffUserWithPermission }) =>
+          isStaffUserWithPermission('ps:1:communications:send_sms'),
       },
     ],
     []

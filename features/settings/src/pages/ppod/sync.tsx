@@ -5,7 +5,9 @@ import {
   ActionMenuProps,
   GridOptions,
   ICellRendererParams,
+  ReturnTypeDisplayName,
   Table,
+  usePreferredNameLayout,
 } from '@tyro/core';
 import { EditIcon } from '@tyro/icons';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -22,16 +24,9 @@ import { SyncStatusChip } from '../../components/ppod/sync-status-chip';
 dayjs.extend(LocalizedFormat);
 
 const getColumnDefs = (
-  t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>
+  t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>,
+  displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseSyncRequests>['columnDefs'] => [
-  // {
-  //   field: 'requester',
-  //   headerName: t('settings:ppodSync.completedBy'),
-  //   cellRenderer: ({
-  //     data,
-  //   }: ICellRendererParams<ReturnTypeFromUseSyncRequests, any>) =>
-  //     data ? <TablePersonAvatar person={data?.requester} /> : null,
-  // },
   {
     field: 'requestedOn',
     headerName: t('common:dateAndTime'),
@@ -64,14 +59,25 @@ const getColumnDefs = (
     enableRowGroup: true,
     sortable: true,
   },
+  {
+    field: 'requester',
+    headerName: t('settings:ppodSync.performedBy'),
+    valueGetter: ({ data }) => displayName(data?.requester),
+    enableRowGroup: true,
+    sortable: true,
+  },
 ];
 
 export default function Sync() {
   const { t } = useTranslation(['common', 'settings']);
+  const { displayName } = usePreferredNameLayout();
 
   const { data: syncRequests } = useSyncRequests({});
 
-  const myColumnDefs = useMemo(() => getColumnDefs(t), [t]);
+  const myColumnDefs = useMemo(
+    () => getColumnDefs(t, displayName),
+    [t, displayName]
+  );
 
   const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => {
     const commonActions = [

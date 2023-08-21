@@ -1,13 +1,5 @@
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogActions,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
+import { Dialog, DialogContent, DialogTitle, DialogActions } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { PersonHeartIcon } from '@tyro/icons';
 import { UpsertStudentMedicalConditionInput } from '@tyro/api';

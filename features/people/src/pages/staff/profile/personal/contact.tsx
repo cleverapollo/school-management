@@ -1,12 +1,14 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { formatPhoneNumber, RHFTextField, useFormValidator } from '@tyro/core';
+import {
+  formatPhoneNumber,
+  RHFTextField,
+  useFormValidator,
+  CardEditableForm,
+  CardEditableFormProps,
+} from '@tyro/core';
 
 import { InputEmailAddress, UpsertStaffInput } from '@tyro/api';
 import { useStaffPersonal } from '../../../../api/staff/personal';
-import {
-  CardEditableForm,
-  CardEditableFormProps,
-} from '../../../../components/common/card-editable-form';
 import {
   MobileNumber,
   MobileNumberData,

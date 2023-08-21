@@ -19,9 +19,9 @@ export function ContactOverviewBar({ contactId }: ContactOverviewBarProps) {
       <Card variant="outlined" sx={{ p: 1.25, display: 'inline-block' }}>
         <Stack direction="row" alignItems="center" sx={{ flexWrap: 'wrap' }}>
           <Avatar
-            sx={{ mx: 1 }}
-            src={contactData?.person?.avatarUrl}
             name={name}
+            src={contactData?.person?.avatarUrl}
+            sx={{ mx: 1, width: 62, height: 62, fontSize: 20 }}
           />
           <Stack sx={{ ml: 0.5, mr: 2.5 }}>
             <Typography variant="subtitle1" component="h2">

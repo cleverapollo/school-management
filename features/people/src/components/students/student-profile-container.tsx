@@ -48,14 +48,24 @@ export default function StudentProfileContainer() {
           {
             label: 'Overview',
             value: t('common:overview'),
+            hasAccess: ({ isTyroUser }) => isTyroUser,
           },
           {
             label: t('people:personal.title'),
             value: 'personal',
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission(
+                'ps:1:people:view_student_personal_information'
+              ),
           },
           {
             label: t('people:contacts'),
             value: 'contacts',
+            hasAccess: ({ isStaffUser }) =>
+              // isStaffUserWithPermission(
+              //   'ps:1:people:view_contacts_for_student'
+              // ),
+              isStaffUser,
           },
           {
             label: t('common:attendance'),
@@ -73,26 +83,45 @@ export default function StudentProfileContainer() {
           {
             label: 'Timetable',
             value: 'timetable',
+            hasAccess: ({ hasAtLeastOnePermission }) =>
+              hasAtLeastOnePermission([
+                'ps:1:calendar:view_own_calendar',
+                'ps:1:calendar:view_calendar',
+              ]),
           },
           {
             label: t('people:behaviour'),
             value: 'behaviour',
+            hasAccess: ({ isStaffUser }) => isStaffUser,
           },
           {
             label: 'AEN',
             value: 'aen',
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission('ps:1:wellbeing:write_student_aen'),
           },
           {
             label: 'Classes',
             value: 'classes',
+            hasAccess: ({ isStaffUser, hasPermission }) =>
+              isStaffUser || hasPermission('ps:1:groups:student_view_groups'),
           },
-          {
-            label: 'Settings',
-            value: 'settings',
-          },
+          // {
+          //   label: 'Settings',
+          //   value: 'settings',
+          //   hasAccess: ({ isTyroUser }) => isTyroUser,
+          // },
           {
             label: 'Medical',
             value: 'medical',
+            hasAccess: ({ hasPermission }) =>
+              hasPermission(' ps:1:wellbeing:read_student_medical'),
+          },
+          {
+            label: t('people:notes'),
+            value: 'notes',
+            hasAccess: ({ hasPermission }) =>
+              hasPermission('ps:1:notes:read_notes'),
           },
         ]}
       />

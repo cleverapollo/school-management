@@ -1,5 +1,5 @@
 import { Box, Button, Typography } from '@mui/material';
-import { UseQueryReturnType } from '@tyro/api';
+import { usePermissions, UseQueryReturnType } from '@tyro/api';
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import {
   useDebouncedValue,
@@ -90,6 +90,10 @@ const getColumns = (
               label: t('people:editCondition'),
               icon: <EditIcon />,
               onClick: () => onClickEdit(data),
+              hasAccess: ({ isStaffUserWithPermission }) =>
+                isStaffUserWithPermission(
+                  'ps:1:wellbeing:write_student_medical'
+                ),
             },
             {
               label: t('people:viewCondition'),
@@ -100,6 +104,10 @@ const getColumns = (
               label: t('people:deleteCondition'),
               icon: <TrashIcon />,
               onClick: () => onClickDelete(data),
+              hasAccess: ({ isStaffUserWithPermission }) =>
+                isStaffUserWithPermission(
+                  'ps:1:wellbeing:write_student_medical'
+                ),
             },
           ]}
         />
@@ -110,6 +118,7 @@ const getColumns = (
 export function ConditionsTable({ studentId }: ConditionsTableProps) {
   const { t } = useTranslation(['common', 'people', 'settings']);
   const { data: medicalData } = useStudentMedicalData(studentId ?? 0);
+  const permissions = usePermissions();
   const {
     value: editConditions,
     setValue: setEditConditions,
@@ -140,16 +149,20 @@ export function ConditionsTable({ studentId }: ConditionsTableProps) {
 
   return (
     <>
-      <Box display="flex" alignItems="center" justifyContent="space-between">
-        <Typography variant="h6">{t('people:conditions')}</Typography>
-        <Button
-          variant="contained"
-          onClick={handleAddCondition}
-          startIcon={<AddIcon />}
-        >
-          {t('people:addCondition')}
-        </Button>
-      </Box>
+      {permissions.isStaffUserWithPermission(
+        'ps:1:wellbeing:write_student_medical'
+      ) && (
+        <Box display="flex" alignItems="center" justifyContent="space-between">
+          <Typography variant="h6">{t('people:conditions')}</Typography>
+          <Button
+            variant="contained"
+            onClick={handleAddCondition}
+            startIcon={<AddIcon />}
+          >
+            {t('people:addCondition')}
+          </Button>
+        </Box>
+      )}
       <Table
         rowData={conditions}
         columnDefs={columns}

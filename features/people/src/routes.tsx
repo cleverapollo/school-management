@@ -14,6 +14,7 @@ import {
   getTodayTimetableEvents,
 } from '@tyro/calendar';
 import dayjs from 'dayjs';
+import { getPermissionUtils } from '@tyro/api';
 import {
   getStudent,
   getStudents,
@@ -27,6 +28,7 @@ import {
 } from './api/student/overview';
 import { getStudentPersonal } from './api/student/personal';
 import { getContacts } from './api/contact/list';
+import { getNotes } from './api/note/list';
 import { getContactPersonal } from './api/contact/personal';
 import { getContactStudents } from './api/contact/students';
 import { getStaff } from './api/staff';
@@ -34,6 +36,7 @@ import { getStaffStatus } from './api/staff/status';
 import { getStaffSubjectGroups } from './api/staff/subject-groups';
 import { getStaffPersonal } from './api/staff/personal';
 import { getMedicalConditionNamesQuery } from './api/student/medicals/medical-condition-lookup';
+import { getPersonalTitlesQuery } from './api/student/medicals/personal-titles';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
 // Student profile pages
@@ -75,6 +78,9 @@ const StudentProfileSettingsPage = lazy(
 );
 const StudentProfileMedicalPage = lazy(
   () => import('./pages/students/profile/medical')
+);
+const StudentProfileNotesPage = lazy(
+  () => import('./pages/students/profile/notes')
 );
 
 // Contact pages
@@ -130,7 +136,6 @@ export const getRoutes: NavObjectFunction = (t) => [
         path: 'people',
         title: t('navigation:management.people.title'),
         icon: <UserGroupIcon />,
-        hasAccess: (permissions) => permissions.isStaffUser,
         children: [
           {
             type: NavObjectType.MenuLink,
@@ -163,7 +168,13 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 index: true,
-                loader: () => redirect('./overview'),
+                loader: async () => {
+                  const permissions = await getPermissionUtils();
+                  if (permissions.isContact || permissions.isStudent) {
+                    return redirect('./classes');
+                  }
+                  return redirect('./classes');
+                },
               },
               {
                 type: NavObjectType.NonMenuLink,
@@ -259,6 +270,8 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'aen',
+                hasAccess: ({ isStaffUserWithPermission }) =>
+                  isStaffUserWithPermission('ps:1:wellbeing:write_student_aen'),
                 element: <StudentProfileAenPage />,
               },
               {
@@ -294,8 +307,18 @@ export const getRoutes: NavObjectFunction = (t) => [
                   return Promise.all([
                     getStudentMedicalData(studentId),
                     getMedicalConditionNamesQuery(),
+                    getPersonalTitlesQuery(),
                   ]);
                 },
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'notes',
+                loader: ({ params }) => {
+                  const studentId = getNumber(params.id);
+                  return getNotes(studentId);
+                },
+                element: <StudentProfileNotesPage />,
               },
             ],
           },
@@ -305,7 +328,9 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.people.contacts'),
             loader: () => getContacts(),
             hasAccess: (permissions) =>
-              permissions.hasPermission('ps:1:people:view_contact_list'),
+              permissions.isStaffUserWithPermission(
+                'ps:1:people:view_contact_list'
+              ),
             element: <ContactsListPage />,
           },
           {

@@ -8,7 +8,7 @@ import { Box, Stack, Drawer } from '@mui/material';
 import { useResponsive, Scrollbar } from '@tyro/core';
 import { NAV } from './config';
 // components
-import Logo from '../../../../../../src/components/Logo';
+import { Logo } from '../../logo';
 import { NavSectionVertical } from './nav-section';
 
 import { NavigationConfig } from '../../../hooks/use-navigation-config';

@@ -56,6 +56,9 @@ export default function Input(theme: Theme) {
           '&.Mui-disabled': {
             backgroundColor: theme.palette.action.disabledBackground,
           },
+          '& .MuiInputAdornment-root.MuiInputAdornment-positionStart.MuiInputAdornment-filled': {
+            marginTop: '0 !important',
+          }
         },
         underline: {
           '&:before, :after': {

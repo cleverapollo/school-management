@@ -230,20 +230,6 @@ export const multiDragAwareReorder = (args: DragArguments) => {
   return singleDrag(args);
 };
 
-export const toggleSelection = (
-  studentId: string,
-  selectedStudentIds: string[]
-) => {
-  const wasSelected = selectedStudentIds.includes(studentId);
-
-  // If wasn't selected or was selected as part of a group
-  if (!wasSelected || selectedStudentIds.length > 1) {
-    return [studentId];
-  }
-
-  return [];
-};
-
 export const toggleSelectionInGroup = (
   studentId: string,
   selectedStudentIds: string[]

@@ -170,13 +170,13 @@ export default function YearGroups() {
             label: t('sms:contactsOfStudentMembers', {
               count: selectedGroups.length,
             }),
-            type: SmsRecipientType.SubjectGroupContact,
+            type: SmsRecipientType.YearGroupContact,
           },
           {
             label: t('sms:teachersOfGroup', {
               count: selectedGroups.length,
             }),
-            type: SmsRecipientType.SubjectGroupStaff,
+            type: SmsRecipientType.YearGroupStaff,
           },
         ]}
       />

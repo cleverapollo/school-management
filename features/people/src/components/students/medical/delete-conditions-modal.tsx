@@ -1,12 +1,6 @@
 import { useEffect } from 'react';
-import {
-  Box,
-  Button,
-  DialogTitle,
-  Stack,
-  DialogActions,
-  Dialog,
-} from '@mui/material';
+import { Button, Stack } from '@mui/material';
+import { Dialog, DialogTitle, DialogActions } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';

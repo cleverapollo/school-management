@@ -3,6 +3,7 @@ import { getNumber, useBreakpointValue } from '@tyro/core';
 import { StudentAssessmentWidget } from '@tyro/assessments';
 import { useParams } from 'react-router-dom';
 import { TimetableWidget } from '@tyro/calendar';
+import { usePermissions } from '@tyro/api';
 import { StudentSessionAttendanceChart } from '../../../components/students/student-session-attendance-chart';
 import { StudentContactsWidget } from '../../../components/students/student-contacts-widget';
 
@@ -14,6 +15,7 @@ export default function StudentProfileOverviewPage() {
     md: 'row',
   });
 
+  const { hasPermission } = usePermissions();
   // return (
   //   <Stack direction={direction} spacing={3}>
   //     <StudentContactsWidget studentId={studentId} />
@@ -44,14 +46,16 @@ export default function StudentProfileOverviewPage() {
         },
       })}
     >
-      <Box
-        sx={{
-          gridColumn: 'span 2',
-          gridRow: 'span 1',
-        }}
-      >
-        <StudentContactsWidget studentId={studentId} />
-      </Box>
+      {hasPermission('ps:1:people:view_contacts_for_student') && (
+        <Box
+          sx={{
+            gridColumn: 'span 2',
+            gridRow: 'span 1',
+          }}
+        >
+          <StudentContactsWidget studentId={studentId} />
+        </Box>
+      )}
       <Box
         sx={{
           gridColumn: 'span 2',

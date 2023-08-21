@@ -1,11 +1,12 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { RHFTextField, useFormValidator } from '@tyro/core';
-import { StaffEmergencyContact, UpsertStaffInput } from '@tyro/api';
-import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
+  RHFTextField,
+  useFormValidator,
   CardEditableForm,
   CardEditableFormProps,
-} from '../../../../components/common/card-editable-form';
+} from '@tyro/core';
+import { StaffEmergencyContact, UpsertStaffInput } from '@tyro/api';
+import { useStaffPersonal } from '../../../../api/staff/personal';
 
 type EmergencyFormState = {
   firstName: StaffEmergencyContact['firstName'];

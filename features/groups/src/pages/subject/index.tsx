@@ -1,5 +1,10 @@
 import { Box, Fade, Container, Typography } from '@mui/material';
-import { SmsRecipientType, UpdateSubjectGroupInput } from '@tyro/api';
+import {
+  PermissionUtils,
+  SmsRecipientType,
+  SubjectGroupType,
+  UpdateSubjectGroupInput,
+} from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -16,15 +21,17 @@ import {
   TableAvatar,
   useDisclosure,
   sortStartNumberFirst,
+  ConfirmDialog,
 } from '@tyro/core';
 
-import { MobileIcon, SendMailIcon } from '@tyro/icons';
+import { MobileIcon, MoveGroupIcon, SendMailIcon } from '@tyro/icons';
 
 import set from 'lodash/set';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import {
   useSaveSubjectGroupEdits,
   useSubjectGroups,
+  useSwitchSubjectGroupType,
 } from '../../api/subject-groups';
 
 type ReturnTypeFromUseSubjectGroups = NonNullable<
@@ -32,7 +39,7 @@ type ReturnTypeFromUseSubjectGroups = NonNullable<
 >[number];
 
 const getSubjectGroupsColumns = (
-  t: TFunction<'common'[], undefined, 'common'[]>,
+  t: TFunction<('common' | 'groups')[]>,
   displayNames: ReturnTypeDisplayNames
 ): GridOptions<ReturnTypeFromUseSubjectGroups>['columnDefs'] => [
   {
@@ -115,6 +122,18 @@ const getSubjectGroupsColumns = (
     valueGetter: ({ data }) => displayNames(data?.staff),
     enableRowGroup: true,
   },
+  {
+    field: 'studentGroupType',
+    headerName: t('groups:groupType'),
+    enableRowGroup: true,
+    hide: true,
+    valueGetter: ({ data }) =>
+      data?.studentMembershipType?.type
+        ? t(
+            `groups:subjectGroupStudentMembershipType.${data.studentMembershipType.type}`
+          )
+        : t('groups:subjectGroupStudentMembershipType.UNKNOWN'),
+  },
 ];
 
 export default function SubjectGroups() {
@@ -122,6 +141,7 @@ export default function SubjectGroups() {
   const { displayNames } = usePreferredNameLayout();
   const { data: subjectGroupsData } = useSubjectGroups();
   const { mutateAsync: updateSubjectGroup } = useSaveSubjectGroupEdits();
+  const { mutateAsync: switchSubjectGroupType } = useSwitchSubjectGroupType();
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
@@ -130,6 +150,8 @@ export default function SubjectGroups() {
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
+  const [switchGroupTypeConfirmation, setSwitchGroupTypeConfirmation] =
+    useState(false);
 
   const studentColumns = useMemo(
     () => getSubjectGroupsColumns(t, displayNames),
@@ -141,6 +163,14 @@ export default function SubjectGroups() {
       label: t('people:sendSms'),
       icon: <MobileIcon />,
       onClick: onOpenSendSms,
+      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+        isStaffUserWithPermission('ps:1:communications:send_sms'),
+    },
+    {
+      label: t('groups:subjectGroup.switchToSupportClass.action'),
+      icon: <MoveGroupIcon />,
+      onClick: () => setSwitchGroupTypeConfirmation(true),
+      hasAccess: ({ isTyroUser }: PermissionUtils) => isTyroUser,
     },
     // {
     //   label: t('mail:sendMail'),
@@ -227,6 +257,22 @@ export default function SubjectGroups() {
             type: SmsRecipientType.YearGroupStaff,
           },
         ]}
+      />
+      <ConfirmDialog
+        open={!!switchGroupTypeConfirmation}
+        title={t('groups:subjectGroup.switchToSupportClass.modalTitle')}
+        description={t(
+          'groups:subjectGroup.switchToSupportClass.modalDescription'
+        )}
+        confirmText={t('groups:subjectGroup.switchToSupportClass.confim')}
+        onClose={() => setSwitchGroupTypeConfirmation(false)}
+        onConfirm={() => {
+          const partyIds = selectedGroups.map((sg) => sg.id);
+          switchSubjectGroupType({
+            subjectGroupPartyId: partyIds,
+            type: SubjectGroupType.SupportGroup,
+          }).then(() => setSwitchGroupTypeConfirmation(false));
+        }}
       />
     </>
   );

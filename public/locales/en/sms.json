@@ -37,7 +37,7 @@
     "SCHEDULED": "Scheduled",
     "SUCCESS": "Success"
   },
-  "smsSentSuccessfully": "SMS sent successfully",
+  "smsSentSuccessfully": "Processing SMS",
   "smsFailedToSend": "SMS failed to send",
   "costPerSms": "Cost per SMS",
   "totalCost": "Total cost",

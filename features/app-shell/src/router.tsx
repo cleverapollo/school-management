@@ -15,6 +15,10 @@ import {
   getCoreAcademicNamespace,
 } from '@tyro/api';
 import {
+  wrapCreateBrowserRouter,
+  setUser as setSentryUser,
+} from '@sentry/react';
+import {
   createBrowserRouter,
   Outlet,
   redirect,
@@ -29,6 +33,7 @@ import { routes as authRoutes } from '@tyro/authentication';
 import { getRoutes as getCalendarRoutes } from '@tyro/calendar';
 import { getRoutes as getClassListManagerRoutes } from '@tyro/class-list-manager';
 import { getRoutes as getGroupRoutes } from '@tyro/groups';
+import { getRoutes as getPrintingRoutes } from '@tyro/printing';
 import { getRoutes as getMailRoutes } from '@tyro/mail';
 import { getRoutes as getAttendanceRoutes } from '@tyro/attendance';
 import { getRoutes as getAssessmentRoutes } from '@tyro/assessments';
@@ -121,7 +126,8 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getCalendarRoutes(t),
   ...getClassListManagerRoutes(t),
   ...getGroupRoutes(t),
-  // ...getAttendanceRoutes(t),
+  ...getAttendanceRoutes(t),
+
   // ...getMailRoutes(t),
   ...getAssessmentRoutes(t),
   ...getPeopleRoutes(t),
@@ -129,23 +135,42 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getSmsRoutes(t),
   ...getSubstitutionRoutes(t),
   ...getTimetableRoutes(t),
+  ...getPrintingRoutes(t),
   ...getSettingsRoutes(t),
   ...getAdminRoutes(t),
 ];
 
-function useAppRouter() {
-  return createBrowserRouter([
-    {
-      loader: async () =>
-        Promise.all([getUser(), getCoreAcademicNamespace()]).catch(
-          (error: Error) => {
-            if (error?.message === 'Failed to fetch') {
-              throw new Response('Service Unavailable', { status: 503 });
-            }
+const sentryCreateBrowserRouter = wrapCreateBrowserRouter(createBrowserRouter);
 
-            throw error;
+function useAppRouter() {
+  return sentryCreateBrowserRouter([
+    {
+      loader: async () => {
+        try {
+          const responses = await Promise.all([
+            getUser(),
+            getCoreAcademicNamespace(),
+          ]);
+          const [user] = responses;
+
+          if (user.activeProfile?.partyId) {
+            const { activeProfile } = user;
+            setSentryUser({
+              id: String(activeProfile.partyId),
+              segment: activeProfile.profileType?.userType ?? 'unknown',
+              tenant: activeProfile.tenant?.tenant ?? 'unknown',
+            });
           }
-        ),
+
+          return responses;
+        } catch (error) {
+          if (error instanceof Error && error?.message === 'Failed to fetch') {
+            throw new Response('Service Unavailable', { status: 503 });
+          }
+
+          throw error;
+        }
+      },
       element: (
         <LazyLoader>
           <Shell>
@@ -176,7 +201,13 @@ function useAppRouter() {
       children: [
         {
           path: '/',
-          loader: () => redirect('/groups/class'),
+          loader: async () => {
+            const permissions = await getPermissionUtils();
+            if (permissions.isStudent || permissions.isContact) {
+              return redirect('/people/students');
+            }
+            return redirect('/calendar');
+          },
         },
         ...buildRouteTree(getNavCategories(mockTFunction)),
       ],

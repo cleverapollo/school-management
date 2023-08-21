@@ -1,23 +1,31 @@
 import { FieldValues } from 'react-hook-form';
 import {
+  Autocomplete,
+  AutocompleteProps,
   RHFAutocomplete,
   RHFAutocompleteProps,
-  usePreferredNameLayout,
 } from '@tyro/core';
 import { UseQueryReturnType } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useStaffForSelect } from '../../api/staff';
 import { usePeopleAutocompleteProps } from './use-people-autocomplete-props';
 
-type StaffSelectOption = UseQueryReturnType<typeof useStaffForSelect>[number];
+export type StaffSelectOption = UseQueryReturnType<
+  typeof useStaffForSelect
+>[number];
 
-type StaffPostsAutocompleteProps<TField extends FieldValues> = Omit<
+type RHFStaffAutocompleteProps<TField extends FieldValues> = Omit<
   RHFAutocompleteProps<TField, StaffSelectOption>,
   'options'
 >;
 
-export const StaffAutocomplete = <TField extends FieldValues>(
-  props: StaffPostsAutocompleteProps<TField>
+type StaffAutocompleteProps = Omit<
+  AutocompleteProps<StaffSelectOption>,
+  'options'
+>;
+
+export const RHFStaffAutocomplete = <TField extends FieldValues>(
+  props: RHFStaffAutocompleteProps<TField>
 ) => {
   const { t } = useTranslation(['common']);
   const { data: teacherData, isLoading } = useStaffForSelect({});
@@ -26,6 +34,24 @@ export const StaffAutocomplete = <TField extends FieldValues>(
 
   return (
     <RHFAutocomplete<TField, StaffSelectOption>
+      label={t('common:staffMember')}
+      {...peopleAutocompleteProps}
+      fullWidth
+      loading={isLoading}
+      options={teacherData ?? []}
+      {...props}
+    />
+  );
+};
+
+export const StaffAutocomplete = (props: StaffAutocompleteProps) => {
+  const { t } = useTranslation(['common']);
+  const { data: teacherData, isLoading } = useStaffForSelect({});
+  const peopleAutocompleteProps =
+    usePeopleAutocompleteProps<StaffSelectOption>();
+
+  return (
+    <Autocomplete
       label={t('common:staffMember')}
       {...peopleAutocompleteProps}
       fullWidth

@@ -1,15 +1,14 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { PersonalInformation, UpdateStudentInput } from '@tyro/api';
-import { RHFTextField, useNumber } from '@tyro/core';
+import {
+  RHFTextField,
+  CardEditableForm,
+  CardEditableFormProps,
+} from '@tyro/core';
 import { Stack, Typography } from '@mui/material';
 import { UserGroupTwoIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { useParams } from 'react-router-dom';
-import {
-  CardEditableForm,
-  CardEditableFormProps,
-} from '../../../../components/common/card-editable-form';
 import { useStudentPersonal } from '../../../../api/student/personal';
 import { SiblingsChips } from '../../../../components/students/sibling-chips';
 

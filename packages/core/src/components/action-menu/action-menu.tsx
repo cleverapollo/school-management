@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { ChevronDownIcon } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
+import { PermissionUtils, usePermissions } from '@tyro/api';
 import { useDisclosure } from '../../hooks';
 import { getMenuItemList, MenuItemConfig } from './menu-item-list';
 
@@ -33,7 +34,7 @@ export function ActionMenu({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [t] = useTranslation(['common']);
   const { onClose, getButtonProps, getDisclosureProps } = useDisclosure();
-
+  const permissions = usePermissions();
   const sectionedMenuItems = (
     Array.isArray(menuItems[0]) ? menuItems : [menuItems]
   ) as MenuItemConfig[][];
@@ -84,6 +85,7 @@ export function ActionMenu({
             acc.push(
               ...getMenuItemList({
                 menuItems: section,
+                permissions,
                 onClose,
               })
             );

@@ -1,10 +1,4 @@
-import {
-  Button,
-  DialogTitle,
-  Stack,
-  DialogActions,
-  Dialog,
-} from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import {
   RHFAutocomplete,
   RHFColorPicker,
@@ -12,6 +6,9 @@ import {
   ValidationError,
   useFormValidator,
   validations,
+  DialogActions,
+  Dialog,
+  DialogTitle,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';

@@ -2,17 +2,19 @@ import { EventContentArg } from '@fullcalendar/core';
 import { Box, Stack, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import { SwapHorizontalIcon } from '@tyro/icons';
+import { SubIcon } from '@tyro/substitution';
 
 dayjs.extend(LocalizedFormat);
 
 export function getCalendarContent(eventInfo: EventContentArg) {
+  const { room, organizer, additionalTeachers, isSubstitution } =
+    eventInfo.event.extendedProps;
   switch (eventInfo.view.type) {
     case 'timeGridDay':
     case 'timeGridWeek':
     case 'resourceTimelineDay':
     case 'resourceTimeGridDay': {
-      const { room, organizer, additionalTeachers } =
-        eventInfo.event.extendedProps;
       const numberOfAdditionalTeachers =
         Array.isArray(additionalTeachers) && additionalTeachers?.length > 0
           ? ` +${additionalTeachers?.length}`
@@ -45,9 +47,12 @@ export function getCalendarContent(eventInfo: EventContentArg) {
               height={22}
               overflow="hidden"
             >
-              <Typography variant="subtitle2" noWrap>
-                {eventInfo.event.title}
-              </Typography>
+              <Stack direction="row" alignItems="center" spacing={0.5}>
+                <Typography variant="subtitle2" noWrap>
+                  {eventInfo.event.title}
+                </Typography>
+                {isSubstitution && <SubIcon />}
+              </Stack>
               {!eventInfo.event.allDay && (
                 <Typography variant="caption" noWrap sx={{ mr: 0.5 }}>
                   {dayjs(eventInfo.event.start).format('LT')} -{' '}
@@ -74,18 +79,34 @@ export function getCalendarContent(eventInfo: EventContentArg) {
               mr: 0.5,
             }}
           />
-          <Box sx={{ overflow: 'hidden', flex: 1 }}>
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={0.5}
+            overflow="hidden"
+            flex={1}
+          >
             <Typography variant="subtitle2" noWrap sx={{ fontSize: '0.75rem' }}>
               {eventInfo.event.title}
             </Typography>
-          </Box>
+            {isSubstitution && <SubIcon size="small" />}
+          </Stack>
         </Stack>
       );
     default:
       return (
         <>
           <Typography>{eventInfo.timeText}</Typography>
-          <i>{eventInfo.event.title}</i>
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={0.5}
+            overflow="hidden"
+            flex={1}
+          >
+            <i>{eventInfo.event.title}</i>
+            {isSubstitution && <SubIcon size="small" />}
+          </Stack>
         </>
       );
   }

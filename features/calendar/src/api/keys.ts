@@ -1,4 +1,5 @@
 import {
+  CalendarDayBellTimeFilter,
   CalendarDayInfoFilter,
   CalendarEventFilter,
   FindFreeResourcesFilter,
@@ -16,4 +17,6 @@ export const calendarKeys = {
   createEvent: () => [...calendarKeys.all, 'createEvent'] as const,
   roomLocation: (filter: FindFreeResourcesFilter) =>
     [...calendarKeys.all, 'roomLocation', filter] as const,
+  calendarDayBellTimes: (filter: CalendarDayBellTimeFilter) =>
+    [...calendarKeys.all, 'calendarDayBellTimes', filter] as const,
 };

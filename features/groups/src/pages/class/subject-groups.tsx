@@ -1,6 +1,10 @@
 import { useMemo, useState } from 'react';
-import { Box, Fade } from '@mui/material';
-import { SmsRecipientType, UseQueryReturnType } from '@tyro/api';
+import { Box, Fade, Grid, Stack, Typography } from '@mui/material';
+import {
+  SmsRecipientType,
+  usePermissions,
+  UseQueryReturnType,
+} from '@tyro/api';
 import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -16,17 +20,18 @@ import {
   sortStartNumberFirst,
 } from '@tyro/core';
 
-import { MobileIcon } from '@tyro/icons';
+import { MobileIcon, UserGroupTwoIcon } from '@tyro/icons';
 
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { useClassGroupById } from '../../api/class-groups';
+import { BlocksChips } from '../../components/class-group/blocks-chips';
 
 type ReturnTypeFromUseSubjectGroupById = UseQueryReturnType<
   typeof useClassGroupById
 >['relatedSubjectGroups'][number];
 
 const getSubjectGroupsColumns = (
-  t: TFunction<'common'[], undefined, 'common'[]>,
+  t: TFunction<('common' | 'groups')[]>,
   displayNames: ReturnTypeDisplayNames
 ): GridOptions<ReturnTypeFromUseSubjectGroupById>['columnDefs'] => [
   {
@@ -96,9 +101,14 @@ const getSubjectGroupsColumns = (
   },
   {
     field: 'studentGroupType',
-    headerName: 'Group type',
+    headerName: t('groups:groupType'),
     enableRowGroup: true,
-    valueGetter: ({ data }) => data && data?.studentMembershipType?.type,
+    valueGetter: ({ data }) =>
+      data?.studentMembershipType?.type
+        ? t(
+            `groups:subjectGroupStudentMembershipType.${data.studentMembershipType.type}`
+          )
+        : t('groups:subjectGroupStudentMembershipType.UNKNOWN'),
   },
 ];
 
@@ -107,6 +117,7 @@ export default function SubjectGroups() {
   const { displayNames } = usePreferredNameLayout();
   const { groupId } = useParams();
   const groupIdAsNumber = useNumber(groupId);
+  const { isTyroUser } = usePermissions();
 
   const { data: subjectGroupData } = useClassGroupById(groupIdAsNumber);
 
@@ -135,6 +146,22 @@ export default function SubjectGroups() {
 
   return (
     <>
+      {subjectGroupData && isTyroUser && (
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <UserGroupTwoIcon sx={{ color: 'text.secondary' }} />
+          <Typography variant="body1" color="text.primary">
+            {t('common:blocks')}
+          </Typography>
+          <Grid container direction="row" gap={1} alignItems="center">
+            {groupIdAsNumber && (
+              <BlocksChips
+                blocks={subjectGroupData.blocks}
+                classGroupId={groupIdAsNumber}
+              />
+            )}
+          </Grid>
+        </Stack>
+      )}
       <Table
         rowData={subjectGroupData?.relatedSubjectGroups ?? []}
         columnDefs={studentColumns}

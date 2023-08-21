@@ -11,8 +11,9 @@ import {
   useDebouncedValue,
   TableBooleanValue,
   ActionMenu,
+  TableLinearProgress,
 } from '@tyro/core';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Tooltip } from '@mui/material';
 
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
@@ -27,6 +28,7 @@ import {
   UpsertAbsenceModal,
   UpsertAbsenceModalProps,
 } from '../components/absences/upsert-absence-modal';
+import { LongTermLeaveCell } from '../components/absences/long-term-leave-cell';
 import { TableDatesList } from '../components/absences/table-dates-list';
 import {
   DeleteAbsenceConfirmModal,
@@ -93,15 +95,18 @@ const getColumnDefs = (
     wrapText: true,
   },
   {
-    field: 'substitutionRequired',
-    headerName: t('substitution:coverRequired'),
+    field: 'isLongTermLeave',
+    headerName: t('substitution:longTermLeave'),
     valueGetter: ({ data }) =>
-      data?.substitutionRequired ? t('common:yes') : t('common:no'),
+      data?.isLongTermLeave ? t('common:yes') : t('common:no'),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseStaffWorkAbsences, any>) => (
-      <TableBooleanValue value={Boolean(data?.substitutionRequired)} />
-    ),
+    }: ICellRendererParams<ReturnTypeFromUseStaffWorkAbsences, any>) => {
+      if (data?.isLongTermLeave) {
+        return data && <LongTermLeaveCell absence={data} />;
+      }
+      return <>-</>;
+    },
     sortable: true,
     filter: true,
   },

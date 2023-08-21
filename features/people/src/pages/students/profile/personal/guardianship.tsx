@@ -1,10 +1,11 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { UpdateStudentInput } from '@tyro/api';
-import { RHFTextField, useFormValidator } from '@tyro/core';
 import {
+  RHFTextField,
+  useFormValidator,
   CardEditableForm,
   CardEditableFormProps,
-} from '../../../../components/common/card-editable-form';
+} from '@tyro/core';
 import { useStudentPersonal } from '../../../../api/student/personal';
 
 type GuardianshipFormState = {
