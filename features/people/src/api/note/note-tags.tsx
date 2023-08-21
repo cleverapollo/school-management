@@ -1,4 +1,9 @@
-import { gqlClient, graphql, UseQueryReturnType } from '@tyro/api';
+import {
+  gqlClient,
+  graphql,
+  Notes_TagCategory,
+  UseQueryReturnType,
+} from '@tyro/api';
 import { useQuery } from '@tanstack/react-query';
 import { peopleKeys } from '../keys';
 
@@ -15,7 +20,7 @@ const noteTagsQuery = () => ({
   queryKey: peopleKeys.notes.noteTags(),
   queryFn: () =>
     gqlClient.request(noteTags, {
-      filter: {},
+      filter: { categories: [Notes_TagCategory.Note] },
     }),
 });
 
