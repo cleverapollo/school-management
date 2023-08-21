@@ -46,7 +46,7 @@ export const useParticipantsSearchProps = (
       renderOption({
         name: option.text,
         src: option.avatarUrl ?? undefined,
-        caption: option.type ? t(`common:searchType.${option.type}`) : '',
+        // caption: option.type ? t(`common:searchType.${option.type}`) : '',
       }),
     ...customProps,
   };

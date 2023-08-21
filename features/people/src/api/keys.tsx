@@ -1,4 +1,11 @@
-import { StaffFilter, StudentFilter } from '@tyro/api';
+import {
+  StaffFilter,
+  StudentFilter,
+  CalendarEventFilter,
+  EventAttendanceFilter,
+  StudentSessionAttendanceFilter,
+  CalendarAttendanceFilter,
+} from '@tyro/api';
 
 export const peopleKeys = {
   all: ['people'] as const,
@@ -53,5 +60,19 @@ export const peopleKeys = {
       [...peopleKeys.students.all(), 'studentsForSiblingSearch'] as const,
     personalTitlesList: () =>
       [...peopleKeys.students.all(), 'personalTitlesList'] as const,
+    sessionAttendance: (filter: StudentSessionAttendanceFilter) =>
+      [...peopleKeys.students.all(), 'sessionAttendance', filter] as const,
+    timetableInformation: (filter: CalendarEventFilter) =>
+      [...peopleKeys.students.all(), 'timetableInformation', filter] as const,
+    timetableEventInformation: (filter: CalendarEventFilter) =>
+      [
+        ...peopleKeys.students.all(),
+        'timetableEventInformation',
+        filter,
+      ] as const,
+    eventAttendance: (filter: EventAttendanceFilter) =>
+      [...peopleKeys.students.all(), 'eventAttendance', filter] as const,
+    calendarAttendance: (filter: CalendarAttendanceFilter) =>
+      [...peopleKeys.students.all(), 'calendarAttendance', filter] as const,
   },
 };

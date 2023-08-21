@@ -5596,6 +5596,7 @@ __metadata:
     "@tyro/api": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
+    "@tyro/groups": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
     react: ^18.2.0
@@ -5649,6 +5650,7 @@ __metadata:
     "@tanstack/react-query": ^4.29.7
     "@tyro/api": "*"
     "@tyro/app-shell": "*"
+    "@tyro/attendance": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
     "@tyro/i18n": "*"
@@ -5836,13 +5838,16 @@ __metadata:
     "@mui/lab": ^5.0.0-alpha.96
     "@mui/material": ^5.13.2
     "@mui/system": ^5.13.2
+    "@mui/x-date-pickers": ^6.3.0
     "@tanstack/react-query": ^4.29.7
     "@tanstack/react-virtual": beta
     "@tyro/api": "*"
     "@tyro/assessments": "*"
+    "@tyro/attendance": "*"
     "@tyro/calendar": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
+    "@tyro/groups": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
     "@tyro/reporting": "*"

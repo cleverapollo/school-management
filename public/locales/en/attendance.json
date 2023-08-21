@@ -20,13 +20,29 @@
   "teachers": "Teachers",
   "contacts": "Contacts",
   "administrationStaffAccessAllAttendanceCodesByDefault": "Administration staff access all attendance codes by default",
+  "attendanceDetailsFor": "Attendance Details for {{date}}",
+  "time": "Time",
+  "type": "Type",
+  "takenBy": "Taken by",
+  "notes": "Notes",
   "attendanceNotTaken": "Attendance not taken",
   "attendanceTaken": "Attendance taken",
   "sessionAttendanceYear": "Session attendance {{year}}",
   "absenceType": "Absence type",
   "totalDays": "Total days {{count}}",
   "noSessionAttendanceForYear": "No session attendance data available for this year.",
+  "studentAttendanceModalMessage": "You are viewing attendance for {{student}}, where you can edit and apply updates.",
+  "totalPresent": "Present",
+  "totalLate": "Late",
+  "totalAbsent": "Absent",
+  "totalUnexplained": "Unexplained absence",
+  "totalNotTaken": "Role not taken",
+  "all": "All",
   "absent": "Absent",
+  "absence": "Absence",
+  "unexplainedAbsence": "Unexplained absence",
+  "present": "Present",
+  "late": "Late",
   "nameByCodeType": {
     "PRESENT": "Present",
     "LATE": "Late",
@@ -42,5 +58,6 @@
     "F": "Unexplained absence",
     "G": "Transferred to another school",
     "H": "Student on holiday"
-  }
+  },
+  "monthOverviews": "Month overviews"
 }

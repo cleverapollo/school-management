@@ -64,7 +64,7 @@ export function GroupOption({
               {text}
             </Typography>
             <Typography component="span" variant="caption">
-              {t(`common:searchType.${type}`)}
+              {/* {t(`common:searchType.${type}`)} */}
             </Typography>
           </Stack>
         </Stack>

@@ -31,6 +31,7 @@
   "teacherCouncilNumber": "Teacher council number",
   "doctorName": "Doctor name",
   "addCondition": "Add condition",
+  "academicYear": "Academic {{ year }}",
   "gender": {
     "title": "Gender",
     "MALE": "Male",
