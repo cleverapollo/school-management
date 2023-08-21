@@ -1,54 +1,57 @@
 import { LoadingButton } from '@mui/lab';
 import {
   Button,
+  Chip,
   Dialog,
   DialogActions,
   DialogTitle,
   Stack,
 } from '@mui/material';
+import { Notes_BehaviourType, getColorBasedOnIndex } from '@tyro/api';
 import {
+  RHFAutocomplete,
   RHFDatePicker,
   RHFSelect,
-  RHFSelectionList,
   RHFTextField,
   useFormValidator,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
+import { ReturnTypeFromUseBehaviours } from '../../api/behaviour/list';
+import { useUpsertBehaviourTags } from '../../api/behaviour/upsert-behaviour-tags';
+import { useUpsertNote } from '../../api/note/upsert-note';
+import {
+  ReturnTypeFromUseStudentSubjectGroups,
+  useStudentsSubjectGroups,
+} from '../../api/student/overview';
+import { useNoteTagsBehaviour } from '../../api/behaviour/behaviour-tags';
+
+type BehaviourFormState = NonNullable<ReturnTypeFromUseBehaviours>;
 
 export interface CreateBehaviourModalProps {
-  isOpen: boolean;
+  studentId: number;
   onClose: () => void;
-  onCreate: (data: CreateBehaviourFormState) => void;
+  initialState: Partial<BehaviourFormState> | null;
 }
-
-// For testing only
-export enum Category {
-  Positive = 'POSITIVE',
-  Negative = 'NEGATIVE',
-  Neutral = 'NEUTRAL',
-}
-
-const SUBJECTS = ['Maths', 'History', 'English', 'Lunchtime'];
 
 export type CreateBehaviourFormState = {
   behaviour: string;
-  category: Category;
+  category: Notes_BehaviourType;
   details: string;
-  subjects: string[];
+  subjects: ReturnTypeFromUseStudentSubjectGroups[];
   outcome: string;
   occurredOn: Date;
 };
 
 export function CreateBehaviourModal({
-  isOpen,
+  studentId,
   onClose,
-  onCreate,
+  initialState,
 }: CreateBehaviourModalProps) {
   const { t } = useTranslation(['common', 'people']);
-
+  const { data: subjectGroup } = useStudentsSubjectGroups(studentId);
+  const { data: behaviourTags } = useNoteTagsBehaviour();
   const { resolver, rules } = useFormValidator<CreateBehaviourFormState>();
-
   const { control, handleSubmit, reset } = useForm<CreateBehaviourFormState>({
     resolver: resolver({
       behaviour: rules.required(),
@@ -58,14 +61,36 @@ export function CreateBehaviourModal({
     mode: 'onChange',
   });
 
-  const onSubmit = (data: CreateBehaviourFormState) => {
-    onCreate(data);
-    onClose();
-    reset();
+  const { mutateAsync: createBehaviour } = useUpsertNote(studentId);
+  const { mutateAsync: createBehaviourTags } =
+    useUpsertBehaviourTags(studentId);
+
+  const onSubmit = async (data: CreateBehaviourFormState) => {
+    // const tags = await createBehaviourTags(
+    //   data.subjects.map((item) => ({
+    //     behaviourType: data.category,
+    //     tag_l2: item.subjects[0]?.name,
+    //   }))
+    // );
+    // await createBehaviour([
+    //   {
+    //     note: data.behaviour,
+    //     referencedParties: [studentId],
+    //     // tags: tags.notes_upsertBehaviourTags.map((tag) => tag.id),
+    //   },
+    // ]);
+    // onClose();
+    // reset();
   };
 
   return (
-    <Dialog open={isOpen} onClose={onClose} fullWidth>
+    <Dialog
+      open={!!initialState}
+      onClose={onClose}
+      scroll="paper"
+      fullWidth
+      maxWidth="sm"
+    >
       <DialogTitle>{t('people:createBehaviour')}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack gap={3} p={3}>
@@ -80,11 +105,11 @@ export function CreateBehaviourModal({
                 fullWidth: true,
               }}
             />
-            <RHFSelect<CreateBehaviourFormState, Category>
+            <RHFSelect<CreateBehaviourFormState, Notes_BehaviourType>
               fullWidth
-              options={Object.values(Category)}
+              options={Object.values(Notes_BehaviourType)}
               label={t('people:category')}
-              getOptionLabel={(option) => option}
+              getOptionLabel={(option) => t(`people:categoryValues.${option}`)}
               controlProps={{
                 name: 'category',
                 control,
@@ -102,15 +127,27 @@ export function CreateBehaviourModal({
                 fullWidth: true,
               }}
             />
-            <RHFSelectionList<CreateBehaviourFormState>
-              fullWidth
-              options={SUBJECTS}
+            <RHFAutocomplete
+              multiple
               label={t('people:associated')}
-              getOptionLabel={(option) => option}
-              controlProps={{
-                name: 'subjects',
-                control,
-              }}
+              optionIdKey="partyId"
+              getOptionLabel={(option) => option.subjects[0]?.name}
+              controlProps={{ name: 'subjects', control }}
+              options={subjectGroup ?? []}
+              sx={{ mt: 2 }}
+              renderTags={(tags, getTagProps) =>
+                tags.map((tag, index) => (
+                  <Chip
+                    {...getTagProps({ index })}
+                    size="small"
+                    variant="soft"
+                    color={
+                      tag.subjects[0]?.colour || getColorBasedOnIndex(index)
+                    }
+                    label={tag.subjects[0]?.name}
+                  />
+                ))
+              }
             />
             <RHFTextField<CreateBehaviourFormState>
               label={t('people:outcome')}

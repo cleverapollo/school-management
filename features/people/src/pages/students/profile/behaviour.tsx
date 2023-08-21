@@ -1,66 +1,61 @@
-import { Box, Button, Chip, Stack } from '@mui/material';
-import { usePermissions, useUser } from '@tyro/api';
-import { GridOptions, Table, useDisclosure } from '@tyro/core';
+import { Box, Button } from '@mui/material';
+import { usePermissions } from '@tyro/api';
+import { GridOptions, PageHeading, Table, getNumber } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { useMemo, useState } from 'react';
+import { AddIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import { useMemo, useState } from 'react';
+import { useParams } from 'react-router';
 import {
-  Category,
-  CreateBehaviourFormState,
+  ReturnTypeFromUseBehaviours,
+  useBehaviours,
+} from '../../../api/behaviour/list';
+import {
   CreateBehaviourModal,
+  CreateBehaviourModalProps,
 } from '../../../components/behaviour/create-behaviour-modal';
 
 dayjs.extend(LocalizedFormat);
 
-interface BehaviourDataType {
-  id: string;
-  behaviour: string;
-  details: string;
-  subjects: string[];
-  category: Category;
-  occurredOn: Date;
-  createdBy: string;
-}
-
 const getStudentBehaviourColumns = (
   t: TFunction<('common' | 'people')[]>
-): GridOptions<BehaviourDataType>['columnDefs'] => [
+): GridOptions<ReturnTypeFromUseBehaviours>['columnDefs'] => [
   {
     field: 'behaviour',
     headerName: t('people:behaviour'),
-    valueGetter: ({ data }) => data?.behaviour ?? '-',
+    valueGetter: ({ data }) => data?.note ?? '-',
   },
   {
     field: 'details',
     headerName: t('common:details'),
-    valueGetter: ({ data }) => data?.details ?? '-',
+    valueGetter: ({ data }) => '-',
   },
   {
     field: 'associated',
     headerName: t('people:associated'),
-    cellRenderer: ({ data }: { data: BehaviourDataType }) => (
-      <Stack gap={1} direction="row">
-        {data.subjects?.map((subject) => (
-          <Chip key={subject} label={subject} />
-        ))}
-      </Stack>
-    ),
+    // cellRenderer: ({ data }: { data: BehaviourDataType }) => (
+    //   <Stack gap={1} direction="row">
+    //     {data.subjects?.map((subject) => (
+    //       <Chip key={subject} label={subject} />
+    //     ))}
+    //   </Stack>
+    // ),
   },
   {
     field: 'category',
     headerName: t('people:category'),
-    valueGetter: ({ data }) => data?.category ?? '-',
+    valueGetter: ({ data }) => '',
   },
   {
     field: 'outcome',
     headerName: t('people:outcome'),
-    valueGetter: ({ data }) => data?.behaviour ?? '-',
+    valueGetter: ({ data }) => '',
   },
   {
     field: 'occurredOn',
     headerName: t('people:occurredOn'),
-    valueGetter: ({ data }) => dayjs(data?.occurredOn).format('LL'),
+    valueGetter: ({ data }) => '',
   },
   {
     field: 'createdBy',
@@ -70,50 +65,50 @@ const getStudentBehaviourColumns = (
 ];
 
 export default function StudentProfileBehaviourPage() {
+  const { id } = useParams();
+  const studentId = getNumber(id);
+  const [behaviourDetails, setBehaviourDetails] =
+    useState<CreateBehaviourModalProps['initialState']>();
   const { t } = useTranslation(['common', 'people']);
   const { isStaffUser } = usePermissions();
-  const { user } = useUser();
-  const [behaviours, setBehaviours] = useState<BehaviourDataType[]>([]);
+  const { data: behaviours = [] } = useBehaviours(studentId);
 
   const studentBehaviourColumns = useMemo(
     () => getStudentBehaviourColumns(t),
     [t]
   );
 
-  const {
-    isOpen: isCreateBehaviourModalOpen,
-    onOpen: onOpenCreateBehaviourModal,
-    onClose: onCloseCreateBehaviourModal,
-  } = useDisclosure();
-
-  const handleCreate = (data: CreateBehaviourFormState) => {
-    setBehaviours((prevState) => [
-      ...prevState,
-      { ...data, id: `${Math.random()}`, createdBy: user?.name || '-' },
-    ]);
-  };
-
   return (
     <>
-      <Table
-        rowData={behaviours}
-        columnDefs={studentBehaviourColumns}
-        getRowId={({ data }) => String(data?.id)}
+      <PageHeading
+        title=""
+        titleProps={{ variant: 'h3' }}
         rightAdornment={
           isStaffUser && (
-            <Box>
-              <Button variant="contained" onClick={onOpenCreateBehaviourModal}>
+            <Box display="flex" alignItems="center">
+              <Button
+                variant="contained"
+                onClick={() => setBehaviourDetails({})}
+                startIcon={<AddIcon />}
+              >
                 {t('people:actions.createBehaviour')}
               </Button>
             </Box>
           )
         }
       />
-      <CreateBehaviourModal
-        isOpen={isCreateBehaviourModalOpen}
-        onClose={onCloseCreateBehaviourModal}
-        onCreate={handleCreate}
+      <Table
+        rowData={behaviours ?? []}
+        columnDefs={studentBehaviourColumns}
+        getRowId={({ data }) => String(data?.id)}
       />
+      {behaviourDetails && (
+        <CreateBehaviourModal
+          studentId={studentId!}
+          onClose={() => setBehaviourDetails(null)}
+          initialState={behaviourDetails}
+        />
+      )}
     </>
   );
 }

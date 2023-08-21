@@ -229,16 +229,6 @@
     "MISC": "Misc",
     "NOTE": "Note"
   },
-  "associated": "Associated",
-  "occurredOn": "Occurred On",
-  "outcome": "Outcome",
-  "category": "Category",
-  "createBehaviour": "Create behaviour",
-  "categoryValues": {
-    "POSITIVE": "Positive",
-    "NEGATIVE": "Negative",
-    "NEUTRAL": "Neutral"
-  },
   "editAen": "Edit AEN",
   "createAen": "Create AEN",
   "aen": {
@@ -250,5 +240,15 @@
     "snaSupport": "SNA support",
     "provision": "Provision",
     "note": "Note"
+  },
+  "associated": "Associated",
+  "occurredOn": "Occurred On",
+  "outcome": "Outcome",
+  "category": "Category",
+  "createBehaviour": "Create behaviour",
+  "categoryValues": {
+    "POSITIVE": "Positive",
+    "NEGATIVE": "Negative",
+    "NEUTRAL": "Neutral"
   }
 }
