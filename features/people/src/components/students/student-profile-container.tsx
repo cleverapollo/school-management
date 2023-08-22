@@ -69,6 +69,10 @@ export default function StudentProfileContainer() {
           {
             label: t('common:attendance'),
             value: 'attendance',
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission(
+                'ps:1:attendance:read_session_attendance_individual'
+              ),
           },
           // NOTE: temporary hide this tab
           // {

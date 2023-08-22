@@ -237,6 +237,10 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'attendance',
                 element: <StudentProfileAttendancePage />,
+                hasAccess: ({ isStaffUserWithPermission }) =>
+                  isStaffUserWithPermission(
+                    'ps:1:attendance:read_session_attendance_individual'
+                  ),
               },
               {
                 type: NavObjectType.NonMenuLink,
