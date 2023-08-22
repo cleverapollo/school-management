@@ -5,6 +5,7 @@ import {
   EventAttendanceFilter,
   StudentSessionAttendanceFilter,
   CalendarAttendanceFilter,
+  CalendarDayBellTimeFilter,
 } from '@tyro/api';
 
 export const peopleKeys = {
@@ -74,5 +75,7 @@ export const peopleKeys = {
       [...peopleKeys.students.all(), 'eventAttendance', filter] as const,
     calendarAttendance: (filter: CalendarAttendanceFilter) =>
       [...peopleKeys.students.all(), 'calendarAttendance', filter] as const,
+    calendarBellTimes: (filter: CalendarDayBellTimeFilter) =>
+      [...peopleKeys.students.all(), 'calendarBellTimes', filter] as const,
   },
 };

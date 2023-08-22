@@ -28,6 +28,7 @@ const studentSessionAttendance = graphql(/* GraphQL */ `
             code
             codeType
           }
+          note
           createdBy {
             partyId
             firstName
@@ -35,7 +36,6 @@ const studentSessionAttendance = graphql(/* GraphQL */ `
             avatarUrl
           }
           createdByPartyId
-          note
         }
       }
       studentPartyId

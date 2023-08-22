@@ -18,8 +18,6 @@ import {
   TableRow,
   TableBody,
   Typography,
-  Input,
-  TextareaAutosize,
 } from '@mui/material';
 import {
   Avatar,
@@ -31,6 +29,7 @@ import {
 import {
   UserType,
   usePermissions,
+  SaveEventAttendanceInput,
   SaveStudentSessionAttendanceInput,
   AttendanceCode,
 } from '@tyro/api';
@@ -38,39 +37,31 @@ import { useTranslation } from '@tyro/i18n';
 import { CloseIcon, LightBulbIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import { useForm } from 'react-hook-form';
-import { AttendanceToggle, useAttendanceCodes } from '@tyro/attendance';
+import { useAttendanceCodes } from '@tyro/attendance';
 import { useState } from 'react';
-import {
-  ReturnTypeFromUseStudentSessionAttendance,
-  useAttendanceQuery,
-} from '../../../api/student/attendance/student-session-attendance';
+import { useAttendanceQuery } from '../../../api/student/attendance/student-session-attendance';
 import { useTimetable } from '../../../api/student/attendance/daily-calendar-information';
 import { useCreateOrUpdateEventAttendance } from '../../../api/student/attendance/save-student-event-attendance';
+import { useCreateOrUpdateSessionAttendance } from '../../../api/student/attendance/save-student-session-attendance';
+import { useBellTimesQuery } from '../../../api/student/attendance/calendar-bell-times';
 import { useStudent } from '../../../api/student/students';
 
 export type SessionAttendanceProps = {
   open: boolean;
   onClose: () => void;
-  attendance: ReturnTypeFromUseStudentSessionAttendance;
   day: string;
   studentId: number;
 };
 
-type SessionAttendanceInputProps = {
-  bellTimeId: number;
-  attendanceCodeId: number;
-  studentPartyId: number;
-  date: string;
-  note: string;
-};
-
 type EventAttendanceInputProps = {
+  bellTimeId: number;
   eventId: number;
   attendanceCodeId: number;
   date: string;
-  note: string;
+  note?: string;
   id: number;
   personPartyId: number;
+  studentPartyId: number;
 };
 
 export type AttendanceCodeInputProps = Pick<
@@ -81,28 +72,22 @@ export type AttendanceCodeInputProps = Pick<
 export const AttendanceDetailsModal = ({
   open,
   onClose,
-  attendance,
   day,
   studentId,
 }: SessionAttendanceProps) => {
   const { t } = useTranslation(['attendance', 'people', 'common']);
   const { userType } = usePermissions();
-  const { handleSubmit, control } = useForm<EventAttendanceInputProps>();
-  const {
-    handleSubmit: handleSessionAttendanceSubmit,
-    control: sessionAttendanceControl,
-  } = useForm<SessionAttendanceInputProps>();
-  const currentDate = dayjs();
-
+  const { handleSubmit, control, reset } = useForm<EventAttendanceInputProps>();
   const [openAlert, setOpenAlert] = useState(true);
 
+  const currentDate = dayjs();
   const formattedCurrentDate = currentDate.format('YYYY-MM-DD');
+
   const isAdminUserType = userType === UserType.Admin;
   const isTeacherUserType = userType === UserType.Teacher;
 
   const { displayName } = usePreferredNameLayout();
 
-  // Gets the student's current lessons for the day
   const { data: timetable, isLoading } = useTimetable({
     resources: {
       partyIds: [studentId],
@@ -117,45 +102,66 @@ export const AttendanceDetailsModal = ({
     to: !day ? formattedCurrentDate : day,
   });
 
-  const { data: attendanceCodes } = useAttendanceCodes({
-    teachingGroupCodes: !!isTeacherUserType,
+  const { data: bellTimes } = useBellTimesQuery({
+    fromDate: !day ? formattedCurrentDate : day,
+    toDate: !day ? formattedCurrentDate : day,
   });
 
-  const { mutate: createOrUpdateEventAttendance } =
-    useCreateOrUpdateEventAttendance();
+  const { data: attendanceCodes } = useAttendanceCodes({
+    teachingGroupCodes: isTeacherUserType,
+  });
 
-  console.log(timetable, 'timetable');
-  console.log(attendance, 'attendance');
-  console.log(attendanceCodes, 'attendanceCodes');
-  console.log(sessionAttendanceData, 'sessionAttendanceData');
+  const { mutateAsync: createOrUpdateSessionAttendance } =
+    useCreateOrUpdateSessionAttendance();
+
+  const { mutateAsync: createOrUpdateEventAttendance } =
+    useCreateOrUpdateEventAttendance();
 
   const { data: studentData } = useStudent(studentId);
   const name = displayName(studentData?.person, {
     format: PreferredNameFormat.FirstnameSurname,
   });
 
-  const onSubmit = handleSubmit(({ ...data }) => {
-    const transformedData = Object.keys(data).reduce((acc, fieldName) => {
+  const onSubmit = handleSubmit(({ ...data }: EventAttendanceInputProps) => {
+    const transformedSessionAttendanceData = Object.keys(data).reduce<
+      SaveStudentSessionAttendanceInput[]
+    >((acc, fieldName) => {
+      if (fieldName.startsWith('sessionAttendanceNote-')) {
+        const ids = fieldName.replace('sessionAttendanceNote-', '');
+        const sessionAttendanceNote =
+          data[fieldName as keyof SaveStudentSessionAttendanceInput];
+        const indexField = `attendanceCode-${ids}`;
+        const [eventId, extractedBellTimeId] = indexField.split('-').slice(1);
+        const attendanceCodeId =
+          data[
+            `attendanceCode-${eventId}` as keyof SaveStudentSessionAttendanceInput
+          ];
+        if (attendanceCodeId !== undefined) {
+          acc.push({
+            note: sessionAttendanceNote?.toString(),
+            attendanceCodeId: Number(attendanceCodeId),
+            date: day,
+            bellTimeId: Number(eventId),
+            studentPartyId: studentId,
+          });
+        }
+      }
+      return acc;
+    }, [] as SaveStudentSessionAttendanceInput[]);
+
+    const transformedEventAttendanceData = Object.keys(data).reduce<
+      SaveEventAttendanceInput[]
+    >((acc, fieldName) => {
       if (fieldName.startsWith('note-')) {
         const eventId = fieldName.replace('note-', '');
-        console.log(eventId, 'eventId');
-
-        // @ts-ignore
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const note = data[fieldName];
+        const note = data[fieldName as keyof SaveEventAttendanceInput];
         const indexField = `index_${eventId}`;
-        // @ts-ignore eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const eventIdValue = data[indexField];
+        const eventIdValue = data[indexField as keyof SaveEventAttendanceInput];
 
         if (eventIdValue !== '') {
-          // @ts-ignore
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           acc.push({
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            note,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            attendanceCodeId: eventIdValue,
+            note: note?.toString(),
+            attendanceCodeId: Number(eventIdValue),
             date: day,
             eventId: Number(eventId),
             personPartyId: studentId,
@@ -165,13 +171,35 @@ export const AttendanceDetailsModal = ({
       return acc;
     }, []);
 
-    onClose();
-    // @ts-ignore
-    createOrUpdateEventAttendance(transformedData, { onSuccess: onClose });
+    if (
+      Array.isArray(transformedSessionAttendanceData) &&
+      transformedSessionAttendanceData?.length > 0 &&
+      transformedSessionAttendanceData[0]?.attendanceCodeId !== 0
+    ) {
+      createOrUpdateSessionAttendance(transformedSessionAttendanceData, {
+        onSuccess: () => {
+          reset();
+          onClose();
+        },
+      });
+    }
+
+    if (
+      Array.isArray(transformedEventAttendanceData) &&
+      transformedEventAttendanceData?.length > 0
+    ) {
+      createOrUpdateEventAttendance(transformedEventAttendanceData, {
+        onSuccess: () => {
+          reset();
+          onClose();
+        },
+      });
+    }
   });
 
   const handleClose = () => {
     setOpenAlert(true);
+    reset();
     onClose();
   };
 
@@ -195,8 +223,6 @@ export const AttendanceDetailsModal = ({
       </DialogTitle>
       <form onSubmit={onSubmit}>
         <DialogContent>
-          {isLoading && <Typography variant="body1">Loading</Typography>}
-
           {!isLoading && timetable && (
             <>
               <Collapse in={openAlert}>
@@ -245,7 +271,6 @@ export const AttendanceDetailsModal = ({
                     background: 'transparent',
                     color: 'text.primary',
                     fontWeight: 600,
-                    // borderBottom: '1px solid #f1f5f9',
                   },
                 }}
               >
@@ -298,6 +323,11 @@ export const AttendanceDetailsModal = ({
                     </TableCell>
                   </TableRow>
                 </TableHead>
+                <TableRow>
+                  <TableCell colSpan={5}>
+                    <Divider sx={{ marginY: 1, fill: 'red' }} />
+                  </TableCell>
+                </TableRow>
 
                 <TableBody
                   sx={{
@@ -307,254 +337,285 @@ export const AttendanceDetailsModal = ({
                     },
                   }}
                 >
-                  {sessionAttendanceData
-                    ?.filter(
-                      (event) => event?.bellTime?.time && event?.bellTime?.name
-                    )
-                    .map((event) => (
-                      <TableRow key={event?.bellTimeId}>
-                        <TableCell>
-                          <Stack direction="row">
-                            <Typography
-                              variant="body2"
-                              color="#637381"
-                              fontWeight="600"
-                            >
-                              {event?.bellTime?.time}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
-                        <TableCell>
-                          <Stack direction="row">
-                            <Typography
-                              variant="body2"
-                              color="#212B36"
-                              fontWeight="600"
-                              fontSize="14px"
-                              sx={{ textWrap: 'noWrap' }}
-                            >
-                              {event?.bellTime?.name}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
-                        <TableCell>
-                          <Stack direction="row" alignItems="center">
-                            {event && event?.createdBy && (
-                              <Avatar
-                                sx={{
-                                  width: 32,
-                                  height: 32,
-                                  fontSize: 14,
-                                }}
-                                name={displayName(event && event?.createdBy, {
-                                  format: PreferredNameFormat.FirstnameSurname,
-                                })}
-                                src={
-                                  event?.createdBy &&
-                                  event?.createdBy?.avatarUrl
-                                }
-                              />
-                            )}
-                            <Typography
-                              variant="body2"
-                              color="#212B36"
-                              fontWeight="600"
-                              fontSize="14px"
-                              sx={{ textWrap: 'noWrap' }}
-                            >
-                              {displayName(event && event?.createdBy, {
-                                format: PreferredNameFormat.FirstnameSurname,
-                              })}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
-                        <TableCell>
-                          <Stack
-                            direction="row"
-                            flexGrow="1"
-                            padding={0}
-                            sx={{
-                              '& .MuiFormControl-root .MuiInputBase-input': {
-                                minWidth: { xs: '200px', md: 0 },
-                                paddingY: 1,
-                              },
-                            }}
-                          >
-                            <RHFTextField<SessionAttendanceInputProps>
-                              key={event?.bellTimeId}
-                              textFieldProps={{
-                                fullWidth: true,
-                              }}
-                              controlProps={{
-                                name: `note-${event?.bellTimeId}` as keyof SessionAttendanceInputProps,
-                                control: sessionAttendanceControl,
-                                defaultValue:
-                                  (event?.note && event?.note) || '',
-                              }}
-                            />
-                          </Stack>
-                        </TableCell>
-                        <TableCell>
-                          <Stack
-                            direction="row"
-                            padding={0}
-                            sx={{ '& .MuiSelect-select': { paddingY: 1 } }}
-                          >
-                            <RHFSelect<
-                              SessionAttendanceInputProps,
-                              AttendanceCodeInputProps
-                            >
-                              fullWidth
-                              options={attendanceCodes ?? []}
-                              getOptionLabel={(option) => option?.name}
-                              optionIdKey="id"
-                              controlProps={{
-                                name: `index_${event?.bellTimeId}` as keyof SessionAttendanceInputProps,
-                                control: sessionAttendanceControl,
-                              }}
-                            />
-                          </Stack>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
+                  {bellTimes &&
+                    sessionAttendanceData &&
+                    bellTimes
+                      ?.filter((bellTime) => bellTime?.name)
+                      ?.map((event, index) => {
+                        const attendanceData =
+                          sessionAttendanceData && sessionAttendanceData[index];
 
-                <TableBody>
-                  {timetable
-                    ?.sort(
-                      (a, b) =>
-                        new Date(a.startTime).getTime() -
-                        new Date(b.startTime).getTime()
-                    )
-                    ?.map((event) => (
-                      <TableRow key={event?.eventId}>
-                        <TableCell>
-                          <Stack direction="row">
-                            <Typography
-                              variant="body2"
-                              color="#637381"
-                              fontWeight="600"
-                            >
-                              {dayjs(event?.startTime).format('HH:mm')}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
-                        <TableCell>
-                          <Stack direction="row">
-                            <Typography
-                              variant="body2"
-                              color="#212B36"
-                              fontWeight="600"
-                              fontSize="14px"
-                              sx={{ textWrap: 'noWrap' }}
-                            >
-                              {event?.name}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
-                        <TableCell>
-                          <Stack direction="row" alignItems="center">
-                            {event?.extensions?.eventAttendance &&
-                              event?.extensions?.eventAttendance[0]
-                                ?.createdBy && (
-                                <Avatar
-                                  sx={{
-                                    width: 32,
-                                    height: 32,
-                                    fontSize: 14,
-                                  }}
-                                  name={displayName(
-                                    event?.extensions?.eventAttendance &&
-                                      event?.extensions?.eventAttendance[0]
-                                        ?.createdBy,
+                        return (
+                          <TableRow key={index}>
+                            <TableCell>
+                              <Stack direction="row">
+                                <Typography
+                                  variant="body2"
+                                  color="#637381"
+                                  fontWeight="600"
+                                >
+                                  {event?.time}
+                                </Typography>
+                              </Stack>
+                            </TableCell>
+                            <TableCell>
+                              <Stack direction="row">
+                                <Typography
+                                  variant="body2"
+                                  color="#212B36"
+                                  fontWeight="600"
+                                  fontSize="14px"
+                                  sx={{ textWrap: 'noWrap' }}
+                                >
+                                  {event?.name}
+                                </Typography>
+                              </Stack>
+                            </TableCell>
+                            <TableCell>
+                              <Stack direction="row" alignItems="center">
+                                {sessionAttendanceData
+                                  ? sessionAttendanceData &&
+                                    sessionAttendanceData[index]?.createdBy && (
+                                      <Avatar
+                                        sx={{
+                                          width: 32,
+                                          height: 32,
+                                          fontSize: 14,
+                                        }}
+                                        name={displayName(
+                                          sessionAttendanceData &&
+                                            sessionAttendanceData[index]
+                                              ?.createdBy,
+                                          {
+                                            format:
+                                              PreferredNameFormat.FirstnameSurname,
+                                          }
+                                        )}
+                                        src={
+                                          sessionAttendanceData[index]
+                                            ?.createdBy &&
+                                          sessionAttendanceData[index]
+                                            ?.createdBy?.avatarUrl
+                                        }
+                                      />
+                                    )
+                                  : ''}
+                                <Typography
+                                  variant="body2"
+                                  color="#212B36"
+                                  fontWeight="600"
+                                  fontSize="14px"
+                                  sx={{ textWrap: 'noWrap', marginLeft: 1 }}
+                                >
+                                  {displayName(
+                                    sessionAttendanceData &&
+                                      sessionAttendanceData[index]?.createdBy,
                                     {
                                       format:
                                         PreferredNameFormat.FirstnameSurname,
                                     }
                                   )}
-                                  src={
-                                    event?.extensions?.eventAttendance &&
-                                    event?.extensions?.eventAttendance[0]
-                                      ?.createdBy?.avatarUrl
-                                  }
+                                </Typography>
+                              </Stack>
+                            </TableCell>
+                            <TableCell>
+                              <Stack
+                                direction="row"
+                                flexGrow="1"
+                                padding={0}
+                                sx={{
+                                  '& .MuiFormControl-root .MuiInputBase-input':
+                                    {
+                                      minWidth: { xs: '200px', md: 0 },
+                                      paddingY: 1,
+                                    },
+                                }}
+                              >
+                                <RHFTextField<EventAttendanceInputProps>
+                                  key={index}
+                                  textFieldProps={{
+                                    fullWidth: true,
+                                  }}
+                                  controlProps={{
+                                    name: `sessionAttendanceNote-${event?.id}` as keyof EventAttendanceInputProps,
+                                    control,
+                                    defaultValue:
+                                      sessionAttendanceData[index]?.note ?? '',
+                                  }}
                                 />
-                              )}
+                              </Stack>
+                            </TableCell>
+                            <TableCell>
+                              <Stack
+                                direction="row"
+                                padding={0}
+                                sx={{ '& .MuiSelect-select': { paddingY: 1 } }}
+                              >
+                                <RHFSelect<
+                                  EventAttendanceInputProps,
+                                  AttendanceCodeInputProps
+                                >
+                                  fullWidth
+                                  options={attendanceCodes ?? []}
+                                  getOptionLabel={(option) => option?.name}
+                                  optionIdKey="id"
+                                  controlProps={{
+                                    name: `attendanceCode-${event?.id}` as keyof EventAttendanceInputProps,
+                                    control,
+                                    defaultValue:
+                                      sessionAttendanceData[index]
+                                        ?.attendanceCode?.id ?? 0,
+                                  }}
+                                />
+                              </Stack>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                </TableBody>
+                <TableRow>
+                  <TableCell colSpan={5}>
+                    <Divider sx={{ marginY: 1 }} />
+                  </TableCell>
+                </TableRow>
+                <TableBody>
+                  {timetable &&
+                    timetable
+                      ?.sort(
+                        (a, b) =>
+                          new Date(a.startTime).getTime() -
+                          new Date(b.startTime).getTime()
+                      )
+                      ?.map((event) => (
+                        <TableRow key={event?.eventId}>
+                          <TableCell>
+                            <Stack direction="row">
+                              <Typography
+                                variant="body2"
+                                color="#637381"
+                                fontWeight="600"
+                              >
+                                {dayjs(event?.startTime).format('HH:mm')}
+                              </Typography>
+                            </Stack>
+                          </TableCell>
+                          <TableCell>
+                            <Stack direction="row">
+                              <Typography
+                                variant="body2"
+                                color="#212B36"
+                                fontWeight="600"
+                                fontSize="14px"
+                                sx={{ textWrap: 'noWrap' }}
+                              >
+                                {event?.name}
+                              </Typography>
+                            </Stack>
+                          </TableCell>
+                          <TableCell>
+                            <Stack direction="row" alignItems="center">
+                              {event?.extensions?.eventAttendance &&
+                                event?.extensions?.eventAttendance[0]
+                                  ?.createdBy && (
+                                  <Avatar
+                                    sx={{
+                                      width: 32,
+                                      height: 32,
+                                      fontSize: 14,
+                                    }}
+                                    name={displayName(
+                                      event?.extensions?.eventAttendance &&
+                                        event?.extensions?.eventAttendance[0]
+                                          ?.createdBy,
+                                      {
+                                        format:
+                                          PreferredNameFormat.FirstnameSurname,
+                                      }
+                                    )}
+                                    src={
+                                      event?.extensions?.eventAttendance &&
+                                      event?.extensions?.eventAttendance[0]
+                                        ?.createdBy?.avatarUrl
+                                    }
+                                  />
+                                )}
 
-                            <Typography
-                              variant="body2"
-                              color="#212B36"
-                              fontWeight="600"
-                              fontSize="14px"
-                              sx={{ textWrap: 'noWrap', marginLeft: 1 }}
-                            >
-                              {displayName(
-                                event?.extensions?.eventAttendance &&
-                                  event?.extensions?.eventAttendance[0]
-                                    ?.createdBy,
-                                {
-                                  format: PreferredNameFormat.FirstnameSurname,
-                                }
-                              )}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
-                        <TableCell>
-                          <Stack
-                            direction="row"
-                            flexGrow="1"
-                            padding={0}
-                            sx={{
-                              '& .MuiFormControl-root .MuiInputBase-input': {
-                                minWidth: { xs: '200px', md: 0 },
-                                paddingY: 1,
-                              },
-                            }}
-                          >
-                            <RHFTextField<EventAttendanceInputProps>
-                              key={event?.eventId}
-                              textFieldProps={{
-                                fullWidth: true,
-                              }}
-                              controlProps={{
-                                name: `note-${event?.eventId}` as keyof EventAttendanceInputProps,
-                                control,
-                                defaultValue:
-                                  (event?.extensions?.eventAttendance &&
+                              <Typography
+                                variant="body2"
+                                color="#212B36"
+                                fontWeight="600"
+                                fontSize="14px"
+                                sx={{ textWrap: 'noWrap', marginLeft: 1 }}
+                              >
+                                {displayName(
+                                  event?.extensions?.eventAttendance &&
                                     event?.extensions?.eventAttendance[0]
-                                      ?.note) ||
-                                  '',
+                                      ?.createdBy,
+                                  {
+                                    format:
+                                      PreferredNameFormat.FirstnameSurname,
+                                  }
+                                )}
+                              </Typography>
+                            </Stack>
+                          </TableCell>
+                          <TableCell>
+                            <Stack
+                              direction="row"
+                              flexGrow="1"
+                              padding={0}
+                              sx={{
+                                '& .MuiFormControl-root .MuiInputBase-input': {
+                                  minWidth: { xs: '200px', md: 0 },
+                                  paddingY: 1,
+                                },
                               }}
-                            />
-                          </Stack>
-                        </TableCell>
-                        <TableCell>
-                          <Stack
-                            direction="row"
-                            padding={0}
-                            sx={{ '& .MuiSelect-select': { paddingY: 1 } }}
-                          >
-                            <RHFSelect<
-                              EventAttendanceInputProps,
-                              AttendanceCodeInputProps
                             >
-                              fullWidth
-                              options={attendanceCodes ?? []}
-                              getOptionLabel={(option) => option?.name}
-                              optionIdKey="id"
-                              controlProps={{
-                                name: `index_${event?.eventId}` as keyof EventAttendanceInputProps,
-                                control,
-                                defaultValue:
-                                  (event?.extensions?.eventAttendance &&
-                                    event?.extensions?.eventAttendance[0]
-                                      ?.attendanceCodeId) ||
-                                  '',
-                              }}
-                            />
-                          </Stack>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                              <RHFTextField<EventAttendanceInputProps>
+                                key={event?.eventId}
+                                textFieldProps={{
+                                  fullWidth: true,
+                                }}
+                                controlProps={{
+                                  name: `note-${event?.eventId}` as keyof EventAttendanceInputProps,
+                                  control,
+                                  defaultValue:
+                                    (event?.extensions?.eventAttendance &&
+                                      event?.extensions?.eventAttendance[0]
+                                        ?.note) ||
+                                    '',
+                                }}
+                              />
+                            </Stack>
+                          </TableCell>
+                          <TableCell>
+                            <Stack
+                              direction="row"
+                              padding={0}
+                              sx={{ '& .MuiSelect-select': { paddingY: 1 } }}
+                            >
+                              <RHFSelect<
+                                EventAttendanceInputProps,
+                                AttendanceCodeInputProps
+                              >
+                                fullWidth
+                                options={attendanceCodes ?? []}
+                                getOptionLabel={(option) => option?.name}
+                                optionIdKey="id"
+                                controlProps={{
+                                  name: `index_${event?.eventId}` as keyof EventAttendanceInputProps,
+                                  control,
+                                  defaultValue:
+                                    (event?.extensions?.eventAttendance &&
+                                      event?.extensions?.eventAttendance[0]
+                                        ?.attendanceCodeId) ||
+                                    '',
+                                }}
+                              />
+                            </Stack>
+                          </TableCell>
+                        </TableRow>
+                      ))}
                 </TableBody>
               </Table>
             </>

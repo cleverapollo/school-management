@@ -14,14 +14,14 @@ import dayjs from 'dayjs';
 import { AcademicCalendar } from './calendar';
 import { useCalendarAttendance } from '../../../api/student/attendance/calendar-attendance';
 
-const attendanceCodeColours = {
-  all: [{ colour: 'indigo', translationText: 'all' }],
-  totalPresent: [{ colour: 'emerald', translationText: 'present' }],
-  totalLate: [{ colour: 'sky', translationText: 'late' }],
-  totalAbsent: [{ colour: 'pink', translationText: 'absent' }],
-  totalUnexplained: [{ colour: 'red', translationText: 'unexplainedAbsence' }],
-  totalNotTaken: [{ colour: 'grey', translationText: 'notTaken' }],
-};
+const attendanceCodeColours = [
+  { colour: 'indigo', translationText: 'all' },
+  { colour: 'emerald', translationText: 'totalPresent' },
+  { colour: 'sky', translationText: 'totalLate' },
+  { colour: 'pink', translationText: 'totalAbsent' },
+  { colour: 'red', translationText: 'totalUnexplained' },
+  { colour: 'grey', translationText: 'totalNotTaken' },
+];
 
 export const MonthOverview = () => {
   const { t } = useTranslation(['attendance', 'people']);
@@ -86,16 +86,18 @@ export const MonthOverview = () => {
             },
           }}
         >
-          {Object.entries(attendanceCodeColours).map(([code, colour]) => {
-            const attendanceData = colour[0];
+          {attendanceCodeColours?.map((code) => {
+            const attendanceData = code?.colour;
             const individualAttendanceCount =
               calendarAttendance &&
               (calendarAttendance[
-                code as keyof typeof calendarAttendance
+                code?.translationText as keyof typeof calendarAttendance
               ] as number);
 
             const labelText =
-              code === 'all' ? totalAttendanceDays : individualAttendanceCount;
+              code?.translationText === 'all'
+                ? totalAttendanceDays
+                : individualAttendanceCount;
 
             return (
               <Stack
@@ -109,7 +111,7 @@ export const MonthOverview = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    backgroundColor: `${attendanceData?.colour}.100`,
+                    backgroundColor: `${attendanceData}.100`,
                     borderRadius: '6px',
                     padding: 0,
                   }}
@@ -123,9 +125,9 @@ export const MonthOverview = () => {
                       fontWeight: '700',
                       fontSize: '12px',
                       paddingX: '8px',
-                      color: `${attendanceData?.colour}.500`,
+                      color: `${attendanceData}.500`,
                       '& .MuiChip-icon': {
-                        color: `${attendanceData?.colour}.500`,
+                        color: `${attendanceData}.500`,
                       },
                       '& .MuiChip-label': {
                         padding: 0,
@@ -142,8 +144,9 @@ export const MonthOverview = () => {
                     textWrap: 'nowrap',
                   }}
                 >
-                  {/* @ts-ignore  */}
-                  {t(`attendance:${code}`)}
+                  {t(
+                    `attendance:${code?.translationText}` as keyof typeof calendarAttendance
+                  )}
                 </Typography>
               </Stack>
             );

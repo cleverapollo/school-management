@@ -53,11 +53,11 @@ export function useCreateOrUpdateSessionAttendance() {
   const { t } = useTranslation(['common']);
 
   return useMutation({
-    mutationFn: async (input: SaveStudentSessionAttendanceInput) =>
+    mutationFn: async (input: SaveStudentSessionAttendanceInput[]) =>
       gqlClient.request(saveStudentSessionAttendance, { input }),
     onSuccess: (_, variables) => {
       toast(
-        variables?.id
+        variables[0]?.id
           ? t('common:snackbarMessages.updateSuccess')
           : t('common:snackbarMessages.createSuccess')
       );

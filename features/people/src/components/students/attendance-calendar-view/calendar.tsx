@@ -5,7 +5,7 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { useParams } from 'react-router-dom';
 import dayjs, { Dayjs } from 'dayjs';
 import isToday from 'dayjs/plugin/isToday';
-import { AcademicNamespace, useCoreAcademicNamespace } from '@tyro/api';
+import { AcademicNamespace } from '@tyro/api';
 import { useDebouncedValue } from '@tyro/core';
 import { ReturnTypeFromUseCalendarAttendance } from '../../../api/student/attendance/calendar-attendance';
 import {
@@ -242,7 +242,6 @@ export const AcademicCalendar = ({
       <AttendanceDetailsModal
         open={!!sessionAttendanceToEdit}
         onClose={() => setSessionAttendanceToEdit('')}
-        attendance={sessionAttendance ?? []}
         day={sessionAttendanceToEdit ?? ''}
         studentId={Number(studentPartyId) ?? 0}
       />

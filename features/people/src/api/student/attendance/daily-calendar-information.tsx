@@ -75,12 +75,12 @@ export function useTimetable(filter: CalendarEventFilter) {
         },
       });
 
-      const filteredEvents = events?.map((event) => {
-        // console.log(event, 'event');
-        const t = 't';
-        // @ts-ignore
-        return filterExtensionsByPersonPartyId(event, studentId);
-      });
+      const filteredEvents = events?.map((event) =>
+        filterExtensionsByPersonPartyId(
+          event as CalendarEvent,
+          studentId as number
+        )
+      );
 
       return filteredEvents;
     },
