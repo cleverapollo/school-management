@@ -53,7 +53,7 @@ export default function ClassGroupContainer() {
             label: t('common:attendance'),
             hasAccess: ({ isStaffUserWithPermission }) =>
               isStaffUserWithPermission(
-                'ps:1:attendance:read_session_attendance'
+                'ps:1:attendance:read_session_attendance_class_group'
               ),
           },
           {
