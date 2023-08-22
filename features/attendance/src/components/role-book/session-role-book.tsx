@@ -109,9 +109,12 @@ const getColumns = (
     valueGetter: ({ data }) =>
       Array.from(Object.values(data?.attendanceByKey ?? {})).filter((id) => {
         if (!id) return false;
-        const codeType = attendanceCodesMap.get(id)?.codeType;
+        const sessionCodeType = attendanceCodesMap.get(id)?.sessionCodeType;
 
-        return codeType && codeType === AttendanceCodeType.UnexplainedAbsence;
+        return (
+          sessionCodeType &&
+          sessionCodeType === AttendanceCodeType.UnexplainedAbsence
+        );
       }).length,
     sortable: true,
   },
@@ -164,11 +167,15 @@ const getColumns = (
               const note = data?.noteByKey[key];
 
               if (!attendanceCode) return null;
-              const { id: codeId, name: code, codeType } = attendanceCode;
+              const {
+                id: codeId,
+                name: code,
+                sessionCodeType,
+              } = attendanceCode;
 
               return (
                 <RolebookAttendanceValue
-                  attendanceCodeType={codeType}
+                  attendanceCodeType={sessionCodeType}
                   code={code}
                   view={view}
                   note={note}

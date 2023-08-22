@@ -61,7 +61,7 @@ export function AttendanceCodeFilter({
             variant="soft"
             color={
               colorsBasedOnCodeType[
-                tag.codeType as AttendanceCodesWithoutNotTaken
+                tag.sessionCodeType as AttendanceCodesWithoutNotTaken
               ]
             }
             label={tag.name}
@@ -72,11 +72,11 @@ export function AttendanceCodeFilter({
       renderOption={(props, option) => {
         const color =
           colorsBasedOnCodeType[
-            option.codeType as AttendanceCodesWithoutNotTaken
+            option.sessionCodeType as AttendanceCodesWithoutNotTaken
           ];
         const icon =
           iconBasedOnCodeType[
-            option.codeType as AttendanceCodesWithoutNotTaken
+            option.sessionCodeType as AttendanceCodesWithoutNotTaken
           ];
         return (
           <Stack
