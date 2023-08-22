@@ -8,7 +8,7 @@ import {
 } from '@tyro/api';
 import { peopleKeys } from '../../keys';
 
-const calendarAttendance = graphql(/* GraphQL */ `
+const studentCalendarAttendance = graphql(/* GraphQL */ `
   query attendance_calendarAttendance($filter: CalendarAttendanceFilter) {
     attendance_calendarAttendance(filter: $filter) {
       totalPresent
@@ -24,26 +24,23 @@ const calendarAttendance = graphql(/* GraphQL */ `
   }
 `);
 
-const calendarAttendanceQuery = (filter: CalendarAttendanceFilter) => ({
-  queryKey: peopleKeys.students.calendarAttendance(filter),
-  queryFn: async () => gqlClient.request(calendarAttendance, { filter }),
+const studentCalendarAttendanceQuery = (filter: CalendarAttendanceFilter) => ({
+  queryKey: peopleKeys.students.studentCalendarAttendance(filter),
+  queryFn: async () => gqlClient.request(studentCalendarAttendance, { filter }),
 });
 
-export function getCalendarAttendance(filter: CalendarAttendanceFilter) {
-  return queryClient.fetchQuery(calendarAttendanceQuery(filter));
+export function getStudentCalendarAttendance(filter: CalendarAttendanceFilter) {
+  return queryClient.fetchQuery(studentCalendarAttendanceQuery(filter));
 }
 
-export function useCalendarAttendance(filter: CalendarAttendanceFilter) {
+export function useStudentCalendarAttendance(filter: CalendarAttendanceFilter) {
   return useQuery({
-    ...calendarAttendanceQuery(filter),
+    ...studentCalendarAttendanceQuery(filter),
     select: ({ attendance_calendarAttendance }) =>
       attendance_calendarAttendance,
-    onError: (error) => {
-      console.error('Error fetching calendnar events:', error);
-    },
   });
 }
 
-export type ReturnTypeFromUseCalendarAttendance = UseQueryReturnType<
-  typeof useCalendarAttendance
+export type ReturnTypeFromUseStudentCalendarAttendance = UseQueryReturnType<
+  typeof useStudentCalendarAttendance
 >;

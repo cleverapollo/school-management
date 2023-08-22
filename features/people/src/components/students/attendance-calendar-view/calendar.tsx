@@ -7,7 +7,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import isToday from 'dayjs/plugin/isToday';
 import { AcademicNamespace } from '@tyro/api';
 import { useDebouncedValue } from '@tyro/core';
-import { ReturnTypeFromUseCalendarAttendance } from '../../../api/student/attendance/calendar-attendance';
+import { ReturnTypeFromUseStudentCalendarAttendance } from '../../../api/student/attendance/calendar-attendance';
 import {
   useAttendanceQuery,
   ReturnTypeFromUseStudentSessionAttendance,
@@ -19,14 +19,14 @@ dayjs.extend(isToday);
 type MonthCalendarProps = {
   month: string;
   attendance?: ReturnTypeFromUseStudentSessionAttendance;
-  calendarAttendance?: ReturnTypeFromUseCalendarAttendance;
+  calendarAttendance?: ReturnTypeFromUseStudentCalendarAttendance;
   handleAddAttendance: (arg0: string) => void;
 };
 
 type CustomDayProps = {
   attendance?: ReturnTypeFromUseStudentSessionAttendance;
   handleAddAttendance: (arg0: string) => void;
-  calendarAttendance?: ReturnTypeFromUseCalendarAttendance;
+  calendarAttendance?: ReturnTypeFromUseStudentCalendarAttendance;
 } & PickersDayProps<Dayjs>;
 
 const attendanceColours = {
@@ -183,7 +183,7 @@ function MonthCalendar({
 
 type AcademicCalendarProps = {
   studentPartyId: string;
-  calendarAttendance?: ReturnTypeFromUseCalendarAttendance;
+  calendarAttendance?: ReturnTypeFromUseStudentCalendarAttendance;
   activeAcademicNamespace?: AcademicNamespace;
 };
 
@@ -221,6 +221,9 @@ export const AcademicCalendar = ({
 
   const handleAddAttendance = (day: string) => setSessionAttendanceToEdit(day);
 
+  const currentDate = dayjs();
+  const formattedCurrentDate = currentDate.format('YYYY-MM-DD');
+
   return (
     <>
       <Stack
@@ -242,7 +245,7 @@ export const AcademicCalendar = ({
       <AttendanceDetailsModal
         open={!!sessionAttendanceToEdit}
         onClose={() => setSessionAttendanceToEdit('')}
-        day={sessionAttendanceToEdit ?? ''}
+        day={sessionAttendanceToEdit ?? formattedCurrentDate}
         studentId={Number(studentPartyId) ?? 0}
       />
     </>

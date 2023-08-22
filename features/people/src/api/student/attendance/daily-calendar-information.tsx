@@ -3,13 +3,12 @@ import {
   gqlClient,
   graphql,
   queryClient,
-  CalendarEvent,
   CalendarEventFilter,
   UseQueryReturnType,
 } from '@tyro/api';
 import { peopleKeys } from '../../keys';
 
-const timetableInformation = graphql(/* GraphQL */ `
+const studentDailyCalendarTimetableInformation = graphql(/* GraphQL */ `
   query calendar_calendarInformation($filter: CalendarEventFilter) {
     calendar_calendarEvents(filter: $filter) {
       resources {
@@ -46,47 +45,54 @@ const timetableInformation = graphql(/* GraphQL */ `
   }
 `);
 
-const timetableQuery = (filter: CalendarEventFilter) => ({
-  queryKey: peopleKeys.students.timetableInformation(filter),
-  queryFn: async () => gqlClient.request(timetableInformation, { filter }),
+const studentDailyCalendarInformationQuery = (filter: CalendarEventFilter) => ({
+  queryKey:
+    peopleKeys.students.studentDailyCalendarTimetableInformation(filter),
+  queryFn: async () => {
+    const { calendar_calendarEvents: calendarEvents } = await gqlClient.request(
+      studentDailyCalendarTimetableInformation,
+      {
+        filter,
+      }
+    );
+    const events = calendarEvents?.resources[0]?.events;
+    const studentId =
+      filter?.resources?.partyIds && filter?.resources?.partyIds[0];
+
+    const filteredEvents = events?.map((event) => ({
+      ...event,
+      extensions: {
+        ...event.extensions,
+        eventAttendance: event?.extensions?.eventAttendance?.filter(
+          (attendance) => attendance?.personPartyId === studentId
+        ),
+      },
+    }));
+
+    return {
+      calendar_calendarEvents: filteredEvents?.sort(
+        (a, b) =>
+          new Date(a?.startTime).getTime() - new Date(b?.startTime).getTime()
+      ),
+    };
+  },
 });
 
-export function getTimetable(filter: CalendarEventFilter) {
-  return queryClient.fetchQuery(timetableQuery(filter));
+export function getStudentDailyCalendarInformation(
+  filter: CalendarEventFilter
+) {
+  return queryClient.fetchQuery(studentDailyCalendarInformationQuery(filter));
 }
 
-export function useTimetable(filter: CalendarEventFilter) {
+export function useStudentDailyCalendarInformation(
+  filter: CalendarEventFilter
+) {
   return useQuery({
-    ...timetableQuery(filter),
-    select: ({ calendar_calendarEvents }) => {
-      const events = calendar_calendarEvents?.resources[0]?.events;
-      const studentId =
-        filter?.resources?.partyIds && filter?.resources?.partyIds[0];
-      const filterExtensionsByPersonPartyId = (
-        event: CalendarEvent,
-        studentPartyId: number
-      ) => ({
-        ...event,
-        extensions: {
-          ...event.extensions,
-          eventAttendance: event?.extensions?.eventAttendance?.filter(
-            (attendance) => attendance?.personPartyId === studentPartyId
-          ),
-        },
-      });
-
-      const filteredEvents = events?.map((event) =>
-        filterExtensionsByPersonPartyId(
-          event as CalendarEvent,
-          studentId as number
-        )
-      );
-
-      return filteredEvents;
-    },
+    ...studentDailyCalendarInformationQuery(filter),
+    select: ({ calendar_calendarEvents }) => calendar_calendarEvents,
   });
 }
 
 export type ReturnTypeFromUseTimetable = UseQueryReturnType<
-  typeof useTimetable
+  typeof useStudentDailyCalendarInformation
 >;

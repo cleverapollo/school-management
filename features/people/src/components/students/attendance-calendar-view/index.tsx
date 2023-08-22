@@ -12,7 +12,7 @@ import { useCoreAcademicNamespace } from '@tyro/api';
 import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { AcademicCalendar } from './calendar';
-import { useCalendarAttendance } from '../../../api/student/attendance/calendar-attendance';
+import { useStudentCalendarAttendance } from '../../../api/student/attendance/calendar-attendance';
 
 const attendanceCodeColours = [
   { colour: 'indigo', translationText: 'all' },
@@ -37,7 +37,7 @@ export const MonthOverview = () => {
   const startDate = activeAcademicNamespace?.startDate;
   const endDate = activeAcademicNamespace?.endDate;
 
-  const { data: calendarAttendance } = useCalendarAttendance({
+  const { data: calendarAttendance } = useStudentCalendarAttendance({
     partyId: Number(id),
     from: !startDate ? formattedCurrentDate : startDate,
     to: !endDate ? formattedCurrentDate : endDate,
