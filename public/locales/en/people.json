@@ -33,6 +33,9 @@
   "teacherCouncilNumber": "Teacher council number",
   "doctorName": "Doctor name",
   "addCondition": "Add condition",
+  "academicYear": "Academic {{ year }}",
+  "studentAttendanceAlertTitleModal": "Changes made will delete previous Attendance",
+  "studentAttendanceAlertBodyModal": "Once changes are saved, they can be edited again.",
   "gender": {
     "title": "Gender",
     "MALE": "Male",
@@ -237,5 +240,4 @@
     "provision": "Provision",
     "note": "Note"
   }
-
 }
