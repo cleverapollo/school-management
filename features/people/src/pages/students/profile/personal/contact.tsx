@@ -1,16 +1,15 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { formatPhoneNumber, RHFTextField, useFormValidator } from '@tyro/core';
-
-import { InputAddress, UpdateStudentInput } from '@tyro/api';
 import {
+  formatPhoneNumber,
+  RHFTextField,
+  useFormValidator,
   CardEditableForm,
   CardEditableFormProps,
-} from '../../../../components/common/card-editable-form';
+} from '@tyro/core';
+
+import { InputAddress, UpdateStudentInput } from '@tyro/api';
 import { useStudentPersonal } from '../../../../api/student/personal';
-import {
-  MobileNumber,
-  MobileNumberData,
-} from '../../../../components/common/mobile-number';
+import { MobileNumberData } from '../../../../components/common/mobile-number';
 
 type ContactFormState = {
   primaryPhoneNumber: MobileNumberData | string | null;

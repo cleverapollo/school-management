@@ -1,16 +1,17 @@
 import { useEffect } from 'react';
+import { Button, Stack } from '@mui/material';
 import {
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Stack,
-} from '@mui/material';
+  RHFSelect,
+  RHFTextField,
+  useFormValidator,
+} from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import { RHFSelect, RHFTextField, useFormValidator } from '@tyro/core';
 import { PersonalTitle, StudentMedicalContact } from '@tyro/api';
 import { useCreateOrUpdateMedicalProfessional } from '../../../api/student/medicals/upsert-medical-professional';
 

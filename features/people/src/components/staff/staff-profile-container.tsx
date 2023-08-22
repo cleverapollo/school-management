@@ -5,6 +5,7 @@ import {
   PageHeading,
   Page,
   TabPageContainer,
+  PreferredNameFormat,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { Container } from '@mui/material';
@@ -23,7 +24,9 @@ export default function StaffProfileContainer() {
   const { displayName } = usePreferredNameLayout();
 
   const userProfileName = t('people:usersProfile', {
-    name: displayName(staffData?.person),
+    name: displayName(staffData?.person, {
+      format: PreferredNameFormat.FirstnameSurname,
+    }),
   });
 
   return (

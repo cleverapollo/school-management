@@ -21,6 +21,7 @@ import {
   getSubjectGroupLesson,
 } from './api';
 import { getYearGroups, getYearGroupById } from './api/year-groups';
+import { getSupportGroupById, getSupportGroups } from './api/support-groups';
 
 const YearGroups = lazy(() => import('./pages/year'));
 const ViewYearGroupPage = lazy(() => import('./pages/year/view'));
@@ -37,21 +38,36 @@ const ClassGroupsStudentsPage = lazy(() => import('./pages/class/students'));
 const ClassGroupAttendancePage = lazy(() => import('./pages/class/attendance'));
 const SubjectGroupsPage = lazy(() => import('./pages/class/subject-groups'));
 const SubjectGroups = lazy(() => import('./pages/subject'));
+const SupportGroups = lazy(() => import('./pages/support'));
 
 const SubjectGroupProfileStudentsPage = lazy(
   () => import('./pages/subject/profile/students')
+);
+
+const SupportGroupProfileStudentsPage = lazy(
+  () => import('./pages/support/profile/students')
 );
 
 const SubjectGroupProfileAttendancePage = lazy(
   () => import('./pages/subject/profile/attendance')
 );
 
+const SupportGroupProfileAttendancePage = lazy(
+  () => import('./pages/support/profile/attendance')
+);
+
 const SubjectGroupProfileTimetablePage = lazy(
   () => import('./pages/subject/profile/timetable')
 );
 
+const SupportGroupProfileTimetablePage = lazy(
+  () => import('./pages/support/profile/timetable')
+);
 const SubjectGroupContainer = lazy(
   () => import('./components/subject-group/container')
+);
+const SupportGroupContainer = lazy(
+  () => import('./components/support-group/container')
 );
 
 export const getRoutes: NavObjectFunction = (t) => [
@@ -143,6 +159,10 @@ export const getRoutes: NavObjectFunction = (t) => [
                   {
                     type: NavObjectType.NonMenuLink,
                     path: 'attendance',
+                    hasAccess: (permissions) =>
+                      permissions.hasPermission(
+                        'ps:1:attendance:read_session_attendance'
+                      ),
                     element: <ClassGroupAttendancePage />,
                   },
                 ],
@@ -228,6 +248,94 @@ export const getRoutes: NavObjectFunction = (t) => [
                     type: NavObjectType.NonMenuLink,
                     path: 'timetable',
                     element: <SubjectGroupProfileTimetablePage />,
+                    loader: ({ params }) => {
+                      const groupId = getNumber(params.groupId);
+
+                      return getTodayTimetableEvents(groupId);
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            type: NavObjectType.MenuLink,
+            path: 'support',
+            title: t('navigation:general.groups.support'),
+            loader: () => getSupportGroups(),
+            hasAccess: ({ isTyroUser }) => isTyroUser,
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                index: true,
+                loader: () => getSupportGroups(),
+                element: <SupportGroups />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: ':groupId',
+                element: <SupportGroupContainer />,
+                loader: async ({ params }) => {
+                  const groupId = getNumber(params.groupId);
+
+                  if (!groupId) {
+                    throw404Error();
+                  }
+
+                  const { calendar_calendarEventsIterator: closestLesson } =
+                    await getSubjectGroupLesson({
+                      partyId: groupId,
+                      iterator: Iterator.Closest,
+                    });
+
+                  return Promise.all([
+                    getSupportGroupById(groupId),
+                    ...(closestLesson
+                      ? [
+                          getSubjectGroupLesson({
+                            partyId: groupId,
+                            eventStartTime: closestLesson.startTime,
+                            iterator: Iterator.Next,
+                          }),
+                        ]
+                      : []),
+                  ]);
+                },
+                children: [
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    index: true,
+                    loader: () => redirect('./students'),
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'students',
+                    element: <SupportGroupProfileStudentsPage />,
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'attendance',
+                    element: <SupportGroupProfileAttendancePage />,
+                    loader: async ({ params }) => {
+                      const groupId = getNumber(params.groupId);
+
+                      if (!groupId) {
+                        throw404Error();
+                      }
+
+                      return Promise.all([
+                        getAttendanceCodes({ teachingGroupCodes: true }),
+                        getSubjectGroupLesson({
+                          partyId: groupId,
+                          iterator: Iterator.Closest,
+                        }),
+                      ]);
+                    },
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'timetable',
+                    element: <SupportGroupProfileTimetablePage />,
                     loader: ({ params }) => {
                       const groupId = getNumber(params.groupId);
 

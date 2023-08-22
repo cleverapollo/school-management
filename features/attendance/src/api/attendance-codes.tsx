@@ -8,7 +8,9 @@ import {
   gqlClient,
   graphql,
   queryClient,
+  Scalars,
 } from '@tyro/api';
+import { attendanceKeys } from './keys';
 
 export type ReturnTypeFromUseAttendanceCodes = UseQueryReturnType<
   typeof useAttendanceCodes
@@ -26,6 +28,8 @@ const attendanceCodes = graphql(/* GraphQL */ `
       visibleForContact
       nameTextId
       codeType
+      sessionCodeType
+      adminSubmitted
     }
   }
 `);
@@ -38,14 +42,8 @@ const createAttendanceCodes = graphql(/* GraphQL */ `
   }
 `);
 
-const attendanceCodesKeys = {
-  list: ['attendance', 'codes'] as const,
-  createOrUpdateAttendanceCode: () =>
-    [...attendanceCodesKeys.list, 'createOrUpdateAttendanceCode'] as const,
-};
-
 const attendanceCodesQuery = (filter: AttendanceCodeFilter) => ({
-  queryKey: attendanceCodesKeys.list,
+  queryKey: attendanceKeys.codes(filter),
   queryFn: () => gqlClient.request(attendanceCodes, { filter }),
 });
 
@@ -65,7 +63,6 @@ export function useCreateOrUpdateAttendanceCode() {
   const { t } = useTranslation(['common']);
 
   return useMutation({
-    mutationKey: attendanceCodesKeys.createOrUpdateAttendanceCode(),
     mutationFn: async (input: SaveAttendanceCodeInput[]) =>
       gqlClient.request(createAttendanceCodes, { input }),
     onError: () => {
@@ -77,7 +74,7 @@ export function useCreateOrUpdateAttendanceCode() {
       } else {
         toast(t('common:snackbarMessages.createSuccess'));
       }
-      queryClient.invalidateQueries(attendanceCodesKeys.list);
+      queryClient.invalidateQueries(attendanceKeys.all);
     },
   });
 }

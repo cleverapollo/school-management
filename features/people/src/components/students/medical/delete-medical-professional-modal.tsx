@@ -1,12 +1,11 @@
+import { Button, Stack } from '@mui/material';
 import {
-  Button,
+  Dialog,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Stack,
   DialogActions,
-  Dialog,
-} from '@mui/material';
+} from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { LoadingButton } from '@mui/lab';
 import { DeleteStudentMedicalContactInput } from '@tyro/api';

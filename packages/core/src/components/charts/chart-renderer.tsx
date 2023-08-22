@@ -3,10 +3,6 @@ import { useCubeQuery } from '@cubejs-client/react';
 import {
   Box,
   CircularProgress,
-  Dialog,
-  DialogContent,
-  DialogProps,
-  DialogTitle,
   Table,
   TableBody,
   TableCell,
@@ -15,6 +11,7 @@ import {
   TableRow,
 } from '@mui/material';
 import { Query, ResultSet } from '@cubejs-client/core';
+import { Dialog, DialogContent, DialogProps, DialogTitle } from '../dialog';
 import { useDisclosure } from '../../hooks/use-disclosure';
 
 export interface ChartDefinition {

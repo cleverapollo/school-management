@@ -37,12 +37,13 @@ import { useHandleLessonAttendance } from '../../../hooks';
 
 export default function SubjectGroupProfileAttendancePage() {
   const { t } = useTranslation(['groups', 'common']);
+  const { displayName } = usePreferredNameLayout();
 
   const { groupId } = useParams();
   const groupIdNumber = useNumber(groupId);
   const { data: subjectGroupData } = useSubjectGroupById(groupIdNumber);
 
-  const { displayName } = usePreferredNameLayout();
+  const students = subjectGroupData?.students || [];
 
   const {
     lessonId,
@@ -59,7 +60,7 @@ export default function SubjectGroupProfileAttendancePage() {
     cancelAttendance,
   } = useHandleLessonAttendance({
     partyId: groupIdNumber!,
-    students: subjectGroupData?.students || [],
+    students,
   });
 
   const [showAlertSuccess, setAlertSuccess] = useState(false);
@@ -161,7 +162,7 @@ export default function SubjectGroupProfileAttendancePage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {subjectGroupData?.students?.map((student) => (
+              {students.map((student) => (
                 <TableRow key={student?.partyId}>
                   <TableCell>
                     <Stack direction="row" spacing={2} alignItems="center">

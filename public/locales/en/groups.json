@@ -2,6 +2,7 @@
   "namedMemberList": "{{groupName}} member list",
   "classGroups": "Class Groups",
   "subjectGroups": "Subject groups",
+  "supportGroups": "Support groups",
   "customGroups": "Custom Groups",
   "yearGroups": "Year Groups",
   "subjectGroupsProfile": "{{name}}'s Profile",
@@ -11,6 +12,9 @@
   "room": "Room",
   "students": "Students",
   "status": "Status",
+  "manageBlocks": "Manage blocks",
+  "addBlock": "Add block",
+  "partOfBlocks": "Part of blocks",
   "confirmAttendance": "Confirm attendance",
   "cancelEdits": "Cancel Edits",
   "saveAttendance": "Save Attendance",
@@ -20,5 +24,26 @@
   "tutor_one": "Tutor",
   "tutor_other": "Tutors",
   "yearHead_one": "Year head",
-  "yearHead_other": "Year heads"
+  "yearHead_other": "Year heads",
+  "subjectGroup": {
+    "switchToSupportClass": {
+      "action": "Switch to support class",
+      "modalTitle": "Switch these subject groups to be a  support class?",
+      "modalDescription": "Support classes are used to give students a helping hand in a particular subject.",
+      "confim": "Switch to support class"
+    }
+  },
+  "subjectGroupStudentMembershipType": {
+    "BLOCK": "Block",
+    "CORE": "Core",
+    "UNKNOWN": "Unknown"
+  },
+  "supportGroup": {
+    "switchToSubjectGroup": {
+      "action": "Switch to subject class",
+      "modalTitle": "Switch these support groups to be a subject groups?",
+      "modalDescription": "Subject groups are standard classes. Such as an English or Maths class.",
+      "confim": "Switch to subject group"
+    }
+  }
 }

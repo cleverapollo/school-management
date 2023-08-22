@@ -57,7 +57,6 @@ export const GeneralInformation = ({ control }: GeneralInformationProps) => {
             getOptionLabel={(option) =>
               t(`settings:permissions.memberTypeOption.${option}`)
             }
-            disabled={Boolean(isEditingGroup)}
             controlProps={{
               name: 'memberType',
               control,

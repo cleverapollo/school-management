@@ -5,62 +5,69 @@ import {
   ActionMenu,
   useDebouncedValue,
   ActionMenuProps,
+  useDisclosure,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useLocation } from 'react-router-dom';
 import { Box } from '@mui/material';
 import { useMemo, useState } from 'react';
-import { MaleFemaleIcon, RotationIcon } from '@tyro/icons';
+import { MaleFemaleIcon, PersonTickIcon, RotationIcon } from '@tyro/icons';
 import { useContainerMargin } from '../hooks/use-container-margin';
 import { ClassListSettingsProvider } from '../store/class-list-settings';
 import { ReturnTypeOfUseBlockList } from '../api/blocks';
 import { CreateBlockRotationModal } from './blocks/create-block-rotation-modal';
+import { YearGroupsAutocompleteProps } from './common/list-manager/year-groups-autocomplete';
+import { AutoAssignConfirmDialog } from './common/auto-assign-confirm-dialog';
 
 export default function ClassListManagerContainer() {
   const { t } = useTranslation(['navigation', 'classListManager']);
   const { pathname } = useLocation();
+  const isBlockView = pathname.includes('blocks');
   const containerMargin = useContainerMargin();
 
-  const [currentBlock, setCurrentBlock] =
-    useState<NonNullable<ReturnTypeOfUseBlockList>[number]>();
-  const blockHasRotations = !!currentBlock?.isRotation;
+  const [showGender, setShowGender] = useState(false);
+  const [selectedYearGroup, setSelectedYearGroup] =
+    useState<YearGroupsAutocompleteProps['value']>(null);
+  const [selectedBlock, setSelectedBlock] = useState<
+    ReturnTypeOfUseBlockList[number] | null
+  >(null);
 
+  const blockHasRotations = !!selectedBlock?.isRotation;
+  const {
+    isOpen: isAutoAssignOpen,
+    onOpen: onOpenAutoAssign,
+    onClose: onCloseAutoAssign,
+  } = useDisclosure({ defaultIsOpen: false });
   const {
     value: blockForCreateRotation,
     debouncedValue: debouncedBlockForCreateRotation,
     setValue: setBlockForCreateRotation,
-  } = useDebouncedValue<
-    NonNullable<ReturnTypeOfUseBlockList>[number] | undefined
-  >({
-    defaultValue: undefined,
+  } = useDebouncedValue<NonNullable<ReturnTypeOfUseBlockList>[number] | null>({
+    defaultValue: null,
   });
-
-  const isBlockView = pathname.includes('blocks');
-  const [classListSettings, setClassListSettings] = useState({
-    showGender: false,
-    setCurrentBlock,
-  });
-
-  const toggleShowGender = () => {
-    setClassListSettings((prevState) => ({
-      ...prevState,
-      showGender: !prevState.showGender,
-    }));
-  };
 
   const createRotation = () => {
-    setBlockForCreateRotation(currentBlock);
+    setBlockForCreateRotation(selectedBlock);
   };
 
   const menuItems = useMemo<ActionMenuProps['menuItems']>(
     () => [
       {
-        label: classListSettings.showGender
+        label: showGender
           ? t('classListManager:deactivateGenderView')
           : t('classListManager:activateGenderView'),
         icon: <MaleFemaleIcon />,
-        onClick: toggleShowGender,
+        onClick: () => setShowGender((prevState) => !prevState),
       },
+      ...(blockHasRotations
+        ? []
+        : [
+            {
+              label: t('classListManager:autoAssign'),
+              icon: <PersonTickIcon />,
+              onClick: onOpenAutoAssign,
+            },
+          ]),
       ...(isBlockView && !blockHasRotations
         ? [
             {
@@ -73,7 +80,32 @@ export default function ClassListManagerContainer() {
           ]
         : []),
     ],
-    [isBlockView, blockHasRotations, classListSettings, t, currentBlock]
+    [
+      isBlockView,
+      blockHasRotations,
+      showGender,
+      setShowGender,
+      t,
+      onOpenAutoAssign,
+      createRotation,
+    ]
+  );
+
+  const classListSettings = useMemo(
+    () => ({
+      showGender,
+      selectedYearGroup,
+      selectedBlock,
+      setSelectedBlock,
+      setSelectedYearGroup,
+    }),
+    [
+      showGender,
+      selectedYearGroup,
+      selectedBlock,
+      setSelectedBlock,
+      setSelectedYearGroup,
+    ]
   );
 
   return (
@@ -110,11 +142,18 @@ export default function ClassListManagerContainer() {
           />
         </Box>
         <CreateBlockRotationModal
-          open={blockForCreateRotation}
+          open={!!blockForCreateRotation}
           blockForCreateRotation={
             blockForCreateRotation || debouncedBlockForCreateRotation
           }
-          onClose={() => setBlockForCreateRotation(undefined)}
+          onClose={() => setBlockForCreateRotation(null)}
+        />
+        <AutoAssignConfirmDialog
+          open={isAutoAssignOpen}
+          onClose={onCloseAutoAssign}
+          isBlockView={isBlockView}
+          currentBlock={selectedBlock}
+          currentYearGroup={selectedYearGroup}
         />
       </Page>
     </ClassListSettingsProvider>

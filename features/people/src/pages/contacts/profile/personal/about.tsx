@@ -3,6 +3,8 @@ import {
   RHFTextField,
   formatPhoneNumber,
   useFormValidator,
+  CardEditableForm,
+  CardEditableFormProps,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -18,10 +20,6 @@ import {
   MobileNumber,
   MobileNumberData,
 } from '../../../../components/common/mobile-number';
-import {
-  CardEditableForm,
-  CardEditableFormProps,
-} from '../../../../components/common/card-editable-form';
 import { PersonalTitlesDropdown } from '../../../../components/common/personal-titles-dropdown';
 import { GenderDropdown } from '../../../../components/common/gender-dropdown';
 

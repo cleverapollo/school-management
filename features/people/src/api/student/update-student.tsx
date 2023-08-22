@@ -18,7 +18,6 @@ export function useUpdateStudent() {
   const { t } = useTranslation(['people']);
 
   return useMutation({
-    mutationKey: peopleKeys.students.updateStudent(),
     mutationFn: async (input: [UpdateStudentInput]) =>
       gqlClient.request(updateStudent, { input }),
     onSuccess: async () => {

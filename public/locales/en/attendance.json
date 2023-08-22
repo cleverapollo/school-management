@@ -5,6 +5,7 @@
   "pageHeading": {
     "attendance": "Attendance"
   },
+  "absentRequests": "Absent requests",
   "attendance": "Attendance",
   "attendanceCodes": "Attendance codes",
   "createAttendanceCode": "Create attendance code",
@@ -14,6 +15,13 @@
   "availableToTeachers": "Available to teachers",
   "availableToContacts": "Available to contacts",
   "editAttendanceCode": "Edit attendance code",
+  "editAbsentRequest": "Edit absent request",
+  "createAbsentRequest": "Create absent request",
+  "viewAbsentRequest": "View absent request",
+  "approveAbsentRequest_one": "Approve absent request",
+  "approveAbsentRequest_other": "Approve absent requests",
+  "declineAbsentRequest_one": "Decline absent request",
+  "declineAbsentRequest_other": "Decline absent requests",
   "attendanceCodeNameShouldBeUnique": "Attendance code name should be unique",
   "availableTo": "Available to",
   "selectUserGroups": "Select user groups that will use this attendance code",
@@ -27,8 +35,13 @@
   "notes": "Notes",
   "attendanceNotTaken": "Attendance not taken",
   "attendanceTaken": "Attendance taken",
+  "attendanceType": "Attendance type",
   "sessionAttendanceYear": "Session attendance {{year}}",
   "absenceType": "Absence type",
+  "absences": "Absences",
+  "unexplainedAbsences": "Unexplained absences",
+  "uneAbsences": "Une. absences",
+  "youMustSelectAttendanceCodeBeforeApplyingANote": "You must select an attendance code before applying a note",
   "totalDays": "Total days {{count}}",
   "noSessionAttendanceForYear": "No session attendance data available for this year.",
   "studentAttendanceModalMessage": "You are viewing attendance for {{student}}, where you can edit and apply updates.",
@@ -43,6 +56,25 @@
   "unexplainedAbsence": "Unexplained absence",
   "present": "Present",
   "late": "Late",
+  "sessionAttendance": "Session attendance",
+  "studentsClassGroupsEtc": "Students, class groups, etc.",
+  "iconView": "Icon view",
+  "codeView": "Code view",
+  "changeRolebookView": "Change rolebook view",
+  "absentType": "Absent type",
+  "studentName": "Student name",
+  "youAreAboutToApproveAbsentRequest_one": "You are about to approve this absent request which will notify the associated contact. Are you sure you want to continue?",
+  "youAreAboutToDeclineAbsentRequest_one": "You are about to decline this absent request which will notify the associated contact. Are you sure you want to continue?",
+  "youAreAboutToApproveAbsentRequest_other": "You are about to approve {{count}} absent requests.The requesting contact will be notified. Are you sure you want to continue?",
+  "youAreAboutToDeclineAbsentRequest_other": "You are about to decline {{count}} absent requests.The requesting contact will be notified. Are you sure you want to continue?",
+  "yesApproveAbsentRequest_one": "Yes, approve absent request",
+  "yesDeclineAbsentRequest_one": "Yes, decline absent request",
+  "yesApproveAbsentRequest_other": "Yes, approve {{count}} requests",
+  "yesDeclineAbsentRequest_other": "Yes, decline {{count}} requests",
+  "approveRequests": "Approve requests",
+  "declineRequests": "Decline requests",
+  "dateOfAbsence": "Date of absence",
+  "feedback": "Feedback",
   "nameByCodeType": {
     "PRESENT": "Present",
     "LATE": "Late",
@@ -59,5 +91,20 @@
     "G": "Transferred to another school",
     "H": "Student on holiday"
   },
-  "monthOverviews": "Month overviews"
+  "monthOverviews": "Month overviews",
+  "attendanceRequestStatus": {
+    "APPROVED": "Approved",
+    "DENIED": "Declined",
+    "PENDING": "Pending"
+  },
+  "absenceRequestFormatByType": {
+    "MULTI_DAY": "{{startDate}} - {{endDate}}",
+    "SINGLE_DAY": "{{startDate}}",
+    "PARTIAL_DAY": "{{startDate}} from {{startTime}} to {{endTime}}"
+  },
+  "youHaveNotSelectedPendingAndApproved": "You have not selected any \"Pending\" or \"Approved\" requests",
+  "youHaveNotSelectedPendingAndDeclined": "You have not selected any \"Pending\" or \"Declined\" requests",
+  "note": "Note",
+  "addNote": "Add note",
+  "editNote": "Edit note"
 }

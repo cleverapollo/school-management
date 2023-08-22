@@ -97,7 +97,7 @@ export function ResourcesTable({
                 border: `1px solid ${palette.divider}`,
                 p: 1,
               },
-              '& thead th': {
+              '& th': {
                 backgroundColor: 'white',
                 color: 'text.primary',
                 fontWeight: 600,

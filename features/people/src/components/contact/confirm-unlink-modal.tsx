@@ -1,4 +1,5 @@
-import { Button, DialogTitle, DialogActions, Dialog } from '@mui/material';
+import { Button } from '@mui/material';
+import { Dialog, DialogActions, DialogTitle } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 
 export type ConfirmUnlinkModalProps = {

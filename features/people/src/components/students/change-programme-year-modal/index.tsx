@@ -1,12 +1,11 @@
+import { Button, Stack } from '@mui/material';
 import {
-  Button,
   Dialog,
   DialogActions,
   DialogTitle,
   DialogContent,
   DialogContentText,
-  Stack,
-} from '@mui/material';
+} from '@tyro/core';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
 import LoadingButton from '@mui/lab/LoadingButton';

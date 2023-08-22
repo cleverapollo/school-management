@@ -1,16 +1,12 @@
 import {
   Button,
-  DialogTitle,
   Stack,
-  DialogActions,
-  Dialog,
   Typography,
   Box,
   Tooltip,
   IconButton,
   Divider,
   Grid,
-  DialogContent,
   Alert,
   Collapse,
   AlertTitle,
@@ -20,6 +16,10 @@ import {
   RHFTextField,
   useFormValidator,
   useDisclosure,
+  DialogTitle,
+  DialogActions,
+  Dialog,
+  DialogContent,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -47,10 +47,8 @@ export type CreateBlockRotationFormState = Pick<
 };
 
 export type CreateBlockRotationViewProps = {
-  open: NonNullable<ReturnTypeOfUseBlockList>[number] | undefined;
-  blockForCreateRotation?:
-    | NonNullable<ReturnTypeOfUseBlockList>[number]
-    | undefined;
+  open: boolean;
+  blockForCreateRotation?: NonNullable<ReturnTypeOfUseBlockList>[number] | null;
   onClose: () => void;
 };
 
@@ -199,7 +197,7 @@ export const CreateBlockRotationModal = ({
 
   return (
     <Dialog
-      open={!!open}
+      open={open}
       onClose={handleClose}
       scroll="paper"
       fullWidth

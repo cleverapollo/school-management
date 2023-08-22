@@ -8,7 +8,9 @@
     "attendance": {
       "title": "Attendance",
       "overview": "Overview",
-      "codes": "Attendance codes"
+      "codes": "Attendance codes",
+      "session": "Session",
+      "absentRequests": "Absent requests"
     },
     "absence": {
       "title": "Absence",
@@ -18,6 +20,7 @@
       "title": "Groups",
       "class": "Class",
       "subject": "Subject",
+      "support": "Support",
       "custom": "Custom",
       "year": "Year"
     },
@@ -53,6 +56,7 @@
       "ppod": "PPOD",
       "schoolDetails": "School details",
       "login": "Login",
+      "dtrReturns": "DTR Returns",
       "userAccess": "User access",
       "permissions": "Permissions"
     },
@@ -60,6 +64,11 @@
       "title": "Timetable",
       "timetables": "Timetables",
       "editTimetable": "Edit timetable"
+    },
+    "printing": {
+      "title": "Printing",
+      "timetable": "Timetable"
+
     },
     "sms": "SMS"
   },

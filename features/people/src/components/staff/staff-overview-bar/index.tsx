@@ -21,9 +21,9 @@ export function StaffOverviewBar({ staffId }: StaffOverviewBarProps) {
       <Card variant="outlined" sx={{ p: 1.25, display: 'inline-block' }}>
         <Stack direction="row" alignItems="center" sx={{ flexWrap: 'wrap' }}>
           <Avatar
-            sx={{ mx: 1 }}
-            src={staffData?.person?.avatarUrl}
             name={name}
+            src={staffData?.person?.avatarUrl}
+            sx={{ mx: 1, width: 62, height: 62, fontSize: 20 }}
           />
           <Stack sx={{ ml: 0.5, mr: 2.5 }}>
             <Typography variant="subtitle1" component="h2">

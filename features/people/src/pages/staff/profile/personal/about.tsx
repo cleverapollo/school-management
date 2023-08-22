@@ -1,13 +1,15 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { RHFTextField, RHFDatePicker, useFormValidator } from '@tyro/core';
+import {
+  RHFTextField,
+  RHFDatePicker,
+  useFormValidator,
+  CardEditableForm,
+  CardEditableFormProps,
+} from '@tyro/core';
 import dayjs from 'dayjs';
 
 import { UpsertStaffInput, InputAddress, PersonalTitle } from '@tyro/api';
 import { useStaffPersonal } from '../../../../api/staff/personal';
-import {
-  CardEditableForm,
-  CardEditableFormProps,
-} from '../../../../components/common/card-editable-form';
 import { PersonalTitlesDropdown } from '../../../../components/common/personal-titles-dropdown';
 import { GenderDropdown } from '../../../../components/common/gender-dropdown';
 

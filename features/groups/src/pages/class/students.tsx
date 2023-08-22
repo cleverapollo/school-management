@@ -37,6 +37,7 @@ const getClassGroupColumns = (
         to={getPersonProfileLink(data?.person)}
       />
     ),
+    sort: 'asc',
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: true,

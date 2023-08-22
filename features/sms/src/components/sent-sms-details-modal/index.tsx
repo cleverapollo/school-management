@@ -1,13 +1,12 @@
+import { Box, Stack, Typography } from '@mui/material';
+import { useTranslation } from '@tyro/i18n';
 import {
-  Box,
+  Avatar,
+  usePreferredNameLayout,
   Dialog,
   DialogActions,
   DialogTitle,
-  Stack,
-  Typography,
-} from '@mui/material';
-import { useTranslation } from '@tyro/i18n';
-import { Avatar, usePreferredNameLayout } from '@tyro/core';
+} from '@tyro/core';
 import { ReturnTypeFromUseSentSms } from '../../api/sent-sms';
 import { SmsMessageField } from '../common/sms-message-field';
 import { SmsSummary } from '../common/sms-summary';
