@@ -73,12 +73,16 @@ const getAttendanceCodeColumns = (
     filter: true,
     editable: true,
     filterValueGetter: ({ data }) =>
-      data?.codeType ? t(`common:attendanceCode.${data.codeType}`) : null,
+      data?.sessionCodeType
+        ? t(`common:attendanceCode.${data.sessionCodeType}`)
+        : null,
     cellEditorSelector: AttendanceCodeSelectCellEditor(t),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAttendanceCodes, any>) =>
-      data?.codeType ? <AttendanceCodeChip codeType={data?.codeType} /> : null,
+      data?.sessionCodeType ? (
+        <AttendanceCodeChip codeType={data?.sessionCodeType} />
+      ) : null,
   },
   {
     field: 'visibleForTeacher',
@@ -183,7 +187,7 @@ export default function Codes() {
                   value: currentData?.description,
                 },
               ],
-          codeType: data[id].codeType?.newValue ?? currentData?.codeType,
+          codeType: data[id].codeType?.newValue ?? currentData?.sessionCodeType,
           visibleForTeacher:
             data[id].visibleForTeacher?.newValue ??
             currentData?.visibleForTeacher,
