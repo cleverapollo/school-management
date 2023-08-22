@@ -6227,45 +6227,6 @@ export type Wellbeing_UpsertStudentAenInput = {
   typeNote?: InputMaybe<Scalars['String']>;
 };
 
-export type Wellbeing_DeleteStudentAenInput = {
-  id: Scalars['Int'];
-  studentPartyId: Scalars['Long'];
-};
-
-export type Wellbeing_StudentAen = {
-  __typename?: 'Wellbeing_StudentAen';
-  entries: Array<Wellbeing_StudentAenEntry>;
-  student?: Maybe<Student>;
-  studentPartyId: Scalars['Long'];
-};
-
-export type Wellbeing_StudentAenEntry = {
-  __typename?: 'Wellbeing_StudentAenEntry';
-  contact?: Maybe<Scalars['String']>;
-  endDate?: Maybe<Scalars['Date']>;
-  id: Scalars['Int'];
-  note?: Maybe<Scalars['String']>;
-  provision?: Maybe<Scalars['String']>;
-  snaSupport?: Maybe<Scalars['String']>;
-  startDate?: Maybe<Scalars['Date']>;
-  studentPartyId: Scalars['Long'];
-  type?: Maybe<Scalars['String']>;
-  typeNote?: Maybe<Scalars['String']>;
-};
-
-export type Wellbeing_UpsertStudentAenInput = {
-  contact?: InputMaybe<Scalars['String']>;
-  endDate?: InputMaybe<Scalars['Date']>;
-  id?: InputMaybe<Scalars['Int']>;
-  note?: InputMaybe<Scalars['String']>;
-  provision?: InputMaybe<Scalars['String']>;
-  snaSupport?: InputMaybe<Scalars['String']>;
-  startDate?: InputMaybe<Scalars['Date']>;
-  studentPartyId: Scalars['Long'];
-  type?: InputMaybe<Scalars['String']>;
-  typeNote?: InputMaybe<Scalars['String']>;
-};
-
 export type WithdrawParentalAttendanceRequest = {
   id: Scalars['Long'];
 };
@@ -6800,13 +6761,6 @@ export type Notes_DeleteNoteMutationVariables = Exact<{
 
 
 export type Notes_DeleteNoteMutation = { __typename?: 'Mutation', notes_deleteNote?: { __typename?: 'Success', success?: boolean | null } | null };
-
-export type Notes_NotesQueryVariables = Exact<{
-  filter: Notes_NotesFilter;
-}>;
-
-
-export type Notes_NotesQuery = { __typename?: 'Query', notes_notes: Array<{ __typename?: 'Notes_Note', id?: number | null, note?: string | null, createdOn: string, createdBy: number, createdByPerson?: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } | null, tags: Array<{ __typename?: 'Notes_Tag', id: number, name: string, category: Notes_TagCategory, descriptionTextId: number, nameTextId: number }> }> };
 
 export type Notes_TagsQueryVariables = Exact<{
   filter: Notes_TagFilter;
