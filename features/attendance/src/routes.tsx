@@ -41,8 +41,7 @@ export const getRoutes: NavObjectFunction = (t) => [
           {
             type: NavObjectType.MenuLink,
             path: 'absent-requests-overview',
-            title: t('navigation:general.attendance.absentRequests'),
-            // hasAccess: ({ isContact }) => isContact,
+            title: t('navigation:general.attendance.absentRequestOverview'),
             children: [
               {
                 type: NavObjectType.NonMenuLink,

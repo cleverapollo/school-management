@@ -8,23 +8,32 @@ import {
   DialogTitle,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
+import { useWithdrawAbsentRequest } from '../../api';
 
 export interface WithdrawAbsentRequestConfirmModalProps {
+  id: number;
   isOpen: boolean;
-  onWithdraw?: () => void;
   onClose: () => void;
 }
 
 export function WithdrawAbsentRequestConfirmModal({
+  id,
   isOpen,
-  onWithdraw,
   onClose,
 }: WithdrawAbsentRequestConfirmModalProps) {
   const { t } = useTranslation(['common', 'attendance']);
 
+  const { mutate } = useWithdrawAbsentRequest();
+
   const onSubmit = () => {
-    onClose();
-    onWithdraw?.();
+    mutate(
+      { id },
+      {
+        onSuccess: () => {
+          onClose();
+        },
+      }
+    );
   };
 
   return (

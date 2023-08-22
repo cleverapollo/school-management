@@ -9,14 +9,17 @@ import {
   Typography,
 } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { AttendanceCode, ParentalAttendanceRequestStatus } from '@tyro/api';
+import {
+  AttendanceCode,
+  ParentalAttendanceRequestStatus,
+  useUser,
+} from '@tyro/api';
 import {
   Avatar,
   ReturnTypeDisplayName,
   RHFSelect,
   RHFTextField,
   useDisclosure,
-  useFormValidator,
   usePreferredNameLayout,
   CardEditableForm,
   CardEditableFormProps,
@@ -106,8 +109,8 @@ export const ViewAbsentRequestModal = ({
   onClose,
 }: ViewAbsentRequestModalProps) => {
   const { t } = useTranslation(['common', 'attendance']);
-
   const { data: attendanceCodes } = useAttendanceCodes({});
+  const { user } = useUser();
 
   const {
     isOpen: isWithdrawAbsentRequestsModalOpen,
@@ -123,14 +126,6 @@ export const ViewAbsentRequestModal = ({
     displayName,
     attendanceCodes
   );
-  const { resolver, rules } =
-    useFormValidator<ReturnTypeFromUseAbsentRequests>();
-
-  const absentRequestFormResolver = resolver({
-    attendanceCode: rules.required(),
-  });
-
-  const handleEdit = (_: ReturnTypeFromUseAbsentRequests) => {};
 
   return (
     <Dialog
@@ -157,15 +152,13 @@ export const ViewAbsentRequestModal = ({
           </Stack>
         </Stack>
         <Divider flexItem sx={{ mt: 3 }} />
-
-        <CardEditableForm
+        <CardEditableForm<ReturnTypeFromUseAbsentRequests>
           title={t('common:details')}
           editable={false}
           fields={absentRequestDataWithLabels}
-          resolver={absentRequestFormResolver}
-          onSave={handleEdit}
           sx={{ mx: -3 }}
           hideBorder
+          onSave={() => {}}
         />
       </DialogContent>
       <DialogActions>
@@ -179,17 +172,22 @@ export const ViewAbsentRequestModal = ({
           color="primary"
           disabled={
             initialAbsentRequestState?.status !==
-            ParentalAttendanceRequestStatus.Pending
+              ParentalAttendanceRequestStatus.Pending ||
+            initialAbsentRequestState.contactPartyId !==
+              user?.activeProfileId ||
+            dayjs(initialAbsentRequestState.to).isAfter(dayjs())
           }
         >
           {t('attendance:withdrawAbsentRequest')}
         </Button>
       </DialogActions>
-      <WithdrawAbsentRequestConfirmModal
-        isOpen={isWithdrawAbsentRequestsModalOpen}
-        onWithdraw={onClose}
-        onClose={onCloseWithdrawAbsentRequestsModal}
-      />
+      {initialAbsentRequestState?.id && (
+        <WithdrawAbsentRequestConfirmModal
+          id={initialAbsentRequestState.id}
+          isOpen={isWithdrawAbsentRequestsModalOpen}
+          onClose={onCloseWithdrawAbsentRequestsModal}
+        />
+      )}
     </Dialog>
   );
 };

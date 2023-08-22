@@ -10,7 +10,8 @@
       "overview": "Overview",
       "codes": "Attendance codes",
       "session": "Session",
-      "absentRequests": "Absent requests"
+      "absentRequests": "Absent requests",
+      "absentRequestOverview": "Absent request overview"
     },
     "absence": {
       "title": "Absence",
@@ -68,7 +69,6 @@
     "printing": {
       "title": "Printing",
       "timetable": "Timetable"
-
     },
     "sms": "SMS"
   },

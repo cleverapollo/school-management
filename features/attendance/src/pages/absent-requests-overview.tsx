@@ -1,4 +1,5 @@
 import { Button } from '@mui/material';
+import { useUser } from '@tyro/api';
 import {
   GridOptions,
   ICellRendererParams,
@@ -15,11 +16,11 @@ import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import { ReturnTypeFromUseAbsentRequests, useAbsentRequests } from '../api';
-import { AbsentRequestStatusChip } from '../components/absent-requests/absent-request-status-chip';
 import {
   ViewAbsentRequestModal,
   ViewAbsentRequestModalProps,
 } from '../components/absent-requests-overview/view-absent-request-overview-modal';
+import { AbsentRequestStatusChip } from '../components/absent-requests/absent-request-status-chip';
 
 dayjs.extend(LocalizedFormat);
 
@@ -88,8 +89,11 @@ const getAbsentRequestsOverviewColumns = (
 ];
 
 export default function AbsentRequestsOverview() {
+  const { user } = useUser();
   const { t } = useTranslation(['common', 'attendance']);
-  const { data: absentRequests } = useAbsentRequests({});
+  const { data: absentRequests } = useAbsentRequests({
+    contactPartyId: user?.activeProfileId,
+  });
 
   const {
     setValue: setViewAbsentRequestInitialState,
@@ -113,15 +117,14 @@ export default function AbsentRequestsOverview() {
   );
 
   return (
-    <PageContainer title={t('attendance:absentRequests')}>
+    <PageContainer title={t('attendance:absentRequestOverview')}>
       <PageHeading
-        title={t('attendance:absentRequests')}
+        title={t('attendance:absentRequestOverview')}
         titleProps={{ variant: 'h3' }}
       />
       <Table
         rowData={absentRequests ?? []}
         columnDefs={absentRequestColumns}
-        rowSelection="multiple"
         getRowId={({ data }) => String(data?.id)}
       />
       <ViewAbsentRequestModal
