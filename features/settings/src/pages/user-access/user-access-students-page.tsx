@@ -52,12 +52,6 @@ const getColumns = (
       data ? <TableAvatar name={displayName(data?.personalInfo)} /> : null,
     checkboxSelection: ({ data }) => Boolean(data),
   },
-  // {
-  //   field: 'contactStudents',
-  //   headerName: t('common:students'),
-  //   valueGetter: ({ data }) =>
-  //     displayNames(data?.contactStudents?.map((student) => student)),
-  // },
   {
     headerName: t('common:email'),
     field: 'personalInfo.primaryEmail.email',
