@@ -10,6 +10,7 @@
     "@tyro/api": "*",
     "@tyro/calendar": "*",
     "@tyro/core": "*",
+    "@tyro/groups": "*",
     "@tyro/i18n": "*",
     "@tyro/icons": "*",
     "dayjs": "^1.11.7",
