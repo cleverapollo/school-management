@@ -61,11 +61,10 @@ export default function StudentProfileContainer() {
           {
             label: t('people:contacts'),
             value: 'contacts',
-            hasAccess: ({ isStaffUser }) =>
-              // isStaffUserWithPermission(
-              //   'ps:1:people:view_contacts_for_student'
-              // ),
-              isStaffUser,
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission(
+                'ps:1:people:view_contacts_for_student'
+              ),
           },
           {
             label: t('common:attendance'),
