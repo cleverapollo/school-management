@@ -11,7 +11,7 @@ export default function Callback() {
 
   useEffect(() => {
     if (!isLoading) {
-      navigate(activeProfile ? '/groups/class' : '/login');
+      navigate(activeProfile ? '/' : '/login');
     }
   }, [navigate, activeProfile, isLoading]);
 
