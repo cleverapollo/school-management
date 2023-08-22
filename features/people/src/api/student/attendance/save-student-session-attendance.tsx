@@ -11,7 +11,7 @@ import { useToast } from '@tyro/core';
 import { peopleKeys } from '../../keys';
 
 const saveStudentSessionAttendance = graphql(/* GraphQL */ `
-  mutation attendance_saveStudentSessionAttendance(
+  mutation saveStudentSessionAttendance(
     $input: [SaveStudentSessionAttendanceInput]
   ) {
     attendance_saveStudentSessionAttendance(input: $input) {

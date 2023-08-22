@@ -93,7 +93,7 @@ export const PermissionAccordionCard = ({
           id={feature}
         >
           <Typography component="h3" variant="subtitle2">
-            {/* {t(`settings:permissions.features.${feature}`)} */}
+            {t(`settings:permissions.features.${feature}`)}
           </Typography>
         </AccordionSummary>
         <AccordionDetails>{children}</AccordionDetails>

@@ -9,9 +9,7 @@ import {
 import { peopleKeys } from '../../keys';
 
 const studentSessionAttendance = graphql(/* GraphQL */ `
-  query attendance_studentSessionAttendance(
-    $filter: StudentSessionAttendanceFilter
-  ) {
+  query studentSessionAttendance($filter: StudentSessionAttendanceFilter) {
     attendance_studentSessionAttendance(filter: $filter) {
       dateAttendance {
         date
