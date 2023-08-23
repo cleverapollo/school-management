@@ -1,18 +1,16 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, redirect } from 'react-router-dom';
 // @mui
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem } from '@mui/material';
 // routes
-import { useAuth, useUser } from '@tyro/api';
-import { Avatar } from '@tyro/core';
+import { useAuth, useUser, usePermissions } from '@tyro/api';
+import { Avatar, Link } from '@tyro/core';
 import MenuPopover from '../../../../../../src/components/menu-popover';
 import { IconButtonAnimate } from '../../../../../../src/components/animate';
-
 // ----------------------------------------------------------------------
-
 const OPTIONS = [
   {
     label: 'Home',
@@ -35,12 +33,14 @@ export default function AccountPopover() {
   const { activeProfile } = useUser();
   const { logout } = useAuth();
 
+  const { isStaffUserWithPermission } = usePermissions();
   const [openPopover, setOpenPopover] = useState<HTMLElement | null>(null);
 
   const handleOpenPopover = (event: React.MouseEvent<HTMLElement>) => {
     setOpenPopover(event.currentTarget);
   };
 
+  const profileId = activeProfile?.partyId;
   const handleClosePopover = () => {
     setOpenPopover(null);
   };
@@ -81,13 +81,22 @@ export default function AccountPopover() {
         sx={{ width: 200, p: 0 }}
       >
         <Box sx={{ my: 1.5, px: 2 }}>
-          <Typography variant="subtitle2" noWrap>
-            {activeProfile?.nickName}
-          </Typography>
+          {profileId &&
+            isStaffUserWithPermission('ps:1:people:view_staff_profile') && (
+              <Link to={`/people/staff/${profileId}/personal`}>
+                <Typography variant="subtitle2" noWrap>
+                  {activeProfile?.nickName}
+                </Typography>
 
-          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {activeProfile?.tenant.name}
-          </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{ color: 'text.secondary' }}
+                  noWrap
+                >
+                  {activeProfile?.tenant.name}
+                </Typography>
+              </Link>
+            )}
         </Box>
 
         {/* <Divider sx={{ borderStyle: 'dashed' }} />
