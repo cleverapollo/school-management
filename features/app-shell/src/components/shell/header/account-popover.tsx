@@ -83,7 +83,10 @@ export default function AccountPopover() {
         <Box sx={{ my: 1.5, px: 2 }}>
           {profileId &&
             isStaffUserWithPermission('ps:1:people:view_staff_profile') && (
-              <Link to={`/people/staff/${profileId}/personal`}>
+              <Link
+                to={`/people/staff/${profileId}/personal`}
+                onClick={handleClosePopover}
+              >
                 <Typography variant="subtitle2" noWrap>
                   {activeProfile?.nickName}
                 </Typography>
