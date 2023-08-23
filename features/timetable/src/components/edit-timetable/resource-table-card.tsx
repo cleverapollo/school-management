@@ -22,6 +22,8 @@ interface ResourceTableCardProps {
   toggleLessonSelection: UseResourceTableReturnType['toggleLessonSelection'];
   selectedLessonIds: UseResourceTableReturnType['selectedLessonIds'];
   onOpenSwapTeacherOrRoomDialog: (anchorLesson: Lesson) => void;
+  onOpenDeleteLessonDialog: (anchorLesson: Lesson) => void;
+  onOpenAddLessonDialog: (anchorLesson: Lesson) => void;
 }
 
 type GroupCardProps = {
@@ -31,6 +33,8 @@ type GroupCardProps = {
   toggleLessonSelection: UseResourceTableReturnType['toggleLessonSelection'];
   selectedLessonIds: UseResourceTableReturnType['selectedLessonIds'];
   onOpenSwapTeacherOrRoomDialog: (anchorLesson: Lesson) => void;
+  onOpenDeleteLessonDialog: (anchorLesson: Lesson) => void;
+  onOpenAddLessonDialog: (anchorLesson: Lesson) => void;
 };
 
 interface PlaceholderLessonProps {
@@ -95,6 +99,8 @@ function GroupCard({
   isLessonSelected,
   toggleLessonSelection,
   onOpenSwapTeacherOrRoomDialog,
+  onOpenDeleteLessonDialog,
+  onOpenAddLessonDialog,
   selectedLessonIds,
 }: GroupCardProps) {
   const { displayName, displayNames } = usePreferredNameLayout();
@@ -226,6 +232,8 @@ function GroupCard({
         onOpenSwapTeacherOrRoomDialog={() =>
           onOpenSwapTeacherOrRoomDialog(lesson)
         }
+        onOpenDeleteLessonDialog={() => onOpenDeleteLessonDialog(lesson)}
+        onOpenAddLessonDialog={() => onOpenAddLessonDialog(lesson)}
         isSelected={isSelected}
       />
     </>

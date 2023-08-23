@@ -1,17 +1,21 @@
-import { Menu, MenuItem, MenuProps } from '@mui/material';
+import { Divider, Menu, MenuItem, MenuProps } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { ActionMenuIconWrapper } from '@tyro/core';
-import { BuildingGraduateHatIcon } from '@tyro/icons';
+import { AddIcon, BuildingGraduateHatIcon, TrashIcon } from '@tyro/icons';
 
 interface ResourceContextMenuProps extends MenuProps {
   selectedLessonIds: string[];
   onOpenSwapTeacherOrRoomDialog: () => void;
+  onOpenDeleteLessonDialog: () => void;
+  onOpenAddLessonDialog: () => void;
   isSelected: boolean;
 }
 
 export function LessonContextMenu({
   selectedLessonIds,
   onOpenSwapTeacherOrRoomDialog,
+  onOpenDeleteLessonDialog,
+  onOpenAddLessonDialog,
   isSelected,
   ...props
 }: ResourceContextMenuProps) {
@@ -42,7 +46,7 @@ export function LessonContextMenu({
         '& li': {
           fontSize: '0.875rem',
           display: 'flex',
-          justifyContent: 'space-between',
+
           alignItems: 'center',
 
           '& > div': {
@@ -68,6 +72,31 @@ export function LessonContextMenu({
             count: numberOfSelectedLessons,
           })}
         </>
+      </MenuItem>
+      <MenuItem
+        onClick={(event) => {
+          event.preventDefault();
+          onOpenDeleteLessonDialog();
+          handleClose();
+        }}
+      >
+        <ActionMenuIconWrapper>
+          <TrashIcon />
+        </ActionMenuIconWrapper>
+        {t('timetable:deleteLesson')}
+      </MenuItem>
+      <Divider />
+      <MenuItem
+        onClick={(event) => {
+          event.preventDefault();
+          onOpenAddLessonDialog();
+          handleClose();
+        }}
+      >
+        <ActionMenuIconWrapper>
+          <AddIcon />
+        </ActionMenuIconWrapper>
+        {t('timetable:addLesson')}
       </MenuItem>
     </Menu>
   );
