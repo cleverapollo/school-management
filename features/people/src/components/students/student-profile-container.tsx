@@ -118,7 +118,7 @@ export default function StudentProfileContainer() {
             label: 'Medical',
             value: 'medical',
             hasAccess: ({ hasPermission }) =>
-              hasPermission(' ps:1:wellbeing:read_student_medical'),
+              hasPermission('ps:1:wellbeing:read_student_medical'),
           },
           {
             label: t('people:notes'),
