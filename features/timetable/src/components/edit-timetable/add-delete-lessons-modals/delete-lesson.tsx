@@ -26,12 +26,14 @@ export function DeleteLessonModal({
   const lessonIdx = lessons?.id?.lessonIdx;
   const lessonInstanceIdx = lessons?.id?.lessonInstanceIdx;
 
-  const data = {
-    timetableId,
-    timetableGroupId: Number(timetableGroupId),
-    lessonIdx: Number(lessonIdx),
-    lessonInstanceIdx: Number(lessonInstanceIdx),
-  };
+  const data = [
+    {
+      timetableId,
+      timetableGroupId: Number(timetableGroupId),
+      lessonIdx: Number(lessonIdx),
+      lessonInstanceIdx: Number(lessonInstanceIdx),
+    },
+  ];
 
   const { mutate: deleteLesson, isLoading } = useDeleteIndividualLesson();
 

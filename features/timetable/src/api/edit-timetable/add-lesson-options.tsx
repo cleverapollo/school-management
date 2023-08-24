@@ -13,6 +13,7 @@ const addLessonOptions = graphql(/* GraphQL */ `
     tt_addLessonOptions(filter: $filter) {
       freeStaffIds
       freeStaff {
+        partyId
         person {
           partyId
           title {

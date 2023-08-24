@@ -40,6 +40,8 @@
   "failedToRevertTimetableChanges": "Failed to revert timetable changes",
   "thereAreNoChangesAvailable": "There are no changes available",
   "whenWouldYouLikeTheFollowingChangesToBeEffectiveFrom": "When would you like the following changes to be effective from?",
+  "lessonAdded": "Lesson added",
+  "lessonRemoved": "Lesson removed",
   "status": {
     "free": "Free",
     "busy": "Busy",

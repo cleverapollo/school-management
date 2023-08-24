@@ -23,7 +23,7 @@ export function useDeleteIndividualLesson() {
   const { t } = useTranslation(['common']);
 
   return useMutation({
-    mutationFn: async (input: Tt_RemoveLessonInput) =>
+    mutationFn: async (input: Tt_RemoveLessonInput[]) =>
       gqlClient.request(deleteIndividualLesson, { input }),
     onSuccess: () => {
       toast(t('common:snackbarMessages.deleteSuccess'));
