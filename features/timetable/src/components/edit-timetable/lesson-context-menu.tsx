@@ -2,6 +2,7 @@ import { Divider, Menu, MenuItem, MenuProps } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { ActionMenuIconWrapper } from '@tyro/core';
 import { AddIcon, BuildingGraduateHatIcon, TrashIcon } from '@tyro/icons';
+import { usePermissions } from '@tyro/api';
 
 interface ResourceContextMenuProps extends MenuProps {
   selectedLessonIds: string[];
@@ -23,7 +24,7 @@ export function LessonContextMenu({
   const numberOfSelectedLessons = isSelected
     ? selectedLessonIds.length
     : selectedLessonIds.length + 1;
-
+  const { isTyroUser } = usePermissions();
   const handleClose = () => {
     props.onClose?.({}, 'backdropClick');
   };
@@ -73,31 +74,35 @@ export function LessonContextMenu({
           })}
         </>
       </MenuItem>
-      <MenuItem
-        onClick={(event) => {
-          event.preventDefault();
-          onOpenDeleteLessonDialog();
-          handleClose();
-        }}
-      >
-        <ActionMenuIconWrapper>
-          <TrashIcon />
-        </ActionMenuIconWrapper>
-        {t('timetable:deleteLesson')}
-      </MenuItem>
-      <Divider />
-      <MenuItem
-        onClick={(event) => {
-          event.preventDefault();
-          onOpenAddLessonDialog();
-          handleClose();
-        }}
-      >
-        <ActionMenuIconWrapper>
-          <AddIcon />
-        </ActionMenuIconWrapper>
-        {t('timetable:addLesson')}
-      </MenuItem>
+      {isTyroUser && (
+        <>
+          <MenuItem
+            onClick={(event) => {
+              event.preventDefault();
+              onOpenDeleteLessonDialog();
+              handleClose();
+            }}
+          >
+            <ActionMenuIconWrapper>
+              <TrashIcon />
+            </ActionMenuIconWrapper>
+            {t('timetable:deleteLesson')}
+          </MenuItem>
+          <Divider />
+          <MenuItem
+            onClick={(event) => {
+              event.preventDefault();
+              onOpenAddLessonDialog();
+              handleClose();
+            }}
+          >
+            <ActionMenuIconWrapper>
+              <AddIcon />
+            </ActionMenuIconWrapper>
+            {t('timetable:addLesson')}
+          </MenuItem>
+        </>
+      )}
     </Menu>
   );
 }
