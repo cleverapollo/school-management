@@ -96,7 +96,7 @@ export function AddLessonModal({
       periodIdx,
       timetableGroupId: groupId.partyId,
       teachersPartyIds: staffIds.map((a) => a.partyId) ?? [],
-      roomId: roomId.roomId,
+      roomId: roomId?.roomId,
     } as Tt_AddLessonInput;
 
     addLesson(transformedData);
