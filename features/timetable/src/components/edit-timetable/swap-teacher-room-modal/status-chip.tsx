@@ -13,6 +13,9 @@ interface StatusChipProps {
 }
 
 export function getStatus(lessons: StatusChipProps['lessons']) {
+  if (lessons !== null && lessons.length === 0) {
+    return 'free';
+  }
   if (lessons.every((lesson) => !!lesson)) {
     return 'busy';
   }
