@@ -37,6 +37,7 @@ import dayjs from 'dayjs';
 import { useForm } from 'react-hook-form';
 import { useAttendanceCodes } from '@tyro/attendance';
 import { useState } from 'react';
+import { LoadingButton } from '@mui/lab';
 import { useAttendanceQuery } from '../../../api/student/attendance/student-session-attendance';
 import { useStudentDailyCalendarInformation } from '../../../api/student/attendance/daily-calendar-information';
 import { useCreateOrUpdateEventAttendance } from '../../../api/student/attendance/save-student-event-attendance';
@@ -105,11 +106,15 @@ export const AttendanceDetailsModal = ({
     teachingGroupCodes: isTeacherUserType,
   });
 
-  const { mutateAsync: createOrUpdateSessionAttendance } =
-    useCreateOrUpdateSessionAttendance();
+  const {
+    mutateAsync: createOrUpdateSessionAttendance,
+    isLoading: isSessionAttendanceLoading,
+  } = useCreateOrUpdateSessionAttendance();
 
-  const { mutateAsync: createOrUpdateEventAttendance } =
-    useCreateOrUpdateEventAttendance();
+  const {
+    mutateAsync: createOrUpdateEventAttendance,
+    isLoading: isEventAttendanceLoading,
+  } = useCreateOrUpdateEventAttendance();
 
   const { data: studentData } = useStudent(studentId);
   const name = displayName(studentData?.person, {
@@ -600,9 +605,14 @@ export const AttendanceDetailsModal = ({
           <Button variant="soft" color="inherit" onClick={handleClose}>
             {t('common:actions.cancel')}
           </Button>
-          <Button type="submit" variant="contained">
+
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            loading={isSessionAttendanceLoading || isEventAttendanceLoading}
+          >
             {t('common:actions.save')}
-          </Button>
+          </LoadingButton>
         </DialogActions>
       </form>
     </Dialog>
