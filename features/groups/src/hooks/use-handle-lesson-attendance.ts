@@ -12,13 +12,23 @@ import isEqual from 'lodash/isEqual';
 
 import { useLayoutEffect, useRef, useState } from 'react';
 import dayjs from 'dayjs';
-import { useSubjectGroupById, useSubjectGroupLessonByIterator } from '../api';
+import {
+  ReturnTypeFromUseSubjectGroupLessonByIterator,
+  useSubjectGroupById,
+  useSubjectGroupLessonByIterator,
+} from '../api';
 import { groupsKeys } from '../api/keys';
 import { useFormatLessonTime } from './use-format-lesson-time';
 
+type EventDetails = NonNullable<
+  NonNullable<
+    ReturnTypeFromUseSubjectGroupLessonByIterator['extensions']
+  >['eventAttendance']
+>[number];
+
 type StudentAttendance = Record<
   SaveEventAttendanceInput['personPartyId'],
-  SaveEventAttendanceInput
+  SaveEventAttendanceInput & EventDetails
 >;
 
 type UseHandleLessonAttendanceParams = {
@@ -109,6 +119,9 @@ export function useHandleLessonAttendance({
   const getStudentAttendanceCode = (studentId: number) =>
     newAttendance[studentId]?.attendanceCodeId;
 
+  const getStudentEventDetails = (studentId: number) =>
+    newAttendance[studentId];
+
   const setStudentAttendanceCode = (studentId: number) => (codeId: number) => {
     setNewAttendance((currentAttendance) => ({
       ...currentAttendance,
@@ -120,7 +133,12 @@ export function useHandleLessonAttendance({
   };
 
   const saveAttendance = ({ onSuccess }: SaveAttendanceCallback) => {
-    saveAttendanceMutation(Object.values(newAttendance), {
+    // NOTE: do not send student if he was already the attendance taken
+    const attendanceInput = Object.values(newAttendance).filter(
+      (attendance) => !attendance.adminSubmitted
+    );
+
+    saveAttendanceMutation(attendanceInput, {
       onSuccess: () => {
         queryClient.invalidateQueries(groupsKeys.subject.all());
         onSuccess();
@@ -145,6 +163,7 @@ export function useHandleLessonAttendance({
     previousLesson,
     getStudentAttendanceCode,
     setStudentAttendanceCode,
+    getStudentEventDetails,
     saveAttendance,
     cancelAttendance,
   };

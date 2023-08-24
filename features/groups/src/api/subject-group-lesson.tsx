@@ -5,6 +5,7 @@ import {
   graphql,
   Iterator,
   queryClient,
+  UseQueryReturnType,
 } from '@tyro/api';
 import { useEffect } from 'react';
 import { groupsKeys } from './keys';
@@ -38,8 +39,17 @@ const subjectGroupLessonByIterator = graphql(/* GraphQL */ `
       extensions {
         eventAttendance {
           eventId
+          note
           attendanceCodeId
+          attendanceCode {
+            name
+          }
           personPartyId
+          adminSubmitted
+          createdBy {
+            firstName
+            lastName
+          }
         }
       }
     }
@@ -99,3 +109,7 @@ export function useSubjectGroupLessonByIterator(
 
   return queryData;
 }
+
+export type ReturnTypeFromUseSubjectGroupLessonByIterator = UseQueryReturnType<
+  typeof useSubjectGroupLessonByIterator
+>;
