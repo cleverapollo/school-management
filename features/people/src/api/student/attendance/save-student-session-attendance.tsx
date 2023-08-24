@@ -8,6 +8,7 @@ import {
 } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
+import { groupsKeys } from '@tyro/groups';
 import { peopleKeys } from '../../keys';
 
 const saveStudentSessionAttendance = graphql(/* GraphQL */ `
@@ -55,9 +56,11 @@ export function useCreateOrUpdateSessionAttendance() {
   return useMutation({
     mutationFn: async (input: SaveStudentSessionAttendanceInput[]) =>
       gqlClient.request(saveStudentSessionAttendance, { input }),
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(peopleKeys.all);
+      await queryClient.invalidateQueries(groupsKeys.subject.all());
+
       toast(t('common:snackbarMessages.updateSuccess'));
-      queryClient.invalidateQueries(peopleKeys.all);
     },
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
