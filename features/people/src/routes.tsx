@@ -270,6 +270,8 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'behaviour',
+                hasAccess: ({ isStaffUserWithPermission }) =>
+                  isStaffUserWithPermission('ps:1:notes:read_behaviour'),
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
 
@@ -327,6 +329,8 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'notes',
+                hasAccess: ({ isStaffUserWithPermission }) =>
+                  isStaffUserWithPermission('ps:1:notes:read_notes'),
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
                   return getNotes(studentId);
