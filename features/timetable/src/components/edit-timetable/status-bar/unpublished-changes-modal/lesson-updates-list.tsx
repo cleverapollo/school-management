@@ -4,6 +4,8 @@ import {
   ReturnTypeDisplayNames,
   usePreferredNameLayout,
 } from '@tyro/core';
+
+import { Tt_DiffType } from '@tyro/api';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { UndoIcon } from '@tyro/icons';
 import { useMemo } from 'react';
@@ -179,16 +181,35 @@ export function LessonsUpdatesList({
                     <Typography variant="subtitle2" color="text.primary">
                       {getLessonTitle(t, lessonDiff)}
                     </Typography>
-                    {changeList.map((change) => (
+                    {lessonDiff.type === Tt_DiffType.New && (
                       <Typography
-                        key={change}
                         component="span"
                         variant="body2"
                         color="text.secondary"
                       >
-                        {change}
+                        {t('timetable:lessonAdded')}
                       </Typography>
-                    ))}
+                    )}
+                    {lessonDiff.type === Tt_DiffType.Deleted && (
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        color="text.secondary"
+                      >
+                        {t('timetable:lessonRemoved')}
+                      </Typography>
+                    )}
+                    {lessonDiff.type === Tt_DiffType.Updated &&
+                      changeList.map((change) => (
+                        <Typography
+                          key={change}
+                          component="span"
+                          variant="body2"
+                          color="text.secondary"
+                        >
+                          {change}
+                        </Typography>
+                      ))}
                   </Stack>
                 </Box>
                 <Tooltip title={t('common:actions.undo')}>
