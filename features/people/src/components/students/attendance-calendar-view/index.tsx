@@ -105,6 +105,7 @@ export const MonthOverview = () => {
                 justifyContent="flex-start"
                 alignItems="center"
                 marginRight={3}
+                key={code.translationText}
               >
                 <Box
                   sx={{

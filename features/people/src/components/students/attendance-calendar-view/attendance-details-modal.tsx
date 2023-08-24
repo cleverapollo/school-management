@@ -1,7 +1,6 @@
 import {
   Alert,
   AlertTitle,
-  Box,
   Button,
   Collapse,
   Dialog,
@@ -9,7 +8,6 @@ import {
   DialogTitle,
   DialogActions,
   Divider,
-  Fade,
   IconButton,
   Stack,
   Table,
@@ -39,6 +37,7 @@ import dayjs from 'dayjs';
 import { useForm } from 'react-hook-form';
 import { useAttendanceCodes } from '@tyro/attendance';
 import { useState } from 'react';
+import { LoadingButton } from '@mui/lab';
 import { useAttendanceQuery } from '../../../api/student/attendance/student-session-attendance';
 import { useStudentDailyCalendarInformation } from '../../../api/student/attendance/daily-calendar-information';
 import { useCreateOrUpdateEventAttendance } from '../../../api/student/attendance/save-student-event-attendance';
@@ -107,11 +106,15 @@ export const AttendanceDetailsModal = ({
     teachingGroupCodes: isTeacherUserType,
   });
 
-  const { mutateAsync: createOrUpdateSessionAttendance } =
-    useCreateOrUpdateSessionAttendance();
+  const {
+    mutateAsync: createOrUpdateSessionAttendance,
+    isLoading: isSessionAttendanceLoading,
+  } = useCreateOrUpdateSessionAttendance();
 
-  const { mutateAsync: createOrUpdateEventAttendance } =
-    useCreateOrUpdateEventAttendance();
+  const {
+    mutateAsync: createOrUpdateEventAttendance,
+    isLoading: isEventAttendanceLoading,
+  } = useCreateOrUpdateEventAttendance();
 
   const { data: studentData } = useStudent(studentId);
   const name = displayName(studentData?.person, {
@@ -125,13 +128,11 @@ export const AttendanceDetailsModal = ({
       if (fieldName.startsWith('sessionAttendanceNote-')) {
         const ids = fieldName.replace('sessionAttendanceNote-', '');
         const sessionAttendanceNote =
-          data[fieldName as keyof SaveStudentSessionAttendanceInput];
+          data[fieldName as keyof EventAttendanceInputProps];
         const indexField = `attendanceCode-${ids}`;
         const [eventId] = indexField.split('-').slice(1);
         const attendanceCodeId = Number(
-          data[
-            `attendanceCode-${eventId}` as keyof SaveStudentSessionAttendanceInput
-          ]
+          data[`attendanceCode-${eventId}` as keyof EventAttendanceInputProps]
         );
         if (attendanceCodeId) {
           acc.push({
@@ -140,6 +141,7 @@ export const AttendanceDetailsModal = ({
             date: day,
             bellTimeId: Number(eventId),
             studentPartyId: studentId,
+            adminSubmitted: true,
           });
         }
       }
@@ -151,9 +153,10 @@ export const AttendanceDetailsModal = ({
     >((acc, fieldName) => {
       if (fieldName.startsWith('note-')) {
         const eventId = fieldName.replace('note-', '');
-        const note = data[fieldName as keyof SaveEventAttendanceInput];
+        const note = data[fieldName as keyof EventAttendanceInputProps];
         const indexField = `index_${eventId}`;
-        const eventIdValue = data[indexField as keyof SaveEventAttendanceInput];
+        const eventIdValue =
+          data[indexField as keyof EventAttendanceInputProps];
 
         if (eventIdValue !== '') {
           acc.push({
@@ -162,6 +165,7 @@ export const AttendanceDetailsModal = ({
             date: day,
             eventId: Number(eventId),
             personPartyId: studentId,
+            adminSubmitted: true,
           });
         }
       }
@@ -601,9 +605,14 @@ export const AttendanceDetailsModal = ({
           <Button variant="soft" color="inherit" onClick={handleClose}>
             {t('common:actions.cancel')}
           </Button>
-          <Button type="submit" variant="contained">
+
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            loading={isSessionAttendanceLoading || isEventAttendanceLoading}
+          >
             {t('common:actions.save')}
-          </Button>
+          </LoadingButton>
         </DialogActions>
       </form>
     </Dialog>
