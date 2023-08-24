@@ -142,6 +142,7 @@ export function AddLessonModal({
                 options={addLessonOptions?.freeStaff ?? []}
                 label="Free Staff"
                 getOptionLabel={(option) =>
+                  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                   `${option?.person?.firstName} ${option?.person?.lastName}` ??
                   ''
                 }
