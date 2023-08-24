@@ -1,7 +1,6 @@
 import {
   Alert,
   AlertTitle,
-  Box,
   Button,
   Collapse,
   Dialog,
@@ -9,7 +8,6 @@ import {
   DialogTitle,
   DialogActions,
   Divider,
-  Fade,
   IconButton,
   Stack,
   Table,
@@ -125,13 +123,11 @@ export const AttendanceDetailsModal = ({
       if (fieldName.startsWith('sessionAttendanceNote-')) {
         const ids = fieldName.replace('sessionAttendanceNote-', '');
         const sessionAttendanceNote =
-          data[fieldName as keyof SaveStudentSessionAttendanceInput];
+          data[fieldName as keyof EventAttendanceInputProps];
         const indexField = `attendanceCode-${ids}`;
         const [eventId] = indexField.split('-').slice(1);
         const attendanceCodeId = Number(
-          data[
-            `attendanceCode-${eventId}` as keyof SaveStudentSessionAttendanceInput
-          ]
+          data[`attendanceCode-${eventId}` as keyof EventAttendanceInputProps]
         );
         if (attendanceCodeId) {
           acc.push({
@@ -140,6 +136,7 @@ export const AttendanceDetailsModal = ({
             date: day,
             bellTimeId: Number(eventId),
             studentPartyId: studentId,
+            adminSubmitted: true,
           });
         }
       }
@@ -151,9 +148,10 @@ export const AttendanceDetailsModal = ({
     >((acc, fieldName) => {
       if (fieldName.startsWith('note-')) {
         const eventId = fieldName.replace('note-', '');
-        const note = data[fieldName as keyof SaveEventAttendanceInput];
+        const note = data[fieldName as keyof EventAttendanceInputProps];
         const indexField = `index_${eventId}`;
-        const eventIdValue = data[indexField as keyof SaveEventAttendanceInput];
+        const eventIdValue =
+          data[indexField as keyof EventAttendanceInputProps];
 
         if (eventIdValue !== '') {
           acc.push({
@@ -162,6 +160,7 @@ export const AttendanceDetailsModal = ({
             date: day,
             eventId: Number(eventId),
             personPartyId: studentId,
+            adminSubmitted: true,
           });
         }
       }
