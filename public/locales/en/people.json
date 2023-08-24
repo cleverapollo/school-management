@@ -243,12 +243,6 @@
   },
   "associated": "Associated",
   "occurredOn": "Occurred On",
-  "outcome": "Outcome",
   "category": "Category",
-  "createBehaviour": "Create behaviour",
-  "categoryValues": {
-    "POSITIVE": "Positive",
-    "NEGATIVE": "Negative",
-    "NEUTRAL": "Neutral"
-  }
+  "createBehaviour": "Create behaviour"
 }

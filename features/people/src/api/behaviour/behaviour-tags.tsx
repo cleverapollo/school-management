@@ -7,6 +7,10 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { peopleKeys } from '../keys';
 
+export type ReturnTypeFromUseNoteTagsBehaviour = UseQueryReturnType<
+  typeof useNoteTagsBehaviour
+>[number];
+
 const noteTagsBehaviour = graphql(/* GraphQL */ `
   query notes_tags_behaviours($filter: Notes_TagFilter!) {
     notes_tags(filter: $filter) {

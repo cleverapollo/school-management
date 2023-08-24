@@ -1,5 +1,9 @@
-import { Box, Button } from '@mui/material';
-import { usePermissions } from '@tyro/api';
+import { Box, Button, Chip, Stack } from '@mui/material';
+import {
+  Core_Student_SubjectGroupsQuery,
+  getColorBasedOnIndex,
+  usePermissions,
+} from '@tyro/api';
 import { GridOptions, PageHeading, Table, getNumber } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { AddIcon } from '@tyro/icons';
@@ -15,47 +19,49 @@ import {
   CreateBehaviourModal,
   CreateBehaviourModalProps,
 } from '../../../components/behaviour/create-behaviour-modal';
+import { useStudentsSubjectGroups } from '../../../api/student/overview';
 
 dayjs.extend(LocalizedFormat);
 
 const getStudentBehaviourColumns = (
-  t: TFunction<('common' | 'people')[]>
+  t: TFunction<('common' | 'people')[]>,
+  subjectGroup: Core_Student_SubjectGroupsQuery['core_students'][number]['subjectGroups']
 ): GridOptions<ReturnTypeFromUseBehaviours>['columnDefs'] => [
   {
     field: 'behaviour',
     headerName: t('people:behaviour'),
-    valueGetter: ({ data }) => data?.note ?? '-',
+    valueGetter: ({ data }) => data?.tags[0]?.name ?? '-',
   },
   {
     field: 'details',
     headerName: t('common:details'),
-    valueGetter: ({ data }) => '-',
+    valueGetter: ({ data }) => data?.note ?? '-',
   },
   {
     field: 'associated',
     headerName: t('people:associated'),
-    // cellRenderer: ({ data }: { data: BehaviourDataType }) => (
-    //   <Stack gap={1} direction="row">
-    //     {data.subjects?.map((subject) => (
-    //       <Chip key={subject} label={subject} />
-    //     ))}
-    //   </Stack>
-    // ),
-  },
-  {
-    field: 'category',
-    headerName: t('people:category'),
-    valueGetter: ({ data }) => '',
-  },
-  {
-    field: 'outcome',
-    headerName: t('people:outcome'),
-    valueGetter: ({ data }) => '',
+    cellRenderer: ({ data }: { data: ReturnTypeFromUseBehaviours }) => (
+      <Stack gap={1} direction="row">
+        {data?.associatedGroups?.map((subject, index) => {
+          const group = subjectGroup.find(
+            (item) => item.partyId === subject?.partyId
+          );
+
+          return (
+            <Chip
+              key={subject?.partyId}
+              label={group?.subjects[0]?.name}
+              color={group?.subjects[0]?.colour || getColorBasedOnIndex(index)}
+            />
+          );
+        })}
+      </Stack>
+    ),
   },
   {
     field: 'occurredOn',
     headerName: t('people:occurredOn'),
-    valueGetter: ({ data }) => '',
+    valueGetter: ({ data }) => dayjs(data?.createdOn).format('LL'),
   },
   {
     field: 'createdBy',
@@ -70,12 +76,15 @@ export default function StudentProfileBehaviourPage() {
   const [behaviourDetails, setBehaviourDetails] =
     useState<CreateBehaviourModalProps['initialState']>();
   const { t } = useTranslation(['common', 'people']);
+  const { data: subjectGroup, isLoading: subjectGroupLoading } =
+    useStudentsSubjectGroups(studentId);
   const { isStaffUser } = usePermissions();
-  const { data: behaviours = [] } = useBehaviours(studentId);
+  const { data: behaviours = [], isLoading: behavioursLoading } =
+    useBehaviours(studentId);
 
   const studentBehaviourColumns = useMemo(
-    () => getStudentBehaviourColumns(t),
-    [t]
+    () => getStudentBehaviourColumns(t, subjectGroup || []),
+    [t, subjectGroup]
   );
 
   return (
@@ -98,6 +107,7 @@ export default function StudentProfileBehaviourPage() {
         }
       />
       <Table
+        isLoading={behavioursLoading || subjectGroupLoading}
         rowData={behaviours ?? []}
         columnDefs={studentBehaviourColumns}
         getRowId={({ data }) => String(data?.id)}

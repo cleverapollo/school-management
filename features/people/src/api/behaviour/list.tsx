@@ -13,7 +13,7 @@ export type ReturnTypeFromUseBehaviours = UseQueryReturnType<
 >[number];
 
 const behaviour = graphql(/* GraphQL */ `
-  query notes_notes($filter: Notes_NotesFilter!) {
+  query notes_notes_behaviour($filter: Notes_NotesFilter!) {
     notes_notes(filter: $filter) {
       id
       note
@@ -34,6 +34,10 @@ const behaviour = graphql(/* GraphQL */ `
         category
         descriptionTextId
         nameTextId
+      }
+      associatedGroups {
+        partyId
+        name
       }
     }
   }
