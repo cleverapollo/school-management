@@ -37,11 +37,6 @@ const noteTagsBehaviourQuery = () => ({
 export function useNoteTagsBehaviour() {
   return useQuery({
     ...noteTagsBehaviourQuery(),
-    select: ({ notes_tags }) =>
-      notes_tags?.flatMap((note) => (note ? [note] : [])),
+    select: ({ notes_tags }) => notes_tags,
   });
 }
-
-export type ReturnTypeFromUseNoteTags = UseQueryReturnType<
-  typeof noteTagsBehaviour
->[number];

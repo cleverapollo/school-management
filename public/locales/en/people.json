@@ -241,8 +241,5 @@
     "provision": "Provision",
     "note": "Note"
   },
-  "associated": "Associated",
-  "occurredOn": "Occurred On",
-  "category": "Category",
   "createBehaviour": "Create behaviour"
 }

@@ -7,7 +7,7 @@ import {
   DialogTitle,
   Stack,
 } from '@mui/material';
-import { Notes_BehaviourType, getColorBasedOnIndex } from '@tyro/api';
+import { getColorBasedOnIndex } from '@tyro/api';
 import {
   RHFAutocomplete,
   RHFDateTimePicker,
@@ -17,32 +17,26 @@ import {
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
-import {
-  ReturnTypeFromUseNoteTagsBehaviour,
-  useNoteTagsBehaviour,
-} from '../../api/behaviour/behaviour-tags';
+import type { Dayjs } from 'dayjs';
+import { useNoteTagsBehaviour } from '../../api/behaviour/behaviour-tags';
 import { ReturnTypeFromUseBehaviours } from '../../api/behaviour/list';
-import { useUpsertBehaviours } from '../../api/behaviour/upsert-behaviour';
+import { useUpsertStudentBehaviour } from '../../api/behaviour/upsert-behaviour';
 import {
   ReturnTypeFromUseStudentSubjectGroups,
   useStudentsSubjectGroups,
 } from '../../api/student/overview';
 
-type BehaviourFormState = NonNullable<ReturnTypeFromUseBehaviours>;
-
 export interface CreateBehaviourModalProps {
   studentId: number;
   onClose: () => void;
-  initialState: Partial<BehaviourFormState> | null;
+  initialState: Partial<ReturnTypeFromUseBehaviours> | null;
 }
 
 export type CreateBehaviourFormState = {
   behaviour: number;
-  category: Notes_BehaviourType;
   details: string;
   subjects: ReturnTypeFromUseStudentSubjectGroups[];
-  outcome: string;
-  occurredOn: Date;
+  occurredOn: Dayjs;
 };
 
 export function CreateBehaviourModal({
@@ -57,13 +51,11 @@ export function CreateBehaviourModal({
   const { control, handleSubmit, reset } = useForm<CreateBehaviourFormState>({
     resolver: resolver({
       behaviour: rules.required(),
-      category: rules.required(),
       occurredOn: rules.required(),
     }),
-    mode: 'onChange',
   });
 
-  const { mutate, isLoading } = useUpsertBehaviours(studentId);
+  const { mutate, isLoading } = useUpsertStudentBehaviour(studentId);
 
   const onSubmit = (data: CreateBehaviourFormState) => {
     mutate(
@@ -97,14 +89,11 @@ export function CreateBehaviourModal({
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack gap={3} p={3}>
           <Stack direction="row" gap={2} gridColumn={2}>
-            <RHFSelect<
-              CreateBehaviourFormState,
-              ReturnTypeFromUseNoteTagsBehaviour
-            >
+            <RHFSelect
               fullWidth
               optionIdKey="id"
               options={behaviourTags ?? []}
-              label={t('people:category')}
+              label={t('common:category')}
               getOptionLabel={(option) => option.name}
               controlProps={{
                 name: 'behaviour',
@@ -113,7 +102,7 @@ export function CreateBehaviourModal({
             />
           </Stack>
           <Stack direction="column" gap={2}>
-            <RHFTextField<CreateBehaviourFormState>
+            <RHFTextField
               label={t('common:details')}
               controlProps={{
                 name: 'details',
@@ -125,7 +114,7 @@ export function CreateBehaviourModal({
             />
             <RHFAutocomplete
               multiple
-              label={t('people:associated')}
+              label={t('common:associated')}
               optionIdKey="partyId"
               getOptionLabel={(option) => option.subjects[0]?.name}
               controlProps={{ name: 'subjects', control }}
@@ -144,8 +133,8 @@ export function CreateBehaviourModal({
                 ))
               }
             />
-            <RHFDateTimePicker<CreateBehaviourFormState>
-              label={t('people:occurredOn')}
+            <RHFDateTimePicker
+              label={t('common:occurredOn')}
               controlProps={{
                 name: 'occurredOn',
                 control,

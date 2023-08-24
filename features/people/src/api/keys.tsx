@@ -54,7 +54,7 @@ export const peopleKeys = {
     notes: (studentId: number | undefined) =>
       [...peopleKeys.students.all(), 'notes', studentId] as const,
     behaviours: (studentId: number | undefined) =>
-      [...peopleKeys.students.all(), 'behaviour', studentId] as const,
+      [...peopleKeys.students.all(), 'behaviours', studentId] as const,
     subjectGroups: (studentId: number | undefined) =>
       [...peopleKeys.students.all(), 'classes', studentId] as const,
     medical: (studentId: number | undefined) =>

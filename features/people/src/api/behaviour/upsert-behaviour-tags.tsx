@@ -18,7 +18,7 @@ const upsertBehaviourTags = graphql(/* GraphQL */ `
   }
 `);
 
-export function useUpsertBehaviourTags(studentId: number | undefined) {
+export function useUpsertBehaviourTags() {
   const { toast } = useToast();
   const { t } = useTranslation(['common']);
 
@@ -26,7 +26,7 @@ export function useUpsertBehaviourTags(studentId: number | undefined) {
     mutationFn: async (input: Notes_UpsertBehaviourTagInput[]) =>
       gqlClient.request(upsertBehaviourTags, { input }),
     onSuccess: async (_, [note]) => {
-      await queryClient.invalidateQueries(peopleKeys.students.notes(studentId));
+      await queryClient.invalidateQueries(peopleKeys.notes.behaviourTags());
 
       toast(
         note

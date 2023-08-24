@@ -4,7 +4,7 @@ import { RHFAutocomplete, RHFAutocompleteProps } from './autocomplete';
 
 type RHFSelectionListProps<TField extends FieldValues> = Omit<
   RHFAutocompleteProps<TField, string, true>,
-  'multiple' | 'freeSolo' | 'renderTags'
+  'multiple' | 'options' | 'freeSolo' | 'renderTags'
 >;
 
 /**
@@ -20,7 +20,9 @@ export const RHFSelectionList = <TField extends FieldValues>({
   <RHFAutocomplete<TField, string, true>
     {...restProps}
     inputProps={inputProps}
+    options={[]}
     multiple
+    freeSolo
     autoSelect
     onInputChange={(event, newInputValue) => {
       const target = event.target as HTMLInputElement;

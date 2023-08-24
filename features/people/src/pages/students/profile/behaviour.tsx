@@ -1,10 +1,13 @@
 import { Box, Button, Chip, Stack } from '@mui/material';
+import { getColorBasedOnIndex, usePermissions } from '@tyro/api';
 import {
-  Core_Student_SubjectGroupsQuery,
-  getColorBasedOnIndex,
-  usePermissions,
-} from '@tyro/api';
-import { GridOptions, PageHeading, Table, getNumber } from '@tyro/core';
+  GridOptions,
+  ICellRendererParams,
+  ReturnTypeDisplayName,
+  Table,
+  getNumber,
+  usePreferredNameLayout,
+} from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { AddIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
@@ -19,28 +22,34 @@ import {
   CreateBehaviourModal,
   CreateBehaviourModalProps,
 } from '../../../components/behaviour/create-behaviour-modal';
-import { useStudentsSubjectGroups } from '../../../api/student/overview';
+import {
+  ReturnTypeFromUseStudentSubjectGroups,
+  useStudentsSubjectGroups,
+} from '../../../api/student/overview';
 
 dayjs.extend(LocalizedFormat);
 
 const getStudentBehaviourColumns = (
   t: TFunction<('common' | 'people')[]>,
-  subjectGroup: Core_Student_SubjectGroupsQuery['core_students'][number]['subjectGroups']
+  subjectGroup: ReturnTypeFromUseStudentSubjectGroups[],
+  displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseBehaviours>['columnDefs'] => [
   {
     field: 'behaviour',
     headerName: t('people:behaviour'),
-    valueGetter: ({ data }) => data?.tags[0]?.name ?? '-',
+    valueGetter: ({ data }) => data?.tags[0]?.name || '-',
   },
   {
     field: 'details',
     headerName: t('common:details'),
-    valueGetter: ({ data }) => data?.note ?? '-',
+    valueGetter: ({ data }) => data?.note || '-',
   },
   {
     field: 'associated',
-    headerName: t('people:associated'),
-    cellRenderer: ({ data }: { data: ReturnTypeFromUseBehaviours }) => (
+    headerName: t('common:associated'),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseBehaviours>) => (
       <Stack gap={1} direction="row">
         {data?.associatedGroups?.map((subject, index) => {
           const group = subjectGroup.find(
@@ -60,13 +69,14 @@ const getStudentBehaviourColumns = (
   },
   {
     field: 'occurredOn',
-    headerName: t('people:occurredOn'),
+    headerName: t('common:occurredOn'),
     valueGetter: ({ data }) => dayjs(data?.createdOn).format('LL'),
   },
   {
-    field: 'createdBy',
+    field: 'createdByPerson',
     headerName: t('common:createdBy'),
-    valueGetter: ({ data }) => data?.createdBy ?? '-',
+    valueGetter: ({ data }) =>
+      data ? displayName(data.createdByPerson) : null,
   },
 ];
 
@@ -76,38 +86,34 @@ export default function StudentProfileBehaviourPage() {
   const [behaviourDetails, setBehaviourDetails] =
     useState<CreateBehaviourModalProps['initialState']>();
   const { t } = useTranslation(['common', 'people']);
-  const { data: subjectGroup, isLoading: subjectGroupLoading } =
+  const { data: subjectGroup = [], isLoading: isSubjectGroupLoading } =
     useStudentsSubjectGroups(studentId);
   const { isStaffUser } = usePermissions();
-  const { data: behaviours = [], isLoading: behavioursLoading } =
+  const { displayName } = usePreferredNameLayout();
+  const { data: behaviours = [], isLoading: isBehavioursLoading } =
     useBehaviours(studentId);
 
   const studentBehaviourColumns = useMemo(
-    () => getStudentBehaviourColumns(t, subjectGroup || []),
-    [t, subjectGroup]
+    () => getStudentBehaviourColumns(t, subjectGroup, displayName),
+    [t, subjectGroup, displayName]
   );
 
   return (
     <>
-      <PageHeading
-        title=""
-        titleProps={{ variant: 'h3' }}
-        rightAdornment={
-          isStaffUser && (
-            <Box display="flex" alignItems="center">
-              <Button
-                variant="contained"
-                onClick={() => setBehaviourDetails({})}
-                startIcon={<AddIcon />}
-              >
-                {t('people:actions.createBehaviour')}
-              </Button>
-            </Box>
-          )
-        }
-      />
+      {isStaffUser && (
+        <Box display="flex" alignItems="center" justifyContent="flex-end">
+          <Button
+            variant="contained"
+            onClick={() => setBehaviourDetails({})}
+            startIcon={<AddIcon />}
+          >
+            {t('people:actions.createBehaviour')}
+          </Button>
+        </Box>
+      )}
+
       <Table
-        isLoading={behavioursLoading || subjectGroupLoading}
+        isLoading={isBehavioursLoading || isSubjectGroupLoading}
         rowData={behaviours ?? []}
         columnDefs={studentBehaviourColumns}
         getRowId={({ data }) => String(data?.id)}
