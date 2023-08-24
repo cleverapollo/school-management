@@ -57,7 +57,7 @@ export function useCreateOrUpdateSessionAttendance() {
     mutationFn: async (input: SaveStudentSessionAttendanceInput[]) =>
       gqlClient.request(saveStudentSessionAttendance, { input }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries(peopleKeys.all);
+      await queryClient.invalidateQueries(peopleKeys.students.all());
       await queryClient.invalidateQueries(groupsKeys.subject.all());
 
       toast(t('common:snackbarMessages.updateSuccess'));

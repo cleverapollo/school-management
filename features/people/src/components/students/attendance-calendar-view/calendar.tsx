@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Box, Stack } from '@mui/material';
 import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
@@ -8,7 +8,7 @@ import isToday from 'dayjs/plugin/isToday';
 import { AcademicNamespace } from '@tyro/api';
 import { ReturnTypeFromUseStudentCalendarAttendance } from '../../../api/student/attendance/calendar-attendance';
 import {
-  useAttendanceQuery,
+  useStudentSessionAttendance,
   ReturnTypeFromUseStudentSessionAttendance,
 } from '../../../api/student/attendance/student-session-attendance';
 import { AttendanceDetailsModal } from './attendance-details-modal';
@@ -208,7 +208,7 @@ export const AcademicCalendar = ({
     months.push(startDate.add(i, 'month').format('YYYY-MM-DD'));
   }
 
-  const { data: attendance } = useAttendanceQuery({
+  const { data: attendance } = useStudentSessionAttendance({
     partyIds: [Number(id) ?? 0],
     from: activeAcademicNamespace?.startDate ?? '',
     to: activeAcademicNamespace?.endDate ?? '',
@@ -234,10 +234,9 @@ export const AcademicCalendar = ({
       </Stack>
       {sessionAttendanceToEdit && (
         <AttendanceDetailsModal
-          open
-          onClose={() => setSessionAttendanceToEdit(null)}
           day={sessionAttendanceToEdit}
           studentId={Number(studentPartyId) ?? 0}
+          onClose={() => setSessionAttendanceToEdit(null)}
         />
       )}
     </>
