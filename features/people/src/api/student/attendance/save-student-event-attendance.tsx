@@ -31,7 +31,7 @@ export function useCreateOrUpdateEventAttendance() {
     mutationFn: async (input: SaveEventAttendanceInput[]) =>
       gqlClient.request(saveStudentEventAttendance, { input }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries(peopleKeys.all);
+      await queryClient.invalidateQueries(peopleKeys.students.all());
       await queryClient.invalidateQueries(groupsKeys.subject.all());
 
       toast(t('common:snackbarMessages.updateSuccess'));
