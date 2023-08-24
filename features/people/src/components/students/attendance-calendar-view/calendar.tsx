@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useState } from 'react';
 import { Box, Stack } from '@mui/material';
 import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
@@ -6,10 +6,9 @@ import { useParams } from 'react-router-dom';
 import dayjs, { Dayjs } from 'dayjs';
 import isToday from 'dayjs/plugin/isToday';
 import { AcademicNamespace } from '@tyro/api';
-import { useDebouncedValue } from '@tyro/core';
 import { ReturnTypeFromUseStudentCalendarAttendance } from '../../../api/student/attendance/calendar-attendance';
 import {
-  useAttendanceQuery,
+  useStudentSessionAttendance,
   ReturnTypeFromUseStudentSessionAttendance,
 } from '../../../api/student/attendance/student-session-attendance';
 import { AttendanceDetailsModal } from './attendance-details-modal';
@@ -194,6 +193,10 @@ export const AcademicCalendar = ({
 }: AcademicCalendarProps) => {
   const { id } = useParams();
 
+  const [sessionAttendanceToEdit, setSessionAttendanceToEdit] = useState<
+    string | null
+  >(null);
+
   const startDate = dayjs(activeAcademicNamespace?.startDate);
   const endDate = dayjs(activeAcademicNamespace?.endDate);
   const months = [];
@@ -205,24 +208,11 @@ export const AcademicCalendar = ({
     months.push(startDate.add(i, 'month').format('YYYY-MM-DD'));
   }
 
-  const { data: attendance } = useAttendanceQuery({
+  const { data: attendance } = useStudentSessionAttendance({
     partyIds: [Number(id) ?? 0],
     from: activeAcademicNamespace?.startDate ?? '',
     to: activeAcademicNamespace?.endDate ?? '',
   });
-
-  const sessionAttendance = useMemo(() => attendance, [attendance]);
-
-  const {
-    value: sessionAttendanceToEdit,
-    debouncedValue: debouncedSessionAttendanceToEdit,
-    setValue: setSessionAttendanceToEdit,
-  } = useDebouncedValue<string | null>({ defaultValue: null });
-
-  const handleAddAttendance = (day: string) => setSessionAttendanceToEdit(day);
-
-  const currentDate = dayjs();
-  const formattedCurrentDate = currentDate.format('YYYY-MM-DD');
 
   return (
     <>
@@ -236,18 +226,19 @@ export const AcademicCalendar = ({
           <MonthCalendar
             key={month}
             month={month}
-            attendance={sessionAttendance}
+            attendance={attendance}
             calendarAttendance={calendarAttendance}
-            handleAddAttendance={handleAddAttendance}
+            handleAddAttendance={setSessionAttendanceToEdit}
           />
         ))}
       </Stack>
-      <AttendanceDetailsModal
-        open={!!sessionAttendanceToEdit}
-        onClose={() => setSessionAttendanceToEdit('')}
-        day={sessionAttendanceToEdit ?? formattedCurrentDate}
-        studentId={Number(studentPartyId) ?? 0}
-      />
+      {sessionAttendanceToEdit && (
+        <AttendanceDetailsModal
+          day={sessionAttendanceToEdit}
+          studentId={Number(studentPartyId) ?? 0}
+          onClose={() => setSessionAttendanceToEdit(null)}
+        />
+      )}
     </>
   );
 };

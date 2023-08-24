@@ -5,7 +5,6 @@ import {
   getNumber,
   GridOptions,
   ICellRendererParams,
-  PageHeading,
   Table,
   useDebouncedValue,
   ReturnTypeDisplayName,
@@ -147,21 +146,15 @@ export default function StudentProfileNotesPage() {
 
   return (
     <>
-      <PageHeading
-        title=""
-        titleProps={{ variant: 'h3' }}
-        rightAdornment={
-          <Box display="flex" alignItems="center">
-            <Button
-              variant="contained"
-              onClick={() => setNoteDetails({})}
-              startIcon={<AddIcon />}
-            >
-              {t('people:createNote')}
-            </Button>
-          </Box>
-        }
-      />
+      <Box display="flex" alignItems="center" justifyContent="flex-end">
+        <Button
+          variant="contained"
+          onClick={() => setNoteDetails({})}
+          startIcon={<AddIcon />}
+        >
+          {t('people:createNote')}
+        </Button>
+      </Box>
       <Table
         rowData={notes ?? []}
         columnDefs={studentNoteColumns}
