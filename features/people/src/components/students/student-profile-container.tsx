@@ -95,7 +95,8 @@ export default function StudentProfileContainer() {
           {
             label: t('people:behaviour'),
             value: 'behaviour',
-            hasAccess: ({ isStaffUser }) => isStaffUser,
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission('ps:1:notes:read_behaviour'),
           },
           {
             label: 'AEN',
