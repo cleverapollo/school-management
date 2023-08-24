@@ -66,7 +66,9 @@ export function getAttendanceQuery(filter: StudentSessionAttendanceFilter) {
   return queryClient.fetchQuery(attendanceQuery(filter));
 }
 
-export function useAttendanceQuery(filter: StudentSessionAttendanceFilter) {
+export function useStudentSessionAttendance(
+  filter: StudentSessionAttendanceFilter
+) {
   return useQuery({
     ...attendanceQuery(filter),
     select: ({ attendance_studentSessionAttendance }) =>
@@ -76,5 +78,5 @@ export function useAttendanceQuery(filter: StudentSessionAttendanceFilter) {
 }
 
 export type ReturnTypeFromUseStudentSessionAttendance = UseQueryReturnType<
-  typeof useAttendanceQuery
+  typeof useStudentSessionAttendance
 >;
