@@ -1,5 +1,4 @@
-import { Button } from '@mui/material';
-import { useUser } from '@tyro/api';
+import { Box, Button } from '@mui/material';
 import {
   GridOptions,
   ICellRendererParams,
@@ -14,13 +13,15 @@ import {
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { Dispatch, SetStateAction, useMemo } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import { AddIcon } from '@tyro/icons';
 import { ReturnTypeFromUseAbsentRequests, useAbsentRequests } from '../api';
 import {
   ViewAbsentRequestModal,
   ViewAbsentRequestModalProps,
 } from '../components/absent-requests-overview/view-absent-request-overview-modal';
 import { AbsentRequestStatusChip } from '../components/absent-requests/absent-request-status-chip';
+import { CreateAbsentRequestModal } from '../components/absent-requests-overview/create-absent-request-overview-modal';
 
 dayjs.extend(LocalizedFormat);
 
@@ -89,11 +90,9 @@ const getAbsentRequestsOverviewColumns = (
 ];
 
 export default function AbsentRequestsOverview() {
-  const { user } = useUser();
   const { t } = useTranslation(['common', 'attendance']);
-  const { data: absentRequests } = useAbsentRequests({
-    contactPartyId: user?.activeProfileId,
-  });
+  const { data: absentRequests } = useAbsentRequests({});
+  const [isCreateAbsentRequest, setIsCreateAbsentRequest] = useState(false);
 
   const {
     setValue: setViewAbsentRequestInitialState,
@@ -121,6 +120,17 @@ export default function AbsentRequestsOverview() {
       <PageHeading
         title={t('attendance:absentRequestOverview')}
         titleProps={{ variant: 'h3' }}
+        rightAdornment={
+          <Box display="flex" alignItems="center">
+            <Button
+              variant="contained"
+              onClick={() => setIsCreateAbsentRequest(true)}
+              startIcon={<AddIcon />}
+            >
+              {t('attendance:createAbsentRequest')}
+            </Button>
+          </Box>
+        }
       />
       <Table
         rowData={absentRequests ?? []}
@@ -131,6 +141,12 @@ export default function AbsentRequestsOverview() {
         initialAbsentRequestState={debouncedViewAbsentRequestInitialState}
         onClose={() => setViewAbsentRequestInitialState(undefined)}
       />
+      {isCreateAbsentRequest && (
+        <CreateAbsentRequestModal
+          isOpen={isCreateAbsentRequest}
+          onClose={() => setIsCreateAbsentRequest(false)}
+        />
+      )}
     </PageContainer>
   );
 }

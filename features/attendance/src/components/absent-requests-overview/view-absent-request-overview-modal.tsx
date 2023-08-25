@@ -8,27 +8,30 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { TFunction, useTranslation } from '@tyro/i18n';
-import {
-  AttendanceCode,
-  ParentalAttendanceRequestStatus,
-  useUser,
-} from '@tyro/api';
+import { ParentalAttendanceRequestStatus } from '@tyro/api';
 import {
   Avatar,
-  ReturnTypeDisplayName,
-  RHFSelect,
-  RHFTextField,
-  useDisclosure,
-  usePreferredNameLayout,
   CardEditableForm,
   CardEditableFormProps,
+  RHFSelect,
+  RHFTextField,
+  ReturnTypeDisplayName,
+  useDisclosure,
+  useFormValidator,
+  usePreferredNameLayout,
 } from '@tyro/core';
+import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { WithdrawAbsentRequestConfirmModal } from './withdraw-absent-request-confirm-modal';
-import { ReturnTypeFromUseAbsentRequests, useAttendanceCodes } from '../../api';
+import { LoadingButton } from '@mui/lab';
+import {
+  ReturnTypeFromUseAbsentRequests,
+  ReturnTypeFromUseAttendanceCodes,
+  useAttendanceCodes,
+  useCreateOrUpdateAbsentRequest,
+} from '../../api';
 import { formatDateOfAbsence } from '../../utils/format-date-of-absence';
+import { WithdrawAbsentRequestConfirmModal } from './withdraw-absent-request-confirm-modal';
 
 dayjs.extend(LocalizedFormat);
 
@@ -41,7 +44,7 @@ const getAbsentRequestDataWithLabels = (
   data: ReturnTypeFromUseAbsentRequests | undefined,
   t: TFunction<('common' | 'attendance')[]>,
   displayName: ReturnTypeDisplayName,
-  attendanceCodes: AttendanceCode[] | undefined
+  attendanceCodes: ReturnTypeFromUseAttendanceCodes[] | undefined
 ): CardEditableFormProps<ReturnTypeFromUseAbsentRequests>['fields'] => {
   if (data === undefined) return [];
   const { contact, attendanceCode, parentNote, requestType } = data;
@@ -73,7 +76,7 @@ const getAbsentRequestDataWithLabels = (
       label: t('attendance:absenceType'),
       value: attendanceCode?.name,
       valueEditor: (
-        <RHFSelect
+        <RHFSelect<ReturnTypeFromUseAbsentRequests, string>
           fullWidth
           options={(attendanceCodes ?? [])
             .filter(({ code }) => code !== undefined)
@@ -109,8 +112,7 @@ export const ViewAbsentRequestModal = ({
   onClose,
 }: ViewAbsentRequestModalProps) => {
   const { t } = useTranslation(['common', 'attendance']);
-  const { data: attendanceCodes } = useAttendanceCodes({});
-  const { user } = useUser();
+  const { data: attendanceCodes = [] } = useAttendanceCodes({});
 
   const {
     isOpen: isWithdrawAbsentRequestsModalOpen,
@@ -126,6 +128,36 @@ export const ViewAbsentRequestModal = ({
     displayName,
     attendanceCodes
   );
+
+  const { resolver, rules } =
+    useFormValidator<ReturnTypeFromUseAbsentRequests>();
+
+  const absentRequestFormResolver = resolver({
+    attendanceCode: rules.required(),
+  });
+
+  const { mutate, isLoading } = useCreateOrUpdateAbsentRequest();
+
+  const handleEdit = ({
+    attendanceCode,
+    parentNote,
+  }: ReturnTypeFromUseAbsentRequests) => {
+    if (initialAbsentRequestState) {
+      mutate([
+        {
+          id: initialAbsentRequestState.id,
+          from: initialAbsentRequestState.from,
+          to: initialAbsentRequestState.to,
+          requestType: initialAbsentRequestState.requestType,
+          status: initialAbsentRequestState.status,
+          studentPartyId: initialAbsentRequestState.studentPartyId,
+          attendanceCodeId:
+            attendanceCode?.id ?? initialAbsentRequestState?.attendanceCode?.id,
+          parentNote,
+        },
+      ]);
+    }
+  };
 
   return (
     <Dialog
@@ -152,39 +184,43 @@ export const ViewAbsentRequestModal = ({
           </Stack>
         </Stack>
         <Divider flexItem sx={{ mt: 3 }} />
-        <CardEditableForm<ReturnTypeFromUseAbsentRequests>
+        <CardEditableForm
           title={t('common:details')}
-          editable={false}
+          editable={
+            initialAbsentRequestState?.status ===
+              ParentalAttendanceRequestStatus.Pending ||
+            dayjs().isBefore(dayjs(initialAbsentRequestState?.from))
+          }
           fields={absentRequestDataWithLabels}
+          resolver={absentRequestFormResolver}
+          onSave={handleEdit}
           sx={{ mx: -3 }}
           hideBorder
-          onSave={() => {}}
         />
       </DialogContent>
       <DialogActions>
         <Button variant="outlined" color="inherit" onClick={onClose}>
           {t('common:actions.cancel')}
         </Button>
-
-        <Button
+        <LoadingButton
           variant="contained"
           onClick={onOpenWithdrawAbsentRequestsModal}
           color="primary"
           disabled={
             initialAbsentRequestState?.status !==
               ParentalAttendanceRequestStatus.Pending ||
-            initialAbsentRequestState.contactPartyId !==
-              user?.activeProfileId ||
-            dayjs(initialAbsentRequestState.to).isAfter(dayjs())
+            dayjs().isAfter(dayjs(initialAbsentRequestState.from))
           }
+          loading={isLoading}
         >
           {t('attendance:withdrawAbsentRequest')}
-        </Button>
+        </LoadingButton>
       </DialogActions>
       {initialAbsentRequestState?.id && (
         <WithdrawAbsentRequestConfirmModal
           id={initialAbsentRequestState.id}
           isOpen={isWithdrawAbsentRequestsModalOpen}
+          onWithdraw={onClose}
           onClose={onCloseWithdrawAbsentRequestsModal}
         />
       )}

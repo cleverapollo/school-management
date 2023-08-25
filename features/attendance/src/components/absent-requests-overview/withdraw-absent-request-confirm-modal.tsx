@@ -13,23 +13,26 @@ import { useWithdrawAbsentRequest } from '../../api';
 export interface WithdrawAbsentRequestConfirmModalProps {
   id: number;
   isOpen: boolean;
+  onWithdraw?: () => void;
   onClose: () => void;
 }
 
 export function WithdrawAbsentRequestConfirmModal({
   id,
   isOpen,
+  onWithdraw,
   onClose,
 }: WithdrawAbsentRequestConfirmModalProps) {
   const { t } = useTranslation(['common', 'attendance']);
 
-  const { mutate } = useWithdrawAbsentRequest();
+  const { mutate, isLoading } = useWithdrawAbsentRequest();
 
   const onSubmit = () => {
     mutate(
       { id },
       {
         onSuccess: () => {
+          onWithdraw?.();
           onClose();
         },
       }
@@ -48,7 +51,7 @@ export function WithdrawAbsentRequestConfirmModal({
         <Button autoFocus onClick={onClose}>
           {t('common:actions.cancel')}
         </Button>
-        <LoadingButton variant="soft" onClick={onSubmit}>
+        <LoadingButton variant="soft" onClick={onSubmit} loading={isLoading}>
           {t('attendance:yesWithdrawAbsentRequest')}
         </LoadingButton>
       </DialogActions>

@@ -111,5 +111,11 @@
   "youHaveNotSelectedPendingAndDeclined": "You have not selected any \"Pending\" or \"Declined\" requests",
   "note": "Note",
   "addNote": "Add note",
-  "editNote": "Edit note"
+  "editNote": "Edit note",
+  "requestType": "Request Type",
+  "absenceRequestType": {
+    "MULTI_DAY": "Multi day",
+    "SINGLE_DAY": "Single day",
+    "PARTIAL_DAY": "Partial day"
+  }
 }
