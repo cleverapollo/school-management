@@ -157,6 +157,17 @@ export default function UserAccessContactsPage() {
       <Table
         rowData={userAccess ?? []}
         columnDefs={columns}
+        statusBar={{
+          statusPanels: [
+            {
+              statusPanel: 'agTotalAndFilteredRowCountComponent',
+              align: 'left',
+            },
+            { statusPanel: 'agTotalRowCountComponent', align: 'center' },
+            { statusPanel: 'agFilteredRowCountComponent' },
+            { statusPanel: 'agSelectedRowCountComponent' },
+          ],
+        }}
         getRowId={({ data }) => String(data?.personPartyId)}
         rowSelection="multiple"
         rightAdornment={

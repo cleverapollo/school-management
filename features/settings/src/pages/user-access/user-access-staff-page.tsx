@@ -146,6 +146,17 @@ export default function UserAccessStaffPage() {
         columnDefs={columns}
         getRowId={({ data }) => String(data?.personPartyId)}
         rowSelection="multiple"
+        statusBar={{
+          statusPanels: [
+            {
+              statusPanel: 'agTotalAndFilteredRowCountComponent',
+              align: 'left',
+            },
+            { statusPanel: 'agTotalRowCountComponent', align: 'center' },
+            { statusPanel: 'agFilteredRowCountComponent' },
+            { statusPanel: 'agSelectedRowCountComponent' },
+          ],
+        }}
         rightAdornment={
           <Fade
             in={Array.isArray(selectedInvites) && selectedInvites?.length > 0}
