@@ -31,8 +31,7 @@
     "react": "^18.2.0",
     "react-hook-form": "^7.43.9",
     "react-router": "^6.3.0",
-    "react-router-dom": "^6.6.2",
-    "yup": "^0.32.11"
+    "react-router-dom": "^6.6.2"
   },
   "devDependencies": {
     "@tyro/configs": "*"
