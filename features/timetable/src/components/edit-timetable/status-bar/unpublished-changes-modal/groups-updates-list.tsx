@@ -40,14 +40,14 @@ function getChangeList(
 
   if (groupDiff.teachersChanged) {
     const oldTeachers =
-      oldGroup.teachers.length > 0
+      oldGroup?.teachers?.length > 0
         ? displayNames(
             oldGroup.teachers.map(({ person }) => person),
             ' & '
           )
         : '-';
     const newTeachers =
-      newGroup.teachers.length > 0
+      newGroup?.teachers?.length > 0
         ? displayNames(
             newGroup.teachers.map(({ person }) => person),
             ' & '
