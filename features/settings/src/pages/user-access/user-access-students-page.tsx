@@ -158,7 +158,6 @@ export default function UserAccessStudentsPage() {
               statusPanel: 'agTotalAndFilteredRowCountComponent',
               align: 'left',
             },
-            { statusPanel: 'agTotalRowCountComponent', align: 'center' },
             { statusPanel: 'agFilteredRowCountComponent' },
             { statusPanel: 'agSelectedRowCountComponent' },
           ],

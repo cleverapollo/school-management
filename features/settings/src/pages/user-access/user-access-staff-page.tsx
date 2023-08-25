@@ -152,7 +152,6 @@ export default function UserAccessStaffPage() {
               statusPanel: 'agTotalAndFilteredRowCountComponent',
               align: 'left',
             },
-            { statusPanel: 'agTotalRowCountComponent', align: 'center' },
             { statusPanel: 'agFilteredRowCountComponent' },
             { statusPanel: 'agSelectedRowCountComponent' },
           ],
