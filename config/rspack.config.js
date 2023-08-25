@@ -1,6 +1,5 @@
 const path = require('path');
 const Dotenv = require('rspack-plugin-dotenv');
-const minifyPlugin = require('@rspack/plugin-minify');
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -10,10 +9,10 @@ module.exports = {
     main: './src/index.tsx',
   },
   output: {
-    filename: 'static/js/[name].[contenthash].js',
-    chunkFilename: 'static/js/[name].[contenthash].chunk.js',
-    cssFilename: 'static/css/[name].[contenthash].css',
-    assetModuleFilename: 'static/media/[name].[hash][ext]',
+    filename: 'static/js/[contenthash].js',
+    chunkFilename: 'static/js/[contenthash].chunk.js',
+    cssFilename: 'static/css/[contenthash].css',
+    assetModuleFilename: 'static/media/[hash][ext]',
     path: path.resolve(__dirname, '../dist'),
     publicPath: '/',
   },
@@ -36,10 +35,10 @@ module.exports = {
             ignore: ['**/index.html'],
           }
         },
-        // {
-        //   from: 'public/locales',
-        //   to: 'locales/[path][name].[contenthash][ext]'
-        // }
+        {
+          from: 'public/locales',
+          to: 'locales/[path][name].[contenthash][ext]'
+        }
       ],
     },
     emotion: true,
@@ -73,29 +72,57 @@ module.exports = {
           and: [/\.(ts|tsx|js|jsx|md|mdx)$/],
         },
       },
-      // {
-      //   test: /public\/locales\/[\w]+\/[\w]+\.json$/,
-      //   type: 'asset/resource',
-      //   exclude: /node_modules/,
-      //   generator: {
-      //     filename: '[path][name].[contenthash][ext]',
-      //   },
-      // },
+      {
+        test: /public\/locales\/[\w]+\/[\w]+\.json$/,
+        type: 'asset/resource',
+        exclude: /node_modules/,
+        generator: {
+          filename: '[path][name].[contenthash][ext]',
+        },
+      },
     ],
   },
   optimization: {
-    // splitChunks: {
-    //   chunks: 'all',
-    //   maxSize: 100000,
-    // },
-    // ...(isProd ? {
-    //   minimize: true,
-    //   minimizer: [
-    //     new minifyPlugin({
-    //       minifier: 'terser',
-    //     }),
-    //   ],
-    // } : {}),
+    splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        framework: {
+          chunks: 'all',
+          name: 'framework',
+          test: /(?<!node_modules.*)[\\/]node_modules[\\/](react|react-dom|react-router-dom|react-router|@mui)[\\/]/,
+          priority: 50,
+          enforce: true,
+        },
+        table: {
+          chunks: 'all',
+          name: 'table',
+          test: /(?<!node_modules.*)[\\/]node_modules[\\/](@ag-grid-community|@ag-grid-enterprise)[\\/]/,
+          priority: 40,
+          enforce: true,
+        },
+        calendar: {
+          chunks: 'all',
+          name: 'calendar',
+          test: /(?<!node_modules.*)[\\/]node_modules[\\/](@fullcalendar)[\\/]/,
+          priority: 30,
+          enforce: true,
+        },
+        charts: {
+          chunks: 'all',
+          name: 'charts',
+          test: /(?<!node_modules.*)[\\/]node_modules[\\/](apexcharts|react-apexcharts)[\\/]/,
+          priority: 20,
+          enforce: true,
+        },
+        graphiqlEditor: {
+          chunks: 'all',
+          name: 'graphiql',
+          test: /(?<!node_modules.*)[\\/]node_modules[\\/](graphiql)[\\/]/,
+          priority: 10,
+          enforce: true,
+        },
+      },
+    },
   },
   plugins: [
     new Dotenv(),
