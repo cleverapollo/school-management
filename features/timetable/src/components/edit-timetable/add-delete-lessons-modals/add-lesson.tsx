@@ -1,37 +1,28 @@
 import { LoadingButton } from '@mui/lab';
 import { Button, Stack } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import {
-  Tt_AddLessonOptions,
-  Room,
-  Person,
-  Staff,
-  PartyGroup,
-  Tt_AddLessonInput,
-} from '@tyro/api';
+import { PartyGroup, Room, Staff, Tt_AddLessonInput } from '@tyro/api';
 import {
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   RHFAutocomplete,
-  RHFSelect,
   useFormValidator,
 } from '@tyro/core';
 import { useForm } from 'react-hook-form';
 import React from 'react';
+import dayjs from 'dayjs';
 import { Lesson } from '../../../hooks/use-resource-table';
-import {
-  useAddLessonOptionsQuery,
-  ReturnTypeFromAddLessonOptionsQuery,
-} from '../../../api/edit-timetable/add-lesson-options';
+import { useAddLessonOptionsQuery } from '../../../api/edit-timetable/add-lesson-options';
 import { useAddIndividualLesson } from '../../../api/edit-timetable/add-individual-lesson';
+import { Period } from '../types';
 
-interface DeleteLessonModalProps {
+export interface AddLessonProps {
   timetableId: number;
   isOpen: boolean;
   onClose: () => void;
-  lessons: Lesson | null;
+  period: Period;
 }
 
 type FreeRoomsProps = Pick<Room, 'roomId' | 'name'>;
@@ -44,36 +35,38 @@ type FreeStaffProps = Pick<Staff, 'person' | 'partyId'>;
 type FreeGroupProps = Pick<PartyGroup, 'name' | 'partyId'>;
 
 export type AddLessonFormState = {
-  roomId: FreeRoomsProps;
+  roomId: FreeRoomsProps | null;
   staffIds: FreeStaffProps[];
-  groupId: FreeGroupProps;
+  groupId: FreeGroupProps | null;
 };
 
+const initialValues = {
+  groupId: null,
+  staffIds: [],
+  roomId: null,
+};
 export function AddLessonModal({
   timetableId,
   isOpen,
   onClose,
-  lessons,
-}: DeleteLessonModalProps) {
+  period,
+}: AddLessonProps) {
   const { t } = useTranslation(['common', 'timetable']);
 
-  const dayIdx = Number(lessons?.timeslotId?.dayIdx);
-  const periodIdx = Number(lessons?.timeslotId?.periodIdx);
-  const gridIdx = Number(lessons?.timeslotId?.gridIdx);
-  const timetableGroupId = Number(lessons?.id?.timetableGroupId);
-
   const { resolver, rules } = useFormValidator<AddLessonFormState>();
-  const { control, handleSubmit, reset } = useForm<AddLessonFormState>({
-    resolver: resolver({
-      groupId: rules.required(),
-    }),
-  });
+  const { control, handleSubmit, reset, setValue } =
+    useForm<AddLessonFormState>({
+      resolver: resolver({
+        groupId: rules.required(),
+      }),
+      defaultValues: initialValues,
+    });
   const dataForAddLessonOptionsQuery = {
     timetableId,
     timeslot: {
-      gridIdx: Number(gridIdx),
-      dayIdx: Number(dayIdx),
-      periodIdx: Number(periodIdx),
+      gridIdx: Number(period.gridIdx),
+      dayIdx: Number(period.dayIdx),
+      periodIdx: Number(period.periodIdx),
     },
   };
 
@@ -84,23 +77,26 @@ export function AddLessonModal({
   const { mutate: addLesson, isLoading } = useAddIndividualLesson();
 
   const handleClose = () => {
-    reset();
+    reset(initialValues);
+    setValue('staffIds', []);
+    setValue('roomId', null);
+    setValue('groupId', null);
     onClose();
   };
 
   const onSubmit = ({ groupId, staffIds, roomId }: AddLessonFormState) => {
     const transformedData = {
       timetableId,
-      gridIdx,
-      dayIdx,
-      periodIdx,
-      timetableGroupId: groupId.partyId,
+      gridIdx: period.gridIdx,
+      dayIdx: period.dayIdx,
+      periodIdx: period.periodIdx,
+      timetableGroupId: groupId?.partyId,
       teachersPartyIds: staffIds.map((a) => a.partyId) ?? [],
       roomId: roomId?.roomId,
     } as Tt_AddLessonInput;
 
     addLesson(transformedData);
-    onClose();
+    handleClose();
   };
 
   // @ts-ignore
@@ -118,24 +114,26 @@ export function AddLessonModal({
           borderColor: 'divider',
         }}
       >
-        {t('timetable:addLesson')}
+        {t('timetable:addSessionModalHeader', {
+          day: dayjs().set('day', period.dayIdx).format('ddd'),
+          period: period.periodIdx,
+        })}
       </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
           <Stack gap={3} py={3}>
             <Stack direction="row" gap={2}>
-              {/* @ts-ignore */}
-              <RHFAutocomplete<AddLessonFormState, FreeRoomsProps>
+              <RHFAutocomplete<AddLessonFormState, FreeGroupProps>
                 fullWidth
-                options={addLessonOptions?.freeRooms ?? []}
-                label="Rooms"
-                optionIdKey="name"
-                getOptionLabel={(option) => option?.name ?? ''}
+                options={addLessonOptions?.freeTimetableGroups ?? []}
+                label="Free Groups"
+                getOptionLabel={(option) => option.name ?? ''}
                 controlProps={{
-                  name: 'roomId',
+                  name: 'groupId',
                   control,
                 }}
               />
+
               <RHFAutocomplete<AddLessonFormState, FreeStaffProps>
                 fullWidth
                 multiple
@@ -151,13 +149,14 @@ export function AddLessonModal({
                   control,
                 }}
               />
-              <RHFAutocomplete<AddLessonFormState, FreeGroupProps>
+              <RHFAutocomplete<AddLessonFormState, FreeRoomsProps>
                 fullWidth
-                options={addLessonOptions?.freeTimetableGroups ?? []}
-                label="Free Groups"
-                getOptionLabel={(option) => option.name ?? ''}
+                options={addLessonOptions?.freeRooms ?? []}
+                label="Rooms"
+                optionIdKey="name"
+                getOptionLabel={(option) => option?.name ?? ''}
                 controlProps={{
-                  name: 'groupId',
+                  name: 'roomId',
                   control,
                 }}
               />
