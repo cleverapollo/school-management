@@ -35,9 +35,13 @@ const renderSelectOption = (
   }
 
   const color =
-    colorsBasedOnCodeType[option.codeType as AttendanceCodesWithoutNotTaken];
+    colorsBasedOnCodeType[
+      option.sessionCodeType as AttendanceCodesWithoutNotTaken
+    ];
   const icon =
-    iconBasedOnCodeType[option.codeType as AttendanceCodesWithoutNotTaken];
+    iconBasedOnCodeType[
+      option.sessionCodeType as AttendanceCodesWithoutNotTaken
+    ];
   return (
     <Stack flex={1} direction="row" spacing={1} justifyContent="space-between">
       <Stack direction="row" spacing={1} alignItems="center" flex={1}>

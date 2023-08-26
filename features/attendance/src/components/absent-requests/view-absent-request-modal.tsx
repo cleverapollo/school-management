@@ -1,6 +1,6 @@
 import { Button, Divider, Stack, Typography } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { AttendanceCode, ParentalAttendanceRequestStatus } from '@tyro/api';
+import { ParentalAttendanceRequestStatus } from '@tyro/api';
 import React from 'react';
 import {
   Avatar,
@@ -25,6 +25,7 @@ import {
   ReturnTypeFromUseAbsentRequests,
   useAttendanceCodes,
   useCreateOrUpdateAbsentRequest,
+  ReturnTypeFromUseAttendanceCodes,
 } from '../../api';
 import { formatDateOfAbsence } from '../../utils/format-date-of-absence';
 
@@ -39,7 +40,7 @@ const getAbsentRequestDataWithLabels = (
   data: ReturnTypeFromUseAbsentRequests | undefined,
   t: TFunction<('common' | 'attendance')[]>,
   displayName: ReturnTypeDisplayName,
-  attendanceCodes: AttendanceCode[] | undefined
+  attendanceCodes: ReturnTypeFromUseAttendanceCodes[] | undefined
 ): CardEditableFormProps<ReturnTypeFromUseAbsentRequests>['fields'] => {
   if (data === undefined) return [];
   const { contact, attendanceCode, parentNote, requestType } = data;

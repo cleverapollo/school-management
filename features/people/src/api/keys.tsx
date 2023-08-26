@@ -1,4 +1,12 @@
-import { StaffFilter, StudentFilter } from '@tyro/api';
+import {
+  StaffFilter,
+  StudentFilter,
+  CalendarEventFilter,
+  EventAttendanceFilter,
+  StudentSessionAttendanceFilter,
+  CalendarAttendanceFilter,
+  CalendarDayBellTimeFilter,
+} from '@tyro/api';
 
 export const peopleKeys = {
   all: ['people'] as const,
@@ -13,6 +21,7 @@ export const peopleKeys = {
   notes: {
     all: () => [...peopleKeys.all, 'notes'] as const,
     noteTags: () => [...peopleKeys.notes.all(), 'noteTags'] as const,
+    behaviourTags: () => [...peopleKeys.notes.all(), 'behaviourTags'] as const,
   },
   staff: {
     all: () => [...peopleKeys.all, 'staff'] as const,
@@ -44,6 +53,8 @@ export const peopleKeys = {
       [...peopleKeys.students.all(), 'contacts', studentId] as const,
     notes: (studentId: number | undefined) =>
       [...peopleKeys.students.all(), 'notes', studentId] as const,
+    behaviours: (studentId: number | undefined) =>
+      [...peopleKeys.students.all(), 'behaviours', studentId] as const,
     subjectGroups: (studentId: number | undefined) =>
       [...peopleKeys.students.all(), 'classes', studentId] as const,
     medical: (studentId: number | undefined) =>
@@ -56,5 +67,29 @@ export const peopleKeys = {
       [...peopleKeys.students.all(), 'studentsForSiblingSearch'] as const,
     personalTitlesList: () =>
       [...peopleKeys.students.all(), 'personalTitlesList'] as const,
+    sessionAttendance: (filter: StudentSessionAttendanceFilter) =>
+      [...peopleKeys.students.all(), 'sessionAttendance', filter] as const,
+    studentDailyCalendarTimetableInformation: (filter: CalendarEventFilter) =>
+      [
+        ...peopleKeys.students.all(),
+        'studentDailyCalendarTimetableInformation',
+        filter,
+      ] as const,
+    timetableEventInformation: (filter: CalendarEventFilter) =>
+      [
+        ...peopleKeys.students.all(),
+        'timetableEventInformation',
+        filter,
+      ] as const,
+    eventAttendance: (filter: EventAttendanceFilter) =>
+      [...peopleKeys.students.all(), 'eventAttendance', filter] as const,
+    studentCalendarAttendance: (filter: CalendarAttendanceFilter) =>
+      [
+        ...peopleKeys.students.all(),
+        'studentCalendarAttendance',
+        filter,
+      ] as const,
+    calendarBellTimes: (filter: CalendarDayBellTimeFilter) =>
+      [...peopleKeys.students.all(), 'calendarBellTimes', filter] as const,
   },
 };

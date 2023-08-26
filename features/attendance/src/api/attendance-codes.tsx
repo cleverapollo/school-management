@@ -8,6 +8,7 @@ import {
   gqlClient,
   graphql,
   queryClient,
+  Scalars,
 } from '@tyro/api';
 import { attendanceKeys } from './keys';
 
@@ -27,6 +28,7 @@ const attendanceCodes = graphql(/* GraphQL */ `
       visibleForContact
       nameTextId
       codeType
+      sessionCodeType
     }
   }
 `);

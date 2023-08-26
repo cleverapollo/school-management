@@ -11,6 +11,7 @@ import {
   useDisclosure,
   ReturnTypeDisplayName,
   ReturnTypeDisplayNames,
+  ValueSetterParams,
 } from '@tyro/core';
 import { AccessUserType, UpdateStudentContactInput } from '@tyro/api';
 import { MailIcon, StopIcon } from '@tyro/icons';
@@ -61,9 +62,15 @@ const getColumns = (
     headerName: t('common:email'),
     field: 'personalInfo.primaryEmail.email',
     editable: true,
-    valueSetter: ({ data, newValue }) => {
-      if (newValue) {
-        set(data ?? {}, `personalInfo.primaryEmail.email`, newValue);
+    valueSetter: (params: ValueSetterParams<ReturnTypeFromUseUserAccess>) => {
+      if (!params?.newValue) {
+        params.data.personalInfo.primaryEmail = null;
+      } else {
+        set(
+          params?.data ?? {},
+          `personalInfo.primaryEmail.email`,
+          params?.newValue
+        );
         return true;
       }
       return false;
@@ -150,6 +157,16 @@ export default function UserAccessContactsPage() {
       <Table
         rowData={userAccess ?? []}
         columnDefs={columns}
+        statusBar={{
+          statusPanels: [
+            {
+              statusPanel: 'agTotalAndFilteredRowCountComponent',
+              align: 'left',
+            },
+            { statusPanel: 'agFilteredRowCountComponent' },
+            { statusPanel: 'agSelectedRowCountComponent' },
+          ],
+        }}
         getRowId={({ data }) => String(data?.personPartyId)}
         rowSelection="multiple"
         rightAdornment={

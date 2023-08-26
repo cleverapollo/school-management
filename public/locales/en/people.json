@@ -33,6 +33,9 @@
   "teacherCouncilNumber": "Teacher council number",
   "doctorName": "Doctor name",
   "addCondition": "Add condition",
+  "academicYear": "Academic {{ year }}",
+  "studentAttendanceAlertTitleModal": "Changes made will delete previous Attendance",
+  "studentAttendanceAlertBodyModal": "Once changes are saved, they can be edited again.",
   "gender": {
     "title": "Gender",
     "MALE": "Male",
@@ -105,7 +108,8 @@
   },
   "actions": {
     "allowUsersToContact": "Allow users to contact",
-    "disallowUsersToContact": "Disallow users to contact"
+    "disallowUsersToContact": "Disallow users to contact",
+    "createBehaviour": "Create behaviour"
   },
   "feedback": {
     "moreThanOneSelectedForPrimaryContact": "You must only select one contact to set as a primary contact."
@@ -236,6 +240,6 @@
     "snaSupport": "SNA support",
     "provision": "Provision",
     "note": "Note"
-  }
-
+  },
+  "createBehaviour": "Create behaviour"
 }

@@ -27,8 +27,7 @@ const noteTagsQuery = () => ({
 export function useNoteTags() {
   return useQuery({
     ...noteTagsQuery(),
-    select: ({ notes_tags }) =>
-      notes_tags?.flatMap((note) => (note ? [note] : [])),
+    select: ({ notes_tags }) => notes_tags,
   });
 }
 

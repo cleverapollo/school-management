@@ -212,7 +212,11 @@
       "PEOPLE": "People",
       "GENERAL_ADMIN": "General admin",
       "TIMETABLE_CONSTRUCTION": "Timetable construction",
-      "STAFF_WORK_MANAGEMENT": "Staff Work Management"
+      "STAFF_WORK_MANAGEMENT": "Staff work management",
+      "YEAR_GROUP_CONTACT": "Year group contact",
+      "YEAR_GROUP_ENROLLMENT": "Year group enrollment",
+      "YEAR_GROUP_STAFF": "Year group staff",
+      "PRINTING_AND_EXPORTING": "Printing and exporting"
     }
   }
 }

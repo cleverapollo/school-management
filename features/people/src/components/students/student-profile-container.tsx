@@ -61,15 +61,18 @@ export default function StudentProfileContainer() {
           {
             label: t('people:contacts'),
             value: 'contacts',
-            hasAccess: ({ isStaffUser }) =>
-              // isStaffUserWithPermission(
-              //   'ps:1:people:view_contacts_for_student'
-              // ),
-              isStaffUser,
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission(
+                'ps:1:people:view_contacts_for_student'
+              ),
           },
           {
             label: t('common:attendance'),
             value: 'attendance',
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission(
+                'ps:1:attendance:read_session_attendance_individual'
+              ),
           },
           // NOTE: temporary hide this tab
           // {
@@ -92,7 +95,8 @@ export default function StudentProfileContainer() {
           {
             label: t('people:behaviour'),
             value: 'behaviour',
-            hasAccess: ({ isStaffUser }) => isStaffUser,
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission('ps:1:notes:read_behaviour'),
           },
           {
             label: 'AEN',
@@ -115,7 +119,7 @@ export default function StudentProfileContainer() {
             label: 'Medical',
             value: 'medical',
             hasAccess: ({ hasPermission }) =>
-              hasPermission(' ps:1:wellbeing:read_student_medical'),
+              hasPermission('ps:1:wellbeing:read_student_medical'),
           },
           {
             label: t('people:notes'),

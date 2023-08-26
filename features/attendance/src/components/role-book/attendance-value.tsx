@@ -95,7 +95,6 @@ export function RolebookAttendanceValue({
 
   const icons = hasNote ? iconWithNoteBasedOnCodeType : iconBasedOnCodeType;
   const icon = icons[attendanceCodeType];
-
   return (
     <Tooltip
       title={

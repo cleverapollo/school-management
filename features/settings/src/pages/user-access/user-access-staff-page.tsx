@@ -10,6 +10,7 @@ import {
   ActionMenu,
   useDisclosure,
   ReturnTypeDisplayName,
+  ValueSetterParams,
 } from '@tyro/core';
 import { AccessUserType, UpdateStaffInput } from '@tyro/api';
 import { MailIcon, StopIcon } from '@tyro/icons';
@@ -52,9 +53,15 @@ const getColumns = (
     headerName: t('common:email'),
     field: 'personalInfo.primaryEmail.email',
     editable: true,
-    valueSetter: ({ data, newValue }) => {
-      if (newValue) {
-        set(data ?? {}, `personalInfo.primaryEmail.email`, newValue);
+    valueSetter: (params: ValueSetterParams<ReturnTypeFromUseUserAccess>) => {
+      if (!params?.newValue) {
+        params.data.personalInfo.primaryEmail = null;
+      } else {
+        set(
+          params?.data ?? {},
+          `personalInfo.primaryEmail.email`,
+          params?.newValue
+        );
         return true;
       }
       return false;
@@ -139,6 +146,16 @@ export default function UserAccessStaffPage() {
         columnDefs={columns}
         getRowId={({ data }) => String(data?.personPartyId)}
         rowSelection="multiple"
+        statusBar={{
+          statusPanels: [
+            {
+              statusPanel: 'agTotalAndFilteredRowCountComponent',
+              align: 'left',
+            },
+            { statusPanel: 'agFilteredRowCountComponent' },
+            { statusPanel: 'agSelectedRowCountComponent' },
+          ],
+        }}
         rightAdornment={
           <Fade
             in={Array.isArray(selectedInvites) && selectedInvites?.length > 0}

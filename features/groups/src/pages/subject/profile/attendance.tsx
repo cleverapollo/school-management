@@ -30,27 +30,21 @@ import {
 } from '@tyro/icons';
 import { useNumber, Avatar, usePreferredNameLayout } from '@tyro/core';
 import { useParams } from 'react-router-dom';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useSubjectGroupById } from '../../../api/subject-groups';
 import { useHandleLessonAttendance } from '../../../hooks';
 
 export default function SubjectGroupProfileAttendancePage() {
   const { t } = useTranslation(['groups', 'common']);
+  const { displayName } = usePreferredNameLayout();
 
   const { groupId } = useParams();
   const groupIdNumber = useNumber(groupId);
+
   const { data: subjectGroupData } = useSubjectGroupById(groupIdNumber);
 
-  const { displayName, sortByDisplayName } = usePreferredNameLayout();
-
-  const sortedStudents = useMemo(() => {
-    if (!subjectGroupData?.students) return [];
-
-    return subjectGroupData.students.sort((a, b) =>
-      sortByDisplayName(a.person, b.person)
-    );
-  }, [subjectGroupData?.students, sortByDisplayName]);
+  const students = subjectGroupData?.students || [];
 
   const {
     lessonId,
@@ -61,13 +55,14 @@ export default function SubjectGroupProfileAttendancePage() {
     isSaveAttendanceLoading,
     nextLesson,
     previousLesson,
+    getStudentEventDetails,
     getStudentAttendanceCode,
     setStudentAttendanceCode,
     saveAttendance,
     cancelAttendance,
   } = useHandleLessonAttendance({
     partyId: groupIdNumber!,
-    students: sortedStudents,
+    students,
   });
 
   const [showAlertSuccess, setAlertSuccess] = useState(false);
@@ -135,7 +130,7 @@ export default function SubjectGroupProfileAttendancePage() {
         <IconButton
           size="small"
           color="primary"
-          disabled={isLoading || isEmptyLesson}
+          disabled={isLoading}
           onClick={nextLesson}
         >
           <ChevronRightIcon />
@@ -169,32 +164,59 @@ export default function SubjectGroupProfileAttendancePage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {sortedStudents.map((student) => (
-                <TableRow key={student?.partyId}>
-                  <TableCell>
-                    <Stack direction="row" spacing={2} alignItems="center">
-                      <Avatar
-                        name={displayName(student?.person)}
-                        src={student?.person?.avatarUrl}
-                      />
-                      <Stack direction="column">
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {displayName(student?.person)}
-                        </Typography>
-                        <Typography variant="body2">
-                          {student?.classGroup?.name ?? '-'}
-                        </Typography>
+              {students.map((student) => {
+                const eventDetails = getStudentEventDetails(student.partyId);
+                const submittedBy = displayName(eventDetails?.createdBy);
+
+                return (
+                  <TableRow key={student?.partyId}>
+                    <TableCell>
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        <Avatar
+                          name={displayName(student?.person)}
+                          src={student?.person?.avatarUrl}
+                        />
+                        <Stack direction="column">
+                          <Typography variant="body2" fontWeight={600}>
+                            {displayName(student?.person)}
+                          </Typography>
+                          <Typography variant="body2">
+                            {student?.classGroup?.name ?? '-'}
+                          </Typography>
+                        </Stack>
                       </Stack>
-                    </Stack>
-                  </TableCell>
-                  <TableCell>
-                    <AttendanceToggle
-                      codeId={getStudentAttendanceCode(student.partyId)}
-                      onChange={setStudentAttendanceCode(student.partyId)}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                    <TableCell>
+                      {eventDetails && eventDetails.adminSubmitted ? (
+                        <Stack direction="column">
+                          <Typography variant="caption" fontWeight={600}>
+                            {eventDetails.attendanceCode.name}
+                          </Typography>
+                          {eventDetails.note && (
+                            <Typography component="span" variant="caption">
+                              {eventDetails.note}
+                            </Typography>
+                          )}
+                          {submittedBy && (
+                            <Typography
+                              component="span"
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              {`${t('common:submittedBy')} ${submittedBy}`}
+                            </Typography>
+                          )}
+                        </Stack>
+                      ) : (
+                        <AttendanceToggle
+                          codeId={getStudentAttendanceCode(student.partyId)}
+                          onChange={setStudentAttendanceCode(student.partyId)}
+                        />
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
           <Box sx={{ p: 2, position: 'sticky', bottom: 0 }}>
@@ -254,7 +276,7 @@ export default function SubjectGroupProfileAttendancePage() {
                   px: 2,
                 }}
               >
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                <Typography variant="body2" fontWeight={600}>
                   {t('groups:confirmAttendance')}
                 </Typography>
                 <Stack direction="row" spacing={2}>

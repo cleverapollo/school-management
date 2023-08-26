@@ -37,6 +37,7 @@ import { getStaffSubjectGroups } from './api/staff/subject-groups';
 import { getStaffPersonal } from './api/staff/personal';
 import { getMedicalConditionNamesQuery } from './api/student/medicals/medical-condition-lookup';
 import { getPersonalTitlesQuery } from './api/student/medicals/personal-titles';
+import { getBehaviours } from './api/behaviour/list';
 
 const StudentsListPage = lazy(() => import('./pages/students'));
 // Student profile pages
@@ -237,6 +238,10 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'attendance',
                 element: <StudentProfileAttendancePage />,
+                hasAccess: ({ isStaffUserWithPermission }) =>
+                  isStaffUserWithPermission(
+                    'ps:1:attendance:read_session_attendance_individual'
+                  ),
               },
               {
                 type: NavObjectType.NonMenuLink,
@@ -265,6 +270,16 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'behaviour',
+                hasAccess: ({ isStaffUserWithPermission }) =>
+                  isStaffUserWithPermission('ps:1:notes:read_behaviour'),
+                loader: ({ params }) => {
+                  const studentId = getNumber(params.id);
+
+                  if (!studentId) {
+                    throw404Error();
+                  }
+                  return getBehaviours(studentId);
+                },
                 element: <StudentProfileBehaviourPage />,
               },
               {
@@ -314,6 +329,8 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'notes',
+                hasAccess: ({ isStaffUserWithPermission }) =>
+                  isStaffUserWithPermission('ps:1:notes:read_notes'),
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
                   return getNotes(studentId);

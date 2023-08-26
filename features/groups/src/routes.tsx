@@ -161,7 +161,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                     path: 'attendance',
                     hasAccess: (permissions) =>
                       permissions.hasPermission(
-                        'ps:1:groups:read_session_attendance'
+                        'ps:1:attendance:read_session_attendance_class_group'
                       ),
                     element: <ClassGroupAttendancePage />,
                   },

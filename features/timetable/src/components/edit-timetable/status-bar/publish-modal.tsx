@@ -21,11 +21,11 @@ interface UnpublishedChangesModalProps {
   onClose: () => void;
 }
 
-const tomorrow = dayjs().add(1, 'day');
+const today = dayjs();
 
 export function PublishModal({ open, onClose }: UnpublishedChangesModalProps) {
   const { t } = useTranslation(['common', 'timetable']);
-  const [publishFromDate, setPublishFromDate] = useState<Dayjs>(tomorrow);
+  const [publishFromDate, setPublishFromDate] = useState<Dayjs>(today);
   const { data: publishDiff, isLoading } = useUnpublishedTimetableChanges(
     { liveTimetable: true },
     open
@@ -82,7 +82,7 @@ export function PublishModal({ open, onClose }: UnpublishedChangesModalProps) {
                   setPublishFromDate(date);
                 }
               }}
-              minDate={tomorrow}
+              minDate={today}
               sx={{
                 mx: 3,
                 mt: 2,

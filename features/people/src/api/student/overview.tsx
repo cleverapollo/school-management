@@ -1,12 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import {
   Core_Student_ContactsQuery,
+  UseQueryReturnType,
   gqlClient,
   graphql,
   queryClient,
 } from '@tyro/api';
 import { useCallback } from 'react';
 import { peopleKeys } from '../keys';
+
+export type ReturnTypeFromUseStudentSubjectGroups = UseQueryReturnType<
+  typeof useStudentsSubjectGroups
+>[number];
 
 const studentsContacts = graphql(/* GraphQL */ `
   query core_student_contacts($filter: StudentFilter!) {

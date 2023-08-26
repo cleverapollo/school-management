@@ -16,6 +16,8 @@ import { ReturnTypeFromUseTimetableResourceView } from '../../api/edit-timetable
 import { Lesson, useResourceTable } from '../../hooks/use-resource-table';
 import { ResourceTableCard } from './resource-table-card';
 import { SwapTeacherRoomModal } from './swap-teacher-room-modal';
+import { DeleteLessonModal } from './add-delete-lessons-modals/delete-lesson';
+import { AddLessonModal } from './add-delete-lessons-modals/add-lesson';
 
 interface ResourcesTableProps {
   timetableId: number;
@@ -33,6 +35,18 @@ export function ResourcesTable({
     debouncedValue: debouncedSelectLessonsToSwapRoomOrTeacher,
     setValue: setSelectLessonsToSwapRoomOrTeacher,
   } = useDebouncedValue<Lesson[] | null>({ defaultValue: null });
+
+  const {
+    value: selectedLessonToDelete,
+    debouncedValue: debouncedSelectedLessonToDelete,
+    setValue: setSelectedLessonToDelete,
+  } = useDebouncedValue<Lesson | null>({ defaultValue: null });
+
+  const {
+    value: selectedLessonToAdd,
+    debouncedValue: debouncedSelectedLessonToAdd,
+    setValue: setSelectedLessonToAdd,
+  } = useDebouncedValue<Lesson | null>({ defaultValue: null });
 
   const {
     gridIds,
@@ -78,6 +92,21 @@ export function ResourcesTable({
       setSelectLessonsToSwapRoomOrTeacher(lessons);
     },
     [selectedLessonIds, getLessons, setSelectLessonsToSwapRoomOrTeacher]
+  );
+
+  const onOpenDeleteLesson = useCallback(
+    (lesson: Lesson) => {
+      setSelectedLessonToDelete(lesson);
+    },
+
+    [selectedLessonIds, setSelectedLessonToDelete]
+  );
+
+  const onOpenAddLesson = useCallback(
+    (lesson: Lesson) => {
+      setSelectedLessonToAdd(lesson);
+    },
+    [selectedLessonIds, setSelectedLessonToAdd]
   );
 
   return (
@@ -173,6 +202,8 @@ export function ResourcesTable({
                               onOpenSwapTeacherOrRoomDialog={
                                 onOpenSwapRoomOrTeacher
                               }
+                              onOpenDeleteLessonDialog={onOpenDeleteLesson}
+                              onOpenAddLessonDialog={onOpenAddLesson}
                             />
                           ))}
                         </Stack>
@@ -193,6 +224,18 @@ export function ResourcesTable({
           debouncedSelectLessonsToSwapRoomOrTeacher
         }
         onClose={() => setSelectLessonsToSwapRoomOrTeacher(null)}
+      />
+      <DeleteLessonModal
+        timetableId={timetableId}
+        isOpen={Boolean(selectedLessonToDelete)}
+        lessons={selectedLessonToDelete ?? debouncedSelectedLessonToDelete}
+        onClose={() => setSelectedLessonToDelete(null)}
+      />
+      <AddLessonModal
+        timetableId={timetableId}
+        isOpen={Boolean(selectedLessonToAdd)}
+        lessons={selectedLessonToAdd ?? debouncedSelectedLessonToAdd}
+        onClose={() => setSelectedLessonToAdd(null)}
       />
     </>
   );
