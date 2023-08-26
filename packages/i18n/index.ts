@@ -33,17 +33,18 @@ export default i18n
       escapeValue: false, // no needed for react as it escapes by default
     },
     backend: {
-      loadPath: (lngs, nss) => '/locales/{{lng}}/{{ns}}.json',
-      // if (process.env.NODE_ENV !== 'production') {
-      //   return '/locales/{{lng}}/{{ns}}.json';
-      // }
+      loadPath: (lngs, nss) => {
+        if (process.env.NODE_ENV !== 'production') {
+          return '/locales/{{lng}}/{{ns}}.json';
+        }
 
-      // const lookupLng = lngs?.[0] as (typeof availableLanguages)[number];
-      // const lookupNs = nss?.[0] as keyof (typeof resources)[typeof lookupLng];
-      // // @ts-expect-error
-      // const originalPath = (resources?.[lookupLng]?.[lookupNs] ??
-      //   '') as string;
-      // return originalPath.replace('/public', '');
+        const lookupLng = lngs?.[0] as (typeof availableLanguages)[number];
+        const lookupNs = nss?.[0] as keyof (typeof resources)[typeof lookupLng];
+        // @ts-expect-error
+        const originalPath = (resources?.[lookupLng]?.[lookupNs] ??
+          '') as string;
+        return originalPath.replace('/public', '');
+      },
     },
   });
 
