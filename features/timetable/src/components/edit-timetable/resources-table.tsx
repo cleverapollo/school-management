@@ -12,6 +12,7 @@ import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import { SearchInput, useDebouncedValue, useContextMenu } from '@tyro/core';
 import { useCallback, useState } from 'react';
+import { CalendarParty } from '@tyro/calendar';
 import { ReturnTypeFromUseTimetableResourceView } from '../../api/edit-timetable/resource-view';
 import { Lesson, useResourceTable } from '../../hooks/use-resource-table';
 import { ResourceTableCard } from './resource-table-card';
@@ -25,17 +26,20 @@ import { Period } from './types';
 interface ResourcesTableProps {
   timetableId: number;
   resources: ReturnTypeFromUseTimetableResourceView;
+  selectedParties: CalendarParty[];
 }
 
 export function ResourcesTable({
   timetableId,
   resources,
+  selectedParties,
 }: ResourcesTableProps) {
   const { t } = useTranslation(['timetable']);
   const [searchValue, setSearchValue] = useState('');
   const [addSessionModalOpen, setAddSessionModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isContextMenuOpen = Boolean(anchorEl);
+
   const {
     value: selectLessonsToSwapRoomOrTeacher,
     debouncedValue: debouncedSelectLessonsToSwapRoomOrTeacher,
@@ -276,6 +280,7 @@ export function ResourcesTable({
             dayIdx: -1,
           }
         }
+        filterForTimetableGroups={selectedParties.map((a) => a.partyId) ?? []}
         onClose={() => {
           setSelectedPeriodToAdd(null);
           setAddSessionModalOpen(false);

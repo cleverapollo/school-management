@@ -23,6 +23,7 @@ export interface AddLessonProps {
   isOpen: boolean;
   onClose: () => void;
   period: Period;
+  filterForTimetableGroups: number[];
 }
 
 type FreeRoomsProps = Pick<Room, 'roomId' | 'name'>;
@@ -50,6 +51,7 @@ export function AddLessonModal({
   isOpen,
   onClose,
   period,
+  filterForTimetableGroups,
 }: AddLessonProps) {
   const { t } = useTranslation(['common', 'timetable']);
 
@@ -68,6 +70,7 @@ export function AddLessonModal({
       dayIdx: Number(period.dayIdx),
       periodIdx: Number(period.periodIdx),
     },
+    timetableGroupIds: filterForTimetableGroups,
   };
 
   const { data: addLessonOptions } = useAddLessonOptionsQuery(
@@ -115,7 +118,7 @@ export function AddLessonModal({
         }}
       >
         {t('timetable:addSessionModalHeader', {
-          day: dayjs().set('day', period.dayIdx).format('ddd'),
+          day: dayjs().set('day', period.dayIdx).format('dddd'),
           period: period.periodIdx,
         })}
       </DialogTitle>
@@ -126,7 +129,7 @@ export function AddLessonModal({
               <RHFAutocomplete<AddLessonFormState, FreeGroupProps>
                 fullWidth
                 options={addLessonOptions?.freeTimetableGroups ?? []}
-                label="Free Groups"
+                label={t('timetable:groupsAvailable')}
                 getOptionLabel={(option) => option.name ?? ''}
                 controlProps={{
                   name: 'groupId',
@@ -137,8 +140,9 @@ export function AddLessonModal({
               <RHFAutocomplete<AddLessonFormState, FreeStaffProps>
                 fullWidth
                 multiple
+                disableCloseOnSelect
                 options={addLessonOptions?.freeStaff ?? []}
-                label="Free Staff"
+                label={t('timetable:teachersAvailable')}
                 getOptionLabel={(option) =>
                   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                   `${option?.person?.firstName} ${option?.person?.lastName}` ??
@@ -152,7 +156,7 @@ export function AddLessonModal({
               <RHFAutocomplete<AddLessonFormState, FreeRoomsProps>
                 fullWidth
                 options={addLessonOptions?.freeRooms ?? []}
-                label="Rooms"
+                label={t('timetable:roomsAvailable')}
                 optionIdKey="name"
                 getOptionLabel={(option) => option?.name ?? ''}
                 controlProps={{
