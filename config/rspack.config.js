@@ -1,10 +1,14 @@
 const path = require('path');
 const Dotenv = require('rspack-plugin-dotenv');
+const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
 
 const isProd = process.env.NODE_ENV === 'production';
 
 module.exports = {
   mode: isProd ? "production" : "development",
+  devtool: isProd
+    ? 'source-map'
+    : false,
   entry: {
     main: './src/index.tsx',
   },
@@ -126,5 +130,12 @@ module.exports = {
   },
   plugins: [
     new Dotenv(),
+    ...isProd ? [
+      sentryWebpackPlugin({
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        org: "tyro-technologies-limited",
+        project: "web-app",
+      }),
+    ] : [],
   ],
 };
