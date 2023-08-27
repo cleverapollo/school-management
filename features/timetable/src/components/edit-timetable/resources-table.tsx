@@ -10,26 +10,36 @@ import {
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
-import { SearchInput, useDebouncedValue } from '@tyro/core';
+import { SearchInput, useDebouncedValue, useContextMenu } from '@tyro/core';
 import { useCallback, useState } from 'react';
+import { CalendarParty } from '@tyro/calendar';
 import { ReturnTypeFromUseTimetableResourceView } from '../../api/edit-timetable/resource-view';
 import { Lesson, useResourceTable } from '../../hooks/use-resource-table';
 import { ResourceTableCard } from './resource-table-card';
 import { SwapTeacherRoomModal } from './swap-teacher-room-modal';
 import { DeleteLessonModal } from './add-delete-lessons-modals/delete-lesson';
 import { AddLessonModal } from './add-delete-lessons-modals/add-lesson';
+import { LessonContextMenu } from './lesson-context-menu';
+import { TimetableContextMenu } from './table-cell-context-menu';
+import { Period } from './types';
 
 interface ResourcesTableProps {
   timetableId: number;
   resources: ReturnTypeFromUseTimetableResourceView;
+  selectedParties: CalendarParty[];
 }
 
 export function ResourcesTable({
   timetableId,
   resources,
+  selectedParties,
 }: ResourcesTableProps) {
   const { t } = useTranslation(['timetable']);
   const [searchValue, setSearchValue] = useState('');
+  const [addSessionModalOpen, setAddSessionModalOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const isContextMenuOpen = Boolean(anchorEl);
+
   const {
     value: selectLessonsToSwapRoomOrTeacher,
     debouncedValue: debouncedSelectLessonsToSwapRoomOrTeacher,
@@ -42,11 +52,17 @@ export function ResourcesTable({
     setValue: setSelectedLessonToDelete,
   } = useDebouncedValue<Lesson | null>({ defaultValue: null });
 
+  // const {
+  //   value: selectedLessonToAdd,
+  //   debouncedValue: debouncedSelectedLessonToAdd,
+  //   setValue: setSelectedLessonToAdd,
+  // } = useDebouncedValue<Lesson | null>({ defaultValue: null });
+
   const {
-    value: selectedLessonToAdd,
-    debouncedValue: debouncedSelectedLessonToAdd,
-    setValue: setSelectedLessonToAdd,
-  } = useDebouncedValue<Lesson | null>({ defaultValue: null });
+    value: selectedPeriodToAdd,
+    debouncedValue: debouncedSelectedPeriodToAdd,
+    setValue: setSelectedPeriodToAdd,
+  } = useDebouncedValue<Period | null>({ defaultValue: null });
 
   const {
     gridIds,
@@ -103,10 +119,11 @@ export function ResourcesTable({
   );
 
   const onOpenAddLesson = useCallback(
-    (lesson: Lesson) => {
-      setSelectedLessonToAdd(lesson);
+    (period: Period) => {
+      setSelectedPeriodToAdd(period);
+      setAddSessionModalOpen(true);
     },
-    [selectedLessonIds, setSelectedLessonToAdd]
+    [selectedLessonIds, setSelectedPeriodToAdd]
   );
 
   return (
@@ -188,7 +205,22 @@ export function ResourcesTable({
                       []
                     );
                     return (
-                      <TableCell key={period}>
+                      <TableCell
+                        key={period}
+                        onContextMenu={(event) => {
+                          console.log(day);
+                          console.log(period);
+                          setAnchorEl(event.currentTarget);
+                          setSelectedPeriodToAdd({
+                            // todo pass in
+                            gridIdx: 1,
+                            dayIdx: day,
+                            periodIdx: period,
+                          });
+                          event.stopPropagation();
+                          event.preventDefault();
+                        }}
+                      >
                         <Stack spacing={1}>
                           {resourcesForPeriod.map((resource) => (
                             <ResourceTableCard
@@ -204,6 +236,12 @@ export function ResourcesTable({
                               }
                               onOpenDeleteLessonDialog={onOpenDeleteLesson}
                               onOpenAddLessonDialog={onOpenAddLesson}
+                              period={{
+                                dayIdx: day,
+                                periodIdx: period,
+                                // todo pass in
+                                gridIdx: 1,
+                              }}
                             />
                           ))}
                         </Stack>
@@ -233,10 +271,34 @@ export function ResourcesTable({
       />
       <AddLessonModal
         timetableId={timetableId}
-        isOpen={Boolean(selectedLessonToAdd)}
-        lessons={selectedLessonToAdd ?? debouncedSelectedLessonToAdd}
-        onClose={() => setSelectedLessonToAdd(null)}
+        isOpen={addSessionModalOpen}
+        period={
+          selectedPeriodToAdd ??
+          debouncedSelectedPeriodToAdd ?? {
+            gridIdx: -1,
+            periodIdx: -1,
+            dayIdx: -1,
+          }
+        }
+        filterForTimetableGroups={selectedParties.map((a) => a.partyId) ?? []}
+        onClose={() => {
+          setSelectedPeriodToAdd(null);
+          setAddSessionModalOpen(false);
+        }}
       />
+      <TimetableContextMenu
+        anchorEl={anchorEl}
+        open={isContextMenuOpen}
+        onClose={() => setAnchorEl(null)}
+        onOpenAddLessonDialog={() => setAddSessionModalOpen(true)}
+        isSelected={isContextMenuOpen}
+      />
+      {/* <AddLessonModal */}
+      {/*  timetableId={timetableId} */}
+      {/*  isOpen={addSessionModalOpen} */}
+      {/*  lessons={selectedLessonToAdd ?? debouncedSelectedLessonToAdd} */}
+      {/*  onClose={() => setAddSessionModalOpen(false)} */}
+      {/* /> */}
     </>
   );
 }
