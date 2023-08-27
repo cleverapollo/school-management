@@ -13,6 +13,7 @@ import dayjs from 'dayjs';
 import { SearchInput, useDebouncedValue, useContextMenu } from '@tyro/core';
 import { useCallback, useState } from 'react';
 import { CalendarParty } from '@tyro/calendar';
+import { usePermissions } from '@tyro/api';
 import { ReturnTypeFromUseTimetableResourceView } from '../../api/edit-timetable/resource-view';
 import { Lesson, useResourceTable } from '../../hooks/use-resource-table';
 import { ResourceTableCard } from './resource-table-card';
@@ -39,7 +40,7 @@ export function ResourcesTable({
   const [addSessionModalOpen, setAddSessionModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isContextMenuOpen = Boolean(anchorEl);
-
+  const { isTyroUser } = usePermissions();
   const {
     value: selectLessonsToSwapRoomOrTeacher,
     debouncedValue: debouncedSelectLessonsToSwapRoomOrTeacher,
@@ -208,17 +209,17 @@ export function ResourcesTable({
                       <TableCell
                         key={period}
                         onContextMenu={(event) => {
-                          console.log(day);
-                          console.log(period);
-                          setAnchorEl(event.currentTarget);
-                          setSelectedPeriodToAdd({
-                            // todo pass in
-                            gridIdx: 1,
-                            dayIdx: day,
-                            periodIdx: period,
-                          });
-                          event.stopPropagation();
-                          event.preventDefault();
+                          if (isTyroUser) {
+                            setAnchorEl(event.currentTarget);
+                            setSelectedPeriodToAdd({
+                              // todo pass in
+                              gridIdx: 1,
+                              dayIdx: day,
+                              periodIdx: period,
+                            });
+                            event.stopPropagation();
+                            event.preventDefault();
+                          }
                         }}
                       >
                         <Stack spacing={1}>
@@ -293,12 +294,6 @@ export function ResourcesTable({
         onOpenAddLessonDialog={() => setAddSessionModalOpen(true)}
         isSelected={isContextMenuOpen}
       />
-      {/* <AddLessonModal */}
-      {/*  timetableId={timetableId} */}
-      {/*  isOpen={addSessionModalOpen} */}
-      {/*  lessons={selectedLessonToAdd ?? debouncedSelectedLessonToAdd} */}
-      {/*  onClose={() => setAddSessionModalOpen(false)} */}
-      {/* /> */}
     </>
   );
 }
