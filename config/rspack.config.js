@@ -1,6 +1,6 @@
 const path = require('path');
 const Dotenv = require('rspack-plugin-dotenv');
-const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
+// const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -134,14 +134,13 @@ module.exports = {
     ...!isProd ? [
       new ForkTsCheckerWebpackPlugin(),
     ] : [],
-    ...isProd ? [
-      sentryWebpackPlugin({
-        authToken: process.env.SENTRY_AUTH_TOKEN,
-        org: "tyro-technologies-limited",
-        project: "web-app",
-      }),
-    ] : [],
-    
+    // ...isProd ? [
+    //   sentryWebpackPlugin({
+    //     authToken: process.env.SENTRY_AUTH_TOKEN,
+    //     org: "tyro-technologies-limited",
+    //     project: "web-app",
+    //   }),
+    // ] : [],
   ],
   watchOptions: {
     ignored: /node_modules/,
