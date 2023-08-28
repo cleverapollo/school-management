@@ -54,14 +54,7 @@ export function DeleteLessonModal({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle
-        sx={{
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        {t('timetable:deleteLesson')}
-      </DialogTitle>
+      <DialogTitle>{t('timetable:deleteLesson')}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
           <Stack display="flex" sx={{ py: 3 }}>
@@ -70,10 +63,10 @@ export function DeleteLessonModal({
               <Box component="span" fontWeight="bold">
                 {lessons?.partyGroup && lessons?.partyGroup?.name}{' '}
               </Box>
-              at
-              <Box component="span" marginX={0.5} fontWeight="bold">
+              at{' '}
+              <Box component="span" fontWeight="bold">
                 {lessons?.timeslotInfo?.startTime}.
-              </Box>
+              </Box>{' '}
               Are you sure you want to continue?
             </Typography>
           </Stack>

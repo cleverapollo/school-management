@@ -1,7 +1,12 @@
 import { Divider, Menu, MenuItem, MenuProps } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { ActionMenuIconWrapper } from '@tyro/core';
-import { AddIcon, BuildingGraduateHatIcon, TrashIcon } from '@tyro/icons';
+import {
+  AddIcon,
+  BuildingGraduateHatIcon,
+  EditIcon,
+  TrashIcon,
+} from '@tyro/icons';
 import { usePermissions } from '@tyro/api';
 
 interface ResourceContextMenuProps extends MenuProps {
@@ -9,6 +14,7 @@ interface ResourceContextMenuProps extends MenuProps {
   onOpenSwapTeacherOrRoomDialog: () => void;
   onOpenDeleteLessonDialog: () => void;
   onOpenAddLessonDialog: () => void;
+  onOpenEditLessonDialog: () => void;
   isSelected: boolean;
 }
 
@@ -17,6 +23,7 @@ export function LessonContextMenu({
   onOpenSwapTeacherOrRoomDialog,
   onOpenDeleteLessonDialog,
   onOpenAddLessonDialog,
+  onOpenEditLessonDialog,
   isSelected,
   ...props
 }: ResourceContextMenuProps) {
@@ -76,6 +83,18 @@ export function LessonContextMenu({
       </MenuItem>
       {isTyroUser && (
         <>
+          <MenuItem
+            onClick={(event) => {
+              event.preventDefault();
+              onOpenEditLessonDialog();
+              handleClose();
+            }}
+          >
+            <ActionMenuIconWrapper>
+              <EditIcon />
+            </ActionMenuIconWrapper>
+            {t('timetable:editLesson')}
+          </MenuItem>
           <MenuItem
             onClick={(event) => {
               event.preventDefault();

@@ -6,6 +6,7 @@ import {
   TtTimetableFilter,
   Tt_GroupsFilter,
   Tt_AddLessonFilter,
+  Tt_EditLessonFilter,
 } from '@tyro/api';
 
 export const timetableKeys = {
@@ -27,4 +28,6 @@ export const timetableKeys = {
     [...timetableKeys.all, 'ttSubjectGroups', filter] as const,
   addLessonsOptions: (filter: Tt_AddLessonFilter) =>
     [...timetableKeys.all, 'addLessonsOptions', filter] as const,
+  editLessonsOptions: (filter: Tt_EditLessonFilter) =>
+    [...timetableKeys.all, 'editLessonsOptions', filter] as const,
 };
