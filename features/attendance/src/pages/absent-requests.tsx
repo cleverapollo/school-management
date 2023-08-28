@@ -2,7 +2,9 @@ import { Box, Button, Fade } from '@mui/material';
 import {
   ParentalAttendanceRequestStatus,
   SaveParentalAttendanceRequest,
+  usePermissions,
 } from '@tyro/api';
+import { AddIcon } from '@tyro/icons';
 import {
   ActionMenu,
   GridOptions,
@@ -28,6 +30,7 @@ import {
   ViewAbsentRequestModal,
   ViewAbsentRequestModalProps,
 } from '../components/absent-requests/view-absent-request-modal';
+import { CreateAbsentRequestModal } from '../components/absent-requests/create-absent-request-modal';
 
 dayjs.extend(LocalizedFormat);
 
@@ -36,13 +39,14 @@ const getAbsentRequestColumns = (
   displayName: ReturnTypeDisplayName,
   onClickView: Dispatch<
     SetStateAction<ViewAbsentRequestModalProps['initialAbsentRequestState']>
-  >
+  >,
+  overview: boolean
 ): GridOptions<ReturnTypeFromUseAbsentRequests>['columnDefs'] => [
   {
     field: 'classGroup.name',
     headerName: t('common:name'),
-    checkboxSelection: ({ data }) => Boolean(data),
-    headerCheckboxSelection: true,
+    checkboxSelection: !overview ? ({ data }) => Boolean(data) : undefined,
+    headerCheckboxSelection: !overview,
     lockVisible: true,
     valueGetter: ({ data }) => displayName(data?.student),
     cellRenderer: ({
@@ -98,9 +102,10 @@ const getAbsentRequestColumns = (
 ];
 
 export default function AbsentRequests() {
+  const { isContact } = usePermissions();
   const { t } = useTranslation(['common', 'attendance']);
   const { data: absentRequests } = useAbsentRequests({});
-
+  const [isCreateAbsentRequest, setIsCreateAbsentRequest] = useState(false);
   const [selectedAbsentRequests, setSelectedAbsentRequests] = useState<
     SaveParentalAttendanceRequest[]
   >([]);
@@ -117,8 +122,13 @@ export default function AbsentRequests() {
 
   const absentRequestColumns = useMemo(
     () =>
-      getAbsentRequestColumns(t, displayName, setViewAbsentRequestInitialState),
-    [t, setViewAbsentRequestInitialState]
+      getAbsentRequestColumns(
+        t,
+        displayName,
+        setViewAbsentRequestInitialState,
+        isContact
+      ),
+    [t, setViewAbsentRequestInitialState, isContact]
   );
 
   const {
@@ -138,6 +148,19 @@ export default function AbsentRequests() {
       <PageHeading
         title={t('attendance:absentRequests')}
         titleProps={{ variant: 'h3' }}
+        rightAdornment={
+          isContact && (
+            <Box display="flex" alignItems="center">
+              <Button
+                variant="contained"
+                onClick={() => setIsCreateAbsentRequest(true)}
+                startIcon={<AddIcon />}
+              >
+                {t('attendance:createAbsentRequest')}
+              </Button>
+            </Box>
+          )
+        }
       />
       <Table
         rowData={absentRequests ?? []}
@@ -145,59 +168,73 @@ export default function AbsentRequests() {
         rowSelection="multiple"
         getRowId={({ data }) => String(data?.id)}
         rightAdornment={
-          <Fade in={selectedAbsentRequests.length > 0} unmountOnExit>
-            <Box>
-              <ActionMenu
-                menuItems={[
-                  {
-                    label: t('attendance:approveRequests'),
-                    onClick: onOpenApproveAbsentRequestsModal,
-                    disabled: !selectedAbsentRequests.some(
-                      ({ status }) =>
-                        status === ParentalAttendanceRequestStatus.Pending ||
-                        status === ParentalAttendanceRequestStatus.Denied
-                    ),
-                    disabledTooltip: t(
-                      'attendance:youHaveNotSelectedPendingAndDeclined'
-                    ),
-                  },
-                  {
-                    label: t('attendance:declineRequests'),
-                    onClick: onOpenDeclineAbsentRequestsModal,
-                    disabled: !selectedAbsentRequests.some(
-                      ({ status }) =>
-                        status === ParentalAttendanceRequestStatus.Pending ||
-                        status === ParentalAttendanceRequestStatus.Approved
-                    ),
-                    disabledTooltip: t(
-                      'attendance:youHaveNotSelectedPendingAndApproved'
-                    ),
-                  },
-                ]}
-              />
-            </Box>
-          </Fade>
+          !isContact && (
+            <Fade in={selectedAbsentRequests.length > 0} unmountOnExit>
+              <Box>
+                <ActionMenu
+                  menuItems={[
+                    {
+                      label: t('attendance:approveRequests'),
+                      onClick: onOpenApproveAbsentRequestsModal,
+                      disabled: !selectedAbsentRequests.some(
+                        ({ status }) =>
+                          status === ParentalAttendanceRequestStatus.Pending ||
+                          status === ParentalAttendanceRequestStatus.Denied
+                      ),
+                      disabledTooltip: t(
+                        'attendance:youHaveNotSelectedPendingAndDeclined'
+                      ),
+                    },
+                    {
+                      label: t('attendance:declineRequests'),
+                      onClick: onOpenDeclineAbsentRequestsModal,
+                      disabled: !selectedAbsentRequests.some(
+                        ({ status }) =>
+                          status === ParentalAttendanceRequestStatus.Pending ||
+                          status === ParentalAttendanceRequestStatus.Approved
+                      ),
+                      disabledTooltip: t(
+                        'attendance:youHaveNotSelectedPendingAndApproved'
+                      ),
+                    },
+                  ]}
+                />
+              </Box>
+            </Fade>
+          )
         }
         onRowSelection={setSelectedAbsentRequests}
       />
       <ViewAbsentRequestModal
+        overview={isContact}
         initialAbsentRequestState={debouncedViewAbsentRequestInitialState}
         onClose={() => setViewAbsentRequestInitialState(undefined)}
       />
-      <ApproveAbsentRequestConfirmModal
-        isOpen={isApproveAbsentRequestsModalOpen}
-        onClose={onCloseApproveAbsentRequestsModal}
-        absentRequestState={selectedAbsentRequests.filter(
-          ({ status }) => status !== ParentalAttendanceRequestStatus.Approved
-        )}
-      />
-      <DeclineAbsentRequestConfirmModal
-        isOpen={isDeclineAbsentRequestsModalOpen}
-        onClose={onCloseDeclineAbsentRequestsModal}
-        absentRequestState={selectedAbsentRequests.filter(
-          ({ status }) => status !== ParentalAttendanceRequestStatus.Denied
-        )}
-      />
+      {isContact ? (
+        isCreateAbsentRequest && (
+          <CreateAbsentRequestModal
+            onClose={() => setIsCreateAbsentRequest(false)}
+          />
+        )
+      ) : (
+        <>
+          <ApproveAbsentRequestConfirmModal
+            isOpen={isApproveAbsentRequestsModalOpen}
+            onClose={onCloseApproveAbsentRequestsModal}
+            absentRequestState={selectedAbsentRequests.filter(
+              ({ status }) =>
+                status !== ParentalAttendanceRequestStatus.Approved
+            )}
+          />
+          <DeclineAbsentRequestConfirmModal
+            isOpen={isDeclineAbsentRequestsModalOpen}
+            onClose={onCloseDeclineAbsentRequestsModal}
+            absentRequestState={selectedAbsentRequests.filter(
+              ({ status }) => status !== ParentalAttendanceRequestStatus.Denied
+            )}
+          />
+        </>
+      )}
     </PageContainer>
   );
 }

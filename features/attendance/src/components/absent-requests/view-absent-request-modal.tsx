@@ -19,6 +19,7 @@ import {
 } from '@tyro/core';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import { LoadingButton } from '@mui/lab';
 import { DeclineAbsentRequestConfirmModal } from './decline-absent-request-confirm-modal';
 import { ApproveAbsentRequestConfirmModal } from './approve-absent-request-confirm-modal';
 import {
@@ -28,12 +29,14 @@ import {
   ReturnTypeFromUseAttendanceCodes,
 } from '../../api';
 import { formatDateOfAbsence } from '../../utils/format-date-of-absence';
+import { WithdrawAbsentRequestConfirmModal } from './withdraw-absent-request-confirm-modal';
 
 dayjs.extend(LocalizedFormat);
 
 export type ViewAbsentRequestModalProps = {
   initialAbsentRequestState?: ReturnTypeFromUseAbsentRequests;
   onClose: () => void;
+  overview?: boolean;
 };
 
 const getAbsentRequestDataWithLabels = (
@@ -106,12 +109,13 @@ const getAbsentRequestDataWithLabels = (
 export const ViewAbsentRequestModal = ({
   initialAbsentRequestState,
   onClose,
+  overview,
 }: ViewAbsentRequestModalProps) => {
   const { t } = useTranslation(['common', 'attendance']);
 
   const { data: attendanceCodes } = useAttendanceCodes({});
 
-  const { mutate: createOrUpdateAbsentRequestMutation } =
+  const { mutate: createOrUpdateAbsentRequestMutation, isLoading } =
     useCreateOrUpdateAbsentRequest();
 
   const {
@@ -124,6 +128,12 @@ export const ViewAbsentRequestModal = ({
     isOpen: isDeclineAbsentRequestModalOpen,
     onOpen: onOpenDeclineAbsentRequestModal,
     onClose: onCloseDeclineAbsentRequestModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isWithdrawAbsentRequestsModalOpen,
+    onOpen: onOpenWithdrawAbsentRequestsModal,
+    onClose: onCloseWithdrawAbsentRequestsModal,
   } = useDisclosure();
 
   const { displayName } = usePreferredNameLayout();
@@ -148,16 +158,21 @@ export const ViewAbsentRequestModal = ({
     if (initialAbsentRequestState) {
       createOrUpdateAbsentRequestMutation([
         {
-          ...initialAbsentRequestState,
+          id: initialAbsentRequestState.id,
+          from: initialAbsentRequestState.from,
+          to: initialAbsentRequestState.to,
+          requestType: initialAbsentRequestState.requestType,
+          status: initialAbsentRequestState.status,
+          studentPartyId: initialAbsentRequestState.studentPartyId,
           attendanceCodeId:
             attendanceCode?.id ?? initialAbsentRequestState?.attendanceCode?.id,
           parentNote,
         },
       ]);
-
-      onClose();
     }
   };
+
+  console.log(initialAbsentRequestState);
 
   return (
     <Dialog
@@ -184,10 +199,15 @@ export const ViewAbsentRequestModal = ({
           </Stack>
         </Stack>
         <Divider flexItem sx={{ mt: 3 }} />
-
         <CardEditableForm
           title={t('common:details')}
-          editable
+          editable={
+            overview
+              ? initialAbsentRequestState?.status ===
+                  ParentalAttendanceRequestStatus.Pending &&
+                dayjs().isBefore(dayjs(initialAbsentRequestState?.from))
+              : true
+          }
           fields={absentRequestDataWithLabels}
           resolver={absentRequestFormResolver}
           onSave={handleEdit}
@@ -199,51 +219,80 @@ export const ViewAbsentRequestModal = ({
         <Button variant="outlined" color="inherit" onClick={onClose}>
           {t('common:actions.cancel')}
         </Button>
-
-        <Button
-          variant="contained"
-          color="error"
-          onClick={onOpenDeclineAbsentRequestModal}
-          disabled={
-            initialAbsentRequestState?.status ===
-            ParentalAttendanceRequestStatus.Denied
-          }
-        >
-          {t('common:actions.decline')}
-        </Button>
-
-        <Button
-          variant="contained"
-          onClick={onOpenApproveAbsentRequestModal}
-          color="primary"
-          disabled={
-            initialAbsentRequestState?.status ===
-            ParentalAttendanceRequestStatus.Approved
-          }
-        >
-          {t('common:actions.approve')}
-        </Button>
+        {overview ? (
+          <LoadingButton
+            variant="contained"
+            onClick={onOpenWithdrawAbsentRequestsModal}
+            color="primary"
+            disabled={
+              initialAbsentRequestState?.status !==
+                ParentalAttendanceRequestStatus.Pending ||
+              dayjs().isAfter(dayjs(initialAbsentRequestState.from))
+            }
+            loading={isLoading}
+          >
+            {t('attendance:withdrawAbsentRequest')}
+          </LoadingButton>
+        ) : (
+          <>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={onOpenDeclineAbsentRequestModal}
+              disabled={
+                initialAbsentRequestState?.status ===
+                ParentalAttendanceRequestStatus.Denied
+              }
+            >
+              {t('common:actions.decline')}
+            </Button>
+            <Button
+              variant="contained"
+              onClick={onOpenApproveAbsentRequestModal}
+              color="primary"
+              disabled={
+                initialAbsentRequestState?.status ===
+                ParentalAttendanceRequestStatus.Approved
+              }
+            >
+              {t('common:actions.approve')}
+            </Button>
+          </>
+        )}
       </DialogActions>
-      <ApproveAbsentRequestConfirmModal
-        isOpen={isApproveAbsentRequestModalOpen}
-        onClose={onCloseApproveAbsentRequestModal}
-        onApprove={onClose}
-        absentRequestState={
-          initialAbsentRequestState === undefined
-            ? []
-            : [initialAbsentRequestState]
-        }
-      />
-      <DeclineAbsentRequestConfirmModal
-        isOpen={isDeclineAbsentRequestModalOpen}
-        onClose={onCloseDeclineAbsentRequestModal}
-        onDecline={onClose}
-        absentRequestState={
-          initialAbsentRequestState === undefined
-            ? []
-            : [initialAbsentRequestState]
-        }
-      />
+      {overview ? (
+        initialAbsentRequestState?.id && (
+          <WithdrawAbsentRequestConfirmModal
+            id={initialAbsentRequestState.id}
+            isOpen={isWithdrawAbsentRequestsModalOpen}
+            onWithdraw={onClose}
+            onClose={onCloseWithdrawAbsentRequestsModal}
+          />
+        )
+      ) : (
+        <>
+          <ApproveAbsentRequestConfirmModal
+            isOpen={isApproveAbsentRequestModalOpen}
+            onClose={onCloseApproveAbsentRequestModal}
+            onApprove={onClose}
+            absentRequestState={
+              initialAbsentRequestState === undefined
+                ? []
+                : [initialAbsentRequestState]
+            }
+          />
+          <DeclineAbsentRequestConfirmModal
+            isOpen={isDeclineAbsentRequestModalOpen}
+            onClose={onCloseDeclineAbsentRequestModal}
+            onDecline={onClose}
+            absentRequestState={
+              initialAbsentRequestState === undefined
+                ? []
+                : [initialAbsentRequestState]
+            }
+          />
+        </>
+      )}
     </Dialog>
   );
 };
