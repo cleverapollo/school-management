@@ -56,10 +56,13 @@ export function EditLessonModal({
   const { data: editLessonOptions } = useEditLessonOptionsQuery(
     {
       timetableId,
-      timeslot,
-      timetableGroupIds: lesson?.id?.timetableGroupId ?? 0,
+      lessonInstance: lesson?.id ?? {
+        lessonIdx: 0,
+        lessonInstanceIdx: 0,
+        timetableGroupId: 0,
+      },
     },
-    !!lesson
+    !!lesson?.id
   );
 
   const { mutateAsync: editLesson, isLoading } = useUpdateTimetableLessons();

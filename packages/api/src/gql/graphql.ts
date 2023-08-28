@@ -5900,8 +5900,7 @@ export type Tt_AddLessonOptions = {
 };
 
 export type Tt_EditLessonFilter = {
-  timeslot: TtTimeslotIdInput;
-  timetableGroupIds: Scalars['Long'];
+  lessonInstance: TtEditLessonPeriodInstanceId;
   timetableId: Scalars['Int'];
 };
 
