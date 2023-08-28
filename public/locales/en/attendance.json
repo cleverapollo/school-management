@@ -114,7 +114,7 @@
   "requestType": "Request Type",
   "absenceRequestType": {
     "MULTI_DAY": "Multi day",
-    "SINGLE_DAY": "Single day",
+    "SINGLE_DAY": "Full day",
     "PARTIAL_DAY": "Partial day"
   },
   "reasonForAbsence": "Reason for absence",

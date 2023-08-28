@@ -11,7 +11,6 @@ import {
   DialogTitle,
   RHFAutocomplete,
   RHFDatePicker,
-  RHFDateTimePicker,
   RHFRadioGroup,
   RHFSelect,
   RHFTextField,
@@ -121,10 +120,6 @@ export const CreateAbsentRequestModal = ({
     const year = data.date?.get('year');
 
     switch (data.requestType) {
-      case ParentalAttendanceRequestType.MultiDay:
-        from = data.from;
-        to = data.to;
-        break;
       case ParentalAttendanceRequestType.PartialDay:
         from = data.startTime
           .set('date', date)
@@ -202,12 +197,13 @@ export const CreateAbsentRequestModal = ({
             <RHFRadioGroup
               radioGroupProps={{ sx: { flexDirection: 'row' } }}
               label={t('attendance:requestType')}
-              options={Object.values(ParentalAttendanceRequestType).map(
-                (option) => ({
-                  value: option,
-                  label: t(`attendance:absenceRequestType.${option}`),
-                })
-              )}
+              options={[
+                ParentalAttendanceRequestType.SingleDay,
+                ParentalAttendanceRequestType.PartialDay,
+              ].map((option) => ({
+                value: option,
+                label: t(`attendance:absenceRequestType.${option}`),
+              }))}
               controlProps={{
                 name: 'requestType',
                 control,
@@ -249,30 +245,6 @@ export const CreateAbsentRequestModal = ({
                   label={t('attendance:returnAtTime')}
                   controlProps={{
                     name: 'endTime',
-                    control,
-                    rules: {
-                      required: true,
-                    },
-                  }}
-                />
-              </>
-            )}
-            {requestType === ParentalAttendanceRequestType.MultiDay && (
-              <>
-                <RHFDateTimePicker
-                  label={t('common:startDate')}
-                  controlProps={{
-                    name: 'from',
-                    control,
-                    rules: {
-                      required: true,
-                    },
-                  }}
-                />
-                <RHFDateTimePicker
-                  label={t('common:endDate')}
-                  controlProps={{
-                    name: 'to',
                     control,
                     rules: {
                       required: true,
