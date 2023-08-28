@@ -206,7 +206,7 @@ export default function AbsentRequests() {
         onRowSelection={setSelectedAbsentRequests}
       />
       <ViewAbsentRequestModal
-        overview={isContact}
+        isContact={isContact}
         initialAbsentRequestState={debouncedViewAbsentRequestInitialState}
         onClose={() => setViewAbsentRequestInitialState(undefined)}
       />

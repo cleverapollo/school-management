@@ -1,7 +1,6 @@
 import { Button, Divider, Stack, Typography } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { ParentalAttendanceRequestStatus } from '@tyro/api';
-import React from 'react';
 import {
   Avatar,
   ReturnTypeDisplayName,
@@ -36,7 +35,7 @@ dayjs.extend(LocalizedFormat);
 export type ViewAbsentRequestModalProps = {
   initialAbsentRequestState?: ReturnTypeFromUseAbsentRequests;
   onClose: () => void;
-  overview?: boolean;
+  isContact?: boolean;
 };
 
 const getAbsentRequestDataWithLabels = (
@@ -109,11 +108,13 @@ const getAbsentRequestDataWithLabels = (
 export const ViewAbsentRequestModal = ({
   initialAbsentRequestState,
   onClose,
-  overview,
+  isContact,
 }: ViewAbsentRequestModalProps) => {
   const { t } = useTranslation(['common', 'attendance']);
 
-  const { data: attendanceCodes } = useAttendanceCodes({});
+  const { data: attendanceCodes } = useAttendanceCodes({
+    visibleForContacts: isContact,
+  });
 
   const { mutate: createOrUpdateAbsentRequestMutation, isLoading } =
     useCreateOrUpdateAbsentRequest();
@@ -158,12 +159,8 @@ export const ViewAbsentRequestModal = ({
     if (initialAbsentRequestState) {
       createOrUpdateAbsentRequestMutation([
         {
+          ...initialAbsentRequestState,
           id: initialAbsentRequestState.id,
-          from: initialAbsentRequestState.from,
-          to: initialAbsentRequestState.to,
-          requestType: initialAbsentRequestState.requestType,
-          status: initialAbsentRequestState.status,
-          studentPartyId: initialAbsentRequestState.studentPartyId,
           attendanceCodeId:
             attendanceCode?.id ?? initialAbsentRequestState?.attendanceCode?.id,
           parentNote,
@@ -172,7 +169,9 @@ export const ViewAbsentRequestModal = ({
     }
   };
 
-  console.log(initialAbsentRequestState);
+  const isBeforeAbsentDate = dayjs().isBefore(
+    dayjs(initialAbsentRequestState?.from)
+  );
 
   return (
     <Dialog
@@ -202,10 +201,9 @@ export const ViewAbsentRequestModal = ({
         <CardEditableForm
           title={t('common:details')}
           editable={
-            overview
+            isContact
               ? initialAbsentRequestState?.status ===
-                  ParentalAttendanceRequestStatus.Pending &&
-                dayjs().isBefore(dayjs(initialAbsentRequestState?.from))
+                  ParentalAttendanceRequestStatus.Pending && isBeforeAbsentDate
               : true
           }
           fields={absentRequestDataWithLabels}
@@ -219,15 +217,14 @@ export const ViewAbsentRequestModal = ({
         <Button variant="outlined" color="inherit" onClick={onClose}>
           {t('common:actions.cancel')}
         </Button>
-        {overview ? (
+        {isContact ? (
           <LoadingButton
             variant="contained"
             onClick={onOpenWithdrawAbsentRequestsModal}
             color="primary"
             disabled={
               initialAbsentRequestState?.status !==
-                ParentalAttendanceRequestStatus.Pending ||
-              dayjs().isAfter(dayjs(initialAbsentRequestState.from))
+                ParentalAttendanceRequestStatus.Pending || !isBeforeAbsentDate
             }
             loading={isLoading}
           >
@@ -260,7 +257,7 @@ export const ViewAbsentRequestModal = ({
           </>
         )}
       </DialogActions>
-      {overview ? (
+      {isContact ? (
         initialAbsentRequestState?.id && (
           <WithdrawAbsentRequestConfirmModal
             id={initialAbsentRequestState.id}
@@ -276,9 +273,7 @@ export const ViewAbsentRequestModal = ({
             onClose={onCloseApproveAbsentRequestModal}
             onApprove={onClose}
             absentRequestState={
-              initialAbsentRequestState === undefined
-                ? []
-                : [initialAbsentRequestState]
+              initialAbsentRequestState ? [initialAbsentRequestState] : []
             }
           />
           <DeclineAbsentRequestConfirmModal
@@ -286,9 +281,7 @@ export const ViewAbsentRequestModal = ({
             onClose={onCloseDeclineAbsentRequestModal}
             onDecline={onClose}
             absentRequestState={
-              initialAbsentRequestState === undefined
-                ? []
-                : [initialAbsentRequestState]
+              initialAbsentRequestState ? [initialAbsentRequestState] : []
             }
           />
         </>

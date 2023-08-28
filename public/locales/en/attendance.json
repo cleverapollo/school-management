@@ -116,5 +116,8 @@
     "MULTI_DAY": "Multi day",
     "SINGLE_DAY": "Single day",
     "PARTIAL_DAY": "Partial day"
-  }
+  },
+  "reasonForAbsence": "Reason for absence",
+  "leavesAtTime": "Leaves at time",
+  "returnAtTime": "Return at time"
 }
