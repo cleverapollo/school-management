@@ -4,6 +4,7 @@ import {
   ParentalAttendanceRequestStatus,
   ParentalAttendanceRequestType,
   Person,
+  useUser,
 } from '@tyro/api';
 import {
   Dialog,
@@ -16,11 +17,12 @@ import {
   RHFSelect,
   RHFTextField,
   RHFTimePicker,
+  getNumber,
   useFormValidator,
   usePreferredNameLayout,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { usePeopleAutocompleteProps, useStudents } from '@tyro/people';
+import { usePeopleAutocompleteProps, useContactStudents } from '@tyro/people';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { useForm } from 'react-hook-form';
@@ -43,19 +45,33 @@ export type CreateAbsentRequestFormState = {
   requestType: ParentalAttendanceRequestType;
 };
 
+function isNotNull<T>(value: T): value is NonNullable<T> {
+  return value !== null;
+}
+
 export const CreateAbsentRequestModal = ({
   onClose,
 }: CreateAbsentRequestModalProps) => {
+  const { user } = useUser();
   const { t } = useTranslation(['common', 'attendance']);
   const { data: attendanceCodes = [] } = useAttendanceCodes({
     visibleForContacts: true,
   });
-  const { data: students = [] } = useStudents();
+
+  const partyId = getNumber(user?.profiles?.[0]?.partyId);
+  const { data: contactStudents, isLoading: isLoadingContactStudents } =
+    useContactStudents(partyId);
   const autocompleteProps = usePeopleAutocompleteProps();
+
   const studentsOptions = useMemo(
-    () => students.map(({ partyId, person }) => ({ ...person, partyId })),
-    [students]
+    () =>
+      contactStudents?.relationships?.filter(isNotNull).map((relation) => ({
+        ...relation.student.person,
+        partyId: getNumber(relation.student.partyId) || 0,
+      })) || [],
+    [contactStudents]
   );
+
   const { resolver, rules } = useFormValidator<CreateAbsentRequestFormState>();
   const { control, handleSubmit, reset, watch } =
     useForm<CreateAbsentRequestFormState>({
@@ -138,6 +154,7 @@ export const CreateAbsentRequestModal = ({
         <DialogContent>
           <Stack direction="column" sx={{ mt: 2 }} gap={2}>
             <RHFAutocomplete
+              loading={isLoadingContactStudents}
               {...autocompleteProps}
               fullWidth
               optionIdKey="partyId"
