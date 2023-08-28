@@ -95,6 +95,12 @@ const getColumns = (
         ? dayjs(data.mobileLastLogin).format('ll LT')
         : '-',
   },
+  {
+    field: 'yearGroup.shortName',
+    headerName: t('common:year'),
+    filter: true,
+    enableRowGroup: true,
+  },
 ];
 
 export default function UserAccessStudentsPage() {
