@@ -63,17 +63,12 @@ const getColumns = (
     field: 'personalInfo.primaryEmail.email',
     editable: true,
     valueSetter: (params: ValueSetterParams<ReturnTypeFromUseUserAccess>) => {
-      if (!params?.newValue) {
-        params.data.personalInfo.primaryEmail = null;
-      } else {
-        set(
-          params?.data ?? {},
-          `personalInfo.primaryEmail.email`,
-          params?.newValue
-        );
-        return true;
-      }
-      return false;
+      set(
+        params?.data ?? {},
+        `personalInfo.primaryEmail.email`,
+        params?.newValue ?? null
+      );
+      return true;
     },
   },
   {
