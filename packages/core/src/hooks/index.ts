@@ -12,3 +12,4 @@ export * from './use-popover-position';
 export * from './use-preferred-name-layout';
 export * from './use-responsive';
 export * from './use-toast';
+export * from './use-context-menu';
