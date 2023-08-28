@@ -1,5 +1,4 @@
 import { Box, Button, Card, Divider, Stack, Tooltip } from '@mui/material';
-import { useMemo } from 'react';
 import { useTranslation } from '@tyro/i18n';
 import { CalendarUploadIcon } from '@tyro/icons';
 import { useDisclosure } from '@tyro/core';

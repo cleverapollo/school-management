@@ -3,14 +3,14 @@ import {
   gqlClient,
   graphql,
   queryClient,
-  Tt_AddLessonFilter,
+  Tt_EditLessonFilter,
   UseQueryReturnType,
 } from '@tyro/api';
 import { timetableKeys } from '../keys';
 
-const addLessonOptions = graphql(/* GraphQL */ `
-  query tt_addLessonOptions($filter: Tt_AddLessonFilter) {
-    tt_addLessonOptions(filter: $filter) {
+const editLessonOptions = graphql(/* GraphQL */ `
+  query tt_editLessonOptions($filter: Tt_EditLessonFilter) {
+    tt_editLessonOptions(filter: $filter) {
       freeStaffIds
       freeStaff {
         person {
@@ -48,32 +48,32 @@ const addLessonOptions = graphql(/* GraphQL */ `
   }
 `);
 
-const addLessonOptionsQuery = (filter: Tt_AddLessonFilter) => ({
-  queryKey: timetableKeys.addLessonsOptions(filter),
+const editLessonOptionsQuery = (filter: Tt_EditLessonFilter) => ({
+  queryKey: timetableKeys.editLessonsOptions(filter),
   queryFn: async () =>
-    gqlClient.request(addLessonOptions, {
+    gqlClient.request(editLessonOptions, {
       filter,
     }),
 });
 
-export function getAddLessonOptionsQuery(filter: Tt_AddLessonFilter) {
-  return queryClient.fetchQuery(addLessonOptionsQuery(filter));
+export function getEditLessonOptionsQuery(filter: Tt_EditLessonFilter) {
+  return queryClient.fetchQuery(editLessonOptionsQuery(filter));
 }
 
-export function useAddLessonOptionsQuery(
-  filter: Tt_AddLessonFilter,
+export function useEditLessonOptionsQuery(
+  filter: Tt_EditLessonFilter,
   enabled = true
 ) {
   return useQuery({
-    ...addLessonOptionsQuery(filter),
+    ...editLessonOptionsQuery(filter),
     enabled,
-    select: ({ tt_addLessonOptions }) => ({
-      ...tt_addLessonOptions,
-      freeStaff: tt_addLessonOptions.freeStaff.map(({ person }) => person),
+    select: ({ tt_editLessonOptions }) => ({
+      ...tt_editLessonOptions,
+      freeStaff: tt_editLessonOptions.freeStaff.map(({ person }) => person),
     }),
   });
 }
 
-export type ReturnTypeFromAddLessonOptionsQuery = UseQueryReturnType<
-  typeof useAddLessonOptionsQuery
+export type ReturnTypeFromEditLessonOptionsQuery = UseQueryReturnType<
+  typeof useEditLessonOptionsQuery
 >;
