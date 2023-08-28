@@ -49,7 +49,7 @@ export function CalendarToolbar({
   const isDesktop = useResponsive('up', 'sm');
   const { t } = useTranslation(['calendar']);
   const currentDate = dayjs(date);
-  const { isTyroUser } = usePermissions();
+  const { isStaffUserWithPermission } = usePermissions();
   const onPreviousDateClick = () => {
     const calendarEl = calendarRef.current;
     if (calendarEl) {
@@ -104,7 +104,7 @@ export function CalendarToolbar({
         >
           {t('calendar:filterCalendar')}
         </Button>
-        {isTyroUser && (
+        {isStaffUserWithPermission('ps:1:calendar:administer_calendar') && (
           <Button
             size="small"
             color="primary"
