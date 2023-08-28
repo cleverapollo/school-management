@@ -3,6 +3,7 @@ import { Button, Stack } from '@mui/material';
 import {
   ParentalAttendanceRequestStatus,
   ParentalAttendanceRequestType,
+  Person,
 } from '@tyro/api';
 import {
   Dialog,
@@ -19,10 +20,11 @@ import {
   usePreferredNameLayout,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { useStudents } from '@tyro/people';
+import { usePeopleAutocompleteProps, useStudents } from '@tyro/people';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { useForm } from 'react-hook-form';
+import { useMemo } from 'react';
 import { useAttendanceCodes, useCreateOrUpdateAbsentRequest } from '../../api';
 
 dayjs.extend(LocalizedFormat);
@@ -32,13 +34,11 @@ export interface CreateAbsentRequestModalProps {
 }
 
 export type CreateAbsentRequestFormState = {
-  studentId: number;
+  student: Person;
   attendanceCodeId: number;
   date: dayjs.Dayjs;
   startTime: dayjs.Dayjs;
   endTime: dayjs.Dayjs;
-  from: dayjs.Dayjs;
-  to: dayjs.Dayjs;
   parentNote: string;
   requestType: ParentalAttendanceRequestType;
 };
@@ -51,57 +51,29 @@ export const CreateAbsentRequestModal = ({
     visibleForContacts: true,
   });
   const { data: students = [] } = useStudents();
-
+  const autocompleteProps = usePeopleAutocompleteProps();
+  const studentsOptions = useMemo(
+    () => students.map(({ partyId, person }) => ({ ...person, partyId })),
+    [students]
+  );
   const { resolver, rules } = useFormValidator<CreateAbsentRequestFormState>();
   const { control, handleSubmit, reset, watch } =
     useForm<CreateAbsentRequestFormState>({
       resolver: resolver({
-        date: rules.validate((value, error, formValues) => {
-          if (
-            [
-              ParentalAttendanceRequestType.PartialDay,
-              ParentalAttendanceRequestType.SingleDay,
-            ].includes(formValues.requestType) &&
-            !value
-          ) {
-            error(t('common:errorMessages.required'));
-          }
-        }),
-        startTime: rules.validate((value: dayjs.Dayjs, error, formValues) => {
-          if (
-            ParentalAttendanceRequestType.PartialDay ===
-              formValues.requestType &&
-            !value
-          ) {
-            error(t('common:errorMessages.required'));
-          }
-        }),
-        endTime: rules.validate((value: dayjs.Dayjs, error, formValues) => {
-          if (
-            ParentalAttendanceRequestType.PartialDay ===
-              formValues.requestType &&
-            !value
-          ) {
-            error(t('common:errorMessages.required'));
-          }
-        }),
-        from: rules.validate((value, error, formValues) => {
-          if (
-            ParentalAttendanceRequestType.MultiDay === formValues.requestType &&
-            !value
-          ) {
-            error(t('common:errorMessages.required'));
-          }
-        }),
-        to: rules.validate((value, error, formValues) => {
-          if (
-            ParentalAttendanceRequestType.MultiDay === formValues.requestType &&
-            !value
-          ) {
-            error(t('common:errorMessages.required'));
-          }
-        }),
-        studentId: rules.required(),
+        date: [rules.date(), rules.required()],
+        startTime: [
+          rules.required(),
+          rules.date(t('common:errorMessages.invalidTime')),
+        ],
+        endTime: [
+          rules.required(),
+          rules.date(t('common:errorMessages.invalidTime')),
+          rules.afterStartDate(
+            'startTime',
+            t('common:errorMessages.afterStartTime')
+          ),
+        ],
+        student: rules.required(),
         attendanceCodeId: rules.required(),
         parentNote: rules.required(),
         requestType: rules.required(),
@@ -142,10 +114,10 @@ export const CreateAbsentRequestModal = ({
       [
         {
           ...data,
-          from: from.toISOString(),
-          to: to.toISOString(),
+          from: from.format('YYYY-MM-DDTHH:mm:ss'),
+          to: to.format('YYYY-MM-DDTHH:mm:ss'),
           status: ParentalAttendanceRequestStatus.Pending,
-          studentPartyId: data.studentId,
+          studentPartyId: data.student.partyId,
         },
       ],
       {
@@ -166,33 +138,16 @@ export const CreateAbsentRequestModal = ({
         <DialogContent>
           <Stack direction="column" sx={{ mt: 2 }} gap={2}>
             <RHFAutocomplete
+              {...autocompleteProps}
               fullWidth
               optionIdKey="partyId"
-              options={students}
+              options={studentsOptions}
               label={t('common:student')}
-              getOptionLabel={(option) => displayName(option.person)}
+              getOptionLabel={(option) => displayName(option)}
               controlProps={{
-                name: 'studentId',
+                name: 'student',
                 control,
               }}
-              renderAvatarAdornment={(value, renderAdornment) =>
-                renderAdornment({
-                  name: displayName(value.person),
-                  src: value.person.avatarUrl,
-                })
-              }
-              renderAvatarTags={(option, renderTag) =>
-                renderTag({
-                  name: displayName(option.person),
-                  src: option.person.avatarUrl ?? undefined,
-                })
-              }
-              renderAvatarOption={(option, renderOption) =>
-                renderOption({
-                  name: displayName(option.person),
-                  src: option.person.avatarUrl ?? undefined,
-                })
-              }
             />
             <RHFRadioGroup
               radioGroupProps={{ sx: { flexDirection: 'row' } }}
