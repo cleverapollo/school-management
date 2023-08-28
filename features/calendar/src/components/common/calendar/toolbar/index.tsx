@@ -104,22 +104,25 @@ export function CalendarToolbar({
         >
           {t('calendar:filterCalendar')}
         </Button>
-        {isTyroUser && (
-          <Button
-            size="small"
-            color="primary"
-            variant="text"
-            onClick={onAddEvent}
-            sx={{
-              '& .MuiButton-startIcon': {
-                mr: 0.25,
-              },
-            }}
-            startIcon={<AddIcon sx={{ width: 24, height: 24 }} />}
-          >
-            {t('calendar:addEvent')}
-          </Button>
-        )}
+        {
+          // leaving as tyro user for now as it is less disoverable when you have to click on the calendar to add an event. We can revisit once we get a bit of testing done on it
+          isTyroUser && (
+            <Button
+              size="small"
+              color="primary"
+              variant="text"
+              onClick={onAddEvent}
+              sx={{
+                '& .MuiButton-startIcon': {
+                  mr: 0.25,
+                },
+              }}
+              startIcon={<AddIcon sx={{ width: 24, height: 24 }} />}
+            >
+              {t('calendar:addEvent')}
+            </Button>
+          )
+        }
       </Stack>
     </RootStyle>
   );
