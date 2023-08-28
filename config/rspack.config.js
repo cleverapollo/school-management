@@ -1,6 +1,7 @@
 const path = require('path');
 const Dotenv = require('rspack-plugin-dotenv');
 const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -17,7 +18,7 @@ module.exports = {
     chunkFilename: 'static/js/[contenthash].chunk.js',
     cssFilename: 'static/css/[contenthash].css',
     assetModuleFilename: 'static/media/[hash][ext]',
-    path: path.resolve(__dirname, '../dist'),
+    path: path.resolve(__dirname, '../build'),
     publicPath: '/',
   },
   devServer: {
@@ -130,6 +131,9 @@ module.exports = {
   },
   plugins: [
     new Dotenv(),
+    ...!isProd ? [
+      new ForkTsCheckerWebpackPlugin(),
+    ] : [],
     ...isProd ? [
       sentryWebpackPlugin({
         authToken: process.env.SENTRY_AUTH_TOKEN,
@@ -137,5 +141,9 @@ module.exports = {
         project: "web-app",
       }),
     ] : [],
+    
   ],
+  watchOptions: {
+    ignored: /node_modules/,
+  },
 };

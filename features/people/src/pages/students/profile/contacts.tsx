@@ -83,7 +83,7 @@ const getStudentContactColumns = (
     headerName: translate('common:email'),
   },
   {
-    field: 'personalInformation.primaryAddress.number',
+    field: 'personalInformation.primaryAddress',
     headerName: translate('common:address'),
     valueGetter: ({ data }) =>
       joinAddress(data?.personalInformation?.primaryAddress, {

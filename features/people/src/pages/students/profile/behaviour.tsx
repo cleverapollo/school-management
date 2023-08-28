@@ -35,17 +35,17 @@ const getStudentBehaviourColumns = (
   displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseBehaviours>['columnDefs'] => [
   {
-    field: 'behaviour',
+    field: 'tags',
     headerName: t('people:behaviour'),
     valueGetter: ({ data }) => data?.tags[0]?.name || '-',
   },
   {
-    field: 'details',
+    field: 'note',
     headerName: t('common:details'),
     valueGetter: ({ data }) => data?.note || '-',
   },
   {
-    field: 'associated',
+    colId: 'associated',
     headerName: t('common:associated'),
     cellRenderer: ({
       data,
@@ -68,7 +68,7 @@ const getStudentBehaviourColumns = (
     ),
   },
   {
-    field: 'occurredOn',
+    field: 'createdOn',
     headerName: t('common:occurredOn'),
     valueGetter: ({ data }) => dayjs(data?.createdOn).format('LL'),
   },

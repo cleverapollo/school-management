@@ -66,8 +66,8 @@ const getClassGroupColumns = (
       data ? data.studentMembers?.memberCount ?? 0 : null,
   },
   {
+    field: 'yearGroups',
     headerName: t('common:year'),
-    field: 'year',
     enableRowGroup: true,
     valueGetter: ({ data }) =>
       data?.yearGroups
@@ -92,14 +92,14 @@ const getClassGroupColumns = (
       editing && event.key === 'Enter',
   },
   {
+    field: 'yearGroupLeads',
     headerName: t('common:yearhead'),
-    field: 'yearhead',
     enableRowGroup: true,
     valueGetter: ({ data }) => displayNames(data?.yearGroupLeads),
   },
   {
+    field: 'programmeStages',
     headerName: t('common:programme'),
-    field: 'programme',
     valueGetter: ({ data }) =>
       data?.programmeStages
         ?.map((programmeStage) => programmeStage?.programme?.name)
