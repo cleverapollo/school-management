@@ -62,7 +62,7 @@ export function useResourceTable(
         }
 
         const id = getIdFromTimeslotIds(timeslotIds);
-        const resourceLessons =
+        const breakLesson =
           timeslots?.periodType === TtGridPeriodType.Break
             ? [
                 {
@@ -75,9 +75,14 @@ export function useResourceTable(
                   },
                 },
               ]
-            : lessons.sort((a, b) =>
-                getResourceName(a).localeCompare(getResourceName(b))
-              );
+            : [];
+
+        const resourceLessons = [
+          ...breakLesson,
+          ...lessons.sort((a, b) =>
+            getResourceName(a).localeCompare(getResourceName(b))
+          ),
+        ];
 
         resourceLessons.forEach((lesson) => {
           const lessonId = JSON.stringify(lesson.id);
@@ -171,14 +176,18 @@ export function useResourceTable(
     const onWindowClickOrTouchEnd = (event: MouseEvent | TouchEvent) => {
       if (event.defaultPrevented) return;
 
-      setSelectedLessonIds([]);
+      setSelectedLessonIds((prevState) =>
+        prevState.length > 0 ? [] : prevState
+      );
     };
 
     const onWindowKeyDown = (event: KeyboardEvent) => {
       if (event.defaultPrevented) return;
 
       if (event.key === 'Escape') {
-        setSelectedLessonIds([]);
+        setSelectedLessonIds((prevState) =>
+          prevState.length > 0 ? [] : prevState
+        );
       }
     };
 

@@ -37,7 +37,6 @@ export function ResourcesTable({
 }: ResourcesTableProps) {
   const { t } = useTranslation(['timetable']);
   const [searchValue, setSearchValue] = useState('');
-  const [addSessionModalOpen, setAddSessionModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | {
     el: HTMLElement;
     period: Period;
