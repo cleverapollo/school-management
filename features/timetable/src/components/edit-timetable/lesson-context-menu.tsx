@@ -31,7 +31,6 @@ export function LessonContextMenu({
   const numberOfSelectedLessons = isSelected
     ? selectedLessonIds.length
     : selectedLessonIds.length + 1;
-  const { isTyroUser } = usePermissions();
   const handleClose = () => {
     props.onClose?.({}, 'backdropClick');
   };
@@ -81,47 +80,45 @@ export function LessonContextMenu({
           })}
         </>
       </MenuItem>
-      {isTyroUser && (
-        <>
-          <MenuItem
-            onClick={(event) => {
-              event.preventDefault();
-              onOpenEditLessonDialog();
-              handleClose();
-            }}
-          >
-            <ActionMenuIconWrapper>
-              <EditIcon />
-            </ActionMenuIconWrapper>
-            {t('timetable:editLesson')}
-          </MenuItem>
-          <MenuItem
-            onClick={(event) => {
-              event.preventDefault();
-              onOpenDeleteLessonDialog();
-              handleClose();
-            }}
-          >
-            <ActionMenuIconWrapper>
-              <TrashIcon />
-            </ActionMenuIconWrapper>
-            {t('timetable:deleteLesson')}
-          </MenuItem>
-          <Divider />
-          <MenuItem
-            onClick={(event) => {
-              event.preventDefault();
-              onOpenAddLessonDialog();
-              handleClose();
-            }}
-          >
-            <ActionMenuIconWrapper>
-              <AddIcon />
-            </ActionMenuIconWrapper>
-            {t('timetable:addLesson')}
-          </MenuItem>
-        </>
-      )}
+      <>
+        <MenuItem
+          onClick={(event) => {
+            event.preventDefault();
+            onOpenEditLessonDialog();
+            handleClose();
+          }}
+        >
+          <ActionMenuIconWrapper>
+            <EditIcon />
+          </ActionMenuIconWrapper>
+          {t('timetable:editLesson')}
+        </MenuItem>
+        <MenuItem
+          onClick={(event) => {
+            event.preventDefault();
+            onOpenDeleteLessonDialog();
+            handleClose();
+          }}
+        >
+          <ActionMenuIconWrapper>
+            <TrashIcon />
+          </ActionMenuIconWrapper>
+          {t('timetable:deleteLesson')}
+        </MenuItem>
+        <Divider />
+        <MenuItem
+          onClick={(event) => {
+            event.preventDefault();
+            onOpenAddLessonDialog();
+            handleClose();
+          }}
+        >
+          <ActionMenuIconWrapper>
+            <AddIcon />
+          </ActionMenuIconWrapper>
+          {t('timetable:addLesson')}
+        </MenuItem>
+      </>
     </Menu>
   );
 }
