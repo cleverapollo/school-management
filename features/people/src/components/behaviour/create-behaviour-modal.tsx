@@ -4,6 +4,7 @@ import {
   Chip,
   Dialog,
   DialogActions,
+  DialogContent,
   DialogTitle,
   Stack,
 } from '@mui/material';
@@ -34,7 +35,7 @@ export interface CreateBehaviourModalProps {
 
 export type CreateBehaviourFormState = {
   behaviour: number;
-  details: string;
+  note: string;
   subjects: ReturnTypeFromUseStudentSubjectGroups[];
   occurredOn: Dayjs;
 };
@@ -45,27 +46,35 @@ export function CreateBehaviourModal({
   initialState,
 }: CreateBehaviourModalProps) {
   const { t } = useTranslation(['common', 'people']);
-  const { data: subjectGroup } = useStudentsSubjectGroups(studentId);
-  const { data: behaviourTags } = useNoteTagsBehaviour();
+  const { data: subjectGroup = [] } = useStudentsSubjectGroups(studentId);
+  const { data: behaviourTags = [] } = useNoteTagsBehaviour();
+
   const { resolver, rules } = useFormValidator<CreateBehaviourFormState>();
   const { control, handleSubmit, reset } = useForm<CreateBehaviourFormState>({
     resolver: resolver({
-      behaviour: rules.required(),
       occurredOn: rules.required(),
+      subjects: rules.required(),
+      behaviour: rules.required(),
+      note: rules.required(),
     }),
   });
 
   const { mutate, isLoading } = useUpsertStudentBehaviour(studentId);
 
-  const onSubmit = (data: CreateBehaviourFormState) => {
+  const onSubmit = ({
+    subjects,
+    occurredOn,
+    behaviour,
+    note,
+  }: CreateBehaviourFormState) => {
     mutate(
       [
         {
-          note: data.details,
+          note,
           referencedParties: [studentId],
-          tags: [data.behaviour],
-          associatedParties: data.subjects.map((subject) => subject.partyId),
-          createdOn: data.occurredOn.toISOString(),
+          tags: [behaviour],
+          associatedParties: subjects.map((subject) => subject.partyId),
+          incidentDate: occurredOn.format('YYYY-MM-DDTHH:mm:ss'),
         },
       ],
       {
@@ -87,29 +96,13 @@ export function CreateBehaviourModal({
     >
       <DialogTitle>{t('people:createBehaviour')}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack gap={3} p={3}>
-          <Stack direction="row" gap={2} gridColumn={2}>
-            <RHFSelect
-              fullWidth
-              optionIdKey="id"
-              options={behaviourTags ?? []}
-              label={t('common:category')}
-              getOptionLabel={(option) => option.name}
+        <DialogContent>
+          <Stack gap={3} mt={1}>
+            <RHFDateTimePicker
+              label={t('common:occurredOn')}
               controlProps={{
-                name: 'behaviour',
+                name: 'occurredOn',
                 control,
-              }}
-            />
-          </Stack>
-          <Stack direction="column" gap={2}>
-            <RHFTextField
-              label={t('common:details')}
-              controlProps={{
-                name: 'details',
-                control,
-              }}
-              textFieldProps={{
-                fullWidth: true,
               }}
             />
             <RHFAutocomplete
@@ -118,30 +111,58 @@ export function CreateBehaviourModal({
               optionIdKey="partyId"
               getOptionLabel={(option) => option.subjects[0]?.name}
               controlProps={{ name: 'subjects', control }}
-              options={subjectGroup ?? []}
+              options={subjectGroup}
               renderTags={(tags, getTagProps) =>
-                tags.map((tag, index) => (
-                  <Chip
-                    {...getTagProps({ index })}
-                    size="small"
-                    variant="soft"
-                    color={
-                      tag.subjects[0]?.colour || getColorBasedOnIndex(index)
-                    }
-                    label={tag.subjects[0]?.name}
-                  />
-                ))
+                tags.map((tag, index) => {
+                  const [subject] = tag.subjects || [];
+
+                  return (
+                    <Chip
+                      {...getTagProps({ index })}
+                      size="small"
+                      variant="soft"
+                      color={
+                        subject?.colour || getColorBasedOnIndex(tag.partyId)
+                      }
+                      label={subject?.name}
+                    />
+                  );
+                })
               }
             />
-            <RHFDateTimePicker
-              label={t('common:occurredOn')}
+            <RHFSelect
+              fullWidth
+              optionIdKey="id"
+              getOptionLabel={(option) => option.name}
+              options={behaviourTags}
+              label={t('common:category')}
+              renderValue={(value) => (
+                <Chip
+                  size="small"
+                  variant="soft"
+                  color={getColorBasedOnIndex(value.id)}
+                  label={value.name}
+                />
+              )}
               controlProps={{
-                name: 'occurredOn',
+                name: 'behaviour',
                 control,
               }}
             />
+            <RHFTextField
+              label={t('common:details')}
+              controlProps={{
+                name: 'note',
+                control,
+              }}
+              textFieldProps={{
+                fullWidth: true,
+                multiline: true,
+                rows: 4,
+              }}
+            />
           </Stack>
-        </Stack>
+        </DialogContent>
 
         <DialogActions>
           <Button variant="outlined" color="inherit" onClick={onClose}>
