@@ -26,17 +26,20 @@ const noteTagsBehaviour = graphql(/* GraphQL */ `
 
 const noteTagsBehaviourQuery = () => ({
   queryKey: peopleKeys.notes.noteTags(),
-  queryFn: () =>
-    gqlClient.request(noteTagsBehaviour, {
+  queryFn: async () => {
+    const { notes_tags: tags } = await gqlClient.request(noteTagsBehaviour, {
       filter: {
         categories: [Notes_TagCategory.Behaviour],
       },
-    }),
+    });
+
+    return tags.sort((prev, next) => prev.name.localeCompare(next.name));
+  },
 });
 
 export function useNoteTagsBehaviour() {
   return useQuery({
     ...noteTagsBehaviourQuery(),
-    select: ({ notes_tags }) => notes_tags,
+    select: (tags) => tags,
   });
 }
