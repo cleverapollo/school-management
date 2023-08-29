@@ -27,6 +27,9 @@ const YearGroups = lazyWithRetry(() => import('./pages/year'));
 const ViewYearGroupPage = lazyWithRetry(() => import('./pages/year/view'));
 const CustomGroups = lazyWithRetry(() => import('./pages/custom'));
 const ViewCustomGroupPage = lazyWithRetry(() => import('./pages/custom/view'));
+const CreateCustomGroupPage = lazyWithRetry(
+  () => import('./pages/custom/create')
+);
 const ClassGroups = lazyWithRetry(() => import('./pages/class'));
 const ClassGroupContainer = lazyWithRetry(
   () => import('./components/class-group/container')
@@ -357,16 +360,19 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'custom',
             title: t('navigation:general.groups.custom'),
-            hasAccess: (permissions) =>
-              permissions.hasPermission('ps:1:groups:view_custom_groups'),
+            // hasAccess: (permissions) =>
+            //   permissions.hasPermission('ps:1:groups:view_custom_groups'),
             children: [
               {
                 type: NavObjectType.NonMenuLink,
                 index: true,
-
                 loader: () => getCustomGroups(),
-
                 element: <CustomGroups />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'create',
+                element: <CreateCustomGroupPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,

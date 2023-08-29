@@ -27,6 +27,10 @@
   "tutor_other": "Tutors",
   "yearHead_one": "Year head",
   "yearHead_other": "Year heads",
+  "createCustomGroup": "Create custom group",
+  "groupName": "Group name",
+  "staticMembers": "Static members",
+  "dynamicMembers": "Dynamic members",
   "subjectGroup": {
     "switchToSupportClass": {
       "action": "Switch to support class",

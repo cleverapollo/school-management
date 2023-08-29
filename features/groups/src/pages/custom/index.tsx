@@ -1,4 +1,4 @@
-import { Box, Container, Fade, Typography } from '@mui/material';
+import { Box, Button, Fade } from '@mui/material';
 import { SmsRecipientType, usePermissions } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -7,13 +7,15 @@ import {
   ActionMenuProps,
   GridOptions,
   ICellRendererParams,
-  Page,
+  PageContainer,
+  PageHeading,
   Table,
   TableAvatar,
   useDisclosure,
 } from '@tyro/core';
-import { MobileIcon, SendMailIcon } from '@tyro/icons';
+import { AddIcon, MobileIcon, SendMailIcon } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
+import { Link } from 'react-router-dom';
 import {
   useCustomGroups,
   ReturnTypeFromUseCustomGroups,
@@ -95,36 +97,47 @@ export default function CustomGroups() {
 
   return (
     <>
-      <Page title={t('groups:customGroups')}>
-        <Container maxWidth="xl">
-          <Typography variant="h3" component="h1" paragraph>
-            {t('groups:customGroups')}
-          </Typography>
-          <Table
-            rowData={customGroupData ?? []}
-            columnDefs={customGroupColumns}
-            rowSelection="multiple"
-            getRowId={({ data }) => String(data?.partyId)}
-            rightAdornment={
-              <Fade in={showActionMenu} unmountOnExit>
-                <Box>
-                  <ActionMenu menuItems={actionMenuItems} />
-                </Box>
-              </Fade>
-            }
-            onRowSelection={(groups) =>
-              setSelectedGroups(
-                groups.map(({ partyId, name, avatarUrl }) => ({
-                  id: partyId,
-                  name,
-                  type: 'group',
-                  avatarUrl,
-                }))
-              )
-            }
-          />
-        </Container>
-      </Page>
+      <PageContainer title={t('groups:customGroups')}>
+        <PageHeading
+          title={t('groups:customGroups')}
+          titleProps={{ variant: 'h3' }}
+          rightAdornment={
+            <Box display="flex" alignItems="center">
+              <Button
+                variant="contained"
+                component={Link}
+                to="./create"
+                startIcon={<AddIcon />}
+              >
+                {t('groups:createCustomGroup')}
+              </Button>
+            </Box>
+          }
+        />
+        <Table
+          rowData={customGroupData ?? []}
+          columnDefs={customGroupColumns}
+          rowSelection="multiple"
+          getRowId={({ data }) => String(data?.partyId)}
+          rightAdornment={
+            <Fade in={showActionMenu} unmountOnExit>
+              <Box>
+                <ActionMenu menuItems={actionMenuItems} />
+              </Box>
+            </Fade>
+          }
+          onRowSelection={(groups) =>
+            setSelectedGroups(
+              groups.map(({ partyId, name, avatarUrl }) => ({
+                id: partyId,
+                name,
+                type: 'group',
+                avatarUrl,
+              }))
+            )
+          }
+        />
+      </PageContainer>
       <SendSmsModal
         isOpen={isSendSmsOpen}
         onClose={onCloseSendSms}
