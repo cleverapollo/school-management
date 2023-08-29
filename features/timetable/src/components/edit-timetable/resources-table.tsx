@@ -42,7 +42,6 @@ export function ResourcesTable({
     period: Period;
   }>(null);
   const isContextMenuOpen = Boolean(anchorEl);
-  const { isTyroUser } = usePermissions();
   const {
     value: selectLessonsToSwapRoomOrTeacher,
     debouncedValue: debouncedSelectLessonsToSwapRoomOrTeacher,
@@ -200,14 +199,12 @@ export function ResourcesTable({
                       <TableCell
                         key={period}
                         onContextMenu={(event) => {
-                          if (isTyroUser) {
-                            setAnchorEl({
-                              el: event.currentTarget,
-                              period: periodObj,
-                            });
-                            event.stopPropagation();
-                            event.preventDefault();
-                          }
+                          setAnchorEl({
+                            el: event.currentTarget,
+                            period: periodObj,
+                          });
+                          event.stopPropagation();
+                          event.preventDefault();
                         }}
                       >
                         <Stack spacing={1}>

@@ -31,7 +31,6 @@ export function LessonContextMenu({
   const numberOfSelectedLessons = isSelected
     ? selectedLessonIds.length
     : selectedLessonIds.length + 1;
-  const { isTyroUser } = usePermissions();
   const handleClose = () => {
     props.onClose?.({}, 'backdropClick');
   };
@@ -79,7 +78,7 @@ export function LessonContextMenu({
           count: numberOfSelectedLessons,
         })}
       </MenuItem>
-      {isTyroUser && [
+      {[
         <MenuItem
           key="edit"
           onClick={(event) => {
