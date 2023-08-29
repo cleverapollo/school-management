@@ -259,5 +259,7 @@
   "submittedBy": "Submitted by",
   "associated": "Associated",
   "occurredOn": "Occurred on",
-  "category": "Category"
+  "category": "Category",
+  "subjects": "Subject(s)",
+  "takenBy": "Taken by"
 }

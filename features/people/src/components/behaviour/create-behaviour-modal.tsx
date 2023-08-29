@@ -99,7 +99,7 @@ export function CreateBehaviourModal({
         <DialogContent>
           <Stack gap={3} mt={1}>
             <RHFDateTimePicker
-              label={t('common:occurredOn')}
+              label={t('common:date')}
               controlProps={{
                 name: 'occurredOn',
                 control,
@@ -107,7 +107,7 @@ export function CreateBehaviourModal({
             />
             <RHFAutocomplete
               multiple
-              label={t('common:associated')}
+              label={t('common:subjects')}
               optionIdKey="partyId"
               getOptionLabel={(option) => option.subjects[0]?.name}
               controlProps={{ name: 'subjects', control }}
