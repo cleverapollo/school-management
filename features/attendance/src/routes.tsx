@@ -31,10 +31,10 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'absent-requests',
             title: t('navigation:general.attendance.absentRequests'),
-            hasAccess: ({ isStaffUserWithPermission }) =>
+            hasAccess: ({ isStaffUserWithPermission, isContact }) =>
               isStaffUserWithPermission(
                 'ps:1:staff_work_management:absences_read'
-              ),
+              ) || isContact,
             element: <AbsentRequests />,
           },
         ],

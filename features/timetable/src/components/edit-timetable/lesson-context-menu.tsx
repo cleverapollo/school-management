@@ -71,17 +71,16 @@ export function LessonContextMenu({
           handleClose();
         }}
       >
-        <>
-          <ActionMenuIconWrapper>
-            <BuildingGraduateHatIcon />
-          </ActionMenuIconWrapper>
-          {t('timetable:swapTeacherOrRoom', {
-            count: numberOfSelectedLessons,
-          })}
-        </>
+        <ActionMenuIconWrapper>
+          <BuildingGraduateHatIcon />
+        </ActionMenuIconWrapper>
+        {t('timetable:swapTeacherOrRoom', {
+          count: numberOfSelectedLessons,
+        })}
       </MenuItem>
-      <>
+      {[
         <MenuItem
+          key="edit"
           onClick={(event) => {
             event.preventDefault();
             onOpenEditLessonDialog();
@@ -92,8 +91,9 @@ export function LessonContextMenu({
             <EditIcon />
           </ActionMenuIconWrapper>
           {t('timetable:editLesson')}
-        </MenuItem>
+        </MenuItem>,
         <MenuItem
+          key="delete"
           onClick={(event) => {
             event.preventDefault();
             onOpenDeleteLessonDialog();
@@ -104,9 +104,10 @@ export function LessonContextMenu({
             <TrashIcon />
           </ActionMenuIconWrapper>
           {t('timetable:deleteLesson')}
-        </MenuItem>
-        <Divider />
+        </MenuItem>,
+        <Divider key="divider" />,
         <MenuItem
+          key="add"
           onClick={(event) => {
             event.preventDefault();
             onOpenAddLessonDialog();
@@ -117,8 +118,8 @@ export function LessonContextMenu({
             <AddIcon />
           </ActionMenuIconWrapper>
           {t('timetable:addLesson')}
-        </MenuItem>
-      </>
+        </MenuItem>,
+      ]}
     </Menu>
   );
 }
