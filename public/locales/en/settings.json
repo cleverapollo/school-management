@@ -223,7 +223,6 @@
   },
   "noteLabel": {
     "title": "Note labels",
-    "codeShouldBeUnique": "Code should be unique",
     "createNoteLabel": "Create note label",
     "editNoteLabel": "Edit note label",
     "code": "Code"

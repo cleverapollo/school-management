@@ -2,6 +2,7 @@ import { Button, Stack } from '@mui/material';
 import {
   RHFTextField,
   useFormValidator,
+  DialogContent,
   DialogActions,
   Dialog,
   DialogTitle,
@@ -33,12 +34,6 @@ export const UpsertNoteLabelModal = ({
   const { resolver, rules } = useFormValidator<UpsertNoteLabelFormState>();
   const currentLanguageCode = i18n.language;
 
-  const defaultFormStateValues: Partial<UpsertNoteLabelFormState> = {
-    name: initialState?.name,
-    description: initialState?.description || '',
-    code: initialState?.tag_l1 || '',
-  };
-
   const { control, handleSubmit, reset } = useForm<UpsertNoteLabelFormState>({
     resolver: resolver({
       name: rules.required(),
@@ -48,11 +43,15 @@ export const UpsertNoteLabelModal = ({
         rules.isUniqueByKey(
           noteTags.filter((noteTag) => noteTag.id !== initialState?.id),
           'tag_l1',
-          t('settings:noteLabel.codeShouldBeUnique')
+          t('common:errorMessages.invalidUniqueByKey', { key: 'Code' })
         ),
       ],
     }),
-    defaultValues: defaultFormStateValues,
+    defaultValues: {
+      name: initialState?.name,
+      description: initialState?.description || '',
+      code: initialState?.tag_l1 || '',
+    },
   });
 
   const { mutate, isLoading } = useUpsertNoteTags();
@@ -100,37 +99,39 @@ export const UpsertNoteLabelModal = ({
     >
       <DialogTitle>
         {initialState?.id
-          ? t('settings:noteLabel.createNoteLabel')
-          : t('settings:noteLabel.editNoteLabel')}
+          ? t('settings:noteLabel.editNoteLabel')
+          : t('settings:noteLabel.createNoteLabel')}
       </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack spacing={3} sx={{ p: 3 }}>
-          <RHFTextField
-            label={t('common:name')}
-            controlProps={{
-              name: 'name',
-              control,
-            }}
-          />
-          <RHFTextField
-            label={t('common:description')}
-            controlProps={{
-              name: 'description',
-              control,
-            }}
-            textFieldProps={{
-              multiline: true,
-              rows: 4,
-            }}
-          />
-          <RHFTextField
-            label={t('settings:noteLabel.code')}
-            controlProps={{
-              name: 'code',
-              control,
-            }}
-          />
-        </Stack>
+        <DialogContent>
+          <Stack spacing={3} sx={{ pt: 1 }}>
+            <RHFTextField
+              label={t('common:name')}
+              controlProps={{
+                name: 'name',
+                control,
+              }}
+            />
+            <RHFTextField
+              label={t('settings:noteLabel.code')}
+              controlProps={{
+                name: 'code',
+                control,
+              }}
+            />
+            <RHFTextField
+              label={t('common:description')}
+              controlProps={{
+                name: 'description',
+                control,
+              }}
+              textFieldProps={{
+                multiline: true,
+                rows: 4,
+              }}
+            />
+          </Stack>
+        </DialogContent>
 
         <DialogActions>
           <Button variant="outlined" color="inherit" onClick={handleClose}>
