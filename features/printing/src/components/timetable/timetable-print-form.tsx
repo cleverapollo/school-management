@@ -1,12 +1,7 @@
-import {
-  RHFStaffAutocomplete,
-  StaffSelectOption,
-  useStaffForSelect,
-} from '@tyro/people';
 import { useTranslation } from '@tyro/i18n';
-import React, { useEffect, useState } from 'react';
-import { Button, Stack, useTheme, Box, Card, Grid } from '@mui/material';
-import { RHFSelect, RHFSwitch, useFormValidator } from '@tyro/core';
+import { useState } from 'react';
+import { Stack, Grid } from '@mui/material';
+import { RHFSelect, RHFSwitch } from '@tyro/core';
 import {
   Print_TimetableLayout,
   Print_TimetableOptions,
@@ -15,11 +10,10 @@ import {
   Print_TimetablePeriodDisplayInCell,
   Print_TimetableSubjectFormat,
 } from '@tyro/api';
-import { useForm, useFormContext } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import {
   getPrintTimetable,
-  ReturnTypeFromUsePrintTimetable,
   usePrintTimetable,
 } from '../../api/print-timetable';
 
@@ -57,10 +51,10 @@ function mapFontSize(fontSize: FontSize) {
       return 6;
     case FontSize.SMALL:
       return 10;
-    case FontSize.MEDIUM:
-      return 12;
     case FontSize.LARGE:
       return 18;
+    default: // MEDIUM
+      return 12;
   }
 }
 export function TimetablePrintForm({
@@ -68,10 +62,6 @@ export function TimetablePrintForm({
   translateRoomIds,
 }: TimetablePrintFormProps) {
   const { t } = useTranslation(['printing', 'common']);
-  const { spacing } = useTheme();
-  const [selectedStaff, setSelectedStaff] = useState<StaffSelectOption[]>([]);
-  const { data: teacherData } = useStaffForSelect({});
-  const { resolver, rules } = useFormValidator<PrintStaffTimetableFormState>();
 
   const [filter, setFilter] = useState<Print_TimetableOptions>({
     partyIds: [1],
@@ -132,6 +122,7 @@ export function TimetablePrintForm({
     }) => {
       const f = {
         partyIds: translatePartyIds ? translatePartyIds(partyIds) : [],
+        roomIds: translateRoomIds ? translateRoomIds(roomIds) : [],
         showRooms,
         teacherDisplayOption,
         layout,
