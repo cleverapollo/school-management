@@ -3,10 +3,6 @@ import {
   AlertTitle,
   Button,
   Collapse,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogActions,
   IconButton,
   Stack,
   Table,
@@ -20,6 +16,10 @@ import {
 } from '@mui/material';
 import {
   Avatar,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogActions,
   RHFSelect,
   RHFTextField,
   PreferredNameFormat,
