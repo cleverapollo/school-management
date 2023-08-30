@@ -34,6 +34,12 @@ export const UpsertNoteLabelModal = ({
   const { resolver, rules } = useFormValidator<UpsertNoteLabelFormState>();
   const currentLanguageCode = i18n.language;
 
+  const defaultFormStateValues: Partial<UpsertNoteLabelFormState> = {
+    name: initialState?.name,
+    description: initialState?.description || '',
+    code: initialState?.tag_l1 || '',
+  };
+
   const { control, handleSubmit, reset } = useForm<UpsertNoteLabelFormState>({
     resolver: resolver({
       name: rules.required(),
@@ -47,11 +53,7 @@ export const UpsertNoteLabelModal = ({
         ),
       ],
     }),
-    defaultValues: {
-      name: initialState?.name,
-      description: initialState?.description || '',
-      code: initialState?.tag_l1 || '',
-    },
+    defaultValues: defaultFormStateValues,
   });
 
   const { mutate, isLoading } = useUpsertNoteTags();
@@ -62,11 +64,7 @@ export const UpsertNoteLabelModal = ({
   };
 
   useEffect(() => {
-    reset({
-      name: initialState?.name,
-      description: initialState?.description || '',
-      code: initialState?.tag_l1 || '',
-    });
+    reset(defaultFormStateValues);
   }, [initialState]);
 
   const onSubmit = (data: UpsertNoteLabelFormState) => {
