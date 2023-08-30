@@ -1,4 +1,5 @@
 import { MenuItem, TextField, TextFieldProps, useTheme } from '@mui/material';
+import { ReactNode, useMemo } from 'react';
 
 type SelectCustomVariant = Omit<TextFieldProps, 'variant'> & {
   variant?: TextFieldProps['variant'] | 'white-filled';
@@ -11,6 +12,7 @@ export type SelectProps<TSelectOption> = SelectCustomVariant & {
   optionIdKey?: TSelectOption extends string | number
     ? never
     : keyof TSelectOption;
+  renderValue?: (option: TSelectOption) => ReactNode;
 };
 
 export const Select = <TSelectOption extends string | number | object>({
@@ -21,15 +23,30 @@ export const Select = <TSelectOption extends string | number | object>({
   variant,
   sx,
   SelectProps,
+  renderValue,
+  value,
   ...textFieldProps
 }: SelectProps<TSelectOption>) => {
   const { spacing, palette } = useTheme();
 
   const isWhiteFilledVariant = variant === 'white-filled';
 
+  const optionSelected = useMemo(
+    () =>
+      options.find((currentOption) => {
+        const currentValue = optionIdKey
+          ? (currentOption[optionIdKey] as string)
+          : String(currentOption);
+
+        return currentValue === value;
+      }),
+    [options, optionIdKey, value]
+  );
+
   return (
     <TextField
       {...textFieldProps}
+      value={value}
       variant={isWhiteFilledVariant ? 'filled' : variant}
       ref={customSelectRef}
       select
@@ -42,6 +59,10 @@ export const Select = <TSelectOption extends string | number | object>({
             ...SelectProps?.MenuProps?.sx,
           },
         },
+        ...(renderValue && {
+          renderValue: () =>
+            optionSelected ? renderValue(optionSelected) : null,
+        }),
       }}
       sx={{
         ...sx,
@@ -58,12 +79,12 @@ export const Select = <TSelectOption extends string | number | object>({
       }}
     >
       {options.map((option) => {
-        const value = optionIdKey
+        const optionValue = optionIdKey
           ? (option[optionIdKey] as string)
           : String(option);
 
         return (
-          <MenuItem key={value} value={value}>
+          <MenuItem key={optionValue} value={optionValue}>
             {getOptionLabel(option)}
           </MenuItem>
         );

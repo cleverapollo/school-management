@@ -258,6 +258,8 @@
   "label": "Label",
   "submittedBy": "Submitted by",
   "associated": "Associated",
-  "occurredOn": "Occurred On",
-  "category": "Category"
+  "occurredOn": "Occurred on",
+  "category": "Category",
+  "subjects": "Subject(s)",
+  "takenBy": "Taken by"
 }
