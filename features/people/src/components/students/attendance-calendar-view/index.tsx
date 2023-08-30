@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Box,
   Card,
@@ -11,28 +12,13 @@ import {
 } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import { useTranslation } from '@tyro/i18n';
-import {
-  useCoreAcademicNamespace,
-  AcademicNamespace,
-  AttendanceCodeType,
-} from '@tyro/api';
+import { useCoreAcademicNamespace } from '@tyro/api';
 import { ToggleButtonCalendarIcon, ToggleButtonTableIcon } from '@tyro/icons';
 import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { useState } from 'react';
-import { SearchInput } from '@tyro/core';
 import { AcademicCalendar } from './calendar';
 import { useStudentCalendarAttendance } from '../../../api/student/attendance/calendar-attendance';
 import { AttendanceTableView } from './attendance-table-view';
-
-const attendanceCodeColours = [
-  { colour: 'indigo', translationText: 'all' },
-  { colour: 'emerald', translationText: 'totalPresent' },
-  { colour: 'sky', translationText: 'totalLate' },
-  { colour: 'pink', translationText: 'totalAbsent' },
-  { colour: 'red', translationText: 'totalUnexplained' },
-  { colour: 'grey', translationText: 'totalNotTaken' },
-];
 
 export const MonthOverview = () => {
   const { t } = useTranslation(['attendance', 'people']);
@@ -60,12 +46,51 @@ export const MonthOverview = () => {
   const totalAttendanceDays = attendanceCounts.length;
 
   const [value, setValue] = useState(0);
-  const [mappedValue, setMappedValue] = useState('ALL');
+  const [currentTabValue, setCurrentTabValue] = useState('All');
   const [showCalendarView, setShowCalendarView] = useState(true);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  const attendanceCodeColours = [
+    {
+      colour: 'indigo',
+      translationText: t('attendance:all'),
+      calendarAttendanceTotals: 'all',
+      currentTabValue: 'All',
+    },
+    {
+      colour: 'emerald',
+      translationText: t('attendance:totalPresent'),
+      calendarAttendanceTotals: 'totalPresent',
+      currentTabValue: 'PRESENT',
+    },
+    {
+      colour: 'sky',
+      translationText: t('attendance:totalLate'),
+      calendarAttendanceTotals: 'totalLate',
+      currentTabValue: 'LATE',
+    },
+    {
+      colour: 'pink',
+      translationText: t('attendance:totalAbsent'),
+      calendarAttendanceTotals: 'totalAbsent',
+      currentTabValue: 'EXPLAINED_ABSENCE',
+    },
+    {
+      colour: 'red',
+      translationText: t('attendance:totalUnexplained'),
+      calendarAttendanceTotals: 'totalUnexplained',
+      currentTabValue: 'UNEXPLAINED_ABSENCE',
+    },
+    {
+      colour: 'grey',
+      translationText: t('attendance:totalNotTaken'),
+      calendarAttendanceTotals: 'totalNotTaken',
+      currentTabValue: 'NOT_TAKEN',
+    },
+  ];
 
   return (
     <Card variant="outlined" sx={{ height: '100%', flex: 1 }}>
@@ -154,12 +179,6 @@ export const MonthOverview = () => {
             },
           }}
         />
-        {/* <SearchInput
-          value="Search"
-          onChange={(e) => State.log('hello')}
-          sx={{ fontSize: '0.875rem' }}
-          containerProps={{ sx: { my: 1 } }}
-        /> */}
       </Stack>
       {calendarAttendanceLoading ? (
         <Stack minHeight="40vh" justifyContent="center" alignItems="center">
@@ -174,326 +193,62 @@ export const MonthOverview = () => {
                 onChange={handleChange}
                 variant="scrollable"
                 scrollButtons="auto"
-                aria-label="scrollable auto tabs example"
+                aria-label="scrollable auto tabs for highlighting attendance types"
                 sx={{
                   '& .MuiTabs-flexContainer': {
                     alignItems: 'center',
-
                     margin: 0,
                   },
                 }}
               >
-                <Tab
-                  onClick={() => setMappedValue('ALL')}
-                  label={
-                    <>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          backgroundColor: `indigo.100`,
-                          borderRadius: '6px',
-                          padding: 0,
-                        }}
-                      >
+                {attendanceCodeColours.map((item) => (
+                  <Tab
+                    onClick={() => setCurrentTabValue(item?.currentTabValue)}
+                    label={
+                      <>
                         <Chip
-                          label={totalAttendanceDays}
+                          label={
+                            item && item?.translationText === 'All'
+                              ? totalAttendanceDays?.toString()
+                              : calendarAttendance &&
+                                calendarAttendance[
+                                  item?.calendarAttendanceTotals as keyof typeof calendarAttendance
+                                ]?.toString()
+                          }
                           variant="soft"
                           sx={{
                             cursor: 'pointer',
-                            backgroundColor: 'transparent',
+                            backgroundColor: `${item?.colour}.100`,
+                            borderRadius: '6px',
                             height: '20px',
                             fontWeight: '700',
                             fontSize: '12px',
                             paddingX: '8px',
-                            color: `indigo.500`,
+                            color: `${item?.colour}.500`,
                             '& .MuiChip-icon': {
-                              color: `indigo.500`,
+                              color: `${item?.colour}.500`,
                             },
                             '& .MuiChip-label': {
                               padding: 0,
                             },
                           }}
                         />
-                      </Box>
-
-                      <Typography
-                        color="#637381"
-                        marginLeft={1}
-                        sx={{
-                          fontWeight: '600',
-                          fontSize: '14px',
-                          textWrap: 'nowrap',
-                        }}
-                      >
-                        {t(`attendance:all` as keyof typeof calendarAttendance)}
-                      </Typography>
-                    </>
-                  }
-                />
-
-                <Tab
-                  onClick={() => setMappedValue('PRESENT')}
-                  label={
-                    <>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          backgroundColor: `emerald.100`,
-                          borderRadius: '6px',
-                          padding: 0,
-                        }}
-                      >
-                        <Chip
-                          label={calendarAttendance?.totalPresent}
-                          variant="soft"
+                        <Typography
+                          color="#637381"
+                          marginLeft={1}
                           sx={{
-                            cursor: 'pointer',
-                            backgroundColor: 'transparent',
-                            height: '20px',
-                            fontWeight: '700',
-                            fontSize: '12px',
-                            paddingX: '8px',
-                            color: `emerald.500`,
-                            '& .MuiChip-icon': {
-                              color: `emerald.500`,
-                            },
-                            '& .MuiChip-label': {
-                              padding: 0,
-                            },
+                            fontWeight: '600',
+                            fontSize: '14px',
+                            textWrap: 'nowrap',
+                            textTransform: 'none',
                           }}
-                        />
-                      </Box>
-
-                      <Typography
-                        color="#637381"
-                        marginLeft={1}
-                        sx={{
-                          fontWeight: '600',
-                          fontSize: '14px',
-                          textWrap: 'nowrap',
-                        }}
-                      >
-                        {t(
-                          `attendance:totalPresent` as keyof typeof calendarAttendance
-                        )}
-                      </Typography>
-                    </>
-                  }
-                />
-
-                <Tab
-                  onClick={() => setMappedValue('LATE')}
-                  label={
-                    <>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          backgroundColor: `sky.100`,
-                          borderRadius: '6px',
-                          padding: 0,
-                        }}
-                      >
-                        <Chip
-                          label={calendarAttendance?.totalLate}
-                          variant="soft"
-                          sx={{
-                            cursor: 'pointer',
-                            backgroundColor: 'transparent',
-                            height: '20px',
-                            fontWeight: '700',
-                            fontSize: '12px',
-                            paddingX: '8px',
-                            color: `sky.500`,
-
-                            '& .MuiChip-icon': {
-                              color: `sky.500`,
-                            },
-                            '& .MuiChip-label': {
-                              padding: 0,
-                            },
-                          }}
-                        />
-                      </Box>
-
-                      <Typography
-                        color="#637381"
-                        marginLeft={1}
-                        sx={{
-                          fontWeight: '600',
-                          fontSize: '14px',
-                          textWrap: 'nowrap',
-                        }}
-                      >
-                        {t(
-                          `attendance:totalLate` as keyof typeof calendarAttendance
-                        )}
-                      </Typography>
-                    </>
-                  }
-                />
-
-                <Tab
-                  onClick={() => setMappedValue('EXPLAINED_ABSENCE')}
-                  label={
-                    <>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          backgroundColor: `pink.100`,
-                          borderRadius: '6px',
-                          padding: 0,
-                        }}
-                      >
-                        <Chip
-                          label={calendarAttendance?.totalAbsent}
-                          variant="soft"
-                          sx={{
-                            cursor: 'pointer',
-                            backgroundColor: 'transparent',
-                            height: '20px',
-                            fontWeight: '700',
-                            fontSize: '12px',
-                            paddingX: '8px',
-                            color: `pink.500`,
-
-                            '& .MuiChip-icon': {
-                              color: `pink.500`,
-                            },
-                            '& .MuiChip-label': {
-                              padding: 0,
-                            },
-                          }}
-                        />
-                      </Box>
-
-                      <Typography
-                        color="#637381"
-                        marginLeft={1}
-                        sx={{
-                          fontWeight: '600',
-                          fontSize: '14px',
-                          textWrap: 'nowrap',
-                        }}
-                      >
-                        {t(
-                          `attendance:totalAbsent` as keyof typeof calendarAttendance
-                        )}
-                      </Typography>
-                    </>
-                  }
-                />
-
-                <Tab
-                  onClick={() => setMappedValue('UNEXPLAINED_ABSENCE')}
-                  label={
-                    <>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          backgroundColor: `red.100`,
-                          borderRadius: '6px',
-                          padding: 0,
-                        }}
-                      >
-                        <Chip
-                          label={calendarAttendance?.totalUnexplained}
-                          variant="soft"
-                          sx={{
-                            cursor: 'pointer',
-                            backgroundColor: 'transparent',
-                            height: '20px',
-                            fontWeight: '700',
-                            fontSize: '12px',
-                            paddingX: '8px',
-                            color: `red.500`,
-                            '& .MuiChip-icon': {
-                              color: `red.500`,
-                            },
-                            '& .MuiChip-label': {
-                              padding: 0,
-                            },
-                          }}
-                        />
-                      </Box>
-
-                      <Typography
-                        color="#637381"
-                        marginLeft={1}
-                        sx={{
-                          fontWeight: '600',
-                          fontSize: '14px',
-                          textWrap: 'nowrap',
-                        }}
-                      >
-                        {t(
-                          `attendance:totalUnexplained` as keyof typeof calendarAttendance
-                        )}
-                      </Typography>
-                    </>
-                  }
-                />
-
-                <Tab
-                  onClick={() => setMappedValue('NOT_TAKEN')}
-                  label={
-                    <>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          backgroundColor: `grey.100`,
-                          borderRadius: '6px',
-                          padding: 0,
-                        }}
-                      >
-                        <Chip
-                          label={calendarAttendance?.totalNotTaken}
-                          variant="soft"
-                          sx={{
-                            cursor: 'pointer',
-                            backgroundColor: 'transparent',
-                            height: '20px',
-                            fontWeight: '700',
-                            fontSize: '12px',
-                            paddingX: '8px',
-                            color: `grey.500`,
-                            '& .MuiChip-icon': {
-                              color: `grey.500`,
-                            },
-                            '& .MuiChip-label': {
-                              padding: 0,
-                            },
-                          }}
-                        />
-                      </Box>
-
-                      <Typography
-                        color="#637381"
-                        marginLeft={1}
-                        sx={{
-                          fontWeight: '600',
-                          fontSize: '14px',
-                          textWrap: 'nowrap',
-                        }}
-                      >
-                        {t(
-                          `attendance:totalNotTaken` as keyof typeof calendarAttendance
-                        )}
-                      </Typography>
-                    </>
-                  }
-                />
+                        >
+                          {item.translationText}
+                        </Typography>
+                      </>
+                    }
+                  />
+                ))}
               </Tabs>
               <Box
                 sx={{
@@ -508,7 +263,7 @@ export const MonthOverview = () => {
                   studentPartyId={id ?? ''}
                   calendarAttendance={calendarAttendance}
                   activeAcademicNamespace={activeAcademicNamespace}
-                  mappedValue={mappedValue}
+                  currentTabValue={currentTabValue}
                 />
               </Box>
             </>
