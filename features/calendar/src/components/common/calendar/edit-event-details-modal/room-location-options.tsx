@@ -8,11 +8,11 @@ import { useRoomLocation } from '../../../../api/add-event';
 export type RoomLocationOption = {
   roomId: number;
   name: string;
-  type: string;
+  type?: string;
 };
 
 export type RoomLocationFormState = {
-  location: Omit<RoomLocationOption, 'type'>;
+  locations: RoomLocationOption[];
 };
 
 export type RecurrenceFilter = FindFreeResourcesFilter['recurrence'] | null;
@@ -26,7 +26,7 @@ export const RoomLocationOptions = <TField extends RoomLocationFormState>({
   recurrenceFilter,
   control,
 }: RoomLocationOptionsProps<TField>) => {
-  const { t } = useTranslation(['calendar']);
+  const { t } = useTranslation(['common', 'calendar']);
 
   const { data: freeLocationData } = useRoomLocation({
     allRooms: true,
@@ -53,11 +53,12 @@ export const RoomLocationOptions = <TField extends RoomLocationFormState>({
 
   return (
     <RHFAutocomplete<RoomLocationFormState, RoomLocationOption>
-      label={t('calendar:inputLabels.location')}
+      label={t('calendar:inputLabels.locations')}
       optionIdKey="roomId"
       optionTextKey="name"
-      groupBy={(option) => option.type}
-      controlProps={{ name: 'location', control }}
+      multiple
+      groupBy={(option) => option.type ?? t('common:unknown')}
+      controlProps={{ name: 'locations', control }}
       options={roomLocationOptions}
     />
   );

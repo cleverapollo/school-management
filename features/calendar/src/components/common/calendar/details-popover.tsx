@@ -134,7 +134,7 @@ export function CalendarDetailsPopover({
         startTime: dayjs(startTime),
         endDate: dayjs(endTime),
         endTime: dayjs(endTime),
-        location: rooms[0],
+        locations: rooms,
         participants: sortedParticipants.map(
           ({ partyId, partyInfo, type }) => ({
             partyId,

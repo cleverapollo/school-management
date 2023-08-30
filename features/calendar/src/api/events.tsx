@@ -296,7 +296,7 @@ export function useCalendarEvents(
                   organizerInfo?.partyInfo?.__typename === 'Staff'
                     ? displayName(organizerInfo?.partyInfo?.person)
                     : '',
-                room: event?.rooms?.length ? event.rooms[0]?.name : '',
+                room: event.rooms.map(({ name }) => name).join(', '),
                 isSubstitution: event.tags.some(
                   (tag) => tag.context === Calendar_TagContext.Substitution
                 ),
