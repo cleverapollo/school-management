@@ -1,5 +1,4 @@
 import { RHFRoomAutocomplete, RoomSelect } from '@tyro/settings';
-import React from 'react';
 import { useFormContext } from 'react-hook-form';
 
 interface StaffTimetableFormState {
