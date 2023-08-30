@@ -1,5 +1,4 @@
 import { StaffSelectOption } from '@tyro/people';
-import React from 'react';
 import { Box, Card, Typography, Divider } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';

@@ -8,20 +8,20 @@
     "rooms": "Rooms",
     "printOptions": "Print Options",
     "teacherDisplayOptions": {
-      "FULL":  "Full Name",
-      "DISPLAY_CODE":  "Display Code",
+      "FULL": "Full Name",
+      "DISPLAY_CODE": "Display Code",
       "HIDE": "Hide"
     },
     "layout": {
-      "PERIODS_ON_X_AXIS":  "Periods on X axis",
-      "DAYS_ON_X_AXIS":  "Days on X axis",
+      "PERIODS_ON_X_AXIS": "Periods on X axis",
+      "DAYS_ON_X_AXIS": "Days on X axis",
       "COMBINED": "Combined"
     },
     "periodDisplayOnAxis": {
       "PERIOD_NUMBER": "Period Number",
       "TIME": "Time"
     },
-    "periodDisplayInCell" : {
+    "periodDisplayInCell": {
       "PERIOD_NUMBER": "Period Number",
       "TIME": "Time",
       "HIDE": "Hide"
@@ -36,7 +36,7 @@
       "CODE": "Code",
       "SHORT": "Short"
     },
-    "options" : {
+    "options": {
       "teacherDisplayFormat": "Teacher Display",
       "layout": "Layout",
       "periodDisplayOnAxis": "Period on Axis",
@@ -45,13 +45,14 @@
       "showGroupNames": "Show Group Names",
       "showRooms": "Show Rooms",
       "individualStudents": "Individual Students",
+      "allTeachers": "All Teachers",
       "fontSize": "Font Size"
     },
     "fontSize": {
       "EXCEEDINGLY_SMALL": "Exceedingly Small",
-      "SMALL" :"Small",
-      "MEDIUM" : "Medium",
-      "LARGE" : "Large"
+      "SMALL": "Small",
+      "MEDIUM": "Medium",
+      "LARGE": "Large"
     }
   }
 }
