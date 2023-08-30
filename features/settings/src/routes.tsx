@@ -13,6 +13,7 @@ import {
   getContactsForSelect,
   getStaffForSelect,
   getStudentsForSelect,
+  getNoteTags,
 } from '@tyro/people';
 import { getStaffPosts } from '@tyro/people/src/api/staff/staff-posts';
 import { getEmploymentCapacities } from '@tyro/people/src/api/staff/employment-capacities';
@@ -52,6 +53,7 @@ const Permissions = lazy(() => import('./pages/permissions'));
 const CreatePermission = lazy(() => import('./pages/permissions/create'));
 const EditPermission = lazy(() => import('./pages/permissions/edit'));
 const ClonePermission = lazy(() => import('./pages/permissions/clone'));
+const NoteLabel = lazy(() => import('./pages/note-label'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -261,6 +263,14 @@ export const getRoutes: NavObjectFunction = (t) => [
                 getEmploymentCapacities(),
               ]),
             element: <DTRReturnsFileB />,
+          },
+          {
+            title: t('navigation:management.settings.noteLabels'),
+            type: NavObjectType.MenuLink,
+            path: 'note-labels',
+            hasAccess: (permissions) => permissions.isStaffUser,
+            loader: () => getNoteTags(),
+            element: <NoteLabel />,
           },
         ],
       },
