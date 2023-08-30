@@ -251,7 +251,8 @@ export function ListManagerProvider({
           selectedIds,
           state,
           unassignedSearch,
-          displayName
+          displayName,
+          includeClassGroupName
         );
       }
 

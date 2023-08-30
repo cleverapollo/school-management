@@ -255,12 +255,19 @@ const filterStudentsFromUnassignedGroup = (
   groupId: ListManagerState['id'],
   unassignedSearch: string,
   displayName: ReturnTypeDisplayName,
-  student: ListManagerState['students'][number]
-) =>
-  String(groupId) !== 'unassigned' ||
-  displayName(student.person)
-    .toLowerCase()
-    .includes(unassignedSearch.toLowerCase());
+  student: ListManagerState['students'][number],
+  includeClassGroupName: boolean
+) => {
+  const lowerCaseSearch = unassignedSearch.toLowerCase();
+  const lowerCaseName = displayName(student.person).toLowerCase();
+
+  return (
+    String(groupId) !== 'unassigned' ||
+    lowerCaseName.includes(lowerCaseSearch) ||
+    (includeClassGroupName &&
+      student.classGroupName?.toLowerCase().includes(lowerCaseSearch))
+  );
+};
 
 // This behaviour matches the MacOSX finder selection
 export const multiSelectTo = (
@@ -268,7 +275,8 @@ export const multiSelectTo = (
   selectedStudentIds: string[],
   groups: ListManagerState[],
   unassignedSearch: string,
-  displayName: ReturnTypeDisplayName
+  displayName: ReturnTypeDisplayName,
+  includeClassGroupName: boolean
 ) => {
   // Nothing already selected
   if (!selectedStudentIds.length) {
@@ -300,7 +308,8 @@ export const multiSelectTo = (
           groupOfNew.id,
           unassignedSearch,
           displayName,
-          student
+          student,
+          includeClassGroupName
         )
       )
       .map(({ id }) => id);
@@ -325,7 +334,8 @@ export const multiSelectTo = (
         groupOfNew.id,
         unassignedSearch,
         displayName,
-        student
+        student,
+        includeClassGroupName
       )
     )
     .map(({ id }) => id);
