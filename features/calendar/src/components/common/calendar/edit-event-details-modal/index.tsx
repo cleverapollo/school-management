@@ -144,7 +144,7 @@ export const CalendarEditEventDetailsModal = ({
           ),
         ],
         participants: rules.required(),
-        location: rules.required(),
+        locations: rules.required(),
         colour: rules.required(),
       }),
       defaultValues: defaultFormStateValues,
@@ -196,10 +196,12 @@ export const CalendarEditEventDetailsModal = ({
 
   const onSubmit = ({
     participants,
-    location,
+    locations,
     ...restEventData
   }: CalendarEditEventFormState) => {
     if (!recurrenceFilter) return;
+
+    console.log('location', locations);
 
     // TODO: edition mutation is not ready yet
     if (restEventData.eventId) {
@@ -224,13 +226,11 @@ export const CalendarEditEventDetailsModal = ({
               // TODO: remove when tags are non mandatory
               tags: [],
             })),
-            rooms: [
-              {
-                roomId: location.roomId,
-                // TODO: remove when tags are non mandatory
-                tags: [],
-              },
-            ],
+            rooms: locations.map(({ roomId }) => ({
+              roomId,
+              // TODO: remove when tags are non mandatory
+              tags: [],
+            })),
             // TODO: remove when tags are non mandatory
             tags: [],
           },
