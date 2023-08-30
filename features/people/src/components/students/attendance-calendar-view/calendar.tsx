@@ -14,13 +14,13 @@ type MonthCalendarProps = {
   month: string;
   calendarAttendance?: ReturnTypeFromUseStudentCalendarAttendance;
   handleAddAttendance: (arg0: string) => void;
-  mappedValue: string;
+  currentTabValue: string;
 };
 
 type CustomDayProps = {
   handleAddAttendance: (arg0: string) => void;
   calendarAttendance?: ReturnTypeFromUseStudentCalendarAttendance;
-  mappedValue: string;
+  currentTabValue: string;
 } & PickersDayProps<Dayjs>;
 
 const attendanceColours = {
@@ -36,13 +36,13 @@ const weekends = [0, 6];
 const getBackgroundColor = (
   formattedDay: string,
   dayOfWeek: number,
-  mappedValue: string
+  currentTabValue: string
 ) => {
   if (weekends.includes(dayOfWeek)) {
     return 'white';
   }
 
-  if (mappedValue === 'ALL') {
+  if (currentTabValue === 'All') {
     if (
       formattedDay &&
       attendanceColours[formattedDay as keyof typeof attendanceColours]
@@ -51,7 +51,7 @@ const getBackgroundColor = (
         attendanceColours[formattedDay as keyof typeof attendanceColours]
       }.100`;
     }
-  } else if (mappedValue === formattedDay) {
+  } else if (currentTabValue === formattedDay) {
     return `${
       attendanceColours[formattedDay as keyof typeof attendanceColours]
     }.100`;
@@ -63,12 +63,12 @@ const getBackgroundColor = (
 const getFontColor = (
   formattedDay: string,
   dayOfWeek: number,
-  mappedValue: string
+  currentTabValue: string
 ) => {
   if (weekends.includes(dayOfWeek)) {
     return 'grey.300';
   }
-  if (mappedValue === 'ALL') {
+  if (currentTabValue === 'All') {
     if (
       formattedDay &&
       attendanceColours[formattedDay as keyof typeof attendanceColours]
@@ -77,7 +77,7 @@ const getFontColor = (
         attendanceColours[formattedDay as keyof typeof attendanceColours]
       }.500`;
     }
-  } else if (mappedValue === formattedDay) {
+  } else if (currentTabValue === formattedDay) {
     return `${
       attendanceColours[formattedDay as keyof typeof attendanceColours]
     }.500`;
@@ -95,7 +95,7 @@ function CustomDay(props: CustomDayProps) {
     onDaySelect,
     handleAddAttendance,
     calendarAttendance,
-    mappedValue,
+    currentTabValue,
     ...other
   } = props;
 
@@ -113,12 +113,12 @@ function CustomDay(props: CustomDayProps) {
         backgroundColor: getBackgroundColor(
           dayAttendance?.status ?? 'NOT_TAKEN',
           dayOfWeek,
-          mappedValue
+          currentTabValue
         ),
         color: getFontColor(
           dayAttendance?.status ?? 'NOT_TAKEN',
           dayOfWeek,
-          mappedValue
+          currentTabValue
         ),
       }}
       onDaySelect={() => {
@@ -134,7 +134,7 @@ function MonthCalendar({
   month,
   handleAddAttendance,
   calendarAttendance,
-  mappedValue,
+  currentTabValue,
 }: MonthCalendarProps) {
   return (
     <Box
@@ -154,7 +154,7 @@ function MonthCalendar({
               ...props,
               handleAddAttendance,
               calendarAttendance,
-              mappedValue,
+              currentTabValue,
             }),
         }}
         sx={{
@@ -205,14 +205,14 @@ type AcademicCalendarProps = {
   studentPartyId: string;
   calendarAttendance?: ReturnTypeFromUseStudentCalendarAttendance;
   activeAcademicNamespace?: AcademicNamespace;
-  mappedValue: string;
+  currentTabValue: string;
 };
 
 export const AcademicCalendar = ({
   studentPartyId,
   calendarAttendance,
   activeAcademicNamespace,
-  mappedValue,
+  currentTabValue,
 }: AcademicCalendarProps) => {
   const [sessionAttendanceToEdit, setSessionAttendanceToEdit] = useState<
     string | null
@@ -242,7 +242,7 @@ export const AcademicCalendar = ({
             key={month}
             month={month}
             calendarAttendance={calendarAttendance}
-            mappedValue={mappedValue}
+            currentTabValue={currentTabValue}
             handleAddAttendance={setSessionAttendanceToEdit}
           />
         ))}
