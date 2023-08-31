@@ -1,9 +1,8 @@
-import { lazy } from 'react';
-import { NavObjectFunction, NavObjectType } from '@tyro/core';
+import { lazyWithRetry, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { PersonCheckmarkIcon } from '@tyro/icons';
 
-const SessionAttendance = lazy(() => import('./pages/session'));
-const AbsentRequests = lazy(() => import('./pages/absent-requests'));
+const SessionAttendance = lazyWithRetry(() => import('./pages/session'));
+const AbsentRequests = lazyWithRetry(() => import('./pages/absent-requests'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
