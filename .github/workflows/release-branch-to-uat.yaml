@@ -1,4 +1,4 @@
-name: Quick release prod
+name: release-branch-to-uat
 
 on:
   workflow_dispatch
