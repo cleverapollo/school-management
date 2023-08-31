@@ -1,12 +1,7 @@
-import {
-  RHFStaffAutocomplete,
-  StaffSelectOption,
-  useStaffForSelect,
-} from '@tyro/people';
 import { useTranslation } from '@tyro/i18n';
-import React, { useEffect, useState } from 'react';
-import { Button, Stack, useTheme, Box, Card, Grid } from '@mui/material';
-import { RHFSelect, RHFSwitch, useFormValidator } from '@tyro/core';
+import { useState } from 'react';
+import { Stack, Grid } from '@mui/material';
+import { RHFSelect, RHFSwitch } from '@tyro/core';
 import {
   Print_TimetableLayout,
   Print_TimetableOptions,
@@ -15,17 +10,20 @@ import {
   Print_TimetablePeriodDisplayInCell,
   Print_TimetableSubjectFormat,
 } from '@tyro/api';
-import { useForm, useFormContext } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
+import { getStaffForSelect } from '@tyro/people';
+import { getCoreRooms } from '@tyro/settings';
 import {
   getPrintTimetable,
-  ReturnTypeFromUsePrintTimetable,
   usePrintTimetable,
 } from '../../api/print-timetable';
 
 export interface PrintStaffTimetableFormState {
-  partyIds: any;
-  roomIds: any;
+  partyIds: number[];
+  roomIds: number[];
+  allStaff?: boolean;
+  allRooms?: boolean;
   showRooms: boolean;
   teacherDisplayOption: Print_TimetableStaffFormat;
   layout: Print_TimetableLayout;
@@ -57,10 +55,10 @@ function mapFontSize(fontSize: FontSize) {
       return 6;
     case FontSize.SMALL:
       return 10;
-    case FontSize.MEDIUM:
-      return 12;
     case FontSize.LARGE:
       return 18;
+    default: // MEDIUM
+      return 12;
   }
 }
 export function TimetablePrintForm({
@@ -68,10 +66,6 @@ export function TimetablePrintForm({
   translateRoomIds,
 }: TimetablePrintFormProps) {
   const { t } = useTranslation(['printing', 'common']);
-  const { spacing } = useTheme();
-  const [selectedStaff, setSelectedStaff] = useState<StaffSelectOption[]>([]);
-  const { data: teacherData } = useStaffForSelect({});
-  const { resolver, rules } = useFormValidator<PrintStaffTimetableFormState>();
 
   const [filter, setFilter] = useState<Print_TimetableOptions>({
     partyIds: [1],
@@ -85,13 +79,15 @@ export function TimetablePrintForm({
     individualStudents: false,
     fontSize: 15,
   });
-  const { control, handleSubmit, reset, watch } =
+  const { control, handleSubmit, watch } =
     useFormContext<PrintStaffTimetableFormState>();
   const { data: timetableData, isLoading } = usePrintTimetable(filter);
-  const partyIds = watch('partyIds') as number[];
-  const roomIds = watch('roomIds') as number[];
+  const partyIds = watch('partyIds');
+  const roomIds = watch('roomIds');
   const onSubmit = handleSubmit(
-    ({
+    async ({
+      allStaff,
+      allRooms,
       showRooms,
       layout,
       teacherDisplayOption,
@@ -102,9 +98,21 @@ export function TimetablePrintForm({
       individualStudents,
       fontSize,
     }) => {
+      let mappedPartyIds = translatePartyIds ? translatePartyIds(partyIds) : [];
+      let mappedRoomIds = translateRoomIds ? translateRoomIds(roomIds) : [];
+
+      if (allStaff) {
+        const { core_staff: coreStaff } = await getStaffForSelect({});
+        mappedPartyIds = coreStaff.map(({ person }) => person.partyId);
+      }
+
+      if (allRooms) {
+        const { core_rooms: coreRooms } = await getCoreRooms();
+        mappedRoomIds = (coreRooms ?? []).map(({ roomId }) => roomId);
+      }
       setFilter({
-        partyIds: translatePartyIds ? translatePartyIds(partyIds) : [],
-        roomIds: translateRoomIds ? translateRoomIds(roomIds) : [],
+        partyIds: mappedPartyIds,
+        roomIds: mappedRoomIds,
         showRooms,
         teacherDisplayOption,
         layout,
@@ -120,6 +128,8 @@ export function TimetablePrintForm({
 
   const handlePrint = handleSubmit(
     async ({
+      allStaff,
+      allRooms,
       showRooms,
       layout,
       teacherDisplayOption,
@@ -130,8 +140,22 @@ export function TimetablePrintForm({
       individualStudents,
       fontSize,
     }) => {
+      let mappedPartyIds = translatePartyIds ? translatePartyIds(partyIds) : [];
+      let mappedRoomIds = translateRoomIds ? translateRoomIds(roomIds) : [];
+
+      if (allStaff) {
+        const { core_staff: coreStaff } = await getStaffForSelect({});
+        mappedPartyIds = coreStaff.map(({ person }) => person.partyId);
+      }
+
+      if (allRooms) {
+        const { core_rooms: coreRooms } = await getCoreRooms();
+        mappedRoomIds = (coreRooms ?? []).map(({ roomId }) => roomId);
+      }
+
       const f = {
-        partyIds: translatePartyIds ? translatePartyIds(partyIds) : [],
+        partyIds: mappedPartyIds,
+        roomIds: mappedRoomIds,
         showRooms,
         teacherDisplayOption,
         layout,

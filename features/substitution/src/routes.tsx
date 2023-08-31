@@ -1,10 +1,9 @@
-import { NavObjectFunction, NavObjectType } from '@tyro/core';
-import { lazy } from 'react';
+import { lazyWithRetry, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { GraduateHatLoadingIcon } from '@tyro/icons';
 import { getStaffWorkAbsences } from './api/staff-work-absences';
 
-const Absences = lazy(() => import('./pages/absences'));
-const Cover = lazy(() => import('./pages/cover'));
+const Absences = lazyWithRetry(() => import('./pages/absences'));
+const Cover = lazyWithRetry(() => import('./pages/cover'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {

@@ -3,8 +3,8 @@ import {
   NavObjectType,
   getNumber,
   throw404Error,
+  lazyWithRetry,
 } from '@tyro/core';
-import { lazy } from 'react';
 import { SchoolExamACircleIcon } from '@tyro/icons';
 import { getCoreAcademicNamespace } from '@tyro/api';
 import { redirect } from 'react-router-dom';
@@ -12,15 +12,17 @@ import { getAssessmentById, getAssessments } from './api/assessments';
 import { getAssessmentSubjectGroups } from './api/assessment-subject-groups';
 import { getAssessmentResults } from './api/term-assessments/results';
 
-const AssessmentsPage = lazy(() => import('./pages/assessments'));
-const ViewTermAssessment = lazy(() => import('./pages/term-assessment/view'));
-const CreateTermAssessmentPage = lazy(
+const AssessmentsPage = lazyWithRetry(() => import('./pages/assessments'));
+const ViewTermAssessment = lazyWithRetry(
+  () => import('./pages/term-assessment/view')
+);
+const CreateTermAssessmentPage = lazyWithRetry(
   () => import('./pages/term-assessment/create')
 );
-const EditTermAssessmentResults = lazy(
+const EditTermAssessmentResults = lazyWithRetry(
   () => import('./pages/term-assessment/subject-group/edit-results')
 );
-const EditTermAssessmentPage = lazy(
+const EditTermAssessmentPage = lazyWithRetry(
   () => import('./pages/term-assessment/edit')
 );
 

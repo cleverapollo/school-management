@@ -1,10 +1,10 @@
 import {
   getNumber,
+  lazyWithRetry,
   NavObjectFunction,
   NavObjectType,
   throw404Error,
 } from '@tyro/core';
-import { lazy } from 'react';
 import { UserProfileCardIcon } from '@tyro/icons';
 import { Iterator } from '@tyro/api';
 import { redirect } from 'react-router-dom';
@@ -23,50 +23,56 @@ import {
 import { getYearGroups, getYearGroupById } from './api/year-groups';
 import { getSupportGroupById, getSupportGroups } from './api/support-groups';
 
-const YearGroups = lazy(() => import('./pages/year'));
-const ViewYearGroupPage = lazy(() => import('./pages/year/view'));
-const CustomGroups = lazy(() => import('./pages/custom'));
-const ViewCustomGroupPage = lazy(() => import('./pages/custom/view'));
-const ClassGroups = lazy(() => import('./pages/class'));
-const ClassGroupContainer = lazy(
+const YearGroups = lazyWithRetry(() => import('./pages/year'));
+const ViewYearGroupPage = lazyWithRetry(() => import('./pages/year/view'));
+const CustomGroups = lazyWithRetry(() => import('./pages/custom'));
+const ViewCustomGroupPage = lazyWithRetry(() => import('./pages/custom/view'));
+const ClassGroups = lazyWithRetry(() => import('./pages/class'));
+const ClassGroupContainer = lazyWithRetry(
   () => import('./components/class-group/container')
 );
-const ClassGroupProfileTimetablePage = lazy(
+const ClassGroupProfileTimetablePage = lazyWithRetry(
   () => import('./pages/class/timetable')
 );
-const ClassGroupsStudentsPage = lazy(() => import('./pages/class/students'));
-const ClassGroupAttendancePage = lazy(() => import('./pages/class/attendance'));
-const SubjectGroupsPage = lazy(() => import('./pages/class/subject-groups'));
-const SubjectGroups = lazy(() => import('./pages/subject'));
-const SupportGroups = lazy(() => import('./pages/support'));
+const ClassGroupsStudentsPage = lazyWithRetry(
+  () => import('./pages/class/students')
+);
+const ClassGroupAttendancePage = lazyWithRetry(
+  () => import('./pages/class/attendance')
+);
+const SubjectGroupsPage = lazyWithRetry(
+  () => import('./pages/class/subject-groups')
+);
+const SubjectGroups = lazyWithRetry(() => import('./pages/subject'));
+const SupportGroups = lazyWithRetry(() => import('./pages/support'));
 
-const SubjectGroupProfileStudentsPage = lazy(
+const SubjectGroupProfileStudentsPage = lazyWithRetry(
   () => import('./pages/subject/profile/students')
 );
 
-const SupportGroupProfileStudentsPage = lazy(
+const SupportGroupProfileStudentsPage = lazyWithRetry(
   () => import('./pages/support/profile/students')
 );
 
-const SubjectGroupProfileAttendancePage = lazy(
+const SubjectGroupProfileAttendancePage = lazyWithRetry(
   () => import('./pages/subject/profile/attendance')
 );
 
-const SupportGroupProfileAttendancePage = lazy(
+const SupportGroupProfileAttendancePage = lazyWithRetry(
   () => import('./pages/support/profile/attendance')
 );
 
-const SubjectGroupProfileTimetablePage = lazy(
+const SubjectGroupProfileTimetablePage = lazyWithRetry(
   () => import('./pages/subject/profile/timetable')
 );
 
-const SupportGroupProfileTimetablePage = lazy(
+const SupportGroupProfileTimetablePage = lazyWithRetry(
   () => import('./pages/support/profile/timetable')
 );
-const SubjectGroupContainer = lazy(
+const SubjectGroupContainer = lazyWithRetry(
   () => import('./components/subject-group/container')
 );
-const SupportGroupContainer = lazy(
+const SupportGroupContainer = lazyWithRetry(
   () => import('./components/support-group/container')
 );
 

@@ -2,6 +2,7 @@ export * from './format-phone-number';
 export * from './get-classes-from-object';
 export * from './get-locale-timestamp';
 export * from './keyboard';
+export * from './lazy-with-retry';
 export * from './navigation';
 export * from './order-by-value';
 export * from './sort-start-number-first';

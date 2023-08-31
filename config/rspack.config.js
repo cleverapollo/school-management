@@ -17,7 +17,7 @@ module.exports = {
     filename: 'static/js/[contenthash].js',
     chunkFilename: 'static/js/[contenthash].chunk.js',
     cssFilename: 'static/css/[contenthash].css',
-    assetModuleFilename: 'static/media/[hash][ext]',
+    assetModuleFilename: 'static/media/[contenthash][ext]',
     path: path.resolve(__dirname, '../build'),
     publicPath: '/',
   },

@@ -1,5 +1,4 @@
-import { lazy } from 'react';
-import { NavObjectFunction, NavObjectType } from '@tyro/core';
+import { lazyWithRetry, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { EditCalendarIcon } from '@tyro/icons';
 import { getYearGroups } from '@tyro/groups';
 import { redirect } from 'react-router-dom';
@@ -7,14 +6,16 @@ import { getLiveTimetableId, getTimetables } from './api/common/timetables';
 import { getTimetableResourceView } from './api/edit-timetable/resource-view';
 import { getTimetableSubjectGroups } from './api/edit-timetable/subject-groups';
 
-// const TimetableList = lazy(() => import('./pages/index'));
-// const ViewTimetable = lazy(() => import('./pages/view'));
+// const TimetableList = lazyWithRetry(() => import('./pages/index'));
+// const ViewTimetable = lazyWithRetry(() => import('./pages/view'));
 
-const EditTimetableContainer = lazy(
+const EditTimetableContainer = lazyWithRetry(
   () => import('./components/edit-timetable-container')
 );
-const Timetable = lazy(() => import('./pages/edit-timetable/timetable'));
-const TimetableSubjectGroups = lazy(
+const Timetable = lazyWithRetry(
+  () => import('./pages/edit-timetable/timetable')
+);
+const TimetableSubjectGroups = lazyWithRetry(
   () => import('./pages/edit-timetable/subject-groups')
 );
 

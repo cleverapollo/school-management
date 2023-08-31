@@ -24,6 +24,7 @@ interface ResourceTableCardProps {
   selectedLessonIds: UseResourceTableReturnType['selectedLessonIds'];
   onOpenSwapTeacherOrRoomDialog: (anchorLesson: Lesson) => void;
   onOpenDeleteLessonDialog: (anchorLesson: Lesson) => void;
+  onOpenEditLessonDialog: (anchorLesson: Lesson) => void;
   onOpenAddLessonDialog: (anchorLesson: Period) => void;
   period: Period;
 }
@@ -36,6 +37,7 @@ type GroupCardProps = {
   selectedLessonIds: UseResourceTableReturnType['selectedLessonIds'];
   onOpenSwapTeacherOrRoomDialog: (anchorLesson: Lesson) => void;
   onOpenDeleteLessonDialog: (anchorLesson: Lesson) => void;
+  onOpenEditLessonDialog: (anchorLesson: Lesson) => void;
   onOpenAddLessonDialog: (anchorLesson: Period) => void;
   period: Period;
 };
@@ -103,6 +105,7 @@ function GroupCard({
   toggleLessonSelection,
   onOpenSwapTeacherOrRoomDialog,
   onOpenDeleteLessonDialog,
+  onOpenEditLessonDialog,
   onOpenAddLessonDialog,
   selectedLessonIds,
   period,
@@ -113,7 +116,6 @@ function GroupCard({
   const isContextMenuOpen = Boolean(anchorEl);
 
   const partyGroup = lesson?.partyGroup;
-  console.log(partyGroup);
 
   const subject =
     partyGroup.__typename === 'SubjectGroup' ? partyGroup.subjects[0] : null;
@@ -241,6 +243,7 @@ function GroupCard({
         }
         onOpenDeleteLessonDialog={() => onOpenDeleteLessonDialog(lesson)}
         onOpenAddLessonDialog={() => onOpenAddLessonDialog(period)}
+        onOpenEditLessonDialog={() => onOpenEditLessonDialog(lesson)}
         isSelected={isSelected}
       />
     </>

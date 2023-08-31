@@ -15,5 +15,3 @@ export const attendanceKeys = {
   absentRequests: (filter: ParentalAttendanceRequestFilter) =>
     [...attendanceKeys.all, 'absentRequests', filter] as const,
 };
-
-

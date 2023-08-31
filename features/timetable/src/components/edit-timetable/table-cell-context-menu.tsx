@@ -1,8 +1,7 @@
-import { Divider, Menu, MenuItem, MenuProps } from '@mui/material';
+import { Menu, MenuItem, MenuProps } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { ActionMenuIconWrapper } from '@tyro/core';
-import { AddIcon, BuildingGraduateHatIcon, TrashIcon } from '@tyro/icons';
-import { usePermissions } from '@tyro/api';
+import { AddIcon } from '@tyro/icons';
 
 interface ResourceContextMenuProps extends MenuProps {
   onOpenAddLessonDialog: () => void;
@@ -15,7 +14,6 @@ export function TimetableContextMenu({
   ...props
 }: ResourceContextMenuProps) {
   const { t } = useTranslation(['timetable']);
-  const { isTyroUser } = usePermissions();
   const handleClose = () => {
     props.onClose?.({}, 'backdropClick');
   };

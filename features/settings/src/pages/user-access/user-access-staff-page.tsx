@@ -54,17 +54,12 @@ const getColumns = (
     field: 'personalInfo.primaryEmail.email',
     editable: true,
     valueSetter: (params: ValueSetterParams<ReturnTypeFromUseUserAccess>) => {
-      if (!params?.newValue) {
-        params.data.personalInfo.primaryEmail = null;
-      } else {
-        set(
-          params?.data ?? {},
-          `personalInfo.primaryEmail.email`,
-          params?.newValue
-        );
-        return true;
-      }
-      return false;
+      set(
+        params?.data ?? {},
+        `personalInfo.primaryEmail.email`,
+        params?.newValue ?? null
+      );
+      return true;
     },
   },
   {
@@ -162,21 +157,21 @@ export default function UserAccessStaffPage() {
             unmountOnExit
           >
             <Box>
-              <ActionMenu
-                menuItems={[
-                  {
-                    label: t('settings:sendInvite'),
-                    icon: <MailIcon />,
-                    onClick: onOpenInviteUsers,
-                  },
-                  {
-                    label: t('settings:deactivateUsers'),
-                    icon: <StopIcon />,
-                    disabled: true,
-                    onClick: () => 'disabled',
-                  },
-                ]}
-              />
+              {/* <ActionMenu */}
+              {/*  menuItems={[ */}
+              {/*    { */}
+              {/*      label: t('settings:sendInvite'), */}
+              {/*      icon: <MailIcon />, */}
+              {/*      onClick: onOpenInviteUsers, */}
+              {/*    }, */}
+              {/*    { */}
+              {/*      label: t('settings:deactivateUsers'), */}
+              {/*      icon: <StopIcon />, */}
+              {/*      disabled: true, */}
+              {/*      onClick: () => 'disabled', */}
+              {/*    }, */}
+              {/*  ]} */}
+              {/* /> */}
             </Box>
           </Fade>
         }

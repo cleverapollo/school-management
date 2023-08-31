@@ -27,6 +27,9 @@ const userAccess = graphql(/* GraphQL */ `
       mobileLastLogin
       status
       invitedOn
+      yearGroup {
+        shortName
+      }
     }
   }
 `);

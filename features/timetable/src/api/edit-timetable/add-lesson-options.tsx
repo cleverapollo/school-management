@@ -13,7 +13,6 @@ const addLessonOptions = graphql(/* GraphQL */ `
     tt_addLessonOptions(filter: $filter) {
       freeStaffIds
       freeStaff {
-        partyId
         person {
           partyId
           title {
@@ -61,13 +60,20 @@ export function getAddLessonOptionsQuery(filter: Tt_AddLessonFilter) {
   return queryClient.fetchQuery(addLessonOptionsQuery(filter));
 }
 
-export function useAddLessonOptionsQuery(filter: Tt_AddLessonFilter) {
+export function useAddLessonOptionsQuery(
+  filter: Tt_AddLessonFilter,
+  enabled = true
+) {
   return useQuery({
     ...addLessonOptionsQuery(filter),
-    select: ({ tt_addLessonOptions }) => tt_addLessonOptions,
+    enabled,
+    select: ({ tt_addLessonOptions }) => ({
+      ...tt_addLessonOptions,
+      freeStaff: tt_addLessonOptions.freeStaff.map(({ person }) => person),
+    }),
   });
 }
 
 export type ReturnTypeFromAddLessonOptionsQuery = UseQueryReturnType<
-  typeof addLessonOptionsQuery
+  typeof useAddLessonOptionsQuery
 >;
