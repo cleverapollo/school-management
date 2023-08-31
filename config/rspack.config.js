@@ -52,6 +52,7 @@ module.exports = {
       define: {
         'process.env.AG_GRID_KEY': `"${process.env.AG_GRID_KEY}"`,
         'process.env.FULL_CALENDAR_KEY': `"${process.env.FULL_CALENDAR_KEY}"`,
+        'process.env.REACT_APP_GRAPHQL_API_URI': false,
       },
     } : {},
   },
