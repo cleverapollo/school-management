@@ -36,7 +36,7 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 index: true,
-                loader: () => redirect('./staff'),
+                loader: () => redirect('./students'),
               },
               {
                 type: NavObjectType.NonMenuLink,
