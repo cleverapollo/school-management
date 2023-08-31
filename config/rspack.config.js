@@ -4,9 +4,10 @@ const Dotenv = require('rspack-plugin-dotenv');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const isProd = process.env.NODE_ENV === 'production';
+const mode = isProd ? 'production' : 'development';
 
 module.exports = {
-  mode: isProd ? "production" : "development",
+  mode,
   devtool: isProd
     ? 'source-map'
     : false,
@@ -47,6 +48,13 @@ module.exports = {
       ],
     },
     emotion: true,
+    ...isProd ? {
+      define: {
+        'process.env.AG_GRID_KEY': process.env.AG_GRID_KEY,
+        'process.env.FULL_CALENDAR_KEY': process.env.FULL_CALENDAR_KEY,
+        'process.env.SENTRY_AUTH_TOKEN': process.env.SENTRY_AUTH_TOKEN,
+      },
+    } : {},
   },
   module: {
     rules: [
