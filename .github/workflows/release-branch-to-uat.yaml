@@ -1,0 +1,57 @@
+name: release-branch-to-uat
+
+on:
+  workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build and Deploy Job
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: c-hive/gha-yarn-cache@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - name: 'yarn build'
+        run: |
+          export AG_GRID_KEY="${{ secrets.AG_GRID_KEY }}"
+          export FULL_CALENDAR_KEY="${{ secrets.FULL_CALENDAR_KEY }}"
+          yarn install
+          yarn build
+      - name: Docker Login
+        uses: Azure/docker-login@v1
+        with:
+          # Container registry username
+          username: tyrocr
+          # Container registry password
+          password: ${{ secrets.ACR_TOKEN }}
+          # Container registry server url
+          login-server: tyrocr.azurecr.io
+      - name: Build image
+        run: docker build -t tyrocr.azurecr.io/tyro-ui:quick-release-${{ github.run_number }} .
+      - name: Push Docker image
+        run: docker push tyrocr.azurecr.io/tyro-ui:quick-release-${{ github.run_number }}
+  deploy-prod:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: uat
+    steps:
+      - name: Log in with Azure
+        uses: azure/login@v1
+        with:
+          creds: '${{ secrets.AZURE_CREDENTIALS }}'
+      - name: Set AKS context
+        uses: azure/aks-set-context@v3
+        with:
+          resource-group: '${{ secrets.AKS_RESOURCE_GROUP }}'
+          cluster-name: '${{ secrets.AKS_CLUSTER_NAME }}'
+      - name: Setup kubectl
+        id: install-kubectl
+        uses: azure/setup-kubectl@v3
+      - name: 'Rollout new image'
+        run: |
+          kubectl set image deployments/tyro-ui tyro-ui=tyrocr.azurecr.io/tyro-ui:quick-release-${{ github.run_number }}
