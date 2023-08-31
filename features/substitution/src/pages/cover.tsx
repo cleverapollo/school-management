@@ -13,6 +13,7 @@ import {
   useStaffForSelect,
 } from '@tyro/people';
 import dayjs, { Dayjs } from 'dayjs';
+import '../styles/cover-print.css';
 import { DayCoverTable } from '../components/cover/day-cover-table';
 import { StaffCoverTable } from '../components/cover/staff-cover-table';
 
