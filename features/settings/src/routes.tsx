@@ -1,6 +1,6 @@
-import { lazy } from 'react';
 import {
   getNumber,
+  lazyWithRetry,
   NavObjectFunction,
   NavObjectType,
   throw404Error,
@@ -29,33 +29,43 @@ import { getFormB } from './api/dtr-returns/form-b';
 import { getSyncRequests } from './api/ppod/sync-requests';
 import { getSchoolsInfo } from './api/ppod/school-details';
 
-const Rooms = lazy(() => import('./pages/rooms'));
-const AcademicYearsList = lazy(() => import('./pages/academic-years'));
-const Subjects = lazy(() => import('./pages/subjects'));
-const Ppod = lazy(() => import('./pages/ppod/ppod'));
-const Login = lazy(() => import('./pages/ppod/login'));
-const Sync = lazy(() => import('./pages/ppod/sync'));
-const SchoolDetails = lazy(() => import('./pages/ppod/school-details'));
-const DTRReturns = lazy(() => import('./pages/dtr-returns/dtr-returns'));
-const DTRReturnsFileB = lazy(() => import('./pages/dtr-returns/file-b'));
-const UserAccessContainer = lazy(
+const Rooms = lazyWithRetry(() => import('./pages/rooms'));
+const AcademicYearsList = lazyWithRetry(() => import('./pages/academic-years'));
+const Subjects = lazyWithRetry(() => import('./pages/subjects'));
+const Ppod = lazyWithRetry(() => import('./pages/ppod/ppod'));
+const Login = lazyWithRetry(() => import('./pages/ppod/login'));
+const Sync = lazyWithRetry(() => import('./pages/ppod/sync'));
+const SchoolDetails = lazyWithRetry(
+  () => import('./pages/ppod/school-details')
+);
+const DTRReturns = lazyWithRetry(
+  () => import('./pages/dtr-returns/dtr-returns')
+);
+const DTRReturnsFileB = lazyWithRetry(
+  () => import('./pages/dtr-returns/file-b')
+);
+const UserAccessContainer = lazyWithRetry(
   () => import('./components/user-access/user-access-container')
 );
-const UserAccessStaffPage = lazy(
+const UserAccessStaffPage = lazyWithRetry(
   () => import('./pages/user-access/user-access-staff-page')
 );
-const UserAccessStudentsPage = lazy(
+const UserAccessStudentsPage = lazyWithRetry(
   () => import('./pages/user-access/user-access-students-page')
 );
-const UserAccessContactsPage = lazy(
+const UserAccessContactsPage = lazyWithRetry(
   () => import('./pages/user-access/user-access-contacts-page')
 );
-const Permissions = lazy(() => import('./pages/permissions'));
-const CreatePermission = lazy(() => import('./pages/permissions/create'));
-const EditPermission = lazy(() => import('./pages/permissions/edit'));
-const ClonePermission = lazy(() => import('./pages/permissions/clone'));
-const NoteLabel = lazy(() => import('./pages/note-label'));
-const BehaviourLabel = lazy(() => import('./pages/behaviour-label'));
+const Permissions = lazyWithRetry(() => import('./pages/permissions'));
+const CreatePermission = lazyWithRetry(
+  () => import('./pages/permissions/create')
+);
+const EditPermission = lazyWithRetry(() => import('./pages/permissions/edit'));
+const ClonePermission = lazyWithRetry(
+  () => import('./pages/permissions/clone')
+);
+const NoteLabel = lazyWithRetry(() => import('./pages/note-label'));
+const BehaviourLabel = lazyWithRetry(() => import('./pages/behaviour-label'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {

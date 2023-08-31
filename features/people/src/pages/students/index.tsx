@@ -80,7 +80,7 @@ const getStudentColumns = (
     valueGetter: ({ data }) => displayNames(data?.yearGroupLeads),
   },
   {
-    field: 'programmeStage',
+    field: 'programmeStages',
     headerName: translate('common:programme'),
     enableRowGroup: true,
     valueGetter: ({ data }) => {

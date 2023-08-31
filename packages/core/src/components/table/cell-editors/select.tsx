@@ -5,7 +5,7 @@ import React, {
   useImperativeHandle,
   useRef,
 } from 'react';
-import { ICellEditorParams } from 'ag-grid-community';
+import { ICellEditorParams } from '@ag-grid-community/core';
 import {
   ClickAwayListener,
   Divider,

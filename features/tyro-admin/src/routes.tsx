@@ -1,15 +1,18 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
-import { lazy } from 'react';
-import { NavObjectFunction, NavObjectType, getNumber } from '@tyro/core';
+import {
+  NavObjectFunction,
+  NavObjectType,
+  getNumber,
+  lazyWithRetry,
+} from '@tyro/core';
 import { PersonGearIcon } from '@tyro/icons';
-import { UserType } from '@tyro/api';
 import { getTenants } from './api/tenants';
 import { getAdminPartyPeople } from './api/party-people';
 
-const AdminSchoolsPage = lazy(() => import('./pages/school'));
-const AdminPeoplesPage = lazy(() => import('./pages/school/people'));
-const GraphiQLPage = lazy(() => import('./pages/graphiql'));
+const AdminSchoolsPage = lazyWithRetry(() => import('./pages/school'));
+const AdminPeoplesPage = lazyWithRetry(() => import('./pages/school/people'));
+const GraphiQLPage = lazyWithRetry(() => import('./pages/graphiql'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {

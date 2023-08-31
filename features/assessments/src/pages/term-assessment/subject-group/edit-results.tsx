@@ -146,7 +146,7 @@ const getColumnDefs = (
   academicNamespaceId: number
 ): GridOptions<ReturnTypeFromUseAssessmentResults>['columnDefs'] => [
   {
-    field: 'subjectGroupName',
+    field: 'student',
     headerName: t('common:name'),
     valueGetter: ({ data }) => displayName(data?.student),
     cellRenderer: ({

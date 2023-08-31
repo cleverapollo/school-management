@@ -1,15 +1,14 @@
-import { lazy } from 'react';
-import { NavObjectFunction, NavObjectType } from '@tyro/core';
+import { lazyWithRetry, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { MoveGroupIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
 import { getYearGroups } from '@tyro/groups';
 import { getBlocksList } from './api/blocks';
 
-const ClassListManagerContainer = lazy(
+const ClassListManagerContainer = lazyWithRetry(
   () => import('./components/class-list-manager-container')
 );
-const ClassListManagerClasses = lazy(() => import('./pages/classes'));
-const ClassListManagerBlocks = lazy(() => import('./pages/blocks'));
+const ClassListManagerClasses = lazyWithRetry(() => import('./pages/classes'));
+const ClassListManagerBlocks = lazyWithRetry(() => import('./pages/blocks'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {

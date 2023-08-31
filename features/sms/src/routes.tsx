@@ -1,10 +1,9 @@
-import { lazy } from 'react';
-import { NavObjectFunction, NavObjectType } from '@tyro/core';
+import { lazyWithRetry, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { MobileIcon } from '@tyro/icons';
 import { getSentSms } from './api/sent-sms';
 import { getSmsCredit } from './api/sms-credit';
 
-const Sms = lazy(() => import('./pages/index'));
+const Sms = lazyWithRetry(() => import('./pages/index'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {

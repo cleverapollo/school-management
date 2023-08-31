@@ -69,8 +69,8 @@ const getColumns = (
     valueGetter: (data) => data?.data?.equipment[0]?.name,
   },
   {
+    colId: 'location',
     headerName: t('common:location'),
-    field: 'location',
     // For this version of the app, we are only displaying one equipment per condition
     valueGetter: (data) => data?.data?.equipment[0]?.location,
   },

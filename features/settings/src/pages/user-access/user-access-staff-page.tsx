@@ -38,7 +38,7 @@ const getColumns = (
 ): GridOptions<ReturnTypeFromUseUserAccess>['columnDefs'] => [
   {
     headerName: t('common:name'),
-    field: 'person',
+    field: 'personalInfo',
     sort: 'asc',
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,

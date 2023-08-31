@@ -1,10 +1,9 @@
-import { NavObjectFunction, NavObjectType } from '@tyro/core';
+import { lazyWithRetry, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { Calendar31Icon } from '@tyro/icons';
 import { getUser } from '@tyro/api';
-import { lazy } from 'react';
 import { getTodayTimetableEvents } from './api/timetable';
 
-const CalendarPage = lazy(() => import('./pages/calendar'));
+const CalendarPage = lazyWithRetry(() => import('./pages/calendar'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {

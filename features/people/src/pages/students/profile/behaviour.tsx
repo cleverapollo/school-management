@@ -78,7 +78,7 @@ const getStudentBehaviourColumns = (
     },
   },
   {
-    field: 'behaviour',
+    field: 'tags',
     headerName: t('people:behaviour'),
     suppressSizeToFit: true,
     valueGetter: ({ data }) => data?.tags[0]?.name || '-',
