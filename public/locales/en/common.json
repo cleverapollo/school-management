@@ -197,6 +197,11 @@
     "UNEXPLAINED_ABSENCE": "Absence unexplained",
     "NOT_TAKEN": "Not taken"
   },
+  "behaviourType": {
+    "NEGATIVE": "Negative",
+    "NEUTRAL": "Neutral",
+    "POSITIVE": "Positive"
+  },
   "colors": {
     "amber": "Amber",
     "blue": "Blue",
@@ -241,6 +246,7 @@
   "wellEmailWhenLive": "We'll email you once this feature is live.",
   "phoneNumber": "Phone number",
   "additionalNumber": "Additional number",
+  "unknown": "Unknown",
   "dates": "Date(s)",
   "contact": "Contact",
   "weeks_one": "{{count}} week",
@@ -258,6 +264,8 @@
   "label": "Label",
   "submittedBy": "Submitted by",
   "associated": "Associated",
-  "occurredOn": "Occurred On",
-  "category": "Category"
+  "occurredOn": "Occurred on",
+  "category": "Category",
+  "subjects": "Subject(s)",
+  "takenBy": "Taken by"
 }

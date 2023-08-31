@@ -1,0 +1,27 @@
+@media print {
+  .MuiCard-root {
+    transform: scale(0.5) !important;
+    transform-origin: left top !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  .MuiCard-root>.MuiStack-root:first-of-type {
+    transform: scale(2) !important;
+    transform-origin: left center !important;
+  }
+
+  .MuiTableContainer-root {
+    overflow-x: visible !important;
+  }
+
+  td,
+  th {
+    border: 1px solid #eef2ff !important;
+    background-color: transparent !important;
+  }
+
+  .MuiContainer-root>.MuiStack-root {
+    display: none !important;
+  }
+}

@@ -58,7 +58,9 @@
       "login": "Login",
       "dtrReturns": "DTR Returns",
       "userAccess": "User access",
-      "permissions": "Permissions"
+      "permissions": "Permissions",
+      "noteLabels": "Note labels",
+      "behaviourLabels": "Behaviour labels"
     },
     "timetable": {
       "title": "Timetable",
@@ -68,7 +70,6 @@
     "printing": {
       "title": "Printing",
       "timetable": "Timetable"
-
     },
     "sms": "SMS"
   },

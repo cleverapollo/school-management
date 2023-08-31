@@ -2,14 +2,15 @@ import { EventContentArg } from '@fullcalendar/core';
 import { Box, Stack, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { SwapHorizontalIcon } from '@tyro/icons';
 import { SubIcon } from '@tyro/substitution';
+import { CalendarEventType } from '@tyro/api';
 
 dayjs.extend(LocalizedFormat);
 
 export function getCalendarContent(eventInfo: EventContentArg) {
-  const { room, organizer, additionalTeachers, isSubstitution } =
+  const { room, organizer, additionalTeachers, isSubstitution, originalEvent } =
     eventInfo.event.extendedProps;
+  const { type } = originalEvent as { type: CalendarEventType };
   switch (eventInfo.view.type) {
     case 'timeGridDay':
     case 'timeGridWeek':
@@ -21,7 +22,7 @@ export function getCalendarContent(eventInfo: EventContentArg) {
           : '';
       const subtitleList = [
         room ?? null,
-        typeof organizer === 'string'
+        typeof organizer === 'string' && type !== CalendarEventType.General
           ? `${organizer}${numberOfAdditionalTeachers}`
           : null,
       ];

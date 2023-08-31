@@ -206,6 +206,9 @@ function useAppRouter() {
             if (permissions.isStudent || permissions.isContact) {
               return redirect('/people/students');
             }
+            if (permissions.isTyroTenantAndUser) {
+              return redirect('/admin/schools');
+            }
             return redirect('/calendar');
           },
         },

@@ -3,6 +3,7 @@ import {
   graphql,
   Notes_TagCategory,
   UseQueryReturnType,
+  queryClient,
 } from '@tyro/api';
 import { useQuery } from '@tanstack/react-query';
 import { peopleKeys } from '../keys';
@@ -12,6 +13,9 @@ const noteTags = graphql(/* GraphQL */ `
     notes_tags(filter: $filter) {
       id
       name
+      description
+      category
+      tag_l1
     }
   }
 `);
@@ -23,6 +27,10 @@ const noteTagsQuery = () => ({
       filter: { categories: [Notes_TagCategory.Note] },
     }),
 });
+
+export function getNoteTags() {
+  return queryClient.fetchQuery(noteTagsQuery());
+}
 
 export function useNoteTags() {
   return useQuery({

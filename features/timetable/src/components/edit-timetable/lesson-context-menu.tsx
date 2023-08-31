@@ -1,7 +1,12 @@
 import { Divider, Menu, MenuItem, MenuProps } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { ActionMenuIconWrapper } from '@tyro/core';
-import { AddIcon, BuildingGraduateHatIcon, TrashIcon } from '@tyro/icons';
+import {
+  AddIcon,
+  BuildingGraduateHatIcon,
+  EditIcon,
+  TrashIcon,
+} from '@tyro/icons';
 import { usePermissions } from '@tyro/api';
 
 interface ResourceContextMenuProps extends MenuProps {
@@ -9,6 +14,7 @@ interface ResourceContextMenuProps extends MenuProps {
   onOpenSwapTeacherOrRoomDialog: () => void;
   onOpenDeleteLessonDialog: () => void;
   onOpenAddLessonDialog: () => void;
+  onOpenEditLessonDialog: () => void;
   isSelected: boolean;
 }
 
@@ -17,6 +23,7 @@ export function LessonContextMenu({
   onOpenSwapTeacherOrRoomDialog,
   onOpenDeleteLessonDialog,
   onOpenAddLessonDialog,
+  onOpenEditLessonDialog,
   isSelected,
   ...props
 }: ResourceContextMenuProps) {
@@ -24,7 +31,6 @@ export function LessonContextMenu({
   const numberOfSelectedLessons = isSelected
     ? selectedLessonIds.length
     : selectedLessonIds.length + 1;
-  const { isTyroUser } = usePermissions();
   const handleClose = () => {
     props.onClose?.({}, 'backdropClick');
   };
@@ -65,44 +71,55 @@ export function LessonContextMenu({
           handleClose();
         }}
       >
-        <>
-          <ActionMenuIconWrapper>
-            <BuildingGraduateHatIcon />
-          </ActionMenuIconWrapper>
-          {t('timetable:swapTeacherOrRoom', {
-            count: numberOfSelectedLessons,
-          })}
-        </>
+        <ActionMenuIconWrapper>
+          <BuildingGraduateHatIcon />
+        </ActionMenuIconWrapper>
+        {t('timetable:swapTeacherOrRoom', {
+          count: numberOfSelectedLessons,
+        })}
       </MenuItem>
-      {isTyroUser && (
-        <>
-          <MenuItem
-            onClick={(event) => {
-              event.preventDefault();
-              onOpenDeleteLessonDialog();
-              handleClose();
-            }}
-          >
-            <ActionMenuIconWrapper>
-              <TrashIcon />
-            </ActionMenuIconWrapper>
-            {t('timetable:deleteLesson')}
-          </MenuItem>
-          <Divider />
-          <MenuItem
-            onClick={(event) => {
-              event.preventDefault();
-              onOpenAddLessonDialog();
-              handleClose();
-            }}
-          >
-            <ActionMenuIconWrapper>
-              <AddIcon />
-            </ActionMenuIconWrapper>
-            {t('timetable:addLesson')}
-          </MenuItem>
-        </>
-      )}
+      {[
+        <MenuItem
+          key="edit"
+          onClick={(event) => {
+            event.preventDefault();
+            onOpenEditLessonDialog();
+            handleClose();
+          }}
+        >
+          <ActionMenuIconWrapper>
+            <EditIcon />
+          </ActionMenuIconWrapper>
+          {t('timetable:editLesson')}
+        </MenuItem>,
+        <MenuItem
+          key="delete"
+          onClick={(event) => {
+            event.preventDefault();
+            onOpenDeleteLessonDialog();
+            handleClose();
+          }}
+        >
+          <ActionMenuIconWrapper>
+            <TrashIcon />
+          </ActionMenuIconWrapper>
+          {t('timetable:deleteLesson')}
+        </MenuItem>,
+        <Divider key="divider" />,
+        <MenuItem
+          key="add"
+          onClick={(event) => {
+            event.preventDefault();
+            onOpenAddLessonDialog();
+            handleClose();
+          }}
+        >
+          <ActionMenuIconWrapper>
+            <AddIcon />
+          </ActionMenuIconWrapper>
+          {t('timetable:addLesson')}
+        </MenuItem>,
+      ]}
     </Menu>
   );
 }

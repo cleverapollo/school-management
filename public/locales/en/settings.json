@@ -49,7 +49,11 @@
     "changeAcademicYear": "Change academic year for just me",
     "addNewRoom": "Add new room",
     "editRoom": "Edit room",
-    "linkToViewRoomTimetable": "Link to view room timetable"
+    "linkToViewRoomTimetable": "Link to view room timetable",
+    "addNoteLabel": "Add note label",
+    "editNoteLabel": "Edit note label",
+    "addBehaviourLabel": "Add behaviour label",
+    "editBehaviourLabel": "Edit behaviour label"
   },
   "namespacesDialog": {
     "title": "Activate academic year {{name}}?",
@@ -218,5 +222,18 @@
       "YEAR_GROUP_STAFF": "Year group staff",
       "PRINTING_AND_EXPORTING": "Printing and exporting"
     }
+  },
+  "noteLabel": {
+    "title": "Note labels",
+    "createNoteLabel": "Create note label",
+    "editNoteLabel": "Edit note label",
+    "code": "Code"
+  },
+  "behaviourLabel": {
+    "title": "Behaviour labels",
+    "createBehaviourLabel": "Create behaviour label",
+    "editBehaviourLabel": "Edit behaviour label",
+    "code": "Code",
+    "reportAs": "Report as"
   }
 }

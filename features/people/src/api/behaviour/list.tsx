@@ -19,6 +19,7 @@ const behaviour = graphql(/* GraphQL */ `
       note
       createdOn
       createdBy
+      incidentDate
       createdByPerson {
         title {
           id
@@ -36,8 +37,14 @@ const behaviour = graphql(/* GraphQL */ `
         nameTextId
       }
       associatedGroups {
+        __typename
         partyId
-        name
+        ... on SubjectGroup {
+          subjects {
+            name
+            colour
+          }
+        }
       }
     }
   }

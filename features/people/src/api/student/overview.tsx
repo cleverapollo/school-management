@@ -118,10 +118,24 @@ export function useStudentsContacts(
 
 const studentsSubjectGroupsQuery = (studentId: number | undefined) => ({
   queryKey: peopleKeys.students.subjectGroups(studentId),
-  queryFn: async () =>
-    gqlClient.request(studentsSubjectGroups, {
-      filter: { partyIds: [studentId ?? 0] },
-    }),
+  queryFn: async () => {
+    const { core_students: students } = await gqlClient.request(
+      studentsSubjectGroups,
+      {
+        filter: { partyIds: [studentId ?? 0] },
+      }
+    );
+
+    const [student] = students;
+    const { subjectGroups } = student;
+
+    return subjectGroups.sort((prev, next) => {
+      const [prevSubject] = prev.subjects || [];
+      const [nextSubject] = next.subjects || [];
+
+      return prevSubject?.name.localeCompare(nextSubject?.name);
+    });
+  },
 });
 
 export function getStudentsSubjectGroups(studentId: number | undefined) {
@@ -131,9 +145,6 @@ export function getStudentsSubjectGroups(studentId: number | undefined) {
 export function useStudentsSubjectGroups(studentId: number | undefined) {
   return useQuery({
     ...studentsSubjectGroupsQuery(studentId),
-    select: ({ core_students }) =>
-      Array.isArray(core_students) && core_students.length > 0
-        ? core_students[0]?.subjectGroups ?? []
-        : [],
+    select: (subjectGroups) => subjectGroups,
   });
 }

@@ -8,7 +8,6 @@ import {
   gqlClient,
   graphql,
   queryClient,
-  Scalars,
 } from '@tyro/api';
 import { attendanceKeys } from './keys';
 

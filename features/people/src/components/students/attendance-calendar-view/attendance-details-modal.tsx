@@ -164,9 +164,9 @@ export const AttendanceDetailsModal = ({
   }, [isLoading, eventAttendance, sessionAttendanceById, bellTimes]);
 
   const onSubmit = handleSubmit(async (data) => {
-    const requiredEventAttendance = Object.values(data.eventAttendance).filter(
-      ({ note, attendanceCodeId }) => note && !attendanceCodeId
-    );
+    const requiredEventAttendance = Object.values(
+      data?.eventAttendance ?? {}
+    ).filter(({ note, attendanceCodeId }) => note && !attendanceCodeId);
 
     requiredEventAttendance.forEach((eventA) => {
       setError(`eventAttendance.${eventA.id}.attendanceCodeId`, {
@@ -177,7 +177,7 @@ export const AttendanceDetailsModal = ({
     if (requiredEventAttendance.length > 0) return;
 
     const sessionAttendanceInput: SaveStudentSessionAttendanceInput[] =
-      Object.values(data.sessionAttendance)
+      Object.values(data?.sessionAttendance ?? {})
         .filter(({ attendanceCodeId, note }) => attendanceCodeId || note)
         .map(({ id, note, attendanceCodeId }) => ({
           note,

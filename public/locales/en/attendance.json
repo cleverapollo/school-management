@@ -22,6 +22,7 @@
   "approveAbsentRequest_other": "Approve absent requests",
   "declineAbsentRequest_one": "Decline absent request",
   "declineAbsentRequest_other": "Decline absent requests",
+  "withdrawAbsentRequest": "Withdraw absent request",
   "attendanceCodeNameShouldBeUnique": "Attendance code name should be unique",
   "availableTo": "Available to",
   "selectUserGroups": "Select user groups that will use this attendance code",
@@ -65,14 +66,17 @@
   "studentName": "Student name",
   "youAreAboutToApproveAbsentRequest_one": "You are about to approve this absent request which will notify the associated contact. Are you sure you want to continue?",
   "youAreAboutToDeclineAbsentRequest_one": "You are about to decline this absent request which will notify the associated contact. Are you sure you want to continue?",
+  "youAreAboutToWithdrawAbsentRequest": "You are about to withdraw this absent request. This will also remove the request from the overview list. Are you sure you want to continue?",
   "youAreAboutToApproveAbsentRequest_other": "You are about to approve {{count}} absent requests.The requesting contact will be notified. Are you sure you want to continue?",
   "youAreAboutToDeclineAbsentRequest_other": "You are about to decline {{count}} absent requests.The requesting contact will be notified. Are you sure you want to continue?",
   "yesApproveAbsentRequest_one": "Yes, approve absent request",
   "yesDeclineAbsentRequest_one": "Yes, decline absent request",
   "yesApproveAbsentRequest_other": "Yes, approve {{count}} requests",
   "yesDeclineAbsentRequest_other": "Yes, decline {{count}} requests",
+  "yesWithdrawAbsentRequest": "Yes, withdraw absent request",
   "approveRequests": "Approve requests",
   "declineRequests": "Decline requests",
+  "withdrawRequest": "Withdraw absent request",
   "dateOfAbsence": "Date of absence",
   "feedback": "Feedback",
   "nameByCodeType": {
@@ -106,5 +110,14 @@
   "youHaveNotSelectedPendingAndDeclined": "You have not selected any \"Pending\" or \"Declined\" requests",
   "note": "Note",
   "addNote": "Add note",
-  "editNote": "Edit note"
+  "editNote": "Edit note",
+  "requestType": "Request Type",
+  "absenceRequestType": {
+    "MULTI_DAY": "Multi day",
+    "SINGLE_DAY": "Full day",
+    "PARTIAL_DAY": "Partial day"
+  },
+  "reasonForAbsence": "Reason for absence",
+  "leavesAtTime": "Leaves at time",
+  "returnAtTime": "Return at time"
 }

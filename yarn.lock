@@ -6110,6 +6110,7 @@ __metadata:
     "@tyro/groups": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    "@tyro/people": "*"
     dayjs: ^1.11.7
     lodash: ^4.17.21
     react: ^18.2.0
@@ -6395,6 +6396,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@tyro/printing@workspace:features/printing"
   dependencies:
+    "@mui/lab": ^5.0.0-alpha.96
     "@mui/material": ^5.13.2
     "@mui/system": ^5.13.2
     "@tanstack/react-query": ^4.29.7
