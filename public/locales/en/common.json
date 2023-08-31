@@ -197,6 +197,11 @@
     "UNEXPLAINED_ABSENCE": "Absence unexplained",
     "NOT_TAKEN": "Not taken"
   },
+  "behaviourType": {
+    "NEGATIVE": "Negative",
+    "NEUTRAL": "Neutral",
+    "POSITIVE": "Positive"
+  },
   "colors": {
     "amber": "Amber",
     "blue": "Blue",

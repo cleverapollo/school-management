@@ -59,7 +59,8 @@
       "dtrReturns": "DTR Returns",
       "userAccess": "User access",
       "permissions": "Permissions",
-      "noteLabels": "Note labels"
+      "noteLabels": "Note labels",
+      "behaviourLabels": "Behaviour labels"
     },
     "timetable": {
       "title": "Timetable",

@@ -6,3 +6,4 @@ export * from './switch';
 export * from './attendance-code';
 export * from './tusla-code';
 export * from './gender';
+export * from './behaviour-label';

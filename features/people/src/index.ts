@@ -13,3 +13,5 @@ export { useStaffSubjectGroups } from './api/staff/subject-groups';
 export * from './api/note/note-tags';
 export * from './api/note/upsert-note-tags';
 export * from './api/contact/students';
+export * from './api/behaviour/behaviour-tags';
+export * from './api/behaviour/upsert-behaviour-tags';
