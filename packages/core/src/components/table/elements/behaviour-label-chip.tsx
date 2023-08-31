@@ -10,9 +10,9 @@ const codeTypeColorMapping: Record<
   BehaviourLabelChipProps['behaviourType'],
   ChipProps['color']
 > = {
-  [Notes_BehaviourType.Positive]: 'success',
-  [Notes_BehaviourType.Negative]: 'error',
-  [Notes_BehaviourType.Neutral]: 'default',
+  [Notes_BehaviourType.Positive]: 'green',
+  [Notes_BehaviourType.Negative]: 'rose',
+  [Notes_BehaviourType.Neutral]: 'blue',
 };
 
 export function BehaviourLabelChip({ behaviourType }: BehaviourLabelChipProps) {

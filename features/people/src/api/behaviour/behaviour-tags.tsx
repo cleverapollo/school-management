@@ -25,7 +25,7 @@ const noteTagsBehaviour = graphql(/* GraphQL */ `
 `);
 
 const noteTagsBehaviourQuery = () => ({
-  queryKey: peopleKeys.notes.noteTags(),
+  queryKey: peopleKeys.notes.behaviourTags(),
   queryFn: async () => {
     const { notes_tags: tags } = await gqlClient.request(noteTagsBehaviour, {
       filter: {

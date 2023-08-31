@@ -26,7 +26,7 @@ export function useUpsertBehaviourTags() {
     mutationFn: async (input: Notes_UpsertBehaviourTagInput[]) =>
       gqlClient.request(upsertBehaviourTags, { input }),
     onSuccess: async (_, [note]) => {
-      await queryClient.invalidateQueries(peopleKeys.notes.all());
+      await queryClient.invalidateQueries(peopleKeys.notes.behaviourTags());
 
       toast(
         note

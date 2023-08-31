@@ -10,14 +10,12 @@ import {
   PageContainer,
   PageHeading,
   Table,
-  TableBooleanValue,
 } from '@tyro/core';
 import { AddIcon, EditIcon, VerticalDotsIcon } from '@tyro/icons';
 import {
   ReturnTypeFromUseNoteTagsBehaviour,
   useNoteTagsBehaviour,
 } from '@tyro/people';
-import { ReturnTypeFromUseAttendanceCodes } from '@tyro/attendance';
 import {
   UpsertBehaviourLabelModal,
   UpsertBehaviourLabelModalProps,
@@ -57,15 +55,6 @@ const getNoteTagBehaviourColumns = (
       data?.behaviourType ? (
         <BehaviourLabelChip behaviourType={data?.behaviourType} />
       ) : null,
-  },
-  {
-    headerName: t('settings:active'),
-    editable: true,
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseNoteTagsBehaviour, any>) => (
-      <TableBooleanValue value={true} />
-    ),
   },
   {
     suppressColumnsToolPanel: true,

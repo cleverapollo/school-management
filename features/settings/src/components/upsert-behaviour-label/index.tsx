@@ -2,7 +2,7 @@ import { Button, Stack } from '@mui/material';
 import {
   Dialog,
   DialogActions,
-  DialogTitle, RHFCheckbox,
+  DialogTitle,
   RHFSelect,
   RHFTextField,
   useFormValidator,
@@ -26,7 +26,6 @@ export type UpsertBehaviourLabelFormState = {
   name: string;
   description: string;
   behaviourType: Notes_BehaviourType;
-  active: boolean;
 };
 
 export const UpsertBehaviourLabelModal = ({
@@ -41,7 +40,6 @@ export const UpsertBehaviourLabelModal = ({
     name: initialState?.name,
     description: initialState?.description || '',
     behaviourType: initialState?.behaviourType || Notes_BehaviourType.Neutral,
-    active: true,
   };
 
   const { control, handleSubmit, reset } =
@@ -64,7 +62,7 @@ export const UpsertBehaviourLabelModal = ({
     reset(defaultFormStateValues);
   }, [initialState]);
 
-  const onSubmit = (data: UpsertBehaviourLabelFormState) => {
+  const onSubmit = handleSubmit((data) => {
     mutate(
       [
         {
@@ -83,7 +81,7 @@ export const UpsertBehaviourLabelModal = ({
         },
       }
     );
-  };
+  });
 
   return (
     <Dialog
@@ -98,7 +96,7 @@ export const UpsertBehaviourLabelModal = ({
           ? t('settings:behaviourLabel.editBehaviourLabel')
           : t('settings:behaviourLabel.createBehaviourLabel')}
       </DialogTitle>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={onSubmit}>
         <Stack spacing={3} sx={{ p: 3 }}>
           <RHFTextField
             label={t('common:name')}
@@ -127,14 +125,6 @@ export const UpsertBehaviourLabelModal = ({
               multiline: true,
               rows: 4,
             }}
-          />
-          <RHFCheckbox
-            label={t('settings:active')}
-            controlLabelProps={{
-              sx: { width: '100%', ml: 0, height: '100%' },
-            }}
-            checkboxProps={{ color: 'primary' }}
-            controlProps={{ name: 'active', control }}
           />
         </Stack>
 
