@@ -50,9 +50,8 @@ module.exports = {
     emotion: true,
     ...isProd ? {
       define: {
-        'process.env.AG_GRID_KEY': process.env.AG_GRID_KEY,
-        'process.env.FULL_CALENDAR_KEY': process.env.FULL_CALENDAR_KEY,
-        'process.env.SENTRY_AUTH_TOKEN': process.env.SENTRY_AUTH_TOKEN,
+        'process.env.AG_GRID_KEY': `"${process.env.AG_GRID_KEY}"`,
+        'process.env.FULL_CALENDAR_KEY': `"${process.env.FULL_CALENDAR_KEY}"`,
       },
     } : {},
   },
@@ -138,8 +137,8 @@ module.exports = {
     },
   },
   plugins: [
-    new Dotenv(),
     ...!isProd ? [
+      new Dotenv(),
       new ForkTsCheckerWebpackPlugin(),
     ] : [],
     // ...isProd ? [
