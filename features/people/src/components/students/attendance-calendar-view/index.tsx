@@ -203,6 +203,7 @@ export const MonthOverview = () => {
               >
                 {attendanceCodeColours.map((item) => (
                   <Tab
+                    key={item.translationText}
                     onClick={() => setCurrentTabValue(item?.currentTabValue)}
                     label={
                       <>
