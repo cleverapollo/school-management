@@ -130,6 +130,7 @@ function TableSelectInner<TSelectOption extends OptionProps>(
         sx={{
           maxHeight: '50vh',
           overflowY: 'auto',
+          backgroundColor: 'background.paper',
         }}
       >
         {options?.map((option, index) => {
