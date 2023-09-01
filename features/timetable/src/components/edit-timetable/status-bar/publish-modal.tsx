@@ -82,7 +82,6 @@ export function PublishModal({ open, onClose }: UnpublishedChangesModalProps) {
                   setPublishFromDate(date);
                 }
               }}
-              minDate={today}
               sx={{
                 mx: 3,
                 mt: 2,

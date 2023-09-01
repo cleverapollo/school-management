@@ -202,6 +202,9 @@ export const CardEditableForm = <TField extends FieldValues>({
                     component="dd"
                     variant="body1"
                     color="text.secondary"
+                    sx={{
+                      overflowWrap: 'break-word',
+                    }}
                   >
                     {valueRenderer || value || '-'}
                   </Typography>

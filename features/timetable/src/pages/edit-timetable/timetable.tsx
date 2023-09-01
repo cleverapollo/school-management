@@ -63,7 +63,11 @@ export default function EditTimetable() {
         />
       </Stack>
       {data && (
-        <ResourcesTable timetableId={liveTimetableId} resources={data} />
+        <ResourcesTable
+          timetableId={liveTimetableId}
+          resources={data}
+          selectedParties={selectedPartys}
+        />
       )}
     </>
   );

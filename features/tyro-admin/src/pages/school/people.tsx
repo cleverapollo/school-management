@@ -29,7 +29,7 @@ const getPeopleColumns = (
   schoolIdAsNumber: number | undefined
 ): GridOptions<ReturnTypeFromUseAdminPartyPeopleByTenantId>['columnDefs'] => [
   {
-    field: 'name',
+    colId: 'name',
     headerName: t('common:name'),
     valueGetter: ({ data }) =>
       `${data?.firstName ?? ''} ${data?.lastName ?? ''}`,

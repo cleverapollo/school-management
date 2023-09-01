@@ -12,24 +12,36 @@ import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import { SearchInput, useDebouncedValue } from '@tyro/core';
 import { useCallback, useState } from 'react';
+import { CalendarParty } from '@tyro/calendar';
+import { usePermissions } from '@tyro/api';
 import { ReturnTypeFromUseTimetableResourceView } from '../../api/edit-timetable/resource-view';
 import { Lesson, useResourceTable } from '../../hooks/use-resource-table';
 import { ResourceTableCard } from './resource-table-card';
 import { SwapTeacherRoomModal } from './swap-teacher-room-modal';
-import { DeleteLessonModal } from './add-delete-lessons-modals/delete-lesson';
-import { AddLessonModal } from './add-delete-lessons-modals/add-lesson';
+import { DeleteLessonModal } from './lessons-modals/delete-lesson';
+import { AddLessonModal } from './lessons-modals/add-lesson';
+import { TimetableContextMenu } from './table-cell-context-menu';
+import { Period } from './types';
+import { EditLessonModal } from './lessons-modals/edit-lesson';
 
 interface ResourcesTableProps {
   timetableId: number;
   resources: ReturnTypeFromUseTimetableResourceView;
+  selectedParties: CalendarParty[];
 }
 
 export function ResourcesTable({
   timetableId,
   resources,
+  selectedParties,
 }: ResourcesTableProps) {
   const { t } = useTranslation(['timetable']);
   const [searchValue, setSearchValue] = useState('');
+  const [anchorEl, setAnchorEl] = useState<null | {
+    el: HTMLElement;
+    period: Period;
+  }>(null);
+  const isContextMenuOpen = Boolean(anchorEl);
   const {
     value: selectLessonsToSwapRoomOrTeacher,
     debouncedValue: debouncedSelectLessonsToSwapRoomOrTeacher,
@@ -43,10 +55,16 @@ export function ResourcesTable({
   } = useDebouncedValue<Lesson | null>({ defaultValue: null });
 
   const {
-    value: selectedLessonToAdd,
-    debouncedValue: debouncedSelectedLessonToAdd,
-    setValue: setSelectedLessonToAdd,
+    value: selectedLessonToEdit,
+    debouncedValue: debouncedSelectedLessonToEdit,
+    setValue: setSelectedLessonToEdit,
   } = useDebouncedValue<Lesson | null>({ defaultValue: null });
+
+  const {
+    value: selectedPeriodToAdd,
+    debouncedValue: debouncedSelectedPeriodToAdd,
+    setValue: setSelectedPeriodToAdd,
+  } = useDebouncedValue<Period | null>({ defaultValue: null });
 
   const {
     gridIds,
@@ -92,21 +110,6 @@ export function ResourcesTable({
       setSelectLessonsToSwapRoomOrTeacher(lessons);
     },
     [selectedLessonIds, getLessons, setSelectLessonsToSwapRoomOrTeacher]
-  );
-
-  const onOpenDeleteLesson = useCallback(
-    (lesson: Lesson) => {
-      setSelectedLessonToDelete(lesson);
-    },
-
-    [selectedLessonIds, setSelectedLessonToDelete]
-  );
-
-  const onOpenAddLesson = useCallback(
-    (lesson: Lesson) => {
-      setSelectedLessonToAdd(lesson);
-    },
-    [selectedLessonIds, setSelectedLessonToAdd]
   );
 
   return (
@@ -187,8 +190,23 @@ export function ResourcesTable({
                       ],
                       []
                     );
+                    const periodObj = {
+                      gridIdx: 1,
+                      dayIdx: day,
+                      periodIdx: period,
+                    };
                     return (
-                      <TableCell key={period}>
+                      <TableCell
+                        key={period}
+                        onContextMenu={(event) => {
+                          setAnchorEl({
+                            el: event.currentTarget,
+                            period: periodObj,
+                          });
+                          event.stopPropagation();
+                          event.preventDefault();
+                        }}
+                      >
                         <Stack spacing={1}>
                           {resourcesForPeriod.map((resource) => (
                             <ResourceTableCard
@@ -202,8 +220,12 @@ export function ResourcesTable({
                               onOpenSwapTeacherOrRoomDialog={
                                 onOpenSwapRoomOrTeacher
                               }
-                              onOpenDeleteLessonDialog={onOpenDeleteLesson}
-                              onOpenAddLessonDialog={onOpenAddLesson}
+                              onOpenDeleteLessonDialog={
+                                setSelectedLessonToDelete
+                              }
+                              onOpenAddLessonDialog={setSelectedPeriodToAdd}
+                              onOpenEditLessonDialog={setSelectedLessonToEdit}
+                              period={periodObj}
                             />
                           ))}
                         </Stack>
@@ -218,7 +240,7 @@ export function ResourcesTable({
       </Card>
       <SwapTeacherRoomModal
         timetableId={timetableId}
-        isOpen={Boolean(selectLessonsToSwapRoomOrTeacher)}
+        isOpen={!!selectLessonsToSwapRoomOrTeacher}
         lessons={
           selectLessonsToSwapRoomOrTeacher ??
           debouncedSelectLessonsToSwapRoomOrTeacher
@@ -227,15 +249,31 @@ export function ResourcesTable({
       />
       <DeleteLessonModal
         timetableId={timetableId}
-        isOpen={Boolean(selectedLessonToDelete)}
+        isOpen={!!selectedLessonToDelete}
         lessons={selectedLessonToDelete ?? debouncedSelectedLessonToDelete}
         onClose={() => setSelectedLessonToDelete(null)}
       />
+      <EditLessonModal
+        timetableId={timetableId}
+        lesson={selectedLessonToEdit ?? debouncedSelectedLessonToEdit}
+        isOpen={!!selectedLessonToEdit}
+        onClose={() => setSelectedLessonToEdit(null)}
+      />
       <AddLessonModal
         timetableId={timetableId}
-        isOpen={Boolean(selectedLessonToAdd)}
-        lessons={selectedLessonToAdd ?? debouncedSelectedLessonToAdd}
-        onClose={() => setSelectedLessonToAdd(null)}
+        isOpen={!!selectedPeriodToAdd}
+        period={selectedPeriodToAdd ?? debouncedSelectedPeriodToAdd}
+        selectedParties={selectedParties}
+        onClose={() => setSelectedPeriodToAdd(null)}
+      />
+      <TimetableContextMenu
+        anchorEl={anchorEl?.el}
+        open={isContextMenuOpen}
+        onClose={() => setAnchorEl(null)}
+        onOpenAddLessonDialog={() =>
+          setSelectedPeriodToAdd(anchorEl?.period ?? null)
+        }
+        isSelected={isContextMenuOpen}
       />
     </>
   );

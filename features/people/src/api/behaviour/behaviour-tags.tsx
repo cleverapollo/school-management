@@ -3,6 +3,7 @@ import {
   graphql,
   Notes_TagCategory,
   UseQueryReturnType,
+  queryClient,
 } from '@tyro/api';
 import { useQuery } from '@tanstack/react-query';
 import { peopleKeys } from '../keys';
@@ -17,26 +18,32 @@ const noteTagsBehaviour = graphql(/* GraphQL */ `
       id
       name
       description
-      tag_l1
+      behaviourType
       tag_l2
-      tag_l3
     }
   }
 `);
 
 const noteTagsBehaviourQuery = () => ({
-  queryKey: peopleKeys.notes.noteTags(),
-  queryFn: () =>
-    gqlClient.request(noteTagsBehaviour, {
+  queryKey: peopleKeys.notes.behaviourTags(),
+  queryFn: async () => {
+    const { notes_tags: tags } = await gqlClient.request(noteTagsBehaviour, {
       filter: {
         categories: [Notes_TagCategory.Behaviour],
       },
-    }),
+    });
+
+    return tags.sort((prev, next) => prev.name.localeCompare(next.name));
+  },
 });
+
+export function getNoteTagsBehaviour() {
+  return queryClient.fetchQuery(noteTagsBehaviourQuery());
+}
 
 export function useNoteTagsBehaviour() {
   return useQuery({
     ...noteTagsBehaviourQuery(),
-    select: ({ notes_tags }) => notes_tags,
+    select: (tags) => tags,
   });
 }

@@ -8,6 +8,7 @@ import {
   queryClient,
   ParentalAttendanceRequestFilter,
   SaveParentalAttendanceRequest,
+  WithdrawParentalAttendanceRequest,
 } from '@tyro/api';
 import { attendanceKeys } from './keys';
 
@@ -69,6 +70,16 @@ const createAbsentRequest = graphql(/* GraphQL */ `
   }
 `);
 
+const withdrawAbsentRequest = graphql(/* GraphQL */ `
+  mutation attendance_withdrawParentalAttendanceRequest(
+    $input: WithdrawParentalAttendanceRequest
+  ) {
+    attendance_withdrawParentalAttendanceRequest(input: $input) {
+      success
+    }
+  }
+`);
+
 const absentRequestsQuery = (filter: ParentalAttendanceRequestFilter) => ({
   queryKey: attendanceKeys.absentRequests(filter),
   queryFn: () => gqlClient.request(absentRequests, { filter }),
@@ -97,6 +108,27 @@ export function useCreateOrUpdateAbsentRequest() {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     },
     onSuccess: async (_, [code]) => {
+      await queryClient.invalidateQueries(attendanceKeys.absentRequests({}));
+      toast(
+        code?.id
+          ? t('common:snackbarMessages.updateSuccess')
+          : t('common:snackbarMessages.createSuccess')
+      );
+    },
+  });
+}
+
+export function useWithdrawAbsentRequest() {
+  const { toast } = useToast();
+  const { t } = useTranslation(['common']);
+
+  return useMutation({
+    mutationFn: async (input: WithdrawParentalAttendanceRequest) =>
+      gqlClient.request(withdrawAbsentRequest, { input }),
+    onError: () => {
+      toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
+    },
+    onSuccess: async (_, code) => {
       await queryClient.invalidateQueries(attendanceKeys.absentRequests({}));
       toast(
         code?.id

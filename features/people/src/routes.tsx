@@ -1,9 +1,9 @@
-import { lazy } from 'react';
 import {
   NavObjectFunction,
   NavObjectType,
   getNumber,
   throw404Error,
+  lazyWithRetry,
 } from '@tyro/core';
 import { UserGroupIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
@@ -39,93 +39,95 @@ import { getMedicalConditionNamesQuery } from './api/student/medicals/medical-co
 import { getPersonalTitlesQuery } from './api/student/medicals/personal-titles';
 import { getBehaviours } from './api/behaviour/list';
 
-const StudentsListPage = lazy(() => import('./pages/students'));
+const StudentsListPage = lazyWithRetry(() => import('./pages/students'));
 // Student profile pages
-const StudentProfileContainer = lazy(
+const StudentProfileContainer = lazyWithRetry(
   () => import('./components/students/student-profile-container')
 );
-const StudentProfileOverviewPage = lazy(
+const StudentProfileOverviewPage = lazyWithRetry(
   () => import('./pages/students/profile/overview')
 );
-const StudentProfilePersonalPage = lazy(
+const StudentProfilePersonalPage = lazyWithRetry(
   () => import('./pages/students/profile/personal')
 );
-const StudentProfileContactsPage = lazy(
+const StudentProfileContactsPage = lazyWithRetry(
   () => import('./pages/students/profile/contacts')
 );
-const StudentProfileAttendancePage = lazy(
+const StudentProfileAttendancePage = lazyWithRetry(
   () => import('./pages/students/profile/attendance')
 );
-const StudentProfileFeesPage = lazy(
+const StudentProfileFeesPage = lazyWithRetry(
   () => import('./pages/students/profile/fees')
 );
-const StudentProfileAssessmentPage = lazy(
+const StudentProfileAssessmentPage = lazyWithRetry(
   () => import('./pages/students/profile/assessment')
 );
-const StudentProfileTimetablePage = lazy(
+const StudentProfileTimetablePage = lazyWithRetry(
   () => import('./pages/students/profile/timetable')
 );
-const StudentProfileBehaviourPage = lazy(
+const StudentProfileBehaviourPage = lazyWithRetry(
   () => import('./pages/students/profile/behaviour')
 );
-const StudentProfileAenPage = lazy(
+const StudentProfileAenPage = lazyWithRetry(
   () => import('./pages/students/profile/aen')
 );
-const StudentProfileClassesPage = lazy(
+const StudentProfileClassesPage = lazyWithRetry(
   () => import('./pages/students/profile/classes')
 );
-const StudentProfileSettingsPage = lazy(
+const StudentProfileSettingsPage = lazyWithRetry(
   () => import('./pages/students/profile/settings')
 );
-const StudentProfileMedicalPage = lazy(
+const StudentProfileMedicalPage = lazyWithRetry(
   () => import('./pages/students/profile/medical')
 );
-const StudentProfileNotesPage = lazy(
+const StudentProfileNotesPage = lazyWithRetry(
   () => import('./pages/students/profile/notes')
 );
 
 // Contact pages
-const ContactsListPage = lazy(() => import('./pages/contacts'));
+const ContactsListPage = lazyWithRetry(() => import('./pages/contacts'));
 
-const ContactProfileContainer = lazy(
+const ContactProfileContainer = lazyWithRetry(
   () => import('./components/contact/contact-profile-container')
 );
-const ContactProfilePersonalPage = lazy(
+const ContactProfilePersonalPage = lazyWithRetry(
   () => import('./pages/contacts/profile/personal')
 );
-const ContactProfileStudentsPage = lazy(
+const ContactProfileStudentsPage = lazyWithRetry(
   () => import('./pages/contacts/profile/students')
 );
-const ContactProfileFeesPage = lazy(
+const ContactProfileFeesPage = lazyWithRetry(
   () => import('./pages/contacts/profile/fees')
 );
-const ContactProfileAccessPage = lazy(
+const ContactProfileAccessPage = lazyWithRetry(
   () => import('./pages/contacts/profile/access')
 );
 
-const CreateContactPage = lazy(() => import('./pages/contacts/create'));
+const CreateContactPage = lazyWithRetry(
+  () => import('./pages/contacts/create')
+);
 
 // Staff pages
 
-const StaffListPage = lazy(() => import('./pages/staff'));
+const StaffListPage = lazyWithRetry(() => import('./pages/staff'));
 
-const StaffProfileContainer = lazy(
+const StaffProfileContainer = lazyWithRetry(
   () => import('./components/staff/staff-profile-container')
 );
-const StaffProfileOverviewPage = lazy(
+const StaffProfileOverviewPage = lazyWithRetry(
   () => import('./pages/staff/profile/overview')
 );
-const StaffProfilePersonalPage = lazy(
+const StaffProfilePersonalPage = lazyWithRetry(
   () => import('./pages/staff/profile/personal')
 );
-const StaffProfileTimetablePage = lazy(
+const StaffProfileTimetablePage = lazyWithRetry(
   () => import('./pages/staff/profile/timetable')
 );
-const StaffProfileClassesPage = lazy(
+const StaffProfileClassesPage = lazyWithRetry(
   () => import('./pages/staff/profile/classes')
 );
 
-const CreateStaffPage = lazy(() => import('./pages/staff/create'));
+const CreateStaffPage = lazyWithRetry(() => import('./pages/staff/create'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {

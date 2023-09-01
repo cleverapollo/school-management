@@ -3,59 +3,37 @@ import { useMutation } from '@tanstack/react-query';
 import {
   gqlClient,
   graphql,
+  queryClient,
   TtEditLessonPeriodInstanceWrapper,
 } from '@tyro/api';
 
 import { useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
+import { timetableKeys } from './keys';
 
-// const updateTimetableLessons = graphql(/* GraphQL */ `
-//   mutation tt_editLessonInstance($input: TTEditLessonPeriodInstanceWrapper!) {
-//     tt_editLessonInstance(input: $input) {
-//       id {
-//         timetableId
-//         lessonIdx
-//         lessonInstanceIdx
-//         timetableGroupId
-//       }
-//       partyGroup {
-//         name
-//         partyId
-//       }
-//       gridIdx
-//       dayIdx
-//       periodIdx
-//       roomId
-//       room {
-//         name
-//         roomId
-//         capacity
-//       }
-//       teacherIds
-//       teachers {
-//         partyId
-//         person {
-//           firstName
-//           lastName
-//         }
-//       }
-//       spread
-//     }
-//   }
-// `);
+const updateTimetableLessons = graphql(/* GraphQL */ `
+  mutation tt_editLessonInstance($input: TTEditLessonPeriodInstanceWrapper!) {
+    tt_editLessonInstance(input: $input) {
+      id {
+        lessonIdx
+        lessonInstanceIdx
+        timetableGroupId
+      }
+    }
+  }
+`);
 
 export function useUpdateTimetableLessons() {
   const { t } = useTranslation(['common', 'settings']);
   const { toast } = useToast();
+
   return useMutation({
-    mutationFn: (input: TtEditLessonPeriodInstanceWrapper) => {
-      console.log({ input });
-      return Promise.resolve();
-    },
-    // gqlClient.request(updateTimetableLessons, {
-    //   input,
-    // }),
-    onSuccess: () => {
+    mutationFn: (input: TtEditLessonPeriodInstanceWrapper) =>
+      gqlClient.request(updateTimetableLessons, {
+        input,
+      }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(timetableKeys.all);
       toast(t('common:snackbarMessages.updateSuccess'));
     },
     onError: () => {

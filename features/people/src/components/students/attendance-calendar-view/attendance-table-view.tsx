@@ -63,7 +63,7 @@ const getColumns = (
   },
   {
     headerName: t('attendance:takenBy'),
-    field: 'person',
+    field: 'createdBy',
     valueGetter: ({ data }) => displayName(data?.createdBy),
     cellRenderer: ({
       data,

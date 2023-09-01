@@ -5,3 +5,4 @@ export * from './study-level-chip';
 export * from './attendance-code-chip';
 export * from './table-avatar';
 export * from './table-person-avatar';
+export * from './behaviour-label-chip';

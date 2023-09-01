@@ -8,7 +8,8 @@ import { Calendar } from '../../components/common/calendar/calendar';
 export default function CalendarPage() {
   const { t } = useTranslation(['navigation', 'calendar']);
   const { activeProfile } = useUser();
-  const { isStaffUser, isContact } = usePermissions();
+  const { isStaffUser, isStaffUserWithPermission, isContact } =
+    usePermissions();
 
   const userSearchType = useMemo(() => {
     if (isStaffUser) {
@@ -46,7 +47,12 @@ export default function CalendarPage() {
       <Typography variant="h3" component="h1" paragraph>
         {t('calendar:calendar')}
       </Typography>
-      <Calendar defaultPartys={defaultPartys} />
+      <Calendar
+        defaultPartys={defaultPartys}
+        editable={isStaffUserWithPermission(
+          'ps:1:calendar:administer_calendar'
+        )}
+      />
     </PageContainer>
   );
 }

@@ -11,6 +11,7 @@ import {
 import { getResourceName } from '../../utils/get-resource-name';
 import { ResourceCardTooltip } from './resource-card-tooltip';
 import { LessonContextMenu } from './lesson-context-menu';
+import { Period } from './types';
 
 export type UseResourceTableReturnType = ReturnType<typeof useResourceTable>;
 
@@ -23,7 +24,9 @@ interface ResourceTableCardProps {
   selectedLessonIds: UseResourceTableReturnType['selectedLessonIds'];
   onOpenSwapTeacherOrRoomDialog: (anchorLesson: Lesson) => void;
   onOpenDeleteLessonDialog: (anchorLesson: Lesson) => void;
-  onOpenAddLessonDialog: (anchorLesson: Lesson) => void;
+  onOpenEditLessonDialog: (anchorLesson: Lesson) => void;
+  onOpenAddLessonDialog: (anchorLesson: Period) => void;
+  period: Period;
 }
 
 type GroupCardProps = {
@@ -34,7 +37,9 @@ type GroupCardProps = {
   selectedLessonIds: UseResourceTableReturnType['selectedLessonIds'];
   onOpenSwapTeacherOrRoomDialog: (anchorLesson: Lesson) => void;
   onOpenDeleteLessonDialog: (anchorLesson: Lesson) => void;
-  onOpenAddLessonDialog: (anchorLesson: Lesson) => void;
+  onOpenEditLessonDialog: (anchorLesson: Lesson) => void;
+  onOpenAddLessonDialog: (anchorLesson: Period) => void;
+  period: Period;
 };
 
 interface PlaceholderLessonProps {
@@ -100,8 +105,10 @@ function GroupCard({
   toggleLessonSelection,
   onOpenSwapTeacherOrRoomDialog,
   onOpenDeleteLessonDialog,
+  onOpenEditLessonDialog,
   onOpenAddLessonDialog,
   selectedLessonIds,
+  period,
 }: GroupCardProps) {
   const { displayName, displayNames } = usePreferredNameLayout();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -109,6 +116,7 @@ function GroupCard({
   const isContextMenuOpen = Boolean(anchorEl);
 
   const partyGroup = lesson?.partyGroup;
+
   const subject =
     partyGroup.__typename === 'SubjectGroup' ? partyGroup.subjects[0] : null;
   const name = getResourceName(lesson);
@@ -164,6 +172,7 @@ function GroupCard({
             toggleLessonSelection(event, lesson);
           }}
           onContextMenu={(event) => {
+            event.stopPropagation();
             event.preventDefault();
             setAnchorEl(event.currentTarget);
           }}
@@ -233,7 +242,8 @@ function GroupCard({
           onOpenSwapTeacherOrRoomDialog(lesson)
         }
         onOpenDeleteLessonDialog={() => onOpenDeleteLessonDialog(lesson)}
-        onOpenAddLessonDialog={() => onOpenAddLessonDialog(lesson)}
+        onOpenAddLessonDialog={() => onOpenAddLessonDialog(period)}
+        onOpenEditLessonDialog={() => onOpenEditLessonDialog(lesson)}
         isSelected={isSelected}
       />
     </>

@@ -41,7 +41,7 @@ const getColumns = (
 ): GridOptions<ReturnTypeFromUseUserAccess>['columnDefs'] => [
   {
     headerName: t('common:name'),
-    field: 'person',
+    field: 'personalInfo',
     sort: 'asc',
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
@@ -63,17 +63,12 @@ const getColumns = (
     field: 'personalInfo.primaryEmail.email',
     editable: true,
     valueSetter: (params: ValueSetterParams<ReturnTypeFromUseUserAccess>) => {
-      if (!params?.newValue) {
-        params.data.personalInfo.primaryEmail = null;
-      } else {
-        set(
-          params?.data ?? {},
-          `personalInfo.primaryEmail.email`,
-          params?.newValue
-        );
-        return true;
-      }
-      return false;
+      set(
+        params?.data ?? {},
+        `personalInfo.primaryEmail.email`,
+        params?.newValue ?? null
+      );
+      return true;
     },
   },
   {
@@ -157,6 +152,16 @@ export default function UserAccessContactsPage() {
       <Table
         rowData={userAccess ?? []}
         columnDefs={columns}
+        statusBar={{
+          statusPanels: [
+            {
+              statusPanel: 'agTotalAndFilteredRowCountComponent',
+              align: 'left',
+            },
+            { statusPanel: 'agFilteredRowCountComponent' },
+            { statusPanel: 'agSelectedRowCountComponent' },
+          ],
+        }}
         getRowId={({ data }) => String(data?.personPartyId)}
         rowSelection="multiple"
         rightAdornment={

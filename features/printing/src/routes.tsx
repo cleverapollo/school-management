@@ -1,5 +1,4 @@
-import { lazy } from 'react';
-import { NavObjectFunction, NavObjectType } from '@tyro/core';
+import { lazyWithRetry, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { PrinterIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
 
@@ -9,7 +8,7 @@ import PrintStudentTimetable from './pages/timetable/student-timetable';
 import PrintClassGroupTimetable from './pages/timetable/class-timetable';
 import PrintRoomTimetable from './pages/timetable/rooms-timetable';
 
-const StaffTimetable = lazy(() => import('./pages/timetable/staff'));
+const StaffTimetable = lazyWithRetry(() => import('./pages/timetable/staff'));
 // Student profile pages
 
 export const getRoutes: NavObjectFunction = (t) => [
@@ -36,7 +35,7 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 index: true,
-                loader: () => redirect('./staff'),
+                loader: () => redirect('./students'),
               },
               {
                 type: NavObjectType.NonMenuLink,
