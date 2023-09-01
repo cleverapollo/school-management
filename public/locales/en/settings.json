@@ -53,7 +53,8 @@
     "addNoteLabel": "Add note label",
     "editNoteLabel": "Edit note label",
     "addBehaviourLabel": "Add behaviour label",
-    "editBehaviourLabel": "Edit behaviour label"
+    "editBehaviourLabel": "Edit behaviour label",
+    "addNonClassContact": "Add Non-class Contact"
   },
   "namespacesDialog": {
     "title": "Activate academic year {{name}}?",
@@ -152,7 +153,8 @@
       "qualificationX": "Qualification {{number}}",
       "currentTeachingSchoolX": "Current teaching school {{number}}",
       "previousTeachingSchoolX": "Previous teaching school {{number}}"
-    }
+    },
+    "createNonClassContact": "Create Non-class Contact"
   },
   "permissions": {
     "title": "Permissions",

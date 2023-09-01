@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { Button } from '@mui/material';
+import { useMemo, useState } from 'react';
+import { Box, Button } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 
 import {
@@ -10,11 +10,16 @@ import {
   ICellRendererParams,
 } from '@tyro/core';
 import { LoadingButton } from '@mui/lab';
-import { DownloadArrowCircleIcon } from '@tyro/icons';
+import { AddIcon, DownloadArrowCircleIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Link } from 'react-router-dom';
 import { useDownloadFile } from '../../api/dtr-returns/download-file';
+import { UpsertBehaviourLabelModalProps } from '../../components/upsert-behaviour-label';
+import {
+  UpsertNonClassContactModal,
+  UpsertNonClassContactModalProps,
+} from '../../components/dtr-returns/upsert-non-class-contact-modal';
 
 dayjs.extend(LocalizedFormat);
 
@@ -128,6 +133,8 @@ export default function DTRReturnsPage() {
 
   const { mutateAsync: downloadFile, isLoading: isSubmitting } =
     useDownloadFile();
+  const [contactDetails, setContactDetails] =
+    useState<UpsertNonClassContactModalProps['initialState']>(null);
 
   const columnDefs = useMemo(
     () => getColumnDefs(t, downloadFile, isSubmitting),
@@ -135,6 +142,14 @@ export default function DTRReturnsPage() {
   );
 
   const rowData = useMemo(() => formTypeOptions(t), [t]);
+
+  const handleCreateNonClassContact = () => {
+    setContactDetails({});
+  };
+
+  const handleCloseEditModal = () => {
+    setContactDetails(null);
+  };
 
   return (
     <PageContainer title={t('navigation:management.settings.dtrReturns')}>
@@ -146,6 +161,24 @@ export default function DTRReturnsPage() {
         rowData={rowData || []}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.name)}
+      />
+      <Box display="flex" justifyContent="flex-end" sx={{ mt: 4 }}>
+        <Button
+          variant="contained"
+          onClick={handleCreateNonClassContact}
+          startIcon={<AddIcon />}
+        >
+          {t('settings:actions.addNonClassContact')}
+        </Button>
+      </Box>
+      <Table
+        rowData={rowData || []}
+        columnDefs={columnDefs}
+        getRowId={({ data }) => String(data?.name)}
+      />
+      <UpsertNonClassContactModal
+        onClose={handleCloseEditModal}
+        initialState={contactDetails}
       />
     </PageContainer>
   );
