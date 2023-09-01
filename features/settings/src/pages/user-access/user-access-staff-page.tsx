@@ -157,21 +157,21 @@ export default function UserAccessStaffPage() {
             unmountOnExit
           >
             <Box>
-              {/* <ActionMenu */}
-              {/*  menuItems={[ */}
-              {/*    { */}
-              {/*      label: t('settings:sendInvite'), */}
-              {/*      icon: <MailIcon />, */}
-              {/*      onClick: onOpenInviteUsers, */}
-              {/*    }, */}
-              {/*    { */}
-              {/*      label: t('settings:deactivateUsers'), */}
-              {/*      icon: <StopIcon />, */}
-              {/*      disabled: true, */}
-              {/*      onClick: () => 'disabled', */}
-              {/*    }, */}
-              {/*  ]} */}
-              {/* /> */}
+              <ActionMenu
+                menuItems={[
+                  {
+                    label: t('settings:sendInvite'),
+                    icon: <MailIcon />,
+                    onClick: onOpenInviteUsers,
+                  },
+                  {
+                    label: t('settings:deactivateUsers'),
+                    icon: <StopIcon />,
+                    disabled: true,
+                    onClick: () => 'disabled',
+                  },
+                ]}
+              />
             </Box>
           </Fade>
         }

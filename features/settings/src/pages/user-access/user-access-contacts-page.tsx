@@ -170,21 +170,21 @@ export default function UserAccessContactsPage() {
             unmountOnExit
           >
             <Box>
-              {/* <ActionMenu */}
-              {/*  menuItems={[ */}
-              {/*    { */}
-              {/*      label: t('settings:inviteUsers'), */}
-              {/*      icon: <MailIcon />, */}
-              {/*      onClick: onOpenInviteUsers, */}
-              {/*    }, */}
-              {/*    { */}
-              {/*      label: t('settings:deactivateUsers'), */}
-              {/*      icon: <StopIcon />, */}
-              {/*      disabled: true, */}
-              {/*      onClick: () => 'disabled', */}
-              {/*    }, */}
-              {/*  ]} */}
-              {/* /> */}
+              <ActionMenu
+                menuItems={[
+                  {
+                    label: t('settings:inviteUsers'),
+                    icon: <MailIcon />,
+                    onClick: onOpenInviteUsers,
+                  },
+                  {
+                    label: t('settings:deactivateUsers'),
+                    icon: <StopIcon />,
+                    disabled: true,
+                    onClick: () => 'disabled',
+                  },
+                ]}
+              />
             </Box>
           </Fade>
         }
