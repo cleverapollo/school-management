@@ -253,6 +253,19 @@ export type AttendanceEventId = {
   eventId?: InputMaybe<Scalars['Int']>;
 };
 
+export type AuditId = {
+  __typename?: 'AuditId';
+  partyId?: Maybe<Scalars['Long']>;
+  userId?: Maybe<Scalars['Int']>;
+};
+
+export type AuditPerson = {
+  __typename?: 'AuditPerson';
+  partyId?: Maybe<Scalars['Long']>;
+  person?: Maybe<Person>;
+  userId?: Maybe<Scalars['Int']>;
+};
+
 export type BellTimeFilter = {
   ids: Array<InputMaybe<Scalars['Int']>>;
 };
@@ -360,7 +373,9 @@ export type CalendarEvent = {
   calendarEventId: CalendarEventId;
   calendarIds: Array<Maybe<Scalars['Int']>>;
   colour?: Maybe<Colour>;
+  createdByUserId: Scalars['Int'];
   description?: Maybe<Scalars['String']>;
+  editable: Scalars['Boolean'];
   endTime: Scalars['DateTime'];
   eventId: Scalars['Int'];
   exclusions: Array<CalendarEventAttendee>;
@@ -433,6 +448,7 @@ export type CalendarEventRaw = {
   attendeeAugments: Array<Calendar_EventAttendeeAugment>;
   calendarIds: Array<Scalars['Int']>;
   colour?: Maybe<Colour>;
+  createdByUserId: Scalars['Int'];
   description?: Maybe<Scalars['String']>;
   eventId: Scalars['Int'];
   lessonInfo?: Maybe<CalendarEventLessonRaw>;
@@ -919,6 +935,7 @@ export enum Context {
   All = 'ALL',
   Calendar = 'CALENDAR',
   Mail = 'MAIL',
+  Party = 'PARTY',
   SessionAttendance = 'SESSION_ATTENDANCE',
   Sms = 'SMS'
 }
@@ -4577,6 +4594,7 @@ export enum SearchType {
   GeneralGroupContact = 'GENERAL_GROUP_CONTACT',
   GeneralGroupStaff = 'GENERAL_GROUP_STAFF',
   GeneralGroupStudent = 'GENERAL_GROUP_STUDENT',
+  Room = 'ROOM',
   Staff = 'STAFF',
   Student = 'STUDENT',
   SubjectGroup = 'SUBJECT_GROUP',
@@ -5354,6 +5372,10 @@ export type Success = {
 
 export type SyncRequest = {
   __typename?: 'SyncRequest';
+  /** deep linked */
+  createdBy: AuditPerson;
+  createdByPartyId?: Maybe<Scalars['Long']>;
+  createdByUserId: Scalars['Int'];
   failureReason?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
   requestedOn: Scalars['DateTime'];
@@ -5987,8 +6009,10 @@ export type UpdateStudentContactInput = {
 
 export type UpdateStudentInput = {
   avatarUrl?: InputMaybe<Scalars['String']>;
+  dateOfLeaving?: InputMaybe<Scalars['Date']>;
   examNumber?: InputMaybe<Scalars['String']>;
   guardianshipNote?: InputMaybe<Scalars['String']>;
+  leftEarly?: InputMaybe<Scalars['Boolean']>;
   lockerNumber?: InputMaybe<Scalars['String']>;
   preferredFirstName?: InputMaybe<Scalars['String']>;
   preferredLastName?: InputMaybe<Scalars['String']>;
