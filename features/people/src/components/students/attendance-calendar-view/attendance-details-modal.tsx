@@ -13,6 +13,7 @@ import {
   TableBody,
   Typography,
   CircularProgress,
+  FormHelperText,
 } from '@mui/material';
 import {
   Avatar,
@@ -27,7 +28,6 @@ import {
 } from '@tyro/core';
 import { AttendanceToggle, useAttendanceCodes } from '@tyro/attendance';
 import {
-  AttendanceCodeType,
   UserType,
   usePermissions,
   SaveEventAttendanceInput,
@@ -73,8 +73,14 @@ export const AttendanceDetailsModal = ({
 }: AttendanceDetailsModalProps) => {
   const { t } = useTranslation(['attendance', 'people', 'common']);
   const { userType } = usePermissions();
-  const { handleSubmit, control, setValue, setError } =
-    useForm<AttendanceForm>();
+  const {
+    handleSubmit,
+    control,
+    setValue,
+    setError,
+    formState: { errors },
+    clearErrors,
+  } = useForm<AttendanceForm>();
   const [openAlert, setOpenAlert] = useState(true);
 
   const isTeacherUserType = userType === UserType.Teacher;
@@ -157,19 +163,17 @@ export const AttendanceDetailsModal = ({
 
     bellTimesWithName.forEach((bellTime) => {
       const currentBellTime = sessionAttendanceById?.[bellTime.id];
+      const attendanceCodeId = currentBellTime?.attendanceCode?.id || null;
 
-      setAttandanceCodesMap((prev) => {
-        const newState = {
-          ...prev,
-        };
-        newState[bellTime.id] = currentBellTime?.attendanceCode?.id || null;
-        return newState;
-      });
+      setAttandanceCodesMap((prev) => ({
+        ...prev,
+        [bellTime.id]: attendanceCodeId,
+      }));
 
       setValue(`sessionAttendance.${bellTime.id}`, {
         id: bellTime.id,
         note: currentBellTime?.note || null,
-        attendanceCodeId: currentBellTime?.attendanceCode?.id || null,
+        attendanceCodeId,
       });
     });
   }, [isLoading, sessionAttendanceById, bellTimesWithName]);
@@ -179,42 +183,40 @@ export const AttendanceDetailsModal = ({
 
     eventAttendance.forEach((event) => {
       const [currentEvent] = event?.extensions?.eventAttendance || [];
-      setEventAttandanceCodeMap((prev) => {
-        const newState = {
-          ...prev,
-        };
-        newState[event.eventId] = currentEvent?.attendanceCodeId || null;
-        return newState;
-      });
+      const attendanceCodeId = currentEvent?.attendanceCodeId || null;
+
+      setEventAttandanceCodeMap((prev) => ({
+        ...prev,
+        [event.eventId]: attendanceCodeId,
+      }));
+
       setValue(`eventAttendance.${event.eventId}`, {
         id: event.eventId,
         note: currentEvent?.note || null,
-        attendanceCodeId: currentEvent?.attendanceCodeId || null,
+        attendanceCodeId,
       });
     });
   }, [isLoading, eventAttendance]);
 
   const onSubmit = handleSubmit(async (data) => {
-    // const requiredEventAttendance = Object.values(
-    //   data?.eventAttendance ?? {}
-    // ).filter(({ note, attendanceCodeId }) => note && !attendanceCodeId);
+    const requiredEventAttendance = Object.values(
+      data?.eventAttendance ?? {}
+    ).filter(({ note, attendanceCodeId }) => note && !attendanceCodeId);
 
-    // requiredEventAttendance.forEach((eventA) => {
-    //   setError(`eventAttendance.${eventA.id}.attendanceCodeId`, {
-    //     message: t('common:errorMessages.required'),
-    //   });
-    // });
+    requiredEventAttendance.forEach((eventA) => {
+      setError(`eventAttendance.${eventA.id}.attendanceCodeId`, {
+        message: t('common:errorMessages.required'),
+      });
+    });
 
-    // if (requiredEventAttendance.length > 0) return;
+    if (requiredEventAttendance.length > 0) return;
 
     const sessionAttendanceInput: SaveStudentSessionAttendanceInput[] =
       Object.values(data?.sessionAttendance ?? {})
         .filter(({ attendanceCodeId, note }) => attendanceCodeId || note)
         .map(({ id, note, attendanceCodeId }) => ({
           note,
-          attendanceCodeId: isTeacherUserType
-            ? attendanceCodesMap?.[id]
-            : attendanceCodeId,
+          attendanceCodeId,
           bellTimeId: id,
           date: day,
           studentPartyId: studentId,
@@ -228,21 +230,15 @@ export const AttendanceDetailsModal = ({
     const eventAttendanceInput: SaveEventAttendanceInput[] = Object.values(
       data.eventAttendance
     )
-      // .filter(({ attendanceCodeId }) => attendanceCodeId)
-      .map(({ id, note, attendanceCodeId }) => {
-        const attendanceCode = isTeacherUserType
-          ? eventAttendanceCodesMap?.[id]
-          : attendanceCodeId;
-
-        return {
-          note,
-          attendanceCodeId: attendanceCode!,
-          eventId: id,
-          date: day,
-          personPartyId: studentId,
-          adminSubmitted: true,
-        };
-      });
+      .filter(({ attendanceCodeId }) => attendanceCodeId)
+      .map(({ id, note, attendanceCodeId }) => ({
+        note,
+        attendanceCodeId: attendanceCodeId!,
+        eventId: id,
+        date: day,
+        personPartyId: studentId,
+        adminSubmitted: true,
+      }));
 
     if (eventAttendanceInput.length > 0) {
       await createOrUpdateEventAttendance(eventAttendanceInput);
@@ -367,8 +363,6 @@ export const AttendanceDetailsModal = ({
                       }
                     );
 
-                    const bellTimeId = event?.id;
-
                     return (
                       <TableRow key={event.id}>
                         <TableCell>
@@ -437,20 +431,16 @@ export const AttendanceDetailsModal = ({
                         </TableCell>
                         {isTeacherUserType ? (
                           <TableCell>
-                            <pre>
-                              {`${JSON.stringify(
-                                attendanceCodesMap?.[bellTimeId]
-                              )}`}
-                            </pre>
-
                             <AttendanceToggle
-                              codeId={
-                                attendanceCodesMap?.[bellTimeId] || undefined
-                              }
+                              codeId={attendanceCodesMap?.[event.id]}
                               onChange={(current) => {
+                                setValue(
+                                  `sessionAttendance.${event.id}.attendanceCodeId`,
+                                  current
+                                );
                                 setAttandanceCodesMap((prev) => ({
                                   ...prev,
-                                  [bellTimeId]: current,
+                                  [event.id]: current,
                                 }));
                               }}
                             />
@@ -496,11 +486,12 @@ export const AttendanceDetailsModal = ({
                       format: PreferredNameFormat.FirstnameSurname,
                     });
 
-                    const eventId = event?.eventId;
-                    const attendanceCode = currentEvent?.attendanceCodeId;
+                    const attendanceCodeError =
+                      errors.eventAttendance?.[event.eventId]?.attendanceCodeId
+                        ?.message;
 
                     return (
-                      <TableRow key={event?.eventId}>
+                      <TableRow key={event.eventId}>
                         <TableCell>
                           <Stack direction="row">
                             <Typography
@@ -568,23 +559,27 @@ export const AttendanceDetailsModal = ({
                         </TableCell>
                         {isTeacherUserType ? (
                           <TableCell>
-                            <pre>
-                              {`${JSON.stringify(
-                                eventAttendanceCodesMap?.[eventId]
-                              )}`}
-                            </pre>
                             <AttendanceToggle
-                              codeId={
-                                eventAttendanceCodesMap?.[eventId] ?? undefined
-                              }
+                              codeId={eventAttendanceCodesMap?.[event.eventId]}
                               onChange={(current) => {
-                                // Update the edited values array when the toggle value changes
+                                setValue(
+                                  `eventAttendance.${event.eventId}.attendanceCodeId`,
+                                  current
+                                );
+                                clearErrors(
+                                  `eventAttendance.${event.eventId}.attendanceCodeId`
+                                );
                                 setEventAttandanceCodeMap((prev) => ({
                                   ...prev,
-                                  [eventId]: current,
+                                  [event.eventId]: current,
                                 }));
                               }}
                             />
+                            {attendanceCodeError && (
+                              <FormHelperText error>
+                                {attendanceCodeError}
+                              </FormHelperText>
+                            )}
                           </TableCell>
                         ) : (
                           <TableCell>
@@ -614,8 +609,6 @@ export const AttendanceDetailsModal = ({
             </TableContainer>
           </DialogContent>
           <DialogActions>
-            <pre>{JSON.stringify(eventAttendanceCodesMap)}</pre>
-            <pre>{JSON.stringify(attendanceCodesMap)}</pre>
             <Button variant="soft" color="inherit" onClick={onClose}>
               {t('common:actions.cancel')}
             </Button>
