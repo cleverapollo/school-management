@@ -169,6 +169,7 @@ export function UpsertSubjectGroupModal({
         <DialogContent>
           <Stack gap={2} p={2} sx={{ py: 2 }}>
             <RHFRadioGroup
+                disabled={isEdit}
               radioGroupProps={{ sx: { flexDirection: 'row' } }}
               label={t('timetable:groupType')}
               options={[
