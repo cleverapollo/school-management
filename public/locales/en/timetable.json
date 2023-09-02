@@ -51,6 +51,7 @@
   "studentMembershipTypeEnum": {
     "CORE": "Core",
     "BLOCK": "Block",
+    "FREEFORM": "Freeform",
     "NO_STUDENTS": "No students"
   },
   "status": {

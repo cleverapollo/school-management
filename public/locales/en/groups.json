@@ -36,6 +36,7 @@
   "subjectGroupStudentMembershipType": {
     "BLOCK": "Block",
     "CORE": "Core",
+    "FREEFORM": "Freeform",
     "UNKNOWN": "Unknown"
   },
   "supportGroup": {

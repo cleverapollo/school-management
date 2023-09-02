@@ -2,28 +2,28 @@ import {
   gqlClient,
   graphql,
   queryClient,
-  Tt_UpdateTimetableGroupInput,
+  Tt_UpsertSubjectGroup,
 } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
 import { useMutation } from '@tanstack/react-query';
 import { timetableKeys } from '../keys';
 
-const ttUpsertSubjectGroup = graphql(/* GraphQL */ `
-  mutation tt_updateTimetableGroup($input: Tt_UpsertSubjectGroup!) {
+const ttUpsertTimetableGroup = graphql(/* GraphQL */ `
+  mutation tt_upsertTimetableGroup($input: Tt_UpsertSubjectGroup!) {
     tt_upsertSubjectGroup(input: $input) {
       success
     }
   }
 `);
 
-export function useTtUpsertSubjectGroup() {
+export function useTtUpsertTimetableGroup() {
   const { t } = useTranslation(['common']);
   const { toast } = useToast();
 
   return useMutation({
     mutationFn: (input: Tt_UpsertSubjectGroup) =>
-      gqlClient.request(ttUpsertSubjectGroup, { input }),
+      gqlClient.request(ttUpsertTimetableGroup, { input }),
     onSuccess: () => {
       queryClient.invalidateQueries(timetableKeys.all);
       toast(t('common:snackbarMessages.updateSuccess'));
