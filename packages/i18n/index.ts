@@ -2,7 +2,11 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpBackend, { HttpBackendOptions } from 'i18next-http-backend';
+
 import dayjs from 'dayjs';
+// eslint-disable-next-line import/no-relative-packages
+import { resources } from '../../public/locales';
+
 import 'dayjs/locale/en-ie';
 import 'dayjs/locale/ga';
 
@@ -27,6 +31,20 @@ export default i18n
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false, // no needed for react as it escapes by default
+    },
+    backend: {
+      loadPath: (lngs, nss) => {
+        if (process.env.NODE_ENV !== 'production') {
+          return '/locales/{{lng}}/{{ns}}.json';
+        }
+
+        const lookupLng = lngs?.[0] as (typeof availableLanguages)[number];
+        const lookupNs = nss?.[0] as keyof (typeof resources)[typeof lookupLng];
+        // @ts-expect-error
+        const originalPath = (resources?.[lookupLng]?.[lookupNs] ??
+          '') as string;
+        return originalPath.replace('/public', '');
+      },
     },
   });
 

@@ -35,7 +35,7 @@ const getSubjectGroupsColumns = (
   displayNames: ReturnTypeDisplayNames
 ): GridOptions<ReturnTypeFromUseSubjectGroupById>['columnDefs'] => [
   {
-    field: 'relatedSubjectGroups',
+    field: 'name',
     headerName: t('common:name'),
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
@@ -81,7 +81,7 @@ const getSubjectGroupsColumns = (
   },
   {
     headerName: t('common:year'),
-    field: 'year',
+    colId: 'year',
     enableRowGroup: true,
     valueGetter: ({ data }) => data?.programmeStages[0]?.name,
   },
@@ -100,7 +100,7 @@ const getSubjectGroupsColumns = (
     enableRowGroup: true,
   },
   {
-    field: 'studentGroupType',
+    colId: 'studentGroupType',
     headerName: t('groups:groupType'),
     enableRowGroup: true,
     valueGetter: ({ data }) =>

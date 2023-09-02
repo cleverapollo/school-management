@@ -81,7 +81,7 @@ const getSubjectGroupsColumns = (
   onClickEdit: Dispatch<SetStateAction<UpsertSubjectGroupProps['initialState']>>
 ): GridOptions<ReturnTypeFromUseTimetableSubjectGroups>['columnDefs'] => [
   {
-    field: 'name',
+    colId: 'name',
     headerName: t('common:name'),
     lockVisible: true,
     cellRenderer: ({
@@ -113,8 +113,8 @@ const getSubjectGroupsColumns = (
     sort: 'asc',
   },
   {
+    colId: 'year',
     headerName: t('common:year'),
-    field: 'year',
     enableRowGroup: true,
     valueGetter: ({ data }) => {
       const yearGroups =

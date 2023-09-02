@@ -1,9 +1,12 @@
-import { lazy } from 'react';
-import { NavObjectFunction, NavObjectType, LazyLoader } from '@tyro/core';
+import {
+  NavObjectFunction,
+  NavObjectType,
+  LazyLoader,
+  lazyWithRetry,
+} from '@tyro/core';
 import { UserGroupIcon } from '@tyro/icons';
-import { UserType } from '@tyro/api';
 
-const StudentsListPage = lazy(() => import('./pages/testReport'));
+const StudentsListPage = lazyWithRetry(() => import('./pages/testReport'));
 // Student profile pages
 
 export const getRoutes: NavObjectFunction = (t) => [

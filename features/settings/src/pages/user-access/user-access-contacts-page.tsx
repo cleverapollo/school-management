@@ -41,7 +41,7 @@ const getColumns = (
 ): GridOptions<ReturnTypeFromUseUserAccess>['columnDefs'] => [
   {
     headerName: t('common:name'),
-    field: 'person',
+    field: 'personalInfo',
     sort: 'asc',
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
@@ -170,21 +170,21 @@ export default function UserAccessContactsPage() {
             unmountOnExit
           >
             <Box>
-              {/* <ActionMenu */}
-              {/*  menuItems={[ */}
-              {/*    { */}
-              {/*      label: t('settings:inviteUsers'), */}
-              {/*      icon: <MailIcon />, */}
-              {/*      onClick: onOpenInviteUsers, */}
-              {/*    }, */}
-              {/*    { */}
-              {/*      label: t('settings:deactivateUsers'), */}
-              {/*      icon: <StopIcon />, */}
-              {/*      disabled: true, */}
-              {/*      onClick: () => 'disabled', */}
-              {/*    }, */}
-              {/*  ]} */}
-              {/* /> */}
+              <ActionMenu
+                menuItems={[
+                  {
+                    label: t('settings:inviteUsers'),
+                    icon: <MailIcon />,
+                    onClick: onOpenInviteUsers,
+                  },
+                  {
+                    label: t('settings:deactivateUsers'),
+                    icon: <StopIcon />,
+                    disabled: true,
+                    onClick: () => 'disabled',
+                  },
+                ]}
+              />
             </Box>
           </Fade>
         }

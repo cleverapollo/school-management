@@ -1,8 +1,7 @@
-import { NavObjectFunction, NavObjectType } from '@tyro/core';
+import { lazyWithRetry, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { PieChartIcon } from '@tyro/icons';
-import { lazy } from 'react';
 
-const Dashboard = lazy(() => import('./pages/dashboard'));
+const Dashboard = lazyWithRetry(() => import('./pages/dashboard'));
 
 export const getShellRoutes: NavObjectFunction = (t) => [
   {

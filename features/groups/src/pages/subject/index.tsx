@@ -92,8 +92,8 @@ const getSubjectGroupsColumns = (
     sortable: true,
   },
   {
+    colId: 'year',
     headerName: t('common:year'),
-    field: 'year',
     enableRowGroup: true,
     valueGetter: ({ data }) =>
       data?.yearGroups?.map((year) => year?.name).join(', '),
@@ -123,7 +123,7 @@ const getSubjectGroupsColumns = (
     enableRowGroup: true,
   },
   {
-    field: 'studentGroupType',
+    colId: 'studentGroupType',
     headerName: t('groups:groupType'),
     enableRowGroup: true,
     hide: true,

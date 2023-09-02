@@ -1,5 +1,5 @@
 import { ForwardedRef, forwardRef, useImperativeHandle, useRef } from 'react';
-import { ICellEditorParams } from 'ag-grid-community';
+import { ICellEditorParams } from '@ag-grid-community/core';
 import { Switch } from '@mui/material';
 
 export const TableSwitch = forwardRef(
@@ -15,7 +15,13 @@ export const TableSwitch = forwardRef(
       },
     }));
 
-    return <Switch autoFocus defaultChecked={value} inputRef={inputRef} />;
+    return (
+      <Switch
+        autoFocus
+        defaultChecked={value ?? undefined}
+        inputRef={inputRef}
+      />
+    );
   }
 );
 
