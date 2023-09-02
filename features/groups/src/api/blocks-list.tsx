@@ -36,6 +36,13 @@ export function useBlocksList(filter: BlockFilter) {
   });
 }
 
+export function useAllBlocksList() {
+  return useQuery({
+    ...blocksQuery({}),
+    select: ({ core_blocks }) => core_blocks,
+  });
+}
 export type ReturnTypeOfUseBlocksList = UseQueryReturnType<
   typeof useBlocksList
 >;
+

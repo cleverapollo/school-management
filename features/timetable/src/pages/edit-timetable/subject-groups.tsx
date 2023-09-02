@@ -1,8 +1,11 @@
-import { useMemo } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import {
+  ActionMenu,
   BulkEditedRows,
   GridOptions,
   ICellRendererParams,
+  PageContainer,
+  PageHeading,
   ReturnTypeDisplayNames,
   sortStartNumberFirst,
   Table,
@@ -13,10 +16,17 @@ import {
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { Chip, Stack, Tooltip } from '@mui/material';
-import { TableStaffMultipleAutocomplete } from '@tyro/people';
-import { Tt_UpdateTimetableGroupRowInput } from '@tyro/api';
-import { EditIcon } from '@tyro/icons';
+import { Box, Button, Chip, Stack, Tooltip } from '@mui/material';
+import {
+  ReturnTypeFromUseNoteTags,
+  TableStaffMultipleAutocomplete,
+} from '@tyro/people';
+import {
+  Tt_UpdateTimetableGroupRowInput,
+  UpdateSubjectGroupInput,
+} from '@tyro/api';
+import { AddIcon, AddUserIcon, EditIcon, VerticalDotsIcon } from '@tyro/icons';
+import { Link } from 'react-router-dom';
 import {
   ReturnTypeFromUseTimetableSubjectGroups,
   useTimetableSubjectGroups,
@@ -26,6 +36,10 @@ import { Lesson } from '../../hooks/use-resource-table';
 import { SwapTeacherRoomModal } from '../../components/edit-timetable/swap-teacher-room-modal';
 import { useTtUpdateTimetableGroup } from '../../api/edit-timetable/update-group';
 import { getLessonDayAndTime } from '../../utils/get-lesson-day-time';
+import {
+  UpsertSubjectGroupModal,
+  UpsertSubjectGroupProps,
+} from '../../components/edit-timetable/subject-groups/upsert-subject-group';
 
 dayjs.extend(LocalizedFormat);
 
@@ -63,7 +77,8 @@ const getSubjectGroupsColumns = (
     ('common' | 'timetable')[]
   >,
   displayNames: ReturnTypeDisplayNames,
-  onLessonClick: (lesson: Lesson[]) => void
+  onLessonClick: (lesson: Lesson[]) => void,
+  onClickEdit: Dispatch<SetStateAction<UpsertSubjectGroupProps['initialState']>>
 ): GridOptions<ReturnTypeFromUseTimetableSubjectGroups>['columnDefs'] => [
   {
     colId: 'name',
@@ -101,6 +116,7 @@ const getSubjectGroupsColumns = (
     colId: 'year',
     headerName: t('common:year'),
     enableRowGroup: true,
+    filter: true,
     valueGetter: ({ data }) => {
       const yearGroups =
         data?.partyGroup?.__typename === 'SubjectGroup'
@@ -112,10 +128,12 @@ const getSubjectGroupsColumns = (
   {
     headerName: t('timetable:core'),
     field: 'partyGroup.studentMembershipType.classGroupName',
+    filter: true,
   },
   {
     headerName: t('timetable:block'),
     field: 'partyGroup.studentMembershipType.blockId',
+    filter: true,
   },
   {
     headerName: t('common:teachers'),
@@ -131,7 +149,7 @@ const getSubjectGroupsColumns = (
   {
     field: 'lessons',
     valueGetter: ({ data }) =>
-      data?.lessons.map(
+      data?.lessons?.map(
         (lesson) => getLessonLabels(lesson, displayNames, t).label
       ),
     cellRenderer: ({
@@ -145,7 +163,7 @@ const getSubjectGroupsColumns = (
 
       return (
         <Stack spacing={0.5} direction="row">
-          {data?.lessons.map((lesson) => {
+          {data?.lessons?.map((lesson) => {
             const { label, tooltip } = getLessonLabels(lesson, displayNames, t);
 
             return (
@@ -167,7 +185,7 @@ const getSubjectGroupsColumns = (
               </Tooltip>
             );
           })}
-          {data?.lessons.length > 1 && (
+          {data?.lessons?.length > 1 && (
             <Chip
               label={t('common:actions.editAll')}
               color={color}
@@ -182,6 +200,27 @@ const getSubjectGroupsColumns = (
       );
     },
     headerName: t('timetable:lessons'),
+  },
+  {
+    suppressColumnsToolPanel: true,
+    sortable: false,
+    cellClass: 'ag-show-on-row-interaction',
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseTimetableSubjectGroups>) =>
+      data && (
+        <ActionMenu
+          iconOnly
+          buttonIcon={<VerticalDotsIcon />}
+          menuItems={[
+            {
+              label: t('common:actions.edit'),
+              icon: <EditIcon />,
+              onClick: () => onClickEdit(data),
+            },
+          ]}
+        />
+      ),
   },
 ];
 
@@ -202,6 +241,9 @@ export default function TimetableSubjectGroups() {
   const onLessonClick = (lesson: Lesson[]) => {
     setOpenedLessonToEdit(lesson);
   };
+
+  const [upsertSubjectGroupDetails, setUpsertSubjectGroupDetails] =
+    useState<UpsertSubjectGroupProps['initialState']>(null);
 
   const onBulkSave = (
     changes: BulkEditedRows<ReturnTypeFromUseTimetableSubjectGroups, 'teachers'>
@@ -224,9 +266,19 @@ export default function TimetableSubjectGroups() {
       updates,
     });
   };
+  const handleCreate = () => {
+    // @ts-ignore
+    setUpsertSubjectGroupDetails({});
+  };
 
   const subjectGroupsColumns = useMemo(
-    () => getSubjectGroupsColumns(t, displayNames, onLessonClick),
+    () =>
+      getSubjectGroupsColumns(
+        t,
+        displayNames,
+        onLessonClick,
+        setUpsertSubjectGroupDetails
+      ),
     [t, displayNames]
   );
 
@@ -237,12 +289,29 @@ export default function TimetableSubjectGroups() {
         columnDefs={subjectGroupsColumns}
         getRowId={({ data }) => String(data?.partyGroup.partyId)}
         onBulkSave={onBulkSave}
+        rightAdornment={
+          <Box display="flex" alignItems="center">
+            <Button
+              variant="contained"
+              onClick={handleCreate}
+              startIcon={<AddIcon />}
+            >
+              {t('timetable:createSubjectGroup')}
+            </Button>
+          </Box>
+        }
       />
       <SwapTeacherRoomModal
         isOpen={!!openedLessonToEdit}
         onClose={() => setOpenedLessonToEdit(null)}
         timetableId={liveTimetableId}
         lessons={openedLessonToEdit || debouncedOpenedLessonToEdit}
+      />
+      <UpsertSubjectGroupModal
+        isOpen={!!upsertSubjectGroupDetails}
+        onClose={() => setUpsertSubjectGroupDetails(null)}
+        initialState={upsertSubjectGroupDetails}
+        timetableId={liveTimetableId}
       />
     </>
   );
