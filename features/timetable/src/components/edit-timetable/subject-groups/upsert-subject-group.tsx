@@ -10,7 +10,12 @@ import {
   RHFTextField,
   useFormValidator,
 } from '@tyro/core';
-import { TtGroupStudentMembershipTypeEnum } from '@tyro/api';
+import {
+  SubjectGroupStudentMembershipTypeEnum,
+  SubjectGroupType,
+  Tt_UpsertSubjectGroup,
+  TtGroupStudentMembershipTypeEnum,
+} from '@tyro/api';
 import { useForm } from 'react-hook-form';
 import { RHFStaffAutocomplete, StaffSelectOption } from '@tyro/people';
 import {
@@ -20,7 +25,9 @@ import {
   RHFClassGroupAutocomplete,
 } from '@tyro/groups';
 import React from 'react';
+import { RHFSubjectAutocomplete, SubjectSelect } from '@tyro/settings';
 import { ReturnTypeFromUseTimetableSubjectGroups } from '../../../api/edit-timetable/subject-groups';
+import { useTtUpsertTimetableGroup } from '../../../api/edit-timetable/upsert-group';
 
 export interface UpsertSubjectGroupProps {
   timetableId: number;
@@ -30,11 +37,17 @@ export interface UpsertSubjectGroupProps {
 }
 
 export type UpsertSubjectGroupFormState = {
-  name: string;
-  classGroup: ClassGroupSelect;
-  membershipType: TtGroupStudentMembershipTypeEnum;
-  block: BlocksSelect;
-  teachers: StaffSelectOption[];
+  name: string | null;
+  classGroup: ClassGroupSelect | null;
+  membershipType: TtGroupStudentMembershipTypeEnum | null;
+  groupType: SubjectGroupType;
+  block: BlocksSelect | null;
+  teachers: StaffSelectOption[] | null;
+  subject: SubjectSelect | null;
+};
+
+const defaultState = {
+  groupType: SubjectGroupType.SubjectGroup,
 };
 
 export function UpsertSubjectGroupModal({
@@ -43,49 +56,56 @@ export function UpsertSubjectGroupModal({
   onClose,
   initialState,
 }: UpsertSubjectGroupProps) {
-  const { t } = useTranslation(['common', 'timetable']);
-  console.log(initialState);
+  const { t } = useTranslation(['common', 'timetable', 'groups']);
   const { resolver, rules } = useFormValidator<UpsertSubjectGroupFormState>();
+  const { mutateAsync: upsertGroup, isLoading } = useTtUpsertTimetableGroup();
+
   const { control, handleSubmit, reset, watch } =
     useForm<UpsertSubjectGroupFormState>({
       resolver: resolver({
         name: rules.required(),
         membershipType: rules.required(),
+        subject: rules.required(),
       }),
+      defaultValues: defaultState,
     });
 
   const handleClose = () => {
     onClose();
   };
 
-  const membershipType = watch('membershipType');
+  const membershipTypeWatch = watch('membershipType');
 
-  const onSubmit = async ({ name }: UpsertSubjectGroupFormState) => {
-    // const transformedData = {
-    //   timetableId,
-    //   allowClashes: true,
-    //   lessonsInstances: [
-    //     {
-    //       id: lesson?.id,
-    //       roomId: room?.roomId,
-    //       teachersPartyIds: staff.map(({ partyId }) => partyId) ?? [],
-    //       timeslot,
-    //     },
-    //   ],
-    // };
-    //
-    // await editLesson(transformedData);
+  const onSubmit = async ({
+    name,
+    membershipType,
+    classGroup,
+    block,
+    teachers,
+    subject,
+    groupType,
+  }: UpsertSubjectGroupFormState) => {
+    const transformedData = {
+      timetableId,
+      id: initialState?.partyGroup?.partyId,
+      name,
+      membershipType,
+      subjectGroupType: groupType,
+      classGroupId:
+        membershipType === TtGroupStudentMembershipTypeEnum.Core
+          ? classGroup?.partyId
+          : null,
+      blockId:
+        membershipType === TtGroupStudentMembershipTypeEnum.Block
+          ? block?.blockId
+          : null,
+      subjectIds: [subject?.subjectId],
+      teachers: teachers?.map((teacher) => teacher.partyId),
+    } as Tt_UpsertSubjectGroup;
+    await upsertGroup(transformedData);
     handleClose();
   };
-  //
-  // useEffect(() => {
-  //   if (lesson) {
-  //     reset({
-  //       staff: lesson?.teachers.map(({ person }) => person) ?? [],
-  //       room: lesson?.room,
-  //     });
-  //   }
-  // }, [lesson]);
+
   return (
     <Dialog
       open={isOpen}
@@ -97,7 +117,24 @@ export function UpsertSubjectGroupModal({
       <DialogTitle>{t('timetable:createSubjectGroup')}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
-          <Stack gap={2} pt={1}>
+          <Stack gap={2} p={2} sx={{ py: 2 }}>
+            <RHFRadioGroup
+              radioGroupProps={{ sx: { flexDirection: 'row' } }}
+              label={t('timetable:groupType')}
+              options={[
+                SubjectGroupType.SubjectGroup,
+                SubjectGroupType.SupportGroup,
+              ].map((option) => ({
+                value: option,
+                label: t(`groups:subjectGroupType.${option}`),
+              }))}
+              controlProps={{
+                name: 'groupType',
+                control,
+              }}
+            />
+          </Stack>
+          <Stack gap={2} pt={2}>
             <RHFTextField
               label={t('common:name')}
               controlProps={{
@@ -112,13 +149,15 @@ export function UpsertSubjectGroupModal({
               }}
             />
           </Stack>
-          <Stack gap={2} pt={1}>
+
+          <Stack gap={2} p={2} sx={{ py: 2 }}>
             <RHFRadioGroup
               radioGroupProps={{ sx: { flexDirection: 'row' } }}
               label={t('timetable:studentMembershipType')}
               options={[
                 TtGroupStudentMembershipTypeEnum.Core,
                 TtGroupStudentMembershipTypeEnum.Block,
+                TtGroupStudentMembershipTypeEnum.Freeform,
               ].map((option) => ({
                 value: option,
                 label: t(`timetable:studentMembershipTypeEnum.${option}`),
@@ -130,8 +169,8 @@ export function UpsertSubjectGroupModal({
             />
           </Stack>
 
-          {TtGroupStudentMembershipTypeEnum.Block === membershipType && (
-            <Stack gap={2} pt={1}>
+          {TtGroupStudentMembershipTypeEnum.Block === membershipTypeWatch && (
+            <Stack gap={2} pt={2}>
               <RHFBlocksSelectAutocomplete
                 controlProps={{
                   name: 'block',
@@ -140,8 +179,8 @@ export function UpsertSubjectGroupModal({
               />
             </Stack>
           )}
-          {TtGroupStudentMembershipTypeEnum.Core === membershipType && (
-            <Stack gap={2} pt={1}>
+          {TtGroupStudentMembershipTypeEnum.Core === membershipTypeWatch && (
+            <Stack gap={2} pt={2}>
               <RHFClassGroupAutocomplete
                 controlProps={{
                   name: 'classGroup',
@@ -150,11 +189,20 @@ export function UpsertSubjectGroupModal({
               />
             </Stack>
           )}
-          <Stack gap={2} pt={1}>
+          <Stack gap={2} pt={2}>
             <RHFStaffAutocomplete
               multiple
               controlProps={{
                 name: 'teachers',
+
+                control,
+              }}
+            />
+          </Stack>
+          <Stack gap={2} pt={2}>
+            <RHFSubjectAutocomplete
+              controlProps={{
+                name: 'subject',
 
                 control,
               }}

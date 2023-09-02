@@ -116,6 +116,7 @@ const getSubjectGroupsColumns = (
     colId: 'year',
     headerName: t('common:year'),
     enableRowGroup: true,
+    filter: true,
     valueGetter: ({ data }) => {
       const yearGroups =
         data?.partyGroup?.__typename === 'SubjectGroup'
@@ -127,10 +128,12 @@ const getSubjectGroupsColumns = (
   {
     headerName: t('timetable:core'),
     field: 'partyGroup.studentMembershipType.classGroupName',
+    filter: true,
   },
   {
     headerName: t('timetable:block'),
     field: 'partyGroup.studentMembershipType.blockId',
+    filter: true,
   },
   {
     headerName: t('common:teachers'),
@@ -146,7 +149,7 @@ const getSubjectGroupsColumns = (
   {
     field: 'lessons',
     valueGetter: ({ data }) =>
-      data?.lessons.map(
+      data?.lessons?.map(
         (lesson) => getLessonLabels(lesson, displayNames, t).label
       ),
     cellRenderer: ({
@@ -160,7 +163,7 @@ const getSubjectGroupsColumns = (
 
       return (
         <Stack spacing={0.5} direction="row">
-          {data?.lessons.map((lesson) => {
+          {data?.lessons?.map((lesson) => {
             const { label, tooltip } = getLessonLabels(lesson, displayNames, t);
 
             return (
@@ -182,7 +185,7 @@ const getSubjectGroupsColumns = (
               </Tooltip>
             );
           })}
-          {data?.lessons.length > 1 && (
+          {data?.lessons?.length > 1 && (
             <Chip
               label={t('common:actions.editAll')}
               color={color}

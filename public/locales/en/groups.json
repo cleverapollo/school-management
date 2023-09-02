@@ -39,6 +39,10 @@
     "FREEFORM": "Freeform",
     "UNKNOWN": "Unknown"
   },
+  "subjectGroupType": {
+    "SUBJECT_GROUP": "Subject Group",
+    "SUPPORT_GROUP": "Support Group"
+  },
   "supportGroup": {
     "switchToSubjectGroup": {
       "action": "Switch to subject class",

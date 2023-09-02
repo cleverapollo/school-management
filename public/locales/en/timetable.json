@@ -48,6 +48,7 @@
   "lessonRemoved": "Session removed",
   "createSubjectGroup": "Create subject group",
   "studentMembershipType": "Student membership type",
+  "groupType": "Group type",
   "studentMembershipTypeEnum": {
     "CORE": "Core",
     "BLOCK": "Block",
