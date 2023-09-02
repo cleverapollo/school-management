@@ -46,6 +46,13 @@
   "whenWouldYouLikeTheFollowingChangesToBeEffectiveFrom": "When would you like the following changes to be effective from?",
   "lessonAdded": "Session added",
   "lessonRemoved": "Session removed",
+  "createSubjectGroup": "Create subject group",
+  "studentMembershipType": "Student membership type",
+  "studentMembershipTypeEnum": {
+    "CORE": "Core",
+    "BLOCK": "Block",
+    "NO_STUDENTS": "No students"
+  },
   "status": {
     "free": "Free",
     "busy": "Busy",

@@ -5,3 +5,4 @@ export { getYearGroups, useYearGroups } from './api/year-groups';
 export type { ReturnTypeFromUseYearGroups } from './api/year-groups';
 export * from './components/common/year-group-autocomplete';
 export * from './components/common/class-group-autocomplete';
+export * from './components/common/block-autocomplete';

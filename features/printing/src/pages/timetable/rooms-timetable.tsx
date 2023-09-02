@@ -10,7 +10,7 @@ import {
 import { TimetablePrintRoomForm } from '../../components/timetable/timetable-print-rooms-form';
 
 function mapper(resources: any): number[] {
-  return (resources as RoomSelect[]).map((p) => p.roomId);
+  return ((resources as RoomSelect[]) ?? []).map((p) => p.roomId);
 }
 export default function PrintRoomTimetable() {
   const { t } = useTranslation(['printing']);
