@@ -214,7 +214,7 @@ const getSubjectGroupsColumns = (
           buttonIcon={<VerticalDotsIcon />}
           menuItems={[
             {
-              label: t('timetable:createSubjectGroup'),
+              label: t('common:actions.edit'),
               icon: <EditIcon />,
               onClick: () => onClickEdit(data),
             },

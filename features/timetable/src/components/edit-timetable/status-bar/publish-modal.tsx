@@ -21,7 +21,7 @@ interface UnpublishedChangesModalProps {
   onClose: () => void;
 }
 
-const today = dayjs();
+const today = dayjs(new Date('2023-08-14'));
 
 export function PublishModal({ open, onClose }: UnpublishedChangesModalProps) {
   const { t } = useTranslation(['common', 'timetable']);
@@ -75,6 +75,7 @@ export function PublishModal({ open, onClose }: UnpublishedChangesModalProps) {
         ) : (
           <>
             <DatePicker
+              disabled
               label={t('timetable:effectiveFrom')}
               value={publishFromDate}
               onChange={(date) => {

@@ -7,20 +7,18 @@ import {
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useMemo } from 'react';
-import { useCatalogueSubjects } from '../../api/subjects';
-
-export interface SubjectSelect {
-  subjectId: number;
-  name: string;
-}
+import {
+  CatalogueSubjectOption,
+  useCatalogueSubjects,
+} from '../../api/subjects';
 
 type RHFYearGroupAutocompleteProps<TField extends FieldValues> = Omit<
-  RHFAutocompleteProps<TField, SubjectSelect>,
+  RHFAutocompleteProps<TField, CatalogueSubjectOption>,
   'options'
 >;
 
 type SubjectAutocompleteProps = Omit<
-  AutocompleteProps<SubjectSelect>,
+  AutocompleteProps<CatalogueSubjectOption>,
   | 'optionIdKey'
   | 'optionTextKey'
   | 'getOptionLabel'
@@ -36,25 +34,18 @@ export const RHFSubjectAutocomplete = <TField extends FieldValues>(
   const { t } = useTranslation(['common']);
   const { data: subjectsData, isLoading } = useCatalogueSubjects();
 
-  const subjectOptions = useMemo(
-    () =>
-      subjectsData?.map((r) => ({
-        subjectId: r.id,
-        name: r.name,
-      })),
-    [subjectsData]
-  );
 
   // @ts-ignore
   return (
-    <RHFAutocomplete<TField, SubjectSelect>
+    <RHFAutocomplete<TField, CatalogueSubjectOption>
       label={t('common:subject')}
       {...props}
       fullWidth
-      optionIdKey="subjectId"
+      optionIdKey="id"
       optionTextKey="name"
+      getOptionLabel={(option) => `${option.name} (${option?.nationalCode ?? "-"})`}
       loading={isLoading}
-      options={subjectOptions ?? []}
+      options={subjectsData ?? []}
     />
   );
 };
@@ -63,23 +54,15 @@ export const SubjectAutocomplete = (props: SubjectAutocompleteProps) => {
   const { t } = useTranslation(['common']);
   const { data: subjectsData, isLoading } = useCatalogueSubjects();
 
-  const subjectOptions = useMemo(
-    () =>
-      subjectsData?.map((r) => ({
-        subjectId: r.id,
-        name: r.name,
-      })),
-    [subjectsData]
-  );
   // @ts-ignore
   return (
     <Autocomplete
       label={t('common:year')}
       fullWidth
-      optionIdKey="subjectId"
-      optionTextKey="name"
+      optionIdKey="id"
+      getOptionLabel={(option) => `${option.name} (${option?.nationalCode ?? "-"})`}
       loading={isLoading}
-      options={subjectOptions ?? []}
+      options={subjectsData ?? []}
     />
   );
 };

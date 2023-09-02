@@ -11,21 +11,30 @@ import {
   useFormValidator,
 } from '@tyro/core';
 import {
-  SubjectGroupStudentMembershipTypeEnum,
+  SubjectGroup,
   SubjectGroupType,
   Tt_UpsertSubjectGroup,
   TtGroupStudentMembershipTypeEnum,
 } from '@tyro/api';
 import { useForm } from 'react-hook-form';
-import { RHFStaffAutocomplete, StaffSelectOption } from '@tyro/people';
 import {
-  BlocksSelect,
+  RHFStaffAutocomplete,
+  StaffSelectOption,
+  useStaffForSelect,
+} from '@tyro/people';
+import {
   ClassGroupSelect,
+  CoreBlockOptions,
   RHFBlocksSelectAutocomplete,
   RHFClassGroupAutocomplete,
+  useBlocksList,
 } from '@tyro/groups';
-import React from 'react';
-import { RHFSubjectAutocomplete, SubjectSelect } from '@tyro/settings';
+import React, { useEffect, useMemo } from 'react';
+import {
+  CatalogueSubjectOption,
+  RHFSubjectAutocomplete,
+  useCatalogueSubjects,
+} from '@tyro/settings';
 import { ReturnTypeFromUseTimetableSubjectGroups } from '../../../api/edit-timetable/subject-groups';
 import { useTtUpsertTimetableGroup } from '../../../api/edit-timetable/upsert-group';
 
@@ -41,9 +50,9 @@ export type UpsertSubjectGroupFormState = {
   classGroup: ClassGroupSelect | null;
   membershipType: TtGroupStudentMembershipTypeEnum | null;
   groupType: SubjectGroupType;
-  block: BlocksSelect | null;
+  block: CoreBlockOptions | null;
   teachers: StaffSelectOption[] | null;
-  subject: SubjectSelect | null;
+  subject: CatalogueSubjectOption | null;
 };
 
 const defaultState = {
@@ -59,7 +68,49 @@ export function UpsertSubjectGroupModal({
   const { t } = useTranslation(['common', 'timetable', 'groups']);
   const { resolver, rules } = useFormValidator<UpsertSubjectGroupFormState>();
   const { mutateAsync: upsertGroup, isLoading } = useTtUpsertTimetableGroup();
+  const { data: subjectsData } = useCatalogueSubjects();
+  const { data: staffData } = useStaffForSelect({});
+  const { data: blocksData } = useBlocksList({});
+  useEffect(() => {
+    if (initialState?.partyGroup?.__typename === 'SubjectGroup') {
+      const subjectGroup = initialState?.partyGroup as SubjectGroup;
 
+      const existingTeachers =
+        staffData?.filter((s) =>
+          (
+            initialState.teachers?.map((teacher) => teacher.partyId) ?? []
+          ).includes(s.partyId)
+        ) ?? null;
+      const existingSubjects =
+        subjectsData?.find((s) =>
+          (subjectGroup.subjectIds ?? []).includes(s.id)
+        ) ?? null;
+
+      const existingBlock =
+        blocksData?.find(
+          (b) => b.blockId === subjectGroup.studentMembershipType?.blockId
+        ) ?? null;
+      const newValue = {
+        name: subjectGroup.name,
+        classGroup: null,
+        membershipType: initialState.studentMembershipType,
+        groupType: subjectGroup.subjectGroupType,
+        block: existingBlock,
+        teachers: existingTeachers,
+        subject: existingSubjects,
+      } as UpsertSubjectGroupFormState;
+      console.log(newValue);
+      reset(newValue);
+    } else {
+      console.log('default');
+      reset(defaultState);
+    }
+  }, [initialState, subjectsData]);
+
+  const isEdit = useMemo(
+    () => initialState?.partyGroup?.__typename === 'SubjectGroup',
+    [initialState]
+  );
   const { control, handleSubmit, reset, watch } =
     useForm<UpsertSubjectGroupFormState>({
       resolver: resolver({
@@ -67,7 +118,6 @@ export function UpsertSubjectGroupModal({
         membershipType: rules.required(),
         subject: rules.required(),
       }),
-      defaultValues: defaultState,
     });
 
   const handleClose = () => {
@@ -99,7 +149,7 @@ export function UpsertSubjectGroupModal({
         membershipType === TtGroupStudentMembershipTypeEnum.Block
           ? block?.blockId
           : null,
-      subjectIds: [subject?.subjectId],
+      subjectIds: [subject?.id],
       teachers: teachers?.map((teacher) => teacher.partyId),
     } as Tt_UpsertSubjectGroup;
     await upsertGroup(transformedData);
@@ -152,6 +202,7 @@ export function UpsertSubjectGroupModal({
 
           <Stack gap={2} p={2} sx={{ py: 2 }}>
             <RHFRadioGroup
+              disabled={isEdit}
               radioGroupProps={{ sx: { flexDirection: 'row' } }}
               label={t('timetable:studentMembershipType')}
               options={[
@@ -172,6 +223,7 @@ export function UpsertSubjectGroupModal({
           {TtGroupStudentMembershipTypeEnum.Block === membershipTypeWatch && (
             <Stack gap={2} pt={2}>
               <RHFBlocksSelectAutocomplete
+                disabled={isEdit}
                 controlProps={{
                   name: 'block',
                   control,
@@ -182,6 +234,7 @@ export function UpsertSubjectGroupModal({
           {TtGroupStudentMembershipTypeEnum.Core === membershipTypeWatch && (
             <Stack gap={2} pt={2}>
               <RHFClassGroupAutocomplete
+                disabled={isEdit}
                 controlProps={{
                   name: 'classGroup',
                   control,
@@ -192,6 +245,7 @@ export function UpsertSubjectGroupModal({
           <Stack gap={2} pt={2}>
             <RHFStaffAutocomplete
               multiple
+              disabled={isEdit}
               controlProps={{
                 name: 'teachers',
 

@@ -7,20 +7,18 @@ import {
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useMemo } from 'react';
-import { useAllBlocksList } from '../../api/blocks-list';
+import { UseQueryReturnType } from '@tyro/api';
+import { useBlocksList } from '../../api/blocks-list';
 
-export interface BlocksSelect {
-  blockId: string;
-  name: string;
-}
+export type CoreBlockOptions = UseQueryReturnType<typeof useBlocksList>[number];
 
 type RHFClassGroupAutocompleteProps<TField extends FieldValues> = Omit<
-  RHFAutocompleteProps<TField, BlocksSelect>,
+  RHFAutocompleteProps<TField, CoreBlockOptions>,
   'options'
 >;
 
 type BlocksSelectAutocompleteProps = Omit<
-  AutocompleteProps<BlocksSelect>,
+  AutocompleteProps<CoreBlockOptions>,
   | 'optionIdKey'
   | 'optionTextKey'
   | 'getOptionLabel'
@@ -34,27 +32,18 @@ export const RHFBlocksSelectAutocomplete = <TField extends FieldValues>(
   props: RHFClassGroupAutocompleteProps<TField>
 ) => {
   const { t } = useTranslation(['common']);
-  const { data: blocksData, isLoading } = useAllBlocksList();
-
-  const blockOptions = useMemo(
-    () =>
-      blocksData?.map((yg) => ({
-        blockId: yg.blockId,
-        name: yg.name,
-      })),
-    [blocksData]
-  );
+  const { data: blocksData, isLoading } = useBlocksList({});
 
   // @ts-ignore
   return (
-    <RHFAutocomplete<TField, BlocksSelect>
+    <RHFAutocomplete<TField, CoreBlockOptions>
       label={t('common:block')}
       {...props}
       fullWidth
       optionIdKey="blockId"
       optionTextKey="name"
       loading={isLoading}
-      options={blockOptions ?? []}
+      options={blocksData ?? []}
     />
   );
 };
@@ -63,16 +52,8 @@ export const BlocksSelectAutocomplete = (
   props: BlocksSelectAutocompleteProps
 ) => {
   const { t } = useTranslation(['common']);
-  const { data: blocksData, isLoading } = useAllBlocksList();
+  const { data: blocksData, isLoading } = useBlocksList({});
 
-  const blocksOptions = useMemo(
-    () =>
-      blocksData?.map((yg) => ({
-        blockId: yg.blockId,
-        name: yg.name,
-      })),
-    [blocksData]
-  );
   // @ts-ignore
   return (
     <Autocomplete
@@ -81,7 +62,7 @@ export const BlocksSelectAutocomplete = (
       optionIdKey="blockId"
       optionTextKey="name"
       loading={isLoading}
-      options={blocksOptions ?? []}
+      options={blocksData ?? []}
     />
   );
 };
