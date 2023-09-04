@@ -5,7 +5,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { ICellEditorParams } from 'ag-grid-community';
+import { ICellEditorParams } from '@ag-grid-community/core';
 import { Colour } from '@tyro/api';
 import { Box } from '@mui/material';
 import { ColorPicker } from '../../color-picker';

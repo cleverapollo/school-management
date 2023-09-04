@@ -5,7 +5,7 @@ import React, {
   useImperativeHandle,
   useRef,
 } from 'react';
-import { ICellEditorParams } from 'ag-grid-community';
+import { ICellEditorParams } from '@ag-grid-community/core';
 import {
   ClickAwayListener,
   Divider,
@@ -130,6 +130,7 @@ function TableSelectInner<TSelectOption extends OptionProps>(
         sx={{
           maxHeight: '50vh',
           overflowY: 'auto',
+          backgroundColor: 'background.paper',
         }}
       >
         {options?.map((option, index) => {

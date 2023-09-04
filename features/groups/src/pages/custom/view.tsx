@@ -27,7 +27,7 @@ const getCustomGroupColumns = (
   displayName: ReturnTypeDisplayName
 ): GridOptions<MembersReturnTypeFromUseCustomGroupsById>['columnDefs'] => [
   {
-    field: 'person',
+    colId: 'person',
     headerName: t('common:name'),
     valueGetter: ({ data }) => displayName(data ?? undefined),
     cellRenderer: ({

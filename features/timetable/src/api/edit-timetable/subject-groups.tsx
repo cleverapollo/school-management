@@ -25,6 +25,8 @@ const ttSubjectGroups = graphql(/* GraphQL */ `
           subjects {
             colour
           }
+            subjectGroupType  
+            subjectIds  
           studentMembershipType {
             type
             classGroupId
@@ -33,6 +35,7 @@ const ttSubjectGroups = graphql(/* GraphQL */ `
           }
         }
       }
+      studentMembershipType
       teachers {
         person {
           partyId
@@ -72,6 +75,7 @@ const ttSubjectGroups = graphql(/* GraphQL */ `
               name
               colour
             }
+             
           }
         }
         room {

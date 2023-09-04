@@ -2,8 +2,8 @@
 import {
   CellValueChangedEvent,
   ValueSetterParams as AGValueSetterParams,
-} from 'ag-grid-community';
-import { AgGridReact } from 'ag-grid-react';
+} from '@ag-grid-community/core';
+import { AgGridReact } from '@ag-grid-community/react';
 import { MutableRefObject, useCallback, useMemo, useState } from 'react';
 import set from 'lodash/set';
 import isEqual from 'lodash/isEqual';

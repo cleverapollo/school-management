@@ -1,14 +1,15 @@
 /* eslint-disable import/no-relative-packages */
 // TODO: remove above eslint when components are moved to @tyro/core
-import { msalInstance, clearUsersData } from '@tyro/api';
-import { lazy, Suspense } from 'react';
+import { msalInstance } from '@tyro/api';
+import { lazyWithRetry } from '@tyro/core';
+import { Suspense } from 'react';
 import { RouteObject, redirect } from 'react-router-dom';
 import LoadingScreen from '../../../src/components/LoadingScreen';
 
-const Login = lazy(() => import('./pages/login'));
-const Logout = lazy(() => import('./pages/logout'));
-const Callback = lazy(() => import('./pages/callback'));
-const Unauthorized = lazy(() => import('./pages/unauthorized'));
+const Login = lazyWithRetry(() => import('./pages/login'));
+const Logout = lazyWithRetry(() => import('./pages/logout'));
+const Callback = lazyWithRetry(() => import('./pages/callback'));
+const Unauthorized = lazyWithRetry(() => import('./pages/unauthorized'));
 
 function Loadable({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={<LoadingScreen />}>{children}</Suspense>;

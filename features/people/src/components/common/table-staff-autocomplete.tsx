@@ -40,7 +40,7 @@ export const TableStaffAutocomplete = forwardRef(
       usePeopleAutocompleteProps<ReturnTypeFromUseStaffForSelect>();
 
     return (
-      <TableAutocomplete
+      <TableAutocomplete<ReturnTypeFromUseStaffForSelect | null>
         ref={autoCompleteRef}
         {...props}
         value={
@@ -49,9 +49,12 @@ export const TableStaffAutocomplete = forwardRef(
             : null
         }
         options={data ?? []}
-        getOptionLabel={getOptionLabel}
+        getOptionLabel={(option) =>
+          option && getOptionLabel ? getOptionLabel(option) : ''
+        }
         optionIdKey={optionIdKey}
         AutocompleteProps={{
+          // @ts-expect-error
           filterOptions,
           autoHighlight: true,
           loading: isLoading,
@@ -67,7 +70,7 @@ export const TableStaffAutocomplete = forwardRef(
               >
                 <Avatar
                   name={name}
-                  src={option.avatarUrl}
+                  src={option?.avatarUrl}
                   sx={{ width: 32, height: 32, fontSize: '0.75rem' }}
                 />
                 <Stack>

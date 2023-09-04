@@ -123,7 +123,7 @@ const getColumnDefs = (
       ),
   },
   {
-    field: 'editResults',
+    colId: 'editResults',
     headerName: '',
     suppressSizeToFit: true,
     cellRenderer: ({

@@ -161,11 +161,13 @@
     "YEAR_GROUP_ENROLLMENT": "Year group",
     "YEAR_GROUP_CONTACT": "Contacts of Students from Year group",
     "YEAR_GROUP_STAFF": "Staff of Students from Year group",
-    "CUSTOM_GROUP": "Custom group"
+    "CUSTOM_GROUP": "Custom group",
+    "ROOM": "Room"
   },
   "administration": "Administration",
   "staff": "Staff",
   "blocks": "Blocks",
+  "block": "Block",
   "staffMember": "Staff member",
   "overview": "Overview",
   "errorMessages": {

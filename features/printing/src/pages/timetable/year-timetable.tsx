@@ -14,7 +14,7 @@ import { TimetablePrintStaffForm } from '../../components/timetable/timetable-pr
 import { TimetablePrintYearGroupForm } from '../../components/timetable/timetable-print-year-form';
 
 function mapper(resources: any): number[] {
-  return (resources as YearGroupSelect[]).map((p) => p.partyId);
+  return ((resources as YearGroupSelect[]) ?? []).map((p) => p.partyId);
 }
 export default function PrintYearGroupTimetable() {
   const { t } = useTranslation(['printing']);

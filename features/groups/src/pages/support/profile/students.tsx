@@ -27,7 +27,7 @@ const getSubjectGroupsColumns = (
   displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseSubjectGroupById>['columnDefs'] => [
   {
-    field: 'name',
+    field: 'person',
     headerName: translate('common:name'),
     valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({

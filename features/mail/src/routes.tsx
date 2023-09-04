@@ -1,9 +1,8 @@
-import { lazy } from 'react';
-import { NavObjectFunction, NavObjectType } from '@tyro/core';
+import { lazyWithRetry, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { LetterIcon } from '@tyro/icons';
 import { getLabels } from './api/labels';
 
-const Mail = lazy(() => import('./pages/index'));
+const Mail = lazyWithRetry(() => import('./pages/index'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {

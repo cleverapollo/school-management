@@ -13,7 +13,7 @@ import { TimetablePrintYearGroupForm } from '../../components/timetable/timetabl
 import { TimetablePrintStudentForm } from '../../components/timetable/timetable-print-student-form';
 
 function mapper(resources: any): number[] {
-  return (resources as StudentSelectOption[]).map((p) => p.partyId);
+  return ((resources as StudentSelectOption[]) ?? []).map((p) => p.partyId);
 }
 export default function PrintStudentTimetable() {
   const { t } = useTranslation(['printing']);

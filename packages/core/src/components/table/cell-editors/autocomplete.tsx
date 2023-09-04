@@ -1,5 +1,5 @@
 import { ForwardedRef, forwardRef, useImperativeHandle, useRef } from 'react';
-import { ICellEditorParams } from 'ag-grid-community';
+import { ICellEditorParams } from '@ag-grid-community/core';
 import { Autocomplete, AutocompleteProps, Box } from '@mui/material';
 
 export interface TableAutocompleteProps<TOption>
