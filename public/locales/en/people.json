@@ -100,9 +100,9 @@
       "previousSchoolName": "Previous school name",
       "previousSchoolType": "Previous school type",
       "previousSchoolRollNumber": "Previous school roll number",
-      "leftEarly": "Has the student left school early?",
+      "leftEarly": "Has left school",
       "dateOfLeaving": "Date of leaving",
-      "reasonOfDeparture": "What is the reason of departure?",
+      "reasonOfDeparture": "Reason for departure",
       "destinationRollNumber": "Destination roll number"
     },
     "guardianship": "Guardianship, custody, access orders or arrangements"

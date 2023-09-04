@@ -5,10 +5,13 @@ import {
   usePreferredNameLayout,
   CardEditableForm,
   CardEditableFormProps,
+  RHFDatePicker,
+  RHFCheckbox,
 } from '@tyro/core';
 import { UpdateStudentInput } from '@tyro/api';
 import dayjs from 'dayjs';
 import { Stack, Typography } from '@mui/material';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { useStudentPersonal } from '../../../../api/student/personal';
 
 type EnrolmentFormState = {
@@ -19,11 +22,15 @@ type EnrolmentFormState = {
 const getEnrolmentDataWithLabels = (
   data: ReturnType<typeof useStudentPersonal>['data'],
   displayNames: ReturnTypeDisplayNames,
-  t: TFunction<'people'[]>
+  t: TFunction<('people' | 'common')[]>,
+  leftEarlyState: boolean,
+  onChangeLeftEarlyState: Dispatch<SetStateAction<boolean>>
 ): CardEditableFormProps<EnrolmentFormState>['fields'] => {
   const {
+    leftEarly,
     studentIrePP,
     startDate,
+    endDate,
     classGroup,
     tutors,
     yearGroupLeads,
@@ -93,6 +100,40 @@ const getEnrolmentDataWithLabels = (
       label: t('people:personal.enrolmentHistory.previousSchoolRollNumber'),
       value: studentIrePP?.previousSchoolRollNumber,
     },
+    {
+      label: t('people:personal.enrolmentHistory.leftEarly'),
+      value: leftEarly,
+      valueEditor: (
+        <RHFCheckbox
+          checkboxProps={{
+            onChange: (event) => onChangeLeftEarlyState(event.target.checked),
+          }}
+          controlProps={{ name: 'leftEarly' }}
+        />
+      ),
+      valueRenderer: leftEarly ? t('common:yes') : t('common:no'),
+    },
+    ...(leftEarlyState
+      ? [
+          {
+            label: t('people:personal.enrolmentHistory.dateOfLeaving'),
+            // value: endDate ? dayjs(endDate).format('l') : '-',
+            value: '09/01/2023',
+            valueEditor: <RHFDatePicker controlProps={{ name: 'endDate' }} />,
+          },
+          {
+            label: t('people:personal.enrolmentHistory.reasonOfDeparture'),
+            // value: studentIrePP?.reasonForLeaving,
+            value: 'Reason example',
+            valueEditor: (
+              <RHFTextField
+                textFieldProps={{ variant: 'standard' }}
+                controlProps={{ name: 'reasonForLeaving' }}
+              />
+            ),
+          },
+        ]
+      : []),
   ];
 };
 
@@ -110,13 +151,7 @@ export const ProfileEnrolment = ({
   const { t } = useTranslation(['people', 'common']);
   const { displayNames } = usePreferredNameLayout();
 
-  const enrolmentDataWithLabels = getEnrolmentDataWithLabels(
-    studentData,
-    displayNames,
-    t
-  );
-
-  const { leftEarly, studentIrePP, endDate } = studentData || {};
+  const { leftEarly, studentIrePP } = studentData || {};
   const {
     languageSupportApplicant,
     examEntrant,
@@ -125,9 +160,18 @@ export const ProfileEnrolment = ({
     boardingDays,
     shortTermPupil,
     shortTermPupilNumWeeks,
-    reasonForLeaving,
     destinationRollNo,
   } = studentIrePP || {};
+
+  const [leftEarlyState, setLeftEarlyState] = useState(leftEarly ?? false);
+
+  const enrolmentDataWithLabels = getEnrolmentDataWithLabels(
+    studentData,
+    displayNames,
+    t,
+    leftEarlyState,
+    setLeftEarlyState
+  );
 
   return (
     <CardEditableForm<EnrolmentFormState>
@@ -167,18 +211,6 @@ export const ProfileEnrolment = ({
           shortTermPupil && {
             label: t('people:personal.enrolmentHistory.numberOfWeeks'),
             value: t('common:weeks', { count: shortTermPupilNumWeeks ?? 0 }),
-          },
-          {
-            label: t('people:personal.enrolmentHistory.leftEarly'),
-            value: leftEarly ? t('common:yes') : t('common:no'),
-          },
-          leftEarly && {
-            label: t('people:personal.enrolmentHistory.dateOfLeaving'),
-            value: endDate ? dayjs(endDate).format('l') : '-',
-          },
-          leftEarly && {
-            label: t('people:personal.enrolmentHistory.reasonOfDeparture'),
-            value: reasonForLeaving || '-',
           },
           destinationRollNo && {
             label: t('people:personal.enrolmentHistory.destinationRollNumber'),
