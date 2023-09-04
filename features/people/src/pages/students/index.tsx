@@ -56,6 +56,7 @@ const getStudentColumns = (
     field: 'classGroup.name',
     headerName: translate('people:class'),
     enableRowGroup: true,
+    filter: true
   },
   {
     field: 'yearGroups',
@@ -66,6 +67,7 @@ const getStudentColumns = (
         return data.yearGroups[0].name;
       }
     },
+    filter: true
   },
   {
     field: 'tutors',
@@ -88,6 +90,7 @@ const getStudentColumns = (
         return data.programmeStages[0]?.programme?.name;
       }
     },
+    filter: true
   },
   {
     field: 'studentIrePP.examNumber',
@@ -131,6 +134,13 @@ const getStudentColumns = (
     field: 'studentIrePP.previousSchoolName',
     headerName: translate(
       'people:personal.enrolmentHistory.previousSchoolName'
+    ),
+    hide: true,
+  },
+  {
+    field: 'partyId',
+    headerName: translate(
+        'common:tyroId'
     ),
     hide: true,
   },

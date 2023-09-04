@@ -31,6 +31,7 @@ type RHFRadioGroupProps<
   radioGroupProps?: RadioGroupProps;
   optionIdKey?: keyof Option;
   optionTextKey?: keyof Option;
+  disabled?: boolean;
   renderOption?: (
     option: Option,
     renderRadio: (props: Partial<FormControlLabelProps>) => React.ReactNode
@@ -49,6 +50,7 @@ export const RHFRadioGroup = <
   optionIdKey = 'value' as keyof Option,
   optionTextKey = 'label' as keyof Option,
   renderOption,
+                                 disabled
 }: RHFRadioGroupProps<TField, Option>) => {
   const autoId = useId();
   const radioId = id ?? autoId;
@@ -59,7 +61,7 @@ export const RHFRadioGroup = <
   } = useController(controlProps);
 
   return (
-    <FormControl error={!!error}>
+    <FormControl error={!!error} disabled={disabled ?? false}>
       {label && <FormLabel id={radioId}>{label}</FormLabel>}
 
       <RadioGroup

@@ -36,7 +36,12 @@
   "subjectGroupStudentMembershipType": {
     "BLOCK": "Block",
     "CORE": "Core",
+    "FREEFORM": "Freeform",
     "UNKNOWN": "Unknown"
+  },
+  "subjectGroupType": {
+    "SUBJECT_GROUP": "Subject Group",
+    "SUPPORT_GROUP": "Support Group"
   },
   "supportGroup": {
     "switchToSubjectGroup": {

@@ -155,6 +155,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ag-grid-enterprise/status-bar@npm:^30.1.0":
+  version: 30.1.0
+  resolution: "@ag-grid-enterprise/status-bar@npm:30.1.0"
+  dependencies:
+    "@ag-grid-community/core": ~30.1.0
+    "@ag-grid-enterprise/core": ~30.1.0
+  checksum: a7266fc7f6758c2f0060aec7646df3ef9d8674b5631be727a0dd9a3382c21c61582c2cbb3a7ad1504e09eb431eeffa20c9003479e7ee4f94f04823f262435686
+  languageName: node
+  linkType: hard
+
 "@alloc/quick-lru@npm:^5.2.0":
   version: 5.2.0
   resolution: "@alloc/quick-lru@npm:5.2.0"
@@ -6253,6 +6263,7 @@ __metadata:
     "@ag-grid-enterprise/range-selection": ^30.1.0
     "@ag-grid-enterprise/row-grouping": ^30.1.0
     "@ag-grid-enterprise/set-filter": ^30.1.0
+    "@ag-grid-enterprise/status-bar": ^30.1.0
     "@cubejs-client/core": ^0.32.0
     "@cubejs-client/react": ^0.32.0
     "@hookform/resolvers": ^3.0.1

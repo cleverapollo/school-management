@@ -12,7 +12,7 @@ import {
 import { TimetablePrintClassGroupForm } from '../../components/timetable/timetable-print-class-form';
 
 function mapper(resources: any): number[] {
-  return (resources as ClassGroupSelect[]).map((p) => p.partyId);
+  return ((resources as ClassGroupSelect[]) ?? []).map((p) => p.partyId);
 }
 export default function PrintYearGroupTimetable() {
   const { t } = useTranslation(['printing']);

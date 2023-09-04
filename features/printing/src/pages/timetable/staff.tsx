@@ -10,7 +10,7 @@ import {
 import { TimetablePrintStaffForm } from '../../components/timetable/timetable-print-staff-form';
 
 function mapper(resources: any): number[] {
-  return (resources as StaffSelectOption[]).map((p) => p.partyId);
+  return ((resources as StaffSelectOption[]) ?? []).map((p) => p.partyId);
 }
 export default function StudentProfileContainer() {
   const { t } = useTranslation(['printing']);

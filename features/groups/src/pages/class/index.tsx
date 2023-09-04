@@ -76,6 +76,7 @@ const getClassGroupColumns = (
         .join(', '),
     sort: 'asc',
     sortIndex: 0,
+    filter: true,
   },
   {
     headerName: t('common:tutor'),
@@ -106,6 +107,7 @@ const getClassGroupColumns = (
         ?.filter(Boolean)
         .join(', '),
     enableRowGroup: true,
+    filter: true,
   },
 ];
 
