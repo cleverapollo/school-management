@@ -1,6 +1,7 @@
 import {
   Alert,
   AlertTitle,
+  Box,
   Button,
   Collapse,
   IconButton,
@@ -13,7 +14,6 @@ import {
   TableBody,
   Typography,
   CircularProgress,
-  FormHelperText,
 } from '@mui/material';
 import {
   Avatar,
@@ -25,8 +25,9 @@ import {
   RHFTextField,
   PreferredNameFormat,
   usePreferredNameLayout,
+  PlaceholderCard,
 } from '@tyro/core';
-import { AttendanceToggle, useAttendanceCodes } from '@tyro/attendance';
+import { useAttendanceCodes } from '@tyro/attendance';
 import {
   UserType,
   usePermissions,
@@ -79,7 +80,6 @@ export const AttendanceDetailsModal = ({
     setValue,
     setError,
     formState: { errors },
-    clearErrors,
   } = useForm<AttendanceForm>();
   const [openAlert, setOpenAlert] = useState(true);
 
@@ -115,7 +115,7 @@ export const AttendanceDetailsModal = ({
 
   const { data: attendanceCodes = [], isLoading: isAttendanceCodesLoading } =
     useAttendanceCodes({
-      teachingGroupCodes: isTeacherUserType,
+      teachingGroupCodes: false,
     });
 
   const {
@@ -147,12 +147,6 @@ export const AttendanceDetailsModal = ({
     [sessionAttendanceData]
   );
 
-  const [eventAttendanceCodesMap, setEventAttandanceCodeMap] =
-    useState<Record<number, number | null>>();
-
-  const [attendanceCodesMap, setAttandanceCodesMap] =
-    useState<Record<number, number | null>>();
-
   const bellTimesWithName = useMemo(
     () => (bellTimes || []).filter((bellTime) => bellTime?.name),
     [bellTimes]
@@ -164,11 +158,6 @@ export const AttendanceDetailsModal = ({
     bellTimesWithName.forEach((bellTime) => {
       const currentBellTime = sessionAttendanceById?.[bellTime.id];
       const attendanceCodeId = currentBellTime?.attendanceCode?.id || null;
-
-      setAttandanceCodesMap((prev) => ({
-        ...prev,
-        [bellTime.id]: attendanceCodeId,
-      }));
 
       setValue(`sessionAttendance.${bellTime.id}`, {
         id: bellTime.id,
@@ -184,11 +173,6 @@ export const AttendanceDetailsModal = ({
     eventAttendance.forEach((event) => {
       const [currentEvent] = event?.extensions?.eventAttendance || [];
       const attendanceCodeId = currentEvent?.attendanceCodeId || null;
-
-      setEventAttandanceCodeMap((prev) => ({
-        ...prev,
-        [event.eventId]: attendanceCodeId,
-      }));
 
       setValue(`eventAttendance.${event.eventId}`, {
         id: event.eventId,
@@ -247,7 +231,7 @@ export const AttendanceDetailsModal = ({
     onClose();
   });
 
-  return (
+  return isLoading ? (
     <Dialog open onClose={onClose} scroll="paper" fullWidth maxWidth="md">
       <DialogTitle
         sx={{
@@ -259,10 +243,39 @@ export const AttendanceDetailsModal = ({
           date: dayjs(day)?.format('L'),
         })}
       </DialogTitle>
-      {isLoading ? (
-        <Stack minHeight="60vh" justifyContent="center" alignItems="center">
-          <CircularProgress />
-        </Stack>
+      <Stack minHeight="60vh" justifyContent="center" alignItems="center">
+        <CircularProgress />
+      </Stack>
+    </Dialog>
+  ) : (
+    <Dialog open onClose={onClose} scroll="paper" fullWidth maxWidth="md">
+      <DialogTitle
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        {t('attendance:attendanceDetailsFor', {
+          date: dayjs(day)?.format('L'),
+        })}
+      </DialogTitle>
+      {sessionAttendanceData.length === 0 && eventAttendance.length === 0 ? (
+        <>
+          <DialogContent>
+            <PlaceholderCard cardProps={{ sx: { boxShadow: 'none', p: 0 } }}>
+              <Box>
+                <Typography component="h4" variant="subtitle1">
+                  {t('attendance:noLessonsScheduled')}
+                </Typography>
+              </Box>
+            </PlaceholderCard>
+          </DialogContent>
+          <DialogActions>
+            <Button variant="soft" color="inherit" onClick={onClose}>
+              {t('common:actions.cancel')}
+            </Button>
+          </DialogActions>
+        </>
       ) : (
         <form onSubmit={onSubmit}>
           <DialogContent>
@@ -407,46 +420,40 @@ export const AttendanceDetailsModal = ({
                           )}
                         </TableCell>
                         <TableCell>
-                          <Stack
-                            direction="row"
-                            flexGrow="1"
-                            padding={0}
-                            sx={{
-                              '& .MuiFormControl-root .MuiInputBase-input': {
-                                minWidth: { xs: '200px', md: 0 },
-                                paddingY: 1,
-                              },
-                            }}
-                          >
-                            <RHFTextField
-                              textFieldProps={{
-                                fullWidth: true,
+                          {isTeacherUserType ? (
+                            <Typography variant="subtitle2">
+                              {sessionAttendance?.note}
+                            </Typography>
+                          ) : (
+                            <Stack
+                              direction="row"
+                              flexGrow="1"
+                              padding={0}
+                              sx={{
+                                '& .MuiFormControl-root .MuiInputBase-input': {
+                                  minWidth: { xs: '200px', md: 0 },
+                                  paddingY: 1,
+                                },
                               }}
-                              controlProps={{
-                                name: `sessionAttendance.${event.id}.note`,
-                                control,
-                              }}
-                            />
-                          </Stack>
+                            >
+                              <RHFTextField
+                                textFieldProps={{
+                                  fullWidth: true,
+                                }}
+                                controlProps={{
+                                  name: `sessionAttendance.${event.id}.note`,
+                                  control,
+                                }}
+                              />
+                            </Stack>
+                          )}
                         </TableCell>
-                        {isTeacherUserType ? (
-                          <TableCell>
-                            <AttendanceToggle
-                              codeId={attendanceCodesMap?.[event.id]}
-                              onChange={(current) => {
-                                setValue(
-                                  `sessionAttendance.${event.id}.attendanceCodeId`,
-                                  current
-                                );
-                                setAttandanceCodesMap((prev) => ({
-                                  ...prev,
-                                  [event.id]: current,
-                                }));
-                              }}
-                            />
-                          </TableCell>
-                        ) : (
-                          <TableCell>
+                        <TableCell>
+                          {isTeacherUserType ? (
+                            <Typography variant="subtitle2">
+                              {sessionAttendance?.attendanceCode?.name}
+                            </Typography>
+                          ) : (
                             <Stack
                               direction="row"
                               padding={0}
@@ -463,8 +470,8 @@ export const AttendanceDetailsModal = ({
                                 }}
                               />
                             </Stack>
-                          </TableCell>
-                        )}
+                          )}
+                        </TableCell>
                       </TableRow>
                     );
                   })}
@@ -485,10 +492,6 @@ export const AttendanceDetailsModal = ({
                     const creatorName = displayName(currentEvent?.createdBy, {
                       format: PreferredNameFormat.FirstnameSurname,
                     });
-
-                    const attendanceCodeError =
-                      errors.eventAttendance?.[event.eventId]?.attendanceCodeId
-                        ?.message;
 
                     return (
                       <TableRow key={event.eventId}>
@@ -535,54 +538,40 @@ export const AttendanceDetailsModal = ({
                           )}
                         </TableCell>
                         <TableCell>
-                          <Stack
-                            direction="row"
-                            flexGrow="1"
-                            padding={0}
-                            sx={{
-                              '& .MuiFormControl-root .MuiInputBase-input': {
-                                minWidth: { xs: '200px', md: 0 },
-                                paddingY: 1,
-                              },
-                            }}
-                          >
-                            <RHFTextField
-                              textFieldProps={{
-                                fullWidth: true,
+                          {isTeacherUserType ? (
+                            <Typography variant="subtitle2">
+                              {currentEvent?.note}
+                            </Typography>
+                          ) : (
+                            <Stack
+                              direction="row"
+                              flexGrow="1"
+                              padding={0}
+                              sx={{
+                                '& .MuiFormControl-root .MuiInputBase-input': {
+                                  minWidth: { xs: '200px', md: 0 },
+                                  paddingY: 1,
+                                },
                               }}
-                              controlProps={{
-                                name: `eventAttendance.${event.eventId}.note`,
-                                control,
-                              }}
-                            />
-                          </Stack>
+                            >
+                              <RHFTextField
+                                textFieldProps={{
+                                  fullWidth: true,
+                                }}
+                                controlProps={{
+                                  name: `eventAttendance.${event.eventId}.note`,
+                                  control,
+                                }}
+                              />
+                            </Stack>
+                          )}
                         </TableCell>
-                        {isTeacherUserType ? (
-                          <TableCell>
-                            <AttendanceToggle
-                              codeId={eventAttendanceCodesMap?.[event.eventId]}
-                              onChange={(current) => {
-                                setValue(
-                                  `eventAttendance.${event.eventId}.attendanceCodeId`,
-                                  current
-                                );
-                                clearErrors(
-                                  `eventAttendance.${event.eventId}.attendanceCodeId`
-                                );
-                                setEventAttandanceCodeMap((prev) => ({
-                                  ...prev,
-                                  [event.eventId]: current,
-                                }));
-                              }}
-                            />
-                            {attendanceCodeError && (
-                              <FormHelperText error>
-                                {attendanceCodeError}
-                              </FormHelperText>
-                            )}
-                          </TableCell>
-                        ) : (
-                          <TableCell>
+                        <TableCell>
+                          {isTeacherUserType ? (
+                            <Typography variant="subtitle2">
+                              {currentEvent?.attendanceCode?.name}
+                            </Typography>
+                          ) : (
                             <Stack
                               direction="row"
                               padding={0}
@@ -599,8 +588,8 @@ export const AttendanceDetailsModal = ({
                                 }}
                               />
                             </Stack>
-                          </TableCell>
-                        )}
+                          )}
+                        </TableCell>
                       </TableRow>
                     );
                   })}
@@ -612,14 +601,15 @@ export const AttendanceDetailsModal = ({
             <Button variant="soft" color="inherit" onClick={onClose}>
               {t('common:actions.cancel')}
             </Button>
-
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              loading={isSubmitting}
-            >
-              {t('common:actions.save')}
-            </LoadingButton>
+            {!isTeacherUserType && (
+              <LoadingButton
+                type="submit"
+                variant="contained"
+                loading={isSubmitting}
+              >
+                {t('common:actions.save')}
+              </LoadingButton>
+            )}
           </DialogActions>
         </form>
       )}

@@ -7,7 +7,7 @@ import {
   UseQueryReturnType,
 } from '@tyro/api';
 import { peopleKeys } from '../../keys';
-import { CombinedAttendanceDataType } from '../../../components/students/attendance-calendar-view/attendance-table-view';
+import { CombinedAttendanceDataType } from '../../../components/students/attendance-individual-view/attendance-table-view';
 
 const tableSessionAttendanceView = graphql(/* GraphQL */ `
   query tableSessionAttendanceView($filter: StudentSessionAttendanceFilter) {
