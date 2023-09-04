@@ -10,7 +10,7 @@ module.exports = {
   mode,
   devtool: isProd
     ? 'source-map'
-    : false,
+    : 'eval-source-map',
   entry: {
     main: './src/index.tsx',
   },

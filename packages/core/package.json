@@ -18,6 +18,7 @@
     "@ag-grid-enterprise/range-selection": "^30.1.0",
     "@ag-grid-enterprise/row-grouping": "^30.1.0",
     "@ag-grid-enterprise/set-filter": "^30.1.0",
+    "@ag-grid-enterprise/status-bar": "^30.1.0",
     "@cubejs-client/core": "^0.32.0",
     "@cubejs-client/react": "^0.32.0",
     "@hookform/resolvers": "^3.0.1",
