@@ -94,6 +94,7 @@ const getSubjectGroupsColumns = (
   {
     colId: 'year',
     headerName: t('common:year'),
+    filter: true,
     enableRowGroup: true,
     valueGetter: ({ data }) =>
       data?.yearGroups?.map((year) => year?.name).join(', '),
