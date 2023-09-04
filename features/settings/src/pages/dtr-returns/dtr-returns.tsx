@@ -95,7 +95,7 @@ const getColumnDefs = (
   },
   {
     cellRenderer: ({ data }: ICellRendererParams<DtrReturn, any>) => {
-      const fileName = Object.keys(fileNames)[data?.id as number];
+      const fileName = Object.values(fileNames)[data?.id as number];
 
       return data?.id === 1 ? (
         <Button

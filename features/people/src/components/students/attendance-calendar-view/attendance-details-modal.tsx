@@ -25,8 +25,6 @@ import {
   usePreferredNameLayout,
 } from '@tyro/core';
 import {
-  UserType,
-  usePermissions,
   SaveEventAttendanceInput,
   SaveStudentSessionAttendanceInput,
 } from '@tyro/api';
@@ -70,12 +68,9 @@ export const AttendanceDetailsModal = ({
   onClose,
 }: AttendanceDetailsModalProps) => {
   const { t } = useTranslation(['attendance', 'people', 'common']);
-  const { userType } = usePermissions();
   const { handleSubmit, control, setValue, setError } =
     useForm<AttendanceForm>();
   const [openAlert, setOpenAlert] = useState(true);
-
-  const isTeacherUserType = userType === UserType.Teacher;
 
   const { displayName } = usePreferredNameLayout();
 
@@ -107,7 +102,7 @@ export const AttendanceDetailsModal = ({
 
   const { data: attendanceCodes = [], isLoading: isAttendanceCodesLoading } =
     useAttendanceCodes({
-      teachingGroupCodes: isTeacherUserType,
+      teachingGroupCodes: false,
     });
 
   const {
