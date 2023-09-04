@@ -3,11 +3,15 @@ import {
   RHFTextField,
   useFormValidator,
   RHFColorPicker,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@tyro/core';
 // form
 import { useForm } from 'react-hook-form';
 // @mui
-import { Stack, Button, DialogActions } from '@mui/material';
+import { Stack, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import { ColorOptions, Colour, LabelInput, Maybe } from '@tyro/api';
@@ -75,21 +79,32 @@ export default function LabelForm({ labelInfo, onCancel }: LabelFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={3} sx={{ p: 3 }}>
-        <RHFTextField controlProps={{ name: 'labelName', control }} />
-        <RHFColorPicker controlProps={{ name: 'color', control }} />
-      </Stack>
+    <Dialog>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DialogTitle>
+          {labelInfo ? t('mail:editLabel') : t('mail:newLabel')}
+        </DialogTitle>
+        <DialogContent>
+          <Stack spacing={3}>
+            <RHFTextField controlProps={{ name: 'labelName', control }} />
+            <RHFColorPicker controlProps={{ name: 'color', control }} />
+          </Stack>
+        </DialogContent>
 
-      <DialogActions>
-        <Button variant="outlined" color="inherit" onClick={onCancel}>
-          {t('common:actions.cancel')}
-        </Button>
+        <DialogActions>
+          <Button variant="outlined" color="inherit" onClick={onCancel}>
+            {t('common:actions.cancel')}
+          </Button>
 
-        <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-          {labelInfo?.id ? t('common:actions.save') : t('common:actions.add')}
-        </LoadingButton>
-      </DialogActions>
-    </form>
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            loading={isSubmitting}
+          >
+            {labelInfo?.id ? t('common:actions.save') : t('common:actions.add')}
+          </LoadingButton>
+        </DialogActions>
+      </form>
+    </Dialog>
   );
 }

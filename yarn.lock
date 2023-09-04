@@ -6355,6 +6355,27 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@tyro/old-mail@workspace:features/old-mail":
+  version: 0.0.0-use.local
+  resolution: "@tyro/old-mail@workspace:features/old-mail"
+  dependencies:
+    "@mui/lab": ^5.0.0-alpha.57
+    "@mui/material": ^5.13.2
+    "@mui/system": ^5.13.2
+    "@tanstack/react-query": ^4.29.7
+    "@tyro/api": "*"
+    "@tyro/configs": "*"
+    "@tyro/core": "*"
+    "@tyro/i18n": "*"
+    "@tyro/icons": "*"
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    react-hook-form: ^7.43.9
+    react-router: ^6.3.0
+    react-router-dom: ^6.6.2
+  languageName: unknown
+  linkType: soft
+
 "@tyro/people@*, @tyro/people@workspace:features/people":
   version: 0.0.0-use.local
   resolution: "@tyro/people@workspace:features/people"

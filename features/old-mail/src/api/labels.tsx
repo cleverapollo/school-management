@@ -3,16 +3,13 @@ import {
   AssignLabelInput,
   gqlClient,
   graphql,
+  InputMaybe,
   LabelInput,
   UnreadCountFilter,
   queryClient,
-  LabelFilter,
-  UseQueryReturnType,
 } from '@tyro/api';
-import { useToast } from '@tyro/core';
-import { useTranslation } from '@tyro/i18n';
-import { getLabelId } from '../constants';
-import { mailKeys } from './keys';
+import { labelsMap, LabelType } from '../constants';
+import { MailLabel } from '../types';
 
 const labels = graphql(/* GraphQL */ `
   query communications_label($filter: LabelFilter) {
@@ -38,7 +35,7 @@ const updateLabel = graphql(/* GraphQL */ `
   }
 `);
 
-const unreadCount = graphql(/* GraphQL */ `
+const unreadCountQuery = graphql(/* GraphQL */ `
   query communications_unreadCount($filter: UnreadCountFilter) {
     communications_unreadCount(filter: $filter) {
       labelId
@@ -104,39 +101,46 @@ const assignLabels = graphql(/* GraphQl */ `
   }
 `);
 
-const labelsQuery = (filter: LabelFilter) => ({
-  queryKey: mailKeys.labels(filter),
-  queryFn: () => gqlClient.request(labels, { filter }),
-});
+export const labelsKeys = {
+  all: ['label'] as const,
+};
 
-export function getLabels(filter: LabelFilter) {
-  return queryClient.fetchQuery(labelsQuery(filter));
+const calendarEventsQuery = {
+  queryKey: labelsKeys.all,
+  queryFn: async () => gqlClient.request(labels, { filter: {} }),
+};
+
+export function getLabels() {
+  return queryClient.fetchQuery(calendarEventsQuery);
 }
 
-export function useLabels(filter: LabelFilter) {
+export function useLabels() {
   return useQuery({
-    ...labelsQuery(filter),
+    ...calendarEventsQuery,
     select: ({ communications_label }) =>
-      communications_label?.map((item) => ({
-        ...item,
-        originalId: item?.id,
-        id: getLabelId(item?.id || 0),
-      })),
+      communications_label?.map(
+        (item) =>
+          ({
+            originalId: item?.id,
+            id: item?.id && item?.id < 5 ? labelsMap[item?.id] : undefined,
+            type: !item?.custom ? LabelType.SYSTEM : LabelType.CUSTOM,
+            name:
+              (item?.name === 'Outbox'
+                ? 'sent'
+                : !item?.custom
+                ? item?.name.toLowerCase()
+                : item?.name) ?? '',
+            unreadCount: 0,
+            color: item?.colour,
+          } ?? [])
+      ) as MailLabel[],
   });
 }
 
-const unreadCountQuery = (filter: UnreadCountFilter) => ({
-  queryKey: mailKeys.unreadCount(filter),
-  queryFn: () => gqlClient.request(unreadCount, { filter }),
-});
-
-export function getUnreadCountQuery(filter: UnreadCountFilter) {
-  return queryClient.fetchQuery(unreadCountQuery(filter));
-}
-
-export function useUnreadCount(filter: UnreadCountFilter) {
+export function useUnreadCount(filter: InputMaybe<UnreadCountFilter>) {
   return useQuery({
-    ...unreadCountQuery(filter),
+    queryKey: ['unreadCount', filter],
+    queryFn: async () => gqlClient.request(unreadCountQuery, { filter }),
     select: ({ communications_unreadCount }) => {
       const totalUnreadCount = communications_unreadCount?.reduce(
         (acc, item) =>
@@ -152,30 +156,17 @@ export function useUnreadCount(filter: UnreadCountFilter) {
 }
 
 export function useCreateLabel() {
-  const { t } = useTranslation(['common']);
-  const { toast } = useToast();
-
   return useMutation({
-    mutationFn: (input: LabelInput) =>
+    mutationKey: ['label'],
+    mutationFn: async (input: InputMaybe<LabelInput>) =>
       gqlClient.request(updateLabel, { input }),
-    onSuccess: async (_data, input) => {
-      await queryClient.invalidateQueries(mailKeys.labels({}));
-      toast(
-        input?.id
-          ? t('common:snackbarMessages.updateSuccess')
-          : t('common:snackbarMessages.createSuccess')
-      );
-    },
   });
 }
 
 export function useAssignLabel() {
   return useMutation({
-    mutationFn: (input: AssignLabelInput) =>
+    mutationKey: ['assignLabel'],
+    mutationFn: async (input: InputMaybe<AssignLabelInput>) =>
       gqlClient.request(assignLabels, { input }),
   });
 }
-
-export type ReturnTypeFromUseLabels = UseQueryReturnType<
-  typeof useLabels
->[number];

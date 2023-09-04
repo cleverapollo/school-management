@@ -2,14 +2,20 @@
 // TODO: remove above eslint when components are moved to @tyro/core
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Card } from '@mui/material';
-import { PageContainer, PageHeading } from '@tyro/core';
+// @mui
+import { Container, Card } from '@mui/material';
+// components
+import { Page } from '@tyro/core';
 import { Mail as MailType, UnreadCountFilter, useUser } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
+import HeaderBreadcrumbs from '../../../../src/components/HeaderBreadcrumbs';
 // sections
+import { MailList, MailDetails, MailSidebar, MailCompose } from '../components';
 import { useLabels, useUnreadCount } from '../api/labels';
 import { MailLabel, Mails } from '../types';
 import { LabelType } from '../constants';
+
+// ----------------------------------------------------------------------
 
 export default function Mail() {
   const { t } = useTranslation(['mail', 'navigation']);
@@ -71,16 +77,26 @@ export default function Mail() {
   const [openCompose, setOpenCompose] = useState(false);
 
   return (
-    <PageContainer title={t('mail:mail')}>
-      <PageHeading title={t('mail:mail')} titleProps={{ variant: 'h3' }} />
-      <Card
-        sx={{
-          minHeight: 480,
-          height: { md: '72vh' },
-          display: { md: 'flex' },
-        }}
-      >
-        {/* <MailSidebar
+    <Page title={t('mail:mail')}>
+      <Container maxWidth="xl">
+        <HeaderBreadcrumbs
+          heading={t('mail:mail')}
+          links={[
+            {
+              name: `${t('navigation:general.dashboard')}`,
+              href: '/dashboard',
+            },
+            { name: `${t('mail:mail')}` },
+          ]}
+        />
+        <Card
+          sx={{
+            minHeight: 480,
+            height: { md: '72vh' },
+            display: { md: 'flex' },
+          }}
+        >
+          <MailSidebar
             isOpenSidebar={openSidebar}
             onCloseSidebar={() => setOpenSidebar(false)}
             onOpenCompose={() => setOpenCompose(true)}
@@ -106,8 +122,9 @@ export default function Mail() {
           <MailCompose
             isOpenCompose={openCompose}
             onCloseCompose={() => setOpenCompose(false)}
-          /> */}
-      </Card>
-    </PageContainer>
+          />
+        </Card>
+      </Container>
+    </Page>
   );
 }
