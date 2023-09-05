@@ -185,6 +185,16 @@ export default function StudentsListPage() {
             rowSelection="multiple"
             getRowId={({ data }) => String(data?.partyId)}
             onBulkSave={bulkSaveStudents}
+            statusBar={{
+              statusPanels: [
+                {
+                  statusPanel: 'agTotalAndFilteredRowCountComponent',
+                  align: 'left',
+                },
+                { statusPanel: 'agFilteredRowCountComponent' },
+                { statusPanel: 'agSelectedRowCountComponent' },
+              ],
+            }}
             rightAdornment={
               <Fade in={selectedStudents.length > 0} unmountOnExit>
                 <Box>
