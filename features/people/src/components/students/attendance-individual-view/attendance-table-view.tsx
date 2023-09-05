@@ -19,16 +19,19 @@ type AttendanceTableViewProps = {
   studentId: string;
 };
 
+type TypeForCombinedAttendanceData = string | null | undefined;
+type OptionalTypeForCombinedAttendanceData = string | null;
+
 export type CombinedAttendanceDataType = {
-  date: string;
-  type: string;
-  attendanceCode: string;
-  details?: string;
+  date: TypeForCombinedAttendanceData;
+  type: TypeForCombinedAttendanceData;
+  attendanceCode: TypeForCombinedAttendanceData;
+  details?: OptionalTypeForCombinedAttendanceData;
   createdBy?: {
-    firstName: string;
-    lastName: string;
+    firstName?: OptionalTypeForCombinedAttendanceData;
+    lastName?: OptionalTypeForCombinedAttendanceData;
   };
-  partyId: string;
+  partyId: TypeForCombinedAttendanceData;
 };
 
 const getColumns = (
@@ -58,7 +61,7 @@ const getColumns = (
   {
     headerName: t('common:details'),
     field: 'type',
-    valueGetter: ({ data }) => data?.details,
+    valueGetter: ({ data }) => data?.details || '-',
   },
   {
     headerName: t('attendance:takenBy'),
@@ -69,7 +72,9 @@ const getColumns = (
     }: ICellRendererParams<CombinedAttendanceDataType, any>) =>
       data?.createdBy?.firstName ? (
         <TablePersonAvatar person={data?.createdBy} />
-      ) : null,
+      ) : (
+        '-'
+      ),
   },
 ];
 
@@ -81,13 +86,16 @@ export function AttendanceTableView({
   const { t } = useTranslation(['common', 'attendance']);
   const { displayName } = usePreferredNameLayout();
 
-  const { data: sessionAttendance } = useTableSessionAttendance({
+  const {
+    data: sessionAttendance = [],
+    isLoading: isSessionAttendanceLoading,
+  } = useTableSessionAttendance({
     partyIds: [Number(studentId) ?? 0],
     from: startDate,
     to: endDate,
   });
 
-  const { data: eventAttendance, isLoading: isTimetableLoading } =
+  const { data: eventAttendance = [], isLoading: isEventAttendanceLoading } =
     useStudentDailyCalendarInformation({
       resources: {
         partyIds: [Number(studentId)],
@@ -106,7 +114,7 @@ export function AttendanceTableView({
       const eventAttendanceData = event?.extensions?.eventAttendance[0];
       const partyId = event?.partyId;
 
-      const formattedData = {
+      const formattedData: CombinedAttendanceDataType = {
         type: event?.name,
         date: eventAttendanceData?.date,
         attendanceCode: eventAttendanceData?.attendanceCode?.name,
@@ -114,15 +122,19 @@ export function AttendanceTableView({
         details: eventAttendanceData?.note,
         partyId,
       };
-      acc.push(formattedData as unknown as CombinedAttendanceDataType);
+      acc.push(formattedData);
       return acc;
     }
     return acc;
   }, []);
 
-  const tableAttendanceData = sessionAttendance?.concat(
-    eventAttendanceFormatted as CombinedAttendanceDataType[]
-  ) as CombinedAttendanceDataType[];
+  const isTimetableLoading =
+    isEventAttendanceLoading || isSessionAttendanceLoading;
+
+  const tableAttendanceData: CombinedAttendanceDataType[] = [
+    ...sessionAttendance,
+    ...eventAttendanceFormatted,
+  ];
 
   const columns = useMemo(() => getColumns(t, displayName), [t, displayName]);
 
@@ -144,7 +156,7 @@ export function AttendanceTableView({
         sx={{
           boxShadow: 'none',
           p: 0,
-          '& .css-15bh6sw-MuiStack-root': { paddingX: 0 },
+          '& .MuiStack-root': { paddingX: 0 },
         }}
       />
     </Stack>

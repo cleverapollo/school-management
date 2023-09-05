@@ -62,19 +62,21 @@ const tableSessionAttendanceQuery = (
       }))
       .flatMap((session) => session.bellTimeAttendance)
       ?.reduce<CombinedAttendanceDataType[]>((acc, currentItem) => {
-        if ('bellTime' in currentItem) {
-          const formattedData = {
-            date: currentItem?.date,
-            type: currentItem?.bellTime?.name,
-            attendanceCode: currentItem?.attendanceCode?.name,
-            details: currentItem?.note,
+        const { attendanceCode, bellTime, createdBy, date, note, partyId } =
+          currentItem || {};
+        if (bellTime) {
+          const formattedData: CombinedAttendanceDataType = {
+            date,
+            type: bellTime?.name,
+            attendanceCode: attendanceCode?.name,
+            details: note,
             createdBy: {
-              firstName: currentItem?.createdBy?.firstName,
-              lastName: currentItem?.createdBy?.lastName,
+              firstName: createdBy?.firstName,
+              lastName: createdBy?.lastName,
             },
-            partyId: currentItem?.partyId,
+            partyId,
           };
-          acc.push(formattedData as CombinedAttendanceDataType);
+          acc.push(formattedData);
         }
         return acc;
       }, []);

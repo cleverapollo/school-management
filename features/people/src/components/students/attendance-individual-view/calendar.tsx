@@ -34,7 +34,7 @@ const attendanceColours = {
 const weekends = [0, 6];
 
 const getBackgroundColor = (
-  formattedDay: string,
+  formattedDay: keyof typeof attendanceColours,
   dayOfWeek: number,
   currentTabValue: string
 ) => {
@@ -42,45 +42,34 @@ const getBackgroundColor = (
     return 'white';
   }
 
+  const keyOfAttendanceColours = attendanceColours[formattedDay];
+
   if (currentTabValue === 'All') {
-    if (
-      formattedDay &&
-      attendanceColours[formattedDay as keyof typeof attendanceColours]
-    ) {
-      return `${
-        attendanceColours[formattedDay as keyof typeof attendanceColours]
-      }.100`;
+    if (formattedDay && keyOfAttendanceColours) {
+      return `${keyOfAttendanceColours}.100`;
     }
   } else if (currentTabValue === formattedDay) {
-    return `${
-      attendanceColours[formattedDay as keyof typeof attendanceColours]
-    }.100`;
+    return `${keyOfAttendanceColours}.100`;
   }
 
   return 'transparent';
 };
 
 const getFontColor = (
-  formattedDay: string,
+  formattedDay: keyof typeof attendanceColours,
   dayOfWeek: number,
   currentTabValue: string
 ) => {
   if (weekends.includes(dayOfWeek)) {
     return 'grey.300';
   }
+  const keyOfAttendanceColours = attendanceColours[formattedDay];
   if (currentTabValue === 'All') {
-    if (
-      formattedDay &&
-      attendanceColours[formattedDay as keyof typeof attendanceColours]
-    ) {
-      return `${
-        attendanceColours[formattedDay as keyof typeof attendanceColours]
-      }.500`;
+    if (formattedDay && keyOfAttendanceColours) {
+      return `${keyOfAttendanceColours}.500`;
     }
   } else if (currentTabValue === formattedDay) {
-    return `${
-      attendanceColours[formattedDay as keyof typeof attendanceColours]
-    }.500`;
+    return `${keyOfAttendanceColours}.500`;
   }
   return 'grey.300';
 };

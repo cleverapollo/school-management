@@ -66,65 +66,16 @@ function ViewToggleButton({
         }}
       >
         <Icon
-          sx={{
+          sx={({ palette }) => ({
             width: 20,
             height: 20,
             '&  g *': {
-              stroke: selected ? '#6366F1' : '#94A3B8',
+              stroke: selected ? palette.indigo?.[500] : palette.slate?.[400],
             },
-          }}
+          })}
         />
       </ToggleButton>
     </Tooltip>
-  );
-}
-
-interface AttendanceViewSwitcherProps {
-  value: ViewOption['value'];
-  onChange: (value: ViewOption['value']) => void;
-}
-
-function AttendanceViewSwitcher({
-  value,
-  onChange,
-}: AttendanceViewSwitcherProps) {
-  const { t } = useTranslation(['attendance']);
-  const viewOptions = useMemo(() => getViewOptions(t), [t]);
-
-  return (
-    <Stack
-      role="group"
-      aria-label={t('attendance:changeRolebookView')}
-      direction="row"
-      spacing={1}
-      sx={{
-        button: {
-          borderStyle: 'solid',
-          borderWidth: 1,
-          borderColor: 'slate.100',
-          color: 'slate.500',
-
-          '&.Mui-selected': {
-            borderColor: 'indigo.200',
-            color: 'primary.main',
-            backgroundColor: 'indigo.50',
-
-            '&:hover': {
-              backgroundColor: 'indigo.100',
-            },
-          },
-        },
-      }}
-    >
-      {viewOptions.map((props) => (
-        <ViewToggleButton
-          key={props.value}
-          {...props}
-          selected={props.value === value}
-          onChange={onChange}
-        />
-      ))}
-    </Stack>
   );
 }
 
@@ -156,48 +107,52 @@ export const MonthOverview = () => {
   const [value, setValue] = useState(0);
   const [currentTabValue, setCurrentTabValue] = useState('All');
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
-
   const attendanceTabData = [
     {
       colour: 'indigo',
       translationText: t('attendance:all'),
       calendarAttendanceTotals: 'all',
       currentTabValue: 'All',
+      total: totalAttendanceDays,
     },
     {
       colour: 'emerald',
       translationText: t('attendance:totalPresent'),
       calendarAttendanceTotals: 'totalPresent',
       currentTabValue: 'PRESENT',
+      total: calendarAttendance?.totalPresent ?? 0,
     },
     {
       colour: 'sky',
       translationText: t('attendance:totalLate'),
       calendarAttendanceTotals: 'totalLate',
       currentTabValue: 'LATE',
+      total: calendarAttendance?.totalLate ?? 0,
     },
     {
       colour: 'pink',
       translationText: t('attendance:totalAbsent'),
       calendarAttendanceTotals: 'totalAbsent',
       currentTabValue: 'EXPLAINED_ABSENCE',
+      total: calendarAttendance?.totalAbsent ?? 0,
     },
     {
       colour: 'red',
       translationText: t('attendance:totalUnexplained'),
       calendarAttendanceTotals: 'totalUnexplained',
       currentTabValue: 'UNEXPLAINED_ABSENCE',
+      total: calendarAttendance?.totalUnexplained ?? 0,
     },
     {
       colour: 'grey',
       translationText: t('attendance:totalNotTaken'),
       calendarAttendanceTotals: 'totalNotTaken',
       currentTabValue: 'NOT_TAKEN',
+      total: calendarAttendance?.totalNotTaken ?? 0,
     },
   ];
+
+  const viewOptions = useMemo(() => getViewOptions(t), [t]);
 
   return (
     <Card variant="outlined" sx={{ height: '100%', flex: 1 }}>
@@ -210,7 +165,39 @@ export const MonthOverview = () => {
           marginY: 2,
         }}
       >
-        <AttendanceViewSwitcher value={view} onChange={setView} />
+        <Stack
+          role="group"
+          aria-label={t('attendance:changeRolebookView')}
+          direction="row"
+          spacing={1}
+          sx={{
+            button: {
+              borderStyle: 'solid',
+              borderWidth: 1,
+              borderColor: 'slate.100',
+              color: 'slate.500',
+
+              '&.Mui-selected': {
+                borderColor: 'indigo.200',
+                color: 'primary.main',
+                backgroundColor: 'indigo.50',
+
+                '&:hover': {
+                  backgroundColor: 'indigo.100',
+                },
+              },
+            },
+          }}
+        >
+          {viewOptions.map((option) => (
+            <ViewToggleButton
+              key={option.value}
+              {...option}
+              selected={option.value === view}
+              onChange={setView}
+            />
+          ))}
+        </Stack>
         <CardHeader
           component="h3"
           title={t(`people:academicYear`, {
@@ -221,7 +208,7 @@ export const MonthOverview = () => {
             border: 0,
             textAlign: 'center',
             fontWeight: 600,
-            '& .css-8ebtji-MuiTypography-root': {
+            '& .MuiTypography-root': {
               fontWeight: 600,
             },
           }}
@@ -237,10 +224,12 @@ export const MonthOverview = () => {
             <>
               <Tabs
                 value={value}
-                onChange={handleChange}
+                onChange={(event: React.SyntheticEvent, newValue: number) =>
+                  setValue(newValue)
+                }
                 variant="scrollable"
                 scrollButtons="auto"
-                aria-label="scrollable auto tabs for highlighting attendance types"
+                aria-label={t('people:ariaLabelForTabs')}
                 sx={{
                   '& .MuiTabs-flexContainer': {
                     alignItems: 'center',
@@ -255,14 +244,7 @@ export const MonthOverview = () => {
                     label={
                       <>
                         <Chip
-                          label={
-                            item && item?.translationText === 'All'
-                              ? totalAttendanceDays?.toString()
-                              : calendarAttendance &&
-                                calendarAttendance[
-                                  item?.calendarAttendanceTotals as keyof typeof calendarAttendance
-                                ]?.toString()
-                          }
+                          label={item.total}
                           variant="soft"
                           sx={{
                             cursor: 'pointer',

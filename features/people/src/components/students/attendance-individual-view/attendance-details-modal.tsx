@@ -74,13 +74,8 @@ export const AttendanceDetailsModal = ({
 }: AttendanceDetailsModalProps) => {
   const { t } = useTranslation(['attendance', 'people', 'common']);
   const { userType } = usePermissions();
-  const {
-    handleSubmit,
-    control,
-    setValue,
-    setError,
-    formState: { errors },
-  } = useForm<AttendanceForm>();
+  const { handleSubmit, control, setValue, setError } =
+    useForm<AttendanceForm>();
   const [openAlert, setOpenAlert] = useState(true);
 
   const isTeacherUserType = userType === UserType.Teacher;
@@ -399,8 +394,8 @@ export const AttendanceDetailsModal = ({
                           </Stack>
                         </TableCell>
                         <TableCell>
-                          {sessionAttendance?.createdBy && (
-                            <Stack direction="row" alignItems="center">
+                          <Stack direction="row" alignItems="center">
+                            {sessionAttendance?.createdBy && (
                               <Avatar
                                 sx={{
                                   width: 32,
@@ -410,19 +405,19 @@ export const AttendanceDetailsModal = ({
                                 name={creatorName}
                                 src={sessionAttendance?.createdBy?.avatarUrl}
                               />
-                              <Typography
-                                variant="subtitle2"
-                                sx={{ textWrap: 'noWrap', marginLeft: 1 }}
-                              >
-                                {creatorName || '-'}
-                              </Typography>
-                            </Stack>
-                          )}
+                            )}
+                            <Typography
+                              variant="subtitle2"
+                              sx={{ textWrap: 'noWrap', marginLeft: 1 }}
+                            >
+                              {creatorName || '-'}
+                            </Typography>
+                          </Stack>
                         </TableCell>
                         <TableCell>
                           {isTeacherUserType ? (
                             <Typography variant="subtitle2">
-                              {sessionAttendance?.note}
+                              {sessionAttendance?.note || '-'}
                             </Typography>
                           ) : (
                             <Stack
@@ -451,7 +446,7 @@ export const AttendanceDetailsModal = ({
                         <TableCell>
                           {isTeacherUserType ? (
                             <Typography variant="subtitle2">
-                              {sessionAttendance?.attendanceCode?.name}
+                              {sessionAttendance?.attendanceCode?.name || '-'}
                             </Typography>
                           ) : (
                             <Stack
@@ -516,8 +511,8 @@ export const AttendanceDetailsModal = ({
                           </Stack>
                         </TableCell>
                         <TableCell>
-                          {currentEvent?.createdBy && (
-                            <Stack direction="row" alignItems="center">
+                          <Stack direction="row" alignItems="center">
+                            {currentEvent?.createdBy && (
                               <Avatar
                                 sx={{
                                   width: 32,
@@ -527,20 +522,23 @@ export const AttendanceDetailsModal = ({
                                 name={creatorName}
                                 src={currentEvent?.createdBy?.avatarUrl}
                               />
+                            )}
 
-                              <Typography
-                                variant="subtitle2"
-                                sx={{ textWrap: 'noWrap', marginLeft: 1 }}
-                              >
-                                {creatorName || '-'}
-                              </Typography>
-                            </Stack>
-                          )}
+                            <Typography
+                              variant="subtitle2"
+                              sx={{
+                                textWrap: 'noWrap',
+                                marginLeft: 1,
+                              }}
+                            >
+                              {creatorName || '-'}
+                            </Typography>
+                          </Stack>
                         </TableCell>
                         <TableCell>
                           {isTeacherUserType ? (
                             <Typography variant="subtitle2">
-                              {currentEvent?.note}
+                              {currentEvent?.note || '-'}
                             </Typography>
                           ) : (
                             <Stack
@@ -569,7 +567,7 @@ export const AttendanceDetailsModal = ({
                         <TableCell>
                           {isTeacherUserType ? (
                             <Typography variant="subtitle2">
-                              {currentEvent?.attendanceCode?.name}
+                              {currentEvent?.attendanceCode?.name || '-'}
                             </Typography>
                           ) : (
                             <Stack
