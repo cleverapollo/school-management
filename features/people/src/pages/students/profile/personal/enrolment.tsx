@@ -117,14 +117,12 @@ const getEnrolmentDataWithLabels = (
       ? [
           {
             label: t('people:personal.enrolmentHistory.dateOfLeaving'),
-            // value: endDate ? dayjs(endDate).format('l') : '-',
-            value: '09/01/2023',
+            value: endDate ? dayjs(endDate).format('l') : '-',
             valueEditor: <RHFDatePicker controlProps={{ name: 'endDate' }} />,
           },
           {
             label: t('people:personal.enrolmentHistory.reasonOfDeparture'),
-            // value: studentIrePP?.reasonForLeaving,
-            value: 'Reason example',
+            value: studentIrePP?.reasonForLeaving,
             valueEditor: (
               <RHFTextField
                 textFieldProps={{ variant: 'standard' }}
