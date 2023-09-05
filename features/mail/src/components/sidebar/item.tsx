@@ -1,10 +1,14 @@
 import { Link, useParams } from 'react-router-dom';
-import { ListItemText, ListItemButton, SvgIconProps } from '@mui/material';
+import {
+  ListItemText,
+  ListItemButton,
+  SvgIconProps,
+  Typography,
+} from '@mui/material';
 
 import {
   Dispatch,
   ForwardRefExoticComponent,
-  ReactElement,
   RefAttributes,
   SetStateAction,
 } from 'react';
@@ -13,10 +17,10 @@ import {
   EditIcon,
   TrashIcon,
   MailInboxIcon,
-  BlankFileIcon,
   SendMailIcon,
   StarIcon,
   LabelIcon,
+  VerticalDotsIcon,
 } from '@tyro/icons';
 import { ActionMenu } from '@tyro/core';
 import { ReturnTypeFromUseLabels } from '../../api/labels';
@@ -39,18 +43,24 @@ const linkTo = ({ custom, id }: ReturnTypeFromUseLabels) =>
 
 type MailSidebarItemProps = {
   label: ReturnTypeFromUseLabels;
-  setLabelInfo: Dispatch<SetStateAction<ReturnTypeFromUseLabels>>;
+  setLabelInfo?: Dispatch<
+    SetStateAction<Partial<ReturnTypeFromUseLabels> | null>
+  >;
 };
 
 export function MailSidebarItem({ label, setLabelInfo }: MailSidebarItemProps) {
   const { t } = useTranslation(['mail', 'common']);
-  const { id } = useParams<{ id: string }>();
-  // const isActive = use
+  const { labelId } = useParams<{ labelId: string }>();
+  const isActive =
+    typeof label.id === 'number'
+      ? label.id === Number(labelId)
+      : label.id === labelId;
   const labelOptions = [
     {
       label: t('common:actions.edit'),
       icon: <EditIcon />,
       onClick: () => {
+        if (!setLabelInfo) return;
         setLabelInfo(label);
       },
     },
@@ -67,30 +77,65 @@ export function MailSidebarItem({ label, setLabelInfo }: MailSidebarItemProps) {
       : LABEL_ICONS[label.id] || LabelIcon;
 
   const sharedIconProps = {
-    mr: 2,
-    color: label.colour,
+    mr: 1,
+    ...(label.custom && {
+      color: label.colour && `${label.colour}.400`,
+      'svg path': {
+        fill: 'currentColor',
+      },
+    }),
   };
+
+  const unreadCount = 5;
+  const isUnread = unreadCount > 0;
 
   return (
     <ListItemButton
       component={Link}
       to={linkTo(label)}
       sx={{
-        px: 3,
+        pl: 3,
+        pr: 1,
         height: 48,
         typography: 'body2',
         color: !isActive ? 'text.secondary' : 'text.primary',
         fontWeight: !isActive ? '' : 'fontWeightMedium',
         bgcolor: !isActive ? '' : 'action.selected',
+
+        '.label-options': {
+          display: 'none',
+        },
+
+        ...(label.custom && {
+          '&:hover': {
+            '.label-options': {
+              display: 'inline-flex',
+            },
+            '.unread-count': {
+              display: 'none',
+            },
+          },
+        }),
       }}
     >
       <Icon sx={sharedIconProps} />
       <ListItemText disableTypography primary={label.name} />
 
-      {/* {isUnread && (!hovered || !label.custom) && (
-        <Typography variant="caption">{label.unreadCount}</Typography>
-      )} */}
-      {label.custom && <ActionMenu menuItems={labelOptions} />}
+      {isUnread && (
+        <Typography className="unread-count" variant="caption" pr={2}>
+          {unreadCount}
+        </Typography>
+      )}
+      {label.custom && (
+        <ActionMenu
+          iconOnly
+          buttonIcon={<VerticalDotsIcon />}
+          menuItems={labelOptions}
+          buttonProps={{
+            className: 'label-options',
+          }}
+        />
+      )}
     </ListItemButton>
   );
 }

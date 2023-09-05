@@ -61,6 +61,15 @@ export type ActiveSupportPlanFilter = {
   studentPartyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
 
+export enum Activity {
+  GuidanceAndCounselling = 'GUIDANCE_AND_COUNSELLING',
+  HomeSchoolLiaison = 'HOME_SCHOOL_LIAISON',
+  OtherActivity = 'OTHER_ACTIVITY',
+  ProgrammeCoordination = 'PROGRAMME_COORDINATION',
+  SmallGroupsForAdditionalStudentNeeds = 'SMALL_GROUPS_FOR_ADDITIONAL_STUDENT_NEEDS',
+  TimetabledHoursInOtherSchools = 'TIMETABLED_HOURS_IN_OTHER_SCHOOLS'
+}
+
 export type Address = {
   __typename?: 'Address';
   active?: Maybe<Scalars['Boolean']>;
@@ -1399,6 +1408,16 @@ export type DashboardAssessmentResult = {
   subjectGroupId: Scalars['Long'];
 };
 
+export enum Day {
+  Friday = 'FRIDAY',
+  Monday = 'MONDAY',
+  Saturday = 'SATURDAY',
+  Sunday = 'SUNDAY',
+  Thursday = 'THURSDAY',
+  Tuesday = 'TUESDAY',
+  Wednesday = 'WEDNESDAY'
+}
+
 export enum DayType {
   Holiday = 'HOLIDAY',
   Partial = 'PARTIAL',
@@ -1421,6 +1440,11 @@ export type DeleteFeeInput = {
 export type DeleteFileTransferInput = {
   feature: FileTransferFeature;
   id: Scalars['Int'];
+};
+
+export type DeleteNonClassContactHoursInput = {
+  nonClassContactHoursId: Scalars['Int'];
+  staffPartyId: Scalars['Int'];
 };
 
 export type DeleteStudentMedicalConditionInput = {
@@ -2112,6 +2136,8 @@ export type Mutation = {
   core_upsertStaff?: Maybe<Array<Maybe<Staff>>>;
   core_upsertStudentContact: StudentContact;
   delete_file_transfer?: Maybe<Success>;
+  eire_deleteNonClassContactHours?: Maybe<Success>;
+  eire_upsertNonClassContactHours?: Maybe<Success>;
   enrollment_ire_autoAssignBlocks: Success;
   enrollment_ire_autoAssignCore: Success;
   enrollment_ire_changeProgrammeStage: Success;
@@ -2362,6 +2388,16 @@ export type MutationDelete_File_TransferArgs = {
 };
 
 
+export type MutationEire_DeleteNonClassContactHoursArgs = {
+  input?: InputMaybe<DeleteNonClassContactHoursInput>;
+};
+
+
+export type MutationEire_UpsertNonClassContactHoursArgs = {
+  input?: InputMaybe<SaveNonClassContactHoursInput>;
+};
+
+
 export type MutationEnrollment_Ire_AutoAssignBlocksArgs = {
   input: EnrollmentIre_AutoAssignBlockMembershipInput;
 };
@@ -2575,11 +2611,40 @@ export type MyLabelsFilter = {
   personPartyId: Scalars['Long'];
 };
 
+export enum Ncch_Programme {
+  Jcsp = 'JCSP',
+  JuniorCycle = 'JUNIOR_CYCLE',
+  Lcvp = 'LCVP',
+  LeavingCertificate = 'LEAVING_CERTIFICATE',
+  LeavingCertificateApplied = 'LEAVING_CERTIFICATE_APPLIED',
+  TransitionYear = 'TRANSITION_YEAR',
+  Vpt2 = 'VPT2',
+  Vtos = 'VTOS'
+}
+
 export type NextOfKin = {
   __typename?: 'NextOfKin';
   firstName?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
   phoneNumbers?: Maybe<Array<Maybe<Scalars['String']>>>;
+};
+
+export type NonClassContactHours = {
+  __typename?: 'NonClassContactHours';
+  academicNameSpaceId: Scalars['Int'];
+  activity: Activity;
+  dayOfTheWeek: Day;
+  description?: Maybe<Scalars['String']>;
+  hours: Scalars['Int'];
+  minutes: Scalars['Int'];
+  nonClassContactHoursId: Scalars['Int'];
+  programme?: Maybe<Ncch_Programme>;
+  staffPartyId: Scalars['Int'];
+};
+
+export type NonClassContactHoursFilter = {
+  academicNameSpaceId: Scalars['Int'];
+  staffPartyId: Scalars['Int'];
 };
 
 export enum Notes_BehaviourType {
@@ -3268,6 +3333,7 @@ export type Query = {
   core_students: Array<Student>;
   core_subjectGroupStudents?: Maybe<SubjectGroupStudent>;
   core_yearGroupEnrollments: Array<YearGroupEnrollment>;
+  eire_nonClassContactHours?: Maybe<Array<Maybe<NonClassContactHours>>>;
   enrollment_ire_blockMemberships: EnrollmentIre_BlockMemberships;
   enrollment_ire_coreMemberships: EnrollmentIre_CoreMemberships;
   fees_discounts?: Maybe<Array<Maybe<Discount>>>;
@@ -3524,6 +3590,11 @@ export type QueryCore_SubjectGroupStudentsArgs = {
 
 export type QueryCore_YearGroupEnrollmentsArgs = {
   filter?: InputMaybe<YearGroupEnrollmentFilter>;
+};
+
+
+export type QueryEire_NonClassContactHoursArgs = {
+  filter?: InputMaybe<NonClassContactHoursFilter>;
 };
 
 
@@ -4286,6 +4357,18 @@ export type SaveGradeSetInput = {
   name: Array<TranslationInput>;
   passFailThreshold?: InputMaybe<Scalars['Int']>;
   years?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
+export type SaveNonClassContactHoursInput = {
+  academicNameSpaceId: Scalars['Int'];
+  activity: Activity;
+  dayOfTheWeek: Day;
+  description?: InputMaybe<Scalars['String']>;
+  hours: Scalars['Int'];
+  minutes: Scalars['Int'];
+  nonClassContactHoursId?: InputMaybe<Scalars['Int']>;
+  programme?: InputMaybe<Ncch_Programme>;
+  staffPartyId: Scalars['Int'];
 };
 
 export type SaveNotificationTemplateInput = {
@@ -6045,7 +6128,9 @@ export type UpdateStudentInput = {
 
 export type UpdateSubjectGroupInput = {
   irePP?: InputMaybe<UpdateSubjectGroupIrePpInput>;
+  name?: InputMaybe<Scalars['String']>;
   subjectGroupPartyId: Scalars['Long'];
+  subjectIds?: InputMaybe<Array<Scalars['Int']>>;
   teachers?: InputMaybe<Array<UpdateSubjectGroupTeachersInput>>;
 };
 

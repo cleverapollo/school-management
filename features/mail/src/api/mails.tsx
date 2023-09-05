@@ -6,8 +6,11 @@ import {
   MailStarredInput,
   SendMailInput,
   MailReadInput,
+  MailFilter,
+  queryClient,
 } from '@tyro/api';
 import { DEFAULT_PAGINATION_LIMIT } from '../constants';
+import { mailKeys } from './keys';
 
 const mails = graphql(/* GraphQL */ `
   query communications_mail($filter: MailFilter) {
@@ -135,43 +138,34 @@ const readMail = graphql(`
   }
 `);
 
-export function useMails(labelId: number, profileId?: number | null) {
-  const starredFilter = {
-    filter: {
+const mailListQuery = (filter: MailFilter) => ({
+  queryKey: mailKeys.list(filter),
+  queryFn: async () => gqlClient.request(mails, { filter }),
+});
+
+export function getMailList(filter: MailFilter) {
+  return queryClient.fetchQuery(mailListQuery(filter));
+}
+
+export function useMailList(labelId: number, profileId?: number | null) {
+  return useQuery({
+    ...mailListQuery({
       pagination: { limit: DEFAULT_PAGINATION_LIMIT },
       partyId: profileId,
-      starred: true,
-    },
-  };
-  return useQuery({
-    queryKey: ['mail'],
-    queryFn: async () =>
-      gqlClient.request(
-        mails,
-        labelId === 0
-          ? starredFilter
-          : {
-              filter: {
-                pagination: { limit: DEFAULT_PAGINATION_LIMIT },
-                partyId: profileId,
-                labelId,
-              },
-            }
-      ),
+      labelId,
+    }),
     select: ({ communications_mail }) => communications_mail,
   });
 }
 
 export function useSendMail(input: InputMaybe<SendMailInput>) {
   return useMutation({
-    mutationKey: ['sendMail', input],
     mutationFn: async () => gqlClient.request(sendMail, { input }),
   });
 }
 
 export function useStarMail() {
   return useMutation({
-    mutationKey: ['starMail'],
     mutationFn: async (input: InputMaybe<MailStarredInput>) =>
       gqlClient.request(starMail, { input }),
   });
@@ -179,7 +173,6 @@ export function useStarMail() {
 
 export function useReadMail() {
   return useMutation({
-    mutationKey: ['readMail'],
     mutationFn: async (input: InputMaybe<MailReadInput>) =>
       gqlClient.request(readMail, { input }),
   });

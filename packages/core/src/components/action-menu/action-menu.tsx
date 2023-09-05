@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 import {
   Button,
   ButtonProps,
@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { ChevronDownIcon } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
-import { PermissionUtils, usePermissions } from '@tyro/api';
+import { usePermissions } from '@tyro/api';
 import { useDisclosure } from '../../hooks';
 import { getMenuItemList, MenuItemConfig } from './menu-item-list';
 
@@ -78,6 +78,14 @@ export function ActionMenu({
           horizontal: 'right',
         }}
         {...menuProps}
+        onClose={(...args) => {
+          if (args[1] === 'backdropClick') {
+            const event = args[0] as React.MouseEvent;
+            event.preventDefault();
+          }
+          onClose();
+          menuProps?.onClose?.(...args);
+        }}
         sx={{ mt: 1, ...menuProps?.sx }}
       >
         {sectionedMenuItems.reduce<React.ReactNode[]>(

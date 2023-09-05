@@ -16,21 +16,16 @@ export const getRoutes: NavObjectFunction = (t) => [
         icon: <LetterIcon />,
         hasAccess: (permissions) => !permissions.isTyroTenantAndUser,
         element: <Mail />,
-        loader: () => getLabels(),
+        loader: () => getLabels({}),
         children: [
           {
             type: NavObjectType.NonMenuLink,
-            path: ':mailId',
+            path: ':labelId',
             element: <Mail />,
           },
           {
             type: NavObjectType.NonMenuLink,
-            path: 'label/:labelName',
-            element: <Mail />,
-          },
-          {
-            type: NavObjectType.NonMenuLink,
-            path: 'label/custom/:labelName',
+            path: 'label/:labelId',
             element: <Mail />,
           },
         ],

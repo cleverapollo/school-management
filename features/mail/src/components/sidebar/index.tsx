@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useMemo, useEffect, useState } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   Box,
@@ -9,32 +9,15 @@ import {
   Typography,
   IconButton,
 } from '@mui/material';
-import {
-  Scrollbar,
-  useDebouncedValue,
-  useDisclosure,
-  useResponsive,
-} from '@tyro/core';
-import { LabelInput, Maybe, useUser } from '@tyro/api';
+import { Scrollbar, useDebouncedValue, useResponsive } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { AddIcon } from '@tyro/icons';
 import { MailSidebarItem } from './item';
-import { Mails } from '../../types';
 import { useMailSettings } from '../../store/mail-settings';
 import { ReturnTypeFromUseLabels, useLabels } from '../../api/labels';
+import { LabelDialog } from './label-dialog';
 
-type Props = {
-  activeLabelName: string;
-  setActiveLabelName: Dispatch<SetStateAction<string>>;
-  setMails: Dispatch<SetStateAction<Mails>>;
-};
-
-export function MailSidebar({
-  activeLabelName,
-  setActiveLabelName,
-  setMails,
-}: Props) {
-  const { activeProfile } = useUser();
+export function MailSidebar() {
   const { pathname } = useLocation();
   const { t } = useTranslation(['mail', 'common']);
   const { sidebarDisclosure } = useMailSettings();
@@ -49,7 +32,6 @@ export function MailSidebar({
   } = useDebouncedValue<Partial<ReturnTypeFromUseLabels> | null>({
     defaultValue: null,
   });
-  const [labelInfo, setLabelInfo] = useState<Maybe<LabelInput>>(null);
 
   const { data: labels } = useLabels({});
   const splitLabels = useMemo(
@@ -90,12 +72,9 @@ export function MailSidebar({
       <List disablePadding>
         {splitLabels.standard.map((label) => (
           <MailSidebarItem
-            setActiveLabelName={setActiveLabelName}
-            key={label.originalId}
+            key={label.id}
             label={label}
-            isActive={label.name === activeLabelName}
-            setMails={setMails}
-            setLabelInfo={setLabelInfo}
+            setLabelInfo={setOpenLabelInfo}
           />
         ))}
       </List>
@@ -120,11 +99,8 @@ export function MailSidebar({
       <List disablePadding>
         {splitLabels.custom.map((label) => (
           <MailSidebarItem
-            setActiveLabelName={setActiveLabelName}
-            key={label.id || label.name}
+            key={label.id}
             label={label}
-            isActive={label.name === activeLabelName}
-            setMails={setMails}
             setLabelInfo={setOpenLabelInfo}
           />
         ))}
@@ -132,21 +108,30 @@ export function MailSidebar({
     </Scrollbar>
   );
 
-  return isDesktop ? (
-    <Drawer
-      variant="permanent"
-      PaperProps={{ sx: { width: 260, position: 'relative' } }}
-    >
-      {renderContent}
-    </Drawer>
-  ) : (
-    <Drawer
-      open={isSidebarOpen}
-      onClose={onCloseSidebar}
-      ModalProps={{ keepMounted: true }}
-      PaperProps={{ sx: { width: 260 } }}
-    >
-      {renderContent}
-    </Drawer>
+  return (
+    <>
+      {isDesktop ? (
+        <Drawer
+          variant="permanent"
+          PaperProps={{ sx: { width: 260, position: 'relative' } }}
+        >
+          {renderContent}
+        </Drawer>
+      ) : (
+        <Drawer
+          open={isSidebarOpen}
+          onClose={onCloseSidebar}
+          ModalProps={{ keepMounted: true }}
+          PaperProps={{ sx: { width: 260 } }}
+        >
+          {renderContent}
+        </Drawer>
+      )}
+      <LabelDialog
+        open={Boolean(openLabelInfo)}
+        labelInfo={openLabelInfo ?? debouncedOpenLabelInfo}
+        onClose={() => setOpenLabelInfo(null)}
+      />
+    </>
   );
 }
