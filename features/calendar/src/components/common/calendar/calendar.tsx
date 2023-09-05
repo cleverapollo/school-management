@@ -35,7 +35,7 @@ import { getCalendarContent } from './calendar-content';
 import { FilterCalendarPanel } from './filter-calendar-panel';
 import { CalendarDetailsPopover } from './details-popover';
 import { getDayHeaderContent } from './day-header-content';
-import { CalendarParty } from '../../../hooks/use-participants-search-props';
+import { CalendarParty } from '../../../hooks/use-calendar-search-props';
 import {
   DEFAULT_END_TIME,
   SELECTABLE_EVENT_CONSTRAINT,
