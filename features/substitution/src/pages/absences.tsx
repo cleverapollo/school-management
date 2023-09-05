@@ -9,11 +9,9 @@ import {
   PageContainer,
   PageHeading,
   useDebouncedValue,
-  TableBooleanValue,
   ActionMenu,
-  TableLinearProgress,
 } from '@tyro/core';
-import { Box, Button, Tooltip } from '@mui/material';
+import { Box, Button } from '@mui/material';
 
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
@@ -29,7 +27,10 @@ import {
   UpsertAbsenceModalProps,
 } from '../components/absences/upsert-absence-modal';
 import { LongTermLeaveCell } from '../components/absences/long-term-leave-cell';
-import { TableDatesList } from '../components/absences/table-dates-list';
+import {
+  TableDatesList,
+  getDateListString,
+} from '../components/absences/table-dates-list';
 import {
   DeleteAbsenceConfirmModal,
   DeleteAbsenceConfirmModalProps,
@@ -91,6 +92,7 @@ const getColumnDefs = (
     }: ICellRendererParams<ReturnTypeFromUseStaffWorkAbsences, any>) => (
       <TableDatesList dates={data?.dates ?? []} />
     ),
+    valueGetter: ({ data }) => getDateListString(data?.dates ?? [], t),
     autoHeight: true,
     wrapText: true,
   },
