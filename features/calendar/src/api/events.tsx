@@ -302,7 +302,7 @@ export function useCalendarEvents(
                   (tag) => tag.context === Calendar_TagContext.Substitution
                 ),
                 originalEvent: event,
-                editable: event?.editable ?? false,
+                editable: !!event?.editable,
               });
             });
 
