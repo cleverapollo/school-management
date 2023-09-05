@@ -14,7 +14,7 @@ import {
   usePreferredNameLayout,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { useMemo, useState } from 'react';
 import { AbsentRequestStatusChip } from '../components/absent-requests/absent-request-status-chip';
@@ -23,15 +23,16 @@ import {
   ReturnTypeFromUseSessionAttendanceList,
   useSessionAttendanceList,
 } from '../api/session-attendance-table';
+import { RolebookToolbar } from '../components/role-book/toolbar';
+import { AttendanceListToolbar } from '../components/attendance-list-toolbar';
+import { ReturnTypeFromUseAttendanceCodes } from '../api';
 
 dayjs.extend(LocalizedFormat);
 
 const getColumns = (
   t: TFunction<('common' | 'attendance')[]>,
   displayName: ReturnTypeDisplayName
-): GridOptions<
-  ReturnTypeFromUseSessionAttendanceList[number]
->['columnDefs'] => [
+): GridOptions<ReturnTypeFromUseSessionAttendanceList>['columnDefs'] => [
   {
     field: 'classGroup.name',
     headerName: t('common:name'),
@@ -61,23 +62,39 @@ const getColumns = (
     valueGetter: ({ data }) => data?.attendanceCode?.name ?? '-',
   },
   {
-    field: 'createdOn',
+    field: 'date',
     headerName: t('common:created'),
     comparator: (dateA: string, dateB: string) =>
       dayjs(dateA).unix() - dayjs(dateB).unix(),
-    valueGetter: ({ data }) => dayjs(data?.createdOn).format('LL'),
+    valueGetter: ({ data }) => dayjs(data?.date).format('LL'),
   },
 ];
 
 export default function AbsentRequests() {
   const { isContact } = usePermissions();
   const { t } = useTranslation(['common', 'attendance']);
-  // const { data: absentRequests } = useSessionAttendanceList({
-  //   attendanceCodeIds: [1],
-  //   from: dayjs().format('YYYY-MM-DD'),
-  //   to: dayjs().format('YYYY-MM-DD'),
-  // });
-  const { data: absentRequests } = useSessionAttendanceList({});
+
+  const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([
+    dayjs().subtract(1, 'weeks'),
+    dayjs(),
+  ]);
+  const [codeFilter, setCodeFilter] = useState<
+    ReturnTypeFromUseAttendanceCodes[]
+  >([]);
+  const [from, to] = dateRange;
+  const fromDate = from.format('YYYY-MM-DD');
+  const toDate = to.format('YYYY-MM-DD');
+
+  const codeFilterIds = useMemo(
+    () => codeFilter.map(({ id }) => id),
+    [codeFilter]
+  );
+  const { data: absentRequests } = useSessionAttendanceList({
+    attendanceCodeIds: codeFilterIds,
+    from: fromDate,
+    to: toDate,
+  });
+  // const { data: absentRequests } = useSessionAttendanceList({});
   const [isCreateAbsentRequest, setIsCreateAbsentRequest] = useState(false);
   const [selectedAbsentRequests, setSelectedAbsentRequests] = useState<
     ReturnTypeFromUseSessionAttendanceList[]
@@ -135,6 +152,14 @@ export default function AbsentRequests() {
         rowSelection="multiple"
         getRowId={({ data }) => String(data?.id)}
         onRowSelection={setSelectedAbsentRequests}
+        toolbar={
+          <AttendanceListToolbar
+            dateRange={dateRange}
+            setDateRange={setDateRange}
+            codeFilter={codeFilter}
+            setCodeFilter={setCodeFilter}
+          />
+        }
       />
     </PageContainer>
   );

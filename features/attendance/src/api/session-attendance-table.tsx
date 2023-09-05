@@ -16,25 +16,24 @@ const sessionAttendanceListRequest = graphql(/* GraphQL */ `
   query attendance_sessionAttendanceReport(
     $filter: SessionAttendanceReportFilter
   ) {
-      attendance_sessionAttendanceReport(filter: $filter) {
+    attendance_sessionAttendanceReport(filter: $filter) {
       id
+      studentPartyId
       attendanceCode {
         code
         name
       }
+        student {
+            partyId
+            firstName
+            lastName
+            avatarUrl
+        } 
       bellTime {
-          time: Time!
-          name: String
-      }     
+        time
+        name
+      }
       attendanceCodeId
-      contactPartyId
-      from
-      parentNote
-          ss
-      requestType
-      status
-      studentPartyId
-      to
       classGroup {
         name
       }
