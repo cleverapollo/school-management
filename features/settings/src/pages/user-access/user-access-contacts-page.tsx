@@ -101,6 +101,13 @@ const getColumns = (
         ? dayjs(data.mobileLastLogin).format('ll LT')
         : '-',
   },
+  {
+    field: 'yearGroupContacts',
+    headerName: t('common:year'),
+    filter: true,
+    valueGetter: ({ data }) =>
+      data?.yearGroupContacts?.map((yg) => yg?.shortName).join(', ') ?? '',
+  },
 ];
 
 export default function UserAccessContactsPage() {
