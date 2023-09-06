@@ -8,16 +8,21 @@ import {
   RHFDatePicker,
   RHFCheckbox,
   RHFSelect,
+  useFormValidator,
 } from '@tyro/core';
 import { StudentLeavingReason, UpdateStudentInput } from '@tyro/api';
 import dayjs from 'dayjs';
 import { Stack, Typography } from '@mui/material';
 import { Dispatch, SetStateAction, useState } from 'react';
+import { UseFormSetValue } from 'react-hook-form/dist/types/form';
 import { useStudentPersonal } from '../../../../api/student/personal';
 
 type EnrolmentFormState = {
   lockerNumber: UpdateStudentInput['lockerNumber'];
   examNumber: UpdateStudentInput['examNumber'];
+  leftEarly: UpdateStudentInput['leftEarly'];
+  dateOfLeaving: UpdateStudentInput['dateOfLeaving'];
+  leavingReason: UpdateStudentInput['leavingReason'];
 };
 
 const getEnrolmentDataWithLabels = (
@@ -138,15 +143,10 @@ const getEnrolmentDataWithLabels = (
           },
           {
             label: t('people:personal.enrolmentHistory.reasonOfDeparture'),
-            value:
-              reasonForLeavingOptions.find(
-                ({ label }) => studentIrePP?.reasonForLeaving === label
-              )?.value || StudentLeavingReason.Other,
-            valueRenderer:
-              studentIrePP?.reasonForLeaving ||
-              t(
-                `people:personal.enrolmentHistory.studentLeavingReason.${StudentLeavingReason.Other}`
-              ),
+            value: reasonForLeavingOptions.find(
+              ({ label }) => studentIrePP?.reasonForLeaving === label
+            )?.value,
+            valueRenderer: studentIrePP?.reasonForLeaving,
             valueEditor: (
               <RHFSelect
                 options={reasonForLeavingOptions}
@@ -176,6 +176,7 @@ export const ProfileEnrolment = ({
 }: ProfileEnrolmentProps) => {
   const { t } = useTranslation(['people', 'common']);
   const { displayNames } = usePreferredNameLayout();
+  const { resolver, rules } = useFormValidator<EnrolmentFormState>();
 
   const { leftEarly, studentIrePP } = studentData || {};
   const {
@@ -199,12 +200,32 @@ export const ProfileEnrolment = ({
     setLeftEarlyState
   );
 
+  const enrolmentResolver = resolver({
+    dateOfLeaving: [rules.required(), rules.date()],
+  });
+
+  const onChangeEnrolmentValues = (
+    watchedValues: EnrolmentFormState,
+    setValue: UseFormSetValue<EnrolmentFormState>
+  ) => {
+    if (
+      !watchedValues.leftEarly &&
+      (watchedValues.dateOfLeaving || watchedValues.leavingReason)
+    ) {
+      setValue('dateOfLeaving', undefined);
+      setValue('leavingReason', undefined);
+    }
+  };
+
   return (
     <CardEditableForm<EnrolmentFormState>
+      resolver={enrolmentResolver}
       title={t('people:personal.enrolmentHistory.title')}
       editable={editable}
       fields={enrolmentDataWithLabels}
       onSave={onSave}
+      onCancel={() => setLeftEarlyState(leftEarly ?? false)}
+      onChangeValues={onChangeEnrolmentValues}
     >
       <Stack gap={3}>
         {[
