@@ -22,10 +22,8 @@ import {
   CreateCalendarEventInput,
 } from '@tyro/api';
 import { useEffect } from 'react';
-import {
-  CalendarParty,
-  useParticipantsSearchProps,
-} from '../../../../hooks/use-participants-search-props';
+import { usePartySearchProps } from '@tyro/people';
+import { CalendarParty } from '../../../../hooks/use-calendar-search-props';
 import { ScheduleEventFormState, ScheduleEvent } from './schedule-event';
 import {
   RoomLocationOptions,
@@ -55,7 +53,7 @@ export const CalendarEditEventDetailsModal = ({
 }: CalendarEventViewProps) => {
   const { t } = useTranslation(['calendar', 'common']);
 
-  const participantsProps = useParticipantsSearchProps();
+  const participantsProps = usePartySearchProps();
 
   const {
     mutate: createCalendarEventMutation,

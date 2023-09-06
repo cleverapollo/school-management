@@ -12,6 +12,7 @@ import {
   EditIcon,
   ExternalLinkIcon,
   LocationIcon,
+  PersonCheckmarkIcon,
   UserGroupTwoIcon,
 } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
@@ -165,6 +166,36 @@ export function CalendarDetailsPopover({
       }}
     >
       <Stack direction="row" justifyContent="flex-end">
+        {event?.originalEvent?.type === CalendarEventType.Lesson && (
+          <Tooltip title={t('calendar:takeAttendance')}>
+            <IconButton
+              component={Link}
+              aria-label={t('calendar:takeAttendance')}
+              size="small"
+              to={`/groups/subject/${
+                event?.originalEvent?.lessonInfo?.subjectGroupId ?? ''
+              }/attendance`}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: 24,
+                  height: 24,
+                }}
+              >
+                <PersonCheckmarkIcon
+                  sx={{
+                    width: 16,
+                    height: 16,
+                  }}
+                />
+              </Box>
+            </IconButton>
+          </Tooltip>
+        )}
+
         {event?.originalEvent?.type === CalendarEventType.Lesson && (
           <Tooltip title={t('calendar:goToSubjectGroup')}>
             <IconButton
