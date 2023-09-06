@@ -15,15 +15,16 @@ export const getEndpoint = () => {
   const { origin } = window.location;
 
   return origin.includes('localhost') || origin.includes('app.tyro')
-    ? `${origin}/api/tyrogql`
-    : 'https://app.tyro-dev.com/api/tyrogql';
+      ? `${origin}/api/tyrogql`
+      : 'https://app.tyro-dev.com/api/tyrogql';
 };
 
 type FetchArguments = Parameters<typeof fetch>;
 
 const getAuthHeaders = (
-  ...args: [url: RequestInfo | URL, init?: RequestInit | undefined]
+    ...args: [url: RequestInfo | URL, init?: RequestInit | undefined]
 ) => {
+  const originalHeaders = (args[1]?.headers ?? {}) as Record<string, string>;
   const headers: HeadersInit = {};
   const emulationMode = checkEmulationMode();
 
@@ -43,25 +44,29 @@ const getAuthHeaders = (
   }
 
   if (
-    emulationMode === EmulationMode.User &&
-    typeof tenantId === 'string' &&
-    typeof partyId === 'string'
+      emulationMode === EmulationMode.User &&
+      typeof tenantId === 'string' &&
+      typeof partyId === 'string'
   ) {
     headers[EmulateHeaders.TENANT] = tenantId;
     headers[EmulateHeaders.PARTY_ID] = partyId;
   }
 
   const academicNamespaceId = localStorage.getItem(
-    EmulateHeaders.ACADEMIC_NAMESPACE_ID
+      EmulateHeaders.ACADEMIC_NAMESPACE_ID
   );
-  if (typeof academicNamespaceId === 'string') {
+
+  if (
+      !originalHeaders[EmulateHeaders.ACADEMIC_NAMESPACE_ID] &&
+      typeof academicNamespaceId === 'string'
+  ) {
     headers[EmulateHeaders.ACADEMIC_NAMESPACE_ID] = academicNamespaceId;
   }
 
   args[1] = {
     ...args[1],
     headers: {
-      ...args[1]?.headers,
+      ...originalHeaders,
       ...headers,
     },
   };
@@ -94,8 +99,8 @@ async function fetchInstance(...args: FetchArguments) {
 type BodyType = keyof Omit<Body, 'body' | 'bodyUsed'>;
 
 export async function fetchClient<TResponse = unknown>(
-  url: string,
-  options?: RequestInit & { bodyType: BodyType }
+    url: string,
+    options?: RequestInit & { bodyType: BodyType }
 ) {
   const bodyType: BodyType = options?.bodyType || 'json';
 
