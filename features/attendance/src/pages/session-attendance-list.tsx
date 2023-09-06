@@ -63,7 +63,7 @@ const getColumns = (
   },
   {
     field: 'date',
-    headerName: t('common:created'),
+    headerName: t('common:date'),
     comparator: (dateA: string, dateB: string) =>
       dayjs(dateA).unix() - dayjs(dateB).unix(),
     valueGetter: ({ data }) => dayjs(data?.date).format('LL'),
@@ -75,12 +75,13 @@ export default function AbsentRequests() {
   const { t } = useTranslation(['common', 'attendance']);
 
   const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([
-    dayjs().subtract(1, 'weeks'),
+    dayjs(),
     dayjs(),
   ]);
   const [codeFilter, setCodeFilter] = useState<
     ReturnTypeFromUseAttendanceCodes[]
   >([]);
+  console.log(codeFilter);
   const [from, to] = dateRange;
   const fromDate = from.format('YYYY-MM-DD');
   const toDate = to.format('YYYY-MM-DD');
