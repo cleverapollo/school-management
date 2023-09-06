@@ -227,10 +227,10 @@ export const CreateAbsentRequestModal = ({
             )}
             <RHFSelect
               fullWidth
-              optionIdKey="id"
-              options={attendanceCodes}
+              optionIdKey={'id'}
+              options={attendanceCodes ?? []}
+              getOptionLabel={(option) => option.name || ''}
               label={t('attendance:reasonForAbsence')}
-              getOptionLabel={(option) => option.name}
               controlProps={{
                 name: 'attendanceCodeId',
                 control,
