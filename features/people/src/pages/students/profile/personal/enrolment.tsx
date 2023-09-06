@@ -7,8 +7,9 @@ import {
   CardEditableFormProps,
   RHFDatePicker,
   RHFCheckbox,
+  RHFSelect,
 } from '@tyro/core';
-import { UpdateStudentInput } from '@tyro/api';
+import { StudentLeavingReason, UpdateStudentInput } from '@tyro/api';
 import dayjs from 'dayjs';
 import { Stack, Typography } from '@mui/material';
 import { Dispatch, SetStateAction, useState } from 'react';
@@ -41,6 +42,15 @@ const getEnrolmentDataWithLabels = (
   const [programmeStage] = programmeStages || [];
   const { programme } = programmeStage || {};
   const [yearGroup] = yearGroups || [];
+
+  const reasonForLeavingOptions = Object.values(StudentLeavingReason).map(
+    (reason) => ({
+      label: t(
+        `people:personal.enrolmentHistory.studentLeavingReason.${reason}`
+      ),
+      value: reason,
+    })
+  );
 
   return [
     {
@@ -117,16 +127,34 @@ const getEnrolmentDataWithLabels = (
       ? [
           {
             label: t('people:personal.enrolmentHistory.dateOfLeaving'),
-            value: endDate ? dayjs(endDate).format('l') : '-',
-            valueEditor: <RHFDatePicker controlProps={{ name: 'endDate' }} />,
+            value: dayjs(endDate),
+            valueRenderer: endDate ? dayjs(endDate).format('l') : '-',
+            valueEditor: (
+              <RHFDatePicker
+                inputProps={{ variant: 'standard' }}
+                controlProps={{ name: 'dateOfLeaving' }}
+              />
+            ),
           },
           {
             label: t('people:personal.enrolmentHistory.reasonOfDeparture'),
-            value: studentIrePP?.reasonForLeaving,
+            value:
+              reasonForLeavingOptions.find(
+                ({ label }) => studentIrePP?.reasonForLeaving === label
+              )?.value || StudentLeavingReason.Other,
+            valueRenderer:
+              studentIrePP?.reasonForLeaving ||
+              t(
+                `people:personal.enrolmentHistory.studentLeavingReason.${StudentLeavingReason.Other}`
+              ),
             valueEditor: (
-              <RHFTextField
-                textFieldProps={{ variant: 'standard' }}
-                controlProps={{ name: 'reasonForLeaving' }}
+              <RHFSelect
+                options={reasonForLeavingOptions}
+                variant="standard"
+                controlProps={{ name: 'leavingReason' }}
+                getOptionLabel={(option) => option.label}
+                optionIdKey="value"
+                fullWidth
               />
             ),
           },

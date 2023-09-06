@@ -103,7 +103,23 @@
       "leftEarly": "Has left school",
       "dateOfLeaving": "Date of leaving",
       "reasonOfDeparture": "Reason for departure",
-      "destinationRollNumber": "Destination roll number"
+      "destinationRollNumber": "Destination roll number",
+      "studentLeavingReason": {
+        "ANOTHER_2ND_LEVEL_SCHOOL_IN_THE_STATE": "Another 2nd level school in the State.",
+        "APPRENTICESHIP_INVOLVING_SOME_TRAINING": "Apprenticeship involving some training.",
+        "A_NON_RECOGNISED_SECOND_LEVEL_SCHOOL_IN_THE_STATE": "A non recognised second level school in the state",
+        "DECEASED": "Deceased",
+        "EMIGRATION_OTHER_THAN_6_AND_7_ABOVE": "Emigration other than 6 and 7 above.",
+        "EMPLOYMENT": "Employment",
+        "FULL_TIME_VOCATIONAL_TRAINING_IN_THE_STATE": "Full-time vocational training in the State",
+        "FURTHER_EDUCATION_OUTSIDE_THE_STATE": "Further education outside the State.",
+        "OTHER": "Other",
+        "OUTSIDE_THE_STATE_AND_NOT_IN_FURTHER_EDUCATION": "Outside the State and not in further education.",
+        "PURSUING_SENIOR_CYCLE_IN_PRIVATE_INSTITUTION": "Pursuing senior cycle in private institution",
+        "SCHOOL_NOT_NOTIFIED_OR_NOT_AWARE_OF_REASON_FOR_LEAVING": "School not notified or not aware of reason for leaving",
+        "THIRD_LEVEL_COLLEGE_IN_THE_STATE": "3rd level college in the State.",
+        "YOUTHREACH_COURSE": "Youthreach Course"
+      }
     },
     "guardianship": "Guardianship, custody, access orders or arrangements"
   },
