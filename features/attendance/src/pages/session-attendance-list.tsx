@@ -1,5 +1,5 @@
 import { Box, Button } from '@mui/material';
-import { usePermissions } from '@tyro/api';
+import {AttendanceCodeType, usePermissions} from '@tyro/api';
 import { AddIcon } from '@tyro/icons';
 import {
   GridOptions,
@@ -25,7 +25,7 @@ import {
 } from '../api/session-attendance-table';
 import { RolebookToolbar } from '../components/role-book/toolbar';
 import { AttendanceListToolbar } from '../components/attendance-list-toolbar';
-import { ReturnTypeFromUseAttendanceCodes } from '../api';
+import { ReturnTypeFromUseAttendanceCodes, useAttendanceCodes } from '../api';
 
 dayjs.extend(LocalizedFormat);
 
@@ -78,6 +78,10 @@ export default function AbsentRequests() {
     dayjs(),
     dayjs(),
   ]);
+
+  const { data: allAttendanceCodes } = useAttendanceCodes({});
+
+  allAttendanceCodes?.filter((code) => code.sessionCodeType === AttendanceCodeType.UnexplainedAbsence);
   const [codeFilter, setCodeFilter] = useState<
     ReturnTypeFromUseAttendanceCodes[]
   >([]);
