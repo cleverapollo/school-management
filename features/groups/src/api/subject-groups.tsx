@@ -4,6 +4,7 @@ import {
   gqlClient,
   graphql,
   queryClient,
+  SubjectGroupFilter,
   SubjectGroupType,
   UpdateSubjectGroupInput,
 } from '@tyro/api';
@@ -58,6 +59,9 @@ const subjectGroupById = graphql(/* GraphQL */ `
       subjects {
         name
         colour
+      }
+      studentMembershipType {
+          type
       }
       staff {
         title {
@@ -118,6 +122,13 @@ const subjectGroupsQuery = {
         filter: { partyIds: [id ?? 0] },
       }),
   }),
+  detailsByFilter: (filter: SubjectGroupFilter) => ({
+    queryKey: groupsKeys.subject.detailsByFilter(filter),
+    queryFn: () =>
+      gqlClient.request(subjectGroupById, {
+        filter,
+      }),
+  }),
 };
 
 export function getSubjectGroups() {
@@ -126,6 +137,10 @@ export function getSubjectGroups() {
 
 export function getSubjectGroupById(id?: number) {
   return queryClient.fetchQuery(subjectGroupsQuery.details(id));
+}
+
+export function getSubjectGroupByFilter(filter: SubjectGroupFilter) {
+  return queryClient.fetchQuery(subjectGroupsQuery.detailsByFilter(filter));
 }
 
 export function useSubjectGroups() {
@@ -138,6 +153,25 @@ export function useSubjectGroups() {
 export function useSubjectGroupById(id?: number) {
   return useQuery({
     ...subjectGroupsQuery.details(id),
+    select: ({ subjectGroups }) => {
+      if (!subjectGroups) return null;
+
+      const [group] = subjectGroups || [];
+
+      return {
+        ...group,
+        staff: group.staff?.sort(sortByDisplayName),
+        students: group.students?.sort((studentA, studentB) =>
+          sortByDisplayName(studentA.person, studentB.person)
+        ),
+      };
+    },
+  });
+}
+
+export function useSubjectGroupByFilter(filter: SubjectGroupFilter) {
+  return useQuery({
+    ...subjectGroupsQuery.detailsByFilter(filter),
     select: ({ subjectGroups }) => {
       if (!subjectGroups) return null;
 

@@ -22,6 +22,7 @@ import {
 } from './api';
 import { getYearGroups, getYearGroupById } from './api/year-groups';
 import { getSupportGroupById, getSupportGroups } from './api/support-groups';
+import {isStaffUser} from "@tyro/configs/dist/utils/permission-utils";
 
 const YearGroups = lazyWithRetry(() => import('./pages/year'));
 const ViewYearGroupPage = lazyWithRetry(() => import('./pages/year/view'));
@@ -269,7 +270,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'support',
             title: t('navigation:general.groups.support'),
             loader: () => getSupportGroups(),
-            hasAccess: ({ isTyroUser }) => isTyroUser,
+            hasAccess: ({ isStaffUserWithPermission }) =>    isStaffUserWithPermission('ps:1:groups:view_subject_groups'),
             children: [
               {
                 type: NavObjectType.NonMenuLink,
