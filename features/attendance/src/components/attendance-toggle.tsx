@@ -13,14 +13,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useAttendanceCodes } from '../api';
 
 type AttendanceToggleProps = {
-  codeId?: number;
+  codeId?: number | null;
   onChange: (newCodeId: number) => void;
 };
 
-export function AttendanceToggle({
-  codeId: initialCodeId,
-  onChange,
-}: AttendanceToggleProps) {
+export function AttendanceToggle({ codeId, onChange }: AttendanceToggleProps) {
   const { t } = useTranslation(['attendance']);
 
   const absentToggleRef = useRef<HTMLButtonElement>(null);
@@ -46,10 +43,10 @@ export function AttendanceToggle({
   };
 
   useEffect(() => {
-    if (codesData?.length) {
-      handleAttendanceCodeChange(initialCodeId ?? AttendanceCodeType.Present);
+    if (codesData?.length && codeId) {
+      handleAttendanceCodeChange(codeId);
     }
-  }, [codesData, initialCodeId]);
+  }, [codesData, codeId]);
 
   const isAbsentCodeSelected =
     codeType === AttendanceCodeType.ExplainedAbsence ||

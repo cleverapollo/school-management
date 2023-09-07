@@ -8,7 +8,7 @@ export type CalendarParty = Pick<Search, 'partyId' | 'text' | 'avatarUrl'> & {
   attendeeType?: CalendarEventAttendeeType;
 };
 
-export const useParticipantsSearchProps = (
+export const useCalendarSearchProps = (
   customProps?: Partial<AutocompleteProps<CalendarParty, true>>
 ): AutocompleteProps<CalendarParty, true> => {
   const { t } = useTranslation(['common', 'calendar']);

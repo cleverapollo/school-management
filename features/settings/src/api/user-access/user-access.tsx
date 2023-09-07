@@ -30,6 +30,9 @@ const userAccess = graphql(/* GraphQL */ `
       yearGroup {
         shortName
       }
+        yearGroupContacts {
+            shortName
+        }
     }
   }
 `);

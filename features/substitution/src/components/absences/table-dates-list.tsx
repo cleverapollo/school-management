@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { useTranslation } from '@tyro/i18n';
+import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { getLocaleTimestamp } from '@tyro/core';
@@ -12,10 +12,11 @@ interface TableDatesListProps {
   dates: ReturnTypeFromUseStaffWorkAbsences['dates'];
 }
 
-export function TableDatesList({ dates }: TableDatesListProps) {
-  const { t } = useTranslation(['substitution']);
-
-  const mappedCellValues = dates?.map(
+function mapDatesToReadableList(
+  dates: TableDatesListProps['dates'],
+  t: TFunction<'substitution'[]>
+) {
+  return dates?.map(
     (
       {
         continuousStartDate,
@@ -74,6 +75,20 @@ export function TableDatesList({ dates }: TableDatesListProps) {
       };
     }
   );
+}
+
+export function getDateListString(
+  dates: TableDatesListProps['dates'],
+  t: TFunction<'substitution'[]>
+) {
+  const mappedCellValues = mapDatesToReadableList(dates, t);
+  return mappedCellValues.map(({ value }) => value).join(', ');
+}
+
+export function TableDatesList({ dates }: TableDatesListProps) {
+  const { t } = useTranslation(['substitution']);
+
+  const mappedCellValues = mapDatesToReadableList(dates, t);
 
   return (
     <Box

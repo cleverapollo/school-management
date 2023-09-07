@@ -109,6 +109,8 @@ export * from './sync';
 export * from './tea-cup';
 export * from './text';
 export * from './thumbs-up-checkmark';
+export * from './toggle-button-calendar';
+export * from './toggle-button-table';
 export * from './trash';
 export * from './unarchive';
 export * from './underline';

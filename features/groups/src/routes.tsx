@@ -269,7 +269,8 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'support',
             title: t('navigation:general.groups.support'),
             loader: () => getSupportGroups(),
-            hasAccess: ({ isTyroUser }) => isTyroUser,
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission('ps:1:groups:view_subject_groups'),
             children: [
               {
                 type: NavObjectType.NonMenuLink,

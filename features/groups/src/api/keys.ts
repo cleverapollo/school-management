@@ -1,4 +1,8 @@
-import { BlockFilter, CalendarEventIteratorFilter } from '@tyro/api';
+import {
+  BlockFilter,
+  CalendarEventIteratorFilter,
+  SubjectGroupFilter,
+} from '@tyro/api';
 
 export const groupsKeys = {
   all: ['groups'] as const,
@@ -19,6 +23,12 @@ export const groupsKeys = {
     groups: () => [...groupsKeys.subject.all(), 'list'] as const,
     details: (id: number | undefined) =>
       [...groupsKeys.subject.all(), 'details', id] as const,
+    detailsByFilter: (filter: SubjectGroupFilter) =>
+      [
+        ...groupsKeys.subject.all(),
+        'detailsByFilter',
+        filter.partyIds,
+      ] as const,
     lesson: (filter: CalendarEventIteratorFilter) => [
       ...groupsKeys.subject.all(),
       'lesson',

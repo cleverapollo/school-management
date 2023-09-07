@@ -76,12 +76,11 @@ const getAbsentRequestDataWithLabels = (
       valueEditor: (
         <RHFSelect
           fullWidth
-          options={(attendanceCodes ?? [])
-            .filter(({ code }) => code !== undefined)
-            .map(({ name }) => name)}
-          getOptionLabel={(option) => option || ''}
+          optionIdKey={'id'}
+          options={attendanceCodes ?? []}
+          getOptionLabel={(option) => option.name || ''}
           controlProps={{
-            name: 'attendanceCode.code',
+            name: 'attendanceCode.id',
           }}
         />
       ),
