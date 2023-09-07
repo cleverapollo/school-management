@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useId } from 'react';
 import { Autocomplete, AutocompleteProps } from '@tyro/core';
-import { useParticipantsSearchProps, CalendarParty } from '@tyro/calendar';
+import { useCalendarSearchProps, CalendarParty } from '@tyro/calendar';
 import { useTranslation } from '@tyro/i18n';
 
 export interface TimetableSearchProps
@@ -15,7 +15,7 @@ export function TimetableSearch({
 }: TimetableSearchProps) {
   const id = useId();
   const { t } = useTranslation(['timetable']);
-  const participantsProps = useParticipantsSearchProps({
+  const participantsProps = useCalendarSearchProps({
     id,
     label: t('timetable:timetables'),
     value: selectedPartys,

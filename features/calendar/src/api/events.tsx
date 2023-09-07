@@ -62,6 +62,7 @@ const calendarEvents = graphql(/* GraphQL */ `
           colour
           description
           allDayEvent
+          editable
           lessonInfo {
             subjectGroupId
             lessonId
@@ -301,9 +302,7 @@ export function useCalendarEvents(
                   (tag) => tag.context === Calendar_TagContext.Substitution
                 ),
                 originalEvent: event,
-                // NOTE: enable when BE support edition
-                // editable: event.type !== CalendarEventType.Lesson,
-                editable: false,
+                editable: !!event?.editable,
               });
             });
 

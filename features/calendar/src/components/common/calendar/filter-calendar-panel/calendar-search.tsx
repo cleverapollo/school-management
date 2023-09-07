@@ -4,8 +4,8 @@ import { Autocomplete, AutocompleteProps } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import {
   CalendarParty,
-  useParticipantsSearchProps,
-} from '../../../../hooks/use-participants-search-props';
+  useCalendarSearchProps,
+} from '../../../../hooks/use-calendar-search-props';
 
 export interface CalendarSearchProps
   extends Partial<AutocompleteProps<CalendarParty, true>> {
@@ -20,7 +20,7 @@ export function CalendarSearch({
   const { t } = useTranslation(['common']);
 
   const id = useId();
-  const participantsProps = useParticipantsSearchProps({
+  const participantsProps = useCalendarSearchProps({
     id,
     label: '',
     value: selectedPartys,
