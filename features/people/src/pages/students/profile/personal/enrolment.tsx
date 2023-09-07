@@ -14,7 +14,6 @@ import { StudentLeavingReason, UpdateStudentInput } from '@tyro/api';
 import dayjs from 'dayjs';
 import { Stack, Typography } from '@mui/material';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { UseFormSetValue } from 'react-hook-form/dist/types/form';
 import { useStudentPersonal } from '../../../../api/student/personal';
 
 type EnrolmentFormState = {
@@ -47,15 +46,6 @@ const getEnrolmentDataWithLabels = (
   const [programmeStage] = programmeStages || [];
   const { programme } = programmeStage || {};
   const [yearGroup] = yearGroups || [];
-
-  const reasonForLeavingOptions = Object.values(StudentLeavingReason).map(
-    (reason) => ({
-      label: t(
-        `people:personal.enrolmentHistory.studentLeavingReason.${reason}`
-      ),
-      value: reason,
-    })
-  );
 
   return [
     {
@@ -133,7 +123,7 @@ const getEnrolmentDataWithLabels = (
           {
             label: t('people:personal.enrolmentHistory.dateOfLeaving'),
             value: dayjs(endDate),
-            valueRenderer: endDate ? dayjs(endDate).format('l') : '-',
+            valueRenderer: endDate ? dayjs(endDate).format('l') : null,
             valueEditor: (
               <RHFDatePicker
                 inputProps={{ variant: 'standard' }}
@@ -143,17 +133,24 @@ const getEnrolmentDataWithLabels = (
           },
           {
             label: t('people:personal.enrolmentHistory.reasonOfDeparture'),
-            value: reasonForLeavingOptions.find(
-              ({ label }) => studentIrePP?.reasonForLeaving === label
-            )?.value,
-            valueRenderer: studentIrePP?.reasonForLeaving,
+            value: studentIrePP?.reasonForLeaving,
+            valueRenderer: studentIrePP?.reasonForLeaving
+              ? t(
+                  `people:personal.enrolmentHistory.studentLeavingReason.${
+                    studentIrePP?.reasonForLeaving as StudentLeavingReason
+                  }`
+                )
+              : null,
             valueEditor: (
               <RHFSelect
-                options={reasonForLeavingOptions}
+                options={Object.values(StudentLeavingReason)}
                 variant="standard"
                 controlProps={{ name: 'leavingReason' }}
-                getOptionLabel={(option) => option.label}
-                optionIdKey="value"
+                getOptionLabel={(option) =>
+                  t(
+                    `people:personal.enrolmentHistory.studentLeavingReason.${option}`
+                  )
+                }
                 fullWidth
               />
             ),
@@ -190,7 +187,7 @@ export const ProfileEnrolment = ({
     destinationRollNo,
   } = studentIrePP || {};
 
-  const [leftEarlyState, setLeftEarlyState] = useState(leftEarly ?? false);
+  const [leftEarlyState, setLeftEarlyState] = useState(Boolean(leftEarly));
 
   const enrolmentDataWithLabels = getEnrolmentDataWithLabels(
     studentData,
@@ -204,19 +201,6 @@ export const ProfileEnrolment = ({
     dateOfLeaving: [rules.required(), rules.date()],
   });
 
-  const onChangeEnrolmentValues = (
-    watchedValues: EnrolmentFormState,
-    setValue: UseFormSetValue<EnrolmentFormState>
-  ) => {
-    if (
-      !watchedValues.leftEarly &&
-      (watchedValues.dateOfLeaving || watchedValues.leavingReason)
-    ) {
-      setValue('dateOfLeaving', undefined);
-      setValue('leavingReason', undefined);
-    }
-  };
-
   return (
     <CardEditableForm<EnrolmentFormState>
       resolver={enrolmentResolver}
@@ -224,8 +208,7 @@ export const ProfileEnrolment = ({
       editable={editable}
       fields={enrolmentDataWithLabels}
       onSave={onSave}
-      onCancel={() => setLeftEarlyState(leftEarly ?? false)}
-      onChangeValues={onChangeEnrolmentValues}
+      onCancel={() => setLeftEarlyState(Boolean(leftEarly))}
     >
       <Stack gap={3}>
         {[

@@ -19,14 +19,7 @@ import {
   Resolver,
 } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
-import {
-  ReactNode,
-  ReactElement,
-  cloneElement,
-  useState,
-  useEffect,
-} from 'react';
-import { UseFormSetValue } from 'react-hook-form/dist/types/form';
+import { ReactNode, ReactElement, cloneElement, useState } from 'react';
 
 type CardEditableField<TField extends FieldValues> = {
   label: string;
@@ -48,10 +41,6 @@ export type CardEditableFormProps<TField extends FieldValues> = CardProps & {
   resolver?: Resolver<TField>;
   onSave: (data: TField, onSuccess: () => void) => void;
   onCancel?: () => void;
-  onChangeValues?: (
-    watchedValues: TField,
-    setValue: UseFormSetValue<TField>
-  ) => void;
 };
 
 export const CardEditableForm = <TField extends FieldValues>({
@@ -61,7 +50,6 @@ export const CardEditableForm = <TField extends FieldValues>({
   resolver,
   onSave,
   onCancel,
-  onChangeValues,
   hideBorder,
   sx,
   children,
@@ -77,11 +65,7 @@ export const CardEditableForm = <TField extends FieldValues>({
     handleSubmit,
     reset,
     formState: { isDirty },
-    watch,
-    setValue,
   } = useForm<TField>({ resolver });
-
-  const watchedValues = watch();
 
   const handleSave = (data: TField) => {
     if (isDirty) {
@@ -98,20 +82,12 @@ export const CardEditableForm = <TField extends FieldValues>({
   const handleCancel = () => {
     setIsEditMode(false);
     reset();
-    if (onCancel !== undefined) {
-      onCancel();
-    }
+    onCancel?.();
   };
 
   const handleEdit = () => {
     setIsEditMode(true);
   };
-
-  useEffect(() => {
-    if (onChangeValues) {
-      onChangeValues(watchedValues, setValue);
-    }
-  }, [watchedValues]);
 
   return (
     <Card
