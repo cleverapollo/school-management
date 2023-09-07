@@ -15,6 +15,7 @@ export interface PermissionUtils {
   hasPermission: (permission: string) => boolean;
   hasAtLeastOnePermission: (permissions: Array<string>) => boolean;
   hasAllPermissions: (permissions: Array<string>) => boolean;
+  isStaffUserHasAllPermissions: (permission: Array<string>) => boolean;
   isStaffUserWithPermission: (permission: string) => boolean;
   isStaffUserHasWithAtLestOnePermission: (
     permissions: Array<string>
@@ -42,19 +43,20 @@ export async function getPermissionUtils(): Promise<PermissionUtils> {
 
   const userType = activeProfile?.profileType?.userType;
   const tenant = activeProfile?.tenant?.tenant;
+  const staffUser = isStaffUser({ userType, tenant });
 
   return {
     permissions: usersPermissions,
     ...getPermissionFunctions(usersPermissions),
     userType: activeProfile?.profileType?.userType,
     tenant: activeProfile?.tenant?.tenant,
+    isStaffUserHasAllPermissions: (permissions: Array<string>) =>
+      staffUser && permissions.every((p) => usersPermissions.includes(p ?? '')),
     isStaffUserWithPermission: (permission: string) =>
-      isStaffUser({ userType, tenant }) &&
-      usersPermissions.includes(permission),
+      staffUser && usersPermissions.includes(permission),
     isStaffUserHasWithAtLestOnePermission: (permissions: Array<string>) =>
-      isStaffUser({ userType, tenant }) &&
-      usersPermissions.some((p) => usersPermissions.includes(p ?? '')),
-    isStaffUser: isStaffUser({ userType, tenant }),
+      staffUser && permissions.some((p) => usersPermissions.includes(p ?? '')),
+    isStaffUser: staffUser,
     isTyroTenantAndUser: isTyroTenantAndUser({ userType, tenant }),
     isTyroUser: isTyroUser({ userType }),
     isStudent: isStudent({ userType }),
@@ -73,6 +75,7 @@ export function usePermissions(): UsePermissionsReturn {
 
   const userType = activeProfile?.profileType?.userType;
   const tenant = activeProfile?.tenant?.tenant;
+  const staffUser = isStaffUser({ userType, tenant });
 
   return {
     isLoading,
@@ -81,14 +84,14 @@ export function usePermissions(): UsePermissionsReturn {
     hasAtLeastOnePermission,
     hasAllPermissions,
     userType,
+    isStaffUserHasAllPermissions: (permissions: Array<string>) =>
+      staffUser && permissions.every((p) => usersPermissions.includes(p ?? '')),
     isStaffUserWithPermission: (permission: string) =>
-      isStaffUser({ userType, tenant }) &&
-      usersPermissions.includes(permission),
+      staffUser && usersPermissions.includes(permission),
     isStaffUserHasWithAtLestOnePermission: (permissions: Array<string>) =>
-      isStaffUser({ userType, tenant }) &&
-      permissions.some((p) => usersPermissions.includes(p ?? '')),
+      staffUser && permissions.some((p) => usersPermissions.includes(p ?? '')),
     tenant,
-    isStaffUser: isStaffUser({ userType, tenant }),
+    isStaffUser: staffUser,
     isTyroTenantAndUser: isTyroTenantAndUser({ userType, tenant }),
     isTyroUser: isTyroUser({ userType }),
     isStudent: isStudent({ userType }),

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Card,
@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { useCoreAcademicNamespace, AttendanceCodeType } from '@tyro/api';
+import { useAcademicNamespace, AttendanceCodeType } from '@tyro/api';
 import { ToggleButtonCalendarIcon, ToggleButtonTableIcon } from '@tyro/icons';
 import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -23,14 +23,7 @@ import { AcademicCalendar } from './calendar';
 import { useStudentCalendarAttendance } from '../../../api/student/attendance/calendar-attendance';
 import { AttendanceTableView } from './attendance-table-view';
 
-export enum ExtendedAttendanceCodeType {
-  All = 'ALL',
-  ExplainedAbsence = 'EXPLAINED_ABSENCE',
-  Late = 'LATE',
-  NotTaken = 'NOT_TAKEN',
-  Present = 'PRESENT',
-  UnexplainedAbsence = 'UNEXPLAINED_ABSENCE',
-}
+export type ExtendedAttendanceCodeType = AttendanceCodeType | 'ALL';
 
 export type AttendanceDataType = {
   colour: string;
@@ -39,15 +32,17 @@ export type AttendanceDataType = {
   total: number;
 };
 
+enum CalendarView {
+  Calendar = 'calendar',
+  Table = 'table',
+}
+
 export const MonthOverview = () => {
   const { t } = useTranslation(['attendance', 'people']);
   const { id } = useParams();
-  const [view, setView] = useState<'calendar' | 'table'>('calendar');
+  const [view, setView] = useState<CalendarView>(CalendarView.Calendar);
 
-  const { data: namespaces } = useCoreAcademicNamespace();
-  const activeAcademicNamespace = namespaces?.find(
-    (academicNamespace) => academicNamespace?.isActiveDefaultNamespace
-  );
+  const { activeAcademicNamespace } = useAcademicNamespace();
 
   const currentDate = dayjs();
   const formattedCurrentDate = currentDate.format('YYYY-MM-DD');
@@ -65,64 +60,65 @@ export const MonthOverview = () => {
   const totalAttendanceDays = attendanceCounts.length;
 
   const [value, setValue] = useState(0);
-  const [currentTabValue, setCurrentTabValue] = useState(
-    ExtendedAttendanceCodeType?.All
-  );
+  const [currentTabValue, setCurrentTabValue] =
+    useState<ExtendedAttendanceCodeType>('ALL');
 
-  const attendanceTabData = [
+  const attendanceTabData: Array<{
+    colour: string;
+    translationText: string;
+    currentTabValue: ExtendedAttendanceCodeType;
+    total: number;
+  }> = [
     {
       colour: 'indigo',
       translationText: t('attendance:all'),
-      currentTabValue: ExtendedAttendanceCodeType?.All,
+      currentTabValue: 'ALL',
       total: totalAttendanceDays,
     },
     {
       colour: 'emerald',
       translationText: t('attendance:totalPresent'),
-      currentTabValue: ExtendedAttendanceCodeType?.Present,
+      currentTabValue: AttendanceCodeType.Present,
       total: calendarAttendance?.totalPresent ?? 0,
     },
     {
       colour: 'sky',
       translationText: t('attendance:totalLate'),
-      currentTabValue: ExtendedAttendanceCodeType?.Late,
+      currentTabValue: AttendanceCodeType.Late,
       total: calendarAttendance?.totalLate ?? 0,
     },
     {
       colour: 'pink',
       translationText: t('attendance:totalAbsent'),
-      currentTabValue: ExtendedAttendanceCodeType?.ExplainedAbsence,
+      currentTabValue: AttendanceCodeType.ExplainedAbsence,
       total: calendarAttendance?.totalAbsent ?? 0,
     },
     {
       colour: 'red',
       translationText: t('attendance:totalUnexplained'),
-      currentTabValue: ExtendedAttendanceCodeType?.UnexplainedAbsence,
+      currentTabValue: AttendanceCodeType.UnexplainedAbsence,
       total: calendarAttendance?.totalUnexplained ?? 0,
     },
     {
       colour: 'grey',
       translationText: t('attendance:totalNotTaken'),
-      currentTabValue: ExtendedAttendanceCodeType?.NotTaken,
+      currentTabValue: AttendanceCodeType.NotTaken,
       total: calendarAttendance?.totalNotTaken ?? 0,
     },
   ];
 
-  const getViewOptions = (translate: TFunction<'attendance'[]>) =>
-    [
-      {
-        value: 'calendar',
-        label: translate('attendance:calendarView'),
-        icon: ToggleButtonCalendarIcon,
-      },
-      {
-        value: 'table',
-        label: translate('attendance:tableView'),
-        icon: ToggleButtonTableIcon,
-      },
-    ] as const;
-
-  const viewOptions = useMemo(() => getViewOptions(t), [t]);
+  const viewOptions = [
+    {
+      value: CalendarView.Calendar,
+      label: t('attendance:calendarView'),
+      icon: ToggleButtonCalendarIcon,
+    },
+    {
+      value: CalendarView.Table,
+      label: t('attendance:tableView'),
+      icon: ToggleButtonTableIcon,
+    },
+  ];
 
   return (
     <Card variant="outlined" sx={{ height: '100%', flex: 1 }}>
@@ -160,7 +156,7 @@ export const MonthOverview = () => {
           }}
         >
           {viewOptions.map((option) => (
-            <Tooltip title={option?.label}>
+            <Tooltip key={option?.value} title={option?.label}>
               <ToggleButton
                 value={option?.value}
                 selected={option?.value === view}
@@ -215,9 +211,7 @@ export const MonthOverview = () => {
             <>
               <Tabs
                 value={value}
-                onChange={(event: React.SyntheticEvent, newValue: number) =>
-                  setValue(newValue)
-                }
+                onChange={(_event, newValue: number) => setValue(newValue)}
                 variant="scrollable"
                 scrollButtons="auto"
                 aria-label={t('people:ariaLabelForTabs')}
