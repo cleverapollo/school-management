@@ -158,9 +158,10 @@ export function useMailList(labelId: number, profileId?: number | null) {
   });
 }
 
-export function useSendMail(input: InputMaybe<SendMailInput>) {
+export function useSendMail() {
   return useMutation({
-    mutationFn: async () => gqlClient.request(sendMail, { input }),
+    mutationFn: async (input: SendMailInput) =>
+      gqlClient.request(sendMail, { input }),
   });
 }
 

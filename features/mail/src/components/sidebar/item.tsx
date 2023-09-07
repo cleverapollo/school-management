@@ -59,7 +59,8 @@ export function MailSidebarItem({ label, setLabelInfo }: MailSidebarItemProps) {
     {
       label: t('common:actions.edit'),
       icon: <EditIcon />,
-      onClick: () => {
+      onClick: (e: React.MouseEvent) => {
+        e.preventDefault();
         if (!setLabelInfo) return;
         setLabelInfo(label);
       },
@@ -67,7 +68,9 @@ export function MailSidebarItem({ label, setLabelInfo }: MailSidebarItemProps) {
     {
       label: t('mail:actions.removeLabel'),
       icon: <TrashIcon />,
-      onClick: () => {},
+      onClick: (e: React.MouseEvent) => {
+        e.preventDefault();
+      },
     },
   ];
 

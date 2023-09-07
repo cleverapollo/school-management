@@ -6,4 +6,5 @@ export const mailKeys = {
   labels: (filter: LabelFilter) => [...mailKeys.all, 'labels', filter] as const,
   unreadCount: (filter: UnreadCountFilter) =>
     [...mailKeys.all, 'unreadCount', filter] as const,
+  search: (query: string) => [...mailKeys.all, 'search', query] as const,
 };

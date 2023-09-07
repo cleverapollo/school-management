@@ -20,7 +20,7 @@ import { LabelDialog } from './label-dialog';
 export function MailSidebar() {
   const { pathname } = useLocation();
   const { t } = useTranslation(['mail', 'common']);
-  const { sidebarDisclosure } = useMailSettings();
+  const { sidebarDisclosure, composeEmail } = useMailSettings();
   const { isOpen: isSidebarOpen, onClose: onCloseSidebar } = sidebarDisclosure;
 
   const isDesktop = useResponsive('up', 'md');
@@ -50,8 +50,7 @@ export function MailSidebar() {
 
   const handleOpenCompose = () => {
     onCloseSidebar();
-    // TODO: Add open compose from provider
-    // onOpenCompose();
+    composeEmail({});
   };
 
   const renderContent = (

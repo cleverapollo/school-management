@@ -14,10 +14,21 @@
     "starred": "Starred",
     "back": "Back",
     "moreOptions": "More options",
-    "reply": "Reply"
+    "reply": "Reply",
+    "formattingOptions": "Formatting options",
+    "undo": "Undo ({{shortcut}})",
+    "redo": "Redo ({{shortcut}})",
+    "bold": "Bold ({{shortcut}})",
+    "italic": "Italic ({{shortcut}})",
+    "underline": "Underline ({{shortcut}})",
+    "numberedList": "Numbered list ({{shortcut}})",
+    "bulletedList": "Bulleted list ({{shortcut}})",
+    "indentLess": "Indent less ({{shortcut}})",
+    "indentMore": "Indent more ({{shortcut}})"
   },
   "errorMessages": {
-    "labelRequired": "Label name is required"
+    "labelRequired": "Label name is required",
+    "recipientsRequired": "Recipients are required"
   },
   "labels": "Labels",
   "editLabel": "Edit label",

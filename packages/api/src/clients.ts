@@ -24,6 +24,7 @@ type FetchArguments = Parameters<typeof fetch>;
 const getAuthHeaders = (
   ...args: [url: RequestInfo | URL, init?: RequestInit | undefined]
 ) => {
+  const originalHeaders = (args[1]?.headers ?? {}) as Record<string, string>;
   const headers: HeadersInit = {};
   const emulationMode = checkEmulationMode();
 
@@ -54,14 +55,18 @@ const getAuthHeaders = (
   const academicNamespaceId = localStorage.getItem(
     EmulateHeaders.ACADEMIC_NAMESPACE_ID
   );
-  if (typeof academicNamespaceId === 'string') {
+
+  if (
+    !originalHeaders[EmulateHeaders.ACADEMIC_NAMESPACE_ID] &&
+    typeof academicNamespaceId === 'string'
+  ) {
     headers[EmulateHeaders.ACADEMIC_NAMESPACE_ID] = academicNamespaceId;
   }
 
   args[1] = {
     ...args[1],
     headers: {
-      ...args[1]?.headers,
+      ...originalHeaders,
       ...headers,
     },
   };
