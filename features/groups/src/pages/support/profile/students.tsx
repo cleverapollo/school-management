@@ -18,13 +18,13 @@ import {
   PermissionUtils,
   SubjectGroupStudentMembershipTypeEnum,
   usePermissions,
-  UserType
+  UserType,
 } from '@tyro/api';
 import { Fade, Box } from '@mui/material';
 
+import { isStaffUser } from '@tyro/configs/dist/utils/permission-utils';
 import { useSubjectGroupById } from '../../../api';
-import {isStaffUser} from "@tyro/configs/dist/utils/permission-utils";
-import {ManageSubjectGroupMembership} from "../../../components/manage-group-membership-modal";
+import { ManageSubjectGroupMembership } from '../../../components/manage-group-membership-modal';
 
 type ReturnTypeFromUseSubjectGroupById = NonNullable<
   NonNullable<ReturnType<typeof useSubjectGroupById>['data']>['students']
@@ -90,64 +90,67 @@ export default function SubjectGroupProfileStudentsPage() {
   );
 
   return (
-      <>
-    <Table
-      rowData={subjectGroupData?.students ?? []}
-      columnDefs={studentColumns}
-      rowSelection="multiple"
-      getRowId={({ data }) => String(data?.partyId)}
-      rightAdornment={
-        <>
-          {selectedGroups.length > 0 && (
-            <Fade in={selectedGroups.length > 0} unmountOnExit>
+    <>
+      <Table
+        rowData={subjectGroupData?.students ?? []}
+        columnDefs={studentColumns}
+        rowSelection="multiple"
+        getRowId={({ data }) => String(data?.partyId)}
+        rightAdornment={
+          <>
+            {selectedGroups.length > 0 && (
+              <Fade in={selectedGroups.length > 0} unmountOnExit>
+                <Box>
+                  <ActionMenu
+                    menuItems={[
+                      {
+                        label: t('people:sendSms'),
+                        icon: <MobileIcon />,
+                        hasAccess: () => false,
+                        // TODO: add action logic
+                        onClick: () => {},
+                      },
+                      {
+                        label: t('mail:sendMail'),
+                        icon: <SendMailIcon />,
+                        hasAccess: () => false,
+                        // TODO: add action logic
+                        onClick: () => {},
+                      },
+                    ]}
+                  />
+                </Box>
+              </Fade>
+            )}
+            {selectedGroups.length === 0 && (
               <Box>
                 <ActionMenu
                   menuItems={[
                     {
-                      label: t('people:sendSms'),
+                      label: t('groups:updateStudentMembership'),
                       icon: <MobileIcon />,
-                      hasAccess: () => false,
                       // TODO: add action logic
-                      onClick: () => {},
-                    },
-                    {
-                      label: t('mail:sendMail'),
-                      icon: <SendMailIcon />,
-                      hasAccess: () => false,
-                      // TODO: add action logic
-                      onClick: () => {},
+                      onClick: onOpenMembership,
+                      hasAccess: ({ isStaffUserWithPermission }) =>
+                        isStaffUserWithPermission(
+                          'ps:1:groups:modify_support_group_memberships'
+                        ),
                     },
                   ]}
                 />
               </Box>
-            </Fade>
-          )}
-          {selectedGroups.length === 0 && (
-            <Box>
-              <ActionMenu
-                menuItems={[
-                  {
-                    label: t('groups:updateStudentMembership'),
-                    icon: <MobileIcon />,
-                    // TODO: add action logic
-                    onClick: onOpenMembership,
-                    hasAccess: ({isStaffUserWithPermission}) => isStaffUserWithPermission('ps:1:groups:modify_support_group_memberships'),
-                  },
-                ]}
-              />
-            </Box>
-          )}
-        </>
-      }
-      onRowSelection={setSelectedGroups}
-    />
-  {groupIdNumber && (
-      <ManageSubjectGroupMembership
+            )}
+          </>
+        }
+        onRowSelection={setSelectedGroups}
+      />
+      {groupIdNumber && (
+        <ManageSubjectGroupMembership
           subjectGroupId={groupIdNumber}
           open={isOpenMembership}
           onClose={() => onCloseMembership()}
-      />
-  )}
-      </>
+        />
+      )}
+    </>
   );
 }
