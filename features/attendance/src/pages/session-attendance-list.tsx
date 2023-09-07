@@ -1,5 +1,5 @@
 import { Box, Button } from '@mui/material';
-import {AttendanceCodeType, usePermissions} from '@tyro/api';
+import { AttendanceCodeType, usePermissions } from '@tyro/api';
 import { AddIcon } from '@tyro/icons';
 import {
   GridOptions,
@@ -16,7 +16,7 @@ import {
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs, { Dayjs } from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AbsentRequestStatusChip } from '../components/absent-requests/absent-request-status-chip';
 import { ViewAbsentRequestModalProps } from '../components/absent-requests/view-absent-request-modal';
 import {
@@ -68,6 +68,10 @@ const getColumns = (
       dayjs(dateA).unix() - dayjs(dateB).unix(),
     valueGetter: ({ data }) => dayjs(data?.date).format('LL'),
   },
+  {
+    field: 'note',
+    headerName: t('common:note'),
+  },
 ];
 
 export default function AbsentRequests() {
@@ -81,11 +85,21 @@ export default function AbsentRequests() {
 
   const { data: allAttendanceCodes } = useAttendanceCodes({});
 
-  allAttendanceCodes?.filter((code) => code.sessionCodeType === AttendanceCodeType.UnexplainedAbsence);
+  const defaultCodes = useMemo(
+    () =>
+      allAttendanceCodes?.filter(
+        (code) => code.sessionCodeType === AttendanceCodeType.UnexplainedAbsence
+      ) ?? [],
+    [allAttendanceCodes]
+  );
+
   const [codeFilter, setCodeFilter] = useState<
     ReturnTypeFromUseAttendanceCodes[]
   >([]);
-  console.log(codeFilter);
+
+  useEffect(() => {
+    setCodeFilter(defaultCodes);
+  }, [allAttendanceCodes]);
   const [from, to] = dateRange;
   const fromDate = from.format('YYYY-MM-DD');
   const toDate = to.format('YYYY-MM-DD');
@@ -99,7 +113,6 @@ export default function AbsentRequests() {
     from: fromDate,
     to: toDate,
   });
-  // const { data: absentRequests } = useSessionAttendanceList({});
   const [isCreateAbsentRequest, setIsCreateAbsentRequest] = useState(false);
   const [selectedAbsentRequests, setSelectedAbsentRequests] = useState<
     ReturnTypeFromUseSessionAttendanceList[]

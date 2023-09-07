@@ -19,7 +19,7 @@ export function AttendanceListToolbar({
 }: AttendanceListToolbar) {
   return (
     <Stack direction="row" justifyContent="space-between" p={2}>
-      <Box flex="1" display="flex" justifyContent="center" alignItems="center">
+      <Box flex="1" display="flex" justifyContent="flex-start" alignItems="center">
         <DateRangeSwitcher
           value={dateRange}
           onChange={setDateRange}

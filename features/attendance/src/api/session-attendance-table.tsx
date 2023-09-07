@@ -3,7 +3,7 @@ import {
   gqlClient,
   graphql,
   queryClient,
-  SessionAttendanceReportFilter,
+  SessionAttendanceListFilter,
   UseQueryReturnType,
 } from '@tyro/api';
 import { attendanceKeys } from './keys';
@@ -14,9 +14,9 @@ export type ReturnTypeFromUseSessionAttendanceList = UseQueryReturnType<
 
 const sessionAttendanceListRequest = graphql(/* GraphQL */ `
   query attendance_sessionAttendanceReport(
-    $filter: SessionAttendanceReportFilter
+    $filter: SessionAttendanceListFilter
   ) {
-    attendance_sessionAttendanceReport(filter: $filter) {
+    attendance_sessionAttendanceList(filter: $filter) {
       id
       studentPartyId
       attendanceCode {
@@ -38,17 +38,18 @@ const sessionAttendanceListRequest = graphql(/* GraphQL */ `
         name
       }
       date
+      note
     }
   }
 `);
 
-const sessionListQuery = (filter: SessionAttendanceReportFilter) => ({
+const sessionListQuery = (filter: SessionAttendanceListFilter) => ({
   queryKey: attendanceKeys.sessionAttendanceList(filter),
   queryFn: () => gqlClient.request(sessionAttendanceListRequest, { filter }),
 });
 
 export function useSessionAttendanceList(
-  filter: SessionAttendanceReportFilter
+  filter: SessionAttendanceListFilter
 ) {
   return useQuery({
     ...sessionListQuery(filter),
@@ -57,6 +58,6 @@ export function useSessionAttendanceList(
   });
 }
 
-export function getAbsentRequests(filter: SessionAttendanceReportFilter) {
+export function getAbsentRequests(filter: SessionAttendanceListFilter) {
   return queryClient.fetchQuery(sessionListQuery(filter));
 }
