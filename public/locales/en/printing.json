@@ -55,10 +55,6 @@
       "SMALL": "Small",
       "MEDIUM": "Medium",
       "LARGE": "Large"
-    },
-    "printWithColour": {
-      "YES" : "Yes",
-      "NO" : "No"
     }
   }
 }
