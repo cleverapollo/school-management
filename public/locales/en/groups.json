@@ -1,6 +1,8 @@
 {
   "namedMemberList": "{{groupName}} member list",
   "classGroups": "Class Groups",
+  "members": "Members",
+  "updateStudentMembership": "Update student membership",
   "subjectGroups": "Subject groups",
   "supportGroups": "Support groups",
   "customGroups": "Custom Groups",
