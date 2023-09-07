@@ -1,7 +1,8 @@
 import { AccountInfo, PublicClientApplication } from '@azure/msal-browser';
 import { setToken } from './jwt';
 
-const isProd = window.location.hostname === 'app.tyro.school';
+// const isProd = window.location.hostname === 'app.tyro.school';
+const isProd = true;
 
 /**
  * Enter here the user flows and custom policies for your B2C application
