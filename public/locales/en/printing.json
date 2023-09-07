@@ -47,13 +47,18 @@
       "individualStudents": "Individual Students",
       "allTeachers": "All Teachers",
       "allRooms": "All rooms",
-      "fontSize": "Font Size"
+      "fontSize": "Font Size",
+      "printWithColour": "Print with Colour"
     },
     "fontSize": {
       "EXCEEDINGLY_SMALL": "Exceedingly Small",
       "SMALL": "Small",
       "MEDIUM": "Medium",
       "LARGE": "Large"
+    },
+    "printWithColour": {
+      "YES" : "Yes",
+      "NO" : "No"
     }
   }
 }
