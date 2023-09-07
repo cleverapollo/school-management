@@ -81,6 +81,9 @@ const getStudentNoteColumns = (
     filter: true,
     sortable: true,
     suppressSizeToFit: true,
+    sort: 'desc',
+    comparator: (dateA: string, dateB: string) =>
+      dayjs(dateA).unix() - dayjs(dateB).unix(),
   },
   {
     field: 'createdByPerson',
