@@ -4,9 +4,10 @@ import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs, { Dayjs } from 'dayjs';
 import isToday from 'dayjs/plugin/isToday';
-import { AcademicNamespace } from '@tyro/api';
+import { AcademicNamespace, usePermissions } from '@tyro/api';
 import { ReturnTypeFromUseStudentCalendarAttendance } from '../../../api/student/attendance/calendar-attendance';
 import { AttendanceDetailsModal } from './attendance-details-modal';
+import { AttendanceDataType, ExtendedAttendanceCodeType } from './index';
 
 dayjs.extend(isToday);
 
@@ -14,13 +15,15 @@ type MonthCalendarProps = {
   month: string;
   calendarAttendance?: ReturnTypeFromUseStudentCalendarAttendance;
   handleAddAttendance: (arg0: string) => void;
-  currentTabValue: string;
+  currentTabValue: AttendanceDataType['currentTabValue'];
+  hasPermissionReadAndWriteAttendanceStudentCalendarView: boolean;
 };
 
 type CustomDayProps = {
   handleAddAttendance: (arg0: string) => void;
   calendarAttendance?: ReturnTypeFromUseStudentCalendarAttendance;
-  currentTabValue: string;
+  currentTabValue: AttendanceDataType['currentTabValue'];
+  hasPermissionReadAndWriteAttendanceStudentCalendarView: boolean;
 } & PickersDayProps<Dayjs>;
 
 const attendanceColours = {
@@ -36,7 +39,7 @@ const weekends = [0, 6];
 const getBackgroundColor = (
   formattedDay: keyof typeof attendanceColours,
   dayOfWeek: number,
-  currentTabValue: string
+  currentTabValue: AttendanceDataType['currentTabValue']
 ) => {
   if (weekends.includes(dayOfWeek)) {
     return 'white';
@@ -44,7 +47,7 @@ const getBackgroundColor = (
 
   const keyOfAttendanceColours = attendanceColours[formattedDay];
 
-  if (currentTabValue === 'All') {
+  if (currentTabValue === ExtendedAttendanceCodeType?.All) {
     if (formattedDay && keyOfAttendanceColours) {
       return `${keyOfAttendanceColours}.100`;
     }
@@ -58,13 +61,13 @@ const getBackgroundColor = (
 const getFontColor = (
   formattedDay: keyof typeof attendanceColours,
   dayOfWeek: number,
-  currentTabValue: string
+  currentTabValue: AttendanceDataType['currentTabValue']
 ) => {
   if (weekends.includes(dayOfWeek)) {
     return 'grey.300';
   }
   const keyOfAttendanceColours = attendanceColours[formattedDay];
-  if (currentTabValue === 'All') {
+  if (currentTabValue === ExtendedAttendanceCodeType?.All) {
     if (formattedDay && keyOfAttendanceColours) {
       return `${keyOfAttendanceColours}.500`;
     }
@@ -85,6 +88,7 @@ function CustomDay(props: CustomDayProps) {
     handleAddAttendance,
     calendarAttendance,
     currentTabValue,
+    hasPermissionReadAndWriteAttendanceStudentCalendarView,
     ...other
   } = props;
 
@@ -98,6 +102,9 @@ function CustomDay(props: CustomDayProps) {
     <PickersDay
       day={day}
       sx={{
+        pointerEvents: hasPermissionReadAndWriteAttendanceStudentCalendarView
+          ? undefined
+          : 'none',
         borderRadius: '13px',
         backgroundColor: getBackgroundColor(
           dayAttendance?.status ?? 'NOT_TAKEN',
@@ -124,6 +131,7 @@ function MonthCalendar({
   handleAddAttendance,
   calendarAttendance,
   currentTabValue,
+  hasPermissionReadAndWriteAttendanceStudentCalendarView,
 }: MonthCalendarProps) {
   return (
     <Box
@@ -144,6 +152,7 @@ function MonthCalendar({
               handleAddAttendance,
               calendarAttendance,
               currentTabValue,
+              hasPermissionReadAndWriteAttendanceStudentCalendarView,
             }),
         }}
         sx={{
@@ -194,7 +203,7 @@ type AcademicCalendarProps = {
   studentPartyId: string;
   calendarAttendance?: ReturnTypeFromUseStudentCalendarAttendance;
   activeAcademicNamespace?: AcademicNamespace;
-  currentTabValue: string;
+  currentTabValue: AttendanceDataType['currentTabValue'];
 };
 
 export const AcademicCalendar = ({
@@ -203,6 +212,15 @@ export const AcademicCalendar = ({
   activeAcademicNamespace,
   currentTabValue,
 }: AcademicCalendarProps) => {
+  const { isStaffUserWithPermission } = usePermissions();
+  const hasPermissionReadAndWriteAttendanceStudentCalendarView =
+    isStaffUserWithPermission(
+      'ps:1:attendance:read_session_attendance_student_calendar_view'
+    ) &&
+    isStaffUserWithPermission(
+      'ps:1:attendance:write_session_attendance_student_calendar_view'
+    );
+
   const [sessionAttendanceToEdit, setSessionAttendanceToEdit] = useState<
     string | null
   >(null);
@@ -233,6 +251,9 @@ export const AcademicCalendar = ({
             calendarAttendance={calendarAttendance}
             currentTabValue={currentTabValue}
             handleAddAttendance={setSessionAttendanceToEdit}
+            hasPermissionReadAndWriteAttendanceStudentCalendarView={
+              hasPermissionReadAndWriteAttendanceStudentCalendarView
+            }
           />
         ))}
       </Stack>

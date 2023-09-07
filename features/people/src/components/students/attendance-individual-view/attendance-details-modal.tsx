@@ -29,8 +29,6 @@ import {
 } from '@tyro/core';
 import { useAttendanceCodes } from '@tyro/attendance';
 import {
-  UserType,
-  usePermissions,
   SaveEventAttendanceInput,
   SaveStudentSessionAttendanceInput,
 } from '@tyro/api';
@@ -73,12 +71,9 @@ export const AttendanceDetailsModal = ({
   onClose,
 }: AttendanceDetailsModalProps) => {
   const { t } = useTranslation(['attendance', 'people', 'common']);
-  const { userType } = usePermissions();
   const { handleSubmit, control, setValue, setError } =
     useForm<AttendanceForm>();
   const [openAlert, setOpenAlert] = useState(true);
-
-  const isTeacherUserType = userType === UserType.Teacher;
 
   const { displayName } = usePreferredNameLayout();
 
@@ -415,57 +410,47 @@ export const AttendanceDetailsModal = ({
                           </Stack>
                         </TableCell>
                         <TableCell>
-                          {isTeacherUserType ? (
-                            <Typography variant="subtitle2">
-                              {sessionAttendance?.note || '-'}
-                            </Typography>
-                          ) : (
-                            <Stack
-                              direction="row"
-                              flexGrow="1"
-                              padding={0}
-                              sx={{
-                                '& .MuiFormControl-root .MuiInputBase-input': {
-                                  minWidth: { xs: '200px', md: 0 },
-                                  paddingY: 1,
-                                },
+                          <Stack
+                            direction="row"
+                            flexGrow="1"
+                            padding={0}
+                            sx={{
+                              '& .MuiFormControl-root .MuiInputBase-input': {
+                                minWidth: { xs: '200px', md: 0 },
+                                paddingY: 1,
+                              },
+                            }}
+                          >
+                            <RHFTextField
+                              textFieldProps={{
+                                fullWidth: true,
                               }}
-                            >
-                              <RHFTextField
-                                textFieldProps={{
-                                  fullWidth: true,
-                                }}
-                                controlProps={{
-                                  name: `sessionAttendance.${event.id}.note`,
-                                  control,
-                                }}
-                              />
-                            </Stack>
-                          )}
+                              controlProps={{
+                                name: `sessionAttendance.${event.id}.note`,
+                                control,
+                              }}
+                            />
+                          </Stack>
                         </TableCell>
                         <TableCell>
-                          {isTeacherUserType ? (
-                            <Typography variant="subtitle2">
-                              {sessionAttendance?.attendanceCode?.name || '-'}
-                            </Typography>
-                          ) : (
-                            <Stack
-                              direction="row"
-                              padding={0}
-                              sx={{ '& .MuiSelect-select': { paddingY: 1 } }}
-                            >
-                              <RHFSelect
-                                fullWidth
-                                options={attendanceCodes}
-                                getOptionLabel={(option) => option?.name}
-                                optionIdKey="id"
-                                controlProps={{
-                                  name: `sessionAttendance.${event.id}.attendanceCodeId`,
-                                  control,
-                                }}
-                              />
-                            </Stack>
-                          )}
+                          <Stack
+                            direction="row"
+                            padding={0}
+                            sx={{
+                              '& .MuiSelect-select': { paddingY: 1 },
+                            }}
+                          >
+                            <RHFSelect
+                              fullWidth
+                              options={attendanceCodes}
+                              getOptionLabel={(option) => option?.name}
+                              optionIdKey="id"
+                              controlProps={{
+                                name: `sessionAttendance.${event.id}.attendanceCodeId`,
+                                control,
+                              }}
+                            />
+                          </Stack>
                         </TableCell>
                       </TableRow>
                     );
@@ -536,57 +521,47 @@ export const AttendanceDetailsModal = ({
                           </Stack>
                         </TableCell>
                         <TableCell>
-                          {isTeacherUserType ? (
-                            <Typography variant="subtitle2">
-                              {currentEvent?.note || '-'}
-                            </Typography>
-                          ) : (
-                            <Stack
-                              direction="row"
-                              flexGrow="1"
-                              padding={0}
-                              sx={{
-                                '& .MuiFormControl-root .MuiInputBase-input': {
-                                  minWidth: { xs: '200px', md: 0 },
-                                  paddingY: 1,
-                                },
+                          <Stack
+                            direction="row"
+                            flexGrow="1"
+                            padding={0}
+                            sx={{
+                              '& .MuiFormControl-root .MuiInputBase-input': {
+                                minWidth: { xs: '200px', md: 0 },
+                                paddingY: 1,
+                              },
+                            }}
+                          >
+                            <RHFTextField
+                              textFieldProps={{
+                                fullWidth: true,
                               }}
-                            >
-                              <RHFTextField
-                                textFieldProps={{
-                                  fullWidth: true,
-                                }}
-                                controlProps={{
-                                  name: `eventAttendance.${event.eventId}.note`,
-                                  control,
-                                }}
-                              />
-                            </Stack>
-                          )}
+                              controlProps={{
+                                name: `eventAttendance.${event.eventId}.note`,
+                                control,
+                              }}
+                            />
+                          </Stack>
                         </TableCell>
                         <TableCell>
-                          {isTeacherUserType ? (
-                            <Typography variant="subtitle2">
-                              {currentEvent?.attendanceCode?.name || '-'}
-                            </Typography>
-                          ) : (
-                            <Stack
-                              direction="row"
-                              padding={0}
-                              sx={{ '& .MuiSelect-select': { paddingY: 1 } }}
-                            >
-                              <RHFSelect
-                                fullWidth
-                                options={attendanceCodes}
-                                getOptionLabel={(option) => option?.name}
-                                optionIdKey="id"
-                                controlProps={{
-                                  name: `eventAttendance.${event.eventId}.attendanceCodeId`,
-                                  control,
-                                }}
-                              />
-                            </Stack>
-                          )}
+                          <Stack
+                            direction="row"
+                            padding={0}
+                            sx={{
+                              '& .MuiSelect-select': { paddingY: 1 },
+                            }}
+                          >
+                            <RHFSelect
+                              fullWidth
+                              options={attendanceCodes}
+                              getOptionLabel={(option) => option?.name}
+                              optionIdKey="id"
+                              controlProps={{
+                                name: `eventAttendance.${event.eventId}.attendanceCodeId`,
+                                control,
+                              }}
+                            />
+                          </Stack>
                         </TableCell>
                       </TableRow>
                     );
@@ -599,15 +574,14 @@ export const AttendanceDetailsModal = ({
             <Button variant="soft" color="inherit" onClick={onClose}>
               {t('common:actions.cancel')}
             </Button>
-            {!isTeacherUserType && (
-              <LoadingButton
-                type="submit"
-                variant="contained"
-                loading={isSubmitting}
-              >
-                {t('common:actions.save')}
-              </LoadingButton>
-            )}
+
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              loading={isSubmitting}
+            >
+              {t('common:actions.save')}
+            </LoadingButton>
           </DialogActions>
         </form>
       )}

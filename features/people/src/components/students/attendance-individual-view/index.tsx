@@ -5,6 +5,7 @@ import {
   CardContent,
   CardHeader,
   CircularProgress,
+  Icon,
   Stack,
   Tab,
   Tabs,
@@ -14,7 +15,7 @@ import {
 } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { useCoreAcademicNamespace } from '@tyro/api';
+import { useCoreAcademicNamespace, AttendanceCodeType } from '@tyro/api';
 import { ToggleButtonCalendarIcon, ToggleButtonTableIcon } from '@tyro/icons';
 import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -22,62 +23,21 @@ import { AcademicCalendar } from './calendar';
 import { useStudentCalendarAttendance } from '../../../api/student/attendance/calendar-attendance';
 import { AttendanceTableView } from './attendance-table-view';
 
-const getViewOptions = (t: TFunction<'attendance'[]>) =>
-  [
-    {
-      value: 'calendar',
-      label: t('attendance:calendarView'),
-      icon: ToggleButtonCalendarIcon,
-    },
-    {
-      value: 'table',
-      label: t('attendance:tableView'),
-      icon: ToggleButtonTableIcon,
-    },
-  ] as const;
-
-export type ViewOption = ReturnType<typeof getViewOptions>[number];
-interface ViewToggleButtonProps {
-  value: ViewOption['value'];
-  label: ViewOption['label'];
-  icon: ViewOption['icon'];
-  selected: boolean;
-  onChange: (value: ViewOption['value']) => void;
+export enum ExtendedAttendanceCodeType {
+  All = 'ALL',
+  ExplainedAbsence = 'EXPLAINED_ABSENCE',
+  Late = 'LATE',
+  NotTaken = 'NOT_TAKEN',
+  Present = 'PRESENT',
+  UnexplainedAbsence = 'UNEXPLAINED_ABSENCE',
 }
 
-function ViewToggleButton({
-  value,
-  label,
-  icon: Icon,
-  selected,
-  onChange,
-}: ViewToggleButtonProps) {
-  return (
-    <Tooltip title={label}>
-      <ToggleButton
-        value={value}
-        selected={selected}
-        onChange={() => onChange(value)}
-        sx={{
-          width: 32,
-          height: 32,
-          padding: 0,
-          border: 0,
-        }}
-      >
-        <Icon
-          sx={({ palette }) => ({
-            width: 20,
-            height: 20,
-            '&  g *': {
-              stroke: selected ? palette.indigo?.[500] : palette.slate?.[400],
-            },
-          })}
-        />
-      </ToggleButton>
-    </Tooltip>
-  );
-}
+export type AttendanceDataType = {
+  colour: string;
+  translationText: TFunction<'attendance'[]>;
+  currentTabValue: ExtendedAttendanceCodeType;
+  total: number;
+};
 
 export const MonthOverview = () => {
   const { t } = useTranslation(['attendance', 'people']);
@@ -97,60 +57,70 @@ export const MonthOverview = () => {
   const { data: calendarAttendance, isLoading: calendarAttendanceLoading } =
     useStudentCalendarAttendance({
       partyId: Number(id),
-      from: !startDate ? formattedCurrentDate : startDate,
-      to: !endDate ? formattedCurrentDate : endDate,
+      from: startDate || formattedCurrentDate,
+      to: endDate || formattedCurrentDate,
     });
 
   const attendanceCounts = calendarAttendance?.attendances ?? [];
   const totalAttendanceDays = attendanceCounts.length;
 
   const [value, setValue] = useState(0);
-  const [currentTabValue, setCurrentTabValue] = useState('All');
+  const [currentTabValue, setCurrentTabValue] = useState(
+    ExtendedAttendanceCodeType?.All
+  );
 
   const attendanceTabData = [
     {
       colour: 'indigo',
       translationText: t('attendance:all'),
-      calendarAttendanceTotals: 'all',
-      currentTabValue: 'All',
+      currentTabValue: ExtendedAttendanceCodeType?.All,
       total: totalAttendanceDays,
     },
     {
       colour: 'emerald',
       translationText: t('attendance:totalPresent'),
-      calendarAttendanceTotals: 'totalPresent',
-      currentTabValue: 'PRESENT',
+      currentTabValue: ExtendedAttendanceCodeType?.Present,
       total: calendarAttendance?.totalPresent ?? 0,
     },
     {
       colour: 'sky',
       translationText: t('attendance:totalLate'),
-      calendarAttendanceTotals: 'totalLate',
-      currentTabValue: 'LATE',
+      currentTabValue: ExtendedAttendanceCodeType?.Late,
       total: calendarAttendance?.totalLate ?? 0,
     },
     {
       colour: 'pink',
       translationText: t('attendance:totalAbsent'),
-      calendarAttendanceTotals: 'totalAbsent',
-      currentTabValue: 'EXPLAINED_ABSENCE',
+      currentTabValue: ExtendedAttendanceCodeType?.ExplainedAbsence,
       total: calendarAttendance?.totalAbsent ?? 0,
     },
     {
       colour: 'red',
       translationText: t('attendance:totalUnexplained'),
-      calendarAttendanceTotals: 'totalUnexplained',
-      currentTabValue: 'UNEXPLAINED_ABSENCE',
+      currentTabValue: ExtendedAttendanceCodeType?.UnexplainedAbsence,
       total: calendarAttendance?.totalUnexplained ?? 0,
     },
     {
       colour: 'grey',
       translationText: t('attendance:totalNotTaken'),
-      calendarAttendanceTotals: 'totalNotTaken',
-      currentTabValue: 'NOT_TAKEN',
+      currentTabValue: ExtendedAttendanceCodeType?.NotTaken,
       total: calendarAttendance?.totalNotTaken ?? 0,
     },
   ];
+
+  const getViewOptions = (translate: TFunction<'attendance'[]>) =>
+    [
+      {
+        value: 'calendar',
+        label: translate('attendance:calendarView'),
+        icon: ToggleButtonCalendarIcon,
+      },
+      {
+        value: 'table',
+        label: translate('attendance:tableView'),
+        icon: ToggleButtonTableIcon,
+      },
+    ] as const;
 
   const viewOptions = useMemo(() => getViewOptions(t), [t]);
 
@@ -190,12 +160,33 @@ export const MonthOverview = () => {
           }}
         >
           {viewOptions.map((option) => (
-            <ViewToggleButton
-              key={option.value}
-              {...option}
-              selected={option.value === view}
-              onChange={setView}
-            />
+            <Tooltip title={option?.label}>
+              <ToggleButton
+                value={option?.value}
+                selected={option?.value === view}
+                onChange={() => setView(option?.value)}
+                sx={{
+                  width: 32,
+                  height: 32,
+                  padding: 0,
+                  border: 0,
+                }}
+              >
+                <Icon
+                  component={option?.icon}
+                  sx={({ palette }) => ({
+                    width: 20,
+                    height: 20,
+                    '&  g *': {
+                      stroke:
+                        option.value === view
+                          ? palette.indigo?.[500]
+                          : palette.slate?.[400],
+                    },
+                  })}
+                />
+              </ToggleButton>
+            </Tooltip>
           ))}
         </Stack>
         <CardHeader
