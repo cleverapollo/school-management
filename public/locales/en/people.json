@@ -36,6 +36,7 @@
   "academicYear": "Academic {{ year }}",
   "studentAttendanceAlertTitleModal": "Changes made will delete previous Attendance",
   "studentAttendanceAlertBodyModal": "Once changes are saved, they can be edited again.",
+  "ariaLabelForTabs": "scrollable auto tabs for highlighting attendance types",
   "gender": {
     "title": "Gender",
     "MALE": "Male",
