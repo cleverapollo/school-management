@@ -1,30 +1,23 @@
-import { useMemo, useState } from 'react';
-import { useParams } from 'react-router';
-import { TFunction, useTranslation } from '@tyro/i18n';
+import {useMemo, useState} from 'react';
+import {useParams} from 'react-router';
+import {TFunction, useTranslation} from '@tyro/i18n';
 import {
-  GridOptions,
-  Table,
-  ICellRendererParams,
-  useNumber,
-  TablePersonAvatar,
   ActionMenu,
+  GridOptions,
+  ICellRendererParams,
   ReturnTypeDisplayName,
-  usePreferredNameLayout,
+  Table,
+  TablePersonAvatar,
   useDisclosure,
+  useNumber,
+  usePreferredNameLayout,
 } from '@tyro/core';
 
-import { MobileIcon, SendMailIcon } from '@tyro/icons';
-import {
-  PermissionUtils,
-  SubjectGroupStudentMembershipTypeEnum,
-  usePermissions,
-  UserType,
-} from '@tyro/api';
-import { Fade, Box } from '@mui/material';
-
-import { isStaffUser } from '@tyro/configs/dist/utils/permission-utils';
-import { useSubjectGroupById } from '../../../api';
-import { ManageSubjectGroupMembership } from '../../../components/manage-group-membership-modal';
+import {AddUserIcon, MobileIcon, SendMailIcon} from '@tyro/icons';
+import {usePermissions, UserType,} from '@tyro/api';
+import {Box, Fade} from '@mui/material';
+import {useSubjectGroupById} from '../../../api';
+import {ManageSubjectGroupMembership} from '../../../components/manage-group-membership-modal';
 
 type ReturnTypeFromUseSubjectGroupById = NonNullable<
   NonNullable<ReturnType<typeof useSubjectGroupById>['data']>['students']
@@ -128,7 +121,7 @@ export default function SubjectGroupProfileStudentsPage() {
                   menuItems={[
                     {
                       label: t('groups:updateStudentMembership'),
-                      icon: <MobileIcon />,
+                      icon: <AddUserIcon />,
                       // TODO: add action logic
                       onClick: onOpenMembership,
                       hasAccess: ({ isStaffUserWithPermission }) =>

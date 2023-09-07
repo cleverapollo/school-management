@@ -1,29 +1,29 @@
-import { useMemo, useState } from 'react';
-import { useParams } from 'react-router';
-import { TFunction, useTranslation } from '@tyro/i18n';
+import {useMemo, useState} from 'react';
+import {useParams} from 'react-router';
+import {TFunction, useTranslation} from '@tyro/i18n';
 import {
-  GridOptions,
-  Table,
-  ICellRendererParams,
-  useNumber,
-  TablePersonAvatar,
   ActionMenu,
+  GridOptions,
+  ICellRendererParams,
   ReturnTypeDisplayName,
-  usePreferredNameLayout,
+  Table,
+  TablePersonAvatar,
   useDisclosure,
+  useNumber,
+  usePreferredNameLayout,
 } from '@tyro/core';
 
-import { MobileIcon, SendMailIcon } from '@tyro/icons';
+import {AddUserIcon, MobileIcon, SendMailIcon} from '@tyro/icons';
 import {
   PermissionUtils,
   SubjectGroupStudentMembershipTypeEnum,
   usePermissions,
   UserType,
 } from '@tyro/api';
-import { Fade, Box } from '@mui/material';
+import {Box, Fade} from '@mui/material';
 
-import { useSubjectGroupById } from '../../../api';
-import { ManageSubjectGroupMembership } from '../../../components/manage-group-membership-modal';
+import {useSubjectGroupById} from '../../../api';
+import {ManageSubjectGroupMembership} from '../../../components/manage-group-membership-modal';
 
 type ReturnTypeFromUseSubjectGroupById = NonNullable<
   NonNullable<ReturnType<typeof useSubjectGroupById>['data']>['students']
@@ -148,7 +148,7 @@ export default function SubjectGroupProfileStudentsPage() {
                   menuItems={[
                     {
                       label: t('groups:updateStudentMembership'),
-                      icon: <MobileIcon />,
+                      icon: <AddUserIcon />,
                       // TODO: add action logic
                       onClick: onOpenMembership,
                       hasAccess: (permissions) =>

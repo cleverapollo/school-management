@@ -66,7 +66,7 @@ export enum Activity {
   HomeSchoolLiaison = 'HOME_SCHOOL_LIAISON',
   OtherActivity = 'OTHER_ACTIVITY',
   ProgrammeCoordination = 'PROGRAMME_COORDINATION',
-  SmallGroupsForAdditionalStudentNeeds = 'SMALL_GROUPS_FOR_ADDITIONAL_STUDENT_NEEDS',
+  Support = 'SUPPORT',
   TimetabledHoursInOtherSchools = 'TIMETABLED_HOURS_IN_OTHER_SCHOOLS'
 }
 
@@ -1421,7 +1421,6 @@ export enum Day {
   Friday = 'FRIDAY',
   Monday = 'MONDAY',
   Saturday = 'SATURDAY',
-  Sunday = 'SUNDAY',
   Thursday = 'THURSDAY',
   Tuesday = 'TUESDAY',
   Wednesday = 'WEDNESDAY'
@@ -1671,6 +1670,41 @@ export type EventAttendanceFilter = {
   date?: InputMaybe<Scalars['Date']>;
   eventIds?: InputMaybe<Array<AttendanceEventId>>;
   personPartyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+};
+
+export type EventAttendanceReport = {
+  __typename?: 'EventAttendanceReport';
+  attendances: Array<EventAttendanceReportPerson>;
+  periods: Array<EventAttendanceReportPeriod>;
+};
+
+export type EventAttendanceReportEntry = {
+  __typename?: 'EventAttendanceReportEntry';
+  attendanceCode?: Maybe<AttendanceCode>;
+  attendanceCodeId?: Maybe<Scalars['Int']>;
+  time: Scalars['Time'];
+};
+
+export type EventAttendanceReportFilter = {
+  classGroupId: Scalars['Long'];
+  date: Scalars['Date'];
+};
+
+export type EventAttendanceReportPeriod = {
+  __typename?: 'EventAttendanceReportPeriod';
+  time: Scalars['Time'];
+};
+
+export type EventAttendanceReportPerson = {
+  __typename?: 'EventAttendanceReportPerson';
+  attendances: Array<EventAttendanceReportEntry>;
+  classGroup: GeneralGroup;
+  classGroupId: Scalars['Long'];
+  percentage: Scalars['Int'];
+  possible: Scalars['Int'];
+  present: Scalars['Int'];
+  student: Person;
+  studentPartyId: Scalars['Long'];
 };
 
 export type ExampleObjectExtension = {
@@ -3312,6 +3346,7 @@ export type Query = {
   attendance_attendanceCodes: Array<AttendanceCode>;
   attendance_calendarAttendance: CalendarAttendance;
   attendance_eventAttendance: Array<EventAttendance>;
+  attendance_eventAttendanceReport: EventAttendanceReport;
   attendance_parentalAttendanceRequests: Array<ParentalAttendanceRequest>;
   attendance_sessionAttendanceReport: Array<SessionAttendanceReport>;
   attendance_studentSessionAttendance: Array<StudentSessionAttendance>;
@@ -3461,6 +3496,11 @@ export type QueryAttendance_CalendarAttendanceArgs = {
 
 export type QueryAttendance_EventAttendanceArgs = {
   filter?: InputMaybe<EventAttendanceFilter>;
+};
+
+
+export type QueryAttendance_EventAttendanceReportArgs = {
+  filter?: InputMaybe<EventAttendanceReportFilter>;
 };
 
 
