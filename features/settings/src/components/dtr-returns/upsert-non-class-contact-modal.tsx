@@ -10,49 +10,53 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import {
-  ReturnTypeFromUseNoteTagsBehaviour,
-  useUpsertBehaviourTags,
-} from '@tyro/people';
 import React, { useEffect } from 'react';
-import { Notes_BehaviourType } from '@tyro/api';
+import { Activity, Day } from '@tyro/api';
+import { ReturnTypeFromUseNonClassContactHours } from '../../api/dtr-returns/non-class-contact';
+import { useUpsertNonClassContact } from '../../api/dtr-returns/upsert-non-class-contact';
 
 export interface UpsertNonClassContactModalProps {
   onClose: () => void;
-  initialState: Partial<ReturnTypeFromUseNoteTagsBehaviour> | null;
+  initialState: Partial<ReturnTypeFromUseNonClassContactHours> | null;
 }
 
 export type UpsertNonClassContactFormState = {
-  name: string;
-  description: string;
-  behaviourType: Notes_BehaviourType;
+  staffPartyId: number;
+  activity: Activity;
+  dayOfTheWeek: Day;
+  hours: number;
+  minutes: number;
 };
 
 export const UpsertNonClassContactModal = ({
   initialState,
   onClose,
 }: UpsertNonClassContactModalProps) => {
-  const { t, i18n } = useTranslation(['settings', 'common']);
+  const { t } = useTranslation(['settings', 'common']);
   const { resolver, rules } =
     useFormValidator<UpsertNonClassContactFormState>();
-  const currentLanguageCode = i18n.language;
 
   const defaultFormStateValues: Partial<UpsertNonClassContactFormState> = {
-    name: initialState?.name,
-    description: initialState?.description || '',
-    behaviourType: initialState?.behaviourType || Notes_BehaviourType.Neutral,
+    staffPartyId: initialState?.staffPartyId,
+    activity: initialState?.activity,
+    dayOfTheWeek: initialState?.dayOfTheWeek || Day.Monday,
+    hours: initialState?.hours || 0,
+    minutes: initialState?.minutes || 0,
   };
 
   const { control, handleSubmit, reset } =
     useForm<UpsertNonClassContactFormState>({
       resolver: resolver({
-        name: rules.required(),
-        behaviourType: rules.required(),
+        // staffPartyId: rules.required(),
+        activity: rules.required(),
+        dayOfTheWeek: rules.required(),
+        hours: rules.required(),
+        minutes: rules.required(),
       }),
       defaultValues: defaultFormStateValues,
     });
 
-  const { mutate, isLoading } = useUpsertBehaviourTags();
+  const { mutate, isLoading } = useUpsertNonClassContact();
 
   const handleClose = () => {
     onClose();
@@ -65,17 +69,16 @@ export const UpsertNonClassContactModal = ({
 
   const onSubmit = handleSubmit((data) => {
     mutate(
-      [
-        {
-          id: initialState?.id,
-          tag_l2: initialState?.tag_l2 || '',
-          name: [{ locale: currentLanguageCode, value: data.name }],
-          description: [
-            { locale: currentLanguageCode, value: data.description },
-          ],
-          behaviourType: data.behaviourType,
-        },
-      ],
+      {
+        ...initialState,
+        academicNameSpaceId: initialState?.academicNameSpaceId ?? 1,
+        staffPartyId: data.staffPartyId ?? 12345,
+        activity: data.activity,
+        dayOfTheWeek: data.dayOfTheWeek,
+        hours: data.hours,
+        minutes: data.minutes,
+      },
+
       {
         onSuccess: () => {
           handleClose();
@@ -93,7 +96,9 @@ export const UpsertNonClassContactModal = ({
       maxWidth="sm"
     >
       <DialogTitle>
-        {t('settings:dtrReturns.createNonClassContact')}
+        {initialState?.staffPartyId
+          ? t('settings:dtrReturns.editNonClassContact')
+          : t('settings:dtrReturns.createNonClassContact')}
       </DialogTitle>
       <form onSubmit={onSubmit}>
         <Stack spacing={3} sx={{ p: 3 }}>
@@ -103,31 +108,60 @@ export const UpsertNonClassContactModal = ({
             label={t('common:teacher')}
             getOptionLabel={(option) => option}
             controlProps={{
-              name: 'name',
+              name: 'staffPartyId',
               control,
             }}
           />
-          <RHFSelect
-            fullWidth
-            options={Object.values(Notes_BehaviourType)}
-            label={t('settings:behaviourLabel.reportAs')}
-            getOptionLabel={(option) => t(`common:behaviourType.${option}`)}
-            controlProps={{
-              name: 'behaviourType',
-              control,
-            }}
-          />
-          <RHFTextField
-            label={t('common:description')}
-            controlProps={{
-              name: 'description',
-              control,
-            }}
-            textFieldProps={{
-              multiline: true,
-              rows: 4,
-            }}
-          />
+          <Stack direction="row" padding={0} gap={2}>
+            <RHFSelect
+              fullWidth
+              options={Object.values(Activity)}
+              label={t('settings:dtrReturns.activity')}
+              getOptionLabel={(option) =>
+                t(`settings:dtrReturns.activityValues.${option}`)
+              }
+              controlProps={{
+                name: 'activity',
+                control,
+              }}
+            />
+            <RHFSelect
+              fullWidth
+              options={Object.values(Day)}
+              label={t('settings:dtrReturns.dayOfWeek')}
+              getOptionLabel={(option) =>
+                t(`settings:dtrReturns.dayOfWeekValues.${option}`)
+              }
+              controlProps={{
+                name: 'dayOfTheWeek',
+                control,
+              }}
+            />
+          </Stack>
+          <Stack direction="row" padding={0} gap={2}>
+            <RHFTextField
+              label={t('settings:dtrReturns.hours')}
+              controlProps={{
+                name: 'hours',
+                control,
+              }}
+              textFieldProps={{
+                type: 'number',
+                fullWidth: true,
+              }}
+            />
+            <RHFTextField
+              label={t('settings:dtrReturns.minutes')}
+              controlProps={{
+                name: 'minutes',
+                control,
+              }}
+              textFieldProps={{
+                type: 'number',
+                fullWidth: true,
+              }}
+            />
+          </Stack>
         </Stack>
 
         <DialogActions>

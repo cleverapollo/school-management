@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { Box, Button } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 
@@ -8,18 +8,31 @@ import {
   Table,
   PageContainer,
   ICellRendererParams,
+  ActionMenu,
 } from '@tyro/core';
 import { LoadingButton } from '@mui/lab';
-import { AddIcon, DownloadArrowCircleIcon } from '@tyro/icons';
+import {
+  AddIcon,
+  DownloadArrowCircleIcon,
+  EditIcon,
+  TrashIcon,
+  VerticalDotsIcon,
+} from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Link } from 'react-router-dom';
+import { UseMutateAsyncFunction } from '@tanstack/react-query';
+import { DeleteNonClassContactHoursInput } from '@tyro/api';
 import { useDownloadFile } from '../../api/dtr-returns/download-file';
-import { UpsertBehaviourLabelModalProps } from '../../components/upsert-behaviour-label';
 import {
   UpsertNonClassContactModal,
   UpsertNonClassContactModalProps,
 } from '../../components/dtr-returns/upsert-non-class-contact-modal';
+import {
+  ReturnTypeFromUseNonClassContactHours,
+  useNonClassContactHours,
+} from '../../api/dtr-returns/non-class-contact';
+import { useDeleteNonClassContact } from '../../api/dtr-returns/delete-non-class-contact';
 
 dayjs.extend(LocalizedFormat);
 
@@ -82,7 +95,7 @@ const formTypeOptions = (
   },
 ];
 
-const getColumnDefs = (
+const getDtrReturnColumnDefs = (
   t: TFunction<('settings' | 'common')[], undefined, ('settings' | 'common')[]>,
   downloadFile: (fileName: string) => void,
   isSubmitting: boolean
@@ -128,6 +141,77 @@ const getColumnDefs = (
   },
 ];
 
+const getNonClassContactColumnDefs = (
+  t: TFunction<('settings' | 'common')[], undefined, ('settings' | 'common')[]>,
+  onClickEdit: Dispatch<
+    SetStateAction<UpsertNonClassContactModalProps['initialState']>
+  >,
+  onDelete: UseMutateAsyncFunction<
+    unknown,
+    unknown,
+    DeleteNonClassContactHoursInput
+  >,
+  numberOfNonClassContacts: number
+): GridOptions<ReturnTypeFromUseNonClassContactHours>['columnDefs'] => [
+  { field: 'nonClassContactHoursId', hide: true },
+  {
+    field: 'staffPartyId',
+    headerName: t('common:teacher'),
+  },
+  {
+    field: 'activity',
+    headerName: t('settings:dtrReturns.activity'),
+    valueGetter: ({ data }) =>
+      data?.activity
+        ? t(`settings:dtrReturns.activityValues.${data?.activity}`)
+        : null,
+  },
+  {
+    field: 'dayOfTheWeek',
+    headerName: t('settings:dtrReturns.dayOfWeek'),
+    valueGetter: ({ data }) =>
+      data?.dayOfTheWeek
+        ? t(`settings:dtrReturns.dayOfWeekValues.${data?.dayOfTheWeek}`)
+        : null,
+  },
+  {
+    field: 'hours',
+    headerName: t('settings:dtrReturns.hours'),
+  },
+  {
+    field: 'minutes',
+    headerName: t('settings:dtrReturns.minutes'),
+  },
+  {
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseNonClassContactHours>) =>
+      data && (
+        <ActionMenu
+          iconOnly
+          buttonIcon={<VerticalDotsIcon />}
+          menuItems={[
+            {
+              label: t('settings:dtrReturns.editNonClassContact'),
+              icon: <EditIcon />,
+              onClick: () => onClickEdit(data),
+            },
+            {
+              label: t('common:actions.delete'),
+              icon: <TrashIcon />,
+              onClick: () =>
+                onDelete({
+                  nonClassContactHoursId: data.nonClassContactHoursId,
+                  staffPartyId: data.staffPartyId,
+                }),
+              disabled: !numberOfNonClassContacts,
+            },
+          ]}
+        />
+      ),
+  },
+];
+
 export default function DTRReturnsPage() {
   const { t } = useTranslation(['navigation', 'settings', 'common']);
 
@@ -136,12 +220,24 @@ export default function DTRReturnsPage() {
   const [contactDetails, setContactDetails] =
     useState<UpsertNonClassContactModalProps['initialState']>(null);
 
-  const columnDefs = useMemo(
-    () => getColumnDefs(t, downloadFile, isSubmitting),
+  const dtrReturnColumnDefs = useMemo(
+    () => getDtrReturnColumnDefs(t, downloadFile, isSubmitting),
     [t, isSubmitting, downloadFile]
   );
+  const { mutateAsync: deleteNonClassContact } = useDeleteNonClassContact();
 
-  const rowData = useMemo(() => formTypeOptions(t), [t]);
+  const dtrReturnRowData = useMemo(() => formTypeOptions(t), [t]);
+  const { data: nonClassContactHours = [] } = useNonClassContactHours({
+    staffPartyId: 12345,
+    academicNameSpaceId: 1,
+  });
+
+  const nonClassContactColumnDefs = getNonClassContactColumnDefs(
+    t,
+    setContactDetails,
+    deleteNonClassContact,
+    nonClassContactHours?.length ?? 0
+  );
 
   const handleCreateNonClassContact = () => {
     setContactDetails({});
@@ -158,8 +254,8 @@ export default function DTRReturnsPage() {
         titleProps={{ variant: 'h3' }}
       />
       <Table
-        rowData={rowData || []}
-        columnDefs={columnDefs}
+        rowData={dtrReturnRowData || []}
+        columnDefs={dtrReturnColumnDefs}
         getRowId={({ data }) => String(data?.name)}
       />
       <Box display="flex" justifyContent="flex-end" sx={{ mt: 4 }}>
@@ -172,9 +268,9 @@ export default function DTRReturnsPage() {
         </Button>
       </Box>
       <Table
-        rowData={rowData || []}
-        columnDefs={columnDefs}
-        getRowId={({ data }) => String(data?.name)}
+        rowData={nonClassContactHours || []}
+        columnDefs={nonClassContactColumnDefs}
+        getRowId={({ data }) => String(data?.nonClassContactHoursId)}
       />
       <UpsertNonClassContactModal
         onClose={handleCloseEditModal}

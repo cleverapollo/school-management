@@ -154,7 +154,28 @@
       "currentTeachingSchoolX": "Current teaching school {{number}}",
       "previousTeachingSchoolX": "Previous teaching school {{number}}"
     },
-    "createNonClassContact": "Create Non-class Contact"
+    "createNonClassContact": "Create Non-class Contact",
+    "editNonClassContact": "Edit Non-class Contact",
+    "activity": "Activity",
+    "dayOfWeek": "Day of week",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "activityValues": {
+      "GUIDANCE_AND_COUNSELLING": "Guidance & Counselling",
+      "HOME_SCHOOL_LIAISON": "Home School Liaison",
+      "OTHER_ACTIVITY": "Other activity",
+      "PROGRAMME_COORDINATION": "Programme Co-ordination",
+      "SUPPORT": "Small groups for additional student needs",
+      "TIMETABLED_HOURS_IN_OTHER_SCHOOLS": "Timetabled hours in other schools"
+    },
+    "dayOfWeekValues": {
+      "FRIDAY": "Friday",
+      "MONDAY": "Monday",
+      "SATURDAY": "Saturday",
+      "THURSDAY": "Thursday",
+      "TUESDAY": "Tuesday",
+      "WEDNESDAY": "Wednesday"
+    }
   },
   "permissions": {
     "title": "Permissions",
