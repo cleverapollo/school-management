@@ -177,10 +177,12 @@ const getNonClassContactColumnDefs = (
   {
     field: 'hours',
     headerName: t('settings:dtrReturns.hours'),
+    valueGetter: ({ data }) => `${data?.hours ?? 0}h`,
   },
   {
     field: 'minutes',
     headerName: t('settings:dtrReturns.minutes'),
+    valueGetter: ({ data }) => `${data?.minutes ?? 0}min`,
   },
   {
     cellRenderer: ({
