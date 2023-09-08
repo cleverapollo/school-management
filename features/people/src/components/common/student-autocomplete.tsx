@@ -54,6 +54,7 @@ export const StudentAutocomplete = (props: StudentAutocompleteProps) => {
       label={t('common:student')}
       {...peopleAutocompleteProps}
       fullWidth
+      optionIdKey="partyId"
       loading={isLoading}
       options={teacherData ?? []}
       {...props}

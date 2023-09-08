@@ -15,6 +15,7 @@
   "awaiting": "awaiting",
   "academicCalendar": "Academic calendar",
   "attendance": "Attendance",
+  "takeAttendance": "Take attendance",
   "room": "Room",
   "lesson": "Lesson",
   "time": "Time",
@@ -52,7 +53,8 @@
     "eventColor": "Event color"
   },
   "placeholders": {
-    "participants": "People, groups, rooms, etc"
+    "participants": "People, groups, rooms, etc",
+    "partyTypeParticipants": "People, groups, etc"
   },
   "schoolDayType": {
     "NON_SCHOOL_DAY": "No school as it's a non-school day.",

@@ -32,7 +32,7 @@ export const getRoutes: NavObjectFunction = (t) => [
           {
             type: NavObjectType.MenuLink,
             path: 'session-list',
-            title: 'SESSION_LIST',
+            title: t('navigation:general.attendance.unexplainedAbsences'),
             element: <SessionAttendanceList />,
             hasAccess: ({ isStaffUserWithPermission }) =>
               isStaffUserWithPermission(

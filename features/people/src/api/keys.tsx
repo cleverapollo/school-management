@@ -69,6 +69,8 @@ export const peopleKeys = {
       [...peopleKeys.students.all(), 'personalTitlesList'] as const,
     sessionAttendance: (filter: StudentSessionAttendanceFilter) =>
       [...peopleKeys.students.all(), 'sessionAttendance', filter] as const,
+    tableSessionAttendance: (filter: StudentSessionAttendanceFilter) =>
+      [...peopleKeys.students.all(), 'tableSessionAttendance', filter] as const,
     studentDailyCalendarTimetableInformation: (filter: CalendarEventFilter) =>
       [
         ...peopleKeys.students.all(),

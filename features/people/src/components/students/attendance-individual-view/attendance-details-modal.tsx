@@ -1,16 +1,14 @@
 import {
   Alert,
   AlertTitle,
+  Box,
   Button,
   Collapse,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogActions,
   IconButton,
   Stack,
   Table,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
   TableBody,
@@ -19,11 +17,17 @@ import {
 } from '@mui/material';
 import {
   Avatar,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogActions,
   RHFSelect,
   RHFTextField,
   PreferredNameFormat,
   usePreferredNameLayout,
+  PlaceholderCard,
 } from '@tyro/core';
+import { useAttendanceCodes } from '@tyro/attendance';
 import {
   SaveEventAttendanceInput,
   SaveStudentSessionAttendanceInput,
@@ -32,7 +36,6 @@ import { useTranslation } from '@tyro/i18n';
 import { CloseIcon, LightBulbIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import { useForm } from 'react-hook-form';
-import { useAttendanceCodes } from '@tyro/attendance';
 import { useEffect, useMemo, useState } from 'react';
 import { LoadingButton } from '@mui/lab';
 import {
@@ -134,29 +137,40 @@ export const AttendanceDetailsModal = ({
     [sessionAttendanceData]
   );
 
+  const bellTimesWithName = useMemo(
+    () => (bellTimes || []).filter((bellTime) => bellTime?.name),
+    [bellTimes]
+  );
+
   useEffect(() => {
     if (isLoading) return;
 
-    bellTimes?.forEach((bellTime) => {
+    bellTimesWithName.forEach((bellTime) => {
       const currentBellTime = sessionAttendanceById?.[bellTime.id];
+      const attendanceCodeId = currentBellTime?.attendanceCode?.id || null;
 
       setValue(`sessionAttendance.${bellTime.id}`, {
         id: bellTime.id,
         note: currentBellTime?.note || null,
-        attendanceCodeId: currentBellTime?.attendanceCode?.id || null,
+        attendanceCodeId,
       });
     });
+  }, [isLoading, sessionAttendanceById, bellTimesWithName]);
+
+  useEffect(() => {
+    if (isLoading) return;
 
     eventAttendance.forEach((event) => {
       const [currentEvent] = event?.extensions?.eventAttendance || [];
+      const attendanceCodeId = currentEvent?.attendanceCodeId || null;
 
       setValue(`eventAttendance.${event.eventId}`, {
         id: event.eventId,
         note: currentEvent?.note || null,
-        attendanceCodeId: currentEvent?.attendanceCodeId || null,
+        attendanceCodeId,
       });
     });
-  }, [isLoading, eventAttendance, sessionAttendanceById, bellTimes]);
+  }, [isLoading, eventAttendance]);
 
   const onSubmit = handleSubmit(async (data) => {
     const requiredEventAttendance = Object.values(
@@ -207,7 +221,7 @@ export const AttendanceDetailsModal = ({
     onClose();
   });
 
-  return (
+  return isLoading ? (
     <Dialog open onClose={onClose} scroll="paper" fullWidth maxWidth="md">
       <DialogTitle
         sx={{
@@ -219,10 +233,39 @@ export const AttendanceDetailsModal = ({
           date: dayjs(day)?.format('L'),
         })}
       </DialogTitle>
-      {isLoading ? (
-        <Stack minHeight="60vh" justifyContent="center" alignItems="center">
-          <CircularProgress />
-        </Stack>
+      <Stack minHeight="60vh" justifyContent="center" alignItems="center">
+        <CircularProgress />
+      </Stack>
+    </Dialog>
+  ) : (
+    <Dialog open onClose={onClose} scroll="paper" fullWidth maxWidth="md">
+      <DialogTitle
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        {t('attendance:attendanceDetailsFor', {
+          date: dayjs(day)?.format('L'),
+        })}
+      </DialogTitle>
+      {sessionAttendanceData.length === 0 && eventAttendance.length === 0 ? (
+        <>
+          <DialogContent>
+            <PlaceholderCard cardProps={{ sx: { boxShadow: 'none', p: 0 } }}>
+              <Box>
+                <Typography component="h4" variant="subtitle1">
+                  {t('attendance:noLessonsScheduled')}
+                </Typography>
+              </Box>
+            </PlaceholderCard>
+          </DialogContent>
+          <DialogActions>
+            <Button variant="soft" color="inherit" onClick={onClose}>
+              {t('common:actions.cancel')}
+            </Button>
+          </DialogActions>
+        </>
       ) : (
         <form onSubmit={onSubmit}>
           <DialogContent>
@@ -266,52 +309,55 @@ export const AttendanceDetailsModal = ({
                 }),
               })}
             </Typography>
-            <Table
-              size="small"
-              sx={{
-                mt: 4,
-                '& th': {
-                  background: 'transparent',
-                  color: 'text.primary',
-                  fontWeight: 600,
-                },
-                '& tbody td': {
-                  verticalAlign: 'baseline',
-                },
-              }}
-            >
-              <TableHead>
-                <TableRow>
-                  {[
-                    t('attendance:time'),
-                    t('attendance:type'),
-                    t('attendance:takenBy'),
-                    t('attendance:notes'),
-                    t('attendance:attendance'),
-                  ].map((heading) => (
-                    <TableCell key={heading}>
-                      <Typography color="text.disabled" variant="subtitle2">
-                        {heading}
-                      </Typography>
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-
-              <TableBody
-                sx={({ palette, spacing }) => ({
-                  borderTop: `1px solid ${palette.divider}`,
-                  borderBottom: `1px solid ${palette.divider}`,
-                  '&::before, &::after': {
-                    content: '""',
-                    display: 'block',
-                    height: spacing(1),
+            <TableContainer>
+              <Table
+                size="small"
+                sx={{
+                  mt: 4,
+                  '& th': {
+                    background: 'transparent',
+                    color: 'text.primary',
+                    fontWeight: 600,
                   },
-                })}
+                  '& tbody td': {
+                    verticalAlign: 'baseline',
+                  },
+                }}
               >
-                {bellTimes
-                  ?.filter((bellTime) => bellTime?.name)
-                  ?.map((event) => {
+                <TableHead>
+                  <TableRow>
+                    {[
+                      t('attendance:time'),
+                      t('attendance:type'),
+                      t('attendance:takenBy'),
+                      t('attendance:notes'),
+                      t('attendance:attendance'),
+                    ].map((heading) => (
+                      <TableCell key={heading}>
+                        <Typography
+                          color="text.disabled"
+                          variant="subtitle2"
+                          sx={{ textWrap: 'noWrap' }}
+                        >
+                          {heading}
+                        </Typography>
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+
+                <TableBody
+                  sx={({ palette, spacing }) => ({
+                    borderTop: `1px solid ${palette.divider}`,
+                    borderBottom: `1px solid ${palette.divider}`,
+                    '&::before, &::after': {
+                      content: '""',
+                      display: 'block',
+                      height: spacing(1),
+                    },
+                  })}
+                >
+                  {bellTimesWithName.map((event) => {
                     const sessionAttendance = sessionAttendanceById?.[event.id];
                     const creatorName = displayName(
                       sessionAttendance?.createdBy,
@@ -343,8 +389,8 @@ export const AttendanceDetailsModal = ({
                           </Stack>
                         </TableCell>
                         <TableCell>
-                          {sessionAttendance?.createdBy && (
-                            <Stack direction="row" alignItems="center">
+                          <Stack direction="row" alignItems="center">
+                            {sessionAttendance?.createdBy && (
                               <Avatar
                                 sx={{
                                   width: 32,
@@ -354,14 +400,14 @@ export const AttendanceDetailsModal = ({
                                 name={creatorName}
                                 src={sessionAttendance?.createdBy?.avatarUrl}
                               />
-                              <Typography
-                                variant="subtitle2"
-                                sx={{ textWrap: 'noWrap', marginLeft: 1 }}
-                              >
-                                {creatorName || '-'}
-                              </Typography>
-                            </Stack>
-                          )}
+                            )}
+                            <Typography
+                              variant="subtitle2"
+                              sx={{ textWrap: 'noWrap', marginLeft: 1 }}
+                            >
+                              {creatorName || '-'}
+                            </Typography>
+                          </Stack>
                         </TableCell>
                         <TableCell>
                           <Stack
@@ -390,7 +436,9 @@ export const AttendanceDetailsModal = ({
                           <Stack
                             direction="row"
                             padding={0}
-                            sx={{ '& .MuiSelect-select': { paddingY: 1 } }}
+                            sx={{
+                              '& .MuiSelect-select': { paddingY: 1 },
+                            }}
                           >
                             <RHFSelect
                               fullWidth
@@ -407,111 +455,120 @@ export const AttendanceDetailsModal = ({
                       </TableRow>
                     );
                   })}
-              </TableBody>
-              <TableBody
-                sx={({ spacing }) => ({
-                  '&::before': {
-                    content: '""',
-                    display: 'block',
-                    height: spacing(1),
-                  },
-                })}
-              >
-                {eventAttendance?.map((event) => {
-                  const [currentEvent] =
-                    event?.extensions?.eventAttendance || [];
+                </TableBody>
+                <TableBody
+                  sx={({ spacing }) => ({
+                    '&::before': {
+                      content: '""',
+                      display: 'block',
+                      height: spacing(1),
+                    },
+                  })}
+                >
+                  {eventAttendance?.map((event) => {
+                    const [currentEvent] =
+                      event?.extensions?.eventAttendance || [];
 
-                  const creatorName = displayName(currentEvent?.createdBy, {
-                    format: PreferredNameFormat.FirstnameSurname,
-                  });
+                    const creatorName = displayName(currentEvent?.createdBy, {
+                      format: PreferredNameFormat.FirstnameSurname,
+                    });
 
-                  return (
-                    <TableRow key={event?.eventId}>
-                      <TableCell>
-                        <Stack direction="row">
-                          <Typography color="text.disabled" variant="subtitle2">
-                            {dayjs(event?.startTime).format('HH:mm')}
-                          </Typography>
-                        </Stack>
-                      </TableCell>
-                      <TableCell>
-                        <Stack direction="row">
-                          <Typography
-                            variant="subtitle2"
-                            sx={{ textWrap: 'noWrap' }}
-                          >
-                            {event?.name}
-                          </Typography>
-                        </Stack>
-                      </TableCell>
-                      <TableCell>
-                        {currentEvent?.createdBy && (
+                    return (
+                      <TableRow key={event.eventId}>
+                        <TableCell>
+                          <Stack direction="row">
+                            <Typography
+                              color="text.disabled"
+                              variant="subtitle2"
+                            >
+                              {dayjs(event?.startTime).format('HH:mm')}
+                            </Typography>
+                          </Stack>
+                        </TableCell>
+                        <TableCell>
+                          <Stack direction="row">
+                            <Typography
+                              variant="subtitle2"
+                              sx={{ textWrap: 'noWrap' }}
+                            >
+                              {event?.name}
+                            </Typography>
+                          </Stack>
+                        </TableCell>
+                        <TableCell>
                           <Stack direction="row" alignItems="center">
-                            <Avatar
-                              sx={{
-                                width: 32,
-                                height: 32,
-                                fontSize: 14,
-                              }}
-                              name={creatorName}
-                              src={currentEvent?.createdBy?.avatarUrl}
-                            />
+                            {currentEvent?.createdBy && (
+                              <Avatar
+                                sx={{
+                                  width: 32,
+                                  height: 32,
+                                  fontSize: 14,
+                                }}
+                                name={creatorName}
+                                src={currentEvent?.createdBy?.avatarUrl}
+                              />
+                            )}
 
                             <Typography
                               variant="subtitle2"
-                              sx={{ textWrap: 'noWrap', marginLeft: 1 }}
+                              sx={{
+                                textWrap: 'noWrap',
+                                marginLeft: 1,
+                              }}
                             >
                               {creatorName || '-'}
                             </Typography>
                           </Stack>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Stack
-                          direction="row"
-                          flexGrow="1"
-                          padding={0}
-                          sx={{
-                            '& .MuiFormControl-root .MuiInputBase-input': {
-                              minWidth: { xs: '200px', md: 0 },
-                              paddingY: 1,
-                            },
-                          }}
-                        >
-                          <RHFTextField
-                            textFieldProps={{
-                              fullWidth: true,
+                        </TableCell>
+                        <TableCell>
+                          <Stack
+                            direction="row"
+                            flexGrow="1"
+                            padding={0}
+                            sx={{
+                              '& .MuiFormControl-root .MuiInputBase-input': {
+                                minWidth: { xs: '200px', md: 0 },
+                                paddingY: 1,
+                              },
                             }}
-                            controlProps={{
-                              name: `eventAttendance.${event.eventId}.note`,
-                              control,
+                          >
+                            <RHFTextField
+                              textFieldProps={{
+                                fullWidth: true,
+                              }}
+                              controlProps={{
+                                name: `eventAttendance.${event.eventId}.note`,
+                                control,
+                              }}
+                            />
+                          </Stack>
+                        </TableCell>
+                        <TableCell>
+                          <Stack
+                            direction="row"
+                            padding={0}
+                            sx={{
+                              '& .MuiSelect-select': { paddingY: 1 },
                             }}
-                          />
-                        </Stack>
-                      </TableCell>
-                      <TableCell>
-                        <Stack
-                          direction="row"
-                          padding={0}
-                          sx={{ '& .MuiSelect-select': { paddingY: 1 } }}
-                        >
-                          <RHFSelect
-                            fullWidth
-                            options={attendanceCodes}
-                            getOptionLabel={(option) => option?.name}
-                            optionIdKey="id"
-                            controlProps={{
-                              name: `eventAttendance.${event.eventId}.attendanceCodeId`,
-                              control,
-                            }}
-                          />
-                        </Stack>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+                          >
+                            <RHFSelect
+                              fullWidth
+                              options={attendanceCodes}
+                              getOptionLabel={(option) => option?.name}
+                              optionIdKey="id"
+                              controlProps={{
+                                name: `eventAttendance.${event.eventId}.attendanceCodeId`,
+                                control,
+                              }}
+                            />
+                          </Stack>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </DialogContent>
           <DialogActions>
             <Button variant="soft" color="inherit" onClick={onClose}>

@@ -27,6 +27,9 @@ const studentDailyCalendarTimetableInformation = graphql(/* GraphQL */ `
               id
               eventId
               attendanceCodeId
+              attendanceCode {
+                name
+              }
               personPartyId
               date
               note
@@ -61,6 +64,7 @@ const studentDailyCalendarInformationQuery = (filter: CalendarEventFilter) => ({
 
     const filteredEvents = events?.map((event) => ({
       ...event,
+      partyId: `${event.eventId}-${event.startTime}`,
       extensions: {
         ...event.extensions,
         eventAttendance: event?.extensions?.eventAttendance?.filter(

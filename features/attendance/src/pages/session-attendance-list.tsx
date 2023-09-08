@@ -1,15 +1,20 @@
-import { Box, Button } from '@mui/material';
-import { AttendanceCodeType, usePermissions } from '@tyro/api';
-import { AddIcon } from '@tyro/icons';
+import { Box, Chip, Fade } from '@mui/material';
 import {
+  AttendanceCodeType,
+  PermissionUtils,
+  SmsRecipientType,
+} from '@tyro/api';
+import { MobileIcon } from '@tyro/icons';
+import {
+  ActionMenu,
   GridOptions,
   ICellRendererParams,
   PageContainer,
   PageHeading,
   ReturnTypeDisplayName,
   Table,
+  TableBooleanValue,
   TablePersonAvatar,
-  useDebouncedValue,
   useDisclosure,
   usePreferredNameLayout,
 } from '@tyro/core';
@@ -17,18 +22,17 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs, { Dayjs } from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { useEffect, useMemo, useState } from 'react';
-import { AbsentRequestStatusChip } from '../components/absent-requests/absent-request-status-chip';
-import { ViewAbsentRequestModalProps } from '../components/absent-requests/view-absent-request-modal';
+import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import {
   ReturnTypeFromUseSessionAttendanceList,
   useSessionAttendanceList,
 } from '../api/session-attendance-table';
-import { RolebookToolbar } from '../components/role-book/toolbar';
 import { AttendanceListToolbar } from '../components/attendance-list-toolbar';
 import { ReturnTypeFromUseAttendanceCodes, useAttendanceCodes } from '../api';
 
 dayjs.extend(LocalizedFormat);
-
+const bellColors = { AM: 'blue', PM: 'default' };
+// @ts-ignore
 const getColumns = (
   t: TFunction<('common' | 'attendance')[]>,
   displayName: ReturnTypeDisplayName
@@ -69,14 +73,32 @@ const getColumns = (
     valueGetter: ({ data }) => dayjs(data?.date).format('LL'),
   },
   {
+    field: 'bellTime',
+    headerName: t('attendance:bellTime'),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseSessionAttendanceList>) => {
+      const color = data?.bellTime?.name === 'AM' ? 'blue' : 'default';
+      return (
+        data && (
+          <Chip
+            size="small"
+            color={color}
+            variant="soft"
+            label={data?.bellTime?.name}
+          />
+        )
+      );
+    },
+  },
+  {
     field: 'note',
-    headerName: t('common:note'),
+    headerName: t('attendance:note'),
   },
 ];
 
 export default function AbsentRequests() {
-  const { isContact } = usePermissions();
-  const { t } = useTranslation(['common', 'attendance']);
+  const { t } = useTranslation(['common', 'attendance', 'people', 'sms']);
 
   const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([
     dayjs(),
@@ -113,55 +135,38 @@ export default function AbsentRequests() {
     from: fromDate,
     to: toDate,
   });
-  const [isCreateAbsentRequest, setIsCreateAbsentRequest] = useState(false);
-  const [selectedAbsentRequests, setSelectedAbsentRequests] = useState<
-    ReturnTypeFromUseSessionAttendanceList[]
-  >([]);
-  const {
-    setValue: setViewAbsentRequestInitialState,
-    debouncedValue: debouncedViewAbsentRequestInitialState,
-  } = useDebouncedValue<
-    ViewAbsentRequestModalProps['initialAbsentRequestState']
-  >({
-    defaultValue: undefined,
-  });
+  const [selectedRecipients, setSelectedRecipients] =
+    useState<RecipientsForSmsModal>([]);
 
   const { displayName } = usePreferredNameLayout();
 
-  const absentRequestColumns = useMemo(
-    () => getColumns(t, displayName),
-    [t, setViewAbsentRequestInitialState, isContact]
-  );
-
+  const absentRequestColumns = useMemo(() => getColumns(t, displayName), [t]);
   const {
-    isOpen: isApproveAbsentRequestsModalOpen,
-    onOpen: onOpenApproveAbsentRequestsModal,
-    onClose: onCloseApproveAbsentRequestsModal,
+    isOpen: isSendSmsOpen,
+    onOpen: onOpenSendSms,
+    onClose: onCloseSendSms,
   } = useDisclosure();
 
-  const {
-    isOpen: isDeclineAbsentRequestsModalOpen,
-    onOpen: onOpenDeclineAbsentRequestsModal,
-    onClose: onCloseDeclineAbsentRequestsModal,
-  } = useDisclosure();
-
+  const actionMenuItems = [
+    {
+      label: t('people:sendSms'),
+      icon: <MobileIcon />,
+      onClick: onOpenSendSms,
+      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+        isStaffUserWithPermission('ps:1:communications:send_sms'),
+    },
+  ];
   return (
-    <PageContainer title={t('attendance:absentRequests')}>
+    <PageContainer title={t('attendance:unexplainedAbsences')}>
       <PageHeading
-        title={t('attendance:absentRequests')}
+        title={t('attendance:unexplainedAbsences')}
         titleProps={{ variant: 'h3' }}
         rightAdornment={
-          isContact && (
-            <Box display="flex" alignItems="center">
-              <Button
-                variant="contained"
-                onClick={() => setIsCreateAbsentRequest(true)}
-                startIcon={<AddIcon />}
-              >
-                {t('attendance:createAbsentRequest')}
-              </Button>
+          <Fade in={selectedRecipients.length > 0} unmountOnExit>
+            <Box>
+              <ActionMenu menuItems={actionMenuItems} />
             </Box>
-          )
+          </Fade>
         }
       />
       <Table
@@ -169,7 +174,16 @@ export default function AbsentRequests() {
         columnDefs={absentRequestColumns}
         rowSelection="multiple"
         getRowId={({ data }) => String(data?.id)}
-        onRowSelection={setSelectedAbsentRequests}
+        onRowSelection={(students) =>
+          setSelectedRecipients(
+            students.map(({ student }) => ({
+              id: student.partyId,
+              name: displayName(student),
+              type: 'individual',
+              avatarUrl: student.avatarUrl,
+            }))
+          )
+        }
         toolbar={
           <AttendanceListToolbar
             dateRange={dateRange}
@@ -178,6 +192,19 @@ export default function AbsentRequests() {
             setCodeFilter={setCodeFilter}
           />
         }
+      />
+      <SendSmsModal
+        isOpen={isSendSmsOpen}
+        onClose={onCloseSendSms}
+        recipients={selectedRecipients}
+        possibleRecipientTypes={[
+          {
+            label: t('sms:contactsOfStudent', {
+              count: selectedRecipients?.length ?? 0,
+            }),
+            type: SmsRecipientType.Student,
+          },
+        ]}
       />
     </PageContainer>
   );

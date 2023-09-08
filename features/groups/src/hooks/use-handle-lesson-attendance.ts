@@ -4,6 +4,7 @@ import {
   CalendarEventIteratorFilter,
   Iterator,
   queryClient,
+  AttendanceCodeType,
 } from '@tyro/api';
 
 import { useSaveAttendance } from '@tyro/attendance';
@@ -117,7 +118,7 @@ export function useHandleLessonAttendance({
   };
 
   const getStudentAttendanceCode = (studentId: number) =>
-    newAttendance[studentId]?.attendanceCodeId;
+    newAttendance[studentId]?.attendanceCodeId ?? AttendanceCodeType.Present;
 
   const getStudentEventDetails = (studentId: number) =>
     newAttendance[studentId];

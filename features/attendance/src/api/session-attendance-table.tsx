@@ -53,8 +53,8 @@ export function useSessionAttendanceList(
 ) {
   return useQuery({
     ...sessionListQuery(filter),
-    select: ({ attendance_sessionAttendanceReport }) =>
-      attendance_sessionAttendanceReport,
+    select: ({ attendance_sessionAttendanceList }) =>
+        attendance_sessionAttendanceList,
   });
 }
 
