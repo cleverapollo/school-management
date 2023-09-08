@@ -5,8 +5,7 @@ import { ReturnTypeUseMailSearch, useMailSearch } from '../api/mail-search';
 export const useMailSearchProps = (
   customProps?: Partial<AutocompleteProps<ReturnTypeUseMailSearch, true>>
 ): AutocompleteProps<ReturnTypeUseMailSearch, true> => {
-  const { t } = useTranslation(['common', 'calendar']);
-
+  const { t } = useTranslation(['common']);
   const {
     value: searchValue,
     setValue: setSearchValue,
@@ -18,10 +17,10 @@ export const useMailSearchProps = (
   const { data: options = [], isLoading } = useMailSearch(debouncedSearchValue);
 
   return {
-    label: t('calendar:inputLabels.participants'),
     // optionIdKey: 'partyId',
-    // optionTextKey: 'text',
-    placeholder: t('calendar:placeholders.participants'),
+    // isOptionEqualToValue: (option, newValue) =>
+    //   JSON.stringify(option) === JSON.stringify(newValue),
+    optionTextKey: 'text',
     multiple: true,
     open: searchValue.length > 0,
     filterSelectedOptions: true,
@@ -30,6 +29,7 @@ export const useMailSearchProps = (
     freeSolo: true,
     loading: isLoading,
     options,
+    limitTags: 2,
     onInputChange: (_, newInputValue) => setSearchValue(newInputValue),
     renderAvatarTags: (option, renderTag) =>
       renderTag({

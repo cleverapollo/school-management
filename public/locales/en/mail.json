@@ -4,6 +4,7 @@
     "searchMail": "Search mail…",
     "typeMessage": "Type a message",
     "to": "To",
+    "bcc": "Bcc",
     "subject": "Subject"
   },
   "tooltipTitles": {

@@ -1,20 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import {
   Box,
-  Input,
   Portal,
   Divider,
   Backdrop,
   IconButton,
   Typography,
+  Link,
 } from '@mui/material';
-import {
-  useDisclosure,
-  useFormValidator,
-  useResponsive,
-  Autocomplete,
-} from '@tyro/core';
+import { useDisclosure, useFormValidator, useResponsive } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import {
   AddPhotoIcon,
@@ -30,6 +25,8 @@ import { ReturnTypeUseMailSearch } from '../api/mail-search';
 import { useMailEditor } from '../hooks/use-mail-editor';
 import { MailEditor } from './editor';
 import { MailEditorToolbar } from './editor/toolbar';
+import { RHFMailSearch } from './fields/rhf-mail-search';
+import { EditorRHFTextfield } from './fields/rhf-textfield';
 
 const RootStyle = styled('div')(({ theme }) => ({
   right: 0,
@@ -46,17 +43,11 @@ const RootStyle = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
 }));
 
-const InputStyle = styled(Input)(({ theme }) => ({
-  padding: theme.spacing(0.5, 3),
-  borderBottom: `solid 1px ${theme.palette.divider}`,
-}));
-
 export interface ComposeMailFormValues {
   subject: string;
   canReply: boolean;
   toRecipients: ReturnTypeUseMailSearch[];
   bccRecipients: ReturnTypeUseMailSearch[];
-  body: string;
 }
 
 type MailComposeProps = {
@@ -69,6 +60,7 @@ export default function MailCompose({
   defaultValues,
 }: MailComposeProps) {
   const { t } = useTranslation(['mail', 'common']);
+  const { isOpen: isBccShowing, onOpen: showBcc } = useDisclosure();
   const isDesktop = useResponsive('up', 'sm');
   const editor = useMailEditor({});
   const { isOpen: isFullScreen, onToggle: onToggleFullScreen } =
@@ -91,12 +83,8 @@ export default function MailCompose({
           }
         }
       ),
-      body: rules.required(),
     }),
   });
-
-  const [recipientsString, setRecipientsString] = useState<string>('');
-  const [subject, setSubject] = useState<string>('');
 
   const { mutateAsync: sendMail } = useSendMail();
 
@@ -118,9 +106,12 @@ export default function MailCompose({
       })),
     ];
 
+    const body = editor?.getHTML() ?? '';
+
     sendMail({
       ...rest,
       recipients,
+      body,
     });
     handleClose();
   });
@@ -196,18 +187,50 @@ export default function MailCompose({
 
         <Divider />
 
-        <InputStyle
-          disableUnderline
+        <RHFMailSearch
+          controlProps={{
+            control,
+            name: 'toRecipients',
+          }}
+          label={t('mail:placeholders.to')}
           placeholder={t('mail:placeholders.to')}
-          value={recipientsString}
-          onChange={({ target: { value } }) => setRecipientsString(value)}
+          inputProps={{
+            InputProps: {
+              ...(!isBccShowing && {
+                endAdornment: (
+                  <Link
+                    component="button"
+                    sx={{
+                      position: 'absolute !important',
+                      right: 0,
+                    }}
+                    onClick={showBcc}
+                  >
+                    {t('mail:placeholders.bcc')}
+                  </Link>
+                ),
+              }),
+            },
+          }}
         />
 
-        <InputStyle
-          disableUnderline
-          placeholder={t('mail:placeholders.subject')}
-          value={subject}
-          onChange={({ target: { value } }) => setSubject(value)}
+        {isBccShowing && (
+          <RHFMailSearch
+            controlProps={{
+              control,
+              name: 'bccRecipients',
+            }}
+            label={t('mail:placeholders.bcc')}
+            placeholder={t('mail:placeholders.bcc')}
+          />
+        )}
+
+        <EditorRHFTextfield
+          label={t('mail:placeholders.subject')}
+          controlProps={{
+            control,
+            name: 'subject',
+          }}
         />
 
         <MailEditor editor={editor} />
