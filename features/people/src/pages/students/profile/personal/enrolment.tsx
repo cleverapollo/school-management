@@ -122,8 +122,8 @@ const getEnrolmentDataWithLabels = (
       ? [
           {
             label: t('people:personal.enrolmentHistory.dateOfLeaving'),
-            value: dayjs(endDate),
-            valueRenderer: endDate ? dayjs(endDate).format('l') : null,
+            value: endDate ? dayjs(endDate).format('l') : null,
+            valueRenderer: endDate ? dayjs(endDate).format('l') : '-',
             valueEditor: (
               <RHFDatePicker
                 inputProps={{ variant: 'standard' }}
