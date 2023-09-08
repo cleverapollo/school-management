@@ -85,12 +85,12 @@ export default function MailToolbar({
         )}
       </Stack>
 
-      <SearchInput
+      {/* <SearchInput
         size="small"
         placeholder={t('mail:placeholders.searchMail')}
         value={filterValue}
         onChange={(e) => setFilterValue(e.target.value)}
-      />
+      /> */}
     </Box>
   );
 }

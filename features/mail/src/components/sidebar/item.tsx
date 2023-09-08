@@ -11,6 +11,7 @@ import {
   ForwardRefExoticComponent,
   RefAttributes,
   SetStateAction,
+  useState,
 } from 'react';
 import { useTranslation } from '@tyro/i18n';
 import {
@@ -106,16 +107,18 @@ export function MailSidebarItem({ label, setLabelInfo }: MailSidebarItemProps) {
         bgcolor: !isActive ? '' : 'action.selected',
 
         '.label-options': {
-          display: 'none',
+          position: 'absolute',
+          right: 8,
+          opacity: 0,
         },
 
         ...(label.custom && {
-          '&:hover': {
+          '&:hover, &:focus-within': {
             '.label-options': {
-              display: 'inline-flex',
+              opacity: 1,
             },
             '.unread-count': {
-              display: 'none',
+              opacity: 0,
             },
           },
         }),

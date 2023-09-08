@@ -14,10 +14,18 @@ import { useTranslation } from '@tyro/i18n';
 import { AddIcon } from '@tyro/icons';
 import { MailSidebarItem } from './item';
 import { useMailSettings } from '../../store/mail-settings';
-import { ReturnTypeFromUseLabels, useLabels } from '../../api/labels';
+import {
+  ReturnTypeFromUseLabels,
+  useLabels,
+  useUnreadCount,
+} from '../../api/labels';
 import { LabelDialog } from './label-dialog';
 
-export function MailSidebar() {
+interface MailSidebarProps {
+  activeProfileId: number;
+}
+
+export function MailSidebar({ activeProfileId }: MailSidebarProps) {
   const { pathname } = useLocation();
   const { t } = useTranslation(['mail', 'common']);
   const { sidebarDisclosure, composeEmail } = useMailSettings();
@@ -33,14 +41,27 @@ export function MailSidebar() {
     defaultValue: null,
   });
 
-  const { data: labels } = useLabels({});
+  const { data: unreadCounts } = useUnreadCount({
+    personPartyId: activeProfileId,
+  });
+  const { data: labels } = useLabels({
+    personPartyId: activeProfileId,
+  });
   const splitLabels = useMemo(
     () => ({
       standard: labels?.filter(({ custom }) => !custom) ?? [],
-      custom: labels?.filter(({ custom }) => custom) ?? [],
+      custom:
+        labels
+          ?.filter(({ custom }) => custom)
+          .sort((labelA, labelB) => labelA.name.localeCompare(labelB.name)) ??
+        [],
     }),
     [labels]
   );
+
+  console.log({
+    unreadCounts,
+  });
 
   useEffect(() => {
     if (isSidebarOpen) {

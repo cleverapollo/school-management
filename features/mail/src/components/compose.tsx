@@ -112,6 +112,7 @@ export default function MailCompose({
       ...rest,
       recipients,
       body,
+      canReply: true,
     });
     handleClose();
   });

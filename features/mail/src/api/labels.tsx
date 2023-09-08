@@ -137,16 +137,7 @@ export function getUnreadCountQuery(filter: UnreadCountFilter) {
 export function useUnreadCount(filter: UnreadCountFilter) {
   return useQuery({
     ...unreadCountQuery(filter),
-    select: ({ communications_unreadCount }) => {
-      const totalUnreadCount = communications_unreadCount?.reduce(
-        (acc, item) =>
-          Number.isInteger(item?.count) && item?.labelId === 1
-            ? acc + item.count
-            : acc,
-        0
-      );
-      return { unreadCount: communications_unreadCount, totalUnreadCount };
-    },
+    select: ({ communications_unreadCount }) => communications_unreadCount,
     enabled: !!filter?.personPartyId,
   });
 }
