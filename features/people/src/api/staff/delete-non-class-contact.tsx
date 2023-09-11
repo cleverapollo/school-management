@@ -4,11 +4,12 @@ import {
   DeleteNonClassContactHoursInput,
   gqlClient,
   graphql,
+  NonClassContactHoursFilter,
   queryClient,
 } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
-import { dtrReturnsKeys } from './keys';
+import { peopleKeys } from '../keys';
 
 const deleteNonClassContact = graphql(/* GraphQL */ `
   mutation eire_deleteNonClassContactHours(
@@ -20,7 +21,7 @@ const deleteNonClassContact = graphql(/* GraphQL */ `
   }
 `);
 
-export function useDeleteNonClassContact() {
+export function useDeleteNonClassContact(filter: NonClassContactHoursFilter) {
   const { toast } = useToast();
   const { t } = useTranslation(['common']);
 
@@ -29,12 +30,7 @@ export function useDeleteNonClassContact() {
       gqlClient.request(deleteNonClassContact, { input }),
     onSuccess: () => {
       toast(t('common:snackbarMessages.deleteSuccess'));
-      queryClient.invalidateQueries(
-        dtrReturnsKeys.nonClassContacts({
-          staffPartyId: 12345,
-          academicNameSpaceId: 1,
-        })
-      );
+      queryClient.invalidateQueries(peopleKeys.staff.nonClassContacts(filter));
     },
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });

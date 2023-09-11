@@ -126,6 +126,9 @@ const StaffProfileTimetablePage = lazyWithRetry(
 const StaffProfileClassesPage = lazyWithRetry(
   () => import('./pages/staff/profile/classes')
 );
+const StaffProfileNonClassContactPage = lazyWithRetry(
+  () => import('./pages/staff/profile/non-class-contact')
+);
 
 const CreateStaffPage = lazyWithRetry(() => import('./pages/staff/create'));
 
@@ -514,6 +517,19 @@ export const getRoutes: NavObjectFunction = (t) => [
                   return getStaffSubjectGroups({ partyIds: [staffId] });
                 },
                 element: <StaffProfileClassesPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'non-class-contact',
+                element: <StaffProfileNonClassContactPage />,
+                loader: ({ params }) => {
+                  const staffId = getNumber(params.id);
+
+                  if (!staffId) {
+                    throw404Error();
+                  }
+                  return null;
+                },
               },
             ],
           },

@@ -11,17 +11,17 @@ import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import React, { useEffect } from 'react';
-import { Activity, Day } from '@tyro/api';
-import { ReturnTypeFromUseNonClassContactHours } from '../../api/dtr-returns/non-class-contact';
-import { useUpsertNonClassContact } from '../../api/dtr-returns/upsert-non-class-contact';
+import { Activity, Day, NonClassContactHoursFilter } from '@tyro/api';
+import { ReturnTypeFromUseNonClassContactHours } from '../../api/staff/non-class-contact';
+import { useUpsertNonClassContact } from '../../api/staff/upsert-non-class-contact';
 
 export interface UpsertNonClassContactModalProps {
   onClose: () => void;
   initialState: Partial<ReturnTypeFromUseNonClassContactHours> | null;
+  nonClassContactHoursQueryFilter: NonClassContactHoursFilter;
 }
 
 export type UpsertNonClassContactFormState = {
-  staffPartyId: number;
   activity: Activity;
   dayOfTheWeek: Day;
   hours: number;
@@ -31,13 +31,13 @@ export type UpsertNonClassContactFormState = {
 export const UpsertNonClassContactModal = ({
   initialState,
   onClose,
+  nonClassContactHoursQueryFilter,
 }: UpsertNonClassContactModalProps) => {
-  const { t } = useTranslation(['settings', 'common']);
+  const { t } = useTranslation(['people', 'common']);
   const { resolver, rules } =
     useFormValidator<UpsertNonClassContactFormState>();
 
   const defaultFormStateValues: Partial<UpsertNonClassContactFormState> = {
-    staffPartyId: initialState?.staffPartyId,
     activity: initialState?.activity,
     dayOfTheWeek: initialState?.dayOfTheWeek || Day.Monday,
     hours: initialState?.hours || 0,
@@ -47,16 +47,17 @@ export const UpsertNonClassContactModal = ({
   const { control, handleSubmit, reset } =
     useForm<UpsertNonClassContactFormState>({
       resolver: resolver({
-        // staffPartyId: rules.required(),
         activity: rules.required(),
         dayOfTheWeek: rules.required(),
-        hours: rules.required(),
-        minutes: rules.required(),
+        hours: [rules.required(), rules.min(0)],
+        minutes: [rules.required(), rules.max(59), rules.min(0)],
       }),
       defaultValues: defaultFormStateValues,
     });
 
-  const { mutate, isLoading } = useUpsertNonClassContact();
+  const { mutate, isLoading } = useUpsertNonClassContact(
+    nonClassContactHoursQueryFilter
+  );
 
   const handleClose = () => {
     onClose();
@@ -71,8 +72,10 @@ export const UpsertNonClassContactModal = ({
     mutate(
       {
         ...initialState,
-        academicNameSpaceId: initialState?.academicNameSpaceId ?? 1,
-        staffPartyId: data.staffPartyId ?? 12345,
+        academicNameSpaceId:
+          initialState?.academicNameSpaceId ??
+          nonClassContactHoursQueryFilter.academicNameSpaceId,
+        staffPartyId: nonClassContactHoursQueryFilter.staffPartyId,
         activity: data.activity,
         dayOfTheWeek: data.dayOfTheWeek,
         hours: data.hours,
@@ -96,30 +99,18 @@ export const UpsertNonClassContactModal = ({
       maxWidth="sm"
     >
       <DialogTitle>
-        {initialState?.staffPartyId
-          ? t('settings:dtrReturns.editNonClassContact')
-          : t('settings:dtrReturns.createNonClassContact')}
+        {initialState?.nonClassContactHoursId
+          ? t('people:editNonClassContact')
+          : t('people:createNonClassContact')}
       </DialogTitle>
       <form onSubmit={onSubmit}>
         <Stack spacing={3} sx={{ p: 3 }}>
-          <RHFSelect
-            fullWidth
-            options={[]}
-            label={t('common:teacher')}
-            getOptionLabel={(option) => option}
-            controlProps={{
-              name: 'staffPartyId',
-              control,
-            }}
-          />
           <Stack direction="row" padding={0} gap={2}>
             <RHFSelect
               fullWidth
               options={Object.values(Activity)}
-              label={t('settings:dtrReturns.activity')}
-              getOptionLabel={(option) =>
-                t(`settings:dtrReturns.activityValues.${option}`)
-              }
+              label={t('people:activity')}
+              getOptionLabel={(option) => t(`people:activityValues.${option}`)}
               controlProps={{
                 name: 'activity',
                 control,
@@ -128,10 +119,8 @@ export const UpsertNonClassContactModal = ({
             <RHFSelect
               fullWidth
               options={Object.values(Day)}
-              label={t('settings:dtrReturns.dayOfWeek')}
-              getOptionLabel={(option) =>
-                t(`settings:dtrReturns.dayOfWeekValues.${option}`)
-              }
+              label={t('people:dayOfWeek')}
+              getOptionLabel={(option) => t(`people:dayOfWeekValues.${option}`)}
               controlProps={{
                 name: 'dayOfTheWeek',
                 control,
@@ -140,7 +129,7 @@ export const UpsertNonClassContactModal = ({
           </Stack>
           <Stack direction="row" padding={0} gap={2}>
             <RHFTextField
-              label={t('settings:dtrReturns.hours')}
+              label={t('people:hours')}
               controlProps={{
                 name: 'hours',
                 control,
@@ -151,7 +140,7 @@ export const UpsertNonClassContactModal = ({
               }}
             />
             <RHFTextField
-              label={t('settings:dtrReturns.minutes')}
+              label={t('people:minutes')}
               controlProps={{
                 name: 'minutes',
                 control,

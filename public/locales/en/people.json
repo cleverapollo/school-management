@@ -121,12 +121,14 @@
         "YOUTHREACH_COURSE": "Youthreach Course"
       }
     },
-    "guardianship": "Guardianship, custody, access orders or arrangements"
+    "guardianship": "Guardianship, custody, access orders or arrangements",
+    "nonClassContact": "Non-Class Contact"
   },
   "actions": {
     "allowUsersToContact": "Allow users to contact",
     "disallowUsersToContact": "Disallow users to contact",
-    "createBehaviour": "Create behaviour"
+    "createBehaviour": "Create behaviour",
+    "addNonClassContact": "Add Non-class Contact"
   },
   "feedback": {
     "moreThanOneSelectedForPrimaryContact": "You must only select one contact to set as a primary contact."
@@ -146,7 +148,7 @@
   "editNote": "Edit note",
   "deleteNote": "Delete note",
   "addNote": "Add note",
-  "areYouSure": "Are you sure you want to delete this note?",
+  "areYouSure": "Are you sure you want to delete this {{entry}}?",
   "pageTitle": {
     "contacts": "List of contacts",
     "createContact": "Add a new contact",
@@ -258,5 +260,28 @@
     "provision": "Provision",
     "note": "Note"
   },
-  "createBehaviour": "Create behaviour"
+  "createBehaviour": "Create behaviour",
+  "createNonClassContact": "Create Non-class Contact",
+  "editNonClassContact": "Edit Non-class Contact",
+  "deleteNonClassContact": "Delete Non-class Contact",
+  "activity": "Activity",
+  "dayOfWeek": "Day of week",
+  "hours": "Hours",
+  "minutes": "Minutes",
+  "activityValues": {
+    "GUIDANCE_AND_COUNSELLING": "Guidance & Counselling",
+    "HOME_SCHOOL_LIAISON": "Home School Liaison",
+    "OTHER_ACTIVITY": "Other activity",
+    "PROGRAMME_COORDINATION": "Programme Co-ordination",
+    "SUPPORT": "Small groups for additional student needs",
+    "TIMETABLED_HOURS_IN_OTHER_SCHOOLS": "Timetabled hours in other schools"
+  },
+  "dayOfWeekValues": {
+    "FRIDAY": "Friday",
+    "MONDAY": "Monday",
+    "SATURDAY": "Saturday",
+    "THURSDAY": "Thursday",
+    "TUESDAY": "Tuesday",
+    "WEDNESDAY": "Wednesday"
+  }
 }

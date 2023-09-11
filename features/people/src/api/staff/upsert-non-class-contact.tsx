@@ -5,10 +5,11 @@ import {
   queryClient,
   graphql,
   SaveNonClassContactHoursInput,
+  NonClassContactHoursFilter,
 } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
-import { dtrReturnsKeys } from './keys';
+import { peopleKeys } from '../keys';
 
 const upsertNonClassContact = graphql(/* GraphQL */ `
   mutation eire_upsertNonClassContactHours(
@@ -20,7 +21,7 @@ const upsertNonClassContact = graphql(/* GraphQL */ `
   }
 `);
 
-export function useUpsertNonClassContact() {
+export function useUpsertNonClassContact(filter: NonClassContactHoursFilter) {
   const { toast } = useToast();
   const { t } = useTranslation(['common']);
 
@@ -29,10 +30,7 @@ export function useUpsertNonClassContact() {
       gqlClient.request(upsertNonClassContact, { input }),
     onSuccess: async (_, nonClassContact) => {
       await queryClient.invalidateQueries(
-        dtrReturnsKeys.nonClassContacts({
-          staffPartyId: 12345,
-          academicNameSpaceId: 1,
-        })
+        peopleKeys.staff.nonClassContacts(filter)
       );
 
       toast(

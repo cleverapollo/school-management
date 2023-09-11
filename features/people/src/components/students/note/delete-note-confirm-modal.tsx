@@ -33,7 +33,7 @@ export function DeleteNoteConfirmModal({
       onClose={onClose}
       onConfirm={onSubmit}
       title={t('people:deleteNote')}
-      description={t('people:areYouSure')}
+      description={t('people:areYouSure', { entry: 'note' })}
       confirmText={t('common:delete')}
     />
   );
