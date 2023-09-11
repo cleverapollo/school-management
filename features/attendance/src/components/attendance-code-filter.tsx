@@ -5,8 +5,8 @@ import { useTranslation } from '@tyro/i18n';
 import {
   ReturnTypeFromUseAttendanceCodes,
   useAttendanceCodes,
-} from '../../api/attendance-codes';
-import { iconBasedOnCodeType, colorsBasedOnCodeType } from './attendance-value';
+} from '../api/attendance-codes';
+import { iconBasedOnCodeType, colorsBasedOnCodeType } from './role-book/attendance-value';
 
 type AttendanceCodesWithoutNotTaken = Exclude<
   AttendanceCodeType,

@@ -1,0 +1,211 @@
+import { Box, Chip, Fade } from '@mui/material';
+import {
+  AttendanceCodeType,
+  PermissionUtils,
+  SmsRecipientType,
+} from '@tyro/api';
+import { MobileIcon } from '@tyro/icons';
+import {
+  ActionMenu,
+  GridOptions,
+  ICellRendererParams,
+  PageContainer,
+  PageHeading,
+  ReturnTypeDisplayName,
+  Table,
+  TableBooleanValue,
+  TablePersonAvatar,
+  useDisclosure,
+  usePreferredNameLayout,
+} from '@tyro/core';
+import { TFunction, useTranslation } from '@tyro/i18n';
+import dayjs, { Dayjs } from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import { useEffect, useMemo, useState } from 'react';
+import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
+import {
+  ReturnTypeFromUseSessionAttendanceList,
+  useSessionAttendanceList,
+} from '../api/session-attendance-table';
+import { AttendanceListToolbar } from '../components/attendance-list-toolbar';
+import { ReturnTypeFromUseAttendanceCodes, useAttendanceCodes } from '../api';
+
+dayjs.extend(LocalizedFormat);
+const bellColors = { AM: 'blue', PM: 'default' };
+// @ts-ignore
+const getColumns = (
+  t: TFunction<('common' | 'attendance')[]>,
+  displayName: ReturnTypeDisplayName
+): GridOptions<ReturnTypeFromUseSessionAttendanceList>['columnDefs'] => [
+  {
+    field: 'classGroup.name',
+    headerName: t('common:name'),
+    checkboxSelection: true,
+    headerCheckboxSelection: true,
+    lockVisible: true,
+    valueGetter: ({ data }) => displayName(data?.student),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseSessionAttendanceList>) =>
+      data ? (
+        <TablePersonAvatar
+          person={data?.student}
+          to={`/people/students/${data?.studentPartyId ?? ''}/overview`}
+        />
+      ) : null,
+  },
+  {
+    field: 'classGroup',
+    headerName: t('common:class'),
+    valueGetter: ({ data }) => data?.classGroup?.name ?? '-',
+  },
+  {
+    field: 'attendanceCode.name',
+    headerName: t('attendance:absentType'),
+    filter: true,
+    valueGetter: ({ data }) => data?.attendanceCode?.name ?? '-',
+  },
+  {
+    field: 'date',
+    headerName: t('common:date'),
+    comparator: (dateA: string, dateB: string) =>
+      dayjs(dateA).unix() - dayjs(dateB).unix(),
+    valueGetter: ({ data }) => dayjs(data?.date).format('LL'),
+  },
+  {
+    field: 'bellTime',
+    headerName: t('attendance:bellTime'),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseSessionAttendanceList>) => {
+      const color = data?.bellTime?.name === 'AM' ? 'blue' : 'default';
+      return (
+        data && (
+          <Chip
+            size="small"
+            color={color}
+            variant="soft"
+            label={data?.bellTime?.name}
+          />
+        )
+      );
+    },
+  },
+  {
+    field: 'note',
+    headerName: t('attendance:note'),
+  },
+];
+
+export default function AbsentRequests() {
+  const { t } = useTranslation(['common', 'attendance', 'people', 'sms']);
+
+  const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([
+    dayjs(),
+    dayjs(),
+  ]);
+
+  const { data: allAttendanceCodes } = useAttendanceCodes({});
+
+  const defaultCodes = useMemo(
+    () =>
+      allAttendanceCodes?.filter(
+        (code) => code.sessionCodeType === AttendanceCodeType.UnexplainedAbsence
+      ) ?? [],
+    [allAttendanceCodes]
+  );
+
+  const [codeFilter, setCodeFilter] = useState<
+    ReturnTypeFromUseAttendanceCodes[]
+  >([]);
+
+  useEffect(() => {
+    setCodeFilter(defaultCodes);
+  }, [allAttendanceCodes]);
+  const [from, to] = dateRange;
+  const fromDate = from.format('YYYY-MM-DD');
+  const toDate = to.format('YYYY-MM-DD');
+
+  const codeFilterIds = useMemo(
+    () => codeFilter.map(({ id }) => id),
+    [codeFilter]
+  );
+  const { data: absentRequests } = useSessionAttendanceList({
+    attendanceCodeIds: codeFilterIds,
+    from: fromDate,
+    to: toDate,
+  });
+  const [selectedRecipients, setSelectedRecipients] =
+    useState<RecipientsForSmsModal>([]);
+
+  const { displayName } = usePreferredNameLayout();
+
+  const absentRequestColumns = useMemo(() => getColumns(t, displayName), [t]);
+  const {
+    isOpen: isSendSmsOpen,
+    onOpen: onOpenSendSms,
+    onClose: onCloseSendSms,
+  } = useDisclosure();
+
+  const actionMenuItems = [
+    {
+      label: t('people:sendSms'),
+      icon: <MobileIcon />,
+      onClick: onOpenSendSms,
+      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+        isStaffUserWithPermission('ps:1:communications:send_sms'),
+    },
+  ];
+  return (
+    <PageContainer title={t('attendance:unexplainedAbsences')}>
+      <PageHeading
+        title={t('attendance:unexplainedAbsences')}
+        titleProps={{ variant: 'h3' }}
+        rightAdornment={
+          <Fade in={selectedRecipients.length > 0} unmountOnExit>
+            <Box>
+              <ActionMenu menuItems={actionMenuItems} />
+            </Box>
+          </Fade>
+        }
+      />
+      <Table
+        rowData={absentRequests ?? []}
+        columnDefs={absentRequestColumns}
+        rowSelection="multiple"
+        getRowId={({ data }) => String(data?.id)}
+        onRowSelection={(students) =>
+          setSelectedRecipients(
+            students.map(({ student }) => ({
+              id: student.partyId,
+              name: displayName(student),
+              type: 'individual',
+              avatarUrl: student.avatarUrl,
+            }))
+          )
+        }
+        toolbar={
+          <AttendanceListToolbar
+            dateRange={dateRange}
+            setDateRange={setDateRange}
+            codeFilter={codeFilter}
+            setCodeFilter={setCodeFilter}
+          />
+        }
+      />
+      <SendSmsModal
+        isOpen={isSendSmsOpen}
+        onClose={onCloseSendSms}
+        recipients={selectedRecipients}
+        possibleRecipientTypes={[
+          {
+            label: t('sms:contactsOfStudent', {
+              count: selectedRecipients?.length ?? 0,
+            }),
+            type: SmsRecipientType.Student,
+          },
+        ]}
+      />
+    </PageContainer>
+  );
+}
