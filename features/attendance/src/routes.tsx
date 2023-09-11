@@ -34,10 +34,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'session-list',
             title: t('navigation:general.attendance.unexplainedAbsences'),
             element: <SessionAttendanceList />,
-            hasAccess: ({ isStaffUserWithPermission }) =>
-              isStaffUserWithPermission(
-                'ps:1:attendance:read_session_attendance'
-              ),
+            hasAccess: ({ isTyroUser }) => isTyroUser,
           },
           {
             type: NavObjectType.MenuLink,
