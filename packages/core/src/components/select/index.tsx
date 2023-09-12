@@ -72,9 +72,6 @@ export const Select = <TSelectOption extends string | number | object>({
               backgroundColor: palette.background.default,
               borderRadius: spacing(1),
             },
-          '& .MuiSelect-icon': {
-            color: palette.primary.main,
-          },
         }),
       }}
     >

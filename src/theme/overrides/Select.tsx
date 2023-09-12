@@ -16,6 +16,7 @@ export default function Select(theme: Theme) {
           height: '1.2rem',
           top: `calc(50 % - 0.6em)`,
           right: 12,
+          color: theme.palette.primary.main,
         }
       },
     },
