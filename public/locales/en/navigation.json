@@ -10,7 +10,8 @@
       "overview": "Overview",
       "codes": "Attendance codes",
       "session": "Session",
-      "absentRequests": "Absent requests"
+      "absentRequests": "Absent requests",
+      "unexplainedAbsences": "Unexplained Absences"
     },
     "absence": {
       "title": "Absence",

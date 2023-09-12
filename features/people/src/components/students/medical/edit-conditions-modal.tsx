@@ -57,13 +57,16 @@ export const EditConditionsModal = ({
   });
 
   const onSubmit = handleSubmit(({ equipment, ...restData }) => {
+    const equipmentValue = (equipment ?? [])
+      .map(({ name, location }) => ({
+        name,
+        location,
+      }))
+      .filter((a) => a.name !== undefined);
     createOrUpdateConditionsMutation(
       {
         ...restData,
-        equipment: (equipment ?? []).map(({ name, location }) => ({
-          name,
-          location,
-        })),
+        equipment: equipmentValue,
         studentPartyId: studentId ?? 0,
       },
       { onSuccess: onClose }

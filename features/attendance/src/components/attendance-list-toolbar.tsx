@@ -1,33 +1,25 @@
 import { DateRangeSwitcher } from '@tyro/core';
 import { Box, Stack } from '@mui/material';
 import { Dayjs } from 'dayjs';
-import { RolebookViewSwitcher } from './view-switcher';
-import { AttendanceCodeFilter } from '../attendance-code-filter';
-import { ReturnTypeFromUseAttendanceCodes } from '../../api/attendance-codes';
+import { AttendanceCodeFilter } from './attendance-code-filter';
+import { ReturnTypeFromUseAttendanceCodes } from '../api/attendance-codes';
 
-interface RolebookToolbarProps {
+interface AttendanceListToolbar {
   dateRange: [Dayjs, Dayjs];
   setDateRange: (range: [Dayjs, Dayjs]) => void;
-  view: 'icons' | 'codes';
-  setView: (view: 'icons' | 'codes') => void;
   codeFilter: ReturnTypeFromUseAttendanceCodes[];
   setCodeFilter: (value: ReturnTypeFromUseAttendanceCodes[]) => void;
 }
 
-export function RolebookToolbar({
+export function AttendanceListToolbar({
   dateRange,
   setDateRange,
-  view,
-  setView,
   codeFilter,
   setCodeFilter,
-}: RolebookToolbarProps) {
+}: AttendanceListToolbar) {
   return (
     <Stack direction="row" justifyContent="space-between" p={2}>
-      <Box flex="1">
-        <RolebookViewSwitcher value={view} onChange={setView} />
-      </Box>
-      <Box flex="1" display="flex" justifyContent="center" alignItems="center">
+      <Box flex="1" display="flex" justifyContent="flex-start" alignItems="center">
         <DateRangeSwitcher
           value={dateRange}
           onChange={setDateRange}

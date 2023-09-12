@@ -5,25 +5,37 @@ import {
   usePreferredNameLayout,
   CardEditableForm,
   CardEditableFormProps,
+  RHFDatePicker,
+  RHFCheckbox,
+  RHFSelect,
+  useFormValidator,
 } from '@tyro/core';
-import { UpdateStudentInput } from '@tyro/api';
+import { StudentLeavingReason, UpdateStudentInput } from '@tyro/api';
 import dayjs from 'dayjs';
 import { Stack, Typography } from '@mui/material';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { useStudentPersonal } from '../../../../api/student/personal';
 
 type EnrolmentFormState = {
   lockerNumber: UpdateStudentInput['lockerNumber'];
   examNumber: UpdateStudentInput['examNumber'];
+  leftEarly: UpdateStudentInput['leftEarly'];
+  dateOfLeaving: UpdateStudentInput['dateOfLeaving'];
+  leavingReason: UpdateStudentInput['leavingReason'];
 };
 
 const getEnrolmentDataWithLabels = (
   data: ReturnType<typeof useStudentPersonal>['data'],
   displayNames: ReturnTypeDisplayNames,
-  t: TFunction<'people'[]>
+  t: TFunction<('people' | 'common')[]>,
+  leftEarlyState: boolean,
+  onChangeLeftEarlyState: Dispatch<SetStateAction<boolean>>
 ): CardEditableFormProps<EnrolmentFormState>['fields'] => {
   const {
+    leftEarly,
     studentIrePP,
     startDate,
+    endDate,
     classGroup,
     tutors,
     yearGroupLeads,
@@ -93,6 +105,58 @@ const getEnrolmentDataWithLabels = (
       label: t('people:personal.enrolmentHistory.previousSchoolRollNumber'),
       value: studentIrePP?.previousSchoolRollNumber,
     },
+    {
+      label: t('people:personal.enrolmentHistory.leftEarly'),
+      value: leftEarly,
+      valueEditor: (
+        <RHFCheckbox
+          checkboxProps={{
+            onChange: (event) => onChangeLeftEarlyState(event.target.checked),
+          }}
+          controlProps={{ name: 'leftEarly' }}
+        />
+      ),
+      valueRenderer: leftEarly ? t('common:yes') : t('common:no'),
+    },
+    ...(leftEarlyState
+      ? [
+          {
+            label: t('people:personal.enrolmentHistory.dateOfLeaving'),
+            value: endDate ? dayjs(endDate).format('l') : null,
+            valueRenderer: endDate ? dayjs(endDate).format('l') : '-',
+            valueEditor: (
+              <RHFDatePicker
+                inputProps={{ variant: 'standard' }}
+                controlProps={{ name: 'dateOfLeaving' }}
+              />
+            ),
+          },
+          {
+            label: t('people:personal.enrolmentHistory.reasonOfDeparture'),
+            value: studentIrePP?.reasonForLeaving,
+            valueRenderer: studentIrePP?.reasonForLeaving
+              ? t(
+                  `people:personal.enrolmentHistory.studentLeavingReason.${
+                    studentIrePP?.reasonForLeaving as StudentLeavingReason
+                  }`
+                )
+              : null,
+            valueEditor: (
+              <RHFSelect
+                options={Object.values(StudentLeavingReason)}
+                variant="standard"
+                controlProps={{ name: 'leavingReason' }}
+                getOptionLabel={(option) =>
+                  t(
+                    `people:personal.enrolmentHistory.studentLeavingReason.${option}`
+                  )
+                }
+                fullWidth
+              />
+            ),
+          },
+        ]
+      : []),
   ];
 };
 
@@ -109,14 +173,9 @@ export const ProfileEnrolment = ({
 }: ProfileEnrolmentProps) => {
   const { t } = useTranslation(['people', 'common']);
   const { displayNames } = usePreferredNameLayout();
+  const { resolver, rules } = useFormValidator<EnrolmentFormState>();
 
-  const enrolmentDataWithLabels = getEnrolmentDataWithLabels(
-    studentData,
-    displayNames,
-    t
-  );
-
-  const { leftEarly, studentIrePP, endDate } = studentData || {};
+  const { leftEarly, studentIrePP } = studentData || {};
   const {
     languageSupportApplicant,
     examEntrant,
@@ -125,16 +184,31 @@ export const ProfileEnrolment = ({
     boardingDays,
     shortTermPupil,
     shortTermPupilNumWeeks,
-    reasonForLeaving,
     destinationRollNo,
   } = studentIrePP || {};
 
+  const [leftEarlyState, setLeftEarlyState] = useState(Boolean(leftEarly));
+
+  const enrolmentDataWithLabels = getEnrolmentDataWithLabels(
+    studentData,
+    displayNames,
+    t,
+    leftEarlyState,
+    setLeftEarlyState
+  );
+
+  const enrolmentResolver = resolver({
+    dateOfLeaving: [rules.required(), rules.date()],
+  });
+
   return (
     <CardEditableForm<EnrolmentFormState>
+      resolver={enrolmentResolver}
       title={t('people:personal.enrolmentHistory.title')}
       editable={editable}
       fields={enrolmentDataWithLabels}
       onSave={onSave}
+      onCancel={() => setLeftEarlyState(Boolean(leftEarly))}
     >
       <Stack gap={3}>
         {[
@@ -167,18 +241,6 @@ export const ProfileEnrolment = ({
           shortTermPupil && {
             label: t('people:personal.enrolmentHistory.numberOfWeeks'),
             value: t('common:weeks', { count: shortTermPupilNumWeeks ?? 0 }),
-          },
-          {
-            label: t('people:personal.enrolmentHistory.leftEarly'),
-            value: leftEarly ? t('common:yes') : t('common:no'),
-          },
-          leftEarly && {
-            label: t('people:personal.enrolmentHistory.dateOfLeaving'),
-            value: endDate ? dayjs(endDate).format('l') : '-',
-          },
-          leftEarly && {
-            label: t('people:personal.enrolmentHistory.reasonOfDeparture'),
-            value: reasonForLeaving || '-',
           },
           destinationRollNo && {
             label: t('people:personal.enrolmentHistory.destinationRollNumber'),

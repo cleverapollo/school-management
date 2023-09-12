@@ -2,6 +2,9 @@ import { lazyWithRetry, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { PersonCheckmarkIcon } from '@tyro/icons';
 
 const SessionAttendance = lazyWithRetry(() => import('./pages/session'));
+const SessionAttendanceList = lazyWithRetry(
+  () => import('./pages/session-attendance-list')
+);
 const AbsentRequests = lazyWithRetry(() => import('./pages/absent-requests'));
 
 export const getRoutes: NavObjectFunction = (t) => [
@@ -25,6 +28,13 @@ export const getRoutes: NavObjectFunction = (t) => [
               isStaffUserWithPermission(
                 'ps:1:attendance:read_session_attendance'
               ),
+          },
+          {
+            type: NavObjectType.MenuLink,
+            path: 'session-list',
+            title: t('navigation:general.attendance.unexplainedAbsences'),
+            element: <SessionAttendanceList />,
+            hasAccess: ({ isTyroUser }) => isTyroUser,
           },
           {
             type: NavObjectType.MenuLink,
