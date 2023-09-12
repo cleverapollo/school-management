@@ -18,7 +18,7 @@ import { useParams } from 'react-router-dom';
 import {
   UpsertNonClassContactModal,
   UpsertNonClassContactModalProps,
-} from '../../../components/staff/upsert-non-class-contact-modal';
+} from '../../../components/staff/non-class-contact/upsert';
 import {
   ReturnTypeFromUseNonClassContactHours,
   useNonClassContactHours,
@@ -26,7 +26,7 @@ import {
 import {
   DeleteNonClassContactConfirmModal,
   DeleteNonClassContactConfirmModalProps,
-} from '../../../components/staff/delete-non-class-contact-confirm-modal';
+} from '../../../components/staff/non-class-contact/delete';
 
 dayjs.extend(LocalizedFormat);
 
@@ -35,7 +35,6 @@ const getNonClassContactColumnDefs = (
   onClickEdit: Dispatch<
     SetStateAction<UpsertNonClassContactModalProps['initialState']>
   >,
-
   onDelete: Dispatch<
     SetStateAction<
       DeleteNonClassContactConfirmModalProps['nonClassContactHourDetails']
@@ -43,32 +42,30 @@ const getNonClassContactColumnDefs = (
   >,
   numberOfNonClassContacts: number
 ): GridOptions<ReturnTypeFromUseNonClassContactHours>['columnDefs'] => [
-  { field: 'nonClassContactHoursId', hide: true },
   {
     field: 'activity',
-    headerName: t('people:activity'),
+    headerName: t('common:activity'),
     valueGetter: ({ data }) =>
       data?.activity ? t(`people:activityValues.${data?.activity}`) : null,
   },
   {
     field: 'dayOfTheWeek',
-    headerName: t('people:dayOfWeek'),
+    headerName: t('common:dayOfWeek'),
     valueGetter: ({ data }) =>
       data?.dayOfTheWeek
-        ? t(`people:dayOfWeekValues.${data?.dayOfTheWeek}`)
+        ? t(`common:dayOfWeekValues.${data?.dayOfTheWeek}`)
         : null,
   },
   {
-    field: 'hours',
-    headerName: t('people:hours'),
-    valueGetter: ({ data }) => `${data?.hours ?? 0}h`,
+    colId: 'time',
+    headerName: t('common:time'),
+    valueGetter: ({ data }) =>
+      `${data?.hours ? `${data?.hours}h` : ''} ${
+        data?.minutes ? `${data?.minutes}m` : ''
+      }`,
   },
   {
-    field: 'minutes',
-    headerName: t('people:minutes'),
-    valueGetter: ({ data }) => `${data?.minutes ?? 0}min`,
-  },
-  {
+    suppressColumnsToolPanel: true,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseNonClassContactHours>) =>
@@ -105,8 +102,8 @@ export default function StaffProfileNonClassContactPage() {
   const { activeAcademicNamespace } = useAcademicNamespace();
 
   const nonClassContactHoursQueryFilter = {
-    academicNameSpaceId: activeAcademicNamespace?.academicNamespaceId ?? 1,
-    staffPartyId: staffId ?? 12345,
+    academicNameSpaceId: activeAcademicNamespace?.academicNamespaceId ?? 0,
+    staffPartyId: staffId ?? 0,
   };
 
   const { data: nonClassContactHours = [] } = useNonClassContactHours(
@@ -140,7 +137,7 @@ export default function StaffProfileNonClassContactPage() {
 
   return (
     <>
-      <Box display="flex" justifyContent="flex-end" sx={{ mt: 4 }}>
+      <Box display="flex" justifyContent="flex-end">
         <Button
           variant="contained"
           onClick={handleCreateNonClassContact}

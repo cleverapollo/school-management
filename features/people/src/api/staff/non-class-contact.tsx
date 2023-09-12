@@ -28,16 +28,16 @@ const nonClassContactHours = graphql(/* GraphQL */ `
   }
 `);
 
-const nonClassContactHoursQuery = (filter?: NonClassContactHoursFilter) => ({
+const nonClassContactHoursQuery = (filter: NonClassContactHoursFilter) => ({
   queryKey: peopleKeys.staff.nonClassContacts(filter),
   queryFn: async () => gqlClient.request(nonClassContactHours, { filter }),
 });
 
-export function getNonClassContactHours(filter?: NonClassContactHoursFilter) {
+export function getNonClassContactHours(filter: NonClassContactHoursFilter) {
   return queryClient.fetchQuery(nonClassContactHoursQuery(filter));
 }
 
-export function useNonClassContactHours(filter?: NonClassContactHoursFilter) {
+export function useNonClassContactHours(filter: NonClassContactHoursFilter) {
   return useQuery({
     ...nonClassContactHoursQuery(filter),
     select: ({ eire_nonClassContactHours }) => eire_nonClassContactHours,

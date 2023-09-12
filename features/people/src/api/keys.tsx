@@ -39,8 +39,8 @@ export const peopleKeys = {
     employmentCapacities: () =>
       [...peopleKeys.staff.all(), 'employmentCapacities'] as const,
     staffPosts: () => [...peopleKeys.staff.all(), 'staffPosts'] as const,
-    nonClassContacts: (filter?: NonClassContactHoursFilter) =>
-      [...peopleKeys.staff.all(), filter ?? 'nonClassContacts'] as const,
+    nonClassContacts: (filter: NonClassContactHoursFilter) =>
+      [...peopleKeys.staff.all(), 'nonClassContacts', filter] as const,
   },
   students: {
     all: () => [...peopleKeys.all, 'students'] as const,

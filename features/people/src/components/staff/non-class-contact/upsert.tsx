@@ -12,8 +12,8 @@ import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import React, { useEffect } from 'react';
 import { Activity, Day, NonClassContactHoursFilter } from '@tyro/api';
-import { ReturnTypeFromUseNonClassContactHours } from '../../api/staff/non-class-contact';
-import { useUpsertNonClassContact } from '../../api/staff/upsert-non-class-contact';
+import { ReturnTypeFromUseNonClassContactHours } from '../../../api/staff/non-class-contact';
+import { useUpsertNonClassContact } from '../../../api/staff/upsert-non-class-contact';
 
 export interface UpsertNonClassContactModalProps {
   onClose: () => void;
@@ -37,9 +37,18 @@ export const UpsertNonClassContactModal = ({
   const { resolver, rules } =
     useFormValidator<UpsertNonClassContactFormState>();
 
+  const dayOfWeekOptions = [
+    Day.Monday,
+    Day.Tuesday,
+    Day.Wednesday,
+    Day.Thursday,
+    Day.Friday,
+    Day.Saturday,
+  ];
+
   const defaultFormStateValues: Partial<UpsertNonClassContactFormState> = {
     activity: initialState?.activity,
-    dayOfTheWeek: initialState?.dayOfTheWeek || Day.Monday,
+    dayOfTheWeek: initialState?.dayOfTheWeek,
     hours: initialState?.hours || 0,
     minutes: initialState?.minutes || 0,
   };
@@ -72,20 +81,14 @@ export const UpsertNonClassContactModal = ({
     mutate(
       {
         ...initialState,
+        ...data,
         academicNameSpaceId:
           initialState?.academicNameSpaceId ??
           nonClassContactHoursQueryFilter.academicNameSpaceId,
         staffPartyId: nonClassContactHoursQueryFilter.staffPartyId,
-        activity: data.activity,
-        dayOfTheWeek: data.dayOfTheWeek,
-        hours: data.hours,
-        minutes: data.minutes,
       },
-
       {
-        onSuccess: () => {
-          handleClose();
-        },
+        onSuccess: handleClose,
       }
     );
   });
@@ -109,7 +112,7 @@ export const UpsertNonClassContactModal = ({
             <RHFSelect
               fullWidth
               options={Object.values(Activity)}
-              label={t('people:activity')}
+              label={t('common:activity')}
               getOptionLabel={(option) => t(`people:activityValues.${option}`)}
               controlProps={{
                 name: 'activity',
@@ -118,9 +121,9 @@ export const UpsertNonClassContactModal = ({
             />
             <RHFSelect
               fullWidth
-              options={Object.values(Day)}
-              label={t('people:dayOfWeek')}
-              getOptionLabel={(option) => t(`people:dayOfWeekValues.${option}`)}
+              options={dayOfWeekOptions}
+              label={t('common:dayOfWeek')}
+              getOptionLabel={(option) => t(`common:dayOfWeekValues.${option}`)}
               controlProps={{
                 name: 'dayOfTheWeek',
                 control,
@@ -129,7 +132,7 @@ export const UpsertNonClassContactModal = ({
           </Stack>
           <Stack direction="row" padding={0} gap={2}>
             <RHFTextField
-              label={t('people:hours')}
+              label={t('common:hours')}
               controlProps={{
                 name: 'hours',
                 control,
@@ -140,7 +143,7 @@ export const UpsertNonClassContactModal = ({
               }}
             />
             <RHFTextField
-              label={t('people:minutes')}
+              label={t('common:minutes')}
               controlProps={{
                 name: 'minutes',
                 control,

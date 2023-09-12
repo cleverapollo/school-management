@@ -2,7 +2,7 @@ import { ConfirmDialog, useNumber } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useParams } from 'react-router-dom';
 import { NonClassContactHours, useAcademicNamespace } from '@tyro/api';
-import { useDeleteNonClassContact } from '../../api/staff/delete-non-class-contact';
+import { useDeleteNonClassContact } from '../../../api/staff/delete-non-class-contact';
 
 export interface DeleteNonClassContactConfirmModalProps {
   open: boolean;
@@ -21,13 +21,10 @@ export function DeleteNonClassContactConfirmModal({
   const staffId = useNumber(id);
   const { activeAcademicNamespace } = useAcademicNamespace();
 
-  const nonClassContactHoursQueryFilter = {
-    academicNameSpaceId: activeAcademicNamespace?.academicNamespaceId ?? 1,
-    staffPartyId: staffId ?? 12345,
-  };
-  const { mutateAsync: deleteNonClassContact } = useDeleteNonClassContact(
-    nonClassContactHoursQueryFilter
-  );
+  const { mutateAsync: deleteNonClassContact } = useDeleteNonClassContact({
+    academicNameSpaceId: activeAcademicNamespace?.academicNamespaceId ?? 0,
+    staffPartyId: staffId ?? 0,
+  });
 
   const onSubmit = async () => {
     if (nonClassContactHourDetails?.nonClassContactHoursId) {
@@ -45,7 +42,7 @@ export function DeleteNonClassContactConfirmModal({
       onClose={onClose}
       onConfirm={onSubmit}
       title={t('people:deleteNonClassContact')}
-      description={t('people:areYouSure', { entry: 'Non-class contact' })}
+      description={t('people:areYouSureYouWantToDeleteNonClassContact')}
       confirmText={t('common:delete')}
     />
   );

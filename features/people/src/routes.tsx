@@ -14,7 +14,7 @@ import {
   getTodayTimetableEvents,
 } from '@tyro/calendar';
 import dayjs from 'dayjs';
-import { getPermissionUtils } from '@tyro/api';
+import { EmulateHeaders, getPermissionUtils } from '@tyro/api';
 import {
   getStudent,
   getStudents,
@@ -38,6 +38,7 @@ import { getStaffPersonal } from './api/staff/personal';
 import { getMedicalConditionNamesQuery } from './api/student/medicals/medical-condition-lookup';
 import { getPersonalTitlesQuery } from './api/student/medicals/personal-titles';
 import { getBehaviours } from './api/behaviour/list';
+import { getNonClassContactHours } from './api/staff/non-class-contact';
 
 const StudentsListPage = lazyWithRetry(() => import('./pages/students'));
 // Student profile pages
@@ -524,11 +525,17 @@ export const getRoutes: NavObjectFunction = (t) => [
                 element: <StaffProfileNonClassContactPage />,
                 loader: ({ params }) => {
                   const staffId = getNumber(params.id);
+                  const academicNameSpaceId = localStorage.getItem(
+                    EmulateHeaders.ACADEMIC_NAMESPACE_ID
+                  );
 
                   if (!staffId) {
                     throw404Error();
                   }
-                  return null;
+                  return getNonClassContactHours({
+                    academicNameSpaceId: parseInt(academicNameSpaceId || '0'),
+                    staffPartyId: staffId,
+                  });
                 },
               },
             ],

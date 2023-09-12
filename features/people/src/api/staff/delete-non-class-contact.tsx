@@ -28,9 +28,11 @@ export function useDeleteNonClassContact(filter: NonClassContactHoursFilter) {
   return useMutation({
     mutationFn: async (input: DeleteNonClassContactHoursInput) =>
       gqlClient.request(deleteNonClassContact, { input }),
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(
+        peopleKeys.staff.nonClassContacts(filter)
+      );
       toast(t('common:snackbarMessages.deleteSuccess'));
-      queryClient.invalidateQueries(peopleKeys.staff.nonClassContacts(filter));
     },
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
