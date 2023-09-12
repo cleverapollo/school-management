@@ -1,15 +1,14 @@
 import { styled } from '@mui/material/styles';
-import { Tooltip, IconButton } from '@mui/material';
+import { Tooltip, IconButton, Stack } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { useMemo } from 'react';
-import { MailCheckmarkIcon, TrashIcon } from '@tyro/icons';
+import { MailIcon, MailOpenIcon, TrashIcon } from '@tyro/icons';
 
-const RootStyle = styled('div')(({ theme }) => ({
+const RootStyle = styled(Stack)(({ theme }) => ({
   height: 40,
   zIndex: 99,
   opacity: 0,
   margin: 'auto',
-  display: 'flex',
   position: 'absolute',
   alignItems: 'center',
   top: theme.spacing(1),
@@ -23,41 +22,44 @@ const RootStyle = styled('div')(({ theme }) => ({
   transition: theme.transitions.create('opacity'),
 }));
 
-type Props = {
-  handleDelete?: VoidFunction;
-  handleMarkRead?: VoidFunction;
+type MailItemActionProps = {
+  mailId: number;
+  isRead?: boolean;
+  className?: string;
 };
 
 export default function MailItemAction({
-  handleDelete,
-  handleMarkRead,
-}: Props) {
-  const { t } = useTranslation(['common']);
+  mailId,
+  isRead,
+  className,
+}: MailItemActionProps) {
+  const { t } = useTranslation(['common', 'mail']);
   const MAIL_ACTIONS = useMemo(
     () => [
       {
         name: t('common:actions.delete'),
         icon: <TrashIcon />,
-        action: handleDelete,
+        action: () => console.log(`delete ${mailId}`),
       },
       {
-        name: t('common:actions.markEmail'),
-        icon: <MailCheckmarkIcon />,
-        action: handleMarkRead,
+        name: isRead
+          ? t('mail:actions.markAsUnread')
+          : t('mail:actions.markAsRead'),
+        icon: isRead ? <MailIcon /> : <MailOpenIcon />,
+        action: () => console.log(`mark as read ${mailId}`),
       },
     ],
     [t]
   );
 
   return (
-    <RootStyle>
+    <RootStyle className={className} direction="row" spacing={0.75}>
       {MAIL_ACTIONS.map((action) => (
         <Tooltip key={action.name} title={action.name}>
           <IconButton
             size="small"
             onClick={action.action}
             sx={{
-              mx: 0.75,
               '&:hover': {
                 color: 'text.primary',
               },

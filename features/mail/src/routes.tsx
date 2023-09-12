@@ -28,11 +28,25 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.NonMenuLink,
             path: ':labelId',
             element: <Mail />,
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'view/:mailId',
+                element: <Mail />,
+              },
+            ],
           },
           {
             type: NavObjectType.NonMenuLink,
             path: 'label/:labelId',
             element: <Mail />,
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'view/:mailId',
+                element: <Mail />,
+              },
+            ],
           },
         ],
       },

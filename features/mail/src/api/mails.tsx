@@ -1,4 +1,9 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
+import {
+  useQuery,
+  useMutation,
+  useInfiniteQuery,
+  QueryFunctionContext,
+} from '@tanstack/react-query';
 import {
   gqlClient,
   graphql,
@@ -8,8 +13,10 @@ import {
   MailReadInput,
   MailFilter,
   queryClient,
+  UseQueryReturnType,
 } from '@tyro/api';
 import { DEFAULT_PAGINATION_LIMIT } from '../constants';
+import { getTextFromHtml } from '../utils/html-formatters';
 import { mailKeys } from './keys';
 
 const mails = graphql(/* GraphQL */ `
@@ -21,6 +28,18 @@ const mails = graphql(/* GraphQL */ `
       subject
       body
       senderPartyId
+      sender {
+        partyId
+        title {
+          id
+          nameTextId
+          name
+        }
+        firstName
+        lastName
+        avatarUrl
+        type
+      }
       sentOn
       latestMessage
       canReply
@@ -138,23 +157,54 @@ const readMail = graphql(`
   }
 `);
 
-const mailListQuery = (filter: MailFilter) => ({
-  queryKey: mailKeys.list(filter),
+export function useMailList(labelId: number, profileId?: number | null) {
+  const filter = {
+    pagination: { limit: DEFAULT_PAGINATION_LIMIT },
+    partyId: profileId,
+    labelId,
+  };
+  const queryKey = mailKeys.list(filter);
+
+  return useInfiniteQuery({
+    queryKey,
+    queryFn: async ({
+      pageParam,
+    }: QueryFunctionContext<typeof queryKey, number | undefined>) =>
+      gqlClient.request(mails, {
+        filter: {
+          ...filter,
+          pagination: { ...filter.pagination, lastId: pageParam },
+        },
+      }),
+    getNextPageParam: ({ communications_mail }) =>
+      communications_mail.length === DEFAULT_PAGINATION_LIMIT
+        ? communications_mail[communications_mail.length - 1].id
+        : undefined,
+    select: (data) => ({
+      ...data,
+      pages: data.pages.map(({ communications_mail }) =>
+        communications_mail.map((mail) => ({
+          ...mail,
+          summary: getTextFromHtml(mail.body ?? ''),
+        }))
+      ),
+    }),
+  });
+}
+
+const mailQuery = (filter: MailFilter) => ({
+  queryKey: mailKeys.mail(filter),
   queryFn: async () => gqlClient.request(mails, { filter }),
 });
 
-export function getMailList(filter: MailFilter) {
-  return queryClient.fetchQuery(mailListQuery(filter));
-}
-
-export function useMailList(labelId: number, profileId?: number | null) {
+export function useMail(mailId: number) {
   return useQuery({
-    ...mailListQuery({
-      pagination: { limit: DEFAULT_PAGINATION_LIMIT },
-      partyId: profileId,
-      labelId,
+    ...mailQuery({
+      id: mailId,
+      pagination: { limit: 1 },
     }),
-    select: ({ communications_mail }) => communications_mail,
+    select: ({ communications_mail }) =>
+      communications_mail.length > 0 ? communications_mail[0] : undefined,
   });
 }
 
@@ -169,6 +219,9 @@ export function useStarMail() {
   return useMutation({
     mutationFn: async (input: InputMaybe<MailStarredInput>) =>
       gqlClient.request(starMail, { input }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(mailKeys.all);
+    },
   });
 }
 
@@ -178,3 +231,9 @@ export function useReadMail() {
       gqlClient.request(readMail, { input }),
   });
 }
+
+export type ReturnTypeUseMailList = UseQueryReturnType<
+  typeof useMailList
+>['pages'][number][number];
+
+export type ReturnTypeUseMail = UseQueryReturnType<typeof useMail>;

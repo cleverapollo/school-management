@@ -21,14 +21,11 @@ import {
 } from '../../api/labels';
 import { LabelDialog } from './label-dialog';
 
-interface MailSidebarProps {
-  activeProfileId: number;
-}
-
-export function MailSidebar({ activeProfileId }: MailSidebarProps) {
+export function MailSidebar() {
   const { pathname } = useLocation();
   const { t } = useTranslation(['mail', 'common']);
-  const { sidebarDisclosure, composeEmail } = useMailSettings();
+  const { sidebarDisclosure, composeEmail, activeProfileId } =
+    useMailSettings();
   const { isOpen: isSidebarOpen, onClose: onCloseSidebar } = sidebarDisclosure;
 
   const isDesktop = useResponsive('up', 'md');
@@ -45,7 +42,7 @@ export function MailSidebar({ activeProfileId }: MailSidebarProps) {
     personPartyId: activeProfileId,
   });
   const { data: labels } = useLabels({
-    personPartyId: activeProfileId,
+    // personPartyId: activeProfileId,
   });
   const splitLabels = useMemo(
     () => ({
@@ -58,10 +55,6 @@ export function MailSidebar({ activeProfileId }: MailSidebarProps) {
     }),
     [labels]
   );
-
-  console.log({
-    unreadCounts,
-  });
 
   useEffect(() => {
     if (isSidebarOpen) {

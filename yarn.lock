@@ -6689,6 +6689,7 @@ __metadata:
     "@mui/material": ^5.13.2
     "@mui/system": ^5.13.2
     "@tanstack/react-query": ^4.29.7
+    "@tanstack/react-virtual": beta
     "@tiptap/extension-underline": ^2.1.8
     "@tiptap/pm": ^2.1.8
     "@tiptap/react": ^2.1.8
@@ -6698,6 +6699,7 @@ __metadata:
     "@tyro/core": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    dayjs: ^1.11.9
     react: ^18.2.0
     react-dom: ^18.2.0
     react-hook-form: ^7.43.9
@@ -9590,6 +9592,13 @@ __metadata:
   version: 1.11.7
   resolution: "dayjs@npm:1.11.7"
   checksum: 5003a7c1dd9ed51385beb658231c3548700b82d3548c0cfbe549d85f2d08e90e972510282b7506941452c58d32136d6362f009c77ca55381a09c704e9f177ebb
+  languageName: node
+  linkType: hard
+
+"dayjs@npm:^1.11.9":
+  version: 1.11.9
+  resolution: "dayjs@npm:1.11.9"
+  checksum: a4844d83dc87f921348bb9b1b93af851c51e6f71fa259604809cfe1b49d1230e6b0212dab44d1cb01994c096ad3a77ea1cf18fa55154da6efcc9d3610526ac38
   languageName: node
   linkType: hard
 

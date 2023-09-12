@@ -1,4 +1,5 @@
 import { useDisclosure, UseDisclosureReturn } from '@tyro/core';
+import { useUser } from '@tyro/api';
 import {
   useContext,
   createContext,
@@ -7,12 +8,15 @@ import {
   useEffect,
   useState,
 } from 'react';
-import MailCompose, { ComposeMailFormValues } from '../components/compose';
+import MailCompose, {
+  ComposeMailFormValues,
+} from '../components/common/compose';
 
 export type MailSettingsContextValue = {
   sidebarDisclosure: UseDisclosureReturn;
   composeDisclosure: UseDisclosureReturn;
   composeEmail: (defaultValue: Partial<ComposeMailFormValues>) => void;
+  activeProfileId: number;
 };
 
 const MailSettingsContext = createContext<MailSettingsContextValue | undefined>(
@@ -25,6 +29,8 @@ export function MailSettingsProvider({ children }: { children: ReactNode }) {
   >({});
   const sidebarDisclosure = useDisclosure({ defaultIsOpen: false });
   const composeDisclosure = useDisclosure({ defaultIsOpen: false });
+  const { activeProfile } = useUser();
+  const activeProfileId = activeProfile?.partyId ?? 0;
 
   const composeEmail = (defaultValue: Partial<ComposeMailFormValues>) => {
     setDefaultComposeValue(defaultValue);
@@ -36,8 +42,9 @@ export function MailSettingsProvider({ children }: { children: ReactNode }) {
       sidebarDisclosure,
       composeDisclosure,
       composeEmail,
+      activeProfileId,
     }),
-    [sidebarDisclosure, composeDisclosure, composeEmail]
+    [sidebarDisclosure, composeDisclosure, composeEmail, activeProfileId]
   );
 
   useEffect(() => {

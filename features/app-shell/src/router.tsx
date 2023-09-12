@@ -35,7 +35,6 @@ import { getRoutes as getClassListManagerRoutes } from '@tyro/class-list-manager
 import { getRoutes as getGroupRoutes } from '@tyro/groups';
 import { getRoutes as getPrintingRoutes } from '@tyro/printing';
 import { getRoutes as getMailRoutes } from '@tyro/mail';
-import { getRoutes as getOldMailRoutes } from '@tyro/old-mail';
 import { getRoutes as getAttendanceRoutes } from '@tyro/attendance';
 import { getRoutes as getAssessmentRoutes } from '@tyro/assessments';
 import { getRoutes as getPeopleRoutes } from '@tyro/people';
@@ -129,7 +128,6 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getGroupRoutes(t),
   ...getAttendanceRoutes(t),
   ...getMailRoutes(t),
-  ...getOldMailRoutes(t),
   ...getAssessmentRoutes(t),
   ...getPeopleRoutes(t),
   // ...getReportingRoutes(t),

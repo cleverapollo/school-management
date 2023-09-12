@@ -13,6 +13,7 @@
     "nextPage": "Next page",
     "previousPage": "Previous page",
     "starred": "Starred",
+    "notStarred": "Not starred",
     "back": "Back",
     "moreOptions": "More options",
     "reply": "Reply",
@@ -43,7 +44,7 @@
     "forward": "Forward",
     "applyLabel": "Apply label",
     "markAsUnread": "Mark as unread",
-    "deleteThisMessage": "Delete this message",
+    "markAsRead": "Mark as read",
     "removeLabel": "Remove label",
     "more": "More"
   }

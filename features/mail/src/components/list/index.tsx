@@ -1,35 +1,42 @@
-import { useState } from 'react';
+import { useMemo, useEffect, useRef, useState } from 'react';
 import { Divider, Box, Typography } from '@mui/material';
-import { Scrollbar } from '@tyro/core';
-import { useUser } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { useParams } from 'react-router';
+import { useResponsive } from '@tyro/core';
 import MailItem from './item';
 import MailToolbar from './toolbar';
 import { useMailList } from '../../api/mails';
 import { getLabelIdNumber } from '../../constants';
+import { useMailSettings } from '../../store/mail-settings';
 
 export default function MailList() {
   const { t } = useTranslation(['mail']);
-  const { activeProfile } = useUser();
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const isDesktop = useResponsive('up', 'md');
+  const { activeProfileId } = useMailSettings();
   const { labelId } = useParams<{ labelId: string }>();
 
   const [filterValue, setFilterValue] = useState<string>('');
   const [selectedMails, setSelectedMails] = useState(new Set<number>());
 
-  const {
-    data: mails,
-    isLoading,
-    isRefetching,
-  } = useMailList(getLabelIdNumber(labelId ?? 0), activeProfile?.partyId);
+  const { data, isLoading, isRefetching, refetch } = useMailList(
+    getLabelIdNumber(labelId ?? 0),
+    activeProfileId
+  );
 
-  console.log({
-    mails,
-    labelId: getLabelIdNumber(labelId ?? 0),
-    partyId: activeProfile?.partyId,
+  const mails = useMemo(() => {
+    if (!data?.pages) {
+      return [];
+    }
+    return data.pages.flat();
+  }, [data?.pages]);
+
+  const rowVirtualizer = useVirtualizer({
+    count: mails?.length ?? 0,
+    getScrollElement: () => listRef.current,
+    estimateSize: () => (isDesktop ? 64 : 94),
   });
-
-  const isEmpty = !mails || mails.length === 0;
 
   const onToggleAll = () => {
     setSelectedMails((prevSelectedMails) => {
@@ -51,17 +58,18 @@ export default function MailList() {
     });
   };
 
-  const onRequestRefresh = () => {
-    // TODO add refresh ability
-  };
+  useEffect(() => {
+    rowVirtualizer.measure();
+  }, [isDesktop]);
 
+  const isEmpty = !mails || mails.length === 0;
   const isSomeSelected = selectedMails.size > 0;
   const isAllSelected = isSomeSelected && mails?.length === selectedMails.size;
 
   return (
     <Box flexGrow={1} display="flex" overflow="hidden" flexDirection="column">
       <MailToolbar
-        onRequestRefresh={onRequestRefresh}
+        onRequestRefresh={refetch}
         onToggleAll={onToggleAll}
         filterValue={filterValue}
         setFilterValue={setFilterValue}
@@ -73,35 +81,32 @@ export default function MailList() {
       <Divider />
 
       {!isEmpty ? (
-        <Scrollbar>
-          <Box sx={{ minWidth: { md: 800 } }}>
-            {/* {filteredMailsIds.map(
-              (mailId) =>
-                (!!mails.byId[mailId].labels?.filter(
-                  (label) =>
-                    activeLabelName &&
-                    ((label?.name === activeLabelName && label.custom) ||
-                      (activeLabelName === 'sent' &&
-                        mails.byId[mailId].senderPartyId ===
-                          (user?.profiles && user.profiles[0].partyId)) ||
-                      (activeLabelName === 'inbox' &&
-                        mails.byId[mailId].senderPartyId !==
-                          (user?.profiles && user.profiles[0].partyId)))
-                ).length ||
-                  (mails.byId[mailId].starred &&
-                    activeLabelName === 'Starred')) && (
-                  <MailItem
-                    key={mailId}
-                    mail={mails.byId[mailId]}
-                    isSelected={selectedMails.includes(mailId)}
-                    onSelect={() => handleSelectOneMail(mailId)}
-                    onDeselect={() => handleDeselectOneMail(mailId)}
-                    labels={labels}
-                  />
-                )
-            )} */}
+        <Box ref={listRef} overflow="auto">
+          <Box
+            sx={{
+              height: `${rowVirtualizer.getTotalSize()}px`,
+              width: '100%',
+              position: 'relative',
+            }}
+          >
+            {rowVirtualizer.getVirtualItems().map((virtualItem) => {
+              const mail = mails[virtualItem.index];
+
+              return (
+                <MailItem
+                  key={virtualItem.key}
+                  mail={mail}
+                  isSelected={selectedMails.has(mail.id)}
+                  onToggleSelect={toggleMailSelection}
+                  sx={{
+                    height: `${virtualItem.size}px`,
+                    transform: `translateY(${virtualItem.start}px)`,
+                  }}
+                />
+              );
+            })}
           </Box>
-        </Scrollbar>
+        </Box>
       ) : (
         <Box
           sx={{

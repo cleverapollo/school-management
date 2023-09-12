@@ -1,19 +1,23 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
-import { Link as RouterLink } from 'react-router-dom';
-// @mui
+import { Link } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import { Box, Tooltip, Typography, Checkbox } from '@mui/material';
-// hooks
-import { useUser, Mail } from '@tyro/api';
+import {
+  Box,
+  Tooltip,
+  Typography,
+  Checkbox,
+  BoxProps,
+  Stack,
+} from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { useResponsive, Avatar } from '@tyro/core';
-// utils
 import { LinkIcon, StarIcon } from '@tyro/icons';
-import { fDate } from '../../../../src/utils/formatTime';
-import Label from '../../../../src/components/Label';
+// import Label from '../../../../src/components/Label';
+// import MailItemAction from './actions';
+import { ReturnTypeUseMailList, useStarMail } from '../../api/mails';
+import { useMailSettings } from '../../store/mail-settings';
+import { getRelativeDateFormat } from '../../utils/relative-date-format';
 import MailItemAction from './actions';
-import { useStarMail } from '../api/mails';
+import { StarMail } from '../common/star';
 
 const RootStyle = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -30,99 +34,63 @@ const RootStyle = styled(Box)(({ theme }) => ({
   },
 }));
 
-// ----------------------------------------------------------------------
-
-type Props = {
-  mail: Mail;
-  isDense: boolean;
+type MailItemProps = {
+  mail: ReturnTypeUseMailList;
   isSelected: boolean;
-  onDeselect: VoidFunction;
-  onSelect: VoidFunction;
-  labels?: MailLabel[];
+  onToggleSelect: (mailId: number) => void;
+  sx?: BoxProps['sx'];
 };
 
 export default function MailItem({
   mail,
-  isDense,
   isSelected,
-  onSelect,
-  onDeselect,
-  labels,
-  ...other
-}: Props) {
+  onToggleSelect,
+  sx,
+}: MailItemProps) {
   const { t } = useTranslation(['mail']);
-  const { user } = useUser();
+  const { activeProfileId } = useMailSettings();
+  const highlightMail = !mail.readOn && activeProfileId !== mail.senderPartyId;
 
   const isDesktop = useResponsive('up', 'md');
 
   // ToDO: refactor isAttached when attachments will be implemented
   const isAttached = false;
 
-  const handleChangeCheckbox = (checked: boolean) =>
-    checked ? onSelect() : onDeselect();
-
-  const { mutate: starMail } = useStarMail();
-  const onStarMail = () => {
-    starMail({
-      mailId: mail.id,
-      threadId: mail.threadId,
-      starred: !mail.starred,
-    });
-  };
-
   return (
     <RootStyle
       sx={{
-        ...((!!mail.readOn ||
-          !!mail.labels?.filter((label) => label?.id === 2).length ||
-          (user?.profiles &&
-            user.profiles[0].partyId === mail.senderPartyId)) && {
+        ...(highlightMail && {
           color: 'text.primary',
           backgroundColor: 'background.paper',
         }),
-        ...(isSelected && { bgcolor: 'action.selected' }),
+        ...(isSelected && { backgroundColor: 'action.selected' }),
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        ...sx,
       }}
-      {...other}
     >
       {isDesktop && (
         <Box sx={{ mr: 2, display: 'flex' }}>
           <Checkbox
             checked={isSelected}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              handleChangeCheckbox(event.target.checked)
-            }
+            onChange={() => onToggleSelect(mail.id)}
           />
-          <Tooltip title={t('mail:tooltipTitles.starred')}>
-            <Checkbox
-              color="warning"
-              onChange={onStarMail}
-              defaultChecked={!!mail.starred}
-              icon={<StarIcon />}
-              checkedIcon={
-                <StarIcon
-                  sx={{
-                    '& path': {
-                      fill: 'currentcolor',
-                    },
-                  }}
-                />
-              }
-            />
-          </Tooltip>
+          <StarMail isStarred={!!mail.starred} mail={mail} />
         </Box>
       )}
 
-      <RouterLink
-        to={`/mail/${mail.id}`}
-        style={{ color: 'inherit', textDecoration: 'none' }}
+      <Link
+        to={`view/${mail.id}`}
+        relative="path"
+        style={{ color: 'inherit', textDecoration: 'none', flex: 1 }}
       >
         <Box
           sx={{
             py: 2,
-            minWidth: 0,
             display: 'flex',
-            transition: (theme) => theme.transitions.create('padding'),
-            ...(isDense && { py: 1 }),
+            flex: 1,
           }}
         >
           <Avatar
@@ -130,72 +98,65 @@ export default function MailItem({
             sx={{ width: 32, height: 32 }}
           />
 
-          <Box
+          <Stack
+            direction={{
+              xs: 'column',
+              md: 'row',
+            }}
+            spacing={{
+              xs: 0,
+              md: 2,
+            }}
+            alignItems={{
+              xs: 'flex-start',
+              md: 'center',
+            }}
             sx={{
               ml: 2,
-              minWidth: 0,
-              alignItems: 'center',
-              display: { md: 'flex' },
+              flex: 1,
             }}
           >
             <Typography
               variant="body2"
               noWrap
               sx={{
-                pr: 2,
-                minWidth: 200,
-                ...((!!mail.readOn ||
-                  !!mail.labels?.filter((label) => label?.id === 2).length ||
-                  (user?.profiles &&
-                    user.profiles[0].partyId === mail.senderPartyId)) && {
-                  fontWeight: 'fontWeightBold',
+                minWidth: 180,
+                ...(highlightMail && {
+                  fontWeight: '700',
                 }),
               }}
             >
               {mail.senderPartyId}
             </Typography>
 
-            <Typography
-              noWrap
-              variant="body2"
-              sx={{
-                pr: 2,
-              }}
-            >
+            <Typography noWrap variant="body2" flex="1">
               <Box
                 component="span"
                 sx={{
-                  ...((!!mail.readOn ||
-                    !!mail.labels?.filter((label) => label?.id === 2).length ||
-                    (user?.profiles &&
-                      user.profiles[0].partyId === mail.senderPartyId)) && {
-                    fontWeight: 'fontWeightBold',
+                  ...(highlightMail && {
+                    fontWeight: '700',
                   }),
                 }}
               >
                 {mail.subject}
-              </Box>
-              &nbsp;-&nbsp;
+              </Box>{' '}
+              -{' '}
               <Box
                 component="span"
                 sx={{
-                  ...((!!mail.readOn ||
-                    !!mail.labels?.filter((label) => label?.id === 2).length ||
-                    (user?.profiles &&
-                      user.profiles[0].partyId === mail.senderPartyId)) && {
+                  ...(highlightMail && {
                     color: 'text.secondary',
                   }),
                 }}
               >
-                {mail.body}
+                {mail.summary}
               </Box>
             </Typography>
 
             {isDesktop && (
               <>
-                <Box sx={{ display: 'flex' }}>
+                {/* <Box sx={{ display: 'flex' }}>
                   {mail.labels?.map((label) => {
-                    if (!label) return null;
                     return (
                       <Label
                         key={label.id}
@@ -211,7 +172,7 @@ export default function MailItem({
                       </Label>
                     );
                   })}
-                </Box>
+                </Box> */}
 
                 {isAttached && (
                   <LinkIcon
@@ -244,24 +205,23 @@ export default function MailItem({
             <Typography
               variant="caption"
               sx={{
-                flexShrink: 0,
-                minWidth: 120,
                 textAlign: 'right',
-                ...((!!mail.readOn ||
-                  !!mail.labels?.filter((label) => label?.id === 2).length ||
-                  (user?.profiles &&
-                    user.profiles[0].partyId === mail.senderPartyId)) && {
-                  fontWeight: 'fontWeightBold',
+                ...(highlightMail && {
+                  fontWeight: '700',
                 }),
               }}
             >
-              {fDate(mail.sentOn)}
+              {getRelativeDateFormat(mail.sentOn)}
             </Typography>
-          </Box>
+          </Stack>
         </Box>
-      </RouterLink>
+      </Link>
 
-      <MailItemAction className="showActions" />
+      <MailItemAction
+        mailId={mail.id}
+        isRead={!highlightMail}
+        className="showActions"
+      />
     </RootStyle>
   );
 }

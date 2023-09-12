@@ -8,12 +8,11 @@ import { useTranslation } from '@tyro/i18n';
 import { useLabels, useUnreadCount } from '../api/labels';
 import { MailSidebar } from '../components/sidebar';
 import MailList from '../components/list';
+import { MailView } from '../components/view';
 
 export default function Mail() {
   const { t } = useTranslation(['mail', 'navigation']);
   const { mailId } = useParams();
-  const { activeProfile } = useUser();
-  const activeProfileId = activeProfile?.partyId ?? 0;
   // const [labels, setLabels] = useState<MailLabel[]>([]);
   // const [mail, setMail] = useState<MailType | null>(null);
   // const [activeLabelName, setActiveLabelName] = useState<string>('');
@@ -75,17 +74,8 @@ export default function Mail() {
           display: { md: 'flex' },
         }}
       >
-        <MailSidebar activeProfileId={activeProfileId} />
-        {mailId ? (
-          <Box />
-        ) : (
-          // <MailDetails
-          //   mail={mail}
-          //   activeLabelName={activeLabelName}
-          //   labels={labels}
-          // />
-          <MailList />
-        )}
+        <MailSidebar />
+        {mailId ? <MailView /> : <MailList />}
       </Card>
     </PageContainer>
   );

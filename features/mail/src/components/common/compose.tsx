@@ -20,13 +20,13 @@ import {
 } from '@tyro/icons';
 import { useForm } from 'react-hook-form';
 import { RecipientType } from '@tyro/api';
-import { useSendMail } from '../api/mails';
-import { ReturnTypeUseMailSearch } from '../api/mail-search';
-import { useMailEditor } from '../hooks/use-mail-editor';
-import { MailEditor } from './editor';
-import { MailEditorToolbar } from './editor/toolbar';
-import { RHFMailSearch } from './fields/rhf-mail-search';
-import { EditorRHFTextfield } from './fields/rhf-textfield';
+import { useSendMail } from '../../api/mails';
+import { ReturnTypeUseMailSearch } from '../../api/mail-search';
+import { useMailEditor } from '../../hooks/use-mail-editor';
+import { MailEditor } from '../editor';
+import { MailEditorToolbar } from '../editor/toolbar';
+import { RHFMailSearch } from '../fields/rhf-mail-search';
+import { EditorRHFTextfield } from '../fields/rhf-textfield';
 
 const RootStyle = styled('div')(({ theme }) => ({
   right: 0,
