@@ -29,6 +29,7 @@ type EmploymentFormState = {
   payrollNumber: UpsertStaffInput['payrollNumber'];
   teacherCouncilNumber: StaffIre['teacherCouncilNumber'];
   startDate: dayjs.Dayjs | null;
+  endDate: dayjs.Dayjs | null;
   qualifications: UpsertStaffInput['qualifications'];
   jobSharing: UpsertStaffInput['jobSharing'];
   availableForTeaching: UpsertStaffInput['availableForTeaching'];
@@ -123,6 +124,18 @@ const getEmploymentDataWitLabels = (
         <RHFDatePicker
           inputProps={{ variant: 'standard' }}
           controlProps={{ name: 'startDate' }}
+        />
+      ),
+    },
+    {
+      label: 'End of employment',
+      valueRenderer: endDate ? `${dayjs(endDate).format('l')}` : '-',
+
+      value: endDate ? dayjs(endDate) : null,
+      valueEditor: (
+        <RHFDatePicker
+          inputProps={{ variant: 'standard' }}
+          controlProps={{ name: 'endDate' }}
         />
       ),
     },
@@ -247,6 +260,7 @@ export const ProfileEmployment = ({
     {
       employmentCapacity,
       startDate,
+      endDate,
       competencies,
       post,
       teacherCouncilNumber,
@@ -258,6 +272,7 @@ export const ProfileEmployment = ({
       {
         employmentCapacity: employmentCapacity.id,
         startDate: startDate ? startDate.format('YYYY-MM-DD') : null,
+        endDate: startDate && endDate ? endDate.format('YYYY-MM-DD') : null,
         competencies: competencies?.map((competency) => competency.id),
         staffIre: {
           staffPost: post?.id,

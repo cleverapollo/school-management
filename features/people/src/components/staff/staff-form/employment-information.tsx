@@ -10,6 +10,7 @@ import { EmploymentCapacityOption } from '../../../api/staff/employment-capaciti
 
 export type EmploymentInformationFormState = {
   startDate: dayjs.Dayjs | null;
+  endDate: dayjs.Dayjs | null;
   position: UpsertStaffInput['position'];
   employmentCapacity: EmploymentCapacityOption;
   displayCode: UpsertStaffInput['displayCode'];
@@ -44,6 +45,13 @@ export const EmploymentInformation = <
           label={t('common:startDate')}
           inputProps={{ fullWidth: true }}
           controlProps={{ name: 'startDate', control }}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <RHFDatePicker
+          label="End date"
+          inputProps={{ fullWidth: true }}
+          controlProps={{ name: 'endDate', control }}
         />
       </Grid>
       <Grid item xs={12} sm={6}>

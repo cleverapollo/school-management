@@ -86,7 +86,11 @@ export function getStaff(filter: StaffFilter) {
 export function useStaff(filter: StaffFilter) {
   return useQuery({
     ...staffQuery(filter),
-    select: ({ core_staff }) => core_staff,
+    select: ({ core_staff }) => {
+      console.log(core_staff, 'core_staff');
+
+      return core_staff;
+    },
   });
 }
 

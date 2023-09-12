@@ -68,6 +68,8 @@ export const CardEditableForm = <TField extends FieldValues>({
   } = useForm<TField>({ resolver });
 
   const handleSave = (data: TField) => {
+    console.log(data, 'TEST');
+
     if (isDirty) {
       setIsSubmitting(true);
       onSave(data, () => {

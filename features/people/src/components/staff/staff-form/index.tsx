@@ -63,8 +63,11 @@ export function StaffForm() {
 
   const handleCancelForm = () => {
     if (isDirty) {
+      console.log('onOpenCancelModal');
       onOpenCancelModal();
     } else {
+      console.log('go back');
+
       goBack();
     }
   };
@@ -72,6 +75,7 @@ export function StaffForm() {
   const onSubmit = ({
     title,
     startDate,
+    endDate,
     mobileNumber,
     additionalNumber,
     email,
@@ -95,12 +99,15 @@ export function StaffForm() {
       nextOfKinAdditionalNumber,
     ].filter(Boolean);
 
+    console.log('submit form');
+
     upsertStaffMutation(
       [
         {
           ...data,
           titleId: title?.id,
           startDate: startDate ? startDate.format('YYYY-MM-DD') : undefined,
+          endDate: endDate ? endDate.format('YYYY-MM-DD') : undefined,
           employmentCapacity: employmentCapacity.id,
           phoneNumbers: [
             ...(mobileNumber

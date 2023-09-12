@@ -32,6 +32,7 @@ export default function StaffProfilePersonalPage() {
           lastName: staffData?.person.lastName,
           gender: staffData?.personalInformation?.gender,
           startDate: staffData?.startDate,
+          endDate: staffData?.endDate,
           dateOfBirth: staffData?.personalInformation?.dateOfBirth,
           payrollNumber: staffData?.payrollNumber,
           availableForTeaching: staffData?.availableForTeaching,
