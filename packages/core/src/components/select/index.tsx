@@ -7,17 +7,17 @@ type SelectCustomVariant = Omit<TextFieldProps, 'variant'> & {
 
 export type SelectProps<TSelectOption> = SelectCustomVariant & {
   options: TSelectOption[];
-  getOptionLabel: (option: TSelectOption) => string;
+  getOptionLabel?: (option: TSelectOption) => string;
   customSelectRef?: TextFieldProps['ref'];
-  optionIdKey?: TSelectOption extends string | number
-    ? never
-    : keyof TSelectOption;
+  optionIdKey?: keyof TSelectOption;
+  optionTextKey?: TSelectOption extends object ? keyof TSelectOption : never;
   renderValue?: (option: TSelectOption) => ReactNode;
 };
 
 export const Select = <TSelectOption extends string | number | object>({
   options,
   optionIdKey,
+  optionTextKey,
   customSelectRef,
   getOptionLabel,
   variant,
@@ -79,10 +79,13 @@ export const Select = <TSelectOption extends string | number | object>({
         const optionValue = optionIdKey
           ? (option[optionIdKey] as string)
           : String(option);
+        const optionLabel = optionTextKey
+          ? (option[optionTextKey] as string)
+          : getOptionLabel?.(option);
 
         return (
           <MenuItem key={optionValue} value={optionValue}>
-            {getOptionLabel(option)}
+            {optionLabel ?? optionValue}
           </MenuItem>
         );
       })}
