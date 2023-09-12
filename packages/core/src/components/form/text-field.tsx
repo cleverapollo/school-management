@@ -17,7 +17,7 @@ export const RHFTextField = <TField extends FieldValues>({
   controlProps,
 }: RHFTextFieldProps<TField>) => {
   const {
-    field: { ref, value, ...restField },
+    field: { ref, value, onChange, ...restField },
     fieldState: { error },
   } = useController(controlProps);
 
@@ -25,6 +25,10 @@ export const RHFTextField = <TField extends FieldValues>({
     <TextField
       {...textFieldProps}
       {...restField}
+      onChange={(e) => {
+        onChange(e);
+        textFieldProps?.onChange?.(e);
+      }}
       value={value ?? ''}
       label={label}
       error={!!error}
