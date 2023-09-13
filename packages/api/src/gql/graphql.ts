@@ -3276,6 +3276,7 @@ export enum Print_TimetableLayout {
 }
 
 export type Print_TimetableOptions = {
+  printWithColour: Scalars['Boolean'];
   fontSize?: InputMaybe<Scalars['Int']>;
   individualStudents: Scalars['Boolean'];
   layout: Print_TimetableLayout;

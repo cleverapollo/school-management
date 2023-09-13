@@ -33,6 +33,7 @@ export interface PrintStaffTimetableFormState {
   subjectFormat: Print_TimetableSubjectFormat;
   individualStudents: boolean;
   fontSize: FontSize;
+  printWithColour: boolean;
 }
 
 enum FontSize {
@@ -79,6 +80,7 @@ export function TimetablePrintForm({
     individualStudents: false,
     printWithColour: false,
     fontSize: 15,
+    printWithColour: true,
   });
   const { control, handleSubmit, watch } =
     useFormContext<PrintStaffTimetableFormState>();
@@ -98,6 +100,7 @@ export function TimetablePrintForm({
       subjectFormat,
       individualStudents,
       fontSize,
+      printWithColour,
     }) => {
       let mappedPartyIds = translatePartyIds ? translatePartyIds(partyIds) : [];
       let mappedRoomIds = translateRoomIds ? translateRoomIds(roomIds) : [];
@@ -124,6 +127,7 @@ export function TimetablePrintForm({
         subjectFormat,
         individualStudents,
         fontSize: mapFontSize(fontSize),
+        printWithColour,
       });
     }
   );
@@ -141,6 +145,7 @@ export function TimetablePrintForm({
       subjectFormat,
       individualStudents,
       fontSize,
+      printWithColour,
     }) => {
       let mappedPartyIds = translatePartyIds ? translatePartyIds(partyIds) : [];
       let mappedRoomIds = translateRoomIds ? translateRoomIds(roomIds) : [];
@@ -168,6 +173,7 @@ export function TimetablePrintForm({
         subjectFormat,
         individualStudents,
         fontSize: mapFontSize(fontSize),
+        printWithColour,
       };
       const printResponse = await getPrintTimetable(f);
 
@@ -187,6 +193,15 @@ export function TimetablePrintForm({
     <>
       <form onSubmit={onSubmit}>
         <Grid container spacing={2} direction="row" sx={{ py: 4 }}>
+          <Grid item>
+            <RHFSwitch
+                label={t(`printing:timetable.options.printWithColour`)}
+                controlLabelProps={{
+                  sx: {ml: 0, height: '100%'},
+                }}
+                controlProps={{name: 'printWithColour', control}}
+            />
+          </Grid>
           <Grid item>
             <RHFSwitch
               label={t(`printing:timetable.options.showRooms`)}
@@ -345,4 +360,5 @@ export const defaultValues = {
   periodDisplayInCell: Print_TimetablePeriodDisplayInCell.Hide,
   subjectFormat: Print_TimetableSubjectFormat.Full,
   fontSize: FontSize.MEDIUM,
+  printWithColour: true,
 } as PrintStaffTimetableFormState;
