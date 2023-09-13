@@ -1,6 +1,8 @@
+import { Dispatch, SetStateAction, useState } from 'react';
 import { Chip, Stack } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
+  RHFCheckbox,
   RHFTextField,
   RHFDatePicker,
   RHFSwitch,
@@ -30,6 +32,7 @@ type EmploymentFormState = {
   teacherCouncilNumber: StaffIre['teacherCouncilNumber'];
   startDate: dayjs.Dayjs | null;
   endDate: dayjs.Dayjs | null;
+  noLongerStaffMember: UpsertStaffInput['noLongerStaff'];
   qualifications: UpsertStaffInput['qualifications'];
   jobSharing: UpsertStaffInput['jobSharing'];
   availableForTeaching: UpsertStaffInput['availableForTeaching'];
@@ -39,9 +42,17 @@ type EmploymentFormState = {
   competencies: CatalogueSubjectOption[] | null;
 };
 
+type ProfileEmploymentProps = {
+  staffData: ReturnType<typeof useStaffPersonal>['data'];
+  editable?: boolean;
+  onSave: CardEditableFormProps<UpsertStaffInput>['onSave'];
+};
+
 const getEmploymentDataWitLabels = (
   data: ReturnType<typeof useStaffPersonal>['data'],
-  t: TFunction<('people' | 'common')[]>
+  t: TFunction<('people' | 'common')[]>,
+  isCurrentEmployeeState: boolean,
+  setIsCurrentEmployeeState: Dispatch<SetStateAction<boolean>>
 ): CardEditableFormProps<EmploymentFormState>['fields'] => {
   const {
     payrollNumber,
@@ -113,7 +124,21 @@ const getEmploymentDataWitLabels = (
       ),
     },
     {
+      label: t('people:currentEmployee'),
+      value: isCurrentEmployeeState,
+      valueRenderer: isCurrentEmployeeState ? t('common:yes') : t('common:no'),
+      valueEditor: (
+        <RHFCheckbox
+          checkboxProps={{
+            onChange: () => setIsCurrentEmployeeState((prev) => !prev),
+          }}
+          controlProps={{ name: 'noLongerStaffMember' }}
+        />
+      ),
+    },
+    {
       label: t('people:dateOfEmployment'),
+      labelForEditingMode: t('common:startDate'),
       valueRenderer: startDate
         ? `${dayjs(startDate).format('l')} - ${
             endDate ? dayjs(endDate).format('l') : t('people:present')
@@ -127,18 +152,22 @@ const getEmploymentDataWitLabels = (
         />
       ),
     },
-    {
-      label: 'End of employment',
-      valueRenderer: endDate ? `${dayjs(endDate).format('l')}` : '-',
-
-      value: endDate ? dayjs(endDate) : null,
-      valueEditor: (
-        <RHFDatePicker
-          inputProps={{ variant: 'standard' }}
-          controlProps={{ name: 'endDate' }}
-        />
-      ),
-    },
+    ...(!isCurrentEmployeeState
+      ? [
+          {
+            label: t('common:endDate'),
+            value: endDate ? dayjs(endDate) : null,
+            valueRenderer: endDate ? `${dayjs(endDate).format('l')}` : '-',
+            showOnlyOnEdition: true,
+            valueEditor: (
+              <RHFDatePicker
+                inputProps={{ variant: 'standard' }}
+                controlProps={{ name: 'endDate' }}
+              />
+            ),
+          },
+        ]
+      : []),
     {
       label: t('people:qualifications'),
       value: qualifications,
@@ -234,20 +263,22 @@ const getEmploymentDataWitLabels = (
   ];
 };
 
-type ProfileEmploymentProps = {
-  staffData: ReturnType<typeof useStaffPersonal>['data'];
-  editable?: boolean;
-  onSave: CardEditableFormProps<UpsertStaffInput>['onSave'];
-};
-
 export const ProfileEmployment = ({
   staffData,
   editable,
   onSave,
 }: ProfileEmploymentProps) => {
   const { t } = useTranslation(['common', 'people']);
+  const [isCurrentEmployeeState, setIsCurrentEmployeeState] = useState(
+    Boolean(!staffData?.noLongerStaffMember)
+  );
 
-  const employmentDataWithLabels = getEmploymentDataWitLabels(staffData, t);
+  const employmentDataWithLabels = getEmploymentDataWitLabels(
+    staffData,
+    t,
+    isCurrentEmployeeState,
+    setIsCurrentEmployeeState
+  );
 
   const { resolver, rules } = useFormValidator<EmploymentFormState>();
 
@@ -259,6 +290,7 @@ export const ProfileEmployment = ({
   const handleEdit = (
     {
       employmentCapacity,
+      noLongerStaffMember,
       startDate,
       endDate,
       competencies,
@@ -271,8 +303,12 @@ export const ProfileEmployment = ({
     onSave(
       {
         employmentCapacity: employmentCapacity.id,
+        noLongerStaff: !noLongerStaffMember,
         startDate: startDate ? startDate.format('YYYY-MM-DD') : null,
-        endDate: startDate && endDate ? endDate.format('YYYY-MM-DD') : null,
+        endDate:
+          startDate && !noLongerStaffMember
+            ? endDate?.format('YYYY-MM-DD')
+            : null,
         competencies: competencies?.map((competency) => competency.id),
         staffIre: {
           staffPost: post?.id,

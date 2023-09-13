@@ -48,7 +48,7 @@ export default function StaffProfilePersonalPage() {
           competencies: staffData?.competencies,
           displayCode: staffData?.displayCode,
           position: staffData?.position,
-          noLongerStaff: false,
+          noLongerStaff: staffData?.noLongerStaffMember,
           staffIre: {
             staffPost: staffData?.staffIre?.staffPost?.id,
             teacherCouncilNumber: staffData?.staffIre?.teacherCouncilNumber,

@@ -18,6 +18,7 @@ const staffPersonal = graphql(/* GraphQL */ `
       }
       startDate
       endDate
+      noLongerStaffMember
       personalInformation {
         gender
         dateOfBirth

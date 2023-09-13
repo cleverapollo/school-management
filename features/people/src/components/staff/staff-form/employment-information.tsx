@@ -48,13 +48,6 @@ export const EmploymentInformation = <
         />
       </Grid>
       <Grid item xs={12} sm={6}>
-        <RHFDatePicker
-          label="End date"
-          inputProps={{ fullWidth: true }}
-          controlProps={{ name: 'endDate', control }}
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
         <RHFTextField
           label={t('people:position')}
           textFieldProps={{ fullWidth: true }}

@@ -20,7 +20,6 @@ export default function StaffProfileContainer() {
 
   const { data = [] } = useStaff({ partyIds: idNumber ? [idNumber] : [] });
   const [staffData] = data;
-  console.log(staffData, 'staffData');
 
   const { displayName } = usePreferredNameLayout();
 
