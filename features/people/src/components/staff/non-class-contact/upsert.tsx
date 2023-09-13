@@ -28,6 +28,15 @@ export type UpsertNonClassContactFormState = {
   minutes: number;
 };
 
+const dayOfWeekOptions = [
+  Day.Monday,
+  Day.Tuesday,
+  Day.Wednesday,
+  Day.Thursday,
+  Day.Friday,
+  Day.Saturday,
+];
+
 export const UpsertNonClassContactModal = ({
   initialState,
   onClose,
@@ -36,15 +45,6 @@ export const UpsertNonClassContactModal = ({
   const { t } = useTranslation(['people', 'common']);
   const { resolver, rules } =
     useFormValidator<UpsertNonClassContactFormState>();
-
-  const dayOfWeekOptions = [
-    Day.Monday,
-    Day.Tuesday,
-    Day.Wednesday,
-    Day.Thursday,
-    Day.Friday,
-    Day.Saturday,
-  ];
 
   const defaultFormStateValues: Partial<UpsertNonClassContactFormState> = {
     activity: initialState?.activity,

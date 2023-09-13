@@ -14,7 +14,7 @@ import {
   getTodayTimetableEvents,
 } from '@tyro/calendar';
 import dayjs from 'dayjs';
-import { EmulateHeaders, getPermissionUtils } from '@tyro/api';
+import { getAcademicNamespace, getPermissionUtils } from '@tyro/api';
 import {
   getStudent,
   getStudents,
@@ -523,17 +523,18 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'non-class-contact',
                 element: <StaffProfileNonClassContactPage />,
-                loader: ({ params }) => {
+                loader: async ({ params }) => {
                   const staffId = getNumber(params.id);
-                  const academicNameSpaceId = localStorage.getItem(
-                    EmulateHeaders.ACADEMIC_NAMESPACE_ID
-                  );
+                  const { activeAcademicNamespace } =
+                    await getAcademicNamespace();
 
                   if (!staffId) {
                     throw404Error();
                   }
+
                   return getNonClassContactHours({
-                    academicNameSpaceId: parseInt(academicNameSpaceId || '0'),
+                    academicNameSpaceId:
+                      activeAcademicNamespace?.academicNamespaceId ?? 0,
                     staffPartyId: staffId,
                   });
                 },

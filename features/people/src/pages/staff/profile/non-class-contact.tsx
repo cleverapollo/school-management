@@ -60,9 +60,9 @@ const getNonClassContactColumnDefs = (
     colId: 'time',
     headerName: t('common:time'),
     valueGetter: ({ data }) =>
-      `${data?.hours ? `${data?.hours}h` : ''} ${
-        data?.minutes ? `${data?.minutes}m` : ''
-      }`,
+      `${data?.hours ? `${data?.hours}h` : ''}${
+        data?.minutes ? ` ${data?.minutes}m` : ''
+      }` || '-',
   },
   {
     suppressColumnsToolPanel: true,
