@@ -77,6 +77,7 @@ export function TimetablePrintForm({
     periodDisplayInCell: Print_TimetablePeriodDisplayInCell.Hide,
     subjectFormat: Print_TimetableSubjectFormat.Full,
     individualStudents: false,
+    printWithColour: false,
     fontSize: 15,
   });
   const { control, handleSubmit, watch } =
@@ -114,6 +115,7 @@ export function TimetablePrintForm({
         partyIds: mappedPartyIds,
         roomIds: mappedRoomIds,
         showRooms,
+        printWithColour: false,
         teacherDisplayOption,
         layout,
         showGroupNames,
@@ -157,6 +159,7 @@ export function TimetablePrintForm({
         partyIds: mappedPartyIds,
         roomIds: mappedRoomIds,
         showRooms,
+        printWithColour: false,
         teacherDisplayOption,
         layout,
         showGroupNames,
