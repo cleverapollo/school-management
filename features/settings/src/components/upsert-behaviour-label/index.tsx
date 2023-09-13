@@ -67,7 +67,7 @@ export const UpsertBehaviourLabelModal = ({
       [
         {
           id: initialState?.id,
-          tag_l2: initialState?.tag_l2 || '',
+          tag_l2: initialState?.tag_l2 || data.name.replace(/\s/g, '_'),
           name: [{ locale: currentLanguageCode, value: data.name }],
           description: [
             { locale: currentLanguageCode, value: data.description },

@@ -72,6 +72,10 @@ export default function StaffProfileContainer() {
               label: 'Classes',
               value: 'classes',
             },
+            {
+              label: t('people:personal.nonClassContact'),
+              value: 'non-class-contact',
+            },
           ]}
         />
       </Container>
