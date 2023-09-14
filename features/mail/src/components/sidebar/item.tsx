@@ -47,6 +47,7 @@ type MailSidebarItemProps = {
   setLabelInfo?: Dispatch<
     SetStateAction<Partial<ReturnTypeFromUseLabels> | null>
   >;
+  unreadCount?: number;
 };
 
 function getLabelName(label: ReturnTypeFromUseLabels, t: TFunction<'mail'[]>) {
@@ -55,7 +56,11 @@ function getLabelName(label: ReturnTypeFromUseLabels, t: TFunction<'mail'[]>) {
     : label.name;
 }
 
-export function MailSidebarItem({ label, setLabelInfo }: MailSidebarItemProps) {
+export function MailSidebarItem({
+  label,
+  setLabelInfo,
+  unreadCount = 0,
+}: MailSidebarItemProps) {
   const { t } = useTranslation(['mail', 'common']);
   const { labelId } = useParams<{ labelId: string }>();
   const isActive =
@@ -96,7 +101,6 @@ export function MailSidebarItem({ label, setLabelInfo }: MailSidebarItemProps) {
     }),
   };
 
-  const unreadCount = 5;
   const isUnread = unreadCount > 0;
 
   return (

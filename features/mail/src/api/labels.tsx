@@ -130,7 +130,17 @@ export function useLabels(filter: LabelFilter) {
 
 const unreadCountQuery = (filter: UnreadCountFilter) => ({
   queryKey: mailKeys.unreadCount(filter),
-  queryFn: () => gqlClient.request(unreadCount, { filter }),
+  queryFn: async () => {
+    const { communications_unreadCount: unreadList } = await gqlClient.request(
+      unreadCount,
+      { filter }
+    );
+
+    return unreadList.reduce((acc, { labelId, count }) => {
+      acc.set(labelId, count);
+      return acc;
+    }, new Map<number, number>());
+  },
 });
 
 export function getUnreadCountQuery(filter: UnreadCountFilter) {
@@ -140,7 +150,6 @@ export function getUnreadCountQuery(filter: UnreadCountFilter) {
 export function useUnreadCount(filter: UnreadCountFilter) {
   return useQuery({
     ...unreadCountQuery(filter),
-    select: ({ communications_unreadCount }) => communications_unreadCount,
     enabled: !!filter?.personPartyId,
   });
 }

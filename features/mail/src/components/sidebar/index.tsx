@@ -42,6 +42,7 @@ export function MailSidebar() {
   const { data: unreadCounts } = useUnreadCount({
     personPartyId: activeProfileId,
   });
+
   const { data: labels } = useLabels({
     personPartyId: activeProfileId,
   });
@@ -49,7 +50,7 @@ export function MailSidebar() {
     () => ({
       standard:
         labels
-          ?.filter(({ custom }) => !custom)
+          ?.filter(({ custom, type }) => !custom && type !== LabelType.Trash)
           .sort((labelA, labelB) => {
             if (labelA.type === LabelType.Inbox) return -1;
             if (labelB.type === LabelType.Inbox) return 1;
@@ -100,11 +101,13 @@ export function MailSidebar() {
             key={label.id}
             label={label}
             setLabelInfo={setOpenLabelInfo}
+            unreadCount={unreadCounts?.get(label.originalId) ?? 0}
           />
         ))}
       </List>
 
-      <Box
+      {/* Custom label will be re-added when backend is refactored */}
+      {/* <Box
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -129,7 +132,7 @@ export function MailSidebar() {
             setLabelInfo={setOpenLabelInfo}
           />
         ))}
-      </List>
+      </List> */}
     </Scrollbar>
   );
 

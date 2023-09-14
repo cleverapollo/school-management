@@ -19,6 +19,7 @@
     "@tyro/i18n": "*",
     "@tyro/icons": "*",
     "dayjs": "^1.11.9",
+    "dompurify": "^3.0.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.9",
@@ -26,6 +27,7 @@
     "react-router-dom": "^6.6.2"
   },
   "devDependencies": {
+    "@types/dompurify": "^3.0.2",
     "@tyro/configs": "*"
   }
 }
