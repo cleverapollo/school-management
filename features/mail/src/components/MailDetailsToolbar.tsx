@@ -147,7 +147,7 @@ export default function MailDetailsToolbar({
             To:&nbsp;
             {mail.recipients?.map((person) => (
               <Link color="inherit" key={person?.recipientPartyId}>
-                {person?.name}
+                {/* {person?.name} */}
               </Link>
             ))}
           </Typography>
