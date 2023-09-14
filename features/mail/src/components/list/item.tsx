@@ -11,8 +11,6 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { useResponsive, Avatar } from '@tyro/core';
 import { LinkIcon, StarIcon } from '@tyro/icons';
-// import Label from '../../../../src/components/Label';
-// import MailItemAction from './actions';
 import { ReturnTypeUseMailList, useStarMail } from '../../api/mails';
 import { useMailSettings } from '../../store/mail-settings';
 import { getRelativeDateFormat } from '../../utils/relative-date-format';
@@ -39,6 +37,7 @@ type MailItemProps = {
   isSelected: boolean;
   onToggleSelect: (mailId: number) => void;
   sx?: BoxProps['sx'];
+  isSentLabel?: boolean;
 };
 
 export default function MailItem({
@@ -46,10 +45,9 @@ export default function MailItem({
   isSelected,
   onToggleSelect,
   sx,
+  isSentLabel,
 }: MailItemProps) {
-  const { t } = useTranslation(['mail']);
-  const { activeProfileId } = useMailSettings();
-  const highlightMail = !mail.readOn && activeProfileId !== mail.senderPartyId;
+  const highlightMail = !mail.readOn;
 
   const isDesktop = useResponsive('up', 'md');
 
@@ -126,7 +124,9 @@ export default function MailItem({
                 }),
               }}
             >
-              {mail.senderPartyId}
+              {isSentLabel
+                ? mail.outboxRecipientSummary
+                : mail.inboxSenderSummary}
             </Typography>
 
             <Typography noWrap variant="body2" flex="1">
@@ -218,7 +218,7 @@ export default function MailItem({
       </Link>
 
       <MailItemAction
-        mailId={mail.id}
+        mail={mail}
         isRead={!highlightMail}
         className="showActions"
       />

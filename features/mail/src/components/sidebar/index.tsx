@@ -12,6 +12,7 @@ import {
 import { Scrollbar, useDebouncedValue, useResponsive } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { AddIcon } from '@tyro/icons';
+import { LabelType } from '@tyro/api';
 import { MailSidebarItem } from './item';
 import { useMailSettings } from '../../store/mail-settings';
 import {
@@ -42,11 +43,22 @@ export function MailSidebar() {
     personPartyId: activeProfileId,
   });
   const { data: labels } = useLabels({
-    // personPartyId: activeProfileId,
+    personPartyId: activeProfileId,
   });
   const splitLabels = useMemo(
     () => ({
-      standard: labels?.filter(({ custom }) => !custom) ?? [],
+      standard:
+        labels
+          ?.filter(({ custom }) => !custom)
+          .sort((labelA, labelB) => {
+            if (labelA.type === LabelType.Inbox) return -1;
+            if (labelB.type === LabelType.Inbox) return 1;
+            if (labelA.type === LabelType.Outbox) return -1;
+            if (labelB.type === LabelType.Outbox) return 1;
+            if (labelA.type === LabelType.Trash) return -1;
+            if (labelB.type === LabelType.Trash) return 1;
+            return 0;
+          }) ?? [],
       custom:
         labels
           ?.filter(({ custom }) => custom)

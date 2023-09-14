@@ -11,9 +11,8 @@ import {
   ForwardRefExoticComponent,
   RefAttributes,
   SetStateAction,
-  useState,
 } from 'react';
-import { useTranslation } from '@tyro/i18n';
+import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   EditIcon,
   TrashIcon,
@@ -24,8 +23,9 @@ import {
   VerticalDotsIcon,
 } from '@tyro/icons';
 import { ActionMenu } from '@tyro/core';
+import { LabelType } from '@tyro/api';
 import { ReturnTypeFromUseLabels } from '../../api/labels';
-import { SystemLabels } from '../../constants';
+import { SystemLabels } from '../../utils/labels';
 
 const LABEL_ICONS: Record<
   SystemLabels,
@@ -34,9 +34,9 @@ const LABEL_ICONS: Record<
   >
 > = {
   inbox: MailInboxIcon,
-  trash: TrashIcon,
+  bin: TrashIcon,
   sent: SendMailIcon,
-  starred: StarIcon,
+  // starred: StarIcon, add back in when star label is added
 };
 
 const linkTo = ({ custom, id }: ReturnTypeFromUseLabels) =>
@@ -48,6 +48,12 @@ type MailSidebarItemProps = {
     SetStateAction<Partial<ReturnTypeFromUseLabels> | null>
   >;
 };
+
+function getLabelName(label: ReturnTypeFromUseLabels, t: TFunction<'mail'[]>) {
+  return label.type !== LabelType.Custom
+    ? t(`mail:systemLabel.${label.type}`)
+    : label.name;
+}
 
 export function MailSidebarItem({ label, setLabelInfo }: MailSidebarItemProps) {
   const { t } = useTranslation(['mail', 'common']);
@@ -125,7 +131,7 @@ export function MailSidebarItem({ label, setLabelInfo }: MailSidebarItemProps) {
       }}
     >
       <Icon sx={sharedIconProps} />
-      <ListItemText disableTypography primary={label.name} />
+      <ListItemText disableTypography primary={getLabelName(label, t)} />
 
       {isUnread && (
         <Typography className="unread-count" variant="caption" pr={2}>

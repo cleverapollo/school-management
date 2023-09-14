@@ -11,7 +11,7 @@ import {
 } from '@tyro/api';
 import { useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { getLabelId } from '../constants';
+import { getLabelId } from '../utils/labels';
 import { mailKeys } from './keys';
 
 const labels = graphql(/* GraphQL */ `
@@ -22,6 +22,7 @@ const labels = graphql(/* GraphQL */ `
       personPartyId
       colour
       custom
+      type
     }
   }
 `);
@@ -106,7 +107,15 @@ const assignLabels = graphql(/* GraphQl */ `
 
 const labelsQuery = (filter: LabelFilter) => ({
   queryKey: mailKeys.labels(filter),
-  queryFn: () => gqlClient.request(labels, { filter }),
+  queryFn: async () => {
+    const { communications_label: communicationsLabel } =
+      await gqlClient.request(labels, { filter });
+    return communicationsLabel.map((item) => ({
+      ...item,
+      originalId: item?.id,
+      id: getLabelId(item),
+    }));
+  },
 });
 
 export function getLabels(filter: LabelFilter) {
@@ -116,12 +125,6 @@ export function getLabels(filter: LabelFilter) {
 export function useLabels(filter: LabelFilter) {
   return useQuery({
     ...labelsQuery(filter),
-    select: ({ communications_label }) =>
-      communications_label?.map((item) => ({
-        ...item,
-        originalId: item?.id,
-        id: getLabelId(item?.id || 0),
-      })),
   });
 }
 

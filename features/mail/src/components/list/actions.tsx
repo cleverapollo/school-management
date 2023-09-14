@@ -3,6 +3,7 @@ import { Tooltip, IconButton, Stack } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { useMemo } from 'react';
 import { MailIcon, MailOpenIcon, TrashIcon } from '@tyro/icons';
+import { ReturnTypeUseMailList, useReadMail } from '../../api/mails';
 
 const RootStyle = styled(Stack)(({ theme }) => ({
   height: 40,
@@ -23,30 +24,37 @@ const RootStyle = styled(Stack)(({ theme }) => ({
 }));
 
 type MailItemActionProps = {
-  mailId: number;
+  mail: ReturnTypeUseMailList;
   isRead?: boolean;
   className?: string;
 };
 
 export default function MailItemAction({
-  mailId,
+  mail,
   isRead,
   className,
 }: MailItemActionProps) {
   const { t } = useTranslation(['common', 'mail']);
+  const { mutate: markAsRead } = useReadMail();
+
   const MAIL_ACTIONS = useMemo(
     () => [
       {
         name: t('common:actions.delete'),
         icon: <TrashIcon />,
-        action: () => console.log(`delete ${mailId}`),
+        action: () => console.log(`delete ${mail.id}`),
       },
       {
         name: isRead
           ? t('mail:actions.markAsUnread')
           : t('mail:actions.markAsRead'),
         icon: isRead ? <MailIcon /> : <MailOpenIcon />,
-        action: () => console.log(`mark as read ${mailId}`),
+        action: () =>
+          // TODO: add markAsUnread when implemented
+          markAsRead({
+            mailId: mail.id,
+            threadId: mail.threadId,
+          }),
       },
     ],
     [t]

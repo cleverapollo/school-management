@@ -32,6 +32,13 @@
     "labelRequired": "Label name is required",
     "recipientsRequired": "Recipients are required"
   },
+  "systemLabel": {
+    "Inbox": "Inbox",
+    "Outbox": "Sent",
+    "Drafts": "Drafts",
+    "Starred": "Starred",
+    "Trash": "Bin"
+  },
   "labels": "Labels",
   "editLabel": "Edit label",
   "newLabel": "New label",
@@ -39,6 +46,9 @@
   "applyLabel": "Apply label",
   "newMessage": "New Message",
   "sendMail": "Send mail",
+  "toRecipients": "To: {{recipients}}",
+  "replyPlaceholder": "Reply here...",
+  "replyEmptyError": "Please write a reply",
   "actions": {
     "reply": "Reply",
     "forward": "Forward",

@@ -4,11 +4,13 @@ import { useTranslation } from '@tyro/i18n';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useParams } from 'react-router';
 import { useResponsive } from '@tyro/core';
+import { LabelType } from '@tyro/api';
 import MailItem from './item';
 import MailToolbar from './toolbar';
 import { useMailList } from '../../api/mails';
-import { getLabelIdNumber } from '../../constants';
+import { getLabelById } from '../../utils/labels';
 import { useMailSettings } from '../../store/mail-settings';
+import { useLabels } from '../../api/labels';
 
 export default function MailList() {
   const { t } = useTranslation(['mail']);
@@ -19,9 +21,13 @@ export default function MailList() {
 
   const [filterValue, setFilterValue] = useState<string>('');
   const [selectedMails, setSelectedMails] = useState(new Set<number>());
+  const { data: labels } = useLabels({
+    personPartyId: activeProfileId,
+  });
+  const matchedLabel = getLabelById(labelId ?? '0', labels);
 
   const { data, isLoading, isRefetching, refetch } = useMailList(
-    getLabelIdNumber(labelId ?? 0),
+    matchedLabel?.originalId ?? 0,
     activeProfileId
   );
 
@@ -98,6 +104,7 @@ export default function MailList() {
                   mail={mail}
                   isSelected={selectedMails.has(mail.id)}
                   onToggleSelect={toggleMailSelection}
+                  isSentLabel={matchedLabel?.type === LabelType.Outbox}
                   sx={{
                     height: `${virtualItem.size}px`,
                     transform: `translateY(${virtualItem.start}px)`,

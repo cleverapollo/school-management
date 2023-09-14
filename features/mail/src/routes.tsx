@@ -1,9 +1,33 @@
-import { lazyWithRetry, NavObjectFunction, NavObjectType } from '@tyro/core';
+import {
+  getNumber,
+  lazyWithRetry,
+  NavObjectFunction,
+  NavObjectType,
+} from '@tyro/core';
 import { LetterIcon } from '@tyro/icons';
-import { redirect } from 'react-router-dom';
+import { getUser } from '@tyro/api';
+import { LoaderFunction, redirect } from 'react-router-dom';
 import { getLabels } from './api/labels';
+import { getLabelById, SystemLabelMapping } from './utils/labels';
+import { getMail, getMailList } from './api/mails';
 
 const Mail = lazyWithRetry(() => import('./pages/index'));
+
+const labelPageLoader: LoaderFunction = async ({ params }) => {
+  const { activeProfile } = await getUser();
+  const activeProfileId = activeProfile?.partyId ?? 0;
+  const labels = await getLabels({
+    personPartyId: activeProfileId,
+  });
+
+  const matchedLabel = getLabelById(params.labelId ?? '0', labels);
+  return getMailList(matchedLabel?.originalId ?? 0, activeProfileId);
+};
+
+const mailPageLoader: LoaderFunction = async ({ params }) => {
+  const mailId = getNumber(params.mailId);
+  return getMail(mailId ?? 0);
+};
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -17,21 +41,22 @@ export const getRoutes: NavObjectFunction = (t) => [
         icon: <LetterIcon />,
         hasAccess: (permissions) => !permissions.isTyroTenantAndUser,
         element: <Mail />,
-        loader: () => getLabels({}),
         children: [
           {
             type: NavObjectType.NonMenuLink,
             index: true,
-            loader: () => redirect('./inbox'),
+            loader: () => redirect(`./${SystemLabelMapping.Inbox}`),
           },
           {
             type: NavObjectType.NonMenuLink,
             path: ':labelId',
+            loader: labelPageLoader,
             element: <Mail />,
             children: [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'view/:mailId',
+                loader: mailPageLoader,
                 element: <Mail />,
               },
             ],
@@ -39,11 +64,13 @@ export const getRoutes: NavObjectFunction = (t) => [
           {
             type: NavObjectType.NonMenuLink,
             path: 'label/:labelId',
+            loader: labelPageLoader,
             element: <Mail />,
             children: [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'view/:mailId',
+                loader: mailPageLoader,
                 element: <Mail />,
               },
             ],

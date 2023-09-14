@@ -23,7 +23,7 @@ export function MailViewToolbar({ mail }: MailViewToolbarProps) {
         justifyContent: 'space-between',
       }}
     >
-      <Stack direction="row" alignItems="center">
+      <Stack direction="row" alignItems="center" spacing={1.5}>
         <IconButton component={Link} to="../.." relative="path">
           <ChevronLeftIcon />
         </IconButton>

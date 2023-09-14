@@ -5394,6 +5394,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tiptap/extension-placeholder@npm:^2.1.8":
+  version: 2.1.8
+  resolution: "@tiptap/extension-placeholder@npm:2.1.8"
+  peerDependencies:
+    "@tiptap/core": ^2.0.0
+    "@tiptap/pm": ^2.0.0
+  checksum: 22b88f6fbc14d92d271a05ac52f1c129d739529841f0deceb9b02ca0ef0faa0fa1cb134d4460c06ab2a1d882164882a601efc91e1e7f90eb649119f0450e6658
+  languageName: node
+  linkType: hard
+
 "@tiptap/extension-strike@npm:^2.1.8":
   version: 2.1.8
   resolution: "@tiptap/extension-strike@npm:2.1.8"
@@ -6691,6 +6701,7 @@ __metadata:
     "@mui/system": ^5.13.2
     "@tanstack/react-query": ^4.29.7
     "@tanstack/react-virtual": beta
+    "@tiptap/extension-placeholder": ^2.1.8
     "@tiptap/extension-underline": ^2.1.8
     "@tiptap/pm": ^2.1.8
     "@tiptap/react": ^2.1.8
@@ -6701,27 +6712,6 @@ __metadata:
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
     dayjs: ^1.11.9
-    react: ^18.2.0
-    react-dom: ^18.2.0
-    react-hook-form: ^7.43.9
-    react-router: ^6.3.0
-    react-router-dom: ^6.6.2
-  languageName: unknown
-  linkType: soft
-
-"@tyro/old-mail@workspace:features/old-mail":
-  version: 0.0.0-use.local
-  resolution: "@tyro/old-mail@workspace:features/old-mail"
-  dependencies:
-    "@mui/lab": ^5.0.0-alpha.57
-    "@mui/material": ^5.13.2
-    "@mui/system": ^5.13.2
-    "@tanstack/react-query": ^4.29.7
-    "@tyro/api": "*"
-    "@tyro/configs": "*"
-    "@tyro/core": "*"
-    "@tyro/i18n": "*"
-    "@tyro/icons": "*"
     react: ^18.2.0
     react-dom: ^18.2.0
     react-hook-form: ^7.43.9
