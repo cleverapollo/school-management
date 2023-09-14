@@ -78,7 +78,6 @@ export function TimetablePrintForm({
     periodDisplayInCell: Print_TimetablePeriodDisplayInCell.Hide,
     subjectFormat: Print_TimetableSubjectFormat.Full,
     individualStudents: false,
-    printWithColour: false,
     fontSize: 15,
     printWithColour: true,
   });
@@ -118,7 +117,6 @@ export function TimetablePrintForm({
         partyIds: mappedPartyIds,
         roomIds: mappedRoomIds,
         showRooms,
-        printWithColour: false,
         teacherDisplayOption,
         layout,
         showGroupNames,
@@ -164,7 +162,6 @@ export function TimetablePrintForm({
         partyIds: mappedPartyIds,
         roomIds: mappedRoomIds,
         showRooms,
-        printWithColour: false,
         teacherDisplayOption,
         layout,
         showGroupNames,
@@ -195,11 +192,11 @@ export function TimetablePrintForm({
         <Grid container spacing={2} direction="row" sx={{ py: 4 }}>
           <Grid item>
             <RHFSwitch
-                label={t(`printing:timetable.options.printWithColour`)}
-                controlLabelProps={{
-                  sx: {ml: 0, height: '100%'},
-                }}
-                controlProps={{name: 'printWithColour', control}}
+              label={t(`printing:timetable.options.printWithColour`)}
+              controlLabelProps={{
+                sx: { ml: 0, height: '100%' },
+              }}
+              controlProps={{ name: 'printWithColour', control }}
             />
           </Grid>
           <Grid item>

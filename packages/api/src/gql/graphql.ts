@@ -3283,7 +3283,6 @@ export type Print_TimetableOptions = {
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   periodDisplayInCell: Print_TimetablePeriodDisplayInCell;
   periodDisplayOnAxis: Print_TimetablePeriodDisplayOnAxis;
-  printWithColour: Scalars['Boolean'];
   roomIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   showGroupNames: Scalars['Boolean'];
   showRooms: Scalars['Boolean'];
