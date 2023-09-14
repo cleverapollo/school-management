@@ -13,7 +13,7 @@ export function AcademicNamespaceSessionSwitcher() {
   const onSelect = (namespace: NonNullable<typeof allNamespaces>[number]) => {
     if (!namespace) return;
 
-    changeAcademicNamespace(namespace.academicNamespaceId);
+    changeAcademicNamespace(namespace);
   };
 
   const menuItems = useMemo(
