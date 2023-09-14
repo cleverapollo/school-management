@@ -168,7 +168,10 @@ export const AssignMembers = ({
                 <ListItemAvatar>
                   <Avatar src={member.avatarUrl} name={displayName(member)} />
                 </ListItemAvatar>
-                <ListItemText primary={displayName(member)} />
+                <ListItemText
+                  primary={displayName(member)}
+                  secondary={member.caption}
+                />
               </ListItem>
             ))}
           </List>
