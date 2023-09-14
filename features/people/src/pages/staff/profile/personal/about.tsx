@@ -8,12 +8,7 @@ import {
 } from '@tyro/core';
 import dayjs from 'dayjs';
 
-import {
-  UpsertStaffInput,
-  InputAddress,
-  PersonalTitle,
-  usePermissions,
-} from '@tyro/api';
+import { UpsertStaffInput, InputAddress, PersonalTitle } from '@tyro/api';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import { PersonalTitlesDropdown } from '../../../../components/common/personal-titles-dropdown';
 import { GenderDropdown } from '../../../../components/common/gender-dropdown';
@@ -216,10 +211,6 @@ export const ProfileAbout = ({
   onSave,
 }: ProfileAboutProps) => {
   const { t } = useTranslation(['people']);
-  const { isStaffUserWithPermission } = usePermissions();
-  const hasPermissionWritePersonalInformation = isStaffUserWithPermission(
-    'ps:1:people:staff_write'
-  );
 
   const aboutDataWithLabels = getAboutDataWithLabels(staffData, t);
 
@@ -280,7 +271,7 @@ export const ProfileAbout = ({
   return (
     <CardEditableForm<AboutFormState>
       title={t('people:personal.about.title')}
-      editable={hasPermissionWritePersonalInformation ? editable : false}
+      editable={editable}
       fields={aboutDataWithLabels}
       resolver={aboutResolver}
       onSave={handleEdit}

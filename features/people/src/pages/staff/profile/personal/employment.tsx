@@ -11,12 +11,7 @@ import {
 } from '@tyro/core';
 import dayjs from 'dayjs';
 
-import {
-  UpsertStaffInput,
-  getColorBasedOnIndex,
-  StaffIre,
-  usePermissions,
-} from '@tyro/api';
+import { UpsertStaffInput, getColorBasedOnIndex, StaffIre } from '@tyro/api';
 import { CatalogueSubjectOption } from '@tyro/settings';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { EmploymentCapacityAutocomplete } from '../../../../components/common/employment-capacity-autocomplete';
@@ -36,7 +31,7 @@ type EmploymentFormState = {
   teacherCouncilNumber: StaffIre['teacherCouncilNumber'];
   startDate: dayjs.Dayjs | null;
   endDate: dayjs.Dayjs | null;
-  currentEmployee: UpsertStaffInput['noLongerStaff'];
+  currentEmployee: boolean;
   qualifications: UpsertStaffInput['qualifications'];
   jobSharing: UpsertStaffInput['jobSharing'];
   availableForTeaching: UpsertStaffInput['availableForTeaching'];
@@ -277,10 +272,6 @@ export const ProfileEmployment = ({
   const [isCurrentEmployee, setIsCurrentEmployee] = useState(
     staffData?.isCurrentEmployee ?? false
   );
-  const { isStaffUserWithPermission } = usePermissions();
-  const hasPermissionWritePersonalInformation = isStaffUserWithPermission(
-    'ps:1:people:staff_write'
-  );
 
   const employmentDataWithLabels = getEmploymentDataWitLabels(
     staffData,
@@ -329,7 +320,7 @@ export const ProfileEmployment = ({
   return (
     <CardEditableForm<EmploymentFormState>
       title={t('people:employment')}
-      editable={hasPermissionWritePersonalInformation ? editable : false}
+      editable={editable}
       fields={employmentDataWithLabels}
       resolver={employmentResolver}
       onSave={handleEdit}
