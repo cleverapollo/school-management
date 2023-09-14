@@ -192,11 +192,11 @@ export function TimetablePrintForm({
         <Grid container spacing={2} direction="row" sx={{ py: 4 }}>
           <Grid item>
             <RHFSwitch
-                label={t(`printing:timetable.options.printWithColour`)}
-                controlLabelProps={{
-                  sx: {ml: 0, height: '100%'},
-                }}
-                controlProps={{name: 'printWithColour', control}}
+              label={t(`printing:timetable.options.printWithColour`)}
+              controlLabelProps={{
+                sx: { ml: 0, height: '100%' },
+              }}
+              controlProps={{ name: 'printWithColour', control }}
             />
           </Grid>
           <Grid item>
