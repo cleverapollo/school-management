@@ -72,6 +72,7 @@ export function StaffForm() {
   const onSubmit = ({
     title,
     startDate,
+    endDate,
     mobileNumber,
     additionalNumber,
     email,
@@ -101,6 +102,7 @@ export function StaffForm() {
           ...data,
           titleId: title?.id,
           startDate: startDate ? startDate.format('YYYY-MM-DD') : undefined,
+          endDate: endDate ? endDate.format('YYYY-MM-DD') : undefined,
           employmentCapacity: employmentCapacity.id,
           phoneNumbers: [
             ...(mobileNumber
