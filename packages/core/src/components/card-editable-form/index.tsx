@@ -19,6 +19,7 @@ import {
   Resolver,
 } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
+import { usePermissions } from '@tyro/api';
 import { ReactNode, ReactElement, cloneElement, useState } from 'react';
 
 type CardEditableField<TField extends FieldValues> = {
@@ -57,6 +58,10 @@ export const CardEditableForm = <TField extends FieldValues>({
   ...cardProps
 }: CardEditableFormProps<TField>) => {
   const { t } = useTranslation(['common']);
+  const { isStaffUserWithPermission } = usePermissions();
+  const hasPermissionWritePersonalInformation = isStaffUserWithPermission(
+    'ps:1:people:staff_write'
+  );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -106,40 +111,41 @@ export const CardEditableForm = <TField extends FieldValues>({
     >
       <CardHeader
         title={title}
-        {...(editable && {
-          action: isEditMode ? (
-            <Stack direction="row">
-              <Tooltip title={t('common:actions.cancel')}>
-                <IconButton
-                  aria-label={t('common:actions.cancel')}
-                  onClick={handleCancel}
-                  disabled={isSubmitting}
-                >
-                  <UndoIcon />
-                </IconButton>
-              </Tooltip>
+        {...(editable &&
+          hasPermissionWritePersonalInformation && {
+            action: isEditMode ? (
+              <Stack direction="row">
+                <Tooltip title={t('common:actions.cancel')}>
+                  <IconButton
+                    aria-label={t('common:actions.cancel')}
+                    onClick={handleCancel}
+                    disabled={isSubmitting}
+                  >
+                    <UndoIcon />
+                  </IconButton>
+                </Tooltip>
 
-              <Tooltip title={t('common:actions.save')}>
+                <Tooltip title={t('common:actions.save')}>
+                  <IconButton
+                    aria-label={t('common:actions.save')}
+                    type="submit"
+                    disabled={isSubmitting}
+                  >
+                    <SaveIcon />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+            ) : (
+              <Tooltip title={t('common:actions.edit')}>
                 <IconButton
-                  aria-label={t('common:actions.save')}
-                  type="submit"
-                  disabled={isSubmitting}
+                  aria-label={t('common:actions.edit')}
+                  onClick={handleEdit}
                 >
-                  <SaveIcon />
+                  <EditIcon />
                 </IconButton>
               </Tooltip>
-            </Stack>
-          ) : (
-            <Tooltip title={t('common:actions.edit')}>
-              <IconButton
-                aria-label={t('common:actions.edit')}
-                onClick={handleEdit}
-              >
-                <EditIcon />
-              </IconButton>
-            </Tooltip>
-          ),
-        })}
+            ),
+          })}
       />
       <Box
         component="dl"

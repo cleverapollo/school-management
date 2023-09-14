@@ -2,7 +2,6 @@ import { Dispatch, SetStateAction, useState } from 'react';
 import { Chip, Stack } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
-  RHFCheckbox,
   RHFTextField,
   RHFDatePicker,
   RHFSwitch,
