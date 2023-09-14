@@ -112,6 +112,13 @@ export function getStaffPersonal(filter: StaffFilter) {
 export function useStaffPersonal(filter: StaffFilter) {
   return useQuery({
     ...staffPersonalQuery(filter),
-    select: ({ core_staff }) => core_staff[0],
+    select: ({ core_staff }) => {
+      const [staff] = core_staff;
+
+      return {
+        ...staff,
+        isCurrentEmployee: !staff.noLongerStaffMember,
+      };
+    },
   });
 }

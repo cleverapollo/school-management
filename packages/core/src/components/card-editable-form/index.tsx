@@ -19,7 +19,6 @@ import {
   Resolver,
 } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
-import { usePermissions } from '@tyro/api';
 import { ReactNode, ReactElement, cloneElement, useState } from 'react';
 
 type CardEditableField<TField extends FieldValues> = {
@@ -58,10 +57,6 @@ export const CardEditableForm = <TField extends FieldValues>({
   ...cardProps
 }: CardEditableFormProps<TField>) => {
   const { t } = useTranslation(['common']);
-  const { isStaffUserWithPermission } = usePermissions();
-  const hasPermissionWritePersonalInformation = isStaffUserWithPermission(
-    'ps:1:people:staff_write'
-  );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -111,41 +106,40 @@ export const CardEditableForm = <TField extends FieldValues>({
     >
       <CardHeader
         title={title}
-        {...(editable &&
-          hasPermissionWritePersonalInformation && {
-            action: isEditMode ? (
-              <Stack direction="row">
-                <Tooltip title={t('common:actions.cancel')}>
-                  <IconButton
-                    aria-label={t('common:actions.cancel')}
-                    onClick={handleCancel}
-                    disabled={isSubmitting}
-                  >
-                    <UndoIcon />
-                  </IconButton>
-                </Tooltip>
-
-                <Tooltip title={t('common:actions.save')}>
-                  <IconButton
-                    aria-label={t('common:actions.save')}
-                    type="submit"
-                    disabled={isSubmitting}
-                  >
-                    <SaveIcon />
-                  </IconButton>
-                </Tooltip>
-              </Stack>
-            ) : (
-              <Tooltip title={t('common:actions.edit')}>
+        {...(editable && {
+          action: isEditMode ? (
+            <Stack direction="row">
+              <Tooltip title={t('common:actions.cancel')}>
                 <IconButton
-                  aria-label={t('common:actions.edit')}
-                  onClick={handleEdit}
+                  aria-label={t('common:actions.cancel')}
+                  onClick={handleCancel}
+                  disabled={isSubmitting}
                 >
-                  <EditIcon />
+                  <UndoIcon />
                 </IconButton>
               </Tooltip>
-            ),
-          })}
+
+              <Tooltip title={t('common:actions.save')}>
+                <IconButton
+                  aria-label={t('common:actions.save')}
+                  type="submit"
+                  disabled={isSubmitting}
+                >
+                  <SaveIcon />
+                </IconButton>
+              </Tooltip>
+            </Stack>
+          ) : (
+            <Tooltip title={t('common:actions.edit')}>
+              <IconButton
+                aria-label={t('common:actions.edit')}
+                onClick={handleEdit}
+              >
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+          ),
+        })}
       />
       <Box
         component="dl"
@@ -162,7 +156,7 @@ export const CardEditableForm = <TField extends FieldValues>({
           (
             {
               label,
-              labelForEditingMode,
+              labelForEditingMode = label,
               tooltipInfo,
               value,
               valueRenderer,
@@ -187,23 +181,10 @@ export const CardEditableForm = <TField extends FieldValues>({
                   flexDirection="row"
                   alignItems="center"
                 >
-                  {isEditMode && labelForEditingMode ? (
-                    <Typography
-                      flex="1 0 0%"
-                      component="dt"
-                      variant="subtitle1"
-                    >
-                      {labelForEditingMode}
-                    </Typography>
-                  ) : (
-                    <Typography
-                      flex="1 0 0%"
-                      component="dt"
-                      variant="subtitle1"
-                    >
-                      {label}
-                    </Typography>
-                  )}
+                  <Typography flex="1 0 0%" component="dt" variant="subtitle1">
+                    {isEditMode ? labelForEditingMode : label}
+                  </Typography>
+
                   {tooltipInfo && (
                     <Box display="flex" flex="1" justifyContent="flex-start">
                       <Tooltip title={tooltipInfo}>

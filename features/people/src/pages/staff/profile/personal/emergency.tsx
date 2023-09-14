@@ -5,7 +5,11 @@ import {
   CardEditableForm,
   CardEditableFormProps,
 } from '@tyro/core';
-import { StaffEmergencyContact, UpsertStaffInput } from '@tyro/api';
+import {
+  StaffEmergencyContact,
+  UpsertStaffInput,
+  usePermissions,
+} from '@tyro/api';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 
 type EmergencyFormState = {
@@ -78,6 +82,10 @@ export const ProfileEmergency = ({
   onSave,
 }: ProfileEmergencyProps) => {
   const { t } = useTranslation(['common', 'people']);
+  const { isStaffUserWithPermission } = usePermissions();
+  const hasPermissionWritePersonalInformation = isStaffUserWithPermission(
+    'ps:1:people:staff_write'
+  );
 
   const emergencyDataWithLabels = getEmergencyDataWitLabels(staffData, t);
 
@@ -96,7 +104,7 @@ export const ProfileEmergency = ({
   return (
     <CardEditableForm<EmergencyFormState>
       title={t('people:emergency')}
-      editable={editable}
+      editable={hasPermissionWritePersonalInformation ? editable : false}
       fields={emergencyDataWithLabels}
       resolver={emergencyResolver}
       onSave={handleEdit}

@@ -7,7 +7,7 @@ import {
   CardEditableFormProps,
 } from '@tyro/core';
 
-import { InputEmailAddress, UpsertStaffInput } from '@tyro/api';
+import { InputEmailAddress, UpsertStaffInput, usePermissions } from '@tyro/api';
 import { useStaffPersonal } from '../../../../api/staff/personal';
 import {
   MobileNumber,
@@ -103,6 +103,10 @@ export const ProfileContact = ({
   onSave,
 }: ProfileContactProps) => {
   const { t } = useTranslation(['common', 'people']);
+  const { isStaffUserWithPermission } = usePermissions();
+  const hasPermissionWritePersonalInformation = isStaffUserWithPermission(
+    'ps:1:people:staff_write'
+  );
 
   const contactDataWithLabels = getContactDataWithLabels(staffData, t);
 
@@ -192,7 +196,7 @@ export const ProfileContact = ({
   return (
     <CardEditableForm<ContactFormState>
       title={t('common:contact')}
-      editable={editable}
+      editable={hasPermissionWritePersonalInformation ? editable : false}
       fields={contactDataWithLabels}
       resolver={contactResolver}
       onSave={handleEdit}

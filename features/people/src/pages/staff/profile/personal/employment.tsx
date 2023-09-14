@@ -11,7 +11,12 @@ import {
 } from '@tyro/core';
 import dayjs from 'dayjs';
 
-import { UpsertStaffInput, getColorBasedOnIndex, StaffIre } from '@tyro/api';
+import {
+  UpsertStaffInput,
+  getColorBasedOnIndex,
+  StaffIre,
+  usePermissions,
+} from '@tyro/api';
 import { CatalogueSubjectOption } from '@tyro/settings';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { EmploymentCapacityAutocomplete } from '../../../../components/common/employment-capacity-autocomplete';
@@ -31,7 +36,7 @@ type EmploymentFormState = {
   teacherCouncilNumber: StaffIre['teacherCouncilNumber'];
   startDate: dayjs.Dayjs | null;
   endDate: dayjs.Dayjs | null;
-  noLongerStaffMember: UpsertStaffInput['noLongerStaff'];
+  currentEmployee: UpsertStaffInput['noLongerStaff'];
   qualifications: UpsertStaffInput['qualifications'];
   jobSharing: UpsertStaffInput['jobSharing'];
   availableForTeaching: UpsertStaffInput['availableForTeaching'];
@@ -50,8 +55,8 @@ type ProfileEmploymentProps = {
 const getEmploymentDataWitLabels = (
   data: ReturnType<typeof useStaffPersonal>['data'],
   t: TFunction<('people' | 'common')[]>,
-  isCurrentEmployeeState: boolean,
-  setIsCurrentEmployeeState: Dispatch<SetStateAction<boolean>>
+  isCurrentEmployee: boolean,
+  setIsCurrentEmployee: Dispatch<SetStateAction<boolean>>
 ): CardEditableFormProps<EmploymentFormState>['fields'] => {
   const {
     payrollNumber,
@@ -124,15 +129,15 @@ const getEmploymentDataWitLabels = (
     },
     {
       label: t('people:currentEmployee'),
-      value: isCurrentEmployeeState,
-      valueRenderer: isCurrentEmployeeState ? t('common:yes') : t('common:no'),
+      value: isCurrentEmployee,
+      valueRenderer: isCurrentEmployee ? t('common:yes') : t('common:no'),
       valueEditor: (
         <RHFSwitch
           switchProps={{
             color: 'primary',
-            onChange: () => setIsCurrentEmployeeState((prev) => !prev),
+            onChange: () => setIsCurrentEmployee((prev) => !prev),
           }}
-          controlProps={{ name: 'noLongerStaffMember' }}
+          controlProps={{ name: 'currentEmployee' }}
         />
       ),
     },
@@ -152,12 +157,12 @@ const getEmploymentDataWitLabels = (
         />
       ),
     },
-    ...(!isCurrentEmployeeState
+    ...(!isCurrentEmployee
       ? [
           {
             label: t('common:endDate'),
             value: endDate ? dayjs(endDate) : null,
-            valueRenderer: endDate ? `${dayjs(endDate).format('l')}` : '-',
+            valueRenderer: endDate ? dayjs(endDate).format('l') : '-',
             showOnlyOnEdition: true,
             valueEditor: (
               <RHFDatePicker
@@ -269,15 +274,19 @@ export const ProfileEmployment = ({
   onSave,
 }: ProfileEmploymentProps) => {
   const { t } = useTranslation(['common', 'people']);
-  const [isCurrentEmployeeState, setIsCurrentEmployeeState] = useState(
-    Boolean(!staffData?.noLongerStaffMember)
+  const [isCurrentEmployee, setIsCurrentEmployee] = useState(
+    staffData?.isCurrentEmployee ?? false
+  );
+  const { isStaffUserWithPermission } = usePermissions();
+  const hasPermissionWritePersonalInformation = isStaffUserWithPermission(
+    'ps:1:people:staff_write'
   );
 
   const employmentDataWithLabels = getEmploymentDataWitLabels(
     staffData,
     t,
-    isCurrentEmployeeState,
-    setIsCurrentEmployeeState
+    isCurrentEmployee,
+    setIsCurrentEmployee
   );
 
   const { resolver, rules } = useFormValidator<EmploymentFormState>();
@@ -290,7 +299,7 @@ export const ProfileEmployment = ({
   const handleEdit = (
     {
       employmentCapacity,
-      noLongerStaffMember,
+      currentEmployee,
       startDate,
       endDate,
       competencies,
@@ -303,12 +312,10 @@ export const ProfileEmployment = ({
     onSave(
       {
         employmentCapacity: employmentCapacity.id,
-        noLongerStaff: !noLongerStaffMember,
+        noLongerStaff: !currentEmployee,
         startDate: startDate ? startDate.format('YYYY-MM-DD') : null,
         endDate:
-          startDate && !noLongerStaffMember
-            ? endDate?.format('YYYY-MM-DD')
-            : null,
+          startDate && !currentEmployee ? endDate?.format('YYYY-MM-DD') : null,
         competencies: competencies?.map((competency) => competency.id),
         staffIre: {
           staffPost: post?.id,
@@ -322,7 +329,7 @@ export const ProfileEmployment = ({
   return (
     <CardEditableForm<EmploymentFormState>
       title={t('people:employment')}
-      editable={editable}
+      editable={hasPermissionWritePersonalInformation ? editable : false}
       fields={employmentDataWithLabels}
       resolver={employmentResolver}
       onSave={handleEdit}
