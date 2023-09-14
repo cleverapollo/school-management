@@ -63,11 +63,8 @@ export function StaffForm() {
 
   const handleCancelForm = () => {
     if (isDirty) {
-      console.log('onOpenCancelModal');
       onOpenCancelModal();
     } else {
-      console.log('go back');
-
       goBack();
     }
   };
@@ -98,8 +95,6 @@ export function StaffForm() {
       nextOfKinPhoneNumber,
       nextOfKinAdditionalNumber,
     ].filter(Boolean);
-
-    console.log('submit form');
 
     upsertStaffMutation(
       [

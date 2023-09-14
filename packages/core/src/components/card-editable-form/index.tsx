@@ -198,9 +198,6 @@ export const CardEditableForm = <TField extends FieldValues>({
                       {label}
                     </Typography>
                   )}
-                  {/* <Typography flex="1 0 0%" component="dt" variant="subtitle1">
-                    {label}
-                  </Typography> */}
                   {tooltipInfo && (
                     <Box display="flex" flex="1" justifyContent="flex-start">
                       <Tooltip title={tooltipInfo}>

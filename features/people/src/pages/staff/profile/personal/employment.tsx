@@ -128,8 +128,9 @@ const getEmploymentDataWitLabels = (
       value: isCurrentEmployeeState,
       valueRenderer: isCurrentEmployeeState ? t('common:yes') : t('common:no'),
       valueEditor: (
-        <RHFCheckbox
-          checkboxProps={{
+        <RHFSwitch
+          switchProps={{
+            color: 'primary',
             onChange: () => setIsCurrentEmployeeState((prev) => !prev),
           }}
           controlProps={{ name: 'noLongerStaffMember' }}
