@@ -233,10 +233,8 @@ export function useStudentsForSelect(filter: StudentFilter) {
   });
 }
 
-export type StudentSelectOption = UseQueryReturnType<
-  typeof useStudentsForSelect
->[number];
-
 export type StudentsSelectOption = UseQueryReturnType<
-    typeof useStudentsForSelect
+  typeof useStudentsForSelect
 >;
+
+export type StudentSelectOption = StudentsSelectOption[number];

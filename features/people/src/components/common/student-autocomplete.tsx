@@ -5,7 +5,6 @@ import {
   RHFAutocomplete,
   RHFAutocompleteProps,
 } from '@tyro/core';
-import { UseQueryReturnType } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import {
   StudentSelectOption,
@@ -27,7 +26,7 @@ export const RHFStudentAutocomplete = <TField extends FieldValues>(
   props: RHFStudentAutocompleteProps<TField>
 ) => {
   const { t } = useTranslation(['common']);
-  const { data: teacherData, isLoading } = useStudentsForSelect({});
+  const { data: studentData, isLoading } = useStudentsForSelect({});
   const peopleAutocompleteProps =
     usePeopleAutocompleteProps<StudentSelectOption>();
 
@@ -37,7 +36,7 @@ export const RHFStudentAutocomplete = <TField extends FieldValues>(
       {...peopleAutocompleteProps}
       fullWidth
       loading={isLoading}
-      options={teacherData ?? []}
+      options={studentData ?? []}
       {...props}
     />
   );
@@ -45,7 +44,7 @@ export const RHFStudentAutocomplete = <TField extends FieldValues>(
 
 export const StudentAutocomplete = (props: StudentAutocompleteProps) => {
   const { t } = useTranslation(['common']);
-  const { data: teacherData, isLoading } = useStudentsForSelect({});
+  const { data: studentData, isLoading } = useStudentsForSelect({});
   const peopleAutocompleteProps =
     usePeopleAutocompleteProps<StudentSelectOption>();
 
@@ -56,7 +55,7 @@ export const StudentAutocomplete = (props: StudentAutocompleteProps) => {
       fullWidth
       optionIdKey="partyId"
       loading={isLoading}
-      options={teacherData ?? []}
+      options={studentData ?? []}
       {...props}
     />
   );
