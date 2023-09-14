@@ -125,7 +125,7 @@
   "requestType": "Request Type",
   "feedbackFromSchool": "Feedback from school",
   "absenceRequestType": {
-    "MULTI_DAY": "Multi day",
+    "MULTI_DAY": "Multiple days",
     "SINGLE_DAY": "Full day",
     "PARTIAL_DAY": "Partial day"
   },
