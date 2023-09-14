@@ -50,7 +50,7 @@ export const AssignMembers = ({
   setFocus,
   control,
 }: AssignMembersProps) => {
-  const { t } = useTranslation(['settings']);
+  const { t } = useTranslation(['settings', 'common']);
   const { displayName, searchDisplayName } = usePreferredNameLayout();
 
   const [searchMember, setSearchMember] = useState('');
@@ -96,7 +96,7 @@ export const AssignMembers = ({
           multiple
           unshiftMode
           filterSelectedOptions
-          label={t(`settings:permissions.searchByMemberType.${memberType}`)}
+          label={t(`common:searchByMemberType.${memberType}`)}
           options={options}
           renderAvatarTags={() => null}
           controlProps={{

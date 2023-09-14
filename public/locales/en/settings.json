@@ -187,12 +187,6 @@
       "MEMBER_OF_GROUP": "Groups they are in",
       "SELF": "Themselves"
     },
-    "searchByMemberType": {
-      "CONTACT": "Search by contact name",
-      "STAFF": "Search by staff name",
-      "STUDENT": "Search by student name",
-      "ADMIN": "Search by staff name"
-    },
     "removeMember": "Remove member",
     "savePermissionsGroup": "Save permissions group",
     "emptyMembers": "There aren't any members assigned yet.",
@@ -219,8 +213,7 @@
       "STAFF_WORK_MANAGEMENT": "Staff work management",
       "YEAR_GROUP_CONTACT": "Year group contact",
       "YEAR_GROUP_ENROLLMENT": "Year group enrollment",
-      "YEAR_GROUP_STAFF": "Year group staff",
-      "PRINTING_AND_EXPORTING": "Printing and exporting"
+      "YEAR_GROUP_STAFF": "Year group staff"
     }
   },
   "noteLabel": {

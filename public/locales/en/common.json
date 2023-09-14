@@ -282,5 +282,11 @@
     "FRIDAY": "Friday",
     "SATURDAY": "Saturday",
     "SUNDAY": "Sunday"
+  },
+  "searchByMemberType": {
+    "CONTACT": "Search by contact name",
+    "STAFF": "Search by staff name",
+    "STUDENT": "Search by student name",
+    "ADMIN": "Search by staff name"
   }
 }
