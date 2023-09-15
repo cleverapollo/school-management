@@ -48,6 +48,7 @@ interface NonIndexRootGroup extends Omit<NonIndexRouteObject, 'children'> {
   type: NavObjectType.RootGroup;
   title: string;
   icon: JSX.Element;
+  info?: JSX.Element;
   children: (MenuLink | NonMenuLink)[];
   hasAccess?: HasAccessFunction;
 }
@@ -56,6 +57,7 @@ interface IndexRootGroup extends IndexRouteObject {
   type: NavObjectType.RootGroup;
   title: string;
   icon: JSX.Element;
+  info?: JSX.Element;
   hasAccess?: HasAccessFunction;
 }
 
@@ -67,6 +69,7 @@ interface NonIndexRootLink extends Omit<NonIndexRouteObject, 'children'> {
   type: NavObjectType.RootLink;
   title: string;
   icon: JSX.Element;
+  info?: JSX.Element;
   children?: NonMenuLink[];
   hasAccess?: HasAccessFunction;
 }
@@ -75,6 +78,7 @@ interface IndexRootLink extends IndexRouteObject {
   type: NavObjectType.RootLink;
   title: string;
   icon: JSX.Element;
+  info?: JSX.Element;
   hasAccess?: HasAccessFunction;
 }
 

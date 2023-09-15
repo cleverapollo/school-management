@@ -28,7 +28,7 @@ const RootStyle = styled(Box)(({ theme }) => ({
   '&:hover': {
     zIndex: 999,
     position: 'relative',
-    boxShadow: theme.customShadows.z24,
+    boxShadow: theme.customShadows.z8,
     '& .showActions': { opacity: 1 },
   },
 }));
@@ -50,6 +50,7 @@ export default function MailItem({
 }: MailItemProps) {
   const { activeProfileId } = useMailSettings();
   const isDesktop = useResponsive('up', 'md');
+  const { t } = useTranslation(['mail']);
 
   const latestThreadSentOn = useMemo(() => {
     const test =
@@ -61,12 +62,13 @@ export default function MailItem({
             : thread.sender.partyId !== activeProfileId
         )?.sentOn ?? mail.sentOn;
 
-    console.log({
-      test,
-      threads: mail.threads,
-    });
     return test;
   }, [isSentLabel, mail.threads, mail.sentOn]);
+
+  const recipientsList = isSentLabel
+    ? mail.outboxRecipientSummary
+    : mail.inboxSenderSummary;
+  const firstRecipient = recipientsList[0];
 
   // ToDO: refactor isAttached when attachments will be implemented
   const isAttached = false;
@@ -99,18 +101,27 @@ export default function MailItem({
       <Link
         to={`view/${mail.id}`}
         relative="path"
-        style={{ color: 'inherit', textDecoration: 'none', flex: 1 }}
+        style={{
+          color: 'inherit',
+          textDecoration: 'none',
+          flex: 1,
+          width: '100%',
+        }}
       >
         <Box
           sx={{
             py: 2,
             pl: 1, // Remove when checkbox is added
+            width: '100%',
             display: 'flex',
             flex: 1,
           }}
         >
           <Avatar
-            name={mail.senderPartyId?.toString()}
+            name={`${firstRecipient.firstName ?? ''} ${
+              firstRecipient.lastName ?? ''
+            }`}
+            src={firstRecipient.avatarUrl}
             sx={{ width: 32, height: 32 }}
           />
 
@@ -127,6 +138,7 @@ export default function MailItem({
               xs: 'flex-start',
               md: 'center',
             }}
+            width="calc(100% - 52px)" // Avatar + margin to left
             sx={{
               ml: 2,
               flex: 1,
@@ -142,12 +154,24 @@ export default function MailItem({
                 }),
               }}
             >
-              {isSentLabel
-                ? mail.outboxRecipientSummary
-                : mail.inboxSenderSummary}
+              {recipientsList
+                .map(({ firstName, lastName, partyId }) =>
+                  partyId === activeProfileId
+                    ? t('mail:me')
+                    : `${firstName ?? ''} ${lastName ?? ''}`
+                )
+                .join(', ')}
             </Typography>
 
-            <Typography noWrap variant="body2" flex="1">
+            <Typography
+              noWrap
+              variant="body2"
+              width={{
+                xs: '100%',
+                md: 'auto',
+              }}
+              flex={1}
+            >
               <Box
                 component="span"
                 sx={{
@@ -167,7 +191,7 @@ export default function MailItem({
                   }),
                 }}
               >
-                {mail.summary}
+                {isSentLabel ? mail.outboxSummary : mail.inboxSummary}
               </Box>
             </Typography>
 
@@ -235,11 +259,11 @@ export default function MailItem({
         </Box>
       </Link>
 
-      <MailItemAction
+      {/* <MailItemAction
         mail={mail}
         isRead={!mail.isMailUnread}
         className="showActions"
-      />
+      /> */}
     </RootStyle>
   );
 }

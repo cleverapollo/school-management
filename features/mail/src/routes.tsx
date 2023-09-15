@@ -10,6 +10,7 @@ import { LoaderFunction, redirect } from 'react-router-dom';
 import { getLabels } from './api/labels';
 import { getLabelById, SystemLabelMapping } from './utils/labels';
 import { getMail, getMailList } from './api/mails';
+import { MailCountLabel } from './components/common/mail-count-label';
 
 const Mail = lazyWithRetry(() => import('./pages/index'));
 
@@ -39,6 +40,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         path: 'mail',
         title: t('navigation:general.mail'),
         icon: <LetterIcon />,
+        info: <MailCountLabel />,
         hasAccess: (permissions) => !permissions.isTyroTenantAndUser,
         element: <Mail />,
         children: [

@@ -12,10 +12,11 @@ import {
 } from '@tyro/api';
 import {
   getInboxSendersSummary,
-  getMailSummary,
+  getInboxMailSummary,
+  getOutboxMailSummary,
   getOutboxRecipientsSummary,
   isMailUnread,
-} from '../utils/get-summarys';
+} from '../utils/get-summaries';
 import { mailKeys } from './keys';
 
 const DEFAULT_PAGINATION_LIMIT = 50;
@@ -181,8 +182,9 @@ export function useMailList(labelId: number, profileId?: number | null) {
       pages: data.pages.map(({ communications_mail }) =>
         communications_mail.map((mail) => ({
           ...mail,
-          summary: getMailSummary(mail),
-          inboxSenderSummary: getInboxSendersSummary(mail, profileId),
+          inboxSummary: getInboxMailSummary(mail, profileId),
+          outboxSummary: getOutboxMailSummary(mail, profileId),
+          inboxSenderSummary: getInboxSendersSummary(mail),
           outboxRecipientSummary: getOutboxRecipientsSummary(mail, profileId),
           isMailUnread: isMailUnread(mail, profileId),
         }))

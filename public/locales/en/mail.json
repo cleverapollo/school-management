@@ -49,6 +49,7 @@
   "toRecipients": "To: {{recipients}}",
   "replyPlaceholder": "Reply here...",
   "replyEmptyError": "Please write a reply",
+  "me": "me",
   "actions": {
     "reply": "Reply",
     "forward": "Forward",

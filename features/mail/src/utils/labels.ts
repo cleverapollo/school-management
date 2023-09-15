@@ -10,7 +10,7 @@ export const SystemLabelMapping = {
 export type SystemLabels =
   (typeof SystemLabelMapping)[keyof typeof SystemLabelMapping];
 
-export function getLabelId(label: Label) {
+export function getLabelId(label: Pick<Label, 'type' | 'id'>) {
   return label.type === LabelType.Custom
     ? label.id
     : SystemLabelMapping[label.type];

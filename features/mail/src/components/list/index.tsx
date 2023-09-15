@@ -26,10 +26,14 @@ export default function MailList() {
   });
   const matchedLabel = getLabelById(labelId ?? '0', labels);
 
-  const { data, isRefetching, refetch } = useMailList(
-    matchedLabel?.originalId ?? 0,
-    activeProfileId
-  );
+  const {
+    data,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    isRefetching,
+    refetch,
+  } = useMailList(matchedLabel?.originalId ?? 0, activeProfileId);
 
   const mails = useMemo(() => {
     if (!data?.pages) {
@@ -39,9 +43,11 @@ export default function MailList() {
   }, [data?.pages]);
 
   const rowVirtualizer = useVirtualizer({
-    count: mails?.length ?? 0,
+    count:
+      mails.length > 0 && hasNextPage ? mails.length + 1 : mails?.length ?? 0,
     getScrollElement: () => listRef.current,
     estimateSize: () => (isDesktop ? 64 : 94),
+    overscan: 5,
   });
 
   const onToggleAll = () => {
@@ -68,6 +74,28 @@ export default function MailList() {
     rowVirtualizer.measure();
   }, [isDesktop]);
 
+  useEffect(() => {
+    const [lastItem] = [...rowVirtualizer.getVirtualItems()].reverse();
+
+    if (!lastItem) {
+      return;
+    }
+
+    if (
+      lastItem.index >= mails.length - 1 &&
+      hasNextPage &&
+      !isFetchingNextPage
+    ) {
+      fetchNextPage();
+    }
+  }, [
+    hasNextPage,
+    fetchNextPage,
+    mails.length,
+    isFetchingNextPage,
+    rowVirtualizer.getVirtualItems(),
+  ]);
+
   const isEmpty = !mails || mails.length === 0;
   const isSomeSelected = selectedMails.size > 0;
   const isAllSelected = isSomeSelected && mails?.length === selectedMails.size;
@@ -87,7 +115,7 @@ export default function MailList() {
       <Divider />
 
       {!isEmpty ? (
-        <Box ref={listRef} overflow="auto">
+        <Box ref={listRef}>
           <Box
             sx={{
               height: `${rowVirtualizer.getTotalSize()}px`,

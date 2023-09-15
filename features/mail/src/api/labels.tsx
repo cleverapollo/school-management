@@ -43,6 +43,7 @@ const unreadCount = graphql(/* GraphQL */ `
   query communications_unreadCount($filter: UnreadCountFilter) {
     communications_unreadCount(filter: $filter) {
       labelId
+      labelType
       count
     }
   }
@@ -87,10 +88,16 @@ const unreadCountQuery = (filter: UnreadCountFilter) => ({
       { filter }
     );
 
-    return unreadList.reduce((acc, { labelId, count }) => {
-      acc.set(labelId, count);
+    return unreadList.reduce((acc, { labelId, labelType, count }) => {
+      acc.set(
+        getLabelId({
+          type: labelType,
+          id: labelId,
+        }),
+        count
+      );
       return acc;
-    }, new Map<number, number>());
+    }, new Map<ReturnType<typeof getLabelId>, number>());
   },
 });
 
@@ -101,6 +108,7 @@ export function getUnreadCountQuery(filter: UnreadCountFilter) {
 export function useUnreadCount(filter: UnreadCountFilter) {
   return useQuery({
     ...unreadCountQuery(filter),
+    refetchInterval: 1000 * 60 * 2,
     enabled: !!filter?.personPartyId,
   });
 }

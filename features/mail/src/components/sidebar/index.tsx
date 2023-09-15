@@ -101,7 +101,7 @@ export function MailSidebar() {
             key={label.id}
             label={label}
             setLabelInfo={setOpenLabelInfo}
-            unreadCount={unreadCounts?.get(label.originalId) ?? 0}
+            unreadCount={unreadCounts?.get(label.id) ?? 0}
           />
         ))}
       </List>
