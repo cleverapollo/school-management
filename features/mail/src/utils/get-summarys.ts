@@ -1,4 +1,4 @@
-import { Communications_MailQuery } from '@tyro/api';
+import { Communications_MailQuery, Mail } from '@tyro/api';
 import { getTextFromHtml } from './html-formatters';
 
 type BasicReturnedMail =
@@ -22,10 +22,12 @@ export function getInboxSendersSummary(
   const { threads = [], sender } = mail;
   const senders = new Map<number, string>();
 
-  senders.set(
-    sender.partyId,
-    `${sender.firstName ?? ''} ${sender.lastName ?? ''}`
-  );
+  if (sender.partyId !== profileId) {
+    senders.set(
+      sender.partyId,
+      `${sender.firstName ?? ''} ${sender.lastName ?? ''}`
+    );
+  }
 
   if (threads.length > 0) {
     threads.forEach((thread) => {
@@ -46,21 +48,41 @@ export function getOutboxRecipientsSummary(
   profileId: number | null | undefined
 ) {
   const { threads = [], recipients } = mail;
-  const fullRecipients = new Map<string, string>();
+  const fullRecipients = new Map<number, string>();
 
-  recipients.forEach((recipient) => {
-    fullRecipients.set(JSON.stringify(recipient), recipient.name ?? '');
+  recipients.forEach(({ recipientPartyId, recipient }) => {
+    if (recipientPartyId !== profileId) {
+      fullRecipients.set(
+        recipientPartyId,
+        `${recipient.firstName ?? ''} ${recipient.lastName ?? ''}`
+      );
+    }
   });
 
   if (threads.length > 0) {
     threads.forEach((thread) => {
-      thread.recipients.forEach((recipient) => {
-        if (recipient.recipientPartyId !== profileId) {
-          fullRecipients.set(JSON.stringify(recipient), recipient.name ?? '');
+      thread.recipients.forEach(({ recipientPartyId, recipient }) => {
+        if (recipientPartyId !== profileId) {
+          fullRecipients.set(
+            recipientPartyId,
+            `${recipient.firstName ?? ''} ${recipient.lastName ?? ''}`
+          );
         }
       });
     });
   }
 
   return Array.from(fullRecipients.values()).join(', ');
+}
+
+export function isMailUnread(
+  mail: BasicReturnedMail,
+  profileId: number | null | undefined
+) {
+  return (
+    (!mail.readOn && mail.sender.partyId !== profileId) ||
+    mail.threads.some(
+      (thread) => !thread.readOn && thread.sender.partyId !== profileId
+    )
+  );
 }

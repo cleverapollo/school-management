@@ -20,7 +20,12 @@ export function ThreadItem({
 }: ThreadItemProps) {
   const { t } = useTranslation(['mail']);
   const senderName = `${sender?.firstName ?? ''} ${sender?.lastName ?? ''}`;
-  const recipientNames = recipients.map(({ name }) => name).join(', ');
+  const recipientNames = recipients
+    .map(
+      ({ recipient }) =>
+        `${recipient.firstName ?? ''} ${recipient.lastName ?? ''}`
+    )
+    .join(', ');
   const sanitizedBody = useMemo(
     () => sanitize(body ?? '', { USE_PROFILES: { html: true } }),
     [body]

@@ -14,6 +14,7 @@ import {
   getInboxSendersSummary,
   getMailSummary,
   getOutboxRecipientsSummary,
+  isMailUnread,
 } from '../utils/get-summarys';
 import { mailKeys } from './keys';
 
@@ -49,7 +50,18 @@ const mails = graphql(/* GraphQL */ `
         id
         recipientPartyId
         recipientType
-        name
+        recipient {
+          partyId
+          title {
+            id
+            nameTextId
+            name
+          }
+          firstName
+          lastName
+          avatarUrl
+          type
+        }
       }
       labels {
         id
@@ -86,7 +98,18 @@ const mails = graphql(/* GraphQL */ `
           id
           recipientPartyId
           recipientType
-          name
+          recipient {
+            partyId
+            title {
+              id
+              nameTextId
+              name
+            }
+            firstName
+            lastName
+            avatarUrl
+            type
+          }
         }
         labels {
           id
@@ -104,55 +127,6 @@ const sendMail = graphql(/* GraphQL */ `
   mutation communications_sendMail($input: SendMailInput) {
     communications_sendMail(input: $input) {
       id
-      rootMailId
-      threadId
-      subject
-      body
-      senderPartyId
-      sentOn
-      latestMessage
-      canReply
-      starred
-      readOn
-      recipients {
-        id
-        recipientPartyId
-        recipientType
-        name
-      }
-      labels {
-        id
-        name
-        personPartyId
-        colour
-        custom
-      }
-      threads {
-        id
-        rootMailId
-        threadId
-        subject
-        body
-        senderPartyId
-        sentOn
-        latestMessage
-        canReply
-        starred
-        readOn
-        recipients {
-          id
-          recipientPartyId
-          recipientType
-          name
-        }
-        labels {
-          id
-          name
-          personPartyId
-          colour
-          custom
-        }
-      }
     }
   }
 `);
@@ -177,7 +151,7 @@ const mailListQuery = (labelId: number, profileId?: number | null) => {
   };
 
   return {
-    queryKey: mailKeys.mail(filter),
+    queryKey: mailKeys.filteredList(filter),
     queryFn: async () =>
       gqlClient.request(mails, {
         filter: {
@@ -210,6 +184,7 @@ export function useMailList(labelId: number, profileId?: number | null) {
           summary: getMailSummary(mail),
           inboxSenderSummary: getInboxSendersSummary(mail, profileId),
           outboxRecipientSummary: getOutboxRecipientsSummary(mail, profileId),
+          isMailUnread: isMailUnread(mail, profileId),
         }))
       ),
     }),
@@ -265,6 +240,10 @@ export function useReadMail() {
   return useMutation({
     mutationFn: async (input: MailReadInput) =>
       gqlClient.request(readMail, { input }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(mailKeys.unreadCounts());
+      queryClient.invalidateQueries(mailKeys.lists());
+    },
   });
 }
 

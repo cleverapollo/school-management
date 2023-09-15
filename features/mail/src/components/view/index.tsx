@@ -69,28 +69,42 @@ export function MailView() {
             },
           ]
         : []),
-      // ...(latestThread?.recipients?.filter(
-      //   (recipient) =>
-      //     recipient.recipientType === RecipientType.To &&
-      //     recipient.recipientPartyId !== activeProfileId
-      // ) ?? []).map((recipient) => ({
-      //   recipientPartyId: recipient.recipientPartyId,
-      //   recipientPartyType: recipient.recipientType,
-      //   recipientType: RecipientType.To,
-      // })),
+      ...(
+        latestThread?.recipients?.filter(
+          ({ recipientType, recipientPartyId }) =>
+            recipientType === RecipientType.To &&
+            recipientPartyId !== activeProfileId
+        ) ?? []
+      ).map((recipient) => ({
+        recipientPartyId: recipient.recipientPartyId,
+        recipientPartyType: getSearchTypeFromPartyType(
+          recipient.recipient.type
+        ),
+        recipientType: RecipientType.To,
+      })),
     ];
 
-    sendMail({
-      threadId: mail?.threadId ?? 0,
-      subject: mail?.subject ?? '',
-      recipients,
-      body,
-      canReply: true,
-    });
+    sendMail(
+      {
+        threadId: mail?.threadId ?? 0,
+        subject: mail?.subject ?? '',
+        recipients,
+        body,
+        canReply: true,
+      },
+      {
+        onSuccess: () => {
+          editor?.commands.clearContent();
+        },
+      }
+    );
   };
 
   useEffect(() => {
-    if (mail?.id && !mail.readOn) {
+    const threadMissingReadOn =
+      mail?.id &&
+      (!mail?.readOn || mail?.threads?.some((thread) => !thread.readOn));
+    if (threadMissingReadOn) {
       markAsRead({
         mailId: mail.id,
         threadId: mail.threadId,

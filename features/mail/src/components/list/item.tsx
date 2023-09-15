@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import {
   Box,
@@ -11,7 +12,7 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { useResponsive, Avatar } from '@tyro/core';
 import { LinkIcon, StarIcon } from '@tyro/icons';
-import { ReturnTypeUseMailList, useStarMail } from '../../api/mails';
+import { ReturnTypeUseMailList, useMail, useStarMail } from '../../api/mails';
 import { useMailSettings } from '../../store/mail-settings';
 import { getRelativeDateFormat } from '../../utils/relative-date-format';
 import MailItemAction from './actions';
@@ -47,9 +48,25 @@ export default function MailItem({
   sx,
   isSentLabel,
 }: MailItemProps) {
-  const highlightMail = !mail.readOn;
-
+  const { activeProfileId } = useMailSettings();
   const isDesktop = useResponsive('up', 'md');
+
+  const latestThreadSentOn = useMemo(() => {
+    const test =
+      [...mail.threads]
+        .reverse()
+        .find((thread) =>
+          isSentLabel
+            ? thread.sender.partyId === activeProfileId
+            : thread.sender.partyId !== activeProfileId
+        )?.sentOn ?? mail.sentOn;
+
+    console.log({
+      test,
+      threads: mail.threads,
+    });
+    return test;
+  }, [isSentLabel, mail.threads, mail.sentOn]);
 
   // ToDO: refactor isAttached when attachments will be implemented
   const isAttached = false;
@@ -57,7 +74,7 @@ export default function MailItem({
   return (
     <RootStyle
       sx={{
-        ...(highlightMail && {
+        ...(mail.isMailUnread && {
           color: 'text.primary',
           backgroundColor: 'background.paper',
         }),
@@ -69,7 +86,7 @@ export default function MailItem({
         ...sx,
       }}
     >
-      {isDesktop && (
+      {/* {isDesktop && (
         <Box sx={{ mr: 2, display: 'flex' }}>
           <Checkbox
             checked={isSelected}
@@ -77,7 +94,7 @@ export default function MailItem({
           />
           <StarMail isStarred={!!mail.starred} mail={mail} />
         </Box>
-      )}
+      )} */}
 
       <Link
         to={`view/${mail.id}`}
@@ -87,6 +104,7 @@ export default function MailItem({
         <Box
           sx={{
             py: 2,
+            pl: 1, // Remove when checkbox is added
             display: 'flex',
             flex: 1,
           }}
@@ -119,7 +137,7 @@ export default function MailItem({
               noWrap
               sx={{
                 minWidth: 180,
-                ...(highlightMail && {
+                ...(mail.isMailUnread && {
                   fontWeight: '700',
                 }),
               }}
@@ -133,7 +151,7 @@ export default function MailItem({
               <Box
                 component="span"
                 sx={{
-                  ...(highlightMail && {
+                  ...(mail.isMailUnread && {
                     fontWeight: '700',
                   }),
                 }}
@@ -144,7 +162,7 @@ export default function MailItem({
               <Box
                 component="span"
                 sx={{
-                  ...(highlightMail && {
+                  ...(mail.isMailUnread && {
                     color: 'text.secondary',
                   }),
                 }}
@@ -174,7 +192,7 @@ export default function MailItem({
                   })}
                 </Box> */}
 
-                {isAttached && (
+                {/* {isAttached && (
                   <LinkIcon
                     sx={{
                       mx: 2,
@@ -183,7 +201,7 @@ export default function MailItem({
                       flexShrink: 0,
                     }}
                   />
-                )}
+                )} */}
               </>
             )}
 
@@ -206,12 +224,12 @@ export default function MailItem({
               variant="caption"
               sx={{
                 textAlign: 'right',
-                ...(highlightMail && {
+                ...(mail.isMailUnread && {
                   fontWeight: '700',
                 }),
               }}
             >
-              {getRelativeDateFormat(mail.sentOn)}
+              {getRelativeDateFormat(latestThreadSentOn)}
             </Typography>
           </Stack>
         </Box>
@@ -219,7 +237,7 @@ export default function MailItem({
 
       <MailItemAction
         mail={mail}
-        isRead={!highlightMail}
+        isRead={!mail.isMailUnread}
         className="showActions"
       />
     </RootStyle>

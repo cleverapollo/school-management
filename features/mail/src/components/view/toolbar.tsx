@@ -33,7 +33,7 @@ export function MailViewToolbar({ mail }: MailViewToolbarProps) {
         </Typography>
       </Stack>
 
-      <Stack direction="row" alignItems="center">
+      {/* <Stack direction="row" alignItems="center">
         <StarMail isStarred={!!mail?.starred} mail={mail} />
         <Tooltip title={t('mail:labels')}>
           <IconButton size="small" onClick={() => console.log('labels')}>
@@ -45,7 +45,7 @@ export function MailViewToolbar({ mail }: MailViewToolbarProps) {
             <TrashIcon />
           </IconButton>
         </Tooltip>
-      </Stack>
+      </Stack> */}
     </Box>
   );
 }

@@ -52,55 +52,6 @@ const assignLabels = graphql(/* GraphQl */ `
   mutation communications_assignLabel($input: AssignLabelInput) {
     communications_assignLabel(input: $input) {
       id
-      rootMailId
-      threadId
-      subject
-      body
-      senderPartyId
-      sentOn
-      latestMessage
-      canReply
-      starred
-      readOn
-      recipients {
-        id
-        recipientPartyId
-        recipientType
-        name
-      }
-      labels {
-        id
-        name
-        personPartyId
-        colour
-        custom
-      }
-      threads {
-        id
-        rootMailId
-        threadId
-        subject
-        body
-        senderPartyId
-        sentOn
-        latestMessage
-        canReply
-        starred
-        readOn
-        recipients {
-          id
-          recipientPartyId
-          recipientType
-          name
-        }
-        labels {
-          id
-          name
-          personPartyId
-          colour
-          custom
-        }
-      }
     }
   }
 `);
@@ -129,7 +80,7 @@ export function useLabels(filter: LabelFilter) {
 }
 
 const unreadCountQuery = (filter: UnreadCountFilter) => ({
-  queryKey: mailKeys.unreadCount(filter),
+  queryKey: mailKeys.filteredUnreadCount(filter),
   queryFn: async () => {
     const { communications_unreadCount: unreadList } = await gqlClient.request(
       unreadCount,

@@ -56,11 +56,11 @@ export default function MailToolbar({
 
         {smUp && (
           <>
-            <Checkbox
+            {/* <Checkbox
               checked={isSomeSelected || isAllSelected}
               indeterminate={!isAllSelected && isSomeSelected}
               onChange={onToggleAll}
-            />
+            /> */}
             {isRefreshing ? (
               <Box
                 display="flex"

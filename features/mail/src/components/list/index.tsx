@@ -26,7 +26,7 @@ export default function MailList() {
   });
   const matchedLabel = getLabelById(labelId ?? '0', labels);
 
-  const { data, isLoading, isRefetching, refetch } = useMailList(
+  const { data, isRefetching, refetch } = useMailList(
     matchedLabel?.originalId ?? 0,
     activeProfileId
   );
