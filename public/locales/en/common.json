@@ -267,5 +267,18 @@
   "occurredOn": "Occurred on",
   "category": "Category",
   "subjects": "Subject(s)",
-  "takenBy": "Taken by"
+  "takenBy": "Taken by",
+  "activity": "Activity",
+  "dayOfWeek": "Day of week",
+  "hours": "Hours",
+  "minutes": "Minutes",
+  "dayOfWeekValues": {
+    "MONDAY": "Monday",
+    "TUESDAY": "Tuesday",
+    "WEDNESDAY": "Wednesday",
+    "THURSDAY": "Thursday",
+    "FRIDAY": "Friday",
+    "SATURDAY": "Saturday",
+    "SUNDAY": "Sunday"
+  }
 }

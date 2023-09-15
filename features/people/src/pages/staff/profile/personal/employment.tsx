@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction, useState } from 'react';
 import { Chip, Stack } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -29,6 +30,8 @@ type EmploymentFormState = {
   payrollNumber: UpsertStaffInput['payrollNumber'];
   teacherCouncilNumber: StaffIre['teacherCouncilNumber'];
   startDate: dayjs.Dayjs | null;
+  endDate: dayjs.Dayjs | null;
+  currentEmployee: boolean;
   qualifications: UpsertStaffInput['qualifications'];
   jobSharing: UpsertStaffInput['jobSharing'];
   availableForTeaching: UpsertStaffInput['availableForTeaching'];
@@ -38,9 +41,17 @@ type EmploymentFormState = {
   competencies: CatalogueSubjectOption[] | null;
 };
 
+type ProfileEmploymentProps = {
+  staffData: ReturnType<typeof useStaffPersonal>['data'];
+  editable?: boolean;
+  onSave: CardEditableFormProps<UpsertStaffInput>['onSave'];
+};
+
 const getEmploymentDataWitLabels = (
   data: ReturnType<typeof useStaffPersonal>['data'],
-  t: TFunction<('people' | 'common')[]>
+  t: TFunction<('people' | 'common')[]>,
+  isCurrentEmployee: boolean,
+  setIsCurrentEmployee: Dispatch<SetStateAction<boolean>>
 ): CardEditableFormProps<EmploymentFormState>['fields'] => {
   const {
     payrollNumber,
@@ -112,7 +123,22 @@ const getEmploymentDataWitLabels = (
       ),
     },
     {
+      label: t('people:currentEmployee'),
+      value: isCurrentEmployee,
+      valueRenderer: isCurrentEmployee ? t('common:yes') : t('common:no'),
+      valueEditor: (
+        <RHFSwitch
+          switchProps={{
+            color: 'primary',
+            onChange: () => setIsCurrentEmployee((prev) => !prev),
+          }}
+          controlProps={{ name: 'currentEmployee' }}
+        />
+      ),
+    },
+    {
       label: t('people:dateOfEmployment'),
+      labelForEditingMode: t('common:startDate'),
       valueRenderer: startDate
         ? `${dayjs(startDate).format('l')} - ${
             endDate ? dayjs(endDate).format('l') : t('people:present')
@@ -126,6 +152,22 @@ const getEmploymentDataWitLabels = (
         />
       ),
     },
+    ...(!isCurrentEmployee
+      ? [
+          {
+            label: t('common:endDate'),
+            value: endDate ? dayjs(endDate) : null,
+            valueRenderer: endDate ? dayjs(endDate).format('l') : '-',
+            showOnlyOnEdition: true,
+            valueEditor: (
+              <RHFDatePicker
+                inputProps={{ variant: 'standard' }}
+                controlProps={{ name: 'endDate' }}
+              />
+            ),
+          },
+        ]
+      : []),
     {
       label: t('people:qualifications'),
       value: qualifications,
@@ -221,20 +263,22 @@ const getEmploymentDataWitLabels = (
   ];
 };
 
-type ProfileEmploymentProps = {
-  staffData: ReturnType<typeof useStaffPersonal>['data'];
-  editable?: boolean;
-  onSave: CardEditableFormProps<UpsertStaffInput>['onSave'];
-};
-
 export const ProfileEmployment = ({
   staffData,
   editable,
   onSave,
 }: ProfileEmploymentProps) => {
   const { t } = useTranslation(['common', 'people']);
+  const [isCurrentEmployee, setIsCurrentEmployee] = useState(
+    staffData?.isCurrentEmployee ?? false
+  );
 
-  const employmentDataWithLabels = getEmploymentDataWitLabels(staffData, t);
+  const employmentDataWithLabels = getEmploymentDataWitLabels(
+    staffData,
+    t,
+    isCurrentEmployee,
+    setIsCurrentEmployee
+  );
 
   const { resolver, rules } = useFormValidator<EmploymentFormState>();
 
@@ -246,7 +290,9 @@ export const ProfileEmployment = ({
   const handleEdit = (
     {
       employmentCapacity,
+      currentEmployee,
       startDate,
+      endDate,
       competencies,
       post,
       teacherCouncilNumber,
@@ -257,7 +303,10 @@ export const ProfileEmployment = ({
     onSave(
       {
         employmentCapacity: employmentCapacity.id,
+        noLongerStaff: !currentEmployee,
         startDate: startDate ? startDate.format('YYYY-MM-DD') : null,
+        endDate:
+          startDate && !currentEmployee ? endDate?.format('YYYY-MM-DD') : null,
         competencies: competencies?.map((competency) => competency.id),
         staffIre: {
           staffPost: post?.id,

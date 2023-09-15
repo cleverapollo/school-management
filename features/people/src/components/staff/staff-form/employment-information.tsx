@@ -10,6 +10,7 @@ import { EmploymentCapacityOption } from '../../../api/staff/employment-capaciti
 
 export type EmploymentInformationFormState = {
   startDate: dayjs.Dayjs | null;
+  endDate: dayjs.Dayjs | null;
   position: UpsertStaffInput['position'];
   employmentCapacity: EmploymentCapacityOption;
   displayCode: UpsertStaffInput['displayCode'];
