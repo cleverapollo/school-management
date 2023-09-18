@@ -32,43 +32,17 @@ const customGroupById = graphql(/* GraphQL */ `
     generalGroups(filter: $filter) {
       partyId
       name
+      avatarUrl
       students {
+        partyId
+        classGroup {
+          name
+        }
         person {
-          partyId
-          title {
-            id
-            name
-            nameTextId
-          }
           firstName
           lastName
           avatarUrl
-          type
         }
-      }
-      staff {
-        partyId
-        title {
-          id
-          name
-          nameTextId
-        }
-        firstName
-        lastName
-        avatarUrl
-        type
-      }
-      contacts {
-        partyId
-        title {
-          id
-          name
-          nameTextId
-        }
-        firstName
-        lastName
-        avatarUrl
-        type
       }
     }
   }
@@ -113,21 +87,9 @@ export function useCustomGroupById(id: number | undefined) {
   return useQuery({
     ...customGroupsByIdQuery(id),
     select: ({ generalGroups }) => {
-      if (!generalGroups) return null;
-      const group = generalGroups[0];
+      const [group] = generalGroups || [];
 
-      const students = group?.students
-        ?.map((student) => student?.person)
-        .filter(Boolean);
-
-      return {
-        name: group?.name,
-        members: [
-          ...(students ?? []),
-          ...(group?.staff ?? []),
-          ...(group?.contacts ?? []),
-        ],
-      };
+      return group;
     },
   });
 }

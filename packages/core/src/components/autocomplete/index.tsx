@@ -10,7 +10,7 @@ import {
   InputAdornment,
   useTheme,
 } from '@mui/material';
-import React, { ForwardedRef } from 'react';
+import React, { ForwardedRef, Fragment } from 'react';
 import { getColorBasedOnIndex } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { Avatar, AvatarProps } from '../avatar';
@@ -160,27 +160,26 @@ export const Autocomplete = <
         />
       )}
       {...(renderAvatarOption && {
-        renderOption: (props, option) =>
-          renderAvatarOption(option, ({ caption, ...avatarProps }) => (
-            <Stack
-              component="li"
-              direction="row"
-              spacing={1}
-              {...props}
-              key={String(optionIdKey ? option[optionIdKey] : option)}
-            >
-              <Avatar
-                sx={{ width: 32, height: 32, fontSize: '0.75rem' }}
-                {...avatarProps}
-              />
-              <Stack>
-                <Typography variant="subtitle2">{avatarProps.name}</Typography>
-                {caption && (
-                  <Typography variant="caption">{caption}</Typography>
-                )}
+        renderOption: (props, option) => (
+          <Fragment key={String(optionIdKey ? option[optionIdKey] : option)}>
+            {renderAvatarOption(option, ({ caption, ...avatarProps }) => (
+              <Stack component="li" direction="row" spacing={1} {...props}>
+                <Avatar
+                  sx={{ width: 32, height: 32, fontSize: '0.75rem' }}
+                  {...avatarProps}
+                />
+                <Stack>
+                  <Typography variant="subtitle2">
+                    {avatarProps.name}
+                  </Typography>
+                  {caption && (
+                    <Typography variant="caption">{caption}</Typography>
+                  )}
+                </Stack>
               </Stack>
-            </Stack>
-          )),
+            ))}
+          </Fragment>
+        ),
       })}
       {...(renderAvatarTags && {
         renderTags: (tags, getTagProps) =>

@@ -50,13 +50,13 @@ export const RHFRadioGroup = <
   optionIdKey = 'value' as keyof Option,
   optionTextKey = 'label' as keyof Option,
   renderOption,
-                                 disabled
+  disabled,
 }: RHFRadioGroupProps<TField, Option>) => {
   const autoId = useId();
   const radioId = id ?? autoId;
 
   const {
-    field,
+    field: { value, onChange, ...field },
     fieldState: { error },
   } = useController(controlProps);
 
@@ -68,8 +68,12 @@ export const RHFRadioGroup = <
         aria-labelledby={label ? radioId : undefined}
         aria-describedby={error ? `${radioId}-helper` : undefined}
         {...field}
-        value={field.value ?? ''}
         {...radioGroupProps}
+        value={value ?? ''}
+        onChange={(e, v) => {
+          onChange(v);
+          radioGroupProps?.onChange?.(e, v);
+        }}
       >
         {options.map((option) => {
           const sharedProps = {

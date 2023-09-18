@@ -19,18 +19,22 @@ import {
   getClassGroups,
   getClassGroupsById,
   getSubjectGroupLesson,
+  getCustomGroupDefinition,
 } from './api';
 import { getYearGroups, getYearGroupById } from './api/year-groups';
 import { getSupportGroupById, getSupportGroups } from './api/support-groups';
 
+// year group
+
 const YearGroups = lazyWithRetry(() => import('./pages/year'));
 const ViewYearGroupPage = lazyWithRetry(() => import('./pages/year/view'));
-const CustomGroups = lazyWithRetry(() => import('./pages/custom'));
-const ViewCustomGroupPage = lazyWithRetry(() => import('./pages/custom/view'));
-const ClassGroups = lazyWithRetry(() => import('./pages/class'));
+
+// class group
+
 const ClassGroupContainer = lazyWithRetry(
   () => import('./components/class-group/container')
 );
+const ClassGroups = lazyWithRetry(() => import('./pages/class'));
 const ClassGroupProfileTimetablePage = lazyWithRetry(
   () => import('./pages/class/timetable')
 );
@@ -43,37 +47,58 @@ const ClassGroupAttendancePage = lazyWithRetry(
 const SubjectGroupsPage = lazyWithRetry(
   () => import('./pages/class/subject-groups')
 );
-const SubjectGroups = lazyWithRetry(() => import('./pages/subject'));
-const SupportGroups = lazyWithRetry(() => import('./pages/support'));
 
-const SubjectGroupProfileStudentsPage = lazyWithRetry(
-  () => import('./pages/subject/profile/students')
-);
+// support group
 
-const SupportGroupProfileStudentsPage = lazyWithRetry(
-  () => import('./pages/support/profile/students')
-);
-
-const SubjectGroupProfileAttendancePage = lazyWithRetry(
-  () => import('./pages/subject/profile/attendance')
-);
-
-const SupportGroupProfileAttendancePage = lazyWithRetry(
-  () => import('./pages/support/profile/attendance')
-);
-
-const SubjectGroupProfileTimetablePage = lazyWithRetry(
-  () => import('./pages/subject/profile/timetable')
-);
-
-const SupportGroupProfileTimetablePage = lazyWithRetry(
-  () => import('./pages/support/profile/timetable')
-);
 const SubjectGroupContainer = lazyWithRetry(
   () => import('./components/subject-group/container')
 );
+const SubjectGroups = lazyWithRetry(() => import('./pages/subject'));
+const SubjectGroupProfileStudentsPage = lazyWithRetry(
+  () => import('./pages/subject/profile/students')
+);
+const SubjectGroupProfileAttendancePage = lazyWithRetry(
+  () => import('./pages/subject/profile/attendance')
+);
+const SubjectGroupProfileTimetablePage = lazyWithRetry(
+  () => import('./pages/subject/profile/timetable')
+);
+// support group
 const SupportGroupContainer = lazyWithRetry(
   () => import('./components/support-group/container')
+);
+const SupportGroups = lazyWithRetry(() => import('./pages/support'));
+const SupportGroupProfileStudentsPage = lazyWithRetry(
+  () => import('./pages/support/profile/students')
+);
+const SupportGroupProfileAttendancePage = lazyWithRetry(
+  () => import('./pages/support/profile/attendance')
+);
+const SupportGroupProfileTimetablePage = lazyWithRetry(
+  () => import('./pages/support/profile/timetable')
+);
+
+// custom group
+
+const CustomGroupContainer = lazyWithRetry(
+  () => import('./components/custom-group/container')
+);
+const CustomGroups = lazyWithRetry(() => import('./pages/custom'));
+const CreateCustomGroupPage = lazyWithRetry(
+  () => import('./pages/custom/create')
+);
+const EditCustomGroupPage = lazyWithRetry(() => import('./pages/custom/edit'));
+const CustomGroupStudentsPage = lazyWithRetry(
+  () => import('./pages/custom/profile/students')
+);
+const CustomGroupStaffPage = lazyWithRetry(
+  () => import('./pages/custom/profile/staff')
+);
+const CustomGroupTimetablePage = lazyWithRetry(
+  () => import('./pages/custom/profile/timetable')
+);
+const CustomGroupAttendancePage = lazyWithRetry(
+  () => import('./pages/custom/profile/attendance')
 );
 
 export const getRoutes: NavObjectFunction = (t) => [
@@ -363,23 +388,87 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 index: true,
-
                 loader: () => getCustomGroups(),
-
                 element: <CustomGroups />,
               },
               {
                 type: NavObjectType.NonMenuLink,
-                path: ':groupId',
+                path: 'create',
+                element: <CreateCustomGroupPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'edit/:groupId',
                 loader: ({ params }) => {
                   const groupId = getNumber(params?.groupId);
                   if (!groupId) {
                     throw404Error();
                   }
 
-                  return getCustomGroupById(groupId);
+                  return getCustomGroupDefinition({ partyId: groupId });
                 },
-                element: <ViewCustomGroupPage />,
+                element: <EditCustomGroupPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: ':groupId',
+                element: <CustomGroupContainer />,
+                loader: async ({ params }) => {
+                  const groupId = getNumber(params.groupId);
+
+                  if (!groupId) {
+                    throw404Error();
+                  }
+
+                  return Promise.all([
+                    getCustomGroupById(groupId),
+                    getCustomGroupDefinition({ partyId: groupId }),
+                  ]);
+                },
+                children: [
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    index: true,
+                    loader: () => redirect('./students'),
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'students',
+                    element: <CustomGroupStudentsPage />,
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'staff',
+                    element: <CustomGroupStaffPage />,
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'attendance',
+                    element: <CustomGroupAttendancePage />,
+                    loader: async ({ params }) => {
+                      const groupId = getNumber(params.groupId);
+                      if (!groupId) {
+                        throw404Error();
+                      }
+                      return Promise.all([
+                        getAttendanceCodes({ teachingGroupCodes: true }),
+                        getSubjectGroupLesson({
+                          partyId: groupId,
+                          iterator: Iterator.Closest,
+                        }),
+                      ]);
+                    },
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'timetable',
+                    element: <CustomGroupTimetablePage />,
+                    loader: ({ params }) => {
+                      const groupId = getNumber(params.groupId);
+                      return getTodayTimetableEvents(groupId);
+                    },
+                  },
+                ],
               },
             ],
           },

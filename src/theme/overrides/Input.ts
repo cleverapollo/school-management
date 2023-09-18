@@ -28,7 +28,7 @@ export default function Input(theme: Theme) {
             borderBottomColor: alpha(theme.palette.slate[400], 0.56),
           },
           '&:after': {
-            borderBottomColor: theme.palette.text.primary,
+            borderBottomColor: theme.palette.slate.main,
           },
         },
       },
@@ -73,10 +73,10 @@ export default function Input(theme: Theme) {
           '& .MuiOutlinedInput-notchedOutline': {
             borderColor: alpha(theme.palette.slate[400], 0.32),
           },
-          '&.Mui-focused': {
+          '&.Mui-focused, &:hover': {
             '& .MuiOutlinedInput-notchedOutline': {
               borderWidth: 1,
-              borderColor: theme.palette.text.primary,
+              borderColor: theme.palette.slate.main,
             },
           },
           '&.Mui-disabled': {
