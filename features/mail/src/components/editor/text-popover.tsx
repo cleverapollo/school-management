@@ -1,4 +1,4 @@
-import { Box, Divider, IconButton, Popover } from '@mui/material';
+import { Box, Divider, Popover } from '@mui/material';
 import { Editor } from '@tiptap/react';
 import {
   RoundRedoIcon,
@@ -10,11 +10,14 @@ import {
   NumberListIcon,
   BulletListIcon,
 } from '@tyro/icons';
-import { getMetaCharacter, useDisclosure } from '@tyro/core';
+import {
+  getMetaCharacter,
+  useDisclosure,
+  IconButtonWithTooltip,
+} from '@tyro/core';
 import { useRef } from 'react';
 import { useTranslation } from '@tyro/i18n';
 import { StyledToggleButtonGroup } from './toggle-buttons/group';
-import { ButtonWithTooltip } from './button-with-tooltip';
 import { ToggleButton } from './toggle-buttons';
 
 interface MailEditorTextPopoverProps {
@@ -29,14 +32,14 @@ export function MailEditorTextPopover({ editor }: MailEditorTextPopoverProps) {
 
   return (
     <>
-      <ButtonWithTooltip
+      <IconButtonWithTooltip
         title={t('mail:tooltipTitles.formattingOptions')}
         placement="top"
         ref={buttonRef}
         {...getButtonProps()}
       >
         <TextIcon />
-      </ButtonWithTooltip>
+      </IconButtonWithTooltip>
       <Popover
         {...getDisclosureProps()}
         anchorEl={buttonRef.current}

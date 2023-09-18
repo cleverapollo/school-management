@@ -44,9 +44,9 @@ export function LabelDialog({ open, labelInfo, onClose }: LabelFormProps) {
 
   const { mutateAsync: createLabel } = useCreateLabel();
 
-  const onSubmit = handleSubmit(async ({ name, colour }: FormValuesProps) => {
+  const onSubmit = handleSubmit(async ({ name, colour }) => {
     const newLabel: LabelInput = {
-      ...(labelInfo?.originalId ? { id: labelInfo.originalId } : {}),
+      ...(labelInfo?.originalId && { id: labelInfo.originalId }),
       name,
       colour,
     };

@@ -63,7 +63,7 @@ export default function MailItem({
         )?.sentOn ?? mail.sentOn;
 
     return test;
-  }, [isSentLabel, mail.threads, mail.sentOn]);
+  }, [isSentLabel, mail.threads, mail.sentOn, activeProfileId]);
 
   const recipientsList = isSentLabel
     ? mail.outboxRecipientSummary
@@ -181,8 +181,8 @@ export default function MailItem({
                 }}
               >
                 {mail.subject}
-              </Box>{' '}
-              -{' '}
+              </Box>
+              {' - '}
               <Box
                 component="span"
                 sx={{
@@ -233,6 +233,7 @@ export default function MailItem({
               (label) =>
                 label?.custom && (
                   <Box
+                    key={label.id}
                     sx={{
                       bgcolor: label.colour,
                       padding: '1px 8px',

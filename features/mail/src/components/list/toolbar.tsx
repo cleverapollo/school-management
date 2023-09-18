@@ -7,7 +7,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
-import { SearchInput, useResponsive } from '@tyro/core';
+import { IconButtonWithTooltip, SearchInput, useResponsive } from '@tyro/core';
 import { HamburgerMenuIcon, RefreshIcon } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
 import { useMailSettings } from '../../store/mail-settings';
@@ -75,11 +75,12 @@ export default function MailToolbar({
                 <CircularProgress size={20} color="primary" />
               </Box>
             ) : (
-              <Tooltip title={t('mail:tooltipTitles.refresh')}>
-                <IconButton onClick={onRequestRefresh}>
-                  <RefreshIcon />
-                </IconButton>
-              </Tooltip>
+              <IconButtonWithTooltip
+                title={t('mail:tooltipTitles.refresh')}
+                onClick={onRequestRefresh}
+              >
+                <RefreshIcon />
+              </IconButtonWithTooltip>
             )}
           </>
         )}

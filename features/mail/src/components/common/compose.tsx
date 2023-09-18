@@ -11,15 +11,10 @@ import {
 } from '@mui/material';
 import { useDisclosure, useFormValidator, useResponsive } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import {
-  AddPhotoIcon,
-  AttachmentIcon,
-  CloseIcon,
-  CollapseIcon,
-  ExpandIcon,
-} from '@tyro/icons';
+import { CloseIcon, CollapseIcon, ExpandIcon } from '@tyro/icons';
 import { useForm } from 'react-hook-form';
 import { RecipientType } from '@tyro/api';
+import { Stack } from '@mui/system';
 import { useSendMail } from '../../api/mails';
 import { ReturnTypeUseMailSearch } from '../../api/mail-search';
 import { useMailEditor } from '../../hooks/use-mail-editor';
@@ -158,15 +153,13 @@ export default function MailCompose({
               }),
         })}
       >
-        <Box
-          sx={{
-            pl: 3,
-            pr: 1,
-            height: 60,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
+        <Stack
+          direction="row"
+          pl={3}
+          pr={1}
+          height={60}
+          alignItems="center"
+          justifyContent="space-between"
         >
           <Typography component="h2" variant="h6">
             {t('mail:newMessage')}
@@ -184,7 +177,7 @@ export default function MailCompose({
               <CloseIcon sx={{ height: 20, width: 20 }} />
             </IconButton>
           </Box>
-        </Box>
+        </Stack>
 
         <Divider />
 

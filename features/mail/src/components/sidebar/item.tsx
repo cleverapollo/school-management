@@ -39,9 +39,6 @@ const LABEL_ICONS: Record<
   // starred: StarIcon, add back in when star label is added
 };
 
-const linkTo = ({ custom, id }: ReturnTypeFromUseLabels) =>
-  custom ? `/mail/label/${id}` : `/mail/${id}`;
-
 type MailSidebarItemProps = {
   label: ReturnTypeFromUseLabels;
   setLabelInfo?: Dispatch<
@@ -49,12 +46,6 @@ type MailSidebarItemProps = {
   >;
   unreadCount?: number;
 };
-
-function getLabelName(label: ReturnTypeFromUseLabels, t: TFunction<'mail'[]>) {
-  return label.type !== LabelType.Custom
-    ? t(`mail:systemLabel.${label.type}`)
-    : label.name;
-}
 
 export function MailSidebarItem({
   label,
@@ -101,20 +92,33 @@ export function MailSidebarItem({
     }),
   };
 
+  const listItemLink = label.custom
+    ? `/mail/label/${label.id}`
+    : `/mail/${label.id}`;
+  const labelName =
+    label.type !== LabelType.Custom
+      ? t(`mail:systemLabel.${label.type}`)
+      : label.name;
   const isUnread = unreadCount > 0;
 
   return (
     <ListItemButton
       component={Link}
-      to={linkTo(label)}
+      to={listItemLink}
       sx={{
         pl: 3,
         pr: 1,
         height: 48,
         typography: 'body2',
-        color: !isActive ? 'text.secondary' : 'text.primary',
-        fontWeight: !isActive ? '' : 'fontWeightMedium',
-        bgcolor: !isActive ? '' : 'action.selected',
+        ...(isActive
+          ? {
+              color: 'text.primary',
+              fontWeight: 'fontWeightMedium',
+              bg: 'action.selected',
+            }
+          : {
+              color: 'text.secondary',
+            }),
 
         '.label-options': {
           position: 'absolute',
@@ -135,7 +139,7 @@ export function MailSidebarItem({
       }}
     >
       <Icon sx={sharedIconProps} />
-      <ListItemText disableTypography primary={getLabelName(label, t)} />
+      <ListItemText disableTypography primary={labelName} />
 
       {isUnread && (
         <Typography className="unread-count" variant="caption" pr={2}>

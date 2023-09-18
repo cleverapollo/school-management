@@ -6,14 +6,14 @@ import {
 } from '@mui/material';
 import { forwardRef } from 'react';
 
-interface ButtonWithTooltipProps extends IconButtonProps {
+interface IconButtonWithTooltipProps extends IconButtonProps {
   title: string;
   placement?: TooltipProps['placement'];
 }
 
-export const ButtonWithTooltip = forwardRef<
+export const IconButtonWithTooltip = forwardRef<
   HTMLButtonElement,
-  ButtonWithTooltipProps
+  IconButtonWithTooltipProps
 >(({ title, placement = 'bottom', ...props }, ref) => (
   <Tooltip title={title} placement={placement} enterDelay={500}>
     <IconButton ref={ref} size="small" {...props} />
@@ -21,5 +21,5 @@ export const ButtonWithTooltip = forwardRef<
 ));
 
 if (process.env.NODE_ENV !== 'production') {
-  ButtonWithTooltip.displayName = 'ButtonWithTooltip';
+  IconButtonWithTooltip.displayName = 'IconButtonWithTooltip';
 }

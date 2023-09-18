@@ -1,4 +1,9 @@
-import { useQuery, useMutation, useInfiniteQuery } from '@tanstack/react-query';
+import {
+  useQuery,
+  useMutation,
+  useInfiniteQuery,
+  InfiniteData,
+} from '@tanstack/react-query';
 import {
   gqlClient,
   graphql,
@@ -9,7 +14,9 @@ import {
   MailFilter,
   queryClient,
   UseQueryReturnType,
+  Communications_MailQuery,
 } from '@tyro/api';
+import { useCallback } from 'react';
 import {
   getInboxSendersSummary,
   getInboxMailSummary,
@@ -177,19 +184,22 @@ export function useMailList(labelId: number, profileId?: number | null) {
         ? communications_mail[communications_mail.length - 1].id
         : undefined,
     enabled: !!labelId,
-    select: (data) => ({
-      ...data,
-      pages: data.pages.map(({ communications_mail }) =>
-        communications_mail.map((mail) => ({
-          ...mail,
-          inboxSummary: getInboxMailSummary(mail, profileId),
-          outboxSummary: getOutboxMailSummary(mail, profileId),
-          inboxSenderSummary: getInboxSendersSummary(mail),
-          outboxRecipientSummary: getOutboxRecipientsSummary(mail, profileId),
-          isMailUnread: isMailUnread(mail, profileId),
-        }))
-      ),
-    }),
+    select: useCallback(
+      (data: InfiniteData<Communications_MailQuery>) => ({
+        ...data,
+        pages: data.pages.map(({ communications_mail }) =>
+          communications_mail.map((mail) => ({
+            ...mail,
+            inboxSummary: getInboxMailSummary(mail, profileId),
+            outboxSummary: getOutboxMailSummary(mail, profileId),
+            inboxSenderSummary: getInboxSendersSummary(mail),
+            outboxRecipientSummary: getOutboxRecipientsSummary(mail, profileId),
+            isMailUnread: isMailUnread(mail, profileId),
+          }))
+        ),
+      }),
+      [profileId]
+    ),
   });
 }
 
@@ -213,8 +223,7 @@ export function useMail(mailId: number) {
       id: mailId,
       pagination: { limit: 1 },
     }),
-    select: ({ communications_mail }) =>
-      communications_mail.length > 0 ? communications_mail[0] : undefined,
+    select: ({ communications_mail }) => communications_mail[0],
   });
 }
 

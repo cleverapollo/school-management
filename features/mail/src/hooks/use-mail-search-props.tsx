@@ -17,9 +17,6 @@ export const useMailSearchProps = (
   const { data: options = [], isLoading } = useMailSearch(debouncedSearchValue);
 
   return {
-    // optionIdKey: 'partyId',
-    // isOptionEqualToValue: (option, newValue) =>
-    //   JSON.stringify(option) === JSON.stringify(newValue),
     optionTextKey: 'text',
     multiple: true,
     open: searchValue.length > 0,
