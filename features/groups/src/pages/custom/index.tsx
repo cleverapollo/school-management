@@ -22,7 +22,8 @@ import {
 
 const getColumns = (
   t: TFunction<('common' | 'groups')[], undefined>,
-  isStaffUser: boolean
+  isStaffUser: boolean,
+  showEditAction: boolean
 ): GridOptions<ReturnTypeFromUseCustomGroups>['columnDefs'] => [
   {
     field: 'name',
@@ -63,7 +64,8 @@ const getColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseCustomGroups>) =>
-      data && (
+      data &&
+      showEditAction && (
         <ActionMenu
           iconOnly
           buttonIcon={<VerticalDotsIcon />}
@@ -91,7 +93,7 @@ export default function CustomGroups() {
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
-  const { isStaffUser } = usePermissions();
+  const { isStaffUser, hasPermission } = usePermissions();
   const { data: customGroupData } = useCustomGroups();
 
   const {
@@ -100,7 +102,14 @@ export default function CustomGroups() {
     onClose: onCloseSendSms,
   } = useDisclosure();
 
-  const columns = useMemo(() => getColumns(t, isStaffUser), [t, isStaffUser]);
+  const showEditAction = hasPermission(
+    'ps:1:groups:view_create_custom_group_definitions'
+  );
+
+  const columns = useMemo(
+    () => getColumns(t, isStaffUser, showEditAction),
+    [t, isStaffUser, showEditAction]
+  );
 
   const showActionMenu = isStaffUser && selectedGroups.length > 0;
 

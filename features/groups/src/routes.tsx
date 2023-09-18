@@ -382,8 +382,8 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'custom',
             title: t('navigation:general.groups.custom'),
-            // hasAccess: (permissions) =>
-            //   permissions.hasPermission('ps:1:groups:view_custom_groups'),
+            hasAccess: (permissions) =>
+              permissions.hasPermission('ps:1:groups:view_custom_groups'),
             children: [
               {
                 type: NavObjectType.NonMenuLink,
