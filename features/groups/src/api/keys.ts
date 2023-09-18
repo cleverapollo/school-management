@@ -2,6 +2,7 @@ import {
   BlockFilter,
   CalendarEventIteratorFilter,
   SubjectGroupFilter,
+  Core_CustomGroupDefinitionFilter,
 } from '@tyro/api';
 
 export const groupsKeys = {
@@ -17,6 +18,8 @@ export const groupsKeys = {
     groups: () => [...groupsKeys.custom.all(), 'list'] as const,
     details: (id: number | undefined) =>
       [...groupsKeys.custom.all(), 'details', id] as const,
+    definition: (filter: Core_CustomGroupDefinitionFilter) =>
+      [...groupsKeys.custom.all(), 'definition', filter] as const,
   },
   subject: {
     all: () => [...groupsKeys.all, 'subject'] as const,

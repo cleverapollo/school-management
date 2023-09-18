@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   ActionMenu,
-  ActionMenuProps,
   GridOptions,
   ICellRendererParams,
   PageContainer,
@@ -13,7 +12,7 @@ import {
   TableAvatar,
   useDisclosure,
 } from '@tyro/core';
-import { AddIcon, MobileIcon, SendMailIcon } from '@tyro/icons';
+import { AddIcon, EditIcon, MobileIcon, VerticalDotsIcon } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { Link } from 'react-router-dom';
 import {
@@ -21,8 +20,8 @@ import {
   ReturnTypeFromUseCustomGroups,
 } from '../../api/custom-groups';
 
-const getCustomGroupsColumns = (
-  t: TFunction<'common'[], undefined, 'common'[]>,
+const getColumns = (
+  t: TFunction<('common' | 'groups')[], undefined>,
   isStaffUser: boolean
 ): GridOptions<ReturnTypeFromUseCustomGroups>['columnDefs'] => [
   {
@@ -57,43 +56,53 @@ const getCustomGroupsColumns = (
       (data?.staffMembers?.memberCount ?? 0) +
       (data?.contactMembers?.memberCount ?? 0),
   },
+  {
+    suppressColumnsToolPanel: true,
+    sortable: false,
+    cellClass: 'ag-show-on-row-interaction',
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseCustomGroups>) =>
+      data && (
+        <ActionMenu
+          iconOnly
+          buttonIcon={<VerticalDotsIcon />}
+          menuItems={[
+            {
+              label: t('common:actions.edit'),
+              icon: <EditIcon />,
+              navigateTo: `./edit/${data.partyId || ''}`,
+            },
+            // TODO: uncomment this when BE support
+            // {
+            //   label: t('common:actions.archive'),
+            //   icon: <ArchiveIcon />,
+            //   onClick: () => onArchive(data.partyId),
+            // },
+          ]}
+        />
+      ),
+  },
 ];
 
 export default function CustomGroups() {
-  const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
+  const { t } = useTranslation(['common', 'groups', 'people', 'sms']);
+
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
   const { isStaffUser } = usePermissions();
   const { data: customGroupData } = useCustomGroups();
-  const showActionMenu = isStaffUser && selectedGroups.length > 0;
+
   const {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
 
-  const customGroupColumns = useMemo(
-    () => getCustomGroupsColumns(t, isStaffUser),
-    [t, isStaffUser]
-  );
+  const columns = useMemo(() => getColumns(t, isStaffUser), [t, isStaffUser]);
 
-  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => {
-    const commonActions = [
-      {
-        label: t('people:sendSms'),
-        icon: <MobileIcon />,
-        onClick: onOpenSendSms,
-      },
-      // {
-      //   label: t('mail:sendMail'),
-      //   icon: <SendMailIcon />,
-      //   onClick: () => {},
-      // },
-    ];
-
-    return commonActions;
-  }, []);
+  const showActionMenu = isStaffUser && selectedGroups.length > 0;
 
   return (
     <>
@@ -116,13 +125,21 @@ export default function CustomGroups() {
         />
         <Table
           rowData={customGroupData ?? []}
-          columnDefs={customGroupColumns}
+          columnDefs={columns}
           rowSelection="multiple"
           getRowId={({ data }) => String(data?.partyId)}
           rightAdornment={
             <Fade in={showActionMenu} unmountOnExit>
               <Box>
-                <ActionMenu menuItems={actionMenuItems} />
+                <ActionMenu
+                  menuItems={[
+                    {
+                      label: t('people:sendSms'),
+                      icon: <MobileIcon />,
+                      onClick: onOpenSendSms,
+                    },
+                  ]}
+                />
               </Box>
             </Fade>
           }

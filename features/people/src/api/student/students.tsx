@@ -229,12 +229,19 @@ const studentsForSelectQuery = (filter: StudentFilter) => ({
 
     return {
       core_students: studentsData
-        .map(({ person, yearGroups, classGroup }) => ({
-          ...person,
-          caption: [...yearGroups.map((group) => group.name), classGroup?.name]
+        .map(({ person, yearGroups, classGroup }) => {
+          const caption = [
+            ...yearGroups.map((group) => group.name),
+            classGroup?.name,
+          ]
             .filter(Boolean)
-            .join(', '),
-        }))
+            .join(', ');
+
+          return {
+            ...person,
+            ...(caption && { caption }),
+          };
+        })
         .sort(sortByDisplayName),
     };
   },
