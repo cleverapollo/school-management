@@ -1,27 +1,29 @@
-import { Box, Container, Fade, Typography } from '@mui/material';
+import { Box, Button, Fade } from '@mui/material';
 import { SmsRecipientType, usePermissions } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   ActionMenu,
-  ActionMenuProps,
   GridOptions,
   ICellRendererParams,
-  Page,
+  PageContainer,
+  PageHeading,
   Table,
   TableAvatar,
   useDisclosure,
 } from '@tyro/core';
-import { MobileIcon, SendMailIcon } from '@tyro/icons';
+import { AddIcon, EditIcon, MobileIcon, VerticalDotsIcon } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
+import { Link } from 'react-router-dom';
 import {
   useCustomGroups,
   ReturnTypeFromUseCustomGroups,
 } from '../../api/custom-groups';
 
-const getCustomGroupsColumns = (
-  t: TFunction<'common'[], undefined, 'common'[]>,
-  isStaffUser: boolean
+const getColumns = (
+  t: TFunction<('common' | 'groups')[], undefined>,
+  isStaffUser: boolean,
+  showEditAction: boolean
 ): GridOptions<ReturnTypeFromUseCustomGroups>['columnDefs'] => [
   {
     field: 'name',
@@ -55,76 +57,113 @@ const getCustomGroupsColumns = (
       (data?.staffMembers?.memberCount ?? 0) +
       (data?.contactMembers?.memberCount ?? 0),
   },
+  {
+    suppressColumnsToolPanel: true,
+    sortable: false,
+    cellClass: 'ag-show-on-row-interaction',
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseCustomGroups>) =>
+      data &&
+      showEditAction && (
+        <ActionMenu
+          iconOnly
+          buttonIcon={<VerticalDotsIcon />}
+          menuItems={[
+            {
+              label: t('common:actions.edit'),
+              icon: <EditIcon />,
+              navigateTo: `./edit/${data.partyId || ''}`,
+            },
+            // TODO: uncomment this when BE support
+            // {
+            //   label: t('common:actions.archive'),
+            //   icon: <ArchiveIcon />,
+            //   onClick: () => onArchive(data.partyId),
+            // },
+          ]}
+        />
+      ),
+  },
 ];
 
 export default function CustomGroups() {
-  const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
+  const { t } = useTranslation(['common', 'groups', 'people', 'sms']);
+
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
-  const { isStaffUser } = usePermissions();
+  const { isStaffUser, hasPermission } = usePermissions();
   const { data: customGroupData } = useCustomGroups();
-  const showActionMenu = isStaffUser && selectedGroups.length > 0;
+
   const {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
 
-  const customGroupColumns = useMemo(
-    () => getCustomGroupsColumns(t, isStaffUser),
-    [t, isStaffUser]
+  const showEditAction = hasPermission(
+    'ps:1:groups:view_create_custom_group_definitions'
   );
 
-  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => {
-    const commonActions = [
-      {
-        label: t('people:sendSms'),
-        icon: <MobileIcon />,
-        onClick: onOpenSendSms,
-      },
-      // {
-      //   label: t('mail:sendMail'),
-      //   icon: <SendMailIcon />,
-      //   onClick: () => {},
-      // },
-    ];
+  const columns = useMemo(
+    () => getColumns(t, isStaffUser, showEditAction),
+    [t, isStaffUser, showEditAction]
+  );
 
-    return commonActions;
-  }, []);
+  const showActionMenu = isStaffUser && selectedGroups.length > 0;
 
   return (
     <>
-      <Page title={t('groups:customGroups')}>
-        <Container maxWidth="xl">
-          <Typography variant="h3" component="h1" paragraph>
-            {t('groups:customGroups')}
-          </Typography>
-          <Table
-            rowData={customGroupData ?? []}
-            columnDefs={customGroupColumns}
-            rowSelection="multiple"
-            getRowId={({ data }) => String(data?.partyId)}
-            rightAdornment={
-              <Fade in={showActionMenu} unmountOnExit>
-                <Box>
-                  <ActionMenu menuItems={actionMenuItems} />
-                </Box>
-              </Fade>
-            }
-            onRowSelection={(groups) =>
-              setSelectedGroups(
-                groups.map(({ partyId, name, avatarUrl }) => ({
-                  id: partyId,
-                  name,
-                  type: 'group',
-                  avatarUrl,
-                }))
-              )
-            }
-          />
-        </Container>
-      </Page>
+      <PageContainer title={t('groups:customGroups')}>
+        <PageHeading
+          title={t('groups:customGroups')}
+          titleProps={{ variant: 'h3' }}
+          rightAdornment={
+            <Box display="flex" alignItems="center">
+              <Button
+                variant="contained"
+                component={Link}
+                to="./create"
+                startIcon={<AddIcon />}
+              >
+                {t('groups:createCustomGroup')}
+              </Button>
+            </Box>
+          }
+        />
+        <Table
+          rowData={customGroupData ?? []}
+          columnDefs={columns}
+          rowSelection="multiple"
+          getRowId={({ data }) => String(data?.partyId)}
+          rightAdornment={
+            <Fade in={showActionMenu} unmountOnExit>
+              <Box>
+                <ActionMenu
+                  menuItems={[
+                    {
+                      label: t('people:sendSms'),
+                      icon: <MobileIcon />,
+                      onClick: onOpenSendSms,
+                    },
+                  ]}
+                />
+              </Box>
+            </Fade>
+          }
+          onRowSelection={(groups) =>
+            setSelectedGroups(
+              groups.map(({ partyId, name, avatarUrl }) => ({
+                id: partyId,
+                name,
+                type: 'group',
+                avatarUrl,
+              }))
+            )
+          }
+        />
+      </PageContainer>
       <SendSmsModal
         isOpen={isSendSmsOpen}
         onClose={onCloseSendSms}

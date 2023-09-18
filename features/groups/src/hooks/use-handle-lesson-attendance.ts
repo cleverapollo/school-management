@@ -1,10 +1,10 @@
 import {
   SaveEventAttendanceInput,
-  UseQueryReturnType,
   CalendarEventIteratorFilter,
   Iterator,
   queryClient,
   AttendanceCodeType,
+  Person,
 } from '@tyro/api';
 
 import { useSaveAttendance } from '@tyro/attendance';
@@ -15,7 +15,6 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import {
   ReturnTypeFromUseSubjectGroupLessonByIterator,
-  useSubjectGroupById,
   useSubjectGroupLessonByIterator,
 } from '../api';
 import { groupsKeys } from '../api/keys';
@@ -32,9 +31,17 @@ type StudentAttendance = Record<
   SaveEventAttendanceInput & EventDetails
 >;
 
+export type GroupStudent = {
+  partyId: number;
+  classGroup?: {
+    name?: string;
+  } | null;
+  person: Pick<Person, 'firstName' | 'lastName' | 'avatarUrl'>;
+};
+
 type UseHandleLessonAttendanceParams = {
   partyId: number;
-  students: UseQueryReturnType<typeof useSubjectGroupById>['students'];
+  students: GroupStudent[];
 };
 
 type SaveAttendanceCallback = {

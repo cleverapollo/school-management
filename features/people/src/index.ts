@@ -5,6 +5,7 @@ export * from './api/student/students';
 export * from './routes';
 export { TableStaffAutocomplete } from './components/common/table-staff-autocomplete';
 export * from './components/common/staff-autocomplete';
+export * from './components/common/list-people-pagination';
 export { usePartySearchProps } from './hooks/use-party-search-props';
 export { usePartySearch } from './api/common/party-search';
 

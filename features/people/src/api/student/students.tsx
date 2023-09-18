@@ -7,7 +7,7 @@ import {
   UpdateStudentInput,
   UseQueryReturnType,
 } from '@tyro/api';
-import { BulkEditedRows } from '@tyro/core';
+import { BulkEditedRows, sortByDisplayName } from '@tyro/core';
 import { peopleKeys } from '../keys';
 
 const students = graphql(/* GraphQL */ `
@@ -115,6 +115,12 @@ const studentsInfoForSelect = graphql(/* GraphQL */ `
         avatarUrl
         type
       }
+      classGroup {
+        name
+      }
+      yearGroups {
+        name
+      }
     }
   }
 `);
@@ -215,7 +221,30 @@ export function useBulkUpdateCoreStudent() {
 
 const studentsForSelectQuery = (filter: StudentFilter) => ({
   queryKey: peopleKeys.students.forSelect(filter),
-  queryFn: async () => gqlClient.request(studentsInfoForSelect, { filter }),
+  queryFn: async () => {
+    const { core_students: studentsData = [] } = await gqlClient.request(
+      studentsInfoForSelect,
+      { filter }
+    );
+
+    return {
+      core_students: studentsData
+        .map(({ person, yearGroups, classGroup }) => {
+          const caption = [
+            ...yearGroups.map((group) => group.name),
+            classGroup?.name,
+          ]
+            .filter(Boolean)
+            .join(', ');
+
+          return {
+            ...person,
+            ...(caption && { caption }),
+          };
+        })
+        .sort(sortByDisplayName),
+    };
+  },
 });
 
 export function getStudentsForSelect(filter: StudentFilter) {
@@ -225,18 +254,12 @@ export function getStudentsForSelect(filter: StudentFilter) {
 export function useStudentsForSelect(filter: StudentFilter) {
   return useQuery({
     ...studentsForSelectQuery(filter),
-    select: ({ core_students }) => {
-      if (!Array.isArray(core_students)) return [];
-
-      return core_students.map(({ person }) => person);
-    },
+    select: ({ core_students }) => core_students,
   });
 }
 
-export type StudentSelectOption = UseQueryReturnType<
-  typeof useStudentsForSelect
->[number];
-
 export type StudentsSelectOption = UseQueryReturnType<
-    typeof useStudentsForSelect
+  typeof useStudentsForSelect
 >;
+
+export type StudentSelectOption = StudentsSelectOption[number];

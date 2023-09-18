@@ -280,5 +280,12 @@
     "FRIDAY": "Friday",
     "SATURDAY": "Saturday",
     "SUNDAY": "Sunday"
+  },
+  "generalInformation": "General information",
+  "searchByMemberType": {
+    "CONTACT": "Search by contact name",
+    "STAFF": "Search by staff name",
+    "STUDENT": "Search by student name",
+    "ADMIN": "Search by staff name"
   }
 }

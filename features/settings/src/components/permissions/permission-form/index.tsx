@@ -179,7 +179,7 @@ export const PermissionForm = ({ initialState }: PermissionFormProps) => {
           </TabContext>
         </Card>
       </Grid>
-      <Grid item xs={12} lg={10} pb={2} position="sticky" bottom={0}>
+      <Grid item xs={12} lg={10}>
         <Stack direction="row" gap={2} justifyContent="flex-end">
           <Button
             variant="soft"
