@@ -114,7 +114,7 @@ export function MailSidebarItem({
           ? {
               color: 'text.primary',
               fontWeight: 'fontWeightMedium',
-              bg: 'action.selected',
+              backgroundColor: 'action.selected',
             }
           : {
               color: 'text.secondary',

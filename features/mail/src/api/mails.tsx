@@ -16,6 +16,8 @@ import {
   UseQueryReturnType,
   Communications_MailQuery,
 } from '@tyro/api';
+import { useToast } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 import { useCallback } from 'react';
 import {
   getInboxSendersSummary,
@@ -229,11 +231,18 @@ export function useMail(mailId: number) {
 }
 
 export function useSendMail() {
+  const { toast } = useToast();
+  const { t } = useTranslation(['mail']);
+
   return useMutation({
     mutationFn: async (input: SendMailInput) =>
       gqlClient.request(sendMail, { input }),
     onSuccess: () => {
       queryClient.invalidateQueries(mailKeys.all);
+      toast(t('mail:mailSentSuccess'));
+    },
+    onError: () => {
+      toast(t('mail:mailSentError'));
     },
   });
 }

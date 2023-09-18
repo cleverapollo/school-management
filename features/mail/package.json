@@ -9,6 +9,7 @@
     "@mui/system": "^5.13.2",
     "@tanstack/react-query": "^4.29.7",
     "@tanstack/react-virtual": "beta",
+    "@tiptap/extension-link": "^2.1.10",
     "@tiptap/extension-placeholder": "^2.1.8",
     "@tiptap/extension-underline": "^2.1.8",
     "@tiptap/pm": "^2.1.8",
