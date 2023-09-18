@@ -20,12 +20,29 @@ export function ThreadItem({
 }: ThreadItemProps) {
   const { t } = useTranslation(['mail']);
   const senderName = `${sender?.firstName ?? ''} ${sender?.lastName ?? ''}`;
-  const recipientNames = recipients
-    .map(
-      ({ recipient }) =>
-        `${recipient.firstName ?? ''} ${recipient.lastName ?? ''}`
-    )
-    .join(', ');
+  const recipientNames = useMemo(() => {
+    const to: string[] = [];
+    const bcc: string[] = [];
+
+    recipients.forEach(({ recipient, recipientType }) => {
+      if (recipientType === 'BCC') {
+        bcc.push(`${recipient.firstName ?? ''} ${recipient.lastName ?? ''}`);
+      } else {
+        to.push(`${recipient.firstName ?? ''} ${recipient.lastName ?? ''}`);
+      }
+    });
+
+    return [
+      to.length > 0
+        ? t('mail:toRecipients', { recipients: to.join(', ') })
+        : null,
+      bcc.length > 0
+        ? t('mail:bccRecipients', { recipients: bcc.join(', ') })
+        : null,
+    ]
+      .filter(Boolean)
+      .join(', ');
+  }, [recipients, t]);
   const sanitizedBody = useMemo(
     () => sanitize(body ?? '', { USE_PROFILES: { html: true } }),
     [body]
@@ -53,7 +70,7 @@ export function ThreadItem({
           <Stack>
             <Typography variant="subtitle2">{senderName}</Typography>
             <Typography variant="caption" color="text.secondary">
-              {t('mail:toRecipients', { recipients: recipientNames })}
+              {recipientNames}
             </Typography>
           </Stack>
         </Stack>

@@ -59,6 +59,11 @@ export function getInboxSendersSummary(
     });
   }
 
+  if (senders.size === 0) {
+    // Used in rare cases where the mail is sent to the user itself
+    senders.set(sender.partyId, sender);
+  }
+
   return Array.from(senders.values());
 }
 

@@ -47,6 +47,7 @@
   "newMessage": "New Message",
   "sendMail": "Send mail",
   "toRecipients": "To: {{recipients}}",
+  "bccRecipients": "Bcc: {{recipients}}",
   "replyPlaceholder": "Reply here...",
   "replyEmptyError": "Please write a reply",
   "me": "me",

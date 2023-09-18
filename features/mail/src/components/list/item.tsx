@@ -118,10 +118,10 @@ export default function MailItem({
           }}
         >
           <Avatar
-            name={`${firstRecipient.firstName ?? ''} ${
-              firstRecipient.lastName ?? ''
+            name={`${firstRecipient?.firstName ?? ''} ${
+              firstRecipient?.lastName ?? ''
             }`}
-            src={firstRecipient.avatarUrl}
+            src={firstRecipient?.avatarUrl}
             sx={{ width: 32, height: 32 }}
           />
 
@@ -148,7 +148,7 @@ export default function MailItem({
               variant="body2"
               noWrap
               sx={{
-                minWidth: 180,
+                width: 180,
                 ...(mail.isMailUnread && {
                   fontWeight: '700',
                 }),

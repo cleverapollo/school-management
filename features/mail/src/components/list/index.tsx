@@ -115,7 +115,7 @@ export default function MailList() {
       <Divider />
 
       {!isEmpty ? (
-        <Box ref={listRef}>
+        <Box ref={listRef} sx={{ overflowY: 'auto' }}>
           <Box
             sx={{
               height: `${rowVirtualizer.getTotalSize()}px`,

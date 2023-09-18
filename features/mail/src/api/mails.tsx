@@ -223,6 +223,7 @@ export function useMail(mailId: number) {
       id: mailId,
       pagination: { limit: 1 },
     }),
+    staleTime: 0,
     select: ({ communications_mail }) => communications_mail[0],
   });
 }
