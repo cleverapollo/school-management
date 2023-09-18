@@ -42,11 +42,16 @@ export function getOutboxMailSummary(
   return getTextFromHtml(body ?? '');
 }
 
-export function getInboxSendersSummary(mail: BasicReturnedMail) {
+export function getInboxSendersSummary(
+  mail: BasicReturnedMail,
+  profileId: number | null | undefined
+) {
   const { threads = [], sender } = mail;
   const senders = new Map<number, Person>();
 
-  senders.set(sender.partyId, sender);
+  if (sender.partyId !== profileId) {
+    senders.set(sender.partyId, sender);
+  }
 
   if (threads.length > 0) {
     threads.forEach((thread) => {

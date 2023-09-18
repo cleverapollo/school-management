@@ -192,7 +192,7 @@ export function useMailList(labelId: number, profileId?: number | null) {
             ...mail,
             inboxSummary: getInboxMailSummary(mail, profileId),
             outboxSummary: getOutboxMailSummary(mail, profileId),
-            inboxSenderSummary: getInboxSendersSummary(mail),
+            inboxSenderSummary: getInboxSendersSummary(mail, profileId),
             outboxRecipientSummary: getOutboxRecipientsSummary(mail, profileId),
             isMailUnread: isMailUnread(mail, profileId),
           }))
