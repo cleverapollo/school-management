@@ -12,7 +12,7 @@ import {
 import { useDisclosure, useFormValidator, useResponsive } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { CloseIcon, CollapseIcon, ExpandIcon } from '@tyro/icons';
-import { useForm } from 'react-hook-form';
+import { useController, useForm } from 'react-hook-form';
 import { RecipientType } from '@tyro/api';
 import { Stack } from '@mui/system';
 import { useSendMail } from '../../api/mails';
@@ -80,6 +80,13 @@ export default function MailCompose({
       ),
     }),
   });
+  const {
+    field: { onChange: onChangeCanReply },
+  } = useController({
+    name: 'canReply',
+    control,
+    defaultValue: true,
+  });
 
   const { mutateAsync: sendMail } = useSendMail();
 
@@ -107,7 +114,6 @@ export default function MailCompose({
       ...rest,
       recipients,
       body,
-      canReply: true,
     });
     handleClose();
   });
@@ -167,13 +173,22 @@ export default function MailCompose({
           <Box>
             <IconButton onClick={onToggleFullScreen}>
               {isFullScreen ? (
-                <CollapseIcon sx={{ height: 20, width: 20 }} />
+                <CollapseIcon
+                  aria-label={t('mail:actions.collapse')}
+                  sx={{ height: 20, width: 20 }}
+                />
               ) : (
-                <ExpandIcon sx={{ height: 20, width: 20 }} />
+                <ExpandIcon
+                  aria-label={t('mail:actions.expand')}
+                  sx={{ height: 20, width: 20 }}
+                />
               )}
             </IconButton>
 
-            <IconButton onClick={handleClose}>
+            <IconButton
+              aria-label={t('common:actions.close')}
+              onClick={handleClose}
+            >
               <CloseIcon sx={{ height: 20, width: 20 }} />
             </IconButton>
           </Box>
@@ -231,7 +246,11 @@ export default function MailCompose({
 
         <Divider />
 
-        <MailEditorToolbar editor={editor} onSend={onSend} />
+        <MailEditorToolbar
+          editor={editor}
+          onSend={onSend}
+          onCanReplyChange={onChangeCanReply}
+        />
       </RootStyle>
     </Portal>
   );

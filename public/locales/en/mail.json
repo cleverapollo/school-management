@@ -50,6 +50,7 @@
   "replyPlaceholder": "Reply here...",
   "replyEmptyError": "Please write a reply",
   "me": "me",
+  "canReply": "Can reply?",
   "actions": {
     "reply": "Reply",
     "forward": "Forward",
@@ -57,6 +58,8 @@
     "markAsUnread": "Mark as unread",
     "markAsRead": "Mark as read",
     "removeLabel": "Remove label",
-    "more": "More"
+    "more": "More",
+    "collapse": "Collapse",
+    "expand": "Expand"
   }
 }
