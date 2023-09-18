@@ -14,18 +14,14 @@ import {
 
 const toOptions = (arr: OptionList) => {
   if (isOptionGroupArray(arr)) {
-    const optArray: JSX.Element[] = [];
-    for (const og of arr) {
-      optArray.push(
-        <ListSubheader key={og.label}>{og.label}</ListSubheader>,
-        ...og.options.map((opt) => (
-          <MenuItem key={opt.name} value={opt.name}>
-            {opt.label}
-          </MenuItem>
-        ))
-      );
-    }
-    return optArray;
+    return arr.flatMap((og) => [
+      <ListSubheader key={og.label}>{og.label}</ListSubheader>,
+      ...og.options.map((opt) => (
+        <MenuItem key={opt.name} value={opt.name}>
+          {opt.label}
+        </MenuItem>
+      )),
+    ]);
   }
 
   if (Array.isArray(arr)) {
