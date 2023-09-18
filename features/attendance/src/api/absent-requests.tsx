@@ -28,6 +28,11 @@ const absentRequests = graphql(/* GraphQL */ `
         code
         name
       }
+      approvedBy {
+        firstName
+        lastName
+      }
+      approvedByPartyId
       attendanceCodeId
       contactPartyId
       from

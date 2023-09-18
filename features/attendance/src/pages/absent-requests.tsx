@@ -87,6 +87,11 @@ const getAbsentRequestColumns = (
       data ? <AbsentRequestStatusChip status={data.status} /> : null,
   },
   {
+    field: 'approvedBy',
+    headerName: t('attendance:completedBy'),
+    valueGetter: ({ data }) => displayName(data?.approvedBy),
+  },
+  {
     suppressColumnsToolPanel: true,
     sortable: false,
     cellClass: 'ag-show-on-row-interaction',
@@ -107,7 +112,7 @@ export default function AbsentRequests() {
   const { data: absentRequests } = useAbsentRequests({});
   const [isCreateAbsentRequest, setIsCreateAbsentRequest] = useState(false);
   const [selectedAbsentRequests, setSelectedAbsentRequests] = useState<
-    SaveParentalAttendanceRequest[]
+    ReturnTypeFromUseAbsentRequests[]
   >([]);
   const {
     setValue: setViewAbsentRequestInitialState,
