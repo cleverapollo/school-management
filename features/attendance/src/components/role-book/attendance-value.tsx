@@ -11,6 +11,7 @@ import {
 } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
 import { TinyPencilIcon } from './tiny-pencil-icon';
+import { getColourBasedOnAttendanceType } from '../../utils/get-attendance-type-colour';
 
 interface RolebookAttendanceValueProps {
   view: 'icons' | 'codes';
@@ -35,10 +36,10 @@ const iconWithNoteBasedOnCodeType = {
 } as const;
 
 export const colorsBasedOnCodeType = {
-  [AttendanceCodeType.Present]: 'success',
-  [AttendanceCodeType.ExplainedAbsence]: 'warning',
-  [AttendanceCodeType.Late]: 'info',
-  [AttendanceCodeType.UnexplainedAbsence]: 'error',
+  [AttendanceCodeType.Present]: 'emerald',
+  [AttendanceCodeType.ExplainedAbsence]: 'pink',
+  [AttendanceCodeType.Late]: 'sky',
+  [AttendanceCodeType.UnexplainedAbsence]: 'violet',
 } as const;
 
 export function RolebookAttendanceValue({
@@ -52,7 +53,8 @@ export function RolebookAttendanceValue({
   if (attendanceCodeType === AttendanceCodeType.NotTaken) return null;
 
   const hasNote = !!note;
-  const attendanceColor = colorsBasedOnCodeType[attendanceCodeType];
+  const color = colorsBasedOnCodeType[attendanceCodeType];
+  const attendanceColor = getColourBasedOnAttendanceType(color);
 
   if (view === 'codes') {
     return (
@@ -69,9 +71,7 @@ export function RolebookAttendanceValue({
           component="span"
           sx={{
             position: 'relative',
-            color: includedInFilter
-              ? `${attendanceColor}.main`
-              : 'text.disabled',
+            color: includedInFilter ? attendanceColor : 'text.disabled',
             opacity: includedInFilter ? 1 : 0.2,
             fontWeight: 'bold',
           }}
@@ -112,7 +112,7 @@ export function RolebookAttendanceValue({
     >
       <Box
         sx={{
-          color: includedInFilter ? `${attendanceColor}.main` : 'text.disabled',
+          color: includedInFilter ? attendanceColor : 'text.disabled',
           opacity: includedInFilter ? 1 : 0.2,
           display: 'flex',
         }}

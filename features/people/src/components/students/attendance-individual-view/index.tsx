@@ -64,43 +64,50 @@ export const MonthOverview = () => {
     useState<ExtendedAttendanceCodeType>('ALL');
 
   const attendanceTabData: Array<{
+    backgroundColor: string;
     colour: string;
     translationText: string;
     currentTabValue: ExtendedAttendanceCodeType;
     total: number;
   }> = [
     {
-      colour: 'indigo',
+      backgroundColor: 'indigo.100',
+      colour: 'indigo.500',
       translationText: t('attendance:all'),
       currentTabValue: 'ALL',
       total: totalAttendanceDays,
     },
     {
-      colour: 'emerald',
+      backgroundColor: 'emerald.500',
+      colour: 'white',
       translationText: t('attendance:totalPresent'),
       currentTabValue: AttendanceCodeType.Present,
       total: calendarAttendance?.totalPresent ?? 0,
     },
     {
-      colour: 'sky',
+      backgroundColor: 'sky.400',
+      colour: 'white',
       translationText: t('attendance:totalLate'),
       currentTabValue: AttendanceCodeType.Late,
       total: calendarAttendance?.totalLate ?? 0,
     },
     {
-      colour: 'pink',
+      backgroundColor: 'pink.500',
+      colour: 'white',
       translationText: t('attendance:totalAbsent'),
       currentTabValue: AttendanceCodeType.ExplainedAbsence,
       total: calendarAttendance?.totalAbsent ?? 0,
     },
     {
-      colour: 'red',
+      backgroundColor: 'indigo.700',
+      colour: 'white',
       translationText: t('attendance:totalUnexplained'),
       currentTabValue: AttendanceCodeType.UnexplainedAbsence,
       total: calendarAttendance?.totalUnexplained ?? 0,
     },
     {
-      colour: 'grey',
+      backgroundColor: 'zinc.300',
+      colour: 'zinc.700',
       translationText: t('attendance:totalNotTaken'),
       currentTabValue: AttendanceCodeType.NotTaken,
       total: calendarAttendance?.totalNotTaken ?? 0,
@@ -218,7 +225,10 @@ export const MonthOverview = () => {
                 sx={{
                   '& .MuiTabs-flexContainer': {
                     alignItems: 'center',
-                    margin: 0,
+                    marginLeft: 2,
+                  },
+                  '& .MuiTabs-flexContainer > .MuiButtonBase-root': {
+                    marginRight: 3.5,
                   },
                 }}
               >
@@ -233,15 +243,15 @@ export const MonthOverview = () => {
                           variant="soft"
                           sx={{
                             cursor: 'pointer',
-                            backgroundColor: `${item?.colour}.100`,
+                            backgroundColor: item?.backgroundColor,
                             borderRadius: '6px',
                             height: '20px',
                             fontWeight: '700',
                             fontSize: '12px',
                             paddingX: '8px',
-                            color: `${item?.colour}.500`,
+                            color: item?.colour,
                             '& .MuiChip-icon': {
-                              color: `${item?.colour}.500`,
+                              color: `${item?.colour}`,
                             },
                             '& .MuiChip-label': {
                               padding: 0,
@@ -256,6 +266,9 @@ export const MonthOverview = () => {
                             fontSize: '14px',
                             textWrap: 'nowrap',
                             textTransform: 'none',
+                            '[aria-selected="true"] &': {
+                              color: 'slate.800',
+                            },
                           }}
                         >
                           {item.translationText}
@@ -269,7 +282,7 @@ export const MonthOverview = () => {
                 sx={{
                   backgroundColor: { xs: 'transparent', sm: 'slate.50' },
                   borderRadius: '16px',
-                  marginY: 2,
+                  marginBottom: 2,
                   paddingBottom: 2,
                   paddingX: { xs: 0, sm: 4 },
                 }}

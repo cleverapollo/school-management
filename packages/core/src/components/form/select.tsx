@@ -5,7 +5,10 @@ import {
 } from 'react-hook-form';
 import { Select, SelectProps } from '../select';
 
-export type RHFSelectProps<TField extends FieldValues, TSelectOption> = {
+export type RHFSelectProps<
+  TField extends FieldValues,
+  TSelectOption extends string | number | object
+> = {
   controlProps: UseControllerProps<TField>;
 } & SelectProps<TSelectOption>;
 
@@ -17,7 +20,7 @@ export const RHFSelect = <
   ...selectProps
 }: RHFSelectProps<TField, TSelectOption>) => {
   const {
-    field: { ref, value, ...restFieldProps },
+    field: { ref, value, onChange, ...restFieldProps },
     fieldState: { error },
   } = useController(controlProps);
 
@@ -25,6 +28,10 @@ export const RHFSelect = <
     <Select<TSelectOption>
       {...restFieldProps}
       {...selectProps}
+      onChange={(e) => {
+        onChange(e);
+        selectProps.onChange?.(e);
+      }}
       customSelectRef={ref}
       value={value ?? ''}
       error={!!error}

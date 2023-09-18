@@ -52,6 +52,7 @@ type AttendanceInput = {
   id: number;
   note: string | null;
   attendanceCodeId: number | null;
+  // date: string;
 };
 
 type AttendanceForm = {
@@ -71,7 +72,7 @@ export const AttendanceDetailsModal = ({
   onClose,
 }: AttendanceDetailsModalProps) => {
   const { t } = useTranslation(['attendance', 'people', 'common']);
-  const { handleSubmit, control, setValue, setError } =
+  const { handleSubmit, control, setValue, setError, getValues } =
     useForm<AttendanceForm>();
   const [openAlert, setOpenAlert] = useState(true);
 
@@ -171,6 +172,16 @@ export const AttendanceDetailsModal = ({
       });
     });
   }, [isLoading, eventAttendance]);
+
+  const sessionAttendanceSync = (eventId: number) => {
+    // get the overlapping times
+
+    console.log(getValues());
+  };
+
+  const eventAttendanceSync = (eventId: number) => {
+    console.log(getValues);
+  };
 
   const onSubmit = handleSubmit(async (data) => {
     const requiredEventAttendance = Object.values(
@@ -449,6 +460,7 @@ export const AttendanceDetailsModal = ({
                                 name: `sessionAttendance.${event.id}.attendanceCodeId`,
                                 control,
                               }}
+                              onChange={() => sessionAttendanceSync(event.id)}
                             />
                           </Stack>
                         </TableCell>

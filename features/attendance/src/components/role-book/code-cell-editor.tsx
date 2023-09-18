@@ -7,6 +7,7 @@ import { EditIcon } from '@tyro/icons';
 import { ReturnTypeFromUseAttendanceCodes } from '../../api/attendance-codes';
 import { colorsBasedOnCodeType, iconBasedOnCodeType } from './attendance-value';
 import { ReturnTypeFromSessionAttendance } from '../../api/session-attendance';
+import { getColourBasedOnAttendanceType } from '../../utils/get-attendance-type-colour';
 
 type AttendanceCodesWithoutNotTaken = Exclude<
   AttendanceCodeType,
@@ -42,17 +43,20 @@ const renderSelectOption = (
     iconBasedOnCodeType[
       option.sessionCodeType as AttendanceCodesWithoutNotTaken
     ];
+
+  const updatedColor = getColourBasedOnAttendanceType(color);
+
   return (
     <Stack flex={1} direction="row" spacing={1} justifyContent="space-between">
       <Stack direction="row" spacing={1} alignItems="center" flex={1}>
-        <Box display="flex" alignItems="center" color={`${color}.main`}>
+        <Box display="flex" alignItems="center" color={updatedColor}>
           {icon}
         </Box>
         <Typography component="span" variant="subtitle2">
           {option.description}
         </Typography>
       </Stack>
-      <Typography component="span" color={`${color}.main`} variant="subtitle2">
+      <Typography component="span" color={updatedColor} variant="subtitle2">
         {option.name}
       </Typography>
     </Stack>

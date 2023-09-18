@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 // eslint-disable-next-line import/no-relative-packages
 import { resources } from '../../public/locales';
 
-import 'dayjs/locale/en-ie';
+import './dayjs-locales/en-ie';
 import 'dayjs/locale/ga';
 
 export * from './hooks';
