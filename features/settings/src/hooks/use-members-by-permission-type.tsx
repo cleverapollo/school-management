@@ -40,4 +40,4 @@ export const useMembersByPermissionType = () => {
 
 export type MemberOption = ReturnType<
   ReturnType<typeof useMembersByPermissionType>['getMembersByMemberType']
->[number];
+>[number] & { caption?: string };

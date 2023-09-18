@@ -106,7 +106,7 @@ export function TimetablePrintForm({
 
       if (allStaff) {
         const { core_staff: coreStaff } = await getStaffForSelect({});
-        mappedPartyIds = coreStaff.map(({ person }) => person.partyId);
+        mappedPartyIds = coreStaff.map(({ partyId }) => partyId);
       }
 
       if (allRooms) {
@@ -150,7 +150,7 @@ export function TimetablePrintForm({
 
       if (allStaff) {
         const { core_staff: coreStaff } = await getStaffForSelect({});
-        mappedPartyIds = coreStaff.map(({ person }) => person.partyId);
+        mappedPartyIds = coreStaff.map(({ partyId }) => partyId);
       }
 
       if (allRooms) {

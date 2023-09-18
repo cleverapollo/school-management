@@ -1,13 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import {
-  Core_StaffInfoForSelectQuery,
-  gqlClient,
-  graphql,
-  queryClient,
-  StaffFilter,
-} from '@tyro/api';
-import { usePreferredNameLayout } from '@tyro/core';
-import { useCallback } from 'react';
+import { gqlClient, graphql, queryClient, StaffFilter } from '@tyro/api';
+import { sortByDisplayName } from '@tyro/core';
 import { peopleKeys } from '../keys';
 
 const staff = graphql(/* GraphQL */ `
@@ -92,7 +85,16 @@ export function useStaff(filter: StaffFilter) {
 
 const staffForSelectQuery = (filter: StaffFilter) => ({
   queryKey: peopleKeys.staff.forSelect(filter),
-  queryFn: async () => gqlClient.request(staffInfoForSelect, { filter }),
+  queryFn: async () => {
+    const { core_staff: staffData = [] } = await gqlClient.request(
+      staffInfoForSelect,
+      { filter }
+    );
+
+    return {
+      core_staff: staffData.map(({ person }) => person).sort(sortByDisplayName),
+    };
+  },
 });
 
 export function getStaffForSelect(filter: StaffFilter) {
@@ -100,14 +102,8 @@ export function getStaffForSelect(filter: StaffFilter) {
 }
 
 export function useStaffForSelect(filter: StaffFilter) {
-  const { sortByDisplayName } = usePreferredNameLayout();
-
   return useQuery({
     ...staffForSelectQuery(filter),
-    select: useCallback(
-      ({ core_staff }: Core_StaffInfoForSelectQuery) =>
-        core_staff.map(({ person }) => person).sort(sortByDisplayName),
-      [sortByDisplayName]
-    ),
+    select: ({ core_staff }) => core_staff,
   });
 }

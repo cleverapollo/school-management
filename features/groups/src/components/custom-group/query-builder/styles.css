@@ -1,0 +1,166 @@
+.ruleGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border: 1px solid transparent;
+}
+
+.ruleGroup .ruleGroup-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.ruleGroup .ruleGroup-body:empty {
+    display: none;
+}
+
+.ruleGroup .ruleGroup-header,
+.ruleGroup .rule {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.ruleGroup .rule .rule-value:has(.rule-value-list-item) {
+    display: flex;
+    gap: 1rem;
+    align-items: baseline;
+}
+
+[data-inlinecombinators=disabled] .dndOver.rule,
+[data-inlinecombinators=disabled] .dndOver.ruleGroup-header {
+    border-bottom-width: 2px;
+    border-bottom-style: dashed;
+    border-bottom-color: #6366f1;
+    padding-bottom: 1rem;
+}
+
+[data-inlinecombinators=disabled] .dndOver.rule.dndCopy,
+[data-inlinecombinators=disabled] .dndOver.ruleGroup-header.dndCopy {
+    border-bottom-color: #669933;
+}
+
+[data-inlinecombinators=enabled] .dndOver.rule:last-child,
+[data-inlinecombinators=enabled] .dndOver.ruleGroup-header,
+[data-inlinecombinators=enabled] .dndOver.rule+.betweenRules,
+[data-inlinecombinators=enabled] .dndOver.betweenRules {
+    border-bottom-width: 2px;
+    border-bottom-style: dashed;
+    border-bottom-color: #6366f1;
+    padding-bottom: 1rem;
+}
+
+[data-inlinecombinators=enabled] .dndOver.rule:last-child.dndCopy,
+[data-inlinecombinators=enabled] .dndOver.ruleGroup-header.dndCopy,
+[data-inlinecombinators=enabled] .dndOver.rule+.betweenRules.dndCopy,
+[data-inlinecombinators=enabled] .dndOver.betweenRules.dndCopy {
+    border-bottom-color: #669933;
+}
+
+.ruleGroup.dndDragging,
+.rule.dndDragging {
+    opacity: 0.5;
+}
+
+.ruleGroup .queryBuilder-dragHandle,
+.rule .queryBuilder-dragHandle {
+    cursor: move;
+    margin-left: 0.15rem;
+}
+
+.queryBuilder-branches .ruleGroup-body {
+    margin-left: calc(2 * 0.95rem);
+}
+
+.queryBuilder-branches .rule,
+.queryBuilder-branches .ruleGroup .ruleGroup {
+    position: relative;
+}
+
+.queryBuilder-branches .rule::before,
+.queryBuilder-branches .rule::after,
+.queryBuilder-branches .ruleGroup .ruleGroup::before,
+.queryBuilder-branches .ruleGroup .ruleGroup::after {
+    content: "";
+    width: 1rem;
+    left: calc(-1rem - 1px);
+    border-color: #eef2ff;
+    border-style: solid;
+    border-radius: 0;
+    position: absolute;
+}
+
+.queryBuilder-branches .rule::before,
+.queryBuilder-branches .ruleGroup .ruleGroup::before {
+    top: -1rem;
+    height: calc(50% + 1rem);
+    border-width: 0 0 1px 1px;
+}
+
+.queryBuilder-branches .rule:last-child::before,
+.queryBuilder-branches .ruleGroup .ruleGroup:last-child::before {
+    border-bottom-left-radius: 0.25rem;
+}
+
+.queryBuilder-branches .rule::after,
+.queryBuilder-branches .ruleGroup .ruleGroup::after {
+    top: 50%;
+    height: 50%;
+    border-width: 0 0 0 1px;
+}
+
+.queryBuilder-branches .rule:last-child::after,
+.queryBuilder-branches .ruleGroup .ruleGroup:last-child::after {
+    display: none;
+}
+
+.queryBuilder-branches .ruleGroup .ruleGroup::before,
+.queryBuilder-branches .ruleGroup .ruleGroup::after {
+    left: calc(calc(-1rem - 1px) - 1px);
+}
+
+.queryBuilder-branches .ruleGroup .ruleGroup::before {
+    top: calc(-1rem - 1px);
+    height: calc(50% + 1rem + 1px);
+}
+
+.queryBuilder-branches .ruleGroup .ruleGroup::after {
+    height: calc(50% + 1px);
+}
+
+.queryBuilder-branches .betweenRules {
+    position: relative;
+}
+
+.queryBuilder-branches .betweenRules::before {
+    content: "";
+    width: 1rem;
+    left: calc(-1rem - 1px);
+    border-color: #eef2ff;
+    border-style: solid;
+    border-radius: 0;
+    position: absolute;
+    top: -1rem;
+    height: calc(100% + 1rem);
+    border-width: 0 0 0 1px;
+}
+
+
+.ruleGroup-header {
+    display: flex;
+    gap: 10px;
+}
+
+.ruleGroup-header [draggable="true"]::after {
+    display: none;
+}
+
+.ruleGroup-rule {
+    background-color: #F8FAFC;
+    border-radius: 12px;
+    padding: 8px;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0px 1px 0px 0px #F1F5F9;
+    margin: -1px;
+}

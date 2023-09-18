@@ -62,7 +62,6 @@ const assignLabels = graphql(/* GraphQl */ `
         id
         recipientPartyId
         recipientType
-        name
       }
       labels {
         id
@@ -87,7 +86,6 @@ const assignLabels = graphql(/* GraphQl */ `
           id
           recipientPartyId
           recipientType
-          name
         }
         labels {
           id

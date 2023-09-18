@@ -5,7 +5,7 @@
   "updateStudentMembership": "Update student membership",
   "subjectGroups": "Subject groups",
   "supportGroups": "Support groups",
-  "customGroups": "Custom Groups",
+  "customGroups": "Custom groups",
   "yearGroups": "Year Groups",
   "subjectGroupsProfile": "{{name}}'s Profile",
   "teachersInGroup": "Teachers in group",
@@ -27,6 +27,10 @@
   "tutor_other": "Tutors",
   "yearHead_one": "Year head",
   "yearHead_other": "Year heads",
+  "createCustomGroup": "Create custom group",
+  "groupName": "Group name",
+  "staticMembers": "Static members",
+  "dynamicMembers": "Dynamic members",
   "subjectGroup": {
     "switchToSupportClass": {
       "action": "Switch to support class",
@@ -52,5 +56,26 @@
       "modalDescription": "Subject groups are standard classes. Such as an English or Maths class.",
       "confim": "Switch to subject group"
     }
-  }
+  },
+  "addGroup": "Add group",
+  "addRule": "Add rule",
+  "removeGroup": "Remove group",
+  "removeRule": "Remove rule",
+  "organisers": "Organiser(s)",
+  "staticStudents": "Static students",
+  "staticStaff": "Static staff",
+  "dynamicStudents": "Dynamic students",
+  "dynamicStaff": "Dynamic staff",
+  "saveCustomGroup": "Save custom group",
+  "noStaticStudents": "There aren't any students assigned yet.",
+  "noStaticStudentsCta": "Search for a student and assign to the group",
+  "noStaticStaff": "There aren't any staff assigned yet.",
+  "noStaticStaffCta": "Search for a staff and assign to the group",
+  "noStudentsFound": "No students found",
+  "noStaffFound": "No staff found",
+  "removeStudent": "Remove student",
+  "removeStaff": "Remove staff",
+  "editGroup": "Edit {{name}} group",
+  "groupDescription": "Group description",
+  "organisersInGroup": "Organisers in group"
 }
