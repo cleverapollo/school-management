@@ -123,5 +123,6 @@
   },
   "reasonForAbsence": "Reason for absence",
   "leavesAtTime": "Leaves at time",
-  "returnAtTime": "Return at time"
+  "returnAtTime": "Return at time",
+  "completedBy": "Completed by"
 }
