@@ -52,7 +52,7 @@ type AttendanceInput = {
   id: number;
   note: string | null;
   attendanceCodeId: number | null;
-  // date: string;
+  date: string;
 };
 
 type AttendanceForm = {
@@ -154,6 +154,7 @@ export const AttendanceDetailsModal = ({
         id: bellTime.id,
         note: currentBellTime?.note || null,
         attendanceCodeId,
+        date: bellTime.time,
       });
     });
   }, [isLoading, sessionAttendanceById, bellTimesWithName]);
@@ -169,18 +170,35 @@ export const AttendanceDetailsModal = ({
         id: event.eventId,
         note: currentEvent?.note || null,
         attendanceCodeId,
+        date: dayjs(event?.startTime).format('HH:mm'),
       });
     });
   }, [isLoading, eventAttendance]);
 
   const sessionAttendanceSync = (eventId: number) => {
-    // get the overlapping times
-
-    console.log(getValues());
+    const sessionAttendance = getValues(`sessionAttendance.${eventId}`);
+    const eventAttendanceAll = getValues(`eventAttendance`);
+    Object.keys(eventAttendanceAll || {}).forEach((eventKey) => {
+      if (sessionAttendance?.date === eventAttendanceAll[eventKey].date) {
+        setValue(
+          `eventAttendance.${eventKey}.attendanceCodeId`,
+          sessionAttendance?.attendanceCodeId
+        );
+      }
+    });
   };
 
   const eventAttendanceSync = (eventId: number) => {
-    console.log(getValues);
+    const eventAttendanceAll = getValues(`eventAttendance.${eventId}`);
+    const sessionAttendanceAll = getValues(`sessionAttendance`);
+    Object.keys(sessionAttendanceAll || {}).forEach((eventKey) => {
+      if (eventAttendanceAll?.date === sessionAttendanceAll[eventKey].date) {
+        setValue(
+          `sessionAttendance.${eventKey}.attendanceCodeId`,
+          eventAttendanceAll?.attendanceCodeId
+        );
+      }
+    });
   };
 
   const onSubmit = handleSubmit(async (data) => {
@@ -572,6 +590,9 @@ export const AttendanceDetailsModal = ({
                                 name: `eventAttendance.${event.eventId}.attendanceCodeId`,
                                 control,
                               }}
+                              onChange={() =>
+                                eventAttendanceSync(event.eventId)
+                              }
                             />
                           </Stack>
                         </TableCell>
