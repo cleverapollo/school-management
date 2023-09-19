@@ -52,6 +52,8 @@
   "replyEmptyError": "Please write a reply",
   "me": "me",
   "canReply": "Can reply?",
+  "mailSentSuccess": "Mail sent successfully",
+  "mailSentError": "Mail could not be sent",
   "actions": {
     "reply": "Reply",
     "forward": "Forward",
