@@ -27,7 +27,6 @@ const mails = graphql(/* GraphQL */ `
         id
         recipientPartyId
         recipientType
-        name
       }
       labels {
         id
@@ -52,7 +51,6 @@ const mails = graphql(/* GraphQL */ `
           id
           recipientPartyId
           recipientType
-          name
         }
         labels {
           id
@@ -84,7 +82,6 @@ const sendMail = graphql(/* GraphQL */ `
         id
         recipientPartyId
         recipientType
-        name
       }
       labels {
         id
@@ -109,7 +106,6 @@ const sendMail = graphql(/* GraphQL */ `
           id
           recipientPartyId
           recipientType
-          name
         }
         labels {
           id

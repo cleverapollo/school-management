@@ -23,6 +23,7 @@ import { ReactNode, ReactElement, cloneElement, useState } from 'react';
 
 type CardEditableField<TField extends FieldValues> = {
   label: string;
+  labelForEditingMode?: string;
   tooltipInfo?: string;
   // NOTE: this is the proper type but as it is a recursive typed function it causes eslint/typescript performance issues.
   // value: PathValue<TField, Path<TField>>;
@@ -155,6 +156,7 @@ export const CardEditableForm = <TField extends FieldValues>({
           (
             {
               label,
+              labelForEditingMode = label,
               tooltipInfo,
               value,
               valueRenderer,
@@ -180,8 +182,9 @@ export const CardEditableForm = <TField extends FieldValues>({
                   alignItems="center"
                 >
                   <Typography flex="1 0 0%" component="dt" variant="subtitle1">
-                    {label}
+                    {isEditMode ? labelForEditingMode : label}
                   </Typography>
+
                   {tooltipInfo && (
                     <Box display="flex" flex="1" justifyContent="flex-start">
                       <Tooltip title={tooltipInfo}>

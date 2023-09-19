@@ -53,7 +53,6 @@ export function CreateBehaviourModal({
   const { control, handleSubmit, reset } = useForm<CreateBehaviourFormState>({
     resolver: resolver({
       occurredOn: rules.required(),
-      subjects: rules.required(),
       behaviour: rules.required(),
       note: rules.required(),
     }),

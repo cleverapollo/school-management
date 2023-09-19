@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, queryClient } from '@tyro/api';
+import { sortByDisplayName } from '@tyro/core';
 import { peopleKeys } from '../keys';
 
 const contacts = graphql(/* GraphQL */ `
@@ -77,7 +78,17 @@ export function useContacts() {
 
 const contactsForSelectQuery = () => ({
   queryKey: peopleKeys.contacts.forSelect(),
-  queryFn: async () => gqlClient.request(contactsInfoForSelect),
+  queryFn: async () => {
+    const { core_studentContacts: contactsData } = await gqlClient.request(
+      contactsInfoForSelect
+    );
+
+    return {
+      core_studentContacts: (contactsData || [])
+        .map(({ person }) => person)
+        .sort(sortByDisplayName),
+    };
+  },
 });
 
 export function getContactsForSelect() {
@@ -87,7 +98,6 @@ export function getContactsForSelect() {
 export function useContactsForSelect() {
   return useQuery({
     ...contactsForSelectQuery(),
-    select: ({ core_studentContacts }) =>
-      (core_studentContacts || []).map(({ person }) => person),
+    select: ({ core_studentContacts }) => core_studentContacts,
   });
 }

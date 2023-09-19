@@ -93,7 +93,7 @@ const getColumns = (
             },
             {
               label: t('settings:actions.changeAcademicYear'),
-              onClick: () => changeAcademicNamespace(data.academicNamespaceId),
+              onClick: () => changeAcademicNamespace(data),
             },
             {
               label: t('settings:actions.makeActive'),

@@ -6316,6 +6316,7 @@ __metadata:
     react: ^18.2.0
     react-dom: ^18.2.0
     react-hook-form: ^7.43.9
+    react-querybuilder: ^6.5.1
     react-router: ^6.3.0
     react-router-dom: ^6.6.2
   languageName: unknown
@@ -12273,6 +12274,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"immer@npm:^10.0.2":
+  version: 10.0.2
+  resolution: "immer@npm:10.0.2"
+  checksum: 525a3b14210d02ae420c3b9f6ca14f7e9bcf625611d1356e773e7739f14c7c8de50dac442e6c7de3a6e24a782f7b792b6b8666bc0b3f00269d21a95f8f68ca84
+  languageName: node
+  linkType: hard
+
 "immer@npm:^9.0.7":
   version: 9.0.21
   resolution: "immer@npm:9.0.21"
@@ -17168,6 +17176,18 @@ __metadata:
     "@mui/material":
       optional: true
   checksum: 5e2bc51da9c578a5cae7be85220c3c362e871c946cbd19c9e1eb790d6d7ad66e98663572c9845dd00f17122aaed338ed09158940c89d634d23708c04a8ee6e91
+  languageName: node
+  linkType: hard
+
+"react-querybuilder@npm:^6.5.1":
+  version: 6.5.1
+  resolution: "react-querybuilder@npm:6.5.1"
+  dependencies:
+    clsx: ^1.2.1
+    immer: ^10.0.2
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: 09d9346eaa823a0eb9f40123e59430bb2c52d49c5f867ab44d1b4462ee7102a5802bd3635f508d683de0e0fe090d91dfdc5237daedcd7b02134f560ae994e310
   languageName: node
   linkType: hard
 
