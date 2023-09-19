@@ -208,12 +208,10 @@ export const AttendanceDetailsModal = ({
           studentPartyId: studentId,
           adminSubmitted: true,
         }));
-    const sessionAttendanceInput = {
-      attendances: sessionAttendances,
-    };
+
     if (sessionAttendances.length > 0) {
       await createOrUpdateSessionAttendance({
-        sessionAttendances,
+        attendances: sessionAttendances,
         adminSubmitted: true,
       });
     }
