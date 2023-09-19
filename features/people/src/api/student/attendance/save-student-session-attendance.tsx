@@ -13,7 +13,7 @@ import { peopleKeys } from '../../keys';
 
 const saveStudentSessionAttendance = graphql(/* GraphQL */ `
   mutation saveStudentSessionAttendance(
-    $input: [SaveStudentSessionAttendanceInput]
+    $input: SaveStudentSessionAttendanceInput
   ) {
     attendance_saveStudentSessionAttendance(input: $input) {
       studentPartyId
@@ -54,7 +54,7 @@ export function useCreateOrUpdateSessionAttendance() {
   const { t } = useTranslation(['common']);
 
   return useMutation({
-    mutationFn: async (input: SaveStudentSessionAttendanceInput[]) =>
+    mutationFn: async (input: SaveStudentSessionAttendanceInput) =>
       gqlClient.request(saveStudentSessionAttendance, { input }),
     onSuccess: async () => {
       await queryClient.invalidateQueries(peopleKeys.students.all());

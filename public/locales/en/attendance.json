@@ -110,6 +110,12 @@
     "SINGLE_DAY": "{{startDate}}",
     "PARTIAL_DAY": "{{startDate}} from {{startTime}} to {{endTime}}"
   },
+  "applyToSubjectAttendance": "Apply to subject attendance?",
+  "applyToSubjectAttendanceOptions": {
+    "no": "No",
+    "onlyForAbsentCodes": "Only for absent codes",
+    "forAllAttendanceCodes": "For all attendance codes"
+  },
   "youHaveNotSelectedPendingAndApproved": "You have not selected any \"Pending\" or \"Approved\" requests",
   "youHaveNotSelectedPendingAndDeclined": "You have not selected any \"Pending\" or \"Declined\" requests",
   "note": "Note",
