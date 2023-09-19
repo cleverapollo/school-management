@@ -31,6 +31,7 @@ import { useAttendanceCodes } from '@tyro/attendance';
 import {
   SaveEventAttendanceInput,
   SaveStudentSessionAttendanceInput,
+  StudentSessionAttendanceInput,
 } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { CloseIcon, LightBulbIcon } from '@tyro/icons';
@@ -72,7 +73,7 @@ export const AttendanceDetailsModal = ({
   onClose,
 }: AttendanceDetailsModalProps) => {
   const { t } = useTranslation(['attendance', 'people', 'common']);
-  const { handleSubmit, control, setValue, setError, getValues } =
+  const { handleSubmit, control, setValue, setError, getFieldState } =
     useForm<AttendanceForm>();
   const [openAlert, setOpenAlert] = useState(true);
 
@@ -175,33 +176,15 @@ export const AttendanceDetailsModal = ({
     });
   }, [isLoading, eventAttendance]);
 
-  const sessionAttendanceSync = (eventId: number) => {
-    const sessionAttendance = getValues(`sessionAttendance.${eventId}`);
-    const eventAttendanceAll = getValues(`eventAttendance`);
-    Object.keys(eventAttendanceAll || {}).forEach((eventKey) => {
-      if (sessionAttendance?.date === eventAttendanceAll[eventKey].date) {
-        setValue(
-          `eventAttendance.${eventKey}.attendanceCodeId`,
-          sessionAttendance?.attendanceCodeId
-        );
-      }
-    });
-  };
-
-  const eventAttendanceSync = (eventId: number) => {
-    const eventAttendanceAll = getValues(`eventAttendance.${eventId}`);
-    const sessionAttendanceAll = getValues(`sessionAttendance`);
-    Object.keys(sessionAttendanceAll || {}).forEach((eventKey) => {
-      if (eventAttendanceAll?.date === sessionAttendanceAll[eventKey].date) {
-        setValue(
-          `sessionAttendance.${eventKey}.attendanceCodeId`,
-          eventAttendanceAll?.attendanceCodeId
-        );
-      }
-    });
-  };
-
   const onSubmit = handleSubmit(async (data) => {
+    const updatedSessionAttendance = Object.values(
+      data?.sessionAttendance
+    )?.filter(({ id }) => getFieldState(`sessionAttendance.${id}`).isDirty);
+
+    const updatedEventAttendance = Object.values(data?.eventAttendance)?.filter(
+      ({ id }) => getFieldState(`eventAttendance.${id}`).isDirty
+    );
+
     const requiredEventAttendance = Object.values(
       data?.eventAttendance ?? {}
     ).filter(({ note, attendanceCodeId }) => note && !attendanceCodeId);
@@ -214,8 +197,8 @@ export const AttendanceDetailsModal = ({
 
     if (requiredEventAttendance.length > 0) return;
 
-    const sessionAttendanceInput: SaveStudentSessionAttendanceInput[] =
-      Object.values(data?.sessionAttendance ?? {})
+    const sessionAttendances: StudentSessionAttendanceInput[] =
+      updatedSessionAttendance
         .filter(({ attendanceCodeId, note }) => attendanceCodeId || note)
         .map(({ id, note, attendanceCodeId }) => ({
           note,
@@ -225,23 +208,27 @@ export const AttendanceDetailsModal = ({
           studentPartyId: studentId,
           adminSubmitted: true,
         }));
-
-    if (sessionAttendanceInput.length > 0) {
-      await createOrUpdateSessionAttendance(sessionAttendanceInput);
+    const sessionAttendanceInput = {
+      attendances: sessionAttendances,
+    };
+    if (sessionAttendances.length > 0) {
+      await createOrUpdateSessionAttendance({
+        sessionAttendances,
+        adminSubmitted: true,
+      });
     }
 
-    const eventAttendanceInput: SaveEventAttendanceInput[] = Object.values(
-      data.eventAttendance
-    )
-      .filter(({ attendanceCodeId }) => attendanceCodeId)
-      .map(({ id, note, attendanceCodeId }) => ({
-        note,
-        attendanceCodeId: attendanceCodeId!,
-        eventId: id,
-        date: day,
-        personPartyId: studentId,
-        adminSubmitted: true,
-      }));
+    const eventAttendanceInput: SaveEventAttendanceInput[] =
+      updatedEventAttendance
+        .filter(({ attendanceCodeId }) => attendanceCodeId)
+        .map(({ id, note, attendanceCodeId }) => ({
+          note,
+          attendanceCodeId: attendanceCodeId!,
+          eventId: id,
+          date: day,
+          personPartyId: studentId,
+          adminSubmitted: true,
+        }));
 
     if (eventAttendanceInput.length > 0) {
       await createOrUpdateEventAttendance(eventAttendanceInput);
@@ -388,6 +375,7 @@ export const AttendanceDetailsModal = ({
                 >
                   {bellTimesWithName.map((event) => {
                     const sessionAttendance = sessionAttendanceById?.[event.id];
+                    // const updatedBy = displayName(sessionAttendance?.updatedBy, { format: PreferredNameFormat.FirstnameSurname})
                     const creatorName = displayName(
                       sessionAttendance?.createdBy,
                       {
@@ -417,6 +405,27 @@ export const AttendanceDetailsModal = ({
                             </Typography>
                           </Stack>
                         </TableCell>
+                        {/* <TableCell>
+                          <Stack direction="row" alignItems="center">
+                            {sessionAttendance?.updatedBy || sessionAttendance?.createdBy && (
+                              <Avatar
+                                sx={{
+                                  width: 32,
+                                  height: 32,
+                                  fontSize: 14,
+                                }}
+                                name={updatedBy || creatorName}
+                                src={sessionAttendance?.updatedBy?.avatarUrl || sessionAttendance?.createdBy?.avatarUrl}
+                              />
+                            )}
+                            <Typography
+                              variant="subtitle2"
+                              sx={{ textWrap: 'noWrap', marginLeft: 1 }}
+                            >
+                              {(updatedBy || creatorName) ?? '-'}
+                            </Typography>
+                          </Stack>
+                        </TableCell> */}
                         <TableCell>
                           <Stack direction="row" alignItems="center">
                             {sessionAttendance?.createdBy && (
@@ -434,7 +443,7 @@ export const AttendanceDetailsModal = ({
                               variant="subtitle2"
                               sx={{ textWrap: 'noWrap', marginLeft: 1 }}
                             >
-                              {creatorName || '-'}
+                              {creatorName ?? '-'}
                             </Typography>
                           </Stack>
                         </TableCell>
@@ -478,7 +487,6 @@ export const AttendanceDetailsModal = ({
                                 name: `sessionAttendance.${event.id}.attendanceCodeId`,
                                 control,
                               }}
-                              onChange={() => sessionAttendanceSync(event.id)}
                             />
                           </Stack>
                         </TableCell>
@@ -498,6 +506,8 @@ export const AttendanceDetailsModal = ({
                   {eventAttendance?.map((event) => {
                     const [currentEvent] =
                       event?.extensions?.eventAttendance || [];
+
+                    // const updatedBy = displayName(currentEvent?.updatedBy, { format: PreferredNameFormat.FirstnameSurname})
 
                     const creatorName = displayName(currentEvent?.createdBy, {
                       format: PreferredNameFormat.FirstnameSurname,
@@ -525,6 +535,31 @@ export const AttendanceDetailsModal = ({
                             </Typography>
                           </Stack>
                         </TableCell>
+                        {/* <TableCell>
+                          <Stack direction="row" alignItems="center">
+                            {(currentEvent?.updatedBy || currentEvent?.createdBy) && (
+                              <Avatar
+                                sx={{
+                                  width: 32,
+                                  height: 32,
+                                  fontSize: 14,
+                                }}
+                                name={creatorName}
+                                src={currentEvent?.updatedBy?.avatarUrl || currentEvent?.createdBy?.avatarUrl}
+                              />
+                            )}
+
+                            <Typography
+                              variant="subtitle2"
+                              sx={{
+                                textWrap: 'noWrap',
+                                marginLeft: 1,
+                              }}
+                            >
+                              {(updatedBy || creatorName) || '-'}
+                            </Typography>
+                          </Stack>
+                        </TableCell> */}
                         <TableCell>
                           <Stack direction="row" alignItems="center">
                             {currentEvent?.createdBy && (
@@ -590,9 +625,9 @@ export const AttendanceDetailsModal = ({
                                 name: `eventAttendance.${event.eventId}.attendanceCodeId`,
                                 control,
                               }}
-                              onChange={() =>
-                                eventAttendanceSync(event.eventId)
-                              }
+                              // onChange={() =>
+                              //   eventAttendanceSync(event.eventId)
+                              // }
                             />
                           </Stack>
                         </TableCell>

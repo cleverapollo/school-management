@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import { ICellEditorParams, TableSelect } from '@tyro/core';
 import { Box, Stack, Typography } from '@mui/material';
 import { AttendanceCodeType } from '@tyro/api';
@@ -69,7 +68,6 @@ export function AttendanceCodeCellEditor(
   attendanceCodes: ReturnTypeFromUseAttendanceCodes[]
 ) {
   const getOptions = (hasNote: boolean, hasAttendanceCode: boolean) => [
-    attendanceCodes,
     [
       {
         id: 'session-note',
@@ -83,6 +81,7 @@ export function AttendanceCodeCellEditor(
         ),
       } as const,
     ],
+    attendanceCodes,
   ];
 
   return ({ data }: ICellEditorParams<ReturnTypeFromSessionAttendance>) =>

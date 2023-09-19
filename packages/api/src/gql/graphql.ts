@@ -1741,6 +1741,8 @@ export type EventAttendance = {
   id: Scalars['Long'];
   note?: Maybe<Scalars['String']>;
   personPartyId: Scalars['Long'];
+  updatedBy: Person;
+  updatedByPartyId: Scalars['Long'];
 };
 
 export type EventAttendanceFilter = {
@@ -3047,7 +3049,7 @@ export type ParentalAttendanceRequest = {
 
 export type ParentalAttendanceRequestFilter = {
   contactPartyId?: InputMaybe<Scalars['Long']>;
-  id?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   status?: InputMaybe<ParentalAttendanceRequestStatus>;
   studentPartyId?: InputMaybe<Scalars['Long']>;
 };
@@ -4643,12 +4645,8 @@ export type SaveResultExtraFieldInput = {
 
 export type SaveStudentSessionAttendanceInput = {
   adminSubmitted?: InputMaybe<Scalars['Boolean']>;
-  attendanceCodeId?: InputMaybe<Scalars['Int']>;
-  bellTimeId: Scalars['Int'];
-  date: Scalars['Date'];
-  id?: InputMaybe<Scalars['Long']>;
-  note?: InputMaybe<Scalars['String']>;
-  studentPartyId: Scalars['Long'];
+  applyCodes?: InputMaybe<SessionAttendanceFlag>;
+  attendances: Array<StudentSessionAttendanceInput>;
 };
 
 export type SaveStudentSupportFileInput = {
@@ -4918,6 +4916,11 @@ export type Session = {
   nameTextId?: Maybe<Scalars['Int']>;
   time: Scalars['Time'];
 };
+
+export enum SessionAttendanceFlag {
+  AbsentCodesOnly = 'ABSENT_CODES_ONLY',
+  AllCodes = 'ALL_CODES'
+}
 
 export type SessionAttendanceList = {
   __typename?: 'SessionAttendanceList';
@@ -5206,6 +5209,8 @@ export type StudentBellTimeAttendance = {
   createdBy: Person;
   createdByPartyId: Scalars['Long'];
   note?: Maybe<Scalars['String']>;
+  updatedBy: Person;
+  updatedByPartyId: Scalars['Long'];
 };
 
 export type StudentContact = Party & PartyPerson & {
@@ -5389,6 +5394,15 @@ export type StudentSessionAttendanceFilter = {
   from: Scalars['Date'];
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   to: Scalars['Date'];
+};
+
+export type StudentSessionAttendanceInput = {
+  attendanceCodeId?: InputMaybe<Scalars['Int']>;
+  bellTimeId: Scalars['Int'];
+  date: Scalars['Date'];
+  id?: InputMaybe<Scalars['Long']>;
+  note?: InputMaybe<Scalars['String']>;
+  studentPartyId: Scalars['Long'];
 };
 
 export type StudentStatus = {
@@ -8030,4 +8044,3 @@ export const Core_AcademicNamespacesDocument = {"kind":"Document","definitions":
 export const Catalogue_ProgrammeStagesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"catalogue_programmeStages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"catalogue_programmeStages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<Catalogue_ProgrammeStagesQuery, Catalogue_ProgrammeStagesQueryVariables>;
 export const YearsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"years"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"YearGroupFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"catalogue_years"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"yearGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<YearsQuery, YearsQueryVariables>;
 export const MyAuthDetailsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"myAuthDetails"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"myAuthDetails"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"defaultProfileId"}},{"kind":"Field","name":{"kind":"Name","value":"activeProfileId"}},{"kind":"Field","name":{"kind":"Name","value":"profiles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nickName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"tenant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"imgUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"profileType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"userType"}}]}},{"kind":"Field","name":{"kind":"Name","value":"permissionIds"}},{"kind":"Field","name":{"kind":"Name","value":"partyId"}}]}}]}}]}}]} as unknown as DocumentNode<MyAuthDetailsQuery, MyAuthDetailsQueryVariables>;
-

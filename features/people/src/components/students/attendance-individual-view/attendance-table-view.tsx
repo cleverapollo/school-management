@@ -66,10 +66,16 @@ const getColumns = (
   {
     headerName: t('attendance:takenBy'),
     field: 'createdBy',
+    // valueGetter: ({ data }) => displayName(data?.updatedBy || data?.createdBy),
     valueGetter: ({ data }) => displayName(data?.createdBy),
     cellRenderer: ({
       data,
     }: ICellRendererParams<CombinedAttendanceDataType, any>) =>
+      // (data?.updatedBy?.firstName || data?.createdBy?.firstName) ? (
+      //   <TablePersonAvatar person={data?.updatedBy || data?.createdBy} />
+      // ) : (
+      //   '-'
+      // ),
       data?.createdBy?.firstName ? (
         <TablePersonAvatar person={data?.createdBy} />
       ) : (
@@ -118,6 +124,7 @@ export function AttendanceTableView({
         type: event?.name,
         date: eventAttendanceData?.date,
         attendanceCode: eventAttendanceData?.attendanceCode?.name,
+        // createdBy: eventAttendanceData?.updatedBy || eventAttendanceData?.createdBy,
         createdBy: eventAttendanceData?.createdBy,
         details: eventAttendanceData?.note,
         partyId,
