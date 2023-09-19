@@ -49,6 +49,16 @@ const getNonClassContactColumnDefs = (
       data?.activity ? t(`people:activityValues.${data?.activity}`) : null,
   },
   {
+    field: 'programme',
+    headerName: t('people:personal.programme'),
+    valueGetter: ({ data }) =>
+      data?.programme ? t(`people:programValues.${data?.programme}`) : null,
+  },
+  {
+    field: 'description',
+    headerName: t('common:details'),
+  },
+  {
     field: 'dayOfTheWeek',
     headerName: t('common:dayOfWeek'),
     valueGetter: ({ data }) =>

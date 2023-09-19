@@ -48,6 +48,7 @@
   "personal": {
     "title": "Personal",
     "studentContactDetails": "Student's contact details",
+    "programme": "Programme",
     "about": {
       "title": "About",
       "preferredFirstName": "Preferred forename",
@@ -273,5 +274,18 @@
     "PROGRAMME_COORDINATION": "Programme Co-ordination",
     "SUPPORT": "Small groups for additional student needs",
     "TIMETABLED_HOURS_IN_OTHER_SCHOOLS": "Timetabled hours in other schools"
+  },
+  "programValues": {
+    "JCSP": "Junior Certificate Schools Programme",
+    "JUNIOR_CYCLE": "Junior Cycle",
+    "TRANSITION_YEAR": "Transition Year",
+    "LCVP": "Leaving Certificate Vocational Programme",
+    "LEAVING_CERTIFICATE": "Leaving Certificate",
+    "LEAVING_CERTIFICATE_APPLIED": "Leaving Certificate Applied",
+    "VPT2": "VPT2",
+    "VTOS": "VTOS"
   }
 }
+
+
+
