@@ -68,7 +68,13 @@ export const UpsertNonClassContactModal = ({
         dayOfTheWeek: rules.required(),
         hours: [rules.required(), rules.min(0)],
         minutes: [rules.required(), rules.max(59), rules.min(0)],
-        programme: rules.required(),
+        programme: rules.validate((value, _throwError, formValues) => {
+          if (formValues.activity === Activity.ProgrammeCoordination) {
+            const requiredFunc = rules.required();
+
+            requiredFunc(value);
+          }
+        }),
         description: rules.maxLength(35),
       }),
       defaultValues: defaultFormStateValues,
