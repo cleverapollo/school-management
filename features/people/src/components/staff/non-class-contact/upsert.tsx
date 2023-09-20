@@ -66,6 +66,7 @@ export const UpsertNonClassContactModal = ({
     dayOfTheWeek: initialState?.dayOfTheWeek,
     hours: initialState?.hours || 0,
     minutes: initialState?.minutes || 0,
+    description: '',
   };
 
   const { control, handleSubmit, reset } =
@@ -75,10 +76,8 @@ export const UpsertNonClassContactModal = ({
         dayOfTheWeek: rules.required(),
         hours: [rules.required(), rules.min(0)],
         minutes: [rules.required(), rules.max(59), rules.min(0)],
-        programme: isProgrammeCoordinationSelected
-          ? rules.required()
-          : undefined,
-        description: isOtherActivitySelected ? rules.maxLength(35) : undefined,
+        ...(isProgrammeCoordinationSelected && { programme: rules.required() }),
+        ...(isOtherActivitySelected && { description: rules.maxLength(35) }),
       }),
       defaultValues: defaultFormStateValues,
     });
