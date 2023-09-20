@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import {
@@ -10,6 +10,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  SearchInput,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
@@ -120,6 +121,16 @@ export function ApplyCoverModal({
   useEffect(() => {
     reset();
   }, [eventsMap]);
+  const [search, setSearch] = useState('');
+
+  const staffListFiltered = useMemo(
+    () =>
+      data?.staff.filter(({ staff }) => {
+        const name = displayName(staff.person);
+        return name.toLowerCase().includes(search.toLowerCase());
+      }),
+    [search, data]
+  );
 
   return (
     <Dialog
@@ -130,20 +141,29 @@ export function ApplyCoverModal({
       maxWidth="md"
     >
       <form onSubmit={onSave}>
-        <DialogTitle>{t('substitution:applyCover')}</DialogTitle>
+        <DialogTitle>
+          {' '}
+          <Typography variant="h5">
+            {t('substitution:applyCoverForList', { list: eventList })}
+          </Typography>
+          <AdditionalTeacherList eventsMap={eventsMap} />
+        </DialogTitle>
         <DialogContent>
           {isLoading ? (
             <LoadingPlaceholder sx={{ minHeight: 200 }} />
           ) : (
             <Stack spacing={2}>
               <Box>
-                <Typography variant="body2">
-                  {t('substitution:applyCoverForList', { list: eventList })}
-                </Typography>
-                <AdditionalTeacherList eventsMap={eventsMap} />
+                <SearchInput
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  containerProps={{
+                    px: 2,
+                  }}
+                />
               </Box>
               <CoverSelectionTable
-                staffList={data?.staff ?? []}
+                staffList={staffListFiltered ?? []}
                 controlProps={{
                   name: 'substituteStaff',
                   control,

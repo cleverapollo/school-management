@@ -50,7 +50,7 @@ const sessionAttendance = graphql(/* GraphQL */ `
 
 const saveSessionAttendance = graphql(/* GraphQL */ `
   mutation attendance_saveStudentSessionAttendance(
-    $input: [SaveStudentSessionAttendanceInput]
+    $input: SaveStudentSessionAttendanceInput
   ) {
     attendance_saveStudentSessionAttendance(input: $input) {
       studentPartyId
@@ -105,7 +105,7 @@ export function getSessionAttendance(filter: StudentSessionAttendanceFilter) {
 
 export function useSaveSessionAttendance() {
   return useMutation({
-    mutationFn: (input: SaveStudentSessionAttendanceInput[]) =>
+    mutationFn: (input: SaveStudentSessionAttendanceInput) =>
       gqlClient.request(saveSessionAttendance, { input }),
     onSuccess: () => {
       queryClient.invalidateQueries(attendanceKeys.all);
