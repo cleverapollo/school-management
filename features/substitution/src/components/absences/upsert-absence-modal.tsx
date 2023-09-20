@@ -142,7 +142,6 @@ export function UpsertAbsenceModal({
       resolver: resolver({
         staff: rules.required(),
         absenceType: rules.required(),
-        note: rules.required(),
         startDate: rules.required(),
         endDate: [rules.required(), rules.afterStartDate('startDate')],
         dates: {
