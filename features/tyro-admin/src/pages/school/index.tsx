@@ -16,7 +16,11 @@ import {
 } from '@tyro/api';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAdminTenants } from '../../api/tenants';
+import {
+  ReturnTypeFromUseEvictTenantLevelCache,
+  useAdminTenants,
+  useEvictTenantLevelCache,
+} from '../../api/tenants';
 
 type ReturnTypeFromUseAdminTenants = UseQueryReturnType<
   typeof useAdminTenants
@@ -24,7 +28,8 @@ type ReturnTypeFromUseAdminTenants = UseQueryReturnType<
 
 const getAdminTenantColumns = (
   t: TFunction<('common' | 'admin')[], undefined, ('common' | 'admin')[]>,
-  navigate: ReturnType<typeof useNavigate>
+  navigate: ReturnType<typeof useNavigate>,
+  evictTenantLevelCache: ReturnTypeFromUseEvictTenantLevelCache['mutateAsync']
 ): GridOptions<ReturnTypeFromUseAdminTenants>['columnDefs'] => [
   {
     field: 'name',
@@ -81,15 +86,33 @@ const getAdminTenantColumns = (
       </Button>
     ),
   },
+  {
+    headerName: '',
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAdminTenants, any>) => (
+      <Button
+        className="ag-show-on-row-interaction"
+        onClick={() => {
+          if (data?.tenant) {
+            evictTenantLevelCache(data?.tenant);
+          }
+        }}
+      >
+        Evict Tenant Cache
+      </Button>
+    ),
+  },
 ];
 
 export default function AdminSchoolsPage() {
   const { t } = useTranslation(['common', 'admin']);
   const { data: tenants } = useAdminTenants();
   const navigate = useNavigate();
+  const { mutateAsync: evictTenantLevelCache } = useEvictTenantLevelCache();
 
   const tenantColumns = useMemo(
-    () => getAdminTenantColumns(t, navigate),
+    () => getAdminTenantColumns(t, navigate, evictTenantLevelCache),
     [t, navigate]
   );
 
