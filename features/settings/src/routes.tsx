@@ -261,13 +261,15 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             title: t('navigation:management.settings.dtrReturns'),
             path: 'dtr-returns',
-            hasAccess: (permissions) => permissions.isTyroUser,
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission('ps:1:general_admin:permissions_dtr'),
             element: <DTRReturns />,
           },
           {
             type: NavObjectType.NonMenuLink,
             path: 'dtr-returns/file-b',
-            hasAccess: (permissions) => permissions.isStaffUser,
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission('ps:1:general_admin:permissions_dtr'),
             loader: () =>
               Promise.all([
                 getFormB({}),
