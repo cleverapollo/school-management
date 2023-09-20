@@ -78,14 +78,7 @@ export function useCoverLookup(
   return useQuery({
     ...coverLookupQuery(filter),
     enabled,
-    select: ({ swm_substitutionLookup }) => ({
-      ...swm_substitutionLookup,
-      staff: swm_substitutionLookup.staff.sort((staffA, staffB) => {
-        const { person: personA } = staffA.staff;
-        const { person: personB } = staffB.staff;
-        return sortByDisplayName(personA, personB);
-      }),
-    }),
+    select: ({ swm_substitutionLookup }) => swm_substitutionLookup,
   });
 }
 

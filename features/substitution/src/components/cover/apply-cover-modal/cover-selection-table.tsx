@@ -10,20 +10,36 @@ import {
   TableRow,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { usePreferredNameLayout, Avatar } from '@tyro/core';
+import {
+  usePreferredNameLayout,
+  Avatar,
+  SearchInput,
+  useDebouncedValue,
+} from '@tyro/core';
 import {
   FieldValues,
   useController,
   UseControllerProps,
 } from 'react-hook-form';
 import { CheckmarkIcon } from '@tyro/icons';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+import { useMemo, useState } from 'react';
 import { ReturnTypeFromUseCoverLookup } from '../../../api/staff-work-cover-lookup';
 
+dayjs.extend(duration);
 interface CoverSelectionTableProps<TField extends FieldValues> {
   staffList: ReturnTypeFromUseCoverLookup['staff'];
   controlProps: UseControllerProps<TField>;
 }
 
+const toHoursMin = (minutes: number | undefined | null): string => {
+  if (minutes == null) {
+    return '';
+  }
+  const duration = dayjs.duration(minutes, 'minutes').format('HH:mm');
+  return `(${duration})`;
+};
 export const CoverSelectionTable = <TField extends FieldValues>({
   staffList,
   controlProps,
@@ -34,6 +50,7 @@ export const CoverSelectionTable = <TField extends FieldValues>({
     field: { value, onChange },
     fieldState: { error },
   } = useController(controlProps);
+
 
   return (
     <Box>
@@ -141,15 +158,21 @@ export const CoverSelectionTable = <TField extends FieldValues>({
                     </TableCell>
                     <TableCell>
                       {substitutionStats.sandsWeekCount > 0 &&
-                        `${substitutionStats.sandsWeekCount} (${substitutionStats.sandsWeekMinutes})`}
+                        `${substitutionStats.sandsWeekCount} ${toHoursMin(
+                          substitutionStats.sandsWeekMinutes
+                        )}`}
                     </TableCell>
                     <TableCell>
                       {substitutionStats.sandsYearCount > 0 &&
-                        `${substitutionStats.sandsYearCount} (${substitutionStats.sandsWeekMinutes})`}
+                        `${substitutionStats.sandsYearCount} ${toHoursMin(
+                          substitutionStats.sandsWeekMinutes
+                        )}`}
                     </TableCell>
                     <TableCell>
                       {substitutionStats.casualWeekCount > 0 &&
-                        `${substitutionStats.casualWeekCount} (${substitutionStats.casualWeekMinutes})`}
+                        `${substitutionStats.casualWeekCount} ${toHoursMin(
+                          substitutionStats.casualWeekMinutes
+                        )}`}
                     </TableCell>
                     <TableCell>
                       {timetableSummary?.fulltimePeriods ?? ''}
