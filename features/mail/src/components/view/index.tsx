@@ -44,7 +44,7 @@ export function MailView() {
   const editor = useMailEditor({
     placeholder: t('mail:replyPlaceholder'),
   });
-  const { mutateAsync: sendMail } = useSendMail();
+  const { mutateAsync: sendMail, isLoading: isSending } = useSendMail();
 
   const onReply = () => {
     const body = editor?.getHTML() ?? '';
@@ -149,7 +149,11 @@ export function MailView() {
                 {replyError}
               </FormHelperText>
             )}
-            <MailEditorToolbar editor={editor} onSend={onReply} />
+            <MailEditorToolbar
+              editor={editor}
+              onSend={onReply}
+              isSending={isSending}
+            />
           </Stack>
         )}
       </Stack>

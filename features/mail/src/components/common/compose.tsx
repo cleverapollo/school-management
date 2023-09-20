@@ -89,7 +89,7 @@ export default function MailCompose({
     defaultValue: true,
   });
 
-  const { mutateAsync: sendMail } = useSendMail();
+  const { mutateAsync: sendMail, isLoading: isSending } = useSendMail();
 
   const handleClose = () => {
     onCloseCompose();
@@ -250,6 +250,7 @@ export default function MailCompose({
         <MailEditorToolbar
           editor={editor}
           onSend={onSend}
+          isSending={isSending}
           onCanReplyChange={isStaffUser ? onChangeCanReply : undefined}
         />
       </RootStyle>

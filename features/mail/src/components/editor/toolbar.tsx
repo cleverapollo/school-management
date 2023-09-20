@@ -1,4 +1,5 @@
-import { Button, FormControlLabel, Stack, Switch } from '@mui/material';
+import { FormControlLabel, Stack, Switch } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import { Editor } from '@tiptap/react';
 import { useTranslation } from '@tyro/i18n';
 import { MailEditorTextPopover } from './text-popover';
@@ -6,12 +7,14 @@ import { MailEditorTextPopover } from './text-popover';
 interface MailEditorToolbarProps {
   editor: Editor | null;
   onSend: () => void;
+  isSending: boolean;
   onCanReplyChange?: (canReply: boolean) => void;
 }
 
 export function MailEditorToolbar({
   editor,
   onSend,
+  isSending,
   onCanReplyChange,
 }: MailEditorToolbarProps) {
   const { t } = useTranslation(['common', 'mail']);
@@ -26,9 +29,9 @@ export function MailEditorToolbar({
       justifyContent="space-between"
     >
       <Stack direction="row" alignItems="center" spacing={1}>
-        <Button variant="contained" onClick={onSend}>
+        <LoadingButton variant="contained" onClick={onSend} loading={isSending}>
           {t('common:actions.send')}
-        </Button>
+        </LoadingButton>
 
         <MailEditorTextPopover editor={editor} />
         {/* Look at adding back in with attachments in v2 */}

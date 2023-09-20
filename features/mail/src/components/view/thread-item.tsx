@@ -78,6 +78,8 @@ export function ThreadItem({
           variant="caption"
           color="text.secondary"
           lineHeight={22 / 12}
+          noWrap
+          flexShrink={0}
         >
           {dayjs(sentOn).format('lll')} ({dayjs(sentOn).fromNow()})
         </Typography>
