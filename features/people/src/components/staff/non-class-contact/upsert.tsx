@@ -10,7 +10,7 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Activity,
   Day,
@@ -49,14 +49,6 @@ export const UpsertNonClassContactModal = ({
   onClose,
   nonClassContactHoursQueryFilter,
 }: UpsertNonClassContactModalProps) => {
-  const [selectedActivity, setSelectedActivity] = useState<
-    Activity | undefined
-  >();
-
-  const isProgrammeCoordinationSelected =
-    selectedActivity === Activity.ProgrammeCoordination;
-  const isOtherActivitySelected = selectedActivity === Activity.OtherActivity;
-
   const { t } = useTranslation(['people', 'common']);
   const { resolver, rules } =
     useFormValidator<UpsertNonClassContactFormState>();
@@ -69,18 +61,24 @@ export const UpsertNonClassContactModal = ({
     description: '',
   };
 
-  const { control, handleSubmit, reset } =
+  const { control, handleSubmit, watch, reset } =
     useForm<UpsertNonClassContactFormState>({
       resolver: resolver({
         activity: rules.required(),
         dayOfTheWeek: rules.required(),
         hours: [rules.required(), rules.min(0)],
         minutes: [rules.required(), rules.max(59), rules.min(0)],
-        ...(isProgrammeCoordinationSelected && { programme: rules.required() }),
-        ...(isOtherActivitySelected && { description: rules.maxLength(35) }),
+        programme: rules.required(),
+        description: rules.maxLength(35),
       }),
       defaultValues: defaultFormStateValues,
     });
+
+  const [selectedActivity] = watch(['activity']);
+
+  const isProgrammeCoordinationSelected =
+    selectedActivity === Activity.ProgrammeCoordination;
+  const isOtherActivitySelected = selectedActivity === Activity.OtherActivity;
 
   const { mutate, isLoading } = useUpsertNonClassContact(
     nonClassContactHoursQueryFilter
@@ -136,7 +134,6 @@ export const UpsertNonClassContactModal = ({
                 name: 'activity',
                 control,
               }}
-              onChange={(e) => setSelectedActivity(e.target.value as Activity)}
             />
             <RHFSelect
               fullWidth
