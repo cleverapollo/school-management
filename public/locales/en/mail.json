@@ -64,5 +64,6 @@
     "more": "More",
     "collapse": "Collapse",
     "expand": "Expand"
-  }
+  },
+  "youDoNotHavePermissionToComposeNewMail": "You do not have permission to compose a new mail"
 }

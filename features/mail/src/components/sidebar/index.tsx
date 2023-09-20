@@ -8,11 +8,12 @@ import {
   Divider,
   Typography,
   IconButton,
+  Tooltip,
 } from '@mui/material';
 import { Scrollbar, useDebouncedValue, useResponsive } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { AddIcon } from '@tyro/icons';
-import { LabelType } from '@tyro/api';
+import { LabelType, usePermissions } from '@tyro/api';
 import { MailSidebarItem } from './item';
 import { useMailSettings } from '../../store/mail-settings';
 import {
@@ -24,6 +25,7 @@ import { LabelDialog } from './label-dialog';
 
 export function MailSidebar() {
   const { pathname } = useLocation();
+  const { isStaffUser } = usePermissions();
   const { t } = useTranslation(['mail', 'common']);
   const { sidebarDisclosure, composeEmail, activeProfileId } =
     useMailSettings();
@@ -83,14 +85,23 @@ export function MailSidebar() {
   const renderContent = (
     <Scrollbar>
       <Box sx={{ p: 3 }}>
-        <Button
-          fullWidth
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={handleOpenCompose}
+        <Tooltip
+          title={
+            !isStaffUser && t('mail:youDoNotHavePermissionToComposeNewMail')
+          }
         >
-          {t('common:actions.compose')}
-        </Button>
+          <span>
+            <Button
+              fullWidth
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={handleOpenCompose}
+              disabled={!isStaffUser}
+            >
+              {t('common:actions.compose')}
+            </Button>
+          </span>
+        </Tooltip>
       </Box>
 
       <Divider />

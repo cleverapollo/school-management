@@ -13,7 +13,7 @@ import { useDisclosure, useFormValidator, useResponsive } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { CloseIcon, CollapseIcon, ExpandIcon } from '@tyro/icons';
 import { useController, useForm } from 'react-hook-form';
-import { RecipientType } from '@tyro/api';
+import { RecipientType, usePermissions } from '@tyro/api';
 import { Stack } from '@mui/system';
 import { useSendMail } from '../../api/mails';
 import { ReturnTypeUseMailSearch } from '../../api/mail-search';
@@ -55,6 +55,7 @@ export default function MailCompose({
   defaultValues,
 }: MailComposeProps) {
   const { t } = useTranslation(['mail', 'common']);
+  const { isStaffUser } = usePermissions();
   const { isOpen: isBccShowing, onOpen: showBcc } = useDisclosure();
   const isDesktop = useResponsive('up', 'sm');
   const editor = useMailEditor({});
@@ -249,7 +250,7 @@ export default function MailCompose({
         <MailEditorToolbar
           editor={editor}
           onSend={onSend}
-          onCanReplyChange={onChangeCanReply}
+          onCanReplyChange={isStaffUser ? onChangeCanReply : undefined}
         />
       </RootStyle>
     </Portal>

@@ -41,7 +41,11 @@ export const getRoutes: NavObjectFunction = (t) => [
         title: t('navigation:general.mail'),
         icon: <LetterIcon />,
         info: <MailCountLabel />,
-        hasAccess: (permissions) => !permissions.isTyroTenantAndUser,
+        hasAccess: (permissions) =>
+          permissions.hasAtLeastOnePermission([
+            'ps:1:communications:read_mail',
+            'ps:1:communications:write_mail',
+          ]),
         element: <Mail />,
         children: [
           {
