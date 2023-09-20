@@ -52,7 +52,6 @@ type AttendanceInput = {
   id: number;
   note: string | null;
   attendanceCodeId: number | null;
-  date: string;
 };
 
 type AttendanceForm = {
@@ -154,7 +153,6 @@ export const AttendanceDetailsModal = ({
         id: bellTime.id,
         note: currentBellTime?.note || null,
         attendanceCodeId,
-        date: bellTime.time,
       });
     });
   }, [isLoading, sessionAttendanceById, bellTimesWithName]);
@@ -170,7 +168,6 @@ export const AttendanceDetailsModal = ({
         id: event.eventId,
         note: currentEvent?.note || null,
         attendanceCodeId,
-        date: dayjs(event?.startTime).format('HH:mm'),
       });
     });
   }, [isLoading, eventAttendance]);
