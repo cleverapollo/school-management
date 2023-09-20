@@ -237,8 +237,8 @@ export function useSendMail() {
   return useMutation({
     mutationFn: async (input: SendMailInput) =>
       gqlClient.request(sendMail, { input }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(mailKeys.all);
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(mailKeys.all);
       toast(t('mail:mailSentSuccess'));
     },
     onError: () => {
