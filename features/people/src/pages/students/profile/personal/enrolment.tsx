@@ -54,7 +54,7 @@ const getEnrolmentDataWithLabels = (
       valueRenderer: startDate ? dayjs(startDate).format('l') : '-',
     },
     {
-      label: t('people:personal.enrolmentHistory.programme'),
+      label: t('people:personal.programme'),
       value: programme?.name,
     },
     {

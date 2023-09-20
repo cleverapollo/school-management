@@ -11,7 +11,12 @@ import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import React, { useEffect } from 'react';
-import { Activity, Day, NonClassContactHoursFilter } from '@tyro/api';
+import {
+  Activity,
+  Day,
+  Ncch_Programme,
+  NonClassContactHoursFilter,
+} from '@tyro/api';
 import { ReturnTypeFromUseNonClassContactHours } from '../../../api/staff/non-class-contact';
 import { useUpsertNonClassContact } from '../../../api/staff/upsert-non-class-contact';
 
@@ -26,6 +31,8 @@ export type UpsertNonClassContactFormState = {
   dayOfTheWeek: Day;
   hours: number;
   minutes: number;
+  programme?: Ncch_Programme;
+  description?: string;
 };
 
 const dayOfWeekOptions = [
@@ -51,18 +58,33 @@ export const UpsertNonClassContactModal = ({
     dayOfTheWeek: initialState?.dayOfTheWeek,
     hours: initialState?.hours || 0,
     minutes: initialState?.minutes || 0,
+    description: '',
   };
 
-  const { control, handleSubmit, reset } =
+  const { control, handleSubmit, watch, reset } =
     useForm<UpsertNonClassContactFormState>({
       resolver: resolver({
         activity: rules.required(),
         dayOfTheWeek: rules.required(),
         hours: [rules.required(), rules.min(0)],
         minutes: [rules.required(), rules.max(59), rules.min(0)],
+        programme: rules.validate((value, _throwError, formValues) => {
+          if (formValues.activity === Activity.ProgrammeCoordination) {
+            const requiredFunc = rules.required();
+
+            requiredFunc(value);
+          }
+        }),
+        description: rules.maxLength(35),
       }),
       defaultValues: defaultFormStateValues,
     });
+
+  const [selectedActivity] = watch(['activity']);
+
+  const isProgrammeCoordinationSelected =
+    selectedActivity === Activity.ProgrammeCoordination;
+  const isOtherActivitySelected = selectedActivity === Activity.OtherActivity;
 
   const { mutate, isLoading } = useUpsertNonClassContact(
     nonClassContactHoursQueryFilter
@@ -154,6 +176,34 @@ export const UpsertNonClassContactModal = ({
               }}
             />
           </Stack>
+          {(isProgrammeCoordinationSelected || isOtherActivitySelected) && (
+            <Stack padding={0} gap={2}>
+              <RHFSelect
+                fullWidth
+                options={Object.values(Ncch_Programme)}
+                label={t('people:personal.programme')}
+                getOptionLabel={(option) => t(`people:programValues.${option}`)}
+                controlProps={{
+                  name: 'programme',
+                  control,
+                }}
+              />
+              {isOtherActivitySelected && (
+                <RHFTextField
+                  label={t('common:details')}
+                  controlProps={{
+                    name: 'description',
+                    control,
+                  }}
+                  textFieldProps={{
+                    fullWidth: true,
+                    multiline: true,
+                    rows: 3,
+                  }}
+                />
+              )}
+            </Stack>
+          )}
         </Stack>
 
         <DialogActions>
