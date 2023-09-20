@@ -31,6 +31,7 @@ import { useAttendanceCodes } from '@tyro/attendance';
 import {
   SaveEventAttendanceInput,
   SaveStudentSessionAttendanceInput,
+  StudentSessionAttendanceInput,
 } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { CloseIcon, LightBulbIcon } from '@tyro/icons';
@@ -185,7 +186,7 @@ export const AttendanceDetailsModal = ({
 
     if (requiredEventAttendance.length > 0) return;
 
-    const sessionAttendanceInput: SaveStudentSessionAttendanceInput[] =
+    const sessionAttendanceInput: StudentSessionAttendanceInput[] =
       Object.values(data?.sessionAttendance ?? {})
         .filter(({ attendanceCodeId, note }) => attendanceCodeId || note)
         .map(({ id, note, attendanceCodeId }) => ({
@@ -194,11 +195,13 @@ export const AttendanceDetailsModal = ({
           bellTimeId: id,
           date: day,
           studentPartyId: studentId,
-          adminSubmitted: true,
         }));
 
     if (sessionAttendanceInput.length > 0) {
-      await createOrUpdateSessionAttendance(sessionAttendanceInput);
+      await createOrUpdateSessionAttendance({
+        adminSubmitted: true,
+        attendances: sessionAttendanceInput,
+      });
     }
 
     const eventAttendanceInput: SaveEventAttendanceInput[] = Object.values(

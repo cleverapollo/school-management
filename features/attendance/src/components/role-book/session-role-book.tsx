@@ -24,7 +24,8 @@ import {
 } from '@tyro/calendar';
 import {
   AttendanceCodeType,
-  SaveStudentSessionAttendanceInput,
+  StudentSessionAttendanceInput,
+  SessionAttendanceFlag,
   usePermissions,
   UsePermissionsReturn,
 } from '@tyro/api';
@@ -41,6 +42,7 @@ import {
 } from '../../api/attendance-codes';
 import { AttendanceCodeCellEditor } from './code-cell-editor';
 import { NoteModal } from './note-modal';
+import { ApplyToSubjectSelect } from './apply-to-subject-select';
 
 interface SessionAttendanceRoleBookProps {
   partyIds: number[];
@@ -279,6 +281,8 @@ export function SessionAttendanceRoleBook({
   const { t } = useTranslation(['common', 'attendance']);
   const tableRef = useRef<AgGridReact<ReturnTypeFromSessionAttendance>>(null);
   const permissions = usePermissions();
+  const [applyToSubjectAttendance, setApplyToSubjectAttendance] =
+    useState<SessionAttendanceFlag | null>(null);
   const editingStateRef =
     useRef<ReturnTypeTableUseEditableState<ReturnTypeFromSessionAttendance>>(
       null
@@ -361,8 +365,7 @@ export function SessionAttendanceRoleBook({
       'attendanceByKey' | 'noteByKey'
     >
   ) => {
-    const attendanceChanges: Record<string, SaveStudentSessionAttendanceInput> =
-      {};
+    const attendanceChanges: Record<string, StudentSessionAttendanceInput> = {};
 
     Object.entries(data).forEach(([studentPartyId, changes]) => {
       Object.entries(changes).forEach(([changeKey, value]) => {
@@ -395,7 +398,10 @@ export function SessionAttendanceRoleBook({
       });
     });
 
-    return saveSessionAttendance(Object.values(attendanceChanges));
+    return saveSessionAttendance({
+      applyCodes: applyToSubjectAttendance,
+      attendances: Object.values(attendanceChanges),
+    });
   };
 
   return (
@@ -425,6 +431,12 @@ export function SessionAttendanceRoleBook({
           suppressMenu: true,
         }}
         onBulkSave={onBulkSave}
+        additionalEditBarElements={
+          <ApplyToSubjectSelect
+            value={applyToSubjectAttendance}
+            onChange={setApplyToSubjectAttendance}
+          />
+        }
       />
       <NoteModal
         open={!!noteRowAndKey}
