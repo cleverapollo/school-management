@@ -90,6 +90,7 @@ export interface TableProps<T> extends AgGridReactProps<T> {
   toolbar?: React.ReactNode;
   editingStateRef?: React.Ref<ReturnTypeUseEditableState<T>>;
   isLoading?: boolean;
+  additionalEditBarElements?: React.ReactNode;
 }
 
 const defaultColDef: ColDef = {
@@ -123,6 +124,7 @@ function TableInner<T extends object>(
     toolbar,
     editingStateRef,
     isLoading,
+    additionalEditBarElements,
     ...props
   }: TableProps<T>,
   ref: React.Ref<AgGridReact<T>>
@@ -306,6 +308,7 @@ function TableInner<T extends object>(
         numberOfEdits={numberOfEdits}
         onSave={onSave}
         onCancel={onCancel}
+        additionalEditBarElements={additionalEditBarElements}
       />
     </>
   );

@@ -205,7 +205,6 @@ export const AttendanceDetailsModal = ({
           bellTimeId: id,
           date: day,
           studentPartyId: studentId,
-          adminSubmitted: true,
         }));
 
     if (sessionAttendances.length > 0) {
