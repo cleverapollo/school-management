@@ -52,6 +52,11 @@ export const UpsertNonClassContactModal = ({
   const [selectedActivity, setSelectedActivity] = useState<
     Activity | undefined
   >();
+
+  const isProgrammeCoordinationSelected =
+    selectedActivity === Activity.ProgrammeCoordination;
+  const isOtherActivitySelected = selectedActivity === Activity.OtherActivity;
+
   const { t } = useTranslation(['people', 'common']);
   const { resolver, rules } =
     useFormValidator<UpsertNonClassContactFormState>();
@@ -63,21 +68,17 @@ export const UpsertNonClassContactModal = ({
     minutes: initialState?.minutes || 0,
   };
 
-  const { control, handleSubmit, watch, reset } =
+  const { control, handleSubmit, reset } =
     useForm<UpsertNonClassContactFormState>({
       resolver: resolver({
         activity: rules.required(),
         dayOfTheWeek: rules.required(),
         hours: [rules.required(), rules.min(0)],
         minutes: [rules.required(), rules.max(59), rules.min(0)],
-        programme:
-          selectedActivity === Activity.ProgrammeCoordination
-            ? rules.required()
-            : undefined,
-        description:
-          selectedActivity === Activity.OtherActivity
-            ? rules.maxLength(35)
-            : undefined,
+        programme: isProgrammeCoordinationSelected
+          ? rules.required()
+          : undefined,
+        description: isOtherActivitySelected ? rules.maxLength(35) : undefined,
       }),
       defaultValues: defaultFormStateValues,
     });
@@ -85,7 +86,7 @@ export const UpsertNonClassContactModal = ({
   const { mutate, isLoading } = useUpsertNonClassContact(
     nonClassContactHoursQueryFilter
   );
-  
+
   const handleClose = () => {
     onClose();
     reset();
@@ -173,8 +174,7 @@ export const UpsertNonClassContactModal = ({
               }}
             />
           </Stack>
-          {(selectedActivity === Activity.ProgrammeCoordination ||
-            selectedActivity === Activity.OtherActivity) && (
+          {(isProgrammeCoordinationSelected || isOtherActivitySelected) && (
             <Stack padding={0} gap={2}>
               <RHFSelect
                 fullWidth
@@ -184,13 +184,9 @@ export const UpsertNonClassContactModal = ({
                 controlProps={{
                   name: 'programme',
                   control,
-                  rules: {
-                    required:
-                      selectedActivity === Activity.ProgrammeCoordination,
-                  },
                 }}
               />
-              {selectedActivity === Activity.OtherActivity && (
+              {isOtherActivitySelected && (
                 <RHFTextField
                   label={t('common:details')}
                   controlProps={{
