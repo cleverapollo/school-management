@@ -1,22 +1,10 @@
 import { Select } from '@tyro/core';
-import { TFunction, useTranslation } from '@tyro/i18n';
+import { useTranslation } from '@tyro/i18n';
 import { SessionAttendanceFlag } from '@tyro/api';
-
-const getOptions = (t: TFunction<'attendance'[]>) => [
-  { id: 'null', name: t('attendance:applyToSubjectAttendanceOptions.no') },
-  {
-    id: SessionAttendanceFlag.AbsentCodesOnly,
-    name: t('attendance:applyToSubjectAttendanceOptions.onlyForAbsentCodes'),
-  },
-  {
-    id: SessionAttendanceFlag.AllCodes,
-    name: t('attendance:applyToSubjectAttendanceOptions.forAllAttendanceCodes'),
-  },
-];
 
 interface ApplyToSubjectSelectProps {
   value: SessionAttendanceFlag | null;
-  onChange: (value: SessionAttendanceFlag | null) => void;
+  onChange: (value: ApplyToSubjectSelectProps['value']) => void;
 }
 
 export function ApplyToSubjectSelect({
@@ -24,12 +12,24 @@ export function ApplyToSubjectSelect({
   onChange,
 }: ApplyToSubjectSelectProps) {
   const { t } = useTranslation(['attendance']);
-  const options = getOptions(t);
+  const options = [
+    { id: 'null', name: t('attendance:applyToSubjectAttendanceOptions.no') },
+    {
+      id: SessionAttendanceFlag.AbsentCodesOnly,
+      name: t('attendance:applyToSubjectAttendanceOptions.onlyForAbsentCodes'),
+    },
+    {
+      id: SessionAttendanceFlag.AllCodes,
+      name: t(
+        'attendance:applyToSubjectAttendanceOptions.forAllAttendanceCodes'
+      ),
+    },
+  ];
 
   return (
     <Select
       label={t('attendance:applyToSubjectAttendance')}
-      value={!value ? 'null' : value}
+      value={value ?? 'null'}
       optionIdKey="id"
       options={options}
       getOptionLabel={(option) => option.name}
