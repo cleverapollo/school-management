@@ -40,6 +40,13 @@ const studentDailyCalendarTimetableInformation = graphql(/* GraphQL */ `
                 lastName
                 avatarUrl
               }
+              updatedByPartyId
+              updatedBy {
+                firstName
+                lastName
+                partyId
+                avatarUrl
+              }
             }
           }
         }

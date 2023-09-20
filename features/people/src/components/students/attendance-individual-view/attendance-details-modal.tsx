@@ -30,7 +30,6 @@ import {
 import { useAttendanceCodes } from '@tyro/attendance';
 import {
   SaveEventAttendanceInput,
-  SaveStudentSessionAttendanceInput,
   StudentSessionAttendanceInput,
 } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
@@ -373,7 +372,10 @@ export const AttendanceDetailsModal = ({
                 >
                   {bellTimesWithName.map((event) => {
                     const sessionAttendance = sessionAttendanceById?.[event.id];
-                    // const updatedBy = displayName(sessionAttendance?.updatedBy, { format: PreferredNameFormat.FirstnameSurname})
+                    const updatedBy = displayName(
+                      sessionAttendance?.updatedBy,
+                      { format: PreferredNameFormat.FirstnameSurname }
+                    );
                     const creatorName = displayName(
                       sessionAttendance?.createdBy,
                       {
@@ -403,9 +405,10 @@ export const AttendanceDetailsModal = ({
                             </Typography>
                           </Stack>
                         </TableCell>
-                        {/* <TableCell>
+                        <TableCell>
                           <Stack direction="row" alignItems="center">
-                            {sessionAttendance?.updatedBy || sessionAttendance?.createdBy && (
+                            {(sessionAttendance?.updatedBy ||
+                              sessionAttendance?.createdBy) && (
                               <Avatar
                                 sx={{
                                   width: 32,
@@ -413,7 +416,10 @@ export const AttendanceDetailsModal = ({
                                   fontSize: 14,
                                 }}
                                 name={updatedBy || creatorName}
-                                src={sessionAttendance?.updatedBy?.avatarUrl || sessionAttendance?.createdBy?.avatarUrl}
+                                src={
+                                  sessionAttendance?.updatedBy?.avatarUrl ||
+                                  sessionAttendance?.createdBy?.avatarUrl
+                                }
                               />
                             )}
                             <Typography
@@ -423,28 +429,8 @@ export const AttendanceDetailsModal = ({
                               {(updatedBy || creatorName) ?? '-'}
                             </Typography>
                           </Stack>
-                        </TableCell> */}
-                        <TableCell>
-                          <Stack direction="row" alignItems="center">
-                            {sessionAttendance?.createdBy && (
-                              <Avatar
-                                sx={{
-                                  width: 32,
-                                  height: 32,
-                                  fontSize: 14,
-                                }}
-                                name={creatorName}
-                                src={sessionAttendance?.createdBy?.avatarUrl}
-                              />
-                            )}
-                            <Typography
-                              variant="subtitle2"
-                              sx={{ textWrap: 'noWrap', marginLeft: 1 }}
-                            >
-                              {creatorName ?? '-'}
-                            </Typography>
-                          </Stack>
                         </TableCell>
+
                         <TableCell>
                           <Stack
                             direction="row"
@@ -505,7 +491,9 @@ export const AttendanceDetailsModal = ({
                     const [currentEvent] =
                       event?.extensions?.eventAttendance || [];
 
-                    // const updatedBy = displayName(currentEvent?.updatedBy, { format: PreferredNameFormat.FirstnameSurname})
+                    const updatedBy = displayName(currentEvent?.updatedBy, {
+                      format: PreferredNameFormat.FirstnameSurname,
+                    });
 
                     const creatorName = displayName(currentEvent?.createdBy, {
                       format: PreferredNameFormat.FirstnameSurname,
@@ -533,34 +521,10 @@ export const AttendanceDetailsModal = ({
                             </Typography>
                           </Stack>
                         </TableCell>
-                        {/* <TableCell>
-                          <Stack direction="row" alignItems="center">
-                            {(currentEvent?.updatedBy || currentEvent?.createdBy) && (
-                              <Avatar
-                                sx={{
-                                  width: 32,
-                                  height: 32,
-                                  fontSize: 14,
-                                }}
-                                name={creatorName}
-                                src={currentEvent?.updatedBy?.avatarUrl || currentEvent?.createdBy?.avatarUrl}
-                              />
-                            )}
-
-                            <Typography
-                              variant="subtitle2"
-                              sx={{
-                                textWrap: 'noWrap',
-                                marginLeft: 1,
-                              }}
-                            >
-                              {(updatedBy || creatorName) || '-'}
-                            </Typography>
-                          </Stack>
-                        </TableCell> */}
                         <TableCell>
                           <Stack direction="row" alignItems="center">
-                            {currentEvent?.createdBy && (
+                            {(currentEvent?.updatedBy ||
+                              currentEvent?.createdBy) && (
                               <Avatar
                                 sx={{
                                   width: 32,
@@ -568,7 +532,10 @@ export const AttendanceDetailsModal = ({
                                   fontSize: 14,
                                 }}
                                 name={creatorName}
-                                src={currentEvent?.createdBy?.avatarUrl}
+                                src={
+                                  currentEvent?.updatedBy?.avatarUrl ||
+                                  currentEvent?.createdBy?.avatarUrl
+                                }
                               />
                             )}
 
@@ -579,7 +546,7 @@ export const AttendanceDetailsModal = ({
                                 marginLeft: 1,
                               }}
                             >
-                              {creatorName || '-'}
+                              {updatedBy || creatorName || '-'}
                             </Typography>
                           </Stack>
                         </TableCell>
@@ -623,9 +590,6 @@ export const AttendanceDetailsModal = ({
                                 name: `eventAttendance.${event.eventId}.attendanceCodeId`,
                                 control,
                               }}
-                              // onChange={() =>
-                              //   eventAttendanceSync(event.eventId)
-                              // }
                             />
                           </Stack>
                         </TableCell>

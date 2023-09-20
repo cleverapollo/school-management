@@ -27,6 +27,10 @@ export type CombinedAttendanceDataType = {
   type: TypeForCombinedAttendanceData;
   attendanceCode: TypeForCombinedAttendanceData;
   details?: OptionalTypeForCombinedAttendanceData;
+  updatedBy?: {
+    firstName?: OptionalTypeForCombinedAttendanceData;
+    lastName?: OptionalTypeForCombinedAttendanceData;
+  };
   createdBy?: {
     firstName?: OptionalTypeForCombinedAttendanceData;
     lastName?: OptionalTypeForCombinedAttendanceData;
@@ -66,18 +70,13 @@ const getColumns = (
   {
     headerName: t('attendance:takenBy'),
     field: 'createdBy',
-    // valueGetter: ({ data }) => displayName(data?.updatedBy || data?.createdBy),
-    valueGetter: ({ data }) => displayName(data?.createdBy),
+    valueGetter: ({ data }) => displayName(data?.updatedBy || data?.createdBy),
+
     cellRenderer: ({
       data,
     }: ICellRendererParams<CombinedAttendanceDataType, any>) =>
-      // (data?.updatedBy?.firstName || data?.createdBy?.firstName) ? (
-      //   <TablePersonAvatar person={data?.updatedBy || data?.createdBy} />
-      // ) : (
-      //   '-'
-      // ),
-      data?.createdBy?.firstName ? (
-        <TablePersonAvatar person={data?.createdBy} />
+      data?.updatedBy?.firstName || data?.createdBy?.firstName ? (
+        <TablePersonAvatar person={data?.updatedBy || data?.createdBy} />
       ) : (
         '-'
       ),

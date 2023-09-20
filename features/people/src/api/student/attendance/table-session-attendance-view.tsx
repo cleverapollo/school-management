@@ -35,6 +35,13 @@ const tableSessionAttendanceView = graphql(/* GraphQL */ `
             avatarUrl
           }
           createdByPartyId
+          updatedByPartyId
+          updatedBy {
+            firstName
+            lastName
+            partyId
+            avatarUrl
+          }
         }
       }
     }

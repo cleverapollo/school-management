@@ -68,21 +68,21 @@ export function AttendanceToggle({ codeId, onChange }: AttendanceToggleProps) {
       >
         <ToggleButton
           value={AttendanceCodeType.Present}
-          color="success"
+          color="emerald"
           onClick={() => handleAttendanceCodeChange(AttendanceCodeType.Present)}
         >
           {t('attendance:nameByCodeType.PRESENT')}
         </ToggleButton>
         <ToggleButton
           value={AttendanceCodeType.Late}
-          color="info"
+          color="sky"
           onClick={() => handleAttendanceCodeChange(AttendanceCodeType.Late)}
         >
           {t('attendance:nameByCodeType.LATE')}
         </ToggleButton>
         <ToggleButton
           ref={absentToggleRef}
-          color="error"
+          color="pink"
           value={{}}
           selected={isAbsentMenuOpen || isAbsentCodeSelected}
           onClick={() => setIsAbsentMenuOpen(true)}
@@ -128,20 +128,6 @@ export function AttendanceToggle({ codeId, onChange }: AttendanceToggleProps) {
       >
         <MenuItem
           dense
-          selected={codeType === AttendanceCodeType.ExplainedAbsence}
-          onClick={() =>
-            handleAttendanceCodeChange(AttendanceCodeType.ExplainedAbsence)
-          }
-        >
-          <ListItemText>
-            {t('attendance:nameByCodeType.EXPLAINED_ABSENCE')}
-          </ListItemText>
-          <ListItemIcon>
-            <SchoolBuildingIcon />
-          </ListItemIcon>
-        </MenuItem>
-        <MenuItem
-          dense
           selected={codeType === AttendanceCodeType.UnexplainedAbsence}
           onClick={() =>
             handleAttendanceCodeChange(AttendanceCodeType.UnexplainedAbsence)
@@ -152,6 +138,20 @@ export function AttendanceToggle({ codeId, onChange }: AttendanceToggleProps) {
           </ListItemText>
           <ListItemIcon>
             <InfoCircleIcon />
+          </ListItemIcon>
+        </MenuItem>
+        <MenuItem
+          dense
+          selected={codeType === AttendanceCodeType.ExplainedAbsence}
+          onClick={() =>
+            handleAttendanceCodeChange(AttendanceCodeType.ExplainedAbsence)
+          }
+        >
+          <ListItemText>
+            {t('attendance:nameByCodeType.EXPLAINED_ABSENCE')}
+          </ListItemText>
+          <ListItemIcon>
+            <SchoolBuildingIcon />
           </ListItemIcon>
         </MenuItem>
       </Menu>

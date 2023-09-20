@@ -87,7 +87,7 @@
     "PRESENT": "Present",
     "LATE": "Late",
     "EXPLAINED_ABSENCE": "In school",
-    "UNEXPLAINED_ABSENCE": "Unknown"
+    "UNEXPLAINED_ABSENCE": "Unexplained"
   },
   "tuslaCodeDescription": {
     "A": "Student illness",
