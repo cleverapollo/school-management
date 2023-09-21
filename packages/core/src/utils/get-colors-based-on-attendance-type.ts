@@ -4,29 +4,107 @@ interface AttendanceCode {
   codeType: AttendanceCodeType;
 }
 
-export const getColourBasedOnAttendanceType = (
+type StyledValues = {
+  color: string;
+  bgColor: string;
+  hoverBg?: string;
+};
+
+type Variants = 'soft' | 'filled';
+
+type ColorsByVariant = Record<Variants, StyledValues>;
+
+type GetColourBasedOnAttendanceTypeFn = (
   attendanceCode: AttendanceCode['codeType']
 ) => {
-  const colors = { color: '', backgroundColor: '' };
-  switch (attendanceCode) {
-    case AttendanceCodeType.Present:
-      colors.color = `emerald.500`;
-      colors.backgroundColor = `emerald.100`;
-      break;
-    case AttendanceCodeType.ExplainedAbsence:
-      colors.color = `pink.600`;
-      colors.backgroundColor = `pink.100`;
-      break;
-    case AttendanceCodeType.UnexplainedAbsence:
-      colors.color = `violet.700`;
-      colors.backgroundColor = `violet.100`;
-      break;
-    case AttendanceCodeType.Late:
-      colors.color = `sky.500`;
-      colors.backgroundColor = `sky.100`;
-      break;
+  base: string;
+} & ColorsByVariant;
 
-    default:
-  }
-  return colors;
-};
+export const getColourBasedOnAttendanceType: GetColourBasedOnAttendanceTypeFn =
+  (attendanceCode) => {
+    switch (attendanceCode) {
+      case AttendanceCodeType.Present: {
+        const base = 'emerald';
+
+        return {
+          base,
+          filled: {
+            color: 'white',
+            bgColor: `${base}.500`,
+            hoverBg: `${base}.700`,
+          },
+          soft: {
+            color: `${base}.500`,
+            bgColor: `${base}.100`,
+          },
+        };
+      }
+      case AttendanceCodeType.ExplainedAbsence: {
+        const base = 'pink';
+
+        return {
+          base,
+          filled: {
+            color: 'white',
+            bgColor: `${base}.500`,
+            hoverBg: `${base}.600`,
+          },
+          soft: {
+            color: `${base}.600`,
+            bgColor: `${base}.100`,
+          },
+        };
+      }
+      case AttendanceCodeType.UnexplainedAbsence: {
+        const base = 'violet';
+
+        return {
+          base,
+          filled: {
+            color: 'white',
+            bgColor: `${base}.700`,
+            hoverBg: `${base}.900`,
+          },
+          soft: {
+            color: `${base}.700`,
+            bgColor: `${base}.100`,
+          },
+        };
+      }
+
+      case AttendanceCodeType.Late: {
+        const base = 'sky';
+
+        return {
+          base,
+          filled: {
+            color: 'white',
+            bgColor: `${base}.400`,
+            hoverBg: `${base}.600`,
+          },
+          soft: {
+            color: `${base}.500`,
+            bgColor: `${base}.100`,
+          },
+        };
+      }
+
+      case AttendanceCodeType.NotTaken:
+      default: {
+        const base = 'zinc';
+
+        return {
+          base,
+          filled: {
+            color: `${base}.700`,
+            bgColor: `${base}.300`,
+            hoverBg: `${base}.400`,
+          },
+          soft: {
+            color: `${base}.500`,
+            bgColor: `${base}.100`,
+          },
+        };
+      }
+    }
+  };

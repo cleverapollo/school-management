@@ -10,10 +10,7 @@ import {
   usePermissions,
 } from '@tyro/api';
 import { ReturnTypeFromUseStudentCalendarAttendance } from '@tyro/attendance';
-import {
-  defaultCalendarDayColors,
-  getColourBasedOnAttendanceType,
-} from '../../../utils/get-color-based-on-attendance-type';
+import { getColourBasedOnAttendanceType } from '@tyro/core';
 import { AttendanceDetailsModal } from './attendance-details-modal';
 import { AttendanceDataType } from './index';
 
@@ -38,30 +35,43 @@ type CustomDayProps = {
 
 const weekends = [0, 6];
 
-const getCalendarColors = (
+type GetCalendarColorsFn = (
   attendanceCode: AttendanceCodeType,
   dayOfWeek: number,
   currentTabValue: AttendanceDataType['currentTabValue'],
   dayToCheck: string,
   startDate: dayjs.Dayjs
+) => ReturnType<typeof getColourBasedOnAttendanceType>['filled'];
+
+const getCalendarColors: GetCalendarColorsFn = (
+  attendanceCode,
+  dayOfWeek,
+  currentTabValue,
+  dayToCheck,
+  startDate
 ) => {
   const isAfterCurrentDay = dayjs().isBefore(dayToCheck);
   const isBeforeCurrentDay = dayjs(dayToCheck).isBefore(startDate);
 
-  if (weekends.includes(dayOfWeek)) {
-    return defaultCalendarDayColors;
-  }
+  const defaultColors: ReturnType<typeof getCalendarColors> = {
+    bgColor: 'transparent',
+    color: 'slate.500',
+    hoverBg: 'transparent',
+  };
+
   if (
+    weekends.includes(dayOfWeek) ||
     isBeforeCurrentDay ||
     (isAfterCurrentDay && attendanceCode === AttendanceCodeType.NotTaken)
   ) {
-    return defaultCalendarDayColors;
-  }
-  if (currentTabValue === 'ALL' || currentTabValue === attendanceCode) {
-    return getColourBasedOnAttendanceType(attendanceCode);
+    return defaultColors;
   }
 
-  return defaultCalendarDayColors;
+  if (currentTabValue === 'ALL' || currentTabValue === attendanceCode) {
+    return getColourBasedOnAttendanceType(attendanceCode).filled;
+  }
+
+  return defaultColors;
 };
 
 function CustomDay(props: CustomDayProps) {
@@ -82,14 +92,13 @@ function CustomDay(props: CustomDayProps) {
     (attendanceItem) => attendanceItem.date === dayToCheck
   );
 
-  const { backgroundColor, color, backgroundColorHoverState, colorHoverState } =
-    getCalendarColors(
-      dayAttendance?.status ?? AttendanceCodeType.NotTaken,
-      dayOfWeek,
-      currentTabValue,
-      dayToCheck,
-      startDate
-    );
+  const { bgColor, color, hoverBg } = getCalendarColors(
+    dayAttendance?.status ?? AttendanceCodeType.NotTaken,
+    dayOfWeek,
+    currentTabValue,
+    dayToCheck,
+    startDate
+  );
 
   return (
     <PickersDay
@@ -99,11 +108,11 @@ function CustomDay(props: CustomDayProps) {
           ? undefined
           : 'none',
         borderRadius: '13px',
-        backgroundColor,
+        backgroundColor: bgColor,
         color,
         '&:hover': {
-          backgroundColor: backgroundColorHoverState,
-          color: colorHoverState,
+          backgroundColor: hoverBg,
+          color,
         },
       }}
       onDaySelect={() => {

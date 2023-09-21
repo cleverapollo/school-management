@@ -54,8 +54,7 @@ export function RolebookAttendanceValue({
 
   const hasNote = !!note;
 
-  const { color: attendanceColor } =
-    getColourBasedOnAttendanceType(attendanceCodeType);
+  const { color } = getColourBasedOnAttendanceType(attendanceCodeType).soft;
 
   if (view === 'codes') {
     return (
@@ -72,7 +71,7 @@ export function RolebookAttendanceValue({
           component="span"
           sx={{
             position: 'relative',
-            color: includedInFilter ? attendanceColor : 'text.disabled',
+            color: includedInFilter ? color : 'text.disabled',
             opacity: includedInFilter ? 1 : 0.2,
             fontWeight: 'bold',
           }}
@@ -113,7 +112,7 @@ export function RolebookAttendanceValue({
     >
       <Box
         sx={{
-          color: includedInFilter ? attendanceColor : 'text.disabled',
+          color: includedInFilter ? color : 'text.disabled',
           opacity: includedInFilter ? 1 : 0.2,
           display: 'flex',
         }}

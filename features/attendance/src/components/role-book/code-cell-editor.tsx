@@ -37,9 +37,7 @@ const renderSelectOption = (
     );
   }
 
-  const { color: updatedColor } = getColourBasedOnAttendanceType(
-    option.sessionCodeType
-  );
+  const { color } = getColourBasedOnAttendanceType(option.sessionCodeType).soft;
   const icon =
     iconBasedOnCodeType[
       option.sessionCodeType as AttendanceCodesWithoutNotTaken
@@ -48,14 +46,14 @@ const renderSelectOption = (
   return (
     <Stack flex={1} direction="row" spacing={1} justifyContent="space-between">
       <Stack direction="row" spacing={1} alignItems="center" flex={1}>
-        <Box display="flex" alignItems="center" color={updatedColor}>
+        <Box display="flex" alignItems="center" color={color}>
           {icon}
         </Box>
         <Typography component="span" variant="subtitle2">
           {option.description}
         </Typography>
       </Stack>
-      <Typography component="span" color={updatedColor} variant="subtitle2">
+      <Typography component="span" color={color} variant="subtitle2">
         {option.name}
       </Typography>
     </Stack>

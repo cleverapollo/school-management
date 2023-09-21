@@ -9,14 +9,14 @@ interface AttendanceCodeChipProps {
 
 export function AttendanceCodeChip({ codeType }: AttendanceCodeChipProps) {
   const { t } = useTranslation(['common']);
-  const { color, backgroundColor } = getColourBasedOnAttendanceType(codeType);
+  const { color, bgColor } = getColourBasedOnAttendanceType(codeType).soft;
 
   return (
     <Chip
       sx={() => ({
         pointerEvents: 'none',
         color,
-        backgroundColor,
+        backgroundColor: bgColor,
       })}
       label={t(`common:attendanceCode.${codeType}`)}
       variant="soft"
