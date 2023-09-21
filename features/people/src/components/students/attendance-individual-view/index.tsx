@@ -17,6 +17,7 @@ import Chip from '@mui/material/Chip';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { useAcademicNamespace, AttendanceCodeType } from '@tyro/api';
 import { ToggleButtonCalendarIcon, ToggleButtonTableIcon } from '@tyro/icons';
+import { getColourBasedOnAttendanceType } from '@tyro/core';
 import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useStudentCalendarAttendance } from '@tyro/attendance';
@@ -36,6 +37,20 @@ enum CalendarView {
   Calendar = 'calendar',
   Table = 'table',
 }
+
+type TabColor = Record<
+  AttendanceCodeType,
+  ReturnType<typeof getColourBasedOnAttendanceType>['filled']
+>;
+
+const tabColors = Object.values(AttendanceCodeType).reduce<TabColor>(
+  (codeTypes, codeType) => {
+    codeTypes[codeType] = getColourBasedOnAttendanceType(codeType).filled;
+
+    return codeTypes;
+  },
+  {} as TabColor
+);
 
 export const MonthOverview = () => {
   const { t } = useTranslation(['attendance', 'people']);
@@ -64,50 +79,45 @@ export const MonthOverview = () => {
     useState<ExtendedAttendanceCodeType>('ALL');
 
   const attendanceTabData: Array<{
-    backgroundColor: string;
-    colour: string;
+    bgColor: string;
+    color: string;
     translationText: string;
     currentTabValue: ExtendedAttendanceCodeType;
     total: number;
   }> = [
     {
-      backgroundColor: 'indigo.100',
-      colour: 'indigo.500',
+      bgColor: 'indigo.100',
+      color: 'indigo.500',
       translationText: t('attendance:all'),
       currentTabValue: 'ALL',
       total: totalAttendanceDays,
     },
     {
-      backgroundColor: 'emerald.500',
-      colour: 'white',
+      ...tabColors.PRESENT,
       translationText: t('attendance:totalPresent'),
       currentTabValue: AttendanceCodeType.Present,
       total: calendarAttendance?.totalPresent ?? 0,
     },
     {
-      backgroundColor: 'sky.400',
-      colour: 'white',
+      ...tabColors.LATE,
       translationText: t('attendance:totalLate'),
       currentTabValue: AttendanceCodeType.Late,
       total: calendarAttendance?.totalLate ?? 0,
     },
     {
-      backgroundColor: 'pink.500',
-      colour: 'white',
+      ...tabColors.EXPLAINED_ABSENCE,
       translationText: t('attendance:totalAbsent'),
       currentTabValue: AttendanceCodeType.ExplainedAbsence,
       total: calendarAttendance?.totalAbsent ?? 0,
     },
     {
-      backgroundColor: 'indigo.700',
-      colour: 'white',
+      ...tabColors.UNEXPLAINED_ABSENCE,
       translationText: t('attendance:totalUnexplained'),
       currentTabValue: AttendanceCodeType.UnexplainedAbsence,
       total: calendarAttendance?.totalUnexplained ?? 0,
     },
     {
-      backgroundColor: 'zinc.300',
-      colour: 'zinc.700',
+      ...tabColors.NOT_TAKEN,
       translationText: t('attendance:totalNotTaken'),
       currentTabValue: AttendanceCodeType.NotTaken,
       total: calendarAttendance?.totalNotTaken ?? 0,
@@ -243,15 +253,15 @@ export const MonthOverview = () => {
                           variant="soft"
                           sx={{
                             cursor: 'pointer',
-                            backgroundColor: item?.backgroundColor,
+                            backgroundColor: item?.bgColor,
                             borderRadius: '6px',
                             height: '20px',
                             fontWeight: '700',
                             fontSize: '12px',
                             paddingX: '8px',
-                            color: item?.colour,
+                            color: item?.color,
                             '& .MuiChip-icon': {
-                              color: `${item?.colour}`,
+                              color: item?.color,
                             },
                             '& .MuiChip-label': {
                               padding: 0,

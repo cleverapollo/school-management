@@ -1,9 +1,5 @@
 import { AttendanceCodeType } from '@tyro/api';
 
-interface AttendanceCode {
-  codeType: AttendanceCodeType;
-}
-
 type StyledValues = {
   color: string;
   bgColor: string;
@@ -15,7 +11,7 @@ type Variants = 'soft' | 'filled';
 type ColorsByVariant = Record<Variants, StyledValues>;
 
 type GetColourBasedOnAttendanceTypeFn = (
-  attendanceCode: AttendanceCode['codeType']
+  attendanceCode: AttendanceCodeType
 ) => {
   base: string;
 } & ColorsByVariant;

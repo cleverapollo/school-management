@@ -416,7 +416,7 @@ export const AttendanceDetailsModal = ({
                               variant="subtitle2"
                               sx={{ textWrap: 'noWrap', marginLeft: 1 }}
                             >
-                              {creatorName ?? '-'}
+                              {creatorName || '-'}
                             </Typography>
                           </Stack>
                         </TableCell>

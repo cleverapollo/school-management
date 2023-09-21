@@ -35,13 +35,6 @@ const iconWithNoteBasedOnCodeType = {
   [AttendanceCodeType.UnexplainedAbsence]: <CloseCircleWithWarningIcon />,
 } as const;
 
-export const colorsBasedOnCodeType = {
-  [AttendanceCodeType.Present]: 'emerald',
-  [AttendanceCodeType.ExplainedAbsence]: 'pink',
-  [AttendanceCodeType.Late]: 'sky',
-  [AttendanceCodeType.UnexplainedAbsence]: 'violet',
-} as const;
-
 export function RolebookAttendanceValue({
   attendanceCodeType,
   view,
