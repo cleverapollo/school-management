@@ -68,21 +68,21 @@ export function AttendanceToggle({ codeId, onChange }: AttendanceToggleProps) {
       >
         <ToggleButton
           value={AttendanceCodeType.Present}
-          color="emerald"
+          color="success"
           onClick={() => handleAttendanceCodeChange(AttendanceCodeType.Present)}
         >
           {t('attendance:nameByCodeType.PRESENT')}
         </ToggleButton>
         <ToggleButton
           value={AttendanceCodeType.Late}
-          color="sky"
+          color="info"
           onClick={() => handleAttendanceCodeChange(AttendanceCodeType.Late)}
         >
           {t('attendance:nameByCodeType.LATE')}
         </ToggleButton>
         <ToggleButton
           ref={absentToggleRef}
-          color="pink"
+          color="error"
           value={{}}
           selected={isAbsentMenuOpen || isAbsentCodeSelected}
           onClick={() => setIsAbsentMenuOpen(true)}
