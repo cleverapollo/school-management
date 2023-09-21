@@ -1,12 +1,12 @@
-import { Box, Chip, Stack, Typography } from '@mui/material';
-import { Autocomplete } from '@tyro/core';
+import { Box, Chip, ChipProps, Stack, Typography } from '@mui/material';
+import { Autocomplete, getColourBasedOnAttendanceType } from '@tyro/core';
 import { AttendanceCodeType } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import {
   ReturnTypeFromUseAttendanceCodes,
   useAttendanceCodes,
 } from '../api/attendance-codes';
-import { iconBasedOnCodeType, colorsBasedOnCodeType } from './role-book/attendance-value';
+import { iconBasedOnCodeType } from './role-book/attendance-value';
 
 type AttendanceCodesWithoutNotTaken = Exclude<
   AttendanceCodeType,
@@ -55,25 +55,27 @@ export function AttendanceCodeFilter({
         });
       }}
       renderTags={(tags, getTagProps) =>
-        tags.map((tag, index) => (
-          <Chip
-            size="small"
-            variant="soft"
-            color={
-              colorsBasedOnCodeType[
-                tag.sessionCodeType as AttendanceCodesWithoutNotTaken
-              ]
-            }
-            label={tag.name}
-            {...getTagProps({ index })}
-          />
-        ))
+        tags.map((tag, index) => {
+          const chipColor = getColourBasedOnAttendanceType(
+            tag.sessionCodeType
+          ).base;
+
+          return (
+            <Chip
+              size="small"
+              variant="soft"
+              color={chipColor as ChipProps['color']}
+              label={tag.name}
+              {...getTagProps({ index })}
+            />
+          );
+        })
       }
       renderOption={(props, option) => {
-        const color =
-          colorsBasedOnCodeType[
-            option.sessionCodeType as AttendanceCodesWithoutNotTaken
-          ];
+        const color = getColourBasedOnAttendanceType(
+          option.sessionCodeType
+        ).base;
+
         const icon =
           iconBasedOnCodeType[
             option.sessionCodeType as AttendanceCodesWithoutNotTaken

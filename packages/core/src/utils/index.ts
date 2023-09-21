@@ -8,3 +8,4 @@ export * from './order-by-value';
 export * from './sort-start-number-first';
 export * from './typography';
 export * from './validations';
+export * from './get-colors-based-on-attendance-type';

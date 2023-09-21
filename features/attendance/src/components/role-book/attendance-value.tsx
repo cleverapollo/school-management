@@ -9,6 +9,7 @@ import {
   CloseCircleWithWarningIcon,
   CloseIcon,
 } from '@tyro/icons';
+import { getColourBasedOnAttendanceType } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { TinyPencilIcon } from './tiny-pencil-icon';
 
@@ -34,13 +35,6 @@ const iconWithNoteBasedOnCodeType = {
   [AttendanceCodeType.UnexplainedAbsence]: <CloseCircleWithWarningIcon />,
 } as const;
 
-export const colorsBasedOnCodeType = {
-  [AttendanceCodeType.Present]: 'success',
-  [AttendanceCodeType.ExplainedAbsence]: 'warning',
-  [AttendanceCodeType.Late]: 'info',
-  [AttendanceCodeType.UnexplainedAbsence]: 'error',
-} as const;
-
 export function RolebookAttendanceValue({
   attendanceCodeType,
   view,
@@ -52,7 +46,8 @@ export function RolebookAttendanceValue({
   if (attendanceCodeType === AttendanceCodeType.NotTaken) return null;
 
   const hasNote = !!note;
-  const attendanceColor = colorsBasedOnCodeType[attendanceCodeType];
+
+  const { color } = getColourBasedOnAttendanceType(attendanceCodeType).soft;
 
   if (view === 'codes') {
     return (
@@ -69,9 +64,7 @@ export function RolebookAttendanceValue({
           component="span"
           sx={{
             position: 'relative',
-            color: includedInFilter
-              ? `${attendanceColor}.main`
-              : 'text.disabled',
+            color: includedInFilter ? color : 'text.disabled',
             opacity: includedInFilter ? 1 : 0.2,
             fontWeight: 'bold',
           }}
@@ -112,7 +105,7 @@ export function RolebookAttendanceValue({
     >
       <Box
         sx={{
-          color: includedInFilter ? `${attendanceColor}.main` : 'text.disabled',
+          color: includedInFilter ? color : 'text.disabled',
           opacity: includedInFilter ? 1 : 0.2,
           display: 'flex',
         }}

@@ -9,7 +9,8 @@ import {
   AttendanceCodeType,
   usePermissions,
 } from '@tyro/api';
-import { ReturnTypeFromUseStudentCalendarAttendance } from '../../../api/student/attendance/calendar-attendance';
+import { ReturnTypeFromUseStudentCalendarAttendance } from '@tyro/attendance';
+import { getColourBasedOnAttendanceType } from '@tyro/core';
 import { AttendanceDetailsModal } from './attendance-details-modal';
 import { AttendanceDataType } from './index';
 
@@ -21,6 +22,7 @@ type MonthCalendarProps = {
   handleAddAttendance: (arg0: string) => void;
   currentTabValue: AttendanceDataType['currentTabValue'];
   hasPermissionReadAndWriteAttendanceStudentCalendarView: boolean;
+  startDate: dayjs.Dayjs;
 };
 
 type CustomDayProps = {
@@ -28,43 +30,48 @@ type CustomDayProps = {
   calendarAttendance?: ReturnTypeFromUseStudentCalendarAttendance;
   currentTabValue: AttendanceDataType['currentTabValue'];
   hasPermissionReadAndWriteAttendanceStudentCalendarView: boolean;
+  startDate: dayjs.Dayjs;
 } & PickersDayProps<Dayjs>;
-
-const attendanceColours: Record<AttendanceCodeType, string> = {
-  [AttendanceCodeType.Present]: 'emerald',
-  [AttendanceCodeType.ExplainedAbsence]: 'pink',
-  [AttendanceCodeType.UnexplainedAbsence]: 'red',
-  [AttendanceCodeType.Late]: 'sky',
-  [AttendanceCodeType.NotTaken]: 'grey',
-};
 
 const weekends = [0, 6];
 
-const getCalendarColors = (
-  formattedDay: keyof typeof attendanceColours,
+type GetCalendarColorsFn = (
+  attendanceCode: AttendanceCodeType,
   dayOfWeek: number,
-  currentTabValue: AttendanceDataType['currentTabValue']
+  currentTabValue: AttendanceDataType['currentTabValue'],
+  dayToCheck: string,
+  startDate: dayjs.Dayjs
+) => ReturnType<typeof getColourBasedOnAttendanceType>['filled'];
+
+const getCalendarColors: GetCalendarColorsFn = (
+  attendanceCode,
+  dayOfWeek,
+  currentTabValue,
+  dayToCheck,
+  startDate
 ) => {
-  if (weekends.includes(dayOfWeek)) {
-    return {
-      backgroundColor: 'white',
-      color: 'grey.300',
-    };
-  }
+  const isAfterCurrentDay = dayjs().isBefore(dayToCheck);
+  const isBeforeCurrentDay = dayjs(dayToCheck).isBefore(startDate);
 
-  if (currentTabValue === 'ALL' || currentTabValue === formattedDay) {
-    const keyOfAttendanceColours = attendanceColours[formattedDay];
-
-    return {
-      backgroundColor: `${keyOfAttendanceColours}.100`,
-      color: `${keyOfAttendanceColours}.500`,
-    };
-  }
-
-  return {
-    backgroundColor: 'transparent',
-    color: 'grey.300',
+  const defaultColors: ReturnType<typeof getCalendarColors> = {
+    bgColor: 'transparent',
+    color: 'slate.500',
+    hoverBg: 'transparent',
   };
+
+  if (
+    weekends.includes(dayOfWeek) ||
+    isBeforeCurrentDay ||
+    (isAfterCurrentDay && attendanceCode === AttendanceCodeType.NotTaken)
+  ) {
+    return defaultColors;
+  }
+
+  if (currentTabValue === 'ALL' || currentTabValue === attendanceCode) {
+    return getColourBasedOnAttendanceType(attendanceCode).filled;
+  }
+
+  return defaultColors;
 };
 
 function CustomDay(props: CustomDayProps) {
@@ -75,6 +82,7 @@ function CustomDay(props: CustomDayProps) {
     calendarAttendance,
     currentTabValue,
     hasPermissionReadAndWriteAttendanceStudentCalendarView,
+    startDate,
     ...other
   } = props;
 
@@ -84,10 +92,12 @@ function CustomDay(props: CustomDayProps) {
     (attendanceItem) => attendanceItem.date === dayToCheck
   );
 
-  const { backgroundColor, color } = getCalendarColors(
+  const { bgColor, color, hoverBg } = getCalendarColors(
     dayAttendance?.status ?? AttendanceCodeType.NotTaken,
     dayOfWeek,
-    currentTabValue
+    currentTabValue,
+    dayToCheck,
+    startDate
   );
 
   return (
@@ -98,8 +108,12 @@ function CustomDay(props: CustomDayProps) {
           ? undefined
           : 'none',
         borderRadius: '13px',
-        backgroundColor,
+        backgroundColor: bgColor,
         color,
+        '&:hover': {
+          backgroundColor: hoverBg,
+          color,
+        },
       }}
       onDaySelect={() => {
         handleAddAttendance(dayjs(day).format('YYYY-MM-DD'));
@@ -116,6 +130,7 @@ function MonthCalendar({
   calendarAttendance,
   currentTabValue,
   hasPermissionReadAndWriteAttendanceStudentCalendarView,
+  startDate,
 }: MonthCalendarProps) {
   return (
     <Box
@@ -137,6 +152,7 @@ function MonthCalendar({
               calendarAttendance,
               currentTabValue,
               hasPermissionReadAndWriteAttendanceStudentCalendarView,
+              startDate,
             }),
         }}
         sx={{
@@ -175,7 +191,7 @@ function MonthCalendar({
           },
           // numbered days
           '& .MuiDayCalendar-weekContainer .MuiPickersDay-root': {
-            fontWeight: '600',
+            fontWeight: '700',
           },
         }}
       />
@@ -236,6 +252,7 @@ export const AcademicCalendar = ({
             hasPermissionReadAndWriteAttendanceStudentCalendarView={
               hasPermissionReadAndWriteAttendanceStudentCalendarView
             }
+            startDate={startDate}
           />
         ))}
       </Stack>

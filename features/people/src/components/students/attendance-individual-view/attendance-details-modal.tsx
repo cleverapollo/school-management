@@ -27,10 +27,17 @@ import {
   usePreferredNameLayout,
   PlaceholderCard,
 } from '@tyro/core';
-import { useAttendanceCodes } from '@tyro/attendance';
+import {
+  useAttendanceCodes,
+  useCreateOrUpdateEventAttendance,
+  useCreateOrUpdateSessionAttendance,
+  useStudentSessionAttendance,
+  ReturnTypeFromUseStudentSessionAttendance,
+  useStudentDailyCalendarInformation,
+  useBellTimesQuery,
+} from '@tyro/attendance';
 import {
   SaveEventAttendanceInput,
-  SaveStudentSessionAttendanceInput,
   StudentSessionAttendanceInput,
 } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
@@ -39,14 +46,6 @@ import dayjs from 'dayjs';
 import { useForm } from 'react-hook-form';
 import { useEffect, useMemo, useState } from 'react';
 import { LoadingButton } from '@mui/lab';
-import {
-  ReturnTypeFromUseStudentSessionAttendance,
-  useStudentSessionAttendance,
-} from '../../../api/student/attendance/student-session-attendance';
-import { useStudentDailyCalendarInformation } from '../../../api/student/attendance/daily-calendar-information';
-import { useCreateOrUpdateEventAttendance } from '../../../api/student/attendance/save-student-event-attendance';
-import { useCreateOrUpdateSessionAttendance } from '../../../api/student/attendance/save-student-session-attendance';
-import { useBellTimesQuery } from '../../../api/student/attendance/calendar-bell-times';
 import { useStudent } from '../../../api/student/students';
 
 type AttendanceInput = {
@@ -72,7 +71,7 @@ export const AttendanceDetailsModal = ({
   onClose,
 }: AttendanceDetailsModalProps) => {
   const { t } = useTranslation(['attendance', 'people', 'common']);
-  const { handleSubmit, control, setValue, setError } =
+  const { handleSubmit, control, setValue, setError, getFieldState } =
     useForm<AttendanceForm>();
   const [openAlert, setOpenAlert] = useState(true);
 
@@ -174,6 +173,14 @@ export const AttendanceDetailsModal = ({
   }, [isLoading, eventAttendance]);
 
   const onSubmit = handleSubmit(async (data) => {
+    const updatedSessionAttendance = Object.values(
+      data?.sessionAttendance
+    )?.filter(({ id }) => getFieldState(`sessionAttendance.${id}`).isDirty);
+
+    const updatedEventAttendance = Object.values(data?.eventAttendance)?.filter(
+      ({ id }) => getFieldState(`eventAttendance.${id}`).isDirty
+    );
+
     const requiredEventAttendance = Object.values(
       data?.eventAttendance ?? {}
     ).filter(({ note, attendanceCodeId }) => note && !attendanceCodeId);
@@ -186,8 +193,8 @@ export const AttendanceDetailsModal = ({
 
     if (requiredEventAttendance.length > 0) return;
 
-    const sessionAttendanceInput: StudentSessionAttendanceInput[] =
-      Object.values(data?.sessionAttendance ?? {})
+    const sessionAttendances: StudentSessionAttendanceInput[] =
+      updatedSessionAttendance
         .filter(({ attendanceCodeId, note }) => attendanceCodeId || note)
         .map(({ id, note, attendanceCodeId }) => ({
           note,
@@ -197,25 +204,24 @@ export const AttendanceDetailsModal = ({
           studentPartyId: studentId,
         }));
 
-    if (sessionAttendanceInput.length > 0) {
+    if (sessionAttendances.length > 0) {
       await createOrUpdateSessionAttendance({
+        attendances: sessionAttendances,
         adminSubmitted: true,
-        attendances: sessionAttendanceInput,
       });
     }
 
-    const eventAttendanceInput: SaveEventAttendanceInput[] = Object.values(
-      data.eventAttendance
-    )
-      .filter(({ attendanceCodeId }) => attendanceCodeId)
-      .map(({ id, note, attendanceCodeId }) => ({
-        note,
-        attendanceCodeId: attendanceCodeId!,
-        eventId: id,
-        date: day,
-        personPartyId: studentId,
-        adminSubmitted: true,
-      }));
+    const eventAttendanceInput: SaveEventAttendanceInput[] =
+      updatedEventAttendance
+        .filter(({ attendanceCodeId }) => attendanceCodeId)
+        .map(({ id, note, attendanceCodeId }) => ({
+          note,
+          attendanceCodeId: attendanceCodeId!,
+          eventId: id,
+          date: day,
+          personPartyId: studentId,
+          adminSubmitted: true,
+        }));
 
     if (eventAttendanceInput.length > 0) {
       await createOrUpdateEventAttendance(eventAttendanceInput);
@@ -362,12 +368,14 @@ export const AttendanceDetailsModal = ({
                 >
                   {bellTimesWithName.map((event) => {
                     const sessionAttendance = sessionAttendanceById?.[event.id];
-                    const creatorName = displayName(
-                      sessionAttendance?.createdBy,
-                      {
-                        format: PreferredNameFormat.FirstnameSurname,
-                      }
-                    );
+
+                    const lastPersonUpdater =
+                      sessionAttendance?.updatedBy ||
+                      sessionAttendance?.createdBy;
+
+                    const creatorName = displayName(lastPersonUpdater, {
+                      format: PreferredNameFormat.FirstnameSurname,
+                    });
 
                     return (
                       <TableRow key={event.id}>
@@ -393,7 +401,7 @@ export const AttendanceDetailsModal = ({
                         </TableCell>
                         <TableCell>
                           <Stack direction="row" alignItems="center">
-                            {sessionAttendance?.createdBy && (
+                            {lastPersonUpdater && (
                               <Avatar
                                 sx={{
                                   width: 32,
@@ -401,7 +409,7 @@ export const AttendanceDetailsModal = ({
                                   fontSize: 14,
                                 }}
                                 name={creatorName}
-                                src={sessionAttendance?.createdBy?.avatarUrl}
+                                src={lastPersonUpdater?.avatarUrl}
                               />
                             )}
                             <Typography
@@ -412,6 +420,7 @@ export const AttendanceDetailsModal = ({
                             </Typography>
                           </Stack>
                         </TableCell>
+
                         <TableCell>
                           <Stack
                             direction="row"
@@ -472,7 +481,10 @@ export const AttendanceDetailsModal = ({
                     const [currentEvent] =
                       event?.extensions?.eventAttendance || [];
 
-                    const creatorName = displayName(currentEvent?.createdBy, {
+                    const lastPersonUpdater =
+                      currentEvent?.updatedBy || currentEvent?.createdBy;
+
+                    const creatorName = displayName(lastPersonUpdater, {
                       format: PreferredNameFormat.FirstnameSurname,
                     });
 
@@ -500,7 +512,7 @@ export const AttendanceDetailsModal = ({
                         </TableCell>
                         <TableCell>
                           <Stack direction="row" alignItems="center">
-                            {currentEvent?.createdBy && (
+                            {creatorName && (
                               <Avatar
                                 sx={{
                                   width: 32,
@@ -508,7 +520,7 @@ export const AttendanceDetailsModal = ({
                                   fontSize: 14,
                                 }}
                                 name={creatorName}
-                                src={currentEvent?.createdBy?.avatarUrl}
+                                src={lastPersonUpdater?.avatarUrl}
                               />
                             )}
 
