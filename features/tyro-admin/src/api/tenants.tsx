@@ -13,6 +13,14 @@ const adminTenants = graphql(/* GraphQL */ `
   }
 `);
 
+const adminResetTenantCache = graphql(/* GraphQL */ `
+  mutation admin__resetTenantCache($input: Int) {
+    admin__resetTenantCache(input: $input) {
+      success
+    }
+  }
+`);
+
 export const adminTenantsKeys = {
   all: ['admin', 'tenants'] as const,
 };
@@ -47,14 +55,7 @@ export function useEvictTenantLevelCache() {
 
   return useMutation({
     mutationFn: async (input: number) =>
-      gqlClient.request(
-        `mutation cache_clear($input: Int) {
-                admin__resetTenantCache(input: $input) {
-                  success
-                }
-            }`,
-        { input }
-      ),
+      gqlClient.request(adminResetTenantCache, { input }),
     onSuccess: () => {
       toast(t('common:snackbarMessages.updateSuccess'));
     },
