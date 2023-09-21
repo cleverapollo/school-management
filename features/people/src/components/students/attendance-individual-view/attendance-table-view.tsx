@@ -8,10 +8,11 @@ import {
   ReturnTypeDisplayName,
   usePreferredNameLayout,
 } from '@tyro/core';
+import {
+  useTableSessionAttendance,
+  useStudentDailyCalendarInformation,
+} from '@tyro/attendance';
 import { useTranslation, TFunction } from '@tyro/i18n';
-
-import { useTableSessionAttendance } from '../../../api/student/attendance/table-session-attendance-view';
-import { useStudentDailyCalendarInformation } from '../../../api/student/attendance/daily-calendar-information';
 
 type AttendanceTableViewProps = {
   startDate: string;
@@ -27,6 +28,10 @@ export type CombinedAttendanceDataType = {
   type: TypeForCombinedAttendanceData;
   attendanceCode: TypeForCombinedAttendanceData;
   details?: OptionalTypeForCombinedAttendanceData;
+  updatedBy?: {
+    firstName?: OptionalTypeForCombinedAttendanceData;
+    lastName?: OptionalTypeForCombinedAttendanceData;
+  };
   createdBy?: {
     firstName?: OptionalTypeForCombinedAttendanceData;
     lastName?: OptionalTypeForCombinedAttendanceData;
@@ -66,15 +71,15 @@ const getColumns = (
   {
     headerName: t('attendance:takenBy'),
     field: 'createdBy',
-    valueGetter: ({ data }) => displayName(data?.createdBy),
+    valueGetter: ({ data }) => displayName(data?.updatedBy || data?.createdBy),
+
     cellRenderer: ({
       data,
-    }: ICellRendererParams<CombinedAttendanceDataType, any>) =>
-      data?.createdBy?.firstName ? (
-        <TablePersonAvatar person={data?.createdBy} />
-      ) : (
-        '-'
-      ),
+    }: ICellRendererParams<CombinedAttendanceDataType, any>) => {
+      const person = data?.updatedBy || data?.createdBy;
+
+      return person?.firstName ? <TablePersonAvatar person={person} /> : '-';
+    },
   },
 ];
 
@@ -118,7 +123,8 @@ export function AttendanceTableView({
         type: event?.name,
         date: eventAttendanceData?.date,
         attendanceCode: eventAttendanceData?.attendanceCode?.name,
-        createdBy: eventAttendanceData?.createdBy,
+        createdBy:
+          eventAttendanceData?.updatedBy || eventAttendanceData?.createdBy,
         details: eventAttendanceData?.note,
         partyId,
       };

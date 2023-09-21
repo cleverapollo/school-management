@@ -1,4 +1,4 @@
-import { Button, Divider, Stack, Typography } from '@mui/material';
+import { Button, Divider, Stack, Tooltip, Typography } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { ParentalAttendanceRequestStatus } from '@tyro/api';
 import {
@@ -65,18 +65,18 @@ const getAbsentRequestDataWithLabels = (
       ),
     },
     {
-      label: t('common:createdBy'),
+      label: t('common:submittedBy'),
       value: contact,
       valueRenderer:
         [contactName, relationShip].filter(Boolean).join(', ') || '-',
     },
     {
-      label: t('attendance:absenceType'),
+      label: t('attendance:reasonForAbsence'),
       value: attendanceCode?.name,
       valueEditor: (
         <RHFSelect
           fullWidth
-          optionIdKey={'id'}
+          optionIdKey="id"
           options={attendanceCodes ?? []}
           getOptionLabel={(option) => option.name || ''}
           controlProps={{
@@ -86,7 +86,7 @@ const getAbsentRequestDataWithLabels = (
       ),
     },
     {
-      label: t('common:details'),
+      label: t('common:note'),
       value: parentNote,
       valueEditor: (
         <RHFTextField
@@ -172,6 +172,10 @@ export const ViewAbsentRequestModal = ({
     dayjs(initialAbsentRequestState?.from)
   );
 
+  const disableWithdraw =
+    initialAbsentRequestState?.status !==
+      ParentalAttendanceRequestStatus.Pending || !isBeforeAbsentDate;
+
   return (
     <Dialog
       open={!!initialAbsentRequestState}
@@ -214,21 +218,26 @@ export const ViewAbsentRequestModal = ({
       </DialogContent>
       <DialogActions>
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          {t('common:actions.cancel')}
+          {isContact ? t('common:actions.close') : t('common:actions.cancel')}
         </Button>
         {isContact ? (
-          <LoadingButton
-            variant="contained"
-            onClick={onOpenWithdrawAbsentRequestsModal}
-            color="primary"
-            disabled={
-              initialAbsentRequestState?.status !==
-                ParentalAttendanceRequestStatus.Pending || !isBeforeAbsentDate
-            }
-            loading={isLoading}
+          <Tooltip
+            describeChild
+            title={disableWithdraw ? t('attendance:unableToWithdraw') : ''}
           >
-            {t('attendance:withdrawAbsentRequest')}
-          </LoadingButton>
+            <span>
+              <LoadingButton
+                variant="contained"
+                onClick={onOpenWithdrawAbsentRequestsModal}
+                color="primary"
+                disabled={disableWithdraw}
+                loading={isLoading}
+                sx={{ ml: 2 }}
+              >
+                {t('attendance:withdrawAbsentRequest')}
+              </LoadingButton>
+            </span>
+          </Tooltip>
         ) : (
           <>
             <Button

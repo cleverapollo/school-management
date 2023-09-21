@@ -6,7 +6,7 @@ import {
   CalendarDayBellTimeFilter,
   UseQueryReturnType,
 } from '@tyro/api';
-import { peopleKeys } from '../../keys';
+import { attendanceKeys } from './keys';
 
 const calendarBellTimes = graphql(/* GraphQL */ `
   query calendar_calendarDayBellTimes($filter: CalendarDayBellTimeFilter) {
@@ -23,7 +23,7 @@ const calendarBellTimes = graphql(/* GraphQL */ `
 `);
 
 const bellTimesQuery = (filter: CalendarDayBellTimeFilter) => ({
-  queryKey: peopleKeys.students.calendarBellTimes(filter),
+  queryKey: attendanceKeys.calendarBellTimes(filter),
   queryFn: async () => gqlClient.request(calendarBellTimes, { filter }),
 });
 

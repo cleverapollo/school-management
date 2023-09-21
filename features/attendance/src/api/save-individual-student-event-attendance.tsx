@@ -9,7 +9,7 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
 import { groupsKeys } from '@tyro/groups';
-import { peopleKeys } from '../../keys';
+import { attendanceKeys } from './keys';
 
 const saveStudentEventAttendance = graphql(/* GraphQL */ `
   mutation attendance_saveEventAttendance($input: [SaveEventAttendanceInput]) {
@@ -31,7 +31,7 @@ export function useCreateOrUpdateEventAttendance() {
     mutationFn: async (input: SaveEventAttendanceInput[]) =>
       gqlClient.request(saveStudentEventAttendance, { input }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries(peopleKeys.students.all());
+      await queryClient.invalidateQueries(attendanceKeys.all);
       await queryClient.invalidateQueries(groupsKeys.subject.all());
 
       toast(t('common:snackbarMessages.updateSuccess'));

@@ -102,7 +102,7 @@ export function DeclineAbsentRequestConfirmModal({
             })}
           </DialogContentText>
           <RHFTextField
-            label={t('attendance:feedback')}
+            label={t('attendance:feedbackToContactOptional')}
             controlProps={{
               name: 'adminNote',
               control,

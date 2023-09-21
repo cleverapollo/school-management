@@ -128,20 +128,6 @@ export function AttendanceToggle({ codeId, onChange }: AttendanceToggleProps) {
       >
         <MenuItem
           dense
-          selected={codeType === AttendanceCodeType.ExplainedAbsence}
-          onClick={() =>
-            handleAttendanceCodeChange(AttendanceCodeType.ExplainedAbsence)
-          }
-        >
-          <ListItemText>
-            {t('attendance:nameByCodeType.EXPLAINED_ABSENCE')}
-          </ListItemText>
-          <ListItemIcon>
-            <SchoolBuildingIcon />
-          </ListItemIcon>
-        </MenuItem>
-        <MenuItem
-          dense
           selected={codeType === AttendanceCodeType.UnexplainedAbsence}
           onClick={() =>
             handleAttendanceCodeChange(AttendanceCodeType.UnexplainedAbsence)
@@ -152,6 +138,20 @@ export function AttendanceToggle({ codeId, onChange }: AttendanceToggleProps) {
           </ListItemText>
           <ListItemIcon>
             <InfoCircleIcon />
+          </ListItemIcon>
+        </MenuItem>
+        <MenuItem
+          dense
+          selected={codeType === AttendanceCodeType.ExplainedAbsence}
+          onClick={() =>
+            handleAttendanceCodeChange(AttendanceCodeType.ExplainedAbsence)
+          }
+        >
+          <ListItemText>
+            {t('attendance:nameByCodeType.EXPLAINED_ABSENCE')}
+          </ListItemText>
+          <ListItemIcon>
+            <SchoolBuildingIcon />
           </ListItemIcon>
         </MenuItem>
       </Menu>

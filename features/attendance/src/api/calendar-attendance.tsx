@@ -6,7 +6,7 @@ import {
   CalendarAttendanceFilter,
   UseQueryReturnType,
 } from '@tyro/api';
-import { peopleKeys } from '../../keys';
+import { attendanceKeys } from './keys';
 
 const studentCalendarAttendance = graphql(/* GraphQL */ `
   query attendance_calendarAttendance($filter: CalendarAttendanceFilter) {
@@ -25,7 +25,7 @@ const studentCalendarAttendance = graphql(/* GraphQL */ `
 `);
 
 const studentCalendarAttendanceQuery = (filter: CalendarAttendanceFilter) => ({
-  queryKey: peopleKeys.students.studentCalendarAttendance(filter),
+  queryKey: attendanceKeys.studentCalendarAttendance(filter),
   queryFn: async () => gqlClient.request(studentCalendarAttendance, { filter }),
 });
 
