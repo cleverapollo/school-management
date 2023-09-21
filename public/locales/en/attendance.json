@@ -11,6 +11,7 @@
   "bulkAttendance": "Bulk attendance",
   "createBulkAttendance": "Create bulk attendance",
   "createAttendanceCode": "Create attendance code",
+  "createdOn": "Created on",
   "reportAs": "Report as",
   "tuslaCode": "Tusla code",
   "bellTime": "Bell time",
