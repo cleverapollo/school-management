@@ -8,6 +8,8 @@
   "absentRequests": "Absent requests",
   "attendance": "Attendance",
   "attendanceCodes": "Attendance codes",
+  "bulkAttendance": "Bulk attendance",
+  "createBulkAttendance": "Create bulk attendance",
   "createAttendanceCode": "Create attendance code",
   "reportAs": "Report as",
   "tuslaCode": "Tusla code",
