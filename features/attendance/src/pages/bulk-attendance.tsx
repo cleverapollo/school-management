@@ -18,6 +18,7 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import { BulkAttendanceModal } from '../components/bulk-attendance/index';
 
 dayjs.extend(LocalizedFormat);
 
@@ -115,6 +116,8 @@ export default function BulkAttendance() {
         columnDefs={columns}
         getRowId={({ data }) => String(data?.id)}
       />
+
+      <BulkAttendanceModal />
     </PageContainer>
   );
 }
