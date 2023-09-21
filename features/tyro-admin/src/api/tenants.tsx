@@ -49,7 +49,7 @@ export function useEvictTenantLevelCache() {
     mutationFn: async (input: number) =>
       gqlClient.request(
         `mutation cache_clear($input: Int) {
-                core_resetTenantCache(input: $input) {
+                admin__resetTenantCache(input: $input) {
                   success
                 }
             }`,
