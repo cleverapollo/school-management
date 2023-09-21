@@ -76,7 +76,7 @@ export const validations = {
     length: number,
     errorMessage?: string
   ): T | ValidationError => {
-    if (value.length < length) {
+    if (value && value.length < length) {
       throw new ValidationError('minLength', errorMessage);
     }
 
@@ -87,7 +87,7 @@ export const validations = {
     length: number,
     errorMessage?: string
   ): T | ValidationError => {
-    if (value.length > length) {
+    if (value && value.length > length) {
       throw new ValidationError('maxLength', errorMessage);
     }
 

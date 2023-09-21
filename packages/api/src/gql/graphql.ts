@@ -804,6 +804,12 @@ export type Calendar_EventAttendeeAugment = {
   type: CalendarEventAttendeeType;
 };
 
+export type Calendar_EventIteratorResult = {
+  __typename?: 'Calendar_EventIteratorResult';
+  event?: Maybe<CalendarEvent>;
+  eventsOnSameDayForSameGroup?: Maybe<Array<CalendarEvent>>;
+};
+
 export type Calendar_EventRoomAugment = {
   __typename?: 'Calendar_EventRoomAugment';
   endDate?: Maybe<Scalars['Date']>;
@@ -3450,7 +3456,9 @@ export type Query = {
   calendar_bellTimes: Array<Calendar_BellTime>;
   calendar_calendarDayBellTimes: Array<CalendarDayBellTime>;
   calendar_calendarEvents?: Maybe<ResourceCalendarWrapper>;
+  /**  depricated */
   calendar_calendarEventsIterator?: Maybe<CalendarEvent>;
+  calendar_calendarEventsIterator_v2?: Maybe<Calendar_EventIteratorResult>;
   calendar_dayInfo: Array<CalendarDayInfo>;
   /**    Checks whether the searched for calendar resources are free or not at particular times */
   calendar_findFreeResources: FreeCalendarResources;
@@ -3634,6 +3642,11 @@ export type QueryCalendar_CalendarEventsArgs = {
 
 
 export type QueryCalendar_CalendarEventsIteratorArgs = {
+  filter?: InputMaybe<CalendarEventIteratorFilter>;
+};
+
+
+export type QueryCalendar_CalendarEventsIterator_V2Args = {
   filter?: InputMaybe<CalendarEventIteratorFilter>;
 };
 
