@@ -34,24 +34,23 @@ export function AdditionalLessonsModal({
   const { t } = useTranslation(['common', 'attendance']);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [checkedEvents, setCheckedEvents] = useState<number[]>([]);
+  const [checkedEvents, setCheckedEvents] = useState<Set<number>>(new Set());
 
   const handleToggle = (eventId: number) => {
-    const currentIndex = checkedEvents.indexOf(eventId);
-    const newChecked = [...checkedEvents];
+    setCheckedEvents((eventsIds) => {
+      if (eventsIds.has(eventId)) {
+        eventsIds.delete(eventId);
+      } else {
+        eventsIds.add(eventId);
+      }
 
-    if (currentIndex === -1) {
-      newChecked.push(eventId);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    setCheckedEvents(newChecked);
+      return new Set(eventsIds);
+    });
   };
 
   const handleSave = () => {
     setIsSubmitting(true);
-    onSave(checkedEvents, () => {
+    onSave(Array.from(checkedEvents), () => {
       setIsSubmitting(false);
     });
   };
@@ -83,7 +82,7 @@ export function AdditionalLessonsModal({
                   />
                   <Checkbox
                     edge="end"
-                    checked={checkedEvents.includes(eventId)}
+                    checked={checkedEvents.has(eventId)}
                     tabIndex={-1}
                     disableRipple
                     inputProps={{ 'aria-labelledby': `${eventId}` }}
