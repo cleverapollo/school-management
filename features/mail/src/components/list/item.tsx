@@ -52,18 +52,17 @@ export default function MailItem({
   const isDesktop = useResponsive('up', 'md');
   const { t } = useTranslation(['mail']);
 
-  const latestThreadSentOn = useMemo(() => {
-    const test =
+  const latestThreadSentOn = useMemo(
+    () =>
       [...mail.threads]
         .reverse()
         .find((thread) =>
           isSentLabel
             ? thread.sender.partyId === activeProfileId
             : thread.sender.partyId !== activeProfileId
-        )?.sentOn ?? mail.sentOn;
-
-    return test;
-  }, [isSentLabel, mail.threads, mail.sentOn, activeProfileId]);
+        )?.sentOn ?? mail.sentOn,
+    [isSentLabel, mail.threads, mail.sentOn, activeProfileId]
+  );
 
   const recipientsList = isSentLabel
     ? mail.outboxRecipientSummary
