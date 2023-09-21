@@ -130,5 +130,11 @@
   "reasonForAbsence": "Reason for absence",
   "leavesAtTime": "Leaves at time",
   "returnAtTime": "Return at time",
-  "completedBy": "Completed by"
+  "completedBy": "Completed by",
+  "additionalLessons": {
+    "title_one": "Additional lesson today",
+    "title_other": "Additional lessons today",
+    "description_one": "Do you want to apply the attendance to this period also?",
+    "description_other": "Do you want to apply the attendance to these periods also?"
+  }
 }
