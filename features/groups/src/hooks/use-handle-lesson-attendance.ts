@@ -14,6 +14,7 @@ import isEqual from 'lodash/isEqual';
 import { useLayoutEffect, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import {
+  getSubjectGroupLesson,
   ReturnTypeFromUseSubjectGroupLessonByIterator,
   useSubjectGroupLessonByIterator,
 } from '../api';
@@ -45,6 +46,7 @@ type UseHandleLessonAttendanceParams = {
 };
 
 type SaveAttendanceCallback = {
+  additionalLessonIds: number[];
   onSuccess: () => void;
 };
 
@@ -74,6 +76,8 @@ export function useHandleLessonAttendance({
   });
 
   const eventAttendance = lessonData?.extensions?.eventAttendance || [];
+  const currentLessonId = lessonData?.eventId ?? 0;
+  const currentLessonStartTime = lessonData?.startTime ?? '';
 
   useLayoutEffect(() => {
     if (lessonData) {
@@ -140,15 +144,38 @@ export function useHandleLessonAttendance({
     }));
   };
 
-  const saveAttendance = ({ onSuccess }: SaveAttendanceCallback) => {
+  const saveAttendance = ({
+    additionalLessonIds,
+    onSuccess,
+  }: SaveAttendanceCallback) => {
     // NOTE: do not send student if he was already the attendance taken
-    const attendanceInput = Object.values(newAttendance).filter(
+    const currentLessonAttendance = Object.values(newAttendance).filter(
       (attendance) => !attendance.adminSubmitted
     );
 
-    saveAttendanceMutation(attendanceInput, {
-      onSuccess: () => {
-        queryClient.invalidateQueries(groupsKeys.subject.all());
+    const attendanceInput = [currentLessonId, ...additionalLessonIds].map(
+      (eventId) =>
+        currentLessonAttendance.map((currentLesson) => ({
+          ...currentLesson,
+          eventId,
+        }))
+    );
+
+    saveAttendanceMutation(attendanceInput.flat(), {
+      onSuccess: async () => {
+        await Promise.all([
+          queryClient.invalidateQueries(groupsKeys.subject.all()),
+          getSubjectGroupLesson({
+            partyId: filter.partyId,
+            iterator: Iterator.Previous,
+            eventStartTime: currentLessonStartTime,
+          }),
+          getSubjectGroupLesson({
+            partyId: filter.partyId,
+            iterator: Iterator.Next,
+            eventStartTime: currentLessonStartTime,
+          }),
+        ]);
         onSuccess();
       },
     });
@@ -159,7 +186,8 @@ export function useHandleLessonAttendance({
   };
 
   return {
-    lessonId: lessonData?.eventId,
+    lessonId: currentLessonId,
+    eventsOnSameDayForSameGroup: lessonData?.eventsOnSameDayForSameGroup || [],
     formattedLessonDate,
     isEmptyLesson: isLessonSuccess && !lessonData,
     isEditing:

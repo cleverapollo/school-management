@@ -7,48 +7,62 @@ import {
   queryClient,
   UseQueryReturnType,
 } from '@tyro/api';
+import dayjs from 'dayjs';
 import { useEffect } from 'react';
 import { groupsKeys } from './keys';
 
 // Query for getting closest/prev/next lesson for a subject group
 const subjectGroupLessonByIterator = graphql(/* GraphQL */ `
   query calendar_calendarEventsIterator($filter: CalendarEventIteratorFilter!) {
-    calendar_calendarEventsIterator(filter: $filter) {
-      eventId
-      calendarIds
-      startTime
-      endTime
-      type
-      attendees {
-        partyId
+    calendar_calendarEventsIterator_v2(filter: $filter) {
+      event {
+        eventId
+        calendarIds
+        startTime
+        endTime
         type
-        partyInfo {
+        attendees {
           partyId
-          ... on Staff {
-            person {
+          type
+          partyInfo {
+            partyId
+            ... on Staff {
+              person {
+                firstName
+                lastName
+                avatarUrl
+              }
+            }
+          }
+        }
+        rooms {
+          name
+        }
+        extensions {
+          eventAttendance {
+            eventId
+            note
+            attendanceCodeId
+            attendanceCode {
+              name
+            }
+            personPartyId
+            adminSubmitted
+            createdBy {
               firstName
               lastName
-              avatarUrl
             }
           }
         }
       }
-      rooms {
+      eventsOnSameDayForSameGroup {
         name
-      }
-      extensions {
-        eventAttendance {
-          eventId
-          note
-          attendanceCodeId
-          attendanceCode {
-            name
-          }
-          personPartyId
-          adminSubmitted
-          createdBy {
-            firstName
-            lastName
+        eventId
+        startTime
+        endTime
+        extensions {
+          eventAttendance {
+            attendanceCodeId
           }
         }
       }
@@ -58,7 +72,26 @@ const subjectGroupLessonByIterator = graphql(/* GraphQL */ `
 
 const subjectGroupLessonQuery = (filter: CalendarEventIteratorFilter) => ({
   queryKey: groupsKeys.subject.lesson(filter),
-  queryFn: () => gqlClient.request(subjectGroupLessonByIterator, { filter }),
+  queryFn: async () => {
+    const { calendar_calendarEventsIterator_v2: eventData } =
+      await gqlClient.request(subjectGroupLessonByIterator, { filter });
+
+    const eventsOnSameDayForSameGroup = (
+      eventData?.eventsOnSameDayForSameGroup || []
+    ).sort(
+      (eventA, eventB) =>
+        dayjs(eventA.startTime).unix() - dayjs(eventB.startTime).unix()
+    );
+
+    return {
+      calendar_calendarEventsIterator: eventData?.event
+        ? {
+            ...eventData?.event,
+            eventsOnSameDayForSameGroup,
+          }
+        : undefined,
+    };
+  },
 });
 
 export function getSubjectGroupLesson(filter: CalendarEventIteratorFilter) {
