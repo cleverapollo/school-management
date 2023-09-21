@@ -9,9 +9,9 @@ import {
   CloseCircleWithWarningIcon,
   CloseIcon,
 } from '@tyro/icons';
+import { getColourBasedOnAttendanceType } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { TinyPencilIcon } from './tiny-pencil-icon';
-import { getColourBasedOnAttendanceType } from '../../utils/get-attendance-type-colour';
 
 interface RolebookAttendanceValueProps {
   view: 'icons' | 'codes';
@@ -53,8 +53,9 @@ export function RolebookAttendanceValue({
   if (attendanceCodeType === AttendanceCodeType.NotTaken) return null;
 
   const hasNote = !!note;
-  const color = colorsBasedOnCodeType[attendanceCodeType];
-  const attendanceColor = getColourBasedOnAttendanceType(color);
+
+  const { color: attendanceColor } =
+    getColourBasedOnAttendanceType(attendanceCodeType);
 
   if (view === 'codes') {
     return (

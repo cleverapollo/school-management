@@ -9,11 +9,11 @@ import {
   AttendanceCodeType,
   usePermissions,
 } from '@tyro/api';
+import { ReturnTypeFromUseStudentCalendarAttendance } from '@tyro/attendance';
 import {
-  defaultColors,
+  defaultCalendarDayColors,
   getColourBasedOnAttendanceType,
 } from '../../../utils/get-color-based-on-attendance-type';
-import { ReturnTypeFromUseStudentCalendarAttendance } from '../../../api/student/attendance/calendar-attendance';
 import { AttendanceDetailsModal } from './attendance-details-modal';
 import { AttendanceDataType } from './index';
 
@@ -36,18 +36,10 @@ type CustomDayProps = {
   startDate: dayjs.Dayjs;
 } & PickersDayProps<Dayjs>;
 
-const attendanceColours: Record<AttendanceCodeType, string> = {
-  [AttendanceCodeType.Present]: 'emerald',
-  [AttendanceCodeType.ExplainedAbsence]: 'pink',
-  [AttendanceCodeType.UnexplainedAbsence]: 'violet',
-  [AttendanceCodeType.Late]: 'sky',
-  [AttendanceCodeType.NotTaken]: 'zinc',
-};
-
 const weekends = [0, 6];
 
 const getCalendarColors = (
-  formattedDay: keyof typeof attendanceColours,
+  attendanceCode: AttendanceCodeType,
   dayOfWeek: number,
   currentTabValue: AttendanceDataType['currentTabValue'],
   dayToCheck: string,
@@ -57,20 +49,19 @@ const getCalendarColors = (
   const isBeforeCurrentDay = dayjs(dayToCheck).isBefore(startDate);
 
   if (weekends.includes(dayOfWeek)) {
-    return defaultColors;
+    return defaultCalendarDayColors;
   }
   if (
     isBeforeCurrentDay ||
-    (isAfterCurrentDay && formattedDay === AttendanceCodeType.NotTaken)
+    (isAfterCurrentDay && attendanceCode === AttendanceCodeType.NotTaken)
   ) {
-    return defaultColors;
+    return defaultCalendarDayColors;
   }
-  if (currentTabValue === 'ALL' || currentTabValue === formattedDay) {
-    const keyOfAttendanceColors = attendanceColours[formattedDay];
-    return getColourBasedOnAttendanceType(keyOfAttendanceColors);
+  if (currentTabValue === 'ALL' || currentTabValue === attendanceCode) {
+    return getColourBasedOnAttendanceType(attendanceCode);
   }
 
-  return defaultColors;
+  return defaultCalendarDayColors;
 };
 
 function CustomDay(props: CustomDayProps) {

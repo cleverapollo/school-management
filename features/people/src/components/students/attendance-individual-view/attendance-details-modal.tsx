@@ -27,7 +27,15 @@ import {
   usePreferredNameLayout,
   PlaceholderCard,
 } from '@tyro/core';
-import { useAttendanceCodes } from '@tyro/attendance';
+import {
+  useAttendanceCodes,
+  useCreateOrUpdateEventAttendance,
+  useCreateOrUpdateSessionAttendance,
+  useStudentSessionAttendance,
+  ReturnTypeFromUseStudentSessionAttendance,
+  useStudentDailyCalendarInformation,
+  useBellTimesQuery,
+} from '@tyro/attendance';
 import {
   SaveEventAttendanceInput,
   StudentSessionAttendanceInput,
@@ -38,14 +46,6 @@ import dayjs from 'dayjs';
 import { useForm } from 'react-hook-form';
 import { useEffect, useMemo, useState } from 'react';
 import { LoadingButton } from '@mui/lab';
-import {
-  ReturnTypeFromUseStudentSessionAttendance,
-  useStudentSessionAttendance,
-} from '../../../api/student/attendance/student-session-attendance';
-import { useStudentDailyCalendarInformation } from '../../../api/student/attendance/daily-calendar-information';
-import { useCreateOrUpdateEventAttendance } from '../../../api/student/attendance/save-student-event-attendance';
-import { useCreateOrUpdateSessionAttendance } from '../../../api/student/attendance/save-student-session-attendance';
-import { useBellTimesQuery } from '../../../api/student/attendance/calendar-bell-times';
 import { useStudent } from '../../../api/student/students';
 
 type AttendanceInput = {
@@ -368,16 +368,14 @@ export const AttendanceDetailsModal = ({
                 >
                   {bellTimesWithName.map((event) => {
                     const sessionAttendance = sessionAttendanceById?.[event.id];
-                    const updatedBy = displayName(
-                      sessionAttendance?.updatedBy,
-                      { format: PreferredNameFormat.FirstnameSurname }
-                    );
-                    const creatorName = displayName(
-                      sessionAttendance?.createdBy,
-                      {
-                        format: PreferredNameFormat.FirstnameSurname,
-                      }
-                    );
+
+                    const lastPersonUpdater =
+                      sessionAttendance?.updatedBy ||
+                      sessionAttendance?.createdBy;
+
+                    const creatorName = displayName(lastPersonUpdater, {
+                      format: PreferredNameFormat.FirstnameSurname,
+                    });
 
                     return (
                       <TableRow key={event.id}>
@@ -403,26 +401,22 @@ export const AttendanceDetailsModal = ({
                         </TableCell>
                         <TableCell>
                           <Stack direction="row" alignItems="center">
-                            {(sessionAttendance?.updatedBy ||
-                              sessionAttendance?.createdBy) && (
+                            {lastPersonUpdater && (
                               <Avatar
                                 sx={{
                                   width: 32,
                                   height: 32,
                                   fontSize: 14,
                                 }}
-                                name={updatedBy || creatorName}
-                                src={
-                                  sessionAttendance?.updatedBy?.avatarUrl ||
-                                  sessionAttendance?.createdBy?.avatarUrl
-                                }
+                                name={creatorName}
+                                src={lastPersonUpdater?.avatarUrl}
                               />
                             )}
                             <Typography
                               variant="subtitle2"
                               sx={{ textWrap: 'noWrap', marginLeft: 1 }}
                             >
-                              {(updatedBy || creatorName) ?? '-'}
+                              {creatorName ?? '-'}
                             </Typography>
                           </Stack>
                         </TableCell>
@@ -487,11 +481,10 @@ export const AttendanceDetailsModal = ({
                     const [currentEvent] =
                       event?.extensions?.eventAttendance || [];
 
-                    const updatedBy = displayName(currentEvent?.updatedBy, {
-                      format: PreferredNameFormat.FirstnameSurname,
-                    });
+                    const lastPersonUpdater =
+                      currentEvent?.updatedBy || currentEvent?.createdBy;
 
-                    const creatorName = displayName(currentEvent?.createdBy, {
+                    const creatorName = displayName(lastPersonUpdater, {
                       format: PreferredNameFormat.FirstnameSurname,
                     });
 
@@ -519,8 +512,7 @@ export const AttendanceDetailsModal = ({
                         </TableCell>
                         <TableCell>
                           <Stack direction="row" alignItems="center">
-                            {(currentEvent?.updatedBy ||
-                              currentEvent?.createdBy) && (
+                            {creatorName && (
                               <Avatar
                                 sx={{
                                   width: 32,
@@ -528,10 +520,7 @@ export const AttendanceDetailsModal = ({
                                   fontSize: 14,
                                 }}
                                 name={creatorName}
-                                src={
-                                  currentEvent?.updatedBy?.avatarUrl ||
-                                  currentEvent?.createdBy?.avatarUrl
-                                }
+                                src={lastPersonUpdater?.avatarUrl}
                               />
                             )}
 
@@ -542,7 +531,7 @@ export const AttendanceDetailsModal = ({
                                 marginLeft: 1,
                               }}
                             >
-                              {updatedBy || creatorName || '-'}
+                              {creatorName || '-'}
                             </Typography>
                           </Stack>
                         </TableCell>

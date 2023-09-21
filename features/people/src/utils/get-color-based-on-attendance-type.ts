@@ -1,4 +1,10 @@
-export const defaultColors = {
+import { AttendanceCodeType } from '@tyro/api';
+
+interface AttendanceCode {
+  codeType: AttendanceCodeType;
+}
+
+export const defaultCalendarDayColors = {
   backgroundColor: 'transparent',
   color: 'slate.500',
   backgroundColorHoverState: 'transparent',
@@ -6,43 +12,43 @@ export const defaultColors = {
 };
 
 export const getColourBasedOnAttendanceType = (
-  keyOfAttendanceColors: string
+  attendanceCode: AttendanceCode['codeType']
 ) => {
-  const defaultColorsWithAttendance = {
-    ...defaultColors,
+  const defaultColors = {
+    ...defaultCalendarDayColors,
     color: '#FFFFFF',
     colorHoverState: '#FFFFFF',
   };
 
-  switch (keyOfAttendanceColors) {
-    case 'emerald':
-      defaultColorsWithAttendance.backgroundColor = `${keyOfAttendanceColors}.500`;
-      defaultColorsWithAttendance.backgroundColorHoverState = `${keyOfAttendanceColors}.700`;
+  switch (attendanceCode) {
+    case AttendanceCodeType.Present:
+      defaultColors.backgroundColor = `emerald.500`;
+      defaultColors.backgroundColorHoverState = `emerald.700`;
       break;
 
-    case 'pink':
-      defaultColorsWithAttendance.backgroundColor = `${keyOfAttendanceColors}.500`;
-      defaultColorsWithAttendance.backgroundColorHoverState = `${keyOfAttendanceColors}.600`;
+    case AttendanceCodeType.ExplainedAbsence:
+      defaultColors.backgroundColor = `pink.500`;
+      defaultColors.backgroundColorHoverState = `pink.600`;
       break;
 
-    case 'violet':
-      defaultColorsWithAttendance.backgroundColor = `${keyOfAttendanceColors}.700`;
-      defaultColorsWithAttendance.backgroundColorHoverState = `${keyOfAttendanceColors}.900`;
+    case AttendanceCodeType.UnexplainedAbsence:
+      defaultColors.backgroundColor = `violet.700`;
+      defaultColors.backgroundColorHoverState = `violet.900`;
       break;
 
-    case 'sky':
-      defaultColorsWithAttendance.backgroundColor = `${keyOfAttendanceColors}.400`;
-      defaultColorsWithAttendance.backgroundColorHoverState = `${keyOfAttendanceColors}.600`;
+    case AttendanceCodeType.Late:
+      defaultColors.backgroundColor = `sky.400`;
+      defaultColors.backgroundColorHoverState = `sky.600`;
       break;
 
-    case 'zinc':
-      defaultColorsWithAttendance.backgroundColor = `${keyOfAttendanceColors}.300`;
-      defaultColorsWithAttendance.color = `${keyOfAttendanceColors}.700`;
-      defaultColorsWithAttendance.backgroundColorHoverState = `${keyOfAttendanceColors}.400`;
-      defaultColorsWithAttendance.colorHoverState = `${keyOfAttendanceColors}.700`;
+    case AttendanceCodeType.NotTaken:
+      defaultColors.backgroundColor = `zinc.300`;
+      defaultColors.color = `zinc.700`;
+      defaultColors.backgroundColorHoverState = `zinc.400`;
+      defaultColors.colorHoverState = `zinc.700`;
       break;
 
     default:
   }
-  return defaultColorsWithAttendance;
+  return defaultColors;
 };

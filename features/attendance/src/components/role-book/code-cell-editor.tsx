@@ -1,12 +1,15 @@
-import { ICellEditorParams, TableSelect } from '@tyro/core';
+import {
+  ICellEditorParams,
+  TableSelect,
+  getColourBasedOnAttendanceType,
+} from '@tyro/core';
 import { Box, Stack, Typography } from '@mui/material';
 import { AttendanceCodeType } from '@tyro/api';
 import { TFunction } from '@tyro/i18n';
 import { EditIcon } from '@tyro/icons';
 import { ReturnTypeFromUseAttendanceCodes } from '../../api/attendance-codes';
-import { colorsBasedOnCodeType, iconBasedOnCodeType } from './attendance-value';
+import { iconBasedOnCodeType } from './attendance-value';
 import { ReturnTypeFromSessionAttendance } from '../../api/session-attendance';
-import { getColourBasedOnAttendanceType } from '../../utils/get-attendance-type-colour';
 
 type AttendanceCodesWithoutNotTaken = Exclude<
   AttendanceCodeType,
@@ -34,16 +37,13 @@ const renderSelectOption = (
     );
   }
 
-  const color =
-    colorsBasedOnCodeType[
-      option.sessionCodeType as AttendanceCodesWithoutNotTaken
-    ];
+  const { color: updatedColor } = getColourBasedOnAttendanceType(
+    option.sessionCodeType
+  );
   const icon =
     iconBasedOnCodeType[
       option.sessionCodeType as AttendanceCodesWithoutNotTaken
     ];
-
-  const updatedColor = getColourBasedOnAttendanceType(color);
 
   return (
     <Stack flex={1} direction="row" spacing={1} justifyContent="space-between">

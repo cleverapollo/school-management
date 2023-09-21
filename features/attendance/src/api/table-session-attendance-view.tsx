@@ -6,8 +6,26 @@ import {
   StudentSessionAttendanceFilter,
   UseQueryReturnType,
 } from '@tyro/api';
-import { peopleKeys } from '../../keys';
-import { CombinedAttendanceDataType } from '../../../components/students/attendance-individual-view/attendance-table-view';
+import { attendanceKeys } from './keys';
+
+type TypeForCombinedAttendanceData = string | null | undefined;
+type OptionalTypeForCombinedAttendanceData = string | null;
+
+type CombinedAttendanceDataType = {
+  date: TypeForCombinedAttendanceData;
+  type: TypeForCombinedAttendanceData;
+  attendanceCode: TypeForCombinedAttendanceData;
+  details?: OptionalTypeForCombinedAttendanceData;
+  updatedBy?: {
+    firstName?: OptionalTypeForCombinedAttendanceData;
+    lastName?: OptionalTypeForCombinedAttendanceData;
+  };
+  createdBy?: {
+    firstName?: OptionalTypeForCombinedAttendanceData;
+    lastName?: OptionalTypeForCombinedAttendanceData;
+  };
+  partyId: TypeForCombinedAttendanceData;
+};
 
 const tableSessionAttendanceView = graphql(/* GraphQL */ `
   query tableSessionAttendanceView($filter: StudentSessionAttendanceFilter) {
@@ -51,7 +69,7 @@ const tableSessionAttendanceView = graphql(/* GraphQL */ `
 const tableSessionAttendanceQuery = (
   filter: StudentSessionAttendanceFilter
 ) => ({
-  queryKey: peopleKeys.students.tableSessionAttendance(filter),
+  queryKey: attendanceKeys.tableSessionAttendance(filter),
   queryFn: async () => {
     const { attendance_studentSessionAttendance: sessionAttendance } =
       await gqlClient.request(tableSessionAttendanceView, {

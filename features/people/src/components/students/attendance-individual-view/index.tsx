@@ -19,8 +19,8 @@ import { useAcademicNamespace, AttendanceCodeType } from '@tyro/api';
 import { ToggleButtonCalendarIcon, ToggleButtonTableIcon } from '@tyro/icons';
 import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
+import { useStudentCalendarAttendance } from '@tyro/attendance';
 import { AcademicCalendar } from './calendar';
-import { useStudentCalendarAttendance } from '../../../api/student/attendance/calendar-attendance';
 import { AttendanceTableView } from './attendance-table-view';
 
 export type ExtendedAttendanceCodeType = AttendanceCodeType | 'ALL';

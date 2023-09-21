@@ -1,30 +1,31 @@
 import { AttendanceCodeType } from '@tyro/api';
 
-interface AttendanceCodeChipProps {
+interface AttendanceCode {
   codeType: AttendanceCodeType;
 }
 
 export const getColourBasedOnAttendanceType = (
-  attendanceCode: AttendanceCodeChipProps['codeType']
+  attendanceCode: AttendanceCode['codeType']
 ) => {
-  const colors = { colour: '', backGroundColor: '' };
+  const colors = { color: '', backgroundColor: '' };
   switch (attendanceCode) {
     case AttendanceCodeType.Present:
-      colors.colour = `emerald.500`;
-      colors.backGroundColor = `emerald.100`;
+      colors.color = `emerald.500`;
+      colors.backgroundColor = `emerald.100`;
       break;
     case AttendanceCodeType.ExplainedAbsence:
-      colors.colour = `pink.600`;
-      colors.backGroundColor = `pink.100`;
-      break;
-    case AttendanceCodeType.Late:
-      colors.colour = `sky.500`;
-      colors.backGroundColor = `sky.100`;
+      colors.color = `pink.600`;
+      colors.backgroundColor = `pink.100`;
       break;
     case AttendanceCodeType.UnexplainedAbsence:
-      colors.colour = `violet.700`;
-      colors.backGroundColor = `violet.100`;
+      colors.color = `violet.700`;
+      colors.backgroundColor = `violet.100`;
       break;
+    case AttendanceCodeType.Late:
+      colors.color = `sky.500`;
+      colors.backgroundColor = `sky.100`;
+      break;
+
     default:
   }
   return colors;
