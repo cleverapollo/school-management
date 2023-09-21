@@ -82,7 +82,8 @@
   "declineRequests": "Decline requests",
   "withdrawRequest": "Withdraw absent request",
   "dateOfAbsence": "Date of absence",
-  "feedback": "Feedback",
+  "feedbackToContactOptional": "Feedback to contact (optional)",
+  "unableToWithdraw": "Unable to withdraw request which has been processed.",
   "nameByCodeType": {
     "PRESENT": "Present",
     "LATE": "Late",
