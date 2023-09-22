@@ -42,10 +42,18 @@ const getAbsentRequestDataWithLabels = (
   data: ReturnTypeFromUseAbsentRequests | undefined,
   t: TFunction<('common' | 'attendance')[]>,
   displayName: ReturnTypeDisplayName,
-  attendanceCodes: ReturnTypeFromUseAttendanceCodes[] | undefined
+  attendanceCodes: ReturnTypeFromUseAttendanceCodes[] | undefined,
+  isContact: boolean | undefined
 ): CardEditableFormProps<ReturnTypeFromUseAbsentRequests>['fields'] => {
   if (data === undefined) return [];
-  const { contact, attendanceCode, parentNote, requestType } = data;
+  const {
+    contact,
+    attendanceCode,
+    parentNote,
+    adminNote,
+    requestType,
+    status,
+  } = data;
 
   const contactName = displayName(contact?.person);
   const relationShip =
@@ -56,7 +64,7 @@ const getAbsentRequestDataWithLabels = (
         )
       : '';
 
-  return [
+  const fields = [
     {
       label: t('attendance:dateOfAbsence'),
       value: t(
@@ -102,6 +110,27 @@ const getAbsentRequestDataWithLabels = (
       ),
     },
   ];
+
+  if (isContact && status === ParentalAttendanceRequestStatus.Denied) {
+    fields.push({
+      label: t('attendance:feedbackFromSchool'),
+      value: adminNote ?? '-',
+      valueEditor: (
+        <RHFTextField
+          controlProps={{
+            name: 'adminNote',
+          }}
+          textFieldProps={{
+            fullWidth: true,
+            multiline: true,
+            minRows: 3,
+          }}
+        />
+      ),
+    });
+  }
+
+  return fields;
 };
 
 export const ViewAbsentRequestModal = ({
@@ -142,7 +171,8 @@ export const ViewAbsentRequestModal = ({
     initialAbsentRequestState,
     t,
     displayName,
-    attendanceCodes
+    attendanceCodes,
+    isContact
   );
   const { resolver, rules } =
     useFormValidator<ReturnTypeFromUseAbsentRequests>();
