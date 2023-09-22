@@ -1,5 +1,6 @@
-import { Box, Button, Container, Typography } from '@mui/material';
+import { Box, Button, Container, Fade, Typography } from '@mui/material';
 import {
+  ActionMenu,
   Avatar,
   GridOptions,
   ICellRendererParams,
@@ -14,13 +15,10 @@ import {
   queryClient,
   UseQueryReturnType,
 } from '@tyro/api';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  ReturnTypeFromUseEvictTenantLevelCache,
-  useAdminTenants,
-  useEvictTenantLevelCache,
-} from '../../api/tenants';
+import { BrushCircleIcon } from '@tyro/icons';
+import { useAdminTenants, useEvictTenantLevelCache } from '../../api/tenants';
 
 type ReturnTypeFromUseAdminTenants = UseQueryReturnType<
   typeof useAdminTenants
@@ -28,8 +26,7 @@ type ReturnTypeFromUseAdminTenants = UseQueryReturnType<
 
 const getAdminTenantColumns = (
   t: TFunction<('common' | 'admin')[], undefined, ('common' | 'admin')[]>,
-  navigate: ReturnType<typeof useNavigate>,
-  evictTenantLevelCache: ReturnTypeFromUseEvictTenantLevelCache['mutateAsync']
+  navigate: ReturnType<typeof useNavigate>
 ): GridOptions<ReturnTypeFromUseAdminTenants>['columnDefs'] => [
   {
     field: 'name',
@@ -52,6 +49,7 @@ const getAdminTenantColumns = (
         </RouterLink>
       </Box>
     ),
+    checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
   },
   {
@@ -86,33 +84,17 @@ const getAdminTenantColumns = (
       </Button>
     ),
   },
-  {
-    headerName: '',
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseAdminTenants, any>) => (
-      <Button
-        className="ag-show-on-row-interaction"
-        onClick={() => {
-          if (data?.tenant) {
-            evictTenantLevelCache(data?.tenant);
-          }
-        }}
-      >
-        Evict Tenant Cache
-      </Button>
-    ),
-  },
 ];
 
 export default function AdminSchoolsPage() {
   const { t } = useTranslation(['common', 'admin']);
+  const [selectedSchoolId, setSelectedSchoolId] = useState<number | null>(null);
   const { data: tenants } = useAdminTenants();
   const navigate = useNavigate();
   const { mutateAsync: evictTenantLevelCache } = useEvictTenantLevelCache();
 
   const tenantColumns = useMemo(
-    () => getAdminTenantColumns(t, navigate, evictTenantLevelCache),
+    () => getAdminTenantColumns(t, navigate),
     [t, navigate]
   );
 
@@ -125,7 +107,29 @@ export default function AdminSchoolsPage() {
         <Table
           rowData={tenants ?? []}
           columnDefs={tenantColumns}
+          rowSelection="single"
           getRowId={({ data }) => String(data?.tenant)}
+          rightAdornment={
+            <Fade in={!!selectedSchoolId} unmountOnExit>
+              <Box>
+                <ActionMenu
+                  menuItems={[
+                    {
+                      label: 'Evict tenant cache',
+                      icon: <BrushCircleIcon />,
+                      onClick: () =>
+                        selectedSchoolId &&
+                        evictTenantLevelCache(selectedSchoolId),
+                    },
+                  ]}
+                />
+              </Box>
+            </Fade>
+          }
+          onRowSelection={(newSelectedSchools) => {
+            const [newSelectedSchool] = newSelectedSchools;
+            setSelectedSchoolId(newSelectedSchool?.tenant ?? null);
+          }}
         />
       </Container>
     </Page>

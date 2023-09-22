@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { gqlClient, graphql, queryClient } from '@tyro/api';
 import { useToast } from '@tyro/core';
-import { useTranslation } from '@tyro/i18n';
 
 const adminTenants = graphql(/* GraphQL */ `
   query admin__tenants {
@@ -51,13 +50,15 @@ export function useAdminTenants() {
 
 export function useEvictTenantLevelCache() {
   const { toast } = useToast();
-  const { t } = useTranslation(['common']);
 
   return useMutation({
     mutationFn: async (input: number) =>
       gqlClient.request(adminResetTenantCache, { input }),
     onSuccess: () => {
-      toast(t('common:snackbarMessages.updateSuccess'));
+      toast('Tenant cache evicted successfully');
+    },
+    onError: () => {
+      toast('Issue evicting tenant cache', { variant: 'error' });
     },
   });
 }
