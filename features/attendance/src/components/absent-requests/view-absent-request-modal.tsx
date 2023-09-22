@@ -64,7 +64,7 @@ const getAbsentRequestDataWithLabels = (
         )
       : '';
 
-  const fields = [
+  return [
     {
       label: t('attendance:dateOfAbsence'),
       value: t(
@@ -109,28 +109,27 @@ const getAbsentRequestDataWithLabels = (
         />
       ),
     },
+    ...(isContact && status === ParentalAttendanceRequestStatus.Denied
+      ? [
+          {
+            label: t('attendance:feedbackFromSchool'),
+            value: adminNote || '-',
+            valueEditor: (
+              <RHFTextField
+                controlProps={{
+                  name: 'adminNote',
+                }}
+                textFieldProps={{
+                  fullWidth: true,
+                  multiline: true,
+                  minRows: 3,
+                }}
+              />
+            ),
+          },
+        ]
+      : []),
   ];
-
-  if (isContact && status === ParentalAttendanceRequestStatus.Denied) {
-    fields.push({
-      label: t('attendance:feedbackFromSchool'),
-      value: adminNote ?? '-',
-      valueEditor: (
-        <RHFTextField
-          controlProps={{
-            name: 'adminNote',
-          }}
-          textFieldProps={{
-            fullWidth: true,
-            multiline: true,
-            minRows: 3,
-          }}
-        />
-      ),
-    });
-  }
-
-  return fields;
 };
 
 export const ViewAbsentRequestModal = ({

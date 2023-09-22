@@ -38,7 +38,16 @@ const getAbsentRequestColumns = (
   >,
   overview: boolean
 ) => {
-  const columns: GridOptions<ReturnTypeFromUseAbsentRequests>['columnDefs'] = [
+  const columnsForContactUser: GridOptions<ReturnTypeFromUseAbsentRequests>['columnDefs'] =
+    [
+      {
+        field: 'adminNote',
+        headerName: t('attendance:feedbackFromSchool'),
+        valueGetter: ({ data }) => data?.adminNote || '-',
+      },
+    ];
+
+  return [
     {
       field: 'classGroup.name',
       headerName: t('common:name'),
@@ -59,13 +68,13 @@ const getAbsentRequestColumns = (
     {
       field: 'classGroup',
       headerName: t('common:class'),
-      valueGetter: ({ data }) => data?.classGroup?.name ?? '-',
+      valueGetter: ({ data }) => data?.classGroup?.name || '-',
     },
     {
       field: 'attendanceCode.name',
       headerName: t('attendance:absentType'),
       filter: true,
-      valueGetter: ({ data }) => data?.attendanceCode?.name ?? '-',
+      valueGetter: ({ data }) => data?.attendanceCode?.name || '-',
     },
     {
       field: 'createdOn',
@@ -88,6 +97,7 @@ const getAbsentRequestColumns = (
       headerName: t('attendance:completedBy'),
       valueGetter: ({ data }) => displayName(data?.approvedBy),
     },
+    ...(overview ? columnsForContactUser : []),
     {
       suppressColumnsToolPanel: true,
       sortable: false,
@@ -101,17 +111,7 @@ const getAbsentRequestColumns = (
           </Button>
         ),
     },
-  ];
-
-  if (overview) {
-    columns.splice(-1, 0, {
-      field: 'adminNote',
-      headerName: t('attendance:feedbackFromSchool'),
-      valueGetter: ({ data }) => data?.adminNote ?? '-',
-    });
-  }
-
-  return columns;
+  ] as GridOptions<ReturnTypeFromUseAbsentRequests>['columnDefs'];
 };
 
 export default function AbsentRequests() {

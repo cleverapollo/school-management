@@ -20,6 +20,8 @@ export type Scalars = {
   DateTime: string;
   /** A 64-bit signed integer */
   Long: number;
+  /** An object scalar */
+  Object: any;
   /** 24-hour clock time value string in the format `hh:mm:ss` or `hh:mm:ss.sss`. */
   Time: string;
 };
@@ -3520,6 +3522,8 @@ export type Query = {
   print_printTimetable: TemporaryDownload;
   profileTypes?: Maybe<Array<Maybe<ProfileType>>>;
   profiles?: Maybe<Array<Maybe<ProfileType>>>;
+  reporting_reports: Array<Reporting_ReportInfo>;
+  reporting_runReport?: Maybe<Reporting_TableReport>;
   search_search: Array<Search>;
   subjectGroups?: Maybe<Array<SubjectGroup>>;
   swm_absenceTypes: Array<Swm_StaffAbsenceType>;
@@ -3849,6 +3853,11 @@ export type QueryProfilesArgs = {
 };
 
 
+export type QueryReporting_RunReportArgs = {
+  filter?: InputMaybe<Reporting_ReportFilter>;
+};
+
+
 export type QuerySearch_SearchArgs = {
   filter?: InputMaybe<SearchFilter>;
 };
@@ -4015,6 +4024,64 @@ export type RegisterDeviceInput = {
   deviceMake: Scalars['String'];
   deviceType: DeviceType;
   osVersion: Scalars['String'];
+};
+
+export type Reporting_ReportFilter = {
+  filters?: InputMaybe<Array<InputMaybe<Reporting_TableFilterInput>>>;
+  reportId: Scalars['String'];
+};
+
+export type Reporting_ReportInfo = {
+  __typename?: 'Reporting_ReportInfo';
+  id: Scalars['String'];
+  name: Scalars['String'];
+  /**  flag to say whether its released */
+  visibleToSchools: Scalars['Boolean'];
+};
+
+export type Reporting_TableFilter = {
+  __typename?: 'Reporting_TableFilter';
+  defaultValue?: Maybe<Scalars['Object']>;
+  id: Scalars['String'];
+  inputType: Reporting_TableFilterType;
+  label: Scalars['String'];
+  required: Scalars['Boolean'];
+  values?: Maybe<Array<Maybe<Reporting_TableFilterValues>>>;
+};
+
+export type Reporting_TableFilterInput = {
+  filterId: Scalars['String'];
+  filterValue?: InputMaybe<Scalars['Object']>;
+};
+
+export enum Reporting_TableFilterType {
+  Checkbox = 'CHECKBOX',
+  Date = 'DATE',
+  Input = 'INPUT',
+  InputNumber = 'INPUT_NUMBER',
+  Select = 'SELECT'
+}
+
+export type Reporting_TableFilterValues = {
+  __typename?: 'Reporting_TableFilterValues';
+  id?: Maybe<Scalars['Object']>;
+  value?: Maybe<Scalars['String']>;
+};
+
+export type Reporting_TableReport = {
+  __typename?: 'Reporting_TableReport';
+  data?: Maybe<Array<Maybe<Scalars['Object']>>>;
+  fields: Array<Reporting_TableReportField>;
+  filters: Array<Reporting_TableFilter>;
+  id: Scalars['String'];
+  info: Reporting_ReportInfo;
+};
+
+export type Reporting_TableReportField = {
+  __typename?: 'Reporting_TableReportField';
+  id: Scalars['String'];
+  label: Scalars['String'];
+  visibleByDefault: Scalars['Boolean'];
 };
 
 export type ResourceCalendar = {
