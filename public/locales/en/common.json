@@ -31,7 +31,8 @@
     "logMeOut": "Log me out",
     "previous": "Previous",
     "next": "Next",
-    "clone": "Clone"
+    "clone": "Clone",
+    "filter": "Filter"
   },
   "snackbarMessages": {
     "createSuccess": "Create success!",

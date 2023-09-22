@@ -1,35 +1,49 @@
 import {
   NavObjectFunction,
   NavObjectType,
-  LazyLoader,
   lazyWithRetry,
+  throw404Error,
 } from '@tyro/core';
-import { UserGroupIcon } from '@tyro/icons';
+import { DocSearchIcon } from '@tyro/icons';
+import { getReportsList } from './api/list';
+import { getRunReports } from './api/run-report';
 
-const StudentsListPage = lazyWithRetry(() => import('./pages/testReport'));
-// Student profile pages
+const ReportsListPage = lazyWithRetry(() => import('./pages'));
+const ReportPage = lazyWithRetry(() => import('./pages/view'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
     type: NavObjectType.Category,
-    title: ' reporting',
+    title: t('navigation:management.title'),
     children: [
       {
-        type: NavObjectType.RootGroup,
-        path: 'reporting',
-        title: t('navigation:management.people.title'),
-        icon: <UserGroupIcon />,
-        hasAccess: ({ userType }) => true,
+        type: NavObjectType.RootLink,
+        path: 'reports-list',
+        hasAccess: ({ isTyroUser }) => isTyroUser,
+        title: t('navigation:management.reports'),
+        icon: <DocSearchIcon />,
         children: [
           {
-            type: NavObjectType.MenuLink,
-            path: 'reporting',
-            title: 'test reporting',
-            element: (
-              <LazyLoader>
-                <StudentsListPage />
-              </LazyLoader>
-            ),
+            type: NavObjectType.NonMenuLink,
+            index: true,
+            hasAccess: ({ isTyroUser }) => isTyroUser,
+            loader: getReportsList,
+            element: <ReportsListPage />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: ':id',
+            hasAccess: ({ isTyroUser }) => isTyroUser,
+            loader: async ({ params }) => {
+              const reportId = params.id ?? '';
+
+              if (!reportId) {
+                throw404Error();
+              }
+
+              return getRunReports({ reportId });
+            },
+            element: <ReportPage />,
           },
         ],
       },

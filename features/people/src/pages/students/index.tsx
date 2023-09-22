@@ -51,12 +51,13 @@ const getStudentColumns = (
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
+    filter: true,
   },
   {
     field: 'classGroup.name',
     headerName: translate('people:class'),
     enableRowGroup: true,
-    filter: true
+    filter: true,
   },
   {
     field: 'yearGroups',
@@ -67,7 +68,7 @@ const getStudentColumns = (
         return data.yearGroups[0].name;
       }
     },
-    filter: true
+    filter: true,
   },
   {
     field: 'tutors',
@@ -80,6 +81,7 @@ const getStudentColumns = (
     headerName: translate('common:yearhead'),
     enableRowGroup: true,
     valueGetter: ({ data }) => displayNames(data?.yearGroupLeads),
+    filter: true,
   },
   {
     field: 'programmeStages',
@@ -90,7 +92,7 @@ const getStudentColumns = (
         return data.programmeStages[0]?.programme?.name;
       }
     },
-    filter: true
+    filter: true,
   },
   {
     field: 'studentIrePP.examNumber',
@@ -139,9 +141,7 @@ const getStudentColumns = (
   },
   {
     field: 'partyId',
-    headerName: translate(
-        'common:tyroId'
-    ),
+    headerName: translate('common:tyroId'),
     hide: true,
   },
 ];
