@@ -1,5 +1,6 @@
-import { Box, Button, Container, Typography } from '@mui/material';
+import { Box, Button, Container, Fade, Typography } from '@mui/material';
 import {
+  ActionMenu,
   Avatar,
   GridOptions,
   ICellRendererParams,
@@ -14,9 +15,10 @@ import {
   queryClient,
   UseQueryReturnType,
 } from '@tyro/api';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAdminTenants } from '../../api/tenants';
+import { BrushCircleIcon } from '@tyro/icons';
+import { useAdminTenants, useEvictTenantLevelCache } from '../../api/tenants';
 
 type ReturnTypeFromUseAdminTenants = UseQueryReturnType<
   typeof useAdminTenants
@@ -47,6 +49,7 @@ const getAdminTenantColumns = (
         </RouterLink>
       </Box>
     ),
+    checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
   },
   {
@@ -85,8 +88,10 @@ const getAdminTenantColumns = (
 
 export default function AdminSchoolsPage() {
   const { t } = useTranslation(['common', 'admin']);
+  const [selectedSchoolId, setSelectedSchoolId] = useState<number | null>(null);
   const { data: tenants } = useAdminTenants();
   const navigate = useNavigate();
+  const { mutateAsync: evictTenantLevelCache } = useEvictTenantLevelCache();
 
   const tenantColumns = useMemo(
     () => getAdminTenantColumns(t, navigate),
@@ -102,7 +107,29 @@ export default function AdminSchoolsPage() {
         <Table
           rowData={tenants ?? []}
           columnDefs={tenantColumns}
+          rowSelection="single"
           getRowId={({ data }) => String(data?.tenant)}
+          rightAdornment={
+            <Fade in={!!selectedSchoolId} unmountOnExit>
+              <Box>
+                <ActionMenu
+                  menuItems={[
+                    {
+                      label: 'Evict tenant cache',
+                      icon: <BrushCircleIcon />,
+                      onClick: () =>
+                        selectedSchoolId &&
+                        evictTenantLevelCache(selectedSchoolId),
+                    },
+                  ]}
+                />
+              </Box>
+            </Fade>
+          }
+          onRowSelection={(newSelectedSchools) => {
+            const [newSelectedSchool] = newSelectedSchools;
+            setSelectedSchoolId(newSelectedSchool?.tenant ?? null);
+          }}
         />
       </Container>
     </Page>

@@ -1,5 +1,8 @@
 import {
   AttendanceCodeFilter,
+  CalendarAttendanceFilter,
+  CalendarDayBellTimeFilter,
+  CalendarEventFilter,
   StudentSessionAttendanceFilter,
   ParentalAttendanceRequestFilter,
   SessionAttendanceListFilter,
@@ -17,4 +20,24 @@ export const attendanceKeys = {
     [...attendanceKeys.all, 'absentRequests', filter] as const,
   sessionAttendanceList: (filter: SessionAttendanceListFilter) =>
     [...attendanceKeys.all, 'sessionAttendanceList', filter] as const,
+  individualStudentSessionAttendance: (
+    filter: StudentSessionAttendanceFilter
+  ) =>
+    [
+      ...attendanceKeys.all,
+      'individualStudentSessionAttendance',
+      filter,
+    ] as const,
+  studentCalendarAttendance: (filter: CalendarAttendanceFilter) =>
+    [...attendanceKeys.all, 'studentCalendarAttendance', filter] as const,
+  studentDailyCalendarTimetableInformation: (filter: CalendarEventFilter) =>
+    [
+      ...attendanceKeys.all,
+      'studentDailyCalendarTimetableInformation',
+      filter,
+    ] as const,
+  tableSessionAttendance: (filter: StudentSessionAttendanceFilter) =>
+    [...attendanceKeys.all, 'tableSessionAttendance', filter] as const,
+  calendarBellTimes: (filter: CalendarDayBellTimeFilter) =>
+    [...attendanceKeys.all, 'calendarBellTimes', filter] as const,
 };
