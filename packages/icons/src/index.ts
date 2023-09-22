@@ -12,6 +12,7 @@ export * from './bell';
 export * from './blank-file';
 export * from './book-open';
 export * from './books-apple';
+export * from './brush-circle';
 export * from './building-graduate-hat';
 export * from './calendar-22';
 export * from './calendar-31';
