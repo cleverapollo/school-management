@@ -30,6 +30,10 @@ import { CreateAbsentRequestModal } from '../components/absent-requests/create-a
 
 dayjs.extend(LocalizedFormat);
 
+type ColumnsDef = NonNullable<
+  GridOptions<ReturnTypeFromUseAbsentRequests>['columnDefs']
+>;
+
 const getAbsentRequestColumns = (
   t: TFunction<('common' | 'attendance')[]>,
   displayName: ReturnTypeDisplayName,
@@ -37,82 +41,79 @@ const getAbsentRequestColumns = (
     SetStateAction<ViewAbsentRequestModalProps['initialAbsentRequestState']>
   >,
   overview: boolean
-) => {
-  const columnsForContactUser: GridOptions<ReturnTypeFromUseAbsentRequests>['columnDefs'] =
-    [
-      {
-        field: 'adminNote',
-        headerName: t('attendance:feedbackFromSchool'),
-        valueGetter: ({ data }) => data?.adminNote || '-',
-      },
-    ];
-
-  return [
-    {
-      field: 'classGroup.name',
-      headerName: t('common:name'),
-      checkboxSelection: !overview ? ({ data }) => Boolean(data) : undefined,
-      headerCheckboxSelection: !overview,
-      lockVisible: true,
-      valueGetter: ({ data }) => displayName(data?.student),
-      cellRenderer: ({
-        data,
-      }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
-        data ? (
-          <TablePersonAvatar
-            person={data?.student}
-            to={`/people/students/${data?.studentPartyId ?? ''}/overview`}
-          />
-        ) : null,
-    },
-    {
-      field: 'classGroup',
-      headerName: t('common:class'),
-      valueGetter: ({ data }) => data?.classGroup?.name || '-',
-    },
-    {
-      field: 'attendanceCode.name',
-      headerName: t('attendance:absentType'),
-      filter: true,
-      valueGetter: ({ data }) => data?.attendanceCode?.name || '-',
-    },
-    {
-      field: 'createdOn',
-      headerName: t('common:created'),
-      comparator: (dateA: string, dateB: string) =>
-        dayjs(dateA).unix() - dayjs(dateB).unix(),
-      valueGetter: ({ data }) => dayjs(data?.createdOn).format('LL'),
-    },
-    {
-      field: 'status',
-      headerName: t('common:status'),
-      sort: 'desc',
-      cellRenderer: ({
-        data,
-      }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
-        data ? <AbsentRequestStatusChip status={data.status} /> : null,
-    },
-    {
-      field: 'approvedBy',
-      headerName: t('attendance:completedBy'),
-      valueGetter: ({ data }) => displayName(data?.approvedBy),
-    },
-    ...(overview ? columnsForContactUser : []),
-    {
-      suppressColumnsToolPanel: true,
-      sortable: false,
-      cellClass: 'ag-show-on-row-interaction',
-      cellRenderer: ({
-        data,
-      }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
-        data && (
-          <Button onClick={() => onClickView(data)}>
-            {t('common:actions.view')}
-          </Button>
-        ),
-    },
-  ] as GridOptions<ReturnTypeFromUseAbsentRequests>['columnDefs'];
-};
+): ColumnsDef => [
+  {
+    field: 'classGroup.name',
+    headerName: t('common:name'),
+    checkboxSelection: !overview ? ({ data }) => Boolean(data) : undefined,
+    headerCheckboxSelection: !overview,
+    lockVisible: true,
+    valueGetter: ({ data }) => displayName(data?.student),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
+      data ? (
+        <TablePersonAvatar
+          person={data?.student}
+          to={`/people/students/${data?.studentPartyId ?? ''}/overview`}
+        />
+      ) : null,
+  },
+  {
+    field: 'classGroup',
+    headerName: t('common:class'),
+    valueGetter: ({ data }) => data?.classGroup?.name || '-',
+  },
+  {
+    field: 'attendanceCode.name',
+    headerName: t('attendance:absentType'),
+    filter: true,
+    valueGetter: ({ data }) => data?.attendanceCode?.name || '-',
+  },
+  {
+    field: 'createdOn',
+    headerName: t('common:created'),
+    comparator: (dateA: string, dateB: string) =>
+      dayjs(dateA).unix() - dayjs(dateB).unix(),
+    valueGetter: ({ data }) => dayjs(data?.createdOn).format('LL'),
+  },
+  {
+    field: 'status',
+    headerName: t('common:status'),
+    sort: 'desc',
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
+      data ? <AbsentRequestStatusChip status={data.status} /> : null,
+  },
+  {
+    field: 'approvedBy',
+    headerName: t('attendance:completedBy'),
+    valueGetter: ({ data }) => displayName(data?.approvedBy),
+  },
+  ...(overview
+    ? ([
+        {
+          field: 'adminNote',
+          headerName: t('attendance:feedbackFromSchool'),
+          valueGetter: ({ data }) => data?.adminNote || '-',
+        },
+      ] as ColumnsDef)
+    : []),
+  {
+    suppressColumnsToolPanel: true,
+    sortable: false,
+    cellClass: 'ag-show-on-row-interaction',
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
+      data && (
+        <Button onClick={() => onClickView(data)}>
+          {t('common:actions.view')}
+        </Button>
+      ),
+  },
+];
 
 export default function AbsentRequests() {
   const { isContact } = usePermissions();
