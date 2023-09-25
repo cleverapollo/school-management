@@ -1,5 +1,5 @@
 import { Stack, Box, Typography } from '@mui/material';
-import { Avatar, pxToRem } from '@tyro/core';
+import { Avatar } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
