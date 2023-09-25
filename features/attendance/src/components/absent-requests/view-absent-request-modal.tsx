@@ -80,7 +80,8 @@ const getAbsentRequestDataWithLabels = (
     },
     {
       label: t('attendance:reasonForAbsence'),
-      value: attendanceCode?.name,
+      value: attendanceCode?.id,
+      valueRenderer: attendanceCode?.name,
       valueEditor: (
         <RHFSelect
           fullWidth
@@ -180,20 +181,24 @@ export const ViewAbsentRequestModal = ({
     attendanceCode: rules.required(),
   });
 
-  const handleEdit = ({
-    attendanceCode,
-    parentNote,
-  }: ReturnTypeFromUseAbsentRequests) => {
+  const handleEdit = (
+    { attendanceCode, parentNote }: ReturnTypeFromUseAbsentRequests,
+    onSuccess: () => void
+  ) => {
     if (initialAbsentRequestState) {
-      createOrUpdateAbsentRequestMutation([
-        {
-          ...initialAbsentRequestState,
-          id: initialAbsentRequestState.id,
-          attendanceCodeId:
-            attendanceCode?.id ?? initialAbsentRequestState?.attendanceCode?.id,
-          parentNote,
-        },
-      ]);
+      createOrUpdateAbsentRequestMutation(
+        [
+          {
+            ...initialAbsentRequestState,
+            id: initialAbsentRequestState.id,
+            attendanceCodeId:
+              attendanceCode?.id ??
+              initialAbsentRequestState?.attendanceCode?.id,
+            parentNote,
+          },
+        ],
+        { onSuccess }
+      );
     }
   };
 
