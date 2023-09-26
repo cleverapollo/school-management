@@ -74,7 +74,8 @@
       "permissions": "Permissions",
       "noteLabels": "Note labels",
       "behaviourLabels": "Behaviour settings",
-      "commentBanks": "Comment banks"
+      "commentBanks": "Comment banks",
+      "schoolCalendar": "School Calendar"
     },
     "timetable": {
       "title": "Timetable",

@@ -45,6 +45,9 @@
     "INVITE_SENT": "Invite sent",
     "DISABLED": "Disabled"
   },
+  "schoolCalendar": {
+    "title": "Day Types and Bell Times"
+  },
   "actions": {
     "makeActive": "Activate academic year for all users",
     "changeAcademicYear": "Change academic year for just me",
