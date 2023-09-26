@@ -110,7 +110,7 @@ export function MailView() {
         threadId: mail.threadId,
       });
     }
-  }, [mail?.readOn]);
+  }, [mail?.readOn, mail?.threads]);
 
   return (
     <Stack flexGrow={1} overflow="hidden">
