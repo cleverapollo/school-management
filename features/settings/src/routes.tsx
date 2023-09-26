@@ -7,7 +7,11 @@ import {
 } from '@tyro/core';
 import { GearIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
-import { getCoreAcademicNamespace, AccessUserType } from '@tyro/api';
+import {
+  getCoreAcademicNamespace,
+  AccessUserType,
+  getAcademicNamespace,
+} from '@tyro/api';
 import { AttendanceCodes, getAttendanceCodes } from '@tyro/attendance';
 import {
   getContactsForSelect,
@@ -19,6 +23,7 @@ import {
 import { getStaffPosts } from '@tyro/people/src/api/staff/staff-posts';
 import { getEmploymentCapacities } from '@tyro/people/src/api/staff/employment-capacities';
 import { AbsenceTypes, getStaffWorkAbsenceTypes } from '@tyro/substitution';
+import dayjs from 'dayjs';
 import { getCoreRooms } from './api/rooms';
 import { getCatalogueSubjects } from './api/subjects';
 import { getPpodCredentialsStatus } from './api/ppod/ppod-credentials-status';
@@ -29,6 +34,7 @@ import { getFormB } from './api/dtr-returns/form-b';
 import { getSyncRequests } from './api/ppod/sync-requests';
 import { getSchoolsInfo } from './api/ppod/school-details';
 import { getCommentBanks } from './api/comment-banks/comment-banks';
+import { getCalendarDayInfo } from './api/school-calendar/day-info';
 
 const Rooms = lazyWithRetry(() => import('./pages/rooms'));
 const AcademicYearsList = lazyWithRetry(() => import('./pages/academic-years'));
@@ -71,6 +77,7 @@ const CommentBanks = lazyWithRetry(
   () => import('./pages/comment-banks/comment-banks')
 );
 const Comments = lazyWithRetry(() => import('./pages/comment-banks/comments'));
+const SchoolCalendar = lazyWithRetry(() => import('./pages/school-calendar'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -94,6 +101,25 @@ export const getRoutes: NavObjectFunction = (t) => [
                 'ps:1:attendance:view_attendance_codes'
               ),
             element: <AttendanceCodes />,
+          },
+          {
+            title: t('navigation:management.settings.schoolCalendar'),
+            type: NavObjectType.MenuLink,
+            path: 'school-calendar',
+            hasAccess: (permissions) => permissions.isStaffUser,
+            loader: async () => {
+              const { activeAcademicNamespace } = await getAcademicNamespace();
+              const currentDate = dayjs();
+              const formattedCurrentDate = currentDate.format('YYYY-MM-DD');
+              const startDate = activeAcademicNamespace?.startDate;
+              const endDate = activeAcademicNamespace?.endDate;
+
+              return getCalendarDayInfo({
+                fromDate: startDate || formattedCurrentDate,
+                toDate: endDate || formattedCurrentDate,
+              });
+            },
+            element: <SchoolCalendar />,
           },
           {
             type: NavObjectType.MenuLink,
