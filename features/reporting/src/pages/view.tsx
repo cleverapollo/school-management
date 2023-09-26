@@ -1,16 +1,16 @@
-import { PageContainer, PageHeading, Table } from '@tyro/core';
+import { Table } from '@tyro/core';
 import { Reporting_TableFilterInput } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useTranslation } from '@tyro/i18n';
 
 import { useRunReports } from '../api/run-report';
 import { DynamicForm } from '../components/dynamic-form';
 
-export default function ReportPage() {
-  const { t } = useTranslation(['reports']);
+type GenericReportData = Array<{ [key: string]: { value: any } }>;
+type FormattedReportData = Array<{ [key: string]: any } & { id: number }>;
 
-  const { id = '' } = useParams();
+export default function ReportPage() {
+  const { reportId = '' } = useParams();
   const [filters, setFilters] = useState<Reporting_TableFilterInput[]>();
 
   const {
@@ -18,48 +18,48 @@ export default function ReportPage() {
     isFetching,
     isLoading,
   } = useRunReports({
-    reportId: id,
+    reportId,
     filters,
   });
 
-  const columns = useMemo(
-    () =>
-      (reportData?.fields || []).map((column) => ({
-        field: column.id,
-        headerName: column.label,
-        hide: !column.visibleByDefault,
-      })),
-    [reportData?.fields]
-  );
+  const mainColumns = useMemo(() => {
+    const fieldsColumns = reportData?.fields || [];
 
-  const reportName = reportData?.info.name || '';
+    return fieldsColumns.map((column) => ({
+      field: column.id,
+      headerName: column.label,
+      hide: !column.visibleByDefault,
+    }));
+  }, [reportData?.fields]);
+
+  const genericReportData = useMemo<FormattedReportData>(() => {
+    const reportFieldsData = (reportData?.data || []) as GenericReportData;
+
+    return reportFieldsData.reduce<FormattedReportData>(
+      (reportFieldData, obj) => {
+        const rowData = Object.keys(obj).reduce((row, key) => {
+          row[key] ??= obj[key].value;
+          return row;
+        }, {} as FormattedReportData[number]);
+
+        return [...reportFieldData, rowData];
+      },
+      []
+    );
+  }, [reportData?.data]);
 
   return (
-    <PageContainer title={reportName}>
-      <PageHeading
-        title={reportName}
-        breadcrumbs={{
-          links: [
-            {
-              name: t('reports:list'),
-              href: './..',
-            },
-            {
-              name: reportName,
-            },
-          ],
-        }}
-      />
+    <>
       <DynamicForm
         isFetching={isFetching}
         filters={reportData?.filters || []}
         onFilterChange={setFilters}
       />
-      <Table
+      <Table<FormattedReportData[number]>
         isLoading={isLoading}
-        rowData={reportData?.data ?? []}
-        columnDefs={columns}
-        getRowId={({ data }) => String((data as { id: number })?.id)}
+        rowData={genericReportData}
+        columnDefs={mainColumns}
+        getRowId={({ data }) => String(data?.id)}
         statusBar={{
           statusPanels: [
             {
@@ -71,6 +71,6 @@ export default function ReportPage() {
           ],
         }}
       />
-    </PageContainer>
+    </>
   );
 }

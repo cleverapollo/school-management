@@ -14,6 +14,11 @@ const reportsRun = graphql(/* GraphQL */ `
       id
       info {
         name
+        supportsExpandRow
+      }
+      innerReports {
+        id
+        name
       }
       filters {
         id
@@ -30,6 +35,7 @@ const reportsRun = graphql(/* GraphQL */ `
         id
         label
         visibleByDefault
+        checkExpandedRows
       }
       data
     }

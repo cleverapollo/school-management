@@ -14,32 +14,37 @@ const getColumns = (
   t: TFunction<'common'[], undefined>
 ): GridOptions<ReturnTypeFromUseReportsList>['columnDefs'] => [
   {
-    field: 'name',
+    field: 'info.name',
     headerName: t('common:name'),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseReportsList, any>) =>
       data ? (
-        <Link fontWeight={600} to={`/reports-list/${data.id}`}>
-          {data.name}
+        <Link
+          fontWeight={600}
+          to={`/reports/${data.info.id}/${data.reports?.[0]?.id}`}
+        >
+          {data.info.name}
         </Link>
       ) : null,
   },
 ];
 
 export default function ReportsListPage() {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'reports']);
 
   const { data: reportsData = [] } = useReportsList();
   const columns = useMemo(() => getColumns(t), [t]);
 
+  const title = t('reports:list');
+
   return (
-    <PageContainer title="Reports list">
-      <PageHeading title="Reports list" titleProps={{ variant: 'h3' }} />
+    <PageContainer title={title}>
+      <PageHeading title={title} titleProps={{ variant: 'h3' }} />
       <Table
         rowData={reportsData}
         columnDefs={columns}
-        getRowId={({ data }) => String(data?.id)}
+        getRowId={({ data }) => String(data?.info?.id)}
       />
     </PageContainer>
   );

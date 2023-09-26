@@ -5,8 +5,14 @@ import { reportsKeys } from './keys';
 const reportsList = graphql(/* GraphQL */ `
   query reporting_reports {
     reporting_reports {
-      id
-      name
+      info {
+        id
+        name
+      }
+      reports {
+        id
+        name
+      }
     }
   }
 `);

@@ -9,6 +9,7 @@ import { getReportsList } from './api/list';
 import { getRunReports } from './api/run-report';
 
 const ReportsListPage = lazyWithRetry(() => import('./pages'));
+const ReportContainer = lazyWithRetry(() => import('./components/container'));
 const ReportPage = lazyWithRetry(() => import('./pages/view'));
 
 export const getRoutes: NavObjectFunction = (t) => [
@@ -18,7 +19,7 @@ export const getRoutes: NavObjectFunction = (t) => [
     children: [
       {
         type: NavObjectType.RootLink,
-        path: 'reports-list',
+        path: 'reports',
         hasAccess: ({ isTyroUser }) => isTyroUser,
         title: t('navigation:management.reports'),
         icon: <DocSearchIcon />,
@@ -43,7 +44,23 @@ export const getRoutes: NavObjectFunction = (t) => [
 
               return getRunReports({ reportId });
             },
-            element: <ReportPage />,
+            element: <ReportContainer />,
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                path: ':reportId',
+                element: <ReportPage />,
+                loader: async ({ params }) => {
+                  const reportId = params.reportId ?? '';
+
+                  if (!reportId) {
+                    throw404Error();
+                  }
+
+                  return getRunReports({ reportId });
+                },
+              },
+            ],
           },
         ],
       },

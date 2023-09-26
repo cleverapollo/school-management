@@ -1,4 +1,3 @@
-import { useTheme } from '@mui/material';
 import {
   RHFCheckbox,
   RHFDatePicker,
@@ -27,8 +26,6 @@ export const DynamicControl = <
   control,
   filter: { id, inputType, label, defaultValue, values = [] },
 }: DynamicControlProps<FV>) => {
-  const { palette, spacing } = useTheme();
-
   const controlProps = {
     name: id as FieldName,
     defaultValue: defaultValue as FieldValue,
@@ -42,16 +39,16 @@ export const DynamicControl = <
           label={label}
           fullWidth
           size="small"
+          variant="white-filled"
           optionIdKey="id"
           optionTextKey="value"
           options={(values || []).flatMap((value) => (value ? [value] : []))}
           controlProps={controlProps}
-          sx={{
+          sx={({ spacing }) => ({
             '& .MuiSelect-select': {
               minWidth: spacing(18),
-              backgroundColor: palette.background.paper,
             },
-          }}
+          })}
         />
       );
     case Reporting_TableFilterType.Date:
@@ -61,11 +58,7 @@ export const DynamicControl = <
           inputProps={{
             size: 'small',
             fullWidth: true,
-            sx: {
-              '& .MuiInputBase-root': {
-                backgroundColor: palette.background.default,
-              },
-            },
+            variant: 'white-filled',
           }}
           controlProps={{
             ...controlProps,
@@ -78,7 +71,7 @@ export const DynamicControl = <
         <RHFCheckbox
           label={label}
           controlLabelProps={{
-            sx: { mr: 0 },
+            sx: ({ spacing }) => ({ mr: 0, height: spacing(6) }),
           }}
           controlProps={controlProps}
         />
@@ -89,6 +82,7 @@ export const DynamicControl = <
       return (
         <RHFTextField
           label={label}
+          variant="white-filled"
           textFieldProps={{
             type:
               inputType === Reporting_TableFilterType.InputNumber
@@ -96,11 +90,6 @@ export const DynamicControl = <
                 : 'text',
             fullWidth: true,
             size: 'small',
-            sx: {
-              '& .MuiInputBase-root': {
-                backgroundColor: palette.background.default,
-              },
-            },
           }}
           controlProps={controlProps}
         />

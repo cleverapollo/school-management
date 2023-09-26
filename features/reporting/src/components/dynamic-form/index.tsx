@@ -97,15 +97,23 @@ export const DynamicForm = ({
           <DynamicControl control={control} filter={filter} />
         </Stack>
       ))}
-      <LoadingButton
-        variant="contained"
-        type="submit"
-        size="medium"
-        loading={isFetching}
-        disabled={isFetching}
+      <Stack
+        flexDirection="row"
+        alignItems="center"
+        sx={({ spacing }) => ({
+          height: spacing(6),
+        })}
       >
-        {t('common:actions.filter')}
-      </LoadingButton>
+        <LoadingButton
+          variant="contained"
+          type="submit"
+          size="medium"
+          loading={isFetching}
+          disabled={isFetching}
+        >
+          {t('common:actions.filter')}
+        </LoadingButton>
+      </Stack>
     </Stack>
   ) : null;
 };
