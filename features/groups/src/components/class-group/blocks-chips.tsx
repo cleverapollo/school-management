@@ -1,16 +1,8 @@
-import { alpha, Chip, Grid, Tooltip } from '@mui/material';
+import { alpha, Chip, Tooltip } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import {
-  Avatar,
-  usePreferredNameLayout,
-  stringToColor,
-  IconChip,
-  useDisclosure,
-} from '@tyro/core';
+import { IconChip, useDisclosure, getBaseColorBasedOnString } from '@tyro/core';
 import { GearIcon } from '@tyro/icons';
 
-import { Link } from 'react-router-dom';
-import { Colour } from '@tyro/api';
 import { ReturnTypeFromUseClassGroupById } from '../../api/class-groups';
 import { ManageBlocksModal } from './manage-blocks-modal';
 
@@ -31,8 +23,7 @@ export function BlocksChips({ blocks, classGroupId }: BlocksChipsProps) {
     <>
       {blocks.map((block) => {
         const name = block.blockId;
-        const color = stringToColor(name);
-        const colorKey = color.split('.')[0] as Colour;
+        const colorKey = getBaseColorBasedOnString(name);
 
         return (
           <Chip

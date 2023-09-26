@@ -8,10 +8,19 @@
     "@mui/material": "^5.13.2",
     "@mui/system": "^5.13.2",
     "@tanstack/react-query": "^4.29.7",
+    "@tanstack/react-virtual": "beta",
+    "@tiptap/extension-link": "^2.1.10",
+    "@tiptap/extension-placeholder": "^2.1.8",
+    "@tiptap/extension-underline": "^2.1.8",
+    "@tiptap/pm": "^2.1.8",
+    "@tiptap/react": "^2.1.8",
+    "@tiptap/starter-kit": "^2.1.8",
     "@tyro/api": "*",
     "@tyro/core": "*",
     "@tyro/i18n": "*",
     "@tyro/icons": "*",
+    "dayjs": "^1.11.9",
+    "dompurify": "^3.0.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.9",
@@ -19,6 +28,7 @@
     "react-router-dom": "^6.6.2"
   },
   "devDependencies": {
+    "@types/dompurify": "^3.0.2",
     "@tyro/configs": "*"
   }
 }

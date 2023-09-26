@@ -62,6 +62,7 @@ export function useDisclosure(props: UseDisclosureProps = {}) {
       'aria-expanded': isOpen,
       'aria-controls': id,
       onClick(event) {
+        event.preventDefault();
         additionalProps.onClick?.(event);
         onToggle();
       },

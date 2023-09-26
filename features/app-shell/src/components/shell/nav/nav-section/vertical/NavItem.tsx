@@ -1,15 +1,8 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
 import { Link as RouterLink } from 'react-router-dom';
-// @mui
 import { Box, Tooltip, Link, ListItemText } from '@mui/material';
-//
 import { ChevronDownIcon, ChevronRightIcon } from '@tyro/icons';
-//
 import { NavItemProps } from '../types';
 import { StyledItem, StyledIcon, StyledDotIcon } from './styles';
-
-// ----------------------------------------------------------------------
 
 export default function NavItem({
   item,
@@ -19,7 +12,7 @@ export default function NavItem({
   isExternalLink,
   ...other
 }: NavItemProps) {
-  const { title, path, icon, children } = item;
+  const { title, path, info, icon, children } = item;
 
   const subItem = !icon;
 
@@ -53,12 +46,7 @@ export default function NavItem({
         }}
       />
 
-      {/* Look at adding this feature back in as it's needed for mail */}
-      {/* {info && (
-        <Box component="span" sx={{ lineHeight: 0 }}>
-          {info}
-        </Box>
-      )} */}
+      {info && <Box>{info}</Box>}
 
       {!!children &&
         (open ? (

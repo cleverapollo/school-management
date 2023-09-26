@@ -1,5 +1,6 @@
 export * from './format-phone-number';
 export * from './get-classes-from-object';
+export * from './get-color-based-on-string';
 export * from './get-locale-timestamp';
 export * from './keyboard';
 export * from './lazy-with-retry';

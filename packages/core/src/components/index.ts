@@ -13,6 +13,7 @@ export * from './date-range-calendar';
 export * from './date-range-switcher';
 export * from './dialog';
 export * from './form';
+export * from './icon-button-with-tooltip';
 export * from './icon-chip';
 export * from './lazy-loader';
 export * from './link';

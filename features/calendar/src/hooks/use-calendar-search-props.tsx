@@ -1,6 +1,11 @@
-import { AutocompleteProps, useDebouncedValue } from '@tyro/core';
+import { AutocompleteProps, useDebouncedValue, Avatar } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { CalendarEventAttendeeType, Search } from '@tyro/api';
+import {
+  CalendarEventAttendeeType,
+  getColorBasedOnIndex,
+  Search,
+} from '@tyro/api';
+import { Chip } from '@mui/material';
 import { useCalendarSearch } from '../api/calendar-search';
 
 export type CalendarParty = Pick<Search, 'partyId' | 'text' | 'avatarUrl'> & {
@@ -37,11 +42,17 @@ export const useCalendarSearchProps = (
     loading: isLoading,
     options: options ?? [],
     onInputChange: (_, newInputValue) => setSearchValue(newInputValue),
-    renderAvatarTags: (option, renderTag) =>
-      renderTag({
-        name: option.text,
-        src: option.avatarUrl ?? undefined,
-      }),
+    renderTags: (tags, getTagProps) =>
+      tags.map((tag, index) => (
+        <Chip
+          size="small"
+          variant="soft"
+          color={getColorBasedOnIndex(index)}
+          avatar={<Avatar name={tag.text} src={tag.avatarUrl ?? undefined} />}
+          label={tag.text}
+          {...getTagProps({ index })}
+        />
+      )),
     renderAvatarOption: (option, renderOption) =>
       renderOption({
         name: option.text,
