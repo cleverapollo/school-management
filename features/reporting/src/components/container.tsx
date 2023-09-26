@@ -9,7 +9,12 @@ export default function ReportContainer() {
   const { t } = useTranslation(['reports']);
 
   const { id = '' } = useParams();
-  const { data: reportData } = useRunReports({ reportId: id });
+  const { data: reportData } = useRunReports({
+    topReportId: id,
+    filter: {
+      reportId: id,
+    },
+  });
 
   const reportName = reportData?.info.name || '';
   const reports = reportData?.innerReports || [];

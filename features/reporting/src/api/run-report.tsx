@@ -1,12 +1,6 @@
-import {
-  gqlClient,
-  graphql,
-  queryClient,
-  Reporting_ReportFilter,
-  UseQueryReturnType,
-} from '@tyro/api';
+import { gqlClient, graphql, queryClient, UseQueryReturnType } from '@tyro/api';
 import { useQuery } from '@tanstack/react-query';
-import { reportsKeys } from './keys';
+import { InnerReportFilter, reportsKeys } from './keys';
 
 const reportsRun = graphql(/* GraphQL */ `
   query reporting_runReport($filter: Reporting_ReportFilter) {
@@ -42,16 +36,16 @@ const reportsRun = graphql(/* GraphQL */ `
   }
 `);
 
-const runReportsQuery = (filter: Reporting_ReportFilter) => ({
-  queryKey: reportsKeys.report(filter),
+const runReportsQuery = ({ topReportId, filter }: InnerReportFilter) => ({
+  queryKey: reportsKeys.report({ topReportId, filter }),
   queryFn: async () => gqlClient.request(reportsRun, { filter }),
 });
 
-export function getRunReports(filter: Reporting_ReportFilter) {
+export function getRunReports(filter: InnerReportFilter) {
   return queryClient.fetchQuery(runReportsQuery(filter));
 }
 
-export function useRunReports(filter: Reporting_ReportFilter) {
+export function useRunReports(filter: InnerReportFilter) {
   return useQuery({
     ...runReportsQuery(filter),
     keepPreviousData: true,

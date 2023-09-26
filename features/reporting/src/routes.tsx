@@ -35,29 +35,35 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.NonMenuLink,
             path: ':id',
             hasAccess: ({ isTyroUser }) => isTyroUser,
+            element: <ReportContainer />,
             loader: async ({ params }) => {
-              const reportId = params.id ?? '';
+              const { id = '' } = params;
 
-              if (!reportId) {
+              if (!id) {
                 throw404Error();
               }
 
-              return getRunReports({ reportId });
+              return getRunReports({
+                topReportId: id,
+                filter: { reportId: id },
+              });
             },
-            element: <ReportContainer />,
             children: [
               {
                 type: NavObjectType.NonMenuLink,
                 path: ':reportId',
                 element: <ReportPage />,
                 loader: async ({ params }) => {
-                  const reportId = params.reportId ?? '';
+                  const { id = '', reportId = '' } = params;
 
-                  if (!reportId) {
+                  if (!id || !reportId) {
                     throw404Error();
                   }
 
-                  return getRunReports({ reportId });
+                  return getRunReports({
+                    topReportId: id,
+                    filter: { reportId },
+                  });
                 },
               },
             ],

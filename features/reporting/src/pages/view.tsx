@@ -10,7 +10,7 @@ type GenericReportData = Array<{ [key: string]: { value: any } }>;
 type FormattedReportData = Array<{ [key: string]: any } & { id: number }>;
 
 export default function ReportPage() {
-  const { reportId = '' } = useParams();
+  const { id = '', reportId = '' } = useParams();
   const [filters, setFilters] = useState<Reporting_TableFilterInput[]>();
 
   const {
@@ -18,8 +18,11 @@ export default function ReportPage() {
     isFetching,
     isLoading,
   } = useRunReports({
-    reportId,
-    filters,
+    topReportId: id,
+    filter: {
+      reportId,
+      filters,
+    },
   });
 
   const mainColumns = useMemo(() => {
