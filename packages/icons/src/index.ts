@@ -41,6 +41,7 @@ export * from './close-circle-with-warning';
 export * from './cloud-upload';
 export * from './collapse';
 export * from './copy';
+export * from './doc-search';
 export * from './double-checkmark';
 export * from './download-arrow-circle';
 export * from './drag-indicator';

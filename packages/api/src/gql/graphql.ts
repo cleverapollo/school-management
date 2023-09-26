@@ -264,6 +264,56 @@ export type AttendanceEventId = {
   eventId?: InputMaybe<Scalars['Int']>;
 };
 
+export type Attendance_BulkAttendanceAction = {
+  __typename?: 'Attendance_BulkAttendanceAction';
+  attendanceCode: AttendanceCode;
+  attendanceCodeId: Scalars['Int'];
+  attendanceForPartyIds: Array<Scalars['Long']>;
+  createdBy: AuditPerson;
+  createdByPartyId: Scalars['Long'];
+  createdByUserId: Scalars['Int'];
+  createdOn: Scalars['DateTime'];
+  endDate?: Maybe<Scalars['Date']>;
+  id: Scalars['Int'];
+  leavesAt: Scalars['Time'];
+  note?: Maybe<Scalars['String']>;
+  partial: Scalars['Boolean'];
+  parties: Array<Maybe<Party>>;
+  returnsAt?: Maybe<Scalars['Time']>;
+  startDate: Scalars['Date'];
+};
+
+export type Attendance_BulkAttendanceActionFilter = {
+  from?: InputMaybe<Scalars['Date']>;
+  partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  to?: InputMaybe<Scalars['Date']>;
+};
+
+export type Attendance_SaveBulkAttendanceInput = {
+  attendanceCodeId: Scalars['Int'];
+  attendanceForPartyIds: Array<Scalars['Long']>;
+  multiDate?: InputMaybe<Attendance_SaveBulkAttendanceMultiDateInput>;
+  note?: InputMaybe<Scalars['String']>;
+  partialDate?: InputMaybe<Attendance_SaveBulkAttendancePartialDateInput>;
+  /**  either singleDate or multiDate or partialDate should be provided */
+  singleDate?: InputMaybe<Attendance_SaveBulkAttendanceSingleDateInput>;
+};
+
+export type Attendance_SaveBulkAttendanceMultiDateInput = {
+  endDate: Scalars['Date'];
+  startDate: Scalars['Date'];
+};
+
+export type Attendance_SaveBulkAttendancePartialDateInput = {
+  date: Scalars['Date'];
+  leavesAt: Scalars['Time'];
+  returnsAt: Scalars['Time'];
+};
+
+export type Attendance_SaveBulkAttendanceSingleDateInput = {
+  date: Scalars['Date'];
+};
+
 export type AuditId = {
   __typename?: 'AuditId';
   partyId?: Maybe<Scalars['Long']>;
@@ -2247,6 +2297,7 @@ export type Mutation = {
   assessment_saveCommentBank?: Maybe<CommentBank>;
   assessment_saveGradeSet?: Maybe<GradeSet>;
   attendance_saveAttendanceCode: Array<AttendanceCode>;
+  attendance_saveBulkAttendance?: Maybe<Scalars['Int']>;
   attendance_saveEventAttendance: Array<EventAttendance>;
   attendance_saveParentalAttendanceRequest: Array<ParentalAttendanceRequest>;
   attendance_saveStudentSessionAttendance: Array<StudentSessionAttendance>;
@@ -2363,6 +2414,11 @@ export type MutationAssessment_SaveGradeSetArgs = {
 
 export type MutationAttendance_SaveAttendanceCodeArgs = {
   input?: InputMaybe<Array<InputMaybe<SaveAttendanceCodeInput>>>;
+};
+
+
+export type MutationAttendance_SaveBulkAttendanceArgs = {
+  input?: InputMaybe<Attendance_SaveBulkAttendanceInput>;
 };
 
 
@@ -3462,6 +3518,7 @@ export type Query = {
   assessment_dashboardAssessment?: Maybe<Array<DashboardAssessment>>;
   assessment_gradeSet?: Maybe<Array<GradeSet>>;
   attendance_attendanceCodes: Array<AttendanceCode>;
+  attendance_bulkAttendanceActions: Array<Attendance_BulkAttendanceAction>;
   attendance_calendarAttendance: CalendarAttendance;
   attendance_eventAttendance: Array<EventAttendance>;
   attendance_eventAttendanceReport: EventAttendanceReport;
@@ -3522,8 +3579,9 @@ export type Query = {
   print_printTimetable: TemporaryDownload;
   profileTypes?: Maybe<Array<Maybe<ProfileType>>>;
   profiles?: Maybe<Array<Maybe<ProfileType>>>;
-  reporting_reports: Array<Reporting_ReportInfo>;
+  reporting_reports: Array<Reporting_ReportInfoTopLevel>;
   reporting_runReport?: Maybe<Reporting_TableReport>;
+  reporting_runReportExpand?: Maybe<Reporting_TableReport>;
   search_search: Array<Search>;
   subjectGroups?: Maybe<Array<SubjectGroup>>;
   swm_absenceTypes: Array<Swm_StaffAbsenceType>;
@@ -3610,6 +3668,11 @@ export type QueryAssessment_GradeSetArgs = {
 
 export type QueryAttendance_AttendanceCodesArgs = {
   filter?: InputMaybe<AttendanceCodeFilter>;
+};
+
+
+export type QueryAttendance_BulkAttendanceActionsArgs = {
+  filter?: InputMaybe<Attendance_BulkAttendanceActionFilter>;
 };
 
 
@@ -3858,6 +3921,11 @@ export type QueryReporting_RunReportArgs = {
 };
 
 
+export type QueryReporting_RunReportExpandArgs = {
+  filter?: InputMaybe<Reporting_ReportFilterExpand>;
+};
+
+
 export type QuerySearch_SearchArgs = {
   filter?: InputMaybe<SearchFilter>;
 };
@@ -4026,17 +4094,34 @@ export type RegisterDeviceInput = {
   osVersion: Scalars['String'];
 };
 
+export enum ReportLink {
+  StudentAttendanceScreen = 'STUDENT_ATTENDANCE_SCREEN'
+}
+
 export type Reporting_ReportFilter = {
   filters?: InputMaybe<Array<InputMaybe<Reporting_TableFilterInput>>>;
   reportId: Scalars['String'];
+};
+
+export type Reporting_ReportFilterExpand = {
+  filter: Reporting_ReportFilter;
+  id: Scalars['Object'];
 };
 
 export type Reporting_ReportInfo = {
   __typename?: 'Reporting_ReportInfo';
   id: Scalars['String'];
   name: Scalars['String'];
+  /**  has aggregated rows which can be expanded to show individual rows */
+  supportsExpandRow: Scalars['Boolean'];
   /**  flag to say whether its released */
   visibleToSchools: Scalars['Boolean'];
+};
+
+export type Reporting_ReportInfoTopLevel = {
+  __typename?: 'Reporting_ReportInfoTopLevel';
+  info: Reporting_ReportInfo;
+  reports: Array<Reporting_ReportInfo>;
 };
 
 export type Reporting_TableFilter = {
@@ -4071,17 +4156,38 @@ export type Reporting_TableFilterValues = {
 export type Reporting_TableReport = {
   __typename?: 'Reporting_TableReport';
   data?: Maybe<Array<Maybe<Scalars['Object']>>>;
+  debug?: Maybe<Reporting_TableReportDebug>;
   fields: Array<Reporting_TableReportField>;
   filters: Array<Reporting_TableFilter>;
   id: Scalars['String'];
   info: Reporting_ReportInfo;
+  innerReports: Array<Reporting_ReportInfo>;
+  links?: Maybe<Array<Maybe<Reporting_TableReportLink>>>;
+};
+
+export type Reporting_TableReportDataColumn = {
+  __typename?: 'Reporting_TableReportDataColumn';
+  value?: Maybe<Scalars['Object']>;
+};
+
+export type Reporting_TableReportDebug = {
+  __typename?: 'Reporting_TableReportDebug';
+  sql?: Maybe<Scalars['String']>;
 };
 
 export type Reporting_TableReportField = {
   __typename?: 'Reporting_TableReportField';
+  checkExpandedRows: Scalars['Boolean'];
   id: Scalars['String'];
   label: Scalars['String'];
   visibleByDefault: Scalars['Boolean'];
+};
+
+export type Reporting_TableReportLink = {
+  __typename?: 'Reporting_TableReportLink';
+  linkId?: Maybe<Scalars['Object']>;
+  linkLabel?: Maybe<Scalars['String']>;
+  linkType?: Maybe<ReportLink>;
 };
 
 export type ResourceCalendar = {
@@ -5358,6 +5464,7 @@ export type StudentDateAttendance = {
 export type StudentFilter = {
   examNumbers?: InputMaybe<Array<Scalars['String']>>;
   externalSystemIds?: InputMaybe<Array<Scalars['String']>>;
+  leftSchool?: InputMaybe<Scalars['Boolean']>;
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
 
@@ -7569,6 +7676,25 @@ export type PrintTimetableQueryVariables = Exact<{
 
 export type PrintTimetableQuery = { __typename?: 'Query', print_printTimetable: { __typename?: 'TemporaryDownload', url?: string | null, html?: string | null } };
 
+export type Reporting_ReportsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type Reporting_ReportsQuery = { __typename?: 'Query', reporting_reports: Array<{ __typename?: 'Reporting_ReportInfoTopLevel', info: { __typename?: 'Reporting_ReportInfo', id: string, name: string }, reports: Array<{ __typename?: 'Reporting_ReportInfo', id: string, name: string }> }> };
+
+export type Reporting_RunReportExpandQueryVariables = Exact<{
+  filter?: InputMaybe<Reporting_ReportFilterExpand>;
+}>;
+
+
+export type Reporting_RunReportExpandQuery = { __typename?: 'Query', reporting_runReportExpand?: { __typename?: 'Reporting_TableReport', id: string, data?: Array<any | null> | null, fields: Array<{ __typename?: 'Reporting_TableReportField', id: string, label: string, visibleByDefault: boolean }> } | null };
+
+export type Reporting_RunReportQueryVariables = Exact<{
+  filter?: InputMaybe<Reporting_ReportFilter>;
+}>;
+
+
+export type Reporting_RunReportQuery = { __typename?: 'Query', reporting_runReport?: { __typename?: 'Reporting_TableReport', id: string, data?: Array<any | null> | null, info: { __typename?: 'Reporting_ReportInfo', name: string, supportsExpandRow: boolean }, innerReports: Array<{ __typename?: 'Reporting_ReportInfo', id: string, name: string }>, filters: Array<{ __typename?: 'Reporting_TableFilter', id: string, inputType: Reporting_TableFilterType, label: string, defaultValue?: any | null, required: boolean, values?: Array<{ __typename?: 'Reporting_TableFilterValues', id?: any | null, value?: string | null } | null> | null }>, fields: Array<{ __typename?: 'Reporting_TableReportField', id: string, label: string, visibleByDefault: boolean, checkExpandedRows: boolean }> } | null };
+
 export type Core_UpsertAcademicNamespaceMutationVariables = Exact<{
   input?: InputMaybe<SaveAcademicNamespaceInput>;
 }>;
@@ -8072,6 +8198,9 @@ export const Core_LinkSiblingsAndContactsDocument = {"kind":"Document","definiti
 export const Core_UpdateStudentContactRelationshipsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_updateStudentContactRelationships"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Core_UpdateStudentContactRelationshipInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_updateStudentContactRelationships"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Core_UpdateStudentContactRelationshipsMutation, Core_UpdateStudentContactRelationshipsMutationVariables>;
 export const UpdateStudentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateStudent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateStudentInput"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_updateStudents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<UpdateStudentMutation, UpdateStudentMutationVariables>;
 export const PrintTimetableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"printTimetable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Print_TimetableOptions"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"print_printTimetable"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"html"}}]}}]}}]} as unknown as DocumentNode<PrintTimetableQuery, PrintTimetableQueryVariables>;
+export const Reporting_ReportsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"reporting_reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reporting_reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"info"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<Reporting_ReportsQuery, Reporting_ReportsQueryVariables>;
+export const Reporting_RunReportExpandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"reporting_runReportExpand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Reporting_ReportFilterExpand"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reporting_runReportExpand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"visibleByDefault"}}]}},{"kind":"Field","name":{"kind":"Name","value":"data"}}]}}]}}]} as unknown as DocumentNode<Reporting_RunReportExpandQuery, Reporting_RunReportExpandQueryVariables>;
+export const Reporting_RunReportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"reporting_runReport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Reporting_ReportFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reporting_runReport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"info"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"supportsExpandRow"}}]}},{"kind":"Field","name":{"kind":"Name","value":"innerReports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"filters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"inputType"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"defaultValue"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"values"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"visibleByDefault"}},{"kind":"Field","name":{"kind":"Name","value":"checkExpandedRows"}}]}},{"kind":"Field","name":{"kind":"Name","value":"data"}}]}}]}}]} as unknown as DocumentNode<Reporting_RunReportQuery, Reporting_RunReportQueryVariables>;
 export const Core_UpsertAcademicNamespaceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_upsertAcademicNamespace"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SaveAcademicNamespaceInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_upsertAcademicNamespace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"academicNamespaceId"}}]}}]}}]} as unknown as DocumentNode<Core_UpsertAcademicNamespaceMutation, Core_UpsertAcademicNamespaceMutationVariables>;
 export const Core_SetActiveActiveAcademicNamespaceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_setActiveActiveAcademicNamespace"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SetActiveAcademicNamespace"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_setActiveActiveAcademicNamespace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"academicNamespaceId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActiveDefaultNamespace"}}]}}]}}]} as unknown as DocumentNode<Core_SetActiveActiveAcademicNamespaceMutation, Core_SetActiveActiveAcademicNamespaceMutationVariables>;
 export const Core_UpsertRoomsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_upsertRooms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpsertRoomInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_upsertRooms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}}]}}]}}]} as unknown as DocumentNode<Core_UpsertRoomsMutation, Core_UpsertRoomsMutationVariables>;
