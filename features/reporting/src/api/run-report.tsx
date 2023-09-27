@@ -24,6 +24,8 @@ const reportsRun = graphql(/* GraphQL */ `
           id
           value
         }
+        minValue
+        maxValue
       }
       fields {
         id
