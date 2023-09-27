@@ -11,7 +11,6 @@ import {
   ModuleRegistry,
   ColDef,
   ColumnRowGroupChangedEvent,
-  FirstDataRenderedEvent,
 } from '@ag-grid-community/core';
 
 import { LicenseManager } from '@ag-grid-enterprise/core';
@@ -134,12 +133,14 @@ function TableInner<T extends object>(
   const refs = useMergeRefs(tableRef, ref);
   const [tableContainerRef, { height: tableContainerHeight }] = useMeasure();
 
-  const spaceForTable = tableContainerHeight;
   const heightBasedOnRows = (props.rowData.length + 1) * rowHeight;
+
   const innerContainerHeight = Math.max(
-    Math.min(heightBasedOnRows, spaceForTable),
+    Math.min(heightBasedOnRows, tableContainerHeight),
     MIN_TABLE_HEIGHT
   );
+
+  const [tableHeight, setTableHeight] = useState(innerContainerHeight);
 
   const editingUtils = useEditableState<T>({
     tableRef,
@@ -199,6 +200,23 @@ function TableInner<T extends object>(
     []
   );
 
+  const calculateTableHeight = useCallback(() => {
+    const [columnDef] = props.columnDefs || [];
+    if ((columnDef as ColDef<T>).autoHeight) {
+      const nodes = tableRef.current?.api.getRenderedNodes() || [];
+      const rowIds = nodes.flatMap((row) => (row.id ? [row.id] : []));
+
+      const currentTableHeight = rowIds.reduce((height, rowId) => {
+        const currentRow = document.querySelector(`[row-id="${rowId}"]`);
+        const { clientHeight = 0 } = currentRow || {};
+
+        return height + clientHeight;
+      }, TOOLBAR_HEIGHT);
+
+      setTableHeight(currentTableHeight);
+    }
+  }, [props.columnDefs]);
+
   return (
     <>
       <Card
@@ -207,7 +225,8 @@ function TableInner<T extends object>(
           flexDirection: 'column',
           flex: 1,
           maxHeight:
-            Math.max(MIN_TABLE_HEIGHT, heightBasedOnRows) + TOOLBAR_HEIGHT,
+            Math.max(MIN_TABLE_HEIGHT, heightBasedOnRows, tableHeight) +
+            TOOLBAR_HEIGHT,
           ...sx,
         }}
       >
@@ -234,7 +253,8 @@ function TableInner<T extends object>(
         >
           <Box
             sx={{
-              height: innerContainerHeight,
+              height: Math.max(innerContainerHeight, tableHeight),
+              flex: 1,
             }}
           >
             {isLoading ? (
@@ -266,7 +286,7 @@ function TableInner<T extends object>(
                   onCellValueChanged(args);
                   props.onCellValueChanged?.(args);
                 }}
-                onFirstDataRendered={(params: FirstDataRenderedEvent<T>) => {
+                onFirstDataRendered={(params) => {
                   const { columnApi } = params;
                   columnApi.autoSizeAllColumns(false);
                   const columnWidths = props.columnDefs
@@ -285,16 +305,16 @@ function TableInner<T extends object>(
 
                   applyUpdatesToTable('newValue');
 
-                  if (onFirstDataRendered) {
-                    onFirstDataRendered(params);
-                  }
+                  onFirstDataRendered?.(params);
+                  calculateTableHeight();
+                }}
+                onModelUpdated={(params) => {
+                  props.onModelUpdated?.(params);
+                  calculateTableHeight();
                 }}
                 onColumnEverythingChanged={(params) => {
                   applyUpdatesToTable('newValue');
-
-                  if (onColumnEverythingChanged) {
-                    onColumnEverythingChanged(params);
-                  }
+                  onColumnEverythingChanged?.(params);
                 }}
                 onColumnRowGroupChanged={onColumnRowGroupChanged}
               />
