@@ -46,7 +46,8 @@
     "DISABLED": "Disabled"
   },
   "schoolCalendar": {
-    "title": "Day Types and Bell Times"
+    "title": "Day Types and Bell Times",
+    "dayTypes": "Day Types"
   },
   "actions": {
     "makeActive": "Activate academic year for all users",

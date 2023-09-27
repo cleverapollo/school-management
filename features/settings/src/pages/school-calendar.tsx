@@ -4,7 +4,7 @@ import { Container, Typography } from '@mui/material';
 
 import { CalendarOverview } from '../components/school-calendar/overview';
 
-export default function SchoolCalendar() {
+export default function SchoolCalendarOverview() {
   const { t } = useTranslation(['common', 'settings']);
 
   return (
