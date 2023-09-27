@@ -3,12 +3,12 @@ import { useTranslation } from '@tyro/i18n';
 import {
   Avatar,
   usePreferredNameLayout,
-  stringToColor,
   IconChip,
   useDisclosure,
+  getColorBasedOnString,
+  getBaseColorBasedOnString,
 } from '@tyro/core';
 import { Link } from 'react-router-dom';
-import { Colour } from '@tyro/api';
 import { GearIcon } from '@tyro/icons';
 import { ReturnTypeFromUseStudentPersonal } from '../../../api/student/personal';
 import { ManageSiblingModal } from '../manage-sibling-modal';
@@ -37,8 +37,8 @@ export function SiblingsChips({
         <>
           {siblings?.enrolledSiblings.map(({ partyId, person }) => {
             const name = displayName(person);
-            const color = stringToColor(name);
-            const colorKey = color.split('.')[0] as Colour;
+            const color = getColorBasedOnString(name);
+            const colorKey = getBaseColorBasedOnString(name);
 
             return (
               <Chip
@@ -66,8 +66,7 @@ export function SiblingsChips({
           })}
           {siblings?.nonEnrolledSiblings.map((sibling) => {
             const name = displayName(sibling);
-            const color = stringToColor(name);
-            const colorKey = color.split('.')[0] as Colour;
+            const colorKey = getBaseColorBasedOnString(name);
 
             return (
               <Chip

@@ -1,4 +1,4 @@
-import { TextField, TextFieldProps } from '@mui/material';
+import { TextField, TextFieldProps, useTheme } from '@mui/material';
 import {
   FieldValues,
   useController,
@@ -7,12 +7,14 @@ import {
 
 export type RHFTextFieldProps<TField extends FieldValues> = {
   label?: string;
+  variant?: TextFieldProps['variant'] | 'white-filled';
   textFieldProps?: TextFieldProps;
   controlProps: UseControllerProps<TField>;
 };
 
 export const RHFTextField = <TField extends FieldValues>({
   label,
+  variant,
   textFieldProps,
   controlProps,
 }: RHFTextFieldProps<TField>) => {
@@ -21,6 +23,10 @@ export const RHFTextField = <TField extends FieldValues>({
     fieldState: { error },
   } = useController(controlProps);
 
+  const { spacing, palette } = useTheme();
+
+  const isWhiteFilledVariant = variant === 'white-filled';
+
   return (
     <TextField
       {...textFieldProps}
@@ -28,6 +34,19 @@ export const RHFTextField = <TField extends FieldValues>({
       onChange={(e) => {
         onChange(e);
         textFieldProps?.onChange?.(e);
+      }}
+      variant={isWhiteFilledVariant ? 'filled' : variant}
+      sx={{
+        ...textFieldProps?.sx,
+        ...(isWhiteFilledVariant && {
+          '& .MuiInputBase-root, & .MuiInputBase-root.Mui-focused': {
+            backgroundColor: palette.background.default,
+            borderRadius: spacing(1),
+          },
+          '& .MuiInputBase-root:hover': {
+            backgroundColor: palette.primary.lighter,
+          },
+        }),
       }}
       value={value ?? ''}
       label={label}

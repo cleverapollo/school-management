@@ -17,8 +17,6 @@
     "back": "Back",
     "newEvent": "New Event",
     "compose": "Compose",
-    "markEmail": "Mark Email Read",
-    "hideEmail": "Hidden Email",
     "send": "Send",
     "save": "Save",
     "apply": "Apply",
@@ -31,7 +29,8 @@
     "logMeOut": "Log me out",
     "previous": "Previous",
     "next": "Next",
-    "clone": "Clone"
+    "clone": "Clone",
+    "filter": "Filter"
   },
   "snackbarMessages": {
     "createSuccess": "Create success!",

@@ -1,8 +1,12 @@
 import { alpha, Chip } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { Avatar, usePreferredNameLayout, stringToColor } from '@tyro/core';
+import {
+  Avatar,
+  usePreferredNameLayout,
+  getColorBasedOnString,
+  getBaseColorBasedOnString,
+} from '@tyro/core';
 import { Link } from 'react-router-dom';
-import { Colour } from '@tyro/api';
 import { ReturnTypeFromUseStudentPersonal } from '../../api/student/personal';
 
 interface SiblingsChipsProps {
@@ -24,9 +28,8 @@ export function SiblingsChips({ siblings }: SiblingsChipsProps) {
     <>
       {siblings?.enrolledSiblings.map(({ partyId, person }) => {
         const name = displayName(person);
-        const color = stringToColor(name);
-
-        const colorKey = color.split('.')[0] as Colour;
+        const color = getColorBasedOnString(name);
+        const colorKey = getBaseColorBasedOnString(name);
 
         return (
           <Chip
@@ -53,8 +56,7 @@ export function SiblingsChips({ siblings }: SiblingsChipsProps) {
       })}
       {siblings?.nonEnrolledSiblings.map((sibling) => {
         const name = displayName(sibling);
-        const color = stringToColor(name);
-        const colorKey = color.split('.')[0] as Colour;
+        const colorKey = getBaseColorBasedOnString(name);
 
         return (
           <Chip

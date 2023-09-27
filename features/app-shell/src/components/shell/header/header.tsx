@@ -23,7 +23,6 @@ import {
   UserType,
   useUser,
 } from '@tyro/api';
-import { MailLinkWithCount } from '@tyro/mail';
 import useOffSetTop from '../../../../../../src/hooks/useOffSetTop';
 // config
 import { HEADER, NAV } from '../nav/config';
@@ -80,7 +79,6 @@ export function Header({ isNavExpanded, onOpenNav }: Props) {
         <AcademicNamespaceSessionSwitcher />
         {/* {userType !== UserType.Tyro && (
           <>
-            <MailLinkWithCount />
             <NotificationsPopover />
           </>
         )} */}

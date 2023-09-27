@@ -3,6 +3,7 @@
 import { Box } from '@mui/material';
 import { useDisclosure, useResponsive } from '@tyro/core';
 import { ScrollRestoration } from 'react-router-dom';
+import { MailSettingsProvider } from '@tyro/mail';
 import { HEADER as HEADERCONFIG, NAV } from './nav/config';
 
 import { Header } from './header';
@@ -73,7 +74,9 @@ function InnerShell({ children }: ShellProps) {
 export function Shell({ children }: ShellProps) {
   return (
     <AppShellConfigProvider>
-      <InnerShell>{children}</InnerShell>
+      <MailSettingsProvider>
+        <InnerShell>{children}</InnerShell>
+      </MailSettingsProvider>
     </AppShellConfigProvider>
   );
 }

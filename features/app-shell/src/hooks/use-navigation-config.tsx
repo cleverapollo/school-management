@@ -14,6 +14,7 @@ export interface NavigationMenuLink {
   title: string;
   path?: string;
   icon?: never;
+  info?: JSX.Element;
   children?: Omit<NavigationMenuLink, 'children'>[];
 }
 
@@ -21,6 +22,7 @@ export interface NavigationRootGroup {
   title: string;
   path?: string;
   icon: JSX.Element;
+  info?: JSX.Element;
   children?: NavigationMenuLink[];
 }
 
@@ -88,7 +90,7 @@ function filterAndMapToNavigationRootGroup(
     if (!hasAccess) return acc;
 
     if (navItem.type === NavObjectType.RootGroup && navItem.children) {
-      const { title, icon, children, path } = navItem;
+      const { title, icon, info, children, path } = navItem;
       const parentPaths = path ? [path] : [];
 
       const filteredChildren = filterAndMapToNavigationMenuLink(
@@ -98,11 +100,11 @@ function filterAndMapToNavigationRootGroup(
       );
 
       if (filteredChildren.length > 0) {
-        acc.push({ title, icon, path, children: filteredChildren });
+        acc.push({ title, icon, info, path, children: filteredChildren });
       }
     } else if (navItem.type === NavObjectType.RootLink) {
-      const { title, path, icon } = navItem;
-      acc.push({ title, icon, path });
+      const { title, path, icon, info } = navItem;
+      acc.push({ title, icon, info, path });
     }
 
     return acc;

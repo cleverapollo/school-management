@@ -5,8 +5,6 @@ import {
   NavigationRootGroup,
 } from '../../../../hooks/use-navigation-config';
 
-// ----------------------------------------------------------------------
-
 export interface NavItemProps extends ListItemButtonProps {
   item: NavigationRootGroup | NavigationMenuLink;
   depth: number;

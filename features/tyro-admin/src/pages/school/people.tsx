@@ -114,7 +114,7 @@ export default function AdminPeoplesPage() {
             links: [
               {
                 name: t('admin:schools'),
-                href: '/admin',
+                href: './..',
               },
               {
                 name: t('admin:people'),

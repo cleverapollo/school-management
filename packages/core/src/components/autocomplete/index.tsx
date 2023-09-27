@@ -11,9 +11,9 @@ import {
   useTheme,
 } from '@mui/material';
 import React, { ForwardedRef, Fragment } from 'react';
-import { getColorBasedOnIndex } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { Avatar, AvatarProps } from '../avatar';
+import { getBaseColorBasedOnString } from '../../utils';
 
 type TextfieldCustomProps = Omit<
   TextFieldProps,
@@ -89,7 +89,7 @@ export const Autocomplete = <
           return option[optionIdKey] === newValue[optionIdKey];
         }
 
-        return option === newValue;
+        return JSON.stringify(option) === JSON.stringify(newValue);
       }}
       loadingText={t('common:loading')}
       multiple={multiple}
@@ -124,6 +124,10 @@ export const Autocomplete = <
           placeholder={placeholder}
           {...params}
           {...inputProps}
+          InputProps={{
+            ...params.InputProps,
+            ...inputProps?.InputProps,
+          }}
           variant={isWhiteFilledVariant ? 'filled' : variant}
           {...(renderAvatarAdornment && {
             InputProps: {
@@ -188,7 +192,7 @@ export const Autocomplete = <
               <Chip
                 size="small"
                 variant="soft"
-                color={getColorBasedOnIndex(index)}
+                color={getBaseColorBasedOnString(avatarProps.name ?? '')}
                 avatar={<Avatar {...avatarProps} />}
                 label={avatarProps.name}
                 {...getTagProps({ index })}

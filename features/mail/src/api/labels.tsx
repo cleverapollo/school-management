@@ -3,13 +3,16 @@ import {
   AssignLabelInput,
   gqlClient,
   graphql,
-  InputMaybe,
   LabelInput,
   UnreadCountFilter,
   queryClient,
+  LabelFilter,
+  UseQueryReturnType,
 } from '@tyro/api';
-import { labelsMap, LabelType } from '../constants';
-import { MailLabel } from '../types';
+import { useToast } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
+import { getLabelId } from '../utils/labels';
+import { mailKeys } from './keys';
 
 const labels = graphql(/* GraphQL */ `
   query communications_label($filter: LabelFilter) {
@@ -19,6 +22,7 @@ const labels = graphql(/* GraphQL */ `
       personPartyId
       colour
       custom
+      type
     }
   }
 `);
@@ -35,10 +39,11 @@ const updateLabel = graphql(/* GraphQL */ `
   }
 `);
 
-const unreadCountQuery = graphql(/* GraphQL */ `
+const unreadCount = graphql(/* GraphQL */ `
   query communications_unreadCount($filter: UnreadCountFilter) {
     communications_unreadCount(filter: $filter) {
       labelId
+      labelType
       count
     }
   }
@@ -48,123 +53,91 @@ const assignLabels = graphql(/* GraphQl */ `
   mutation communications_assignLabel($input: AssignLabelInput) {
     communications_assignLabel(input: $input) {
       id
-      rootMailId
-      threadId
-      subject
-      body
-      senderPartyId
-      sentOn
-      latestMessage
-      canReply
-      starred
-      readOn
-      recipients {
-        id
-        recipientPartyId
-        recipientType
-      }
-      labels {
-        id
-        name
-        personPartyId
-        colour
-        custom
-      }
-      threads {
-        id
-        rootMailId
-        threadId
-        subject
-        body
-        senderPartyId
-        sentOn
-        latestMessage
-        canReply
-        starred
-        readOn
-        recipients {
-          id
-          recipientPartyId
-          recipientType
-        }
-        labels {
-          id
-          name
-          personPartyId
-          colour
-          custom
-        }
-      }
     }
   }
 `);
 
-export const labelsKeys = {
-  all: ['label'] as const,
-};
+const labelsQuery = (filter: LabelFilter) => ({
+  queryKey: mailKeys.labels(filter),
+  queryFn: async () => {
+    const { communications_label: communicationsLabel } =
+      await gqlClient.request(labels, { filter });
+    return communicationsLabel.map((item) => ({
+      ...item,
+      originalId: item?.id,
+      id: getLabelId(item),
+    }));
+  },
+});
 
-const calendarEventsQuery = {
-  queryKey: labelsKeys.all,
-  queryFn: async () => gqlClient.request(labels, { filter: {} }),
-};
-
-export function getLabels() {
-  return queryClient.fetchQuery(calendarEventsQuery);
+export function getLabels(filter: LabelFilter) {
+  return queryClient.fetchQuery(labelsQuery(filter));
 }
 
-export function useLabels() {
+export function useLabels(filter: LabelFilter) {
   return useQuery({
-    ...calendarEventsQuery,
-    select: ({ communications_label }) =>
-      communications_label?.map(
-        (item) =>
-          ({
-            originalId: item?.id,
-            id: item?.id && item?.id < 5 ? labelsMap[item?.id] : undefined,
-            type: !item?.custom ? LabelType.SYSTEM : LabelType.CUSTOM,
-            name:
-              (item?.name === 'Outbox'
-                ? 'sent'
-                : !item?.custom
-                ? item?.name.toLowerCase()
-                : item?.name) ?? '',
-            unreadCount: 0,
-            color: item?.colour,
-          } ?? [])
-      ) as MailLabel[],
+    ...labelsQuery(filter),
   });
 }
 
-export function useUnreadCount(filter: InputMaybe<UnreadCountFilter>) {
-  return useQuery({
-    queryKey: ['unreadCount', filter],
-    queryFn: async () => gqlClient.request(unreadCountQuery, { filter }),
-    select: ({ communications_unreadCount }) => {
-      const totalUnreadCount = communications_unreadCount?.reduce(
-        (acc, item) =>
-          Number.isInteger(item?.count) && item?.labelId === 1
-            ? acc + item.count
-            : acc,
-        0
+const unreadCountQuery = (filter: UnreadCountFilter) => ({
+  queryKey: mailKeys.filteredUnreadCount(filter),
+  queryFn: async () => {
+    const { communications_unreadCount: unreadList } = await gqlClient.request(
+      unreadCount,
+      { filter }
+    );
+
+    return unreadList.reduce((acc, { labelId, labelType, count }) => {
+      acc.set(
+        getLabelId({
+          type: labelType,
+          id: labelId,
+        }),
+        count
       );
-      return { unreadCount: communications_unreadCount, totalUnreadCount };
-    },
+      return acc;
+    }, new Map<ReturnType<typeof getLabelId>, number>());
+  },
+});
+
+export function getUnreadCountQuery(filter: UnreadCountFilter) {
+  return queryClient.fetchQuery(unreadCountQuery(filter));
+}
+
+export function useUnreadCount(filter: UnreadCountFilter) {
+  return useQuery({
+    ...unreadCountQuery(filter),
+    refetchInterval: 1000 * 60 * 2,
     enabled: !!filter?.personPartyId,
   });
 }
 
 export function useCreateLabel() {
+  const { t } = useTranslation(['common']);
+  const { toast } = useToast();
+
   return useMutation({
-    mutationKey: ['label'],
-    mutationFn: async (input: InputMaybe<LabelInput>) =>
+    mutationFn: (input: LabelInput) =>
       gqlClient.request(updateLabel, { input }),
+    onSuccess: async (_data, input) => {
+      await queryClient.invalidateQueries(mailKeys.labels({}));
+      toast(
+        input?.id
+          ? t('common:snackbarMessages.updateSuccess')
+          : t('common:snackbarMessages.createSuccess')
+      );
+    },
   });
 }
 
 export function useAssignLabel() {
   return useMutation({
-    mutationKey: ['assignLabel'],
-    mutationFn: async (input: InputMaybe<AssignLabelInput>) =>
+    mutationFn: (input: AssignLabelInput) =>
       gqlClient.request(assignLabels, { input }),
   });
 }
+
+export type ReturnTypeFromUseLabels = UseQueryReturnType<
+  typeof useLabels
+>[number];

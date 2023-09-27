@@ -42,10 +42,18 @@ const getAbsentRequestDataWithLabels = (
   data: ReturnTypeFromUseAbsentRequests | undefined,
   t: TFunction<('common' | 'attendance')[]>,
   displayName: ReturnTypeDisplayName,
-  attendanceCodes: ReturnTypeFromUseAttendanceCodes[] | undefined
+  attendanceCodes: ReturnTypeFromUseAttendanceCodes[] | undefined,
+  isContact: boolean | undefined
 ): CardEditableFormProps<ReturnTypeFromUseAbsentRequests>['fields'] => {
   if (data === undefined) return [];
-  const { contact, attendanceCode, parentNote, requestType } = data;
+  const {
+    contact,
+    attendanceCode,
+    parentNote,
+    adminNote,
+    requestType,
+    status,
+  } = data;
 
   const contactName = displayName(contact?.person);
   const relationShip =
@@ -72,7 +80,8 @@ const getAbsentRequestDataWithLabels = (
     },
     {
       label: t('attendance:reasonForAbsence'),
-      value: attendanceCode?.name,
+      value: attendanceCode?.id,
+      valueRenderer: attendanceCode?.name,
       valueEditor: (
         <RHFSelect
           fullWidth
@@ -101,6 +110,26 @@ const getAbsentRequestDataWithLabels = (
         />
       ),
     },
+    ...(isContact && status === ParentalAttendanceRequestStatus.Denied
+      ? [
+          {
+            label: t('attendance:feedbackFromSchool'),
+            value: adminNote || '-',
+            valueEditor: (
+              <RHFTextField
+                controlProps={{
+                  name: 'adminNote',
+                }}
+                textFieldProps={{
+                  fullWidth: true,
+                  multiline: true,
+                  minRows: 3,
+                }}
+              />
+            ),
+          },
+        ]
+      : []),
   ];
 };
 
@@ -142,7 +171,8 @@ export const ViewAbsentRequestModal = ({
     initialAbsentRequestState,
     t,
     displayName,
-    attendanceCodes
+    attendanceCodes,
+    isContact
   );
   const { resolver, rules } =
     useFormValidator<ReturnTypeFromUseAbsentRequests>();
@@ -151,20 +181,24 @@ export const ViewAbsentRequestModal = ({
     attendanceCode: rules.required(),
   });
 
-  const handleEdit = ({
-    attendanceCode,
-    parentNote,
-  }: ReturnTypeFromUseAbsentRequests) => {
+  const handleEdit = (
+    { attendanceCode, parentNote }: ReturnTypeFromUseAbsentRequests,
+    onSuccess: () => void
+  ) => {
     if (initialAbsentRequestState) {
-      createOrUpdateAbsentRequestMutation([
-        {
-          ...initialAbsentRequestState,
-          id: initialAbsentRequestState.id,
-          attendanceCodeId:
-            attendanceCode?.id ?? initialAbsentRequestState?.attendanceCode?.id,
-          parentNote,
-        },
-      ]);
+      createOrUpdateAbsentRequestMutation(
+        [
+          {
+            ...initialAbsentRequestState,
+            id: initialAbsentRequestState.id,
+            attendanceCodeId:
+              attendanceCode?.id ??
+              initialAbsentRequestState?.attendanceCode?.id,
+            parentNote,
+          },
+        ],
+        { onSuccess }
+      );
     }
   };
 

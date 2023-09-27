@@ -400,6 +400,7 @@ export function SessionAttendanceRoleBook({
 
     return saveSessionAttendance({
       applyCodes: applyToSubjectAttendance,
+      adminSubmitted: true,
       attendances: Object.values(attendanceChanges),
     });
   };

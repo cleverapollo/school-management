@@ -16,6 +16,8 @@ import substitution from './substitution.json';
 import timetable from './timetable.json'
 import userAccounts from './userAccounts.json';
 import printing from './printing.json'
+import reports from './reports.json'
+
 export const en = {
   admin,
   assessments,
@@ -34,5 +36,6 @@ export const en = {
   substitution,
   timetable,
   userAccounts,
-  printing
+  printing,
+  reports,
 };

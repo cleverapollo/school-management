@@ -1,9 +1,5 @@
 import { Box, Button, Fade } from '@mui/material';
-import {
-  ParentalAttendanceRequestStatus,
-  SaveParentalAttendanceRequest,
-  usePermissions,
-} from '@tyro/api';
+import { ParentalAttendanceRequestStatus, usePermissions } from '@tyro/api';
 import { AddIcon } from '@tyro/icons';
 import {
   ActionMenu,
@@ -34,6 +30,10 @@ import { CreateAbsentRequestModal } from '../components/absent-requests/create-a
 
 dayjs.extend(LocalizedFormat);
 
+type ColumnsDef = NonNullable<
+  GridOptions<ReturnTypeFromUseAbsentRequests>['columnDefs']
+>;
+
 const getAbsentRequestColumns = (
   t: TFunction<('common' | 'attendance')[]>,
   displayName: ReturnTypeDisplayName,
@@ -41,7 +41,7 @@ const getAbsentRequestColumns = (
     SetStateAction<ViewAbsentRequestModalProps['initialAbsentRequestState']>
   >,
   overview: boolean
-): GridOptions<ReturnTypeFromUseAbsentRequests>['columnDefs'] => [
+): ColumnsDef => [
   {
     field: 'classGroup.name',
     headerName: t('common:name'),
@@ -62,13 +62,13 @@ const getAbsentRequestColumns = (
   {
     field: 'classGroup',
     headerName: t('common:class'),
-    valueGetter: ({ data }) => data?.classGroup?.name ?? '-',
+    valueGetter: ({ data }) => data?.classGroup?.name || '-',
   },
   {
     field: 'attendanceCode.name',
     headerName: t('attendance:absentType'),
     filter: true,
-    valueGetter: ({ data }) => data?.attendanceCode?.name ?? '-',
+    valueGetter: ({ data }) => data?.attendanceCode?.name || '-',
   },
   {
     field: 'createdOn',
@@ -91,6 +91,15 @@ const getAbsentRequestColumns = (
     headerName: t('attendance:completedBy'),
     valueGetter: ({ data }) => displayName(data?.approvedBy),
   },
+  ...(overview
+    ? ([
+        {
+          field: 'adminNote',
+          headerName: t('attendance:feedbackFromSchool'),
+          valueGetter: ({ data }) => data?.adminNote || '-',
+        },
+      ] as ColumnsDef)
+    : []),
   {
     suppressColumnsToolPanel: true,
     sortable: false,

@@ -1,35 +1,70 @@
 import {
   NavObjectFunction,
   NavObjectType,
-  LazyLoader,
   lazyWithRetry,
+  throw404Error,
 } from '@tyro/core';
-import { UserGroupIcon } from '@tyro/icons';
+import { DocSearchIcon } from '@tyro/icons';
+import { getReportsList } from './api/list';
+import { getRunReports } from './api/run-report';
 
-const StudentsListPage = lazyWithRetry(() => import('./pages/testReport'));
-// Student profile pages
+const ReportsListPage = lazyWithRetry(() => import('./pages'));
+const ReportContainer = lazyWithRetry(() => import('./components/container'));
+const ReportPage = lazyWithRetry(() => import('./pages/view'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
     type: NavObjectType.Category,
-    title: ' reporting',
+    title: t('navigation:management.title'),
     children: [
       {
-        type: NavObjectType.RootGroup,
-        path: 'reporting',
-        title: t('navigation:management.people.title'),
-        icon: <UserGroupIcon />,
-        hasAccess: ({ userType }) => true,
+        type: NavObjectType.RootLink,
+        path: 'reports',
+        hasAccess: ({ isStaffUserWithPermission }) => isStaffUserWithPermission('ps:1:general_admin:read_reports'),
+        title: t('navigation:management.reports'),
+        icon: <DocSearchIcon />,
         children: [
           {
-            type: NavObjectType.MenuLink,
-            path: 'reporting',
-            title: 'test reporting',
-            element: (
-              <LazyLoader>
-                <StudentsListPage />
-              </LazyLoader>
-            ),
+            type: NavObjectType.NonMenuLink,
+            index: true,
+            loader: getReportsList,
+            element: <ReportsListPage />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: ':id',
+            element: <ReportContainer />,
+            loader: async ({ params }) => {
+              const { id = '' } = params;
+
+              if (!id) {
+                throw404Error();
+              }
+
+              return getRunReports({
+                topReportId: id,
+                filter: { reportId: id },
+              });
+            },
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                path: ':reportId',
+                element: <ReportPage />,
+                loader: async ({ params }) => {
+                  const { id = '', reportId = '' } = params;
+
+                  if (!id || !reportId) {
+                    throw404Error();
+                  }
+
+                  return getRunReports({
+                    topReportId: id,
+                    filter: { reportId },
+                  });
+                },
+              },
+            ],
           },
         ],
       },

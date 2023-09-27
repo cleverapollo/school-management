@@ -5,7 +5,7 @@ import { PermissionUtils } from '@tyro/api';
 export interface MenuItemConfig {
   label: string;
   icon?: React.ReactNode;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent) => void;
   navigateTo?: LinkProps['to'];
   disabled?: boolean;
   disabledTooltip?: string;
@@ -51,8 +51,8 @@ export function getMenuItemList({
                   to: navigateTo,
                 }
               : {
-                  onClick: () => {
-                    onClick?.();
+                  onClick: (e: React.MouseEvent) => {
+                    onClick?.(e);
                     onClose();
                   },
                 })}
