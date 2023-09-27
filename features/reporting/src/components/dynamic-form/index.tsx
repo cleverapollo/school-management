@@ -9,6 +9,7 @@ import {
   Reporting_TableFilterInput,
   Reporting_TableFilter,
   Reporting_TableFilterType,
+  Reporting_TableFilterValues,
 } from '@tyro/api';
 import dayjs from 'dayjs';
 import { DynamicControl } from './control';
@@ -28,6 +29,13 @@ const getValueFormat = (
   switch (inputType) {
     case Reporting_TableFilterType.Checkbox:
       return Boolean(formValue);
+    case Reporting_TableFilterType.MultiSelect: {
+      const selectedValue = formValue as Reporting_TableFilterValues[];
+      return selectedValue?.map((value) => value.id as number);
+    }
+    case Reporting_TableFilterType.Select: {
+      return formValue as number;
+    }
     case Reporting_TableFilterType.Date:
       return dayjs(formValue as dayjs.Dayjs).format('YYYY-MM-DD');
     case Reporting_TableFilterType.InputNumber:
