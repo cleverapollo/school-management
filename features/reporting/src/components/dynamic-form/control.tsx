@@ -12,6 +12,7 @@ import {
   FieldPath,
 } from 'react-hook-form';
 import dayjs from 'dayjs';
+import { useTheme } from '@mui/material';
 
 type DynamicControlProps<FV extends FieldValues> = {
   control: Control<FV>;
@@ -26,6 +27,8 @@ export const DynamicControl = <
   control,
   filter: { id, inputType, label, defaultValue, values = [] },
 }: DynamicControlProps<FV>) => {
+  const { spacing } = useTheme();
+
   const controlProps = {
     name: id as FieldName,
     defaultValue: defaultValue as FieldValue,
@@ -44,11 +47,11 @@ export const DynamicControl = <
           optionTextKey="value"
           options={(values || []).flatMap((value) => (value ? [value] : []))}
           controlProps={controlProps}
-          sx={({ spacing }) => ({
+          sx={{
             '& .MuiSelect-select': {
               minWidth: spacing(18),
             },
-          })}
+          }}
         />
       );
     case Reporting_TableFilterType.Date:
@@ -71,7 +74,7 @@ export const DynamicControl = <
         <RHFCheckbox
           label={label}
           controlLabelProps={{
-            sx: ({ spacing }) => ({ mr: 0, height: spacing(6) }),
+            sx: { mr: 0, height: spacing(6) },
           }}
           controlProps={controlProps}
         />
