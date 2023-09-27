@@ -5,22 +5,60 @@ import {
   RHFSelect,
   RHFTextField,
 } from '@tyro/core';
-import { Reporting_TableFilter, Reporting_TableFilterType } from '@tyro/api';
+import {
+  Reporting_TableFilter,
+  Reporting_TableFilterType,
+  Reporting_TableFilterValues,
+} from '@tyro/api';
 import {
   Control,
   FieldValues,
   FieldPathValue,
   FieldPath,
 } from 'react-hook-form';
-import dayjs from 'dayjs';
 import { useTheme } from '@mui/material';
 import { useMemo } from 'react';
+import dayjs from 'dayjs';
 
 type DynamicControlProps<FV extends FieldValues> = {
   control: Control<FV>;
   filter: Omit<Reporting_TableFilter, 'defaultValue'> & {
     defaultValue?: FieldPathValue<FV, FieldPath<FV>>;
   };
+};
+
+const getDefaultValueFormat = (
+  defaultValue: any,
+  values: Reporting_TableFilterValues[],
+  inputType: Reporting_TableFilterType
+) => {
+  switch (inputType) {
+    case Reporting_TableFilterType.Checkbox:
+      return Boolean(defaultValue);
+    case Reporting_TableFilterType.MultiSelect: {
+      const defaultIdValues = Array.isArray(defaultValue)
+        ? defaultValue
+        : [defaultValue];
+
+      return values.filter((value) =>
+        defaultIdValues.includes(value.id as number)
+      );
+    }
+    case Reporting_TableFilterType.Select: {
+      const currentValue = values.find(
+        (value) => value.id === defaultValue
+      ) as Reporting_TableFilterValues;
+
+      return currentValue?.id as number;
+    }
+    case Reporting_TableFilterType.Date:
+      return dayjs(defaultValue as dayjs.Dayjs);
+    case Reporting_TableFilterType.InputNumber:
+      return Number(defaultValue);
+    case Reporting_TableFilterType.Input:
+    default:
+      return String(defaultValue);
+  }
 };
 
 export const DynamicControl = <
@@ -33,18 +71,24 @@ export const DynamicControl = <
 }: DynamicControlProps<FV>) => {
   const { spacing } = useTheme();
 
-  const controlProps = {
-    name: id as FieldName,
-    ...(defaultValue && { defaultValue }),
-    control,
-  };
-
-  const minWidth = spacing(32);
-
   const options = useMemo(
     () => (values || []).flatMap((value) => (value ? [value] : [])),
     [values]
   );
+
+  const controlProps = {
+    name: id as FieldName,
+    ...(defaultValue && {
+      defaultValue: getDefaultValueFormat(
+        defaultValue,
+        options,
+        inputType
+      ) as FieldValue,
+    }),
+    control,
+  };
+
+  const minWidth = spacing(32);
 
   switch (inputType) {
     case Reporting_TableFilterType.Select:
@@ -99,10 +143,7 @@ export const DynamicControl = <
               minWidth,
             },
           }}
-          controlProps={{
-            ...controlProps,
-            defaultValue: dayjs(controlProps.defaultValue) as FieldValue,
-          }}
+          controlProps={controlProps}
         />
       );
     case Reporting_TableFilterType.Checkbox:
