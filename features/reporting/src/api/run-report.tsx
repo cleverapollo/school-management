@@ -30,6 +30,7 @@ const reportsRun = graphql(/* GraphQL */ `
         label
         visibleByDefault
         checkExpandedRows
+        hideMenu
       }
       data
     }
