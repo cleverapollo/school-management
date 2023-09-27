@@ -11,7 +11,7 @@ import {
   Reporting_TableFilterType,
   Reporting_TableFilterValues,
 } from '@tyro/api';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { DynamicControl } from './control';
 
 type DynamicFormProps = {
@@ -66,7 +66,23 @@ export const DynamicForm = ({
               [field.id]: [
                 rules.required(),
                 ...(field.inputType === Reporting_TableFilterType.Date
-                  ? [rules.date()]
+                  ? [
+                      rules.date(),
+                      rules.validate((value, throwError) => {
+                        if (
+                          (field.minValue &&
+                            (value as Dayjs).isBefore(
+                              dayjs(field.minValue as string)
+                            )) ||
+                          (field.maxValue &&
+                            (value as Dayjs).isAfter(
+                              dayjs(field.maxValue as string)
+                            ))
+                        ) {
+                          throwError(t('common:errorMessages.invalidDate'));
+                        }
+                      }),
+                    ]
                   : []),
               ],
             }),
