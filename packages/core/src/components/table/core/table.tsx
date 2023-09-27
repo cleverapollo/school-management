@@ -201,8 +201,11 @@ function TableInner<T extends object>(
   );
 
   const calculateTableHeight = useCallback(() => {
-    const [columnDef] = props.columnDefs || [];
-    if ((columnDef as ColDef<T>).autoHeight) {
+    const hasAutoHeight = (props.columnDefs || []).some(
+      (columnDef: ColDef<T>) => columnDef.autoHeight
+    );
+
+    if (hasAutoHeight) {
       const nodes = tableRef.current?.api.getRenderedNodes() || [];
       const rowIds = nodes.flatMap((row) => (row.id ? [row.id] : []));
 
