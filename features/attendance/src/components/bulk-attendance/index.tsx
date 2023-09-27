@@ -2,34 +2,21 @@ import React, { useEffect, useState } from 'react';
 import {
   Alert,
   AlertTitle,
-  Box,
   Button,
   Collapse,
-  DialogContent,
   IconButton,
   Stack,
-  Tooltip,
-  Typography,
 } from '@mui/material';
+import { Person } from '@tyro/api';
 import {
-  Person,
-  SubjectGroup,
-  SubjectGroupType,
-  PartyPersonType,
-} from '@tyro/api';
-import {
-  Autocomplete,
-  DateRangeSwitcher,
   Dialog,
   DialogActions,
+  DialogContent,
   DialogTitle,
   RHFAutocomplete,
-  RHFCheckbox,
   RHFDatePicker,
-  RHFMultiDatePicker,
   RHFRadioGroup,
   RHFSelect,
-  RHFSwitch,
   RHFTextField,
   RHFTimePicker,
   useFormValidator,
@@ -43,47 +30,45 @@ import { useTranslation } from '@tyro/i18n';
 import { LoadingButton } from '@mui/lab';
 import dayjs, { Dayjs } from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { useSubjectGroupsForBulkAttendanceQuery } from '../../api/bulk-attendance/subject-groups';
 import {
   useStudentSearchQuery,
   ReturnTypeFromStudentSearchQuery,
 } from '../../api/bulk-attendance/student-search';
+import { ReturnTypeFromUseBulkAttendance } from '../../api/bulk-attendance/bulk-attendance';
 import { useCreateBulkAttendance } from '../../api/bulk-attendance/save-bulk-attendance';
+import { useAttendanceCodes } from '../../api/attendance-codes';
 
 dayjs.extend(LocalizedFormat);
 
-enum BulkAttendanceRequestType {
+export enum BulkAttendanceRequestType {
   MultiDay = 'MULTI_DAY',
   PartialDay = 'PARTIAL_DAY',
   SingleDay = 'SINGLE_DAY',
 }
 
 export type BulkAttendanceModalProps = {
-  initialModalState: boolean;
+  open: boolean;
+  initialModalState: Partial<ReturnTypeFromUseBulkAttendance> | null;
   onClose: () => void;
-};
-
-type AttendanceDate = {
-  dates: Array<Dayjs>;
-  isFullDay: boolean;
-  startTime?: Dayjs;
-  endTime?: Dayjs;
 };
 
 export type CreateBulkAttendanceFormState = {
   attendees: Person;
   attendanceCodeId: number;
   date?: dayjs.Dayjs;
-  dates?: Array<AttendanceDate>;
+  dates?: Array<Dayjs>;
   startTime?: dayjs.Dayjs;
   endTime?: dayjs.Dayjs;
   note?: string;
   requestType: BulkAttendanceRequestType;
 };
 
-type AttendanceIds = [Person['partyId']];
+const defaultFormValue = {
+  requestType: BulkAttendanceRequestType.SingleDay,
+};
 
 export const BulkAttendanceModal = ({
+  open,
   initialModalState,
   onClose,
 }: BulkAttendanceModalProps) => {
@@ -113,54 +98,49 @@ export const BulkAttendanceModal = ({
     });
 
   const handleClose = () => {
-    reset();
     onClose();
+    reset();
   };
 
-  const { data: subjectGroupsData } = useSubjectGroupsForBulkAttendanceQuery({
-    type: [SubjectGroupType.SubjectGroup],
-  });
   const { data: students } = useStudentSearchQuery();
-  const { mutateAsync: saveBulkAttendance } = useCreateBulkAttendance();
+  const { mutateAsync: saveBulkAttendance, isLoading: isSubmitting } =
+    useCreateBulkAttendance();
+  const { data: attendanceCodes = [] } = useAttendanceCodes({
+    visibleForTeachers: true,
+  });
 
   const peopleAutocompleteProps =
     usePeopleAutocompleteProps<ReturnTypeFromStudentSearchQuery>();
 
   const requestType = watch('requestType');
 
-  const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([
-    dayjs().subtract(1, 'weeks'),
-    dayjs(),
-  ]);
-
   const onSubmit = (data: CreateBulkAttendanceFormState) => {
-    console.log(data, 'Form data');
     function getAttendanceIds() {
       if (Array.isArray(data?.attendees)) {
         const { attendees } = data;
         return attendees?.map((item: Person) => item?.partyId);
       }
     }
+    const attendanceIdArrays = getAttendanceIds();
+
+    const sharedData = {
+      attendanceCodeId: data?.attendanceCodeId,
+      attendanceForPartyIds: attendanceIdArrays ?? [],
+      note: data?.note,
+    };
+
     if (data?.requestType === BulkAttendanceRequestType.SingleDay) {
-      const attendanceIdArrays = getAttendanceIds();
       const transformedData = {
-        attendanceCodeId: 64, // data?.attendanceCodeId,
-        attendanceForPartyIds: attendanceIdArrays ?? [],
-        note: data?.note,
+        ...sharedData,
         singleDate: {
           date: dayjs(data?.date).format('YYYY-MM-DD'),
         },
       };
       saveBulkAttendance(transformedData);
-      reset();
-      onClose();
     }
     if (data?.requestType === BulkAttendanceRequestType.PartialDay) {
-      const attendanceIdArrays = getAttendanceIds();
       const transformedData = {
-        attendanceCodeId: 64, // data?.attendanceCodeId,
-        attendanceForPartyIds: attendanceIdArrays ?? [],
-        note: data?.note,
+        ...sharedData,
         partialDate: {
           date: dayjs(data?.date).format('YYYY-MM-DD'),
           leavesAt: dayjs(data?.startTime).format('HH:MM'),
@@ -168,14 +148,22 @@ export const BulkAttendanceModal = ({
         },
       };
       saveBulkAttendance(transformedData);
-      reset();
-      onClose();
     }
+    reset();
+    onClose();
   };
+
+  useEffect(() => {
+    if (initialModalState) {
+      reset({
+        ...defaultFormValue,
+      });
+    }
+  }, [initialModalState]);
 
   return (
     <Dialog
-      open={initialModalState}
+      open={open}
       onClose={handleClose}
       scroll="paper"
       fullWidth
@@ -231,6 +219,17 @@ export const BulkAttendanceModal = ({
                 control,
               }}
               sx={{ mt: 1 }}
+            />
+            <RHFSelect
+              fullWidth
+              optionIdKey="id"
+              options={attendanceCodes ?? []}
+              getOptionLabel={(option) => option.name || ''}
+              label={t('attendance:attendance')}
+              controlProps={{
+                name: 'attendanceCodeId',
+                control,
+              }}
             />
             <RHFRadioGroup
               radioGroupProps={{ sx: { flexDirection: 'row' } }}
@@ -293,13 +292,7 @@ export const BulkAttendanceModal = ({
               </>
             )}
             {requestType === BulkAttendanceRequestType.MultiDay && (
-              <DateRangeSwitcher
-                value={dateRange}
-                onChange={setDateRange}
-                maxDateRange={(firstSelectedDate) =>
-                  firstSelectedDate.add(4, 'weeks')
-                }
-              />
+              <div>Switcher will go here.</div>
             )}
             <RHFTextField
               label={t('attendance:note')}
@@ -322,7 +315,7 @@ export const BulkAttendanceModal = ({
             <LoadingButton
               type="submit"
               variant="contained"
-              //   loading={isSubmitting}
+              loading={isSubmitting}
             >
               Submit
             </LoadingButton>

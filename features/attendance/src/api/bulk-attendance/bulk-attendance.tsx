@@ -37,6 +37,15 @@ const bulkAttendance = graphql(/* GraphQL */ `
           avatarUrl
           __typename
         }
+        ... on GeneralGroup {
+          __typename
+          partyId
+          generalGroupType
+          name
+          classGroupInfo {
+            __typename
+          }
+        }
       }
       attendanceCodeId
       attendanceCode {

@@ -1,8 +1,7 @@
-import { Box, Button, Fade } from '@mui/material';
-
+import { useMemo } from 'react';
+import { Box, Button } from '@mui/material';
 import { AddIcon } from '@tyro/icons';
 import {
-  ActionMenu,
   GridOptions,
   ICellRendererParams,
   PageContainer,
@@ -11,41 +10,21 @@ import {
   Table,
   TablePersonAvatar,
   useDebouncedValue,
-  useDisclosure,
   usePreferredNameLayout,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { Dispatch, SetStateAction, useMemo, useState } from 'react';
-import { BulkAttendanceModal } from '../components/bulk-attendance/index';
+import {
+  BulkAttendanceModal,
+  BulkAttendanceModalProps,
+} from '../components/bulk-attendance/index';
 import {
   useBulkAttendance,
   ReturnTypeFromUseBulkAttendance,
 } from '../api/bulk-attendance/bulk-attendance';
 
 dayjs.extend(LocalizedFormat);
-
-const bulkAttendanceData = [
-  {
-    id: 1,
-    name: 'Michael Story',
-    attendance: 'School activity',
-    date: '17/09/2023 from 10:00 to 13:00',
-    note: 'Home match',
-    createdOn: '15/09/2023',
-    createdBy: 'Maurice Moss',
-  },
-  {
-    id: 2,
-    name: 'Paris trip',
-    attendance: 'School activity',
-    date: '05/09/2023 - 10/09/2023',
-    note: 'Transition year trip to Paris',
-    createdOn: '01/09/2023',
-    createdBy: 'Mars Malone',
-  },
-];
 
 const getColumns = (
   t: TFunction<
@@ -66,12 +45,15 @@ const getColumns = (
         if (party?.__typename === 'SubjectGroup') {
           return party?.actualName;
         }
+        if (party?.__typename === 'GeneralGroup') {
+          return party?.name;
+        }
       }),
   },
   {
     field: 'attendanceCode.name',
     headerName: t('common:attendance'),
-    valueGetter: ({ data }) => data?.attendanceCodeId ?? '-',
+    valueGetter: ({ data }) => data?.attendanceCode?.name ?? '-',
   },
   {
     field: 'startDate',
@@ -79,11 +61,13 @@ const getColumns = (
     valueGetter: ({ data }) => {
       const startDate = dayjs(data?.startDate).format('DD/MM/YYYY');
       const endDate = dayjs(data?.endDate).format('DD/MM/YYYY');
-      const dates = endDate ? `${startDate} - ${endDate}` : startDate;
-      const partial = `${dayjs(data?.startDate).format('DD/MM/YYYY')} from ${
+      const fullDayOrMultiDay = endDate
+        ? `${startDate} - ${endDate}`
+        : startDate;
+      const partialDay = `${dayjs(data?.startDate).format('DD/MM/YYYY')} from ${
         data?.leavesAt ?? '-'
       } to ${data?.returnsAt ?? '-'}`;
-      const date = data?.leavesAt ? partial : dates;
+      const date = data?.leavesAt ? partialDay : fullDayOrMultiDay;
       return date;
     },
   },
@@ -113,19 +97,18 @@ const getColumns = (
 export default function BulkAttendance() {
   const { t } = useTranslation(['common', 'attendance']);
   const { displayName } = usePreferredNameLayout();
-  const [initialModalState, setInitialModalState] = useState<boolean>(false);
+
+  const {
+    value: bulkAttendanceDetails,
+    debouncedValue: debouncedAttendanceDetails,
+    setValue: setBulkAttendanceDetails,
+  } = useDebouncedValue<BulkAttendanceModalProps['initialModalState']>({
+    defaultValue: null,
+  });
 
   const { data: bulkAttendance } = useBulkAttendance({});
 
   const columns = useMemo(() => getColumns(t, displayName), [t, displayName]);
-
-  const handleAddBulkAttendance = () => {
-    setInitialModalState(true);
-  };
-
-  const handleCloseModal = () => {
-    setInitialModalState(false);
-  };
 
   return (
     <PageContainer title={t('attendance:bulkAttendance')}>
@@ -136,7 +119,7 @@ export default function BulkAttendance() {
           <Box display="flex" alignItems="center">
             <Button
               variant="contained"
-              onClick={() => handleAddBulkAttendance()}
+              onClick={() => setBulkAttendanceDetails({})}
               startIcon={<AddIcon />}
             >
               {t('attendance:createBulkAttendance')}
@@ -151,8 +134,9 @@ export default function BulkAttendance() {
       />
 
       <BulkAttendanceModal
-        initialModalState={initialModalState}
-        onClose={handleCloseModal}
+        open={!!bulkAttendanceDetails}
+        onClose={() => setBulkAttendanceDetails(null)}
+        initialModalState={bulkAttendanceDetails || debouncedAttendanceDetails}
       />
     </PageContainer>
   );
