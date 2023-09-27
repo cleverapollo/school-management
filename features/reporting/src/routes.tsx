@@ -20,21 +20,19 @@ export const getRoutes: NavObjectFunction = (t) => [
       {
         type: NavObjectType.RootLink,
         path: 'reports',
-        hasAccess: ({ isTyroUser }) => isTyroUser,
+        hasAccess: ({ isStaffUserWithPermission }) => isStaffUserWithPermission('ps:1:general_admin:read_reports'),
         title: t('navigation:management.reports'),
         icon: <DocSearchIcon />,
         children: [
           {
             type: NavObjectType.NonMenuLink,
             index: true,
-            hasAccess: ({ isTyroUser }) => isTyroUser,
             loader: getReportsList,
             element: <ReportsListPage />,
           },
           {
             type: NavObjectType.NonMenuLink,
             path: ':id',
-            hasAccess: ({ isTyroUser }) => isTyroUser,
             element: <ReportContainer />,
             loader: async ({ params }) => {
               const { id = '' } = params;
