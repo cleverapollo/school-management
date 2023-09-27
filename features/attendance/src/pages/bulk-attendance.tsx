@@ -19,18 +19,13 @@ import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { BulkAttendanceModal } from '../components/bulk-attendance/index';
+import {
+  useBulkAttendance,
+  ReturnTypeFromUseBulkAttendance,
+} from '../api/bulk-attendance/bulk-attendance';
 
 dayjs.extend(LocalizedFormat);
 
-type Data = {
-  id: number;
-  name: string;
-  attendance: string;
-  date: string;
-  note: string;
-  createdOn: string;
-  createdBy: string;
-};
 const bulkAttendanceData = [
   {
     id: 1,
@@ -53,46 +48,84 @@ const bulkAttendanceData = [
 ];
 
 const getColumns = (
-  t: TFunction<('common' | 'attendance')[]>,
+  t: TFunction<
+    ('common' | 'attendance')[],
+    undefined,
+    ('common' | 'attendance')[]
+  >,
   displayName: ReturnTypeDisplayName
-): GridOptions<Data>['columnDefs'] => [
+): GridOptions<ReturnTypeFromUseBulkAttendance>['columnDefs'] => [
   {
-    field: 'name',
     headerName: t('common:name'),
-    // valueGetter: ({ data }) => data?.name ?? '-',
+    field: 'id',
+    valueGetter: ({ data }) =>
+      data?.parties?.map((party) => {
+        if (party?.__typename === 'Student') {
+          return displayName(party?.person);
+        }
+        if (party?.__typename === 'SubjectGroup') {
+          return party?.actualName;
+        }
+      }),
   },
   {
-    field: 'attendance',
+    field: 'attendanceCode.name',
     headerName: t('common:attendance'),
-    // valueGetter: ({ data }) => data?.name ?? '-',
+    valueGetter: ({ data }) => data?.attendanceCodeId ?? '-',
   },
   {
-    field: 'date',
+    field: 'startDate',
     headerName: t('common:date'),
-    // valueGetter: ({ data }) => data?.name ?? '-',
+    valueGetter: ({ data }) => {
+      const startDate = dayjs(data?.startDate).format('DD/MM/YYYY');
+      const endDate = dayjs(data?.endDate).format('DD/MM/YYYY');
+      const dates = endDate ? `${startDate} - ${endDate}` : startDate;
+      const partial = `${dayjs(data?.startDate).format('DD/MM/YYYY')} from ${
+        data?.leavesAt ?? '-'
+      } to ${data?.returnsAt ?? '-'}`;
+      const date = data?.leavesAt ? partial : dates;
+      return date;
+    },
   },
   {
     field: 'note',
     headerName: t('common:note'),
-    // valueGetter: ({ data }) => data?.name ?? '-',
+    valueGetter: ({ data }) => data?.note ?? '-',
   },
   {
     field: 'createdOn',
     headerName: t('attendance:createdOn'),
-    // valueGetter: ({ data }) => data?.name ?? '-',
+    valueFormatter: ({ data }) =>
+      dayjs(data?.createdOn).format('DD/MM/YYYY') ?? '-',
   },
   {
     field: 'createdBy',
     headerName: t('common:createdBy'),
-    // valueGetter: ({ data }) => data?.name ?? '-',
+    valueGetter: ({ data }) => displayName(data?.createdBy?.person),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseBulkAttendance>) => (
+      <TablePersonAvatar person={data?.createdBy?.person ?? undefined} />
+    ),
   },
 ];
 
 export default function BulkAttendance() {
   const { t } = useTranslation(['common', 'attendance']);
   const { displayName } = usePreferredNameLayout();
+  const [initialModalState, setInitialModalState] = useState<boolean>(false);
 
-  const columns = useMemo(() => getColumns(t, displayName), [t]);
+  const { data: bulkAttendance } = useBulkAttendance({});
+
+  const columns = useMemo(() => getColumns(t, displayName), [t, displayName]);
+
+  const handleAddBulkAttendance = () => {
+    setInitialModalState(true);
+  };
+
+  const handleCloseModal = () => {
+    setInitialModalState(false);
+  };
 
   return (
     <PageContainer title={t('attendance:bulkAttendance')}>
@@ -103,7 +136,7 @@ export default function BulkAttendance() {
           <Box display="flex" alignItems="center">
             <Button
               variant="contained"
-              onClick={() => console.log('Create Bulk attendance')}
+              onClick={() => handleAddBulkAttendance()}
               startIcon={<AddIcon />}
             >
               {t('attendance:createBulkAttendance')}
@@ -112,12 +145,15 @@ export default function BulkAttendance() {
         }
       />
       <Table
-        rowData={bulkAttendanceData ?? []}
+        rowData={bulkAttendance ?? []}
         columnDefs={columns}
         getRowId={({ data }) => String(data?.id)}
       />
 
-      <BulkAttendanceModal />
+      <BulkAttendanceModal
+        initialModalState={initialModalState}
+        onClose={handleCloseModal}
+      />
     </PageContainer>
   );
 }

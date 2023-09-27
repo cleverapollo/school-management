@@ -10,6 +10,8 @@
   "attendanceCodes": "Attendance codes",
   "bulkAttendance": "Bulk attendance",
   "createBulkAttendance": "Create bulk attendance",
+  "bulkAttendanceAlertTitle": "Bulk attendance applies to session and subject groups",
+  "bulkAttendanceAlertDescription": "The selected attendance code will overwrite session and subject group attendance for the chosen date(s).",
   "createAttendanceCode": "Create attendance code",
   "createdOn": "Created on",
   "reportAs": "Report as",
