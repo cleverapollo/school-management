@@ -1,4 +1,4 @@
-import { Table } from '@tyro/core';
+import { GridOptions, Table } from '@tyro/core';
 import { Reporting_TableFilterInput } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -25,13 +25,23 @@ export default function ReportPage() {
     },
   });
 
-  const mainColumns = useMemo(() => {
+  const mainColumns = useMemo<
+    GridOptions<FormattedReportData[number]>['columnDefs']
+  >(() => {
     const fieldsColumns = reportData?.fields || [];
 
     return fieldsColumns.map((column) => ({
       field: column.id,
       headerName: column.label,
       hide: !column.visibleByDefault,
+      ...(column.hideMenu
+        ? {
+            suppressMenu: true,
+          }
+        : {
+            filter: true,
+            enableRowGroup: true,
+          }),
     }));
   }, [reportData?.fields]);
 

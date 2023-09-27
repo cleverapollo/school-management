@@ -1,4 +1,5 @@
 import {
+  RHFAutocomplete,
   RHFCheckbox,
   RHFDatePicker,
   RHFSelect,
@@ -13,10 +14,13 @@ import {
 } from 'react-hook-form';
 import dayjs from 'dayjs';
 import { useTheme } from '@mui/material';
+import { useMemo } from 'react';
 
 type DynamicControlProps<FV extends FieldValues> = {
   control: Control<FV>;
-  filter: Reporting_TableFilter;
+  filter: Omit<Reporting_TableFilter, 'defaultValue'> & {
+    defaultValue?: FieldPathValue<FV, FieldPath<FV>>;
+  };
 };
 
 export const DynamicControl = <
@@ -31,9 +35,16 @@ export const DynamicControl = <
 
   const controlProps = {
     name: id as FieldName,
-    defaultValue: defaultValue as FieldValue,
+    ...(defaultValue && { defaultValue }),
     control,
   };
+
+  const minWidth = spacing(32);
+
+  const options = useMemo(
+    () => (values || []).flatMap((value) => (value ? [value] : [])),
+    [values]
+  );
 
   switch (inputType) {
     case Reporting_TableFilterType.Select:
@@ -45,13 +56,35 @@ export const DynamicControl = <
           variant="white-filled"
           optionIdKey="id"
           optionTextKey="value"
-          options={(values || []).flatMap((value) => (value ? [value] : []))}
+          options={options}
           controlProps={controlProps}
           sx={{
             '& .MuiSelect-select': {
-              minWidth: spacing(18),
+              minWidth,
             },
           }}
+        />
+      );
+    case Reporting_TableFilterType.MultiSelect:
+      return (
+        <RHFAutocomplete
+          label={label}
+          fullWidth
+          multiple
+          size="small"
+          optionIdKey="id"
+          optionTextKey="value"
+          options={options}
+          inputProps={{
+            variant: 'white-filled',
+          }}
+          limitTags={2}
+          disableCloseOnSelect
+          sx={{
+            minWidth,
+            maxWidth: spacing(66),
+          }}
+          controlProps={controlProps}
         />
       );
     case Reporting_TableFilterType.Date:
@@ -62,6 +95,9 @@ export const DynamicControl = <
             size: 'small',
             fullWidth: true,
             variant: 'white-filled',
+            sx: {
+              minWidth,
+            },
           }}
           controlProps={{
             ...controlProps,
@@ -93,6 +129,9 @@ export const DynamicControl = <
                 : 'text',
             fullWidth: true,
             size: 'small',
+            sx: {
+              minWidth,
+            },
           }}
           controlProps={controlProps}
         />
