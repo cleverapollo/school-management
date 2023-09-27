@@ -7,7 +7,7 @@ import {
   IconButton,
   Stack,
 } from '@mui/material';
-import { Person } from '@tyro/api';
+import { Person, Search, SearchType } from '@tyro/api';
 import {
   Dialog,
   DialogActions,
@@ -19,24 +19,20 @@ import {
   RHFSelect,
   RHFTextField,
   RHFTimePicker,
+  useDebouncedValue,
   useFormValidator,
-  usePreferredNameLayout,
 } from '@tyro/core';
-import { usePeopleAutocompleteProps } from '@tyro/people';
 import { useForm } from 'react-hook-form';
 import { CloseIcon, LightBulbIcon } from '@tyro/icons';
-
 import { useTranslation } from '@tyro/i18n';
 import { LoadingButton } from '@mui/lab';
 import dayjs, { Dayjs } from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import {
-  useStudentSearchQuery,
-  ReturnTypeFromStudentSearchQuery,
-} from '../../api/bulk-attendance/student-search';
+import { useSearchAutocompleteProps } from './use-search-autocomplete-props';
 import { ReturnTypeFromUseBulkAttendance } from '../../api/bulk-attendance/bulk-attendance';
 import { useCreateBulkAttendance } from '../../api/bulk-attendance/save-bulk-attendance';
 import { useAttendanceCodes } from '../../api/attendance-codes';
+import { useSessionPartySearch } from '../../api/session-party-search';
 
 dayjs.extend(LocalizedFormat);
 
@@ -45,6 +41,13 @@ export enum BulkAttendanceRequestType {
   PartialDay = 'PARTIAL_DAY',
   SingleDay = 'SINGLE_DAY',
 }
+// Try swap this for Search from api
+export type CustomSearch = {
+  avatarUrl?: string | null;
+  partyId: number;
+  text: string;
+  type: SearchType;
+};
 
 export type BulkAttendanceModalProps = {
   open: boolean;
@@ -53,7 +56,7 @@ export type BulkAttendanceModalProps = {
 };
 
 export type CreateBulkAttendanceFormState = {
-  attendees: Person;
+  selectedGroups: CustomSearch;
   attendanceCodeId: number;
   date?: dayjs.Dayjs;
   dates?: Array<Dayjs>;
@@ -92,7 +95,7 @@ export const BulkAttendanceModal = ({
             t('common:errorMessages.afterStartTime')
           ),
         ],
-        attendees: [rules.required()],
+        selectedGroups: [rules.required()],
       }),
       mode: 'onChange',
     });
@@ -102,23 +105,33 @@ export const BulkAttendanceModal = ({
     reset();
   };
 
-  const { data: students } = useStudentSearchQuery();
   const { mutateAsync: saveBulkAttendance, isLoading: isSubmitting } =
     useCreateBulkAttendance();
   const { data: attendanceCodes = [] } = useAttendanceCodes({
     visibleForTeachers: true,
   });
 
-  const peopleAutocompleteProps =
-    usePeopleAutocompleteProps<ReturnTypeFromStudentSearchQuery>();
+  const {
+    value: searchValue,
+    setValue: setSearchValue,
+    debouncedValue: debouncedSearchValue,
+  } = useDebouncedValue({
+    defaultValue: '',
+  });
+
+  const { data: options, isLoading } =
+    useSessionPartySearch(debouncedSearchValue);
+
+  const bulkAttendanceAutocompleteProps =
+    useSearchAutocompleteProps<CustomSearch>();
 
   const requestType = watch('requestType');
 
   const onSubmit = (data: CreateBulkAttendanceFormState) => {
     function getAttendanceIds() {
-      if (Array.isArray(data?.attendees)) {
-        const { attendees } = data;
-        return attendees?.map((item: Person) => item?.partyId);
+      if (Array.isArray(data?.selectedGroups)) {
+        const { selectedGroups } = data;
+        return selectedGroups?.map((item: Person) => item?.partyId);
       }
     }
     const attendanceIdArrays = getAttendanceIds();
@@ -206,18 +219,23 @@ export const BulkAttendanceModal = ({
           <Stack direction="column" sx={{ mt: 1 }} gap={2}>
             <RHFAutocomplete<
               CreateBulkAttendanceFormState,
-              CreateBulkAttendanceFormState['attendees']
+              CreateBulkAttendanceFormState['selectedGroups']
             >
               fullWidth
               multiple
               disableCloseOnSelect
-              options={students ?? []}
-              {...peopleAutocompleteProps}
-              label="Attendees"
+              options={options ?? []}
+              label={t('common:name')}
               controlProps={{
-                name: `attendees`,
+                name: `selectedGroups`,
                 control,
               }}
+              open={searchValue.length > 0}
+              loading={isLoading}
+              onInputChange={(_, newInputValue) =>
+                setSearchValue(newInputValue)
+              }
+              {...bulkAttendanceAutocompleteProps}
               sx={{ mt: 1 }}
             />
             <RHFSelect

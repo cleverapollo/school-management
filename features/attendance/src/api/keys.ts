@@ -43,4 +43,6 @@ export const attendanceKeys = {
     [...attendanceKeys.all, 'calendarBellTimes', filter] as const,
   bulkAttendance: (filter: Attendance_BulkAttendanceActionFilter) =>
     [...attendanceKeys.all, 'bulkAttendance', filter] as const,
+  bulkAttendanceSearch: (query: string) =>
+    [...attendanceKeys.all, 'bulkAttendanceSearch', query] as const,
 };
