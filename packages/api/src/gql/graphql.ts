@@ -7004,13 +7004,6 @@ export type Attendance_SaveEventAttendanceMutationVariables = Exact<{
 
 export type Attendance_SaveEventAttendanceMutation = { __typename?: 'Mutation', attendance_saveEventAttendance: Array<{ __typename?: 'EventAttendance', id: number, eventId: number, attendanceCodeId: number, personPartyId: number, date: string }> };
 
-export type CalendarSearchQueryQueryVariables = Exact<{
-  filter?: InputMaybe<SearchFilter>;
-}>;
-
-
-export type CalendarSearchQueryQuery = { __typename?: 'Query', search_search: Array<{ __typename?: 'Search', partyId: number, type: SearchType, text: string, avatarUrl?: string | null }> };
-
 export type Attendance_BulkAttendanceActionsQueryVariables = Exact<{
   filter: Attendance_BulkAttendanceActionFilter;
 }>;
