@@ -15,6 +15,7 @@ import {
   TableSwitch,
   GenderSelectCellEditor,
   BulkEditedRows,
+  ValueSetterParams,
 } from '@tyro/core';
 import { DownloadArrowCircleIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
@@ -76,6 +77,7 @@ const getColumnFormBDefs = (
     cellEditor: TableSwitch,
     editable: true,
     cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
+    filter: true,
     valueFormatter: ({ data }) =>
       data?.staffIre?.includeDtrReturns
         ? translate('common:yes')
@@ -89,6 +91,7 @@ const getColumnFormBDefs = (
   {
     field: 'person',
     headerName: translate('common:name'),
+    valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFormB>) =>
       data && (
         <RouterLink to={`/people/staff/${data.partyId}`}>
@@ -140,12 +143,19 @@ const getColumnFormBDefs = (
     field: 'personalInformation.ire.ppsNumber',
     headerName: translate('settings:dtrReturns.formB.ppsNumber'),
     editable: ({ data }) => Boolean(data?.staffIre?.includeDtrReturns),
-    valueSetter: ({ data, newValue, oldValue }) => {
-      set(
-        data ?? {},
-        'personalInformation.ire.ppsNumber',
-        (newValue as string).length <= 10 ? newValue : oldValue
-      );
+    cellEditorParams: { maxLength: 10 },
+    valueSetter: ({
+      data,
+      newValue,
+      oldValue,
+    }: ValueSetterParams<ReturnTypeFromUseFormB, string | null>) => {
+      let replacedValue = newValue?.trim() ?? null;
+
+      if (typeof replacedValue === 'string' && replacedValue.length > 10) {
+        replacedValue = oldValue;
+      }
+
+      set(data ?? {}, 'personalInformation.ire.ppsNumber', replacedValue);
       return true;
     },
   },

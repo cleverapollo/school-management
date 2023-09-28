@@ -67,7 +67,15 @@ export const DynamicControl = <
   FieldValue extends FieldPathValue<FV, FieldName>
 >({
   control,
-  filter: { id, inputType, label, defaultValue, values = [] },
+  filter: {
+    id,
+    inputType,
+    label,
+    defaultValue,
+    values = [],
+    minValue,
+    maxValue,
+  },
 }: DynamicControlProps<FV>) => {
   const { spacing } = useTheme();
 
@@ -142,6 +150,10 @@ export const DynamicControl = <
             sx: {
               minWidth,
             },
+          }}
+          datePickerProps={{
+            minDate: minValue ? dayjs(minValue as string) : undefined,
+            maxDate: maxValue ? dayjs(maxValue as string) : undefined,
           }}
           controlProps={controlProps}
         />

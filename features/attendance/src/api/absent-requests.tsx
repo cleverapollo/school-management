@@ -27,6 +27,7 @@ const absentRequests = graphql(/* GraphQL */ `
         id
         code
         name
+        description
       }
       approvedBy {
         firstName
