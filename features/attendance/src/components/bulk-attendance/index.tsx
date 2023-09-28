@@ -51,7 +51,7 @@ export type BulkAttendanceModalProps = {
 };
 
 export type CreateBulkAttendanceFormState = {
-  SessionParty: SessionParty[];
+  selectedStudentsOrGroups: SessionParty[];
   attendanceCodeId: number;
   date?: dayjs.Dayjs;
   dateRange: [dayjs.Dayjs, dayjs.Dayjs];
@@ -91,7 +91,7 @@ export const BulkAttendanceModal = ({
             t('common:errorMessages.afterStartTime')
           ),
         ],
-        SessionParty: [rules.required()],
+        selectedStudentsOrGroups: [rules.required()],
         attendanceCodeId: [rules.required()],
       }),
     });
@@ -109,8 +109,8 @@ export const BulkAttendanceModal = ({
   };
 
   const onSubmit = (data: CreateBulkAttendanceFormState) => {
-    const attendanceIdArrays = data.SessionParty.map(
-      (item: SessionParty) => item?.partyId
+    const attendanceIdArrays = data.selectedStudentsOrGroups.map(
+      (item) => item?.partyId
     );
 
     const transformedData: Attendance_SaveBulkAttendanceInput = {
@@ -194,14 +194,14 @@ export const BulkAttendanceModal = ({
 
           <Stack direction="column" sx={{ mt: 1 }} gap={2}>
             <RHFAutocomplete<CreateBulkAttendanceFormState, SessionParty, true>
+              {...bulkAttendanceAutocompleteProps}
               fullWidth
               disableCloseOnSelect
               label={t('common:name')}
               controlProps={{
-                name: `SessionParty`,
+                name: `selectedStudentsOrGroups`,
                 control,
               }}
-              {...bulkAttendanceAutocompleteProps}
               sx={{ mt: 1 }}
             />
             <RHFSelect
