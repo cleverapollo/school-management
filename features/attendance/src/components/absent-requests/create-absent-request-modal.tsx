@@ -1,11 +1,5 @@
 import LoadingButton from '@mui/lab/LoadingButton';
-import {
-  Button,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  Stack,
-} from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import {
   ParentalAttendanceRequestStatus,
   ParentalAttendanceRequestType,
@@ -13,7 +7,6 @@ import {
   useUser,
 } from '@tyro/api';
 import {
-  DateRangeSwitcher,
   Dialog,
   DialogActions,
   DialogContent,
@@ -27,13 +20,14 @@ import {
   RHFTimePicker,
   useFormValidator,
   usePreferredNameLayout,
+  RHFDateRangePicker,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useContactStudents, usePeopleAutocompleteProps } from '@tyro/people';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { useForm } from 'react-hook-form';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useAttendanceCodes, useCreateOrUpdateAbsentRequest } from '../../api';
 
 dayjs.extend(LocalizedFormat);
@@ -45,7 +39,8 @@ export interface CreateAbsentRequestModalProps {
 export type CreateAbsentRequestFormState = {
   student: Person;
   attendanceCodeId: number;
-  date: dayjs.Dayjs;
+  startDate: dayjs.Dayjs;
+  dateRange: [dayjs.Dayjs, dayjs.Dayjs];
   startTime: dayjs.Dayjs;
   endTime: dayjs.Dayjs;
   parentNote: string;
@@ -64,8 +59,6 @@ export const CreateAbsentRequestModal = ({
   const { data: attendanceCodes = [] } = useAttendanceCodes({
     visibleForContacts: true,
   });
-  const [dateRange, setDateRange] = useState<[Dayjs, Dayjs] | undefined>();
-  const [dateRangeError, setDateRangeError] = useState<string | undefined>();
 
   const partyId = getNumber(user?.profiles?.[0]?.partyId);
   const { data: contactStudents, isLoading: isLoadingContactStudents } =
@@ -85,7 +78,8 @@ export const CreateAbsentRequestModal = ({
   const { control, handleSubmit, reset, watch } =
     useForm<CreateAbsentRequestFormState>({
       resolver: resolver({
-        date: [rules.date(), rules.required()],
+        startDate: [rules.date(), rules.required()],
+        dateRange: [rules.date(), rules.required()],
         startTime: [
           rules.required(),
           rules.date(t('common:errorMessages.invalidTime')),
@@ -108,38 +102,34 @@ export const CreateAbsentRequestModal = ({
   const { mutate, isLoading } = useCreateOrUpdateAbsentRequest();
   const { displayName } = usePreferredNameLayout();
 
-  useEffect(() => {
-    if (dateRange !== undefined) {
-      setDateRangeError(undefined);
-    }
-  }, [dateRange]);
-
-  const onSubmit = (data: CreateAbsentRequestFormState) => {
-    if (dateRange === undefined) {
-      setDateRangeError('This field is required');
-      return;
-    }
+  const onSubmit = ({
+    startDate,
+    dateRange,
+    startTime,
+    endTime,
+    requestType,
+    student,
+    ...data
+  }: CreateAbsentRequestFormState) => {
     let from = dayjs();
     let to = dayjs();
 
-    const date = data.date?.get('date');
-    const month = data.date?.get('month');
-    const year = data.date?.get('year');
+    switch (requestType) {
+      case ParentalAttendanceRequestType.PartialDay: {
+        const date = startDate.get('date');
+        const month = startDate.get('month');
+        const year = startDate.get('year');
 
-    switch (data.requestType) {
-      case ParentalAttendanceRequestType.PartialDay:
-        from = data.startTime
+        from = startTime
           .set('date', date)
           .set('month', month)
           .set('year', year);
-        to = data.endTime
-          .set('date', date)
-          .set('month', month)
-          .set('year', year);
+        to = endTime.set('date', date).set('month', month).set('year', year);
         break;
+      }
       case ParentalAttendanceRequestType.SingleDay:
-        from = data.date.startOf('day');
-        to = data.date.endOf('day');
+        from = startDate.startOf('day');
+        to = startDate.endOf('day');
         break;
       case ParentalAttendanceRequestType.MultiDay:
         from = dateRange[0].startOf('day');
@@ -153,10 +143,11 @@ export const CreateAbsentRequestModal = ({
       [
         {
           ...data,
+          requestType,
           from: from.format('YYYY-MM-DDTHH:mm:ss'),
           to: to.format('YYYY-MM-DDTHH:mm:ss'),
           status: ParentalAttendanceRequestStatus.Pending,
-          studentPartyId: data.student.partyId,
+          studentPartyId: student.partyId,
         },
       ],
       {
@@ -209,9 +200,8 @@ export const CreateAbsentRequestModal = ({
               <RHFDatePicker
                 label={t('common:date')}
                 controlProps={{
-                  name: 'date',
+                  name: 'startDate',
                   control,
-                  rules: { required: true },
                 }}
                 inputProps={{ sx: { flexGrow: 1 } }}
               />
@@ -221,9 +211,8 @@ export const CreateAbsentRequestModal = ({
                 <RHFDatePicker
                   label={t('common:date')}
                   controlProps={{
-                    name: 'date',
+                    name: 'startDate',
                     control,
-                    rules: { required: true },
                   }}
                   inputProps={{ sx: { flexGrow: 1 } }}
                 />
@@ -232,9 +221,6 @@ export const CreateAbsentRequestModal = ({
                   controlProps={{
                     name: 'startTime',
                     control,
-                    rules: {
-                      required: true,
-                    },
                   }}
                 />
                 <RHFTimePicker
@@ -242,33 +228,23 @@ export const CreateAbsentRequestModal = ({
                   controlProps={{
                     name: 'endTime',
                     control,
-                    rules: {
-                      required: true,
-                    },
                   }}
                 />
               </>
             )}
             {requestType === ParentalAttendanceRequestType.MultiDay && (
-              <FormControl error={!!dateRangeError}>
-                <FormLabel>{t('common:date')}</FormLabel>
-                <DateRangeSwitcher
-                  value={dateRange}
-                  onChange={(val) => setDateRange(val)}
-                  maxDateRange={(firstSelectedDate) =>
-                    firstSelectedDate.add(4, 'weeks')
-                  }
-                />
-                {!!dateRangeError && (
-                  <FormHelperText>{dateRangeError}</FormHelperText>
-                )}
-              </FormControl>
+              <RHFDateRangePicker
+                controlProps={{
+                  name: 'dateRange',
+                  control,
+                }}
+              />
             )}
             <RHFSelect
               fullWidth
               optionIdKey="id"
               options={attendanceCodes ?? []}
-              getOptionLabel={(option) => option.name || ''}
+              getOptionLabel={(option) => option.description || option.name}
               label={t('attendance:reasonForAbsence')}
               controlProps={{
                 name: 'attendanceCodeId',
