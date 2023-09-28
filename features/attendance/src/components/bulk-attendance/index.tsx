@@ -7,7 +7,7 @@ import {
   IconButton,
   Stack,
 } from '@mui/material';
-import { Person } from '@tyro/api';
+import { Attendance_SaveBulkAttendanceInput } from '@tyro/api';
 import {
   Dialog,
   DialogActions,
@@ -51,7 +51,7 @@ export type BulkAttendanceModalProps = {
 };
 
 export type CreateBulkAttendanceFormState = {
-  selectedStudentsOrGroups: SessionParty;
+  SessionParty: SessionParty[];
   attendanceCodeId: number;
   date?: dayjs.Dayjs;
   dateRange: [dayjs.Dayjs, dayjs.Dayjs];
@@ -91,10 +91,9 @@ export const BulkAttendanceModal = ({
             t('common:errorMessages.afterStartTime')
           ),
         ],
-        selectedStudentsOrGroups: [rules.required()],
+        SessionParty: [rules.required()],
         attendanceCodeId: [rules.required()],
       }),
-      mode: 'onChange',
     });
   const requestType = watch('requestType');
 
@@ -110,51 +109,37 @@ export const BulkAttendanceModal = ({
   };
 
   const onSubmit = (data: CreateBulkAttendanceFormState) => {
-    const attendanceIdArrays = (function getAttendanceIds() {
-      if (Array.isArray(data?.selectedStudentsOrGroups)) {
-        const { selectedStudentsOrGroups } = data;
-        return selectedStudentsOrGroups?.map((item: Person) => item?.partyId);
-      }
-    })();
+    const attendanceIdArrays = data.SessionParty.map(
+      (item: SessionParty) => item?.partyId
+    );
 
-    const sharedData = {
-      attendanceCodeId: data?.attendanceCodeId,
-      attendanceForPartyIds: attendanceIdArrays ?? [],
-      note: data?.note,
+    const transformedData: Attendance_SaveBulkAttendanceInput = {
+      attendanceCodeId: data.attendanceCodeId,
+      attendanceForPartyIds: attendanceIdArrays,
+      note: data.note,
     };
 
     if (data?.requestType === BulkAttendanceRequestType.SingleDay) {
-      const transformedData = {
-        ...sharedData,
-        singleDate: {
-          date: dayjs(data?.date).format('YYYY-MM-DD'),
-        },
+      transformedData.singleDate = {
+        date: dayjs(data?.date).format('YYYY-MM-DD'),
       };
-      saveBulkAttendance(transformedData);
     }
     if (data?.requestType === BulkAttendanceRequestType.PartialDay) {
-      const transformedData = {
-        ...sharedData,
-        partialDate: {
-          date: dayjs(data?.date).format('YYYY-MM-DD'),
-          leavesAt: dayjs(data?.startTime).format('HH:MM'),
-          returnsAt: dayjs(data?.endTime).format('HH:MM'),
-        },
+      transformedData.partialDate = {
+        date: dayjs(data?.date).format('YYYY-MM-DD'),
+        leavesAt: dayjs(data?.startTime).format('HH:MM'),
+        returnsAt: dayjs(data?.endTime).format('HH:MM'),
       };
-      saveBulkAttendance(transformedData);
     }
     if (data?.requestType === BulkAttendanceRequestType.MultiDay) {
-      const transformedData = {
-        ...sharedData,
-        multiDate: {
-          startDate: dayjs(data?.dateRange[0]).format('YYYY-MM-DD'),
-          endDate: dayjs(data?.dateRange[1]).format('YYYY-MM-DD'),
-        },
+      transformedData.multiDate = {
+        startDate: dayjs(data?.dateRange[0]).format('YYYY-MM-DD'),
+        endDate: dayjs(data?.dateRange[1]).format('YYYY-MM-DD'),
       };
-      saveBulkAttendance(transformedData);
     }
-    reset();
-    onClose();
+    saveBulkAttendance(transformedData, {
+      onSuccess: handleClose,
+    });
   };
 
   useEffect(() => {
@@ -208,16 +193,12 @@ export const BulkAttendanceModal = ({
           </Collapse>
 
           <Stack direction="column" sx={{ mt: 1 }} gap={2}>
-            <RHFAutocomplete<
-              CreateBulkAttendanceFormState,
-              CreateBulkAttendanceFormState['selectedStudentsOrGroups'],
-              true
-            >
+            <RHFAutocomplete<CreateBulkAttendanceFormState, SessionParty, true>
               fullWidth
               disableCloseOnSelect
               label={t('common:name')}
               controlProps={{
-                name: `selectedStudentsOrGroups`,
+                name: `SessionParty`,
                 control,
               }}
               {...bulkAttendanceAutocompleteProps}
@@ -317,7 +298,7 @@ export const BulkAttendanceModal = ({
               variant="contained"
               loading={isSubmitting}
             >
-              Submit
+              {t('common:actions.save')}
             </LoadingButton>
           </DialogActions>
         </form>
