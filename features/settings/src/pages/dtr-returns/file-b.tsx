@@ -76,6 +76,7 @@ const getColumnFormBDefs = (
     cellEditor: TableSwitch,
     editable: true,
     cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
+    filter: true,
     valueFormatter: ({ data }) =>
       data?.staffIre?.includeDtrReturns
         ? translate('common:yes')
@@ -89,6 +90,7 @@ const getColumnFormBDefs = (
   {
     field: 'person',
     headerName: translate('common:name'),
+    valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFormB>) =>
       data && (
         <RouterLink to={`/people/staff/${data.partyId}`}>
