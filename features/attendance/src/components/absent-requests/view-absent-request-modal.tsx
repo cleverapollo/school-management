@@ -81,7 +81,9 @@ const getAbsentRequestDataWithLabels = (
     {
       label: t('attendance:reasonForAbsence'),
       value: attendanceCode?.id,
-      valueRenderer: attendanceCode?.name,
+      valueRenderer: [attendanceCode?.name, attendanceCode?.description]
+        .filter(Boolean)
+        .join(' - '),
       valueEditor: (
         <RHFSelect
           fullWidth
