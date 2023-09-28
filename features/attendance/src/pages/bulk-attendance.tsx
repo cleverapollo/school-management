@@ -35,8 +35,8 @@ const getColumns = (
   displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseBulkAttendance>['columnDefs'] => [
   {
+    colId: 'name',
     headerName: t('common:name'),
-    field: 'id',
     valueGetter: ({ data }) =>
       data?.parties?.map((party) => {
         if (party?.__typename === 'Student') {
@@ -48,42 +48,51 @@ const getColumns = (
         if (party?.__typename === 'GeneralGroup') {
           return party?.name;
         }
-        return null;
+        return '-';
       }),
   },
   {
     field: 'attendanceCode.name',
     headerName: t('common:attendance'),
-    valueGetter: ({ data }) => data?.attendanceCode?.name ?? '-',
+    valueGetter: ({ data }) => data?.attendanceCode?.name || '-',
   },
   {
     field: 'startDate',
     headerName: t('common:date'),
     valueGetter: ({ data }) => {
-      const startDate = dayjs(data?.startDate).format('DD/MM/YYYY');
-      const endDate = data?.endDate
-        ? dayjs(data?.endDate).format('DD/MM/YYYY')
-        : null;
-      const fullDayOrMultiDay = endDate
-        ? `${startDate} - ${endDate}`
-        : startDate;
-      const partialDay = `${dayjs(data?.startDate).format('DD/MM/YYYY')} from ${
-        data?.leavesAt ?? '-'
-      } to ${data?.returnsAt ?? '-'}`;
-      const date = data?.leavesAt ? partialDay : fullDayOrMultiDay;
-      return date;
+      const { startDate, endDate, leavesAt, returnsAt } = data || {};
+
+      const startDateFormat = dayjs(startDate).format('L');
+      const endDateFormat = endDate ? dayjs(endDate).format('L') : null;
+
+      const fullDayOrMultiDay = endDateFormat
+        ? t('attendance:dayTypeOptionsFormatted.MULTI_DAY', {
+            startDate: startDateFormat,
+            endDate: endDateFormat,
+          })
+        : t('attendance:dayTypeOptionsFormatted.SINGLE_DAY', {
+            startDate: startDateFormat,
+          });
+
+      const partialDay = t('attendance:dayTypeOptionsFormatted.PARTIAL_DAY', {
+        startDate: startDateFormat,
+        enDate: endDateFormat,
+        startTime: leavesAt,
+        endTime: returnsAt,
+      });
+
+      return leavesAt ? partialDay : fullDayOrMultiDay;
     },
   },
   {
     field: 'note',
     headerName: t('common:note'),
-    valueGetter: ({ data }) => data?.note ?? '-',
+    valueGetter: ({ data }) => data?.note || '-',
   },
   {
     field: 'createdOn',
     headerName: t('attendance:createdOn'),
-    valueFormatter: ({ data }) =>
-      dayjs(data?.createdOn).format('DD/MM/YYYY') ?? '-',
+    valueFormatter: ({ data }) => dayjs(data?.createdOn).format('L') || '-',
   },
   {
     field: 'createdBy',

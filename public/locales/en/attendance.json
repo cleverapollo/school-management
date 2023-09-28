@@ -111,7 +111,7 @@
     "DENIED": "Declined",
     "PENDING": "Pending"
   },
-  "absenceRequestFormatByType": {
+  "dayTypeOptionsFormatted": {
     "MULTI_DAY": "{{startDate}} - {{endDate}}",
     "SINGLE_DAY": "{{startDate}}",
     "PARTIAL_DAY": "{{startDate}} from {{startTime}} to {{endTime}}"

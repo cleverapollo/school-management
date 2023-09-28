@@ -7,7 +7,7 @@ import {
   IconButton,
   Stack,
 } from '@mui/material';
-import { Person, Search } from '@tyro/api';
+import { Person } from '@tyro/api';
 import {
   Dialog,
   DialogActions,
@@ -15,24 +15,26 @@ import {
   DialogTitle,
   RHFAutocomplete,
   RHFDatePicker,
+  RHFDateRangePicker,
   RHFRadioGroup,
   RHFSelect,
   RHFTextField,
   RHFTimePicker,
-  useDebouncedValue,
   useFormValidator,
 } from '@tyro/core';
 import { useForm } from 'react-hook-form';
 import { CloseIcon, LightBulbIcon } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
 import { LoadingButton } from '@mui/lab';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { useSearchAutocompleteProps } from './use-search-autocomplete-props';
 import { ReturnTypeFromUseBulkAttendance } from '../../api/bulk-attendance/bulk-attendance';
 import { useCreateBulkAttendance } from '../../api/bulk-attendance/save-bulk-attendance';
 import { useAttendanceCodes } from '../../api/attendance-codes';
-import { useSessionPartySearch } from '../../api/session-party-search';
+import {
+  useSessionPartySearchProps,
+  SessionParty,
+} from '../../hooks/use-session-party-search-props';
 
 dayjs.extend(LocalizedFormat);
 
@@ -42,11 +44,6 @@ enum BulkAttendanceRequestType {
   SingleDay = 'SINGLE_DAY',
 }
 
-export type AutocompleteSearchType = Pick<
-  Search,
-  'avatarUrl' | 'partyId' | 'text' | 'type'
->;
-
 export type BulkAttendanceModalProps = {
   open: boolean;
   initialModalState: Partial<ReturnTypeFromUseBulkAttendance> | null;
@@ -54,10 +51,10 @@ export type BulkAttendanceModalProps = {
 };
 
 export type CreateBulkAttendanceFormState = {
-  selectedStudentsOrGroups: AutocompleteSearchType;
+  selectedStudentsOrGroups: SessionParty;
   attendanceCodeId: number;
   date?: dayjs.Dayjs;
-  dates?: Array<Dayjs>;
+  dateRange: [dayjs.Dayjs, dayjs.Dayjs];
   startTime?: dayjs.Dayjs;
   endTime?: dayjs.Dayjs;
   note?: string;
@@ -81,6 +78,7 @@ export const BulkAttendanceModal = ({
     useForm<CreateBulkAttendanceFormState>({
       resolver: resolver({
         date: [rules.date(), rules.required()],
+        dateRange: [rules.date(), rules.required()],
         startTime: [
           rules.required(),
           rules.date(t('common:errorMessages.invalidTime')),
@@ -100,21 +98,11 @@ export const BulkAttendanceModal = ({
     });
   const requestType = watch('requestType');
 
-  const {
-    value: searchValue,
-    setValue: setSearchValue,
-    debouncedValue: debouncedSearchValue,
-  } = useDebouncedValue({
-    defaultValue: '',
-  });
-  const { data: options, isLoading } =
-    useSessionPartySearch(debouncedSearchValue);
   const { mutateAsync: saveBulkAttendance, isLoading: isSubmitting } =
     useCreateBulkAttendance();
   const { data: attendanceCodes = [] } = useAttendanceCodes({});
 
-  const bulkAttendanceAutocompleteProps =
-    useSearchAutocompleteProps<AutocompleteSearchType>();
+  const bulkAttendanceAutocompleteProps = useSessionPartySearchProps();
 
   const handleClose = () => {
     onClose();
@@ -151,6 +139,16 @@ export const BulkAttendanceModal = ({
           date: dayjs(data?.date).format('YYYY-MM-DD'),
           leavesAt: dayjs(data?.startTime).format('HH:MM'),
           returnsAt: dayjs(data?.endTime).format('HH:MM'),
+        },
+      };
+      saveBulkAttendance(transformedData);
+    }
+    if (data?.requestType === BulkAttendanceRequestType.MultiDay) {
+      const transformedData = {
+        ...sharedData,
+        multiDate: {
+          startDate: dayjs(data?.dateRange[0]).format('YYYY-MM-DD'),
+          endDate: dayjs(data?.dateRange[1]).format('YYYY-MM-DD'),
         },
       };
       saveBulkAttendance(transformedData);
@@ -212,22 +210,16 @@ export const BulkAttendanceModal = ({
           <Stack direction="column" sx={{ mt: 1 }} gap={2}>
             <RHFAutocomplete<
               CreateBulkAttendanceFormState,
-              CreateBulkAttendanceFormState['selectedStudentsOrGroups']
+              CreateBulkAttendanceFormState['selectedStudentsOrGroups'],
+              true
             >
               fullWidth
-              multiple
               disableCloseOnSelect
-              options={options ?? []}
               label={t('common:name')}
               controlProps={{
                 name: `selectedStudentsOrGroups`,
                 control,
               }}
-              open={searchValue.length > 0}
-              loading={isLoading}
-              onInputChange={(_, newInputValue) =>
-                setSearchValue(newInputValue)
-              }
               {...bulkAttendanceAutocompleteProps}
               sx={{ mt: 1 }}
             />
@@ -264,7 +256,6 @@ export const BulkAttendanceModal = ({
                 controlProps={{
                   name: 'date',
                   control,
-                  rules: { required: true },
                 }}
                 inputProps={{ sx: { flexGrow: 1 } }}
               />
@@ -276,7 +267,6 @@ export const BulkAttendanceModal = ({
                   controlProps={{
                     name: 'date',
                     control,
-                    rules: { required: true },
                   }}
                   inputProps={{ sx: { flexGrow: 1 } }}
                 />
@@ -285,9 +275,6 @@ export const BulkAttendanceModal = ({
                   controlProps={{
                     name: 'startTime',
                     control,
-                    rules: {
-                      required: true,
-                    },
                   }}
                 />
                 <RHFTimePicker
@@ -295,17 +282,18 @@ export const BulkAttendanceModal = ({
                   controlProps={{
                     name: 'endTime',
                     control,
-                    rules: {
-                      required: true,
-                    },
                   }}
                 />
               </>
             )}
-            {/* TODO - Multi day will go here once it's built */}
-            {/* {requestType === BulkAttendanceRequestType.MultiDay && (
-            
-            )} */}
+            {requestType === BulkAttendanceRequestType.MultiDay && (
+              <RHFDateRangePicker
+                controlProps={{
+                  name: 'dateRange',
+                  control,
+                }}
+              />
+            )}
             <RHFTextField
               label={t('attendance:note')}
               controlProps={{
