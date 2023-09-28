@@ -302,9 +302,10 @@ export const BulkAttendanceModal = ({
                 />
               </>
             )}
-            {requestType === BulkAttendanceRequestType.MultiDay && (
-              <div>Switcher will go here.</div>
-            )}
+            {/* TODO - Multi day will go here once it's built */}
+            {/* {requestType === BulkAttendanceRequestType.MultiDay && (
+            
+            )} */}
             <RHFTextField
               label={t('attendance:note')}
               controlProps={{
