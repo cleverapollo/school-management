@@ -25,9 +25,21 @@ export const validations = {
     return value;
   },
   date: (
-    date: Date | dayjs.Dayjs,
+    date: Date | dayjs.Dayjs | dayjs.Dayjs[],
     errorMessage?: string
-  ): Date | dayjs.Dayjs | ValidationError => {
+  ): Date | dayjs.Dayjs | dayjs.Dayjs[] | ValidationError => {
+    if (Array.isArray(date)) {
+      const hasInvalidDate = date.some(
+        (currentDate) => !dayjs(currentDate).isValid()
+      );
+
+      if (hasInvalidDate) {
+        throw new ValidationError('date', errorMessage);
+      }
+
+      return date;
+    }
+
     if (date && !dayjs(date).isValid()) {
       throw new ValidationError('date', errorMessage);
     }
