@@ -7,7 +7,11 @@ import {
 } from '@tyro/core';
 import { GearIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
-import { getCoreAcademicNamespace, AccessUserType } from '@tyro/api';
+import {
+  getCoreAcademicNamespace,
+  AccessUserType,
+  getAcademicNamespace,
+} from '@tyro/api';
 import { AttendanceCodes, getAttendanceCodes } from '@tyro/attendance';
 import {
   getContactsForSelect,
@@ -19,6 +23,8 @@ import {
 import { getStaffPosts } from '@tyro/people/src/api/staff/staff-posts';
 import { getEmploymentCapacities } from '@tyro/people/src/api/staff/employment-capacities';
 import { AbsenceTypes, getStaffWorkAbsenceTypes } from '@tyro/substitution';
+import dayjs from 'dayjs';
+import { getCalendarDayBellTimes } from '@tyro/calendar';
 import { getCoreRooms } from './api/rooms';
 import { getCatalogueSubjects } from './api/subjects';
 import { getPpodCredentialsStatus } from './api/ppod/ppod-credentials-status';
@@ -103,6 +109,16 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'school-calendar',
             hasAccess: (permissions) => permissions.isStaffUser,
+            loader: async () => {
+              const { activeAcademicNamespace } = await getAcademicNamespace();
+              const startDate = dayjs(activeAcademicNamespace?.startDate);
+              const endDate = dayjs(activeAcademicNamespace?.endDate);
+
+              return getCalendarDayBellTimes({
+                fromDate: startDate.format('YYYY-MM-DD'),
+                toDate: endDate.format('YYYY-MM-DD'),
+              });
+            },
             element: <SchoolCalendarOverview />,
           },
           {

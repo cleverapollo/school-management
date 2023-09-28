@@ -20,7 +20,7 @@ import { VerticalDotsIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { useCalendarDayBellTimes } from '@tyro/calendar';
-import {SchoolCalendar} from "./calendar";
+import { SchoolCalendar } from './calendar';
 
 dayjs.extend(LocalizedFormat);
 
@@ -62,7 +62,9 @@ export const CalendarOverview = () => {
     event: React.MouseEvent<HTMLElement>,
     newType: DayType | 'All'
   ) => {
-    setDayType(newType);
+    if (newType !== null) {
+      setDayType(newType);
+    }
   };
 
   return (
@@ -147,6 +149,7 @@ export const CalendarOverview = () => {
           >
             <SchoolCalendar
               bellTimes={bellTimes}
+              dayType={dayType}
               activeAcademicNamespace={activeAcademicNamespace}
             />
           </Box>

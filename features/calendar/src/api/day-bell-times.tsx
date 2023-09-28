@@ -13,6 +13,7 @@ const calendarDayBellTimes = graphql(/* GraphQL */ `
     calendar_calendarDayBellTimes(filter: $filter) {
       date
       bellTimeIds
+      dayType
       bellTimes {
         id
         time

@@ -1,85 +1,64 @@
-import { useState } from 'react';
 import { Box, Stack } from '@mui/material';
 import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs, { Dayjs } from 'dayjs';
 import isToday from 'dayjs/plugin/isToday';
-import {
-  AcademicNamespace,
-  AttendanceCodeType,
-  CalendarDayBellTime,
-  usePermissions,
-} from '@tyro/api';
+import { AcademicNamespace, DayType } from '@tyro/api';
+import { ReturnTypeFromCalendarDayBellTimes } from '@tyro/calendar';
 
 dayjs.extend(isToday);
 
 type MonthCalendarProps = {
   month: string;
-  bellTimes: CalendarDayBellTime[];
+  bellTimes: ReturnTypeFromCalendarDayBellTimes;
 };
 
 type CustomDayProps = {
-  bellTimes: CalendarDayBellTime[];
+  bellTimes: ReturnTypeFromCalendarDayBellTimes;
 } & PickersDayProps<Dayjs>;
 
-const attendanceColours: Record<AttendanceCodeType, string> = {
-  [AttendanceCodeType.Present]: 'emerald',
-  [AttendanceCodeType.ExplainedAbsence]: 'pink',
-  [AttendanceCodeType.UnexplainedAbsence]: 'red',
-  [AttendanceCodeType.Late]: 'sky',
-  [AttendanceCodeType.NotTaken]: 'grey',
+const getCalendarColors = (dayType: DayType | undefined) => {
+  switch (dayType) {
+    case DayType.SchoolDay:
+      return {
+        backgroundColor: 'blue.500',
+        color: 'white',
+      };
+    case DayType.StaffDay:
+      return {
+        backgroundColor: 'orange.500',
+        color: 'white',
+      };
+    case DayType.Holiday:
+      return {
+        backgroundColor: 'purple.400',
+        color: 'white',
+      };
+    default:
+      return {
+        backgroundColor: 'transparent',
+        color: 'grey.300',
+      };
+  }
 };
-
-const weekends = [0, 6];
-
-// const getCalendarColors = (
-//   formattedDay: keyof typeof attendanceColours,
-//   dayOfWeek: number,
-// ) => {
-//   if (weekends.includes(dayOfWeek)) {
-//     return {
-//       backgroundColor: 'white',
-//       color: 'grey.300',
-//     };
-//   }
-//
-//   if (currentTabValue === 'ALL' || currentTabValue === formattedDay) {
-//     const keyOfAttendanceColours = attendanceColours[formattedDay];
-//
-//     return {
-//       backgroundColor: `${keyOfAttendanceColours}.100`,
-//       color: `${keyOfAttendanceColours}.500`,
-//     };
-//   }
-//
-//   return {
-//     backgroundColor: 'transparent',
-//     color: 'grey.300',
-//   };
-// };
 
 function CustomDay(props: CustomDayProps) {
   const { day, onDaySelect, bellTimes, ...other } = props;
 
   const dayToCheck = dayjs(day).format('YYYY-MM-DD');
-  const dayOfWeek = dayjs(dayToCheck).day();
   const dayBellTime = bellTimes.find(
     (bellTime) => bellTime.date === dayToCheck
   );
 
-  // const { backgroundColor, color } = getCalendarColors(
-  //   dayBellTime?.status ?? AttendanceCodeType.NotTaken,
-  //   dayOfWeek,
-  //   currentTabValue
-  // );
+  const { backgroundColor, color } = getCalendarColors(dayBellTime?.dayType);
 
   return (
     <PickersDay
       day={day}
       sx={{
-        borderRadius: '13px',
-        // backgroundColor,
-        // color,
+        borderRadius: '50%',
+        backgroundColor,
+        color,
       }}
       onDaySelect={() => {
         dayjs(day).format('YYYY-MM-DD');
@@ -154,31 +133,26 @@ function MonthCalendar({ month, bellTimes }: MonthCalendarProps) {
 }
 
 type SchoolCalendarProps = {
-  bellTimes: CalendarDayBellTime[];
+  bellTimes: ReturnTypeFromCalendarDayBellTimes;
   activeAcademicNamespace?: AcademicNamespace;
+  dayType: DayType | 'All';
 };
 
 export const SchoolCalendar = ({
   bellTimes,
   activeAcademicNamespace,
+  dayType,
 }: SchoolCalendarProps) => {
-  const { isStaffUserHasAllPermissions } = usePermissions();
-  const hasPermissionReadAndWriteAttendanceStudentCalendarView =
-    isStaffUserHasAllPermissions([
-      'ps:1:attendance:read_session_attendance_student_calendar_view',
-      'ps:1:attendance:write_session_attendance_student_calendar_view',
-    ]);
-
-  const [sessionAttendanceToEdit, setSessionAttendanceToEdit] = useState<
-    string | null
-  >(null);
-
   const startDate = dayjs(activeAcademicNamespace?.startDate);
   const endDate = dayjs(activeAcademicNamespace?.endDate);
   const months = [];
 
   const diffInMonths = endDate.diff(startDate, 'month');
   const totalMonths = diffInMonths + 1;
+  const filteredBellTimes =
+    dayType === 'All'
+      ? bellTimes
+      : bellTimes.filter((bellTime) => bellTime.dayType === dayType);
 
   for (let i = 0; i <= totalMonths; i += 1) {
     months.push(startDate.add(i, 'month').format('YYYY-MM-DD'));
@@ -192,7 +166,11 @@ export const SchoolCalendar = ({
       gap={2}
     >
       {months.map((month) => (
-        <MonthCalendar key={month} month={month} bellTimes={bellTimes} />
+        <MonthCalendar
+          key={month}
+          month={month}
+          bellTimes={filteredBellTimes}
+        />
       ))}
     </Stack>
   );
