@@ -129,7 +129,7 @@
   "editNote": "Edit note",
   "requestType": "Request Type",
   "feedbackFromSchool": "Feedback from school",
-  "absenceRequestType": {
+  "dayTypeOptions": {
     "MULTI_DAY": "Multi day",
     "SINGLE_DAY": "Full day",
     "PARTIAL_DAY": "Partial day"

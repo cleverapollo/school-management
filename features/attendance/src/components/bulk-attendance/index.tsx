@@ -7,7 +7,7 @@ import {
   IconButton,
   Stack,
 } from '@mui/material';
-import { Person, Search, SearchType } from '@tyro/api';
+import { Person, Search } from '@tyro/api';
 import {
   Dialog,
   DialogActions,
@@ -36,18 +36,16 @@ import { useSessionPartySearch } from '../../api/session-party-search';
 
 dayjs.extend(LocalizedFormat);
 
-export enum BulkAttendanceRequestType {
+enum BulkAttendanceRequestType {
   MultiDay = 'MULTI_DAY',
   PartialDay = 'PARTIAL_DAY',
   SingleDay = 'SINGLE_DAY',
 }
-// Try swap this for Search from api
-export type CustomSearch = {
-  avatarUrl?: string | null;
-  partyId: number;
-  text: string;
-  type: SearchType;
-};
+
+export type AutocompleteSearchType = Pick<
+  Search,
+  'avatarUrl' | 'partyId' | 'text' | 'type'
+>;
 
 export type BulkAttendanceModalProps = {
   open: boolean;
@@ -56,7 +54,7 @@ export type BulkAttendanceModalProps = {
 };
 
 export type CreateBulkAttendanceFormState = {
-  selectedGroups: CustomSearch;
+  selectedStudentsOrGroups: AutocompleteSearchType;
   attendanceCodeId: number;
   date?: dayjs.Dayjs;
   dates?: Array<Dayjs>;
@@ -95,21 +93,12 @@ export const BulkAttendanceModal = ({
             t('common:errorMessages.afterStartTime')
           ),
         ],
-        selectedGroups: [rules.required()],
+        selectedStudentsOrGroups: [rules.required()],
+        attendanceCodeId: [rules.required()],
       }),
       mode: 'onChange',
     });
-
-  const handleClose = () => {
-    onClose();
-    reset();
-  };
-
-  const { mutateAsync: saveBulkAttendance, isLoading: isSubmitting } =
-    useCreateBulkAttendance();
-  const { data: attendanceCodes = [] } = useAttendanceCodes({
-    visibleForTeachers: true,
-  });
+  const requestType = watch('requestType');
 
   const {
     value: searchValue,
@@ -118,23 +107,27 @@ export const BulkAttendanceModal = ({
   } = useDebouncedValue({
     defaultValue: '',
   });
-
   const { data: options, isLoading } =
     useSessionPartySearch(debouncedSearchValue);
+  const { mutateAsync: saveBulkAttendance, isLoading: isSubmitting } =
+    useCreateBulkAttendance();
+  const { data: attendanceCodes = [] } = useAttendanceCodes({});
 
   const bulkAttendanceAutocompleteProps =
-    useSearchAutocompleteProps<CustomSearch>();
+    useSearchAutocompleteProps<AutocompleteSearchType>();
 
-  const requestType = watch('requestType');
+  const handleClose = () => {
+    onClose();
+    reset();
+  };
 
   const onSubmit = (data: CreateBulkAttendanceFormState) => {
-    function getAttendanceIds() {
-      if (Array.isArray(data?.selectedGroups)) {
-        const { selectedGroups } = data;
-        return selectedGroups?.map((item: Person) => item?.partyId);
+    const attendanceIdArrays = (function getAttendanceIds() {
+      if (Array.isArray(data?.selectedStudentsOrGroups)) {
+        const { selectedStudentsOrGroups } = data;
+        return selectedStudentsOrGroups?.map((item: Person) => item?.partyId);
       }
-    }
-    const attendanceIdArrays = getAttendanceIds();
+    })();
 
     const sharedData = {
       attendanceCodeId: data?.attendanceCodeId,
@@ -219,7 +212,7 @@ export const BulkAttendanceModal = ({
           <Stack direction="column" sx={{ mt: 1 }} gap={2}>
             <RHFAutocomplete<
               CreateBulkAttendanceFormState,
-              CreateBulkAttendanceFormState['selectedGroups']
+              CreateBulkAttendanceFormState['selectedStudentsOrGroups']
             >
               fullWidth
               multiple
@@ -227,7 +220,7 @@ export const BulkAttendanceModal = ({
               options={options ?? []}
               label={t('common:name')}
               controlProps={{
-                name: `selectedGroups`,
+                name: `selectedStudentsOrGroups`,
                 control,
               }}
               open={searchValue.length > 0}
@@ -258,7 +251,7 @@ export const BulkAttendanceModal = ({
                 BulkAttendanceRequestType.MultiDay,
               ].map((option) => ({
                 value: option,
-                label: t(`attendance:absenceRequestType.${option}`),
+                label: t(`attendance:dayTypeOptions.${option}`),
               }))}
               controlProps={{
                 name: 'requestType',

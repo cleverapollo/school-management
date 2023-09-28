@@ -174,7 +174,7 @@ export const CreateAbsentRequestModal = ({
                 ParentalAttendanceRequestType.PartialDay,
               ].map((option) => ({
                 value: option,
-                label: t(`attendance:absenceRequestType.${option}`),
+                label: t(`attendance:dayTypeOptions.${option}`),
               }))}
               controlProps={{
                 name: 'requestType',
@@ -227,7 +227,7 @@ export const CreateAbsentRequestModal = ({
             )}
             <RHFSelect
               fullWidth
-              optionIdKey={'id'}
+              optionIdKey="id"
               options={attendanceCodes ?? []}
               getOptionLabel={(option) => option.name || ''}
               label={t('attendance:reasonForAbsence')}

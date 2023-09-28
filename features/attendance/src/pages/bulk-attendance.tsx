@@ -48,6 +48,7 @@ const getColumns = (
         if (party?.__typename === 'GeneralGroup') {
           return party?.name;
         }
+        return null;
       }),
   },
   {
@@ -60,7 +61,9 @@ const getColumns = (
     headerName: t('common:date'),
     valueGetter: ({ data }) => {
       const startDate = dayjs(data?.startDate).format('DD/MM/YYYY');
-      const endDate = dayjs(data?.endDate).format('DD/MM/YYYY');
+      const endDate = data?.endDate
+        ? dayjs(data?.endDate).format('DD/MM/YYYY')
+        : null;
       const fullDayOrMultiDay = endDate
         ? `${startDate} - ${endDate}`
         : startDate;

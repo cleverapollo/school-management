@@ -1,8 +1,10 @@
 import { AutocompleteProps } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { CustomSearch } from './index';
+import { AutocompleteSearchType } from './index';
 
-export const useSearchAutocompleteProps = <T extends CustomSearch>(): Pick<
+export const useSearchAutocompleteProps = <
+  T extends AutocompleteSearchType
+>(): Pick<
   AutocompleteProps<T>,
   | 'clearOnBlur'
   | 'optionIdKey'
