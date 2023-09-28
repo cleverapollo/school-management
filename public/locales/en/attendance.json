@@ -130,7 +130,7 @@
   "requestType": "Request Type",
   "feedbackFromSchool": "Feedback from school",
   "dayTypeOptions": {
-    "MULTI_DAY": "Multi day",
+    "MULTI_DAY": "Multiple days",
     "SINGLE_DAY": "Full day",
     "PARTIAL_DAY": "Partial day"
   },
