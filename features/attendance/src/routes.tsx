@@ -52,6 +52,10 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'bulk-attendance',
             title: t('navigation:general.attendance.bulkAttendance'),
             element: <BulkAttendance />,
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission(
+                'ps:1:attendance:write_session_attendance'
+              ),
           },
         ],
       },
