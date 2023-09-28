@@ -6,6 +6,7 @@ const SessionAttendanceList = lazyWithRetry(
   () => import('./pages/session-attendance-list')
 );
 const AbsentRequests = lazyWithRetry(() => import('./pages/absent-requests'));
+const BulkAttendance = lazyWithRetry(() => import('./pages/bulk-attendance'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -45,6 +46,16 @@ export const getRoutes: NavObjectFunction = (t) => [
                 'ps:1:staff_work_management:absences_read'
               ) || isContact,
             element: <AbsentRequests />,
+          },
+          {
+            type: NavObjectType.MenuLink,
+            path: 'bulk-attendance',
+            title: t('navigation:general.attendance.bulkAttendance'),
+            element: <BulkAttendance />,
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission(
+                'ps:1:attendance:write_session_attendance'
+              ),
           },
         ],
       },

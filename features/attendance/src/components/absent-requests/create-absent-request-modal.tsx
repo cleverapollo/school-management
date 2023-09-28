@@ -189,7 +189,7 @@ export const CreateAbsentRequestModal = ({
                 ParentalAttendanceRequestType.MultiDay,
               ].map((option) => ({
                 value: option,
-                label: t(`attendance:absenceRequestType.${option}`),
+                label: t(`attendance:dayTypeOptions.${option}`),
               }))}
               controlProps={{
                 name: 'requestType',

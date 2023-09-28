@@ -11,7 +11,8 @@
       "codes": "Attendance codes",
       "session": "Session",
       "absentRequests": "Absent requests",
-      "unexplainedAbsences": "Unexplained Absences"
+      "unexplainedAbsences": "Unexplained Absences",
+      "bulkAttendance": "Bulk attendance"
     },
     "absence": {
       "title": "Absence",

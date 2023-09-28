@@ -68,7 +68,7 @@ const getAbsentRequestDataWithLabels = (
     {
       label: t('attendance:dateOfAbsence'),
       value: t(
-        `attendance:absenceRequestFormatByType.${requestType}`,
+        `attendance:dayTypeOptionsFormatted.${requestType}`,
         formatDateOfAbsence(data)
       ),
     },

@@ -1,4 +1,5 @@
 import {
+  Attendance_BulkAttendanceActionFilter,
   AttendanceCodeFilter,
   CalendarAttendanceFilter,
   CalendarDayBellTimeFilter,
@@ -40,4 +41,8 @@ export const attendanceKeys = {
     [...attendanceKeys.all, 'tableSessionAttendance', filter] as const,
   calendarBellTimes: (filter: CalendarDayBellTimeFilter) =>
     [...attendanceKeys.all, 'calendarBellTimes', filter] as const,
+  bulkAttendance: (filter: Attendance_BulkAttendanceActionFilter) =>
+    [...attendanceKeys.all, 'bulkAttendance', filter] as const,
+  bulkAttendanceSearch: (query: string) =>
+    [...attendanceKeys.all, 'bulkAttendanceSearch', query] as const,
 };
