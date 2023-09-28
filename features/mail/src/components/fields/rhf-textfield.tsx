@@ -12,8 +12,8 @@ export const EditorRHFTextfield = <TField extends FieldValues>({
 }: RHFTextFieldProps<TField>) => (
   <RHFTextField
     label={label}
+    variant="standard"
     textFieldProps={{
-      variant: 'standard',
       InputProps: {
         disableUnderline: true,
       },

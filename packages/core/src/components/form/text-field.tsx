@@ -23,7 +23,8 @@ export const RHFTextField = <TField extends FieldValues>({
     fieldState: { error },
   } = useController(controlProps);
 
-  const { spacing, palette } = useTheme();
+  const theme = useTheme();
+  const { spacing, palette } = theme;
 
   const isWhiteFilledVariant = variant === 'white-filled';
 
@@ -37,7 +38,9 @@ export const RHFTextField = <TField extends FieldValues>({
       }}
       variant={isWhiteFilledVariant ? 'filled' : variant}
       sx={{
-        ...textFieldProps?.sx,
+        ...(typeof textFieldProps?.sx === 'function'
+          ? textFieldProps.sx(theme)
+          : textFieldProps?.sx),
         ...(isWhiteFilledVariant && {
           '& .MuiInputBase-root, & .MuiInputBase-root.Mui-focused': {
             backgroundColor: palette.background.default,
