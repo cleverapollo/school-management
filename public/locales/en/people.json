@@ -149,8 +149,10 @@
   "createNote": "Create note",
   "editNote": "Edit note",
   "deleteNote": "Delete note",
+  "deleteBehaviour": "Delete behaviour",
   "addNote": "Add note",
   "areYouSureYouWantToDeleteNote": "Are you sure you want to delete this note?",
+  "areYouSureYouWantToDeleteBehaviour": "Are you sure you want to delete this behaviour?",
   "areYouSureYouWantToDeleteNonClassContact": "Are you sure you want to delete this non-class contact?",
   "pageTitle": {
     "contacts": "List of contacts",

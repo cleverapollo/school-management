@@ -7,12 +7,14 @@ import {
   Table,
   getNumber,
   usePreferredNameLayout,
+  ActionMenu,
+  ConfirmDialog,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { AddIcon } from '@tyro/icons';
+import { AddIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import {
   ReturnTypeFromUseBehaviours,
@@ -22,12 +24,14 @@ import {
   CreateBehaviourModal,
   CreateBehaviourModalProps,
 } from '../../../components/behaviour/create-behaviour-modal';
+import { useDeleteBehaviour } from '../../../api/behaviour/delete-behaviour';
 
 dayjs.extend(LocalizedFormat);
 
 const getStudentBehaviourColumns = (
   t: TFunction<('common' | 'people')[]>,
-  displayName: ReturnTypeDisplayName
+  displayName: ReturnTypeDisplayName,
+  onDelete: Dispatch<SetStateAction<ReturnTypeFromUseBehaviours['id']>>
 ): GridOptions<ReturnTypeFromUseBehaviours>['columnDefs'] => [
   {
     field: 'incidentDate',
@@ -43,7 +47,7 @@ const getStudentBehaviourColumns = (
     headerName: t('common:subjects'),
     autoHeight: true,
     wrapText: true,
-    width: 300,
+    width: 200,
     valueGetter: ({ data }) =>
       data?.associatedGroups?.flatMap((group) => {
         if (group?.__typename === 'SubjectGroup') {
@@ -55,16 +59,16 @@ const getStudentBehaviourColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseBehaviours>) => {
-      const subjects = data?.associatedGroups?.flatMap((group) => {
+      const subjects = (data?.associatedGroups || []).flatMap((group) => {
         if (group?.__typename === 'SubjectGroup') {
           return { partyId: group.partyId, ...group.subjects[0] };
         }
         return [];
       });
 
-      return (
+      return subjects.length > 0 ? (
         <Stack gap={1} direction="row" flexWrap="wrap">
-          {subjects?.map((subject, index) => (
+          {subjects.map((subject, index) => (
             <Chip
               size="small"
               variant="soft"
@@ -74,28 +78,35 @@ const getStudentBehaviourColumns = (
             />
           ))}
         </Stack>
+      ) : (
+        '-'
       );
     },
   },
   {
     field: 'tags',
     headerName: t('people:behaviour'),
-    suppressSizeToFit: true,
+    autoHeight: true,
+    wrapText: true,
+    width: 300,
     valueGetter: ({ data }) => data?.tags[0]?.name || '-',
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseBehaviours>) => (
-      <Stack gap={1} direction="row" flexWrap="wrap">
-        {data?.tags.map(({ id, name }) => (
-          <Chip
-            key={id}
-            label={name}
-            variant="soft"
-            color={getColorBasedOnIndex(id)}
-          />
-        ))}
-      </Stack>
-    ),
+    }: ICellRendererParams<ReturnTypeFromUseBehaviours>) =>
+      (data?.tags || []).length > 0 ? (
+        <Stack gap={1} my={1} direction="row" flexWrap="wrap">
+          {data?.tags.map(({ id, name }) => (
+            <Chip
+              key={id}
+              label={name}
+              variant="soft"
+              color={getColorBasedOnIndex(id)}
+            />
+          ))}
+        </Stack>
+      ) : (
+        '-'
+      ),
   },
   {
     field: 'note',
@@ -114,26 +125,59 @@ const getStudentBehaviourColumns = (
     field: 'createdByPerson',
     suppressSizeToFit: true,
     headerName: t('common:takenBy'),
-    valueGetter: ({ data }) =>
-      data ? displayName(data.createdByPerson) : null,
+    valueGetter: ({ data }) => displayName(data?.createdByPerson) || '-',
+  },
+  {
+    suppressColumnsToolPanel: true,
+    cellClass: 'ag-show-on-row-interaction',
+    sortable: false,
+    suppressSizeToFit: true,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseBehaviours>) =>
+      data && (
+        <ActionMenu
+          iconOnly
+          buttonIcon={<VerticalDotsIcon />}
+          menuItems={[
+            {
+              label: t('common:actions.delete'),
+              icon: <TrashIcon />,
+              onClick: () => onDelete(data.id),
+            },
+          ]}
+        />
+      ),
   },
 ];
 
 export default function StudentProfileBehaviourPage() {
-  const { id } = useParams();
-  const studentId = getNumber(id);
-  const [behaviourDetails, setBehaviourDetails] =
-    useState<CreateBehaviourModalProps['initialState']>();
   const { t } = useTranslation(['common', 'people']);
   const { isStaffUser } = usePermissions();
   const { displayName } = usePreferredNameLayout();
+
+  const { id } = useParams();
+  const studentId = getNumber(id) ?? 0;
+
   const { data: behaviours = [], isLoading: isBehavioursLoading } =
     useBehaviours(studentId);
 
+  const { mutateAsync: deleteBehaviour } = useDeleteBehaviour(studentId);
+
+  const [behaviourDetails, setBehaviourDetails] =
+    useState<CreateBehaviourModalProps['initialState']>();
+
+  const [behaviourIdToDelete, setBehaviourIdToDelete] =
+    useState<ReturnTypeFromUseBehaviours['id']>(null);
+
   const studentBehaviourColumns = useMemo(
-    () => getStudentBehaviourColumns(t, displayName),
+    () => getStudentBehaviourColumns(t, displayName, setBehaviourIdToDelete),
     [t, displayName]
   );
+
+  const onConfirmDelete = async () => {
+    await deleteBehaviour({ noteIds: [behaviourIdToDelete!] });
+  };
 
   return (
     <>
@@ -157,9 +201,19 @@ export default function StudentProfileBehaviourPage() {
       />
       {behaviourDetails && (
         <CreateBehaviourModal
-          studentId={studentId!}
+          studentId={studentId}
           onClose={() => setBehaviourDetails(null)}
           initialState={behaviourDetails}
+        />
+      )}
+      {behaviourIdToDelete && (
+        <ConfirmDialog
+          open
+          title={t('people:deleteBehaviour')}
+          description={t('people:areYouSureYouWantToDeleteBehaviour')}
+          confirmText={t('common:delete')}
+          onClose={() => setBehaviourIdToDelete(null)}
+          onConfirm={onConfirmDelete}
         />
       )}
     </>
