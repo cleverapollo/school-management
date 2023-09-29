@@ -1,5 +1,19 @@
-import { Box, Button, Chip, Stack } from '@mui/material';
-import { getColorBasedOnIndex, usePermissions } from '@tyro/api';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Chip,
+  CircularProgress,
+  Stack,
+} from '@mui/material';
+import {
+  getColorBasedOnIndex,
+  Notes_BehaviourType,
+  usePermissions,
+  useAcademicNamespace,
+} from '@tyro/api';
 import {
   GridOptions,
   ICellRendererParams,
@@ -20,11 +34,14 @@ import {
   ReturnTypeFromUseBehaviours,
   useBehaviours,
 } from '../../../api/behaviour/list';
+import { useNoteTagsBehaviour } from '../../../api/behaviour/behaviour-tags';
 import {
   CreateBehaviourModal,
   CreateBehaviourModalProps,
 } from '../../../components/behaviour/create-behaviour-modal';
 import { useDeleteBehaviour } from '../../../api/behaviour/delete-behaviour';
+import { OccurrenceTypesContainer } from '../../../components/students/behaviour-individual-view/occurrence-types-container';
+import { TabsContainer } from '../../../components/students/behaviour-individual-view/tabs';
 
 dayjs.extend(LocalizedFormat);
 
@@ -152,6 +169,11 @@ const getStudentBehaviourColumns = (
 ];
 
 export default function StudentProfileBehaviourPage() {
+  const [behaviourDetails, setBehaviourDetails] =
+    useState<CreateBehaviourModalProps['initialState']>();
+  const [behaviourType, setBehaviourType] = useState(
+    Notes_BehaviourType.Positive
+  );
   const { t } = useTranslation(['common', 'people']);
   const { isStaffUser } = usePermissions();
   const { displayName } = usePreferredNameLayout();
@@ -161,11 +183,15 @@ export default function StudentProfileBehaviourPage() {
 
   const { data: behaviours = [], isLoading: isBehavioursLoading } =
     useBehaviours(studentId);
+  const { activeAcademicNamespace } = useAcademicNamespace();
+  const academicYear = activeAcademicNamespace?.name;
+
+  const filteredBehaviours = behaviours?.filter(
+    (item) => item.tags[0].behaviourType === behaviourType
+  );
+  console.log(filteredBehaviours, 'getBehavioursBasedOnType');
 
   const { mutateAsync: deleteBehaviour } = useDeleteBehaviour(studentId);
-
-  const [behaviourDetails, setBehaviourDetails] =
-    useState<CreateBehaviourModalProps['initialState']>();
 
   const [behaviourIdToDelete, setBehaviourIdToDelete] =
     useState<ReturnTypeFromUseBehaviours['id']>(null);
@@ -178,11 +204,127 @@ export default function StudentProfileBehaviourPage() {
   const onConfirmDelete = async () => {
     await deleteBehaviour({ noteIds: [behaviourIdToDelete!] });
   };
+  const { data: behaviourTags = [] } = useNoteTagsBehaviour();
+
+  const filteredTags = behaviourTags?.filter(
+    (item) => item?.behaviourType === behaviourType
+  );
+  const filteredTagsNames = filteredTags?.map((item) => item?.name);
+  console.log(filteredTagsNames, 'filteredTagsNames');
 
   return (
-    <>
-      {isStaffUser && (
-        <Box display="flex" alignItems="center" justifyContent="flex-end">
+    <Card
+      sx={{
+        backgroundColor: '#f9fafc',
+        borderStyle: 'solid',
+        borderWidth: '1px',
+        borderColor: 'indigo.50',
+        padding: '18px',
+      }}
+    >
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingX: 3,
+          marginY: 2,
+        }}
+      >
+        <Stack direction="column">
+          <CardHeader
+            component="h3"
+            title={t('people:behaviourTitle', { year: academicYear })}
+            sx={{
+              p: 0,
+              border: 0,
+              textAlign: 'center',
+              fontWeight: 600,
+              '& .MuiTypography-root': {
+                fontWeight: 600,
+              },
+              lineHeight: '22px',
+              height: '40px',
+            }}
+          />
+          <Box>
+            <Button
+              onClick={() => setBehaviourType(Notes_BehaviourType.Positive)}
+              sx={{
+                borderRadius: 1,
+                backgroundColor:
+                  behaviourType === Notes_BehaviourType.Positive
+                    ? 'indigo.100'
+                    : ' transparent',
+                borderStyle: 'solid',
+                borderWidth: '1px',
+                borderColor:
+                  behaviourType === Notes_BehaviourType.Positive
+                    ? 'indigo.500'
+                    : 'grey.500',
+                color:
+                  behaviourType === Notes_BehaviourType.Positive
+                    ? 'indigo.500'
+                    : 'grey.500',
+                height: '30px',
+              }}
+            >
+              <Box
+                sx={{
+                  width: '9px',
+                  height: '9px',
+                  display: 'flex',
+                  borderRadius: '50%',
+                  position: 'relative',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'green',
+                  marginRight: 1,
+                }}
+              />
+              Positive
+            </Button>
+            <Button
+              onClick={() => setBehaviourType(Notes_BehaviourType.Negative)}
+              sx={{
+                borderRadius: 1,
+                backgroundColor:
+                  behaviourType === Notes_BehaviourType.Negative
+                    ? 'indigo.100'
+                    : 'grey.100',
+                borderStyle: 'solid',
+                borderWidth: '1px',
+                borderColor:
+                  behaviourType === Notes_BehaviourType.Negative
+                    ? 'indigo.500'
+                    : 'grey.500',
+                color:
+                  behaviourType === Notes_BehaviourType.Negative
+                    ? 'indigo.500'
+                    : 'grey.500',
+                height: '30px',
+                marginLeft: 2,
+              }}
+            >
+              <Box
+                sx={{
+                  width: '9px',
+                  height: '9px',
+                  display: 'flex',
+                  borderRadius: '50%',
+                  position: 'relative',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'red',
+                  marginRight: 1,
+                }}
+              />
+              Negative
+            </Button>
+          </Box>
+        </Stack>
+
+        {isStaffUser && (
           <Button
             variant="contained"
             onClick={() => setBehaviourDetails({})}
@@ -190,14 +332,23 @@ export default function StudentProfileBehaviourPage() {
           >
             {t('people:actions.createBehaviour')}
           </Button>
-        </Box>
-      )}
+        )}
+      </Stack>
 
+      <OccurrenceTypesContainer />
+
+      <TabsContainer filteredTagsNames={filteredTagsNames} />
       <Table
         isLoading={isBehavioursLoading}
-        rowData={behaviours ?? []}
+        rowData={filteredBehaviours ?? []}
         columnDefs={studentBehaviourColumns}
         getRowId={({ data }) => String(data?.id)}
+        sx={{
+          boxShadow: 'none',
+          p: 0,
+          '& .MuiStack-root': { paddingX: 0 },
+          '& .MuiFilledInput-root': { marginX: 2 },
+        }}
       />
       {behaviourDetails && (
         <CreateBehaviourModal
@@ -216,6 +367,6 @@ export default function StudentProfileBehaviourPage() {
           onConfirm={onConfirmDelete}
         />
       )}
-    </>
+    </Card>
   );
 }
