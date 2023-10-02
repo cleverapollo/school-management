@@ -137,9 +137,9 @@ export const BulkAttendanceModal = ({
         endDate: dayjs(data?.dateRange[1]).format('YYYY-MM-DD'),
       };
     }
-    // saveBulkAttendance(transformedData, {
-    //   onSuccess: handleClose,
-    // });
+    saveBulkAttendance(transformedData, {
+      onSuccess: handleClose,
+    });
   };
 
   useEffect(() => {

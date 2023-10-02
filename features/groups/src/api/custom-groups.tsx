@@ -66,7 +66,7 @@ export function useCustomGroups() {
   return useQuery({
     ...customGroupsQuery,
     select: ({ generalGroups }) =>
-      generalGroups?.filter(({ name }) => !['Duty', 'On Call'].includes(name)),
+      generalGroups?.filter(({ name }) => !['Duty', 'On Call'].includes(name)), // Filtered as are system groups that are controlled elsewhere
   });
 }
 
