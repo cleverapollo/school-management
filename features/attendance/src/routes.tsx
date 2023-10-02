@@ -43,7 +43,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:general.attendance.absentRequests'),
             hasAccess: ({ isStaffUserWithPermission, isContact }) =>
               isStaffUserWithPermission(
-                'ps:1:staff_work_management:absences_read'
+                'ps:1:attendance:read_parental_attendance_requests'
               ) || isContact,
             element: <AbsentRequests />,
           },
@@ -52,10 +52,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'bulk-attendance',
             title: t('navigation:general.attendance.bulkAttendance'),
             element: <BulkAttendance />,
-            hasAccess: ({ isStaffUserWithPermission }) =>
-              isStaffUserWithPermission(
-                'ps:1:attendance:write_session_attendance'
-              ),
+            hasAccess: ({ isTyroUser }) => isTyroUser,
           },
         ],
       },
