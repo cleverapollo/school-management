@@ -175,7 +175,9 @@
       "CONTACT": "Contacts",
       "STAFF": "Staff",
       "STUDENT": "Students",
-      "ADMIN": "Admin"
+      "ADMIN": "Admin",
+      "EXTERNAL": "External",
+      "THIRD_PARTY": "Third party"
     },
     "selectPermissions": "Select permissions",
     "permissionSet": "Permission set",

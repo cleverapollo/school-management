@@ -35,6 +35,8 @@ const filters: Record<MemberType, PermissionSetFilter> = {
   [MemberType.Student]: {
     student: true,
   },
+  [MemberType.External]: {},
+  [MemberType.ThirdParty]: {},
 };
 
 type PermissionsByFeatures = Array<{

@@ -65,7 +65,8 @@ export function getCustomGroups() {
 export function useCustomGroups() {
   return useQuery({
     ...customGroupsQuery,
-    select: ({ generalGroups }) => generalGroups,
+    select: ({ generalGroups }) =>
+      generalGroups?.filter(({ name }) => !['Duty', 'On Call'].includes(name)),
   });
 }
 

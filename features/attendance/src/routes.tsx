@@ -1,5 +1,6 @@
 import { lazyWithRetry, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { PersonCheckmarkIcon } from '@tyro/icons';
+import { getBulkAttendance } from './api/bulk-attendance/bulk-attendance';
 
 const SessionAttendance = lazyWithRetry(() => import('./pages/session'));
 const SessionAttendanceList = lazyWithRetry(
@@ -52,6 +53,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'bulk-attendance',
             title: t('navigation:general.attendance.bulkAttendance'),
             element: <BulkAttendance />,
+            loader: () => getBulkAttendance({}),
             hasAccess: ({ isTyroUser }) => isTyroUser,
           },
         ],
