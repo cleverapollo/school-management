@@ -159,8 +159,8 @@ export const BulkAttendanceModal = ({
       maxWidth="sm"
     >
       <DialogTitle>{t('attendance:createBulkAttendance')}</DialogTitle>
-      <DialogContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DialogContent>
           <Collapse in={openAlert}>
             <Alert
               severity="error"
@@ -202,7 +202,6 @@ export const BulkAttendanceModal = ({
                 name: `selectedStudentsOrGroups`,
                 control,
               }}
-              sx={{ mt: 1 }}
             />
             <RHFSelect
               fullWidth
@@ -288,21 +287,21 @@ export const BulkAttendanceModal = ({
               }}
             />
           </Stack>
-          <DialogActions>
-            <Button variant="outlined" color="inherit" onClick={onClose}>
-              {t('common:actions.cancel')}
-            </Button>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" color="inherit" onClick={onClose}>
+            {t('common:actions.cancel')}
+          </Button>
 
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              loading={isSubmitting}
-            >
-              {t('common:actions.save')}
-            </LoadingButton>
-          </DialogActions>
-        </form>
-      </DialogContent>
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            loading={isSubmitting}
+          >
+            {t('common:actions.save')}
+          </LoadingButton>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 };
