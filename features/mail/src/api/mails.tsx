@@ -186,6 +186,7 @@ export function useMailList(labelId: number, profileId?: number | null) {
         ? communications_mail[communications_mail.length - 1].id
         : undefined,
     enabled: !!labelId,
+    refetchInterval: 1000 * 60 * 2,
     select: useCallback(
       (data: InfiniteData<Communications_MailQuery>) => ({
         ...data,
