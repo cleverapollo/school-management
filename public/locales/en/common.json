@@ -288,6 +288,8 @@
     "CONTACT": "Search by contact name",
     "STAFF": "Search by staff name",
     "STUDENT": "Search by student name",
-    "ADMIN": "Search by staff name"
+    "ADMIN": "Search by staff name",
+    "EXTERNAL": "Search by external name",
+    "THIRD_PARTY": "Search by third party"
   }
 }

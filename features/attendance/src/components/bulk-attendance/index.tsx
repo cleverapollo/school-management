@@ -127,8 +127,8 @@ export const BulkAttendanceModal = ({
     if (data?.requestType === BulkAttendanceRequestType.PartialDay) {
       transformedData.partialDate = {
         date: dayjs(data?.date).format('YYYY-MM-DD'),
-        leavesAt: dayjs(data?.startTime).format('HH:MM'),
-        returnsAt: dayjs(data?.endTime).format('HH:MM'),
+        leavesAt: dayjs(data?.startTime).format('HH:mm'),
+        returnsAt: dayjs(data?.endTime).format('HH:mm'),
       };
     }
     if (data?.requestType === BulkAttendanceRequestType.MultiDay) {
@@ -197,7 +197,7 @@ export const BulkAttendanceModal = ({
               {...bulkAttendanceAutocompleteProps}
               fullWidth
               disableCloseOnSelect
-              label={t('common:name')}
+              label={t('common:search')}
               controlProps={{
                 name: `selectedStudentsOrGroups`,
                 control,
