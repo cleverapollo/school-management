@@ -15,7 +15,11 @@ import {
 import { Link } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { AddDocIcon } from '@tyro/icons';
-import { useAcademicNamespace, UseQueryReturnType } from '@tyro/api';
+import {
+  useAcademicNamespace,
+  usePermissions,
+  UseQueryReturnType,
+} from '@tyro/api';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { useAssessments } from '../api/assessments';
@@ -109,6 +113,7 @@ const getColumnDefs = (
 export default function AssessmentsPage() {
   const { t } = useTranslation(['assessments', 'common']);
 
+  const { hasPermission } = usePermissions();
   const { activeAcademicNamespace } = useAcademicNamespace();
   const { displayName } = usePreferredNameLayout();
 
@@ -120,6 +125,9 @@ export default function AssessmentsPage() {
     academicNameSpaceId: academicNameSpaceId ?? 0,
   });
 
+  const canCreateAssessment = hasPermission(
+    'ps:1:assessment:write_assessments'
+  );
   const columnDefs = useMemo(
     () => getColumnDefs(t, displayName),
     [t, displayName]
@@ -131,16 +139,18 @@ export default function AssessmentsPage() {
         title={t('assessments:pageHeading.assessments')}
         titleProps={{ variant: 'h3' }}
         rightAdornment={
-          <Box display="flex" alignItems="center">
-            <Button
-              variant="contained"
-              component={Link}
-              to="./term-assessments/create"
-              startIcon={<AddDocIcon />}
-            >
-              {t('assessments:createAssessment')}
-            </Button>
-          </Box>
+          canCreateAssessment && (
+            <Box display="flex" alignItems="center">
+              <Button
+                variant="contained"
+                component={Link}
+                to="./term-assessments/create"
+                startIcon={<AddDocIcon />}
+              >
+                {t('assessments:createAssessment')}
+              </Button>
+            </Box>
+          )
         }
       />
       {academicNameSpaceId && (
