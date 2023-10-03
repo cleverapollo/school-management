@@ -54,7 +54,8 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:general.attendance.bulkAttendance'),
             element: <BulkAttendance />,
             loader: () => getBulkAttendance({}),
-            hasAccess: ({ isTyroUser }) => isTyroUser,
+            hasAccess: ({ hasPermission }) =>
+              hasPermission('ps:1:attendance:write_attendance:bulk'),
           },
         ],
       },
