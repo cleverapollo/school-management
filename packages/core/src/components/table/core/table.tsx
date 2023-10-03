@@ -106,7 +106,7 @@ const defaultColDef: ColDef = {
 };
 
 const TOOLBAR_HEIGHT = 72;
-const MIN_TABLE_HEIGHT = 320;
+const MIN_TABLE_HEIGHT = 460;
 
 function TableInner<T extends object>(
   {
@@ -227,6 +227,7 @@ function TableInner<T extends object>(
           display: 'flex',
           flexDirection: 'column',
           flex: 1,
+          minHeight: MIN_TABLE_HEIGHT,
           maxHeight:
             Math.max(MIN_TABLE_HEIGHT, heightBasedOnRows, tableHeight) +
             TOOLBAR_HEIGHT,

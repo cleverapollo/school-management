@@ -149,22 +149,16 @@ export function AttendanceTableView({
       <CircularProgress />
     </Stack>
   ) : (
-    <Stack
-      flexDirection={{ xs: 'column', sm: 'row' }}
-      flexWrap={{ xs: 'nowrap', sm: 'wrap' }}
-      justifyContent={{ xs: 'center', sm: 'space-evenly' }}
-      gap={2}
-    >
-      <Table
-        rowData={tableAttendanceData ?? []}
-        columnDefs={columns}
-        getRowId={({ data }) => String(data?.partyId)}
-        sx={{
-          boxShadow: 'none',
-          p: 0,
-          '& .MuiStack-root': { paddingX: 0 },
-        }}
-      />
-    </Stack>
+    <Table
+      rowData={tableAttendanceData ?? []}
+      columnDefs={columns}
+      getRowId={({ data }) => String(data?.partyId)}
+      sx={{
+        height: '100%',
+        boxShadow: 'none',
+        p: 0,
+        '& .MuiStack-root': { paddingX: 0 },
+      }}
+    />
   );
 }
