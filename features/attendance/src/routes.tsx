@@ -55,7 +55,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             element: <BulkAttendance />,
             loader: () => getBulkAttendance({}),
             hasAccess: ({ hasPermission }) =>
-              hasPermission('ps:1:attendance:write_attendance:bulk'),
+              hasPermission('ps:1:attendance:write_bulk_attendance'),
           },
         ],
       },
