@@ -138,7 +138,10 @@ export const MonthOverview = () => {
   ];
 
   return (
-    <Card variant="outlined" sx={{ height: '100%', flex: 1 }}>
+    <Card
+      variant="outlined"
+      sx={{ height: '100%', flex: 1, display: 'flex', flexDirection: 'column' }}
+    >
       <Stack
         direction="row"
         sx={{
@@ -223,7 +226,7 @@ export const MonthOverview = () => {
           <CircularProgress />
         </Stack>
       ) : (
-        <CardContent>
+        <CardContent sx={{ height: '100%' }}>
           {view === 'calendar' ? (
             <>
               <Tabs
