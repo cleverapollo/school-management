@@ -90,11 +90,7 @@ export const MonthOverview = () => {
         (acc, { partiallyTaken, status }) => {
           if (partiallyTaken) {
             const currentCount = acc.get(status);
-            if (typeof currentCount === 'number') {
-              acc.set(status, currentCount + 1);
-            } else {
-              acc.set(status, 1);
-            }
+            acc.set(status, 1 + (currentCount ?? 0));
           }
 
           return acc;
