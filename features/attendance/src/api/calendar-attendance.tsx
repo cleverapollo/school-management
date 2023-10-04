@@ -16,9 +16,11 @@ const studentCalendarAttendance = graphql(/* GraphQL */ `
       totalAbsent
       totalUnexplained
       totalNotTaken
+      totalPartial
       attendances {
         date
         status
+        partiallyTaken
       }
     }
   }

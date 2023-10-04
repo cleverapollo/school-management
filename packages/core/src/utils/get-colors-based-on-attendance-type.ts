@@ -1,5 +1,7 @@
 import { AttendanceCodeType } from '@tyro/api';
 
+type ExtendedAttendanceCodeType = AttendanceCodeType | 'PARTIAL_ABSENCE';
+
 type StyledValues = {
   color: string;
   bgColor: string;
@@ -11,7 +13,7 @@ type Variants = 'soft' | 'filled';
 type ColorsByVariant = Record<Variants, StyledValues>;
 
 type GetColourBasedOnAttendanceTypeFn = (
-  attendanceCode: AttendanceCodeType
+  attendanceCode: ExtendedAttendanceCodeType
 ) => {
   base: string;
 } & ColorsByVariant;
@@ -76,6 +78,23 @@ export const getColourBasedOnAttendanceType: GetColourBasedOnAttendanceTypeFn =
           filled: {
             color: 'white',
             bgColor: `${base}.400`,
+            hoverBg: `${base}.600`,
+          },
+          soft: {
+            color: `${base}.500`,
+            bgColor: `${base}.100`,
+          },
+        };
+      }
+
+      case 'PARTIAL_ABSENCE': {
+        const base = 'amber';
+
+        return {
+          base,
+          filled: {
+            color: 'white',
+            bgColor: `${base}.500`,
             hoverBg: `${base}.600`,
           },
           soft: {

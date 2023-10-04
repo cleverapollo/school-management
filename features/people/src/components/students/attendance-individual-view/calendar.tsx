@@ -23,6 +23,7 @@ type MonthCalendarProps = {
   currentTabValue: AttendanceDataType['currentTabValue'];
   hasPermissionReadAndWriteAttendanceStudentCalendarView: boolean;
   startDate: dayjs.Dayjs;
+  isPartialAbsenceEnabled: boolean;
 };
 
 type CustomDayProps = {
@@ -31,6 +32,7 @@ type CustomDayProps = {
   currentTabValue: AttendanceDataType['currentTabValue'];
   hasPermissionReadAndWriteAttendanceStudentCalendarView: boolean;
   startDate: dayjs.Dayjs;
+  isPartialAbsenceEnabled: boolean;
 } & PickersDayProps<Dayjs>;
 
 const weekends = [0, 6];
@@ -40,24 +42,28 @@ type GetCalendarColorsFn = (
   dayOfWeek: number,
   currentTabValue: AttendanceDataType['currentTabValue'],
   dayToCheck: string,
-  startDate: dayjs.Dayjs
+  startDate: dayjs.Dayjs,
+  isPartialAbsenceEnabled: boolean,
+  isPartialAbsence?: boolean
 ) => ReturnType<typeof getColourBasedOnAttendanceType>['filled'];
+
+const defaultColors: ReturnType<typeof getCalendarColors> = {
+  bgColor: 'transparent',
+  color: 'slate.500',
+  hoverBg: 'transparent',
+};
 
 const getCalendarColors: GetCalendarColorsFn = (
   attendanceCode,
   dayOfWeek,
   currentTabValue,
   dayToCheck,
-  startDate
+  startDate,
+  isPartialAbsenceEnabled,
+  isPartialAbsence
 ) => {
   const isAfterCurrentDay = dayjs().isBefore(dayToCheck);
   const isBeforeCurrentDay = dayjs(dayToCheck).isBefore(startDate);
-
-  const defaultColors: ReturnType<typeof getCalendarColors> = {
-    bgColor: 'transparent',
-    color: 'slate.500',
-    hoverBg: 'transparent',
-  };
 
   if (
     weekends.includes(dayOfWeek) ||
@@ -65,6 +71,14 @@ const getCalendarColors: GetCalendarColorsFn = (
     (isAfterCurrentDay && attendanceCode === AttendanceCodeType.NotTaken)
   ) {
     return defaultColors;
+  }
+
+  if (
+    ['ALL', 'PARTIAL_ABSENCE'].includes(currentTabValue) &&
+    isPartialAbsenceEnabled &&
+    isPartialAbsence
+  ) {
+    return getColourBasedOnAttendanceType('PARTIAL_ABSENCE').filled;
   }
 
   if (currentTabValue === 'ALL' || currentTabValue === attendanceCode) {
@@ -83,6 +97,7 @@ function CustomDay(props: CustomDayProps) {
     currentTabValue,
     hasPermissionReadAndWriteAttendanceStudentCalendarView,
     startDate,
+    isPartialAbsenceEnabled,
     ...other
   } = props;
 
@@ -92,12 +107,15 @@ function CustomDay(props: CustomDayProps) {
     (attendanceItem) => attendanceItem.date === dayToCheck
   );
 
+  const isPartialAbsence = dayAttendance?.partiallyTaken;
   const { bgColor, color, hoverBg } = getCalendarColors(
     dayAttendance?.status ?? AttendanceCodeType.NotTaken,
     dayOfWeek,
     currentTabValue,
     dayToCheck,
-    startDate
+    startDate,
+    isPartialAbsenceEnabled,
+    isPartialAbsence
   );
 
   return (
@@ -131,6 +149,7 @@ function MonthCalendar({
   currentTabValue,
   hasPermissionReadAndWriteAttendanceStudentCalendarView,
   startDate,
+  isPartialAbsenceEnabled,
 }: MonthCalendarProps) {
   return (
     <Box
@@ -153,6 +172,7 @@ function MonthCalendar({
               currentTabValue,
               hasPermissionReadAndWriteAttendanceStudentCalendarView,
               startDate,
+              isPartialAbsenceEnabled,
             }),
         }}
         sx={{
@@ -204,6 +224,7 @@ type AcademicCalendarProps = {
   calendarAttendance?: ReturnTypeFromUseStudentCalendarAttendance;
   activeAcademicNamespace?: AcademicNamespace;
   currentTabValue: AttendanceDataType['currentTabValue'];
+  isPartialAbsenceEnabled: boolean;
 };
 
 export const AcademicCalendar = ({
@@ -211,6 +232,7 @@ export const AcademicCalendar = ({
   calendarAttendance,
   activeAcademicNamespace,
   currentTabValue,
+  isPartialAbsenceEnabled,
 }: AcademicCalendarProps) => {
   const { isStaffUserHasAllPermissions } = usePermissions();
   const hasPermissionReadAndWriteAttendanceStudentCalendarView =
@@ -253,6 +275,7 @@ export const AcademicCalendar = ({
               hasPermissionReadAndWriteAttendanceStudentCalendarView
             }
             startDate={startDate}
+            isPartialAbsenceEnabled={isPartialAbsenceEnabled}
           />
         ))}
       </Stack>
