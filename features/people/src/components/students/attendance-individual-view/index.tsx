@@ -281,7 +281,7 @@ export const MonthOverview = () => {
                 }}
               />
             }
-            label={t('attendance:enablePartialDay')}
+            label={t('attendance:enablePartialAbsence')}
             sx={{ '&.MuiFormControlLabel-root': { marginLeft: '4px' } }}
           />
         </Stack>
