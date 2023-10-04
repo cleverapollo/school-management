@@ -58,6 +58,8 @@
   "totalAbsent": "Explained Absence",
   "totalUnexplained": "Unexplained absences",
   "totalNotTaken": "Roll not taken",
+  "totalPartialAbsence": "Total partial absence",
+  "enablePartialDay": "Enable partial day",
   "all": "All",
   "absent": "Absent",
   "absence": "Absence",
