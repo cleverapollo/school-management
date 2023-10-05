@@ -266,7 +266,7 @@ export const MonthOverview = () => {
           ))}
 
           <Fade in={view === CalendarView.Calendar}>
-            <Box>
+            <Box display="flex" sx={{ '&.MuiBox-root': { marginLeft: 0 } }}>
               <Divider
                 orientation="vertical"
                 flexItem
