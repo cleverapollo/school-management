@@ -6,6 +6,7 @@ import {
   CardHeader,
   CircularProgress,
   Divider,
+  Fade,
   FormControlLabel,
   Icon,
   Stack,
@@ -264,26 +265,30 @@ export const MonthOverview = () => {
             </Tooltip>
           ))}
 
-          <Divider
-            orientation="vertical"
-            flexItem
-            sx={{ '&.MuiDivider-root': { marginLeft: '16px' } }}
-          />
-
-          <FormControlLabel
-            control={
-              <Switch
-                checked={showPartialAbsence}
-                onChange={() => {
-                  setValue(0);
-                  setCurrentTabValue('ALL');
-                  setShowPartialAbsence((current) => !current);
-                }}
+          <Fade in={view === CalendarView.Calendar}>
+            <Box>
+              <Divider
+                orientation="vertical"
+                flexItem
+                sx={{ '&.MuiDivider-root': { marginLeft: '16px' } }}
               />
-            }
-            label={t('attendance:enablePartialAbsence')}
-            sx={{ '&.MuiFormControlLabel-root': { marginLeft: '4px' } }}
-          />
+
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={showPartialAbsence}
+                    onChange={() => {
+                      setValue(0);
+                      setCurrentTabValue('ALL');
+                      setShowPartialAbsence((current) => !current);
+                    }}
+                  />
+                }
+                label={t('attendance:viewPartialAbsence')}
+                sx={{ '&.MuiFormControlLabel-root': { marginLeft: '4px' } }}
+              />
+            </Box>
+          </Fade>
         </Stack>
         <CardHeader
           component="h3"
