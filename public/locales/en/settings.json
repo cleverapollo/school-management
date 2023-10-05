@@ -47,7 +47,8 @@
   },
   "schoolCalendar": {
     "title": "Day Types and Bell Times",
-    "dayTypes": "Day Types"
+    "dayTypes": "Day Types",
+    "bellTimeDetailsFor": "Bell time Details for {{date}}"
   },
   "actions": {
     "makeActive": "Activate academic year for all users",
