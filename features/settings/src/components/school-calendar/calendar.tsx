@@ -5,15 +5,19 @@ import dayjs, { Dayjs } from 'dayjs';
 import isToday from 'dayjs/plugin/isToday';
 import { AcademicNamespace, DayType } from '@tyro/api';
 import { ReturnTypeFromCalendarDayBellTimes } from '@tyro/calendar';
+import { useState } from 'react';
+import { BellTimeDetailsModal } from './bell-time-details-modal';
 
 dayjs.extend(isToday);
 
 type MonthCalendarProps = {
   month: string;
+  handleAddBellTime: (val: string) => void;
   bellTimes: ReturnTypeFromCalendarDayBellTimes;
 };
 
 type CustomDayProps = {
+  handleAddBellTime: (val: string) => void;
   bellTimes: ReturnTypeFromCalendarDayBellTimes;
 } & PickersDayProps<Dayjs>;
 
@@ -43,7 +47,7 @@ const getCalendarColors = (dayType: DayType | undefined) => {
 };
 
 function CustomDay(props: CustomDayProps) {
-  const { day, onDaySelect, bellTimes, ...other } = props;
+  const { day, onDaySelect, bellTimes, handleAddBellTime, ...other } = props;
 
   const dayToCheck = dayjs(day).format('YYYY-MM-DD');
   const dayBellTime = bellTimes.find(
@@ -61,6 +65,7 @@ function CustomDay(props: CustomDayProps) {
         color,
       }}
       onDaySelect={() => {
+        handleAddBellTime(dayjs(day).format('YYYY-MM-DD'));
         dayjs(day).format('YYYY-MM-DD');
       }}
       {...other}
@@ -68,7 +73,11 @@ function CustomDay(props: CustomDayProps) {
   );
 }
 
-function MonthCalendar({ month, bellTimes }: MonthCalendarProps) {
+function MonthCalendar({
+  month,
+  bellTimes,
+  handleAddBellTime,
+}: MonthCalendarProps) {
   return (
     <Box
       key={month}
@@ -85,6 +94,7 @@ function MonthCalendar({ month, bellTimes }: MonthCalendarProps) {
           day: (props) =>
             CustomDay({
               ...props,
+              handleAddBellTime,
               bellTimes,
             }),
         }}
@@ -143,6 +153,10 @@ export const SchoolCalendar = ({
   activeAcademicNamespace,
   dayType,
 }: SchoolCalendarProps) => {
+  const [sessionBellTimeToEdit, setSessionBellTimeToEdit] = useState<
+    string | null
+  >(null);
+
   const startDate = dayjs(activeAcademicNamespace?.startDate);
   const endDate = dayjs(activeAcademicNamespace?.endDate);
   const months = [];
@@ -169,9 +183,16 @@ export const SchoolCalendar = ({
         <MonthCalendar
           key={month}
           month={month}
+          handleAddBellTime={setSessionBellTimeToEdit}
           bellTimes={filteredBellTimes}
         />
       ))}
+      {sessionBellTimeToEdit && (
+        <BellTimeDetailsModal
+          day={sessionBellTimeToEdit}
+          onClose={() => setSessionBellTimeToEdit(null)}
+        />
+      )}
     </Stack>
   );
 };

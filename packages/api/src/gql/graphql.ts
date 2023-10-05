@@ -8528,7 +8528,7 @@ export type Calendar_CalendarDayBellTimesQueryVariables = Exact<{
 }>;
 
 
-export type Calendar_CalendarDayBellTimesQuery = { __typename?: 'Query', calendar_calendarDayBellTimes: Array<{ __typename?: 'CalendarDayBellTime', date: string, bellTimeIds?: Array<number> | null, bellTimes?: Array<{ __typename?: 'Calendar_BellTime', id: number, time: string, name?: string | null }> | null }> };
+export type Calendar_CalendarDayBellTimesQuery = { __typename?: 'Query', calendar_calendarDayBellTimes: Array<{ __typename?: 'CalendarDayBellTime', date: string, bellTimeIds?: Array<number> | null, dayType: DayType, bellTimes?: Array<{ __typename?: 'Calendar_BellTime', id: number, time: string, name?: string | null }> | null }> };
 
 export type Calendar_CalendarInformationQueryVariables = Exact<{
   filter?: InputMaybe<CalendarEventFilter>;
