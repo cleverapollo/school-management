@@ -1,12 +1,15 @@
 import { Dispatch, SetStateAction, useId } from 'react';
 import { Autocomplete, AutocompleteProps } from '@tyro/core';
-import { useCalendarSearchProps, CalendarParty } from '@tyro/calendar';
 import { useTranslation } from '@tyro/i18n';
+import {
+  useTimetableSearchProps,
+  TimetableParty,
+} from '../../hooks/use-timetable-search-props';
 
 export interface TimetableSearchProps
-  extends Partial<AutocompleteProps<CalendarParty, true>> {
-  selectedPartys: CalendarParty[];
-  onChangeSelectedPartys: Dispatch<SetStateAction<CalendarParty[]>>;
+  extends Partial<AutocompleteProps<TimetableParty, true>> {
+  selectedPartys: TimetableParty[];
+  onChangeSelectedPartys: Dispatch<SetStateAction<TimetableParty[]>>;
 }
 
 export function TimetableSearch({
@@ -15,7 +18,7 @@ export function TimetableSearch({
 }: TimetableSearchProps) {
   const id = useId();
   const { t } = useTranslation(['timetable']);
-  const participantsProps = useCalendarSearchProps({
+  const participantsProps = useTimetableSearchProps({
     id,
     label: t('timetable:timetables'),
     value: selectedPartys,
@@ -31,12 +34,12 @@ export function TimetableSearch({
       fullWidth: true,
     },
     onChange: (_, options) =>
-      onChangeSelectedPartys((options as CalendarParty[]) ?? []),
+      onChangeSelectedPartys((options as TimetableParty[]) ?? []),
     sx: {
       flex: 1,
       maxWidth: 600,
     },
   });
 
-  return <Autocomplete<CalendarParty, true> {...participantsProps} />;
+  return <Autocomplete<TimetableParty, true> {...participantsProps} />;
 }
