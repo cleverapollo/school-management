@@ -61,6 +61,9 @@ const students = graphql(/* GraphQL */ `
           name
         }
       }
+      # extensions {
+      #   priority
+      # }
     }
   }
 `);

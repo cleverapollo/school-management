@@ -35,6 +35,9 @@ const notes = graphql(/* GraphQL */ `
         descriptionTextId
         nameTextId
       }
+      priorityNote
+      priorityStartDate
+      priorityEndDate
     }
   }
 `);
