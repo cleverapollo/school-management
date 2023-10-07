@@ -8,6 +8,7 @@ import { getColorBasedOnString } from '../../utils';
 export interface AvatarProps extends Omit<MuiAvatarProps, 'src'> {
   name?: string;
   src?: string | null | undefined;
+  size?: number;
 }
 
 function getInitials(name: string | undefined) {
@@ -16,11 +17,12 @@ function getInitials(name: string | undefined) {
     .split(' ')
     .map((n) => n[0])
     .slice(0, 2)
-    .join('');
+    .join('')
+    .toUpperCase();
 }
 
 export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
-  ({ name, sx, children, src, ...props }, ref) => {
+  ({ name, sx, children, src, size, ...props }, ref) => {
     const { initials, bgcolor } = useMemo(
       () => ({
         initials: getInitials(name),
@@ -34,6 +36,9 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
         ref={ref}
         sx={{
           bgcolor,
+          width: size,
+          height: size,
+          fontSize: size ? Math.ceil(size * 0.35) : undefined,
           ...sx,
         }}
         alt={name}

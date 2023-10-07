@@ -61,9 +61,9 @@ const students = graphql(/* GraphQL */ `
           name
         }
       }
-      # extensions {
-      #   priority
-      # }
+      extensions {
+        priority
+      }
     }
   }
 `);
@@ -98,6 +98,9 @@ const studentById = graphql(/* GraphQL */ `
         lastName
         avatarUrl
         type
+      }
+      extensions {
+        priority
       }
     }
   }
