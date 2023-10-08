@@ -83,19 +83,21 @@ export function LessonContextMenu({
           count: numberOfSelectedLessons,
         })}
       </MenuItem>
-      {isTyroUser && (<MenuItem
+      {isTyroUser && (
+        <MenuItem
           key="publish"
           onClick={(event) => {
             event.preventDefault();
             onOpenPublishLessonDialog();
             handleClose();
           }}
-      >
-        <ActionMenuIconWrapper>
-          <CalendarUploadIcon />
-        </ActionMenuIconWrapper>
-        {t('timetable:publishLesson')}
-      </MenuItem>)}
+        >
+          <ActionMenuIconWrapper>
+            <CalendarUploadIcon />
+          </ActionMenuIconWrapper>
+          {t('timetable:republishLesson')}
+        </MenuItem>
+      )}
       {[
         <MenuItem
           key="edit"
