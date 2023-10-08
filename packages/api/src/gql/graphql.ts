@@ -1795,6 +1795,7 @@ export type EventAttendance = {
   adminSubmitted: Scalars['Boolean'];
   attendanceCode: AttendanceCode;
   attendanceCodeId: Scalars['Int'];
+  createdAt: Scalars['DateTime'];
   createdBy: Person;
   createdByPartyId: Scalars['Long'];
   date: Scalars['Date'];
@@ -1802,6 +1803,7 @@ export type EventAttendance = {
   id: Scalars['Long'];
   note?: Maybe<Scalars['String']>;
   personPartyId: Scalars['Long'];
+  updatedAt?: Maybe<Scalars['DateTime']>;
   updatedBy: Person;
   updatedByPartyId: Scalars['Long'];
 };
@@ -2940,6 +2942,9 @@ export type Notes_Note = {
   id?: Maybe<Scalars['Long']>;
   incidentDate?: Maybe<Scalars['DateTime']>;
   note?: Maybe<Scalars['String']>;
+  priorityEndDate?: Maybe<Scalars['Date']>;
+  priorityNote?: Maybe<Scalars['Boolean']>;
+  priorityStartDate?: Maybe<Scalars['Date']>;
   referencedParties: Array<Person>;
   referencedPartiesIds: Array<Scalars['Long']>;
   tags: Array<Notes_Tag>;
@@ -2950,6 +2955,11 @@ export type Notes_NotesFilter = {
   associatedPartyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   noteIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   noteType?: InputMaybe<Notes_TagCategory>;
+  partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  priority?: InputMaybe<Scalars['Boolean']>;
+};
+
+export type Notes_PriorityFilter = {
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
 
@@ -3020,6 +3030,9 @@ export type Notes_UpsertNote = {
   id?: InputMaybe<Scalars['Long']>;
   incidentDate?: InputMaybe<Scalars['DateTime']>;
   note?: InputMaybe<Scalars['String']>;
+  priorityEndDate?: InputMaybe<Scalars['Date']>;
+  priorityNote?: InputMaybe<Scalars['Boolean']>;
+  priorityStartDate?: InputMaybe<Scalars['Date']>;
   referencedParties: Array<Scalars['Long']>;
   tags: Array<Scalars['Int']>;
 };
@@ -5570,6 +5583,7 @@ export type StudentGraphqlExtension = {
   doeNotUser?: Maybe<Scalars['String']>;
   exampleExtension?: Maybe<Scalars['String']>;
   objectExample?: Maybe<ExampleObjectExtension>;
+  priority?: Maybe<Scalars['Boolean']>;
 };
 
 export type StudentIre = {
@@ -6171,6 +6185,8 @@ export type TtPublishTimetableInput = {
   effectiveFromDate?: InputMaybe<Scalars['Date']>;
   /**  defaults to false. This will delete all existing timetable lessons in calendar and republish them */
   fullRepublish?: InputMaybe<Scalars['Boolean']>;
+  /**  used to publish specific lessons. Will only publish lessons that are in this list and not update the publish stats */
+  republishLessonsInstances?: InputMaybe<Array<TtEditLessonPeriodInstanceId>>;
   timetableId: Scalars['Int'];
 };
 
