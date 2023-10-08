@@ -4,6 +4,7 @@ import { ActionMenuIconWrapper } from '@tyro/core';
 import {
   AddIcon,
   BuildingGraduateHatIcon,
+  CalendarUploadIcon,
   EditIcon,
   TrashIcon,
 } from '@tyro/icons';
@@ -15,6 +16,7 @@ interface ResourceContextMenuProps extends MenuProps {
   onOpenDeleteLessonDialog: () => void;
   onOpenAddLessonDialog: () => void;
   onOpenEditLessonDialog: () => void;
+  onOpenPublishLessonDialog: () => void;
   isSelected: boolean;
 }
 
@@ -24,10 +26,13 @@ export function LessonContextMenu({
   onOpenDeleteLessonDialog,
   onOpenAddLessonDialog,
   onOpenEditLessonDialog,
+  onOpenPublishLessonDialog,
   isSelected,
   ...props
 }: ResourceContextMenuProps) {
   const { t } = useTranslation(['timetable']);
+  const { isTyroUser } = usePermissions();
+
   const numberOfSelectedLessons = isSelected
     ? selectedLessonIds.length
     : selectedLessonIds.length + 1;
@@ -78,6 +83,19 @@ export function LessonContextMenu({
           count: numberOfSelectedLessons,
         })}
       </MenuItem>
+      {isTyroUser && (<MenuItem
+          key="publish"
+          onClick={(event) => {
+            event.preventDefault();
+            onOpenPublishLessonDialog();
+            handleClose();
+          }}
+      >
+        <ActionMenuIconWrapper>
+          <CalendarUploadIcon />
+        </ActionMenuIconWrapper>
+        {t('timetable:publishLesson')}
+      </MenuItem>)}
       {[
         <MenuItem
           key="edit"
@@ -105,6 +123,7 @@ export function LessonContextMenu({
           </ActionMenuIconWrapper>
           {t('timetable:deleteLesson')}
         </MenuItem>,
+
         <Divider key="divider" />,
         <MenuItem
           key="add"

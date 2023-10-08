@@ -26,6 +26,7 @@ interface ResourceTableCardProps {
   onOpenDeleteLessonDialog: (anchorLesson: Lesson) => void;
   onOpenEditLessonDialog: (anchorLesson: Lesson) => void;
   onOpenAddLessonDialog: (anchorLesson: Period) => void;
+  onOpenPublishLessonDialog: (anchorLesson: Lesson) => void;
   period: Period;
 }
 
@@ -39,6 +40,7 @@ type GroupCardProps = {
   onOpenDeleteLessonDialog: (anchorLesson: Lesson) => void;
   onOpenEditLessonDialog: (anchorLesson: Lesson) => void;
   onOpenAddLessonDialog: (anchorLesson: Period) => void;
+  onOpenPublishLessonDialog: (anchorLesson: Lesson) => void;
   period: Period;
 };
 
@@ -107,6 +109,7 @@ function GroupCard({
   onOpenDeleteLessonDialog,
   onOpenEditLessonDialog,
   onOpenAddLessonDialog,
+  onOpenPublishLessonDialog,
   selectedLessonIds,
   period,
 }: GroupCardProps) {
@@ -244,6 +247,7 @@ function GroupCard({
         onOpenDeleteLessonDialog={() => onOpenDeleteLessonDialog(lesson)}
         onOpenAddLessonDialog={() => onOpenAddLessonDialog(period)}
         onOpenEditLessonDialog={() => onOpenEditLessonDialog(lesson)}
+        onOpenPublishLessonDialog={() => onOpenPublishLessonDialog(lesson)}
         isSelected={isSelected}
       />
     </>

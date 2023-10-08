@@ -2286,10 +2286,8 @@ export type MailStarredInput = {
 export enum MemberType {
   Admin = 'ADMIN',
   Contact = 'CONTACT',
-  External = 'EXTERNAL',
   Staff = 'STAFF',
-  Student = 'STUDENT',
-  ThirdParty = 'THIRD_PARTY'
+  Student = 'STUDENT'
 }
 
 export type Mutation = {
@@ -2352,9 +2350,7 @@ export type Mutation = {
   fees_deleteFee?: Maybe<Scalars['String']>;
   fees_saveDiscount?: Maybe<Discount>;
   fees_saveFee?: Maybe<Fee>;
-  notes_deleteBehaviourCategory?: Maybe<Success>;
   notes_deleteNote?: Maybe<Success>;
-  notes_upsertBehaviourCategory?: Maybe<Success>;
   notes_upsertBehaviourTags: Array<Notes_Tag>;
   notes_upsertNotes: Array<Notes_Note>;
   notes_upsertNotesTags: Array<Notes_Tag>;
@@ -2675,18 +2671,8 @@ export type MutationFees_SaveFeeArgs = {
 };
 
 
-export type MutationNotes_DeleteBehaviourCategoryArgs = {
-  input?: InputMaybe<Array<InputMaybe<Notes_BehaviourCategoryInput>>>;
-};
-
-
 export type MutationNotes_DeleteNoteArgs = {
   input?: InputMaybe<Notes_DeleteNotes>;
-};
-
-
-export type MutationNotes_UpsertBehaviourCategoryArgs = {
-  input?: InputMaybe<Array<InputMaybe<Notes_BehaviourCategoryInput>>>;
 };
 
 
@@ -2889,36 +2875,6 @@ export type NonClassContactHoursFilter = {
   staffPartyId: Scalars['Int'];
 };
 
-export type Notes_BehaviourCategory = {
-  __typename?: 'Notes_BehaviourCategory';
-  behaviourCategoryId: Scalars['Int'];
-  behaviourType: Notes_BehaviourType;
-  colour: Colour;
-  description: Scalars['String'];
-  name: Scalars['String'];
-  tagIds: Array<Scalars['Int']>;
-  tags: Array<Notes_Tag>;
-};
-
-export type Notes_BehaviourCategoryFilter = {
-  categoryIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  type?: InputMaybe<Notes_BehaviourType>;
-};
-
-export type Notes_BehaviourCategoryInput = {
-  behaviourType: Notes_BehaviourType;
-  colour: Colour;
-  description: Scalars['String'];
-  id?: InputMaybe<Scalars['Int']>;
-  name: Scalars['String'];
-  tags?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-};
-
-export type Notes_BehaviourFilter = {
-  behaviourType: Notes_BehaviourType;
-  partyId: Scalars['Long'];
-};
-
 export enum Notes_BehaviourType {
   Negative = 'NEGATIVE',
   Neutral = 'NEUTRAL',
@@ -2951,32 +2907,6 @@ export type Notes_NotesFilter = {
   noteIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   noteType?: InputMaybe<Notes_TagCategory>;
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-};
-
-export type Notes_StudentBehaviour = {
-  __typename?: 'Notes_StudentBehaviour';
-  associatedParties: Array<Maybe<Party>>;
-  associatedPartyIds?: Maybe<Array<Maybe<Scalars['Long']>>>;
-  category: Scalars['String'];
-  details: Scalars['String'];
-  incidentDate: Scalars['Date'];
-  noteId: Scalars['Long'];
-  takenBy: Person;
-  takenByPartyId: Scalars['Long'];
-};
-
-export type Notes_StudentBehaviourCategory = {
-  __typename?: 'Notes_StudentBehaviourCategory';
-  behaviourCategoryId: Scalars['Int'];
-  colour: Colour;
-  count: Scalars['Int'];
-  name: Scalars['String'];
-};
-
-export type Notes_StudentBehaviourOverview = {
-  __typename?: 'Notes_StudentBehaviourOverview';
-  behaviours?: Maybe<Array<Maybe<Notes_StudentBehaviour>>>;
-  categories: Array<Maybe<Notes_StudentBehaviourCategory>>;
 };
 
 export type Notes_Tag = {
@@ -3650,8 +3580,6 @@ export type Query = {
   file_transfer_list?: Maybe<Array<FileTransferResponse>>;
   generalGroups?: Maybe<Array<GeneralGroup>>;
   myAuthDetails?: Maybe<GlobalUser>;
-  notes_behaviour?: Maybe<Notes_StudentBehaviourOverview>;
-  notes_behaviourCategories: Array<Notes_BehaviourCategory>;
   notes_notes: Array<Notes_Note>;
   notes_tags: Array<Notes_Tag>;
   permissions?: Maybe<Array<Maybe<Permission>>>;
@@ -3964,16 +3892,6 @@ export type QueryFile_Transfer_ListArgs = {
 
 export type QueryGeneralGroupsArgs = {
   filter?: InputMaybe<GeneralGroupFilter>;
-};
-
-
-export type QueryNotes_BehaviourArgs = {
-  filter?: InputMaybe<Notes_BehaviourFilter>;
-};
-
-
-export type QueryNotes_BehaviourCategoriesArgs = {
-  filter?: InputMaybe<Notes_BehaviourCategoryFilter>;
 };
 
 
@@ -6171,6 +6089,8 @@ export type TtPublishTimetableInput = {
   effectiveFromDate?: InputMaybe<Scalars['Date']>;
   /**  defaults to false. This will delete all existing timetable lessons in calendar and republish them */
   fullRepublish?: InputMaybe<Scalars['Boolean']>;
+  /**  used to publish specific lessons. Will only publish lessons that are in this list and not update the publish stats */
+  republishLessonsInstances?: InputMaybe<Array<TtEditLessonPeriodInstanceId>>;
   timetableId: Scalars['Int'];
 };
 
@@ -6869,10 +6789,8 @@ export type UserPermission = {
 export enum UserType {
   Admin = 'ADMIN',
   Contact = 'CONTACT',
-  External = 'EXTERNAL',
   Student = 'STUDENT',
   Teacher = 'TEACHER',
-  ThirdParty = 'THIRD_PARTY',
   Tyro = 'TYRO'
 }
 
