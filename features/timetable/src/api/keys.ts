@@ -30,4 +30,5 @@ export const timetableKeys = {
     [...timetableKeys.all, 'addLessonsOptions', filter] as const,
   editLessonsOptions: (filter: Tt_EditLessonFilter) =>
     [...timetableKeys.all, 'editLessonsOptions', filter] as const,
+  search: (query: string) => [...timetableKeys.all, 'search', query] as const,
 };
