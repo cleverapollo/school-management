@@ -268,6 +268,10 @@
     "note": "Note"
   },
   "createBehaviour": "Create behaviour",
+  "logByLevels": "Logs by levels",
+  "totalLogs_one": "{{ count }} log",
+  "totalLogs_other": "{{ count }} logs",
+  "association": "Association",
   "createNonClassContact": "Create non-class contact",
   "editNonClassContact": "Edit non-class contact",
   "deleteNonClassContact": "Delete non-class contact",

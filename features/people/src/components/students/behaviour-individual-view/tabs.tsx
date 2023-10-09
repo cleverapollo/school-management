@@ -2,44 +2,30 @@ import { useState } from 'react';
 import { Tab, Tabs, Typography } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import Chip from '@mui/material/Chip';
+import { ExtendedNotesTagType } from '../../../pages/students/profile/behaviour';
 
-const behaviourTabData: Array<{
-  colour: string;
-  translationText: string;
-  total: number;
-}> = [
-  { colour: 'indigo', translationText: 'All', total: 46 },
-  { colour: 'emerald', translationText: 'Uniform violation', total: 12 },
-  { colour: 'sky', translationText: 'Incidents', total: 7 },
-  { colour: 'pink', translationText: 'Call home', total: 7 },
-  { colour: 'red', translationText: 'No homework', total: 1 },
-  { colour: 'grey', translationText: 'Fighting', total: 1 },
-];
-
-type BehaviorType = {
-  filteredTagsNames: string[];
+type TabsPropsType = {
+  subCategories?: ExtendedNotesTagType;
 };
 
-export const TabsContainer = ({ filteredTagsNames }: BehaviorType) => {
+export const TabsContainer = ({ subCategories }: TabsPropsType) => {
   const { t } = useTranslation(['people']);
   const [value, setValue] = useState(0);
-  const [currentTabValue, setCurrentTabValue] = useState(filteredTagsNames[0]);
-
-  console.log(filteredTagsNames, 'filteredTagsNames');
-  console.log(currentTabValue, 'currentTabValue');
-  // console.log(academicYear, 'academicYear');
 
   return (
     <Tabs
       value={value}
-      onChange={(_event, newValue: number) => setValue(newValue)}
+      onChange={(_event, newValue: number) => {
+        setValue(newValue);
+      }}
       variant="scrollable"
       scrollButtons="auto"
       aria-label={t('people:scrollableTabs')}
       TabIndicatorProps={{
-        sx: { backgroundColor: `${currentTabValue}` },
+        sx: { backgroundColor: 'cyan.100' },
       }}
       sx={{
+        '&.MuiTabs-root > .MuiTabs-scrollButtons': { display: 'none' },
         '& .MuiTabs-flexContainer': {
           alignItems: 'center',
           margin: 0,
@@ -48,26 +34,25 @@ export const TabsContainer = ({ filteredTagsNames }: BehaviorType) => {
         },
       }}
     >
-      {filteredTagsNames.map((item) => (
+      {subCategories?.map((item, index) => (
         <Tab
-          onClick={() => setCurrentTabValue(item)}
           label={
             <>
               <Chip
-                key={item}
+                key={index}
                 label="7"
                 variant="soft"
                 sx={{
                   cursor: 'pointer',
-                  backgroundColor: 'indigo.100',
+                  backgroundColor: `${item?.colour}.100`,
                   borderRadius: '6px',
                   height: '20px',
                   fontWeight: '700',
                   fontSize: '12px',
                   paddingX: '8px',
-                  color: 'indigo.500',
+                  color: `${item?.colour}.500`,
                   '& .MuiChip-icon': {
-                    color: `indigo.500`,
+                    color: `${item?.colour}.500`,
                   },
                   '& .MuiChip-label': {
                     padding: 0,
@@ -84,7 +69,7 @@ export const TabsContainer = ({ filteredTagsNames }: BehaviorType) => {
                   textTransform: 'none',
                 }}
               >
-                {item}
+                {item?.name}
               </Typography>
             </>
           }
