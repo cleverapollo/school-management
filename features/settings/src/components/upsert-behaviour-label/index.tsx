@@ -21,11 +21,18 @@ export interface UpsertBehaviourLabelModalProps {
   onClose: () => void;
   initialState: Partial<ReturnTypeFromUseNoteTagsBehaviour> | null;
 }
+// TODO: update when category list is ready
+enum MockNotesBehaviourCategory {
+  CatOne = 'CatOne',
+  CatTwo = 'CatTwo',
+  CatThree = 'CatThree',
+}
 
 export type UpsertBehaviourLabelFormState = {
   name: string;
   description: string;
   behaviourType: Notes_BehaviourType;
+  behaviourCategory: MockNotesBehaviourCategory;
 };
 
 export const UpsertBehaviourLabelModal = ({
@@ -40,6 +47,7 @@ export const UpsertBehaviourLabelModal = ({
     name: initialState?.name,
     description: initialState?.description || '',
     behaviourType: initialState?.behaviourType || Notes_BehaviourType.Neutral,
+    behaviourCategory: MockNotesBehaviourCategory.CatOne
   };
 
   const { control, handleSubmit, reset } =
@@ -112,6 +120,16 @@ export const UpsertBehaviourLabelModal = ({
             getOptionLabel={(option) => t(`common:behaviourType.${option}`)}
             controlProps={{
               name: 'behaviourType',
+              control,
+            }}
+          />
+          <RHFSelect
+            fullWidth
+            options={Object.values(MockNotesBehaviourCategory)}
+            label={t('common:category')}
+            getOptionLabel={(option) => option}
+            controlProps={{
+              name: 'behaviourCategory',
               control,
             }}
           />
