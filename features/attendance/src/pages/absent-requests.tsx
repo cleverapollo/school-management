@@ -1,5 +1,9 @@
 import { Box, Button, Fade } from '@mui/material';
-import { ParentalAttendanceRequestStatus, usePermissions } from '@tyro/api';
+import {
+  getPersonProfileLink,
+  ParentalAttendanceRequestStatus,
+  usePermissions,
+} from '@tyro/api';
 import { AddIcon } from '@tyro/icons';
 import {
   ActionMenu,
@@ -9,7 +13,6 @@ import {
   PageHeading,
   ReturnTypeDisplayName,
   Table,
-  TablePersonAvatar,
   useDebouncedValue,
   useDisclosure,
   usePreferredNameLayout,
@@ -18,6 +21,7 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import { StudentTableAvatar } from '@tyro/people';
 import { ReturnTypeFromUseAbsentRequests, useAbsentRequests } from '../api';
 import { AbsentRequestStatusChip } from '../components/absent-requests/absent-request-status-chip';
 import { ApproveAbsentRequestConfirmModal } from '../components/absent-requests/approve-absent-request-confirm-modal';
@@ -48,16 +52,19 @@ const getAbsentRequestColumns = (
     checkboxSelection: !overview ? ({ data }) => Boolean(data) : undefined,
     headerCheckboxSelection: !overview,
     lockVisible: true,
-    valueGetter: ({ data }) => displayName(data?.student),
+    valueGetter: ({ data }) => displayName(data?.student?.person),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>
       data ? (
-        <TablePersonAvatar
-          person={data?.student}
-          to={`/people/students/${data?.studentPartyId ?? ''}/overview`}
+        <StudentTableAvatar
+          person={data?.student?.person}
+          isPriorityStudent={!!data?.student?.extensions}
+          hasSupportPlan={false}
+          to={getPersonProfileLink(data?.student?.person)}
         />
       ) : null,
+    cellClass: 'cell-value-visible',
   },
   {
     field: 'classGroup',

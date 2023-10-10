@@ -1,6 +1,6 @@
-import {useMemo, useState} from 'react';
-import {useParams} from 'react-router';
-import {TFunction, useTranslation} from '@tyro/i18n';
+import { useMemo, useState } from 'react';
+import { useParams } from 'react-router';
+import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   ActionMenu,
   GridOptions,
@@ -13,17 +13,17 @@ import {
   usePreferredNameLayout,
 } from '@tyro/core';
 
-import {AddUserIcon, MobileIcon, SendMailIcon} from '@tyro/icons';
+import { AddUserIcon, MobileIcon, SendMailIcon } from '@tyro/icons';
 import {
   PermissionUtils,
   SubjectGroupStudentMembershipTypeEnum,
   usePermissions,
   UserType,
 } from '@tyro/api';
-import {Box, Fade} from '@mui/material';
+import { Box, Fade } from '@mui/material';
 
-import {useSubjectGroupById} from '../../../api';
-import {ManageSubjectGroupMembership} from '../../../components/manage-group-membership-modal';
+import { useSubjectGroupById } from '../../../api';
+import { ManageSubjectGroupMembership } from '../../../components/manage-group-membership-modal';
 
 type ReturnTypeFromUseSubjectGroupById = NonNullable<
   NonNullable<ReturnType<typeof useSubjectGroupById>['data']>['students']

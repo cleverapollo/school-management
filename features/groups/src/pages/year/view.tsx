@@ -6,7 +6,6 @@ import {
   useNumber,
   Table,
   GridOptions,
-  TablePersonAvatar,
   ICellRendererParams,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
@@ -17,9 +16,9 @@ import {
   PageContainer,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { SmsRecipientType } from '@tyro/api';
+import { SmsRecipientType, getPersonProfileLink } from '@tyro/api';
 import { MobileIcon } from '@tyro/icons';
-import { getPersonProfileLink } from '../../utils/get-person-profile-link';
+import { StudentTableAvatar } from '@tyro/people';
 import { useYearGroupById } from '../../api/year-groups';
 
 type MembersReturnTypeFromUseYearGroupsById = NonNullable<
@@ -40,12 +39,16 @@ const getYearGroupColumns = (
     valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<MembersReturnTypeFromUseYearGroupsById, any>) => (
-      <TablePersonAvatar
-        person={data?.person}
-        to={getPersonProfileLink(data?.person)}
-      />
-    ),
+    }: ICellRendererParams<MembersReturnTypeFromUseYearGroupsById, any>) =>
+      data ? (
+        <StudentTableAvatar
+          person={data?.person}
+          isPriorityStudent={!!data?.extensions?.priority}
+          hasSupportPlan={false}
+          to={getPersonProfileLink(data?.person)}
+        />
+      ) : null,
+    cellClass: 'cell-value-visible',
     sort: 'asc',
     lockVisible: true,
   },

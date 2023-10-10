@@ -408,3 +408,7 @@
   transform: translate(18px, 1px);
   color: var(--ag-tyro-slate-500);
 }
+
+.ag-theme-tyro .cell-value-visible .ag-cell-value {
+  overflow: visible;
+}

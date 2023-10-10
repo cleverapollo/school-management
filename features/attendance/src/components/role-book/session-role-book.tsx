@@ -4,7 +4,6 @@ import {
   ICellRendererParams,
   ReturnTypeDisplayName,
   Table,
-  Avatar,
   usePreferredNameLayout,
   getLocaleTimestamp,
   ValueSetterParams,
@@ -24,11 +23,12 @@ import {
 } from '@tyro/calendar';
 import {
   AttendanceCodeType,
-  StudentSessionAttendanceInput,
+  SessionAttendanceInput,
   SessionAttendanceFlag,
   usePermissions,
   UsePermissionsReturn,
 } from '@tyro/api';
+import { StudentAvatar } from '@tyro/people';
 import {
   ReturnTypeFromSessionAttendance,
   useSaveSessionAttendance,
@@ -71,22 +71,28 @@ const getColumns = (
   {
     headerName: t('common:student'),
     field: 'student',
-    valueGetter: ({ data }) => displayName(data?.student),
+    valueGetter: ({ data }) => displayName(data?.student?.person),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromSessionAttendance, any>) => {
       if (!data) return null;
+      const { person, extensions } = data.student;
 
-      const name = displayName(data.student);
+      const name = displayName(person);
 
       return (
         <Box display="flex" alignItems="center">
-          <Avatar
-            src={data.student?.avatarUrl ?? undefined}
+          <StudentAvatar
+            partyId={person?.partyId}
+            src={person?.avatarUrl ?? undefined}
             name={name}
-            sx={{
-              my: 1,
-              mr: 1.5,
+            isPriorityStudent={!!extensions?.priority}
+            hasSupportPlan={false}
+            ContainingButtonProps={{
+              sx: {
+                my: 1,
+                mr: 1.5,
+              },
             }}
           />
           <Stack>
@@ -365,7 +371,7 @@ export function SessionAttendanceRoleBook({
       'attendanceByKey' | 'noteByKey'
     >
   ) => {
-    const attendanceChanges: Record<string, StudentSessionAttendanceInput> = {};
+    const attendanceChanges: Record<string, SessionAttendanceInput> = {};
 
     Object.entries(data).forEach(([studentPartyId, changes]) => {
       Object.entries(changes).forEach(([changeKey, value]) => {

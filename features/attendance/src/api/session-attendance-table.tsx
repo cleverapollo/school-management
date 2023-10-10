@@ -23,12 +23,18 @@ const sessionAttendanceListRequest = graphql(/* GraphQL */ `
         code
         name
       }
-        student {
-            partyId
-            firstName
-            lastName
-            avatarUrl
-        } 
+      student {
+        person {
+          partyId
+          firstName
+          lastName
+          avatarUrl
+          type
+        }
+        extensions {
+          priority
+        }
+      }
       bellTime {
         time
         name
@@ -48,13 +54,11 @@ const sessionListQuery = (filter: SessionAttendanceListFilter) => ({
   queryFn: () => gqlClient.request(sessionAttendanceListRequest, { filter }),
 });
 
-export function useSessionAttendanceList(
-  filter: SessionAttendanceListFilter
-) {
+export function useSessionAttendanceList(filter: SessionAttendanceListFilter) {
   return useQuery({
     ...sessionListQuery(filter),
     select: ({ attendance_sessionAttendanceList }) =>
-        attendance_sessionAttendanceList,
+      attendance_sessionAttendanceList,
   });
 }
 

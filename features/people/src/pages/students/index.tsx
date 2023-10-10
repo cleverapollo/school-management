@@ -23,6 +23,7 @@ import {
   useStudents,
 } from '../../api/student/students';
 import { ChangeProgrammeYearModal } from '../../components/students/change-programme-year-modal';
+import { StudentTableAvatar } from '../../components/common/student-table-avatar';
 
 const getStudentColumns = (
   translate: TFunction<
@@ -41,11 +42,14 @@ const getStudentColumns = (
       data,
     }: ICellRendererParams<ReturnTypeFromUseStudents, any>) =>
       data ? (
-        <TablePersonAvatar
+        <StudentTableAvatar
           person={data?.person}
+          isPriorityStudent={!!data?.extensions?.priority}
+          hasSupportPlan={false}
           to={`./${data?.partyId ?? ''}`}
         />
       ) : null,
+    cellClass: 'cell-value-visible',
     sort: 'asc',
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,

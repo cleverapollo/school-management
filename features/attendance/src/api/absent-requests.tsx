@@ -58,9 +58,16 @@ const absentRequests = graphql(/* GraphQL */ `
       }
       createdOn
       student {
-        avatarUrl
-        firstName
-        lastName
+        person {
+          partyId
+          firstName
+          lastName
+          avatarUrl
+          type
+        }
+        extensions {
+          priority
+        }
       }
     }
   }

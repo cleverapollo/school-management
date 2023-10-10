@@ -74,6 +74,9 @@ const classGroupById = graphql(/* GraphQL */ `
           avatarUrl
           type
         }
+        extensions {
+          priority
+        }
       }
       relatedSubjectGroups {
         name

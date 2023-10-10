@@ -7,6 +7,7 @@ import {
   CalendarAttendanceFilter,
   CalendarDayBellTimeFilter,
   NonClassContactHoursFilter,
+  Notes_NotesFilter,
 } from '@tyro/api';
 
 export const peopleKeys = {
@@ -54,8 +55,8 @@ export const peopleKeys = {
       [...peopleKeys.students.all(), 'status', studentId] as const,
     contacts: (studentId: number | undefined) =>
       [...peopleKeys.students.all(), 'contacts', studentId] as const,
-    notes: (studentId: number | undefined) =>
-      [...peopleKeys.students.all(), 'notes', studentId] as const,
+    notes: (filter: Notes_NotesFilter) =>
+      [...peopleKeys.students.all(), 'notes', filter] as const,
     behaviours: (studentId: number | undefined) =>
       [...peopleKeys.students.all(), 'behaviours', studentId] as const,
     subjectGroups: (studentId: number | undefined) =>

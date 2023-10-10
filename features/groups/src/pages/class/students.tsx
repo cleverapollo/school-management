@@ -3,19 +3,18 @@ import { Box, Fade } from '@mui/material';
 import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { MobileIcon, SendMailIcon } from '@tyro/icons';
-import { UseQueryReturnType } from '@tyro/api';
+import { UseQueryReturnType, getPersonProfileLink } from '@tyro/api';
 import {
   useNumber,
   Table,
   GridOptions,
   ActionMenu,
-  TablePersonAvatar,
   ICellRendererParams,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
 } from '@tyro/core';
+import { StudentTableAvatar } from '@tyro/people';
 import { useClassGroupById } from '../../api/class-groups';
-import { getPersonProfileLink } from '../../utils/get-person-profile-link';
 
 type ReturnTypeFromUseSubjectGroupById = UseQueryReturnType<
   typeof useClassGroupById
@@ -31,12 +30,16 @@ const getClassGroupColumns = (
     valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseSubjectGroupById, any>) => (
-      <TablePersonAvatar
-        person={data?.person}
-        to={getPersonProfileLink(data?.person)}
-      />
-    ),
+    }: ICellRendererParams<ReturnTypeFromUseSubjectGroupById, any>) =>
+      data ? (
+        <StudentTableAvatar
+          person={data?.person}
+          isPriorityStudent={!!data?.extensions?.priority}
+          hasSupportPlan={false}
+          to={getPersonProfileLink(data?.person)}
+        />
+      ) : null,
+    cellClass: 'cell-value-visible',
     sort: 'asc',
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,

@@ -27,6 +27,7 @@ import { ConfirmUnlinkModal } from '../../../components/contact/confirm-unlink-m
 import { RelationshipTypeCellEditor } from '../../../components/contacts/relationship-type-cell-editor';
 import { PriorityTypeCellEditor } from '../../../components/contacts/priority-cell-editor';
 import { useUpdateStudentContactRelationships } from '../../../api/student/update-student-contact-relationships';
+import { StudentTableAvatar } from '../../../components/common/student-table-avatar';
 
 type ContactStudentsRelationships = NonNullable<
   UseQueryReturnType<typeof useContactStudents>['relationships']
@@ -43,19 +44,19 @@ const getContactStudentsColumns = (
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: true,
     lockVisible: true,
+    valueGetter: ({ data }) => displayName(data?.student?.person),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ContactStudentsRelationships>) => {
-      if (!data) return null;
-      const student = data?.student;
-      return (
-        <TableAvatar
-          name={displayName(student?.person) ?? ''}
-          to={`/people/students/${student?.partyId ?? ''}`}
-          avatarUrl={student?.person?.avatarUrl}
+    }: ICellRendererParams<ContactStudentsRelationships>) =>
+      data ? (
+        <StudentTableAvatar
+          person={data?.student?.person}
+          isPriorityStudent={!!data?.student?.extensions?.priority}
+          hasSupportPlan={false}
+          to={`/people/students/${data?.studentPartyId ?? ''}`}
         />
-      );
-    },
+      ) : null,
+    cellClass: 'cell-value-visible',
     sort: 'asc',
   },
   {

@@ -61,7 +61,7 @@ const subjectGroupById = graphql(/* GraphQL */ `
         colour
       }
       studentMembershipType {
-          type
+        type
       }
       staff {
         title {
@@ -79,9 +79,13 @@ const subjectGroupById = graphql(/* GraphQL */ `
           name
         }
         person {
+          partyId
           firstName
           lastName
           avatarUrl
+        }
+        extensions {
+          priority
         }
       }
     }

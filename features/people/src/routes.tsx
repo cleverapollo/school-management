@@ -339,7 +339,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                   isStaffUserWithPermission('ps:1:notes:read_notes'),
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
-                  return getNotes(studentId);
+                  return getNotes({ partyIds: [studentId ?? 0] });
                 },
                 element: <StudentProfileNotesPage />,
               },
