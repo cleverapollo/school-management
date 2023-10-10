@@ -50,7 +50,7 @@ const getColumns = (
       data ? (
         <StudentTableAvatar
           person={data?.student?.person}
-          isPriorityStudent={!!data?.student?.extensions}
+          isPriorityStudent={!!data?.student?.extensions?.priority}
           hasSupportPlan={false}
           to={getPersonProfileLink(data?.student?.person)}
         />

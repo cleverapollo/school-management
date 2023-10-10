@@ -37,7 +37,7 @@ export const EditNoteModal = ({
   const { t } = useTranslation(['common', 'people']);
   const { isTyroUser } = usePermissions();
   const { mutate: createOrUpdateNoteMutation, isLoading: isSubmitting } =
-    useUpsertNote(studentId);
+    useUpsertNote();
   const { data: noteTags = [] } = useNoteTags();
 
   const { resolver, rules } = useFormValidator<NoteFormState>();

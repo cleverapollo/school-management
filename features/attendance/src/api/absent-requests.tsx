@@ -57,7 +57,7 @@ const absentRequests = graphql(/* GraphQL */ `
         }
       }
       createdOn
-      student {
+      studentNew {
         person {
           partyId
           firstName
@@ -102,7 +102,10 @@ export function useAbsentRequests(filter: ParentalAttendanceRequestFilter) {
   return useQuery({
     ...absentRequestsQuery(filter),
     select: ({ attendance_parentalAttendanceRequests }) =>
-      attendance_parentalAttendanceRequests,
+      attendance_parentalAttendanceRequests.map((request) => ({
+        ...request,
+        student: request.studentNew,
+      })),
   });
 }
 
