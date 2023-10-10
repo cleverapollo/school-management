@@ -39,7 +39,6 @@ import {
   useIndividualStudentBehaviour,
   useBehaviourCategories,
   ReturnTypeFromUseIndividualStudentBehaviour,
-  ReturnTypeFromBehaviourCategories,
 } from '../../../api/behaviour/individual-student-behaviour';
 import {
   useBehaviourLevels,
@@ -50,7 +49,7 @@ import {
   CreateBehaviourModalProps,
 } from '../../../components/behaviour/create-behaviour-modal';
 import { useDeleteBehaviour } from '../../../api/behaviour/delete-behaviour';
-import { BehaviourLevelsContainer } from '../../../components/students/behaviour-individual-view/occurrence-types-container';
+import { CategoriesContainer } from '../../../components/students/behaviour-individual-view/categories-container';
 
 dayjs.extend(LocalizedFormat);
 
@@ -312,14 +311,20 @@ export default function StudentProfileBehaviourPage() {
     }
   }, [studentBehaviorData, currentTabValue]);
 
-  const getBehaviourCount = (tabValue: string) =>
-    filteredData?.reduce((count, item) => {
-      const behaviours = item?.category
-        ? getTagsForCategory(item?.category, behaviourCategories).tags
-        : [];
-      const behaviourNames = behaviours?.map((behaviour) => behaviour.name);
-      return count + (behaviourNames?.includes(tabValue) ? 1 : 0);
-    }, 0);
+  const getBehaviourTypesTotals = useMemo(
+    () => (tabValue: string) =>
+      studentBehaviorData?.reduce((count, item) => {
+        console.log(item, 'behaviours - item');
+
+        const behaviours = item?.category
+          ? getTagsForCategory(item?.category, behaviourCategories).tags
+          : [];
+
+        const behaviourNames = behaviours?.map((behaviour) => behaviour.name);
+        return count + (behaviourNames?.includes(tabValue) ? 1 : 0);
+      }, 0),
+    [studentBehaviorData]
+  );
 
   return loadingStatus ? (
     <Box
@@ -454,9 +459,10 @@ export default function StudentProfileBehaviourPage() {
         )}
       </Stack>
 
-      <BehaviourLevelsContainer
+      <CategoriesContainer
         categories={categories}
         isCategoriesLoading={isCategoriesLoading}
+        totalLogsByLevels={subCategories?.length ?? 0}
       />
 
       <Tabs
@@ -488,7 +494,7 @@ export default function StudentProfileBehaviourPage() {
                   label={
                     tab?.name === 'All'
                       ? subCategories?.length
-                      : getBehaviourCount(tab?.name)
+                      : getBehaviourTypesTotals(tab?.name)
                   }
                   variant="soft"
                   sx={{

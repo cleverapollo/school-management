@@ -14,7 +14,11 @@ import {
   getTodayTimetableEvents,
 } from '@tyro/calendar';
 import dayjs from 'dayjs';
-import { getAcademicNamespace, getPermissionUtils } from '@tyro/api';
+import {
+  getAcademicNamespace,
+  getPermissionUtils,
+  Notes_BehaviourType,
+} from '@tyro/api';
 import {
   getStudent,
   getStudents,
@@ -37,7 +41,10 @@ import { getStaffSubjectGroups } from './api/staff/subject-groups';
 import { getStaffPersonal } from './api/staff/personal';
 import { getMedicalConditionNamesQuery } from './api/student/medicals/medical-condition-lookup';
 import { getPersonalTitlesQuery } from './api/student/medicals/personal-titles';
-import { getBehaviours } from './api/behaviour/list';
+import {
+  getIndividualStudentBehaviour,
+  getBehaviourCategories,
+} from './api/behaviour/individual-student-behaviour';
 import { getNonClassContactHours } from './api/staff/non-class-contact';
 
 const StudentsListPage = lazyWithRetry(() => import('./pages/students'));
@@ -284,7 +291,19 @@ export const getRoutes: NavObjectFunction = (t) => [
                   if (!studentId) {
                     throw404Error();
                   }
-                  return getBehaviours(studentId);
+
+                  return (
+                    Promise.all([
+                      getBehaviourCategories({
+                        partyId: studentId,
+                        behaviourType: Notes_BehaviourType.Positive,
+                      }),
+                    ]),
+                    getIndividualStudentBehaviour({
+                      partyId: studentId,
+                      behaviourType: Notes_BehaviourType.Positive,
+                    })
+                  );
                 },
                 element: <StudentProfileBehaviourPage />,
               },

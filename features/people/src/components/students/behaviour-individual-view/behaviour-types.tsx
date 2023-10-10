@@ -1,15 +1,20 @@
 import { Box, Typography } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
+import { FolderIcon } from '@tyro/icons';
 
-type TypesProps = {
+type BehaviourTypesProps = {
   title: string;
   color: string;
   count: number;
-  // icon: JSX.Element;
 };
 
-export const Types = ({ color, title, count }: TypesProps) => {
+export const BehaviourTypes = ({
+  color,
+  title,
+  count,
+}: BehaviourTypesProps) => {
   const { t } = useTranslation(['common', 'people']);
+
   return (
     <Box
       minWidth="137px"
@@ -27,13 +32,18 @@ export const Types = ({ color, title, count }: TypesProps) => {
     >
       <Box
         sx={{
-          padding: '6px',
           borderRadius: '6px',
           backgroundColor: `${color}.100`,
+          color: `${color}.500`,
           width: '32px',
           height: '32px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         }}
-      />
+      >
+        <FolderIcon />
+      </Box>
       <Box flexDirection="column" height="32px" marginLeft="12px">
         <Typography
           sx={{ fontSize: '.875rem', lineHeight: '1rem', fontWeight: 'bold' }}
