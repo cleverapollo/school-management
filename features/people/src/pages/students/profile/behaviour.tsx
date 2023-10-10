@@ -311,20 +311,15 @@ export default function StudentProfileBehaviourPage() {
     }
   }, [studentBehaviorData, currentTabValue]);
 
-  const getBehaviourTypesTotals = useMemo(
-    () => (tabValue: string) =>
-      studentBehaviorData?.reduce((count, item) => {
-        console.log(item, 'behaviours - item');
+  const getBehaviourTypesTotals = (tabValue: string) =>
+    studentBehaviorData?.reduce((count, item) => {
+      const behaviours = item?.category
+        ? getTagsForCategory(item?.category, behaviourCategories).tags
+        : [];
 
-        const behaviours = item?.category
-          ? getTagsForCategory(item?.category, behaviourCategories).tags
-          : [];
-
-        const behaviourNames = behaviours?.map((behaviour) => behaviour.name);
-        return count + (behaviourNames?.includes(tabValue) ? 1 : 0);
-      }, 0),
-    [studentBehaviorData]
-  );
+      const behaviourNames = behaviours?.map((behaviour) => behaviour.name);
+      return count + (behaviourNames?.includes(tabValue) ? 1 : 0);
+    }, 0);
 
   return loadingStatus ? (
     <Box
