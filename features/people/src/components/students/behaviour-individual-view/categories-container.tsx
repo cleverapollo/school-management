@@ -44,6 +44,7 @@ export const CategoriesContainer = ({
       <Stack direction="row">
         {categories?.map((type) => (
           <BehaviourTypes
+            key={type?.behaviourCategoryId}
             title={type?.name ?? '-'}
             color={type?.colour ?? ''}
             count={type?.count ?? 0}
