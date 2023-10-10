@@ -6,8 +6,6 @@ import { ReturnTypeFromUseBehaviourLevels } from '../../../api/behaviour/behavio
 import { ReturnTypeFromBehaviourCategories } from '../../../api/behaviour/individual-student-behaviour';
 
 type BehaviourLevelsContainerProps = {
-  behaviourCategories: ReturnTypeFromUseBehaviourLevels;
-  behaviourType: Notes_BehaviourType;
   categories: ReturnTypeFromBehaviourCategories[];
   isCategoriesLoading: boolean;
 };
@@ -18,7 +16,6 @@ export const BehaviourLevelsContainer = ({
 }: BehaviourLevelsContainerProps) => {
   const { t } = useTranslation(['common', 'people']);
   const totalLogs = 10;
-  console.log(categories, 'test');
 
   return isCategoriesLoading ? (
     <CircularProgress />

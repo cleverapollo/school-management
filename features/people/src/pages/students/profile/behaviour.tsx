@@ -455,8 +455,6 @@ export default function StudentProfileBehaviourPage() {
       </Stack>
 
       <BehaviourLevelsContainer
-        behaviourCategories={behaviourCategories}
-        behaviourType={behaviourType}
         categories={categories}
         isCategoriesLoading={isCategoriesLoading}
       />
