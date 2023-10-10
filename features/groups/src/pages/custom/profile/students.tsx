@@ -11,6 +11,7 @@ import {
   ReturnTypeDisplayName,
 } from '@tyro/core';
 import { StudentTableAvatar } from '@tyro/people';
+import { getPersonProfileLink } from '@tyro/api';
 import {
   useCustomGroupDefinition,
   ReturnTypeFromUseCustomGroupDefinition,
@@ -34,7 +35,7 @@ const getColumns = (
           person={data?.person}
           isPriorityStudent={!!data?.extensions?.priority}
           hasSupportPlan={false}
-          to={`./${data?.partyId ?? ''}`}
+          to={getPersonProfileLink(data?.person)}
         />
       ) : null,
     cellClass: 'cell-value-visible',

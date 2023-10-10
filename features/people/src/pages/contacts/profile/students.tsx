@@ -6,7 +6,6 @@ import {
   usePreferredNameLayout,
   ReturnTypeDisplayName,
   TableBooleanValue,
-  TableAvatar,
   useNumber,
   ActionMenu,
   TableSwitch,
@@ -19,6 +18,7 @@ import { useMemo, useState } from 'react';
 import {
   UseQueryReturnType,
   Core_UpdateStudentContactRelationshipInput,
+  getPersonProfileLink,
 } from '@tyro/api';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { MobileIcon, PersonHeartIcon, SendMailIcon } from '@tyro/icons';
@@ -53,7 +53,7 @@ const getContactStudentsColumns = (
           person={data?.student?.person}
           isPriorityStudent={!!data?.student?.extensions?.priority}
           hasSupportPlan={false}
-          to={`/people/students/${data?.studentPartyId ?? ''}`}
+          to={getPersonProfileLink(data?.student?.person)}
         />
       ) : null,
     cellClass: 'cell-value-visible',

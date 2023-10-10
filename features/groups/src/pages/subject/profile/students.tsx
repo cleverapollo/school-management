@@ -7,7 +7,6 @@ import {
   ICellRendererParams,
   ReturnTypeDisplayName,
   Table,
-  TablePersonAvatar,
   useDisclosure,
   useNumber,
   usePreferredNameLayout,
@@ -15,6 +14,7 @@ import {
 
 import { AddUserIcon, MobileIcon, SendMailIcon } from '@tyro/icons';
 import {
+  getPersonProfileLink,
   PermissionUtils,
   SubjectGroupStudentMembershipTypeEnum,
   usePermissions,
@@ -22,6 +22,7 @@ import {
 } from '@tyro/api';
 import { Box, Fade } from '@mui/material';
 
+import { StudentTableAvatar } from '@tyro/people';
 import { useSubjectGroupById } from '../../../api';
 import { ManageSubjectGroupMembership } from '../../../components/manage-group-membership-modal';
 
@@ -41,11 +42,14 @@ const getSubjectGroupsColumns = (
       data,
     }: ICellRendererParams<ReturnTypeFromUseSubjectGroupById>) =>
       data && (
-        <TablePersonAvatar
+        <StudentTableAvatar
           person={data?.person}
-          to={`/people/students/${data?.partyId ?? ''}`}
+          isPriorityStudent={!!data?.extensions?.priority}
+          hasSupportPlan={false}
+          to={getPersonProfileLink(data?.person)}
         />
       ),
+    cellClass: 'cell-value-visible',
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: ({ data }) => Boolean(data),

@@ -5,7 +5,6 @@ import {
   ICellRendererParams,
   Page,
   Table,
-  TablePersonAvatar,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
   ReturnTypeDisplayNames,
@@ -16,7 +15,7 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
 import { MobileIcon, CalendarEditPenIcon } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { SmsRecipientType } from '@tyro/api';
+import { getPersonProfileLink, SmsRecipientType } from '@tyro/api';
 import {
   useBulkUpdateCoreStudent,
   ReturnTypeFromUseStudents,
@@ -46,7 +45,7 @@ const getStudentColumns = (
           person={data?.person}
           isPriorityStudent={!!data?.extensions?.priority}
           hasSupportPlan={false}
-          to={`./${data?.partyId ?? ''}`}
+          to={getPersonProfileLink(data?.person)}
         />
       ) : null,
     cellClass: 'cell-value-visible',
