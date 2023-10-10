@@ -65,6 +65,9 @@ export function CreateBehaviourModal({
         occurredOn: rules.required(),
         behaviour: rules.required(),
       }),
+      defaultValues: {
+        behaviourTypeState: behaviourType,
+      },
     });
 
   const { mutate, isLoading } = useUpsertStudentBehaviour(studentId);
@@ -76,7 +79,6 @@ export function CreateBehaviourModal({
     note,
     behaviourTypeState,
   }: CreateBehaviourFormState) => {
-    setBehaviourType(behaviourTypeState);
     mutate(
       [
         {
@@ -89,6 +91,7 @@ export function CreateBehaviourModal({
       ],
       {
         onSuccess: () => {
+          setBehaviourType(behaviourTypeState);
           onClose();
           reset();
         },
@@ -97,14 +100,11 @@ export function CreateBehaviourModal({
   };
 
   const behaviourTypeOption = watch('behaviourTypeState');
-  const behaviourTypeToCheck = behaviourTypeOption || behaviourType;
 
   const filterTagsByBehaviourType = useMemo(
     () =>
-      behaviourTags?.filter(
-        (tag) => tag.behaviourType === behaviourTypeToCheck
-      ),
-    [behaviourTypeToCheck, behaviourTypeOption, behaviourType]
+      behaviourTags?.filter((tag) => tag.behaviourType === behaviourTypeOption),
+    [behaviourTypeOption, behaviourTags]
   );
 
   return (
