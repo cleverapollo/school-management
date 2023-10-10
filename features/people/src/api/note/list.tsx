@@ -1,6 +1,7 @@
 import {
   gqlClient,
   graphql,
+  Notes_NotesFilter,
   Notes_TagCategory,
   queryClient,
   UseQueryReturnType,
@@ -42,21 +43,26 @@ const notes = graphql(/* GraphQL */ `
   }
 `);
 
-const notesQuery = (studentId: number | undefined) => ({
-  queryKey: peopleKeys.students.notes(studentId),
-  queryFn: async () =>
-    gqlClient.request(notes, {
-      filter: { partyIds: [studentId ?? 0], noteType: Notes_TagCategory.Note },
-    }),
-});
+const notesQuery = (filter: Notes_NotesFilter) => {
+  const updatedFilter = { ...filter, noteType: Notes_TagCategory.Note };
 
-export function getNotes(studentId: number | undefined) {
-  return queryClient.fetchQuery(notesQuery(studentId));
+  return {
+    queryKey: peopleKeys.students.notes(updatedFilter),
+    queryFn: async () =>
+      gqlClient.request(notes, {
+        filter: updatedFilter,
+      }),
+  };
+};
+
+export function getNotes(filter: Notes_NotesFilter) {
+  return queryClient.fetchQuery(notesQuery(filter));
 }
 
-export function useNotes(studentId: number | undefined) {
+export function useNotes(filter: Notes_NotesFilter, enabled = true) {
   return useQuery({
-    ...notesQuery(studentId),
+    ...notesQuery(filter),
     select: ({ notes_notes }) => notes_notes,
+    enabled,
   });
 }

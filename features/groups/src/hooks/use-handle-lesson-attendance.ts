@@ -5,6 +5,8 @@ import {
   queryClient,
   AttendanceCodeType,
   Person,
+  Maybe,
+  StudentGraphqlExtension,
 } from '@tyro/api';
 
 import { useSaveAttendance } from '@tyro/attendance';
@@ -37,7 +39,8 @@ export type GroupStudent = {
   classGroup?: {
     name?: string;
   } | null;
-  person: Pick<Person, 'firstName' | 'lastName' | 'avatarUrl'>;
+  person: Pick<Person, 'firstName' | 'lastName' | 'avatarUrl' | 'partyId'>;
+  extensions?: Maybe<Pick<StudentGraphqlExtension, 'priority'>>;
 };
 
 type UseHandleLessonAttendanceParams = {

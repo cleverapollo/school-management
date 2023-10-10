@@ -28,8 +28,9 @@ import {
   SaveIcon,
   UndoIcon,
 } from '@tyro/icons';
-import { Avatar, usePreferredNameLayout } from '@tyro/core';
+import { usePreferredNameLayout } from '@tyro/core';
 import { useEffect, useState } from 'react';
+import { StudentAvatar } from '@tyro/people';
 import { useHandleLessonAttendance, GroupStudent } from '../../../hooks';
 import { AdditionalLessonsModal } from './additional-lessons-modal';
 
@@ -189,8 +190,11 @@ export const GroupAttendance = ({ partyId, students }: AttendanceProps) => {
                     <TableRow key={student?.partyId}>
                       <TableCell>
                         <Stack direction="row" spacing={2} alignItems="center">
-                          <Avatar
+                          <StudentAvatar
+                            partyId={student?.partyId}
                             name={displayName(student?.person)}
+                            isPriorityStudent={!!student?.extensions?.priority}
+                            hasSupportPlan={false}
                             src={student?.person?.avatarUrl}
                           />
                           <Stack direction="column">

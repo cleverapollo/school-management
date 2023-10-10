@@ -9,7 +9,9 @@ import { StudentAvatar } from './student-avatar';
 
 type TableAvatarProps = {
   to?: string | null;
-  person: Partial<Person> | undefined;
+  person:
+    | Pick<Person, 'avatarUrl' | 'firstName' | 'lastName' | 'partyId'>
+    | undefined;
   isPriorityStudent: boolean;
   hasSupportPlan: boolean;
   AvatarProps?: CoreAvatarProps;

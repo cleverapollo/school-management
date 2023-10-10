@@ -19,6 +19,7 @@ import {
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { SmsRecipientType } from '@tyro/api';
 import { MobileIcon } from '@tyro/icons';
+import { StudentTableAvatar } from '@tyro/people';
 import { getPersonProfileLink } from '../../utils/get-person-profile-link';
 import { useYearGroupById } from '../../api/year-groups';
 
@@ -40,12 +41,16 @@ const getYearGroupColumns = (
     valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<MembersReturnTypeFromUseYearGroupsById, any>) => (
-      <TablePersonAvatar
-        person={data?.person}
-        to={getPersonProfileLink(data?.person)}
-      />
-    ),
+    }: ICellRendererParams<MembersReturnTypeFromUseYearGroupsById, any>) =>
+      data ? (
+        <StudentTableAvatar
+          person={data?.person}
+          isPriorityStudent={!!data?.extensions?.priority}
+          hasSupportPlan={false}
+          to={getPersonProfileLink(data?.person)}
+        />
+      ) : null,
+    cellClass: 'cell-value-visible',
     sort: 'asc',
     lockVisible: true,
   },

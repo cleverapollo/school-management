@@ -6,11 +6,11 @@ import {
   useNumber,
   Table,
   GridOptions,
-  TablePersonAvatar,
   ICellRendererParams,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
 } from '@tyro/core';
+import { StudentTableAvatar } from '@tyro/people';
 import {
   useCustomGroupDefinition,
   ReturnTypeFromUseCustomGroupDefinition,
@@ -29,12 +29,15 @@ const getColumns = (
     sort: 'asc',
     valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({ data }: ICellRendererParams<CustomGroupStudent>) =>
-      data && (
-        <TablePersonAvatar
+      data ? (
+        <StudentTableAvatar
           person={data?.person}
-          to={`/people/students/${data?.partyId ?? ''}`}
+          isPriorityStudent={!!data?.extensions?.priority}
+          hasSupportPlan={false}
+          to={`./${data?.partyId ?? ''}`}
         />
-      ),
+      ) : null,
+    cellClass: 'cell-value-visible',
   },
   {
     field: 'classGroup.name',

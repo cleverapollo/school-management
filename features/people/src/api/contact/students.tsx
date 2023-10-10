@@ -24,9 +24,14 @@ const contactsStudentsById = graphql(/* GraphQL */ `
             }
             ... on Student {
               person {
+                partyId
                 firstName
                 lastName
                 avatarUrl
+                type
+              }
+              extensions {
+                priority
               }
             }
           }

@@ -1,23 +1,24 @@
-import {useMemo, useState} from 'react';
-import {useParams} from 'react-router';
-import {TFunction, useTranslation} from '@tyro/i18n';
+import { useMemo, useState } from 'react';
+import { useParams } from 'react-router';
+import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   ActionMenu,
   GridOptions,
   ICellRendererParams,
   ReturnTypeDisplayName,
   Table,
-  TablePersonAvatar,
   useDisclosure,
   useNumber,
   usePreferredNameLayout,
 } from '@tyro/core';
 
-import {AddUserIcon, MobileIcon, SendMailIcon} from '@tyro/icons';
-import {usePermissions, UserType,} from '@tyro/api';
-import {Box, Fade} from '@mui/material';
-import {useSubjectGroupById} from '../../../api';
-import {ManageSubjectGroupMembership} from '../../../components/manage-group-membership-modal';
+import { AddUserIcon, MobileIcon, SendMailIcon } from '@tyro/icons';
+import { usePermissions, UserType } from '@tyro/api';
+import { Box, Fade } from '@mui/material';
+import { StudentTableAvatar } from '@tyro/people';
+import { useSubjectGroupById } from '../../../api';
+import { ManageSubjectGroupMembership } from '../../../components/manage-group-membership-modal';
+import { getPersonProfileLink } from '../../../utils/get-person-profile-link';
 
 type ReturnTypeFromUseSubjectGroupById = NonNullable<
   NonNullable<ReturnType<typeof useSubjectGroupById>['data']>['students']
@@ -34,12 +35,15 @@ const getSubjectGroupsColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseSubjectGroupById>) =>
-      data && (
-        <TablePersonAvatar
+      data ? (
+        <StudentTableAvatar
           person={data?.person}
-          to={`/people/students/${data?.partyId ?? ''}`}
+          isPriorityStudent={!!data?.extensions?.priority}
+          hasSupportPlan={false}
+          to={getPersonProfileLink(data?.person)}
         />
-      ),
+      ) : null,
+    cellClass: 'cell-value-visible',
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: ({ data }) => Boolean(data),

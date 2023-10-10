@@ -21,7 +21,9 @@ export function useUpsertNote(studentId: number | undefined) {
     mutationFn: async (input: Notes_UpsertNote[]) =>
       gqlClient.request(upsertNote, { input }),
     onSuccess: async (_, [note]) => {
-      await queryClient.invalidateQueries(peopleKeys.students.notes(studentId));
+      await queryClient.invalidateQueries(
+        peopleKeys.students.notes({ partyIds: [studentId ?? 0] })
+      );
 
       toast(
         note

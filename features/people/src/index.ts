@@ -6,6 +6,8 @@ export * from './routes';
 export { TableStaffAutocomplete } from './components/common/table-staff-autocomplete';
 export * from './components/common/staff-autocomplete';
 export * from './components/common/list-people-pagination';
+export * from './components/common/student-avatar';
+export * from './components/common/student-table-avatar';
 export { usePartySearchProps } from './hooks/use-party-search-props';
 export { usePartySearch } from './api/common/party-search';
 
