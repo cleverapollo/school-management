@@ -13,26 +13,21 @@ import { LoadingButton } from '@mui/lab';
 import {
   ReturnTypeFromUseNoteTagsBehaviour,
   useUpsertBehaviourTags,
+  useBehaviourCategory,
 } from '@tyro/people';
 import React, { useEffect } from 'react';
-import { Notes_BehaviourType } from '@tyro/api';
+import { Notes_BehaviourType, Notes_BehaviourCategory } from '@tyro/api';
 
 export interface UpsertBehaviourLabelModalProps {
   onClose: () => void;
   initialState: Partial<ReturnTypeFromUseNoteTagsBehaviour> | null;
-}
-// TODO: update when category list is ready
-enum MockNotesBehaviourCategory {
-  CatOne = 'CatOne',
-  CatTwo = 'CatTwo',
-  CatThree = 'CatThree',
 }
 
 export type UpsertBehaviourLabelFormState = {
   name: string;
   description: string;
   behaviourType: Notes_BehaviourType;
-  behaviourCategory: MockNotesBehaviourCategory;
+  behaviourCategory: string;
 };
 
 export const UpsertBehaviourLabelModal = ({
@@ -42,12 +37,13 @@ export const UpsertBehaviourLabelModal = ({
   const { t, i18n } = useTranslation(['settings', 'common']);
   const { resolver, rules } = useFormValidator<UpsertBehaviourLabelFormState>();
   const currentLanguageCode = i18n.language;
+  const { data: categories } = useBehaviourCategory({});
 
   const defaultFormStateValues: Partial<UpsertBehaviourLabelFormState> = {
     name: initialState?.name,
     description: initialState?.description || '',
     behaviourType: initialState?.behaviourType || Notes_BehaviourType.Neutral,
-    behaviourCategory: MockNotesBehaviourCategory.CatOne
+    behaviourCategory: initialState?.category || categories?.[0]?.name,
   };
 
   const { control, handleSubmit, reset } =
@@ -125,7 +121,7 @@ export const UpsertBehaviourLabelModal = ({
           />
           <RHFSelect
             fullWidth
-            options={Object.values(MockNotesBehaviourCategory)}
+            options={categories?.map((cat) => cat.name) || []}
             label={t('common:category')}
             getOptionLabel={(option) => option}
             controlProps={{

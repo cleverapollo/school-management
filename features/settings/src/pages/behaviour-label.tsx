@@ -11,7 +11,7 @@ import {
   PageHeading,
   Table,
 } from '@tyro/core';
-import { EditIcon, VerticalDotsIcon } from '@tyro/icons';
+import { EditIcon, VerticalDotsIcon, AddFolderIcon } from '@tyro/icons';
 import {
   ReturnTypeFromUseNoteTagsBehaviour,
   useNoteTagsBehaviour,
@@ -59,6 +59,7 @@ const getNoteTagBehaviourColumns = (
   },
   {
     headerName: t('common:category'),
+    field: 'category',
     lockVisible: true,
     editable: false,
   },
@@ -92,7 +93,9 @@ export default function BehaviourLabel() {
   const [noteLabelDetails, setNoteLabelDetails] =
     useState<UpsertBehaviourLabelModalProps['initialState']>(null);
 
-  const [noteCategoryDetails, setNoteCategoryDetails] = useState<Object | null>(null);
+  const [noteCategoryDetails, setNoteCategoryDetails] = useState<object | null>(
+    null
+  );
 
   const handleCreateBehaviourLabel = () => {
     setNoteLabelDetails({});
@@ -127,10 +130,12 @@ export default function BehaviourLabel() {
                 menuItems={[
                   {
                     label: t('settings:actions.addBehaviourLabel'),
+                    icon: <AddFolderIcon />,
                     onClick: handleCreateBehaviourLabel,
                   },
                   {
                     label: t('settings:actions.addCategory'),
+                    icon: <AddFolderIcon />,
                     onClick: handleCreateCategoryModal,
                   },
                 ]}
