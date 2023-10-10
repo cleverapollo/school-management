@@ -59,6 +59,7 @@ export * from './expand';
 export * from './external-link';
 export * from './eye';
 export * from './eye-slash';
+export * from './folder';
 export * from './flags';
 export * from './forward-mail';
 export * from './gear';

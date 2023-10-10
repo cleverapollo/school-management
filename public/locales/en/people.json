@@ -38,6 +38,7 @@
   "studentAttendanceAlertBodyModal": "Once changes are saved, they can be edited again.",
   "ariaLabelForTabs": "scrollable auto tabs for highlighting attendance types",
   "currentEmployee": "Current employee",
+  "scrollableTabs": "Scrollable tabs",
   "gender": {
     "title": "Gender",
     "MALE": "Male",
@@ -206,6 +207,7 @@
   "present": "Present",
   "displayCode": "Display code",
   "behaviour": "Behaviour",
+  "behaviourTitle": "Behaviour - {{year}}",
   "availableForTeaching": "Available for teaching",
   "availableForSubstitution": "Available for substitution",
   "availableForSupportClasses": "Available for support classes",
@@ -266,6 +268,19 @@
     "note": "Note"
   },
   "createBehaviour": "Create behaviour",
+  "behaviourCategories": "Behaviour categories",
+  "behaviourType": "Behaviour type",
+  "totalLogs_one": "{{ count }} log",
+  "totalLogs_other": "{{ count }} logs",
+  "association": "Association",
+  "associations": "Association(s)",
+  "category": "Category",
+  "tags": "Tags",
+  "behaviourTypes": {
+    "POSITIVE": "Positive",
+    "NEUTRAL": "Neutral",
+    "NEGATIVE": "Negative"
+  },
   "createNonClassContact": "Create non-class contact",
   "editNonClassContact": "Edit non-class contact",
   "deleteNonClassContact": "Delete non-class contact",

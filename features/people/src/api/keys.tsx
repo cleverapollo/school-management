@@ -8,6 +8,8 @@ import {
   CalendarDayBellTimeFilter,
   NonClassContactHoursFilter,
   Notes_NotesFilter,
+  Notes_BehaviourFilter,
+  Notes_BehaviourCategoryFilter,
 } from '@tyro/api';
 
 export const peopleKeys = {
@@ -99,5 +101,19 @@ export const peopleKeys = {
       ] as const,
     calendarBellTimes: (filter: CalendarDayBellTimeFilter) =>
       [...peopleKeys.students.all(), 'calendarBellTimes', filter] as const,
+    individualStudentBehaviours: (filter: Notes_BehaviourFilter) =>
+      [
+        ...peopleKeys.students.all(),
+        'individualStudentBehaviours',
+        filter,
+      ] as const,
+    individualStudentBehavioursCategories: (filter: Notes_BehaviourFilter) =>
+      [
+        ...peopleKeys.students.all(),
+        'individualStudentBehavioursCategories',
+        filter,
+      ] as const,
+    behaviourLevels: (filter: Notes_BehaviourCategoryFilter) =>
+      [...peopleKeys.students.all(), 'behaviourLevels', filter] as const,
   },
 };

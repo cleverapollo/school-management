@@ -33,6 +33,7 @@ const behaviour = graphql(/* GraphQL */ `
         id
         name
         category
+        behaviourType
         descriptionTextId
         nameTextId
       }
