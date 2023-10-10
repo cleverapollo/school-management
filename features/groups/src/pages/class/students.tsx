@@ -3,7 +3,7 @@ import { Box, Fade } from '@mui/material';
 import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { MobileIcon, SendMailIcon } from '@tyro/icons';
-import { UseQueryReturnType } from '@tyro/api';
+import { UseQueryReturnType, getPersonProfileLink } from '@tyro/api';
 import {
   useNumber,
   Table,
@@ -15,7 +15,6 @@ import {
 } from '@tyro/core';
 import { StudentTableAvatar } from '@tyro/people';
 import { useClassGroupById } from '../../api/class-groups';
-import { getPersonProfileLink } from '@tyro/api/src/utils/get-person-profile-link';
 
 type ReturnTypeFromUseSubjectGroupById = UseQueryReturnType<
   typeof useClassGroupById

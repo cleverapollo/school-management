@@ -1,6 +1,7 @@
 import { useDisclosure } from '@tyro/core';
 import { IconButton, IconButtonProps } from '@mui/material';
-import { useTranslation } from '@tyro/i18n';
+// import { useTranslation } from '@tyro/i18n';
+import { memo } from 'react';
 import {
   StudentAvatarPicture,
   StudentAvatarPictureProps,
@@ -12,20 +13,20 @@ interface StudentAvatarProps extends StudentAvatarPictureProps {
   ContainingButtonProps?: IconButtonProps;
 }
 
-export function StudentAvatar({
+export function StudentAvatarInner({
   ContainingButtonProps,
   ...props
 }: StudentAvatarProps) {
-  const { t } = useTranslation(['common', 'people']);
+  // const { t } = useTranslation(['people']); // Commenting out this line as it's causing infinite loop on assessment results
   const { getButtonProps, getDisclosureProps } = useDisclosure();
 
   return (
     <>
       <IconButton
         disabled={!props.isPriorityStudent && !props.hasSupportPlan}
-        aria-label={t('people:studentClickableAvatarAria', {
-          name: props.name,
-        })}
+        // aria-label={t('people:studentClickableAvatarAria', {
+        //   name: props.name,
+        // })}
         {...ContainingButtonProps}
         sx={{
           ...(ContainingButtonProps?.sx ?? {}),
@@ -46,3 +47,5 @@ export function StudentAvatar({
     </>
   );
 }
+
+export const StudentAvatar = memo(StudentAvatarInner);

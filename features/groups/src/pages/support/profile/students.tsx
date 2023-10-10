@@ -13,12 +13,11 @@ import {
 } from '@tyro/core';
 
 import { AddUserIcon, MobileIcon, SendMailIcon } from '@tyro/icons';
-import { usePermissions, UserType } from '@tyro/api';
+import { usePermissions, UserType, getPersonProfileLink } from '@tyro/api';
 import { Box, Fade } from '@mui/material';
 import { StudentTableAvatar } from '@tyro/people';
 import { useSubjectGroupById } from '../../../api';
 import { ManageSubjectGroupMembership } from '../../../components/manage-group-membership-modal';
-import { getPersonProfileLink } from '@tyro/api/src/utils/get-person-profile-link';
 
 type ReturnTypeFromUseSubjectGroupById = NonNullable<
   NonNullable<ReturnType<typeof useSubjectGroupById>['data']>['students']

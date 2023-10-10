@@ -6,7 +6,9 @@ import {
   queryClient,
   CommentBankFilter,
   UseQueryReturnType,
+  CommentBanksWithCommentsQuery,
 } from '@tyro/api';
+import { useCallback } from 'react';
 import { assessmentsKeys } from './keys';
 
 const commentBank = graphql(/* GraphQL */ `
@@ -68,6 +70,10 @@ export function getCommentBanksWithComments(filter: CommentBankFilter) {
 export function useCommentBanksWithComments(filter: CommentBankFilter) {
   return useQuery({
     ...commentBanksWithCommentsQuery(filter),
-    select: ({ assessment_commentBank }) => assessment_commentBank ?? [],
+    select: useCallback(
+      ({ assessment_commentBank }: CommentBanksWithCommentsQuery) =>
+        assessment_commentBank ?? [],
+      []
+    ),
   });
 }

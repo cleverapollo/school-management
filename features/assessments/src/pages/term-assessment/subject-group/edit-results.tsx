@@ -12,6 +12,7 @@ import {
   PageContainer,
   StudyLevelSelectCellEditor,
   ValueSetterParams,
+  TablePersonAvatar,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { useParams } from 'react-router-dom';
@@ -153,10 +154,10 @@ const getColumnDefs = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAssessmentResults>) =>
-      data ? (
+      data?.student ? (
         <StudentTableAvatar
           person={data?.student?.person}
-          isPriorityStudent={!!data?.student?.extensions}
+          isPriorityStudent={!!data?.student?.extensions?.priority}
           hasSupportPlan={false}
           to={getPersonProfileLink(data?.student?.person)}
         />
@@ -164,6 +165,7 @@ const getColumnDefs = (
     cellClass: 'cell-value-visible',
     sort: 'asc',
     pinned: 'left',
+    lockVisible: true,
   },
   {
     field: 'studentClassGroup',

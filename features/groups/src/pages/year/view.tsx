@@ -6,7 +6,6 @@ import {
   useNumber,
   Table,
   GridOptions,
-  TablePersonAvatar,
   ICellRendererParams,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
@@ -17,10 +16,9 @@ import {
   PageContainer,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { SmsRecipientType } from '@tyro/api';
+import { SmsRecipientType, getPersonProfileLink } from '@tyro/api';
 import { MobileIcon } from '@tyro/icons';
 import { StudentTableAvatar } from '@tyro/people';
-import { getPersonProfileLink } from '@tyro/api/src/utils/get-person-profile-link';
 import { useYearGroupById } from '../../api/year-groups';
 
 type MembersReturnTypeFromUseYearGroupsById = NonNullable<
