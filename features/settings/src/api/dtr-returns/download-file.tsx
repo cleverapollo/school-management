@@ -24,8 +24,12 @@ export function useDownloadFile() {
         }
       );
 
-      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-      saveAs(blob, filename);
+      if (file === 'FORM_TL') {
+        window.open('about:blank', '', '')?.document.write(content);
+      } else {
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        saveAs(blob, filename);
+      }
     } catch (error) {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     }

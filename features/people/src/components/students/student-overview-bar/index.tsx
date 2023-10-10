@@ -1,35 +1,17 @@
-import {
-  Badge,
-  Box,
-  Card,
-  Divider,
-  IconButton,
-  Stack,
-  Typography,
-} from '@mui/material';
-import { useTranslation } from '@tyro/i18n';
-import {
-  Avatar,
-  PreferredNameFormat,
-  useDisclosure,
-  usePreferredNameLayout,
-} from '@tyro/core';
+import { Box, Card, Divider, Stack, Typography } from '@mui/material';
+import { PreferredNameFormat, usePreferredNameLayout } from '@tyro/core';
 import { useStudent } from '../../../api/student/students';
-import { SupportPlanRing } from '../support-plan-ring';
 import { AdditionalInfo } from './additional-info';
 import { CurrentLocation } from './current-location';
-import { PrioritySupportStudentModal } from './priority-support-student-modal';
 import { TyroId } from '../../common/tyro-id';
 import { useStudentStatus } from '../../../api/student/status';
+import { StudentAvatar } from '../../common/student-avatar';
 
 interface StudentOverviewBarProps {
   studentId: number | undefined;
 }
 
 export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
-  const { t } = useTranslation(['people']);
-
-  const { getButtonProps, getDisclosureProps } = useDisclosure();
   const { displayName } = usePreferredNameLayout();
 
   const { data: studentData } = useStudent(studentId);
@@ -40,88 +22,61 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
   });
 
   return (
-    <>
-      <Box>
-        <Card variant="outlined" sx={{ p: 1.25, display: 'inline-block' }}>
-          <Stack direction="row" alignItems="center" sx={{ flexWrap: 'wrap' }}>
-            <IconButton
-              disabled={
-                !statusData?.priorityStudent && !statusData?.activeSupportPlan
-              }
-              aria-label={t('people:studentClickableAvatarAria', { name })}
-              {...getButtonProps()}
-            >
-              <Badge
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left',
-                }}
-                sx={({ palette }) => ({
-                  '& .MuiBadge-badge': {
-                    boxShadow: `0 0 0 2px ${palette.background.paper}`,
-                    backgroundColor: palette.blue[500],
-                  },
-                })}
-                overlap="circular"
-                variant="dot"
-                badgeContent={statusData?.priorityStudent ? 1 : 0}
-              >
-                <SupportPlanRing
-                  hasSupportPlan={statusData?.activeSupportPlan ?? false}
-                >
-                  <Avatar
-                    name={name}
-                    src={studentData?.person?.avatarUrl}
-                    sx={{ width: 62, height: 62, fontSize: 20 }}
-                  />
-                </SupportPlanRing>
-              </Badge>
-            </IconButton>
-            <Stack sx={{ ml: 0.5, mr: 2.5 }}>
-              <Typography variant="subtitle1" component="h2">
-                {name}
-              </Typography>
+    <Box>
+      <Card variant="outlined" sx={{ p: 1.25, display: 'inline-block' }}>
+        <Stack direction="row" alignItems="center" sx={{ flexWrap: 'wrap' }}>
+          <StudentAvatar
+            partyId={studentData?.partyId ?? 0}
+            name={name}
+            src={studentData?.person?.avatarUrl}
+            ContainingButtonProps={{
+              sx: {
+                m: 1,
+              },
+            }}
+            isPriorityStudent={!!studentData?.extensions?.priority}
+            hasSupportPlan={false}
+            size={62}
+          />
+          <Stack sx={{ ml: 0.5, mr: 2.5 }}>
+            <Typography variant="subtitle1" component="h2">
+              {name}
+            </Typography>
 
-              {Array.isArray(statusData?.sessionAttendance) && (
-                <Stack component="dl" sx={{ my: 0 }}>
-                  {statusData?.sessionAttendance?.map((session) => (
-                    <Stack key={session?.name} direction="row" spacing={1}>
-                      <Typography
-                        component="dt"
-                        sx={{
-                          color: 'slate.600',
-                          fontWeight: 600,
-                          fontSize: 12,
-                        }}
-                      >
-                        {session?.name}
-                      </Typography>
-                      <Typography component="dd" sx={{ fontSize: 12 }}>
-                        {session?.status ?? '-'}
-                      </Typography>
-                    </Stack>
-                  ))}
-                </Stack>
-              )}
-            </Stack>
-            <CurrentLocation studentPartyId={studentData?.partyId} />
-            <Divider orientation="vertical" flexItem sx={{ ml: 2.5, mr: 1 }} />
-            <AdditionalInfo
-              years={studentData?.yearGroups}
-              classGroup={studentData?.classGroup}
-              tutors={studentData?.tutors}
-              yearGroupLeads={studentData?.yearGroupLeads}
-            />
-            <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-            <TyroId id={studentData?.partyId ?? 0} />
+            {Array.isArray(statusData?.sessionAttendance) && (
+              <Stack component="dl" sx={{ my: 0 }}>
+                {statusData?.sessionAttendance?.map((session) => (
+                  <Stack key={session?.name} direction="row" spacing={1}>
+                    <Typography
+                      component="dt"
+                      sx={{
+                        color: 'slate.600',
+                        fontWeight: 600,
+                        fontSize: 12,
+                      }}
+                    >
+                      {session?.name}
+                    </Typography>
+                    <Typography component="dd" sx={{ fontSize: 12 }}>
+                      {session?.status ?? '-'}
+                    </Typography>
+                  </Stack>
+                ))}
+              </Stack>
+            )}
           </Stack>
-        </Card>
-      </Box>
-      <PrioritySupportStudentModal
-        studentId={studentData?.partyId ?? 0}
-        studentName={name}
-        {...getDisclosureProps()}
-      />
-    </>
+          <CurrentLocation studentPartyId={studentData?.partyId} />
+          <Divider orientation="vertical" flexItem sx={{ ml: 2.5, mr: 1 }} />
+          <AdditionalInfo
+            years={studentData?.yearGroups ?? []}
+            classGroup={studentData?.classGroup}
+            tutors={studentData?.tutors ?? []}
+            yearGroupLeads={studentData?.yearGroupLeads ?? []}
+          />
+          <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+          <TyroId id={studentData?.partyId ?? 0} />
+        </Stack>
+      </Card>
+    </Box>
   );
 }

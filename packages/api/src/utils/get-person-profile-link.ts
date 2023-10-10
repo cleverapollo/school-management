@@ -1,4 +1,4 @@
-import { PartyPersonType, Person } from '@tyro/api';
+import { PartyPersonType, Person } from '../gql/graphql';
 
 export function getPersonProfileLink(
   person: Pick<Person, 'type' | 'partyId'> | undefined

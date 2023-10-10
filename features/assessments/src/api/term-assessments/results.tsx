@@ -21,15 +21,21 @@ const assessmentResults = graphql(/* GraphQL */ `
       assessmentId
       studentPartyId
       student {
-        title {
-          id
-          name
-          nameTextId
+        person {
+          partyId
+          title {
+            id
+            name
+            nameTextId
+          }
+          firstName
+          lastName
+          avatarUrl
+          type
         }
-        firstName
-        lastName
-        avatarUrl
-        type
+        extensions {
+          priority
+        }
       }
       studentClassGroup
       studentProgramme {

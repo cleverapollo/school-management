@@ -49,6 +49,9 @@ const customGroupDefinition = graphql(/* GraphQL */ `
         classGroup {
           name
         }
+        extensions {
+          priority
+        }
       }
     }
   }

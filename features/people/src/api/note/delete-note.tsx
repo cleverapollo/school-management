@@ -20,7 +20,9 @@ export function useDeleteNote(studentId: number | undefined) {
     mutationFn: (input: Notes_DeleteNotes) =>
       gqlClient.request(deleteNote, { input }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries(peopleKeys.students.notes(studentId));
+      await queryClient.invalidateQueries(
+        peopleKeys.students.notes({ partyIds: [studentId ?? 0] })
+      );
 
       toast(t('common:snackbarMessages.deleteSuccess'));
     },

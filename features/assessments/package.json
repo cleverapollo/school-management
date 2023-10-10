@@ -13,6 +13,7 @@
     "@tyro/groups": "*",
     "@tyro/i18n": "*",
     "@tyro/icons": "*",
+    "@tyro/people": "*",
     "dayjs": "^1.11.7",
     "framer-motion": "^9.0.1",
     "lodash": "^4.17.21",

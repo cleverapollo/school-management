@@ -39,9 +39,13 @@ const customGroupById = graphql(/* GraphQL */ `
           name
         }
         person {
+          partyId
           firstName
           lastName
           avatarUrl
+        }
+        extensions {
+          priority
         }
       }
     }

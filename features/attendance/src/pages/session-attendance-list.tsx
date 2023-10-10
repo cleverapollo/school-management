@@ -1,6 +1,7 @@
 import { Box, Chip, Fade } from '@mui/material';
 import {
   AttendanceCodeType,
+  getPersonProfileLink,
   PermissionUtils,
   SmsRecipientType,
 } from '@tyro/api';
@@ -13,8 +14,6 @@ import {
   PageHeading,
   ReturnTypeDisplayName,
   Table,
-  TableBooleanValue,
-  TablePersonAvatar,
   useDisclosure,
   usePreferredNameLayout,
 } from '@tyro/core';
@@ -23,6 +22,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { useEffect, useMemo, useState } from 'react';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
+import { StudentTableAvatar } from '@tyro/people';
 import {
   ReturnTypeFromUseSessionAttendanceList,
   useSessionAttendanceList,
@@ -43,16 +43,19 @@ const getColumns = (
     checkboxSelection: true,
     headerCheckboxSelection: true,
     lockVisible: true,
-    valueGetter: ({ data }) => displayName(data?.student),
+    valueGetter: ({ data }) => displayName(data?.student?.person),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseSessionAttendanceList>) =>
       data ? (
-        <TablePersonAvatar
-          person={data?.student}
-          to={`/people/students/${data?.studentPartyId ?? ''}/overview`}
+        <StudentTableAvatar
+          person={data?.student?.person}
+          isPriorityStudent={!!data?.student?.extensions?.priority}
+          hasSupportPlan={false}
+          to={getPersonProfileLink(data?.student?.person)}
         />
       ) : null,
+    cellClass: 'cell-value-visible',
   },
   {
     field: 'classGroup',
@@ -176,11 +179,11 @@ export default function AbsentRequests() {
         getRowId={({ data }) => String(data?.id)}
         onRowSelection={(students) =>
           setSelectedRecipients(
-            students.map(({ student }) => ({
-              id: student.partyId,
-              name: displayName(student),
+            students.map(({ student: { person } }) => ({
+              id: person.partyId,
+              name: displayName(person),
               type: 'individual',
-              avatarUrl: student.avatarUrl,
+              avatarUrl: person.avatarUrl,
             }))
           )
         }

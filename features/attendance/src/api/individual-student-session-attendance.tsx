@@ -45,9 +45,11 @@ const studentSessionAttendance = graphql(/* GraphQL */ `
       }
       studentPartyId
       student {
-        partyId
-        firstName
-        lastName
+        person {
+          partyId
+          firstName
+          lastName
+        }
       }
       classGroup {
         name

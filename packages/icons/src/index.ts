@@ -84,6 +84,7 @@ export * from './male-female';
 export * from './minus';
 export * from './mobile';
 export * from './move-group';
+export * from './notebook';
 export * from './number-list';
 export * from './office-desk';
 export * from './outdent';

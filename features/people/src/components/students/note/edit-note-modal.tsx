@@ -1,4 +1,4 @@
-import { Button, Stack, Chip } from '@mui/material';
+import { Button, Stack, Chip, Collapse } from '@mui/material';
 import {
   RHFAutocomplete,
   RHFTextField,
@@ -7,16 +7,21 @@ import {
   DialogActions,
   Dialog,
   DialogContent,
+  RHFSwitch,
+  RHFDateRangePicker,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import { getColorBasedOnIndex } from '@tyro/api';
+import { getColorBasedOnIndex, usePermissions } from '@tyro/api';
+import dayjs, { Dayjs } from 'dayjs';
 import { useUpsertNote } from '../../../api/note/upsert-note';
 import { useNoteTags } from '../../../api/note/note-tags';
 import { ReturnTypeFromUseNotes } from '../../../api/note/list';
 
-type NoteFormState = NonNullable<ReturnTypeFromUseNotes>;
+type NoteFormState = NonNullable<ReturnTypeFromUseNotes> & {
+  priorityDateRange?: [Dayjs, Dayjs];
+};
 
 export type EditNoteModalProps = {
   initialState: Partial<NoteFormState> | null;
@@ -30,36 +35,62 @@ export const EditNoteModal = ({
   studentId,
 }: EditNoteModalProps) => {
   const { t } = useTranslation(['common', 'people']);
+  const { isTyroUser } = usePermissions();
   const { mutate: createOrUpdateNoteMutation, isLoading: isSubmitting } =
-    useUpsertNote(studentId);
+    useUpsertNote();
   const { data: noteTags = [] } = useNoteTags();
 
   const { resolver, rules } = useFormValidator<NoteFormState>();
 
-  const { control, handleSubmit } = useForm<NoteFormState>({
-    defaultValues: { ...initialState },
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<NoteFormState>({
+    defaultValues: {
+      ...initialState,
+      priorityDateRange:
+        initialState?.priorityStartDate && initialState?.priorityEndDate
+          ? [
+              dayjs(initialState?.priorityStartDate),
+              dayjs(initialState?.priorityEndDate),
+            ]
+          : undefined,
+    },
     resolver: resolver({
       note: rules.required(),
       tags: rules.required(),
+      priorityDateRange: rules.required(),
     }),
   });
 
-  const onSubmit = handleSubmit(({ note, tags, ...restData }) => {
-    createOrUpdateNoteMutation(
-      [
+  const onSubmit = handleSubmit(
+    ({ note, tags, priorityDateRange, ...restData }) => {
+      const [startDate, endDate] = priorityDateRange || [null, null];
+
+      createOrUpdateNoteMutation(
+        [
+          {
+            ...restData,
+            id: initialState?.id,
+            note,
+            tags: tags.map(({ id }) => id),
+            referencedParties: [studentId],
+            priorityStartDate: startDate
+              ? startDate.format('YYYY-MM-DD')
+              : null,
+            priorityEndDate: endDate ? endDate.format('YYYY-MM-DD') : null,
+          },
+        ],
         {
-          ...restData,
-          id: initialState?.id,
-          note,
-          tags: tags.map(({ id }) => id),
-          referencedParties: [studentId],
-        },
-      ],
-      {
-        onSuccess: onClose,
-      }
-    );
-  });
+          onSuccess: onClose,
+        }
+      );
+    }
+  );
+
+  const priorityNote = watch('priorityNote');
 
   return (
     <Dialog
@@ -69,12 +100,12 @@ export const EditNoteModal = ({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {initialState?.id ? t('people:editNote') : t('people:addNote')}
       </DialogTitle>
       <form onSubmit={onSubmit}>
         <DialogContent>
-          <Stack py={1}>
+          <Stack pt={1} spacing={3}>
             <RHFTextField
               label={t('people:note')}
               controlProps={{
@@ -108,6 +139,34 @@ export const EditNoteModal = ({
                 ))
               }
             />
+
+            {isTyroUser && (
+              <>
+                <RHFSwitch
+                  label={t('people:markAsPriorityNote')}
+                  controlProps={{ name: 'priorityNote', control }}
+                  controlLabelProps={{ sx: { mt: 2 } }}
+                />
+
+                <Collapse
+                  in={!!priorityNote}
+                  unmountOnExit
+                  sx={{
+                    '&.MuiCollapse-root': {
+                      marginTop: 1,
+                    },
+                  }}
+                >
+                  <RHFDateRangePicker
+                    label={t('people:priorityDateRange')}
+                    controlProps={{ name: 'priorityDateRange', control }}
+                    textFieldProps={{
+                      fullWidth: true,
+                    }}
+                  />
+                </Collapse>
+              </>
+            )}
           </Stack>
         </DialogContent>
 

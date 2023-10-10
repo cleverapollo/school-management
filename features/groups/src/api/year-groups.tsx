@@ -71,6 +71,9 @@ const yearGroupById = graphql(/* GraphQL */ `
           avatarUrl
           type
         }
+        extensions {
+          priority
+        }
       }
     }
   }

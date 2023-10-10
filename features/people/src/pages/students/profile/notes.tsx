@@ -128,7 +128,9 @@ export default function StudentProfileNotesPage() {
   const { displayName } = usePreferredNameLayout();
 
   const studentId = getNumber(id);
-  const { data: notes = [] } = useNotes(studentId);
+  const { data: notes = [] } = useNotes({
+    partyIds: [studentId ?? 0],
+  });
 
   const [noteDetails, setNoteDetails] =
     useState<EditNoteModalProps['initialState']>(null);

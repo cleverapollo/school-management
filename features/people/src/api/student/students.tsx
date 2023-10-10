@@ -15,6 +15,7 @@ const students = graphql(/* GraphQL */ `
     core_students {
       partyId
       person {
+        partyId
         avatarUrl
         firstName
         lastName
@@ -61,6 +62,9 @@ const students = graphql(/* GraphQL */ `
           name
         }
       }
+      extensions {
+        priority
+      }
     }
   }
 `);
@@ -70,6 +74,7 @@ const studentById = graphql(/* GraphQL */ `
     core_students(filter: $filter) {
       partyId
       person {
+        partyId
         avatarUrl
         firstName
         lastName
@@ -95,6 +100,9 @@ const studentById = graphql(/* GraphQL */ `
         lastName
         avatarUrl
         type
+      }
+      extensions {
+        priority
       }
     }
   }
@@ -167,20 +175,14 @@ export type ReturnTypeFromUseStudents = UseQueryReturnType<
   typeof useStudents
 >[number];
 
-export function useStudent(studentId: number | undefined) {
+export function useStudent(studentId: number | undefined, enabled = true) {
   return useQuery({
     ...studentQuery(studentId),
-    select: ({ core_students }) => {
-      const student =
-        Array.isArray(core_students) && core_students.length > 0
-          ? core_students[0]
-          : null;
-      // Adding mock data for demo purposes
-      return {
-        ...student,
-      };
-    },
-    enabled: !!studentId,
+    select: ({ core_students }) =>
+      Array.isArray(core_students) && core_students.length > 0
+        ? core_students[0]
+        : null,
+    enabled: !!studentId && enabled,
   });
 }
 

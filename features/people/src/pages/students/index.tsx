@@ -5,7 +5,6 @@ import {
   ICellRendererParams,
   Page,
   Table,
-  TablePersonAvatar,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
   ReturnTypeDisplayNames,
@@ -16,13 +15,14 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
 import { MobileIcon, CalendarEditPenIcon } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { SmsRecipientType } from '@tyro/api';
+import { getPersonProfileLink, SmsRecipientType } from '@tyro/api';
 import {
   useBulkUpdateCoreStudent,
   ReturnTypeFromUseStudents,
   useStudents,
 } from '../../api/student/students';
 import { ChangeProgrammeYearModal } from '../../components/students/change-programme-year-modal';
+import { StudentTableAvatar } from '../../components/common/student-table-avatar';
 
 const getStudentColumns = (
   translate: TFunction<
@@ -41,11 +41,14 @@ const getStudentColumns = (
       data,
     }: ICellRendererParams<ReturnTypeFromUseStudents, any>) =>
       data ? (
-        <TablePersonAvatar
+        <StudentTableAvatar
           person={data?.person}
-          to={`./${data?.partyId ?? ''}`}
+          isPriorityStudent={!!data?.extensions?.priority}
+          hasSupportPlan={false}
+          to={getPersonProfileLink(data?.person)}
         />
       ) : null,
+    cellClass: 'cell-value-visible',
     sort: 'asc',
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,

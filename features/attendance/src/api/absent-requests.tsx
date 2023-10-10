@@ -57,10 +57,17 @@ const absentRequests = graphql(/* GraphQL */ `
         }
       }
       createdOn
-      student {
-        avatarUrl
-        firstName
-        lastName
+      studentNew {
+        person {
+          partyId
+          firstName
+          lastName
+          avatarUrl
+          type
+        }
+        extensions {
+          priority
+        }
       }
     }
   }
@@ -95,7 +102,10 @@ export function useAbsentRequests(filter: ParentalAttendanceRequestFilter) {
   return useQuery({
     ...absentRequestsQuery(filter),
     select: ({ attendance_parentalAttendanceRequests }) =>
-      attendance_parentalAttendanceRequests,
+      attendance_parentalAttendanceRequests.map((request) => ({
+        ...request,
+        student: request.studentNew,
+      })),
   });
 }
 
