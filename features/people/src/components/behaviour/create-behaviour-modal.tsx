@@ -8,10 +8,11 @@ import {
   DialogTitle,
   Stack,
 } from '@mui/material';
-import { getColorBasedOnIndex } from '@tyro/api';
+import { getColorBasedOnIndex, Notes_BehaviourType } from '@tyro/api';
 import {
   RHFAutocomplete,
   RHFDateTimePicker,
+  RHFRadioGroup,
   RHFSelect,
   RHFTextField,
   useFormValidator,
@@ -19,6 +20,7 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import type { Dayjs } from 'dayjs';
+import { useMemo } from 'react';
 import { useNoteTagsBehaviour } from '../../api/behaviour/behaviour-tags';
 import { ReturnTypeFromUseBehaviours } from '../../api/behaviour/list';
 import { useUpsertStudentBehaviour } from '../../api/behaviour/upsert-behaviour';
@@ -31,6 +33,7 @@ export interface CreateBehaviourModalProps {
   studentId: number;
   onClose: () => void;
   initialState: Partial<ReturnTypeFromUseBehaviours> | null;
+  behaviourType: Notes_BehaviourType;
 }
 
 export type CreateBehaviourFormState = {
@@ -38,25 +41,27 @@ export type CreateBehaviourFormState = {
   note: string;
   subjects: ReturnTypeFromUseStudentSubjectGroups[];
   occurredOn: Dayjs;
+  behaviourType: Notes_BehaviourType;
 };
 
 export function CreateBehaviourModal({
   studentId,
   onClose,
   initialState,
+  behaviourType,
 }: CreateBehaviourModalProps) {
   const { t } = useTranslation(['common', 'people']);
   const { data: subjectGroup = [] } = useStudentsSubjectGroups(studentId);
   const { data: behaviourTags = [] } = useNoteTagsBehaviour();
 
   const { resolver, rules } = useFormValidator<CreateBehaviourFormState>();
-  const { control, handleSubmit, reset } = useForm<CreateBehaviourFormState>({
-    resolver: resolver({
-      occurredOn: rules.required(),
-      behaviour: rules.required(),
-      note: rules.required(),
-    }),
-  });
+  const { control, handleSubmit, reset, watch } =
+    useForm<CreateBehaviourFormState>({
+      resolver: resolver({
+        occurredOn: rules.required(),
+        behaviour: rules.required(),
+      }),
+    });
 
   const { mutate, isLoading } = useUpsertStudentBehaviour(studentId);
 
@@ -85,6 +90,14 @@ export function CreateBehaviourModal({
     );
   };
 
+  const behaviourTypeOption = watch('behaviourType');
+
+  const filterTagsByBehaviourType = useMemo(
+    () =>
+      behaviourTags.filter((tag) => tag.behaviourType === behaviourTypeOption),
+    [behaviourTypeOption]
+  );
+
   return (
     <Dialog
       open={!!initialState}
@@ -106,7 +119,7 @@ export function CreateBehaviourModal({
             />
             <RHFAutocomplete
               multiple
-              label={t('common:subjects')}
+              label={t('people:associations')}
               optionIdKey="partyId"
               getOptionLabel={(option) => option.subjects[0]?.name}
               controlProps={{ name: 'subjects', control }}
@@ -129,11 +142,27 @@ export function CreateBehaviourModal({
                 })
               }
             />
+            <RHFRadioGroup
+              radioGroupProps={{ sx: { flexDirection: 'row' } }}
+              label={t('people:behaviourType')}
+              options={[
+                Notes_BehaviourType.Positive,
+                Notes_BehaviourType.Negative,
+              ].map((option) => ({
+                value: option,
+                label: t(`people:behaviourTypes.${option}`),
+              }))}
+              controlProps={{
+                name: 'behaviourType',
+                defaultValue: behaviourType,
+                control,
+              }}
+            />
             <RHFSelect
               fullWidth
               optionIdKey="id"
               getOptionLabel={(option) => option.name}
-              options={behaviourTags}
+              options={filterTagsByBehaviourType}
               label={t('common:category')}
               renderValue={(value) => (
                 <Chip

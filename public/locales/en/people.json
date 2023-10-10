@@ -268,10 +268,18 @@
     "note": "Note"
   },
   "createBehaviour": "Create behaviour",
-  "logByLevels": "Logs by levels",
+  "behaviourCategories": "Behaviour categories",
+  "behaviourType": "Behaviour type",
   "totalLogs_one": "{{ count }} log",
   "totalLogs_other": "{{ count }} logs",
   "association": "Association",
+  "associations": "Association(s)",
+  "category": "Category",
+  "behaviourTypes": {
+    "POSITIVE": "Positive",
+    "NEUTRAL": "Neutral",
+    "NEGATIVE": "Negative"
+  },
   "createNonClassContact": "Create non-class contact",
   "editNonClassContact": "Edit non-class contact",
   "deleteNonClassContact": "Delete non-class contact",

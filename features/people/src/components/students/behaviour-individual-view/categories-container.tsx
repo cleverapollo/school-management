@@ -29,7 +29,7 @@ export const CategoriesContainer = ({
     >
       <Stack direction="column" paddingX={3} paddingY={2}>
         <Typography variant="h6" component="h3">
-          {t('people:logByLevels')}
+          {t('people:behaviourCategories')}
         </Typography>
         <Box display="flex" flexDirection="row" alignItems="baseline">
           <Typography

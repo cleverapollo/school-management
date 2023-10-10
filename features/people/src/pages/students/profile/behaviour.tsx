@@ -75,11 +75,58 @@ const getStudentBehaviourColumns = (
   {
     field: 'incidentDate',
     headerName: t('common:date'),
-    suppressSizeToFit: true,
     valueGetter: ({ data }) => dayjs(data?.incidentDate).format('ll'),
     sort: 'desc',
     comparator: (dateA: string, dateB: string) =>
       dayjs(dateA).unix() - dayjs(dateB).unix(),
+  },
+  {
+    field: 'category',
+    headerName: t('people:category'),
+    valueGetter: ({ data }) => data?.category || '-',
+  },
+  {
+    colId: 'tags',
+    headerName: t('people:behaviour'),
+    autoHeight: true,
+    wrapText: true,
+    width: 350,
+    valueGetter: ({ data }) => {
+      if (!data?.category) {
+        return '-';
+      }
+
+      return getTagsForCategory(data.category)?.tags?.map((tag) => tag?.name);
+    },
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseIndividualStudentBehaviour>) => {
+      if (!data?.category) {
+        return '-';
+      }
+      const { colour, tags } = getTagsForCategory(data?.category);
+
+      return (
+        <Stack gap={1} my={1} direction="row" flexWrap="wrap">
+          {tags?.map(({ id, name }) => (
+            <Chip key={id} label={name} variant="soft" color={colour} />
+          ))}
+        </Stack>
+      );
+    },
+  },
+  {
+    field: 'details',
+    headerName: t('common:details'),
+    autoHeight: true,
+    wrapText: true,
+    width: 250,
+    cellStyle: {
+      lineHeight: 2,
+      paddingTop: 12,
+      paddingBottom: 12,
+      wordBreak: 'break-word',
+    },
   },
   {
     field: 'associatedParties',
@@ -124,59 +171,10 @@ const getStudentBehaviourColumns = (
     },
   },
   {
-    colId: 'tags',
-    headerName: t('people:behaviour'),
-    autoHeight: true,
-    wrapText: true,
-    width: 350,
-    valueGetter: ({ data }) => {
-      if (!data?.category) {
-        return '-';
-      }
-
-      return getTagsForCategory(data.category)?.tags?.map((tag) => tag?.name);
-    },
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseIndividualStudentBehaviour>) => {
-      if (!data?.category) {
-        return '-';
-      }
-      const { colour, tags } = getTagsForCategory(data?.category);
-
-      return (
-        <Stack gap={1} my={1} direction="row" flexWrap="wrap">
-          {tags?.map(({ id, name }) => (
-            <Chip key={id} label={name} variant="soft" color={colour} />
-          ))}
-        </Stack>
-      );
-    },
-  },
-  {
-    field: 'details',
-    headerName: t('common:details'),
-    autoHeight: true,
-    wrapText: true,
-    width: 300,
-    cellStyle: {
-      lineHeight: 2,
-      paddingTop: 12,
-      paddingBottom: 12,
-      wordBreak: 'break-word',
-    },
-  },
-  {
     field: 'takenBy',
     suppressSizeToFit: true,
-    headerName: t('common:takenBy'),
+    headerName: t('common:createdBy'),
     valueGetter: ({ data }) => displayName(data?.takenBy) || '-',
-  },
-  {
-    field: 'category',
-    suppressSizeToFit: true,
-    headerName: 'Level',
-    valueGetter: ({ data }) => data?.category || '-',
   },
   {
     suppressColumnsToolPanel: true,
@@ -474,9 +472,6 @@ export default function StudentProfileBehaviourPage() {
           '& .MuiTabs-flexContainer > .MuiButtonBase-root': {
             marginRight: 3.5,
           },
-          '& .MuiTabScrollButton-horizontal': {
-            display: 'none',
-          },
         }}
       >
         {allTabs?.map((tab) => (
@@ -544,6 +539,7 @@ export default function StudentProfileBehaviourPage() {
           studentId={studentId}
           onClose={() => setBehaviourDetails(null)}
           initialState={behaviourDetails}
+          behaviourType={behaviourType}
         />
       )}
       {behaviourIdToDelete && (
