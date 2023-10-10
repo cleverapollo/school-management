@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { peopleKeys } from '../keys';
 
 const behaviourLevels = graphql(/* GraphQL */ `
-  query notes_behaviourCategories($filter: Notes_BehaviourCategoryFilter) {
+  query notes_behaviourLevels($filter: Notes_BehaviourCategoryFilter) {
     notes_behaviourCategories(filter: $filter) {
       behaviourType
       behaviourCategoryId

@@ -289,7 +289,7 @@ export const getRoutes: NavObjectFunction = (t) => [
           {
             title: t('navigation:management.settings.behaviourLabels'),
             type: NavObjectType.MenuLink,
-            path: 'behaviour-labels',
+            path: 'behaviour-settings',
             hasAccess: (permissions) => permissions.isStaffUser,
             loader: () => getNoteTagsBehaviour(),
             element: <BehaviourLabel />,

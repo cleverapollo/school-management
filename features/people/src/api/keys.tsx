@@ -26,6 +26,8 @@ export const peopleKeys = {
     all: () => [...peopleKeys.all, 'notes'] as const,
     noteTags: () => [...peopleKeys.notes.all(), 'noteTags'] as const,
     behaviourTags: () => [...peopleKeys.notes.all(), 'behaviourTags'] as const,
+    behaviourCategories: () =>
+      [...peopleKeys.notes.all(), 'behaviourCategories'] as const,
   },
   staff: {
     all: () => [...peopleKeys.all, 'staff'] as const,

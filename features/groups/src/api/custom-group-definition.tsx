@@ -44,6 +44,7 @@ const customGroupDefinition = graphql(/* GraphQL */ `
           firstName
           lastName
           avatarUrl
+          type
         }
         partyId
         classGroup {

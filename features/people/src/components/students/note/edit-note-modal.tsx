@@ -35,7 +35,7 @@ export const EditNoteModal = ({
   studentId,
 }: EditNoteModalProps) => {
   const { t } = useTranslation(['common', 'people']);
-  const { isTyroUser } = usePermissions();
+  const { hasPermission } = usePermissions();
   const { mutate: createOrUpdateNoteMutation, isLoading: isSubmitting } =
     useUpsertNote();
   const { data: noteTags = [] } = useNoteTags();
@@ -140,7 +140,7 @@ export const EditNoteModal = ({
               }
             />
 
-            {isTyroUser && (
+            {hasPermission('ps:1:wellbeing:write_priority_students') && (
               <>
                 <RHFSwitch
                   label={t('people:markAsPriorityNote')}

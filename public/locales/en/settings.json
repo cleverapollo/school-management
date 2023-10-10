@@ -52,8 +52,10 @@
     "linkToViewRoomTimetable": "Link to view room timetable",
     "addNoteLabel": "Add note label",
     "editNoteLabel": "Edit note label",
-    "addBehaviourLabel": "Add behaviour label",
-    "editBehaviourLabel": "Edit behaviour label"
+    "addBehaviourLabel": "Add behaviour type",
+    "editBehaviourLabel": "Edit behaviour type",
+    "addCategory": "Add category",
+    "editCategory": "Edit category"
   },
   "namespacesDialog": {
     "title": "Activate academic year {{name}}?",
@@ -225,10 +227,14 @@
     "code": "Code"
   },
   "behaviourLabel": {
-    "title": "Behaviour labels",
-    "createBehaviourLabel": "Create behaviour label",
-    "editBehaviourLabel": "Edit behaviour label",
+    "title": "Behaviour settings",
+    "createBehaviourLabel": "Create behaviour type",
+    "editBehaviourLabel": "Edit behaviour type",
     "code": "Code",
     "reportAs": "Report as"
+  },
+  "category": {
+    "createCategory": "Create category",
+    "editCategory": "Edit category"
   }
 }
