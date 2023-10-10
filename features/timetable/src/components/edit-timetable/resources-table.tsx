@@ -23,6 +23,7 @@ import { AddLessonModal } from './lessons-modals/add-lesson';
 import { TimetableContextMenu } from './table-cell-context-menu';
 import { Period } from './types';
 import { EditLessonModal } from './lessons-modals/edit-lesson';
+import { RepublishLessonModal } from './lessons-modals/republish-lesson';
 
 interface ResourcesTableProps {
   timetableId: number;
@@ -53,6 +54,12 @@ export function ResourcesTable({
     debouncedValue: debouncedSelectedLessonToDelete,
     setValue: setSelectedLessonToDelete,
   } = useDebouncedValue<Lesson | null>({ defaultValue: null });
+
+  const {
+    value: selectedLessonToPublish,
+    debouncedValue: debouncedSelectedLessonToPublish,
+    setValue: setSelectedLessonToPublish,
+  } = useDebouncedValue<Lesson[] | null>({ defaultValue: null });
 
   const {
     value: selectedLessonToEdit,
@@ -108,6 +115,19 @@ export function ResourcesTable({
         }
       );
       setSelectLessonsToSwapRoomOrTeacher(lessons);
+    },
+    [selectedLessonIds, getLessons, setSelectLessonsToSwapRoomOrTeacher]
+  );
+
+  const onOpenPublishLesson = useCallback(
+    (lesson: Lesson) => {
+      const lessonId = JSON.stringify(lesson.id);
+
+      const arrayOfUniqueIds = Array.from(
+        new Set([...selectedLessonIds, lessonId])
+      );
+      const lessons = getLessons(arrayOfUniqueIds);
+      setSelectedLessonToPublish(lessons);
     },
     [selectedLessonIds, getLessons, setSelectLessonsToSwapRoomOrTeacher]
   );
@@ -225,6 +245,7 @@ export function ResourcesTable({
                               }
                               onOpenAddLessonDialog={setSelectedPeriodToAdd}
                               onOpenEditLessonDialog={setSelectedLessonToEdit}
+                              onOpenPublishLessonDialog={onOpenPublishLesson}
                               period={periodObj}
                             />
                           ))}
@@ -252,6 +273,12 @@ export function ResourcesTable({
         isOpen={!!selectedLessonToDelete}
         lessons={selectedLessonToDelete ?? debouncedSelectedLessonToDelete}
         onClose={() => setSelectedLessonToDelete(null)}
+      />
+      <RepublishLessonModal
+        timetableId={timetableId}
+        isOpen={!!selectedLessonToPublish}
+        lessons={selectedLessonToPublish ?? debouncedSelectedLessonToPublish}
+        onClose={() => setSelectedLessonToPublish(null)}
       />
       <EditLessonModal
         timetableId={timetableId}

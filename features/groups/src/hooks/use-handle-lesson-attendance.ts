@@ -22,6 +22,7 @@ import {
 } from '../api';
 import { groupsKeys } from '../api/keys';
 import { useFormatLessonTime } from './use-format-lesson-time';
+import { getValidEventStartTime } from '../utils/get-valid-event-start-time';
 
 type EventDetails = NonNullable<
   NonNullable<
@@ -45,6 +46,7 @@ export type GroupStudent = {
 
 type UseHandleLessonAttendanceParams = {
   partyId: number;
+  eventStartTime?: string | null;
   students: GroupStudent[];
 };
 
@@ -55,6 +57,7 @@ type SaveAttendanceCallback = {
 
 export function useHandleLessonAttendance({
   partyId,
+  eventStartTime,
   students,
 }: UseHandleLessonAttendanceParams) {
   const initialAttendanceRef = useRef<StudentAttendance>({});
@@ -63,6 +66,7 @@ export function useHandleLessonAttendance({
 
   const [filter, setFilter] = useState<CalendarEventIteratorFilter>({
     partyId,
+    eventStartTime: getValidEventStartTime(eventStartTime),
     iterator: Iterator.Closest,
   });
 

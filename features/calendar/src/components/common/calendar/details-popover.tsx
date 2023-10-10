@@ -174,7 +174,7 @@ export function CalendarDetailsPopover({
               size="small"
               to={`/groups/subject/${
                 event?.originalEvent?.lessonInfo?.subjectGroupId ?? ''
-              }/attendance`}
+              }/attendance?eventStartTime=${event?.originalEvent?.startTime}`}
             >
               <Box
                 sx={{

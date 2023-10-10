@@ -36,10 +36,15 @@ import { AdditionalLessonsModal } from './additional-lessons-modal';
 
 type AttendanceProps = {
   partyId: number;
+  eventStartTime?: string | null;
   students: GroupStudent[];
 };
 
-export const GroupAttendance = ({ partyId, students }: AttendanceProps) => {
+export const GroupAttendance = ({
+  partyId,
+  eventStartTime,
+  students,
+}: AttendanceProps) => {
   const { t } = useTranslation(['groups', 'common']);
   const { displayName } = usePreferredNameLayout();
 
@@ -60,6 +65,7 @@ export const GroupAttendance = ({ partyId, students }: AttendanceProps) => {
     cancelAttendance,
   } = useHandleLessonAttendance({
     partyId,
+    eventStartTime,
     students,
   });
 
