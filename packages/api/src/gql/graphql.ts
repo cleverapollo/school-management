@@ -3042,7 +3042,7 @@ export type Notes_TagFilter = {
 
 export type Notes_UpsertBehaviourTagInput = {
   behaviourType?: InputMaybe<Notes_BehaviourType>;
-  categoryId: Scalars['Int'];
+  categoryId?: Scalars['Int'];
   description?: InputMaybe<Array<InputMaybe<TranslationInput>>>;
   id?: InputMaybe<Scalars['Int']>;
   name?: InputMaybe<Array<InputMaybe<TranslationInput>>>;
