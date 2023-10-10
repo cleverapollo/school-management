@@ -448,7 +448,7 @@ export default function StudentProfileBehaviourPage() {
         </Stack>
       ) : (
         <>
-          <CardContent sx={{ height: '100%' }}>
+          <CardContent sx={{ height: '100%', p: 0 }}>
             <CategoriesContainer
               categories={categories}
               isCategoriesLoading={isCategoriesLoading}
