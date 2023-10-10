@@ -20,7 +20,7 @@ import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { SmsRecipientType } from '@tyro/api';
 import { MobileIcon } from '@tyro/icons';
 import { StudentTableAvatar } from '@tyro/people';
-import { getPersonProfileLink } from '../../utils/get-person-profile-link';
+import { getPersonProfileLink } from '@tyro/api/src/utils/get-person-profile-link';
 import { useYearGroupById } from '../../api/year-groups';
 
 type MembersReturnTypeFromUseYearGroupsById = NonNullable<

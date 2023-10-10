@@ -36,10 +36,7 @@ import {
   useStudentDailyCalendarInformation,
   useBellTimesQuery,
 } from '@tyro/attendance';
-import {
-  SaveEventAttendanceInput,
-  StudentSessionAttendanceInput,
-} from '@tyro/api';
+import { SaveEventAttendanceInput, SessionAttendanceInput } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { CloseIcon, LightBulbIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
@@ -193,7 +190,7 @@ export const AttendanceDetailsModal = ({
 
     if (requiredEventAttendance.length > 0) return;
 
-    const sessionAttendances: StudentSessionAttendanceInput[] =
+    const sessionAttendances: SessionAttendanceInput[] =
       updatedSessionAttendance
         .filter(({ attendanceCodeId, note }) => attendanceCodeId || note)
         .map(({ id, note, attendanceCodeId }) => ({

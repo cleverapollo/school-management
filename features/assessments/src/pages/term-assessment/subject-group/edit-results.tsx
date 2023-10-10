@@ -5,7 +5,6 @@ import {
   PageHeading,
   ReturnTypeDisplayName,
   Table,
-  TablePersonAvatar,
   TableSelect,
   TableStudyLevelChip,
   useNumber,
@@ -25,8 +24,10 @@ import {
   SaveAssessmentResultInput,
   CommenterUserType,
   useUser,
+  getPersonProfileLink,
 } from '@tyro/api';
 import set from 'lodash/set';
+import { StudentTableAvatar } from '@tyro/people';
 import { useAssessmentById } from '../../../api/assessments';
 import {
   ReturnTypeFromUseAssessmentResults,
@@ -148,11 +149,19 @@ const getColumnDefs = (
   {
     field: 'student',
     headerName: t('common:name'),
-    valueGetter: ({ data }) => displayName(data?.student),
+    valueGetter: ({ data }) => displayName(data?.student?.person),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAssessmentResults>) =>
-      data && <TablePersonAvatar person={data.student} />,
+      data ? (
+        <StudentTableAvatar
+          person={data?.student?.person}
+          isPriorityStudent={!!data?.student?.extensions}
+          hasSupportPlan={false}
+          to={getPersonProfileLink(data?.student?.person)}
+        />
+      ) : null,
+    cellClass: 'cell-value-visible',
     sort: 'asc',
     pinned: 'left',
   },

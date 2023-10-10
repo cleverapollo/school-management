@@ -2,7 +2,6 @@ import { Button, Divider, Stack, Tooltip, Typography } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { ParentalAttendanceRequestStatus } from '@tyro/api';
 import {
-  Avatar,
   ReturnTypeDisplayName,
   RHFSelect,
   RHFTextField,
@@ -19,6 +18,7 @@ import {
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { LoadingButton } from '@mui/lab';
+import { StudentAvatar } from '@tyro/people';
 import { DeclineAbsentRequestConfirmModal } from './decline-absent-request-confirm-modal';
 import { ApproveAbsentRequestConfirmModal } from './approve-absent-request-confirm-modal';
 import {
@@ -204,6 +204,7 @@ export const ViewAbsentRequestModal = ({
     }
   };
 
+  const { student } = initialAbsentRequestState ?? {};
   const isBeforeAbsentDate = dayjs().isBefore(
     dayjs(initialAbsentRequestState?.from)
   );
@@ -223,13 +224,16 @@ export const ViewAbsentRequestModal = ({
       <DialogTitle>{t('attendance:viewAbsentRequest')}</DialogTitle>
       <DialogContent>
         <Stack direction="row" gap={2} alignItems="center">
-          <Avatar
-            name={displayName(initialAbsentRequestState?.student)}
-            src={initialAbsentRequestState?.student?.avatarUrl}
+          <StudentAvatar
+            partyId={student?.person?.partyId ?? 0}
+            src={student?.person?.avatarUrl ?? undefined}
+            name={displayName(student?.person)}
+            isPriorityStudent={!!student?.extensions?.priority}
+            hasSupportPlan={false}
           />
           <Stack>
             <Typography component="span" variant="subtitle2">
-              {displayName(initialAbsentRequestState?.student)}
+              {displayName(initialAbsentRequestState?.student?.person)}
             </Typography>
             <Typography component="span" variant="body2">
               {initialAbsentRequestState?.classGroup?.name || '-'}

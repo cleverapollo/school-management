@@ -17,34 +17,6 @@ const saveStudentSessionAttendance = graphql(/* GraphQL */ `
   ) {
     attendance_saveStudentSessionAttendance(input: $input) {
       studentPartyId
-      student {
-        partyId
-        firstName
-        lastName
-      }
-      classGroup {
-        partyId
-        name
-      }
-      dateAttendance {
-        date
-        bellTimeAttendance {
-          bellTimeId
-          attendanceCode {
-            id
-            name
-            description
-            code
-            active
-            visibleForTeacher
-            visibleForContact
-            nameTextId
-            descriptionTextId
-            codeType
-          }
-          note
-        }
-      }
     }
   }
 `);

@@ -3,7 +3,8 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "../../@types/**/*.ts"
+    "../../@types/**/*.ts",
+    "../../packages/api/src/utils/get-person-profile-link.ts"
   ],
   "exclude": [
     "node_modules"

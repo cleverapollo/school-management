@@ -48,7 +48,7 @@ const getAbsentRequestColumns = (
     checkboxSelection: !overview ? ({ data }) => Boolean(data) : undefined,
     headerCheckboxSelection: !overview,
     lockVisible: true,
-    valueGetter: ({ data }) => displayName(data?.student),
+    valueGetter: ({ data }) => displayName(data?.student?.person),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>

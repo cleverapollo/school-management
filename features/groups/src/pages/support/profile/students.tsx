@@ -18,7 +18,7 @@ import { Box, Fade } from '@mui/material';
 import { StudentTableAvatar } from '@tyro/people';
 import { useSubjectGroupById } from '../../../api';
 import { ManageSubjectGroupMembership } from '../../../components/manage-group-membership-modal';
-import { getPersonProfileLink } from '../../../utils/get-person-profile-link';
+import { getPersonProfileLink } from '@tyro/api/src/utils/get-person-profile-link';
 
 type ReturnTypeFromUseSubjectGroupById = NonNullable<
   NonNullable<ReturnType<typeof useSubjectGroupById>['data']>['students']

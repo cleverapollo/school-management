@@ -15,7 +15,7 @@ import {
 } from '@tyro/core';
 import { StudentTableAvatar } from '@tyro/people';
 import { useClassGroupById } from '../../api/class-groups';
-import { getPersonProfileLink } from '../../utils/get-person-profile-link';
+import { getPersonProfileLink } from '@tyro/api/src/utils/get-person-profile-link';
 
 type ReturnTypeFromUseSubjectGroupById = UseQueryReturnType<
   typeof useClassGroupById

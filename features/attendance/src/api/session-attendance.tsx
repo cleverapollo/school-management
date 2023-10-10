@@ -18,16 +18,21 @@ const sessionAttendance = graphql(/* GraphQL */ `
     attendance_studentSessionAttendance(filter: $filter) {
       studentPartyId
       student {
-        partyId
-        title {
-          id
-          name
-          nameTextId
+        person {
+          partyId
+          title {
+            id
+            name
+            nameTextId
+          }
+          firstName
+          lastName
+          avatarUrl
+          type
         }
-        firstName
-        lastName
-        avatarUrl
-        type
+        extensions {
+          priority
+        }
       }
       classGroup {
         name
