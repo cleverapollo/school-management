@@ -7,6 +7,7 @@ import {
   CalendarAttendanceFilter,
   CalendarDayBellTimeFilter,
   NonClassContactHoursFilter,
+  Notes_NotesFilter,
   Notes_BehaviourFilter,
   Notes_BehaviourCategoryFilter,
 } from '@tyro/api';
