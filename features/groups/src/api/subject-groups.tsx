@@ -83,6 +83,7 @@ const subjectGroupById = graphql(/* GraphQL */ `
           firstName
           lastName
           avatarUrl
+          type
         }
         extensions {
           priority

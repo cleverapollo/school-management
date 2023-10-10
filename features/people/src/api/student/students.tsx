@@ -19,6 +19,7 @@ const students = graphql(/* GraphQL */ `
         avatarUrl
         firstName
         lastName
+        type
       }
       classGroup {
         name
