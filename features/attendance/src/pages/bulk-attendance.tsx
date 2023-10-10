@@ -18,7 +18,7 @@ import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import {
   BulkAttendanceModal,
   BulkAttendanceModalProps,
-} from '../components/bulk-attendance/index';
+} from '../components/bulk-attendance/create-modal';
 import {
   useBulkAttendance,
   ReturnTypeFromUseBulkAttendance,
