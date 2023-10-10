@@ -204,6 +204,11 @@
     "NEUTRAL": "Neutral",
     "POSITIVE": "Positive"
   },
+  "behaviourCategory": {
+    "BEHAVIOUR": "Behaviour",
+    "MISC": "Misc",
+    "NOTE": "Note"
+  },
   "colors": {
     "amber": "Amber",
     "blue": "Blue",
