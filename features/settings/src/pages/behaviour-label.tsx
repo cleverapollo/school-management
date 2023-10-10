@@ -11,7 +11,12 @@ import {
   PageHeading,
   Table,
 } from '@tyro/core';
-import { EditIcon, VerticalDotsIcon, AddFolderIcon } from '@tyro/icons';
+import {
+  EditIcon,
+  VerticalDotsIcon,
+  AddFolderIcon,
+  AddIcon,
+} from '@tyro/icons';
 import {
   ReturnTypeFromUseNoteTagsBehaviour,
   useNoteTagsBehaviour,
@@ -38,7 +43,6 @@ const getNoteTagBehaviourColumns = (
   {
     headerName: t('common:description'),
     field: 'description',
-    lockVisible: true,
   },
   {
     headerName: t('settings:behaviourLabel.reportAs'),
@@ -60,7 +64,6 @@ const getNoteTagBehaviourColumns = (
   {
     headerName: t('common:category'),
     field: 'behaviourCategory.name',
-    lockVisible: true,
     editable: false,
   },
   {
@@ -97,22 +100,6 @@ export default function BehaviourLabel() {
     null
   );
 
-  const handleCreateBehaviourLabel = () => {
-    setNoteLabelDetails({});
-  };
-
-  const handleCloseEditModal = () => {
-    setNoteLabelDetails(null);
-  };
-
-  const handleCreateCategoryModal = () => {
-    setNoteCategoryDetails({});
-  };
-
-  const handleCloseCategoryModal = () => {
-    setNoteCategoryDetails(null);
-  };
-
   const noteTagBehaviourColumns = useMemo(
     () => getNoteTagBehaviourColumns(setNoteLabelDetails, t),
     [noteLabelDetails, t]
@@ -130,13 +117,13 @@ export default function BehaviourLabel() {
                 menuItems={[
                   {
                     label: t('settings:actions.addBehaviourLabel'),
-                    icon: <AddFolderIcon />,
-                    onClick: handleCreateBehaviourLabel,
+                    icon: <AddIcon />,
+                    onClick: () => setNoteLabelDetails({}),
                   },
                   {
                     label: t('settings:actions.addCategory'),
                     icon: <AddFolderIcon />,
-                    onClick: handleCreateCategoryModal,
+                    onClick: () => setNoteCategoryDetails({}),
                   },
                 ]}
               />
@@ -151,11 +138,11 @@ export default function BehaviourLabel() {
       />
       <UpsertBehaviourLabelModal
         initialState={noteLabelDetails}
-        onClose={handleCloseEditModal}
+        onClose={() => setNoteLabelDetails(null)}
       />
       <UpsertCategoryModal
         initialState={noteCategoryDetails}
-        onClose={handleCloseCategoryModal}
+        onClose={() => setNoteCategoryDetails(null)}
       />
     </PageContainer>
   );

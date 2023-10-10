@@ -1,4 +1,4 @@
-import { Button, Stack } from '@mui/material';
+import { Button, DialogContent, Stack } from '@mui/material';
 import {
   Dialog,
   DialogActions,
@@ -15,7 +15,7 @@ import {
   useUpsertBehaviourTags,
   useBehaviourCategory,
 } from '@tyro/people';
-import React, { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Notes_BehaviourType } from '@tyro/api';
 
 export interface UpsertBehaviourLabelModalProps {
@@ -35,38 +35,28 @@ export const UpsertBehaviourLabelModal = ({
   onClose,
 }: UpsertBehaviourLabelModalProps) => {
   const { t, i18n } = useTranslation(['settings', 'common']);
-  const { resolver, rules } = useFormValidator<UpsertBehaviourLabelFormState>();
   const currentLanguageCode = i18n.language;
+
   const { data: categories } = useBehaviourCategory({});
+  const { mutate, isLoading } = useUpsertBehaviourTags();
 
-  const defaultFormStateValues: Partial<UpsertBehaviourLabelFormState> = {
-    name: initialState?.name,
-    description: initialState?.description || '',
-    behaviourType: initialState?.behaviourType || Notes_BehaviourType.Neutral,
-    categoryId:
-      initialState?.behaviourCategory?.behaviourCategoryId ||
-      categories?.[0]?.behaviourCategoryId,
-  };
-
-  const { control, handleSubmit, reset } =
+  const { resolver, rules } = useFormValidator<UpsertBehaviourLabelFormState>();
+  const { control, handleSubmit, reset, watch } =
     useForm<UpsertBehaviourLabelFormState>({
       resolver: resolver({
         name: rules.required(),
         behaviourType: rules.required(),
       }),
-      defaultValues: defaultFormStateValues,
     });
 
-  const { mutate, isLoading } = useUpsertBehaviourTags();
-
-  const handleClose = () => {
-    onClose();
-    reset();
-  };
-
-  useEffect(() => {
-    reset(defaultFormStateValues);
-  }, [initialState]);
+  const behaviourType = watch('behaviourType');
+  const filteredCategories = useMemo(
+    () =>
+      categories?.filter(
+        (category) => category.behaviourType === behaviourType
+      ),
+    [categories, behaviourType]
+  );
 
   const onSubmit = handleSubmit((data) => {
     mutate(
@@ -84,16 +74,25 @@ export const UpsertBehaviourLabelModal = ({
       ],
       {
         onSuccess: () => {
-          handleClose();
+          onClose();
         },
       }
     );
   });
 
+  useEffect(() => {
+    reset({
+      name: initialState?.name,
+      description: initialState?.description || '',
+      behaviourType: initialState?.behaviourType || Notes_BehaviourType.Neutral,
+      categoryId: initialState?.behaviourCategory?.behaviourCategoryId,
+    });
+  }, [initialState]);
+
   return (
     <Dialog
       open={!!initialState}
-      onClose={handleClose}
+      onClose={onClose}
       scroll="paper"
       fullWidth
       maxWidth="sm"
@@ -104,57 +103,57 @@ export const UpsertBehaviourLabelModal = ({
           : t('settings:behaviourLabel.createBehaviourLabel')}
       </DialogTitle>
       <form onSubmit={onSubmit}>
-        <Stack spacing={3} sx={{ p: 3 }}>
-          <RHFTextField
-            label={t('common:name')}
-            controlProps={{
-              name: 'name',
-              control,
-            }}
-          />
-          <RHFSelect
-            fullWidth
-            options={Object.values(Notes_BehaviourType)}
-            label={t('settings:behaviourLabel.reportAs')}
-            getOptionLabel={(option) => t(`common:behaviourType.${option}`)}
-            controlProps={{
-              name: 'behaviourType',
-              control,
-            }}
-          />
-          <RHFSelect
-            fullWidth
-            options={categories || []}
-            label={t('common:category')}
-            getOptionLabel={(option) => option.name}
-            optionIdKey="behaviourCategoryId"
-            controlProps={{
-              name: 'categoryId',
-              control,
-            }}
-          />
-          <RHFTextField
-            label={t('common:description')}
-            controlProps={{
-              name: 'description',
-              control,
-            }}
-            textFieldProps={{
-              multiline: true,
-              rows: 4,
-            }}
-          />
-        </Stack>
+        <DialogContent>
+          <Stack spacing={3} mt={1}>
+            <RHFTextField
+              label={t('common:name')}
+              controlProps={{
+                name: 'name',
+                control,
+              }}
+            />
+            <RHFSelect
+              fullWidth
+              options={Object.values(Notes_BehaviourType)}
+              label={t('settings:behaviourLabel.reportAs')}
+              getOptionLabel={(option) => t(`common:behaviourType.${option}`)}
+              controlProps={{
+                name: 'behaviourType',
+                control,
+              }}
+            />
+            <RHFSelect
+              fullWidth
+              options={filteredCategories || []}
+              label={t('common:category')}
+              getOptionLabel={(option) => option.name}
+              optionIdKey="behaviourCategoryId"
+              controlProps={{
+                name: 'categoryId',
+                control,
+              }}
+            />
+            <RHFTextField
+              label={t('common:description')}
+              controlProps={{
+                name: 'description',
+                control,
+              }}
+              textFieldProps={{
+                multiline: true,
+                rows: 4,
+              }}
+            />
+          </Stack>
+        </DialogContent>
 
         <DialogActions>
-          <Button variant="outlined" color="inherit" onClick={handleClose}>
+          <Button variant="soft" color="inherit" onClick={onClose}>
             {t('common:actions.cancel')}
           </Button>
 
           <LoadingButton type="submit" variant="contained" loading={isLoading}>
-            {initialState?.id
-              ? t('common:actions.edit')
-              : t('common:actions.add')}
+            {t('common:actions.save')}
           </LoadingButton>
         </DialogActions>
       </form>

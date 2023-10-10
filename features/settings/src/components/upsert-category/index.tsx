@@ -1,4 +1,4 @@
-import { Button, Stack } from '@mui/material';
+import { Button, DialogContent, Stack } from '@mui/material';
 import {
   Dialog,
   DialogActions,
@@ -11,18 +11,15 @@ import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import { Colour, Notes_BehaviourType } from '@tyro/api';
-import React from 'react';
-import { useUpsertBehaviourCategory } from '@tyro/people/src/api/behaviour/upsert-behaviour-category';
-
-type MockReturnTypeFromCategory = {
-  name: string;
-  description?: string | null | undefined;
-  id: number;
-};
+import { useEffect } from 'react';
+import {
+  useUpsertBehaviourCategory,
+  ReturnTypeFromUseBehaviourCategory,
+} from '@tyro/people';
 
 export interface UpsertCategoryModalProps {
   onClose: () => void;
-  initialState: Partial<MockReturnTypeFromCategory> | null;
+  initialState: Partial<ReturnTypeFromUseBehaviourCategory> | null;
 }
 
 export type UpsertCategoryFormState = {
@@ -45,24 +42,12 @@ export const UpsertCategoryModal = ({
   const { resolver, rules } = useFormValidator<UpsertCategoryFormState>();
   const { mutate, isLoading } = useUpsertBehaviourCategory();
 
-  const defaultFormStateValues: Partial<UpsertCategoryFormState> = {
-    behaviourType: Notes_BehaviourType.Neutral,
-    name: initialState?.name,
-    description: initialState?.description || '',
-  };
-
   const { control, handleSubmit, reset } = useForm<UpsertCategoryFormState>({
     resolver: resolver({
       behaviourType: rules.required(),
       name: rules.required(),
     }),
-    defaultValues: defaultFormStateValues,
   });
-
-  const handleClose = () => {
-    onClose();
-    reset();
-  };
 
   const onSubmit = handleSubmit((data) => {
     mutate(
@@ -74,66 +59,74 @@ export const UpsertCategoryModal = ({
       },
       {
         onSuccess: () => {
-          handleClose();
+          onClose();
         },
       }
     );
   });
 
+  useEffect(() => {
+    reset({
+      behaviourType: Notes_BehaviourType.Neutral,
+      name: initialState?.name,
+      description: initialState?.description || '',
+    });
+  }, [initialState]);
+
   return (
     <Dialog
       open={!!initialState}
-      onClose={handleClose}
+      onClose={onClose}
       scroll="paper"
       fullWidth
       maxWidth="sm"
     >
       <DialogTitle>
-        {initialState?.id
+        {initialState?.behaviourCategoryId
           ? t('settings:category.editCategory')
           : t('settings:category.createCategory')}
       </DialogTitle>
       <form onSubmit={onSubmit}>
-        <Stack spacing={3} sx={{ p: 3 }}>
-          <RHFSelect
-            fullWidth
-            options={Object.values(Notes_BehaviourType)}
-            label={t('settings:behaviourLabel.reportAs')}
-            getOptionLabel={(option) => t(`common:behaviourType.${option}`)}
-            controlProps={{
-              name: 'behaviourType',
-              control,
-            }}
-          />
-          <RHFTextField
-            label={t('common:name')}
-            controlProps={{
-              name: 'name',
-              control,
-            }}
-          />
-          <RHFTextField
-            label={t('common:description')}
-            controlProps={{
-              name: 'description',
-              control,
-            }}
-            textFieldProps={{
-              multiline: true,
-              rows: 4,
-            }}
-          />
-        </Stack>
+        <DialogContent>
+          <Stack spacing={3} mt={1}>
+            <RHFSelect
+              fullWidth
+              options={Object.values(Notes_BehaviourType)}
+              label={t('settings:behaviourLabel.reportAs')}
+              getOptionLabel={(option) => t(`common:behaviourType.${option}`)}
+              controlProps={{
+                name: 'behaviourType',
+                control,
+              }}
+            />
+            <RHFTextField
+              label={t('common:name')}
+              controlProps={{
+                name: 'name',
+                control,
+              }}
+            />
+            <RHFTextField
+              label={t('common:description')}
+              controlProps={{
+                name: 'description',
+                control,
+              }}
+              textFieldProps={{
+                multiline: true,
+                rows: 4,
+              }}
+            />
+          </Stack>
+        </DialogContent>
 
         <DialogActions>
-          <Button variant="outlined" color="inherit" onClick={handleClose}>
+          <Button variant="soft" color="inherit" onClick={onClose}>
             {t('common:actions.cancel')}
           </Button>
 
           <LoadingButton type="submit" variant="contained" loading={isLoading}>
-            {initialState?.id
-              ? t('common:actions.edit')
-              : t('common:actions.add')}
+            {t('common:actions.save')}
           </LoadingButton>
         </DialogActions>
       </form>
