@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Card,
+  CardContent,
   CardHeader,
   Chip,
   CircularProgress,
@@ -87,7 +88,7 @@ const getStudentBehaviourColumns = (
   },
   {
     colId: 'tags',
-    headerName: t('people:behaviour'),
+    headerName: t('people:tags'),
     autoHeight: true,
     wrapText: true,
     width: 350,
@@ -319,18 +320,7 @@ export default function StudentProfileBehaviourPage() {
       return count + (behaviourNames?.includes(tabValue) ? 1 : 0);
     }, 0);
 
-  return loadingStatus ? (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-      }}
-    >
-      <CircularProgress />
-    </Box>
-  ) : (
+  return (
     <Card
       sx={{
         backgroundColor: '#ffffff',
@@ -452,105 +442,117 @@ export default function StudentProfileBehaviourPage() {
         )}
       </Stack>
 
-      <CategoriesContainer
-        categories={categories}
-        isCategoriesLoading={isCategoriesLoading}
-        totalLogsByLevels={subCategories?.length ?? 0}
-      />
+      {loadingStatus ? (
+        <Stack minHeight="40vh" justifyContent="center" alignItems="center">
+          <CircularProgress />
+        </Stack>
+      ) : (
+        <>
+          <CardContent sx={{ height: '100%' }}>
+            <CategoriesContainer
+              categories={categories}
+              isCategoriesLoading={isCategoriesLoading}
+              totalLogsByLevels={subCategories?.length ?? 0}
+            />
 
-      <Tabs
-        value={value}
-        onChange={(_event, newValue: number) => setValue(newValue)}
-        variant="scrollable"
-        scrollButtons="auto"
-        aria-label={t('people:ariaLabelForTabs')}
-        sx={{
-          '& .MuiTabs-flexContainer': {
-            alignItems: 'center',
-            marginLeft: 2,
-          },
-          '& .MuiTabs-flexContainer > .MuiButtonBase-root': {
-            marginRight: 3.5,
-          },
-        }}
-      >
-        {allTabs?.map((tab) => (
-          <Tab
-            key={tab.id}
-            onClick={() => setCurrentTabValue(tab?.name)}
-            label={
-              <>
-                <MyChip
+            <Tabs
+              value={value}
+              onChange={(_event, newValue: number) => setValue(newValue)}
+              variant="scrollable"
+              scrollButtons="auto"
+              aria-label={t('people:ariaLabelForTabs')}
+              sx={{
+                '& .MuiTabs-flexContainer': {
+                  alignItems: 'center',
+                  marginLeft: 2,
+                },
+                '& .MuiTabs-flexContainer > .MuiButtonBase-root': {
+                  marginRight: 3.5,
+                },
+              }}
+            >
+              {allTabs?.map((tab) => (
+                <Tab
+                  key={tab.id}
+                  onClick={() => setCurrentTabValue(tab?.name)}
                   label={
-                    tab?.name === 'All'
-                      ? subCategories?.length
-                      : getBehaviourTypesTotals(tab?.name)
+                    <>
+                      <MyChip
+                        label={
+                          tab?.name === 'All'
+                            ? subCategories?.length
+                            : getBehaviourTypesTotals(tab?.name)
+                        }
+                        variant="soft"
+                        sx={{
+                          cursor: 'pointer',
+                          backgroundColor: `${tab?.colour}.100`,
+                          borderRadius: '6px',
+                          height: '20px',
+                          fontWeight: '700',
+                          fontSize: '12px',
+                          paddingX: '8px',
+                          color: `${tab?.colour}.500`,
+                          '& .MuiChip-icon': {
+                            color: `${tab?.colour}.500`,
+                          },
+                          '& .MuiChip-label': {
+                            padding: 0,
+                          },
+                        }}
+                      />
+                      <Typography
+                        color="#637381"
+                        marginLeft={1}
+                        sx={{
+                          fontWeight: '600',
+                          fontSize: '14px',
+                          textWrap: 'nowrap',
+                          textTransform: 'none',
+                        }}
+                      >
+                        {tab?.name}
+                      </Typography>
+                    </>
                   }
-                  variant="soft"
-                  sx={{
-                    cursor: 'pointer',
-                    backgroundColor: `${tab?.colour}.100`,
-                    borderRadius: '6px',
-                    height: '20px',
-                    fontWeight: '700',
-                    fontSize: '12px',
-                    paddingX: '8px',
-                    color: `${tab?.colour}.500`,
-                    '& .MuiChip-icon': {
-                      color: `${tab?.colour}.500`,
-                    },
-                    '& .MuiChip-label': {
-                      padding: 0,
-                    },
-                  }}
                 />
-                <Typography
-                  color="#637381"
-                  marginLeft={1}
-                  sx={{
-                    fontWeight: '600',
-                    fontSize: '14px',
-                    textWrap: 'nowrap',
-                    textTransform: 'none',
-                  }}
-                >
-                  {tab?.name}
-                </Typography>
-              </>
-            }
-          />
-        ))}
-      </Tabs>
+              ))}
+            </Tabs>
 
-      <Table
-        isLoading={isBehavioursLoading}
-        rowData={filteredData}
-        columnDefs={studentBehaviourColumns}
-        getRowId={({ data }) => String(data?.noteId)}
-        sx={{
-          boxShadow: 'none',
-          p: 0,
-          '& .MuiStack-root': { paddingX: 0 },
-          '& .MuiFilledInput-root': { marginX: 2 },
-        }}
-      />
-      {behaviourDetails && (
-        <CreateBehaviourModal
-          studentId={studentId}
-          onClose={() => setBehaviourDetails(null)}
-          initialState={behaviourDetails}
-          behaviourType={behaviourType}
-        />
-      )}
-      {behaviourIdToDelete && (
-        <ConfirmDialog
-          open
-          title={t('people:deleteBehaviour')}
-          description={t('people:areYouSureYouWantToDeleteBehaviour')}
-          confirmText={t('common:delete')}
-          onClose={() => setBehaviourIdToDelete(null)}
-          onConfirm={onConfirmDelete}
-        />
+            <Table
+              isLoading={isBehavioursLoading}
+              rowData={filteredData}
+              columnDefs={studentBehaviourColumns}
+              getRowId={({ data }) => String(data?.noteId)}
+              sx={{
+                height: '100%',
+                boxShadow: 'none',
+                p: 0,
+                '& .MuiStack-root': { paddingX: 0 },
+                '& .MuiFilledInput-root': { marginX: 2 },
+              }}
+            />
+          </CardContent>
+          {behaviourDetails && (
+            <CreateBehaviourModal
+              studentId={studentId}
+              onClose={() => setBehaviourDetails(null)}
+              initialState={behaviourDetails}
+              behaviourType={behaviourType}
+              setBehaviourType={setBehaviourType}
+            />
+          )}
+          {behaviourIdToDelete && (
+            <ConfirmDialog
+              open
+              title={t('people:deleteBehaviour')}
+              description={t('people:areYouSureYouWantToDeleteBehaviour')}
+              confirmText={t('common:delete')}
+              onClose={() => setBehaviourIdToDelete(null)}
+              onConfirm={onConfirmDelete}
+            />
+          )}
+        </>
       )}
     </Card>
   );

@@ -275,6 +275,7 @@
   "association": "Association",
   "associations": "Association(s)",
   "category": "Category",
+  "tags": "Tags",
   "behaviourTypes": {
     "POSITIVE": "Positive",
     "NEUTRAL": "Neutral",
