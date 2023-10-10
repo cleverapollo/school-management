@@ -23,6 +23,7 @@ import {
 } from './api';
 import { getYearGroups, getYearGroupById } from './api/year-groups';
 import { getSupportGroupById, getSupportGroups } from './api/support-groups';
+import { getValidEventStartTime } from './utils/get-valid-event-start-time';
 
 // year group
 
@@ -266,10 +267,18 @@ export const getRoutes: NavObjectFunction = (t) => [
                         throw404Error();
                       }
 
+                      const searchParams = new URLSearchParams(
+                        document.location.search
+                      );
+
+                      const eventStartTime = searchParams.get('eventStartTime');
+
                       return Promise.all([
                         getAttendanceCodes({ teachingGroupCodes: true }),
                         getSubjectGroupLesson({
                           partyId: groupId,
+                          eventStartTime:
+                            getValidEventStartTime(eventStartTime),
                           iterator: Iterator.Closest,
                         }),
                       ]);
