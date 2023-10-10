@@ -59,7 +59,7 @@ const getNoteTagBehaviourColumns = (
   },
   {
     headerName: t('common:category'),
-    field: 'category',
+    field: 'behaviourCategory.name',
     lockVisible: true,
     editable: false,
   },

@@ -16,7 +16,7 @@ import {
   useBehaviourCategory,
 } from '@tyro/people';
 import React, { useEffect } from 'react';
-import { Notes_BehaviourType, Notes_BehaviourCategory } from '@tyro/api';
+import { Notes_BehaviourType } from '@tyro/api';
 
 export interface UpsertBehaviourLabelModalProps {
   onClose: () => void;
@@ -27,7 +27,7 @@ export type UpsertBehaviourLabelFormState = {
   name: string;
   description: string;
   behaviourType: Notes_BehaviourType;
-  behaviourCategory: string;
+  categoryId: number;
 };
 
 export const UpsertBehaviourLabelModal = ({
@@ -43,7 +43,9 @@ export const UpsertBehaviourLabelModal = ({
     name: initialState?.name,
     description: initialState?.description || '',
     behaviourType: initialState?.behaviourType || Notes_BehaviourType.Neutral,
-    behaviourCategory: initialState?.category || categories?.[0]?.name,
+    categoryId:
+      initialState?.behaviourCategory?.behaviourCategoryId ||
+      categories?.[0]?.behaviourCategoryId,
   };
 
   const { control, handleSubmit, reset } =
@@ -77,6 +79,7 @@ export const UpsertBehaviourLabelModal = ({
             { locale: currentLanguageCode, value: data.description },
           ],
           behaviourType: data.behaviourType,
+          categoryId: data.categoryId,
         },
       ],
       {
@@ -121,11 +124,12 @@ export const UpsertBehaviourLabelModal = ({
           />
           <RHFSelect
             fullWidth
-            options={categories?.map((cat) => cat.name) || []}
+            options={categories || []}
             label={t('common:category')}
-            getOptionLabel={(option) => option}
+            getOptionLabel={(option) => option.name}
+            optionIdKey="behaviourCategoryId"
             controlProps={{
-              name: 'behaviourCategory',
+              name: 'categoryId',
               control,
             }}
           />

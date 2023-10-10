@@ -3,12 +3,16 @@ import {
   Dialog,
   DialogActions,
   DialogTitle,
+  RHFSelect,
   RHFTextField,
   useFormValidator,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
+import { Colour, Notes_BehaviourType } from '@tyro/api';
+import React from 'react';
+import { useUpsertBehaviourCategory } from '@tyro/people/src/api/behaviour/upsert-behaviour-category';
 
 type MockReturnTypeFromCategory = {
   name: string;
@@ -22,8 +26,15 @@ export interface UpsertCategoryModalProps {
 }
 
 export type UpsertCategoryFormState = {
+  behaviourType: Notes_BehaviourType;
   name: string;
   description: string;
+};
+
+const codeTypeColorMapping = {
+  [Notes_BehaviourType.Positive]: Colour.Green,
+  [Notes_BehaviourType.Negative]: Colour.Rose,
+  [Notes_BehaviourType.Neutral]: Colour.Blue,
 };
 
 export const UpsertCategoryModal = ({
@@ -32,14 +43,17 @@ export const UpsertCategoryModal = ({
 }: UpsertCategoryModalProps) => {
   const { t } = useTranslation(['settings', 'common']);
   const { resolver, rules } = useFormValidator<UpsertCategoryFormState>();
+  const { mutate, isLoading } = useUpsertBehaviourCategory();
 
   const defaultFormStateValues: Partial<UpsertCategoryFormState> = {
+    behaviourType: Notes_BehaviourType.Neutral,
     name: initialState?.name,
     description: initialState?.description || '',
   };
 
   const { control, handleSubmit, reset } = useForm<UpsertCategoryFormState>({
     resolver: resolver({
+      behaviourType: rules.required(),
       name: rules.required(),
     }),
     defaultValues: defaultFormStateValues,
@@ -51,8 +65,19 @@ export const UpsertCategoryModal = ({
   };
 
   const onSubmit = handleSubmit((data) => {
-    // TODO: update this action when API integrate API
-    console.log('Submit category', data);
+    mutate(
+      {
+        name: data.name,
+        description: data.description,
+        behaviourType: data.behaviourType,
+        colour: codeTypeColorMapping[data.behaviourType],
+      },
+      {
+        onSuccess: () => {
+          handleClose();
+        },
+      }
+    );
   });
 
   return (
@@ -66,11 +91,20 @@ export const UpsertCategoryModal = ({
       <DialogTitle>
         {initialState?.id
           ? t('settings:category.editCategory')
-          : t('settings:category.createCategory')
-        }
+          : t('settings:category.createCategory')}
       </DialogTitle>
       <form onSubmit={onSubmit}>
         <Stack spacing={3} sx={{ p: 3 }}>
+          <RHFSelect
+            fullWidth
+            options={Object.values(Notes_BehaviourType)}
+            label={t('settings:behaviourLabel.reportAs')}
+            getOptionLabel={(option) => t(`common:behaviourType.${option}`)}
+            controlProps={{
+              name: 'behaviourType',
+              control,
+            }}
+          />
           <RHFTextField
             label={t('common:name')}
             controlProps={{
@@ -96,7 +130,7 @@ export const UpsertCategoryModal = ({
             {t('common:actions.cancel')}
           </Button>
 
-          <LoadingButton type="submit" variant="contained" loading={false}>
+          <LoadingButton type="submit" variant="contained" loading={isLoading}>
             {initialState?.id
               ? t('common:actions.edit')
               : t('common:actions.add')}
@@ -105,4 +139,4 @@ export const UpsertCategoryModal = ({
       </form>
     </Dialog>
   );
-}
+};

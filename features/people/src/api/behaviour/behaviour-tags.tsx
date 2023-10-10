@@ -21,6 +21,10 @@ const noteTagsBehaviour = graphql(/* GraphQL */ `
       behaviourType
       tag_l2
       category
+      behaviourCategory {
+        behaviourCategoryId
+        name
+      }
     }
   }
 `);
