@@ -46,6 +46,44 @@ const bulkAttendance = graphql(/* GraphQL */ `
             __typename
           }
         }
+        ... on ProgrammeStageEnrollment {
+          __typename
+          partyId
+          name
+        }
+        ... on YearGroupEnrollment {
+          __typename
+          partyId
+          name
+        }
+        ... on Staff {
+          __typename
+          person {
+            title {
+              id
+              name
+              nameTextId
+            }
+            firstName
+            lastName
+            avatarUrl
+            type
+          }
+        }
+        ... on StudentContact {
+          __typename
+          person {
+            title {
+              id
+              name
+              nameTextId
+            }
+            firstName
+            lastName
+            avatarUrl
+            type
+          }
+        }
       }
       attendanceCodeId
       attendanceCode {
@@ -93,7 +131,7 @@ const bulkAttendanceQuery = (
     }),
 });
 
-export function getBulkAttendanceQuery(
+export function getBulkAttendance(
   filter: Attendance_BulkAttendanceActionFilter
 ) {
   return queryClient.fetchQuery(bulkAttendanceQuery(filter));

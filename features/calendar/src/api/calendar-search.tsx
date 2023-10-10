@@ -20,7 +20,10 @@ export function useCalendarSearch(query: string) {
     queryKey: calendarKeys.search(query),
     queryFn: async () =>
       gqlClient.request(calendarSearch, {
-        filter: { text: trimmedQuery, context: [Context.Calendar] },
+        filter: {
+          text: trimmedQuery,
+          context: [Context.Calendar],
+        },
       }),
     enabled: trimmedQuery.length > 0,
     keepPreviousData: true,

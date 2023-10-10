@@ -127,8 +127,8 @@ export const BulkAttendanceModal = ({
     if (data?.requestType === BulkAttendanceRequestType.PartialDay) {
       transformedData.partialDate = {
         date: dayjs(data?.date).format('YYYY-MM-DD'),
-        leavesAt: dayjs(data?.startTime).format('HH:MM'),
-        returnsAt: dayjs(data?.endTime).format('HH:MM'),
+        leavesAt: dayjs(data?.startTime).format('HH:mm'),
+        returnsAt: dayjs(data?.endTime).format('HH:mm'),
       };
     }
     if (data?.requestType === BulkAttendanceRequestType.MultiDay) {
@@ -159,8 +159,8 @@ export const BulkAttendanceModal = ({
       maxWidth="sm"
     >
       <DialogTitle>{t('attendance:createBulkAttendance')}</DialogTitle>
-      <DialogContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DialogContent>
           <Collapse in={openAlert}>
             <Alert
               severity="error"
@@ -197,12 +197,11 @@ export const BulkAttendanceModal = ({
               {...bulkAttendanceAutocompleteProps}
               fullWidth
               disableCloseOnSelect
-              label={t('common:name')}
+              label={t('common:search')}
               controlProps={{
                 name: `selectedStudentsOrGroups`,
                 control,
               }}
-              sx={{ mt: 1 }}
             />
             <RHFSelect
               fullWidth
@@ -288,21 +287,21 @@ export const BulkAttendanceModal = ({
               }}
             />
           </Stack>
-          <DialogActions>
-            <Button variant="outlined" color="inherit" onClick={onClose}>
-              {t('common:actions.cancel')}
-            </Button>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" color="inherit" onClick={onClose}>
+            {t('common:actions.cancel')}
+          </Button>
 
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              loading={isSubmitting}
-            >
-              {t('common:actions.save')}
-            </LoadingButton>
-          </DialogActions>
-        </form>
-      </DialogContent>
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            loading={isSubmitting}
+          >
+            {t('common:actions.save')}
+          </LoadingButton>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 };

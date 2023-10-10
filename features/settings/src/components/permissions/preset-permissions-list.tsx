@@ -16,6 +16,8 @@ const Icons: Record<MemberType, ReactNode> = {
   [MemberType.Staff]: <BooksAppleIcon />,
   [MemberType.Admin]: <OfficeDeskIcon />,
   [MemberType.Contact]: <HandHeartIcon />,
+  [MemberType.External]: <OfficeDeskIcon />, // May never be used
+  [MemberType.ThirdParty]: <OfficeDeskIcon />,
 };
 
 export const PresetPermissionsList = () => {

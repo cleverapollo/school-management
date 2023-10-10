@@ -68,6 +68,8 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.NonMenuLink,
             path: 'term-assessments/create',
             element: <CreateTermAssessmentPage />,
+            hasAccess: ({ hasPermission }) =>
+              hasPermission('ps:1:assessment:write_assessments'),
           },
           {
             type: NavObjectType.NonMenuLink,

@@ -25,7 +25,7 @@ import { LabelDialog } from './label-dialog';
 
 export function MailSidebar() {
   const { pathname } = useLocation();
-  const { isStaffUser } = usePermissions();
+  const { isStaffUser, isTyroUser } = usePermissions();
   const { t } = useTranslation(['mail', 'common']);
   const { sidebarDisclosure, composeEmail, activeProfileId } =
     useMailSettings();
@@ -82,12 +82,14 @@ export function MailSidebar() {
     composeEmail({});
   };
 
+  const composeDisabled = !isStaffUser || isTyroUser;
+
   const renderContent = (
     <Scrollbar>
       <Box sx={{ p: 3 }}>
         <Tooltip
           title={
-            !isStaffUser && t('mail:youDoNotHavePermissionToComposeNewMail')
+            composeDisabled && t('mail:youDoNotHavePermissionToComposeNewMail')
           }
         >
           <span>
@@ -96,7 +98,7 @@ export function MailSidebar() {
               variant="contained"
               startIcon={<AddIcon />}
               onClick={handleOpenCompose}
-              disabled={!isStaffUser}
+              disabled={composeDisabled}
             >
               {t('common:actions.compose')}
             </Button>

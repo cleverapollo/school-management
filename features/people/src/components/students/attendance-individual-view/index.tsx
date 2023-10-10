@@ -1,12 +1,16 @@
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   Box,
   Card,
   CardContent,
   CardHeader,
   CircularProgress,
+  Divider,
+  Fade,
+  FormControlLabel,
   Icon,
   Stack,
+  Switch,
   Tab,
   Tabs,
   ToggleButton,
@@ -24,7 +28,10 @@ import { useStudentCalendarAttendance } from '@tyro/attendance';
 import { AcademicCalendar } from './calendar';
 import { AttendanceTableView } from './attendance-table-view';
 
-export type ExtendedAttendanceCodeType = AttendanceCodeType | 'ALL';
+export type ExtendedAttendanceCodeType =
+  | AttendanceCodeType
+  | 'ALL'
+  | 'PARTIAL_ABSENCE';
 
 export type AttendanceDataType = {
   colour: string;
@@ -56,6 +63,10 @@ export const MonthOverview = () => {
   const { t } = useTranslation(['attendance', 'people']);
   const { id } = useParams();
   const [view, setView] = useState<CalendarView>(CalendarView.Calendar);
+  const [showPartialAbsence, setShowPartialAbsence] = useState(false);
+  const [value, setValue] = useState(0);
+  const [currentTabValue, setCurrentTabValue] =
+    useState<ExtendedAttendanceCodeType>('ALL');
 
   const { activeAcademicNamespace } = useAcademicNamespace();
 
@@ -74,9 +85,29 @@ export const MonthOverview = () => {
   const attendanceCounts = calendarAttendance?.attendances ?? [];
   const totalAttendanceDays = attendanceCounts.length;
 
-  const [value, setValue] = useState(0);
-  const [currentTabValue, setCurrentTabValue] =
-    useState<ExtendedAttendanceCodeType>('ALL');
+  const partialsByCodeType = useMemo(
+    () =>
+      (calendarAttendance?.attendances ?? []).reduce(
+        (acc, { partiallyTaken, status }) => {
+          if (partiallyTaken) {
+            const currentCount = acc.get(status);
+            acc.set(status, 1 + (currentCount ?? 0));
+          }
+
+          return acc;
+        },
+        new Map<ExtendedAttendanceCodeType, number>()
+      ),
+    [calendarAttendance]
+  );
+
+  const getCodeCount = useCallback(
+    (code: ExtendedAttendanceCodeType, defaultCount: number | undefined = 0) =>
+      showPartialAbsence
+        ? defaultCount - (partialsByCodeType.get(code) ?? 0)
+        : defaultCount,
+    [partialsByCodeType, showPartialAbsence]
+  );
 
   const attendanceTabData: Array<{
     bgColor: string;
@@ -84,45 +115,74 @@ export const MonthOverview = () => {
     translationText: string;
     currentTabValue: ExtendedAttendanceCodeType;
     total: number;
-  }> = [
-    {
-      bgColor: 'indigo.100',
-      color: 'indigo.500',
-      translationText: t('attendance:all'),
-      currentTabValue: 'ALL',
-      total: totalAttendanceDays,
-    },
-    {
-      ...tabColors.PRESENT,
-      translationText: t('attendance:totalPresent'),
-      currentTabValue: AttendanceCodeType.Present,
-      total: calendarAttendance?.totalPresent ?? 0,
-    },
-    {
-      ...tabColors.LATE,
-      translationText: t('attendance:totalLate'),
-      currentTabValue: AttendanceCodeType.Late,
-      total: calendarAttendance?.totalLate ?? 0,
-    },
-    {
-      ...tabColors.EXPLAINED_ABSENCE,
-      translationText: t('attendance:totalAbsent'),
-      currentTabValue: AttendanceCodeType.ExplainedAbsence,
-      total: calendarAttendance?.totalAbsent ?? 0,
-    },
-    {
-      ...tabColors.UNEXPLAINED_ABSENCE,
-      translationText: t('attendance:totalUnexplained'),
-      currentTabValue: AttendanceCodeType.UnexplainedAbsence,
-      total: calendarAttendance?.totalUnexplained ?? 0,
-    },
-    {
-      ...tabColors.NOT_TAKEN,
-      translationText: t('attendance:totalNotTaken'),
-      currentTabValue: AttendanceCodeType.NotTaken,
-      total: calendarAttendance?.totalNotTaken ?? 0,
-    },
-  ];
+  }> = useMemo(
+    () => [
+      {
+        bgColor: 'indigo.100',
+        color: 'indigo.500',
+        translationText: t('attendance:all'),
+        currentTabValue: 'ALL',
+        total: totalAttendanceDays,
+      },
+      {
+        ...tabColors.PRESENT,
+        translationText: t('attendance:totalPresent'),
+        currentTabValue: AttendanceCodeType.Present,
+        total: getCodeCount(
+          AttendanceCodeType.Present,
+          calendarAttendance?.totalPresent
+        ),
+      },
+      {
+        ...tabColors.LATE,
+        translationText: t('attendance:totalLate'),
+        currentTabValue: AttendanceCodeType.Late,
+        total: getCodeCount(
+          AttendanceCodeType.Late,
+          calendarAttendance?.totalLate
+        ),
+      },
+      ...(showPartialAbsence
+        ? [
+            {
+              bgColor: 'amber.500',
+              color: 'white',
+              translationText: t('attendance:totalPartialAbsence'),
+              currentTabValue: 'PARTIAL_ABSENCE',
+              total: calendarAttendance?.totalPartial ?? 0,
+            } as const,
+          ]
+        : []),
+      {
+        ...tabColors.EXPLAINED_ABSENCE,
+        translationText: t('attendance:totalAbsent'),
+        currentTabValue: AttendanceCodeType.ExplainedAbsence,
+        total: getCodeCount(
+          AttendanceCodeType.ExplainedAbsence,
+          calendarAttendance?.totalAbsent
+        ),
+      },
+      {
+        ...tabColors.UNEXPLAINED_ABSENCE,
+        translationText: t('attendance:totalUnexplained'),
+        currentTabValue: AttendanceCodeType.UnexplainedAbsence,
+        total: getCodeCount(
+          AttendanceCodeType.UnexplainedAbsence,
+          calendarAttendance?.totalUnexplained
+        ),
+      },
+      {
+        ...tabColors.NOT_TAKEN,
+        translationText: t('attendance:totalNotTaken'),
+        currentTabValue: AttendanceCodeType.NotTaken,
+        total: getCodeCount(
+          AttendanceCodeType.NotTaken,
+          calendarAttendance?.totalNotTaken
+        ),
+      },
+    ],
+    [calendarAttendance, showPartialAbsence, getCodeCount]
+  );
 
   const viewOptions = [
     {
@@ -138,7 +198,10 @@ export const MonthOverview = () => {
   ];
 
   return (
-    <Card variant="outlined" sx={{ height: '100%', flex: 1 }}>
+    <Card
+      variant="outlined"
+      sx={{ height: '100%', flex: 1, display: 'flex', flexDirection: 'column' }}
+    >
       <Stack
         direction="row"
         sx={{
@@ -201,6 +264,31 @@ export const MonthOverview = () => {
               </ToggleButton>
             </Tooltip>
           ))}
+
+          <Fade in={view === CalendarView.Calendar}>
+            <Box display="flex" sx={{ '&.MuiBox-root': { marginLeft: 0 } }}>
+              <Divider
+                orientation="vertical"
+                flexItem
+                sx={{ '&.MuiDivider-root': { marginLeft: '16px' } }}
+              />
+
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={showPartialAbsence}
+                    onChange={() => {
+                      setValue(0);
+                      setCurrentTabValue('ALL');
+                      setShowPartialAbsence((current) => !current);
+                    }}
+                  />
+                }
+                label={t('attendance:viewPartialAbsence')}
+                sx={{ '&.MuiFormControlLabel-root': { marginLeft: '4px' } }}
+              />
+            </Box>
+          </Fade>
         </Stack>
         <CardHeader
           component="h3"
@@ -223,7 +311,7 @@ export const MonthOverview = () => {
           <CircularProgress />
         </Stack>
       ) : (
-        <CardContent>
+        <CardContent sx={{ height: '100%' }}>
           {view === 'calendar' ? (
             <>
               <Tabs
@@ -302,6 +390,7 @@ export const MonthOverview = () => {
                   calendarAttendance={calendarAttendance}
                   activeAcademicNamespace={activeAcademicNamespace}
                   currentTabValue={currentTabValue}
+                  isPartialAbsenceEnabled={showPartialAbsence}
                 />
               </Box>
             </>

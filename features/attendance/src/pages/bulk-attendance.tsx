@@ -35,20 +35,20 @@ const getColumns = (
   displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseBulkAttendance>['columnDefs'] => [
   {
-    colId: 'name',
-    headerName: t('common:name'),
+    colId: 'search',
+    headerName: t('attendance:attendanceFor'),
     valueGetter: ({ data }) =>
       data?.parties?.map((party) => {
-        if (party?.__typename === 'Student') {
-          return displayName(party?.person);
+        switch (party?.__typename) {
+          case 'Student':
+          case 'StudentContact':
+          case 'Staff':
+            return displayName(party?.person);
+          case 'SubjectGroup':
+            return party?.actualName;
+          default:
+            return party?.name ?? '-';
         }
-        if (party?.__typename === 'SubjectGroup') {
-          return party?.actualName;
-        }
-        if (party?.__typename === 'GeneralGroup') {
-          return party?.name;
-        }
-        return '-';
       }),
   },
   {
@@ -92,6 +92,9 @@ const getColumns = (
   {
     field: 'createdOn',
     headerName: t('attendance:createdOn'),
+    sort: 'desc',
+    comparator: (dateA: string, dateB: string) =>
+      dayjs(dateA).unix() - dayjs(dateB).unix(),
     valueFormatter: ({ data }) => dayjs(data?.createdOn).format('L') || '-',
   },
   {

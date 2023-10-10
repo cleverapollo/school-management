@@ -33,6 +33,7 @@ export const fileNames = {
   FileC: 'FILE_C',
   FileD: 'FILE_D',
   FileE: 'FILE_E',
+  FormTL: 'FORM_TL',
 };
 
 const formTypeOptions = (
@@ -107,7 +108,6 @@ const getColumnDefs = (
         </Button>
       ) : (
         <LoadingButton
-          disabled={data?.name === 'DTR summary'}
           className="ag-show-on-row-interaction"
           loadingPosition="start"
           loading={isSubmitting}
