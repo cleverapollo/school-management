@@ -21,6 +21,7 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import type { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import { SetStateAction, Dispatch, useMemo } from 'react';
 import { useNoteTagsBehaviour } from '../../api/behaviour/behaviour-tags';
 import { ReturnTypeFromUseBehaviours } from '../../api/behaviour/list';
@@ -67,6 +68,7 @@ export function CreateBehaviourModal({
       }),
       defaultValues: {
         behaviourTypeState: behaviourType,
+        occurredOn: dayjs(),
       },
     });
 
