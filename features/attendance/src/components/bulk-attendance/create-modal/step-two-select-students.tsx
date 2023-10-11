@@ -34,7 +34,7 @@ export function SelectStudentsStepTwoForm({
 }: SelectStudentsStepTwoFormProps) {
   const id = useId();
   const { t } = useTranslation(['attendance']);
-  const { displayName } = usePreferredNameLayout();
+  const { displayName, searchDisplayName } = usePreferredNameLayout();
   const [searchValue, setSearchValue] = useState('');
 
   const filteredStudents = useMemo(() => {
@@ -42,15 +42,8 @@ export function SelectStudentsStepTwoForm({
       peopleFromSelectedGroups?.filter(
         (person) => person.type === PartyPersonType.Student
       ) ?? [];
-    if (!searchValue) return students;
-
-    const lowerCaseSearch = searchValue.toLowerCase();
-    return students.filter((person) => {
-      const name = displayName(person);
-
-      return name.toLowerCase().includes(lowerCaseSearch);
-    });
-  }, [searchValue, displayName, peopleFromSelectedGroups]);
+    return searchDisplayName(students, searchValue);
+  }, [searchValue, searchDisplayName, peopleFromSelectedGroups]);
 
   const toggleSelectedStudent = (partyId: number) => {
     setExcludedStudents((prevExcludedStudents) => {

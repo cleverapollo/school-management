@@ -209,7 +209,7 @@ export const BulkAttendanceModal = ({
         <Button
           variant="soft"
           color="inherit"
-          startIcon={!isStep1 ? <ArrowLeftIcon /> : undefined}
+          startIcon={isStep1 ? undefined : <ArrowLeftIcon />}
           onClick={() => {
             if (isStep1) {
               handleClose();
