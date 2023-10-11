@@ -1,17 +1,29 @@
 import { useEffect, useState } from 'react';
 import { Attendance_SaveBulkAttendanceInput } from '@tyro/api';
-import { Dialog, DialogTitle, useFormValidator } from '@tyro/core';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  useFormValidator,
+} from '@tyro/core';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { ReturnTypeFromUseBulkAttendance } from '../../../api/bulk-attendance/bulk-attendance';
-import { useCreateBulkAttendance } from '../../../api/bulk-attendance/save-bulk-attendance';
+import { AnimatePresence, m, Variants } from 'framer-motion';
+import { Box, Button } from '@mui/material';
+import { ArrowLeftIcon, ArrowRightIcon } from '@tyro/icons';
+import { LoadingButton } from '@mui/lab';
+import { usePeopleBasedOnPartyIds } from '@tyro/people';
 import {
   BulkAttendanceRequestType,
   CreateBulkAttendanceFormState,
   CreateBulkAttendanceStepOneForm,
 } from './step-one-form';
+import { useCreateBulkAttendance } from '../../../api/bulk-attendance/save-bulk-attendance';
+import { ReturnTypeFromUseBulkAttendance } from '../../../api/bulk-attendance/bulk-attendance';
+import { SelectStudentsStepTwoForm } from './step-two-select-students';
 
 dayjs.extend(LocalizedFormat);
 
@@ -25,6 +37,24 @@ const defaultFormValue = {
   requestType: BulkAttendanceRequestType.SingleDay,
 };
 
+const animationVariants: Variants = {
+  enter: (step: number) => ({
+    x: step === 2 ? '100%' : '-100%',
+    opacity: 0,
+    position: 'absolute',
+  }),
+  center: {
+    x: '0%',
+    opacity: 1,
+    position: 'relative',
+  },
+  exit: (step: number) => ({
+    x: step === 2 ? '-100%' : '100%',
+    opacity: 0,
+    position: 'absolute',
+  }),
+};
+
 export const BulkAttendanceModal = ({
   open,
   initialModalState,
@@ -32,9 +62,13 @@ export const BulkAttendanceModal = ({
 }: BulkAttendanceModalProps) => {
   const { t } = useTranslation(['common', 'attendance']);
   const [step, setStep] = useState(1);
+  const [excludedStudents, setExcludedStudents] = useState<Set<number>>(
+    new Set<number>()
+  );
+  const isStep1 = step === 1;
 
   const { resolver, rules } = useFormValidator<CreateBulkAttendanceFormState>();
-  const { control, handleSubmit, reset, watch, trigger } =
+  const { control, handleSubmit, reset, watch } =
     useForm<CreateBulkAttendanceFormState>({
       resolver: resolver({
         date: [rules.date(), rules.required()],
@@ -56,11 +90,24 @@ export const BulkAttendanceModal = ({
       }),
     });
 
-  const { mutateAsync: saveBulkAttendance, isLoading: isSubmitting } =
+  const selectedStudentsOrGroups = watch('selectedStudentsOrGroups');
+  const selectedStudentsOrGroupsPartyIds =
+    selectedStudentsOrGroups?.map((item) => item?.partyId) ?? [];
+
+  const { mutateAsync: saveBulkAttendance, isLoading: isSaving } =
     useCreateBulkAttendance();
+  const { data: peopleFromSelectedGroups } = usePeopleBasedOnPartyIds(
+    {
+      partyIds: selectedStudentsOrGroupsPartyIds,
+    },
+    selectedStudentsOrGroupsPartyIds.length > 0
+  );
 
   const handleClose = () => {
     onClose();
+    setTimeout(() => {
+      setStep(1);
+    }, 300);
     reset();
   };
 
@@ -77,6 +124,7 @@ export const BulkAttendanceModal = ({
       attendanceCodeId: data.attendanceCodeId,
       attendanceForPartyIds: attendanceIdArrays,
       note: data.note,
+      exclusionPersonPartyIds: Array.from(excludedStudents),
     };
 
     if (data?.requestType === BulkAttendanceRequestType.SingleDay) {
@@ -121,11 +169,67 @@ export const BulkAttendanceModal = ({
       <DialogTitle onClose={onClose}>
         {t('attendance:createBulkAttendance')}
       </DialogTitle>
-      <CreateBulkAttendanceStepOneForm
-        control={control}
-        onSubmit={onSubmitStepOne}
-        onClose={handleClose}
-      />
+      <DialogContent sx={{ p: 0, position: 'relative' }}>
+        <AnimatePresence initial={false} custom={step}>
+          <Box
+            component={m.div}
+            key={step}
+            custom={step}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            variants={animationVariants}
+            transition={{ ease: 'easeInOut', duration: 0.3 }}
+            sx={{
+              width: '100%',
+            }}
+          >
+            {isStep1 ? (
+              <CreateBulkAttendanceStepOneForm
+                control={control}
+                onSubmit={onSubmitStepOne}
+                onClose={handleClose}
+              />
+            ) : (
+              <SelectStudentsStepTwoForm
+                peopleFromSelectedGroups={peopleFromSelectedGroups}
+                excludedStudents={excludedStudents}
+                setExcludedStudents={setExcludedStudents}
+              />
+            )}
+          </Box>
+        </AnimatePresence>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          variant="soft"
+          color="inherit"
+          startIcon={!isStep1 ? <ArrowLeftIcon /> : undefined}
+          onClick={() => {
+            if (isStep1) {
+              handleClose();
+            } else {
+              setStep(step - 1);
+            }
+          }}
+        >
+          {isStep1 ? t('common:actions.cancel') : t('common:actions.back')}
+        </Button>
+        <LoadingButton
+          loading={isSaving}
+          variant="contained"
+          endIcon={isStep1 ? <ArrowRightIcon /> : undefined}
+          onClick={() => {
+            if (isStep1) {
+              setStep(step + 1);
+            } else {
+              onSave();
+            }
+          }}
+        >
+          {isStep1 ? t('common:actions.next') : t('common:actions.save')}
+        </LoadingButton>
+      </DialogActions>
     </Dialog>
   );
 };

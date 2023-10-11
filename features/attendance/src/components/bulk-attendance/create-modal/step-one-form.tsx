@@ -1,14 +1,12 @@
 import {
   Alert,
   AlertTitle,
-  Button,
+  Box,
   Collapse,
-  DialogActions,
   IconButton,
   Stack,
 } from '@mui/material';
 import {
-  DialogContent,
   RHFAutocomplete,
   RHFDatePicker,
   RHFDateRangePicker,
@@ -53,8 +51,6 @@ interface CreateBulkAttendanceStepOneFormProps {
 
 export function CreateBulkAttendanceStepOneForm({
   control,
-  onSubmit,
-  onClose,
 }: CreateBulkAttendanceStepOneFormProps) {
   const { t } = useTranslation(['common', 'attendance']);
   const [openAlert, setOpenAlert] = useState(true);
@@ -68,76 +64,84 @@ export function CreateBulkAttendanceStepOneForm({
   const { data: attendanceCodes = [] } = useAttendanceCodes({});
 
   return (
-    <>
-      <DialogContent>
-        <Collapse in={openAlert}>
-          <Alert
-            severity="error"
-            action={
-              <IconButton
-                aria-label="close"
-                color="inherit"
-                size="small"
-                onClick={() => {
-                  setOpenAlert(false);
-                }}
-              >
-                <CloseIcon fontSize="inherit" />
-              </IconButton>
-            }
-            icon={
-              <LightBulbIcon fontSize="inherit" sx={{ color: 'blue.800' }} />
-            }
-            sx={{
-              marginBottom: 3,
-              backgroundColor: 'indigo.50',
-              color: 'blue.800',
-            }}
-          >
-            <AlertTitle>{t('attendance:bulkAttendanceAlertTitle')}</AlertTitle>
-            {t('attendance:bulkAttendanceAlertDescription')}
-          </Alert>
-        </Collapse>
+    <Box sx={{ px: 3, pt: 1 }}>
+      <Collapse in={openAlert}>
+        <Alert
+          severity="error"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setOpenAlert(false);
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+          icon={<LightBulbIcon fontSize="inherit" sx={{ color: 'blue.800' }} />}
+          sx={{
+            marginBottom: 3,
+            backgroundColor: 'indigo.50',
+            color: 'blue.800',
+          }}
+        >
+          <AlertTitle>{t('attendance:bulkAttendanceAlertTitle')}</AlertTitle>
+          {t('attendance:bulkAttendanceAlertDescription')}
+        </Alert>
+      </Collapse>
 
-        <Stack direction="column" sx={{ mt: 1 }} gap={2}>
-          <RHFAutocomplete<CreateBulkAttendanceFormState, SessionParty, true>
-            {...bulkAttendanceAutocompleteProps}
-            fullWidth
-            disableCloseOnSelect
-            label={t('common:search')}
+      <Stack direction="column" sx={{ mt: 1 }} gap={2}>
+        <RHFAutocomplete<CreateBulkAttendanceFormState, SessionParty, true>
+          {...bulkAttendanceAutocompleteProps}
+          fullWidth
+          disableCloseOnSelect
+          label={t('common:search')}
+          controlProps={{
+            name: `selectedStudentsOrGroups`,
+            control,
+          }}
+        />
+        <RHFSelect
+          fullWidth
+          optionIdKey="id"
+          options={attendanceCodes ?? []}
+          getOptionLabel={(option) => option.name || ''}
+          label={t('attendance:attendance')}
+          controlProps={{
+            name: 'attendanceCodeId',
+            control,
+          }}
+        />
+        <RHFRadioGroup
+          radioGroupProps={{ sx: { flexDirection: 'row' } }}
+          label={t('attendance:attendance')}
+          options={[
+            BulkAttendanceRequestType.SingleDay,
+            BulkAttendanceRequestType.PartialDay,
+            BulkAttendanceRequestType.MultiDay,
+          ].map((option) => ({
+            value: option,
+            label: t(`attendance:dayTypeOptions.${option}`),
+          }))}
+          controlProps={{
+            name: 'requestType',
+            control,
+          }}
+        />
+        {requestType === BulkAttendanceRequestType.SingleDay && (
+          <RHFDatePicker
+            label={t('common:date')}
             controlProps={{
-              name: `selectedStudentsOrGroups`,
+              name: 'date',
               control,
             }}
+            inputProps={{ sx: { flexGrow: 1 } }}
           />
-          <RHFSelect
-            fullWidth
-            optionIdKey="id"
-            options={attendanceCodes ?? []}
-            getOptionLabel={(option) => option.name || ''}
-            label={t('attendance:attendance')}
-            controlProps={{
-              name: 'attendanceCodeId',
-              control,
-            }}
-          />
-          <RHFRadioGroup
-            radioGroupProps={{ sx: { flexDirection: 'row' } }}
-            label={t('attendance:attendance')}
-            options={[
-              BulkAttendanceRequestType.SingleDay,
-              BulkAttendanceRequestType.PartialDay,
-              BulkAttendanceRequestType.MultiDay,
-            ].map((option) => ({
-              value: option,
-              label: t(`attendance:dayTypeOptions.${option}`),
-            }))}
-            controlProps={{
-              name: 'requestType',
-              control,
-            }}
-          />
-          {requestType === BulkAttendanceRequestType.SingleDay && (
+        )}
+        {requestType === BulkAttendanceRequestType.PartialDay && (
+          <>
             <RHFDatePicker
               label={t('common:date')}
               controlProps={{
@@ -146,64 +150,43 @@ export function CreateBulkAttendanceStepOneForm({
               }}
               inputProps={{ sx: { flexGrow: 1 } }}
             />
-          )}
-          {requestType === BulkAttendanceRequestType.PartialDay && (
-            <>
-              <RHFDatePicker
-                label={t('common:date')}
-                controlProps={{
-                  name: 'date',
-                  control,
-                }}
-                inputProps={{ sx: { flexGrow: 1 } }}
-              />
-              <RHFTimePicker
-                label={t('attendance:leavesAtTime')}
-                controlProps={{
-                  name: 'startTime',
-                  control,
-                }}
-              />
-              <RHFTimePicker
-                label={t('attendance:returnAtTime')}
-                controlProps={{
-                  name: 'endTime',
-                  control,
-                }}
-              />
-            </>
-          )}
-          {requestType === BulkAttendanceRequestType.MultiDay && (
-            <RHFDateRangePicker
+            <RHFTimePicker
+              label={t('attendance:leavesAtTime')}
               controlProps={{
-                name: 'dateRange',
+                name: 'startTime',
                 control,
               }}
             />
-          )}
-          <RHFTextField
-            label={t('attendance:note')}
+            <RHFTimePicker
+              label={t('attendance:returnAtTime')}
+              controlProps={{
+                name: 'endTime',
+                control,
+              }}
+            />
+          </>
+        )}
+        {requestType === BulkAttendanceRequestType.MultiDay && (
+          <RHFDateRangePicker
             controlProps={{
-              name: 'note',
+              name: 'dateRange',
               control,
             }}
-            textFieldProps={{
-              fullWidth: true,
-              multiline: true,
-              rows: 4,
-            }}
           />
-        </Stack>
-      </DialogContent>
-      <DialogActions>
-        <Button variant="outlined" color="inherit" onClick={onClose}>
-          {t('common:actions.cancel')}
-        </Button>
-
-        <Button variant="contained" onClick={onSubmit}>
-          {t('common:actions.next')}
-        </Button>
-      </DialogActions>
-    </>
+        )}
+        <RHFTextField
+          label={t('attendance:note')}
+          controlProps={{
+            name: 'note',
+            control,
+          }}
+          textFieldProps={{
+            fullWidth: true,
+            multiline: true,
+            rows: 4,
+          }}
+        />
+      </Stack>
+    </Box>
   );
 }
