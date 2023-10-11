@@ -223,11 +223,19 @@
   color: var(--ag-foreground-color);
   font-family: inherit;
   font-size: inherit;
-  height: calc(var(--ag-grid-size) * 5);
   padding-bottom: var(--ag-grid-size);
   border-width: 0;
   border-bottom: 2px solid;
   border-bottom-color: var(--ag-border-color);
+}
+
+.ag-theme-tyro input[class^=ag-]:not([type]),
+.ag-theme-tyro input[class^=ag-][type=text],
+.ag-theme-tyro input[class^=ag-][type=number],
+.ag-theme-tyro input[class^=ag-][type=tel],
+.ag-theme-tyro input[class^=ag-][type=date],
+.ag-theme-tyro input[class^=ag-][type=datetime-local] {
+  height: calc(var(--ag-grid-size) * 5);
 }
 
 .ag-theme-tyro input[class^=ag-]:not([type]):focus,
