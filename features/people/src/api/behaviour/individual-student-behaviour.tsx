@@ -35,6 +35,12 @@ const individualStudentBehaviour = graphql(/* GraphQL */ `
           avatarUrl
           type
         }
+        tags {
+          id
+          name
+          description
+        }
+        tagIds
       }
     }
   }
