@@ -1,4 +1,4 @@
-import { Button, Box } from '@mui/material';
+import { Box } from '@mui/material';
 import { useTranslation, TFunction } from '@tyro/i18n';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import {
@@ -11,7 +11,12 @@ import {
   PageHeading,
   Table,
 } from '@tyro/core';
-import { AddIcon, EditIcon, VerticalDotsIcon } from '@tyro/icons';
+import {
+  EditIcon,
+  VerticalDotsIcon,
+  AddFolderIcon,
+  AddIcon,
+} from '@tyro/icons';
 import {
   ReturnTypeFromUseNoteTagsBehaviour,
   useNoteTagsBehaviour,
@@ -20,6 +25,7 @@ import {
   UpsertBehaviourLabelModal,
   UpsertBehaviourLabelModalProps,
 } from '../components/upsert-behaviour-label';
+import { UpsertCategoryModal } from '../components/upsert-category';
 
 const getNoteTagBehaviourColumns = (
   onClickEdit: Dispatch<
@@ -37,7 +43,6 @@ const getNoteTagBehaviourColumns = (
   {
     headerName: t('common:description'),
     field: 'description',
-    lockVisible: true,
   },
   {
     headerName: t('settings:behaviourLabel.reportAs'),
@@ -55,6 +60,11 @@ const getNoteTagBehaviourColumns = (
       data?.behaviourType ? (
         <BehaviourLabelChip behaviourType={data?.behaviourType} />
       ) : null,
+  },
+  {
+    headerName: t('common:category'),
+    field: 'behaviourCategory.name',
+    editable: false,
   },
   {
     suppressColumnsToolPanel: true,
@@ -86,13 +96,9 @@ export default function BehaviourLabel() {
   const [noteLabelDetails, setNoteLabelDetails] =
     useState<UpsertBehaviourLabelModalProps['initialState']>(null);
 
-  const handleCreateBehaviourLabel = () => {
-    setNoteLabelDetails({});
-  };
-
-  const handleCloseEditModal = () => {
-    setNoteLabelDetails(null);
-  };
+  const [noteCategoryDetails, setNoteCategoryDetails] = useState<object | null>(
+    null
+  );
 
   const noteTagBehaviourColumns = useMemo(
     () => getNoteTagBehaviourColumns(setNoteLabelDetails, t),
@@ -106,13 +112,22 @@ export default function BehaviourLabel() {
         titleProps={{ variant: 'h3' }}
         rightAdornment={
           <Box display="flex" alignItems="center">
-            <Button
-              variant="contained"
-              onClick={handleCreateBehaviourLabel}
-              startIcon={<AddIcon />}
-            >
-              {t('settings:actions.addBehaviourLabel')}
-            </Button>
+            <Box>
+              <ActionMenu
+                menuItems={[
+                  {
+                    label: t('settings:actions.addBehaviourLabel'),
+                    icon: <AddIcon />,
+                    onClick: () => setNoteLabelDetails({}),
+                  },
+                  {
+                    label: t('settings:actions.addCategory'),
+                    icon: <AddFolderIcon />,
+                    onClick: () => setNoteCategoryDetails({}),
+                  },
+                ]}
+              />
+            </Box>
           </Box>
         }
       />
@@ -123,7 +138,11 @@ export default function BehaviourLabel() {
       />
       <UpsertBehaviourLabelModal
         initialState={noteLabelDetails}
-        onClose={handleCloseEditModal}
+        onClose={() => setNoteLabelDetails(null)}
+      />
+      <UpsertCategoryModal
+        initialState={noteCategoryDetails}
+        onClose={() => setNoteCategoryDetails(null)}
       />
     </PageContainer>
   );

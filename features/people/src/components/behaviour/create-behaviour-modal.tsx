@@ -2,16 +2,18 @@ import { LoadingButton } from '@mui/lab';
 import {
   Button,
   Chip,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Stack,
 } from '@mui/material';
-import { getColorBasedOnIndex } from '@tyro/api';
+import { getColorBasedOnIndex, Notes_BehaviourType } from '@tyro/api';
 import {
   RHFAutocomplete,
   RHFDateTimePicker,
+  RHFRadioGroup,
   RHFSelect,
   RHFTextField,
   useFormValidator,
@@ -19,6 +21,8 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import type { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
+import { SetStateAction, Dispatch, useMemo } from 'react';
 import { useNoteTagsBehaviour } from '../../api/behaviour/behaviour-tags';
 import { ReturnTypeFromUseBehaviours } from '../../api/behaviour/list';
 import { useUpsertStudentBehaviour } from '../../api/behaviour/upsert-behaviour';
@@ -31,6 +35,8 @@ export interface CreateBehaviourModalProps {
   studentId: number;
   onClose: () => void;
   initialState: Partial<ReturnTypeFromUseBehaviours> | null;
+  behaviourType: Notes_BehaviourType;
+  setBehaviourType: Dispatch<SetStateAction<Notes_BehaviourType>>;
 }
 
 export type CreateBehaviourFormState = {
@@ -38,25 +44,33 @@ export type CreateBehaviourFormState = {
   note: string;
   subjects: ReturnTypeFromUseStudentSubjectGroups[];
   occurredOn: Dayjs;
+  behaviourTypeState: Notes_BehaviourType;
 };
 
 export function CreateBehaviourModal({
   studentId,
   onClose,
   initialState,
+  behaviourType,
+  setBehaviourType,
 }: CreateBehaviourModalProps) {
   const { t } = useTranslation(['common', 'people']);
   const { data: subjectGroup = [] } = useStudentsSubjectGroups(studentId);
-  const { data: behaviourTags = [] } = useNoteTagsBehaviour();
+  const { data: behaviourTags = [], isLoading: isLoadingBehaviourTags } =
+    useNoteTagsBehaviour();
 
   const { resolver, rules } = useFormValidator<CreateBehaviourFormState>();
-  const { control, handleSubmit, reset } = useForm<CreateBehaviourFormState>({
-    resolver: resolver({
-      occurredOn: rules.required(),
-      behaviour: rules.required(),
-      note: rules.required(),
-    }),
-  });
+  const { control, handleSubmit, reset, watch } =
+    useForm<CreateBehaviourFormState>({
+      resolver: resolver({
+        occurredOn: rules.required(),
+        behaviour: rules.required(),
+      }),
+      defaultValues: {
+        behaviourTypeState: behaviourType,
+        occurredOn: dayjs(),
+      },
+    });
 
   const { mutate, isLoading } = useUpsertStudentBehaviour(studentId);
 
@@ -65,6 +79,7 @@ export function CreateBehaviourModal({
     occurredOn,
     behaviour,
     note,
+    behaviourTypeState,
   }: CreateBehaviourFormState) => {
     mutate(
       [
@@ -78,12 +93,21 @@ export function CreateBehaviourModal({
       ],
       {
         onSuccess: () => {
+          setBehaviourType(behaviourTypeState);
           onClose();
           reset();
         },
       }
     );
   };
+
+  const behaviourTypeOption = watch('behaviourTypeState');
+
+  const filterTagsByBehaviourType = useMemo(
+    () =>
+      behaviourTags?.filter((tag) => tag.behaviourType === behaviourTypeOption),
+    [behaviourTypeOption, behaviourTags]
+  );
 
   return (
     <Dialog
@@ -93,85 +117,113 @@ export function CreateBehaviourModal({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>{t('people:createBehaviour')}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogContent>
-          <Stack gap={3} mt={1}>
-            <RHFDateTimePicker
-              label={t('common:date')}
-              controlProps={{
-                name: 'occurredOn',
-                control,
-              }}
-            />
-            <RHFAutocomplete
-              multiple
-              label={t('common:subjects')}
-              optionIdKey="partyId"
-              getOptionLabel={(option) => option.subjects[0]?.name}
-              controlProps={{ name: 'subjects', control }}
-              options={subjectGroup}
-              renderTags={(tags, getTagProps) =>
-                tags.map((tag, index) => {
-                  const [subject] = tag.subjects || [];
+        {isLoadingBehaviourTags ? (
+          <Stack minHeight="40vh" justifyContent="center" alignItems="center">
+            <CircularProgress />
+          </Stack>
+        ) : (
+          <>
+            <DialogTitle>{t('people:createBehaviour')}</DialogTitle>
+            <DialogContent>
+              <Stack gap={3} mt={1}>
+                <RHFDateTimePicker
+                  label={t('common:date')}
+                  controlProps={{
+                    name: 'occurredOn',
+                    control,
+                  }}
+                />
+                <RHFAutocomplete
+                  multiple
+                  label={t('people:associations')}
+                  optionIdKey="partyId"
+                  getOptionLabel={(option) => option.subjects[0]?.name}
+                  controlProps={{ name: 'subjects', control }}
+                  options={subjectGroup}
+                  renderTags={(tags, getTagProps) =>
+                    tags.map((tag, index) => {
+                      const [subject] = tag.subjects || [];
 
-                  return (
+                      return (
+                        <Chip
+                          {...getTagProps({ index })}
+                          size="small"
+                          variant="soft"
+                          color={
+                            subject?.colour || getColorBasedOnIndex(tag.partyId)
+                          }
+                          label={subject?.name}
+                        />
+                      );
+                    })
+                  }
+                />
+                <RHFRadioGroup
+                  radioGroupProps={{ sx: { flexDirection: 'row' } }}
+                  label={t('people:behaviourType')}
+                  options={[
+                    Notes_BehaviourType.Positive,
+                    Notes_BehaviourType.Negative,
+                  ].map((option) => ({
+                    value: option,
+                    label: t(`people:behaviourTypes.${option}`),
+                  }))}
+                  controlProps={{
+                    name: 'behaviourTypeState',
+                    defaultValue: behaviourType,
+                    control,
+                  }}
+                />
+                <RHFSelect
+                  fullWidth
+                  optionIdKey="id"
+                  getOptionLabel={(option) => option.name}
+                  options={filterTagsByBehaviourType}
+                  label={t('people:tags')}
+                  renderValue={(value) => (
                     <Chip
-                      {...getTagProps({ index })}
                       size="small"
                       variant="soft"
-                      color={
-                        subject?.colour || getColorBasedOnIndex(tag.partyId)
-                      }
-                      label={subject?.name}
+                      color={getColorBasedOnIndex(value.id)}
+                      label={value.name}
                     />
-                  );
-                })
-              }
-            />
-            <RHFSelect
-              fullWidth
-              optionIdKey="id"
-              getOptionLabel={(option) => option.name}
-              options={behaviourTags}
-              label={t('common:category')}
-              renderValue={(value) => (
-                <Chip
-                  size="small"
-                  variant="soft"
-                  color={getColorBasedOnIndex(value.id)}
-                  label={value.name}
+                  )}
+                  controlProps={{
+                    name: 'behaviour',
+                    control,
+                  }}
                 />
-              )}
-              controlProps={{
-                name: 'behaviour',
-                control,
-              }}
-            />
-            <RHFTextField
-              label={t('common:details')}
-              controlProps={{
-                name: 'note',
-                control,
-              }}
-              textFieldProps={{
-                fullWidth: true,
-                multiline: true,
-                rows: 4,
-              }}
-            />
-          </Stack>
-        </DialogContent>
+                <RHFTextField
+                  label={t('common:details')}
+                  controlProps={{
+                    name: 'note',
+                    control,
+                  }}
+                  textFieldProps={{
+                    fullWidth: true,
+                    multiline: true,
+                    rows: 4,
+                  }}
+                />
+              </Stack>
+            </DialogContent>
 
-        <DialogActions>
-          <Button variant="outlined" color="inherit" onClick={onClose}>
-            {t('common:actions.cancel')}
-          </Button>
+            <DialogActions>
+              <Button variant="outlined" color="inherit" onClick={onClose}>
+                {t('common:actions.cancel')}
+              </Button>
 
-          <LoadingButton type="submit" variant="contained" loading={isLoading}>
-            {t('common:actions.save')}
-          </LoadingButton>
-        </DialogActions>
+              <LoadingButton
+                type="submit"
+                variant="contained"
+                loading={isLoading}
+              >
+                {t('common:actions.save')}
+              </LoadingButton>
+            </DialogActions>
+          </>
+        )}
       </form>
     </Dialog>
   );

@@ -1,6 +1,7 @@
 export * from './add';
 export * from './add-circle';
 export * from './add-doc';
+export * from './add-folder-icon';
 export * from './add-photo';
 export * from './add-user';
 export * from './align-center';
@@ -58,6 +59,7 @@ export * from './expand';
 export * from './external-link';
 export * from './eye';
 export * from './eye-slash';
+export * from './folder';
 export * from './flags';
 export * from './forward-mail';
 export * from './gear';
