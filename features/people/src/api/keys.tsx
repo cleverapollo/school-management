@@ -8,12 +8,17 @@ import {
   CalendarDayBellTimeFilter,
   NonClassContactHoursFilter,
   Notes_NotesFilter,
+  Core_PeopleFilter,
   Notes_BehaviourFilter,
   Notes_BehaviourCategoryFilter,
 } from '@tyro/api';
 
 export const peopleKeys = {
   all: ['people'] as const,
+  common: {
+    basedOnPartyIds: (filter: Core_PeopleFilter) =>
+      [...peopleKeys.all, 'basedOnPartyIds', filter] as const,
+  },
   contacts: {
     all: () => [...peopleKeys.all, 'contacts'] as const,
     personalDetails: (contactId: number | undefined) =>

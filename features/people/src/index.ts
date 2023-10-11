@@ -20,5 +20,6 @@ export * from './api/note/upsert-note-tags';
 export * from './api/contact/students';
 export * from './api/behaviour/behaviour-tags';
 export * from './api/behaviour/upsert-behaviour-tags';
+export * from './api/common/people';
 export * from './api/behaviour/upsert-behaviour-category';
 export * from './api/behaviour/behaviour-categories';

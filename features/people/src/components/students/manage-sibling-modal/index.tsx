@@ -188,7 +188,7 @@ export function ManageSiblingModal({
       <DialogActions>
         <Button
           variant="soft"
-          startIcon={!isStep1 ? <ArrowLeftIcon /> : undefined}
+          startIcon={isStep1 ? undefined : <ArrowLeftIcon />}
           onClick={() => {
             if (isStep1) {
               closeAndResetModal();
