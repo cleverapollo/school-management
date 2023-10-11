@@ -258,11 +258,21 @@ const getColumnDefs = (
     suppressColumnsToolPanel: assessmentData?.commentType === CommentType.None,
     headerName: t('common:comment'),
     editable: true,
+    autoHeight: true,
+    wrapText: true,
+    width: 350,
+    cellStyle: {
+      lineHeight: 2,
+      paddingTop: 12,
+      paddingBottom: 12,
+      wordBreak: 'break-word',
+    },
     cellEditorSelector: () => ({
       component: 'agLargeTextCellEditor',
       popup: true,
       params: {
         maxLength: assessmentData?.commentLength ?? 2000,
+        rows: 10,
       },
     }),
     valueSetter: ({ data, newValue }) => {
