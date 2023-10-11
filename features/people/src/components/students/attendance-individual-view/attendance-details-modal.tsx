@@ -171,12 +171,12 @@ export const AttendanceDetailsModal = ({
 
   const onSubmit = handleSubmit(async (data) => {
     const updatedSessionAttendance = Object.values(
-      data?.sessionAttendance
+      data?.sessionAttendance ?? {}
     )?.filter(({ id }) => getFieldState(`sessionAttendance.${id}`).isDirty);
 
-    const updatedEventAttendance = Object.values(data?.eventAttendance)?.filter(
-      ({ id }) => getFieldState(`eventAttendance.${id}`).isDirty
-    );
+    const updatedEventAttendance = Object.values(
+      data?.eventAttendance ?? {}
+    )?.filter(({ id }) => getFieldState(`eventAttendance.${id}`).isDirty);
 
     const requiredEventAttendance = Object.values(
       data?.eventAttendance ?? {}
@@ -191,15 +191,13 @@ export const AttendanceDetailsModal = ({
     if (requiredEventAttendance.length > 0) return;
 
     const sessionAttendances: SessionAttendanceInput[] =
-      updatedSessionAttendance
-        .filter(({ attendanceCodeId, note }) => attendanceCodeId || note)
-        .map(({ id, note, attendanceCodeId }) => ({
-          note,
-          attendanceCodeId,
-          bellTimeId: id,
-          date: day,
-          studentPartyId: studentId,
-        }));
+      updatedSessionAttendance.map(({ id, note, attendanceCodeId }) => ({
+        note,
+        attendanceCodeId,
+        bellTimeId: id,
+        date: day,
+        studentPartyId: studentId,
+      }));
 
     if (sessionAttendances.length > 0) {
       await createOrUpdateSessionAttendance({
@@ -209,16 +207,14 @@ export const AttendanceDetailsModal = ({
     }
 
     const eventAttendanceInput: SaveEventAttendanceInput[] =
-      updatedEventAttendance
-        .filter(({ attendanceCodeId }) => attendanceCodeId)
-        .map(({ id, note, attendanceCodeId }) => ({
-          note,
-          attendanceCodeId: attendanceCodeId!,
-          eventId: id,
-          date: day,
-          personPartyId: studentId,
-          adminSubmitted: true,
-        }));
+      updatedEventAttendance.map(({ id, note, attendanceCodeId }) => ({
+        note,
+        attendanceCodeId: attendanceCodeId!,
+        eventId: id,
+        date: day,
+        personPartyId: studentId,
+        adminSubmitted: true,
+      }));
 
     if (eventAttendanceInput.length > 0) {
       await createOrUpdateEventAttendance(eventAttendanceInput);
@@ -454,6 +450,15 @@ export const AttendanceDetailsModal = ({
                               options={attendanceCodes}
                               getOptionLabel={(option) => option?.name}
                               optionIdKey="id"
+                              canDeleteValue
+                              onChange={({ target }) => {
+                                if (!target.value) {
+                                  setValue(
+                                    `sessionAttendance.${event.id}.note`,
+                                    ''
+                                  );
+                                }
+                              }}
                               controlProps={{
                                 name: `sessionAttendance.${event.id}.attendanceCodeId`,
                                 control,
@@ -568,6 +573,15 @@ export const AttendanceDetailsModal = ({
                               options={attendanceCodes}
                               getOptionLabel={(option) => option?.name}
                               optionIdKey="id"
+                              canDeleteValue
+                              onChange={({ target }) => {
+                                if (!target.value) {
+                                  setValue(
+                                    `eventAttendance.${event.eventId}.note`,
+                                    ''
+                                  );
+                                }
+                              }}
                               controlProps={{
                                 name: `eventAttendance.${event.eventId}.attendanceCodeId`,
                                 control,
