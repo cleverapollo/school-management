@@ -21,9 +21,7 @@ export function useUpsertStudentBehaviour(studentId: number | undefined) {
     mutationFn: async (input: Notes_UpsertNote[]) =>
       gqlClient.request(upsertNote, { input }),
     onSuccess: async (_, [note]) => {
-      await queryClient.invalidateQueries(
-        peopleKeys.students.behaviours(studentId)
-      );
+      await queryClient.invalidateQueries(peopleKeys.students.all());
 
       toast(
         note
