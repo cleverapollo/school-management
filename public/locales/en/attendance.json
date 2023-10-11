@@ -147,5 +147,6 @@
     "title_other": "Additional lessons today",
     "description_one": "Do you want to apply the attendance to this period also?",
     "description_other": "Do you want to apply the attendance to these periods also?"
-  }
+  },
+  "deselectBulkAttendanceStudentsParagraph": "Below is the list of students that will be included in this attendance. Please deselect them if you do not want them to be included."
 }

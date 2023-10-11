@@ -107,6 +107,7 @@ export const BulkAttendanceModal = ({
     onClose();
     setTimeout(() => {
       setStep(1);
+      setExcludedStudents(new Set<number>());
     }, 300);
     reset();
   };
@@ -149,6 +150,10 @@ export const BulkAttendanceModal = ({
       onSuccess: handleClose,
     });
   });
+
+  useEffect(() => {
+    setExcludedStudents(new Set<number>());
+  }, [selectedStudentsOrGroups]);
 
   useEffect(() => {
     if (initialModalState) {

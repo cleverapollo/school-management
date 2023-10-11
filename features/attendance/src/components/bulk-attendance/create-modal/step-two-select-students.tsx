@@ -67,8 +67,7 @@ export function SelectStudentsStepTwoForm({
   return (
     <Box sx={{ px: 3 }}>
       <Typography variant="body1" sx={{ mb: 2 }}>
-        Below is the list of students that will be included in this attendance.
-        Please deselect them if you do not want them to be included.
+        {t('attendance:deselectBulkAttendanceStudentsParagraph')}
       </Typography>
       <SearchInput
         value={searchValue}
