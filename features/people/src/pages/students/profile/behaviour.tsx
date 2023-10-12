@@ -362,7 +362,7 @@ export default function StudentProfileBehaviourPage() {
                   marginRight: 1,
                 }}
               />
-              Positive
+              {t('common:behaviourType.POSITIVE')}
             </Button>
             <Button
               onClick={() => setBehaviourType(Notes_BehaviourType.Negative)}
@@ -399,7 +399,7 @@ export default function StudentProfileBehaviourPage() {
                   marginRight: 1,
                 }}
               />
-              Negative
+              {t('common:behaviourType.NEGATIVE')}
             </Button>
           </Box>
         </Stack>
