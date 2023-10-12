@@ -37,8 +37,10 @@ export default function EditTermAssessmentPage() {
       ...restData
     } = assessmentData;
 
+    const { createdBy, createdOn, ...dataWithOmittedValues } = restData;
+
     return {
-      ...restData,
+      ...dataWithOmittedValues,
       years: years ?? [],
       startDate: dayjs(startDate),
       endDate: dayjs(endDate),
@@ -65,7 +67,7 @@ export default function EditTermAssessmentPage() {
             ]
           : []
       ),
-    };
+    } as const;
   }, [assessmentData]);
 
   const titleName = t('assessments:pageHeading.editTermAssessment', {
