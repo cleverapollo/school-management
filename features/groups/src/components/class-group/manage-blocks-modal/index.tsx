@@ -113,7 +113,7 @@ export function ManageBlocksModal({
 
   return (
     <Dialog open={open} onClose={closeAndResetModal} fullWidth maxWidth="sm">
-      <DialogTitle>{t('groups:manageBlocks')}</DialogTitle>
+      <DialogTitle onClose={onClose}>{t('groups:manageBlocks')}</DialogTitle>
       <DialogContent sx={{ p: 0, position: 'relative' }}>
         <Box sx={{ px: 3, pt: 1 }}>
           <>

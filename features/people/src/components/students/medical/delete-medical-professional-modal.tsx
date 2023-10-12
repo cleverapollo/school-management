@@ -45,7 +45,9 @@ export const DeleteMedicalProfessionalModal = ({
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{t('people:deleteMedicalProfessional')}</DialogTitle>
+      <DialogTitle onClose={onClose}>
+        {t('people:deleteMedicalProfessional')}
+      </DialogTitle>
 
       <DialogContent>
         <DialogContentText>

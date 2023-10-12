@@ -57,7 +57,7 @@ export function AdditionalLessonsModal({
 
   return (
     <Dialog open onClose={onClose} scroll="paper" fullWidth maxWidth="xs">
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {t('attendance:additionalLessons.title', { count: events.length })}
       </DialogTitle>
       <DialogContent>

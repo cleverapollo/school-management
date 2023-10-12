@@ -73,7 +73,7 @@ export function AddCreditModal({
 
   return (
     <Dialog open={isOpen} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>{t('sms:addSmsCredit')}</DialogTitle>
+      <DialogTitle onClose={onClose}>{t('sms:addSmsCredit')}</DialogTitle>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={3} sx={{ p: 3, pb: 0 }}>

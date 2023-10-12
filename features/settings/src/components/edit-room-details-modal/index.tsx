@@ -106,7 +106,7 @@ export const EditRoomDetailsModal = ({
       fullWidth
       maxWidth="md"
     >
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {initialRoomState?.roomId
           ? t('settings:editRoom')
           : t('settings:addRoom')}

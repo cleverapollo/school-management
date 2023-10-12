@@ -126,7 +126,7 @@ export const EditAcademicYearModal = ({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {initialAcademicYearState?.id
           ? t('settings:editAcademicYear')
           : t('settings:createAcademicYear')}

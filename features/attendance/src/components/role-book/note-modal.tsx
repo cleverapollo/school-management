@@ -56,7 +56,7 @@ export function NoteModal({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {hasNote ? t('attendance:editNote') : t('attendance:addNote')}
       </DialogTitle>
       <DialogContent>

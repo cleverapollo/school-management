@@ -154,7 +154,7 @@ export const EditAttendanceCodeModal = ({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {initialAttendanceCodeState?.id
           ? t('attendance:editAttendanceCode')
           : t('attendance:createAttendanceCode')}

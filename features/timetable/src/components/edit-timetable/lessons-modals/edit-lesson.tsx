@@ -110,7 +110,7 @@ export function EditLessonModal({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {t('timetable:editSessionModalHeader', {
           subjectGroup: lesson?.partyGroup?.name,
           day: dayjs().set('day', timeslot.dayIdx).format('dddd'),

@@ -65,6 +65,7 @@ export const DeleteConditionsModal = ({
       maxWidth="sm"
     >
       <DialogTitle
+        onClose={onClose}
         sx={{
           borderBottom: '1px solid',
           borderColor: 'divider',

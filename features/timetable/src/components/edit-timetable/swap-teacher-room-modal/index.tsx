@@ -122,7 +122,7 @@ export function SwapTeacherRoomModal({
         pb={0}
       >
         <Stack>
-          <DialogTitle sx={{ p: 0 }}>{t('timetable:swapping')}</DialogTitle>
+          <DialogTitle onClose={onClose} sx={{ p: 0 }}>{t('timetable:swapping')}</DialogTitle>
           <Tabs
             value={visibleView}
             onChange={(_event, newValue: ModalViews) => {

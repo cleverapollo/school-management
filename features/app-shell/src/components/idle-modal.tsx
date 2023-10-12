@@ -60,7 +60,9 @@ export function IdleModal() {
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
     >
-      <DialogTitle id={titleId}>{t('common:helloAnyoneHome')}</DialogTitle>
+      <DialogTitle id={titleId} onClose={onClose}>
+        {t('common:helloAnyoneHome')}
+      </DialogTitle>
       <DialogContent>
         <DialogContentText id={descriptionId}>
           {t('common:itLooksLikeYouveBeenIdle', { count: countDown })}

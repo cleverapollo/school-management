@@ -221,7 +221,9 @@ export const ViewAbsentRequestModal = ({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>{t('attendance:viewAbsentRequest')}</DialogTitle>
+      <DialogTitle onClose={onClose}>
+        {t('attendance:viewAbsentRequest')}
+      </DialogTitle>
       <DialogContent>
         <Stack direction="row" gap={2} alignItems="center">
           <StudentAvatar

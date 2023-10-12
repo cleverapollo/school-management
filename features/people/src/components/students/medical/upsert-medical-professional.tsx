@@ -96,7 +96,7 @@ export function UpsertMedicalProfessionalModal({
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {medicalContact?.id
           ? t('people:editMedicalProfessional')
           : t('people:addMedicalProfessional')}
