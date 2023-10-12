@@ -13,7 +13,7 @@ import { useSaveAttendance } from '@tyro/attendance';
 
 import isEqual from 'lodash/isEqual';
 
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import {
   getSubjectGroupLesson,
@@ -83,6 +83,22 @@ export function useHandleLessonAttendance({
   });
 
   const eventAttendance = lessonData?.extensions?.eventAttendance || [];
+  const previousAttendanceTypeByPersonPartyId = useMemo(
+    () =>
+      (lessonData?.extensions?.previousEventAttendance ?? []).reduce(
+        (acc, previousAttendance) => {
+          if (previousAttendance) {
+            acc.set(
+              previousAttendance.personPartyId,
+              previousAttendance.attendanceCode?.codeType
+            );
+          }
+          return acc;
+        },
+        new Map<number, AttendanceCodeType>()
+      ),
+    [lessonData?.extensions?.previousEventAttendance]
+  );
   const currentLessonId = lessonData?.eventId ?? 0;
   const currentLessonStartTime = lessonData?.startTime ?? '';
 
@@ -200,6 +216,7 @@ export function useHandleLessonAttendance({
     isEditing:
       eventAttendance.length > 0 &&
       !isEqual(newAttendance, initialAttendanceRef.current),
+    previousAttendanceTypeByPersonPartyId,
     isLessonLoading,
     isSaveAttendanceLoading,
     nextLesson,

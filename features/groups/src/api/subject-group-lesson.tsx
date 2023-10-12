@@ -52,9 +52,12 @@ const subjectGroupLessonByIterator = graphql(/* GraphQL */ `
               firstName
               lastName
             }
-            previousLessonAttendanceCode {
+          }
+          previousEventAttendance {
+            attendanceCode {
               codeType
             }
+            personPartyId
           }
         }
       }

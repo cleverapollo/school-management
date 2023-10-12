@@ -64,6 +64,7 @@ export const GroupAttendance = ({
     isEmptyLesson,
     formattedLessonDate,
     isSaveAttendanceLoading,
+    previousAttendanceTypeByPersonPartyId,
     eventsOnSameDayForSameGroup,
     nextLesson,
     previousLesson,
@@ -201,8 +202,9 @@ export const GroupAttendance = ({
                   const eventDetails = getStudentEventDetails(student.partyId);
                   const submittedBy = displayName(eventDetails?.createdBy);
                   const previousLessonCode =
-                    eventDetails?.previousLessonAttendanceCode?.codeType ??
-                    AttendanceCodeType.NotTaken;
+                    previousAttendanceTypeByPersonPartyId.get(
+                      student.partyId
+                    ) ?? AttendanceCodeType.NotTaken;
 
                   return (
                     <TableRow key={student?.partyId}>
