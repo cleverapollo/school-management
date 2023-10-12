@@ -91,7 +91,7 @@ const getStudentBehaviourColumns = (
     headerName: t('people:tags'),
     autoHeight: true,
     wrapText: true,
-    width: 350,
+    width: 250,
     valueGetter: ({ data }) => data?.tags?.map((tag) => tag?.name) ?? '-',
     cellRenderer: ({
       data,
@@ -242,7 +242,14 @@ export default function StudentProfileBehaviourPage() {
       behaviourType,
     });
 
-  const [filteredData, setFilteredData] = useState(studentBehaviorData ?? []);
+  const filteredData = useMemo(() => {
+    const allBehaviourData = studentBehaviorData ?? [];
+    return currentTabValue === 'All'
+      ? allBehaviourData
+      : allBehaviourData.filter((item) =>
+          item?.tags?.some((tag) => tag?.name === currentTabValue)
+        );
+  }, [studentBehaviorData, currentTabValue]);
 
   const { data: categories = [], isLoading: isCategoriesLoading } =
     useBehaviourCategories({
@@ -295,18 +302,6 @@ export default function StudentProfileBehaviourPage() {
     ...subCategories,
   ];
 
-  useEffect(() => {
-    if (currentTabValue === 'All') {
-      setFilteredData(studentBehaviorData ?? []);
-    } else {
-      setFilteredData(
-        (studentBehaviorData ?? []).filter((item) =>
-          item?.tags?.some((tag) => tag?.name === currentTabValue)
-        )
-      );
-    }
-  }, [studentBehaviorData, categories, currentTabValue, tags]);
-
   const getBehaviourTypesTotals = (tabValue?: string) =>
     tags?.filter((tag) => tag?.name === tabValue).length;
 
@@ -332,21 +327,6 @@ export default function StudentProfileBehaviourPage() {
         }}
       >
         <Stack direction="column">
-          <CardHeader
-            component="h3"
-            title={t('people:behaviourTitle', { year: academicYear })}
-            sx={{
-              p: 0,
-              border: 0,
-              textAlign: 'center',
-              fontWeight: 600,
-              '& .MuiTypography-root': {
-                fontWeight: 600,
-              },
-              lineHeight: '22px',
-              height: '40px',
-            }}
-          />
           <Box>
             <Button
               onClick={() => setBehaviourType(Notes_BehaviourType.Positive)}
@@ -441,12 +421,16 @@ export default function StudentProfileBehaviourPage() {
         </Stack>
       ) : (
         <CardContent
-          sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+            p: 0,
+          }}
         >
           <CategoriesContainer
             categories={categories}
             isCategoriesLoading={isCategoriesLoading}
-            totalLogsByLevels={subCategories.length ?? 0}
           />
 
           <Tabs
