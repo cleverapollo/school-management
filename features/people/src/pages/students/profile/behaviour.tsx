@@ -3,7 +3,6 @@ import {
   Button,
   Card,
   CardContent,
-  CardHeader,
   Chip,
   CircularProgress,
   Stack,
@@ -133,7 +132,7 @@ const getStudentBehaviourColumns = (
     headerName: t('people:association'),
     autoHeight: true,
     wrapText: true,
-    width: 250,
+    width: 200,
     valueGetter: ({ data }) =>
       data?.associatedParties?.flatMap((group) => {
         if (group?.__typename === 'SubjectGroup') {
