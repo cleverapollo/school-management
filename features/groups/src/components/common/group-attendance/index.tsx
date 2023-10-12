@@ -31,6 +31,7 @@ import {
 import { usePreferredNameLayout } from '@tyro/core';
 import { useEffect, useState } from 'react';
 import { StudentAvatar } from '@tyro/people';
+import { AttendanceCodeType } from '@tyro/api';
 import { useHandleLessonAttendance, GroupStudent } from '../../../hooks';
 import { AdditionalLessonsModal } from './additional-lessons-modal';
 
@@ -40,12 +41,20 @@ type AttendanceProps = {
   students: GroupStudent[];
 };
 
+const previousAttendanceCodeColor = {
+  [AttendanceCodeType.Present]: 'text.secondary',
+  [AttendanceCodeType.ExplainedAbsence]: 'pink.600',
+  [AttendanceCodeType.UnexplainedAbsence]: 'pink.600',
+  [AttendanceCodeType.Late]: 'sky.600',
+  [AttendanceCodeType.NotTaken]: 'text.secondary',
+} as const;
+
 export const GroupAttendance = ({
   partyId,
   eventStartTime,
   students,
 }: AttendanceProps) => {
-  const { t } = useTranslation(['groups', 'common']);
+  const { t } = useTranslation(['common', 'groups', 'attendance']);
   const { displayName } = usePreferredNameLayout();
 
   const {
@@ -191,6 +200,9 @@ export const GroupAttendance = ({
                 {students.map((student) => {
                   const eventDetails = getStudentEventDetails(student.partyId);
                   const submittedBy = displayName(eventDetails?.createdBy);
+                  const previousLessonCode =
+                    eventDetails?.previousLessonAttendanceCode?.codeType ??
+                    AttendanceCodeType.NotTaken;
 
                   return (
                     <TableRow key={student?.partyId}>
@@ -207,8 +219,18 @@ export const GroupAttendance = ({
                             <Typography variant="body2" fontWeight={600}>
                               {displayName(student?.person)}
                             </Typography>
-                            <Typography variant="body2">
-                              {student?.classGroup?.name ?? '-'}
+                            <Typography
+                              variant="body2"
+                              color={
+                                previousAttendanceCodeColor[previousLessonCode]
+                              }
+                            >
+                              {previousLessonCode ===
+                              AttendanceCodeType.NotTaken
+                                ? '-'
+                                : t(
+                                    `attendance:previousAttendanceCode.${previousLessonCode}`
+                                  )}
                             </Typography>
                           </Stack>
                         </Stack>

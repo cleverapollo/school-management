@@ -138,6 +138,12 @@
     "SINGLE_DAY": "Full day",
     "PARTIAL_DAY": "Partial day"
   },
+  "previousAttendanceCode": {
+    "PRESENT": "Present previous lesson",
+    "EXPLAINED_ABSENCE": "Absent previous lesson",
+    "UNEXPLAINED_ABSENCE": "Absent previous lesson",
+    "LATE": "Late previous lesson"
+  },
   "reasonForAbsence": "Reason for absence",
   "leavesAtTime": "Leaves at time",
   "returnAtTime": "Return at time",
