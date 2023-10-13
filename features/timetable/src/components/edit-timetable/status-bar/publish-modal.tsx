@@ -21,7 +21,7 @@ interface UnpublishedChangesModalProps {
   onClose: () => void;
 }
 
-const today = dayjs(new Date('2023-08-14'));
+const today = dayjs(new Date());
 
 export function PublishModal({ open, onClose }: UnpublishedChangesModalProps) {
   const { t } = useTranslation(['common', 'timetable']);
