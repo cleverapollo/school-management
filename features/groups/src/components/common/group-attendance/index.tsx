@@ -200,7 +200,9 @@ export const GroupAttendance = ({
               <TableBody>
                 {students.map((student) => {
                   const eventDetails = getStudentEventDetails(student.partyId);
-                  const submittedBy = displayName(eventDetails?.createdBy);
+                  const submittedBy = displayName(
+                    eventDetails?.updatedBy ?? eventDetails?.createdBy
+                  );
                   const previousLessonCode =
                     previousAttendanceTypeByPersonPartyId.get(
                       student.partyId
