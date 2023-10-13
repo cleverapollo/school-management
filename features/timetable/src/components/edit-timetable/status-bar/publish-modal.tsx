@@ -75,7 +75,6 @@ export function PublishModal({ open, onClose }: UnpublishedChangesModalProps) {
         ) : (
           <>
             <DatePicker
-              disabled
               label={t('timetable:effectiveFrom')}
               value={publishFromDate}
               onChange={(date) => {
