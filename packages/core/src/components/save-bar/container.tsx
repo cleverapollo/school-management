@@ -41,6 +41,7 @@ export const SaveBarContainer = ({
         sx={{
           borderTopRightRadius: 24,
           borderTopLeftRadius: 24,
+          borderTop: '1px solid',
           borderTopColor: 'indigo.50',
           ...containerProps?.sx,
         }}
