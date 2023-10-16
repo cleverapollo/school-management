@@ -212,13 +212,13 @@ export default function SupportGroups() {
             label: t('sms:contactsOfStudentMembers', {
               count: selectedGroups.length,
             }),
-            type: SmsRecipientType.YearGroupContact,
+            type: SmsRecipientType.GeneralGroupContact,
           },
           {
             label: t('sms:yearHeadsOfGroup', {
               count: selectedGroups.length,
             }),
-            type: SmsRecipientType.YearGroupStaff,
+            type: SmsRecipientType.GeneralGroupStaff,
           },
         ]}
       />
