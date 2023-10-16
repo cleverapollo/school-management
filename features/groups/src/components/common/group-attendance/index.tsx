@@ -61,6 +61,7 @@ export const GroupAttendance = ({
     formattedLessonDate,
     isSaveAttendanceLoading,
     additionalLessons,
+    previousAttendanceTypeByPersonPartyId,
     nextLesson,
     previousLesson,
     getStudentEventDetails,
@@ -204,10 +205,12 @@ export const GroupAttendance = ({
             <TableBody>
               {students.map((student) => {
                 const eventDetails = getStudentEventDetails(student.partyId);
-                const submittedBy = displayName(eventDetails?.createdBy);
-                // const previousLessonCode =
-                //  eventDetails?.previousLessonAttendanceCode?.codeType ??
-                //  AttendanceCodeType.NotTaken;
+                const submittedBy = displayName(
+                  eventDetails?.updatedBy ?? eventDetails?.createdBy
+                );
+                const previousLessonCode =
+                  previousAttendanceTypeByPersonPartyId.get(student.partyId) ??
+                  AttendanceCodeType.NotTaken;
 
                 return (
                   <TableRow key={student?.partyId}>
@@ -224,7 +227,7 @@ export const GroupAttendance = ({
                           <Typography variant="body2" fontWeight={600}>
                             {displayName(student?.person)}
                           </Typography>
-                          {/* <Typography
+                          <Typography
                             variant="body2"
                             color={
                               previousAttendanceCodeColor[previousLessonCode]
@@ -235,7 +238,7 @@ export const GroupAttendance = ({
                               : t(
                                   `attendance:previousAttendanceCode.${previousLessonCode}`
                                 )}
-                          </Typography> */}
+                          </Typography>
                         </Stack>
                       </Stack>
                     </TableCell>

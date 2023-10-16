@@ -54,6 +54,7 @@ const subjectGroupLessonByIterator = graphql(/* GraphQL */ `
             createdBy {
               firstName
               lastName
+              type
             }
             updatedAt
             updatedBy {
@@ -61,6 +62,12 @@ const subjectGroupLessonByIterator = graphql(/* GraphQL */ `
               lastName
               type
             }
+          }
+          previousEventAttendance {
+            attendanceCode {
+              codeType
+            }
+            personPartyId
           }
         }
       }

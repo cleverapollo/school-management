@@ -6,6 +6,7 @@ import {
   Person,
   Maybe,
   StudentGraphqlExtension,
+  AttendanceCodeType,
 } from '@tyro/api';
 
 import { useAttendanceCodeByType, useSaveAttendance } from '@tyro/attendance';
@@ -85,6 +86,22 @@ export function useHandleLessonAttendance({
   });
 
   const eventAttendance = lessonData?.extensions?.eventAttendance || [];
+  const previousAttendanceTypeByPersonPartyId = useMemo(
+    () =>
+      (lessonData?.extensions?.previousEventAttendance ?? []).reduce(
+        (acc, previousAttendance) => {
+          if (previousAttendance) {
+            acc.set(
+              previousAttendance.personPartyId,
+              previousAttendance.attendanceCode?.codeType
+            );
+          }
+          return acc;
+        },
+        new Map<number, AttendanceCodeType>()
+      ),
+    [lessonData?.extensions?.previousEventAttendance]
+  );
   const currentLessonId = lessonData?.eventId ?? 0;
   const currentLessonStartTime = lessonData?.startTime ?? '';
 
@@ -230,6 +247,7 @@ export function useHandleLessonAttendance({
     isEmptyLesson: isLessonSuccess && !lessonData,
     unsavedChanges,
     isFirstTime,
+    previousAttendanceTypeByPersonPartyId,
     isLessonLoading,
     isSaveAttendanceLoading,
     nextLesson,
