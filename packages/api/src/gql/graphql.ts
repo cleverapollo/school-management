@@ -265,6 +265,32 @@ export type AttendanceEventId = {
   eventId?: InputMaybe<Scalars['Int']>;
 };
 
+export type Attendance_AwolReport = {
+  __typename?: 'Attendance_AwolReport';
+  awolStudents: Array<Attendance_AwolStudent>;
+};
+
+export type Attendance_AwolStudent = {
+  __typename?: 'Attendance_AwolStudent';
+  absentCreatedByPartyId: Scalars['Long'];
+  absentEvent: CalendarEvent;
+  absentMarkedBy?: Maybe<Person>;
+  absentSubjectGroup: SubjectGroup;
+  absentSubjectGroupId: Scalars['Long'];
+  absentUpdatedByPartyId: Scalars['Long'];
+  classGroup: GeneralGroup;
+  classGroupId: Scalars['Long'];
+  date: Scalars['Date'];
+  partyId: Scalars['Long'];
+  presentCreatedByPartyId: Scalars['Long'];
+  presentEvent: CalendarEvent;
+  presentMarkedBy?: Maybe<Person>;
+  presentSubjectGroup: SubjectGroup;
+  presentSubjectGroupId: Scalars['Long'];
+  presentUpdatedByPartyId: Scalars['Long'];
+  student: Student;
+};
+
 export type Attendance_BulkAttendanceAction = {
   __typename?: 'Attendance_BulkAttendanceAction';
   attendanceCode: AttendanceCode;
@@ -327,6 +353,11 @@ export type AuditPerson = {
   partyId?: Maybe<Scalars['Long']>;
   person?: Maybe<Person>;
   userId?: Maybe<Scalars['Int']>;
+};
+
+export type AwolFilter = {
+  date: Scalars['Date'];
+  partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
 
 export type BellTimeAttendance = {
@@ -488,6 +519,7 @@ export type CalendarEventExtension = {
   doeNotUser?: Maybe<Scalars['String']>;
   /**  attendance for this event. The list is empty if no attendance has been taken */
   eventAttendance?: Maybe<Array<Maybe<EventAttendance>>>;
+  previousEventAttendance?: Maybe<Array<Maybe<EventAttendance>>>;
 };
 
 export type CalendarEventFilter = {
@@ -1828,6 +1860,8 @@ export type EventAttendance = {
   id: Scalars['Long'];
   note?: Maybe<Scalars['String']>;
   personPartyId: Scalars['Long'];
+  previousLessonAttendanceCode?: Maybe<AttendanceCode>;
+  previousLessonAttendanceCodeId?: Maybe<Scalars['Int']>;
   updatedAt?: Maybe<Scalars['DateTime']>;
   updatedBy: Person;
   updatedByPartyId: Scalars['Long'];
@@ -1836,6 +1870,7 @@ export type EventAttendance = {
 export type EventAttendanceFilter = {
   date?: InputMaybe<Scalars['Date']>;
   eventIds?: InputMaybe<Array<AttendanceEventId>>;
+  includePreviousLesson?: InputMaybe<Scalars['Boolean']>;
   personPartyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
 
@@ -3496,6 +3531,19 @@ export type PhoneNumber = {
   primaryPhoneNumber?: Maybe<Scalars['Boolean']>;
 };
 
+export type PreviousEventAttendance = {
+  __typename?: 'PreviousEventAttendance';
+  attendanceCode: AttendanceCode;
+  attendanceCodeId: Scalars['Int'];
+  eventId: Scalars['Int'];
+  id: Scalars['Long'];
+  personPartyId: Scalars['Long'];
+};
+
+export type PreviousEventAttendanceFilter = {
+  eventIds?: InputMaybe<Array<AttendanceEventId>>;
+};
+
 export type PrimarySchoolIre = {
   __typename?: 'PrimarySchoolIre';
   rollNumber: Scalars['String'];
@@ -3668,6 +3716,7 @@ export type Query = {
   assessment_dashboardAssessment?: Maybe<Array<DashboardAssessment>>;
   assessment_gradeSet?: Maybe<Array<GradeSet>>;
   attendance_attendanceCodes: Array<AttendanceCode>;
+  attendance_awolReport: Attendance_AwolReport;
   attendance_bulkAttendanceActions: Array<Attendance_BulkAttendanceAction>;
   attendance_calendarAttendance: CalendarAttendance;
   attendance_eventAttendance: Array<EventAttendance>;
@@ -3822,6 +3871,11 @@ export type QueryAssessment_GradeSetArgs = {
 
 export type QueryAttendance_AttendanceCodesArgs = {
   filter?: InputMaybe<AttendanceCodeFilter>;
+};
+
+
+export type QueryAttendance_AwolReportArgs = {
+  filter?: InputMaybe<AwolFilter>;
 };
 
 
@@ -4843,7 +4897,7 @@ export type SaveDiscountInput = {
 
 export type SaveEventAttendanceInput = {
   adminSubmitted?: InputMaybe<Scalars['Boolean']>;
-  attendanceCodeId: Scalars['Int'];
+  attendanceCodeId?: InputMaybe<Scalars['Int']>;
   date: Scalars['Date'];
   eventId: Scalars['Int'];
   id?: InputMaybe<Scalars['Long']>;
@@ -7908,6 +7962,13 @@ export type PrintTimetableQueryVariables = Exact<{
 
 export type PrintTimetableQuery = { __typename?: 'Query', print_printTimetable: { __typename?: 'TemporaryDownload', url?: string | null, html?: string | null } };
 
+export type Attendance_AwolReportQueryVariables = Exact<{
+  filter: AwolFilter;
+}>;
+
+
+export type Attendance_AwolReportQuery = { __typename?: 'Query', attendance_awolReport: { __typename?: 'Attendance_AwolReport', awolStudents: Array<{ __typename?: 'Attendance_AwolStudent', partyId: number, date: string, student: { __typename?: 'Student', person: { __typename?: 'Person', avatarUrl?: string | null, firstName?: string | null, lastName?: string | null } }, classGroup: { __typename?: 'GeneralGroup', name: string }, absentSubjectGroup: { __typename?: 'SubjectGroup', name: string }, absentEvent: { __typename?: 'CalendarEvent', eventId: number, startTime: string, endTime: string, name: string, description?: string | null }, absentMarkedBy?: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null } | null, presentEvent: { __typename?: 'CalendarEvent', eventId: number, allDayEvent: boolean, startTime: string, endTime: string, name: string }, presentSubjectGroup: { __typename?: 'SubjectGroup', partyId: number, subjectGroupType: SubjectGroupType, name: string }, presentMarkedBy?: { __typename?: 'Person', type?: PartyPersonType | null, firstName?: string | null } | null }> } };
+
 export type Reporting_ReportsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -8447,6 +8508,7 @@ export const Core_LinkSiblingsAndContactsDocument = {"kind":"Document","definiti
 export const Core_UpdateStudentContactRelationshipsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_updateStudentContactRelationships"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Core_UpdateStudentContactRelationshipInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_updateStudentContactRelationships"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Core_UpdateStudentContactRelationshipsMutation, Core_UpdateStudentContactRelationshipsMutationVariables>;
 export const UpdateStudentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateStudent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateStudentInput"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_updateStudents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<UpdateStudentMutation, UpdateStudentMutationVariables>;
 export const PrintTimetableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"printTimetable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Print_TimetableOptions"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"print_printTimetable"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"html"}}]}}]}}]} as unknown as DocumentNode<PrintTimetableQuery, PrintTimetableQueryVariables>;
+export const Attendance_AwolReportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"attendance_awolReport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AwolFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"attendance_awolReport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"awolStudents"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"student"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"classGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"absentSubjectGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"absentEvent"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventId"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}},{"kind":"Field","name":{"kind":"Name","value":"absentMarkedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"presentEvent"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventId"}},{"kind":"Field","name":{"kind":"Name","value":"allDayEvent"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"presentSubjectGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"subjectGroupType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"presentMarkedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Attendance_AwolReportQuery, Attendance_AwolReportQueryVariables>;
 export const Reporting_ReportsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"reporting_reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reporting_reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"info"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<Reporting_ReportsQuery, Reporting_ReportsQueryVariables>;
 export const Reporting_RunReportExpandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"reporting_runReportExpand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Reporting_ReportFilterExpand"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reporting_runReportExpand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"visibleByDefault"}}]}},{"kind":"Field","name":{"kind":"Name","value":"data"}}]}}]}}]} as unknown as DocumentNode<Reporting_RunReportExpandQuery, Reporting_RunReportExpandQueryVariables>;
 export const Reporting_RunReportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"reporting_runReport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Reporting_ReportFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reporting_runReport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"info"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"supportsExpandRow"}}]}},{"kind":"Field","name":{"kind":"Name","value":"innerReports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"filters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"inputType"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"defaultValue"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"values"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"Field","name":{"kind":"Name","value":"minValue"}},{"kind":"Field","name":{"kind":"Name","value":"maxValue"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"visibleByDefault"}},{"kind":"Field","name":{"kind":"Name","value":"checkExpandedRows"}},{"kind":"Field","name":{"kind":"Name","value":"hideMenu"}}]}},{"kind":"Field","name":{"kind":"Name","value":"data"}}]}}]}}]} as unknown as DocumentNode<Reporting_RunReportQuery, Reporting_RunReportQueryVariables>;

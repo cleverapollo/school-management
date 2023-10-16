@@ -1,3 +1,6 @@
 {
-  "list": "Reports list"
+  "list": "Reports list",
+  "absentFrom": "Absent from",
+  "lastPresentIn": "Last present in",
+  "awolStudents": "AWOL Students"
 }
