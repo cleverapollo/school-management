@@ -296,5 +296,8 @@
     "ADMIN": "Search by staff name",
     "EXTERNAL": "Search by external name",
     "THIRD_PARTY": "Search by third party"
-  }
+  },
+  "unconfirmed": "Unconfirmed",
+  "absent": "Absent",
+  "by": "By"
 }

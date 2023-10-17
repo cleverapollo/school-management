@@ -25,6 +25,7 @@ export * from './page-heading';
 export * from './placeholder-card';
 export * from './processing-data-placeholder';
 export * from './router-link';
+export * from './save-bar';
 export * from './scrollbar';
 export * from './search-input';
 export * from './select';

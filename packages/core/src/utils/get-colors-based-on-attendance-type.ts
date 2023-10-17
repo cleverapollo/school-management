@@ -32,7 +32,7 @@ export const getColourBasedOnAttendanceType: GetColourBasedOnAttendanceTypeFn =
             hoverBg: `${base}.700`,
           },
           soft: {
-            color: `${base}.500`,
+            color: `${base}.600`,
             bgColor: `${base}.100`,
           },
         };
@@ -81,7 +81,7 @@ export const getColourBasedOnAttendanceType: GetColourBasedOnAttendanceTypeFn =
             hoverBg: `${base}.600`,
           },
           soft: {
-            color: `${base}.500`,
+            color: `${base}.600`,
             bgColor: `${base}.100`,
           },
         };
