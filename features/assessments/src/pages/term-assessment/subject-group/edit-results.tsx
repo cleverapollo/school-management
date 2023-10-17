@@ -12,7 +12,10 @@ import {
   PageContainer,
   StudyLevelSelectCellEditor,
   ValueSetterParams,
-  TablePersonAvatar,
+  ValueGetterParams,
+  ValueFormatterParams,
+  useToast,
+  ReturnOfUseToast,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { useParams } from 'react-router-dom';
@@ -37,6 +40,7 @@ import {
 } from '../../../api/term-assessments/results';
 import { useCommentBanksWithComments } from '../../../api/comment-bank';
 import { checkAndSetGrades } from '../../../utils/check-and-set-grades';
+import { CommentTypeCellEditor } from '../../../components/common/comment-type-cell-editor';
 
 export type ReturnTypeFromUseAssessmentById = UseQueryReturnType<
   typeof useAssessmentById
@@ -46,10 +50,164 @@ export type ReturnTypeFromUseCommentBanksWithComments = UseQueryReturnType<
   typeof useCommentBanksWithComments
 >;
 
+type ColumnDefs = NonNullable<
+  GridOptions<ReturnTypeFromUseAssessmentResults>['columnDefs']
+>;
+
+function getCommentFields(
+  assessmentData: ReturnTypeFromUseAssessmentById | null | undefined,
+  commentBanks: ReturnTypeFromUseCommentBanksWithComments | undefined,
+  t: TFunction<
+    ('common' | 'assessments')[],
+    undefined,
+    ('common' | 'assessments')[]
+  >,
+  toast: ReturnOfUseToast['toast']
+): ColumnDefs {
+  if (assessmentData?.commentType === CommentType.None) {
+    return [];
+  }
+
+  const matchedCommentBank =
+    commentBanks?.find(
+      (commentBank) =>
+        commentBank.id === assessmentData?.commentBank?.commentBankId
+    )?.comments || [];
+
+  const commentBankOptions = matchedCommentBank?.filter(
+    (comment) => comment?.active
+  );
+
+  return [
+    ...(assessmentData?.commentType === CommentType.Both
+      ? [
+          {
+            colId: 'commentType',
+            headerName: t('assessments:labels.commentType'),
+            editable: true,
+            cellEditorSelector: CommentTypeCellEditor(t),
+            valueGetter: ({
+              data,
+            }: ValueGetterParams<ReturnTypeFromUseAssessmentResults>) =>
+              data?.teacherComment?.commentBankCommentId
+                ? CommentType.CommentBank
+                : CommentType.FreeForm,
+            valueSetter: ({
+              data,
+              newValue,
+            }: ValueSetterParams<ReturnTypeFromUseAssessmentResults>) => {
+              if (newValue === CommentType.CommentBank) {
+                if (!commentBankOptions?.length) {
+                  toast(t('assessments:noActiveCommentsInCommentBank'), {
+                    variant: 'error',
+                  });
+                  return false;
+                }
+
+                set(data ?? {}, 'teacherComment.comment', null);
+                set(
+                  data ?? {},
+                  'teacherComment.commentBankCommentId',
+                  commentBankOptions?.[0]?.id ?? null
+                );
+              } else {
+                set(data ?? {}, 'teacherComment.commentBankCommentId', null);
+              }
+              return true;
+            },
+            valueFormatter: ({
+              value,
+            }: ValueFormatterParams<
+              ReturnTypeFromUseAssessmentResults,
+              CommentType.CommentBank | CommentType.FreeForm
+            >) => (value ? t(`assessments:labels.commentTypes.${value}`) : ''),
+          },
+        ]
+      : []),
+    {
+      field: 'teacherComment',
+      headerName: t('common:comment'),
+      editable: true,
+      autoHeight: true,
+      wrapText: true,
+      width: 350,
+      cellStyle: {
+        lineHeight: 2,
+        paddingTop: 12,
+        paddingBottom: 12,
+        wordBreak: 'break-word',
+      },
+      cellEditorSelector: ({ data }) => {
+        const isCommentBankSelector =
+          assessmentData?.commentType === CommentType.CommentBank ||
+          !!data?.teacherComment?.commentBankCommentId;
+
+        return isCommentBankSelector
+          ? {
+              component: TableSelect,
+              popup: true,
+              popupPosition: 'under',
+              params: {
+                options: commentBankOptions,
+                optionIdKey: 'id',
+                getOptionLabel: (option: Comment) => option.comment,
+              },
+            }
+          : {
+              component: 'agLargeTextCellEditor',
+              popup: true,
+              params: {
+                maxLength: assessmentData?.commentLength ?? 2000,
+                rows: 10,
+              },
+            };
+      },
+      valueGetter: ({ data }) => {
+        const isCommentBankSelector =
+          assessmentData?.commentType === CommentType.CommentBank ||
+          !!data?.teacherComment?.commentBankCommentId;
+
+        return isCommentBankSelector
+          ? data?.teacherComment?.commentBankCommentId
+          : data?.teacherComment?.comment;
+      },
+      valueSetter: ({ data, newValue }) => {
+        const isCommentBankSelector =
+          assessmentData?.commentType === CommentType.CommentBank ||
+          !!data?.teacherComment?.commentBankCommentId;
+        if (!newValue) {
+          data.teacherComment = null;
+        } else {
+          const valuePath = isCommentBankSelector
+            ? `teacherComment.commentBankCommentId`
+            : `teacherComment.comment`;
+          set(data ?? {}, valuePath, newValue);
+        }
+        return true;
+      },
+      valueFormatter: ({ data, value }) => {
+        const isCommentBankSelector =
+          assessmentData?.commentType === CommentType.CommentBank ||
+          !!data?.teacherComment?.commentBankCommentId;
+
+        if (isCommentBankSelector) {
+          const matchedComment = matchedCommentBank?.find(
+            (comment) => comment.id === value
+          );
+
+          return matchedComment?.comment ?? (value as string);
+        }
+
+        return value as string;
+      },
+    },
+  ];
+}
+
 function getExtraFields(
   extraFields: ReturnTypeFromUseAssessmentById['extraFields'],
   commentBanks: ReturnTypeFromUseCommentBanksWithComments | undefined
-): NonNullable<GridOptions<ReturnTypeFromUseAssessmentResults>['columnDefs']> {
+): ColumnDefs {
   return (
     extraFields?.map((extraField) => {
       const matchedCommentBank = commentBanks?.find(
@@ -143,6 +301,7 @@ const getColumnDefs = (
     ('common' | 'assessments')[]
   >,
   displayName: ReturnTypeDisplayName,
+  toast: ReturnOfUseToast['toast'],
   assessmentData: ReturnTypeFromUseAssessmentById | null | undefined,
   commentBanks: ReturnTypeFromUseCommentBanksWithComments | undefined,
   academicNamespaceId: number
@@ -252,44 +411,14 @@ const getColumnDefs = (
     hide: !assessmentData?.captureTarget,
     suppressColumnsToolPanel: !assessmentData?.captureTarget,
   },
-  {
-    field: 'teacherComment.comment',
-    hide: assessmentData?.commentType === CommentType.None,
-    suppressColumnsToolPanel: assessmentData?.commentType === CommentType.None,
-    headerName: t('common:comment'),
-    editable: true,
-    autoHeight: true,
-    wrapText: true,
-    width: 350,
-    cellStyle: {
-      lineHeight: 2,
-      paddingTop: 12,
-      paddingBottom: 12,
-      wordBreak: 'break-word',
-    },
-    cellEditorSelector: () => ({
-      component: 'agLargeTextCellEditor',
-      popup: true,
-      params: {
-        maxLength: assessmentData?.commentLength ?? 2000,
-        rows: 10,
-      },
-    }),
-    valueSetter: ({ data, newValue }) => {
-      if (!newValue) {
-        data.teacherComment = null;
-      } else {
-        set(data ?? {}, `teacherComment.comment`, newValue);
-      }
-      return true;
-    },
-  },
+  ...getCommentFields(assessmentData, commentBanks, t, toast),
   ...getExtraFields(assessmentData?.extraFields, commentBanks),
 ];
 
 export default function EditTermAssessmentResults() {
   const { academicNamespaceId, subjectGroupId, assessmentId } = useParams();
   const { activeProfile } = useUser();
+  const { toast } = useToast();
   const academicNamespaceIdAsNumber = useNumber(academicNamespaceId);
   const assessmentIdAsNumber = useNumber(assessmentId);
   const subjectGroupIdAsNumber = useNumber(subjectGroupId);
@@ -352,11 +481,19 @@ export default function EditTermAssessmentResults() {
       getColumnDefs(
         t,
         displayName,
+        toast,
         assessmentData,
         commentBanks,
         academicNamespaceIdAsNumber ?? 0
       ),
-    [t, displayName, assessmentData, commentBanks, academicNamespaceIdAsNumber]
+    [
+      t,
+      displayName,
+      toast,
+      assessmentData,
+      commentBanks,
+      academicNamespaceIdAsNumber,
+    ]
   );
 
   const saveAssessmentResult = (
@@ -370,6 +507,7 @@ export default function EditTermAssessmentResults() {
       | 'teacherComment.comment'
     >
   ) => {
+    console.log(data);
     const results = studentResults?.reduce<SaveAssessmentResultInput[]>(
       (acc, result) => {
         const editedColumns = data[result.studentPartyId];
