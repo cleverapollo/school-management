@@ -379,6 +379,7 @@
 
 .ag-theme-tyro .ag-popup-editor {
   border-radius: 6px;
+  overflow: hidden;
 }
 
 .ag-theme-tyro .ag-right-aligned-cell {
