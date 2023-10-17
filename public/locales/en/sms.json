@@ -4,7 +4,7 @@
   "sendSms": "Send SMS",
   "numberOfCharacters_one": "{{count}} character",
   "numberOfCharacters_other": "{{count}} characters",
-  "numberOfCharactersWithByteSizePerSms": "{{byteSize}}/{{byteSizePerSms}} characters",
+  "numberOfCharactersWithCharLimitPerSms": "{{characterCount}}/{{messageLimit}} characters",
   "numberOfSms": "{{count}}x SMS",
   "contactsOfStudentMembers_one": "Contact(s) of student member(s) in group",
   "contactsOfStudentMembers_other": "Contact(s) of student member(s) in groups",
