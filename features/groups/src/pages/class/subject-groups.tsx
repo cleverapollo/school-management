@@ -202,7 +202,7 @@ export default function SubjectGroups() {
             type: SmsRecipientType.SubjectGroupContact,
           },
           {
-            label: t('sms:yearHeadsOfGroup', {
+            label: t('sms:teachersOfGroup', {
               count: selectedGroups.length,
             }),
             type: SmsRecipientType.SubjectGroupStaff,

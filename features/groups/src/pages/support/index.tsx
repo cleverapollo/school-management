@@ -215,7 +215,7 @@ export default function SupportGroups() {
             type: SmsRecipientType.GeneralGroupContact,
           },
           {
-            label: t('sms:yearHeadsOfGroup', {
+            label: t('sms:teachersOfGroup', {
               count: selectedGroups.length,
             }),
             type: SmsRecipientType.GeneralGroupStaff,
