@@ -54,13 +54,6 @@ type ColumnDefs = NonNullable<
   GridOptions<ReturnTypeFromUseAssessmentResults>['columnDefs']
 >;
 
-const getIsCommentBankSelector = (
-  commentType: CommentType,
-  data: ReturnTypeFromUseAssessmentResults | undefined
-) =>
-  commentType === CommentType.CommentBank ||
-  !!data?.teacherComment?.commentBankCommentId;
-
 function getCommentFields(
   assessmentData: ReturnTypeFromUseAssessmentById | null | undefined,
   commentBanks: ReturnTypeFromUseCommentBanksWithComments | undefined,
@@ -80,6 +73,12 @@ function getCommentFields(
       (commentBank) =>
         commentBank.id === assessmentData?.commentBank?.commentBankId
     )?.comments || [];
+
+  const getIsCommentBankSelector = (
+    data: ReturnTypeFromUseAssessmentResults | undefined
+  ) =>
+    assessmentData?.commentType === CommentType.CommentBank ||
+    !!data?.teacherComment?.commentBankCommentId;
 
   const commentBankOptions = matchedCommentBank?.filter(
     (comment) => comment?.active
@@ -145,10 +144,7 @@ function getCommentFields(
         wordBreak: 'break-word',
       },
       cellEditorSelector: ({ data }) => {
-        const isCommentBankSelector = getIsCommentBankSelector(
-          assessmentData?.commentType ?? CommentType.None,
-          data
-        );
+        const isCommentBankSelector = getIsCommentBankSelector(data);
 
         return isCommentBankSelector
           ? {
@@ -171,20 +167,14 @@ function getCommentFields(
             };
       },
       valueGetter: ({ data }) => {
-        const isCommentBankSelector = getIsCommentBankSelector(
-          assessmentData?.commentType ?? CommentType.None,
-          data
-        );
+        const isCommentBankSelector = getIsCommentBankSelector(data);
 
         return isCommentBankSelector
           ? data?.teacherComment?.commentBankCommentId
           : data?.teacherComment?.comment;
       },
       valueSetter: ({ data, newValue }) => {
-        const isCommentBankSelector = getIsCommentBankSelector(
-          assessmentData?.commentType ?? CommentType.None,
-          data
-        );
+        const isCommentBankSelector = getIsCommentBankSelector(data);
 
         if (!newValue) {
           data.teacherComment = null;
@@ -197,10 +187,7 @@ function getCommentFields(
         return true;
       },
       valueFormatter: ({ data, value }) => {
-        const isCommentBankSelector = getIsCommentBankSelector(
-          assessmentData?.commentType ?? CommentType.None,
-          data
-        );
+        const isCommentBankSelector = getIsCommentBankSelector(data);
 
         if (isCommentBankSelector) {
           const matchedComment = matchedCommentBank?.find(
