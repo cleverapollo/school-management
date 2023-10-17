@@ -54,6 +54,13 @@ type ColumnDefs = NonNullable<
   GridOptions<ReturnTypeFromUseAssessmentResults>['columnDefs']
 >;
 
+const getIsCommentBankSelector = (
+  commentType: CommentType,
+  data: ReturnTypeFromUseAssessmentResults | undefined
+) =>
+  commentType === CommentType.CommentBank ||
+  !!data?.teacherComment?.commentBankCommentId;
+
 function getCommentFields(
   assessmentData: ReturnTypeFromUseAssessmentById | null | undefined,
   commentBanks: ReturnTypeFromUseCommentBanksWithComments | undefined,
@@ -138,9 +145,10 @@ function getCommentFields(
         wordBreak: 'break-word',
       },
       cellEditorSelector: ({ data }) => {
-        const isCommentBankSelector =
-          assessmentData?.commentType === CommentType.CommentBank ||
-          !!data?.teacherComment?.commentBankCommentId;
+        const isCommentBankSelector = getIsCommentBankSelector(
+          assessmentData?.commentType ?? CommentType.None,
+          data
+        );
 
         return isCommentBankSelector
           ? {
@@ -163,18 +171,21 @@ function getCommentFields(
             };
       },
       valueGetter: ({ data }) => {
-        const isCommentBankSelector =
-          assessmentData?.commentType === CommentType.CommentBank ||
-          !!data?.teacherComment?.commentBankCommentId;
+        const isCommentBankSelector = getIsCommentBankSelector(
+          assessmentData?.commentType ?? CommentType.None,
+          data
+        );
 
         return isCommentBankSelector
           ? data?.teacherComment?.commentBankCommentId
           : data?.teacherComment?.comment;
       },
       valueSetter: ({ data, newValue }) => {
-        const isCommentBankSelector =
-          assessmentData?.commentType === CommentType.CommentBank ||
-          !!data?.teacherComment?.commentBankCommentId;
+        const isCommentBankSelector = getIsCommentBankSelector(
+          assessmentData?.commentType ?? CommentType.None,
+          data
+        );
+
         if (!newValue) {
           data.teacherComment = null;
         } else {
@@ -186,9 +197,10 @@ function getCommentFields(
         return true;
       },
       valueFormatter: ({ data, value }) => {
-        const isCommentBankSelector =
-          assessmentData?.commentType === CommentType.CommentBank ||
-          !!data?.teacherComment?.commentBankCommentId;
+        const isCommentBankSelector = getIsCommentBankSelector(
+          assessmentData?.commentType ?? CommentType.None,
+          data
+        );
 
         if (isCommentBankSelector) {
           const matchedComment = matchedCommentBank?.find(
@@ -507,7 +519,6 @@ export default function EditTermAssessmentResults() {
       | 'teacherComment.comment'
     >
   ) => {
-    console.log(data);
     const results = studentResults?.reduce<SaveAssessmentResultInput[]>(
       (acc, result) => {
         const editedColumns = data[result.studentPartyId];
