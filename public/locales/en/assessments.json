@@ -50,6 +50,7 @@
     "extraFieldName": "Type a name",
     "extraFieldValue": "Type a value"
   },
+  "noActiveCommentsInCommentBank": "You use comment bank comments at this time. There are no active comments in the selected comment bank.",
   "extraFieldNo": "No.",
   "extraFieldName": "Field Name",
   "extraFieldType": "Type",

@@ -157,13 +157,13 @@ export default function StaffProfileClassesPage() {
             label: t('sms:contactsOfStudentMembers', {
               count: selectedGroups.length,
             }),
-            type: SmsRecipientType.GeneralGroupContact,
+            type: SmsRecipientType.SubjectGroupContact,
           },
           {
-            label: t('sms:tutorsAndYearHeadsOfGroup', {
+            label: t('sms:teachersOfGroup', {
               count: selectedGroups.length,
             }),
-            type: SmsRecipientType.ClassGroupStaff,
+            type: SmsRecipientType.SubjectGroupStaff,
           },
         ]}
       />

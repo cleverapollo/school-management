@@ -1,9 +1,9 @@
-name: Release pipeline
+name: UAT release pipeline
 
 on:
   push:
     branches:
-      - main
+      - uat
 
 jobs:
   build:
@@ -38,10 +38,11 @@ jobs:
         run: docker build -t tyrocr.azurecr.io/tyro-ui:0.0.${{ github.run_number }} .
       - name: Push Docker image
         run: docker push tyrocr.azurecr.io/tyro-ui:0.0.${{ github.run_number }}
-  deploy-prod:
+
+  deploy-uat:
     needs: build
-    environment: prod
     runs-on: ubuntu-latest
+    environment: uat
     steps:
       - name: Log in with Azure
         uses: azure/login@v1
@@ -52,15 +53,9 @@ jobs:
         with:
           resource-group: '${{ secrets.AKS_RESOURCE_GROUP }}'
           cluster-name: '${{ secrets.AKS_CLUSTER_NAME }}'
-      - name: Set AKS context
-        id: set-context
-        uses: azure/aks-set-context@v3
-        with:
-          resource-group: '${{ secrets.AKS_RESOURCE_GROUP }}'
-          cluster-name: '${{ secrets.AKS_CLUSTER_NAME }}'
       - name: Setup kubectl
         id: install-kubectl
         uses: azure/setup-kubectl@v3
       - name: 'Rollout new image'
         run: |
-          kubectl set image deployments/tyro-ui tyro-ui=tyrocr.azurecr.io/tyro-ui:0.0.${{ github.run_number }}        
+          kubectl set image deployments/tyro-ui tyro-ui=tyrocr.azurecr.io/tyro-ui:0.0.${{ github.run_number }}      

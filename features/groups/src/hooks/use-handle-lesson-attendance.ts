@@ -3,18 +3,17 @@ import {
   CalendarEventIteratorFilter,
   Iterator,
   queryClient,
-  AttendanceCodeType,
   Person,
   Maybe,
   StudentGraphqlExtension,
+  AttendanceCodeType,
 } from '@tyro/api';
 
-import { useSaveAttendance } from '@tyro/attendance';
+import { useAttendanceCodeByType, useSaveAttendance } from '@tyro/attendance';
 
-import isEqual from 'lodash/isEqual';
-
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import dayjs from 'dayjs';
+import { usePreferredNameLayout } from '@tyro/core';
 import {
   getSubjectGroupLesson,
   ReturnTypeFromUseSubjectGroupLessonByIterator,
@@ -30,7 +29,7 @@ type EventDetails = NonNullable<
   >['eventAttendance']
 >[number];
 
-type StudentAttendance = Record<
+export type StudentAttendance = Record<
   SaveEventAttendanceInput['personPartyId'],
   SaveEventAttendanceInput & EventDetails
 >;
@@ -51,8 +50,8 @@ type UseHandleLessonAttendanceParams = {
 };
 
 type SaveAttendanceCallback = {
-  additionalLessonIds: number[];
-  onSuccess: () => void;
+  lessonIds: number[];
+  onSuccess: (invalidateQueryFn: () => Promise<void>) => void;
 };
 
 export function useHandleLessonAttendance({
@@ -60,15 +59,19 @@ export function useHandleLessonAttendance({
   eventStartTime,
   students,
 }: UseHandleLessonAttendanceParams) {
+  const { displayName } = usePreferredNameLayout();
+
   const initialAttendanceRef = useRef<StudentAttendance>({});
   const [newAttendance, setNewAttendance] = useState<StudentAttendance>({});
-  const currentStartTime = useRef(dayjs().format('YYYY-MM-DD[T]HH:mm:ss'));
+  const currentStartTime = useRef(getValidEventStartTime(eventStartTime));
 
   const [filter, setFilter] = useState<CalendarEventIteratorFilter>({
     partyId,
-    eventStartTime: getValidEventStartTime(eventStartTime),
+    eventStartTime: currentStartTime.current,
     iterator: Iterator.Closest,
   });
+
+  const codeByType = useAttendanceCodeByType({ teachingGroupCodes: true });
 
   const { mutate: saveAttendanceMutation, isLoading: isSaveAttendanceLoading } =
     useSaveAttendance();
@@ -83,6 +86,22 @@ export function useHandleLessonAttendance({
   });
 
   const eventAttendance = lessonData?.extensions?.eventAttendance || [];
+  const previousAttendanceTypeByPersonPartyId = useMemo(
+    () =>
+      (lessonData?.extensions?.previousEventAttendance ?? []).reduce(
+        (acc, previousAttendance) => {
+          if (previousAttendance) {
+            acc.set(
+              previousAttendance.personPartyId,
+              previousAttendance.attendanceCode?.codeType
+            );
+          }
+          return acc;
+        },
+        new Map<number, AttendanceCodeType>()
+      ),
+    [lessonData?.extensions?.previousEventAttendance]
+  );
   const currentLessonId = lessonData?.eventId ?? 0;
   const currentLessonStartTime = lessonData?.startTime ?? '';
 
@@ -100,10 +119,14 @@ export function useHandleLessonAttendance({
 
       initialAttendanceRef.current = (students || []).reduce((acc, student) => {
         if (student) {
+          const currentStudent = studentAttendance[student.partyId];
+          const presentId = codeByType?.PRESENT.id;
+
           acc[student.partyId] = {
-            ...studentAttendance[student.partyId],
+            ...currentStudent,
             eventId: lessonData.eventId,
             personPartyId: student.partyId,
+            attendanceCodeId: currentStudent?.attendanceCodeId ?? presentId,
             date,
           };
         }
@@ -112,7 +135,7 @@ export function useHandleLessonAttendance({
 
       setNewAttendance(initialAttendanceRef.current);
     }
-  }, [lessonData, students]);
+  }, [lessonData, students, codeByType]);
 
   const formattedLessonDate = useFormatLessonTime({
     startTime: lessonData?.startTime ?? '',
@@ -136,7 +159,7 @@ export function useHandleLessonAttendance({
   };
 
   const getStudentAttendanceCode = (studentId: number) =>
-    newAttendance[studentId]?.attendanceCodeId ?? AttendanceCodeType.Present;
+    newAttendance[studentId]?.attendanceCodeId;
 
   const getStudentEventDetails = (studentId: number) =>
     newAttendance[studentId];
@@ -151,39 +174,41 @@ export function useHandleLessonAttendance({
     }));
   };
 
-  const saveAttendance = ({
-    additionalLessonIds,
-    onSuccess,
-  }: SaveAttendanceCallback) => {
+  const saveAttendance = ({ lessonIds, onSuccess }: SaveAttendanceCallback) => {
     // NOTE: do not send student if he was already the attendance taken
     const currentLessonAttendance = Object.values(newAttendance).filter(
       (attendance) => !attendance.adminSubmitted
     );
 
-    const attendanceInput = [currentLessonId, ...additionalLessonIds].map(
-      (eventId) =>
-        currentLessonAttendance.map((currentLesson) => ({
-          ...currentLesson,
-          eventId,
-        }))
+    const attendanceInput = lessonIds.map((eventId) =>
+      currentLessonAttendance.map((currentLesson) => ({
+        ...currentLesson,
+        eventId,
+      }))
     );
 
     saveAttendanceMutation(attendanceInput.flat(), {
-      onSuccess: async () => {
-        await Promise.all([
-          queryClient.invalidateQueries(groupsKeys.subject.all()),
-          getSubjectGroupLesson({
-            partyId: filter.partyId,
-            iterator: Iterator.Previous,
-            eventStartTime: currentLessonStartTime,
-          }),
-          getSubjectGroupLesson({
-            partyId: filter.partyId,
-            iterator: Iterator.Next,
-            eventStartTime: currentLessonStartTime,
-          }),
-        ]);
-        onSuccess();
+      onSuccess: () => {
+        onSuccess(async () => {
+          await Promise.all([
+            getSubjectGroupLesson({
+              partyId: filter.partyId,
+              iterator: Iterator.Closest,
+              eventStartTime: currentStartTime.current,
+            }),
+            getSubjectGroupLesson({
+              partyId: filter.partyId,
+              iterator: Iterator.Previous,
+              eventStartTime: currentLessonStartTime,
+            }),
+            getSubjectGroupLesson({
+              partyId: filter.partyId,
+              iterator: Iterator.Next,
+              eventStartTime: currentLessonStartTime,
+            }),
+            queryClient.invalidateQueries(groupsKeys.subject.all()),
+          ]);
+        });
       },
     });
   };
@@ -192,14 +217,37 @@ export function useHandleLessonAttendance({
     setNewAttendance(initialAttendanceRef.current);
   };
 
+  const unsavedChanges = useMemo(
+    () =>
+      Object.values(initialAttendanceRef.current).filter(
+        ({ personPartyId, attendanceCodeId }) =>
+          newAttendance[personPartyId]?.attendanceCodeId !== attendanceCodeId
+      ).length,
+    [newAttendance]
+  );
+
+  const isFirstTime = useMemo(
+    () =>
+      eventAttendance
+        .filter((event) => !event?.adminSubmitted)
+        .every((event) => !event?.attendanceCodeId),
+    [eventAttendance]
+  );
+
   return {
     lessonId: currentLessonId,
-    eventsOnSameDayForSameGroup: lessonData?.eventsOnSameDayForSameGroup || [],
+    currentLesson: lessonData,
+    attendance: newAttendance,
+    updatedAt: lessonData?.updatedAt
+      ? dayjs(lessonData?.updatedAt).format('L')
+      : '-',
+    updatedBy: displayName(lessonData?.updatedBy) || '-',
+    additionalLessons: lessonData?.additionalLessons || [],
     formattedLessonDate,
     isEmptyLesson: isLessonSuccess && !lessonData,
-    isEditing:
-      eventAttendance.length > 0 &&
-      !isEqual(newAttendance, initialAttendanceRef.current),
+    unsavedChanges,
+    isFirstTime,
+    previousAttendanceTypeByPersonPartyId,
     isLessonLoading,
     isSaveAttendanceLoading,
     nextLesson,

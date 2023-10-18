@@ -53,7 +53,6 @@ export const EditAbsenceTypeModal = ({
     resolver: resolver({
       name: [
         rules.required(),
-        rules.max(20),
         rules.isUniqueByKey(
           absenceTypesWithoutSelf,
           'name',

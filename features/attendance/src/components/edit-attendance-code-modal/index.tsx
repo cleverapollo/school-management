@@ -80,14 +80,13 @@ export const EditAttendanceCodeModal = ({
       resolver: resolver({
         name: [
           rules.required(),
-          rules.max(20),
           rules.isUniqueByKey(
             attendanceCodesWithoutSelf as [],
             'name',
             t('attendance:attendanceCodeNameShouldBeUnique')
           ),
         ],
-        description: [rules.required(), rules.max(20)],
+        description: rules.required(),
         codeType: rules.required(),
       }),
       defaultValues: defaultFormStateValues,

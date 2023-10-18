@@ -158,6 +158,13 @@ const getColumnFormBDefs = (
       set(data ?? {}, 'personalInformation.ire.ppsNumber', replacedValue);
       return true;
     },
+    cellClassRules: {
+      'failed-cell': ({ data }) =>
+        Boolean(
+          data?.staffIre?.includeDtrReturns &&
+            !data?.personalInformation?.ire?.ppsNumber
+        ),
+    },
   },
   {
     field: 'payrollNumber',

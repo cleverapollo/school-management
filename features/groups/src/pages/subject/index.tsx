@@ -249,13 +249,13 @@ export default function SubjectGroups() {
             label: t('sms:contactsOfStudentMembers', {
               count: selectedGroups.length,
             }),
-            type: SmsRecipientType.YearGroupContact,
+            type: SmsRecipientType.SubjectGroupContact,
           },
           {
-            label: t('sms:yearHeadsOfGroup', {
+            label: t('sms:teachersOfGroup', {
               count: selectedGroups.length,
             }),
-            type: SmsRecipientType.YearGroupStaff,
+            type: SmsRecipientType.SubjectGroupStaff,
           },
         ]}
       />
