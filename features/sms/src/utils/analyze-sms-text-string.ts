@@ -3,11 +3,11 @@ import memoize from 'lodash/memoize';
 
 const segmentLimits = {
   sevenBit: {
-    singlSmsCharLimit: 160,
+    singleSmsCharLimit: 160,
     overSingleSmsCharLimit: 153,
   },
   unicode: {
-    singlSmsCharLimit: 70,
+    singleSmsCharLimit: 70,
     overSingleSmsCharLimit: 67,
   },
 } as const;
@@ -31,8 +31,8 @@ export const analyzeSmsTextString = memoize(
       return acc + (gsm2CountChars.includes(character) ? 2 : 1);
     }, 0);
     const messageLimit =
-      characterCount <= segmentLimitsForEncodingType.singlSmsCharLimit
-        ? segmentLimitsForEncodingType.singlSmsCharLimit
+      characterCount <= segmentLimitsForEncodingType.singleSmsCharLimit
+        ? segmentLimitsForEncodingType.singleSmsCharLimit
         : segmentLimitsForEncodingType.overSingleSmsCharLimit;
 
     return {
