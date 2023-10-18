@@ -1,12 +1,13 @@
 import { useTranslation } from '@tyro/i18n';
-import { ActionMenu } from '@tyro/core';
-import { Assessment } from '@tyro/api';
+import { ActionMenu, ActionMenuProps } from '@tyro/core';
+import { Assessment, AssessmentType } from '@tyro/api';
 import {
   EyeIcon,
   EditIcon,
   StopIcon,
   CheckmarkCircleIcon,
   VerticalDotsIcon,
+  CommentIcon,
 } from '@tyro/icons';
 import { getAssessmentSubjectGroupsLink } from '../../utils/get-assessment-subject-groups-link';
 
@@ -36,29 +37,39 @@ export const AssessmentActionMenu = ({
       iconOnly
       buttonIcon={<VerticalDotsIcon />}
       menuItems={
-        id && assessmentType
+        assessmentPath
           ? [
-              {
-                label: t('assessments:actions.view'),
-                icon: <EyeIcon />,
-                navigateTo: assessmentPath,
-              },
-              {
-                label: t('assessments:actions.edit'),
-                icon: <EditIcon />,
-                navigateTo: `${assessmentPath}/edit`,
-              },
-              publish
-                ? {
-                    label: t('assessments:actions.unpublish'),
-                    icon: <StopIcon />,
-                    onClick: () => console.log('unpublish', id),
-                  }
-                : {
-                    label: t('assessments:actions.publish'),
-                    icon: <CheckmarkCircleIcon />,
-                    onClick: () => console.log('publish', id),
-                  },
+              [
+                {
+                  label: t('assessments:actions.view'),
+                  icon: <EyeIcon />,
+                  navigateTo: assessmentPath,
+                },
+                {
+                  label: t('assessments:actions.edit'),
+                  icon: <EditIcon />,
+                  navigateTo: `${assessmentPath}/edit`,
+                },
+                {
+                  label: t('assessments:actions.makeOverallComments'),
+                  icon: <CommentIcon />,
+                  hasAccess: () => assessmentType === AssessmentType.Term,
+                  navigateTo: `${assessmentPath}/overall-comments`,
+                },
+              ],
+              [
+                publish
+                  ? {
+                      label: t('assessments:actions.unpublish'),
+                      icon: <StopIcon />,
+                      onClick: () => console.log('unpublish', id),
+                    }
+                  : {
+                      label: t('assessments:actions.publish'),
+                      icon: <CheckmarkCircleIcon />,
+                      onClick: () => console.log('publish', id),
+                    },
+              ],
             ]
           : []
       }

@@ -22,6 +22,9 @@ const CreateTermAssessmentPage = lazyWithRetry(
 const EditTermAssessmentResults = lazyWithRetry(
   () => import('./pages/term-assessment/subject-group/edit-results')
 );
+const OverallCommentsTermAssessmentPage = lazyWithRetry(
+  () => import('./pages/term-assessment/overall-comments')
+);
 const EditTermAssessmentPage = lazyWithRetry(
   () => import('./pages/term-assessment/edit')
 );
@@ -122,6 +125,11 @@ export const getRoutes: NavObjectFunction = (t) => [
                     type: NavObjectType.NonMenuLink,
                     path: 'edit',
                     element: <EditTermAssessmentPage />,
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'overall-comments',
+                    element: <OverallCommentsTermAssessmentPage />,
                   },
                   {
                     type: NavObjectType.NonMenuLink,

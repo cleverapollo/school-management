@@ -11,7 +11,8 @@
     "createTermAssessment": "Term Assessment Creation",
     "termAssessmentSubjectGroups": "{{name}}'s Subject Groups",
     "editResultsFor": "Edit Results for {{name}}",
-    "editTermAssessment": "Edit {{name}}'s term assessment"
+    "editTermAssessment": "Edit {{name}}'s term assessment",
+    "overallCommentsFor": "Overall Comments for {{name}}"
   },
   "assessmentResults": "Assessment Results",
   "details": "Details",
@@ -69,7 +70,8 @@
     "view": "View assessment",
     "publish": "Publish online",
     "unpublish": "Unpublish online",
-    "editResults": "Edit results"
+    "editResults": "Edit results",
+    "makeOverallComments": "Make overall comments"
   },
   "academicYear": "Academic Year",
   "results": "Results"
