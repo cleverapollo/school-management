@@ -64,9 +64,6 @@ const assessment = graphql(/* GraphQL */ `
         commentBankId
         commentBankName
       }
-      capturePrincipalComment
-      captureYearHeadComment
-      captureHouseMasterComment
       publish
       publishLearner
       extraFields {
@@ -94,6 +91,33 @@ const assessment = graphql(/* GraphQL */ `
       startDate
       endDate
       captureTutorComment
+      capturePrincipalComment
+      captureYearHeadComment
+      captureHouseMasterComment
+      tutorCommentType
+      tutorCommentBank {
+        commentBankId
+        commentBankName
+      }
+      tutorCommentLength
+      yearHeadCommentType
+      yearHeadCommentBank {
+        commentBankId
+        commentBankName
+      }
+      yearHeadCommentLength
+      principalCommentType
+      principalCommentBank {
+        commentBankId
+        commentBankName
+      }
+      principalCommentLength
+      housemasterCommentType
+      housemasterCommentBank {
+        commentBankId
+        commentBankName
+      }
+      housemasterCommentLength
     }
   }
 `);
