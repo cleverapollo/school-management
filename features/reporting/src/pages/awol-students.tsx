@@ -10,13 +10,13 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
-import { Reporting_TableFilterInput, useAcademicNamespace } from '@tyro/api';
+import { Reporting_TableFilterInput } from '@tyro/api';
 import {
   useAttendanceAwolReports,
   ReturnTypeFromUseAttendanceAwolReports,
 } from '../api/awol-report';
 import { DynamicForm } from '../components/dynamic-form';
-import { getAwolReportsFilters } from '../utils/get-awol-reports-filters';
+import { useAwolReportFilters } from '../hooks/use-awol-report-filters';
 
 const getColumns = (
   t: TFunction<('common' | 'reports')[], undefined, ('common' | 'reports')[]>,
@@ -104,22 +104,16 @@ const getColumns = (
 export default function AwolStudentsPage() {
   const { t } = useTranslation(['common', 'reports']);
   const { displayName } = usePreferredNameLayout();
-  const { activeAcademicNamespace } = useAcademicNamespace();
+  const awolReportsFilters = useAwolReportFilters();
 
-  const defaultStartDate =
-    activeAcademicNamespace?.startDate || dayjs().format('YYYY-MM-DD');
-  const defaultEndDate = dayjs().format('YYYY-MM-DD');
-
-  const awolReportsFilters = getAwolReportsFilters(
-    t,
-    defaultStartDate,
-    defaultEndDate
+  const formattedAwolReportsFilters = useMemo(
+    () =>
+      awolReportsFilters?.map((filter) => ({
+        filterId: filter.id,
+        filterValue: filter.defaultValue,
+      })),
+    [awolReportsFilters]
   );
-
-  const formattedAwolReportsFilters = awolReportsFilters?.map((filter) => ({
-    filterId: filter.id,
-    filterValue: filter.defaultValue,
-  }));
 
   const [filters, setFilters] = useState<Reporting_TableFilterInput[]>(
     formattedAwolReportsFilters

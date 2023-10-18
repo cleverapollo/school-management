@@ -67,7 +67,7 @@ export const getRoutes: NavObjectFunction = (t) => [
 
                   return getRunReports({
                     topReportId: id,
-                    filter: { reportId: id },
+                    filter: { reportId },
                   });
                 },
               },
@@ -86,7 +86,9 @@ export const getRoutes: NavObjectFunction = (t) => [
                 );
 
               return getAwolReportsQuery({
-                from: activeAcademicNamespace?.startDate || '',
+                from:
+                  activeAcademicNamespace?.startDate ||
+                  dayjs().format('YYYY-MM-DD'),
                 to: dayjs().format('YYYY-MM-DD'),
               });
             },
