@@ -23,15 +23,13 @@ export const analyzeSmsTextString = memoize(
       ? segmentLimits.unicode
       : segmentLimits.sevenBit;
 
-    let characterCount = 0;
-
-    message.split('').forEach((character, i) => {
+    const characterCount = message.split('').reduce((acc, character, i) => {
       if (isUnicode) {
-        characterCount += message.charCodeAt(i) < 0x10000 ? 1 : 2;
-      } else {
-        characterCount += gsm2CountChars.includes(character) ? 2 : 1;
+        return acc + (message.charCodeAt(i) < 0x10000 ? 1 : 2); // Checks for larger unicode characters like emojis
       }
-    });
+
+      return acc + (gsm2CountChars.includes(character) ? 2 : 1);
+    }, 0);
     const messageLimit =
       characterCount <= segmentLimitsForEncodingType.singlSmsCharLimit
         ? segmentLimitsForEncodingType.singlSmsCharLimit
