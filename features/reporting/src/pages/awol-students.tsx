@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   GridOptions,
   ICellRendererParams,
@@ -8,22 +8,25 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
+import { Reporting_TableFilterInput, useAcademicNamespace } from '@tyro/api';
 import {
-  useAwolReports,
-  ReturnTypeFromUseAwolReports,
+  useAttendanceAwolReports,
+  ReturnTypeFromUseAttendanceAwolReports,
 } from '../api/awol-report';
+import { DynamicForm } from '../components/dynamic-form';
+import { getAwolReportsFilters } from '../utils/get-awol-reports-filters';
 
 const getColumns = (
   t: TFunction<('common' | 'reports')[], undefined, ('common' | 'reports')[]>,
   displayName: ReturnTypeDisplayName
-): GridOptions<ReturnTypeFromUseAwolReports>['columnDefs'] => [
+): GridOptions<ReturnTypeFromUseAttendanceAwolReports>['columnDefs'] => [
   {
     headerName: t('common:name'),
     field: 'student',
     valueGetter: ({ data }) => displayName(data?.student?.person),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseAwolReports, any>) =>
+    }: ICellRendererParams<ReturnTypeFromUseAttendanceAwolReports, any>) =>
       displayName(data?.student?.person) || '-',
     sort: 'asc',
   },
@@ -31,13 +34,14 @@ const getColumns = (
     headerName: t('common:class'),
     field: 'classGroup.name',
     valueGetter: ({ data }) => data?.classGroup?.name || '-',
+    filter: true,
   },
   {
     headerName: t('common:date'),
     field: 'date',
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseAwolReports, any>) =>
+    }: ICellRendererParams<ReturnTypeFromUseAttendanceAwolReports, any>) =>
       data?.date ? dayjs(data?.date).format('L') : '-',
   },
   {
@@ -46,25 +50,26 @@ const getColumns = (
     valueGetter: ({ data }) => data?.absentEvent?.name || '-',
   },
   {
+    colId: 'absentTakenTime',
     headerName: t('common:time'),
     valueGetter: ({ data }) =>
       (data?.absentEvent?.startTime && data?.absentEvent?.endTime) || '-',
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseAwolReports, any>) => {
+    }: ICellRendererParams<ReturnTypeFromUseAttendanceAwolReports, any>) => {
       const start = dayjs(data?.absentEvent?.startTime).format('HH:mm');
       const end = dayjs(data?.absentEvent?.endTime).format('HH:mm');
       return `${start} - ${end}`;
     },
   },
   {
-    headerName: t('common:teacher'),
-    field: 'absentMarkedBy',
-    valueGetter: ({ data }) => data?.absentMarkedBy,
+    headerName: t('common:takenBy'),
+    colId: 'absentTakenBy',
+    valueGetter: ({ data }) => data?.absentUpdatedBy || data?.absentCreatedBy,
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseAwolReports, any>) =>
-      displayName(data?.absentMarkedBy) || '-',
+    }: ICellRendererParams<ReturnTypeFromUseAttendanceAwolReports, any>) =>
+      displayName(data?.absentUpdatedBy || data?.absentCreatedBy) || '-',
   },
   {
     headerName: t('reports:lastPresentIn'),
@@ -72,47 +77,86 @@ const getColumns = (
     valueGetter: ({ data }) => data?.presentEvent?.name || '-',
   },
   {
-    colId: 'time',
+    colId: 'presentTakenTime',
     headerName: t('common:time'),
     valueGetter: ({ data }) => data?.presentEvent || '-',
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseAwolReports, any>) => {
+    }: ICellRendererParams<ReturnTypeFromUseAttendanceAwolReports, any>) => {
       const start = dayjs(data?.presentEvent?.startTime).format('HH:mm');
       const end = dayjs(data?.presentEvent?.endTime).format('HH:mm');
       return start && end ? `${start} - ${end}` : '-';
     },
   },
   {
-    headerName: t('common:teacher'),
-    field: 'presentMarkedBy',
-    valueGetter: ({ data }) => data?.presentMarkedBy,
+    headerName: t('common:takenBy'),
+    colId: 'presentTakenBy',
+    valueGetter: ({ data }) => data?.presentUpdatedBy,
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseAwolReports, any>) =>
-      displayName(data?.presentMarkedBy) || '-',
+    }: ICellRendererParams<ReturnTypeFromUseAttendanceAwolReports, any>) =>
+      displayName(data?.presentUpdatedBy || data?.presentCreatedBy) || '-',
   },
 ];
 
 export default function AwolStudentsPage() {
   const { t } = useTranslation(['common', 'reports']);
   const { displayName } = usePreferredNameLayout();
+  const { activeAcademicNamespace } = useAcademicNamespace();
 
-  const currentDay = dayjs().format('YYYY-MM-DD');
+  const defaultStartDate =
+    activeAcademicNamespace?.startDate || dayjs().format('YYYY-MM-DD');
+  const defaultEndDate = dayjs().format('YYYY-MM-DD');
 
-  const { data: reports = [], isLoading } = useAwolReports({
-    date: '2023-10-17',
-    // date: currentDay,
+  const awolReportsFilters = getAwolReportsFilters(
+    t,
+    defaultStartDate,
+    defaultEndDate
+  );
+
+  const formattedAwolReportsFilters = awolReportsFilters?.map((filter) => ({
+    filterId: filter.id,
+    filterValue: filter.defaultValue,
+  }));
+
+  const [filters, setFilters] = useState<Reporting_TableFilterInput[]>(
+    formattedAwolReportsFilters
+  );
+
+  const {
+    data: reports = [],
+    isFetching,
+    isLoading,
+  } = useAttendanceAwolReports({
+    from: filters[0].filterValue as string,
+    to: filters[1].filterValue as string,
   });
 
   const columns = useMemo(() => getColumns(t, displayName), [t, displayName]);
 
   return (
-    <Table
-      isLoading={isLoading}
-      rowData={reports}
-      columnDefs={columns}
-      getRowId={({ data }) => String(data?.partyId)}
-    />
+    <>
+      <DynamicForm
+        isFetching={isFetching}
+        filters={awolReportsFilters || []}
+        onFilterChange={setFilters}
+      />
+      <Table
+        isLoading={isLoading}
+        rowData={reports}
+        columnDefs={columns}
+        getRowId={({ data }) => String(data?.partyId)}
+        statusBar={{
+          statusPanels: [
+            {
+              statusPanel: 'agTotalAndFilteredRowCountComponent',
+              align: 'left',
+            },
+            { statusPanel: 'agFilteredRowCountComponent' },
+            { statusPanel: 'agSelectedRowCountComponent' },
+          ],
+        }}
+      />
+    </>
   );
 }

@@ -6,10 +6,11 @@ import {
 } from '@tyro/core';
 import { DocSearchIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
+import { getCoreAcademicNamespace } from '@tyro/api';
 import { getReportsList } from './api/list';
 import { getRunReports } from './api/run-report';
 import { getAwolReportsQuery } from './api/awol-report';
-import { getAwolReportsInfo } from './utils/get-awol-report-data';
+import { getAttendanceAwolReportsInfo } from './utils/get-awol-reports-info';
 
 const ReportsListPage = lazyWithRetry(() => import('./pages'));
 const ReportContainer = lazyWithRetry(() => import('./components/container'));
@@ -52,12 +53,19 @@ export const getRoutes: NavObjectFunction = (t) => [
               if (!id) {
                 throw404Error();
               }
-              const awolReports = getAwolReportsInfo(t);
-              const awolReportId = awolReports?.info?.id;
-              const formattedDate = dayjs().format('YYYY-MM-DD');
+              const awolReportId = getAttendanceAwolReportsInfo(t)?.info?.id;
+              const data = await getCoreAcademicNamespace();
+              const activeAcademicNamespace =
+                data.core_academicNamespaces?.find(
+                  (academicNamespace) =>
+                    academicNamespace?.isActiveDefaultNamespace
+                );
 
               return id === awolReportId
-                ? getAwolReportsQuery({ date: formattedDate })
+                ? getAwolReportsQuery({
+                    from: activeAcademicNamespace?.startDate || '',
+                    to: dayjs().format('YYYY-MM-DD'),
+                  })
                 : getRunReports({
                     topReportId: id,
                     filter: { reportId: id },
@@ -87,12 +95,22 @@ export const getRoutes: NavObjectFunction = (t) => [
                 element: <AwolStudentReportPage />,
                 loader: async ({ params }) => {
                   const { id = '' } = params;
-                  const formattedDate = dayjs().format('YYYY-MM-DD');
+
+                  const data = await getCoreAcademicNamespace();
+                  const activeAcademicNamespace =
+                    data.core_academicNamespaces?.find(
+                      (academicNamespace) =>
+                        academicNamespace?.isActiveDefaultNamespace
+                    );
 
                   if (!id) {
                     throw404Error();
                   }
-                  return getAwolReportsQuery({ date: formattedDate });
+
+                  return getAwolReportsQuery({
+                    from: activeAcademicNamespace?.startDate || '',
+                    to: dayjs().format('YYYY-MM-DD'),
+                  });
                 },
               },
             ],

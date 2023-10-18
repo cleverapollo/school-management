@@ -8,74 +8,83 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { reportsKeys } from './keys';
 
-const awolReportsList = graphql(/* GraphQL */ `
+const attendanceAwolReports = graphql(/* GraphQL */ `
   query attendance_awolReport($filter: AwolFilter!) {
     attendance_awolReport(filter: $filter) {
-      awolStudents {
+      date
+      partyId
+      student {
         partyId
-        date
-        student {
-          person {
-            avatarUrl
-            firstName
-            lastName
-          }
-        }
-        classGroup {
-          name
-        }
-        absentSubjectGroup {
-          name
-        }
-        absentEvent {
-          eventId
-          startTime
-          endTime
-          name
-          description
-        }
-        absentMarkedBy {
+        person {
           firstName
           lastName
           avatarUrl
         }
-        presentEvent {
-          eventId
-          allDayEvent
-          startTime
-          endTime
-          name
-        }
-        presentSubjectGroup {
-          partyId
-          subjectGroupType
-          name
-        }
-        presentMarkedBy {
-          type
-          firstName
-        }
+      }
+      classGroupId
+      classGroup {
+        partyId
+        name
+      }
+      absentEvent {
+        eventId
+        startTime
+        endTime
+        name
+        description
+      }
+      absentUpdatedBy {
+        firstName
+        lastName
+        avatarUrl
+      }
+      absentCreatedBy {
+        firstName
+        lastName
+        avatarUrl
+      }
+      presentEvent {
+        eventId
+        allDayEvent
+        startTime
+        endTime
+        name
+      }
+      presentSubjectGroup {
+        partyId
+        subjectGroupType
+        name
+      }
+      presentUpdatedBy {
+        avatarUrl
+        firstName
+        lastName
+      }
+      presentCreatedBy {
+        avatarUrl
+        firstName
+        lastName
       }
     }
   }
 `);
 
-const awolReportsQuery = (filter: AwolFilter) => ({
+const attendanceAwolReportsQuery = (filter: AwolFilter) => ({
   queryKey: reportsKeys.awolReport(filter),
-  queryFn: async () => gqlClient.request(awolReportsList, { filter }),
+  queryFn: async () => gqlClient.request(attendanceAwolReports, { filter }),
 });
 
 export function getAwolReportsQuery(filter: AwolFilter) {
-  return queryClient.fetchQuery(awolReportsQuery(filter));
+  return queryClient.fetchQuery(attendanceAwolReportsQuery(filter));
 }
 
-export function useAwolReports(filter: AwolFilter) {
+export function useAttendanceAwolReports(filter: AwolFilter) {
   return useQuery({
-    ...awolReportsQuery(filter),
-    select: ({ attendance_awolReport }) => attendance_awolReport?.awolStudents,
+    ...attendanceAwolReportsQuery(filter),
+    select: ({ attendance_awolReport }) => attendance_awolReport,
   });
 }
 
-export type ReturnTypeFromUseAwolReports = UseQueryReturnType<
-  typeof useAwolReports
+export type ReturnTypeFromUseAttendanceAwolReports = UseQueryReturnType<
+  typeof useAttendanceAwolReports
 >[number];

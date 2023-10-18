@@ -9,7 +9,7 @@ import {
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { useMemo } from 'react';
 import { ReturnTypeFromUseReportsList, useReportsList } from '../api/list';
-import { getAwolReportsInfo } from '../utils/get-awol-report-data';
+import { getAttendanceAwolReportsInfo } from '../utils/get-awol-reports-info';
 
 const getColumns = (
   t: TFunction<'common'[], undefined>
@@ -23,15 +23,15 @@ const getColumns = (
       if (!data) return null;
 
       const isAwolStudent = data?.info?.name === 'AWOL Students';
-      const awolReportsData = getAwolReportsInfo(t);
+      const attendanceAwolReportsData = getAttendanceAwolReportsInfo(t);
 
       return isAwolStudent ? (
         <Link
           fontWeight={600}
-          to={`/reports/${awolReportsData?.info?.id}/${awolReportsData?.reports?.[0]?.id}`}
+          to={`/reports/${attendanceAwolReportsData?.info?.id}/${attendanceAwolReportsData?.reports?.[0]?.id}`}
         >
           {' '}
-          {awolReportsData?.info?.name}
+          {attendanceAwolReportsData?.info?.name}
         </Link>
       ) : (
         <Link
@@ -42,6 +42,7 @@ const getColumns = (
         </Link>
       );
     },
+    sort: 'asc',
   },
 ];
 
@@ -49,8 +50,8 @@ export default function ReportsListPage() {
   const { t } = useTranslation(['common', 'reports']);
 
   const { data: reportsData = [] } = useReportsList();
-  const awolReportsData = getAwolReportsInfo(t);
-  const updatedReportsData = [...reportsData, awolReportsData];
+  const attendanceAwolReportsData = getAttendanceAwolReportsInfo(t);
+  const updatedReportsData = [...reportsData, attendanceAwolReportsData];
 
   const columns = useMemo(() => getColumns(t), [t]);
 
