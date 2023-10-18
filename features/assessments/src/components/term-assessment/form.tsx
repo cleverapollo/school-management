@@ -57,16 +57,16 @@ export interface FormValues extends FormCustomFieldsValues {
   captureYearHeadComment: boolean;
   captureHouseMasterComment: boolean;
   capturePrincipalComment: boolean;
-  tutorCommentType?: CommentType;
+  tutorCommentType?: CommentType | null;
   tutorCommentBank?: Partial<CommentBankOption>;
   tutorCommentLength?: number | null;
-  yearHeadCommentType?: CommentType;
+  yearHeadCommentType?: CommentType | null;
   yearHeadCommentBank?: Partial<CommentBankOption>;
   yearHeadCommentLength?: number | null;
-  principalCommentType?: CommentType;
+  principalCommentType?: CommentType | null;
   principalCommentBank?: Partial<CommentBankOption>;
   principalCommentLength?: number | null;
-  housemasterCommentType?: CommentType;
+  housemasterCommentType?: CommentType | null;
   housemasterCommentBank?: Partial<CommentBankOption>;
   housemasterCommentLength?: number | null;
 }
