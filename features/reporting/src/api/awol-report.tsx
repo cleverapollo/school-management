@@ -71,6 +71,7 @@ const attendanceAwolReports = graphql(/* GraphQL */ `
 
 const attendanceAwolReportsQuery = (filter: AwolFilter) => ({
   queryKey: reportsKeys.awolReport(filter),
+  staleTime: 0,
   queryFn: async () => gqlClient.request(attendanceAwolReports, { filter }),
 });
 
