@@ -10,7 +10,6 @@ import { getCoreAcademicNamespace } from '@tyro/api';
 import { getReportsList } from './api/list';
 import { getRunReports } from './api/run-report';
 import { getAwolReportsQuery } from './api/awol-report';
-import { getAttendanceAwolReportsInfo } from './utils/get-awol-reports-info';
 
 const ReportsListPage = lazyWithRetry(() => import('./pages'));
 const ReportContainer = lazyWithRetry(() => import('./components/container'));
@@ -18,11 +17,6 @@ const ReportPage = lazyWithRetry(() => import('./pages/view'));
 const AwolStudentReportPage = lazyWithRetry(
   () => import('./pages/awol-students')
 );
-
-export const awolReportsData = {
-  info: { id: 'awol-students', name: 'AWOL Students' },
-  reports: [{ id: 'awol-students', name: 'AWOL Students' }],
-};
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -53,23 +47,11 @@ export const getRoutes: NavObjectFunction = (t) => [
               if (!id) {
                 throw404Error();
               }
-              const awolReportId = getAttendanceAwolReportsInfo(t)?.info?.id;
-              const data = await getCoreAcademicNamespace();
-              const activeAcademicNamespace =
-                data.core_academicNamespaces?.find(
-                  (academicNamespace) =>
-                    academicNamespace?.isActiveDefaultNamespace
-                );
 
-              return id === awolReportId
-                ? getAwolReportsQuery({
-                    from: activeAcademicNamespace?.startDate || '',
-                    to: dayjs().format('YYYY-MM-DD'),
-                  })
-                : getRunReports({
-                    topReportId: id,
-                    filter: { reportId: id },
-                  });
+              return getRunReports({
+                topReportId: id,
+                filter: { reportId: id },
+              });
             },
             children: [
               {
@@ -89,31 +71,25 @@ export const getRoutes: NavObjectFunction = (t) => [
                   });
                 },
               },
-              {
-                type: NavObjectType.NonMenuLink,
-                path: 'awol-students',
-                element: <AwolStudentReportPage />,
-                loader: async ({ params }) => {
-                  const { id = '' } = params;
-
-                  const data = await getCoreAcademicNamespace();
-                  const activeAcademicNamespace =
-                    data.core_academicNamespaces?.find(
-                      (academicNamespace) =>
-                        academicNamespace?.isActiveDefaultNamespace
-                    );
-
-                  if (!id) {
-                    throw404Error();
-                  }
-
-                  return getAwolReportsQuery({
-                    from: activeAcademicNamespace?.startDate || '',
-                    to: dayjs().format('YYYY-MM-DD'),
-                  });
-                },
-              },
             ],
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: 'awol-students',
+            element: <AwolStudentReportPage />,
+            loader: async () => {
+              const data = await getCoreAcademicNamespace();
+              const activeAcademicNamespace =
+                data.core_academicNamespaces?.find(
+                  (academicNamespace) =>
+                    academicNamespace?.isActiveDefaultNamespace
+                );
+
+              return getAwolReportsQuery({
+                from: activeAcademicNamespace?.startDate || '',
+                to: dayjs().format('YYYY-MM-DD'),
+              });
+            },
           },
         ],
       },

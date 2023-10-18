@@ -4,7 +4,6 @@ import { useParams, Outlet } from 'react-router-dom';
 import { useTranslation } from '@tyro/i18n';
 
 import { useRunReports } from '../api/run-report';
-import { getAttendanceAwolReportsInfo } from '../utils/get-awol-reports-info';
 
 export default function ReportContainer() {
   const { t } = useTranslation(['reports']);
@@ -17,10 +16,7 @@ export default function ReportContainer() {
     },
   });
 
-  const attendanceAwolReportsData = getAttendanceAwolReportsInfo(t);
-
-  const awolReportName = attendanceAwolReportsData?.info?.name;
-  const reportName = (reportData?.info.name ?? awolReportName) || '';
+  const reportName = reportData?.info.name || '';
   const reports = reportData?.innerReports || [];
 
   return (

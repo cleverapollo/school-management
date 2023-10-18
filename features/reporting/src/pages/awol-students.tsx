@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react';
 import {
   GridOptions,
   ICellRendererParams,
+  PageContainer,
+  PageHeading,
   ReturnTypeDisplayName,
   Table,
   usePreferredNameLayout,
@@ -134,8 +136,24 @@ export default function AwolStudentsPage() {
 
   const columns = useMemo(() => getColumns(t, displayName), [t, displayName]);
 
+  const reportName = t('reports:awolStudents');
+
   return (
-    <>
+    <PageContainer title={reportName}>
+      <PageHeading
+        title={reportName}
+        breadcrumbs={{
+          links: [
+            {
+              name: t('reports:list'),
+              href: './..',
+            },
+            {
+              name: reportName,
+            },
+          ],
+        }}
+      />
       <DynamicForm
         isFetching={isFetching}
         filters={awolReportsFilters || []}
@@ -157,6 +175,6 @@ export default function AwolStudentsPage() {
           ],
         }}
       />
-    </>
+    </PageContainer>
   );
 }
