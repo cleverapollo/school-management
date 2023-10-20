@@ -1,7 +1,7 @@
 import { Stack, StackProps, Typography } from '@mui/material';
 import { useMemo } from 'react';
 import { useTranslation, useFormatNumber } from '@tyro/i18n';
-import { BYTE_SIZE_PER_SMS, getByteSize } from '../../utils/byte-size';
+import { analyzeSmsTextString } from '../../utils/analyze-sms-text-string';
 
 interface SmsSummaryProps extends StackProps<'dl'> {
   message: string;
@@ -19,13 +19,12 @@ export function SmsSummary({
   const { formatCurrency } = useFormatNumber();
 
   const summaryLines = useMemo(() => {
-    const messageByteSize = getByteSize(message);
-    const numberOfSms = Math.ceil(messageByteSize / BYTE_SIZE_PER_SMS);
+    const { numberOfMessages, characterCount } = analyzeSmsTextString(message);
 
     return {
-      [t('sms:numberOfSms', { count: numberOfSms })]: t(
+      [t('sms:numberOfSms', { count: numberOfMessages })]: t(
         'sms:numberOfCharacters',
-        { count: messageByteSize }
+        { count: characterCount }
       ),
       [t('sms:costPerSms')]: formatCurrency(costPerSms),
       [t('sms:totalCost')]: formatCurrency(totalCost),

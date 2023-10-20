@@ -10,19 +10,13 @@ import isEqual from 'lodash/isEqual';
 import cloneDeep from 'lodash/cloneDeep';
 import get from 'lodash/get';
 import { useCacheWithExpiry } from '../../../hooks/use-cache-with-expiry';
+import { EditState } from '../../save-bar';
 
 export interface ValueSetterParams<TData = any, CellValue = any>
   extends AGValueSetterParams<TData> {
   newValue: CellValue;
   oldValue: CellValue;
   isEditCheckCall?: boolean;
-}
-
-export enum EditState {
-  Idle = 'IDLE',
-  Saving = 'SAVING',
-  Saved = 'SAVED',
-  Error = 'ERROR',
 }
 
 type StringableKey<T> = T extends readonly unknown[]

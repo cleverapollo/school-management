@@ -17,6 +17,8 @@ const subjectGroupLessonByIterator = graphql(/* GraphQL */ `
     calendar_calendarEventsIterator_v2(filter: $filter) {
       event {
         eventId
+        name
+        colour
         calendarIds
         startTime
         endTime
@@ -45,6 +47,7 @@ const subjectGroupLessonByIterator = graphql(/* GraphQL */ `
             attendanceCodeId
             attendanceCode {
               name
+              codeType
             }
             personPartyId
             adminSubmitted
@@ -53,6 +56,7 @@ const subjectGroupLessonByIterator = graphql(/* GraphQL */ `
               lastName
               type
             }
+            updatedAt
             updatedBy {
               firstName
               lastName
@@ -68,14 +72,18 @@ const subjectGroupLessonByIterator = graphql(/* GraphQL */ `
         }
       }
       eventsOnSameDayForSameGroup {
-        name
         eventId
+        name
+        colour
+        type
         startTime
         endTime
-        extensions {
-          eventAttendance {
-            attendanceCodeId
-          }
+        rooms {
+          name
+        }
+        tags {
+          label
+          context
         }
       }
     }
@@ -88,18 +96,25 @@ const subjectGroupLessonQuery = (filter: CalendarEventIteratorFilter) => ({
     const { calendar_calendarEventsIterator_v2: eventData } =
       await gqlClient.request(subjectGroupLessonByIterator, { filter });
 
-    const eventsOnSameDayForSameGroup = (
-      eventData?.eventsOnSameDayForSameGroup || []
-    ).sort(
-      (eventA, eventB) =>
-        dayjs(eventA.startTime).unix() - dayjs(eventB.startTime).unix()
-    );
+    const [lastUpdate] = (eventData?.event?.extensions?.eventAttendance || [])
+      .filter((event) => !event?.adminSubmitted)
+      .sort(
+        (eventA, eventB) =>
+          dayjs(eventB?.updatedAt).unix() - dayjs(eventA?.updatedAt).unix()
+      );
+
+    const additionalLessons = eventData?.eventsOnSameDayForSameGroup || [];
 
     return {
       calendar_calendarEventsIterator: eventData?.event
         ? {
             ...eventData?.event,
-            eventsOnSameDayForSameGroup,
+            updatedAt: lastUpdate?.updatedAt,
+            updatedBy: lastUpdate?.updatedBy,
+            additionalLessons: additionalLessons.sort(
+              (eventA, eventB) =>
+                dayjs(eventA.startTime).unix() - dayjs(eventB.startTime).unix()
+            ),
           }
         : undefined,
     };

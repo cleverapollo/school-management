@@ -64,6 +64,7 @@ export type {
   CellValueChangedEvent,
   ICellEditorParams,
   ValueGetterParams,
+  ValueFormatterParams,
   NewValueParams,
   ProcessCellForExportParams,
 } from '@ag-grid-community/core';

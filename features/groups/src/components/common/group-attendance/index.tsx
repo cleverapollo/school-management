@@ -1,6 +1,5 @@
 import {
   Card,
-  Fade,
   Stack,
   Typography,
   Skeleton,
@@ -8,32 +7,22 @@ import {
   Table,
   TableCell,
   TableHead,
-  Slide,
-  AlertTitle,
-  Alert,
   TableRow,
   TableBody,
   IconButton,
-  Button,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import LoadingButton from '@mui/lab/LoadingButton';
 
 import { AttendanceToggle } from '@tyro/attendance';
 
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ThumbsUpCheckmarkIcon,
-  SaveIcon,
-  UndoIcon,
-} from '@tyro/icons';
-import { usePreferredNameLayout } from '@tyro/core';
+import { ChevronLeftIcon, ChevronRightIcon } from '@tyro/icons';
+import { usePreferredNameLayout, EditState, useToast } from '@tyro/core';
 import { useEffect, useState } from 'react';
 import { StudentAvatar } from '@tyro/people';
 import { AttendanceCodeType } from '@tyro/api';
 import { useHandleLessonAttendance, GroupStudent } from '../../../hooks';
 import { AdditionalLessonsModal } from './additional-lessons-modal';
+import { SaveBar } from './save-bar';
 
 type AttendanceProps = {
   partyId: number;
@@ -54,18 +43,25 @@ export const GroupAttendance = ({
   eventStartTime,
   students,
 }: AttendanceProps) => {
+  const { toast } = useToast();
+
   const { t } = useTranslation(['common', 'groups', 'attendance']);
   const { displayName } = usePreferredNameLayout();
 
   const {
     lessonId,
-    isEditing,
+    currentLesson,
+    attendance,
+    updatedAt,
+    updatedBy,
+    unsavedChanges,
+    isFirstTime,
     isLessonLoading,
     isEmptyLesson,
     formattedLessonDate,
     isSaveAttendanceLoading,
+    additionalLessons,
     previousAttendanceTypeByPersonPartyId,
-    eventsOnSameDayForSameGroup,
     nextLesson,
     previousLesson,
     getStudentEventDetails,
@@ -79,31 +75,41 @@ export const GroupAttendance = ({
     students,
   });
 
-  const [showAlertSuccess, setAlertSuccess] = useState(false);
+  const [editingState, setEditingState] = useState<EditState>(EditState.Idle);
   const [showAdditionalLessonsModal, setShowAdditionalLessonsModal] =
     useState(false);
 
   useEffect(() => {
-    setAlertSuccess(false);
-  }, [lessonId]);
+    setEditingState(EditState.Idle);
+  }, [lessonId, unsavedChanges]);
 
-  const handleSaveAttendance = () => {
-    if (eventsOnSameDayForSameGroup.length > 0) {
-      setShowAdditionalLessonsModal(true);
-    } else {
-      saveAttendance({
-        additionalLessonIds: [],
-        onSuccess: () => setAlertSuccess(true),
-      });
+  useEffect(() => {
+    if (isSaveAttendanceLoading) {
+      setEditingState(EditState.Saving);
     }
+  }, [isSaveAttendanceLoading]);
+
+  const handleSaveCurrentAttendance = () => {
+    saveAttendance({
+      lessonIds: [lessonId],
+      onSuccess: (invalidateQuery) => {
+        setEditingState(EditState.Saved);
+
+        setTimeout(async () => {
+          await invalidateQuery();
+          setShowAdditionalLessonsModal(additionalLessons.length > 0);
+        }, 250);
+      },
+    });
   };
 
-  const handleSaveAdditionalLessons = (additionalLessonIds: number[]) => {
+  const handleSaveAdditionalLessons = (lessonIds: number[]) => {
     saveAttendance({
-      additionalLessonIds,
-      onSuccess: () => {
+      lessonIds,
+      onSuccess: async (invalidateQuery) => {
+        await invalidateQuery();
         setShowAdditionalLessonsModal(false);
-        setAlertSuccess(true);
+        toast(t('common:snackbarMessages.updateSuccess'));
       },
     });
   };
@@ -177,196 +183,120 @@ export const GroupAttendance = ({
           </Stack>
         )}
         {showStudentsTable && (
-          <>
-            <Table
-              size="small"
-              sx={{
-                '& th': {
-                  background: 'transparent',
-                  color: 'text.primary',
-                  fontWeight: 600,
-                },
-                '& th:first-of-type': {
-                  width: '100%',
-                },
-              }}
-            >
-              <TableHead>
-                <TableRow>
-                  <TableCell>{t('groups:students')}</TableCell>
-                  <TableCell>{t('groups:status')}</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {students.map((student) => {
-                  const eventDetails = getStudentEventDetails(student.partyId);
-                  const submittedBy = displayName(
-                    eventDetails?.updatedBy ?? eventDetails?.createdBy
-                  );
-                  const previousLessonCode =
-                    previousAttendanceTypeByPersonPartyId.get(
-                      student.partyId
-                    ) ?? AttendanceCodeType.NotTaken;
+          <Table
+            size="small"
+            sx={{
+              '& th': {
+                background: 'transparent',
+                color: 'text.primary',
+                fontWeight: 600,
+              },
+              '& th:first-of-type': {
+                width: '100%',
+              },
+            }}
+          >
+            <TableHead>
+              <TableRow>
+                <TableCell>{t('groups:students')}</TableCell>
+                <TableCell>{t('groups:status')}</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {students.map((student) => {
+                const eventDetails = getStudentEventDetails(student.partyId);
+                const submittedBy = displayName(
+                  eventDetails?.updatedBy ?? eventDetails?.createdBy
+                );
+                const previousLessonCode =
+                  previousAttendanceTypeByPersonPartyId.get(student.partyId) ??
+                  AttendanceCodeType.NotTaken;
 
-                  return (
-                    <TableRow key={student?.partyId}>
-                      <TableCell>
-                        <Stack direction="row" spacing={2} alignItems="center">
-                          <StudentAvatar
-                            partyId={student?.partyId}
-                            name={displayName(student?.person)}
-                            isPriorityStudent={!!student?.extensions?.priority}
-                            hasSupportPlan={false}
-                            src={student?.person?.avatarUrl}
-                          />
-                          <Stack direction="column">
-                            <Typography variant="body2" fontWeight={600}>
-                              {displayName(student?.person)}
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              color={
-                                previousAttendanceCodeColor[previousLessonCode]
-                              }
-                            >
-                              {previousLessonCode ===
-                              AttendanceCodeType.NotTaken
-                                ? '-'
-                                : t(
-                                    `attendance:previousAttendanceCode.${previousLessonCode}`
-                                  )}
-                            </Typography>
-                          </Stack>
-                        </Stack>
-                      </TableCell>
-                      <TableCell>
-                        {eventDetails && eventDetails.adminSubmitted ? (
-                          <Stack direction="column">
-                            <Typography variant="caption" fontWeight={600}>
-                              {eventDetails.attendanceCode.name}
-                            </Typography>
-                            {eventDetails.note && (
-                              <Typography component="span" variant="caption">
-                                {eventDetails.note}
-                              </Typography>
-                            )}
-                            {submittedBy && (
-                              <Typography
-                                component="span"
-                                variant="caption"
-                                color="text.secondary"
-                              >
-                                {`${t('common:submittedBy')} ${submittedBy}`}
-                              </Typography>
-                            )}
-                          </Stack>
-                        ) : (
-                          <AttendanceToggle
-                            codeId={getStudentAttendanceCode(student.partyId)}
-                            onChange={setStudentAttendanceCode(student.partyId)}
-                          />
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-            <Box sx={{ p: 2, position: 'sticky', bottom: 0 }}>
-              <Box position="relative">
-                <Box
-                  sx={{
-                    alignItems: 'center',
-                    position: 'absolute',
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                    left: 0,
-                    zIndex: showAlertSuccess ? 1 : 0,
-                  }}
-                >
-                  <Fade in={showAlertSuccess}>
-                    <Alert
-                      severity="success"
-                      variant="standard"
-                      sx={{ height: '100%', alignItems: 'center', px: 6 }}
-                      icon={
-                        <ThumbsUpCheckmarkIcon
-                          color="success"
-                          sx={{ width: '36px', height: '36px' }}
+                return (
+                  <TableRow key={student?.partyId}>
+                    <TableCell>
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        <StudentAvatar
+                          partyId={student?.partyId}
+                          name={displayName(student?.person)}
+                          isPriorityStudent={!!student?.extensions?.priority}
+                          hasSupportPlan={false}
+                          src={student?.person?.avatarUrl}
                         />
-                      }
-                      onClose={() => setAlertSuccess(false)}
-                    >
-                      <Stack direction="row" spacing={1} alignItems="baseline">
-                        <Slide
-                          direction="right"
-                          in={showAlertSuccess}
-                          {...(showAlertSuccess && { timeout: 250 })}
-                        >
-                          <AlertTitle sx={{ m: 0, color: 'emerald.700' }}>
-                            {t('common:success')}
-                          </AlertTitle>
-                        </Slide>
-                        <Typography variant="body2">
-                          {t('groups:attendanceUpdated')}
-                        </Typography>
+                        <Stack direction="column">
+                          <Typography variant="body2" fontWeight={600}>
+                            {displayName(student?.person)}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color={
+                              previousAttendanceCodeColor[previousLessonCode]
+                            }
+                          >
+                            {previousLessonCode === AttendanceCodeType.NotTaken
+                              ? '-'
+                              : t(
+                                  `attendance:previousAttendanceCode.${previousLessonCode}`
+                                )}
+                          </Typography>
+                        </Stack>
                       </Stack>
-                    </Alert>
-                  </Fade>
-                </Box>
-                <Stack
-                  direction="row"
-                  spacing={2}
-                  alignItems="center"
-                  justifyContent="space-between"
-                  sx={{
-                    backgroundColor: 'slate.100',
-                    py: 1.5,
-                    px: 2,
-                    borderRadius: 1.5,
-                    borderTop: '1px solid',
-                    borderTopColor: 'indigo.50',
-                    boxShadow: '0px -1px 10px rgba(99, 102, 241, 0.20)',
-                  }}
-                >
-                  <Typography variant="body2" fontWeight={600}>
-                    {t('groups:confirmAttendance')}
-                  </Typography>
-                  <Stack direction="row" spacing={2}>
-                    {isEditing && (
-                      <Button
-                        color="primary"
-                        variant="soft"
-                        disabled={isLoading && !showAdditionalLessonsModal}
-                        endIcon={<UndoIcon />}
-                        onClick={cancelAttendance}
-                      >
-                        {t('groups:cancelEdits')}
-                      </Button>
-                    )}
-                    <LoadingButton
-                      color="primary"
-                      variant="contained"
-                      loading={
-                        isSaveAttendanceLoading && !showAdditionalLessonsModal
-                      }
-                      endIcon={<SaveIcon />}
-                      loadingPosition="end"
-                      onClick={handleSaveAttendance}
-                    >
-                      {t('groups:saveAttendance')}
-                    </LoadingButton>
-                  </Stack>
-                </Stack>
-              </Box>
-            </Box>
-          </>
+                    </TableCell>
+                    <TableCell>
+                      {eventDetails && eventDetails.adminSubmitted ? (
+                        <Stack direction="column">
+                          <Typography variant="caption" fontWeight={600}>
+                            {eventDetails.attendanceCode.name}
+                          </Typography>
+                          {eventDetails.note && (
+                            <Typography component="span" variant="caption">
+                              {eventDetails.note}
+                            </Typography>
+                          )}
+                          {submittedBy && (
+                            <Typography
+                              component="span"
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              {`${t('common:submittedBy')} ${submittedBy}`}
+                            </Typography>
+                          )}
+                        </Stack>
+                      ) : (
+                        <AttendanceToggle
+                          codeId={getStudentAttendanceCode(student.partyId)}
+                          onChange={setStudentAttendanceCode(student.partyId)}
+                        />
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
         )}
       </Card>
+
+      <SaveBar
+        isFirstTime={isFirstTime}
+        editingState={editingState}
+        attendance={attendance}
+        updatedAt={updatedAt}
+        updatedBy={updatedBy}
+        unsavedChanges={unsavedChanges}
+        onCancel={cancelAttendance}
+        onSave={handleSaveCurrentAttendance}
+      />
+
       {showAdditionalLessonsModal && (
         <AdditionalLessonsModal
-          events={eventsOnSameDayForSameGroup || []}
+          isSaving={editingState === EditState.Saving}
+          attendance={attendance}
+          currentLesson={currentLesson}
+          updatedAt={updatedAt}
+          updatedBy={updatedBy}
+          lessons={additionalLessons}
           onClose={() => setShowAdditionalLessonsModal(false)}
           onSave={handleSaveAdditionalLessons}
         />

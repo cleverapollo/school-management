@@ -50,6 +50,7 @@
     "extraFieldName": "Type a name",
     "extraFieldValue": "Type a value"
   },
+  "noActiveCommentsInCommentBank": "No active comments available to select. Contact school administration.",
   "extraFieldNo": "No.",
   "extraFieldName": "Field Name",
   "extraFieldType": "Type",
