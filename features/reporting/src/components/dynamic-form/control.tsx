@@ -27,7 +27,7 @@ type DynamicControlProps<FV extends FieldValues> = {
   };
 };
 
-const getDefaultValueFormat = (
+export const getDefaultValueFormat = (
   defaultValue: any,
   values: Reporting_TableFilterValues[],
   inputType: Reporting_TableFilterType

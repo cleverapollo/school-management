@@ -22,7 +22,7 @@ type DynamicFormProps = {
 
 type FormState = { [id: Reporting_TableFilter['id']]: any };
 
-const getValueFormat = (
+export const getValueFormat = (
   formValue: any,
   inputType: Reporting_TableFilterType
 ) => {
