@@ -73,19 +73,18 @@ export function SendSmsModal({
   }, [message]);
   const fullRecipientList = useMemo(
     () =>
-      recipientList.reduce<NonNullable<SendSmsInput['recipients']>>(
-        (acc, recipient) => {
-          recipientTypes.forEach((recipientType) => {
-            acc.push({
-              recipientPartyId: recipient.id,
-              recipientPartyType: recipientType,
-            });
+      recipientList.reduce<
+        NonNullable<NonNullable<SendSmsInput['recipients']>>
+      >((acc, recipient) => {
+        recipientTypes.forEach((recipientType) => {
+          acc.push({
+            recipientPartyId: recipient.id,
+            recipientPartyType: recipientType,
           });
+        });
 
-          return acc;
-        },
-        []
-      ),
+        return acc;
+      }, []),
     [recipientList, recipientTypes]
   );
 

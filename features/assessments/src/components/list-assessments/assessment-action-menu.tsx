@@ -50,12 +50,12 @@ export const AssessmentActionMenu = ({
                   icon: <EditIcon />,
                   navigateTo: `${assessmentPath}/edit`,
                 },
-                {
-                  label: t('assessments:actions.makeOverallComments'),
-                  icon: <CommentIcon />,
-                  hasAccess: () => assessmentType === AssessmentType.Term,
-                  navigateTo: `${assessmentPath}/overall-comments`,
-                },
+                // {
+                //   label: t('assessments:actions.makeOverallComments'),
+                //   icon: <CommentIcon />,
+                //   hasAccess: () => assessmentType === AssessmentType.Term,
+                //   navigateTo: `${assessmentPath}/overall-comments`,
+                // },
               ],
               [
                 publish

@@ -15,6 +15,7 @@
     "overallCommentsFor": "Overall Comments for {{name}}"
   },
   "assessmentResults": "Assessment Results",
+  "assessment": "Assessment",
   "details": "Details",
   "grades": "Grades",
   "comments": "Comments",
@@ -52,6 +53,8 @@
     "extraFieldValue": "Type a value"
   },
   "noActiveCommentsInCommentBank": "You use comment bank comments at this time. There are no active comments in the selected comment bank.",
+  "noAssessmentsAvailable": "No assessments available",
+  "noAssessmentsFound": "No assessments found",
   "extraFieldNo": "No.",
   "extraFieldName": "Field Name",
   "extraFieldType": "Type",

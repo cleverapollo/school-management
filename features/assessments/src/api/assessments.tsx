@@ -6,6 +6,7 @@ import {
   gqlClient,
   graphql,
   queryClient,
+  UseQueryReturnType,
 } from '@tyro/api';
 import { assessmentsKeys } from './keys';
 
@@ -186,3 +187,7 @@ export function useAssessmentById(filter: AssessmentByIdFilter) {
         : null,
   });
 }
+
+export type ReturnTypeFromUseAssessmentById = UseQueryReturnType<
+  typeof useAssessmentById
+>;

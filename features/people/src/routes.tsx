@@ -203,7 +203,9 @@ export const getRoutes: NavObjectFunction = (t) => [
 
                   return Promise.all([
                     getStudentsContacts(studentId),
-                    getStudentDashboardAssessments(studentId),
+                    getStudentDashboardAssessments({
+                      studentPartyId: studentId,
+                    }),
                     getPartyTimetable({
                       resources: {
                         partyIds: [studentId ?? 0],

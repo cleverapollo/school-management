@@ -31,7 +31,10 @@ export function StudentAssessmentWidget({
 }: StudentAssessmentWidgetProps) {
   const { t } = useTranslation(['common', 'assessments']);
   const [assessmentIndex, setAssessmentIndex] = useState(0);
-  const { data } = useStudentDashboardAssessments(studentId);
+  const { data } = useStudentDashboardAssessments(
+    { studentPartyId: studentId },
+    !!studentId
+  );
 
   const selectedAssessment = data?.[assessmentIndex];
 

@@ -17,3 +17,11 @@ export function LoadingPlaceholder({ sx, ...props }: BoxProps) {
     </Box>
   );
 }
+
+export function LoadingPlaceholderContainer({
+  children,
+  isLoading,
+  ...props
+}: BoxProps & { isLoading: boolean; children: JSX.Element }) {
+  return isLoading ? <LoadingPlaceholder {...props} /> : children;
+}
