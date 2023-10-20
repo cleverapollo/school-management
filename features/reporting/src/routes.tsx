@@ -77,21 +77,11 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.NonMenuLink,
             path: 'awol-students',
             element: <AwolStudentReportPage />,
-            loader: async () => {
-              const data = await getCoreAcademicNamespace();
-              const activeAcademicNamespace =
-                data.core_academicNamespaces?.find(
-                  (academicNamespace) =>
-                    academicNamespace?.isActiveDefaultNamespace
-                );
-
-              return getAwolReportsQuery({
-                from:
-                  activeAcademicNamespace?.startDate ||
-                  dayjs().format('YYYY-MM-DD'),
+            loader: async () =>
+              getAwolReportsQuery({
+                from: dayjs().format('YYYY-MM-DD'),
                 to: dayjs().format('YYYY-MM-DD'),
-              });
-            },
+              }),
           },
         ],
       },
