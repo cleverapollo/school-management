@@ -77,7 +77,6 @@ export type Address = {
   active?: Maybe<Scalars['Boolean']>;
   city?: Maybe<Scalars['String']>;
   country?: Maybe<Scalars['String']>;
-  county?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['Int']>;
   line1?: Maybe<Scalars['String']>;
   line2?: Maybe<Scalars['String']>;
@@ -109,27 +108,14 @@ export type Assessment = {
   extraFields?: Maybe<Array<AssessmentExtraField>>;
   gradeSets?: Maybe<Array<AssessmentGradeSet>>;
   gradeType?: Maybe<GradeType>;
-  housemasterCommentBank?: Maybe<AssessmentCommentBank>;
-  housemasterCommentLength?: Maybe<Scalars['Int']>;
-  housemasterCommentType?: Maybe<CommentType>;
   id: Scalars['Long'];
   name: Scalars['String'];
   passFailThreshold?: Maybe<Scalars['Int']>;
-  principalCommentBank?: Maybe<AssessmentCommentBank>;
-  principalCommentLength?: Maybe<Scalars['Int']>;
-  principalCommentType?: Maybe<CommentType>;
   publish: Scalars['Boolean'];
   publishLearner: Scalars['Boolean'];
-  publishedFrom?: Maybe<Scalars['Date']>;
   startDate: Scalars['Date'];
-  tutorCommentBank?: Maybe<AssessmentCommentBank>;
-  tutorCommentLength?: Maybe<Scalars['Int']>;
-  tutorCommentType?: Maybe<CommentType>;
   yearGroupEnrollmentPartyIds?: Maybe<Array<Scalars['Long']>>;
   yearGroupIds?: Maybe<Array<Scalars['Int']>>;
-  yearHeadCommentBank?: Maybe<AssessmentCommentBank>;
-  yearHeadCommentLength?: Maybe<Scalars['Int']>;
-  yearHeadCommentType?: Maybe<CommentType>;
   /** deep linked */
   years?: Maybe<Array<YearGroup>>;
 };
@@ -186,8 +172,6 @@ export type AssessmentGradeSet = {
 export type AssessmentResult = {
   __typename?: 'AssessmentResult';
   assessmentId?: Maybe<Scalars['Long']>;
-  createdBy: Person;
-  createdByPartyId: Scalars['Long'];
   externalSystemId?: Maybe<Scalars['String']>;
   extraFields?: Maybe<Array<ResultExtraField>>;
   gradeId?: Maybe<Scalars['Long']>;
@@ -281,35 +265,29 @@ export type AttendanceEventId = {
   eventId?: InputMaybe<Scalars['Int']>;
 };
 
+export type Attendance_AwolReport = {
+  __typename?: 'Attendance_AwolReport';
+  awolStudents: Array<Attendance_AwolStudent>;
+};
+
 export type Attendance_AwolStudent = {
   __typename?: 'Attendance_AwolStudent';
-  /** deep linked */
-  absentCreatedBy?: Maybe<Person>;
   absentCreatedByPartyId: Scalars['Long'];
   absentEvent: CalendarEvent;
-  /** deep linked */
+  absentMarkedBy?: Maybe<Person>;
   absentSubjectGroup: SubjectGroup;
   absentSubjectGroupId: Scalars['Long'];
-  /** deep linked */
-  absentUpdatedBy?: Maybe<Person>;
   absentUpdatedByPartyId: Scalars['Long'];
-  /** deep linked */
   classGroup: GeneralGroup;
   classGroupId: Scalars['Long'];
   date: Scalars['Date'];
-  id: AwolId;
   partyId: Scalars['Long'];
-  /** deep linked */
-  presentCreatedBy?: Maybe<Person>;
   presentCreatedByPartyId: Scalars['Long'];
   presentEvent: CalendarEvent;
-  /** deep linked */
+  presentMarkedBy?: Maybe<Person>;
   presentSubjectGroup: SubjectGroup;
   presentSubjectGroupId: Scalars['Long'];
-  /** deep linked */
-  presentUpdatedBy?: Maybe<Person>;
   presentUpdatedByPartyId: Scalars['Long'];
-  /** deep linked */
   student: Student;
 };
 
@@ -378,15 +356,8 @@ export type AuditPerson = {
 };
 
 export type AwolFilter = {
-  from: Scalars['Date'];
-  partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-  to: Scalars['Date'];
-};
-
-export type AwolId = {
-  __typename?: 'AwolId';
   date: Scalars['Date'];
-  partyId: Scalars['Long'];
+  partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
 
 export type BellTimeAttendance = {
@@ -845,7 +816,6 @@ export type Calendar_BellTime = {
 };
 
 export type Calendar_CreateBellTimeInput = {
-  bellTimeId?: InputMaybe<Scalars['Int']>;
   name: Array<TranslationInput>;
   time: Scalars['Time'];
 };
@@ -1500,7 +1470,6 @@ export type CreateStudentInput = {
   externalSystemInfo?: InputMaybe<ExternalSystemInfo>;
   firstName?: InputMaybe<Scalars['String']>;
   gender?: InputMaybe<Gender>;
-  guardianshipNote?: InputMaybe<Scalars['String']>;
   lastName?: InputMaybe<Scalars['String']>;
   leavingReason?: InputMaybe<Scalars['String']>;
   leftEarly?: InputMaybe<Scalars['Boolean']>;
@@ -1624,8 +1593,7 @@ export type DashboardAssessment = {
 };
 
 export type DashboardAssessmentFilter = {
-  published: Scalars['Boolean'];
-  studentPartyId: Scalars['Long'];
+  studentPartyId?: InputMaybe<Scalars['Long']>;
 };
 
 export type DashboardAssessmentResult = {
@@ -2243,7 +2211,6 @@ export type InputAddress = {
   addressId?: InputMaybe<Scalars['Int']>;
   city?: InputMaybe<Scalars['String']>;
   country?: InputMaybe<Scalars['String']>;
-  county?: InputMaybe<Scalars['String']>;
   line1?: InputMaybe<Scalars['String']>;
   line2?: InputMaybe<Scalars['String']>;
   line3?: InputMaybe<Scalars['String']>;
@@ -2393,7 +2360,6 @@ export type Mutation = {
   __typename?: 'Mutation';
   admin__resetTenantCache: Success;
   asd?: Maybe<Scalars['String']>;
-  assessment_publish: Success;
   assessment_saveAssessment?: Maybe<Assessment>;
   assessment_saveAssessmentComments?: Maybe<Array<AssessmentComment>>;
   assessment_saveAssessmentResults?: Maybe<Array<AssessmentResult>>;
@@ -2493,11 +2459,6 @@ export type Mutation = {
 
 export type MutationAdmin__ResetTenantCacheArgs = {
   input?: InputMaybe<Scalars['Int']>;
-};
-
-
-export type MutationAssessment_PublishArgs = {
-  input?: InputMaybe<PublishAssessmentInput>;
 };
 
 
@@ -3194,13 +3155,11 @@ export type NotificationFilter = {
 export type NotificationMetaData = {
   __typename?: 'NotificationMetaData';
   mailId?: Maybe<Scalars['Long']>;
-  notificationType: NotificationType;
   partyId?: Maybe<Scalars['Long']>;
 };
 
 export type NotificationMetaDataInput = {
   mailId?: InputMaybe<Scalars['Long']>;
-  notificationType: NotificationType;
   partyId?: InputMaybe<Scalars['Long']>;
 };
 
@@ -3757,12 +3716,6 @@ export type ProgrammeStageFilter = {
   programmeStageIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
-export type PublishAssessmentInput = {
-  assessmentId: Scalars['Long'];
-  publish: Scalars['Boolean'];
-  publishFrom?: InputMaybe<Scalars['Date']>;
-};
-
 export type Query = {
   __typename?: 'Query';
   admin__party_people?: Maybe<Array<Person>>;
@@ -3776,9 +3729,8 @@ export type Query = {
   assessment_commentBank?: Maybe<Array<CommentBank>>;
   assessment_dashboardAssessment?: Maybe<Array<DashboardAssessment>>;
   assessment_gradeSet?: Maybe<Array<GradeSet>>;
-  assessment_studentResult: Array<AssessmentResult>;
   attendance_attendanceCodes: Array<AttendanceCode>;
-  attendance_awolReport: Array<Attendance_AwolStudent>;
+  attendance_awolReport: Attendance_AwolReport;
   attendance_bulkAttendanceActions: Array<Attendance_BulkAttendanceAction>;
   attendance_calendarAttendance: CalendarAttendance;
   attendance_eventAttendance: Array<EventAttendance>;
@@ -3928,11 +3880,6 @@ export type QueryAssessment_DashboardAssessmentArgs = {
 
 export type QueryAssessment_GradeSetArgs = {
   filter?: InputMaybe<GradeSetFilter>;
-};
-
-
-export type QueryAssessment_StudentResultArgs = {
-  filter?: InputMaybe<StudentResultFilter>;
 };
 
 
@@ -4909,24 +4856,12 @@ export type SaveAssessmentInput = {
   extraFields?: InputMaybe<Array<InputMaybe<SaveExtraFieldInput>>>;
   gradeSetIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   gradeType?: InputMaybe<GradeType>;
-  housemasterCommentBankId?: InputMaybe<Scalars['Long']>;
-  housemasterCommentLength?: InputMaybe<Scalars['Int']>;
-  housemasterCommentType?: InputMaybe<CommentType>;
   id?: InputMaybe<Scalars['Long']>;
   name: Scalars['String'];
   passFailThreshold?: InputMaybe<Scalars['Int']>;
-  principalCommentBankId?: InputMaybe<Scalars['Long']>;
-  principalCommentLength?: InputMaybe<Scalars['Int']>;
-  principalCommentType?: InputMaybe<CommentType>;
   publish?: InputMaybe<Scalars['Boolean']>;
   publishLearner?: InputMaybe<Scalars['Boolean']>;
   startDate: Scalars['Date'];
-  tutorCommentBankId?: InputMaybe<Scalars['Long']>;
-  tutorCommentLength?: InputMaybe<Scalars['Int']>;
-  tutorCommentType?: InputMaybe<CommentType>;
-  yearHeadCommentBankId?: InputMaybe<Scalars['Long']>;
-  yearHeadCommentLength?: InputMaybe<Scalars['Int']>;
-  yearHeadCommentType?: InputMaybe<CommentType>;
   years?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
@@ -5507,7 +5442,7 @@ export type SmsCost = {
 };
 
 export type SmsCostFilter = {
-  recipients: Array<RecipientInput>;
+  recipients?: InputMaybe<Array<InputMaybe<RecipientInput>>>;
 };
 
 export type SmsCredit = {
@@ -5889,13 +5824,6 @@ export type StudentMedicalContact = {
 
 export type StudentMedicalFilter = {
   studentPartyId: Scalars['Long'];
-};
-
-export type StudentResultFilter = {
-  academicYearId?: InputMaybe<Scalars['Int']>;
-  assessmentId: Scalars['Long'];
-  studentPartyIds?: InputMaybe<Array<Scalars['Long']>>;
-  subjectGroupIds?: InputMaybe<Array<Scalars['Long']>>;
 };
 
 export type StudentSessionAttendance = {
