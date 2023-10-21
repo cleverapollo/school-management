@@ -120,6 +120,7 @@ export type Assessment = {
   principalCommentType?: Maybe<CommentType>;
   publish: Scalars['Boolean'];
   publishLearner: Scalars['Boolean'];
+  publishedFrom?: Maybe<Scalars['Date']>;
   startDate: Scalars['Date'];
   tutorCommentBank?: Maybe<AssessmentCommentBank>;
   tutorCommentLength?: Maybe<Scalars['Int']>;
@@ -185,6 +186,8 @@ export type AssessmentGradeSet = {
 export type AssessmentResult = {
   __typename?: 'AssessmentResult';
   assessmentId?: Maybe<Scalars['Long']>;
+  createdBy: Person;
+  createdByPartyId: Scalars['Long'];
   externalSystemId?: Maybe<Scalars['String']>;
   extraFields?: Maybe<Array<ResultExtraField>>;
   gradeId?: Maybe<Scalars['Long']>;
@@ -1619,7 +1622,8 @@ export type DashboardAssessment = {
 };
 
 export type DashboardAssessmentFilter = {
-  studentPartyId?: InputMaybe<Scalars['Long']>;
+  published: Scalars['Boolean'];
+  studentPartyId: Scalars['Long'];
 };
 
 export type DashboardAssessmentResult = {
@@ -2387,6 +2391,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   admin__resetTenantCache: Success;
   asd?: Maybe<Scalars['String']>;
+  assessment_publish: Success;
   assessment_saveAssessment?: Maybe<Assessment>;
   assessment_saveAssessmentComments?: Maybe<Array<AssessmentComment>>;
   assessment_saveAssessmentResults?: Maybe<Array<AssessmentResult>>;
@@ -2484,6 +2489,11 @@ export type Mutation = {
 
 export type MutationAdmin__ResetTenantCacheArgs = {
   input?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type MutationAssessment_PublishArgs = {
+  input?: InputMaybe<PublishAssessmentInput>;
 };
 
 
@@ -3733,6 +3743,12 @@ export type ProgrammeStageFilter = {
   programmeStageIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
+export type PublishAssessmentInput = {
+  assessmentId: Scalars['Long'];
+  publish: Scalars['Boolean'];
+  publishFrom?: InputMaybe<Scalars['Date']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   admin__party_people?: Maybe<Array<Person>>;
@@ -3746,6 +3762,7 @@ export type Query = {
   assessment_commentBank?: Maybe<Array<CommentBank>>;
   assessment_dashboardAssessment?: Maybe<Array<DashboardAssessment>>;
   assessment_gradeSet?: Maybe<Array<GradeSet>>;
+  assessment_studentResult: Array<AssessmentResult>;
   attendance_attendanceCodes: Array<AttendanceCode>;
   attendance_awolReport: Array<Attendance_AwolStudent>;
   attendance_bulkAttendanceActions: Array<Attendance_BulkAttendanceAction>;
@@ -3897,6 +3914,11 @@ export type QueryAssessment_DashboardAssessmentArgs = {
 
 export type QueryAssessment_GradeSetArgs = {
   filter?: InputMaybe<GradeSetFilter>;
+};
+
+
+export type QueryAssessment_StudentResultArgs = {
+  filter?: InputMaybe<StudentResultFilter>;
 };
 
 
@@ -5846,6 +5868,13 @@ export type StudentMedicalContact = {
 
 export type StudentMedicalFilter = {
   studentPartyId: Scalars['Long'];
+};
+
+export type StudentResultFilter = {
+  academicYearId?: InputMaybe<Scalars['Int']>;
+  assessmentId: Scalars['Long'];
+  studentPartyIds?: InputMaybe<Array<Scalars['Long']>>;
+  subjectGroupIds?: InputMaybe<Array<Scalars['Long']>>;
 };
 
 export type StudentSessionAttendance = {
