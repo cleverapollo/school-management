@@ -94,8 +94,8 @@ export function Header({ isNavExpanded, onOpenNav }: Props) {
         height: HEADER.H_MOBILE,
         zIndex: theme.zIndex.appBar + 1,
         backgroundColor: theme.isLight
-          ? alpha(theme.palette.background.neutral, 0.72)
-          : theme.palette.background.neutral,
+          ? alpha(theme.palette.slate[100], 0.72)
+          : theme.palette.slate[100],
         backdropFilter: 'blur(10px)',
         transition: theme.transitions.create(['height'], {
           duration: theme.transitions.duration.shorter,

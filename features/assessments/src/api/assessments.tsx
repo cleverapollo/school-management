@@ -1,12 +1,16 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import {
   AssessmentFilter,
   EmulateHeaders,
   gqlClient,
   graphql,
+  PublishAssessmentInput,
   queryClient,
+  UseQueryReturnType,
 } from '@tyro/api';
+import { useToast } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 import { assessmentsKeys } from './keys';
 
 const assessmentsList = graphql(/* GraphQL */ `
@@ -21,6 +25,7 @@ const assessmentsList = graphql(/* GraphQL */ `
         name
       }
       publish
+      publishedFrom
       startDate
       endDate
       createdBy {
@@ -64,9 +69,6 @@ const assessment = graphql(/* GraphQL */ `
         commentBankId
         commentBankName
       }
-      capturePrincipalComment
-      captureYearHeadComment
-      captureHouseMasterComment
       publish
       publishLearner
       extraFields {
@@ -94,6 +96,41 @@ const assessment = graphql(/* GraphQL */ `
       startDate
       endDate
       captureTutorComment
+      capturePrincipalComment
+      captureYearHeadComment
+      captureHouseMasterComment
+      tutorCommentType
+      tutorCommentBank {
+        commentBankId
+        commentBankName
+      }
+      tutorCommentLength
+      yearHeadCommentType
+      yearHeadCommentBank {
+        commentBankId
+        commentBankName
+      }
+      yearHeadCommentLength
+      principalCommentType
+      principalCommentBank {
+        commentBankId
+        commentBankName
+      }
+      principalCommentLength
+      housemasterCommentType
+      housemasterCommentBank {
+        commentBankId
+        commentBankName
+      }
+      housemasterCommentLength
+    }
+  }
+`);
+
+const publishAssessment = graphql(/* GraphQL */ `
+  mutation assessment_publish($input: PublishAssessmentInput) {
+    assessment_publish(input: $input) {
+      success
     }
   }
 `);
@@ -162,3 +199,27 @@ export function useAssessmentById(filter: AssessmentByIdFilter) {
         : null,
   });
 }
+
+export function usePublishAssessment() {
+  const { toast } = useToast();
+  const { t } = useTranslation(['common']);
+
+  return useMutation({
+    mutationFn: (input: PublishAssessmentInput) =>
+      gqlClient.request(publishAssessment, { input }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(assessmentsKeys.all);
+    },
+    onError: () => {
+      toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
+    },
+  });
+}
+
+export type ReturnTypeFromUseAssessmentById = UseQueryReturnType<
+  typeof useAssessmentById
+>;
+
+export type ReturnTypeFromUseAssessments = UseQueryReturnType<
+  typeof useAssessments
+>[number];

@@ -3,6 +3,8 @@ import {
   AssessmentResultFilter,
   CalculateGradeFilter,
   CommentBankFilter,
+  DashboardAssessmentFilter,
+  StudentResultFilter,
 } from '@tyro/api';
 
 export const assessmentsKeys = {
@@ -19,8 +21,18 @@ export const assessmentsKeys = {
   commentBanks: () => [...assessmentsKeys.all, 'commentBanks'] as const,
   commentBanksWithComments: (filter: CommentBankFilter) =>
     [...assessmentsKeys.commentBanks(), filter] as const,
-  studentAssessments: (studentId: number) => [
+  studentDashboardAssessments: (filter: DashboardAssessmentFilter) => [
     ...assessmentsKeys.all,
-    studentId,
+    'dashboard',
+    filter,
+  ],
+  assessmentResultsForStudent: (
+    academicNamespaceId: number,
+    filter: StudentResultFilter
+  ) => [
+    ...assessmentsKeys.all,
+    'assessmentResultsForStudent',
+    academicNamespaceId,
+    filter,
   ],
 };
