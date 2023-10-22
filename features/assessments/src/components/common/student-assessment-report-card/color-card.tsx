@@ -34,7 +34,6 @@ export function ColorCard({ color, text, isMobile = false }: ColorCardProps) {
       <Typography
         component="span"
         variant="subtitle2"
-        noWrap
         sx={{ flex: 1, fontSize: isMobile ? '0.75rem' : undefined }}
       >
         {text ?? '-'}
