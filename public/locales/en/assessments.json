@@ -54,9 +54,9 @@
     "extraFieldName": "Type a name",
     "extraFieldValue": "Type a value"
   },
-  "noActiveCommentsInCommentBank": "You use comment bank comments at this time. There are no active comments in the selected comment bank.",
   "noAssessmentsAvailable": "No assessments available",
   "noAssessmentsFound": "No assessments found",
+  "noActiveCommentsInCommentBank": "No active comments available to select. Contact school administration.",
   "extraFieldNo": "No.",
   "extraFieldName": "Field name",
   "extraFieldType": "Type",

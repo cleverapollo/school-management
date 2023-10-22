@@ -2,23 +2,15 @@ import { Box, TextField, TextFieldProps, Typography } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { RHFTextFieldProps } from '@tyro/core';
 import { FieldValues, useController } from 'react-hook-form';
-import { forwardRef, useMemo } from 'react';
-import { BYTE_SIZE_PER_SMS, getByteSize } from '../../utils/byte-size';
+import { forwardRef } from 'react';
+import { analyzeSmsTextString } from '../../utils/analyze-sms-text-string';
 
 export const SmsMessageField = forwardRef<JSX.Element, TextFieldProps>(
   (props, ref) => {
     const { value, helperText, InputProps } = props;
     const { t } = useTranslation(['sms']);
 
-    const textCountObject = useMemo(() => {
-      const messageByteSize = getByteSize(value);
-
-      return {
-        numberOfSms: Math.ceil(messageByteSize / BYTE_SIZE_PER_SMS),
-        byteSize: messageByteSize,
-        byteSizePerSms: BYTE_SIZE_PER_SMS,
-      };
-    }, [value]);
+    const textCountObject = analyzeSmsTextString(value as string | undefined);
 
     return (
       <Box position="relative">
@@ -46,7 +38,7 @@ export const SmsMessageField = forwardRef<JSX.Element, TextFieldProps>(
             color: 'text.secondary',
           }}
         >
-          {t('sms:numberOfCharactersWithByteSizePerSms', textCountObject)}
+          {t('sms:numberOfCharactersWithCharLimitPerSms', textCountObject)}
         </Typography>
       </Box>
     );
