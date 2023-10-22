@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import {
   Assessment_AssessmentResultQuery,
+  Assessment_StudentResultQuery,
   EmulateHeaders,
   gqlClient,
   graphql,
@@ -119,28 +120,15 @@ export function useStudentAssessmentResults(
   filter: StudentResultFilter | null
 ) {
   return useQuery({
-    ...studentAssessmentResultsQuery(academicNamespaceId, filter ?? {}),
-    enabled: !!filter,
-    select: useCallback(
-      ({ assessment_assessmentResult }: Assessment_AssessmentResultQuery) =>
-        assessment_assessmentResult?.map((result) => {
-          const extraFields =
-            result?.extraFields?.reduce((acc, extraField) => {
-              acc[extraField.assessmentExtraFieldId] = extraField;
-              return acc;
-            }, {} as Record<number, NonNullable<(typeof result)['extraFields']>[number]>) ??
-            {};
-
-          return {
-            ...result,
-            extraFields,
-          };
-        }),
-      []
+    ...studentAssessmentResultsQuery(
+      academicNamespaceId,
+      filter ?? { assessmentId: 0 }
     ),
+    enabled: !!filter,
+    select: ({ assessment_studentResult }) => assessment_studentResult,
   });
 }
 
-export type ReturnTypeFromUseAssessmentResults = UseQueryReturnType<
+export type ReturnTypeFromUseStudentAssessmentResults = UseQueryReturnType<
   typeof useStudentAssessmentResults
->[number];
+>;

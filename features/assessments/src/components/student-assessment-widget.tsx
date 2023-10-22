@@ -32,7 +32,7 @@ export function StudentAssessmentWidget({
   const { t } = useTranslation(['common', 'assessments']);
   const [assessmentIndex, setAssessmentIndex] = useState(0);
   const { data } = useStudentDashboardAssessments(
-    { studentPartyId: studentId },
+    { studentPartyId: studentId ?? 0, published: true },
     !!studentId
   );
 

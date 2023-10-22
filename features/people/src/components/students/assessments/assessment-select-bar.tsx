@@ -1,9 +1,10 @@
 import { Dispatch, SetStateAction, useEffect } from 'react';
-import { Stack } from '@mui/material';
+import { Stack, Button, Fade, useMediaQuery } from '@mui/material';
 import { Autocomplete } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import {
   ReturnTypeFromUseStudentDashboardAssessments,
+  useStudentAssessmentReportCardSettings,
   useStudentDashboardAssessments,
 } from '@tyro/assessments';
 
@@ -23,9 +24,14 @@ export function AssessmentSelectBar({
   setSelectedAssessment,
 }: AssessmentSelectBarProps) {
   const { t } = useTranslation(['assessments']);
+  const wrapItems = useMediaQuery('(max-width: 440px)');
+  const { isMobile, isMobileCommentsShowing, toggleIsMobileCommentsShowing } =
+    useStudentAssessmentReportCardSettings();
+
   const { data: studentAssessments = [] } = useStudentDashboardAssessments(
     {
       studentPartyId: studentId ?? 0,
+      published: true,
     },
     !!studentId
   );
@@ -37,7 +43,15 @@ export function AssessmentSelectBar({
   }, [studentAssessments]);
 
   return (
-    <Stack direction="row">
+    <Stack
+      direction={wrapItems ? 'column' : 'row'}
+      spacing={wrapItems ? 1 : 0}
+      sx={
+        wrapItems
+          ? { justifyContent: 'flex-start', alignItems: 'flex-start' }
+          : { justifyContent: 'space-between', alignItems: 'center' }
+      }
+    >
       <Autocomplete
         label={t('assessments:assessment')}
         value={selectedAssessment}
@@ -52,6 +66,7 @@ export function AssessmentSelectBar({
           setSelectedAssessment(extractedValue);
         }}
         fullWidth
+        disableClearable
         inputProps={{
           variant: 'white-filled',
         }}
@@ -61,9 +76,16 @@ export function AssessmentSelectBar({
             : t('assessments:noAssessmentsAvailable')
         }
         sx={{
-          maxWidth: 300,
+          maxWidth: wrapItems ? undefined : 300,
         }}
       />
+      <Fade in={isMobile} unmountOnExit>
+        <Button variant="text" onClick={toggleIsMobileCommentsShowing}>
+          {isMobileCommentsShowing
+            ? t('assessments:hideComments')
+            : t('assessments:showComments')}
+        </Button>
+      </Fade>
     </Stack>
   );
 }

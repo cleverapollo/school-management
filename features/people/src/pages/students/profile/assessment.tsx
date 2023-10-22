@@ -34,7 +34,6 @@ export default function StudentProfileAssessmentPage() {
             }
             studentPartyId={Number(studentId)}
             assessmentId={selectedAssessment?.id ?? 0}
-            tableData={selectedAssessment ?? null}
           />
         )}
       </Stack>

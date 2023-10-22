@@ -7,7 +7,10 @@ import {
 } from '@tyro/core';
 import { UserGroupIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
-import { getStudentDashboardAssessments } from '@tyro/assessments';
+import {
+  getStudentDashboardAssessments,
+  getStudentAssessmentResults,
+} from '@tyro/assessments';
 import {
   getPartyTimetable,
   getTimetableInfo,
@@ -205,6 +208,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                     getStudentsContacts(studentId),
                     getStudentDashboardAssessments({
                       studentPartyId: studentId,
+                      published: true,
                     }),
                     getPartyTimetable({
                       resources: {
@@ -267,6 +271,32 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'assessment',
                 element: <StudentProfileAssessmentPage />,
+                loader: async ({ params }) => {
+                  const studentId = getNumber(params.id);
+                  const { activeAcademicNamespace } =
+                    await getAcademicNamespace();
+
+                  if (!studentId) {
+                    throw404Error();
+                  }
+
+                  const assessments = await getStudentDashboardAssessments({
+                    studentPartyId: studentId,
+                    published: true,
+                  });
+
+                  if (activeAcademicNamespace && assessments?.length) {
+                    return getStudentAssessmentResults(
+                      activeAcademicNamespace.academicNamespaceId,
+                      {
+                        studentPartyIds: [studentId],
+                        assessmentId: assessments[0].id,
+                      }
+                    );
+                  }
+
+                  return assessments;
+                },
               },
               {
                 type: NavObjectType.NonMenuLink,

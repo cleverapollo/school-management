@@ -3,6 +3,7 @@ export {
   getStudentDashboardAssessments,
   useStudentDashboardAssessments,
 } from './api/student-dashboard-assessment';
+export { getStudentAssessmentResults } from './api/term-assessments/student-results';
 export type { ReturnTypeFromUseStudentDashboardAssessments } from './api/student-dashboard-assessment';
 export * from './components/common/student-assessment-report-card';
 export * from './routes';
