@@ -166,17 +166,17 @@ export function ReportCardResultTable({ results }: ReportCardResultTableProps) {
       <Table
         size="small"
         sx={({ palette }) => ({
-          '& th': {
-            background: 'transparent',
-            color: 'text.secondary',
-            fontWeight: 600,
-            borderTop: 'none',
-          },
           '& th, & td': {
             border: `1px solid ${palette.divider}`,
             px: 2,
             py: 1.25,
             verticalAlign: 'middle',
+          },
+          '& th': {
+            background: 'transparent',
+            color: 'text.secondary',
+            fontWeight: 600,
+            borderTop: 'none',
           },
           '& th:first-of-type, & td:first-of-type': {
             borderLeft: 'none',
@@ -189,6 +189,9 @@ export function ReportCardResultTable({ results }: ReportCardResultTableProps) {
               textAlign: 'center',
               width: 100,
             },
+          '& tr:last-of-type td': {
+            borderBottom: 'none',
+          },
         })}
       >
         <TableHead>
