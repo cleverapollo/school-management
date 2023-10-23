@@ -6,7 +6,6 @@ import { LoadingButton } from '@mui/lab';
 import { useFormValidator } from '@tyro/core';
 import { useMemo } from 'react';
 import {
-  Reporting_TableFilterInput,
   Reporting_TableFilter,
   Reporting_TableFilterType,
   Reporting_TableFilterValues,
@@ -17,12 +16,12 @@ import { DynamicControl } from './control';
 type DynamicFormProps = {
   isFetching: boolean;
   filters: Reporting_TableFilter[];
-  onFilterChange: (filters: Reporting_TableFilterInput[]) => void;
+  onFilterChange: (filters: Reporting_TableFilter[]) => void;
 };
 
 type FormState = { [id: Reporting_TableFilter['id']]: any };
 
-export const getValueFormat = (
+const getValueFormat = (
   formValue: any,
   inputType: Reporting_TableFilterType
 ) => {
@@ -98,12 +97,10 @@ export const DynamicForm = ({
 
   const onSubmit = handleSubmit((formData) => {
     onFilterChange(
-      filters
-        .filter((filter) => formData[filter.id])
-        .map<Reporting_TableFilterInput>((filter) => ({
-          filterId: filter.id,
-          filterValue: getValueFormat(formData[filter.id], filter.inputType),
-        }))
+      filters.map<Reporting_TableFilter>((filter) => ({
+        ...filter,
+        defaultValue: getValueFormat(formData[filter.id], filter.inputType),
+      }))
     );
   });
 
