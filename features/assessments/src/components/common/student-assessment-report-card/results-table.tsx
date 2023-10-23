@@ -171,27 +171,24 @@ export function ReportCardResultTable({
                   isMobile
                   text={studentResult?.teacherComment?.comment ?? '-'}
                 />
-                {extraFields?.map((extraField) => {
-                  const extraFieldResult = studentResult.extraFields?.find(
-                    ({ assessmentExtraFieldId }) =>
-                      assessmentExtraFieldId === extraField.id
-                  );
-
-                  return (
-                    <ColorCard
-                      key={extraField.id}
-                      isMobile
-                      text={
-                        <>
-                          <strong>{extraField.name}</strong>
-                          <Box component="span" fontWeight="400">
-                            : {extraFieldResult?.result ?? '-'}
-                          </Box>
-                        </>
-                      }
-                    />
-                  );
-                })}
+                {studentResult.extraFields?.map((extraField) => (
+                  <ColorCard
+                    key={extraField.id}
+                    isMobile
+                    text={
+                      <>
+                        <strong>
+                          {extraFieldNames.get(
+                            extraField.assessmentExtraFieldId
+                          )}
+                        </strong>
+                        <Box component="span" fontWeight="400">
+                          : {extraField?.result ?? '-'}
+                        </Box>
+                      </>
+                    }
+                  />
+                ))}
               </Stack>
             </Collapse>
           </Stack>
