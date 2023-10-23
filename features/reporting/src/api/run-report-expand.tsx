@@ -23,6 +23,7 @@ const reportExpand = graphql(/* GraphQL */ `
 
 const reportExpandQuery = (filter: Reporting_ReportFilterExpand) => ({
   queryKey: reportsKeys.reportExpand(filter),
+  staleTime: 0,
   queryFn: async () => gqlClient.request(reportExpand, { filter }),
 });
 

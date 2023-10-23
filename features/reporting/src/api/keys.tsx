@@ -1,6 +1,7 @@
 import {
   Reporting_ReportFilter,
   Reporting_ReportFilterExpand,
+  AwolFilter,
 } from '@tyro/api';
 
 export type InnerReportFilter = {
@@ -14,4 +15,6 @@ export const reportsKeys = {
     [...reportsKeys.all, 'report', filter] as const,
   reportExpand: (filter: Reporting_ReportFilterExpand) =>
     [...reportsKeys.all, 'reportExpand', filter] as const,
+  awolReport: (filter: AwolFilter) =>
+    [...reportsKeys.all, 'awolReport', filter] as const,
 };
