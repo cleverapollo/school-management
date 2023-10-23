@@ -70,6 +70,12 @@ declare module '@mui/material/Button' {
   }
 }
 
+declare module '@mui/material/Paper' {
+  interface PaperPropsVariantOverrides {
+    soft: true;
+  }
+}
+
 declare module '@mui/material/Chip' {
   interface ChipPropsVariantOverrides {
     soft: true;

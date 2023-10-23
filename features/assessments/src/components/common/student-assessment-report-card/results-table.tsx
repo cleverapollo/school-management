@@ -10,15 +10,18 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import { useMemo } from 'react';
 import { useTranslation } from '@tyro/i18n';
 import { TableStudyLevelChip } from '@tyro/core';
 import { StudyLevel } from '@tyro/api';
 import { ReturnTypeFromUseStudentAssessmentResults } from '../../../api/term-assessments/student-results';
 import { useStudentAssessmentReportCardSettings } from './settings';
 import { ColorCard } from './color-card';
+import { ReturnTypeFromUseAssessmentExtraFieldsById } from '../../../api/assessments';
 
 interface ReportCardResultTableProps {
   results: ReturnTypeFromUseStudentAssessmentResults;
+  extraFields: ReturnTypeFromUseAssessmentExtraFieldsById;
 }
 
 type GridRowProps = {
@@ -36,17 +39,18 @@ function getRowDetailsFromResult(
   result: ReturnTypeFromUseStudentAssessmentResults[number]
 ) {
   const { staff, subjects } = result.subjectGroup;
-  const mainTeacher = staff?.length > 0 ? staff[0] : null;
-  const teacherName = mainTeacher
-    ? `${mainTeacher?.firstName ? mainTeacher?.firstName[0] : ''}. ${
-        mainTeacher?.lastName ?? ''
-      }`
-    : '-';
+  const teacherNames =
+    staff
+      ?.map(
+        ({ firstName, lastName }) =>
+          `${firstName ? firstName[0] : ''}. ${lastName ?? ''}`
+      )
+      .join(', ') ?? '-';
   const subject = subjects.length > 0 ? subjects[0] : null;
 
   return {
     subject,
-    teacherName,
+    teacherNames,
     result: result.result,
     grade: result.gradeResult,
     studyLevel: result.studentStudyLevel ?? StudyLevel.NotApplicable,
@@ -90,7 +94,10 @@ function GridRow({ rowType = 'body', columns }: GridRowProps) {
   );
 }
 
-export function ReportCardResultTable({ results }: ReportCardResultTableProps) {
+export function ReportCardResultTable({
+  results,
+  extraFields,
+}: ReportCardResultTableProps) {
   const { t } = useTranslation(['common']);
   const { isMobile, isMobileCommentsShowing } =
     useStudentAssessmentReportCardSettings();
@@ -102,6 +109,15 @@ export function ReportCardResultTable({ results }: ReportCardResultTableProps) {
     t('common:grade'),
     t('common:teacher'),
   ];
+
+  const extraFieldNames = useMemo(
+    () =>
+      extraFields.reduce((acc, extraField) => {
+        acc.set(extraField.id, extraField.name);
+        return acc;
+      }, new Map<number, string>()),
+    [extraFields]
+  );
 
   return isMobile ? (
     <Stack role="treegrid" px={1} pt={0.5} pb={1.5} spacing={0.5}>
@@ -116,13 +132,13 @@ export function ReportCardResultTable({ results }: ReportCardResultTableProps) {
               color="text.secondary"
               fontSize="0.75rem"
             >
-              {t('common:subject')}
+              {heading}
             </Typography>
           )) as GridRowProps['columns']
         }
       />
       {results?.map(({ id, ...studentResult }) => {
-        const { subject, teacherName, result, grade, studyLevel } =
+        const { subject, teacherNames, result, grade, studyLevel } =
           getRowDetailsFromResult(studentResult);
 
         return (
@@ -145,16 +161,37 @@ export function ReportCardResultTable({ results }: ReportCardResultTableProps) {
                   {grade ?? '-'}
                 </Typography>,
                 <Typography variant="body2" fontSize="0.75rem">
-                  {teacherName}
+                  {teacherNames}
                 </Typography>,
               ]}
             />
             <Collapse unmountOnExit in={isMobileCommentsShowing}>
-              <Stack px={0.5} pt={0.5}>
+              <Stack px={0.5} pt={0.5} spacing={1}>
                 <ColorCard
                   isMobile
                   text={studentResult?.teacherComment?.comment ?? '-'}
                 />
+                {extraFields?.map((extraField) => {
+                  const extraFieldResult = studentResult.extraFields?.find(
+                    ({ assessmentExtraFieldId }) =>
+                      assessmentExtraFieldId === extraField.id
+                  );
+
+                  return (
+                    <ColorCard
+                      key={extraField.id}
+                      isMobile
+                      text={
+                        <>
+                          <strong>{extraField.name}</strong>
+                          <Box component="span" fontWeight="400">
+                            : {extraFieldResult?.result ?? '-'}
+                          </Box>
+                        </>
+                      }
+                    />
+                  );
+                })}
               </Stack>
             </Collapse>
           </Stack>
@@ -180,6 +217,7 @@ export function ReportCardResultTable({ results }: ReportCardResultTableProps) {
           },
           '& th:first-of-type, & td:first-of-type': {
             borderLeft: 'none',
+            maxWidth: 180,
           },
           '& th:last-of-type, & td:last-of-type': {
             borderRight: 'none',
@@ -202,11 +240,14 @@ export function ReportCardResultTable({ results }: ReportCardResultTableProps) {
             <TableCell>{t('common:grade')}</TableCell>
             <TableCell>{t('common:teacher')}</TableCell>
             <TableCell>{t('common:comment')}</TableCell>
+            {extraFields?.map((extraField) => (
+              <TableCell key={extraField.id}>{extraField.name}</TableCell>
+            ))}
           </TableRow>
         </TableHead>
         <TableBody>
           {results?.map(({ id, ...studentResult }) => {
-            const { subject, teacherName, result, grade, studyLevel } =
+            const { subject, teacherNames, result, grade, studyLevel } =
               getRowDetailsFromResult(studentResult);
             return (
               <TableRow
@@ -222,10 +263,22 @@ export function ReportCardResultTable({ results }: ReportCardResultTableProps) {
                   {typeof result === 'number' ? `${result}%` : '-'}
                 </TableCell>
                 <TableCell>{grade ?? '-'}</TableCell>
-                <TableCell>{teacherName}</TableCell>
+                <TableCell>{teacherNames}</TableCell>
                 <TableCell sx={{ minWidth: 200 }}>
                   {studentResult?.teacherComment?.comment ?? '-'}
                 </TableCell>
+                {extraFields?.map((extraField) => {
+                  const extraFieldResult = studentResult.extraFields?.find(
+                    ({ assessmentExtraFieldId }) =>
+                      assessmentExtraFieldId === extraField.id
+                  );
+
+                  return (
+                    <TableCell key={extraField.id}>
+                      {extraFieldResult?.result ?? '-'}
+                    </TableCell>
+                  );
+                })}
               </TableRow>
             );
           })}

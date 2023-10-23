@@ -1,15 +1,14 @@
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { Stack, Button, Fade, useMediaQuery } from '@mui/material';
 import { Autocomplete } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import {
   ReturnTypeFromUseStudentDashboardAssessments,
   useStudentAssessmentReportCardSettings,
-  useStudentDashboardAssessments,
 } from '@tyro/assessments';
 
 interface AssessmentSelectBarProps {
-  studentId: number | undefined;
+  studentAssessments: ReturnTypeFromUseStudentDashboardAssessments;
   selectedAssessment:
     | ReturnTypeFromUseStudentDashboardAssessments[number]
     | null;
@@ -19,7 +18,7 @@ interface AssessmentSelectBarProps {
 }
 
 export function AssessmentSelectBar({
-  studentId,
+  studentAssessments,
   selectedAssessment,
   setSelectedAssessment,
 }: AssessmentSelectBarProps) {
@@ -27,20 +26,6 @@ export function AssessmentSelectBar({
   const wrapItems = useMediaQuery('(max-width: 440px)');
   const { isMobile, isMobileCommentsShowing, toggleIsMobileCommentsShowing } =
     useStudentAssessmentReportCardSettings();
-
-  const { data: studentAssessments = [] } = useStudentDashboardAssessments(
-    {
-      studentPartyId: studentId ?? 0,
-      published: true,
-    },
-    !!studentId
-  );
-
-  useEffect(() => {
-    if (studentAssessments.length && !selectedAssessment) {
-      setSelectedAssessment(studentAssessments[0]);
-    }
-  }, [studentAssessments]);
 
   return (
     <Stack
