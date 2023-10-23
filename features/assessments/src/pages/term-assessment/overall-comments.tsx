@@ -40,11 +40,6 @@ export default function OverallCommentsTermAssessmentPage() {
     }
   }, [assessmentData?.years]);
 
-  console.log({
-    assessmentData,
-    selectedYearGroup,
-  });
-
   return (
     <PageContainer title={titleName}>
       <PageHeading

@@ -24,11 +24,8 @@ export function StudentSelectorForOverallComments({
       <CardHeader component="h3" title={header} />
       {students.map((student) => (
         <ButtonBase
-          onClick={() =>
-            console.log({
-              student,
-            })
-          }
+          key={student.partyId}
+          onClick={() => {}}
           TouchRippleProps={{}}
           color="primary"
         >

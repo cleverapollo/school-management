@@ -326,9 +326,8 @@ export function TermAssessmentForm({
               ]);
 
               return (
-                <Stack>
+                <Stack key={name}>
                   <RHFSwitch<FormValues>
-                    key={name}
                     label={label}
                     switchProps={{ color: 'success' }}
                     controlProps={{ name, control }}
