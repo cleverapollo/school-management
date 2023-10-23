@@ -1,5 +1,6 @@
 import { gqlClient, graphql, queryClient, UseQueryReturnType } from '@tyro/api';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from '@tyro/i18n';
 import { reportsKeys } from './keys';
 
 const reportsList = graphql(/* GraphQL */ `
@@ -27,9 +28,21 @@ export function getReportsList() {
 }
 
 export function useReportsList() {
+  const { t } = useTranslation(['reports']);
+
   return useQuery({
     ...reportsListQuery(),
-    select: ({ reporting_reports }) => reporting_reports,
+    select: ({ reporting_reports }) => [
+      ...reporting_reports.map((report) => ({
+        ...report,
+        url: `${report.info.id}/${report?.reports?.[0]?.id}`,
+      })),
+      {
+        info: { id: 'awol-students', name: t('reports:awolStudents') },
+        reports: [{ id: 'awol-students', name: t('reports:awolStudents') }],
+        url: 'awol-students',
+      },
+    ],
   });
 }
 

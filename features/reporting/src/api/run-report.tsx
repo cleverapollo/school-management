@@ -41,6 +41,7 @@ const reportsRun = graphql(/* GraphQL */ `
 
 const runReportsQuery = ({ topReportId, filter }: InnerReportFilter) => ({
   queryKey: reportsKeys.report({ topReportId, filter }),
+  staleTime: 0,
   queryFn: async () => gqlClient.request(reportsRun, { filter }),
 });
 
