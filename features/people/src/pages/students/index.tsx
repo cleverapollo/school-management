@@ -16,6 +16,7 @@ import set from 'lodash/set';
 import { MobileIcon, CalendarEditPenIcon } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { getPersonProfileLink, SmsRecipientType } from '@tyro/api';
+import dayjs from 'dayjs';
 import {
   useBulkUpdateCoreStudent,
   ReturnTypeFromUseStudents,
@@ -134,6 +135,15 @@ const getStudentColumns = (
       set(data ?? {}, 'personalInformation.primaryEmail.email', newValue);
       return true;
     },
+  },
+  {
+    field: 'personalInformation.dateOfBirth',
+    headerName: translate('people:dateOfBirth'),
+    hide: true,
+    valueGetter: ({ data }) =>
+      data?.personalInformation?.dateOfBirth
+        ? dayjs(data.personalInformation.dateOfBirth).format('L')
+        : undefined,
   },
   {
     field: 'studentIrePP.previousSchoolName',
