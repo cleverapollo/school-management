@@ -63,7 +63,8 @@
       "userAccess": "User access",
       "permissions": "Permissions",
       "noteLabels": "Note labels",
-      "behaviourLabels": "Behaviour settings"
+      "behaviourLabels": "Behaviour settings",
+      "commentBanks": "Comment banks"
     },
     "timetable": {
       "title": "Timetable",
