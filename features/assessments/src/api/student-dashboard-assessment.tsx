@@ -40,7 +40,7 @@ const studentDashboardAssessmentsQuery = (
       });
 
     return assessmentDashboardAssessment?.sort(
-      (a, b) => dayjs(a.startDate).unix() - dayjs(b.startDate).unix()
+      (a, b) => dayjs(b.startDate).unix() - dayjs(a.startDate).unix()
     );
   },
 });
