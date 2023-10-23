@@ -1,6 +1,7 @@
 import { Box, Card } from '@mui/material';
 import { LoadingPlaceholderContainer } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
+import { useAssessmentExtraFieldsById } from '../../../api/assessments';
 import { useStudentAssessmentResults } from '../../../api/term-assessments/student-results';
 import { useStudentAssessmentReportCardSettings } from './settings';
 import { ReportCardResultTable } from './results-table';
@@ -36,22 +37,33 @@ export function StudentAssessmentReportCard({
   assessmentId,
 }: StudentAssessmentReportCardProps) {
   const { tableContainerRef } = useStudentAssessmentReportCardSettings();
-  const { data: studentResults, isLoading } = useStudentAssessmentResults(
-    academicNamespaceId,
-    academicNamespaceId && studentPartyId && assessmentId
-      ? {
-          studentPartyIds: [studentPartyId],
-          assessmentId,
-        }
-      : null
-  );
+  const { data: studentResults, isLoading: isResultsLoading } =
+    useStudentAssessmentResults(
+      academicNamespaceId,
+      academicNamespaceId && studentPartyId && assessmentId
+        ? {
+            studentPartyIds: [studentPartyId],
+            assessmentId,
+          }
+        : null
+    );
+  const { data: extraFields, isLoading: isExtrafieldsLoading } =
+    useAssessmentExtraFieldsById({
+      academicNameSpaceId: academicNamespaceId,
+      ids: [assessmentId],
+    });
+
+  const isLoading = isResultsLoading || isExtrafieldsLoading;
 
   return (
-    <Card sx={{ backgroundColor: 'slate.50', p: 1.5, borderRadius: 3.5 }}>
+    <Card variant="soft">
       <Card ref={tableContainerRef} sx={{ minHeight: 300 }}>
         <LoadingPlaceholderContainer isLoading={isLoading}>
           {studentResults?.length ? (
-            <ReportCardResultTable results={studentResults} />
+            <ReportCardResultTable
+              results={studentResults}
+              extraFields={extraFields ?? []}
+            />
           ) : (
             <EmptyResultsMessage />
           )}

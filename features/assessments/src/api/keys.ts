@@ -11,6 +11,8 @@ export const assessmentsKeys = {
   all: ['assessments'] as const,
   assessments: (filter: AssessmentFilter) =>
     [...assessmentsKeys.all, filter] as const,
+  assessmentsExtraFields: (filter: AssessmentFilter) =>
+    [...assessmentsKeys.all, 'extraFields', filter] as const,
   resultsBySubjectGroup: (
     academicNamespaceId: number,
     filter: AssessmentResultFilter

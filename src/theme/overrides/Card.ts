@@ -21,6 +21,14 @@ export default function Card(theme: Theme) {
             boxShadow: 'none',
           },
         },
+        {
+          props: { variant: 'soft' },
+          style: {
+            backgroundColor: 'slate.50',
+            padding: theme.spacing(1.5),
+            borderRadius: theme.spacing(3.5),
+          },
+        },
       ],
     },
     MuiCardHeader: {

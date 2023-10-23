@@ -1,8 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useCallback } from 'react';
 import {
-  Assessment_AssessmentResultQuery,
-  Assessment_StudentResultQuery,
   EmulateHeaders,
   gqlClient,
   graphql,
@@ -57,6 +54,7 @@ const studentResults = graphql(/* GraphQL */ `
         subjects {
           name
           colour
+          nationalCode
         }
       }
       studentStudyLevel
@@ -125,7 +123,22 @@ export function useStudentAssessmentResults(
       filter ?? { assessmentId: 0 }
     ),
     enabled: !!filter,
-    select: ({ assessment_studentResult }) => assessment_studentResult,
+    select: ({ assessment_studentResult }) =>
+      assessment_studentResult.sort((resultA, resultB) => {
+        const nationalCodeA =
+          resultA.subjectGroup?.subjects?.[0]?.nationalCode ?? '';
+        const nationalCodeB =
+          resultB.subjectGroup?.subjects?.[0]?.nationalCode ?? '';
+
+        if (
+          !Number.isNaN(Number(nationalCodeA)) &&
+          !Number.isNaN(Number(nationalCodeB))
+        ) {
+          return Number(nationalCodeA) - Number(nationalCodeB);
+        }
+
+        return nationalCodeA.localeCompare(nationalCodeB);
+      }),
   });
 }
 
