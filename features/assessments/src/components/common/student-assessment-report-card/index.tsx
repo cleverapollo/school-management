@@ -14,28 +14,12 @@ interface StudentAssessmentReportCardProps {
   assessmentId: number;
 }
 
-const EmptyResultsMessage = () => {
-  const { t } = useTranslation(['common']);
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100%',
-        width: '100%',
-      }}
-    >
-      {t('common:noResultsFound')}
-    </Box>
-  );
-};
-
 export function StudentAssessmentReportCard({
   academicNamespaceId,
   studentPartyId,
   assessmentId,
 }: StudentAssessmentReportCardProps) {
+  const { t } = useTranslation(['common']);
   const { tableContainerRef } = useStudentAssessmentReportCardSettings();
   const { data: studentResults, isLoading: isResultsLoading } =
     useStudentAssessmentResults(
@@ -65,7 +49,18 @@ export function StudentAssessmentReportCard({
               extraFields={extraFields ?? []}
             />
           ) : (
-            <EmptyResultsMessage />
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+                width: '100%',
+                position: 'absolute',
+              }}
+            >
+              {t('common:noResultsFound')}
+            </Box>
           )}
         </LoadingPlaceholderContainer>
       </Card>
