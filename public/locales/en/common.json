@@ -279,6 +279,7 @@
   "dayOfWeek": "Day of week",
   "hours": "Hours",
   "minutes": "Minutes",
+  "fromDate": "From {{date}}",
   "dayOfWeekValues": {
     "MONDAY": "Monday",
     "TUESDAY": "Tuesday",

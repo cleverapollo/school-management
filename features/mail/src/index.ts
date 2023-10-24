@@ -1,3 +1,3 @@
 export * from './routes';
 export * from './components/common/mail-count-label';
-export { MailSettingsProvider } from './store/mail-settings';
+export { MailSettingsProvider, useMailSettings } from './store/mail-settings';

@@ -30,6 +30,7 @@ const students = graphql(/* GraphQL */ `
       }
       personalInformation {
         preferredFirstName
+        dateOfBirth
         primaryPhoneNumber {
           number
         }

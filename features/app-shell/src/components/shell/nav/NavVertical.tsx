@@ -84,6 +84,7 @@ export default function NavVertical({
             sx: {
               width: NAV.W_DASHBOARD,
               borderRightStyle: 'solid',
+              backgroundColor: 'slate.50',
             },
           }}
         >

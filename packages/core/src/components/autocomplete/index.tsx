@@ -25,10 +25,7 @@ type TextfieldCustomProps = Omit<
 export type AutocompleteProps<
   T extends object | string,
   FreeSolo extends boolean | undefined = false
-> = Omit<
-  MiAutocompleteProps<T, boolean, undefined, FreeSolo>,
-  'renderInput'
-> & {
+> = Omit<MiAutocompleteProps<T, boolean, boolean, FreeSolo>, 'renderInput'> & {
   label?: TextFieldProps['label'];
   placeholder?: TextFieldProps['placeholder'];
   inputProps?: TextfieldCustomProps;

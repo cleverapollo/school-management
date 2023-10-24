@@ -68,6 +68,7 @@ export default function MailCompose({
     defaultValues: {
       toRecipients: [],
       bccRecipients: [],
+      canReply: true,
       ...defaultValues,
     },
     resolver: resolver({
@@ -82,11 +83,10 @@ export default function MailCompose({
     }),
   });
   const {
-    field: { onChange: onChangeCanReply },
+    field: { value: canReplyValue, onChange: onChangeCanReply },
   } = useController({
     name: 'canReply',
     control,
-    defaultValue: true,
   });
 
   const { mutateAsync: sendMail, isLoading: isSending } = useSendMail();
@@ -121,6 +121,9 @@ export default function MailCompose({
 
   useEffect(() => {
     if (defaultValues) {
+      if (defaultValues.bccRecipients?.length) {
+        showBcc();
+      }
       reset(defaultValues);
     }
   }, [defaultValues]);
@@ -251,6 +254,7 @@ export default function MailCompose({
           editor={editor}
           onSend={onSend}
           isSending={isSending}
+          canReplyValue={canReplyValue}
           onCanReplyChange={isStaffUser ? onChangeCanReply : undefined}
         />
       </RootStyle>

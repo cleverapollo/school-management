@@ -76,7 +76,7 @@ const getAboutDataWithLabels = (
       value: lastName,
     },
     {
-      label: t('people:personal.about.dateOfBirth'),
+      label: t('people:dateOfBirth'),
       value: dateOfBirth ? dayjs(dateOfBirth) : null,
       valueRenderer: dateOfBirth ? dayjs(dateOfBirth).format('l') : '-',
     },

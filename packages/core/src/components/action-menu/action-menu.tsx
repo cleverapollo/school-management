@@ -88,24 +88,21 @@ export function ActionMenu({
         }}
         sx={{ mt: 1, ...menuProps?.sx }}
       >
-        {sectionedMenuItems.reduce<React.ReactNode[]>(
-          (acc, section, index, menuSections) => {
-            acc.push(
-              ...getMenuItemList({
-                menuItems: section,
-                permissions,
-                onClose,
-              })
-            );
+        {sectionedMenuItems.reduce<React.ReactNode[]>((acc, section, index) => {
+          const sectionItems = getMenuItemList({
+            menuItems: section,
+            permissions,
+            onClose,
+          });
 
-            if (index + 1 !== menuSections.length) {
-              acc.push(<Divider key={`divider-${index}`} />);
-            }
+          if (index !== 0 && sectionItems.length > 0) {
+            acc.push(<Divider key={`divider-${index}`} />);
+          }
 
-            return acc;
-          },
-          []
-        )}
+          acc.push(...sectionItems);
+
+          return acc;
+        }, [])}
       </Menu>
     </>
   );

@@ -8,6 +8,7 @@ interface MailEditorToolbarProps {
   editor: Editor | null;
   onSend: () => void;
   isSending: boolean;
+  canReplyValue?: boolean;
   onCanReplyChange?: (canReply: boolean) => void;
 }
 
@@ -15,6 +16,7 @@ export function MailEditorToolbar({
   editor,
   onSend,
   isSending,
+  canReplyValue,
   onCanReplyChange,
 }: MailEditorToolbarProps) {
   const { t } = useTranslation(['common', 'mail']);
@@ -45,8 +47,9 @@ export function MailEditorToolbar({
       </Stack>
       {onCanReplyChange && (
         <FormControlLabel
-          control={<Switch defaultChecked />}
+          control={<Switch value={canReplyValue} />}
           label={t('mail:canReply')}
+          checked={canReplyValue}
           onChange={(_e, checked) => onCanReplyChange(checked)}
         />
       )}
