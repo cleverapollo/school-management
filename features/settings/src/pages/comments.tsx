@@ -1,5 +1,6 @@
 import { Button, Box } from '@mui/material';
 import { useTranslation, TFunction } from '@tyro/i18n';
+import { Comment, SaveCommentBankInput } from '@tyro/api';
 import { useMemo } from 'react';
 import {
   BulkEditedRows,
@@ -16,10 +17,7 @@ import {
 import { AddIcon } from '@tyro/icons';
 import set from 'lodash/set';
 import { useParams } from 'react-router-dom';
-import {
-  useCommentBanks,
-  ReturnTypeFromCommentBanks,
-} from '../api/comment-banks/comment-banks';
+import { useCommentBanks } from '../api/comment-banks/comment-banks';
 import {
   useCommentBankById,
   ReturnTypeFromCommentBankById,
@@ -28,9 +26,10 @@ import {
   AddComment,
   AddCommentProps,
 } from '../components/comment-bank/add-comment';
+import { useCreateCommentBank } from '../api/comment-banks/save-comment-bank';
 
 const getCommentsColumns = (
-  t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>
+  t: TFunction<'settings'[], undefined, 'settings'[]>
 ): GridOptions<ReturnTypeFromCommentBankById>['columnDefs'] => [
   {
     headerName: t('settings:commentBanks.comment'),
@@ -42,6 +41,7 @@ const getCommentsColumns = (
       set(data ?? {}, 'comment', newValue);
       return true;
     },
+    sort: 'asc',
   },
   {
     headerName: t('settings:commentBanks.status'),
@@ -56,7 +56,7 @@ const getCommentsColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromCommentBankById, any>) =>
-      data?.active ? 'Active' : 'Archived',
+      data?.active ? t('settings:active') : t('settings:commentBanks.archived'),
     cellEditorSelector: ({ data }) => {
       const options = [
         { label: t('settings:active'), value: true },
@@ -79,12 +79,13 @@ const getCommentsColumns = (
 ];
 
 export default function Comments() {
-  const { t } = useTranslation(['common', 'navigation', 'settings']);
+  const { t } = useTranslation(['settings']);
   const { id } = useParams();
   const idNumber = useNumber(id);
 
   const { data: commentBanks = [] } = useCommentBanks({ ids: [idNumber ?? 0] });
   const { data: comments } = useCommentBankById({ ids: [idNumber ?? 0] });
+  const { mutateAsync: createCommentBank } = useCreateCommentBank();
 
   const {
     value: commentBankComment,
@@ -93,6 +94,8 @@ export default function Comments() {
   } = useDebouncedValue<AddCommentProps['initialModalState']>({
     defaultValue: null,
   });
+
+  const commentBankName = (commentBanks && commentBanks[0]?.name) ?? '';
 
   const handleAddCondition = () => {
     setCommentBankComment({});
@@ -106,13 +109,39 @@ export default function Comments() {
       'id' | 'active' | 'comment'
     >
   ) => {
-    if (commentBanks) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const commentBankData: ReturnTypeFromCommentBanks[] = JSON.parse(
-        JSON.stringify(commentBanks)
-      );
-      // Loop through edited data
-    }
+    const currentCommentBankComments =
+      (commentBanks && commentBanks[0].comments) ?? [];
+
+    const currentCommentBank = commentBanks && commentBanks[0];
+
+    const updatedComments = currentCommentBankComments.reduce(
+      (acc, comment) => {
+        const editedData = data[comment.id.toString()];
+
+        if (editedData && editedData.comment) {
+          comment.comment = editedData.comment.newValue;
+        }
+        if (editedData && editedData.active) {
+          comment.active = editedData.active.newValue;
+        }
+
+        acc.push(comment);
+        return acc;
+      },
+      [] as Comment[]
+    );
+
+    const formattedData: [SaveCommentBankInput] = [
+      {
+        id: currentCommentBank?.id,
+        name: commentBankName,
+        description: currentCommentBank?.description,
+        active: currentCommentBank?.active,
+        comments: updatedComments,
+      },
+    ];
+
+    return createCommentBank(formattedData);
   };
 
   return (
@@ -126,7 +155,7 @@ export default function Comments() {
               href: './..',
             },
             {
-              name: 'Test',
+              name: commentBankName,
             },
           ],
         }}
@@ -147,7 +176,6 @@ export default function Comments() {
         rowData={comments || []}
         columnDefs={getColumns}
         getRowId={({ data }) => String(data?.id)}
-        // @ts-ignore
         onBulkSave={handleBulkSave}
       />
       <AddComment

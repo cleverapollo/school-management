@@ -19,7 +19,6 @@ const commentBanks = graphql(/* GraphQL */ `
         id
         comment
         active
-        externalSystemId
       }
     }
   }

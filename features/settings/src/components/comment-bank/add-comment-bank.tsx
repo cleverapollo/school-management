@@ -45,16 +45,15 @@ export const AddCommentBank = ({
     mode: 'onChange',
   });
 
-  const onSubmit = handleSubmit(({ name, description, ...restData }) => {
-    // console.log(restData, name, description);
-
+  const onSubmit = handleSubmit(({ name, description }) => {
     createCommentBank(
-      {
-        ...restData,
-        name,
-        description,
-        comments: restData?.comments,
-      },
+      [
+        {
+          name,
+          description,
+          comments: [],
+        },
+      ],
       { onSuccess: onClose }
     );
   });

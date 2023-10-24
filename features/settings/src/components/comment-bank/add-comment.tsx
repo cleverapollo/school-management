@@ -12,6 +12,7 @@ import { SaveCommentInput } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
+import { useEffect } from 'react';
 import { useCreateCommentBank } from '../../api/comment-banks/save-comment-bank';
 import { ReturnTypeFromCommentBanks } from '../../api/comment-banks/comment-banks';
 
@@ -47,25 +48,35 @@ export const AddComment = ({
     mode: 'onChange',
   });
 
-  const onSubmit = handleSubmit(({ comment, active, ...restData }) => {
+  const onSubmit = handleSubmit(({ comment, active }) => {
     if (commentBanks && comment) {
       const oldComments = commentBanks[0]?.comments;
       const newComment = {
         comment,
-        active: active === 'Active',
+        active: active === t('settings:active'),
       };
       const updatedComments = [...(oldComments || []), newComment];
-      // console.log(updatedComments, 'updatedComments');
-      // ** ADD THIS WHEN BE SUPPORTS IT **
-      // createCommentBank({
-      //   id: commentBanks[0]?.id,
-      //   name: commentBanks[0]?.name,
-      //   description: commentBanks[0]?.description,
-      //   active: commentBanks[0]?.active,
-      //   comments: updatedComments,
-      // });
+      createCommentBank(
+        [
+          {
+            id: commentBanks[0]?.id,
+            name: commentBanks[0]?.name,
+            description: commentBanks[0]?.description,
+            active: commentBanks[0]?.active,
+            comments: updatedComments,
+          },
+        ],
+        { onSuccess: onClose }
+      );
     }
   });
+
+  useEffect(() => {
+    reset({
+      ...defaultFormStateValues,
+      ...(initialModalState ?? {}),
+    });
+  }, [initialModalState]);
 
   const handleClose = () => {
     onClose();
@@ -113,7 +124,7 @@ export const AddComment = ({
             {t('common:actions.cancel')}
           </Button>
 
-          <LoadingButton type="submit" variant="contained" loading={false}>
+          <LoadingButton type="submit" variant="contained" loading={isLoading}>
             {t('common:actions.save')}
           </LoadingButton>
         </DialogActions>

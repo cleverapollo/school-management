@@ -1,8 +1,7 @@
 import { Button, Box } from '@mui/material';
 import { useTranslation, TFunction } from '@tyro/i18n';
-import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import {
-  ActionMenu,
   GridOptions,
   ICellRendererParams,
   PageContainer,
@@ -15,13 +14,8 @@ import {
   useDebouncedValue,
 } from '@tyro/core';
 import set from 'lodash/set';
-import {
-  AddIcon,
-  EditIcon,
-  ExternalLinkIcon,
-  VerticalDotsIcon,
-} from '@tyro/icons';
-import { SaveCommentBankInput } from '@tyro/api';
+import { AddIcon } from '@tyro/icons';
+import { SaveCommentBankInput, CommentBank } from '@tyro/api';
 import { useCreateCommentBank } from '../api/comment-banks/save-comment-bank';
 import {
   useCommentBanks,
@@ -33,9 +27,6 @@ import {
 } from '../components/comment-bank/add-comment-bank';
 
 const getCommentBankColumns = (
-  onClickEdit: Dispatch<
-    SetStateAction<AddCommentBankProps['initialModalState']>
-  >,
   t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>
 ): GridOptions<ReturnTypeFromCommentBanks>['columnDefs'] => [
   {
@@ -44,7 +35,7 @@ const getCommentBankColumns = (
     editable: true,
     cellEditor: 'agCellEditor',
     cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
-    // valueGetter: ({ data }) => data?.name || '-',
+    valueGetter: ({ data }) => data?.name || '-',
     valueSetter: ({ data, newValue }) => {
       set(data ?? {}, 'name', newValue);
       return true;
@@ -59,7 +50,7 @@ const getCommentBankColumns = (
     editable: true,
     cellEditor: 'agCellEditor',
     cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
-    // valueGetter: ({ data }) => data?.description || '-',
+    valueGetter: ({ data }) => data?.description || '-',
     valueSetter: ({ data, newValue }) => {
       set(data ?? {}, 'description', newValue);
       return true;
@@ -84,33 +75,13 @@ const getCommentBankColumns = (
       <TableBooleanValue value={Boolean(data?.active)} />
     ),
   },
-  {
-    suppressColumnsToolPanel: true,
-    sortable: false,
-    cellClass: 'ag-show-on-row-interaction',
-    cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromCommentBanks>) =>
-      data && (
-        <ActionMenu
-          iconOnly
-          buttonIcon={<VerticalDotsIcon />}
-          menuItems={[
-            {
-              label: t('settings:commentBanks.editCommentBank'),
-              icon: <EditIcon />,
-              // @ts-ignore
-              onClick: () => onClickEdit(data),
-            },
-          ]}
-        />
-      ),
-  },
 ];
 
 export default function CommentBanks() {
   const { t } = useTranslation(['common', 'navigation', 'settings']);
 
   const { data: commentBanks } = useCommentBanks({});
-  const { mutate: createCommentBank, isLoading } = useCreateCommentBank();
+  const { mutateAsync: createCommentBank } = useCreateCommentBank();
 
   const {
     value: commentBank,
@@ -124,10 +95,7 @@ export default function CommentBanks() {
     setCommentBank({});
   };
 
-  const getColumns = useMemo(
-    () => getCommentBankColumns(setCommentBank, t),
-    [setCommentBank, t]
-  );
+  const getColumns = useMemo(() => getCommentBankColumns(t), [t]);
 
   const handleBulkSave = (
     data: BulkEditedRows<
@@ -135,39 +103,34 @@ export default function CommentBanks() {
       'id' | 'name' | 'description' | 'active' | 'comments'
     >
   ) => {
-    Object.keys(data).forEach((idStr) => {
-      const id = Number(idStr);
+    const formattedData = Object.keys(data)
+      .map((idStr) => {
+        const updatedCommentBanks = commentBanks
+          ?.filter(
+            (currentCommentBank) => idStr === currentCommentBank.id.toString()
+          )
+          .reduce((acc, current) => {
+            const editedData = data[current.id.toString()];
 
-      // Find the item from commentBanks using the ID
-      const commentBankItem = commentBanks?.find((item) => item.id === id);
+            if (editedData && editedData.name) {
+              current.name = editedData.name.newValue;
+            }
+            if (editedData && editedData.description) {
+              current.description = editedData.description.newValue;
+            }
+            if (editedData && editedData.active) {
+              current.active = editedData.active.newValue;
+            }
 
-      if (!commentBankItem) {
-        console.error(`Could not find comment bank item id`);
-        return;
-      }
+            acc.push(current);
 
-      // Use the newValue from data if available, otherwise use the original value from commentBankItem
-      // const updatedItem = {
-      //   id: commentBankItem.id,
-      //   name: commentBankItem.name, // Assuming name cannot be edited in bulk
-      //   description: commentBankItem.description,
-      //   comments: commentBankItem.comments,
-      //   active: commentBankItem.active,
-      // };
+            return acc;
+          }, [] as CommentBank[]);
 
-      // Check if name and comments are defined before calling the mutation
-      if (commentBankItem.name && commentBankItem.comments) {
-        createCommentBank({
-          id: commentBankItem.id,
-          name: commentBankItem.name,
-          description: commentBankItem.description,
-          comments: commentBankItem.comments,
-          active: commentBankItem.active,
-        });
-      } else {
-        console.log(commentBankItem, 'TESTING - commentBankItem else');
-      }
-    });
+        return updatedCommentBanks;
+      })
+      .flatMap((updatedData) => updatedData);
+    return createCommentBank(formattedData as [SaveCommentBankInput]);
   };
 
   return (
@@ -191,7 +154,6 @@ export default function CommentBanks() {
         rowData={commentBanks || []}
         columnDefs={getColumns}
         getRowId={({ data }) => String(data?.id)}
-        // @ts-ignore
         onBulkSave={handleBulkSave}
       />
       <AddCommentBank

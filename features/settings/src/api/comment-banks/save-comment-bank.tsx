@@ -11,7 +11,7 @@ import { useToast } from '@tyro/core';
 import { commentBanksKeys } from './keys';
 
 const saveCommentBank = graphql(/* GraphQL */ `
-  mutation assessment_saveCommentBank($input: SaveCommentBankInput) {
+  mutation assessment_saveCommentBank($input: [SaveCommentBankInput]) {
     assessment_saveCommentBank(input: $input) {
       id
       name
@@ -31,7 +31,7 @@ export function useCreateCommentBank() {
   const { t } = useTranslation(['common']);
 
   return useMutation({
-    mutationFn: async (input: SaveCommentBankInput) =>
+    mutationFn: async (input: [SaveCommentBankInput]) =>
       gqlClient.request(saveCommentBank, { input }),
     onSuccess: () => {
       toast(t('common:snackbarMessages.createSuccess'));
