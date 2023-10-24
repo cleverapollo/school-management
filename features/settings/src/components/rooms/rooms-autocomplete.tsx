@@ -48,7 +48,7 @@ export const RHFRoomAutocomplete = <TField extends FieldValues>(
   // @ts-ignore
   return (
     <RHFAutocomplete<TField, RoomSelect>
-      label={t('common:room')}
+      label={t('common:room', { count: 1 })}
       {...props}
       fullWidth
       optionIdKey="roomId"

@@ -62,7 +62,7 @@ export default function Cover() {
     <PageContainer
       title={t('navigation:management.substitution.cover')}
       maxWidth={false}
-      sx={{ maxWidth: 1980 }}
+      sx={{ maxWidth: 2200 }}
     >
       <PageHeading
         title={t('navigation:management.substitution.cover')}

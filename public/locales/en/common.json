@@ -227,7 +227,8 @@
     "violet": "Violet",
     "yellow": "Yellow"
   },
-  "room": "Room",
+  "room_one": "Room",
+  "room_other": "Rooms",
   "noRoomSet": "No room set",
   "createdBy": "Created by",
   "dateOfCreation": "Date of creation",
