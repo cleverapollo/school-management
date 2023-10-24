@@ -67,8 +67,10 @@ const ClonePermission = lazyWithRetry(
 );
 const NoteLabel = lazyWithRetry(() => import('./pages/note-label'));
 const BehaviourLabel = lazyWithRetry(() => import('./pages/behaviour-label'));
-const CommentBanks = lazyWithRetry(() => import('./pages/comment-bank'));
-const Comments = lazyWithRetry(() => import('./pages/comments'));
+const CommentBanks = lazyWithRetry(
+  () => import('./pages/comment-banks/comment-banks')
+);
+const Comments = lazyWithRetry(() => import('./pages/comment-banks/comments'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {

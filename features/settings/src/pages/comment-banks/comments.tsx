@@ -17,16 +17,16 @@ import {
 import { AddIcon } from '@tyro/icons';
 import set from 'lodash/set';
 import { useParams } from 'react-router-dom';
-import { useCommentBanks } from '../api/comment-banks/comment-banks';
+import { useCommentBanks } from '../../api/comment-banks/comment-banks';
 import {
   useCommentBankById,
   ReturnTypeFromCommentBankById,
-} from '../api/comment-banks/comment';
+} from '../../api/comment-banks/comment';
 import {
   AddComment,
   AddCommentProps,
-} from '../components/comment-bank/add-comment';
-import { useCreateCommentBank } from '../api/comment-banks/save-comment-bank';
+} from '../../components/comment-bank/add-comment';
+import { useCreateCommentBank } from '../../api/comment-banks/save-comment-bank';
 
 const getCommentsColumns = (
   t: TFunction<'settings'[], undefined, 'settings'[]>

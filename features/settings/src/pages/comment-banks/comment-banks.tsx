@@ -16,15 +16,15 @@ import {
 import set from 'lodash/set';
 import { AddIcon } from '@tyro/icons';
 import { SaveCommentBankInput, CommentBank } from '@tyro/api';
-import { useCreateCommentBank } from '../api/comment-banks/save-comment-bank';
+import { useCreateCommentBank } from '../../api/comment-banks/save-comment-bank';
 import {
   useCommentBanks,
   ReturnTypeFromCommentBanks,
-} from '../api/comment-banks/comment-banks';
+} from '../../api/comment-banks/comment-banks';
 import {
   AddCommentBank,
   AddCommentBankProps,
-} from '../components/comment-bank/add-comment-bank';
+} from '../../components/comment-bank/add-comment-bank';
 
 const getCommentBankColumns = (
   t: TFunction<('common' | 'settings')[], undefined, ('common' | 'settings')[]>
