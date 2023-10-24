@@ -3,6 +3,7 @@ import {
   CalendarEventIteratorFilter,
   SubjectGroupFilter,
   Core_CustomGroupDefinitionFilter,
+  YearGroupEnrollmentFilter,
 } from '@tyro/api';
 
 export const groupsKeys = {
@@ -52,8 +53,8 @@ export const groupsKeys = {
   year: {
     all: () => [...groupsKeys.all, 'year'] as const,
     groups: () => [...groupsKeys.year.all(), 'list'] as const,
-    details: (id: number | undefined) =>
-      [...groupsKeys.year.all(), 'details', id] as const,
+    details: (filter: YearGroupEnrollmentFilter) =>
+      [...groupsKeys.year.all(), 'details', filter] as const,
   },
   blocks: {
     filter: (filter: BlockFilter) => [

@@ -69,6 +69,6 @@ export function getSentSms(filter: SmsFilter) {
   return queryClient.fetchQuery(sentSmsQuery(filter));
 }
 
-export type ReturnTypeFromUseSentSms = UseQueryReturnType<
-  typeof useSentSms
->[number] | null;
+export type ReturnTypeFromUseSentSms =
+  | UseQueryReturnType<typeof useSentSms>[number]
+  | null;

@@ -18,15 +18,16 @@ const getColumns = (
     headerName: t('common:name'),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseReportsList, any>) =>
-      data ? (
-        <Link
-          fontWeight={600}
-          to={`/reports/${data.info.id}/${data.reports?.[0]?.id}`}
-        >
-          {data.info.name}
+    }: ICellRendererParams<ReturnTypeFromUseReportsList, any>) => {
+      if (!data) return null;
+
+      return (
+        <Link fontWeight={600} to={`/reports/${data.url}`}>
+          {data?.info.name}
         </Link>
-      ) : null,
+      );
+    },
+    sort: 'asc',
   },
 ];
 
@@ -34,6 +35,7 @@ export default function ReportsListPage() {
   const { t } = useTranslation(['common', 'reports']);
 
   const { data: reportsData = [] } = useReportsList();
+
   const columns = useMemo(() => getColumns(t), [t]);
 
   const title = t('reports:list');

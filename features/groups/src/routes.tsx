@@ -136,7 +136,9 @@ export const getRoutes: NavObjectFunction = (t) => [
                     throw404Error();
                   }
 
-                  return getYearGroupById(groupId);
+                  return getYearGroupById({
+                    yearGroupEnrollmentPartyId: [groupId],
+                  });
                 },
                 element: <ViewYearGroupPage />,
               },

@@ -10,10 +10,16 @@ import {
   usePreferredNameLayout,
   ReturnTypeDisplayNames,
   useResponsive,
+  useDisclosure,
+  ActionMenu,
 } from '@tyro/core';
+import { Search, SearchType, SmsRecipientType } from '@tyro/api';
 import { Link, useParams } from 'react-router-dom';
-import { useMemo } from 'react';
-import { Button, Typography } from '@mui/material';
+import { useMemo, useState } from 'react';
+import { Box, Button, Fade, Typography } from '@mui/material';
+import { MobileIcon, SendMailIcon } from '@tyro/icons';
+import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
+import { useMailSettings } from '@tyro/mail';
 import {
   useAssessmentSubjectGroups,
   ReturnTypeFromUseAssessmentSubjectGroups,
@@ -34,6 +40,10 @@ const getColumnDefs = (
     headerName: t('common:name'),
     sort: 'asc',
     suppressSizeToFit: isDesktop,
+    headerCheckboxSelection: true,
+    headerCheckboxSelectionFilteredOnly: true,
+    checkboxSelection: ({ data }) => Boolean(data),
+    lockVisible: true,
   },
   {
     field: 'subjectGroup.subjects',
@@ -142,12 +152,28 @@ const getColumnDefs = (
 ];
 
 export default function ViewTermAssessment() {
-  const { t } = useTranslation(['assessments', 'common']);
+  const { t } = useTranslation([
+    'assessments',
+    'common',
+    'people',
+    'sms',
+    'mail',
+  ]);
 
   const { academicNamespaceId, assessmentId } = useParams();
   const academicNameSpaceIdAsNumber = useNumber(academicNamespaceId);
   const assessmentIdAsNumber = useNumber(assessmentId);
-  const { displayNames } = usePreferredNameLayout();
+  const { displayName, displayNames } = usePreferredNameLayout();
+  const [selectedAssessments, setSelectedAssessments] = useState<
+    ReturnTypeFromUseAssessmentSubjectGroups[]
+  >([]);
+
+  const {
+    isOpen: isSendSmsOpen,
+    onOpen: onOpenSendSms,
+    onClose: onCloseSendSms,
+  } = useDisclosure();
+  const { composeEmail } = useMailSettings();
 
   const { data: assessmentData } = useAssessmentById({
     academicNameSpaceId: academicNameSpaceIdAsNumber ?? 0,
@@ -161,6 +187,46 @@ export default function ViewTermAssessment() {
   );
 
   const isDesktop = useResponsive('up', 'md');
+  const staffFromSelectedGroups = useMemo(() => {
+    const uniqueStaffList = selectedAssessments.reduce(
+      (acc, { subjectGroup }) => {
+        subjectGroup.staff.forEach((staff) => {
+          acc.set(staff.partyId, {
+            name: displayName(staff),
+            id: staff.partyId,
+            type: 'individual',
+            avatarUrl: staff?.avatarUrl,
+          });
+        });
+        return acc;
+      },
+      new Map<number, RecipientsForSmsModal[number]>()
+    );
+
+    return Array.from(uniqueStaffList.values());
+  }, [selectedAssessments]);
+
+  const sendMailToSelectedStaff = () => {
+    const uniqueStaffList = selectedAssessments.reduce(
+      (acc, { subjectGroup }) => {
+        subjectGroup.staff.forEach((staff) => {
+          acc.set(staff.partyId, {
+            partyId: staff.partyId,
+            type: SearchType.Staff,
+            text: displayName(staff),
+            avatarUrl: staff?.avatarUrl,
+          });
+        });
+        return acc;
+      },
+      new Map<number, Omit<Search, 'meta'>>()
+    );
+
+    composeEmail({
+      canReply: false,
+      bccRecipients: Array.from(uniqueStaffList.values()),
+    });
+  };
 
   const columnDefs = useMemo(
     () => getColumnDefs(!!isDesktop, t, displayNames),
@@ -168,41 +234,82 @@ export default function ViewTermAssessment() {
   );
 
   return (
-    <PageContainer
-      title={t('assessments:pageTitle.termAssessmentSubjectGroups')}
-    >
-      <PageHeading
-        title={t('assessments:pageHeading.termAssessmentSubjectGroups', {
-          name: assessmentData?.name,
-        })}
-        breadcrumbs={{
-          links: [
-            {
-              name: t('assessments:pageHeading.assessments'),
-              href: '/assessments',
-            },
-            {
-              name: t('assessments:pageHeading.termAssessmentSubjectGroups', {
-                name: assessmentData?.name,
-              }),
-            },
-          ],
-        }}
+    <>
+      <PageContainer
+        title={t('assessments:pageTitle.termAssessmentSubjectGroups')}
+      >
+        <PageHeading
+          title={t('assessments:pageHeading.termAssessmentSubjectGroups', {
+            name: assessmentData?.name,
+          })}
+          breadcrumbs={{
+            links: [
+              {
+                name: t('assessments:pageHeading.assessments'),
+                href: '/assessments',
+              },
+              {
+                name: t('assessments:pageHeading.termAssessmentSubjectGroups', {
+                  name: assessmentData?.name,
+                }),
+              },
+            ],
+          }}
+        />
+        <Table
+          rowData={assessmentSubjectGroupsData || []}
+          columnDefs={columnDefs}
+          getRowId={({ data }) => String(data?.subjectGroup.partyId)}
+          onRowSelection={setSelectedAssessments}
+          rowSelection="multiple"
+          rightAdornment={
+            <Fade in={selectedAssessments.length > 0} unmountOnExit>
+              <Box>
+                <ActionMenu
+                  menuItems={[
+                    {
+                      label: t('people:sendSms'),
+                      icon: <MobileIcon />,
+                      onClick: onOpenSendSms,
+                      hasAccess: ({ isStaffUserWithPermission }) =>
+                        isStaffUserWithPermission(
+                          'ps:1:communications:send_sms'
+                        ),
+                    },
+                    {
+                      label: t('mail:sendMail'),
+                      icon: <SendMailIcon />,
+                      onClick: sendMailToSelectedStaff,
+                    },
+                  ]}
+                />
+              </Box>
+            </Fade>
+          }
+          onFirstDataRendered={(params) => {
+            params.columnApi.autoSizeColumns([
+              'subjectGroup.name',
+              'resultsTotal',
+              'commentsTotal',
+              'editResults',
+            ]);
+            params.api.sizeColumnsToFit();
+          }}
+        />
+      </PageContainer>
+      <SendSmsModal
+        isOpen={isSendSmsOpen}
+        onClose={onCloseSendSms}
+        recipients={staffFromSelectedGroups}
+        possibleRecipientTypes={[
+          {
+            label: t('sms:teachersOfGroup', {
+              count: staffFromSelectedGroups.length,
+            }),
+            type: SmsRecipientType.Staff,
+          },
+        ]}
       />
-      <Table
-        rowData={assessmentSubjectGroupsData || []}
-        columnDefs={columnDefs}
-        getRowId={({ data }) => String(data?.subjectGroup.partyId)}
-        onFirstDataRendered={(params) => {
-          params.columnApi.autoSizeColumns([
-            'subjectGroup.name',
-            'resultsTotal',
-            'commentsTotal',
-            'editResults',
-          ]);
-          params.api.sizeColumnsToFit();
-        }}
-      />
-    </PageContainer>
+    </>
   );
 }

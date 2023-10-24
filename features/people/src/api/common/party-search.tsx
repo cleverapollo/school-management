@@ -17,7 +17,7 @@ export function usePartySearch(query: string) {
   const trimmedQuery = query.trim();
 
   return useQuery({
-    queryKey: peopleCommonKeys.partySearch,
+    queryKey: peopleCommonKeys.partySearch(trimmedQuery),
     queryFn: async () =>
       gqlClient.request(partySearch, {
         filter: { text: trimmedQuery, context: [Context.Party] },

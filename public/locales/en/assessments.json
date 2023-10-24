@@ -1,48 +1,52 @@
 {
   "pageTitle": {
-    "assessments": "List of Assessments",
+    "assessments": "List of assessments",
     "createTermAssessment": "Create a new term assessment",
     "termAssessmentSubjectGroups": "List of subject groups",
     "editTermAssessment": "Edit term assessment"
   },
   "pageHeading": {
     "assessments": "Assessments",
-    "termAssessments": "Term Assessments",
-    "createTermAssessment": "Term Assessment Creation",
-    "termAssessmentSubjectGroups": "{{name}}'s Subject Groups",
-    "editResultsFor": "Edit Results for {{name}}",
-    "editTermAssessment": "Edit {{name}}'s term assessment"
+    "termAssessments": "Term assessments",
+    "createTermAssessment": "Term assessment creation",
+    "termAssessmentSubjectGroups": "{{name}}'s subject groups",
+    "editResultsFor": "Edit results for {{name}}",
+    "editTermAssessment": "Edit {{name}}'s term assessment",
+    "overallCommentsFor": "Overall comments for {{name}}"
   },
-  "assessmentResults": "Assessment Results",
+  "assessmentResults": "Assessment results",
+  "assessment": "Assessment",
+  "hideComments": "Hide comments",
+  "showComments": "Show comments",
   "details": "Details",
   "grades": "Grades",
   "comments": "Comments",
-  "customFields": "Custom Fields",
+  "customFields": "Custom fields",
   "addCustomField": "Add custom field",
   "targetGrade": "Target grade",
   "targetResult": "Target result",
   "labels": {
-    "assessmentName": "Assessment Name",
+    "assessmentName": "Assessment name",
     "years": "Years",
-    "startDate": "Start Date",
-    "endDate": "End Date",
+    "startDate": "Start date",
+    "endDate": "End date",
     "includeTargetGrades": "Include target grades for this assessment",
     "includeTeacherComments": "Include teachers comments for this assessment",
-    "commentType": "Comment Type",
+    "commentType": "Comment type",
     "commentTypes": {
-      "FREE_FORM": "Written Comment",
-      "COMMENT_BANK": "Comment Bank",
-      "BOTH": "Comment Bank or Written Comment"
+      "FREE_FORM": "Written comment",
+      "COMMENT_BANK": "Comment bank",
+      "BOTH": "Comment bank or written comment"
     },
-    "commentBankOptions": "Comment Bank",
+    "commentBankOptions": "Comment bank",
     "commentLength": "Max number of characters",
-    "includeClassTutorComment": "Include Class Tutor comment",
-    "includeYearHeadComment": "Include Year Head comment",
-    "includeHousemasterComment": "Include Housemaster comment",
-    "includePrincipalComment": "Include Principal comment",
+    "includeClassTutorComment": "Include class tutor comment",
+    "includeYearHeadComment": "Include year head comment",
+    "includeHousemasterComment": "Include housemaster comment",
+    "includePrincipalComment": "Include principal comment",
     "extraFieldTypes": {
-      "COMMENT_BANK": "Comment Bank",
-      "FREE_FORM": "Written Comment",
+      "COMMENT_BANK": "Comment bank",
+      "FREE_FORM": "Written comment",
       "SELECT": " Selection"
     }
   },
@@ -50,14 +54,17 @@
     "extraFieldName": "Type a name",
     "extraFieldValue": "Type a value"
   },
-  "noActiveCommentsInCommentBank": "You use comment bank comments at this time. There are no active comments in the selected comment bank.",
+  "noAssessmentsAvailable": "No assessments available",
+  "noAssessmentsFound": "No assessments found",
+  "noActiveCommentsInCommentBank": "No active comments available to select. Contact school administration.",
   "extraFieldNo": "No.",
-  "extraFieldName": "Field Name",
+  "extraFieldName": "Field name",
   "extraFieldType": "Type",
   "extraFieldValue": "Value",
-  "createTermAssessment": "Create Term Assessment",
-  "editTermAssessment": "Edit Term Assessment",
-  "createAssessment": "Create Assessment",
+  "createTermAssessment": "Create term assessment",
+  "editTermAssessment": "Edit term assessment",
+  "createAssessment": "Create assessment",
+  "whenWouldYouLikeToPublish": "When would you like to publish from?",
   "assessmentTypes": {
     "TERM": "Term",
     "STATE_CBA": "State CBA",
@@ -69,8 +76,13 @@
     "view": "View assessment",
     "publish": "Publish online",
     "unpublish": "Unpublish online",
-    "editResults": "Edit results"
+    "editResults": "Edit results",
+    "makeOverallComments": "Make overall comments",
+    "editPublishDate": "Edit publish date"
   },
-  "academicYear": "Academic Year",
-  "results": "Results"
+  "publish": "Publish",
+  "publishDate": "Publish date",
+  "academicYear": "Academic year",
+  "results": "Results",
+  "unpublishedSuccessfully": "Unpublished successfully"
 }
