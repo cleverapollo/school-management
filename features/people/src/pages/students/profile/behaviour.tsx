@@ -304,6 +304,11 @@ export default function StudentProfileBehaviourPage() {
   const getBehaviourTypesTotals = (tabValue?: string) =>
     tags?.filter((tag) => tag?.name === tabValue).length;
 
+  useEffect(() => {
+    setCurrentTabValue('All');
+    setValue(0);
+  }, [behaviourType]);
+
   return (
     <Card
       sx={{
@@ -330,8 +335,6 @@ export default function StudentProfileBehaviourPage() {
             <Button
               onClick={() => {
                 setBehaviourType(Notes_BehaviourType.Positive);
-                setCurrentTabValue('All');
-                setValue(0);
               }}
               sx={{
                 borderRadius: 1,
@@ -370,8 +373,6 @@ export default function StudentProfileBehaviourPage() {
             <Button
               onClick={() => {
                 setBehaviourType(Notes_BehaviourType.Negative);
-                setCurrentTabValue('All');
-                setValue(0);
               }}
               sx={{
                 borderRadius: 1,
