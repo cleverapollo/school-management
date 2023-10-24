@@ -48,7 +48,7 @@ function InnerShell({ children }: ShellProps) {
             display: 'flex',
             flexDirection: 'column',
             flex: 1,
-            backgroundColor: 'background.neutral',
+            backgroundColor: 'slate.100',
             minHeight: '100vh',
             pt: `${HEADERCONFIG.H_MOBILE + 8}px`,
             ...(isDesktop && {

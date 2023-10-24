@@ -77,7 +77,12 @@ export default function ViewYearGroupPage() {
     onClose: onCloseSendSms,
   } = useDisclosure();
 
-  const { data: groupData } = useYearGroupById(groupIdAsNumber);
+  const { data: groupData } = useYearGroupById(
+    {
+      yearGroupEnrollmentPartyId: [groupIdAsNumber ?? 0],
+    },
+    !!groupIdAsNumber
+  );
 
   const actionMenuItems = [
     {

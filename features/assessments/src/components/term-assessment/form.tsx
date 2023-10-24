@@ -16,7 +16,7 @@ import {
   GradeType,
   UseQueryReturnType,
 } from '@tyro/api';
-import { Card, Stack, CardHeader, Typography } from '@mui/material';
+import { Card, Stack, CardHeader, Typography, Collapse } from '@mui/material';
 import { useForm, Path } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
@@ -57,6 +57,18 @@ export interface FormValues extends FormCustomFieldsValues {
   captureYearHeadComment: boolean;
   captureHouseMasterComment: boolean;
   capturePrincipalComment: boolean;
+  tutorCommentType?: CommentType | null;
+  tutorCommentBank?: Partial<CommentBankOption>;
+  tutorCommentLength?: number | null;
+  yearHeadCommentType?: CommentType | null;
+  yearHeadCommentBank?: Partial<CommentBankOption>;
+  yearHeadCommentLength?: number | null;
+  principalCommentType?: CommentType | null;
+  principalCommentBank?: Partial<CommentBankOption>;
+  principalCommentLength?: number | null;
+  housemasterCommentType?: CommentType | null;
+  housemasterCommentBank?: Partial<CommentBankOption>;
+  housemasterCommentLength?: number | null;
 }
 
 type TermAssessmentFormProps = {
@@ -103,6 +115,34 @@ export function TermAssessmentForm({
         rules.min(COMMENT_LENGTH_MIN),
         rules.max(COMMENT_LENGTH_MAX),
       ],
+      tutorCommentType: rules.required(),
+      tutorCommentBank: rules.required(),
+      tutorCommentLength: [
+        rules.required(),
+        rules.min(COMMENT_LENGTH_MIN),
+        rules.max(COMMENT_LENGTH_MAX),
+      ],
+      yearHeadCommentType: rules.required(),
+      yearHeadCommentBank: rules.required(),
+      yearHeadCommentLength: [
+        rules.required(),
+        rules.min(COMMENT_LENGTH_MIN),
+        rules.max(COMMENT_LENGTH_MAX),
+      ],
+      housemasterCommentType: rules.required(),
+      housemasterCommentBank: rules.required(),
+      housemasterCommentLength: [
+        rules.required(),
+        rules.min(COMMENT_LENGTH_MIN),
+        rules.max(COMMENT_LENGTH_MAX),
+      ],
+      principalCommentType: rules.required(),
+      principalCommentBank: rules.required(),
+      principalCommentLength: [
+        rules.required(),
+        rules.min(COMMENT_LENGTH_MIN),
+        rules.max(COMMENT_LENGTH_MAX),
+      ],
       extraFields: {
         name: rules.required(),
         extraFieldType: rules.required(),
@@ -116,11 +156,6 @@ export function TermAssessmentForm({
     }),
   });
 
-  const [showTeacherComments, commentTypeValue] = watch([
-    'includeTeacherComments',
-    'commentType',
-  ]);
-
   const onSubmit = ({
     years,
     startDate,
@@ -131,6 +166,10 @@ export function TermAssessmentForm({
     extraFields,
     id: assessmentId,
     commentLength,
+    tutorCommentBank,
+    yearHeadCommentBank,
+    principalCommentBank,
+    housemasterCommentBank,
     ...restData
   }: FormValues) => {
     saveTermAssessment(
@@ -153,6 +192,10 @@ export function TermAssessmentForm({
               commentBankId: null,
               commentLength: null,
             }),
+        tutorCommentBankId: tutorCommentBank?.id,
+        yearHeadCommentBankId: yearHeadCommentBank?.id,
+        principalCommentBankId: principalCommentBank?.id,
+        housemasterCommentBankId: housemasterCommentBank?.id,
         extraFields: extraFields.map(
           ({ commentBank: fieldCommentBank, ...field }) => ({
             ...field,
@@ -230,66 +273,97 @@ export function TermAssessmentForm({
           <Typography variant="subtitle1" color="text.secondary">
             {t('assessments:comments')}
           </Typography>
-          <RHFSwitch<FormValues>
-            label={t('assessments:labels.includeTeacherComments')}
-            switchProps={{ color: 'success' }}
-            controlProps={{ name: 'includeTeacherComments', control }}
-          />
-          {showTeacherComments && (
-            <Stack direction="row" gap={2}>
-              <RHFSelect<FormValues, CommentTypeOption>
-                label={t('assessments:labels.commentType')}
-                options={commentTypeOptions}
-                controlProps={{ name: 'commentType', control }}
-                getOptionLabel={(option) =>
-                  t(`assessments:labels.commentTypes.${option}`)
-                }
-                sx={textFieldStyle}
-              />
-              {(commentTypeValue === CommentType.CommentBank ||
-                commentTypeValue === CommentType.Both) && (
-                <CommentBankOptions<FormValues>
-                  name="commentBank"
-                  control={control}
-                />
-              )}
-
-              {(commentTypeValue === CommentType.FreeForm ||
-                commentTypeValue === CommentType.Both) && (
-                <CommentLengthField<FormValues>
-                  name="commentLength"
-                  control={control}
-                />
-              )}
-            </Stack>
-          )}
           {(
             [
               {
+                label: t('assessments:labels.includeTeacherComments'),
+                name: 'includeTeacherComments',
+                commentType: 'commentType',
+                commentBankName: 'commentBank',
+                commentLengthName: 'commentLength',
+              },
+              {
                 label: t('assessments:labels.includeClassTutorComment'),
                 name: 'captureTutorComment',
+                commentType: 'tutorCommentType',
+                commentBankName: 'tutorCommentBank',
+                commentLengthName: 'tutorCommentLength',
               },
               {
                 label: t('assessments:labels.includeYearHeadComment'),
                 name: 'captureYearHeadComment',
+                commentType: 'yearHeadCommentType',
+                commentBankName: 'yearHeadCommentBank',
+                commentLengthName: 'yearHeadCommentLength',
               },
-              {
-                label: t('assessments:labels.includeHousemasterComment'),
-                name: 'captureHouseMasterComment',
-              },
+              // Hiding for now. Will need to enable based on school info that tells us if school is boarding school
+              // {
+              //   label: t('assessments:labels.includeHousemasterComment'),
+              //   name: 'captureHouseMasterComment',
+              //   commentType: 'housemasterCommentType',
+              //   commentBankName: 'housemasterCommentBank',
+              //   commentLengthName: 'housemasterCommentLength',
+              // },
               {
                 label: t('assessments:labels.includePrincipalComment'),
                 name: 'capturePrincipalComment',
+                commentType: 'principalCommentType',
+                commentBankName: 'principalCommentBank',
+                commentLengthName: 'principalCommentLength',
               },
-            ] as Array<{ label: string; name: Path<FormValues> }>
-          ).map(({ label, name }) => (
-            <RHFSwitch<FormValues>
-              key={name}
-              label={label}
-              switchProps={{ color: 'success' }}
-              controlProps={{ name, control }}
-            />
-          ))}
+            ] as const
+          ).map(
+            ({
+              label,
+              name,
+              commentType,
+              commentBankName,
+              commentLengthName,
+            }) => {
+              const [showComments, commentTypeValue] = watch([
+                name,
+                commentType,
+              ]);
+
+              return (
+                <Stack key={name}>
+                  <RHFSwitch<FormValues>
+                    label={label}
+                    switchProps={{ color: 'success' }}
+                    controlProps={{ name, control }}
+                  />
+                  <Collapse in={showComments} unmountOnExit>
+                    <Stack direction="row" gap={2} pt={1}>
+                      <RHFSelect<FormValues, CommentTypeOption>
+                        label={t('assessments:labels.commentType')}
+                        options={commentTypeOptions}
+                        controlProps={{ name: commentType, control }}
+                        getOptionLabel={(option) =>
+                          t(`assessments:labels.commentTypes.${option}`)
+                        }
+                        sx={textFieldStyle}
+                      />
+                      {(commentTypeValue === CommentType.CommentBank ||
+                        commentTypeValue === CommentType.Both) && (
+                        <CommentBankOptions<FormValues>
+                          name={commentBankName}
+                          control={control}
+                        />
+                      )}
+
+                      {(commentTypeValue === CommentType.FreeForm ||
+                        commentTypeValue === CommentType.Both) && (
+                        <CommentLengthField<FormValues>
+                          name={commentLengthName}
+                          control={control}
+                        />
+                      )}
+                    </Stack>
+                  </Collapse>
+                </Stack>
+              );
+            }
+          )}
         </Stack>
         <CustomFieldsTable control={control} />
         <Stack alignItems="flex-end">
