@@ -114,24 +114,20 @@ export default function Comments() {
 
     const currentCommentBank = commentBanks && commentBanks[0];
 
-    const updatedComments = currentCommentBankComments.reduce(
-      (acc, comment) => {
-        const editedData = data[comment.id.toString()];
+    const updatedComments = currentCommentBankComments.map((comment) => {
+      const editedData = data[comment.id.toString()];
 
-        if (editedData && editedData.comment) {
-          comment.comment = editedData.comment.newValue;
-        }
-        if (editedData && editedData.active) {
-          comment.active = editedData.active.newValue;
-        }
+      if (editedData && editedData.comment) {
+        comment.comment = editedData.comment.newValue;
+      }
+      if (editedData && editedData.active) {
+        comment.active = editedData.active.newValue;
+      }
 
-        acc.push(comment);
-        return acc;
-      },
-      [] as Comment[]
-    );
+      return comment;
+    });
 
-    const formattedData: [SaveCommentBankInput] = [
+    return createCommentBank([
       {
         id: currentCommentBank?.id,
         name: commentBankName,
@@ -139,9 +135,7 @@ export default function Comments() {
         active: currentCommentBank?.active,
         comments: updatedComments,
       },
-    ];
-
-    return createCommentBank(formattedData);
+    ]);
   };
 
   return (

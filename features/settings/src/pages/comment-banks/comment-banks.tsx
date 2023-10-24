@@ -103,33 +103,29 @@ export default function CommentBanks() {
       'id' | 'name' | 'description' | 'active' | 'comments'
     >
   ) => {
-    const formattedData = Object.keys(data)
-      .map((idStr) => {
-        const updatedCommentBanks = commentBanks
-          ?.filter(
-            (currentCommentBank) => idStr === currentCommentBank.id.toString()
-          )
-          .reduce((acc, current) => {
-            const editedData = data[current.id.toString()];
+    console.log(data, 'data');
 
-            if (editedData && editedData.name) {
-              current.name = editedData.name.newValue;
-            }
-            if (editedData && editedData.description) {
-              current.description = editedData.description.newValue;
-            }
-            if (editedData && editedData.active) {
-              current.active = editedData.active.newValue;
-            }
+    const formattedData = Object.keys(data).flatMap((idStr) =>
+      (commentBanks || [])
+        .filter(
+          (currentCommentBank) => idStr === currentCommentBank.id.toString()
+        )
+        .map((current) => {
+          const editedData = data[current.id.toString()];
 
-            acc.push(current);
+          if (editedData && editedData.name) {
+            current.name = editedData.name.newValue;
+          }
+          if (editedData && editedData.description) {
+            current.description = editedData.description.newValue;
+          }
+          if (editedData && editedData.active) {
+            current.active = editedData.active.newValue;
+          }
 
-            return acc;
-          }, [] as CommentBank[]);
-
-        return updatedCommentBanks;
-      })
-      .flatMap((updatedData) => updatedData);
+          return current;
+        })
+    );
     return createCommentBank(formattedData as [SaveCommentBankInput]);
   };
 

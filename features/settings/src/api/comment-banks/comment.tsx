@@ -23,7 +23,7 @@ const commentBankById = graphql(/* GraphQL */ `
 `);
 
 const commentBankByIdQuery = (filter: CommentBankFilter) => ({
-  queryKey: commentBanksKeys.commentBanks(filter),
+  queryKey: commentBanksKeys.commentBankById(filter),
   queryFn: async () => gqlClient.request(commentBankById, { filter }),
 });
 

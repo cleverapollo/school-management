@@ -33,9 +33,9 @@ export function useCreateCommentBank() {
   return useMutation({
     mutationFn: async (input: [SaveCommentBankInput]) =>
       gqlClient.request(saveCommentBank, { input }),
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(commentBanksKeys.all);
       toast(t('common:snackbarMessages.createSuccess'));
-      queryClient.invalidateQueries(commentBanksKeys.all);
     },
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });

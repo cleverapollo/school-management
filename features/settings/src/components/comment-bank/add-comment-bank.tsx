@@ -82,7 +82,7 @@ export const AddCommentBank = ({
       <form onSubmit={onSubmit}>
         <DialogContent>
           <Stack spacing={3} sx={{ mt: 1 }}>
-            <RHFTextField<AddCommentBankFormState>
+            <RHFTextField
               label={t('common:name')}
               textFieldProps={{ fullWidth: true }}
               controlProps={{
@@ -90,7 +90,7 @@ export const AddCommentBank = ({
                 control,
               }}
             />
-            <RHFTextField<AddCommentBankFormState>
+            <RHFTextField
               label={t('common:description')}
               controlProps={{
                 name: 'description',

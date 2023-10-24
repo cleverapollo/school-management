@@ -17,7 +17,7 @@ import { useCreateCommentBank } from '../../api/comment-banks/save-comment-bank'
 import { ReturnTypeFromCommentBanks } from '../../api/comment-banks/comment-banks';
 
 export type AddCommentFormState = Pick<SaveCommentInput, 'comment'> & {
-  active: string;
+  active: boolean;
 };
 
 export type AddCommentProps = {
@@ -38,6 +38,7 @@ export const AddComment = ({
 
   const defaultFormStateValues: Partial<AddCommentFormState> = {
     ...initialModalState,
+    active: true,
   };
 
   const { control, handleSubmit, reset } = useForm<AddCommentFormState>({
@@ -53,7 +54,7 @@ export const AddComment = ({
       const oldComments = commentBanks[0]?.comments;
       const newComment = {
         comment,
-        active: active === t('settings:active'),
+        active,
       };
       const updatedComments = [...(oldComments || []), newComment];
       createCommentBank(
@@ -95,7 +96,7 @@ export const AddComment = ({
       <form onSubmit={onSubmit}>
         <DialogContent>
           <Stack spacing={3} sx={{ mt: 1 }}>
-            <RHFTextField<AddCommentFormState>
+            <RHFTextField
               label={t('settings:commentBanks.comment')}
               textFieldProps={{ fullWidth: true }}
               controlProps={{
@@ -103,18 +104,24 @@ export const AddComment = ({
                 control,
               }}
             />
-            <RHFSelect<AddCommentFormState, string>
+            <RHFSelect
               fullWidth
               options={[
-                t('settings:active'),
-                t('settings:commentBanks.archived'),
+                {
+                  label: t('settings:active'),
+                  value: true,
+                },
+                {
+                  label: t('settings:commentBanks.archived'),
+                  value: false,
+                },
               ]}
               label={t('settings:commentBanks.status')}
-              getOptionLabel={(option) => option}
+              optionTextKey="label"
+              optionIdKey="value"
               controlProps={{
                 name: 'active',
                 control,
-                defaultValue: t('settings:active'),
               }}
             />
           </Stack>
