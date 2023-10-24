@@ -44,6 +44,7 @@ export default function ReportPage() {
         valueGetter,
         sortable: column.sortable,
         hide: !column.visibleByDefault,
+        pinned: column.pinned ?? null,
         ...(column.hideMenu
           ? {
               suppressMenu: true,

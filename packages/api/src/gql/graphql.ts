@@ -77,6 +77,7 @@ export type Address = {
   active?: Maybe<Scalars['Boolean']>;
   city?: Maybe<Scalars['String']>;
   country?: Maybe<Scalars['String']>;
+  county?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['Int']>;
   line1?: Maybe<Scalars['String']>;
   line2?: Maybe<Scalars['String']>;
@@ -108,14 +109,27 @@ export type Assessment = {
   extraFields?: Maybe<Array<AssessmentExtraField>>;
   gradeSets?: Maybe<Array<AssessmentGradeSet>>;
   gradeType?: Maybe<GradeType>;
+  housemasterCommentBank?: Maybe<AssessmentCommentBank>;
+  housemasterCommentLength?: Maybe<Scalars['Int']>;
+  housemasterCommentType?: Maybe<CommentType>;
   id: Scalars['Long'];
   name: Scalars['String'];
   passFailThreshold?: Maybe<Scalars['Int']>;
+  principalCommentBank?: Maybe<AssessmentCommentBank>;
+  principalCommentLength?: Maybe<Scalars['Int']>;
+  principalCommentType?: Maybe<CommentType>;
   publish: Scalars['Boolean'];
   publishLearner: Scalars['Boolean'];
+  publishedFrom?: Maybe<Scalars['Date']>;
   startDate: Scalars['Date'];
+  tutorCommentBank?: Maybe<AssessmentCommentBank>;
+  tutorCommentLength?: Maybe<Scalars['Int']>;
+  tutorCommentType?: Maybe<CommentType>;
   yearGroupEnrollmentPartyIds?: Maybe<Array<Scalars['Long']>>;
   yearGroupIds?: Maybe<Array<Scalars['Int']>>;
+  yearHeadCommentBank?: Maybe<AssessmentCommentBank>;
+  yearHeadCommentLength?: Maybe<Scalars['Int']>;
+  yearHeadCommentType?: Maybe<CommentType>;
   /** deep linked */
   years?: Maybe<Array<YearGroup>>;
 };
@@ -172,6 +186,8 @@ export type AssessmentGradeSet = {
 export type AssessmentResult = {
   __typename?: 'AssessmentResult';
   assessmentId?: Maybe<Scalars['Long']>;
+  createdBy: Person;
+  createdByPartyId: Scalars['Long'];
   externalSystemId?: Maybe<Scalars['String']>;
   extraFields?: Maybe<Array<ResultExtraField>>;
   gradeId?: Maybe<Scalars['Long']>;
@@ -265,29 +281,35 @@ export type AttendanceEventId = {
   eventId?: InputMaybe<Scalars['Int']>;
 };
 
-export type Attendance_AwolReport = {
-  __typename?: 'Attendance_AwolReport';
-  awolStudents: Array<Attendance_AwolStudent>;
-};
-
 export type Attendance_AwolStudent = {
   __typename?: 'Attendance_AwolStudent';
+  /** deep linked */
+  absentCreatedBy?: Maybe<Person>;
   absentCreatedByPartyId: Scalars['Long'];
   absentEvent: CalendarEvent;
-  absentMarkedBy?: Maybe<Person>;
+  /** deep linked */
   absentSubjectGroup: SubjectGroup;
   absentSubjectGroupId: Scalars['Long'];
+  /** deep linked */
+  absentUpdatedBy?: Maybe<Person>;
   absentUpdatedByPartyId: Scalars['Long'];
+  /** deep linked */
   classGroup: GeneralGroup;
   classGroupId: Scalars['Long'];
   date: Scalars['Date'];
+  id: AwolId;
   partyId: Scalars['Long'];
+  /** deep linked */
+  presentCreatedBy?: Maybe<Person>;
   presentCreatedByPartyId: Scalars['Long'];
   presentEvent: CalendarEvent;
-  presentMarkedBy?: Maybe<Person>;
+  /** deep linked */
   presentSubjectGroup: SubjectGroup;
   presentSubjectGroupId: Scalars['Long'];
+  /** deep linked */
+  presentUpdatedBy?: Maybe<Person>;
   presentUpdatedByPartyId: Scalars['Long'];
+  /** deep linked */
   student: Student;
 };
 
@@ -356,8 +378,15 @@ export type AuditPerson = {
 };
 
 export type AwolFilter = {
-  date: Scalars['Date'];
+  from: Scalars['Date'];
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  to: Scalars['Date'];
+};
+
+export type AwolId = {
+  __typename?: 'AwolId';
+  date: Scalars['Date'];
+  partyId: Scalars['Long'];
 };
 
 export type BellTimeAttendance = {
@@ -816,6 +845,7 @@ export type Calendar_BellTime = {
 };
 
 export type Calendar_CreateBellTimeInput = {
+  bellTimeId?: InputMaybe<Scalars['Int']>;
   name: Array<TranslationInput>;
   time: Scalars['Time'];
 };
@@ -1470,6 +1500,7 @@ export type CreateStudentInput = {
   externalSystemInfo?: InputMaybe<ExternalSystemInfo>;
   firstName?: InputMaybe<Scalars['String']>;
   gender?: InputMaybe<Gender>;
+  guardianshipNote?: InputMaybe<Scalars['String']>;
   lastName?: InputMaybe<Scalars['String']>;
   leavingReason?: InputMaybe<Scalars['String']>;
   leftEarly?: InputMaybe<Scalars['Boolean']>;
@@ -1593,7 +1624,8 @@ export type DashboardAssessment = {
 };
 
 export type DashboardAssessmentFilter = {
-  studentPartyId?: InputMaybe<Scalars['Long']>;
+  published: Scalars['Boolean'];
+  studentPartyId: Scalars['Long'];
 };
 
 export type DashboardAssessmentResult = {
@@ -2211,6 +2243,7 @@ export type InputAddress = {
   addressId?: InputMaybe<Scalars['Int']>;
   city?: InputMaybe<Scalars['String']>;
   country?: InputMaybe<Scalars['String']>;
+  county?: InputMaybe<Scalars['String']>;
   line1?: InputMaybe<Scalars['String']>;
   line2?: InputMaybe<Scalars['String']>;
   line3?: InputMaybe<Scalars['String']>;
@@ -2360,10 +2393,11 @@ export type Mutation = {
   __typename?: 'Mutation';
   admin__resetTenantCache: Success;
   asd?: Maybe<Scalars['String']>;
+  assessment_publish: Success;
   assessment_saveAssessment?: Maybe<Assessment>;
   assessment_saveAssessmentComments?: Maybe<Array<AssessmentComment>>;
   assessment_saveAssessmentResults?: Maybe<Array<AssessmentResult>>;
-  assessment_saveCommentBank?: Maybe<CommentBank>;
+  assessment_saveCommentBank?: Maybe<Array<Maybe<CommentBank>>>;
   assessment_saveGradeSet?: Maybe<GradeSet>;
   attendance_saveAttendanceCode: Array<AttendanceCode>;
   attendance_saveBulkAttendance?: Maybe<Success>;
@@ -2389,6 +2423,7 @@ export type Mutation = {
   communications_sendSms?: Maybe<Scalars['String']>;
   communications_smsTopUp?: Maybe<SmsTopUpResponse>;
   communications_starred?: Maybe<Scalars['String']>;
+  core_deleteGroup: Success;
   core_enableBlockRotations?: Maybe<Success>;
   core_linkSiblingsAndContacts: Success;
   core_modifyBlocks: Success;
@@ -2462,6 +2497,11 @@ export type MutationAdmin__ResetTenantCacheArgs = {
 };
 
 
+export type MutationAssessment_PublishArgs = {
+  input?: InputMaybe<PublishAssessmentInput>;
+};
+
+
 export type MutationAssessment_SaveAssessmentArgs = {
   input?: InputMaybe<SaveAssessmentInput>;
 };
@@ -2478,7 +2518,7 @@ export type MutationAssessment_SaveAssessmentResultsArgs = {
 
 
 export type MutationAssessment_SaveCommentBankArgs = {
-  input?: InputMaybe<SaveCommentBankInput>;
+  input?: InputMaybe<Array<InputMaybe<SaveCommentBankInput>>>;
 };
 
 
@@ -2604,6 +2644,11 @@ export type MutationCommunications_SmsTopUpArgs = {
 
 export type MutationCommunications_StarredArgs = {
   input?: InputMaybe<MailStarredInput>;
+};
+
+
+export type MutationCore_DeleteGroupArgs = {
+  input: Scalars['Long'];
 };
 
 
@@ -3155,11 +3200,13 @@ export type NotificationFilter = {
 export type NotificationMetaData = {
   __typename?: 'NotificationMetaData';
   mailId?: Maybe<Scalars['Long']>;
+  notificationType: NotificationType;
   partyId?: Maybe<Scalars['Long']>;
 };
 
 export type NotificationMetaDataInput = {
   mailId?: InputMaybe<Scalars['Long']>;
+  notificationType: NotificationType;
   partyId?: InputMaybe<Scalars['Long']>;
 };
 
@@ -3716,6 +3763,12 @@ export type ProgrammeStageFilter = {
   programmeStageIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
+export type PublishAssessmentInput = {
+  assessmentId: Scalars['Long'];
+  publish: Scalars['Boolean'];
+  publishFrom?: InputMaybe<Scalars['Date']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   admin__party_people?: Maybe<Array<Person>>;
@@ -3729,8 +3782,9 @@ export type Query = {
   assessment_commentBank?: Maybe<Array<CommentBank>>;
   assessment_dashboardAssessment?: Maybe<Array<DashboardAssessment>>;
   assessment_gradeSet?: Maybe<Array<GradeSet>>;
+  assessment_studentResult: Array<AssessmentResult>;
   attendance_attendanceCodes: Array<AttendanceCode>;
-  attendance_awolReport: Attendance_AwolReport;
+  attendance_awolReport: Array<Attendance_AwolStudent>;
   attendance_bulkAttendanceActions: Array<Attendance_BulkAttendanceAction>;
   attendance_calendarAttendance: CalendarAttendance;
   attendance_eventAttendance: Array<EventAttendance>;
@@ -3880,6 +3934,11 @@ export type QueryAssessment_DashboardAssessmentArgs = {
 
 export type QueryAssessment_GradeSetArgs = {
   filter?: InputMaybe<GradeSetFilter>;
+};
+
+
+export type QueryAssessment_StudentResultArgs = {
+  filter?: InputMaybe<StudentResultFilter>;
 };
 
 
@@ -4341,6 +4400,11 @@ export type Reporting_Colour = {
   shade: Scalars['Int'];
 };
 
+export enum Reporting_Pinned {
+  Left = 'left',
+  Right = 'right'
+}
+
 export type Reporting_ReportFilter = {
   filters?: InputMaybe<Array<InputMaybe<Reporting_TableFilterInput>>>;
   reportId: Scalars['String'];
@@ -4437,6 +4501,7 @@ export type Reporting_TableReportField = {
   label: Scalars['String'];
   maxWidth?: Maybe<Scalars['Int']>;
   minWidth?: Maybe<Scalars['Int']>;
+  pinned?: Maybe<Reporting_Pinned>;
   sortable: Scalars['Boolean'];
   visibleByDefault: Scalars['Boolean'];
 };
@@ -4856,12 +4921,24 @@ export type SaveAssessmentInput = {
   extraFields?: InputMaybe<Array<InputMaybe<SaveExtraFieldInput>>>;
   gradeSetIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   gradeType?: InputMaybe<GradeType>;
+  housemasterCommentBankId?: InputMaybe<Scalars['Long']>;
+  housemasterCommentLength?: InputMaybe<Scalars['Int']>;
+  housemasterCommentType?: InputMaybe<CommentType>;
   id?: InputMaybe<Scalars['Long']>;
   name: Scalars['String'];
   passFailThreshold?: InputMaybe<Scalars['Int']>;
+  principalCommentBankId?: InputMaybe<Scalars['Long']>;
+  principalCommentLength?: InputMaybe<Scalars['Int']>;
+  principalCommentType?: InputMaybe<CommentType>;
   publish?: InputMaybe<Scalars['Boolean']>;
   publishLearner?: InputMaybe<Scalars['Boolean']>;
   startDate: Scalars['Date'];
+  tutorCommentBankId?: InputMaybe<Scalars['Long']>;
+  tutorCommentLength?: InputMaybe<Scalars['Int']>;
+  tutorCommentType?: InputMaybe<CommentType>;
+  yearHeadCommentBankId?: InputMaybe<Scalars['Long']>;
+  yearHeadCommentLength?: InputMaybe<Scalars['Int']>;
+  yearHeadCommentType?: InputMaybe<CommentType>;
   years?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
@@ -5442,7 +5519,7 @@ export type SmsCost = {
 };
 
 export type SmsCostFilter = {
-  recipients?: InputMaybe<Array<InputMaybe<RecipientInput>>>;
+  recipients: Array<RecipientInput>;
 };
 
 export type SmsCredit = {
@@ -5824,6 +5901,13 @@ export type StudentMedicalContact = {
 
 export type StudentMedicalFilter = {
   studentPartyId: Scalars['Long'];
+};
+
+export type StudentResultFilter = {
+  academicYearId?: InputMaybe<Scalars['Int']>;
+  assessmentId: Scalars['Long'];
+  studentPartyIds?: InputMaybe<Array<Scalars['Long']>>;
+  subjectGroupIds?: InputMaybe<Array<Scalars['Long']>>;
 };
 
 export type StudentSessionAttendance = {
@@ -8038,7 +8122,7 @@ export type Reporting_RunReportQueryVariables = Exact<{
 }>;
 
 
-export type Reporting_RunReportQuery = { __typename?: 'Query', reporting_runReport?: { __typename?: 'Reporting_TableReport', id: string, data?: Array<any | null> | null, info: { __typename?: 'Reporting_ReportInfo', name: string, supportsExpandRow: boolean }, innerReports: Array<{ __typename?: 'Reporting_ReportInfo', id: string, name: string }>, filters: Array<{ __typename?: 'Reporting_TableFilter', id: string, inputType: Reporting_TableFilterType, label: string, defaultValue?: any | null, required: boolean, minValue?: any | null, maxValue?: any | null, values?: Array<{ __typename?: 'Reporting_TableFilterValues', id?: any | null, value?: string | null } | null> | null }>, fields: Array<{ __typename?: 'Reporting_TableReportField', id: string, label: string, visibleByDefault: boolean, checkExpandedRows: boolean, hideMenu: boolean, sortable: boolean, maxWidth?: number | null, minWidth?: number | null }>, tableDisplayOptions: { __typename?: 'Reporting_TableDisplayOptions', gridOptions?: any | null, tableContainerSx?: any | null } } | null };
+export type Reporting_RunReportQuery = { __typename?: 'Query', reporting_runReport?: { __typename?: 'Reporting_TableReport', id: string, data?: Array<any | null> | null, info: { __typename?: 'Reporting_ReportInfo', name: string, supportsExpandRow: boolean }, innerReports: Array<{ __typename?: 'Reporting_ReportInfo', id: string, name: string }>, filters: Array<{ __typename?: 'Reporting_TableFilter', id: string, inputType: Reporting_TableFilterType, label: string, defaultValue?: any | null, required: boolean, minValue?: any | null, maxValue?: any | null, values?: Array<{ __typename?: 'Reporting_TableFilterValues', id?: any | null, value?: string | null } | null> | null }>, fields: Array<{ __typename?: 'Reporting_TableReportField', id: string, label: string, visibleByDefault: boolean, checkExpandedRows: boolean, hideMenu: boolean, sortable: boolean, maxWidth?: number | null, minWidth?: number | null, pinned?: Reporting_Pinned | null }>, tableDisplayOptions: { __typename?: 'Reporting_TableDisplayOptions', gridOptions?: any | null, tableContainerSx?: any | null } } | null };
 
 export type Core_UpsertAcademicNamespaceMutationVariables = Exact<{
   input?: InputMaybe<SaveAcademicNamespaceInput>;
@@ -8566,7 +8650,7 @@ export const PrintTimetableDocument = {"kind":"Document","definitions":[{"kind":
 export const Attendance_AwolReportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"attendance_awolReport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AwolFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"attendance_awolReport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"student"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"classGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"classGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"absentEvent"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventId"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}},{"kind":"Field","name":{"kind":"Name","value":"absentUpdatedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"absentCreatedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"presentEvent"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventId"}},{"kind":"Field","name":{"kind":"Name","value":"allDayEvent"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"presentSubjectGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"subjectGroupType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"presentUpdatedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"presentCreatedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}}]}}]} as unknown as DocumentNode<Attendance_AwolReportQuery, Attendance_AwolReportQueryVariables>;
 export const Reporting_ReportsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"reporting_reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reporting_reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"info"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<Reporting_ReportsQuery, Reporting_ReportsQueryVariables>;
 export const Reporting_RunReportExpandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"reporting_runReportExpand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Reporting_ReportFilterExpand"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reporting_runReportExpand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"visibleByDefault"}}]}},{"kind":"Field","name":{"kind":"Name","value":"data"}}]}}]}}]} as unknown as DocumentNode<Reporting_RunReportExpandQuery, Reporting_RunReportExpandQueryVariables>;
-export const Reporting_RunReportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"reporting_runReport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Reporting_ReportFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reporting_runReport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"info"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"supportsExpandRow"}}]}},{"kind":"Field","name":{"kind":"Name","value":"innerReports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"filters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"inputType"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"defaultValue"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"values"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"Field","name":{"kind":"Name","value":"minValue"}},{"kind":"Field","name":{"kind":"Name","value":"maxValue"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"visibleByDefault"}},{"kind":"Field","name":{"kind":"Name","value":"checkExpandedRows"}},{"kind":"Field","name":{"kind":"Name","value":"hideMenu"}},{"kind":"Field","name":{"kind":"Name","value":"sortable"}},{"kind":"Field","name":{"kind":"Name","value":"maxWidth"}},{"kind":"Field","name":{"kind":"Name","value":"minWidth"}}]}},{"kind":"Field","name":{"kind":"Name","value":"data"}},{"kind":"Field","name":{"kind":"Name","value":"tableDisplayOptions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gridOptions"}},{"kind":"Field","name":{"kind":"Name","value":"tableContainerSx"}}]}}]}}]}}]} as unknown as DocumentNode<Reporting_RunReportQuery, Reporting_RunReportQueryVariables>;
+export const Reporting_RunReportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"reporting_runReport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Reporting_ReportFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reporting_runReport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"info"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"supportsExpandRow"}}]}},{"kind":"Field","name":{"kind":"Name","value":"innerReports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"filters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"inputType"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"defaultValue"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"values"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"Field","name":{"kind":"Name","value":"minValue"}},{"kind":"Field","name":{"kind":"Name","value":"maxValue"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"visibleByDefault"}},{"kind":"Field","name":{"kind":"Name","value":"checkExpandedRows"}},{"kind":"Field","name":{"kind":"Name","value":"hideMenu"}},{"kind":"Field","name":{"kind":"Name","value":"sortable"}},{"kind":"Field","name":{"kind":"Name","value":"maxWidth"}},{"kind":"Field","name":{"kind":"Name","value":"minWidth"}},{"kind":"Field","name":{"kind":"Name","value":"pinned"}}]}},{"kind":"Field","name":{"kind":"Name","value":"data"}},{"kind":"Field","name":{"kind":"Name","value":"tableDisplayOptions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gridOptions"}},{"kind":"Field","name":{"kind":"Name","value":"tableContainerSx"}}]}}]}}]}}]} as unknown as DocumentNode<Reporting_RunReportQuery, Reporting_RunReportQueryVariables>;
 export const Core_UpsertAcademicNamespaceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_upsertAcademicNamespace"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SaveAcademicNamespaceInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_upsertAcademicNamespace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"academicNamespaceId"}}]}}]}}]} as unknown as DocumentNode<Core_UpsertAcademicNamespaceMutation, Core_UpsertAcademicNamespaceMutationVariables>;
 export const Core_SetActiveActiveAcademicNamespaceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_setActiveActiveAcademicNamespace"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SetActiveAcademicNamespace"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_setActiveActiveAcademicNamespace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"academicNamespaceId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActiveDefaultNamespace"}}]}}]}}]} as unknown as DocumentNode<Core_SetActiveActiveAcademicNamespaceMutation, Core_SetActiveActiveAcademicNamespaceMutationVariables>;
 export const Core_UpsertRoomsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_upsertRooms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpsertRoomInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_upsertRooms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}}]}}]}}]} as unknown as DocumentNode<Core_UpsertRoomsMutation, Core_UpsertRoomsMutationVariables>;
