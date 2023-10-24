@@ -16,7 +16,7 @@ import { RHFSmsMessageField } from '../sms-message-field';
 import { SmsSummary } from '../sms-summary';
 import { RecipientList, RecipientsForSmsModal } from './recipient-list';
 import { useSmsCostPerMessage } from '../../../api/sms-cost';
-import { BYTE_SIZE_PER_SMS, getByteSize } from '../../../utils/byte-size';
+import { analyzeSmsTextString } from '../../../utils/analyze-sms-text-string';
 
 export type { RecipientsForSmsModal } from './recipient-list';
 
@@ -67,10 +67,7 @@ export function SendSmsModal({
     'message',
     'recipientTypes',
   ]);
-  const numberOfMessages = useMemo(() => {
-    const messageByteSize = getByteSize(message);
-    return Math.ceil(messageByteSize / BYTE_SIZE_PER_SMS);
-  }, [message]);
+  const { numberOfMessages } = analyzeSmsTextString(message);
   const fullRecipientList = useMemo(
     () =>
       recipientList.reduce<NonNullable<SendSmsInput['recipients']>>(

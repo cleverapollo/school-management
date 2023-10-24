@@ -61,7 +61,6 @@ export const EditAcademicYearModal = ({
     resolver: resolver({
       name: [
         rules.required(),
-        rules.max(20),
         rules.isUniqueByKey(
           academicYearsWithoutSelf,
           'name',

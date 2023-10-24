@@ -142,9 +142,13 @@ export const ViewAbsentRequestModal = ({
 }: ViewAbsentRequestModalProps) => {
   const { t } = useTranslation(['common', 'attendance']);
 
-  const { data: attendanceCodes } = useAttendanceCodes({
-    visibleForContacts: isContact,
-  });
+  const { data: attendanceCodes } = useAttendanceCodes(
+    isContact
+      ? {
+          visibleForContacts: true,
+        }
+      : { teachingGroupCodes: false }
+  );
 
   const { mutate: createOrUpdateAbsentRequestMutation, isLoading } =
     useCreateOrUpdateAbsentRequest();

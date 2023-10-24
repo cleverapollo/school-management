@@ -1,39 +1,36 @@
 import { LoadingButton } from '@mui/lab';
-import {
-  Button,
-  Checkbox,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  Stack,
-} from '@mui/material';
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  DialogContentText,
-} from '@tyro/core';
+import { Box, Button, Checkbox, Grid, Stack, Typography } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import dayjs from 'dayjs';
 import { useState } from 'react';
 import { ReturnTypeFromUseSubjectGroupLessonByIterator } from '../../../api';
+import { AttendanceBreakdown } from './breakdown';
+import { StudentAttendance } from '../../../hooks';
+import { LessonCard } from './lesson-card';
 
 type AdditionalLessonsModalProps = {
-  events: ReturnTypeFromUseSubjectGroupLessonByIterator['eventsOnSameDayForSameGroup'];
+  isSaving: boolean;
+  attendance: StudentAttendance;
+  currentLesson?: ReturnTypeFromUseSubjectGroupLessonByIterator;
+  updatedAt: string;
+  updatedBy: string;
+  lessons: ReturnTypeFromUseSubjectGroupLessonByIterator['additionalLessons'];
   onClose: () => void;
-  onSave: (additionalLessonIds: number[], onSuccess: () => void) => void;
+  onSave: (additionalLessonIds: number[]) => void;
 };
 
 export function AdditionalLessonsModal({
-  events,
+  isSaving,
+  attendance,
+  currentLesson,
+  updatedAt,
+  updatedBy,
+  lessons,
   onSave,
   onClose,
 }: AdditionalLessonsModalProps) {
   const { t } = useTranslation(['common', 'attendance']);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [checkedEvents, setCheckedEvents] = useState<Set<number>>(new Set());
 
   const handleToggle = (eventId: number) => {
@@ -49,67 +46,136 @@ export function AdditionalLessonsModal({
   };
 
   const handleSave = () => {
-    setIsSubmitting(true);
-    onSave(Array.from(checkedEvents), () => {
-      setIsSubmitting(false);
-    });
+    const ids = Array.from(checkedEvents);
+
+    if (ids.length > 0) {
+      onSave(ids);
+    } else {
+      onClose();
+    }
   };
 
   return (
-    <Dialog open onClose={onClose} scroll="paper" fullWidth maxWidth="xs">
+    <Dialog
+      open
+      onClose={onClose}
+      scroll="paper"
+      fullWidth
+      maxWidth="md"
+      PaperProps={{
+        sx: ({ spacing }) => ({
+          maxWidth: spacing(96),
+        }),
+      }}
+    >
       <DialogTitle onClose={onClose}>
-        {t('attendance:additionalLessons.title', { count: events.length })}
+        {t('attendance:additionalLessons.title', { count: lessons.length })}
       </DialogTitle>
-      <DialogContent>
-        <Stack direction="column" gap={2}>
-          <DialogContentText>
-            {t('attendance:additionalLessons.description', {
-              count: events.length,
-            })}
-          </DialogContentText>
-          <List>
-            {events.map(({ eventId, startTime }) => (
-              <ListItem key={eventId} disablePadding>
-                <ListItemButton
-                  dense
-                  role={undefined}
-                  sx={({ spacing }) => ({ borderRadius: spacing(1) })}
-                  onClick={() => handleToggle(eventId)}
+      <DialogContent sx={{ overflow: 'initial' }}>
+        <Stack direction="column" gap={6}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              backgroundColor: 'slate.100',
+              borderRadius: 2.5,
+              p: 2.5,
+              borderTop: '1px solid',
+              borderTopColor: 'indigo.50',
+              flexWrap: 'wrap',
+              gap: 2,
+            }}
+          >
+            <Stack gap={1.5}>
+              <Stack flexDirection="row" gap={0.5}>
+                <Typography
+                  variant="subtitle2"
+                  component="span"
+                  color="text.secondary"
                 >
-                  <ListItemText
-                    id={`${eventId}`}
-                    primary={dayjs(startTime).format('HH:mm')}
-                  />
-                  <Checkbox
-                    edge="end"
-                    checked={checkedEvents.has(eventId)}
-                    tabIndex={-1}
-                    disableRipple
-                    inputProps={{ 'aria-labelledby': `${eventId}` }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
+                  {t('common:saved')}
+                </Typography>
+                <Typography variant="subtitle2" component="span">
+                  {updatedAt}
+                </Typography>
+              </Stack>
+
+              <LessonCard {...currentLesson} />
+            </Stack>
+            <Stack gap={1.5} justifyContent="flex-end">
+              <Stack flexDirection="row" gap={0.5}>
+                <Typography
+                  variant="subtitle2"
+                  component="span"
+                  color="text.secondary"
+                >
+                  {t('common:by')}
+                </Typography>
+                <Typography variant="subtitle2" component="span">
+                  {updatedBy}
+                </Typography>
+              </Stack>
+
+              <AttendanceBreakdown
+                borderRadius={2}
+                padding={1.5}
+                attendance={attendance}
+              />
+            </Stack>
+          </Box>
+          <Stack gap={4} px={2} mb={6}>
+            <Typography variant="subtitle1">
+              {t('attendance:additionalLessons.description', {
+                count: lessons.length,
+              })}
+            </Typography>
+            <Grid container spacing={3}>
+              {lessons.map((lesson) => {
+                const { eventId } = lesson;
+
+                return (
+                  <Grid key={eventId} item xs={12} sm={7} md={6}>
+                    <Stack
+                      flexDirection="row"
+                      alignItems="center"
+                      height="100%"
+                      marginRight={{ xs: 0, md: 6 }}
+                      gap={2}
+                    >
+                      <LessonCard
+                        {...lesson}
+                        onClick={() => handleToggle(eventId)}
+                      />
+                      <Checkbox
+                        checked={checkedEvents.has(eventId)}
+                        onChange={() => handleToggle(eventId)}
+                      />
+                    </Stack>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </Stack>
         </Stack>
       </DialogContent>
       <DialogActions>
         <Button
-          variant="outlined"
-          color="inherit"
-          disabled={isSubmitting}
+          variant="soft"
+          color="primary"
+          disabled={isSaving}
           onClick={onClose}
         >
-          {t('common:actions.cancel')}
+          {t('common:actions.close')}
         </Button>
 
         <LoadingButton
           type="submit"
           variant="contained"
-          loading={isSubmitting}
+          loading={isSaving}
           onClick={handleSave}
         >
-          {t('common:actions.save')}
+          {t('common:actions.apply')}
         </LoadingButton>
       </DialogActions>
     </Dialog>

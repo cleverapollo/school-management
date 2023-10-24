@@ -56,16 +56,15 @@ export const EditRoomDetailsModal = ({
     resolver: resolver({
       name: [
         rules.required(),
-        rules.max(20),
         rules.isUniqueByKey(
           roomsWithoutSelf,
           'name',
           t('settings:roomNameShouldBeUnique')
         ),
       ],
-      description: [rules.required(), rules.max(50)],
+      description: [rules.required()],
       capacity: [rules.required(), rules.min(0)],
-      location: [rules.required(), rules.max(50)],
+      location: [rules.required()],
     }),
     defaultValues: defaultFormStateValues,
     mode: 'onChange',

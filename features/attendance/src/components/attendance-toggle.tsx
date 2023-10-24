@@ -9,8 +9,9 @@ import {
 import { AttendanceCodeType } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { InfoCircleIcon, SchoolBuildingIcon } from '@tyro/icons';
-import { useEffect, useRef, useState } from 'react';
-import { useAttendanceCodes } from '../api';
+import { useRef, useState } from 'react';
+import { useAttendanceCodeById } from '../hooks/use-attendance-by-id';
+import { useAttendanceCodeByType } from '../hooks/use-attendance-by-type';
 
 type AttendanceToggleProps = {
   codeId?: number | null;
@@ -23,36 +24,29 @@ export function AttendanceToggle({ codeId, onChange }: AttendanceToggleProps) {
   const absentToggleRef = useRef<HTMLButtonElement>(null);
 
   const [isAbsentMenuOpen, setIsAbsentMenuOpen] = useState(false);
-  const [codeType, setCodeType] = useState<AttendanceCodeType>();
 
-  const { data: codesData, isLoading } = useAttendanceCodes({
-    teachingGroupCodes: true,
-  });
+  const codeByType = useAttendanceCodeByType({ teachingGroupCodes: true });
+  const codeById = useAttendanceCodeById({ teachingGroupCodes: true });
 
   const handleAttendanceCodeChange = (code: AttendanceCodeType | number) => {
-    const currentCode = codesData?.find((attendanceCode) => {
-      if (typeof code === 'number') return attendanceCode?.id === code;
-      return attendanceCode?.codeType === code;
-    });
+    if (codeById && codeByType) {
+      const currentCode =
+        typeof code === 'number' ? codeById[code] : codeByType[code];
 
-    if (currentCode) {
-      setCodeType(currentCode.codeType);
-      onChange(currentCode.id);
-      setIsAbsentMenuOpen(false);
+      if (currentCode) {
+        onChange(currentCode.id);
+        setIsAbsentMenuOpen(false);
+      }
     }
   };
 
-  useEffect(() => {
-    if (codesData?.length && codeId) {
-      handleAttendanceCodeChange(codeId);
-    }
-  }, [codesData, codeId]);
+  const codeType = codeId
+    ? codeById?.[codeId]?.codeType
+    : codeByType?.PRESENT?.codeType;
 
   const isAbsentCodeSelected =
     codeType === AttendanceCodeType.ExplainedAbsence ||
     codeType === AttendanceCodeType.UnexplainedAbsence;
-
-  if (isLoading) return null;
 
   return (
     <>

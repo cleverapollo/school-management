@@ -1,20 +1,24 @@
 import { Box, CircularProgress, Stack, Typography } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
+import { useMemo } from 'react';
 import { BehaviourTypes } from './behaviour-types';
 import { ReturnTypeFromBehaviourCategories } from '../../../api/behaviour/individual-student-behaviour';
 
 type BehaviourLevelsContainerProps = {
   categories: ReturnTypeFromBehaviourCategories[];
   isCategoriesLoading: boolean;
-  totalLogsByLevels: number;
 };
 
 export const CategoriesContainer = ({
   categories,
   isCategoriesLoading,
-  totalLogsByLevels,
 }: BehaviourLevelsContainerProps) => {
   const { t } = useTranslation(['common', 'people']);
+
+  const totalCategoryLogCount = useMemo(
+    () => categories?.reduce((acc, curr) => acc + (curr?.count ?? 0), 0),
+    [categories]
+  );
 
   return isCategoriesLoading ? (
     <CircularProgress />
@@ -37,7 +41,7 @@ export const CategoriesContainer = ({
             color="text.secondary"
             sx={{ fontSize: '0.75rem' }}
           >
-            {t('people:totalLogs', { count: totalLogsByLevels })}
+            {t('people:totalLogs', { count: totalCategoryLogCount })}
           </Typography>
         </Box>
       </Stack>
