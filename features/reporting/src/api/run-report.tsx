@@ -36,6 +36,7 @@ const reportsRun = graphql(/* GraphQL */ `
         sortable
         maxWidth
         minWidth
+        pinned
       }
       data
       tableDisplayOptions {
