@@ -2,12 +2,12 @@ import { GridOptions, Table } from '@tyro/core';
 import { Reporting_TableFilterInput } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
 import { useRunReports } from '../api/run-report';
 import { DynamicForm } from '../components/dynamic-form';
 
-type GenericReportData = Array<{ [key: string]: { value: any } }>;
-type FormattedReportData = Array<{ [key: string]: any } & { id: number }>;
+type GenericReportData = Array<{ [key: string]: GenericReportDataCell }>;
+type GenericReportDataCell = { value: any; colour: string };
+type FormattedReportData = Array<{ [key: string]: GenericReportDataCell }>;
 
 export default function ReportPage() {
   const { id = '', reportId = '' } = useParams();
@@ -29,20 +29,36 @@ export default function ReportPage() {
     GridOptions<FormattedReportData[number]>['columnDefs']
   >(() => {
     const fieldsColumns = reportData?.fields || [];
-
-    return fieldsColumns.map((column) => ({
-      field: column.id,
-      headerName: column.label,
-      hide: !column.visibleByDefault,
-      ...(column.hideMenu
-        ? {
-            suppressMenu: true,
-          }
-        : {
-            filter: true,
-            enableRowGroup: true,
-          }),
-    }));
+    return fieldsColumns.map((column) => {
+      // @ts-ignore
+      const valueGetter = ({ data }) => {
+        if (data != null) {
+          // @ts-ignore
+          const value = data[column.id] as GenericReportDataCell;
+          return value?.value;
+        }
+      };
+      const mapped = {
+        field: column.id,
+        headerName: column.label,
+        valueGetter,
+        sortable: column.sortable,
+        hide: !column.visibleByDefault,
+        ...(column.hideMenu
+          ? {
+              suppressMenu: true,
+            }
+          : {
+              filter: true,
+              enableRowGroup: true,
+            }),
+      };
+      if (column.maxWidth) {
+        // @ts-ignore
+        mapped.maxWidth = column.maxWidth;
+      }
+      return mapped;
+    });
   }, [reportData?.fields]);
 
   const genericReportData = useMemo<FormattedReportData>(() => {
@@ -51,7 +67,7 @@ export default function ReportPage() {
     return reportFieldsData.reduce<FormattedReportData>(
       (reportFieldData, obj) => {
         const rowData = Object.keys(obj).reduce((row, key) => {
-          row[key] ??= obj[key].value;
+          row[key] ??= obj[key];
           return row;
         }, {} as FormattedReportData[number]);
 
@@ -72,7 +88,13 @@ export default function ReportPage() {
         isLoading={isLoading}
         rowData={genericReportData}
         columnDefs={mainColumns}
-        getRowId={({ data }) => String(data?.id)}
+        gridOptions={{
+          ...reportData?.tableDisplayOptions?.gridOptions,
+        }}
+        tableContainerSx={{
+          ...reportData?.tableDisplayOptions?.tableContainerSx,
+        }}
+        getRowId={({ data }) => String(data?.id.value)}
         statusBar={{
           statusPanels: [
             {
