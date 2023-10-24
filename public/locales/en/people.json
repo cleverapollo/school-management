@@ -45,6 +45,7 @@
     "FEMALE": "Female",
     "UNKNOWN": "Unknown"
   },
+  "dateOfBirth": "Date of birth",
   "employmentCapacity": "Employment capacity",
   "personal": {
     "title": "Personal",
@@ -57,7 +58,6 @@
       "preferredLastName": "Preferred surname",
       "surname": "Surname",
       "middleName": "Middle name",
-      "dateOfBirth": "Date of birth",
       "departmentId": "Department ID",
       "birthCertForename": "Birth cert. forename",
       "birthCertSurname": "Birth cert. surname",

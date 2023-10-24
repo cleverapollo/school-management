@@ -15,23 +15,18 @@ import {
 import { Link } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { AddDocIcon } from '@tyro/icons';
-import {
-  useAcademicNamespace,
-  usePermissions,
-  UseQueryReturnType,
-} from '@tyro/api';
+import { useAcademicNamespace, usePermissions } from '@tyro/api';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { useAssessments } from '../api/assessments';
+import {
+  ReturnTypeFromUseAssessments,
+  useAssessments,
+} from '../api/assessments';
 import { AcademicYearDropdown } from '../components/list-assessments/academic-year-dropdown';
 import { getAssessmentSubjectGroupsLink } from '../utils/get-assessment-subject-groups-link';
 import { AssessmentActionMenu } from '../components/list-assessments/assessment-action-menu';
 
 dayjs.extend(LocalizedFormat);
-
-type ReturnTypeFromUseAssessments = UseQueryReturnType<
-  typeof useAssessments
->[number];
 
 const getColumnDefs = (
   translate: TFunction<
@@ -90,14 +85,40 @@ const getColumnDefs = (
       dayjs(dateA).unix() - dayjs(dateB).unix(),
   },
   {
-    field: 'publish',
+    field: 'publishedFrom',
     headerName: translate('assessments:publishedOnline'),
-    valueGetter: ({ data }) =>
-      data?.publish ? translate('common:yes') : translate('common:no'),
+    valueGetter: ({ data }) => {
+      if (!data) return null;
+
+      if (
+        data.publishedFrom &&
+        dayjs(data.publishedFrom).isAfter(dayjs(), 'day')
+      ) {
+        return translate('common:fromDate', {
+          date: dayjs(data.publishedFrom).format('LL'),
+        });
+      }
+
+      return data.publishedFrom
+        ? translate('common:yes')
+        : translate('common:no');
+    },
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseAssessments>) =>
-      data && <TableBooleanValue value={!!data?.publish} />,
+    }: ICellRendererParams<ReturnTypeFromUseAssessments>) => {
+      if (!data) return null;
+
+      if (
+        data.publishedFrom &&
+        dayjs(data.publishedFrom).isAfter(dayjs(), 'day')
+      ) {
+        return translate('common:fromDate', {
+          date: dayjs(data.publishedFrom).format('LL'),
+        });
+      }
+
+      return <TableBooleanValue value={!!data.publishedFrom} />;
+    },
   },
   {
     suppressColumnsToolPanel: true,

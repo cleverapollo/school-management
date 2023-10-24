@@ -46,6 +46,7 @@ export * from './close-circle-with-pencil';
 export * from './close-circle-with-warning';
 export * from './cloud-upload';
 export * from './collapse';
+export * from './comment';
 export * from './copy';
 export * from './doc-search';
 export * from './double-checkmark';
