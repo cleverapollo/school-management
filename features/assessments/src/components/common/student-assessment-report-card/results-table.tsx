@@ -10,7 +10,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { useMemo } from 'react';
+import { useMemo, Fragment } from 'react';
 import { useTranslation } from '@tyro/i18n';
 import { TableStudyLevelChip } from '@tyro/core';
 import { StudyLevel } from '@tyro/api';
@@ -40,12 +40,14 @@ function getRowDetailsFromResult(
 ) {
   const { staff, subjects } = result.subjectGroup;
   const teacherNames =
-    staff
-      ?.map(
-        ({ firstName, lastName }) =>
-          `${firstName ? firstName[0] : ''}. ${lastName ?? ''}`
-      )
-      .join(', ') ?? '-';
+    staff?.map(({ partyId, firstName, lastName }, index) => (
+      <>
+        <span key={partyId} style={{ whiteSpace: 'nowrap' }}>
+          {firstName ? firstName[0] : ''}. {lastName ?? ''}
+        </span>
+        {index !== staff.length - 1 ? ', ' : ''}
+      </>
+    )) ?? '-';
   const subject = subjects.length > 0 ? subjects[0] : null;
 
   return {
