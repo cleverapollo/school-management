@@ -236,5 +236,17 @@
   "category": {
     "createCategory": "Create category",
     "editCategory": "Edit category"
+  },
+  "commentBanks": {
+    "addCommentBank": "Add comment bank",
+    "addComment": "Add comment",
+    "editCommentBank": "Edit comment bank",
+    "commentBanks": "Comment banks",
+    "comments": "Comments",
+    "comment": "Comment",
+    "createCommentBank": "Create comment bank",
+    "createComment": "Create comment",
+    "status": "Status",
+    "archived": "Archived"
   }
 }
