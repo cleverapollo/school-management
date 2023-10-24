@@ -36,7 +36,7 @@ const getCommentsColumns = (
     field: 'comment',
     editable: true,
     cellEditor: 'agCellEditor',
-    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
+    cellClass: ['ag-editable-cell'],
     valueSetter: ({ data, newValue }) => {
       set(data ?? {}, 'comment', newValue);
       return true;
@@ -47,7 +47,7 @@ const getCommentsColumns = (
     headerName: t('settings:commentBanks.status'),
     field: 'active',
     editable: true,
-    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
+    cellClass: ['ag-editable-cell'],
     cellEditor: TableSwitch,
     valueSetter: ({ data, newValue }) => {
       set(data ?? {}, 'active', newValue);

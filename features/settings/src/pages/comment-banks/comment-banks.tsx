@@ -34,7 +34,7 @@ const getCommentBankColumns = (
     field: 'name',
     editable: true,
     cellEditor: 'agCellEditor',
-    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
+    cellClass: ['ag-editable-cell'],
     valueGetter: ({ data }) => data?.name || '-',
     valueSetter: ({ data, newValue }) => {
       set(data ?? {}, 'name', newValue);
@@ -49,7 +49,7 @@ const getCommentBankColumns = (
     field: 'description',
     editable: true,
     cellEditor: 'agCellEditor',
-    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
+    cellClass: ['ag-editable-cell'],
     valueGetter: ({ data }) => data?.description || '-',
     valueSetter: ({ data, newValue }) => {
       set(data ?? {}, 'description', newValue);
