@@ -26,7 +26,7 @@ const studentDashboardAssessmentsQuery = (studentId: number | undefined) => ({
   queryKey: assessmentsKeys.studentAssessments(studentId ?? 0),
   queryFn: async () =>
     gqlClient.request(studentDashboardAssessments, {
-      filter: { studentPartyId: studentId ?? 0 },
+      filter: { studentPartyId: studentId ?? 0, published: true },
     }),
 });
 
