@@ -103,8 +103,6 @@ export default function CommentBanks() {
       'id' | 'name' | 'description' | 'active' | 'comments'
     >
   ) => {
-    console.log(data, 'data');
-
     const formattedData = Object.keys(data).flatMap((idStr) =>
       (commentBanks || [])
         .filter(
