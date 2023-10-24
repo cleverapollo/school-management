@@ -24,7 +24,24 @@ export function useOmniSearch(query: string) {
     queryKey: ['omni-search', query],
     queryFn: async () =>
       gqlClient.request(omniSearch, {
-        filter: { text: trimmedQuery, context: [Context.All] },
+        filter: {
+          text: trimmedQuery,
+          context: [Context.All],
+          includeSearchType: [
+            SearchType.Student,
+            SearchType.Staff,
+            SearchType.GeneralGroup,
+            SearchType.GeneralGroupStudent,
+            SearchType.GeneralGroupStaff,
+            SearchType.SubjectGroup,
+            SearchType.SubjectGroupStudent,
+            SearchType.SubjectGroupStaff,
+            SearchType.YearGroupEnrollment,
+            SearchType.SubjectGroupStaff,
+            SearchType.CustomGroup,
+            SearchType.Room,
+          ],
+        },
       }),
     enabled: trimmedQuery.length > 0,
     keepPreviousData: true,
@@ -33,16 +50,10 @@ export function useOmniSearch(query: string) {
         (Array.isArray(search_search) && search_search?.length > 0) ||
         results?.length > 0,
       people: search_search.filter(
-        ({ type }) =>
-          type === SearchType.Contact ||
-          type === SearchType.Student ||
-          type === SearchType.Staff
+        ({ type }) => type === SearchType.Student || type === SearchType.Staff
       ),
       groups: search_search.filter(
-        ({ type }) =>
-          type !== SearchType.Contact &&
-          type !== SearchType.Student &&
-          type !== SearchType.Staff
+        ({ type }) => type !== SearchType.Student && type !== SearchType.Staff
       ),
       pages: results.map(({ item: { path, icon, title, breadcrumbs } }) => ({
         partyId: path,
