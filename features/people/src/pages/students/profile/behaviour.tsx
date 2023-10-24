@@ -328,7 +328,11 @@ export default function StudentProfileBehaviourPage() {
         <Stack direction="column">
           <Box>
             <Button
-              onClick={() => setBehaviourType(Notes_BehaviourType.Positive)}
+              onClick={() => {
+                setBehaviourType(Notes_BehaviourType.Positive);
+                setCurrentTabValue('All');
+                setValue(0);
+              }}
               sx={{
                 borderRadius: 1,
                 backgroundColor:
@@ -364,7 +368,11 @@ export default function StudentProfileBehaviourPage() {
               {t('common:behaviourType.POSITIVE')}
             </Button>
             <Button
-              onClick={() => setBehaviourType(Notes_BehaviourType.Negative)}
+              onClick={() => {
+                setBehaviourType(Notes_BehaviourType.Negative);
+                setCurrentTabValue('All');
+                setValue(0);
+              }}
               sx={{
                 borderRadius: 1,
                 backgroundColor:
