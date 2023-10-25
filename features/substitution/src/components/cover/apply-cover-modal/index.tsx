@@ -150,7 +150,7 @@ export function ApplyCoverModal({
         </DialogTitle>
         <DialogContent>
           {isLoading ? (
-            <LoadingPlaceholder sx={{ minHeight: 200 }} />
+            <LoadingPlaceholder sx={{ minHeight: 200, position: 'relative' }} />
           ) : (
             <Stack spacing={2}>
               <Box>
@@ -158,7 +158,7 @@ export function ApplyCoverModal({
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   containerProps={{
-                    px: 2,
+                    maxWidth: 320,
                   }}
                 />
               </Box>

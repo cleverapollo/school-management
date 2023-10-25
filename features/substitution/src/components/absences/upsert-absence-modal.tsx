@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   Collapse,
+  DialogContent,
   IconButton,
   Stack,
   Tooltip,
@@ -26,11 +27,7 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { RHFStaffAutocomplete, useStaffSubjectGroups } from '@tyro/people';
 import { AddIcon, TrashIcon } from '@tyro/icons';
-import {
-  Swm_UpsertStaffAbsenceDate,
-  Swm_UpsertStaffAbsenceLongTermLeaveGroupInput,
-  UseQueryReturnType,
-} from '@tyro/api';
+import { Person, Swm_UpsertStaffAbsenceDate } from '@tyro/api';
 import {
   ReturnTypeFromUseStaffWorkAbsences,
   useSaveStaffAbsence,
@@ -39,10 +36,6 @@ import {
   AbsenceTypeAutoComplete,
   StaffWorkAbsenceTypeOption,
 } from './absence-type-autocomplete';
-
-type ReturnTypeFromUseStaffSubjectGroups = UseQueryReturnType<
-  typeof useStaffSubjectGroups
->[number];
 
 export interface UpsertAbsenceModalProps {
   initialAbsenceData: Partial<ReturnTypeFromUseStaffWorkAbsences> | null;
@@ -63,7 +56,10 @@ interface UpsertAbsenceFormState {
   note: string;
   dates: Array<AbsenceDate>;
   isLongTermLeave: boolean;
-  longTermLeaveGroups: Array<Swm_UpsertStaffAbsenceLongTermLeaveGroupInput>;
+  longTermLeaveGroups: Array<{
+    groupId: number;
+    coveringStaff: Person | undefined;
+  }>;
   startDate: Dayjs;
   endDate: Dayjs;
 }
@@ -118,15 +114,6 @@ function mapAbsenceDates(datesToMap: Array<AbsenceDate>) {
   );
 }
 
-const defaultFormValue = {
-  dates: [
-    {
-      isFullDay: true,
-      dates: [],
-    },
-  ],
-};
-
 export function UpsertAbsenceModal({
   initialAbsenceData,
   open,
@@ -134,6 +121,7 @@ export function UpsertAbsenceModal({
 }: UpsertAbsenceModalProps) {
   const { t } = useTranslation(['common', 'substitution']);
   const { resolver, rules } = useFormValidator<UpsertAbsenceFormState>();
+  const isEditAbsence = !!initialAbsenceData?.absenceId;
 
   const { mutateAsync: saveStaffAbsence, isLoading } = useSaveStaffAbsence();
 
@@ -187,18 +175,19 @@ export function UpsertAbsenceModal({
     name: 'dates',
   });
 
-  const selectedStaff = watch('staff');
+  const { fields: ltlGroups, replace: replaceLtlGroups } = useFieldArray({
+    control,
+    name: 'longTermLeaveGroups',
+  });
+
+  const [selectedStaff, datesValue, isLongTermLeaveValue] = watch([
+    'staff',
+    'dates',
+    'isLongTermLeave',
+  ]);
 
   const { data: subjectGroupsData } = useStaffSubjectGroups({
     partyIds: [selectedStaff?.partyId || 0],
-  });
-  const {
-    fields: ltlGroups,
-
-    replace: replaceLtlGroups,
-  } = useFieldArray({
-    control,
-    name: 'longTermLeaveGroups',
   });
 
   const onSubmit = handleSubmit(
@@ -213,28 +202,27 @@ export function UpsertAbsenceModal({
       endDate,
     }) => {
       if (isLongTermLeave) {
-        const ltlValue = longTermLeaveGroups.map((g) => ({
-          groupId: g.groupId,
-          // @ts-expect-error
-          coveringStaffId: g?.coveringStaffId?.partyId,
-        }));
-        const ltlDates = [
-          {
-            continuousStartDate: startDate.format('YYYY-MM-DD'),
-            continuousEndDate: endDate.format('YYYY-MM-DD'),
-            partialAbsence: false,
-          },
-        ] as Swm_UpsertStaffAbsenceDate[];
         return saveStaffAbsence(
           [
             {
               staffPartyId: staff.partyId,
-              dates: ltlDates,
+              dates: [
+                {
+                  continuousStartDate: startDate.format('YYYY-MM-DD'),
+                  continuousEndDate: endDate.format('YYYY-MM-DD'),
+                  partialAbsence: false,
+                },
+              ],
               absenceTypeId: absenceType.absenceTypeId,
               absenceReasonText: note,
               substitutionRequired: true,
               isLongTermLeave,
-              longTermLeaveGroups: ltlValue,
+              longTermLeaveGroups: longTermLeaveGroups.map(
+                ({ groupId, coveringStaff }) => ({
+                  groupId,
+                  coveringStaffId: coveringStaff?.partyId,
+                })
+              ),
             },
           ],
           {
@@ -242,6 +230,7 @@ export function UpsertAbsenceModal({
           }
         );
       }
+
       const mappedDates = mapAbsenceDates(dates);
       return saveStaffAbsence(
         [
@@ -262,85 +251,248 @@ export function UpsertAbsenceModal({
 
   useEffect(() => {
     if (initialAbsenceData) {
+      let dates: Partial<UpsertAbsenceFormState> = {
+        dates: [
+          {
+            isFullDay: true,
+            dates: [],
+          },
+        ],
+      };
+
+      if (initialAbsenceData?.dates) {
+        dates = initialAbsenceData.isLongTermLeave
+          ? {
+              startDate: dayjs(initialAbsenceData.dates[0].continuousStartDate),
+              endDate: dayjs(initialAbsenceData.dates[0].continuousEndDate),
+            }
+          : {
+              dates: initialAbsenceData.dates.map(
+                ({ partialAbsence, individualDates, leavesAt, returnsAt }) => ({
+                  isFullDay: !partialAbsence,
+                  dates: individualDates?.map((date) => dayjs(date)) ?? [],
+                  startTime: leavesAt ? dayjs(leavesAt, 'HH:mm') : undefined,
+                  endTime: returnsAt ? dayjs(returnsAt, 'HH:mm') : undefined,
+                })
+              ),
+            };
+      }
+
       reset({
-        ...defaultFormValue,
+        ...dates,
+        staff: initialAbsenceData?.staff ?? undefined,
+        absenceType: initialAbsenceData?.absenceType,
+        note: initialAbsenceData.absenceReasonText ?? '',
+        isLongTermLeave: initialAbsenceData?.isLongTermLeave ?? false,
+        longTermLeaveGroups:
+          initialAbsenceData?.longTermLeaveGroups?.map(
+            ({ groupId, coveringStaff }) => ({
+              groupId,
+              coveringStaff: coveringStaff?.person,
+            })
+          ) ?? [],
       });
     }
   }, [initialAbsenceData]);
 
   useEffect(() => {
     if (subjectGroupsData) {
-      const updatedPartyIds = subjectGroupsData.map(
-        (group) =>
-          ({
-            groupId: group.partyId,
-          } as Swm_UpsertStaffAbsenceLongTermLeaveGroupInput)
-      );
-      console.log('updatedPartyIds', updatedPartyIds);
-      console.log(updatedPartyIds);
+      const updatedPartyIds = subjectGroupsData.map((group) => ({
+        groupId: group.partyId,
+        coveringStaff: undefined,
+      }));
 
       replaceLtlGroups(updatedPartyIds);
-      console.log('---------------ltlGroups');
-      console.log(ltlGroups);
     }
   }, [subjectGroupsData]);
 
-  const dates = watch('dates');
-  const isLongTermLeaveValue = watch('isLongTermLeave');
-
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle>{t('substitution:createStaffAbsence')}</DialogTitle>
+      <DialogTitle>
+        {isEditAbsence
+          ? t('substitution:editStaffAbsence')
+          : t('substitution:createStaffAbsence')}
+      </DialogTitle>
       <form onSubmit={onSubmit}>
-        <Stack spacing={3} sx={{ p: 3 }}>
-          <Stack direction="row" spacing={2}>
-            <RHFStaffAutocomplete
+        <DialogContent sx={{ pt: 0.75 }}>
+          <Stack spacing={3}>
+            <Stack direction="row" spacing={2}>
+              <RHFStaffAutocomplete
+                controlProps={{
+                  name: 'staff',
+                  control,
+                }}
+              />
+              <AbsenceTypeAutoComplete
+                label={t('substitution:reason')}
+                controlProps={{
+                  name: 'absenceType',
+                  control,
+                }}
+              />
+            </Stack>
+            <RHFCheckbox
+              label={
+                <Stack direction="row" gap={2}>
+                  {t('substitution:applyLongTermLeave')}
+                </Stack>
+              }
+              controlLabelProps={{
+                sx: { mb: 2 },
+              }}
+              checkboxProps={{
+                color: 'primary',
+                disabled: isEditAbsence,
+              }}
+              controlProps={{ name: 'isLongTermLeave', control }}
+            />
+            <RHFTextField
+              label={t('substitution:note')}
               controlProps={{
-                name: 'staff',
+                name: 'note',
                 control,
               }}
-            />
-            <AbsenceTypeAutoComplete
-              label={t('substitution:reason')}
-              controlProps={{
-                name: 'absenceType',
-                control,
+              textFieldProps={{
+                multiline: true,
+                rows: 3,
               }}
             />
-          </Stack>
-          <RHFCheckbox
-            label={
-              <Stack direction="row" gap={2}>
-                {t('substitution:applyLongTermLeave')}
-              </Stack>
-            }
-            controlLabelProps={{
-              sx: { mb: 2 },
-            }}
-            checkboxProps={{
-              color: 'primary',
-            }}
-            controlProps={{ name: 'isLongTermLeave', control }}
-          />
-          <RHFTextField
-            label={t('substitution:note')}
-            controlProps={{
-              name: 'note',
-              control,
-            }}
-            textFieldProps={{
-              multiline: true,
-              rows: 3,
-            }}
-          />
 
-          {!isLongTermLeaveValue && (
-            <Stack spacing={2}>
-              {fields.map((field, index) => {
-                const { isFullDay, startTime } = dates[index];
-                return (
+            {!isLongTermLeaveValue && (
+              <Stack spacing={2}>
+                {fields.map((field, index) => {
+                  const { isFullDay, startTime } = datesValue[index];
+                  return (
+                    <Stack
+                      key={field.id}
+                      sx={({ palette }) => ({
+                        backgroundColor: 'background.neutral',
+                        p: 2,
+                        pt: 1,
+                        borderRadius: 1,
+                        border: `1px solid ${palette.divider}`,
+                      })}
+                      spacing={2}
+                    >
+                      <Stack direction="row" justifyContent="space-between">
+                        <RHFSwitch<UpsertAbsenceFormState>
+                          label={t('common:allDay')}
+                          switchProps={{
+                            color: 'primary',
+                            disabled: isEditAbsence,
+                          }}
+                          controlProps={{
+                            name: `dates.${index}.isFullDay`,
+                            control,
+                          }}
+                        />
+                        {index > 0 && (
+                          <Tooltip
+                            describeChild
+                            title={t('common:actions.remove')}
+                          >
+                            <IconButton
+                              aria-label={t('common:actions.remove')}
+                              onClick={() => {
+                                remove(index);
+                              }}
+                              disabled={isEditAbsence}
+                              color="primary"
+                            >
+                              <TrashIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </Stack>
+
+                      <RHFMultiDatePicker
+                        label={t('common:dates')}
+                        inputProps={{
+                          fullWidth: true,
+                          variant: 'white-filled',
+                          disabled: isEditAbsence,
+                        }}
+                        controlProps={{
+                          name: `dates.${index}.dates`,
+                          control,
+                        }}
+                      />
+
+                      <Collapse in={!isFullDay}>
+                        <Stack direction="row" gap={1} width="100%">
+                          <RHFTimePicker
+                            label={t('common:startTime')}
+                            inputProps={{
+                              fullWidth: true,
+                              variant: 'white-filled',
+                              disabled: isEditAbsence,
+                            }}
+                            controlProps={{
+                              name: `dates.${index}.startTime`,
+                              control,
+                            }}
+                          />
+                          <RHFTimePicker
+                            label={t('common:endTime')}
+                            timePickerProps={{
+                              minTime: startTime ? dayjs(startTime) : undefined,
+                            }}
+                            inputProps={{
+                              fullWidth: true,
+                              variant: 'white-filled',
+                              disabled: isEditAbsence,
+                            }}
+                            controlProps={{
+                              name: `dates.${index}.endTime`,
+                              control,
+                            }}
+                          />
+                        </Stack>
+                      </Collapse>
+                    </Stack>
+                  );
+                })}
+                <Box
+                  sx={{
+                    display: 'flex',
+                  }}
+                >
+                  <Button
+                    variant="text"
+                    onClick={() => {
+                      append({
+                        isFullDay: true,
+                        dates: [],
+                      });
+                    }}
+                    disabled={isEditAbsence}
+                    startIcon={<AddIcon />}
+                  >
+                    {t('common:addDate')}
+                  </Button>
+                </Box>
+              </Stack>
+            )}
+
+            {isLongTermLeaveValue &&
+              subjectGroupsData &&
+              subjectGroupsData.length > 0 && (
+                <>
+                  <Stack direction="row" spacing={2}>
+                    <RHFDatePicker
+                      label={t('common:startDate')}
+                      inputProps={{ fullWidth: true, disabled: isEditAbsence }}
+                      controlProps={{ name: 'startDate', control }}
+                    />
+                    <RHFDatePicker
+                      label={t('common:endDate')}
+                      inputProps={{ fullWidth: true, disabled: isEditAbsence }}
+                      controlProps={{ name: 'endDate', control }}
+                    />
+                  </Stack>
+
                   <Stack
-                    key={field.id}
+                    spacing={2}
                     sx={({ palette }) => ({
                       backgroundColor: 'background.neutral',
                       p: 2,
@@ -348,162 +500,47 @@ export function UpsertAbsenceModal({
                       borderRadius: 1,
                       border: `1px solid ${palette.divider}`,
                     })}
-                    spacing={2}
                   >
-                    <Stack direction="row" justifyContent="space-between">
-                      <RHFSwitch<UpsertAbsenceFormState>
-                        label={t('common:allDay')}
-                        switchProps={{ color: 'primary' }}
-                        controlProps={{
-                          name: `dates.${index}.isFullDay`,
-                          control,
-                        }}
-                      />
-                      {index > 0 && (
-                        <Tooltip
-                          describeChild
-                          title={t('common:actions.remove')}
-                        >
-                          <IconButton
-                            aria-label={t('common:actions.remove')}
-                            onClick={() => {
-                              remove(index);
+                    <Typography variant="subtitle1" color="text.secondary">
+                      {t('substitution:selectCoverStaff')}
+                    </Typography>
+                    {ltlGroups?.map((field, index) => {
+                      const subjectGroup = subjectGroupsData[index];
+                      return (
+                        <Stack direction="row" justifyContent="space-evenly">
+                          <Typography
+                            variant="subtitle1"
+                            color="text.secondary"
+                            sx={{
+                              width: '50%',
+                              my: 1.5,
                             }}
-                            color="primary"
                           >
-                            <TrashIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </Stack>
-
-                    <RHFMultiDatePicker
-                      label={t('common:dates')}
-                      inputProps={{
-                        fullWidth: true,
-                        variant: 'white-filled',
-                      }}
-                      controlProps={{
-                        name: `dates.${index}.dates`,
-                        control,
-                      }}
-                    />
-
-                    <Collapse in={!isFullDay}>
-                      <Stack direction="row" gap={1} width="100%">
-                        <RHFTimePicker
-                          label={t('common:startTime')}
-                          inputProps={{
-                            fullWidth: true,
-                            variant: 'white-filled',
-                          }}
-                          controlProps={{
-                            name: `dates.${index}.startTime`,
-                            control,
-                          }}
-                        />
-                        <RHFTimePicker
-                          label={t('common:endTime')}
-                          timePickerProps={{
-                            minTime: startTime ? dayjs(startTime) : undefined,
-                          }}
-                          inputProps={{
-                            fullWidth: true,
-                            variant: 'white-filled',
-                          }}
-                          controlProps={{
-                            name: `dates.${index}.endTime`,
-                            control,
-                          }}
-                        />
-                      </Stack>
-                    </Collapse>
+                            {subjectGroup?.name}
+                          </Typography>
+                          <RHFStaffAutocomplete
+                            key={field.id}
+                            label={
+                              <Stack direction="row">
+                                {subjectGroup?.name}
+                              </Stack>
+                            }
+                            sx={{
+                              backgroundColor: 'white',
+                            }}
+                            controlProps={{
+                              name: `longTermLeaveGroups.${index}.coveringStaff`,
+                              control,
+                            }}
+                          />
+                        </Stack>
+                      );
+                    })}
                   </Stack>
-                );
-              })}
-              <Box
-                sx={{
-                  display: 'flex',
-                }}
-              >
-                <Button
-                  variant="text"
-                  onClick={() => {
-                    append({
-                      isFullDay: true,
-                      dates: [],
-                    });
-                  }}
-                  startIcon={<AddIcon />}
-                >
-                  {t('common:addDate')}
-                </Button>
-              </Box>
-            </Stack>
-          )}
-
-          {isLongTermLeaveValue &&
-            subjectGroupsData &&
-            subjectGroupsData.length > 0 && (
-              <>
-                <Stack direction="row" spacing={2}>
-                  <RHFDatePicker
-                    label={t('common:startDate')}
-                    inputProps={{ fullWidth: true }}
-                    controlProps={{ name: 'startDate', control }}
-                  />
-                  <RHFDatePicker
-                    label={t('common:endDate')}
-                    inputProps={{ fullWidth: true }}
-                    controlProps={{ name: 'endDate', control }}
-                  />
-                </Stack>
-
-                <Stack
-                  spacing={2}
-                  sx={({ palette }) => ({
-                    backgroundColor: 'background.neutral',
-                    p: 2,
-                    pt: 1,
-                    borderRadius: 1,
-                    border: `1px solid ${palette.divider}`,
-                  })}
-                >
-                  <Typography variant="subtitle1" color="text.secondary">
-                    {t('substitution:selectCoverStaff')}
-                  </Typography>
-                  {ltlGroups?.map((field, index) => {
-                    const sg = subjectGroupsData[index];
-                    return (
-                      <Stack direction="row" justifyContent="space-evenly">
-                        <Typography
-                          variant="subtitle1"
-                          color="text.secondary"
-                          sx={{
-                            width: '50%',
-                            my: 1.5,
-                          }}
-                        >
-                          {sg?.name}
-                        </Typography>
-                        <RHFStaffAutocomplete
-                          key={field.id}
-                          label={<Stack direction="row">{sg?.name}</Stack>}
-                          sx={({ palette }) => ({
-                            backgroundColor: 'white',
-                          })}
-                          controlProps={{
-                            name: `longTermLeaveGroups.${index}.coveringStaffId`,
-                            control,
-                          }}
-                        />
-                      </Stack>
-                    );
-                  })}
-                </Stack>
-              </>
-            )}
-        </Stack>
+                </>
+              )}
+          </Stack>
+        </DialogContent>
 
         <DialogActions>
           <Button variant="soft" color="inherit" onClick={onClose}>

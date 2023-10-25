@@ -8,6 +8,7 @@ import { EventCoverContextMenu } from './event-context-menu';
 import {
   getCurrentCoverRoom,
   getAdditionalStaff,
+  getEventId,
 } from '../../../utils/cover-utils';
 import {
   SubIconWithType,
@@ -87,6 +88,14 @@ export function EventCoverCard({
           }}
           onContextMenu={(e) => {
             e.preventDefault();
+            if (
+              !selectedEvents.find(
+                (selectedEvent) =>
+                  getEventId(selectedEvent) === getEventId(eventInfo)
+              )
+            ) {
+              toggleEventSelection(eventInfo);
+            }
             setAnchorEl(e.currentTarget);
           }}
         >

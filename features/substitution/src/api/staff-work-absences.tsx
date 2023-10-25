@@ -58,8 +58,16 @@ const staffWorkAbsences = graphql(/* GraphQL */ `
         coveringStaffId
         coveringStaff {
           person {
+            partyId
+            title {
+              id
+              name
+              nameTextId
+            }
             firstName
             lastName
+            avatarUrl
+            type
           }
         }
       }
