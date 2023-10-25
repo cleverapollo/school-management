@@ -7,6 +7,7 @@ import {
   RHFTextField,
   RHFSelect,
   useFormValidator,
+  useNumber,
 } from '@tyro/core';
 
 import {
@@ -15,11 +16,12 @@ import {
   AssessmentType,
   GradeType,
   UseQueryReturnType,
+  useAcademicNamespace,
 } from '@tyro/api';
 import { Card, Stack, CardHeader, Typography, Collapse } from '@mui/material';
 import { useForm, Path } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { CommentBankOption } from '../../api/comment-bank';
 import { CommentBankOptions } from './comment-bank-options';
 import { CommentLengthField } from './comment-length-field';
@@ -91,11 +93,15 @@ export function TermAssessmentForm({
 }: TermAssessmentFormProps) {
   const navigate = useNavigate();
   const { t } = useTranslation(['assessments']);
+  const { academicNamespaceId } = useParams();
+  const academicNamespaceIdAsNumber = useNumber(academicNamespaceId);
 
   const { data: yearGroupsData = [] } = useYearGroups({});
 
   const { resolver, rules } = useFormValidator<FormValues>();
-  const { mutate: saveTermAssessment, isLoading } = useSaveTermAssessment();
+  const { mutate: saveTermAssessment, isLoading } = useSaveTermAssessment(
+    academicNamespaceIdAsNumber
+  );
 
   const { control, handleSubmit, watch } = useForm<FormValues>({
     defaultValues: termAssessment,
