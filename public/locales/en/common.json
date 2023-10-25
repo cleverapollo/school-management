@@ -33,9 +33,9 @@
     "filter": "Filter"
   },
   "snackbarMessages": {
-    "createSuccess": "Create success!",
-    "updateSuccess": "Update success!",
-    "deleteSuccess": "Delete success!",
+    "createSuccess": "Created successfully!",
+    "updateSuccess": "Updated successfully!",
+    "deleteSuccess": "Deleted successfully!",
     "mailWasSent": "Mail was sent",
     "inviteSent": "Invite was sent",
     "labelWasAssigned": "Label was assigned!",

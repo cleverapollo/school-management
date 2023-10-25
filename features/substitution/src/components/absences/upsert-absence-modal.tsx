@@ -324,6 +324,7 @@ export function UpsertAbsenceModal({
                   name: 'staff',
                   control,
                 }}
+                disabled={isEditAbsence}
               />
               <AbsenceTypeAutoComplete
                 label={t('substitution:reason')}
