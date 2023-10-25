@@ -141,7 +141,7 @@ export function ApplyCoverModal({
       maxWidth="md"
     >
       <form onSubmit={onSave}>
-        <DialogTitle>
+        <DialogTitle onClose={onClose}>
           {' '}
           <Typography variant="h5">
             {t('substitution:applyCoverForList', { list: eventList })}

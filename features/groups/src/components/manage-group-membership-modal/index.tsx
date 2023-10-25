@@ -1,4 +1,4 @@
-import {Box, Button, Chip, Typography} from '@mui/material';
+import { Box, Button, Chip, Typography } from '@mui/material';
 import {
   Dialog,
   DialogActions,
@@ -6,13 +6,13 @@ import {
   DialogTitle,
   usePreferredNameLayout,
 } from '@tyro/core';
-import {useTranslation} from '@tyro/i18n';
-import {useEffect, useMemo, useState} from 'react';
-import {LoadingButton} from '@mui/lab';
+import { useTranslation } from '@tyro/i18n';
+import { useEffect, useMemo, useState } from 'react';
+import { LoadingButton } from '@mui/lab';
 import {
   Core_ModifyMembershipEnum,
   Core_ModifyStudentSubjectGroupMembership,
-  SubjectGroupType
+  SubjectGroupType,
 } from '@tyro/api';
 import {
   StudentAutocomplete,
@@ -20,9 +20,9 @@ import {
   StudentsSelectOption,
   useStudentsForSelect,
 } from '@tyro/people';
-import {useSubjectGroupByFilter} from '../../api/subject-groups';
-import {StudentListContainer, StudentListItems} from './student-list';
-import {useModifyGroupMemberships} from "../../api/modify-group-memberships";
+import { useSubjectGroupByFilter } from '../../api/subject-groups';
+import { StudentListContainer, StudentListItems } from './student-list';
+import { useModifyGroupMemberships } from '../../api/modify-group-memberships';
 
 export interface ManageGroupMembershipModalProps {
   open: boolean;
@@ -59,7 +59,9 @@ export function ManageSubjectGroupMembership({
   }, [originalStudents]);
 
   const [currentStudents, setCurrentStudents] = useState(originalStudents);
-  const [removeStudents, setRemoveStudents] = useState<StudentsSelectOption>([]);
+  const [removeStudents, setRemoveStudents] = useState<StudentsSelectOption>(
+    []
+  );
   const [addStudents, setAddStudent] = useState<StudentsSelectOption>([]);
   const removeEnrolledSibling = (selectedStudent: StudentSelectOption) => {
     if (selectedStudent) {
@@ -119,7 +121,7 @@ export function ManageSubjectGroupMembership({
 
   return (
     <Dialog open={open} onClose={closeAndResetModal} fullWidth maxWidth="sm">
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {t('groups:namedMemberList', {
           groupName: subjectGroup?.name ?? '',
         })}

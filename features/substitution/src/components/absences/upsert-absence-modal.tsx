@@ -276,12 +276,7 @@ export function UpsertAbsenceModal({
             groupId: group.partyId,
           } as Swm_UpsertStaffAbsenceLongTermLeaveGroupInput)
       );
-      console.log('updatedPartyIds', updatedPartyIds);
-      console.log(updatedPartyIds);
-
       replaceLtlGroups(updatedPartyIds);
-      console.log('---------------ltlGroups');
-      console.log(ltlGroups);
     }
   }, [subjectGroupsData]);
 
@@ -290,7 +285,7 @@ export function UpsertAbsenceModal({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle>{t('substitution:createStaffAbsence')}</DialogTitle>
+      <DialogTitle onClose={onClose}>{t('substitution:createStaffAbsence')}</DialogTitle>
       <form onSubmit={onSubmit}>
         <Stack spacing={3} sx={{ p: 3 }}>
           <Stack direction="row" spacing={2}>

@@ -148,7 +148,7 @@ export function ManageSiblingModal({
 
   return (
     <Dialog open={open} onClose={closeAndResetModal} fullWidth maxWidth="sm">
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {isStep1 ? t('people:manageSiblings') : t('people:associateContacts')}
       </DialogTitle>
       <DialogContent sx={{ p: 0, position: 'relative' }}>

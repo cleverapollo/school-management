@@ -33,6 +33,7 @@ export const ViewConditionsModal = ({
       maxWidth="sm"
     >
       <DialogTitle
+        onClose={onClose}
         sx={{
           display: 'flex',
           alignItems: 'center',

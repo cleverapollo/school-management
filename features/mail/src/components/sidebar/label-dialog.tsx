@@ -67,7 +67,7 @@ export function LabelDialog({ open, labelInfo, onClose }: LabelFormProps) {
   return (
     <Dialog open={open} onClose={onClose}>
       <form onSubmit={onSubmit}>
-        <DialogTitle>
+        <DialogTitle onClose={onClose}>
           {isEdit ? t('mail:editLabel') : t('mail:newLabel')}
         </DialogTitle>
         <DialogContent>
