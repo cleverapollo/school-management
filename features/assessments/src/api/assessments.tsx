@@ -1,12 +1,16 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import {
   AssessmentFilter,
   EmulateHeaders,
   gqlClient,
   graphql,
+  PublishAssessmentInput,
   queryClient,
+  UseQueryReturnType,
 } from '@tyro/api';
+import { useToast } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 import { assessmentsKeys } from './keys';
 
 const assessmentsList = graphql(/* GraphQL */ `
@@ -21,6 +25,7 @@ const assessmentsList = graphql(/* GraphQL */ `
         name
       }
       publish
+      publishedFrom
       startDate
       endDate
       createdBy {
@@ -64,9 +69,6 @@ const assessment = graphql(/* GraphQL */ `
         commentBankId
         commentBankName
       }
-      capturePrincipalComment
-      captureYearHeadComment
-      captureHouseMasterComment
       publish
       publishLearner
       extraFields {
@@ -94,6 +96,61 @@ const assessment = graphql(/* GraphQL */ `
       startDate
       endDate
       captureTutorComment
+      capturePrincipalComment
+      captureYearHeadComment
+      captureHouseMasterComment
+      tutorCommentType
+      tutorCommentBank {
+        commentBankId
+        commentBankName
+      }
+      tutorCommentLength
+      yearHeadCommentType
+      yearHeadCommentBank {
+        commentBankId
+        commentBankName
+      }
+      yearHeadCommentLength
+      principalCommentType
+      principalCommentBank {
+        commentBankId
+        commentBankName
+      }
+      principalCommentLength
+      housemasterCommentType
+      housemasterCommentBank {
+        commentBankId
+        commentBankName
+      }
+      housemasterCommentLength
+    }
+  }
+`);
+
+const assessmentExtraFields = graphql(/* GraphQL */ `
+  query assessmentExtraFields($filter: AssessmentFilter) {
+    assessment_assessment(filter: $filter) {
+      id
+      name
+      extraFields {
+        id
+        name
+        assessmentId
+        extraFieldType
+        gradeSetId
+        commentBankId
+        commentBankName
+        selectOptions
+        commentLength
+      }
+    }
+  }
+`);
+
+const publishAssessment = graphql(/* GraphQL */ `
+  mutation assessment_publish($input: PublishAssessmentInput) {
+    assessment_publish(input: $input) {
+      success
     }
   }
 `);
@@ -133,6 +190,19 @@ const assessmentByIdQuery = (filter: AssessmentByIdFilter) => ({
     ),
 });
 
+const assessmentExtraFieldsByIdQuery = (filter: AssessmentByIdFilter) => ({
+  queryKey: assessmentsKeys.assessmentsExtraFields(filter),
+  queryFn: () =>
+    gqlClient.request(
+      assessmentExtraFields,
+      { filter },
+      {
+        [EmulateHeaders.ACADEMIC_NAMESPACE_ID]:
+          filter.academicNameSpaceId.toString(),
+      }
+    ),
+});
+
 export function getAssessments(filter: AssessmentListFilter) {
   return queryClient.fetchQuery(assessmentsQuery(filter));
 }
@@ -162,3 +232,46 @@ export function useAssessmentById(filter: AssessmentByIdFilter) {
         : null,
   });
 }
+
+export function getAssessmentExtraFieldsById(filter: AssessmentByIdFilter) {
+  return queryClient.fetchQuery(assessmentExtraFieldsByIdQuery(filter));
+}
+
+export function useAssessmentExtraFieldsById(filter: AssessmentByIdFilter) {
+  return useQuery({
+    ...assessmentExtraFieldsByIdQuery(filter),
+    enabled: !!(filter.academicNameSpaceId && filter.ids.length > 0),
+    select: ({ assessment_assessment }) =>
+      Array.isArray(assessment_assessment) && assessment_assessment.length > 0
+        ? assessment_assessment[0].extraFields
+        : [],
+  });
+}
+
+export function usePublishAssessment() {
+  const { toast } = useToast();
+  const { t } = useTranslation(['common']);
+
+  return useMutation({
+    mutationFn: (input: PublishAssessmentInput) =>
+      gqlClient.request(publishAssessment, { input }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(assessmentsKeys.all);
+    },
+    onError: () => {
+      toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
+    },
+  });
+}
+
+export type ReturnTypeFromUseAssessmentById = UseQueryReturnType<
+  typeof useAssessmentById
+>;
+
+export type ReturnTypeFromUseAssessmentExtraFieldsById = UseQueryReturnType<
+  typeof useAssessmentExtraFieldsById
+>;
+
+export type ReturnTypeFromUseAssessments = UseQueryReturnType<
+  typeof useAssessments
+>[number];

@@ -32,12 +32,27 @@ export default function EditTermAssessmentPage() {
       startDate,
       endDate,
       commentType,
+      tutorCommentBank,
+      yearHeadCommentBank,
+      principalCommentBank,
+      housemasterCommentBank,
       commentBank,
       extraFields,
       ...restData
     } = assessmentData;
 
     const { createdBy, createdOn, ...dataWithOmittedValues } = restData;
+    const commentBankValues = {
+      commentBank,
+      tutorCommentBank,
+      yearHeadCommentBank,
+      principalCommentBank,
+      housemasterCommentBank,
+    } as const;
+    const commentBanks = Object.entries(commentBankValues) as [
+      keyof typeof commentBankValues,
+      (typeof commentBankValues)[keyof typeof commentBankValues]
+    ][];
 
     return {
       ...dataWithOmittedValues,
@@ -46,12 +61,16 @@ export default function EditTermAssessmentPage() {
       endDate: dayjs(endDate),
       includeTeacherComments: commentType !== CommentType.None,
       commentType: commentType === CommentType.None ? undefined : commentType,
-      ...(commentBank && {
-        commentBank: {
-          id: commentBank.commentBankId,
-          name: commentBank.commentBankName ?? '',
-        },
-      }),
+      ...commentBanks.reduce((acc, [key, bankValue]) => {
+        if (bankValue) {
+          acc[key] = {
+            id: bankValue.commentBankId,
+            name: bankValue.commentBankName ?? '',
+          };
+        }
+
+        return acc;
+      }, {} as Record<keyof typeof commentBankValues, { id: number; name: string }>),
       extraFields: (extraFields ?? []).flatMap((field) =>
         field?.extraFieldType && field.name
           ? [

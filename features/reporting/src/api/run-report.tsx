@@ -33,8 +33,16 @@ const reportsRun = graphql(/* GraphQL */ `
         visibleByDefault
         checkExpandedRows
         hideMenu
+        sortable
+        maxWidth
+        minWidth
+        pinned
       }
       data
+      tableDisplayOptions {
+          gridOptions
+          tableContainerSx
+      }  
     }
   }
 `);

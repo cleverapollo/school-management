@@ -1,5 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient } from '@tyro/api';
+import {
+  DashboardAssessmentFilter,
+  gqlClient,
+  graphql,
+  queryClient,
+  UseQueryReturnType,
+} from '@tyro/api';
+import dayjs from 'dayjs';
 import { assessmentsKeys } from './keys';
 
 const studentDashboardAssessments = graphql(/* GraphQL */ `
@@ -22,23 +29,38 @@ const studentDashboardAssessments = graphql(/* GraphQL */ `
   }
 `);
 
-const studentDashboardAssessmentsQuery = (studentId: number | undefined) => ({
-  queryKey: assessmentsKeys.studentAssessments(studentId ?? 0),
-  queryFn: async () =>
-    gqlClient.request(studentDashboardAssessments, {
-      filter: { studentPartyId: studentId ?? 0, published: true },
-    }),
+const studentDashboardAssessmentsQuery = (
+  filter: DashboardAssessmentFilter
+) => ({
+  queryKey: assessmentsKeys.studentDashboardAssessments(filter),
+  queryFn: async () => {
+    const { assessment_dashboardAssessment: assessmentDashboardAssessment } =
+      await gqlClient.request(studentDashboardAssessments, {
+        filter,
+      });
+
+    return assessmentDashboardAssessment?.sort(
+      (a, b) => dayjs(b.startDate).unix() - dayjs(a.startDate).unix()
+    );
+  },
 });
 
-export function getStudentDashboardAssessments(studentId: number | undefined) {
-  return queryClient.fetchQuery(studentDashboardAssessmentsQuery(studentId));
+export function getStudentDashboardAssessments(
+  filter: DashboardAssessmentFilter
+) {
+  return queryClient.fetchQuery(studentDashboardAssessmentsQuery(filter));
 }
 
-export function useStudentDashboardAssessments(studentId: number | undefined) {
+export function useStudentDashboardAssessments(
+  filter: DashboardAssessmentFilter,
+  enabled = true
+) {
   return useQuery({
-    ...studentDashboardAssessmentsQuery(studentId),
-    enabled: !!studentId,
-    select: ({ assessment_dashboardAssessment }) =>
-      assessment_dashboardAssessment,
+    ...studentDashboardAssessmentsQuery(filter),
+    enabled,
   });
 }
+
+export type ReturnTypeFromUseStudentDashboardAssessments = UseQueryReturnType<
+  typeof useStudentDashboardAssessments
+>;

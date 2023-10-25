@@ -22,11 +22,8 @@ export const StyledItem = styled(ListItemButton, {
   const subItem = depth !== 1;
 
   const activeStyle = {
-    color: theme.palette.primary.main,
-    backgroundColor: alpha(
-      theme.palette.primary.main,
-      theme.palette.action.selectedOpacity
-    ),
+    color: theme.palette.indigo[600],
+    backgroundColor: theme.palette.indigo[100],
     ...(!isLight && {
       color: theme.palette.primary.light,
     }),
@@ -42,7 +39,7 @@ export const StyledItem = styled(ListItemButton, {
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(1.5),
     marginBottom: theme.spacing(0.5),
-    color: theme.palette.text.secondary,
+    color: theme.palette.slate[700],
     borderRadius: theme.shape.borderRadius,
     height: NAV.H_DASHBOARD_ITEM,
     // Sub item

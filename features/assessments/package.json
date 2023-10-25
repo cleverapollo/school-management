@@ -13,7 +13,9 @@
     "@tyro/groups": "*",
     "@tyro/i18n": "*",
     "@tyro/icons": "*",
+    "@tyro/mail": "*",
     "@tyro/people": "*",
+    "@tyro/sms": "*",
     "dayjs": "^1.11.7",
     "framer-motion": "^9.0.1",
     "lodash": "^4.17.21",
@@ -21,7 +23,8 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.9",
     "react-router": "^6.6.2",
-    "react-router-dom": "^6.6.2"
+    "react-router-dom": "^6.6.2",
+    "react-use": "^17.4.0"
   },
   "devDependencies": {
     "@tyro/configs": "*"

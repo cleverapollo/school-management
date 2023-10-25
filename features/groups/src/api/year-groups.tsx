@@ -5,9 +5,8 @@ import {
   queryClient,
   UpdateYearGroupEnrollmentInput,
   UseQueryReturnType,
-  YearGroupsListQuery,
+  YearGroupEnrollmentFilter,
 } from '@tyro/api';
-import { useCallback } from 'react';
 import { groupsKeys } from './keys';
 
 const yearGroupsList = graphql(/* GraphQL */ `
@@ -114,23 +113,25 @@ export function useYearGroups() {
   });
 }
 
-const yearGroupByIdQuery = (id: number | undefined) => ({
-  queryKey: groupsKeys.year.details(id),
+const yearGroupByIdQuery = (filter: YearGroupEnrollmentFilter) => ({
+  queryKey: groupsKeys.year.details(filter),
   queryFn: async () =>
     gqlClient.request(yearGroupById, {
-      filter: {
-        yearGroupEnrollmentPartyId: [id ?? 0],
-      },
+      filter,
     }),
 });
 
-export function getYearGroupById(id: number | undefined) {
-  return queryClient.fetchQuery(yearGroupByIdQuery(id));
+export function getYearGroupById(filter: YearGroupEnrollmentFilter) {
+  return queryClient.fetchQuery(yearGroupByIdQuery(filter));
 }
 
-export function useYearGroupById(id: number | undefined) {
+export function useYearGroupById(
+  filter: YearGroupEnrollmentFilter,
+  enabled = true
+) {
   return useQuery({
-    ...yearGroupByIdQuery(id),
+    ...yearGroupByIdQuery(filter),
+    enabled,
     select: ({ core_yearGroupEnrollments }) => {
       if (!Array.isArray(core_yearGroupEnrollments)) return null;
 
@@ -154,3 +155,7 @@ export function useUpdateYearGroupLeads() {
 export type ReturnTypeFromUseYearGroups = UseQueryReturnType<
   typeof useYearGroups
 >[number];
+
+export type ReturnTypeFromUseYearGroupById = UseQueryReturnType<
+  typeof useYearGroupById
+>;

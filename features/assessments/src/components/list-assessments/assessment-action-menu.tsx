@@ -1,29 +1,37 @@
 import { useTranslation } from '@tyro/i18n';
-import { ActionMenu } from '@tyro/core';
-import { Assessment } from '@tyro/api';
+import { ActionMenu, useDisclosure, useToast } from '@tyro/core';
 import {
   EyeIcon,
   EditIcon,
   StopIcon,
   CheckmarkCircleIcon,
   VerticalDotsIcon,
+  CommentIcon,
+  EditCalendarIcon,
 } from '@tyro/icons';
 import { getAssessmentSubjectGroupsLink } from '../../utils/get-assessment-subject-groups-link';
+import { PublishAssessmentModal } from './publish-assessment-modal';
+import {
+  ReturnTypeFromUseAssessments,
+  usePublishAssessment,
+} from '../../api/assessments';
 
 type AssessmentActionMenuProps = {
-  id: Assessment['id'];
-  publish: Assessment['publish'];
-  assessmentType: Assessment['assessmentType'];
+  id: ReturnTypeFromUseAssessments['id'];
+  publishedFrom?: ReturnTypeFromUseAssessments['publishedFrom'];
+  assessmentType: ReturnTypeFromUseAssessments['assessmentType'];
   academicNamespaceId: number;
 };
 
 export const AssessmentActionMenu = ({
   id,
-  publish,
+  publishedFrom,
   assessmentType,
   academicNamespaceId,
 }: AssessmentActionMenuProps) => {
   const { t } = useTranslation(['assessments']);
+  const { toast } = useToast();
+  const { isOpen, onClose, onOpen } = useDisclosure();
 
   const assessmentPath = getAssessmentSubjectGroupsLink(
     id,
@@ -31,37 +39,78 @@ export const AssessmentActionMenu = ({
     academicNamespaceId
   );
 
-  return (
-    <ActionMenu
-      iconOnly
-      buttonIcon={<VerticalDotsIcon />}
-      menuItems={
-        id && assessmentType
-          ? [
-              {
-                label: t('assessments:actions.view'),
-                icon: <EyeIcon />,
-                navigateTo: assessmentPath,
-              },
-              {
-                label: t('assessments:actions.edit'),
-                icon: <EditIcon />,
-                navigateTo: `${assessmentPath}/edit`,
-              },
-              publish
-                ? {
-                    label: t('assessments:actions.unpublish'),
-                    icon: <StopIcon />,
-                    onClick: () => console.log('unpublish', id),
-                  }
-                : {
-                    label: t('assessments:actions.publish'),
-                    icon: <CheckmarkCircleIcon />,
-                    onClick: () => console.log('publish', id),
-                  },
-            ]
-          : []
+  const { mutateAsync: publishAssessment } = usePublishAssessment();
+
+  const unpublishAssessment = () => {
+    publishAssessment(
+      {
+        assessmentId: id,
+        publish: false,
+      },
+      {
+        onSuccess: () => {
+          toast(t('assessments:unpublishedSuccessfully'));
+        },
       }
-    />
+    );
+  };
+
+  return (
+    <>
+      <ActionMenu
+        iconOnly
+        buttonIcon={<VerticalDotsIcon />}
+        menuItems={
+          assessmentPath
+            ? [
+                [
+                  {
+                    label: t('assessments:actions.view'),
+                    icon: <EyeIcon />,
+                    navigateTo: assessmentPath,
+                  },
+                  {
+                    label: t('assessments:actions.edit'),
+                    icon: <EditIcon />,
+                    navigateTo: `${assessmentPath}/edit`,
+                  },
+                  // {
+                  //   label: t('assessments:actions.makeOverallComments'),
+                  //   icon: <CommentIcon />,
+                  //   hasAccess: () => assessmentType === AssessmentType.Term,
+                  //   navigateTo: `${assessmentPath}/overall-comments`,
+                  // },
+                ],
+                publishedFrom
+                  ? [
+                      {
+                        label: t('assessments:actions.editPublishDate'),
+                        icon: <EditCalendarIcon />,
+                        onClick: onOpen,
+                      },
+                      {
+                        label: t('assessments:actions.unpublish'),
+                        icon: <StopIcon />,
+                        onClick: unpublishAssessment,
+                      },
+                    ]
+                  : [
+                      {
+                        label: t('assessments:actions.publish'),
+                        icon: <CheckmarkCircleIcon />,
+                        onClick: onOpen,
+                      },
+                    ],
+              ]
+            : []
+        }
+      />
+      <PublishAssessmentModal
+        assessmentId={id}
+        publishedFrom={publishedFrom}
+        open={isOpen}
+        onClose={onClose}
+      />
+    </>
   );
 };
