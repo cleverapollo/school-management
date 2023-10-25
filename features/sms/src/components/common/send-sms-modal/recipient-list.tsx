@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { Colour, RecipientInput } from '@tyro/api';
-import { Avatar, SearchInput } from '@tyro/core';
+import { Avatar, DialogCloseButton, SearchInput } from '@tyro/core';
 import { TrashIcon } from '@tyro/icons';
 import { useVirtualizer } from '@tanstack/react-virtual';
 
@@ -25,12 +25,14 @@ interface RecipientListProps {
   recipients: RecipientsForSmsModal | undefined;
   initialRecipientAmount: number;
   removeRecipient: (id: RecipientInput['recipientPartyId']) => void;
+  onClose: () => void;
 }
 
 function RecipientListInner({
   recipients,
   initialRecipientAmount,
   removeRecipient,
+  onClose,
 }: RecipientListProps) {
   const recipientContainerRef = useRef<HTMLDivElement>(null);
   const [search, setSearch] = useState('');
@@ -63,16 +65,36 @@ function RecipientListInner({
 
   return (
     <Stack sx={{ flex: 1, bgcolor: 'slate.50' }}>
-      <Typography component="h3" variant="h6" sx={{ p: 3 }}>
-        {t('sms:recipient', { count: recipients?.length ?? 0 })}
-        <Typography
-          component="span"
-          variant="body1"
-          sx={{ ml: 1, color: 'text.secondary' }}
-        >
-          {t('common:selectedWithNumber', { count: recipients?.length ?? 0 })}
+      <Stack
+        direction="row"
+        p={3}
+        pr={8}
+        alignItems="center"
+        justifyContent="space-between"
+        position="relative"
+      >
+        <Typography component="h3" variant="h6">
+          {t('sms:recipient', { count: recipients?.length ?? 0 })}
+          <Typography
+            component="span"
+            variant="body1"
+            sx={{ ml: 1, color: 'text.secondary' }}
+          >
+            {t('common:selectedWithNumber', { count: recipients?.length ?? 0 })}
+          </Typography>
         </Typography>
-      </Typography>
+        <DialogCloseButton
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 24,
+            backgroundColor: 'slate.200',
+            '&:hover': {
+              backgroundColor: 'slate.300',
+            },
+          }}
+        />
+      </Stack>
       {showSearch && (
         <SearchInput
           value={search}

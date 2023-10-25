@@ -137,7 +137,7 @@ export function SendSmsModal({
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack direction="row">
           <Box sx={{ flex: 1.2 }}>
-            <DialogTitle onClose={onClose}>{t('sms:sendSms')}</DialogTitle>
+            <DialogTitle>{t('sms:sendSms')}</DialogTitle>
             <Stack spacing={3} sx={{ p: 3, pt: 0 }}>
               <RHFSmsMessageField<SmsFormState>
                 label={t('sms:message')}
@@ -170,6 +170,7 @@ export function SendSmsModal({
             </Stack>
           </Box>
           <RecipientList
+            onClose={onClose}
             recipients={recipientList}
             initialRecipientAmount={recipients.length}
             removeRecipient={removeRecipient}
