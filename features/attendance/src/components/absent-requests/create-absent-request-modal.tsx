@@ -163,7 +163,9 @@ export const CreateAbsentRequestModal = ({
 
   return (
     <Dialog open onClose={onClose} scroll="paper" fullWidth maxWidth="sm">
-      <DialogTitle>{t('attendance:createAbsentRequest')}</DialogTitle>
+      <DialogTitle onClose={onClose}>
+        {t('attendance:createAbsentRequest')}
+      </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
           <Stack direction="column" sx={{ mt: 2 }} gap={2}>

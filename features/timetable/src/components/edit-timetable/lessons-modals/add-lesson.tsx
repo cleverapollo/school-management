@@ -103,7 +103,7 @@ export function AddLessonModal({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {t('timetable:addSessionModalHeader', {
           day: dayjs()
             .set('day', period?.dayIdx ?? 0)

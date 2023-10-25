@@ -164,7 +164,7 @@ export const ChartRenderer = ({
         onClose={onClose}
       >
         {drillDownConfig?.heading && (
-          <DialogTitle>{drillDownConfig.heading}</DialogTitle>
+          <DialogTitle onClose={onClose}>{drillDownConfig.heading}</DialogTitle>
         )}
         <DialogContent sx={{ p: 0 }}>
           {drillDownResponse.isLoading ? (

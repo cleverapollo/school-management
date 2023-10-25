@@ -1,29 +1,17 @@
+import { Button, Stack } from '@mui/material';
 import {
-  Button,
-  DialogTitle,
-  DialogActions,
-  Dialog,
-  DialogContent,
-  Stack,
-  Chip,
-  Grid,
-} from '@mui/material';
-import {
-  RHFAutocomplete,
   RHFDatePicker,
   RHFSelect,
   RHFTextField,
   useFormValidator,
+  DialogTitle,
+  DialogActions,
+  Dialog,
+  DialogContent,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import { useEffect } from 'react';
-import {
-  CreateCalendarEventInput,
-  getColorBasedOnIndex,
-  usePermissions,
-} from '@tyro/api';
 import dayjs from 'dayjs';
 import { useUpsertStudentAen } from '../../../api/student/aen/upsert-student-aen';
 import { ReturnTypeFromUseStudentAen } from '../../../api/student/aen/student-aen-data';
@@ -173,7 +161,7 @@ export const EditNoteModal = ({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {initialState?.id ? t('people:editNote') : t('people:addNote')}
       </DialogTitle>
       <form onSubmit={onSubmit}>
