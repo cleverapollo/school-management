@@ -89,7 +89,7 @@ export function DeclineAbsentRequestConfirmModal({
 
   return (
     <Dialog open={isOpen} onClose={onClose}>
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {t('attendance:declineAbsentRequest', {
           count: absentRequestState?.length,
         })}

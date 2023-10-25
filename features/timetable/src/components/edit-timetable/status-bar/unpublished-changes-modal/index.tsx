@@ -40,7 +40,7 @@ export function UnpublishedChangesModal({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>{t('timetable:unpublishedChanges')}</DialogTitle>
+      <DialogTitle onClose={onClose}>{t('timetable:unpublishedChanges')}</DialogTitle>
       <DialogContent sx={{ p: 0 }}>
         {isLoading ? (
           <LoadingPlaceholder sx={{ minHeight: 200 }} />

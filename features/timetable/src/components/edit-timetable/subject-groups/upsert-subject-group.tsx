@@ -164,7 +164,7 @@ export function UpsertSubjectGroupModal({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>{t('timetable:createSubjectGroup')}</DialogTitle>
+      <DialogTitle onClose={onClose}>{t('timetable:createSubjectGroup')}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
           <Stack gap={2} p={2} sx={{ py: 2 }}>

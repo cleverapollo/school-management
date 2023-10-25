@@ -59,7 +59,7 @@ export function RepublishLessonModal({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>{t('timetable:republishLesson')}</DialogTitle>
+      <DialogTitle onClose={onClose}>{t('timetable:republishLesson')}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
           <Stack display="flex" sx={{ py: 3 }}>

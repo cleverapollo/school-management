@@ -93,7 +93,7 @@ export const EditConditionsModal = ({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {initialConditionsState?.id
           ? t('people:editCondition')
           : t('people:addCondition')}

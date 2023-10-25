@@ -108,7 +108,7 @@ export const EditAbsenceTypeModal = ({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {initialAbsenceTypeState?.absenceTypeId
           ? t('absence:editAbsenceType')
           : t('absence:createAbsenceType')}

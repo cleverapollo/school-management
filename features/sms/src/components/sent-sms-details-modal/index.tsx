@@ -48,7 +48,10 @@ export function SentSmsDetailsModal({
             />
           </Stack>
         </Box>
-        <ReadOnlyRecipientList recipients={data?.recipients} />
+        <ReadOnlyRecipientList
+          onClose={onClose}
+          recipients={data?.recipients}
+        />
       </Stack>
 
       <DialogActions

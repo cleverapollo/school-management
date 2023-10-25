@@ -97,7 +97,7 @@ export const UpsertBehaviourLabelModal = ({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {initialState?.id
           ? t('settings:behaviourLabel.editBehaviourLabel')
           : t('settings:behaviourLabel.createBehaviourLabel')}

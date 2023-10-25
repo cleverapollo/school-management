@@ -95,7 +95,7 @@ export const UpsertNoteLabelModal = ({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {initialState?.id
           ? t('settings:noteLabel.editNoteLabel')
           : t('settings:noteLabel.createNoteLabel')}

@@ -42,7 +42,7 @@ export function ConfirmDialog({
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
     >
-      <DialogTitle id={titleId}>{title}</DialogTitle>
+      <DialogTitle onClose={onClose} id={titleId}>{title}</DialogTitle>
       <DialogContent>
         <DialogContentText id={descriptionId}>{description}</DialogContentText>
       </DialogContent>

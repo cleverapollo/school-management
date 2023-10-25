@@ -41,7 +41,9 @@ export function WithdrawAbsentRequestConfirmModal({
 
   return (
     <Dialog open={isOpen} onClose={onClose}>
-      <DialogTitle>{t('attendance:withdrawAbsentRequest')}</DialogTitle>
+      <DialogTitle onClose={onClose}>
+        {t('attendance:withdrawAbsentRequest')}
+      </DialogTitle>
       <DialogContent>
         <DialogContentText>
           {t('attendance:youAreAboutToWithdrawAbsentRequest')}

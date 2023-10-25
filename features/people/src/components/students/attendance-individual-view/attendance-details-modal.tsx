@@ -226,6 +226,7 @@ export const AttendanceDetailsModal = ({
   return isLoading ? (
     <Dialog open onClose={onClose} scroll="paper" fullWidth maxWidth="md">
       <DialogTitle
+        onClose={onClose}
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -242,6 +243,7 @@ export const AttendanceDetailsModal = ({
   ) : (
     <Dialog open onClose={onClose} scroll="paper" fullWidth maxWidth="md">
       <DialogTitle
+        onClose={onClose}
         sx={{
           display: 'flex',
           alignItems: 'center',

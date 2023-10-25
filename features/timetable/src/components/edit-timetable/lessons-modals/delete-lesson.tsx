@@ -54,7 +54,7 @@ export function DeleteLessonModal({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>{t('timetable:deleteLesson')}</DialogTitle>
+      <DialogTitle onClose={onClose}>{t('timetable:deleteLesson')}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
           <Stack display="flex" sx={{ py: 3 }}>
