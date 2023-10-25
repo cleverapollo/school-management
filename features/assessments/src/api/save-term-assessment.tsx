@@ -1,9 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
 import {
+  EmulateHeaders,
   gqlClient,
   graphql,
   queryClient,
   SaveAssessmentInput,
+  useAcademicNamespace,
 } from '@tyro/api';
 import { useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
@@ -22,13 +24,24 @@ const saveTermAssessment = graphql(/* GraphQL */ `
   }
 `);
 
-export function useSaveTermAssessment() {
+export function useSaveTermAssessment(academicNameSpaceId?: number) {
   const { toast } = useToast();
   const { t } = useTranslation(['common']);
+  const { activeAcademicNamespace } = useAcademicNamespace();
 
   return useMutation({
     mutationFn: (input: SaveAssessmentInput) =>
-      gqlClient.request(saveTermAssessment, { input }),
+      gqlClient.request(
+        saveTermAssessment,
+        { input },
+        {
+          [EmulateHeaders.ACADEMIC_NAMESPACE_ID]: (
+            academicNameSpaceId ??
+            activeAcademicNamespace?.academicNamespaceId ??
+            0
+          )?.toString(),
+        }
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries(assessmentsKeys.all);
     },
