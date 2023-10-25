@@ -17,7 +17,6 @@ import {
   Notes_StudentBehaviour,
   Notes_Tag,
   usePermissions,
-  useAcademicNamespace,
 } from '@tyro/api';
 import {
   GridOptions,
@@ -28,9 +27,10 @@ import {
   usePreferredNameLayout,
   ActionMenu,
   ConfirmDialog,
+  useDebouncedValue,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { AddIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
+import { AddIcon, EditIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
@@ -50,6 +50,7 @@ import {
 } from '../../../components/behaviour/create-behaviour-modal';
 import { useDeleteBehaviour } from '../../../api/behaviour/delete-behaviour';
 import { CategoriesContainer } from '../../../components/students/behaviour-individual-view/categories-container';
+import { ReturnTypeFromUseBehaviours } from '../../../api/behaviour/list';
 
 dayjs.extend(LocalizedFormat);
 
@@ -67,6 +68,9 @@ export type ExtendedNotesTagType = (Notes_Tag & { colour: Colour })[];
 export type TabValueType = Notes_Tag['name'] | 'All';
 
 const getStudentBehaviourColumns = (
+  onClickEdit: Dispatch<
+    SetStateAction<CreateBehaviourModalProps['initialState']>
+  >,
   t: TFunction<('common' | 'people')[], undefined, ('common' | 'people')[]>,
   displayName: ReturnTypeDisplayName,
   onDelete: Dispatch<SetStateAction<DeleteNoteIdType>>,
@@ -180,7 +184,9 @@ const getStudentBehaviourColumns = (
     cellClass: 'ag-show-on-row-interaction',
     sortable: false,
     suppressSizeToFit: true,
-    cellRenderer: ({ data }: ICellRendererParams<DeleteNoteIdType>) =>
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseIndividualStudentBehaviour>) =>
       data && (
         <ActionMenu
           iconOnly
@@ -189,8 +195,12 @@ const getStudentBehaviourColumns = (
             {
               label: t('common:actions.delete'),
               icon: <TrashIcon />,
-              // @ts-ignore
-              onClick: () => onDelete(data?.noteId as DeleteNoteIdType),
+              onClick: () => onDelete(data?.noteId),
+            },
+            {
+              label: t('common:actions.edit'),
+              icon: <EditIcon />,
+              onClick: () => onClickEdit(data),
             },
           ]}
         />
@@ -220,20 +230,23 @@ export default function StudentProfileBehaviourPage() {
   const { t } = useTranslation(['common', 'people']);
   const { isStaffUser } = usePermissions();
   const { displayName } = usePreferredNameLayout();
-  const { activeAcademicNamespace } = useAcademicNamespace();
-  const academicYear = activeAcademicNamespace?.name;
   const { id } = useParams();
   const studentId = getNumber(id) ?? 0;
 
   const [value, setValue] = useState(0);
   const [currentTabValue, setCurrentTabValue] = useState<TabValueType>('All');
-  const [behaviourDetails, setBehaviourDetails] =
-    useState<CreateBehaviourModalProps['initialState']>();
+  const {
+    value: editBehaviours,
+    setValue: setEditBehaviours,
+    debouncedValue: debouncedEditConditions,
+  } = useDebouncedValue<CreateBehaviourModalProps['initialState']>({
+    defaultValue: null,
+  });
   const [behaviourType, setBehaviourType] = useState(
     Notes_BehaviourType.Positive
   );
   const [behaviourIdToDelete, setBehaviourIdToDelete] =
-    useState<DeleteNoteIdType>(null);
+    useState<ReturnTypeFromUseBehaviours['id']>(null);
 
   const { data: studentBehaviorData, isLoading: isBehavioursLoading } =
     useIndividualStudentBehaviour({
@@ -276,18 +289,21 @@ export default function StudentProfileBehaviourPage() {
   const { mutateAsync: deleteBehaviour } = useDeleteBehaviour(studentId);
 
   const onConfirmDelete = async () => {
-    await deleteBehaviour({ noteIds: [behaviourIdToDelete!] });
+    if (behaviourIdToDelete) {
+      await deleteBehaviour({ noteIds: [behaviourIdToDelete] });
+    }
   };
 
   const studentBehaviourColumns = useMemo(
     () =>
       getStudentBehaviourColumns(
+        setEditBehaviours,
         t,
         displayName,
         setBehaviourIdToDelete,
         (categoryName) => getTagsForCategory(categoryName, behaviourCategories)
       ),
-    [t, displayName, behaviourCategories]
+    [setEditBehaviours, t, displayName, behaviourCategories]
   );
 
   const loadingStatus = isCategoriesLoading || isBehavioursLoading;
@@ -308,6 +324,10 @@ export default function StudentProfileBehaviourPage() {
     setCurrentTabValue('All');
     setValue(0);
   }, [behaviourType]);
+
+  const handleAddCondition = () => {
+    setEditBehaviours({});
+  };
 
   return (
     <Card
@@ -415,7 +435,7 @@ export default function StudentProfileBehaviourPage() {
         {isStaffUser && (
           <Button
             variant="contained"
-            onClick={() => setBehaviourDetails({})}
+            onClick={handleAddCondition}
             startIcon={<AddIcon />}
           >
             {t('people:actions.createBehaviour')}
@@ -527,15 +547,14 @@ export default function StudentProfileBehaviourPage() {
         </CardContent>
       )}
 
-      {behaviourDetails && (
-        <CreateBehaviourModal
-          studentId={studentId}
-          onClose={() => setBehaviourDetails(null)}
-          initialState={behaviourDetails}
-          behaviourType={behaviourType}
-          setBehaviourType={setBehaviourType}
-        />
-      )}
+      <CreateBehaviourModal
+        studentId={studentId}
+        onClose={() => setEditBehaviours(null)}
+        initialState={editBehaviours}
+        behaviourType={behaviourType}
+        setBehaviourType={setBehaviourType}
+      />
+
       {behaviourIdToDelete && (
         <ConfirmDialog
           open
