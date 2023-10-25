@@ -20,6 +20,7 @@
     "@tyro/groups": "*",
     "@tyro/i18n": "*",
     "@tyro/icons": "*",
+    "@tyro/mail": "*",
     "@tyro/reporting": "*",
     "@tyro/settings": "*",
     "@tyro/sms": "*",
