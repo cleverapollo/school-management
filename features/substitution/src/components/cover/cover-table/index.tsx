@@ -20,7 +20,6 @@ import { EventCoverCard } from './event-card';
 import { EmptyStateContainer } from './empty-state-container';
 import { useCoverTable, CoverTableRow } from '../../../hooks/use-cover-table';
 import { ApplyCoverModal } from '../apply-cover-modal';
-import { getEventId } from '../../../utils/cover-utils';
 import { RemoveCoverModal } from '../remove-cover-modal';
 
 interface CoverTableProps {
@@ -192,21 +191,14 @@ export function CoverTable({
                                   selectedEvents={Array.from(
                                     selectedEventsMap.values()
                                   )}
-                                  applyCover={(anchorEvent) => {
-                                    setEventsForApplyCover(
-                                      new Map([
-                                        ...selectedEventsMap.entries(),
-                                        [getEventId(anchorEvent), anchorEvent],
-                                      ])
-                                    );
+                                  applyCover={() => {
+                                    setEventsForApplyCover(selectedEventsMap);
                                   }}
-                                  removeCover={(anchorEvent) => {
-                                    setEventsForDeleteCover(
-                                      new Map([
-                                        ...selectedEventsMap.entries(),
-                                        [getEventId(anchorEvent), anchorEvent],
-                                      ])
-                                    );
+                                  editCover={() => {
+                                    setEventsForApplyCover(selectedEventsMap);
+                                  }}
+                                  removeCover={() => {
+                                    setEventsForDeleteCover(selectedEventsMap);
                                   }}
                                 />
                               )}

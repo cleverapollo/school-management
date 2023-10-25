@@ -205,6 +205,7 @@ export function UpsertAbsenceModal({
         return saveStaffAbsence(
           [
             {
+              staffAbsenceId: initialAbsenceData?.absenceId,
               staffPartyId: staff.partyId,
               dates: [
                 {
@@ -235,6 +236,7 @@ export function UpsertAbsenceModal({
       return saveStaffAbsence(
         [
           {
+            staffAbsenceId: initialAbsenceData?.absenceId,
             staffPartyId: staff.partyId,
             dates: mappedDates,
             absenceTypeId: absenceType.absenceTypeId,

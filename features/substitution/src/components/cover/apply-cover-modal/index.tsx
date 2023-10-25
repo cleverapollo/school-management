@@ -47,15 +47,20 @@ export function ApplyCoverModal({
 }: ApplyCoverModalProps) {
   const { t } = useTranslation(['common', 'substitution']);
   const { displayName } = usePreferredNameLayout();
+  const [search, setSearch] = useState('');
 
   const substitutionEventIds = useMemo(() => {
     if (!eventsMap) return [];
 
-    return Array.from(eventsMap.values()).map(({ event }) => ({
+    return Array.from(eventsMap.values()).map(({ event, substitution }) => ({
       eventId: event.eventId,
       date: dayjs(event.startTime).format('YYYY-MM-DD'),
+      hasSubstitution: !!substitution,
     }));
   }, [eventsMap]);
+  const isEdit =
+    substitutionEventIds.length === 1 &&
+    substitutionEventIds[0].hasSubstitution;
 
   const { mutateAsync: applyCover, isLoading: isSaving } = useApplyCover();
   const { data, isLoading } = useCoverLookup(
@@ -92,12 +97,13 @@ export function ApplyCoverModal({
 
   const onSave = handleSubmit(({ substituteStaff, room, coverType, note }) => {
     const events = Array.from(eventsMap?.values() ?? []).map(
-      ({ absenceId, event, staffPartyId }) => ({
+      ({ absenceId, event, staffPartyId, substitution }) => ({
         eventId: event.eventId,
         originalStaffId: staffPartyId,
         substituteStaffId: substituteStaff.partyId,
         absenceId,
         substitutionTypeId: coverType,
+        substitutionId: substitution?.substitutionId,
         date: dayjs(event.startTime).format('YYYY-MM-DD'),
         ...(note && { note }),
         ...(room && {
@@ -119,9 +125,20 @@ export function ApplyCoverModal({
   });
 
   useEffect(() => {
-    reset();
-  }, [eventsMap]);
-  const [search, setSearch] = useState('');
+    if (isEdit) {
+      const { substitution } = Array.from(eventsMap?.values() ?? [])[0];
+      reset({
+        substituteStaff: substitution?.substituteStaff,
+        room: substitution?.substituteRoom
+          ? { ...substitution.substituteRoom, group: undefined }
+          : undefined,
+        coverType: substitution?.substitutionType?.substitutionTypeId,
+        note: substitution?.note ?? undefined,
+      });
+    } else {
+      reset();
+    }
+  }, [eventsMap, isEdit]);
 
   const staffListFiltered = useMemo(
     () =>
@@ -142,9 +159,10 @@ export function ApplyCoverModal({
     >
       <form onSubmit={onSave}>
         <DialogTitle>
-          {' '}
           <Typography variant="h5">
-            {t('substitution:applyCoverForList', { list: eventList })}
+            {isEdit
+              ? t('substitution:editCoverForList', { list: eventList })
+              : t('substitution:applyCoverForList', { list: eventList })}
           </Typography>
           <AdditionalTeacherList eventsMap={eventsMap} />
         </DialogTitle>
