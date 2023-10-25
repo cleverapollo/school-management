@@ -171,23 +171,23 @@ const getStudentContactColumns = (
       />
     ),
   },
-  {
-    field: 'includeInTmail',
-    headerName: translate('people:includeInTmail'),
-    editable: true,
-    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
-    cellEditor: TableSwitch,
-    valueGetter: ({ data }) => data?.allowedToContact && data?.includeInTmail,
-    valueFormatter: ({ data }) =>
-      data?.includeInTmail ? translate('common:yes') : translate('common:no'),
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
-      <TableBooleanValue
-        value={Boolean(data?.allowedToContact && data?.includeInTmail)}
-      />
-    ),
-  },
+  // {
+  //   field: 'includeInTmail',
+  //   headerName: translate('people:includeInTmail'),
+  //   editable: true,
+  //   cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
+  //   cellEditor: TableSwitch,
+  //   valueGetter: ({ data }) => data?.allowedToContact && data?.includeInTmail,
+  //   valueFormatter: ({ data }) =>
+  //     data?.includeInTmail ? translate('common:yes') : translate('common:no'),
+  //   cellRenderer: ({
+  //     data,
+  //   }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
+  //     <TableBooleanValue
+  //       value={Boolean(data?.allowedToContact && data?.includeInTmail)}
+  //     />
+  //   ),
+  // },
 ];
 
 export default function StudentProfileContactsPage() {
