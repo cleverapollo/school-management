@@ -16,11 +16,12 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
-import { SmsRecipientType, UseQueryReturnType } from '@tyro/api';
+import { SearchType, SmsRecipientType, UseQueryReturnType } from '@tyro/api';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { AddUserIcon, MobileIcon } from '@tyro/icons';
+import { AddUserIcon, MobileIcon, SendMailIcon } from '@tyro/icons';
+import { useMailSettings } from '@tyro/mail';
 import { useStaff } from '../../api/staff';
 
 dayjs.extend(LocalizedFormat);
@@ -135,10 +136,13 @@ const getStaffColumns = (
 ];
 
 export default function StaffListPage() {
-  const { t } = useTranslation(['common', 'people']);
+  const { t } = useTranslation(['common', 'people', 'mail']);
   const { data: staff } = useStaff({});
   const { displayName } = usePreferredNameLayout();
   const [selectedStaff, setSelectedStaff] = useState<RecipientsForSmsModal>([]);
+
+  const { composeEmail } = useMailSettings();
+
   const {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
@@ -149,11 +153,30 @@ export default function StaffListPage() {
     [t, displayName]
   );
 
+  const sendMailToSelectedStaff = () => {
+    const staffListForMail = selectedStaff.map(({ id, name, avatarUrl }) => ({
+      partyId: id,
+      type: SearchType.Staff,
+      text: name,
+      avatarUrl,
+    }));
+
+    composeEmail({
+      canReply: false,
+      bccRecipients: staffListForMail,
+    });
+  };
+
   const actionMenuItems = [
     {
       label: t('people:sendSms'),
       icon: <MobileIcon />,
       onClick: onOpenSendSms,
+    },
+    {
+      label: t('mail:sendMail'),
+      icon: <SendMailIcon />,
+      onClick: sendMailToSelectedStaff,
     },
   ];
 
