@@ -33,7 +33,7 @@ import {
 
 export type CreateBehaviourFormState =
   NonNullable<ReturnTypeFromUseIndividualStudentBehaviour> & {
-    noteId?: number;
+    noteId: number | null;
     behaviour: number;
     note: string;
     subjects: ReturnTypeFromUseStudentSubjectGroups[];
@@ -69,7 +69,7 @@ export function CreateBehaviourModal({
     behaviour: (initialState?.tagIds && initialState?.tagIds[0]) ?? 0,
     note: initialState?.details,
     behaviourTypeState: behaviourType,
-    occurredOn: dayjs(),
+    occurredOn: dayjs(initialState?.incidentDate) ?? dayjs(),
   };
 
   const { control, handleSubmit, reset, watch } =
@@ -95,7 +95,7 @@ export function CreateBehaviourModal({
     mutate(
       [
         {
-          id: initialState?.noteId ?? null,
+          id: initialState?.noteId,
           note: note ?? initialState?.details,
           referencedParties: [studentId],
           tags: [behaviour],
