@@ -64,7 +64,7 @@ export function CreateBehaviourModal({
     behaviour: (initialState?.tagIds && initialState?.tagIds[0]) ?? 0,
     note: initialState?.details,
     behaviourTypeState: behaviourType,
-    occurredOn: dayjs(initialState?.incidentDate) ?? dayjs(),
+    occurredOn: dayjs(initialState?.incidentDate || undefined),
   };
 
   const { control, handleSubmit, reset, watch } =
