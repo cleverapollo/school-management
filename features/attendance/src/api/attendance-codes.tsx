@@ -28,6 +28,7 @@ const attendanceCodes = graphql(/* GraphQL */ `
       nameTextId
       codeType
       sessionCodeType
+      custom
     }
   }
 `);

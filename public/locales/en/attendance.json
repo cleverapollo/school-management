@@ -93,6 +93,7 @@
   "dateOfAbsence": "Date of absence",
   "feedbackToContactOptional": "Feedback to contact (optional)",
   "unableToWithdraw": "Unable to withdraw request which has been processed.",
+  "editAttendanceCodeTooltip": "This is a default attendance code and can't be edited",
   "nameByCodeType": {
     "PRESENT": "Present",
     "LATE": "Late",
