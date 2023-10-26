@@ -23,11 +23,10 @@ export const assessmentsKeys = {
   commentBanks: () => [...assessmentsKeys.all, 'commentBanks'] as const,
   commentBanksWithComments: (filter: CommentBankFilter) =>
     [...assessmentsKeys.commentBanks(), filter] as const,
-  studentDashboardAssessments: (filter: DashboardAssessmentFilter) => [
-    ...assessmentsKeys.all,
-    'dashboard',
-    filter,
-  ],
+  studentDashboardAssessments: (
+    filter: DashboardAssessmentFilter,
+    academicNamespaceId: number | string
+  ) => [...assessmentsKeys.all, 'dashboard', academicNamespaceId, filter],
   assessmentResultsForStudent: (
     academicNamespaceId: number,
     filter: StudentResultFilter
