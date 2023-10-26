@@ -35,3 +35,7 @@ export function useAcademicNamespace() {
     ...rest,
   };
 }
+
+export type ReturnTypeFromUseAcademicNamespace = ReturnType<
+  typeof useAcademicNamespace
+>;

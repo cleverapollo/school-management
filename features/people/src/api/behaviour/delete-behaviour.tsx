@@ -20,9 +20,7 @@ export function useDeleteBehaviour(studentId: number) {
     mutationFn: (input: Notes_DeleteNotes) =>
       gqlClient.request(deleteBehaviour, { input }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries(
-        peopleKeys.students.behaviours(studentId)
-      );
+      await queryClient.invalidateQueries(peopleKeys.students.all());
 
       toast(t('common:snackbarMessages.deleteSuccess'));
     },
