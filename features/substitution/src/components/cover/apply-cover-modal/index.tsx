@@ -136,7 +136,7 @@ export function ApplyCoverModal({
         note: substitution?.note ?? undefined,
       });
     } else {
-      reset();
+      reset({});
     }
   }, [eventsMap, isEdit]);
 
@@ -158,7 +158,7 @@ export function ApplyCoverModal({
       maxWidth="md"
     >
       <form onSubmit={onSave}>
-        <DialogTitle>
+        <DialogTitle onClose={onClose}>
           <Typography variant="h5">
             {isEdit
               ? t('substitution:editCoverForList', { list: eventList })
