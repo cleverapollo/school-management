@@ -107,6 +107,7 @@ const eventsForCover = graphql(/* GraphQL */ `
                 type
               }
               substitutionType {
+                substitutionTypeId
                 name
                 description
                 code
