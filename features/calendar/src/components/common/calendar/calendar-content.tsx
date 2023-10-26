@@ -8,9 +8,16 @@ import { CalendarEventType } from '@tyro/api';
 dayjs.extend(LocalizedFormat);
 
 export function getCalendarContent(eventInfo: EventContentArg) {
-  const { room, organizer, additionalTeachers, isSubstitution, originalEvent } =
-    eventInfo.event.extendedProps;
+  const {
+    room,
+    organizer,
+    additionalTeachers,
+    isSubstitution,
+    originalEvent,
+    backgroundImage,
+  } = eventInfo.event.extendedProps;
   const { type } = originalEvent as { type: CalendarEventType };
+  const bgImage = backgroundImage as string;
   switch (eventInfo.view.type) {
     case 'timeGridDay':
     case 'timeGridWeek':
@@ -29,7 +36,13 @@ export function getCalendarContent(eventInfo: EventContentArg) {
       return (
         <Stack
           direction="row"
-          sx={{ alignItems: 'stretch', height: '100%', p: '3px' }}
+          sx={{
+            alignItems: 'stretch',
+            height: '100%',
+            p: '3px',
+            backgroundImage: bgImage,
+            borderRadius: '5px',
+          }}
         >
           <Box
             sx={{
@@ -70,7 +83,15 @@ export function getCalendarContent(eventInfo: EventContentArg) {
     }
     case 'dayGridMonth':
       return (
-        <Stack direction="row" alignItems="center" px={0.5}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          px={0.5}
+          borderRadius="5px"
+          sx={{
+            backgroundImage: bgImage,
+          }}
+        >
           <Box
             sx={{
               width: 4,
