@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   GridOptions,
   ICellRendererParams,
@@ -163,7 +163,6 @@ const getColumns = (
               isFirstElement ? 'ag-left-cell-border' : null,
               isLastElement ? 'ag-right-cell-border' : null,
             ],
-            width: 100,
             cellStyle: {
               justifyContent: 'center',
             },
@@ -416,6 +415,14 @@ export function SessionAttendanceRoleBook({
       attendances: Object.values(attendanceChanges),
     });
   };
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (tableRef.current?.columnApi) {
+        tableRef.current.columnApi.autoSizeAllColumns(false);
+      }
+    }, 0);
+  }, [view, sessionData]);
 
   return (
     <>
