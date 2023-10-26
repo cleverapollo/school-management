@@ -12,6 +12,7 @@ import {
   NewValueParams,
   ReturnTypeTableUseEditableState,
   BulkEditedRows,
+  RouterLink,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs, { Dayjs } from 'dayjs';
@@ -83,7 +84,7 @@ const getColumns = (
       return (
         <Box display="flex" alignItems="center">
           <StudentAvatar
-            partyId={person?.partyId}
+            partyId={person.partyId}
             src={person?.avatarUrl ?? undefined}
             name={name}
             isPriorityStudent={!!extensions?.priority}
@@ -96,7 +97,12 @@ const getColumns = (
             }}
           />
           <Stack>
-            <Typography variant="subtitle2">{name}</Typography>
+            <RouterLink
+              sx={{ fontWeight: 600, lineHeight: 1.5 }}
+              to={`/people/students/${person.partyId}/attendance`}
+            >
+              {name}
+            </RouterLink>
             {data?.classGroup?.name && (
               <Typography variant="caption" color="text.secondary">
                 {data.classGroup.name}
