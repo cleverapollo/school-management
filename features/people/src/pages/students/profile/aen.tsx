@@ -84,7 +84,7 @@ const getStudentNoteColumns = (
   },
   {
     field: 'snaSupport',
-    headerName: translate('people:aen.snaSupport'),
+    headerName: translate('people:aen.anaSupport'),
     filter: true,
     sortable: true,
     autoHeight: true,
