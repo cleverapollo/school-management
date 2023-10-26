@@ -28,6 +28,7 @@ import { getPermissionSets } from './api/permissions/user-permissions-sets';
 import { getFormB } from './api/dtr-returns/form-b';
 import { getSyncRequests } from './api/ppod/sync-requests';
 import { getSchoolsInfo } from './api/ppod/school-details';
+import { getCommentBanks } from './api/comment-banks/comment-banks';
 
 const Rooms = lazyWithRetry(() => import('./pages/rooms'));
 const AcademicYearsList = lazyWithRetry(() => import('./pages/academic-years'));
@@ -66,6 +67,10 @@ const ClonePermission = lazyWithRetry(
 );
 const NoteLabel = lazyWithRetry(() => import('./pages/note-label'));
 const BehaviourLabel = lazyWithRetry(() => import('./pages/behaviour-label'));
+const CommentBanks = lazyWithRetry(
+  () => import('./pages/comment-banks/comment-banks')
+);
+const Comments = lazyWithRetry(() => import('./pages/comment-banks/comments'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -293,6 +298,29 @@ export const getRoutes: NavObjectFunction = (t) => [
             hasAccess: (permissions) => permissions.isStaffUser,
             loader: () => getNoteTagsBehaviour(),
             element: <BehaviourLabel />,
+          },
+          {
+            title: t('navigation:management.settings.commentBanks'),
+            type: NavObjectType.MenuLink,
+            path: 'comment-banks',
+            hasAccess: (permissions) => permissions.isStaffUser,
+            loader: () => getCommentBanks({}),
+            element: <CommentBanks />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: 'comment-banks/:id',
+            hasAccess: (permissions) => permissions.isStaffUser,
+            loader: ({ params }) => {
+              const id = getNumber(params?.id);
+
+              if (!id) {
+                throw404Error();
+              }
+
+              return getCommentBanks({ ids: [id] });
+            },
+            element: <Comments />,
           },
         ],
       },
