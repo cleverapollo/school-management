@@ -72,8 +72,7 @@ export function getIndividualStudentBehaviour(filter: Notes_BehaviourFilter) {
 export function useIndividualStudentBehaviour(filter: Notes_BehaviourFilter) {
   return useQuery({
     ...individualStudentBehaviourQuery(filter),
-    select: ({ notes_behaviour }) =>
-      notes_behaviour?.behaviours?.filter((item) => item?.category),
+    select: ({ notes_behaviour }) => notes_behaviour?.behaviours,
   });
 }
 

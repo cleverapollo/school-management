@@ -67,6 +67,12 @@ export type ExtendedNotesTagType = (Notes_Tag & { colour: Colour })[];
 
 export type TabValueType = Notes_Tag['name'] | 'All';
 
+type SubCategoriesWithoutCategoryIdsType = {
+  id: number | undefined;
+  name: string | null | undefined;
+  colour: string;
+};
+
 const getStudentBehaviourColumns = (
   onClickEdit: Dispatch<
     SetStateAction<CreateBehaviourModalProps['initialState']>
@@ -99,19 +105,30 @@ const getStudentBehaviourColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseIndividualStudentBehaviour>) => {
-      if (!data?.category) {
-        return '-';
+      if (data?.category) {
+        const { colour } = getTagsForCategory(data?.category);
+        return (
+          <Stack gap={1} my={1} direction="row" flexWrap="wrap">
+            {data?.tags?.map((tag) => (
+              <Chip
+                key={tag?.id}
+                label={tag?.name}
+                variant="soft"
+                color={colour}
+              />
+            ))}
+          </Stack>
+        );
       }
-      const { colour } = getTagsForCategory(data?.category);
 
       return (
         <Stack gap={1} my={1} direction="row" flexWrap="wrap">
           {data?.tags?.map((tag) => (
             <Chip
               key={tag?.id}
-              label={tag?.name}
+              label={data?.tags && data?.tags[0]?.name}
               variant="soft"
-              color={colour}
+              sx={{ color: 'grey' }}
             />
           ))}
         </Stack>
@@ -280,11 +297,38 @@ export default function StudentProfileBehaviourPage() {
   const subCategories = behaviourCategories?.flatMap((category) =>
     behaviorCategoryIds?.includes(category?.behaviourCategoryId)
       ? category?.tags?.map((tag) => ({
-          ...tag,
+          id: tag?.id,
+          name: tag?.name,
           colour: category.colour,
         }))
       : []
   );
+
+  const subCategoriesWithCategoryIds =
+    studentBehaviorData
+      ?.filter((item) => !item?.category)
+      ?.map((data) => ({
+        id: data?.noteId,
+        name: data?.tags && data?.tags[0]?.name,
+        colour: 'grey',
+      })) || [];
+
+  const subCategoriesWithoutCategoryIds: SubCategoriesWithoutCategoryIdsType[] =
+    subCategoriesWithCategoryIds?.reduce<SubCategoriesWithoutCategoryIdsType[]>(
+      (acc, current) => {
+        const tagName = current?.name;
+        const isTagNameAlreadyIncluded = acc.some(
+          (item) => item?.name === tagName
+        );
+
+        if (!isTagNameAlreadyIncluded) {
+          acc.push(current);
+        }
+
+        return acc;
+      },
+      []
+    );
 
   const { mutateAsync: deleteBehaviour } = useDeleteBehaviour(studentId);
 
@@ -315,6 +359,7 @@ export default function StudentProfileBehaviourPage() {
       name: 'All',
     },
     ...subCategories,
+    ...subCategoriesWithoutCategoryIds,
   ];
 
   const getBehaviourTypesTotals = (tabValue?: string) =>
