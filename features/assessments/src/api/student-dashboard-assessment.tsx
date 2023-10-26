@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import {
   DashboardAssessmentFilter,
+  EmulateHeaders,
+  getAcademicNamespace,
   gqlClient,
   graphql,
   queryClient,
@@ -30,14 +32,33 @@ const studentDashboardAssessments = graphql(/* GraphQL */ `
 `);
 
 const studentDashboardAssessmentsQuery = (
-  filter: DashboardAssessmentFilter
+  filter: DashboardAssessmentFilter,
+  academicNamespaceId?: number | null
 ) => ({
-  queryKey: assessmentsKeys.studentDashboardAssessments(filter),
+  queryKey: assessmentsKeys.studentDashboardAssessments(
+    filter,
+    academicNamespaceId ?? 'activeNamespace'
+  ),
   queryFn: async () => {
+    let fufilledAcademicNamespaceId = academicNamespaceId;
+
+    if (!fufilledAcademicNamespaceId) {
+      const { activeAcademicNamespace } = await getAcademicNamespace();
+      fufilledAcademicNamespaceId =
+        activeAcademicNamespace?.academicNamespaceId ?? 0;
+    }
+
     const { assessment_dashboardAssessment: assessmentDashboardAssessment } =
-      await gqlClient.request(studentDashboardAssessments, {
-        filter,
-      });
+      await gqlClient.request(
+        studentDashboardAssessments,
+        {
+          filter,
+        },
+        {
+          [EmulateHeaders.ACADEMIC_NAMESPACE_ID]:
+            fufilledAcademicNamespaceId.toString(),
+        }
+      );
 
     return assessmentDashboardAssessment?.sort(
       (a, b) => dayjs(b.startDate).unix() - dayjs(a.startDate).unix()
@@ -46,17 +67,21 @@ const studentDashboardAssessmentsQuery = (
 });
 
 export function getStudentDashboardAssessments(
-  filter: DashboardAssessmentFilter
+  filter: DashboardAssessmentFilter,
+  academicNamespaceId?: number | null
 ) {
-  return queryClient.fetchQuery(studentDashboardAssessmentsQuery(filter));
+  return queryClient.fetchQuery(
+    studentDashboardAssessmentsQuery(filter, academicNamespaceId)
+  );
 }
 
 export function useStudentDashboardAssessments(
   filter: DashboardAssessmentFilter,
+  academicNamespaceId?: number | null,
   enabled = true
 ) {
   return useQuery({
-    ...studentDashboardAssessmentsQuery(filter),
+    ...studentDashboardAssessmentsQuery(filter, academicNamespaceId),
     enabled,
   });
 }

@@ -33,6 +33,7 @@ export function StudentAssessmentWidget({
   const [assessmentIndex, setAssessmentIndex] = useState(0);
   const { data } = useStudentDashboardAssessments(
     { studentPartyId: studentId ?? 0, published: true },
+    null,
     !!studentId
   );
 
