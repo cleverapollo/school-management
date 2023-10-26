@@ -64,7 +64,7 @@ export function PublishModal({ open, onClose }: UnpublishedChangesModalProps) {
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {t('timetable:whenWouldYouLikeTheFollowingChangesToBeEffectiveFrom')}
       </DialogTitle>
       <DialogContent sx={{ p: 0 }}>

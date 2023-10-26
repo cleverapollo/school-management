@@ -10,7 +10,7 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import {
   Activity,
   Day,
@@ -123,7 +123,7 @@ export const UpsertNonClassContactModal = ({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {initialState?.nonClassContactHoursId
           ? t('people:editNonClassContact')
           : t('people:createNonClassContact')}

@@ -68,7 +68,7 @@ export function StudentEditsModal({ open, onClose }: StudentEditsModalProps) {
       fullWidth
       maxWidth="xs"
     >
-      <DialogTitle>{t('common:changes')}</DialogTitle>
+      <DialogTitle onClose={onClose}>{t('common:changes')}</DialogTitle>
       <DialogContent sx={{ p: 0 }}>
         <Stack
           component="ul"

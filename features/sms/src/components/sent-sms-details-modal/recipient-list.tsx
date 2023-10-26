@@ -1,16 +1,25 @@
 import { memo, useMemo, useRef, useState } from 'react';
 import { Box, Stack, Typography, useTheme } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { Avatar, SearchInput, usePreferredNameLayout } from '@tyro/core';
+import {
+  Avatar,
+  DialogCloseButton,
+  SearchInput,
+  usePreferredNameLayout,
+} from '@tyro/core';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { SmsStatus } from '@tyro/api';
 import { ReturnTypeFromUseSentSms } from '../../api/sent-sms';
 
 interface RecipientListProps {
   recipients: NonNullable<ReturnTypeFromUseSentSms>['recipients'] | undefined;
+  onClose: () => void;
 }
 
-function ReadOnlyRecipientListInner({ recipients }: RecipientListProps) {
+function ReadOnlyRecipientListInner({
+  recipients,
+  onClose,
+}: RecipientListProps) {
   const recipientContainerRef = useRef<HTMLDivElement>(null);
   const [search, setSearch] = useState('');
   const { t } = useTranslation(['common', 'sms']);
@@ -42,16 +51,37 @@ function ReadOnlyRecipientListInner({ recipients }: RecipientListProps) {
 
   return (
     <Stack sx={{ flex: 1, bgcolor: 'slate.50' }}>
-      <Typography component="h3" variant="h6" sx={{ p: 3 }}>
-        {t('sms:recipient', { count: recipients?.length ?? 0 })}
-        <Typography
-          component="span"
-          variant="body1"
-          sx={{ ml: 1, color: 'text.secondary' }}
-        >
-          ({recipients?.length ?? 0})
+      <Stack
+        direction="row"
+        p={3}
+        pr={8}
+        alignItems="center"
+        justifyContent="space-between"
+        position="relative"
+      >
+        <Typography component="h3" variant="h6" sx={{ p: 3 }}>
+          {t('sms:recipient', { count: recipients?.length ?? 0 })}
+          <Typography
+            component="span"
+            variant="body1"
+            sx={{ ml: 1, color: 'text.secondary' }}
+          >
+            ({recipients?.length ?? 0})
+          </Typography>
         </Typography>
-      </Typography>
+        <DialogCloseButton
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 24,
+            backgroundColor: 'slate.200',
+            '&:hover': {
+              backgroundColor: 'slate.300',
+            },
+          }}
+        />
+      </Stack>
+
       {showSearch && (
         <SearchInput
           value={search}

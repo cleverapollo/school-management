@@ -169,6 +169,7 @@ export function SendSmsModal({
             </Stack>
           </Box>
           <RecipientList
+            onClose={onClose}
             recipients={recipientList}
             initialRecipientAmount={recipients.length}
             removeRecipient={removeRecipient}

@@ -1,14 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import {
-  Button,
-  Chip,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Stack,
-} from '@mui/material';
+import { Button, Chip, CircularProgress, Stack } from '@mui/material';
 import { getColorBasedOnIndex, Notes_BehaviourType } from '@tyro/api';
 import {
   RHFAutocomplete,
@@ -17,6 +8,10 @@ import {
   RHFSelect,
   RHFTextField,
   useFormValidator,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
@@ -143,7 +138,7 @@ export function CreateBehaviourModal({
           </Stack>
         ) : (
           <>
-            <DialogTitle>
+            <DialogTitle onClose={onClose}>
               {initialState?.noteId
                 ? t('people:editBehaviour')
                 : t('people:createBehaviour')}

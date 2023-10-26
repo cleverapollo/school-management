@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Box } from '@mui/material';
+import { useMemo } from 'react';
+import { Box, Tooltip } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 
 import {
@@ -354,22 +354,21 @@ export default function DTRReturnsFileB() {
     [t, displayName, capacitiesData, postsData]
   );
 
-  const isEnableDownload = () => {
-    if (!staffFormB) return false;
+  const getIsDownloadDisabled = () => {
+    if (!staffFormB) return true;
 
-    const staffIncludeInDTRReturns = staffFormB.filter(
-      (staff) => staff?.staffIre?.includeDtrReturns
-    );
-
-    return staffIncludeInDTRReturns.every(
-      (staff) =>
-        displayName(staff?.person) &&
-        staff?.staffIre?.teacherReferenceNumber &&
-        staff?.personalInformation?.gender &&
-        staff?.employmentCapacity &&
-        staff?.qualifications &&
-        staff?.staffIre?.includeDtrReturns
-    );
+    return !!staffFormB
+      .filter((staff) => staff?.staffIre?.includeDtrReturns)
+      .some(
+        (staff) =>
+          !displayName(staff?.person) ||
+          !staff?.staffIre?.teacherReferenceNumber ||
+          !staff?.personalInformation?.gender ||
+          !staff?.personalInformation?.ire?.ppsNumber ||
+          !staff?.employmentCapacity ||
+          !staff?.qualifications ||
+          !staff?.staffIre?.includeDtrReturns
+      );
   };
 
   const saveBulkResult = (
@@ -413,6 +412,8 @@ export default function DTRReturnsFileB() {
     return updateStaffFormB(updates);
   };
 
+  const isDownloadDisabled = getIsDownloadDisabled();
+
   return (
     <PageContainer title={t('navigation:management.settings.dtrReturns')}>
       <PageHeading
@@ -431,15 +432,26 @@ export default function DTRReturnsFileB() {
         }}
         rightAdornment={
           <Box display="flex" alignItems="center">
-            <LoadingButton
-              disabled={!isEnableDownload()}
-              variant="contained"
-              loading={isDownloadLoading}
-              onClick={() => downloadFile('FILE_B')}
-              startIcon={<DownloadArrowCircleIcon />}
+            <Tooltip
+              describeChild
+              title={
+                isDownloadDisabled
+                  ? t('settings:youMustCompleteAllHighlightedFields')
+                  : ''
+              }
             >
-              {t('settings:dtrReturns.downloadFile')}
-            </LoadingButton>
+              <span>
+                <LoadingButton
+                  disabled={isDownloadDisabled}
+                  variant="contained"
+                  loading={isDownloadLoading}
+                  onClick={() => downloadFile('FILE_B')}
+                  startIcon={<DownloadArrowCircleIcon />}
+                >
+                  {t('settings:dtrReturns.downloadFile')}
+                </LoadingButton>
+              </span>
+            </Tooltip>
           </Box>
         }
       />

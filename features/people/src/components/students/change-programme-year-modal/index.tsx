@@ -70,7 +70,9 @@ export function ChangeProgrammeYearModal({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>{t('people:changeProgrammeYearModalTitle')}</DialogTitle>
+      <DialogTitle onClose={onClose}>
+        {t('people:changeProgrammeYearModalTitle')}
+      </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
           <Stack gap={2}>
