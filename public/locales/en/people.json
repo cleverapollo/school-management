@@ -267,6 +267,7 @@
     "provision": "Provision",
     "note": "Note"
   },
+  "editBehaviour": "Edit behaviour",
   "createBehaviour": "Create behaviour",
   "behaviourCategories": "Behaviour categories",
   "behaviourType": "Behaviour type",
