@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, Context } from '@tyro/api';
+import { gqlClient, graphql, Context, SearchType } from '@tyro/api';
 import { calendarKeys } from './keys';
 
 const calendarSearch = graphql(/* GraphQL */ `
@@ -23,6 +23,15 @@ export function useCalendarSearch(query: string) {
         filter: {
           text: trimmedQuery,
           context: [Context.Calendar],
+          includeSearchType: [
+            SearchType.Student,
+            SearchType.Staff,
+            SearchType.GeneralGroup,
+            SearchType.CustomGroup,
+            SearchType.SubjectGroup,
+            SearchType.YearGroupEnrollment,
+            SearchType.Room,
+          ],
         },
       }),
     enabled: trimmedQuery.length > 0,
