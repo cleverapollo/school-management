@@ -162,7 +162,7 @@ export const EditNoteModal = ({
       maxWidth="sm"
     >
       <DialogTitle onClose={onClose}>
-        {initialState?.id ? t('people:editNote') : t('people:addNote')}
+        {initialState?.id ? t('people:editAen') : t('people:addAen')}
       </DialogTitle>
       <form onSubmit={onSubmit}>
         <DialogContent>

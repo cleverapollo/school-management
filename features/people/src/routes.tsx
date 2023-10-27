@@ -196,6 +196,10 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'overview',
+                hasAccess: ({ isStaffUserWithPermission }) =>
+                  isStaffUserWithPermission(
+                    'ps:1:people:view_student_overview'
+                  ),
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
                   const formattedDate = dayjs().format('YYYY-MM-DD');

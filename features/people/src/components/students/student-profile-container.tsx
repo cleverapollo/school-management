@@ -48,7 +48,8 @@ export default function StudentProfileContainer() {
           {
             label: 'Overview',
             value: t('common:overview'),
-            hasAccess: ({ isTyroUser }) => isTyroUser,
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission('ps:1:people:view_student_overview'),
           },
           {
             label: t('people:personal.title'),

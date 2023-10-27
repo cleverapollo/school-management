@@ -256,6 +256,7 @@
     "NOTE": "Note"
   },
   "editAen": "Edit AEN",
+  "addAen": "Add AEN",
   "createAen": "Create AEN",
   "aen": {
     "type": "Type",
