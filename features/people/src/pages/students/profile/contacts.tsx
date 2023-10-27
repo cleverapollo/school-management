@@ -16,7 +16,7 @@ import {
   useToast,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { MobileIcon, AddUserIcon } from '@tyro/icons';
+import { MobileIcon, AddUserIcon, PersonGearIcon } from '@tyro/icons';
 import { SendSmsModal } from '@tyro/sms';
 import {
   Core_UpdateStudentContactRelationshipInput,
@@ -230,24 +230,6 @@ export default function StudentProfileContactsPage() {
 
   const actionMenuItems = useMemo(
     () => [
-      [
-        {
-          label: t('people:createContact'),
-          icon: <AddUserIcon />,
-          onClick: () => {
-            if (!studentData) return;
-            const currentStudentAsOption: StudentSelectOption = {
-              ...studentData?.person,
-              caption: studentData.classGroup?.name,
-            };
-            navigate(`/people/contacts/create`, {
-              state: {
-                students: [currentStudentAsOption],
-              },
-            });
-          },
-        },
-      ],
       selectedContacts.length
         ? [
             {
@@ -266,6 +248,40 @@ export default function StudentProfileContactsPage() {
             // },
           ]
         : [],
+      [
+        {
+          label: t('people:manageContacts'),
+          icon: <PersonGearIcon />,
+          onClick: () => {
+            if (!studentData) return;
+            const currentStudentAsOption: StudentSelectOption = {
+              ...studentData?.person,
+              caption: studentData.classGroup?.name,
+            };
+            navigate(`/people/contacts/${selectedContacts[0]?.partyId}`, {
+              state: {
+                students: [currentStudentAsOption],
+              },
+            });
+          },
+        },
+        {
+          label: t('people:createContact'),
+          icon: <AddUserIcon />,
+          onClick: () => {
+            if (!studentData) return;
+            const currentStudentAsOption: StudentSelectOption = {
+              ...studentData?.person,
+              caption: studentData.classGroup?.name,
+            };
+            navigate(`/people/contacts/create`, {
+              state: {
+                students: [currentStudentAsOption],
+              },
+            });
+          },
+        },
+      ],
     ],
     [selectedContacts, recipientsForSms]
   );

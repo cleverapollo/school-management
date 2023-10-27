@@ -148,3 +148,7 @@ export function useStudentsSubjectGroups(studentId: number | undefined) {
     select: (subjectGroups) => subjectGroups,
   });
 }
+
+export type ReturnTypeFromUseStudentsContacts = UseQueryReturnType<
+  typeof useStudentsContacts
+>[number];
