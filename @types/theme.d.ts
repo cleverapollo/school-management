@@ -98,6 +98,8 @@ declare module '@mui/material/Chip' {
     fuchsia: true;
     pink: true;
     rose: true;
+    slate: true;
+    gray: true;
   }
 }
 

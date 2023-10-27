@@ -105,30 +105,18 @@ const getStudentBehaviourColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseIndividualStudentBehaviour>) => {
-      if (data?.category) {
-        const { colour } = getTagsForCategory(data?.category);
-        return (
-          <Stack gap={1} my={1} direction="row" flexWrap="wrap">
-            {data?.tags?.map((tag) => (
-              <Chip
-                key={tag?.id}
-                label={tag?.name}
-                variant="soft"
-                color={colour}
-              />
-            ))}
-          </Stack>
-        );
-      }
+      const { colour } = data?.category
+        ? getTagsForCategory(data.category)
+        : { colour: undefined };
 
       return (
         <Stack gap={1} my={1} direction="row" flexWrap="wrap">
           {data?.tags?.map((tag) => (
             <Chip
               key={tag?.id}
-              label={data?.tags && data?.tags[0]?.name}
+              label={tag?.name}
               variant="soft"
-              sx={{ color: 'grey' }}
+              color={colour ?? 'slate'}
             />
           ))}
         </Stack>
