@@ -15,7 +15,12 @@ import { useTranslation } from '@tyro/i18n';
 
 import { AttendanceToggle } from '@tyro/attendance';
 
-import { ChevronLeftIcon, ChevronRightIcon } from '@tyro/icons';
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  EditIcon,
+  UndoIcon,
+} from '@tyro/icons';
 import { usePreferredNameLayout, EditState, useToast } from '@tyro/core';
 import { useEffect, useState } from 'react';
 import { StudentAvatar } from '@tyro/people';
@@ -67,6 +72,8 @@ export const GroupAttendance = ({
     getStudentEventDetails,
     getStudentAttendanceCode,
     setStudentAttendanceCode,
+    editAttendance,
+    cancelEditAttendance,
     saveAttendance,
     cancelAttendance,
   } = useHandleLessonAttendance({
@@ -243,31 +250,69 @@ export const GroupAttendance = ({
                       </Stack>
                     </TableCell>
                     <TableCell>
-                      {eventDetails && eventDetails.adminSubmitted ? (
-                        <Stack direction="column">
-                          <Typography variant="caption" fontWeight={600}>
-                            {eventDetails.attendanceCode.name}
-                          </Typography>
-                          {eventDetails.note && (
-                            <Typography component="span" variant="caption">
-                              {eventDetails.note}
-                            </Typography>
-                          )}
-                          {submittedBy && (
-                            <Typography
-                              component="span"
-                              variant="caption"
-                              color="text.secondary"
+                      {eventDetails?.isEditMode ? (
+                        <Stack
+                          direction="row"
+                          alignItems="center"
+                          gap={1}
+                          position="relative"
+                        >
+                          <AttendanceToggle
+                            codeId={getStudentAttendanceCode(student.partyId)}
+                            onChange={setStudentAttendanceCode(student.partyId)}
+                          />
+                          {eventDetails?.editable && (
+                            <IconButton
+                              aria-label={t('common:actions.cancel')}
+                              sx={({ spacing }) => ({
+                                position: 'absolute',
+                                right: spacing(-1),
+                                top: spacing(-2),
+                              })}
+                              onClick={() =>
+                                cancelEditAttendance(student.partyId)
+                              }
                             >
-                              {`${t('common:submittedBy')} ${submittedBy}`}
-                            </Typography>
+                              <UndoIcon sx={{ height: 18, width: 18 }} />
+                            </IconButton>
                           )}
                         </Stack>
                       ) : (
-                        <AttendanceToggle
-                          codeId={getStudentAttendanceCode(student.partyId)}
-                          onChange={setStudentAttendanceCode(student.partyId)}
-                        />
+                        <Stack
+                          direction="row"
+                          alignItems="center"
+                          justifyContent="space-between"
+                          gap={1}
+                        >
+                          <Stack direction="column">
+                            <Typography variant="caption" fontWeight={600}>
+                              {eventDetails?.attendanceCode.name}
+                            </Typography>
+                            {eventDetails?.note && (
+                              <Typography component="span" variant="caption">
+                                {eventDetails?.note}
+                              </Typography>
+                            )}
+                            {submittedBy && (
+                              <Typography
+                                component="span"
+                                variant="caption"
+                                color="text.secondary"
+                              >
+                                {`${t('common:submittedBy')} ${submittedBy}`}
+                              </Typography>
+                            )}
+                          </Stack>
+                          {eventDetails?.editable && (
+                            <IconButton
+                              aria-label={t('common:actions.edit')}
+                              color="primary"
+                              onClick={() => editAttendance(student.partyId)}
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          )}
+                        </Stack>
                       )}
                     </TableCell>
                   </TableRow>
