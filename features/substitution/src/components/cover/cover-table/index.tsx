@@ -10,24 +10,16 @@ import {
   TableRow,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import {
-  Avatar,
-  ConfirmDialog,
-  useDebouncedValue,
-  usePreferredNameLayout,
-} from '@tyro/core';
+import { Avatar, useDebouncedValue } from '@tyro/core';
 import dayjs, { Dayjs } from 'dayjs';
 import { CalendarGridPeriodType } from '@tyro/api';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { ReturnTypeFromUseEventsForCover } from '../../../api/staff-work-events-for-cover';
 import { CoverBreakOrFinished } from './cover-break-or-finished';
 import { EventCoverCard } from './event-card';
 import { EmptyStateContainer } from './empty-state-container';
 import { useCoverTable, CoverTableRow } from '../../../hooks/use-cover-table';
 import { ApplyCoverModal } from '../apply-cover-modal';
-import { useApplyCover } from '../../../api/apply-cover';
-import { useDeleteCover } from '../../../api/remove-cover';
-import { getEventId } from '../../../utils/cover-utils';
 import { RemoveCoverModal } from '../remove-cover-modal';
 
 interface CoverTableProps {
@@ -49,7 +41,6 @@ export function CoverTable({
   isLoading = false,
 }: CoverTableProps) {
   const { t } = useTranslation(['timetable', 'common', 'substitution']);
-  const { displayName } = usePreferredNameLayout();
   const { onSelectEvent, isEventSelected, selectedEventsMap } =
     useCoverTable(data);
 
@@ -138,8 +129,11 @@ export function CoverTable({
                     ? staff.partyId
                     : dayjs(dayInfo.date).format('YYYY-MM-DD');
                   const dateString = dayjs(dayInfo?.date).format('YYYY-MM-DD');
+                  const staffName = `${
+                    staff?.firstName ? staff.firstName[0] : ''
+                  }. ${staff?.lastName ?? ''}`;
                   const label = userAsFirstColumn
-                    ? displayName(staff)
+                    ? staffName
                     : dayjs(dayInfo.date).format('L');
 
                   return (
@@ -181,39 +175,34 @@ export function CoverTable({
 
                         return (
                           <TableCell key={`${id}-${dateString}-${index}`}>
-                            {(isBreak || isFinished) && (
-                              <CoverBreakOrFinished
-                                timeslotInfo={periodInfo}
-                                type={isBreak ? 'break' : 'finished'}
-                              />
-                            )}
-                            {eventInfo && (
-                              <EventCoverCard
-                                eventInfo={eventInfo}
-                                staff={staff}
-                                isEventSelected={isEventSelected}
-                                toggleEventSelection={onSelectEvent}
-                                selectedEvents={Array.from(
-                                  selectedEventsMap.values()
-                                )}
-                                applyCover={(anchorEvent) => {
-                                  setEventsForApplyCover(
-                                    new Map([
-                                      ...selectedEventsMap.entries(),
-                                      [getEventId(anchorEvent), anchorEvent],
-                                    ])
-                                  );
-                                }}
-                                removeCover={(anchorEvent) => {
-                                  setEventsForDeleteCover(
-                                    new Map([
-                                      ...selectedEventsMap.entries(),
-                                      [getEventId(anchorEvent), anchorEvent],
-                                    ])
-                                  );
-                                }}
-                              />
-                            )}
+                            <Stack spacing={0.5}>
+                              {(isBreak || isFinished) && (
+                                <CoverBreakOrFinished
+                                  timeslotInfo={periodInfo}
+                                  type={isBreak ? 'break' : 'finished'}
+                                />
+                              )}
+                              {eventInfo && (
+                                <EventCoverCard
+                                  eventInfo={eventInfo}
+                                  staff={staff}
+                                  isEventSelected={isEventSelected}
+                                  toggleEventSelection={onSelectEvent}
+                                  selectedEvents={Array.from(
+                                    selectedEventsMap.values()
+                                  )}
+                                  applyCover={() => {
+                                    setEventsForApplyCover(selectedEventsMap);
+                                  }}
+                                  editCover={() => {
+                                    setEventsForApplyCover(selectedEventsMap);
+                                  }}
+                                  removeCover={() => {
+                                    setEventsForDeleteCover(selectedEventsMap);
+                                  }}
+                                />
+                              )}
+                            </Stack>
                           </TableCell>
                         );
                       })}

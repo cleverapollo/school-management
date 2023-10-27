@@ -17,7 +17,7 @@ import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 
 import { Dispatch, SetStateAction, useMemo } from 'react';
-import { AddIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
+import { AddIcon, EditIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
 import {
   ReturnTypeFromUseStaffWorkAbsences,
   useStaffWorkAbsences,
@@ -45,6 +45,9 @@ const getColumnDefs = (
     ('common' | 'substitution')[]
   >,
   displayName: ReturnTypeDisplayName,
+  setAbsenceDetails: Dispatch<
+    SetStateAction<UpsertAbsenceModalProps['initialAbsenceData']>
+  >,
   setAbsenceToDelete: Dispatch<
     SetStateAction<DeleteAbsenceConfirmModalProps['absenceDetails']>
   >
@@ -131,6 +134,13 @@ const getColumnDefs = (
           buttonIcon={<VerticalDotsIcon />}
           menuItems={[
             {
+              label: t('common:actions.edit'),
+              icon: <EditIcon />,
+              onClick: () => {
+                setAbsenceDetails(data);
+              },
+            },
+            {
               label: t('common:actions.delete'),
               icon: <TrashIcon />,
               onClick: () => {
@@ -164,7 +174,7 @@ export default function Absences() {
   const { data: absencesData } = useStaffWorkAbsences({});
 
   const columnDefs = useMemo(
-    () => getColumnDefs(t, displayName, setAbsenceToDelete),
+    () => getColumnDefs(t, displayName, setAbsenceDetails, setAbsenceToDelete),
     [t, displayName]
   );
 

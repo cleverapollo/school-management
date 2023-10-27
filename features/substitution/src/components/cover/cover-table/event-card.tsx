@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography, useMediaQuery } from '@mui/material';
 import { usePreferredNameLayout } from '@tyro/core';
 import { CoverEvent } from '../../../hooks/use-cover-table';
 import { ReturnTypeFromUseEventsForCover } from '../../../api/staff-work-events-for-cover';
@@ -8,6 +8,7 @@ import { EventCoverContextMenu } from './event-context-menu';
 import {
   getCurrentCoverRoom,
   getAdditionalStaff,
+  getEventId,
 } from '../../../utils/cover-utils';
 import {
   SubIconWithType,
@@ -20,6 +21,7 @@ interface EventCoverCardProps {
   isEventSelected: (eventInfo: CoverEvent) => boolean;
   toggleEventSelection: (eventInfo: CoverEvent) => void;
   applyCover: (anchorEvent: CoverEvent) => void;
+  editCover: (anchorEvent: CoverEvent) => void;
   removeCover: (anchorEvent: CoverEvent) => void;
   selectedEvents: CoverEvent[];
 }
@@ -30,6 +32,7 @@ export function EventCoverCard({
   isEventSelected,
   toggleEventSelection,
   applyCover,
+  editCover,
   removeCover,
   selectedEvents,
 }: EventCoverCardProps) {
@@ -38,6 +41,7 @@ export function EventCoverCard({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isSelected = isEventSelected(eventInfo);
   const isContextMenuOpen = Boolean(anchorEl);
+  const isCompact = useMediaQuery('(max-width: 1980px)');
 
   const rooms = getCurrentCoverRoom(eventInfo);
 
@@ -62,13 +66,14 @@ export function EventCoverCard({
           startTime: event.startTime,
           endTime: event.endTime,
         }}
+        rooms={rooms}
         additionalTeachers={additionalTeachers}
       >
         <Box
           sx={{
             backgroundColor: `${color}.100`,
             borderRadius: 0.75,
-            width: 240,
+            width: isCompact ? 80 : 120,
             transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
             transitionDuration: '150ms',
             transitionProperty: 'background-color, opacity',
@@ -85,6 +90,14 @@ export function EventCoverCard({
           }}
           onContextMenu={(e) => {
             e.preventDefault();
+            if (
+              !selectedEvents.find(
+                (selectedEvent) =>
+                  getEventId(selectedEvent) === getEventId(eventInfo)
+              )
+            ) {
+              toggleEventSelection(eventInfo);
+            }
             setAnchorEl(e.currentTarget);
           }}
         >
@@ -104,23 +117,13 @@ export function EventCoverCard({
               }}
             />
             <Stack sx={{ overflow: 'hidden', flex: 1 }}>
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-                spacing={1}
-              >
-                <Stack direction="row" alignItems="center" spacing={0.75}>
-                  <Typography variant="subtitle2" noWrap sx={{ flex: 1 }}>
-                    {event.name}
-                  </Typography>
-                  {substitutionType && (
-                    <SubIconWithType substitutionType={substitutionType} />
-                  )}
-                </Stack>
+              <Stack direction="row" alignItems="center" spacing={0.75}>
                 <Typography variant="subtitle2" noWrap>
-                  {rooms}
+                  {event.name}
                 </Typography>
+                {substitutionType && (
+                  <SubIconWithType substitutionType={substitutionType} />
+                )}
               </Stack>
               <Stack
                 direction="row"
@@ -149,7 +152,11 @@ export function EventCoverCard({
         open={isContextMenuOpen}
         onClose={() => setAnchorEl(null)}
         applyCover={() => applyCover(eventInfo)}
+        editCover={() => editCover(eventInfo)}
         removeCover={() => removeCover(eventInfo)}
+        showEdit={
+          selectedEvents.length === 1 && !!selectedEvents[0].substitution
+        }
         showApply={selectedEvents.some(
           (selectedEvent) => !selectedEvent.substitution
         )}

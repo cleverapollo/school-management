@@ -1,4 +1,4 @@
-import { Stack, Typography } from '@mui/material';
+import { Stack, Typography, useMediaQuery } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { ClockWithXIcon, TeaCupIcon } from '@tyro/icons';
 import { CoverCardTooltip } from './cover-card-tooltip';
@@ -13,6 +13,8 @@ export function CoverBreakOrFinished({
   timeslotInfo,
 }: CoverBreakOrFinishedProps) {
   const { t } = useTranslation(['timetable']);
+  const isCompact = useMediaQuery('(max-width: 1980px)');
+
   return (
     <CoverCardTooltip timeslotInfo={timeslotInfo}>
       <Stack
@@ -21,15 +23,13 @@ export function CoverBreakOrFinished({
           borderRadius: 0.75,
           py: 0.75,
           px: 1.5,
-          maxWidth: 240,
+          width: isCompact ? 80 : 120,
           minHeight: 52,
           border: '1px dashed',
           borderColor: 'slate.200',
         }}
-        direction="row"
         alignItems="center"
         justifyContent="center"
-        spacing={1}
       >
         {type === 'break' ? <TeaCupIcon /> : <ClockWithXIcon />}
         <Stack>
@@ -38,6 +38,7 @@ export function CoverBreakOrFinished({
             variant="subtitle2"
             lineHeight={1.2}
             mt={0.25}
+            fontSize="0.75rem"
             noWrap
           >
             {t(`timetable:${type}`)}

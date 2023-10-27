@@ -66,7 +66,7 @@ function getChangeList(
 
   if (lessonDiff.roomChanged) {
     changes.push(
-      `${t('common:room')}: ${oldLesson?.room?.name ?? '-'} → ${
+      `${t('common:room', { count: 1 })}: ${oldLesson?.room?.name ?? '-'} → ${
         newLesson?.room?.name ?? '-'
       }`
     );

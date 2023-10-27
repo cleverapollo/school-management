@@ -19,7 +19,7 @@ export function RemoveCoverModal({
   const { t } = useTranslation(['substitution']);
   const { mutateAsync: deleteCover } = useDeleteCover();
 
-  const listOfDates = useMemo(() => {
+  const { arrayOfDates, listOfDates } = useMemo(() => {
     const sortedDatesList = Array.from(eventsMap?.values() || [])
       .sort(
         (a, b) =>
@@ -27,7 +27,12 @@ export function RemoveCoverModal({
       )
       .map((a) => dayjs(a.event.startTime).format('L'));
 
-    return Array.from(new Set(sortedDatesList)).join(', ');
+    const datesArray = Array.from(new Set(sortedDatesList));
+
+    return {
+      arrayOfDates: datesArray,
+      listOfDates: datesArray.join(', '),
+    };
   }, [eventsMap]);
 
   const onConfirm = async () => {
@@ -42,6 +47,7 @@ export function RemoveCoverModal({
       open={open}
       title={t('substitution:removeCover')}
       description={t('substitution:youAreAboutToRemoveCover', {
+        count: arrayOfDates.length,
         dates: listOfDates,
       })}
       confirmText={t('substitution:removeCover')}
