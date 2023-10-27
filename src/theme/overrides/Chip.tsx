@@ -6,7 +6,7 @@ import { Colour } from '@tyro/api';
 
 // ----------------------------------------------------------------------
 
-const COLORS = ['primary', 'secondary', 'info', 'success', 'warning', 'error', 'red', ...Object.values(Colour)] as const;
+const COLORS = ['primary', 'secondary', 'info', 'success', 'warning', 'error', 'red', ...Object.values(Colour), 'slate', 'gray'] as const;
 
 // NEW VARIANT
 declare module '@mui/material/Chip' {
