@@ -35,11 +35,7 @@ type EventDetails = NonNullable<
 
 export type StudentAttendance = Record<
   SaveEventAttendanceInput['personPartyId'],
-  SaveEventAttendanceInput &
-    EventDetails & {
-      isEditMode?: boolean;
-      editable?: boolean;
-    }
+  SaveEventAttendanceInput & EventDetails & { isEditMode?: boolean }
 >;
 
 export type GroupStudent = {
@@ -141,7 +137,6 @@ export function useHandleLessonAttendance({
             personPartyId: student.partyId,
             attendanceCodeId: currentStudent?.attendanceCodeId ?? presentId,
             isEditMode: !currentStudent?.adminSubmitted ?? true,
-            editable: currentStudent?.adminSubmitted,
             date,
           };
         }
@@ -197,15 +192,6 @@ export function useHandleLessonAttendance({
         },
       };
     });
-
-  const cancelEditAttendance = (studentId: number) =>
-    setNewAttendance((currentAttendance) => ({
-      ...currentAttendance,
-      [studentId]: {
-        ...initialAttendanceRef.current[studentId],
-        isEditMode: false,
-      },
-    }));
 
   const setStudentAttendanceCode = (studentId: number) => (codeId: number) => {
     setNewAttendance((currentAttendance) => ({
@@ -299,7 +285,6 @@ export function useHandleLessonAttendance({
     setStudentAttendanceCode,
     getStudentEventDetails,
     editAttendance,
-    cancelEditAttendance,
     saveAttendance,
     cancelAttendance,
   };

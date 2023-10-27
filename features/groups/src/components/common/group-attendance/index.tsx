@@ -15,12 +15,7 @@ import { useTranslation } from '@tyro/i18n';
 
 import { AttendanceToggle } from '@tyro/attendance';
 
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  EditIcon,
-  UndoIcon,
-} from '@tyro/icons';
+import { ChevronLeftIcon, ChevronRightIcon, EditIcon } from '@tyro/icons';
 import { usePreferredNameLayout, EditState, useToast } from '@tyro/core';
 import { useEffect, useState } from 'react';
 import { StudentAvatar } from '@tyro/people';
@@ -73,7 +68,6 @@ export const GroupAttendance = ({
     getStudentAttendanceCode,
     setStudentAttendanceCode,
     editAttendance,
-    cancelEditAttendance,
     saveAttendance,
     cancelAttendance,
   } = useHandleLessonAttendance({
@@ -251,32 +245,10 @@ export const GroupAttendance = ({
                     </TableCell>
                     <TableCell>
                       {eventDetails?.isEditMode ? (
-                        <Stack
-                          direction="row"
-                          alignItems="center"
-                          gap={1}
-                          position="relative"
-                        >
-                          <AttendanceToggle
-                            codeId={getStudentAttendanceCode(student.partyId)}
-                            onChange={setStudentAttendanceCode(student.partyId)}
-                          />
-                          {eventDetails?.editable && (
-                            <IconButton
-                              aria-label={t('common:actions.cancel')}
-                              sx={({ spacing }) => ({
-                                position: 'absolute',
-                                right: spacing(-1),
-                                top: spacing(-2),
-                              })}
-                              onClick={() =>
-                                cancelEditAttendance(student.partyId)
-                              }
-                            >
-                              <UndoIcon sx={{ height: 18, width: 18 }} />
-                            </IconButton>
-                          )}
-                        </Stack>
+                        <AttendanceToggle
+                          codeId={getStudentAttendanceCode(student.partyId)}
+                          onChange={setStudentAttendanceCode(student.partyId)}
+                        />
                       ) : (
                         <Stack
                           direction="row"
@@ -303,15 +275,13 @@ export const GroupAttendance = ({
                               </Typography>
                             )}
                           </Stack>
-                          {eventDetails?.editable && (
-                            <IconButton
-                              aria-label={t('common:actions.edit')}
-                              color="primary"
-                              onClick={() => editAttendance(student.partyId)}
-                            >
-                              <EditIcon />
-                            </IconButton>
-                          )}
+                          <IconButton
+                            aria-label={t('common:actions.edit')}
+                            color="primary"
+                            onClick={() => editAttendance(student.partyId)}
+                          >
+                            <EditIcon />
+                          </IconButton>
                         </Stack>
                       )}
                     </TableCell>
