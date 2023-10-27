@@ -24,10 +24,12 @@ import {
   ConfirmDialog,
 } from '@tyro/core';
 
-import { MobileIcon, MoveGroupIcon, SendMailIcon } from '@tyro/icons';
+import { MobileIcon, MoveGroupIcon } from '@tyro/icons';
 
 import set from 'lodash/set';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
+import { SubjectSelectCellEditor } from '@tyro/core/src/components/table/cell-editors/subject';
+import { CatalogueSubjectOption, useCatalogueSubjects } from '@tyro/settings';
 import {
   useSaveSubjectGroupEdits,
   useSubjectGroups,
@@ -40,7 +42,8 @@ type ReturnTypeFromUseSubjectGroups = NonNullable<
 
 const getSubjectGroupsColumns = (
   t: TFunction<('common' | 'groups')[]>,
-  displayNames: ReturnTypeDisplayNames
+  displayNames: ReturnTypeDisplayNames,
+  subjects?: CatalogueSubjectOption[]
 ): GridOptions<ReturnTypeFromUseSubjectGroups>['columnDefs'] => [
   {
     field: 'name',
@@ -49,7 +52,7 @@ const getSubjectGroupsColumns = (
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
-
+    editable: true,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseSubjectGroups>) => {
@@ -80,10 +83,18 @@ const getSubjectGroupsColumns = (
     field: 'subjects',
     headerName: t('common:subject'),
     filter: true,
+    editable: true,
+    valueSetter: ({ data, newValue }) => {
+      const newOption = subjects?.find(({ id }) => id === newValue);
+
+      set(data, 'subjects[0]', newOption ?? {});
+      return true;
+    },
     valueGetter: ({ data }) => {
       const [firstSubject] = data?.subjects || [];
       return firstSubject?.name;
     },
+    cellEditorSelector: () => SubjectSelectCellEditor(subjects),
     enableRowGroup: true,
   },
   {
@@ -141,6 +152,7 @@ export default function SubjectGroups() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
   const { displayNames } = usePreferredNameLayout();
   const { data: subjectGroupsData } = useSubjectGroups();
+  const { data: subjects } = useCatalogueSubjects();
   const { mutateAsync: updateSubjectGroup } = useSaveSubjectGroupEdits();
   const { mutateAsync: switchSubjectGroupType } = useSwitchSubjectGroupType();
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
@@ -155,8 +167,8 @@ export default function SubjectGroups() {
     useState(false);
 
   const studentColumns = useMemo(
-    () => getSubjectGroupsColumns(t, displayNames),
-    [t, displayNames]
+    () => getSubjectGroupsColumns(t, displayNames, subjects),
+    [t, displayNames, subjects]
   );
 
   const actionMenuItems = [
@@ -181,19 +193,31 @@ export default function SubjectGroups() {
   ];
 
   const handleBulkSave = (
-    data: BulkEditedRows<ReturnTypeFromUseSubjectGroups, 'irePP.level'>
+    data: BulkEditedRows<
+      ReturnTypeFromUseSubjectGroups,
+      'irePP.level' | 'name' | 'subjects'
+    >
   ) => {
     const updates = Object.entries(data).reduce<UpdateSubjectGroupInput[]>(
       (acc, [partyId, changes]) => {
         const level = changes['irePP.level'];
+        const { name } = changes;
+        const { subjects: subjectsChange } = changes;
+        const updatedEntry: UpdateSubjectGroupInput = {
+          subjectGroupPartyId: Number(partyId),
+        };
 
         if (level) {
-          acc.push({
-            subjectGroupPartyId: Number(partyId),
-            irePP: { level: level.newValue },
-          });
+          updatedEntry.irePP = { level: level.newValue };
+        }
+        if (name) {
+          updatedEntry.name = name.newValue;
+        }
+        if (subjectsChange && subjectsChange.newValue.length) {
+          updatedEntry.subjectIds = [subjectsChange.newValue[0]?.id];
         }
 
+        acc.push(updatedEntry);
         return acc;
       },
       []

@@ -18,6 +18,7 @@ const subjectGroupsList = graphql(/* GraphQL */ `
       name
       avatarUrl
       subjects {
+        id
         name
         colour
       }
