@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import {
   ActionMenu,
@@ -16,13 +16,7 @@ import {
   useToast,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import {
-  MobileIcon,
-  PersonHeartIcon,
-  PersonTickIcon,
-  PersonCrossIcon,
-} from '@tyro/icons';
-import { Box, Fade } from '@mui/material';
+import { MobileIcon, AddUserIcon } from '@tyro/icons';
 import { SendSmsModal } from '@tyro/sms';
 import {
   Core_UpdateStudentContactRelationshipInput,
@@ -33,6 +27,7 @@ import { useStudentsContacts } from '../../../api/student/overview';
 import { joinAddress } from '../../../utils/join-address';
 import { PriorityTypeCellEditor } from '../../../components/contacts/priority-cell-editor';
 import { useUpdateStudentContactRelationships } from '../../../api/student/update-student-contact-relationships';
+import { StudentSelectOption, useStudent } from '../../../api/student/students';
 
 type ReturnTypeFromUseContacts = NonNullable<
   ReturnType<typeof useStudentsContacts>['data']
@@ -195,8 +190,10 @@ export default function StudentProfileContactsPage() {
   const { t } = useTranslation(['common', 'people', 'mail', 'sms']);
   const { displayName } = usePreferredNameLayout();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const studentId = getNumber(id);
+  const { data: studentData } = useStudent(studentId);
   const { data: contacts = [] } = useStudentsContacts(studentId);
   const { mutateAsync: updateRelationshipsAsyncMutation } =
     useUpdateStudentContactRelationships();
@@ -231,51 +228,47 @@ export default function StudentProfileContactsPage() {
     [selectedContacts]
   );
 
-  const actionMenuItems = useMemo(() => {
-    const isThereAtLeastOneContactThatIsNotAllowedToContact =
-      selectedContacts.some((contact) => !contact?.allowedToContact);
-
-    return [
+  const actionMenuItems = useMemo(
+    () => [
       [
         {
-          label: t('people:sendSms'),
-          icon: <MobileIcon />,
-          onClick: onOpenSendSms,
-          disabled: recipientsForSms.length === 0,
-          disabledTooltip: t('sms:recipientNotIncludedInSms', {
-            count: selectedContacts.length,
-          }),
+          label: t('people:createContact'),
+          icon: <AddUserIcon />,
+          onClick: () => {
+            if (!studentData) return;
+            const currentStudentAsOption: StudentSelectOption = {
+              ...studentData?.person,
+              caption: studentData.classGroup?.name,
+            };
+            navigate(`/people/contacts/create`, {
+              state: {
+                students: [currentStudentAsOption],
+              },
+            });
+          },
         },
-        // {
-        //   label: t('mail:sendMail'),
-        //   icon: <SendMailIcon />,
-        //   onClick: () => {},
-        // },
       ],
-      [
-        {
-          label: t('people:makePrimaryContact'),
-          icon: <PersonHeartIcon />,
-          onClick: () => {},
-          disabled: selectedContacts.length !== 1,
-          disabledTooltip: t(
-            'people:feedback.moreThanOneSelectedForPrimaryContact'
-          ),
-        },
-        isThereAtLeastOneContactThatIsNotAllowedToContact
-          ? {
-              label: t('people:actions.allowUsersToContact'),
-              icon: <PersonTickIcon />,
-              onClick: () => {},
-            }
-          : {
-              label: t('people:actions.disallowUsersToContact'),
-              icon: <PersonCrossIcon />,
-              onClick: () => {},
+      selectedContacts.length
+        ? [
+            {
+              label: t('people:sendSms'),
+              icon: <MobileIcon />,
+              onClick: onOpenSendSms,
+              disabled: recipientsForSms.length === 0,
+              disabledTooltip: t('sms:recipientNotIncludedInSms', {
+                count: selectedContacts.length,
+              }),
             },
-      ],
-    ];
-  }, [selectedContacts, recipientsForSms]);
+            // {
+            //   label: t('mail:sendMail'),
+            //   icon: <SendMailIcon />,
+            //   onClick: () => {},
+            // },
+          ]
+        : [],
+    ],
+    [selectedContacts, recipientsForSms]
+  );
 
   const handleBulkSave = (
     data: BulkEditedRows<
@@ -330,13 +323,7 @@ export default function StudentProfileContactsPage() {
             toast(t('people:allowedToContactDisabled'), { variant: 'info' });
           }
         }}
-        rightAdornment={
-          <Fade in={selectedContacts.length > 0}>
-            <Box>
-              <ActionMenu menuItems={actionMenuItems} />
-            </Box>
-          </Fade>
-        }
+        rightAdornment={<ActionMenu menuItems={actionMenuItems} />}
         onBulkSave={handleBulkSave}
       />
       <SendSmsModal

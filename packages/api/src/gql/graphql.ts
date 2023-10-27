@@ -508,6 +508,7 @@ export type CalendarDayInfoId = {
 export type CalendarEvent = {
   __typename?: 'CalendarEvent';
   allDayEvent: Scalars['Boolean'];
+  alsoShowForParties: Array<Scalars['Long']>;
   attendees: Array<CalendarEventAttendee>;
   calendarEventId: CalendarEventId;
   calendarIds: Array<Maybe<Scalars['Int']>>;
