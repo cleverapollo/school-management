@@ -3,6 +3,7 @@ import {
   PermissionUtils,
   SmsRecipientType,
   SubjectGroupType,
+  SubjectUsage,
   UpdateSubjectGroupInput,
 } from '@tyro/api';
 import { useMemo, useState } from 'react';
@@ -22,13 +23,13 @@ import {
   useDisclosure,
   sortStartNumberFirst,
   ConfirmDialog,
+  TableSelect,
 } from '@tyro/core';
 
 import { MobileIcon, MoveGroupIcon } from '@tyro/icons';
 
-import set from 'lodash/set';
+import { set } from 'lodash';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { SubjectSelectCellEditor } from '@tyro/core/src/components/table/cell-editors/subject';
 import { CatalogueSubjectOption, useCatalogueSubjects } from '@tyro/settings';
 import {
   useSaveSubjectGroupEdits,
@@ -62,9 +63,12 @@ const getSubjectGroupsColumns = (
       const bgColorStyle = subject?.colour
         ? { bgcolor: `${subject.colour}.500` }
         : {};
+      const subjectName = data?.name ?? '';
+      const nationalCode = subject?.nationalCode ?? '-';
+
       return (
         <TableAvatar
-          name={data?.name ?? ''}
+          name={`${subjectName} (${nationalCode})`}
           to={`./${data?.partyId ?? ''}`}
           avatarUrl={data?.avatarUrl}
           AvatarProps={{
@@ -94,7 +98,17 @@ const getSubjectGroupsColumns = (
       const [firstSubject] = data?.subjects || [];
       return firstSubject?.name;
     },
-    cellEditorSelector: () => SubjectSelectCellEditor(subjects),
+    cellEditorSelector: () =>
+      ({
+        component: TableSelect<CatalogueSubjectOption>,
+        popup: true,
+        popupPosition: 'under',
+        params: {
+          options: subjects,
+          optionIdKey: 'id',
+          getOptionLabel: (option: CatalogueSubjectOption) => option.name,
+        },
+      } as const),
     enableRowGroup: true,
   },
   {
@@ -152,7 +166,9 @@ export default function SubjectGroups() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
   const { displayNames } = usePreferredNameLayout();
   const { data: subjectGroupsData } = useSubjectGroups();
-  const { data: subjects } = useCatalogueSubjects();
+  const { data: subjects } = useCatalogueSubjects({
+    filterUsage: SubjectUsage.All,
+  });
   const { mutateAsync: updateSubjectGroup } = useSaveSubjectGroupEdits();
   const { mutateAsync: switchSubjectGroupType } = useSwitchSubjectGroupType();
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
@@ -200,22 +216,19 @@ export default function SubjectGroups() {
   ) => {
     const updates = Object.entries(data).reduce<UpdateSubjectGroupInput[]>(
       (acc, [partyId, changes]) => {
-        const level = changes['irePP.level'];
-        const { name } = changes;
-        const { subjects: subjectsChange } = changes;
         const updatedEntry: UpdateSubjectGroupInput = {
           subjectGroupPartyId: Number(partyId),
         };
 
-        if (level) {
-          updatedEntry.irePP = { level: level.newValue };
-        }
-        if (name) {
-          updatedEntry.name = name.newValue;
-        }
-        if (subjectsChange && subjectsChange.newValue.length) {
-          updatedEntry.subjectIds = [subjectsChange.newValue[0]?.id];
-        }
+        Object.entries(changes).forEach(([key, value]) => {
+          if (key === 'irePP.level') {
+            set(updatedEntry, 'irePP.level', value.newValue);
+          } else if (key === 'subjects' && value?.newValue?.length) {
+            set(updatedEntry, 'subjectIds', [(value?.newValue?.[0] as CatalogueSubjectOption)?.id]);
+          } else {
+            set(updatedEntry, key, value.newValue);
+          }
+        });
 
         acc.push(updatedEntry);
         return acc;

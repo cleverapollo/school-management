@@ -3,6 +3,7 @@ import {
   gqlClient,
   graphql,
   queryClient,
+  SubjectFilter,
   UpsertSubject,
   UseQueryReturnType,
 } from '@tyro/api';
@@ -10,8 +11,8 @@ import { useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 
 const catalogueSubjects = graphql(/* GraphQL */ `
-  query catalogueSubjects {
-    catalogue_subjects {
+  query catalogueSubjects($filter: SubjectFilter) {
+    catalogue_subjects(filter: $filter) {
       id
       name
       description
@@ -34,21 +35,21 @@ const updateCatalogueSubjects = graphql(/* GraphQL */ `
 `);
 
 export const catalogueSubjectsKeys = {
-  all: ['catalogue_subjects'] as const,
+  all: (filter?: SubjectFilter) => ['catalogue_subjects', filter] as const,
 };
 
-const catalogueSubjectsQuery = {
-  queryKey: catalogueSubjectsKeys.all,
-  queryFn: async () => gqlClient.request(catalogueSubjects),
-};
+const catalogueSubjectsQuery = (filter?: SubjectFilter) => ({
+  queryKey: catalogueSubjectsKeys.all(filter),
+  queryFn: async () => gqlClient.request(catalogueSubjects, { filter }),
+});
 
-export function getCatalogueSubjects() {
-  return queryClient.fetchQuery(catalogueSubjectsQuery);
+export function getCatalogueSubjects(filter?: SubjectFilter) {
+  return queryClient.fetchQuery(catalogueSubjectsQuery(filter));
 }
 
-export function useCatalogueSubjects() {
+export function useCatalogueSubjects(filter?: SubjectFilter) {
   return useQuery({
-    ...catalogueSubjectsQuery,
+    ...catalogueSubjectsQuery(filter),
     select: ({ catalogue_subjects }) => catalogue_subjects,
   });
 }
@@ -61,7 +62,7 @@ export function useUpdateCatalogueSubjects() {
     mutationFn: (input: UpsertSubject[]) =>
       gqlClient.request(updateCatalogueSubjects, { input }),
     onSuccess: () => {
-      queryClient.invalidateQueries(catalogueSubjectsKeys.all);
+      queryClient.invalidateQueries(catalogueSubjectsKeys.all());
       toast(t('settings:successfullyUpdatedSubjects'), {
         variant: 'success',
       });

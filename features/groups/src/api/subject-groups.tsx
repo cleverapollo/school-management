@@ -21,6 +21,7 @@ const subjectGroupsList = graphql(/* GraphQL */ `
         id
         name
         colour
+        nationalCode
       }
       studentMembers {
         memberCount
