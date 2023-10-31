@@ -1,18 +1,12 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-// @mui
 import { Collapse } from '@mui/material';
-// hooks
 import useActiveLink from '../../../../../hooks/use-active-link';
 import NavItem from './NavItem';
 import {
   NavigationMenuLink,
   NavigationRootGroup,
 } from '../../../../../hooks/use-navigation-config';
-
-// ----------------------------------------------------------------------
 
 type NavListRootProps = {
   data: NavigationRootGroup | NavigationMenuLink;
