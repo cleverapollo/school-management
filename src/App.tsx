@@ -1,8 +1,7 @@
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 // theme
-import ThemeProvider from './theme';
-import { ProgressBarStyle } from './components/ProgressBar';
+import { ThemeProvider } from '@tyro/core';
 import MotionLazyContainer from './components/animate/MotionLazyContainer';
 // @mui
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -20,7 +19,6 @@ export default function App() {
         <AuthProvider>
           <MotionLazyContainer>
             <ThemeProvider>
-              <ProgressBarStyle />
               <AppShell />
               <ReactQueryDevtools />
             </ThemeProvider>

@@ -20,6 +20,7 @@ jobs:
         run: |
           export AG_GRID_KEY="${{ secrets.AG_GRID_KEY }}"
           export FULL_CALENDAR_KEY="${{ secrets.FULL_CALENDAR_KEY }}"
+          export SENTRY_AUTH_TOKEN="${{ secrets.SENTRY_AUTH_TOKEN }}"
           yarn install
           yarn build
       - name: Docker Login

@@ -1,6 +1,6 @@
 const path = require('path');
 const Dotenv = require('rspack-plugin-dotenv');
-// const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
+const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -10,15 +10,15 @@ module.exports = {
   mode,
   devtool: isProd
     ? 'source-map'
-    : 'eval-source-map',
+    : 'cheap-source-map',
   entry: {
     main: './src/index.tsx',
   },
   output: {
-    filename: 'static/js/[contenthash].js',
-    chunkFilename: 'static/js/[contenthash].chunk.js',
-    cssFilename: 'static/css/[contenthash].css',
-    assetModuleFilename: 'static/media/[contenthash][ext]',
+    filename: 'static/js/[name].[contenthash].js',
+    chunkFilename: 'static/js/[name].[contenthash].chunk.js',
+    cssFilename: 'static/css/[name].[contenthash].css',
+    assetModuleFilename: 'static/media/[name].[contenthash][ext]',
     path: path.resolve(__dirname, '../build'),
     publicPath: '/',
   },
@@ -41,10 +41,6 @@ module.exports = {
             ignore: ['**/index.html'],
           }
         },
-        {
-          from: 'public/locales',
-          to: 'locales/[path][name].[contenthash][ext]'
-        }
       ],
     },
     emotion: true,
@@ -142,13 +138,13 @@ module.exports = {
       new Dotenv(),
       new ForkTsCheckerWebpackPlugin(),
     ] : [],
-    // ...isProd ? [
-    //   sentryWebpackPlugin({
-    //     authToken: process.env.SENTRY_AUTH_TOKEN,
-    //     org: "tyro-technologies-limited",
-    //     project: "web-app",
-    //   }),
-    // ] : [],
+    ...isProd && process.env.SENTRY_AUTH_TOKEN ? [
+      new SentryWebpackPlugin({
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        org: "tyro-technologies-limited",
+        project: "web-app",
+      }),
+    ] : [],
   ],
   watchOptions: {
     ignored: /node_modules/,
