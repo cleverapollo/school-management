@@ -4710,7 +4710,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/webpack-plugin@npm:^1.20.0":
+"@sentry/webpack-plugin@npm:^1.20.1":
   version: 1.20.1
   resolution: "@sentry/webpack-plugin@npm:1.20.1"
   dependencies:
@@ -17062,7 +17062,7 @@ __metadata:
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.3
     "@rspack/cli": ^0.3.8
     "@sentry/react": ^7.76.0
-    "@sentry/webpack-plugin": ^1.20.0
+    "@sentry/webpack-plugin": ^1.20.1
     "@svgr/webpack": ^6.2.1
     "@tanstack/react-query": ^4.29.7
     "@tanstack/react-query-devtools": ^4.29.7
