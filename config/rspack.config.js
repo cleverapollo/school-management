@@ -138,7 +138,7 @@ module.exports = {
       new Dotenv(),
       new ForkTsCheckerWebpackPlugin(),
     ] : [],
-    ...isProd ? [
+    ...isProd && process.env.SENTRY_AUTH_TOKEN ? [
       new SentryWebpackPlugin({
         authToken: process.env.SENTRY_AUTH_TOKEN,
         org: "tyro-technologies-limited",
