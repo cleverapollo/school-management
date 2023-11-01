@@ -78,7 +78,8 @@ function getCommentFields(
     data: ReturnTypeFromUseAssessmentResults | undefined
   ) =>
     assessmentData?.commentType === CommentType.CommentBank ||
-    !!data?.teacherComment?.commentBankCommentId;
+    !!data?.teacherComment?.commentBankCommentId ||
+    data?.teacherComment?.commentBankCommentId === -1;
 
   const commentBankOptions = matchedCommentBank?.filter(
     (comment) => comment?.active
@@ -110,12 +111,7 @@ function getCommentFields(
                   return false;
                 }
 
-                set(data ?? {}, 'teacherComment.comment', null);
-                set(
-                  data ?? {},
-                  'teacherComment.commentBankCommentId',
-                  commentBankOptions?.[0]?.id ?? null
-                );
+                set(data ?? {}, 'teacherComment.commentBankCommentId', -1);
               } else {
                 set(data ?? {}, 'teacherComment.commentBankCommentId', null);
               }
@@ -173,8 +169,23 @@ function getCommentFields(
           ? data?.teacherComment?.commentBankCommentId
           : data?.teacherComment?.comment;
       },
-      valueSetter: ({ data, newValue }) => {
+      valueSetter: ({
+        data,
+        newValue,
+      }: ValueSetterParams<
+        ReturnTypeFromUseAssessmentResults,
+        string | number | ReturnTypeFromUseAssessmentResults['teacherComment']
+      >) => {
         const isCommentBankSelector = getIsCommentBankSelector(data);
+
+        if (
+          typeof newValue === 'object' &&
+          newValue?.commentBankCommentId === -1
+        ) {
+          set(data ?? {}, 'teacherComment.commentBankCommentId', null);
+          set(data ?? {}, 'teacherComment.comment', newValue?.comment ?? null);
+          return true;
+        }
 
         if (!newValue) {
           data.teacherComment = null;
@@ -545,7 +556,10 @@ export default function EditTermAssessmentResults() {
             }
           });
 
-          if (newResult.teacherComment?.comment) {
+          if (
+            newResult.teacherComment?.comment ||
+            newResult.teacherComment?.commentBankCommentId
+          ) {
             newResult.teacherComment = {
               ...newResult.teacherComment,
               assessmentId: assessmentData?.id ?? 0,
@@ -606,6 +620,28 @@ export default function EditTermAssessmentResults() {
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.studentPartyId)}
         onBulkSave={saveAssessmentResult}
+        onCellValueChanged={({ node, data, colDef }) => {
+          if (colDef.colId === 'commentType') {
+            if (data?.teacherComment?.commentBankCommentId === -1) {
+              const matchedCommentBank =
+                commentBanks?.find(
+                  (commentBank) =>
+                    commentBank.id ===
+                    assessmentData?.commentBank?.commentBankId
+                )?.comments || [];
+
+              const firstActiveComment = matchedCommentBank?.find(
+                (comment) => comment?.active
+              );
+              node?.setDataValue(
+                'teacherComment',
+                firstActiveComment?.id ?? null
+              );
+            } else {
+              node?.setDataValue('teacherComment', null);
+            }
+          }
+        }}
       />
     </PageContainer>
   );
