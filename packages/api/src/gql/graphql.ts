@@ -553,6 +553,7 @@ export type CalendarEventExtension = {
 };
 
 export type CalendarEventFilter = {
+  alsoShowForParties?: InputMaybe<Calender_EventFilterAlsoShowForParties>;
   calendarIds?: InputMaybe<Array<Scalars['Int']>>;
   endDate: Scalars['Date'];
   eventIds?: InputMaybe<Array<Scalars['Int']>>;
@@ -845,6 +846,16 @@ export type Calendar_BellTime = {
   time: Scalars['Time'];
 };
 
+export type Calendar_CalendarUnavailabilityDate = {
+  continuousEndDate?: InputMaybe<Scalars['Date']>;
+  continuousStartDate?: InputMaybe<Scalars['Date']>;
+  individualDates?: InputMaybe<Array<Scalars['Date']>>;
+  leavesAt?: InputMaybe<Scalars['Time']>;
+  /**  if is a partial wither leavesAt or  returnsAt must be set */
+  partial: Scalars['Boolean'];
+  returnsAt?: InputMaybe<Scalars['Time']>;
+};
+
 export type Calendar_CreateBellTimeInput = {
   bellTimeId?: InputMaybe<Scalars['Int']>;
   name: Array<TranslationInput>;
@@ -881,6 +892,10 @@ export type Calendar_DeleteEvent = {
 
 export type Calendar_DeleteEventAugments = {
   augments: Array<Scalars['String']>;
+};
+
+export type Calendar_DeleteUnavailability = {
+  unavailabilityIds?: InputMaybe<Array<Scalars['Int']>>;
 };
 
 export type Calendar_EditEvent = {
@@ -975,9 +990,76 @@ export enum Calendar_TagContext {
   Substitution = 'SUBSTITUTION'
 }
 
+export type Calendar_Unavailability = {
+  dates?: InputMaybe<Calendar_CalendarUnavailabilityDate>;
+  partyIds: Array<Scalars['Long']>;
+  tags: Array<Calendar_UnavailabilityTag>;
+  unavailabilityId?: InputMaybe<Scalars['Int']>;
+};
+
+export type Calendar_UnavailabilityFilter = {
+  excludeContexts?: InputMaybe<Array<Calendar_UnavailabilityTagContext>>;
+  fromDate?: InputMaybe<Scalars['Date']>;
+  orConditions?: InputMaybe<Array<Calendar_UnavailabilityFilterCondition>>;
+  partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  toDate?: InputMaybe<Scalars['Date']>;
+  unavailabilityIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
+export type Calendar_UnavailabilityFilterCondition = {
+  afterTime?: InputMaybe<Scalars['Time']>;
+  beforeTime?: InputMaybe<Scalars['Time']>;
+  /**  filters for only these dates within the range */
+  dateArray?: InputMaybe<Array<Scalars['Date']>>;
+  onOrAfterDate?: InputMaybe<Scalars['Date']>;
+  onOrBeforeDate?: InputMaybe<Scalars['Date']>;
+  partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+};
+
+export type Calendar_UnavailabilityTag = {
+  context: Calendar_UnavailabilityTagContext;
+  label: Scalars['String'];
+};
+
+export enum Calendar_UnavailabilityTagContext {
+  LongTermAbsence = 'LONG_TERM_ABSENCE',
+  SchoolActivity = 'SCHOOL_ACTIVITY',
+  ShortTermAbsence = 'SHORT_TERM_ABSENCE'
+}
+
+export type Calendar_UnavailabilityTagInput = {
+  context: Calendar_UnavailabilityTagContext;
+  label: Scalars['String'];
+};
+
 export type Calendar_UpdateDays = {
   calendarId?: InputMaybe<Scalars['Int']>;
   days?: InputMaybe<Array<InputMaybe<Calendar_CreateCalendarDayInput>>>;
+};
+
+export type Calendar_UpsertCalendarUnavailability = {
+  dates?: InputMaybe<Calendar_UpsertCalendarUnavailabilityDate>;
+  partyIds: Array<Scalars['Long']>;
+  tags: Array<Calendar_UnavailabilityTagInput>;
+  unavailabilityId?: InputMaybe<Scalars['Int']>;
+};
+
+export type Calendar_UpsertCalendarUnavailabilityDate = {
+  continuousEndDate?: InputMaybe<Scalars['Date']>;
+  continuousStartDate?: InputMaybe<Scalars['Date']>;
+  individualDates?: InputMaybe<Array<Scalars['Date']>>;
+  leavesAt?: InputMaybe<Scalars['Time']>;
+  /**  if is a partial wither leavesAt or  returnsAt must be set */
+  partial: Scalars['Boolean'];
+  returnsAt?: InputMaybe<Scalars['Time']>;
+};
+
+export type Calender_EventFilterAlsoShowForParties = {
+  /**
+   *  add ability to include people who are exluded from an event to have the event displayed on their calendar
+   *  e.g. a teacher has been substituted but still wants it to show on their timetable  partiesForAugments: [Calendar_TagContext.SUBSTITUTION]
+   */
+  partiesForAugments?: InputMaybe<Array<Calendar_TagContext>>;
 };
 
 export type Calender_EventSourceInput = {
@@ -4426,6 +4508,8 @@ export enum Reporting_Pinned {
 export type Reporting_ReportFilter = {
   filters?: InputMaybe<Array<InputMaybe<Reporting_TableFilterInput>>>;
   reportId: Scalars['String'];
+  /**  list of fields ids to be returned in report. Returns default if null */
+  showFields?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
 export type Reporting_ReportFilterExpand = {
