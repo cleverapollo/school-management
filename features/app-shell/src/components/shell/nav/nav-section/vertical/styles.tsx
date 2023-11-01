@@ -1,13 +1,7 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
-import { alpha, styled } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import { ListItemIcon, ListSubheader, ListItemButton } from '@mui/material';
-// config
 import { ICON, NAV } from '../../config';
-//
 import { NavItemProps } from '../types';
-
-// ----------------------------------------------------------------------
 
 type StyledItemProps = Omit<NavItemProps, 'item'> & {
   caption?: boolean;

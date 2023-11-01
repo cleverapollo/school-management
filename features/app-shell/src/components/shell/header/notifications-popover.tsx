@@ -20,7 +20,6 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { Scrollbar, Avatar } from '@tyro/core';
 import { BellIcon, DoubleCheckmarkIcon, ClockIcon } from '@tyro/icons';
-import { _notifications } from '../../../../../../src/_mock/arrays';
 import MenuPopover from '../../../../../../src/components/menu-popover';
 import { IconButtonAnimate } from '../../../../../../src/components/animate';
 
@@ -29,11 +28,12 @@ dayjs.extend(relativeTime);
 export default function NotificationsPopover() {
   const [openPopover, setOpenPopover] = useState<HTMLElement | null>(null);
 
-  const [notifications, setNotifications] = useState(_notifications);
+  const [notifications, setNotifications] = useState([]);
 
-  const totalUnRead = notifications.filter(
-    (item) => item.isUnRead === true
-  ).length;
+  // const totalUnRead = notifications.filter(
+  //   (item) => item.isUnRead === true
+  // ).length;
+  const totalUnRead = 0;
 
   const handleOpenPopover = (event: React.MouseEvent<HTMLElement>) => {
     setOpenPopover(event.currentTarget);
@@ -44,12 +44,12 @@ export default function NotificationsPopover() {
   };
 
   const handleMarkAllAsRead = () => {
-    setNotifications(
-      notifications.map((notification) => ({
-        ...notification,
-        isUnRead: false,
-      }))
-    );
+    // setNotifications(
+    //   notifications.map((notification) => ({
+    //     ...notification,
+    //     isUnRead: false,
+    //   }))
+    // );
   };
 
   return (
@@ -108,12 +108,13 @@ export default function NotificationsPopover() {
               </ListSubheader>
             }
           >
-            {notifications.slice(0, 2).map((notification) => (
-              <NotificationItem
-                key={notification.id}
-                notification={notification}
-              />
-            ))}
+            {notifications.slice(0, 2).map(
+              (notification) => null
+              // <NotificationItem
+              //   key={notification.id}
+              //   notification={notification}
+              // />
+            )}
           </List>
 
           <List
@@ -127,12 +128,13 @@ export default function NotificationsPopover() {
               </ListSubheader>
             }
           >
-            {notifications.slice(2, 5).map((notification) => (
-              <NotificationItem
-                key={notification.id}
-                notification={notification}
-              />
-            ))}
+            {notifications.slice(2, 5).map(
+              (notification) => null
+              // <NotificationItem
+              //   key={notification.id}
+              //   notification={notification}
+              // />
+            )}
           </List>
         </Scrollbar>
 

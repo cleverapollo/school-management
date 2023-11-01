@@ -1,5 +1,3 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
 import { IconButton } from '@mui/material';
 import { ChevronLeftIcon, ChevronRightIcon } from '@tyro/icons';
 import { NAV } from './config';

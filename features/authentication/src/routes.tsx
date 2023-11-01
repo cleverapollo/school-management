@@ -1,10 +1,7 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
 import { msalInstance } from '@tyro/api';
-import { lazyWithRetry } from '@tyro/core';
+import { lazyWithRetry, LoadingScreen } from '@tyro/core';
 import { Suspense } from 'react';
 import { RouteObject, redirect } from 'react-router-dom';
-import LoadingScreen from '../../../src/components/LoadingScreen';
 
 const Login = lazyWithRetry(() => import('./pages/login'));
 const Logout = lazyWithRetry(() => import('./pages/logout'));

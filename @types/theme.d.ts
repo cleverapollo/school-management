@@ -1,5 +1,5 @@
-import palette from '../src/theme/palette';
-import type { CustomShadowOptions } from '../src/theme/shadows';
+import palette from '@tyro/core/src/theme/palette';
+import type { CustomShadowOptions } from '@tyro/core/src/theme/shadows';
 
 type TyroPalette = typeof palette['light'];
 
@@ -70,6 +70,12 @@ declare module '@mui/material/Button' {
   }
 }
 
+declare module '@mui/material/ButtonGroup' {
+  interface ButtonGroupPropsVariantOverrides {
+    soft: true;
+  }
+}
+
 declare module '@mui/material/Paper' {
   interface PaperPropsVariantOverrides {
     soft: true;
@@ -121,5 +127,27 @@ declare module '@mui/material/ToggleButton' {
     fuchsia: true;
     pink: true;
     rose: true;
+  }
+}
+
+declare module '@mui/material/Fab' {
+  interface FabPropsVariantOverrides {
+    outlined: true;
+    outlinedExtended: true;
+    soft: true;
+    softExtended: true;
+  }
+}
+
+declare module '@mui/material/Pagination' {
+  interface PaginationPropsVariantOverrides {
+    soft: true;
+  }
+
+  interface PaginationPropsColorOverrides {
+    info: true;
+    success: true;
+    warning: true;
+    error: true;
   }
 }

@@ -1,5 +1,3 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
 import { forwardRef } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 // @mui
@@ -8,8 +6,6 @@ import { Tooltip, Link, ListItemText } from '@mui/material';
 import { ChevronRightIcon } from '@tyro/icons';
 import { NavItemProps } from '../types';
 import { StyledItem, StyledIcon } from './styles';
-
-// ----------------------------------------------------------------------
 
 const NavItem = forwardRef<HTMLDivElement, NavItemProps>(
   ({ item, depth, open, active, isExternalLink, ...other }, ref) => {
