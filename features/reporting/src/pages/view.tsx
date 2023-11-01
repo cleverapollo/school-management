@@ -7,6 +7,11 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Color, Palette, useTheme } from '@mui/material';
+import {
+  DisplayedColumnsChangedEvent,
+  ColumnApi,
+  Column,
+} from '@ag-grid-community/core';
 import { useRunReports } from '../api/run-report';
 import { DynamicForm } from '../components/dynamic-form';
 
@@ -59,6 +64,7 @@ export const getURLFromFilters = (filters: Reporting_TableFilter[]) =>
 export default function ReportPage() {
   const { id = '', reportId = '' } = useParams();
   const [filters, setFilters] = useState<Reporting_TableFilter[]>([]);
+  const [showFields, setShowFields] = useState<string[] | null>(null);
   const { palette } = useTheme();
   const params = new URL(window.location.href).searchParams;
 
@@ -84,6 +90,7 @@ export default function ReportPage() {
     filter: {
       reportId,
       filters: filterPayload,
+      showFields,
     },
   });
 
@@ -194,6 +201,15 @@ export default function ReportPage() {
     }
   }, [filters]);
 
+  const onDisplayedColumnsChanged = (
+    event: DisplayedColumnsChangedEvent<unknown>
+  ) => {
+    const columnApi: ColumnApi = event?.columnApi;
+    const displayColumns: Column[] = columnApi?.getAllDisplayedColumns() ?? [];
+
+    setShowFields(displayColumns?.map((column) => column.getColId()));
+  };
+
   return (
     <>
       <DynamicForm
@@ -207,6 +223,7 @@ export default function ReportPage() {
         columnDefs={mainColumns}
         gridOptions={{
           ...reportData?.tableDisplayOptions?.gridOptions,
+          onDisplayedColumnsChanged,
         }}
         tableContainerSx={{
           ...reportData?.tableDisplayOptions?.tableContainerSx,
