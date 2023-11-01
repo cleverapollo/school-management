@@ -6,6 +6,7 @@ import {
 } from '@tyro/api';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Color, Palette, useTheme } from '@mui/material';
 import { useRunReports } from '../api/run-report';
 import { DynamicForm } from '../components/dynamic-form';
 
@@ -58,6 +59,7 @@ export const getURLFromFilters = (filters: Reporting_TableFilter[]) =>
 export default function ReportPage() {
   const { id = '', reportId = '' } = useParams();
   const [filters, setFilters] = useState<Reporting_TableFilter[]>([]);
+  const { palette } = useTheme();
   const params = new URL(window.location.href).searchParams;
 
   const navigate = useNavigate();
@@ -105,6 +107,17 @@ export default function ReportPage() {
         sortable: column.sortable,
         hide: !column.visibleByDefault,
         pinned: column.pinned ?? null,
+        cellStyle: (params: any) => {
+          const colour = params?.data[column.id]?.colour;
+          const backgroundColor =
+            (palette?.[colour?.colour as keyof Palette] as Color)?.[
+              colour?.shade as keyof Color
+            ] ?? '';
+
+          return {
+            backgroundColor,
+          };
+        },
         ...(column.hideMenu
           ? {
               suppressMenu: true,
@@ -117,6 +130,10 @@ export default function ReportPage() {
       if (column.maxWidth) {
         // @ts-ignore
         mapped.maxWidth = column.maxWidth;
+      }
+      if (column.minWidth) {
+        // @ts-ignore
+        mapped.minWidth = column.minWidth;
       }
       return mapped;
     });
