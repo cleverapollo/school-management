@@ -162,6 +162,15 @@ export default function ReportPage() {
     );
   }, [reportData?.data]);
 
+  const onDisplayedColumnsChanged = (
+    event: DisplayedColumnsChangedEvent<unknown>
+  ) => {
+    const columnApi: ColumnApi = event?.columnApi;
+    const displayColumns: Column[] = columnApi?.getAllDisplayedColumns() ?? [];
+
+    setShowFields(displayColumns?.map((column) => column.getColId()));
+  };
+
   useEffect(() => {
     if (!!reportData?.filters?.length && !filters.length && !params.size) {
       setFilters(reportData?.filters);
@@ -200,15 +209,6 @@ export default function ReportPage() {
       navigate(`?${redirectUrl}`);
     }
   }, [filters]);
-
-  const onDisplayedColumnsChanged = (
-    event: DisplayedColumnsChangedEvent<unknown>
-  ) => {
-    const columnApi: ColumnApi = event?.columnApi;
-    const displayColumns: Column[] = columnApi?.getAllDisplayedColumns() ?? [];
-
-    setShowFields(displayColumns?.map((column) => column.getColId()));
-  };
 
   return (
     <>
