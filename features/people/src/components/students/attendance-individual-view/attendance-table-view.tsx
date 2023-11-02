@@ -7,12 +7,14 @@ import {
   TablePersonAvatar,
   ReturnTypeDisplayName,
   usePreferredNameLayout,
+  AttendanceCodeChip,
 } from '@tyro/core';
 import {
   useTableSessionAttendance,
   useStudentDailyCalendarInformation,
 } from '@tyro/attendance';
 import { useTranslation, TFunction } from '@tyro/i18n';
+import { AttendanceCodeType } from '@tyro/api';
 
 type AttendanceTableViewProps = {
   startDate: string;
@@ -25,8 +27,10 @@ type OptionalTypeForCombinedAttendanceData = string | null;
 
 export type CombinedAttendanceDataType = {
   date: TypeForCombinedAttendanceData;
+  time: TypeForCombinedAttendanceData;
   type: TypeForCombinedAttendanceData;
   attendanceCode: TypeForCombinedAttendanceData;
+  attendanceCodeType?: AttendanceCodeType;
   details?: OptionalTypeForCombinedAttendanceData;
   updatedBy?: {
     firstName?: OptionalTypeForCombinedAttendanceData;
@@ -54,14 +58,25 @@ const getColumns = (
     sort: 'asc',
   },
   {
+    headerName: t('common:time'),
+    field: 'time',
+    valueGetter: ({ data }) => data?.time,
+  },
+  {
     headerName: t('common:type'),
     field: 'type',
     valueGetter: ({ data }) => data?.type,
   },
   {
     headerName: t('common:attendance'),
-    field: 'type',
+    field: 'attendanceCode',
     valueGetter: ({ data }) => data?.attendanceCode,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<CombinedAttendanceDataType, any>) =>
+      data?.attendanceCodeType ? (
+        <AttendanceCodeChip codeType={data?.attendanceCodeType} />
+      ) : null,
   },
   {
     headerName: t('common:details'),
@@ -121,8 +136,10 @@ export function AttendanceTableView({
 
       const formattedData: CombinedAttendanceDataType = {
         type: event?.name,
+        time: event?.startTime,
         date: eventAttendanceData?.date,
         attendanceCode: eventAttendanceData?.attendanceCode?.name,
+        attendanceCodeType: eventAttendanceData?.attendanceCode?.codeType,
         createdBy:
           eventAttendanceData?.updatedBy || eventAttendanceData?.createdBy,
         details: eventAttendanceData?.note,

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import {
+  AttendanceCodeType,
   gqlClient,
   graphql,
   queryClient,
@@ -13,8 +14,10 @@ type OptionalTypeForCombinedAttendanceData = string | null;
 
 type CombinedAttendanceDataType = {
   date: TypeForCombinedAttendanceData;
+  time: TypeForCombinedAttendanceData;
   type: TypeForCombinedAttendanceData;
   attendanceCode: TypeForCombinedAttendanceData;
+  attendanceCodeType?: AttendanceCodeType;
   details?: OptionalTypeForCombinedAttendanceData;
   updatedBy?: {
     firstName?: OptionalTypeForCombinedAttendanceData;
@@ -92,8 +95,10 @@ const tableSessionAttendanceQuery = (
         if (bellTime) {
           const formattedData: CombinedAttendanceDataType = {
             date,
+            time: bellTime?.time,
             type: bellTime?.name,
             attendanceCode: attendanceCode?.name,
+            attendanceCodeType: attendanceCode?.codeType,
             details: note,
             createdBy: {
               firstName: createdBy?.firstName,
