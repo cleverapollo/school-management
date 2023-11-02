@@ -16,12 +16,19 @@ import {
   useToast,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { MobileIcon, AddUserIcon, PersonGearIcon } from '@tyro/icons';
+import {
+  MobileIcon,
+  AddUserIcon,
+  PersonGearIcon,
+  SendMailIcon,
+} from '@tyro/icons';
 import { SendSmsModal } from '@tyro/sms';
 import {
   Core_UpdateStudentContactRelationshipInput,
+  SearchType,
   SmsRecipientType,
 } from '@tyro/api';
+import { useMailSettings } from '@tyro/mail';
 import { RelationshipTypeCellEditor } from '../../../components/contacts/relationship-type-cell-editor';
 import { useStudentsContacts } from '../../../api/student/overview';
 import { joinAddress } from '../../../utils/join-address';
@@ -198,6 +205,7 @@ export default function StudentProfileContactsPage() {
   const { data: contacts = [] } = useStudentsContacts(studentId);
   const { mutateAsync: updateRelationshipsAsyncMutation } =
     useUpdateStudentContactRelationships();
+  const { composeEmail } = useMailSettings();
 
   const [selectedContacts, setSelectedContacts] = useState<
     ReturnTypeFromUseContacts[]
@@ -234,6 +242,26 @@ export default function StudentProfileContactsPage() {
     [selectedContacts]
   );
 
+  const recipientsForMail = useMemo(
+    () =>
+      selectedContacts
+        .filter((contact) => contact?.allowedToContact)
+        .map(({ person }) => ({
+          partyId: person.partyId,
+          type: SearchType.Contact,
+          text: displayName(person),
+          avatarUrl: person.avatarUrl,
+        })) ?? [],
+    [selectedContacts]
+  );
+
+  const sendMailToSelectedContacts = () => {
+    composeEmail({
+      canReply: false,
+      bccRecipients: recipientsForMail,
+    });
+  };
+
   const actionMenuItems = useMemo(
     () => [
       selectedContacts.length
@@ -247,11 +275,15 @@ export default function StudentProfileContactsPage() {
                 count: selectedContacts.length,
               }),
             },
-            // {
-            //   label: t('mail:sendMail'),
-            //   icon: <SendMailIcon />,
-            //   onClick: () => {},
-            // },
+            {
+              label: t('mail:sendMail'),
+              icon: <SendMailIcon />,
+              onClick: sendMailToSelectedContacts,
+              disabled: recipientsForMail.length === 0,
+              disabledTooltip: t('sms:recipientNotAllowedToContact', {
+                count: selectedContacts.length,
+              }),
+            },
           ]
         : [],
       [
