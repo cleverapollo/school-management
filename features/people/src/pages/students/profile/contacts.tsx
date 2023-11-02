@@ -28,6 +28,7 @@ import { joinAddress } from '../../../utils/join-address';
 import { PriorityTypeCellEditor } from '../../../components/contacts/priority-cell-editor';
 import { useUpdateStudentContactRelationships } from '../../../api/student/update-student-contact-relationships';
 import { StudentSelectOption, useStudent } from '../../../api/student/students';
+import { ManageContactsModal } from '../../../components/students/manage-contacts-modal';
 
 type ReturnTypeFromUseContacts = NonNullable<
   ReturnType<typeof useStudentsContacts>['data']
@@ -206,6 +207,11 @@ export default function StudentProfileContactsPage() {
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
+  const {
+    isOpen: isManageContactsModalOpen,
+    onOpen: onOpenManageContactsModal,
+    onClose: onCloseManageContactsModal,
+  } = useDisclosure();
 
   const studentContactColumns = useMemo(
     () => getStudentContactColumns(t, displayName),
@@ -252,18 +258,7 @@ export default function StudentProfileContactsPage() {
         {
           label: t('people:manageContacts'),
           icon: <PersonGearIcon />,
-          onClick: () => {
-            if (!studentData) return;
-            const currentStudentAsOption: StudentSelectOption = {
-              ...studentData?.person,
-              caption: studentData.classGroup?.name,
-            };
-            navigate(`/people/contacts/${selectedContacts[0]?.partyId}`, {
-              state: {
-                students: [currentStudentAsOption],
-              },
-            });
-          },
+          onClick: onOpenManageContactsModal,
         },
         {
           label: t('people:createContact'),
@@ -283,7 +278,7 @@ export default function StudentProfileContactsPage() {
         },
       ],
     ],
-    [selectedContacts, recipientsForSms]
+    [selectedContacts, recipientsForSms, onOpenManageContactsModal]
   );
 
   const handleBulkSave = (
@@ -341,6 +336,12 @@ export default function StudentProfileContactsPage() {
         }}
         rightAdornment={<ActionMenu menuItems={actionMenuItems} />}
         onBulkSave={handleBulkSave}
+      />
+      <ManageContactsModal
+        studentPartyId={studentId ?? 0}
+        open={isManageContactsModalOpen}
+        onClose={onCloseManageContactsModal}
+        currentContacts={contacts}
       />
       <SendSmsModal
         isOpen={isSendSmsOpen}

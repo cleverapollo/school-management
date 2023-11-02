@@ -20,6 +20,7 @@ const studentsContacts = graphql(/* GraphQL */ `
       contacts {
         partyId
         person {
+          partyId
           firstName
           lastName
           avatarUrl

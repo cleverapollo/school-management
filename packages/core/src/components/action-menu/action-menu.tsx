@@ -95,11 +95,13 @@ export function ActionMenu({
             onClose,
           });
 
-          if (index !== 0 && sectionItems.length > 0) {
+          if (acc.length > 0 && sectionItems.length > 0) {
             acc.push(<Divider key={`divider-${index}`} />);
           }
 
-          acc.push(...sectionItems);
+          if (sectionItems.length > 0) {
+            acc.push(...sectionItems);
+          }
 
           return acc;
         }, [])}
