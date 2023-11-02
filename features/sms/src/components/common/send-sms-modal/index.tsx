@@ -45,7 +45,6 @@ export function SendSmsModal({
   hideRecipientTypes = false,
 }: SendSmsModalProps) {
   const { t } = useTranslation(['common', 'sms']);
-
   const { resolver, rules } = useFormValidator<SmsFormState>();
   const { reset, control, handleSubmit, setValue, watch } =
     useForm<SmsFormState>({
@@ -119,10 +118,19 @@ export function SendSmsModal({
   };
 
   useEffect(() => {
-    setValue(
-      'recipients',
-      recipients.sort((a, b) => a.name.localeCompare(b.name))
-    );
+    const uniqueObjects: Record<string, boolean> = {};
+    const filteredArray = recipients
+      .filter((obj) => {
+        const key = `${obj.id}-${obj.type}`;
+        if (!uniqueObjects[key]) {
+          uniqueObjects[key] = true;
+          return true;
+        }
+        return false;
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    setValue('recipients', filteredArray);
   }, [isOpen]);
 
   return (
