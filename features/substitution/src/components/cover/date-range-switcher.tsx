@@ -22,7 +22,7 @@ export function DateRangeSwitcher({
 }: DateRangeSwitcherProps) {
   const { t } = useTranslation(['common']);
   const dateButtonRef = useRef<HTMLButtonElement>(null);
-  const { getButtonProps, getDisclosureProps } = useDisclosure();
+  const { id, isOpen, onClose, getButtonProps } = useDisclosure();
 
   return (
     <>
@@ -38,7 +38,9 @@ export function DateRangeSwitcher({
           : t('common:selectDateRange')}
       </Button>
       <Popover
-        {...getDisclosureProps()}
+        open={isOpen}
+        id={id}
+        onClose={onClose}
         anchorEl={dateButtonRef.current}
         anchorOrigin={{
           vertical: 'bottom',

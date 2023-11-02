@@ -8,7 +8,7 @@ import {
   FieldValue,
   ResolverOptions,
 } from 'react-hook-form';
-import { toNestError, validateFieldsNatively } from '@hookform/resolvers';
+import { toNestErrors, validateFieldsNatively } from '@hookform/resolvers';
 import { ValidationError, ValidationType, validations } from '../utils';
 
 type ErrorMessages = Partial<Record<ValidationType, string>>;
@@ -261,7 +261,7 @@ export const useFormValidator = <TField extends FieldValues>(): {
       if (Object.keys(errors).length > 0) {
         return {
           values: {},
-          errors: toNestError(errors, options),
+          errors: toNestErrors(errors, options),
         };
       }
 

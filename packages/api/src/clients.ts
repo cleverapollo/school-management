@@ -21,9 +21,7 @@ export const getEndpoint = () => {
 
 type FetchArguments = Parameters<typeof fetch>;
 
-const getAuthHeaders = (
-  ...args: [url: RequestInfo | URL, init?: RequestInit | undefined]
-) => {
+const getAuthHeaders = (...args: FetchArguments) => {
   const originalHeaders = (args[1]?.headers ?? {}) as Record<string, string>;
   const headers: HeadersInit = {};
   const emulationMode = checkEmulationMode();
