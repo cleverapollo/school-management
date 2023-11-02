@@ -1,4 +1,10 @@
-import { GridOptions, Table } from '@tyro/core';
+import {
+  GridOptions,
+  Table,
+  DisplayedColumnsChangedEvent,
+  ColumnApi,
+  Column,
+} from '@tyro/core';
 import {
   Reporting_TableFilter,
   Reporting_TableFilterInput,
@@ -7,11 +13,6 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Color, Palette, useTheme } from '@mui/material';
-import {
-  DisplayedColumnsChangedEvent,
-  ColumnApi,
-  Column,
-} from '@ag-grid-community/core';
 import { useRunReports } from '../api/run-report';
 import { DynamicForm } from '../components/dynamic-form';
 
