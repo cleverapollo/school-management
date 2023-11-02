@@ -33,7 +33,7 @@ export function ActionMenu({
 }: ActionMenuProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [t] = useTranslation(['common']);
-  const { onClose, getButtonProps, getDisclosureProps } = useDisclosure();
+  const { id, isOpen, onClose, getButtonProps } = useDisclosure();
   const permissions = usePermissions();
   const sectionedMenuItems = (
     Array.isArray(menuItems[0]) ? menuItems : [menuItems]
@@ -68,7 +68,8 @@ export function ActionMenu({
       )}
       <Menu
         anchorEl={buttonRef.current}
-        {...getDisclosureProps()}
+        id={id}
+        open={isOpen}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'right',

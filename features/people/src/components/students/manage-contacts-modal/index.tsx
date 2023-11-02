@@ -103,6 +103,7 @@ export function ManageContactsModal({
   });
 
   const contacts = watch('contacts');
+  const disableRemoveButton = contacts?.length <= 1;
   const contactIds = useMemo(
     () => new Set(contacts?.map(({ partyId }) => partyId)),
     [contacts]
@@ -221,14 +222,23 @@ export function ManageContactsModal({
                       setValue(`contacts.${index}.relationshipType`, newValue);
                     }}
                   />
-                  <Tooltip title={t('common:actions.remove')}>
-                    <IconButton
-                      aria-label={t('common:actions.remove')}
-                      onClick={() => removeContact(person.partyId)}
-                      color="primary"
-                    >
-                      <CloseIcon />
-                    </IconButton>
+                  <Tooltip
+                    title={
+                      disableRemoveButton
+                        ? t('people:studentMustHaveAContact')
+                        : t('common:actions.remove')
+                    }
+                  >
+                    <span>
+                      <IconButton
+                        aria-label={t('common:actions.remove')}
+                        disabled={disableRemoveButton}
+                        onClick={() => removeContact(person.partyId)}
+                        color="primary"
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </span>
                   </Tooltip>
                 </Stack>
               </Stack>

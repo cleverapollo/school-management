@@ -10,6 +10,7 @@ const onActivity = throttle(() => {
 
 export function useIdleTracker(maxIdleMinutes: number) {
   const [isIdle, setIsIdle] = useState(false);
+  const [isPastIdle, setIsPastIdle] = useState(false);
 
   useEffect(() => {
     window.addEventListener('mousemove', onActivity);
@@ -23,8 +24,12 @@ export function useIdleTracker(maxIdleMinutes: number) {
       }
 
       const idleMinutes = dayjs().diff(dayjs.unix(Number(lastActivity)), 'm');
-      if (idleMinutes >= maxIdleMinutes) {
+      if (idleMinutes >= maxIdleMinutes - 2) {
         setIsIdle(true);
+      }
+
+      if (idleMinutes >= maxIdleMinutes) {
+        setIsPastIdle(true);
       }
     }, 60000);
 
@@ -38,6 +43,7 @@ export function useIdleTracker(maxIdleMinutes: number) {
 
   return {
     isIdle,
+    isPastIdle,
     resetActivity: () => {
       setIsIdle(false);
       onActivity();

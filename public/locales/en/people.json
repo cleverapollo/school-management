@@ -245,6 +245,7 @@
   "locationOfEquipment": "Location of equipment",
   "siblingsInSchool": "Siblings in school",
   "noMedicalContacts": "No medical contacts added",
+  "studentMustHaveAContact": "A student must have at least one contact",
   "firstName": "First name",
   "lastName": "Last name",
   "medicalProfessional": "Medical professional",
