@@ -9,16 +9,14 @@ import {
   useDebouncedValue,
   ReturnTypeDisplayName,
   usePreferredNameLayout,
-  TableSwitch,
   TableBooleanValue,
-  BulkEditedRows,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { Box, Button, Chip, Stack } from '@mui/material';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { AddIcon, EditIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
-import { getColorBasedOnIndex, Notes_UpsertNote } from '@tyro/api';
+import { getColorBasedOnIndex } from '@tyro/api';
 import { ReturnTypeFromUseNotes, useNotes } from '../../../api/note/list';
 import {
   EditNoteModal,
@@ -28,7 +26,6 @@ import {
   DeleteNoteConfirmModal,
   DeleteNoteConfirmModalProps,
 } from '../../../components/students/note/delete-note-confirm-modal';
-import { useUpsertNote } from '../../../api/note/upsert-note';
 
 dayjs.extend(LocalizedFormat);
 
@@ -101,9 +98,7 @@ const getStudentNoteColumns = (
   {
     field: 'priorityNote',
     headerName: translate('people:priority'),
-    editable: true,
     cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
-    cellEditor: TableSwitch,
     valueGetter: ({ data }) => data?.priorityNote,
     valueFormatter: ({ data }) =>
       data?.priorityNote ? translate('common:yes') : translate('common:no'),
@@ -150,7 +145,6 @@ export default function StudentProfileNotesPage() {
   const { data: notes = [] } = useNotes({
     partyIds: [studentId ?? 0],
   });
-  const { mutate: createOrUpdateNoteMutation } = useUpsertNote();
 
   const [noteDetails, setNoteDetails] =
     useState<EditNoteModalProps['initialState']>(null);
@@ -169,28 +163,6 @@ export default function StudentProfileNotesPage() {
     [t]
   );
 
-  const handleBulkSave = (
-    data: BulkEditedRows<ReturnTypeFromUseNotes, any>
-  ) => {
-    const updates = Object.entries(data).reduce<Notes_UpsertNote[]>(
-      (acc, [partyId, changes]) => {
-        const noteRow = notes.find((note) => note.id === Number(partyId));
-        const priorityNote = changes?.priorityNote?.newValue;
-        const priorityNoteUpdateInput = {
-          priorityNote: Boolean(priorityNote),
-          id: Number(partyId),
-          tags: noteRow?.tags?.map((tag) => tag.id),
-          referencedParties: [studentId],
-        };
-
-        return [...acc, priorityNoteUpdateInput];
-      },
-      []
-    );
-
-    return createOrUpdateNoteMutation(updates);
-  };
-
   return (
     <>
       <Box display="flex" alignItems="center" justifyContent="flex-end">
@@ -208,7 +180,6 @@ export default function StudentProfileNotesPage() {
         tableContainerSx={{ height: 300 }}
         rowSelection="multiple"
         getRowId={({ data }) => String(data?.id)}
-        onBulkSave={handleBulkSave}
       />
       {noteDetails && (
         <EditNoteModal
