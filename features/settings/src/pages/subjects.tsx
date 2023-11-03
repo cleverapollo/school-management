@@ -10,6 +10,7 @@ import {
   TableBooleanValue,
   TableColorPicker,
   TableSelectedColor,
+  TableSwitch,
 } from '@tyro/core';
 import {
   ColorOptions,
@@ -81,6 +82,17 @@ const getColumns = (
   {
     headerName: t('common:description'),
     field: 'description',
+  },
+  {
+    headerName: t('common:examinable'),
+    editable: true,
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
+    cellEditor: TableSwitch,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseCatalogueSubjects, any>) => (
+      <TableBooleanValue value />
+    ),
   },
   {
     headerName: t('settings:subjectType'),

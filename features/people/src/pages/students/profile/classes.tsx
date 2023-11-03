@@ -14,6 +14,8 @@ import {
   ActionMenu,
   ActionMenuProps,
   useDisclosure,
+  TableSwitch,
+  TableBooleanValue,
 } from '@tyro/core';
 
 import set from 'lodash/set';
@@ -109,6 +111,17 @@ const getSubjectGroupsColumns = (
     headerName: t('common:teacher'),
     valueGetter: ({ data }) => displayNames(data?.staff),
     enableRowGroup: true,
+  },
+  {
+    headerName: t('common:examinable'),
+    editable: true,
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
+    cellEditor: TableSwitch,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseStudentsSubjectGroups, any>) => (
+      <TableBooleanValue value />
+    ),
   },
 ];
 
