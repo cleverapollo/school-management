@@ -24,6 +24,8 @@ import {
   sortStartNumberFirst,
   ConfirmDialog,
   TableSelect,
+  TableSwitch,
+  TableBooleanValue,
 } from '@tyro/core';
 
 import { MobileIcon, MoveGroupIcon } from '@tyro/icons';
@@ -145,6 +147,17 @@ const getSubjectGroupsColumns = (
     headerName: t('common:teacher'),
     valueGetter: ({ data }) => displayNames(data?.staff),
     enableRowGroup: true,
+  },
+  {
+    headerName: t('common:examinable'),
+    editable: true,
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
+    cellEditor: TableSwitch,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseSubjectGroups, any>) => (
+      <TableBooleanValue value={true} />
+    ),
   },
   {
     colId: 'studentGroupType',

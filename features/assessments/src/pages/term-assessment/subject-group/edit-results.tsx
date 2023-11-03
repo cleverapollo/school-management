@@ -16,6 +16,8 @@ import {
   ValueFormatterParams,
   useToast,
   ReturnOfUseToast,
+  TableSwitch,
+  TableBooleanValue,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { useParams } from 'react-router-dom';
@@ -423,6 +425,17 @@ const getColumnDefs = (
   },
   ...getCommentFields(assessmentData, commentBanks, t, toast),
   ...getExtraFields(assessmentData?.extraFields, commentBanks),
+  {
+    headerName: t('common:examinable'),
+    editable: true,
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
+    cellEditor: TableSwitch,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAssessmentResults, any>) => (
+      <TableBooleanValue value />
+    ),
+  },
 ];
 
 export default function EditTermAssessmentResults() {
