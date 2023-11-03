@@ -18,9 +18,9 @@ export function IdleModal() {
 
   const { t } = useTranslation(['common']);
 
-  const { isIdle, resetActivity } = useIdleTracker(30);
+  const { isIdle, isPastIdle, resetActivity } = useIdleTracker(30);
   const { logout } = useAuth();
-  const timerRef = useRef<NodeJS.Timer>();
+  const timerRef = useRef<NodeJS.Timeout>();
   const [countDown, setCountDown] = useState(60);
 
   const clearTimer = () => {
@@ -37,7 +37,9 @@ export function IdleModal() {
   };
 
   useEffect(() => {
-    if (isIdle) {
+    if (isPastIdle) {
+      logout();
+    } else if (isIdle) {
       timerRef.current = setInterval(() => {
         setCountDown((prev) => {
           if (prev <= 0) {
@@ -51,7 +53,7 @@ export function IdleModal() {
       }, 1000);
       return () => clearTimer();
     }
-  }, [isIdle]);
+  }, [isIdle, isPastIdle]);
 
   return (
     <Dialog
