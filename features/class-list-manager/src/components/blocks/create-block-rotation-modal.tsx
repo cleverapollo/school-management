@@ -204,7 +204,7 @@ export const CreateBlockRotationModal = ({
       maxWidth="sm"
     >
       <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogTitle>
+        <DialogTitle onClose={onClose}>
           {blockForCreateRotation?.isRotation
             ? t('classListManager:updateRotation')
             : t('classListManager:createRotation')}

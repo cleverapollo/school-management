@@ -3,11 +3,14 @@ import { Stack, Button, Fade, useMediaQuery } from '@mui/material';
 import { Autocomplete } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import {
+  AcademicYearDropdown,
   ReturnTypeFromUseStudentDashboardAssessments,
   useStudentAssessmentReportCardSettings,
 } from '@tyro/assessments';
 
 interface AssessmentSelectBarProps {
+  academicNameSpaceId: number | null;
+  setAcademicNameSpaceId: Dispatch<SetStateAction<number | null>>;
   studentAssessments: ReturnTypeFromUseStudentDashboardAssessments;
   selectedAssessment:
     | ReturnTypeFromUseStudentDashboardAssessments[number]
@@ -18,6 +21,8 @@ interface AssessmentSelectBarProps {
 }
 
 export function AssessmentSelectBar({
+  academicNameSpaceId,
+  setAcademicNameSpaceId,
   studentAssessments,
   selectedAssessment,
   setSelectedAssessment,
@@ -37,33 +42,47 @@ export function AssessmentSelectBar({
           : { justifyContent: 'space-between', alignItems: 'center' }
       }
     >
-      <Autocomplete
-        label={t('assessments:assessment')}
-        value={selectedAssessment}
-        optionIdKey="id"
-        getOptionLabel={({ name }) => name}
-        options={studentAssessments}
-        isOptionEqualToValue={(option, { id }) => option.id === id}
-        onChange={(_event, newValue) => {
-          const extractedValue = Array.isArray(newValue)
-            ? newValue[0]
-            : newValue;
-          setSelectedAssessment(extractedValue);
-        }}
-        fullWidth
-        disableClearable
-        inputProps={{
-          variant: 'white-filled',
-        }}
-        noOptionsText={
-          studentAssessments.length
-            ? t('assessments:noAssessmentsFound')
-            : t('assessments:noAssessmentsAvailable')
-        }
-        sx={{
-          maxWidth: wrapItems ? undefined : 300,
-        }}
-      />
+      <Stack
+        direction={wrapItems ? 'column' : 'row'}
+        spacing={1}
+        flex={1}
+        width={wrapItems ? '100%' : undefined}
+      >
+        <AcademicYearDropdown
+          academicNamespaceId={academicNameSpaceId ?? 0}
+          onChangeAcademicNamespace={setAcademicNameSpaceId}
+          sx={{
+            maxWidth: wrapItems ? undefined : 300,
+          }}
+        />
+        <Autocomplete
+          label={t('assessments:assessment')}
+          value={selectedAssessment}
+          optionIdKey="id"
+          getOptionLabel={({ name }) => name}
+          options={studentAssessments}
+          isOptionEqualToValue={(option, { id }) => option.id === id}
+          onChange={(_event, newValue) => {
+            const extractedValue = Array.isArray(newValue)
+              ? newValue[0]
+              : newValue;
+            setSelectedAssessment(extractedValue);
+          }}
+          fullWidth
+          disableClearable
+          inputProps={{
+            variant: 'white-filled',
+          }}
+          noOptionsText={
+            studentAssessments.length
+              ? t('assessments:noAssessmentsFound')
+              : t('assessments:noAssessmentsAvailable')
+          }
+          sx={{
+            maxWidth: wrapItems ? undefined : 300,
+          }}
+        />
+      </Stack>
       <Fade in={isMobile} unmountOnExit>
         <Button variant="text" onClick={toggleIsMobileCommentsShowing}>
           {isMobileCommentsShowing

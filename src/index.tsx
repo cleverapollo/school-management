@@ -2,9 +2,6 @@
 import '@tyro/i18n';
 import * as Sentry from '@sentry/react';
 
-// editor
-import 'react-quill/dist/quill.snow.css';
-
 // lazy image
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import 'react-lazy-load-image-component/src/effects/opacity.css';
@@ -15,7 +12,6 @@ import { createRoutesFromChildren, matchRoutes, useLocation, useNavigationType }
 import ReactDOM from 'react-dom/client';
 
 import App from './App';
-import reportWebVitals from './reportWebVitals';
 
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({
@@ -46,5 +42,3 @@ if (process.env.NODE_ENV === 'production') {
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 root.render(<App />);
-
-reportWebVitals();

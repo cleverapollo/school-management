@@ -96,7 +96,8 @@ export default function StudentProfileOverviewPage() {
           },
         })}
       >
-        <StudentSessionAttendanceChart studentId={studentId} />
+        {/* temporarily hiding the session attendance chart for all user types from student overview page until it's fixed */}
+        {/* <StudentSessionAttendanceChart studentId={studentId} /> */}
       </Box>
     </Box>
   );

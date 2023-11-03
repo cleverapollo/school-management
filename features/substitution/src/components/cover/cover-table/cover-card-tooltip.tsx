@@ -16,6 +16,7 @@ import { StaffAttendee } from '../../../utils/cover-utils';
 interface CoverCardTooltipProps {
   timeslotInfo: { startTime: string; endTime: string } | null;
   children: React.ReactElement;
+  rooms?: string;
   additionalTeachers?: StaffAttendee['partyInfo']['person'][];
 }
 
@@ -31,8 +32,12 @@ const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
 
 function CoverCardTooltipContent({
   timeslotInfo,
+  rooms,
   additionalTeachers,
-}: Pick<CoverCardTooltipProps, 'timeslotInfo' | 'additionalTeachers'>) {
+}: Pick<
+  CoverCardTooltipProps,
+  'timeslotInfo' | 'additionalTeachers' | 'rooms'
+>) {
   const { t } = useTranslation(['common']);
   const { displayName } = usePreferredNameLayout();
 
@@ -51,6 +56,21 @@ function CoverCardTooltipContent({
           <Typography variant="caption" component="dt" color="blue.500">
             {getLocaleTimestampFromDateString(timeslotInfo.startTime)} -{' '}
             {getLocaleTimestampFromDateString(timeslotInfo.endTime)}
+          </Typography>
+        </Stack>
+      )}
+      {rooms && (
+        <Stack>
+          <Typography
+            variant="caption"
+            component="dt"
+            color="text.secondary"
+            fontWeight="600"
+          >
+            {t('common:room', { count: 1 })}
+          </Typography>
+          <Typography variant="caption" component="dt">
+            {rooms}
           </Typography>
         </Stack>
       )}
@@ -82,6 +102,7 @@ function CoverCardTooltipContent({
 export function CoverCardTooltip({
   timeslotInfo,
   children,
+  rooms,
   additionalTeachers,
 }: CoverCardTooltipProps) {
   if (!timeslotInfo) {
@@ -93,6 +114,7 @@ export function CoverCardTooltip({
       title={
         <CoverCardTooltipContent
           timeslotInfo={timeslotInfo}
+          rooms={rooms}
           additionalTeachers={additionalTeachers}
         />
       }

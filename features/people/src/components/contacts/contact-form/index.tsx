@@ -3,8 +3,8 @@ import { LoadingButton } from '@mui/lab';
 import { ConfirmDialog, useFormValidator } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import {
   StudentRelationships,
   StudentRelationshipsFormState,
@@ -18,6 +18,7 @@ import {
   PersonalInformation,
   PersonalInformationFormState,
 } from './personal-information';
+import { StudentSelectOption } from '../../../api/student/students';
 
 type ContactFormState = PersonalInformationFormState &
   PrimaryAddressFormState &
@@ -27,6 +28,7 @@ export function ContactForm() {
   const { t } = useTranslation(['common', 'people']);
   const navigate = useNavigate();
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const location = useLocation();
 
   const { mutate: upsertContactMutation, isLoading } = useUpsertContact();
 
@@ -140,6 +142,17 @@ export function ContactForm() {
       }
     );
   };
+
+  useEffect(() => {
+    const { students } = (location?.state ?? { students: [] }) as {
+      students: StudentSelectOption[];
+    };
+    if (Array.isArray(students) && students.length > 0) {
+      students.forEach((student, index) => {
+        setValue(`studentRelationships.${index}.student`, student);
+      });
+    }
+  }, [location]);
 
   return (
     <>

@@ -17,7 +17,6 @@ import {
   Notes_StudentBehaviour,
   Notes_Tag,
   usePermissions,
-  useAcademicNamespace,
 } from '@tyro/api';
 import {
   GridOptions,
@@ -28,9 +27,10 @@ import {
   usePreferredNameLayout,
   ActionMenu,
   ConfirmDialog,
+  useDebouncedValue,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { AddIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
+import { AddIcon, EditIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
@@ -50,6 +50,7 @@ import {
 } from '../../../components/behaviour/create-behaviour-modal';
 import { useDeleteBehaviour } from '../../../api/behaviour/delete-behaviour';
 import { CategoriesContainer } from '../../../components/students/behaviour-individual-view/categories-container';
+import { ReturnTypeFromUseBehaviours } from '../../../api/behaviour/list';
 
 dayjs.extend(LocalizedFormat);
 
@@ -66,7 +67,16 @@ export type ExtendedNotesTagType = (Notes_Tag & { colour: Colour })[];
 
 export type TabValueType = Notes_Tag['name'] | 'All';
 
+type SubCategoriesWithoutCategoryIdsType = {
+  id: number | undefined;
+  name: string | null | undefined;
+  colour: string;
+};
+
 const getStudentBehaviourColumns = (
+  onClickEdit: Dispatch<
+    SetStateAction<CreateBehaviourModalProps['initialState']>
+  >,
   t: TFunction<('common' | 'people')[], undefined, ('common' | 'people')[]>,
   displayName: ReturnTypeDisplayName,
   onDelete: Dispatch<SetStateAction<DeleteNoteIdType>>,
@@ -95,10 +105,9 @@ const getStudentBehaviourColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseIndividualStudentBehaviour>) => {
-      if (!data?.category) {
-        return '-';
-      }
-      const { colour } = getTagsForCategory(data?.category);
+      const { colour } = data?.category
+        ? getTagsForCategory(data.category)
+        : { colour: undefined };
 
       return (
         <Stack gap={1} my={1} direction="row" flexWrap="wrap">
@@ -107,7 +116,7 @@ const getStudentBehaviourColumns = (
               key={tag?.id}
               label={tag?.name}
               variant="soft"
-              color={colour}
+              color={colour ?? 'slate'}
             />
           ))}
         </Stack>
@@ -180,7 +189,9 @@ const getStudentBehaviourColumns = (
     cellClass: 'ag-show-on-row-interaction',
     sortable: false,
     suppressSizeToFit: true,
-    cellRenderer: ({ data }: ICellRendererParams<DeleteNoteIdType>) =>
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseIndividualStudentBehaviour>) =>
       data && (
         <ActionMenu
           iconOnly
@@ -189,8 +200,12 @@ const getStudentBehaviourColumns = (
             {
               label: t('common:actions.delete'),
               icon: <TrashIcon />,
-              // @ts-ignore
-              onClick: () => onDelete(data?.noteId as DeleteNoteIdType),
+              onClick: () => onDelete(data?.noteId),
+            },
+            {
+              label: t('common:actions.edit'),
+              icon: <EditIcon />,
+              onClick: () => onClickEdit(data),
             },
           ]}
         />
@@ -220,20 +235,23 @@ export default function StudentProfileBehaviourPage() {
   const { t } = useTranslation(['common', 'people']);
   const { isStaffUser } = usePermissions();
   const { displayName } = usePreferredNameLayout();
-  const { activeAcademicNamespace } = useAcademicNamespace();
-  const academicYear = activeAcademicNamespace?.name;
   const { id } = useParams();
   const studentId = getNumber(id) ?? 0;
 
   const [value, setValue] = useState(0);
   const [currentTabValue, setCurrentTabValue] = useState<TabValueType>('All');
-  const [behaviourDetails, setBehaviourDetails] =
-    useState<CreateBehaviourModalProps['initialState']>();
+  const {
+    value: editBehaviours,
+    setValue: setEditBehaviours,
+    debouncedValue: debouncedEditConditions,
+  } = useDebouncedValue<CreateBehaviourModalProps['initialState']>({
+    defaultValue: null,
+  });
   const [behaviourType, setBehaviourType] = useState(
     Notes_BehaviourType.Positive
   );
   const [behaviourIdToDelete, setBehaviourIdToDelete] =
-    useState<DeleteNoteIdType>(null);
+    useState<ReturnTypeFromUseBehaviours['id']>(null);
 
   const { data: studentBehaviorData, isLoading: isBehavioursLoading } =
     useIndividualStudentBehaviour({
@@ -267,27 +285,57 @@ export default function StudentProfileBehaviourPage() {
   const subCategories = behaviourCategories?.flatMap((category) =>
     behaviorCategoryIds?.includes(category?.behaviourCategoryId)
       ? category?.tags?.map((tag) => ({
-          ...tag,
+          id: tag?.id,
+          name: tag?.name,
           colour: category.colour,
         }))
       : []
   );
 
+  const subCategoriesWithCategoryIds =
+    studentBehaviorData
+      ?.filter((item) => !item?.category)
+      ?.map((data) => ({
+        id: data?.noteId,
+        name: data?.tags && data?.tags[0]?.name,
+        colour: 'grey',
+      })) || [];
+
+  const subCategoriesWithoutCategoryIds: SubCategoriesWithoutCategoryIdsType[] =
+    subCategoriesWithCategoryIds?.reduce<SubCategoriesWithoutCategoryIdsType[]>(
+      (acc, current) => {
+        const tagName = current?.name;
+        const isTagNameAlreadyIncluded = acc.some(
+          (item) => item?.name === tagName
+        );
+
+        if (!isTagNameAlreadyIncluded) {
+          acc.push(current);
+        }
+
+        return acc;
+      },
+      []
+    );
+
   const { mutateAsync: deleteBehaviour } = useDeleteBehaviour(studentId);
 
   const onConfirmDelete = async () => {
-    await deleteBehaviour({ noteIds: [behaviourIdToDelete!] });
+    if (behaviourIdToDelete) {
+      await deleteBehaviour({ noteIds: [behaviourIdToDelete] });
+    }
   };
 
   const studentBehaviourColumns = useMemo(
     () =>
       getStudentBehaviourColumns(
+        setEditBehaviours,
         t,
         displayName,
         setBehaviourIdToDelete,
         (categoryName) => getTagsForCategory(categoryName, behaviourCategories)
       ),
-    [t, displayName, behaviourCategories]
+    [setEditBehaviours, t, displayName, behaviourCategories]
   );
 
   const loadingStatus = isCategoriesLoading || isBehavioursLoading;
@@ -299,10 +347,20 @@ export default function StudentProfileBehaviourPage() {
       name: 'All',
     },
     ...subCategories,
+    ...subCategoriesWithoutCategoryIds,
   ];
 
   const getBehaviourTypesTotals = (tabValue?: string) =>
     tags?.filter((tag) => tag?.name === tabValue).length;
+
+  useEffect(() => {
+    setCurrentTabValue('All');
+    setValue(0);
+  }, [behaviourType]);
+
+  const handleAddCondition = () => {
+    setEditBehaviours({});
+  };
 
   return (
     <Card
@@ -328,7 +386,9 @@ export default function StudentProfileBehaviourPage() {
         <Stack direction="column">
           <Box>
             <Button
-              onClick={() => setBehaviourType(Notes_BehaviourType.Positive)}
+              onClick={() => {
+                setBehaviourType(Notes_BehaviourType.Positive);
+              }}
               sx={{
                 borderRadius: 1,
                 backgroundColor:
@@ -364,7 +424,9 @@ export default function StudentProfileBehaviourPage() {
               {t('common:behaviourType.POSITIVE')}
             </Button>
             <Button
-              onClick={() => setBehaviourType(Notes_BehaviourType.Negative)}
+              onClick={() => {
+                setBehaviourType(Notes_BehaviourType.Negative);
+              }}
               sx={{
                 borderRadius: 1,
                 backgroundColor:
@@ -406,7 +468,7 @@ export default function StudentProfileBehaviourPage() {
         {isStaffUser && (
           <Button
             variant="contained"
-            onClick={() => setBehaviourDetails({})}
+            onClick={handleAddCondition}
             startIcon={<AddIcon />}
           >
             {t('people:actions.createBehaviour')}
@@ -518,15 +580,14 @@ export default function StudentProfileBehaviourPage() {
         </CardContent>
       )}
 
-      {behaviourDetails && (
-        <CreateBehaviourModal
-          studentId={studentId}
-          onClose={() => setBehaviourDetails(null)}
-          initialState={behaviourDetails}
-          behaviourType={behaviourType}
-          setBehaviourType={setBehaviourType}
-        />
-      )}
+      <CreateBehaviourModal
+        studentId={studentId}
+        onClose={() => setEditBehaviours(null)}
+        initialState={editBehaviours}
+        behaviourType={behaviourType}
+        setBehaviourType={setBehaviourType}
+      />
+
       {behaviourIdToDelete && (
         <ConfirmDialog
           open

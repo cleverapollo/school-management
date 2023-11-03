@@ -119,6 +119,8 @@ const getAttendanceCodeColumns = (
             {
               label: t('attendance:editAttendanceCode'),
               onClick: () => onClickEdit(data),
+              disabled: !data?.custom,
+              disabledTooltip: t('attendance:editAttendanceCodeTooltip'),
             },
           ]}
         />

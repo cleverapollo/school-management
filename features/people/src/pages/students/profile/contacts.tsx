@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import {
   ActionMenu,
@@ -18,21 +18,24 @@ import {
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   MobileIcon,
-  PersonHeartIcon,
-  PersonTickIcon,
-  PersonCrossIcon,
+  AddUserIcon,
+  PersonGearIcon,
+  SendMailIcon,
 } from '@tyro/icons';
-import { Box, Fade } from '@mui/material';
 import { SendSmsModal } from '@tyro/sms';
 import {
   Core_UpdateStudentContactRelationshipInput,
+  SearchType,
   SmsRecipientType,
 } from '@tyro/api';
+import { useMailSettings } from '@tyro/mail';
 import { RelationshipTypeCellEditor } from '../../../components/contacts/relationship-type-cell-editor';
 import { useStudentsContacts } from '../../../api/student/overview';
 import { joinAddress } from '../../../utils/join-address';
 import { PriorityTypeCellEditor } from '../../../components/contacts/priority-cell-editor';
 import { useUpdateStudentContactRelationships } from '../../../api/student/update-student-contact-relationships';
+import { StudentSelectOption, useStudent } from '../../../api/student/students';
+import { ManageContactsModal } from '../../../components/students/manage-contacts-modal';
 
 type ReturnTypeFromUseContacts = NonNullable<
   ReturnType<typeof useStudentsContacts>['data']
@@ -171,23 +174,23 @@ const getStudentContactColumns = (
       />
     ),
   },
-  {
-    field: 'includeInTmail',
-    headerName: translate('people:includeInTmail'),
-    editable: true,
-    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
-    cellEditor: TableSwitch,
-    valueGetter: ({ data }) => data?.allowedToContact && data?.includeInTmail,
-    valueFormatter: ({ data }) =>
-      data?.includeInTmail ? translate('common:yes') : translate('common:no'),
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
-      <TableBooleanValue
-        value={Boolean(data?.allowedToContact && data?.includeInTmail)}
-      />
-    ),
-  },
+  // {
+  //   field: 'includeInTmail',
+  //   headerName: translate('people:includeInTmail'),
+  //   editable: true,
+  //   cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
+  //   cellEditor: TableSwitch,
+  //   valueGetter: ({ data }) => data?.allowedToContact && data?.includeInTmail,
+  //   valueFormatter: ({ data }) =>
+  //     data?.includeInTmail ? translate('common:yes') : translate('common:no'),
+  //   cellRenderer: ({
+  //     data,
+  //   }: ICellRendererParams<ReturnTypeFromUseContacts, any>) => (
+  //     <TableBooleanValue
+  //       value={Boolean(data?.allowedToContact && data?.includeInTmail)}
+  //     />
+  //   ),
+  // },
 ];
 
 export default function StudentProfileContactsPage() {
@@ -195,11 +198,14 @@ export default function StudentProfileContactsPage() {
   const { t } = useTranslation(['common', 'people', 'mail', 'sms']);
   const { displayName } = usePreferredNameLayout();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const studentId = getNumber(id);
+  const { data: studentData } = useStudent(studentId);
   const { data: contacts = [] } = useStudentsContacts(studentId);
   const { mutateAsync: updateRelationshipsAsyncMutation } =
     useUpdateStudentContactRelationships();
+  const { composeEmail } = useMailSettings();
 
   const [selectedContacts, setSelectedContacts] = useState<
     ReturnTypeFromUseContacts[]
@@ -208,6 +214,11 @@ export default function StudentProfileContactsPage() {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
+  } = useDisclosure();
+  const {
+    isOpen: isManageContactsModalOpen,
+    onOpen: onOpenManageContactsModal,
+    onClose: onCloseManageContactsModal,
   } = useDisclosure();
 
   const studentContactColumns = useMemo(
@@ -231,51 +242,76 @@ export default function StudentProfileContactsPage() {
     [selectedContacts]
   );
 
-  const actionMenuItems = useMemo(() => {
-    const isThereAtLeastOneContactThatIsNotAllowedToContact =
-      selectedContacts.some((contact) => !contact?.allowedToContact);
+  const recipientsForMail = useMemo(
+    () =>
+      selectedContacts
+        .filter((contact) => contact?.allowedToContact)
+        .map(({ person }) => ({
+          partyId: person.partyId,
+          type: SearchType.Contact,
+          text: displayName(person),
+          avatarUrl: person.avatarUrl,
+        })) ?? [],
+    [selectedContacts]
+  );
 
-    return [
-      [
-        {
-          label: t('people:sendSms'),
-          icon: <MobileIcon />,
-          onClick: onOpenSendSms,
-          disabled: recipientsForSms.length === 0,
-          disabledTooltip: t('sms:recipientNotIncludedInSms', {
-            count: selectedContacts.length,
-          }),
-        },
-        // {
-        //   label: t('mail:sendMail'),
-        //   icon: <SendMailIcon />,
-        //   onClick: () => {},
-        // },
-      ],
-      [
-        {
-          label: t('people:makePrimaryContact'),
-          icon: <PersonHeartIcon />,
-          onClick: () => {},
-          disabled: selectedContacts.length !== 1,
-          disabledTooltip: t(
-            'people:feedback.moreThanOneSelectedForPrimaryContact'
-          ),
-        },
-        isThereAtLeastOneContactThatIsNotAllowedToContact
-          ? {
-              label: t('people:actions.allowUsersToContact'),
-              icon: <PersonTickIcon />,
-              onClick: () => {},
-            }
-          : {
-              label: t('people:actions.disallowUsersToContact'),
-              icon: <PersonCrossIcon />,
-              onClick: () => {},
+  const sendMailToSelectedContacts = () => {
+    composeEmail({
+      canReply: false,
+      bccRecipients: recipientsForMail,
+    });
+  };
+
+  const actionMenuItems = useMemo(
+    () => [
+      selectedContacts.length
+        ? [
+            {
+              label: t('people:sendSms'),
+              icon: <MobileIcon />,
+              onClick: onOpenSendSms,
+              disabled: recipientsForSms.length === 0,
+              disabledTooltip: t('sms:recipientNotIncludedInSms', {
+                count: selectedContacts.length,
+              }),
             },
+            {
+              label: t('mail:sendMail'),
+              icon: <SendMailIcon />,
+              onClick: sendMailToSelectedContacts,
+              disabled: recipientsForMail.length === 0,
+              disabledTooltip: t('sms:recipientNotAllowedToContact', {
+                count: selectedContacts.length,
+              }),
+            },
+          ]
+        : [],
+      [
+        {
+          label: t('people:manageContacts'),
+          icon: <PersonGearIcon />,
+          onClick: onOpenManageContactsModal,
+        },
+        {
+          label: t('people:createContact'),
+          icon: <AddUserIcon />,
+          onClick: () => {
+            if (!studentData) return;
+            const currentStudentAsOption: StudentSelectOption = {
+              ...studentData?.person,
+              caption: studentData.classGroup?.name,
+            };
+            navigate(`/people/contacts/create`, {
+              state: {
+                students: [currentStudentAsOption],
+              },
+            });
+          },
+        },
       ],
-    ];
-  }, [selectedContacts, recipientsForSms]);
+    ],
+    [selectedContacts, recipientsForSms, onOpenManageContactsModal]
+  );
 
   const handleBulkSave = (
     data: BulkEditedRows<
@@ -330,14 +366,14 @@ export default function StudentProfileContactsPage() {
             toast(t('people:allowedToContactDisabled'), { variant: 'info' });
           }
         }}
-        rightAdornment={
-          <Fade in={selectedContacts.length > 0}>
-            <Box>
-              <ActionMenu menuItems={actionMenuItems} />
-            </Box>
-          </Fade>
-        }
+        rightAdornment={<ActionMenu menuItems={actionMenuItems} />}
         onBulkSave={handleBulkSave}
+      />
+      <ManageContactsModal
+        studentPartyId={studentId ?? 0}
+        open={isManageContactsModalOpen}
+        onClose={onCloseManageContactsModal}
+        currentContacts={contacts}
       />
       <SendSmsModal
         isOpen={isSendSmsOpen}

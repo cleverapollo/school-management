@@ -85,7 +85,7 @@ export function InviteUsersModal({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>{t('settings:inviteUsers')}</DialogTitle>
+      <DialogTitle onClose={onClose}>{t('settings:inviteUsers')}</DialogTitle>
       <DialogContent>
         {showError && (
           <Collapse in>

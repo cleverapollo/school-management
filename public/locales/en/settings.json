@@ -23,6 +23,7 @@
   "changeAcademicNamespaceCurrentlySet": "Change academic namespace. Currently set to {{name}}",
   "createAcademicYear": "Create academic year",
   "editAcademicYear": "Edit academic year",
+  "youMustCompleteAllHighlightedFields": "You must complete all highlighted fields",
   "academicYearNameShouldBeUnique": "Academic year name should be unique",
   "successfullyChangedYear": "Successfully changed year to {{name}}",
   "failedChangingYear": "Failed changing year to {{name}}",
@@ -236,5 +237,17 @@
   "category": {
     "createCategory": "Create category",
     "editCategory": "Edit category"
+  },
+  "commentBanks": {
+    "addCommentBank": "Add comment bank",
+    "addComment": "Add comment",
+    "editCommentBank": "Edit comment bank",
+    "commentBanks": "Comment banks",
+    "comments": "Comments",
+    "comment": "Comment",
+    "createCommentBank": "Create comment bank",
+    "createComment": "Create comment",
+    "status": "Status",
+    "archived": "Archived"
   }
 }

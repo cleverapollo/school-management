@@ -68,7 +68,7 @@ export function AdditionalLessonsModal({
         }),
       }}
     >
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {t('attendance:additionalLessons.title', { count: lessons.length })}
       </DialogTitle>
       <DialogContent sx={{ overflow: 'initial' }}>

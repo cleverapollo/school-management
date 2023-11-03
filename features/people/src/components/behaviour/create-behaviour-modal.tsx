@@ -1,14 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import {
-  Button,
-  Chip,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Stack,
-} from '@mui/material';
+import { Button, Chip, CircularProgress, Stack } from '@mui/material';
 import { getColorBasedOnIndex, Notes_BehaviourType } from '@tyro/api';
 import {
   RHFAutocomplete,
@@ -17,34 +8,40 @@ import {
   RHFSelect,
   RHFTextField,
   useFormValidator,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
-import { SetStateAction, Dispatch, useMemo } from 'react';
+import { SetStateAction, Dispatch, useMemo, useEffect } from 'react';
 import { useNoteTagsBehaviour } from '../../api/behaviour/behaviour-tags';
-import { ReturnTypeFromUseBehaviours } from '../../api/behaviour/list';
+import { ReturnTypeFromUseIndividualStudentBehaviour } from '../../api/behaviour/individual-student-behaviour';
 import { useUpsertStudentBehaviour } from '../../api/behaviour/upsert-behaviour';
 import {
   ReturnTypeFromUseStudentSubjectGroups,
   useStudentsSubjectGroups,
 } from '../../api/student/overview';
 
-export interface CreateBehaviourModalProps {
+export type CreateBehaviourFormState =
+  NonNullable<ReturnTypeFromUseIndividualStudentBehaviour> & {
+    noteId: number | null;
+    behaviour: number;
+    note: string;
+    subjects: ReturnTypeFromUseStudentSubjectGroups[];
+    occurredOn: Dayjs;
+    behaviourTypeState: Notes_BehaviourType;
+  };
+export type CreateBehaviourModalProps = {
+  noteId?: number;
   studentId: number;
   onClose: () => void;
-  initialState: Partial<ReturnTypeFromUseBehaviours> | null;
+  initialState: Partial<CreateBehaviourFormState> | null;
   behaviourType: Notes_BehaviourType;
   setBehaviourType: Dispatch<SetStateAction<Notes_BehaviourType>>;
-}
-
-export type CreateBehaviourFormState = {
-  behaviour: number;
-  note: string;
-  subjects: ReturnTypeFromUseStudentSubjectGroups[];
-  occurredOn: Dayjs;
-  behaviourTypeState: Notes_BehaviourType;
 };
 
 export function CreateBehaviourModal({
@@ -60,16 +57,23 @@ export function CreateBehaviourModal({
     useNoteTagsBehaviour();
 
   const { resolver, rules } = useFormValidator<CreateBehaviourFormState>();
+
+  const defaultFormStateValues: Partial<CreateBehaviourFormState> = {
+    subjects:
+      initialState?.associatedParties as ReturnTypeFromUseStudentSubjectGroups[],
+    behaviour: (initialState?.tagIds && initialState?.tagIds[0]) ?? 0,
+    note: initialState?.details,
+    behaviourTypeState: behaviourType,
+    occurredOn: dayjs(initialState?.incidentDate || undefined),
+  };
+
   const { control, handleSubmit, reset, watch } =
     useForm<CreateBehaviourFormState>({
       resolver: resolver({
         occurredOn: rules.required(),
         behaviour: rules.required(),
       }),
-      defaultValues: {
-        behaviourTypeState: behaviourType,
-        occurredOn: dayjs(),
-      },
+      defaultValues: defaultFormStateValues,
     });
 
   const { mutate, isLoading } = useUpsertStudentBehaviour(studentId);
@@ -81,13 +85,16 @@ export function CreateBehaviourModal({
     note,
     behaviourTypeState,
   }: CreateBehaviourFormState) => {
+    const subjectIds = subjects?.map((subject) => subject?.partyId);
+
     mutate(
       [
         {
-          note,
+          id: initialState?.noteId,
+          note: note ?? initialState?.details,
           referencedParties: [studentId],
           tags: [behaviour],
-          associatedParties: subjects.map((subject) => subject.partyId),
+          associatedParties: subjectIds ?? [initialState?.associatedPartyIds],
           incidentDate: occurredOn.format('YYYY-MM-DDTHH:mm:ss'),
         },
       ],
@@ -109,6 +116,13 @@ export function CreateBehaviourModal({
     [behaviourTypeOption, behaviourTags]
   );
 
+  useEffect(() => {
+    reset({
+      ...defaultFormStateValues,
+      ...(initialState ?? {}),
+    });
+  }, [initialState]);
+
   return (
     <Dialog
       open={!!initialState}
@@ -124,7 +138,11 @@ export function CreateBehaviourModal({
           </Stack>
         ) : (
           <>
-            <DialogTitle>{t('people:createBehaviour')}</DialogTitle>
+            <DialogTitle onClose={onClose}>
+              {initialState?.noteId
+                ? t('people:editBehaviour')
+                : t('people:createBehaviour')}
+            </DialogTitle>
             <DialogContent>
               <Stack gap={3} mt={1}>
                 <RHFDateTimePicker

@@ -44,13 +44,8 @@ const getDefaultValueFormat = (
         defaultIdValues.includes(value.id as number)
       );
     }
-    case Reporting_TableFilterType.Select: {
-      const currentValue = values.find(
-        (value) => value.id === defaultValue
-      ) as Reporting_TableFilterValues;
-
-      return currentValue?.id as number;
-    }
+    case Reporting_TableFilterType.Select:
+      return defaultValue?.id as number;
     case Reporting_TableFilterType.Date:
       return dayjs(defaultValue as dayjs.Dayjs);
     case Reporting_TableFilterType.InputNumber:

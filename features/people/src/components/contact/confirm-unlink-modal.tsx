@@ -15,7 +15,9 @@ export const ConfirmUnlinkModal = ({
 
   return (
     <Dialog open={isOpen} onClose={onClose}>
-      <DialogTitle>{t('people:messageUnlinkContact')}</DialogTitle>
+      <DialogTitle onClose={onClose}>
+        {t('people:messageUnlinkContact')}
+      </DialogTitle>
       <DialogActions>
         <Button onClick={onClose}>{t('common:actions.cancel')}</Button>
         <Button onClick={onClose} autoFocus>

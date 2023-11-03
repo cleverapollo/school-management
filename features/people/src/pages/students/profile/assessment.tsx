@@ -8,7 +8,7 @@ import {
   useStudentDashboardAssessments,
 } from '@tyro/assessments';
 import { Box, Card, Stack } from '@mui/material';
-import { useAcademicNamespace } from '@tyro/api';
+import { useAcademicNamespace, usePermissions } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { AssessmentSelectBar } from '../../../components/students/assessments/assessment-select-bar';
 
@@ -16,31 +16,46 @@ export default function StudentProfileAssessmentPage() {
   const { id } = useParams();
   const studentId = useNumber(id);
   const { t } = useTranslation(['assessments']);
+  const [academicNameSpaceId, setAcademicNameSpaceId] = useState<number | null>(
+    null
+  );
   const [selectedAssessment, setSelectedAssessment] = useState<
     ReturnTypeFromUseStudentDashboardAssessments[number] | null
   >(null);
 
-  const { data: studentAssessments = [], isLoading } =
+  const { isStaffUser } = usePermissions();
+  const { activeAcademicNamespace, isLoading: isNamespacesLoading } =
+    useAcademicNamespace();
+  const { data: studentAssessments = [], isLoading: isAssessmentsLoading } =
     useStudentDashboardAssessments(
       {
         studentPartyId: studentId ?? 0,
-        published: true,
+        published: !isStaffUser,
       },
+      academicNameSpaceId,
       !!studentId
     );
 
-  const { activeAcademicNamespace } = useAcademicNamespace();
+  useEffect(() => {
+    if (!academicNameSpaceId && activeAcademicNamespace) {
+      setAcademicNameSpaceId(activeAcademicNamespace.academicNamespaceId);
+    }
+  }, [activeAcademicNamespace]);
 
   useEffect(() => {
-    if (studentAssessments.length && !selectedAssessment) {
-      setSelectedAssessment(studentAssessments[0]);
-    }
+    setSelectedAssessment(
+      studentAssessments.length ? studentAssessments[0] : null
+    );
   }, [studentAssessments]);
+
+  const isLoading = isNamespacesLoading || isAssessmentsLoading;
 
   return (
     <StudentAssessmentReportCardSettingsProvider>
       <Stack direction="column" spacing={2}>
         <AssessmentSelectBar
+          academicNameSpaceId={academicNameSpaceId}
+          setAcademicNameSpaceId={setAcademicNameSpaceId}
           studentAssessments={studentAssessments}
           selectedAssessment={selectedAssessment}
           setSelectedAssessment={setSelectedAssessment}
@@ -65,9 +80,7 @@ export default function StudentProfileAssessmentPage() {
         )}
         {selectedAssessment?.id && (
           <StudentAssessmentReportCard
-            academicNamespaceId={
-              activeAcademicNamespace?.academicNamespaceId ?? 0
-            }
+            academicNamespaceId={academicNameSpaceId ?? 0}
             studentPartyId={Number(studentId)}
             assessmentId={selectedAssessment?.id ?? 0}
           />

@@ -81,7 +81,7 @@ export const UpsertCategoryModal = ({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {initialState?.behaviourCategoryId
           ? t('settings:category.editCategory')
           : t('settings:category.createCategory')}

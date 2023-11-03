@@ -20,13 +20,13 @@ const staffWorkAbsences = graphql(/* GraphQL */ `
       absenceTypeId
       staffPartyId
       absenceType {
+        absenceTypeId
         name
         code
       }
       isLongTermLeave
       longTermLeaveGroupsRequired
       longTermLeaveGroupsApplied
-
       staff {
         partyId
         title {
@@ -58,8 +58,16 @@ const staffWorkAbsences = graphql(/* GraphQL */ `
         coveringStaffId
         coveringStaff {
           person {
+            partyId
+            title {
+              id
+              name
+              nameTextId
+            }
             firstName
             lastName
+            avatarUrl
+            type
           }
         }
       }
@@ -103,11 +111,23 @@ export function useStaffWorkAbsences(filter: Swm_StaffAbsenceFilter) {
 }
 
 export function useSaveStaffAbsence() {
+  const { toast } = useToast();
+  const { t } = useTranslation(['common']);
+
   return useMutation({
     mutationFn: (input: Swm_UpsertStaffAbsence[]) =>
       gqlClient.request(saveStaffAbsence, { input }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(substitutionKeys.all);
+    onSuccess: async (_data, absences) => {
+      await queryClient.invalidateQueries(substitutionKeys.all);
+      const [firstAbsence] = absences;
+      toast(
+        firstAbsence.staffAbsenceId
+          ? t('common:snackbarMessages.updateSuccess')
+          : t('common:snackbarMessages.createSuccess')
+      );
+    },
+    onError: () => {
+      toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     },
   });
 }

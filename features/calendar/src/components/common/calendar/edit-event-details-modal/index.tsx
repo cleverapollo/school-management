@@ -246,7 +246,7 @@ export const CalendarEditEventDetailsModal = ({
 
   return (
     <Dialog open={!!initialEventState} onClose={handleClose}>
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         {initialEventState?.eventId
           ? t('calendar:editEvent')
           : t('calendar:addEvent')}

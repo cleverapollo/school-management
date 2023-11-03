@@ -33,7 +33,7 @@ export function ActionMenu({
 }: ActionMenuProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [t] = useTranslation(['common']);
-  const { onClose, getButtonProps, getDisclosureProps } = useDisclosure();
+  const { id, isOpen, onClose, getButtonProps } = useDisclosure();
   const permissions = usePermissions();
   const sectionedMenuItems = (
     Array.isArray(menuItems[0]) ? menuItems : [menuItems]
@@ -68,7 +68,8 @@ export function ActionMenu({
       )}
       <Menu
         anchorEl={buttonRef.current}
-        {...getDisclosureProps()}
+        id={id}
+        open={isOpen}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'right',
@@ -95,11 +96,13 @@ export function ActionMenu({
             onClose,
           });
 
-          if (index !== 0 && sectionItems.length > 0) {
+          if (acc.length > 0 && sectionItems.length > 0) {
             acc.push(<Divider key={`divider-${index}`} />);
           }
 
-          acc.push(...sectionItems);
+          if (sectionItems.length > 0) {
+            acc.push(...sectionItems);
+          }
 
           return acc;
         }, [])}

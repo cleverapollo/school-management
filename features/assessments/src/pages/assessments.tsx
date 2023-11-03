@@ -22,7 +22,7 @@ import {
   ReturnTypeFromUseAssessments,
   useAssessments,
 } from '../api/assessments';
-import { AcademicYearDropdown } from '../components/list-assessments/academic-year-dropdown';
+import { AcademicYearDropdown } from '../components/common/academic-year-dropdown';
 import { getAssessmentSubjectGroupsLink } from '../utils/get-assessment-subject-groups-link';
 import { AssessmentActionMenu } from '../components/list-assessments/assessment-action-menu';
 

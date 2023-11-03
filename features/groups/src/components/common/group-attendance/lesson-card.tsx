@@ -72,7 +72,7 @@ export const LessonCard = ({
           color="text.secondary"
           fontWeight={600}
         >
-          {t('common:room')}
+          {t('common:room', { count: rooms.length })}
         </Typography>
         <Typography variant="caption" component="span">
           {rooms.map((room) => room.name).join(', ') || '-'}

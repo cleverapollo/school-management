@@ -1,29 +1,17 @@
+import { Button, Stack } from '@mui/material';
 import {
-  Button,
+  RHFDatePicker,
+  RHFTextField,
+  useFormValidator,
   DialogTitle,
   DialogActions,
   Dialog,
   DialogContent,
-  Stack,
-  Chip,
-  Grid,
-} from '@mui/material';
-import {
   RHFAutocomplete,
-  RHFDatePicker,
-  RHFSelect,
-  RHFTextField,
-  useFormValidator,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import { useEffect } from 'react';
-import {
-  CreateCalendarEventInput,
-  getColorBasedOnIndex,
-  usePermissions,
-} from '@tyro/api';
 import dayjs from 'dayjs';
 import { useUpsertStudentAen } from '../../../api/student/aen/upsert-student-aen';
 import { ReturnTypeFromUseStudentAen } from '../../../api/student/aen/student-aen-data';
@@ -39,7 +27,7 @@ const aenTypes = [
   'Anorexia',
   'Anxiety',
   'Aphasia',
-  'Application to NCSE for Additional Teaching Support and/or SNA Support.',
+  'Application to NCSE for Additional Teaching Support and/or ANA Support.',
   "Asperger's Syndrome",
   'Assessment Report on file',
   'Attention Deficit/Hyperactivity Disorder',
@@ -109,12 +97,12 @@ const aenTypes = [
   'Visual Processing Disorder',
   'Worster-Drought Syndrome',
 ];
+
 export const EditNoteModal = ({
   initialState,
   onClose,
   studentId,
 }: EditAenModalProps) => {
-  console.log(initialState);
   const { t } = useTranslation(['common', 'people']);
   const { mutate: upsertAenMutation, isLoading: isSubmitting } =
     useUpsertStudentAen();
@@ -133,7 +121,7 @@ export const EditNoteModal = ({
     },
     resolver: resolver({}),
   });
-  console.log(initialState);
+
   const onSubmit = handleSubmit(
     ({
       note,
@@ -173,44 +161,46 @@ export const EditNoteModal = ({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>
-        {initialState?.id ? t('people:editNote') : t('people:addNote')}
+      <DialogTitle onClose={onClose}>
+        {initialState?.id ? t('people:editAen') : t('people:addAen')}
       </DialogTitle>
       <form onSubmit={onSubmit}>
         <DialogContent>
-          <Stack gap={3} p={3}>
-            <Stack direction="row" gap={2}>
-              <RHFSelect
-                label={t('people:aen.type')}
-                options={aenTypes}
-                sx={{ width: '100%' }}
-                getOptionLabel={(option) => option}
-                controlProps={{
-                  name: 'type',
-                  control,
-                }}
-              />
-            </Stack>
-
-            <Stack direction="row" gap={2}>
+          <Stack spacing={3}>
+            <RHFAutocomplete
+              fullWidth
+              freeSolo
+              autoSelect
+              label={t('people:aen.type')}
+              options={aenTypes}
+              controlProps={{
+                name: `type`,
+                control,
+              }}
+              sx={{ mt: 1 }}
+            />
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
               <RHFTextField
                 label={t('people:aen.contact')}
+                textFieldProps={{ fullWidth: true }}
                 controlProps={{
                   name: 'contact',
                   control,
                 }}
               />
               <RHFTextField
-                label={t('people:aen.snaSupport')}
+                label={t('people:aen.anaSupport')}
+                textFieldProps={{ fullWidth: true }}
                 controlProps={{
                   name: 'snaSupport',
                   control,
                 }}
               />
             </Stack>
-            <Stack direction="row" gap={2}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
               <RHFTextField
                 label={t('people:aen.provision')}
+                textFieldProps={{ fullWidth: true }}
                 controlProps={{
                   name: 'provision',
                   control,
@@ -218,15 +208,17 @@ export const EditNoteModal = ({
               />
               <RHFTextField
                 label={t('people:aen.typeNote')}
+                textFieldProps={{ fullWidth: true }}
                 controlProps={{
                   name: 'typeNote',
                   control,
                 }}
               />
             </Stack>
-            <Stack direction="row" gap={2}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
               <RHFDatePicker
                 label={t('people:aen.startDate')}
+                inputProps={{ fullWidth: true }}
                 controlProps={{
                   name: 'startDate',
                   control,
@@ -234,6 +226,7 @@ export const EditNoteModal = ({
               />
               <RHFDatePicker
                 label={t('people:aen.endDate')}
+                inputProps={{ fullWidth: true }}
                 controlProps={{
                   name: 'endDate',
                   control,
