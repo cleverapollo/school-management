@@ -1,5 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
-import { gqlClient, graphql, SaveEventAttendanceInput } from '@tyro/api';
+import {
+  gqlClient,
+  graphql,
+  queryClient,
+  SaveEventAttendanceInput,
+} from '@tyro/api';
+import { attendanceKeys } from './keys';
 
 const saveAttendance = graphql(/* GraphQL */ `
   mutation attendance_saveEventAttendance($input: [SaveEventAttendanceInput]) {
@@ -17,5 +23,8 @@ export function useSaveAttendance() {
   return useMutation({
     mutationFn: (input: SaveEventAttendanceInput[]) =>
       gqlClient.request(saveAttendance, { input }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(attendanceKeys.all);
+    },
   });
 }

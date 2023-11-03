@@ -30,8 +30,7 @@ export function DateRangePicker({
 
   const inputRef = useRef<HTMLInputElement>(null);
   const refs = useMergeRefs(textFieldProps?.inputRef, inputRef);
-  const { getButtonProps, getDisclosureProps, onClose, isOpen, onOpen } =
-    useDisclosure();
+  const { id, getButtonProps, onClose, isOpen, onOpen } = useDisclosure();
   const inputProps = getButtonProps() as unknown as TextFieldProps;
 
   const hasValue = dateRange && dateRange.length === 2;
@@ -78,7 +77,9 @@ export function DateRangePicker({
         }}
       />
       <Popover
-        {...getDisclosureProps()}
+        open={isOpen}
+        id={id}
+        onClose={onClose}
         anchorEl={inputRef.current}
         anchorOrigin={{
           vertical: 'bottom',

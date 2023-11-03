@@ -9,7 +9,11 @@ import {
   AttendanceCodeType,
 } from '@tyro/api';
 
-import { useAttendanceCodeByType, useSaveAttendance } from '@tyro/attendance';
+import {
+  useAttendanceCodeById,
+  useAttendanceCodeByType,
+  useSaveAttendance,
+} from '@tyro/attendance';
 
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import dayjs from 'dayjs';
@@ -31,7 +35,7 @@ type EventDetails = NonNullable<
 
 export type StudentAttendance = Record<
   SaveEventAttendanceInput['personPartyId'],
-  SaveEventAttendanceInput & EventDetails
+  SaveEventAttendanceInput & EventDetails & { isEditMode?: boolean }
 >;
 
 export type GroupStudent = {
@@ -62,8 +66,9 @@ export function useHandleLessonAttendance({
   const { displayName } = usePreferredNameLayout();
 
   const initialAttendanceRef = useRef<StudentAttendance>({});
-  const [newAttendance, setNewAttendance] = useState<StudentAttendance>({});
   const currentStartTime = useRef(getValidEventStartTime(eventStartTime));
+
+  const [newAttendance, setNewAttendance] = useState<StudentAttendance>({});
 
   const [filter, setFilter] = useState<CalendarEventIteratorFilter>({
     partyId,
@@ -72,6 +77,7 @@ export function useHandleLessonAttendance({
   });
 
   const codeByType = useAttendanceCodeByType({ teachingGroupCodes: true });
+  const codeByIds = useAttendanceCodeById({ teachingGroupCodes: true });
 
   const { mutate: saveAttendanceMutation, isLoading: isSaveAttendanceLoading } =
     useSaveAttendance();
@@ -112,7 +118,10 @@ export function useHandleLessonAttendance({
 
       const studentAttendance = eventAttendance.reduce((acc, event) => {
         if (event) {
-          acc[event.personPartyId] = { ...event, date };
+          acc[event.personPartyId] = {
+            ...event,
+            date,
+          };
         }
         return acc;
       }, {} as StudentAttendance);
@@ -127,6 +136,7 @@ export function useHandleLessonAttendance({
             eventId: lessonData.eventId,
             personPartyId: student.partyId,
             attendanceCodeId: currentStudent?.attendanceCodeId ?? presentId,
+            isEditMode: !currentStudent?.adminSubmitted ?? true,
             date,
           };
         }
@@ -163,6 +173,25 @@ export function useHandleLessonAttendance({
 
   const getStudentEventDetails = (studentId: number) =>
     newAttendance[studentId];
+
+  const editAttendance = (studentId: number) =>
+    setNewAttendance((currentAttendance) => {
+      const currentStudent = currentAttendance[studentId];
+
+      return {
+        ...currentAttendance,
+        [studentId]: {
+          ...currentStudent,
+          isEditMode: true,
+          note: '',
+          adminSubmitted: false,
+          attendanceCodeId:
+            codeByIds?.[currentStudent?.attendanceCodeId]?.id ??
+            codeByType?.PRESENT.id ??
+            0,
+        },
+      };
+    });
 
   const setStudentAttendanceCode = (studentId: number) => (codeId: number) => {
     setNewAttendance((currentAttendance) => ({
@@ -255,6 +284,7 @@ export function useHandleLessonAttendance({
     getStudentAttendanceCode,
     setStudentAttendanceCode,
     getStudentEventDetails,
+    editAttendance,
     saveAttendance,
     cancelAttendance,
   };

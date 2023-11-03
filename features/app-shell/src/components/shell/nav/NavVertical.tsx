@@ -1,5 +1,3 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 // @mui

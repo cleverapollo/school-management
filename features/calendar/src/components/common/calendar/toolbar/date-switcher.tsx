@@ -23,7 +23,7 @@ export function DateSwitcher({
   onChangeDate,
 }: DateSwitcherProps) {
   const dateButtonRef = useRef<HTMLButtonElement>(null);
-  const { onClose, getButtonProps, getDisclosureProps } = useDisclosure();
+  const { isOpen, id, onClose, getButtonProps } = useDisclosure();
   const { t } = useTranslation(['common', 'calendar']);
 
   return (
@@ -45,7 +45,9 @@ export function DateSwitcher({
         {date.format('LL')}
       </Button>
       <Popover
-        {...getDisclosureProps()}
+        open={isOpen}
+        id={id}
+        onClose={onClose}
         anchorEl={dateButtonRef.current}
         anchorOrigin={{
           vertical: 'bottom',

@@ -1,5 +1,3 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
 import { Box } from '@mui/material';
 import { useDisclosure, useResponsive } from '@tyro/core';
 import { ScrollRestoration } from 'react-router-dom';

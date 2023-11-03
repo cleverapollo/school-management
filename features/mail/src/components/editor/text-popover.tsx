@@ -28,7 +28,7 @@ export function MailEditorTextPopover({ editor }: MailEditorTextPopoverProps) {
   const { t } = useTranslation(['mail']);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const metaCharacter = getMetaCharacter();
-  const { getButtonProps, getDisclosureProps } = useDisclosure();
+  const { id, isOpen, onClose, getButtonProps } = useDisclosure();
 
   return (
     <>
@@ -41,7 +41,9 @@ export function MailEditorTextPopover({ editor }: MailEditorTextPopoverProps) {
         <TextIcon />
       </IconButtonWithTooltip>
       <Popover
-        {...getDisclosureProps()}
+        open={isOpen}
+        id={id}
+        onClose={onClose}
         anchorEl={buttonRef.current}
         anchorOrigin={{
           vertical: 'top',

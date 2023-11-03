@@ -1,15 +1,7 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
 import { alpha, styled } from '@mui/material/styles';
 import { Popover, ListItemButton, ListItemIcon } from '@mui/material';
-// utils
-import { bgBlur } from '../../../../../../../../src/utils/cssStyles';
-// config
 import { ICON } from '../../config';
-//
 import { NavItemProps } from '../types';
-
-// ----------------------------------------------------------------------
 
 type StyledItemProps = Omit<NavItemProps, 'item'>;
 
@@ -87,8 +79,6 @@ export const StyledIcon = styled(ListItemIcon)({
   height: ICON.NAV_ITEM_MINI,
 });
 
-// ----------------------------------------------------------------------
-
 export const StyledPopover = styled(Popover)(({ theme }) => ({
   pointerEvents: 'none',
   '& .MuiPopover-paper': {
@@ -98,6 +88,8 @@ export const StyledPopover = styled(Popover)(({ theme }) => ({
     marginTop: theme.spacing(0.5),
     boxShadow: theme.customShadows.dropdown,
     borderRadius: Number(theme.shape.borderRadius) * 1.5,
-    ...bgBlur({ color: theme.palette.background.default }),
+    backdropFilter: `blur(6px)`,
+    WebkitBackdropFilter: `blur(6px)`,
+    backgroundColor: alpha(theme.palette.background.default, 0.8),
   },
 }));

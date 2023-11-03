@@ -1,8 +1,5 @@
-/* eslint-disable import/no-relative-packages */
-// TODO: remove above eslint when components are moved to @tyro/core
 import { Stack, Box } from '@mui/material';
 import { NAV } from './config';
-import { hideScrollbarX } from '../../../../../../src/utils/cssStyles';
 import { NavSectionMini } from './nav-section';
 import { NavigationConfig } from '../../../hooks/use-navigation-config';
 import { ExpandButton } from './expanding-button';
@@ -31,7 +28,12 @@ export default function NavMini({ onExpand, navConfig }: NavMiniProps) {
           position: 'fixed',
           width: NAV.W_DASHBOARD_MINI,
           borderRight: (theme) => `solid 1px ${theme.palette.divider}`,
-          ...hideScrollbarX,
+          msOverflowStyle: 'none',
+          scrollbarWidth: 'none',
+          overflowX: 'scroll',
+          '&::-webkit-scrollbar': {
+            display: 'none',
+          },
         }}
       >
         <Logo sx={{ mx: 'auto', my: 2, width: 50 }} />
