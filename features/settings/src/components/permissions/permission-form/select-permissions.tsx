@@ -186,12 +186,6 @@ export const SelectPermissions = ({
                   ) : (
                     <PermissionTypeDropdown
                       name={`permissionsFieldsBySetId.${permission.id}.permissionType`}
-                      onRemovePermissionType={() =>
-                        setValue(
-                          `permissionsFieldsBySetId.${permission.id}.permissionType`,
-                          null
-                        )
-                      }
                       control={control}
                     />
                   )}
