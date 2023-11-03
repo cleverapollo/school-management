@@ -9,6 +9,7 @@ import {
   useAssessmentById,
 } from '../../api/assessments';
 import { StudentSelectorForOverallComments } from '../../components/overall-comments/student-selector';
+import { useOverallCommentsByYearGroup } from '../../api/overall-comment-year-group';
 
 export default function OverallCommentsTermAssessmentPage() {
   const { academicNamespaceId, assessmentId } = useParams();
@@ -23,9 +24,11 @@ export default function OverallCommentsTermAssessmentPage() {
     academicNameSpaceId: academicNameSpaceIdAsNumber ?? 0,
     ids: [assessmentIdAsNumber ?? 0],
   });
-  const { data: studentListForYearGroup } = useYearGroupById(
+  const { data: studentListForYearGroup } = useOverallCommentsByYearGroup(
+    academicNameSpaceIdAsNumber ?? 0,
     {
-      yearGroupIds: [selectedYearGroup?.yearGroupId ?? 0],
+      yearGroupEnrolmentId: selectedYearGroup?.yearGroupId ?? 0,
+      assessmentId: assessmentIdAsNumber ?? 0,
     },
     !!selectedYearGroup?.yearGroupId
   );
@@ -78,7 +81,7 @@ export default function OverallCommentsTermAssessmentPage() {
       <Stack direction="row">
         <StudentSelectorForOverallComments
           yearGroup={selectedYearGroup}
-          students={studentListForYearGroup?.students ?? []}
+          students={studentListForYearGroup ?? []}
         />
       </Stack>
     </PageContainer>

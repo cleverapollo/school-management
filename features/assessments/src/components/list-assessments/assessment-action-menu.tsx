@@ -9,6 +9,7 @@ import {
   CommentIcon,
   EditCalendarIcon,
 } from '@tyro/icons';
+import { AssessmentType } from '@tyro/api';
 import { getAssessmentSubjectGroupsLink } from '../../utils/get-assessment-subject-groups-link';
 import { PublishAssessmentModal } from './publish-assessment-modal';
 import {
@@ -74,12 +75,12 @@ export const AssessmentActionMenu = ({
                     icon: <EditIcon />,
                     navigateTo: `${assessmentPath}/edit`,
                   },
-                  // {
-                  //   label: t('assessments:actions.makeOverallComments'),
-                  //   icon: <CommentIcon />,
-                  //   hasAccess: () => assessmentType === AssessmentType.Term,
-                  //   navigateTo: `${assessmentPath}/overall-comments`,
-                  // },
+                  {
+                    label: t('assessments:actions.makeOverallComments'),
+                    icon: <CommentIcon />,
+                    hasAccess: () => assessmentType === AssessmentType.Term,
+                    navigateTo: `${assessmentPath}/overall-comments`,
+                  },
                 ],
                 publishedFrom
                   ? [
