@@ -309,7 +309,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'comment-banks',
             hasAccess: ({ isStaffUserWithPermission }) =>
                 isStaffUserWithPermission(
-                    'ps:1:assessment:write_grade_sets'
+                    'ps:1:assessment:write_comment_banks'
                 ),
             loader: () => getCommentBanks({}),
             element: <CommentBanks />,
