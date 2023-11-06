@@ -84,14 +84,18 @@ const getColumns = (
     field: 'description',
   },
   {
+    field: 'examinable',
     headerName: t('common:examinable'),
     editable: true,
     cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellEditor: TableSwitch,
+    valueGetter: ({ data }) => data?.examinable,
+    valueFormatter: ({ data }) =>
+      data?.examinable ? t('common:yes') : t('common:no'),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseCatalogueSubjects, any>) => (
-      <TableBooleanValue value />
+      <TableBooleanValue value={Boolean(data?.examinable)} />
     ),
   },
   {
@@ -120,11 +124,12 @@ export default function Subjects() {
   const { mutateAsync: saveSubjects } = useUpdateCatalogueSubjects();
 
   const bulkSaveSubjects = (
-    data: BulkEditedRows<ReturnTypeFromUseCatalogueSubjects, 'colour'>
+    data: BulkEditedRows<ReturnTypeFromUseCatalogueSubjects, 'colour' | 'examinable'>
   ) => {
     const dataForEndpoint = Object.keys(data).map<UpsertSubject>((id) => ({
       subjectId: Number(id),
       colour: data[id].colour?.newValue,
+      examinable: data[id].examinable?.newValue,
     }));
 
     return saveSubjects(dataForEndpoint);

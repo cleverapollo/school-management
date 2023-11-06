@@ -113,10 +113,18 @@ const getSubjectGroupsColumns = (
     enableRowGroup: true,
   },
   {
+    field: 'irePP.examinable',
     headerName: t('common:examinable'),
     editable: true,
     cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellEditor: TableSwitch,
+    valueGetter: ({ data }) => data?.irePP?.examinable,
+    valueFormatter: ({ data }) =>
+      data?.irePP?.examinable ? t('common:yes') : t('common:no'),
+    valueSetter: (params) => {
+      set(params.data ?? {}, 'irePP.examinable', params.newValue);
+      return true;
+    },
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseStudentsSubjectGroups, any>) => (
