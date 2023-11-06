@@ -45,7 +45,6 @@ export function SendSmsModal({
   hideRecipientTypes = false,
 }: SendSmsModalProps) {
   const { t } = useTranslation(['common', 'sms']);
-
   const { resolver, rules } = useFormValidator<SmsFormState>();
   const { reset, control, handleSubmit, setValue, watch } =
     useForm<SmsFormState>({
@@ -119,10 +118,18 @@ export function SendSmsModal({
   };
 
   useEffect(() => {
-    setValue(
-      'recipients',
-      recipients.sort((a, b) => a.name.localeCompare(b.name))
-    );
+    const recipientKeys = new Set<string>();
+    const filteredArray = recipients
+      .filter(({ id, type }) => {
+        const key = `${id}-${type}`;
+        const isDuplicateRecipient = recipientKeys.has(key);
+
+        recipientKeys.add(key);
+        return !isDuplicateRecipient;
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    setValue('recipients', filteredArray);
   }, [isOpen]);
 
   return (

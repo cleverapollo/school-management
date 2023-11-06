@@ -1,4 +1,4 @@
-import { ButtonProps, DialogProps } from '@mui/material';
+import { ButtonProps, DialogProps, PopoverProps } from '@mui/material';
 import { useCallback, useState, useId } from 'react';
 import { useCallbackRef } from './use-callback-ref';
 
