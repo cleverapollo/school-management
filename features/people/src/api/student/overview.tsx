@@ -80,6 +80,7 @@ const studentsSubjectGroups = graphql(/* GraphQL */ `
         }
         irePP {
           level
+          examinable
         }
       }
     }

@@ -439,14 +439,24 @@ const getColumnDefs = (
   ...getCommentFields(assessmentData, commentBanks, t, toast),
   ...getExtraFields(assessmentData?.extraFields, commentBanks),
   {
+    field: 'subjectGroup.irePP.examinable',
     headerName: t('common:examinable'),
     editable: true,
     cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellEditor: TableSwitch,
+    valueGetter: ({ data }) => data?.subjectGroup?.irePP?.examinable,
+    valueFormatter: ({ data }) =>
+      data?.subjectGroup?.irePP?.examinable ? t('common:yes') : t('common:no'),
+    valueSetter: (params) => {
+      set(params.data ?? {}, 'subjectGroup.irePP.examinable', params.newValue);
+      return true;
+    },
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAssessmentResults, any>) => (
-      <TableBooleanValue value />
+      <TableBooleanValue
+        value={Boolean(data?.subjectGroup?.irePP?.examinable)}
+      />
     ),
   },
 ];
@@ -541,6 +551,7 @@ export default function EditTermAssessmentResults() {
       | 'targetResult'
       | 'targetGradeResult'
       | 'teacherComment.comment'
+      | 'subjectGroup.irePP.examinable'
     >
   ) => {
     const results = studentResults?.reduce<SaveAssessmentResultInput[]>(
