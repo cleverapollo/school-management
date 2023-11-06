@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient } from '@tyro/api';
+import { gqlClient, graphql, queryClient, UseQueryReturnType } from '@tyro/api';
 import { sortByDisplayName } from '@tyro/core';
 import { peopleKeys } from '../keys';
 
@@ -36,6 +36,8 @@ const contacts = graphql(/* GraphQL */ `
             lastName
           }
         }
+        allowedToContact
+        includeInSms
       }
     }
   }
@@ -101,3 +103,7 @@ export function useContactsForSelect() {
     select: ({ core_studentContacts }) => core_studentContacts,
   });
 }
+
+export type ReturnTypeFromUseContacts = UseQueryReturnType<
+  typeof useContacts
+>[number];

@@ -1,6 +1,5 @@
-import { ConfirmDialog, getNumber } from '@tyro/core';
+import { ConfirmDialog } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { useParams } from 'react-router-dom';
 import { ReturnTypeFromUseStudentAen } from '../../../api/student/aen/student-aen-data';
 import { useDeleteAen } from '../../../api/student/aen/delete-student-aen';
 
@@ -15,8 +14,6 @@ export function DeleteAenConfirmModal({
   onClose,
   aenDetails,
 }: DeleteAenConfirmModalProps) {
-  const { id } = useParams();
-  const studentId = getNumber(id);
   const { t } = useTranslation(['common', 'people']);
 
   const { mutateAsync: deleteNote } = useDeleteAen();
@@ -32,6 +29,7 @@ export function DeleteAenConfirmModal({
 
   return (
     <ConfirmDialog
+      isDelete
       open={open}
       onClose={onClose}
       onConfirm={onSubmit}

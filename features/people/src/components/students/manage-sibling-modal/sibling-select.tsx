@@ -73,6 +73,7 @@ export function SiblingSelect({
         multiple
         openOnFocus
         filterSelectedOptions
+        disableClearable
         loading={isLoading}
         options={sibilingOptions}
         renderAvatarTags={() => null}

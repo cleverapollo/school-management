@@ -43,7 +43,8 @@ export default i18n
         // @ts-expect-error
         const originalPath = (resources?.[lookupLng]?.[lookupNs] ??
           '') as string;
-        return originalPath.replace('/public', '');
+        return originalPath;
+        // return originalPath.replace('/public', '');
       },
     },
   });

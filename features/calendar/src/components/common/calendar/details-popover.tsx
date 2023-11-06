@@ -161,8 +161,10 @@ export function CalendarDetailsPopover({
         vertical: 'center',
         horizontal: 'right',
       }}
-      PaperProps={{
-        sx: { p: 1, minWidth: 280 },
+      slotProps={{
+        paper: {
+          sx: { p: 1, minWidth: 280 },
+        },
       }}
     >
       <Stack direction="row" justifyContent="flex-end">

@@ -106,7 +106,7 @@ const getSubjectGroupsColumns = (
         params: {
           options: subjects,
           optionIdKey: 'id',
-          getOptionLabel: (option: CatalogueSubjectOption) => option.name,
+          getOptionLabel: (option: CatalogueSubjectOption) => `${option.name} (${option.nationalCode})`,
         },
       } as const),
     enableRowGroup: true,

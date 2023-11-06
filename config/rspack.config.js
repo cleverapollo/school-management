@@ -1,6 +1,7 @@
 const path = require('path');
+const rspack = require('@rspack/core');
 const Dotenv = require('rspack-plugin-dotenv');
-// const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
+const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -10,15 +11,15 @@ module.exports = {
   mode,
   devtool: isProd
     ? 'source-map'
-    : 'eval-source-map',
+    : 'cheap-source-map',
   entry: {
     main: './src/index.tsx',
   },
   output: {
-    filename: 'static/js/[contenthash].js',
-    chunkFilename: 'static/js/[contenthash].chunk.js',
-    cssFilename: 'static/css/[contenthash].css',
-    assetModuleFilename: 'static/media/[contenthash][ext]',
+    filename: 'static/js/[name].[contenthash].js',
+    chunkFilename: 'static/js/[name].[contenthash].chunk.js',
+    cssFilename: 'static/css/[name].[contenthash].css',
+    assetModuleFilename: 'static/media/[name].[contenthash][ext]',
     path: path.resolve(__dirname, '../build'),
     publicPath: '/',
   },
@@ -28,33 +29,7 @@ module.exports = {
     historyApiFallback: true,
   },
   builtins: {
-    html: [
-      {
-        template: './public/index.html',
-      },
-    ],
-    copy: {
-      patterns: [
-        {
-          from: 'public',
-          globOptions: {
-            ignore: ['**/index.html'],
-          }
-        },
-        {
-          from: 'public/locales',
-          to: 'locales/[path][name].[contenthash][ext]'
-        }
-      ],
-    },
     emotion: true,
-    ...isProd ? {
-      define: {
-        'process.env.AG_GRID_KEY': `"${process.env.AG_GRID_KEY}"`,
-        'process.env.FULL_CALENDAR_KEY': `"${process.env.FULL_CALENDAR_KEY}"`,
-        'process.env.REACT_APP_GRAPHQL_API_URI': false,
-      },
-    } : {},
   },
   module: {
     rules: [
@@ -138,17 +113,35 @@ module.exports = {
     },
   },
   plugins: [
+    new rspack.HtmlRspackPlugin({
+      template: './public/index.html',
+    }),
+    new rspack.CopyRspackPlugin({
+      patterns: [
+        {
+          from: 'public',
+          globOptions: {
+            ignore: ['**/index.html'],
+          }
+        },
+      ],
+    }),
     ...!isProd ? [
       new Dotenv(),
       new ForkTsCheckerWebpackPlugin(),
     ] : [],
-    // ...isProd ? [
-    //   sentryWebpackPlugin({
-    //     authToken: process.env.SENTRY_AUTH_TOKEN,
-    //     org: "tyro-technologies-limited",
-    //     project: "web-app",
-    //   }),
-    // ] : [],
+    ...isProd && process.env.SENTRY_AUTH_TOKEN ? [
+      new SentryWebpackPlugin({
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        org: "tyro-technologies-limited",
+        project: "web-app",
+      }),
+    ] : [],
+    new rspack.DefinePlugin(isProd ? {
+      'process.env.AG_GRID_KEY': `"${process.env.AG_GRID_KEY}"`,
+      'process.env.FULL_CALENDAR_KEY': `"${process.env.FULL_CALENDAR_KEY}"`,
+      'process.env.REACT_APP_GRAPHQL_API_URI': false,
+    }: {}),
   ],
   watchOptions: {
     ignored: /node_modules/,

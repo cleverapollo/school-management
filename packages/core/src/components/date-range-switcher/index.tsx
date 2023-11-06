@@ -14,7 +14,7 @@ dayjs.extend(LocalizedFormat);
 export function DateRangeSwitcher(props: DateRangeCalendarProps<Dayjs>) {
   const { t } = useTranslation(['common']);
   const dateButtonRef = useRef<HTMLButtonElement>(null);
-  const { getButtonProps, getDisclosureProps } = useDisclosure();
+  const { id, isOpen, onClose, getButtonProps } = useDisclosure();
 
   const { value } = props;
 
@@ -32,7 +32,9 @@ export function DateRangeSwitcher(props: DateRangeCalendarProps<Dayjs>) {
           : t('common:selectDateRange')}
       </Button>
       <Popover
-        {...getDisclosureProps()}
+        open={isOpen}
+        id={id}
+        onClose={onClose}
         anchorEl={dateButtonRef.current}
         anchorOrigin={{
           vertical: 'bottom',

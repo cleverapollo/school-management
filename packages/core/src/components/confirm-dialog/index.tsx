@@ -18,6 +18,7 @@ export interface ConfirmDialogProps {
   open: boolean;
   onConfirm: () => void;
   onClose: () => void;
+  isDelete?: boolean;
 }
 
 export function ConfirmDialog({
@@ -28,6 +29,7 @@ export function ConfirmDialog({
   open,
   onConfirm,
   onClose,
+  isDelete = false,
 }: ConfirmDialogProps) {
   const id = useId();
   const titleId = `${id}-title`;
@@ -42,16 +44,19 @@ export function ConfirmDialog({
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
     >
-      <DialogTitle onClose={onClose} id={titleId}>{title}</DialogTitle>
+      <DialogTitle onClose={onClose} id={titleId}>
+        {title}
+      </DialogTitle>
       <DialogContent>
         <DialogContentText id={descriptionId}>{description}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button autoFocus onClick={onClose}>
+        <Button autoFocus color="inherit" variant="soft" onClick={onClose}>
           {cancelText || t('common:actions.cancel')}
         </Button>
         <LoadingButton
-          variant="soft"
+          variant="contained"
+          color={isDelete ? 'error' : 'primary'}
           loading={loading}
           onClick={async () => {
             setLoading(true);

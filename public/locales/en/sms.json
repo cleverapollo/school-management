@@ -22,6 +22,8 @@
   "subjectTeachersOfStudent_other": "Subject teacher(s) of students",
   "recipientNotIncludedInSms_one": "Recipient not included in SMS",
   "recipientNotIncludedInSms_other": "Recipients not included in SMS",
+  "recipientNotAllowedToContact_one": "Recipient not allowed to contact",
+  "recipientNotAllowedToContact_other": "Recipients not allowed to contact",
   "recipients": "Recipient(s)",
   "recipient_one": "Recipient",
   "recipient_other": "Recipients",
