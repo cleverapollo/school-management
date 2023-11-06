@@ -87,10 +87,15 @@ export type Address = {
   primaryAddress?: Maybe<Scalars['Boolean']>;
 };
 
+export type ArchiveStudentContactInput = {
+  contactPartyIds: Array<Scalars['Long']>;
+};
+
 export type Assessment = {
   __typename?: 'Assessment';
   academicNamespaceId: Scalars['Int'];
   assessmentType: AssessmentType;
+  canEnterOverallComments: Scalars['Boolean'];
   captureHouseMasterComment: Scalars['Boolean'];
   capturePrincipalComment: Scalars['Boolean'];
   captureTarget: Scalars['Boolean'];
@@ -126,6 +131,7 @@ export type Assessment = {
   tutorCommentLength?: Maybe<Scalars['Int']>;
   tutorCommentType?: Maybe<CommentType>;
   yearGroupEnrollmentPartyIds?: Maybe<Array<Scalars['Long']>>;
+  yearGroupEnrolments?: Maybe<Array<YearGroupEnrollment>>;
   yearGroupIds?: Maybe<Array<Scalars['Int']>>;
   yearHeadCommentBank?: Maybe<AssessmentCommentBank>;
   yearHeadCommentLength?: Maybe<Scalars['Int']>;
@@ -188,6 +194,7 @@ export type AssessmentResult = {
   assessmentId?: Maybe<Scalars['Long']>;
   createdBy: Person;
   createdByPartyId: Scalars['Long'];
+  examinable: Scalars['Boolean'];
   externalSystemId?: Maybe<Scalars['String']>;
   extraFields?: Maybe<Array<ResultExtraField>>;
   gradeId?: Maybe<Scalars['Long']>;
@@ -1244,6 +1251,7 @@ export type Core_EnableBlockRotationIterationInput = {
 };
 
 export type Core_LinkContacts = {
+  delete?: InputMaybe<Array<InputMaybe<Core_ContactInput>>>;
   upsert?: InputMaybe<Array<InputMaybe<Core_ContactInput>>>;
 };
 
@@ -1257,6 +1265,7 @@ export type Core_LinkSiblingsAndContacts = {
   linkContacts: Array<Core_LinkSiblingsAndContactsContactInfo>;
   linkSiblings: Array<Scalars['Long']>;
   studentPartyId: Scalars['Long'];
+  unlinkContacts: Array<Core_LinkSiblingsAndContactsContactInfo>;
   unlinkSiblings: Array<Scalars['Long']>;
 };
 
@@ -1527,6 +1536,7 @@ export type CreateGroupAcademicNamespacesInput = {
 
 export type CreateGroupMembershipInput = {
   academicNamespaceId: Scalars['Int'];
+  examinable?: InputMaybe<Scalars['Boolean']>;
   fromDate?: InputMaybe<Scalars['Date']>;
   partyId?: InputMaybe<Scalars['Long']>;
   studyLevel?: InputMaybe<StudyLevel>;
@@ -1645,6 +1655,7 @@ export type CreateSubjectGroupInput = {
 
 export type CreateSubjectGroupIrePpInput = {
   academicNamespaceId: Scalars['Int'];
+  examinable: Scalars['Boolean'];
   level?: InputMaybe<StudyLevel>;
 };
 
@@ -2513,6 +2524,7 @@ export type Mutation = {
   communications_sendSms?: Maybe<Scalars['String']>;
   communications_smsTopUp?: Maybe<SmsTopUpResponse>;
   communications_starred?: Maybe<Scalars['String']>;
+  core_archiveStudentContacts: Success;
   core_deleteGroup: Success;
   core_enableBlockRotations?: Maybe<Success>;
   core_linkSiblingsAndContacts: Success;
@@ -2734,6 +2746,11 @@ export type MutationCommunications_SmsTopUpArgs = {
 
 export type MutationCommunications_StarredArgs = {
   input?: InputMaybe<MailStarredInput>;
+};
+
+
+export type MutationCore_ArchiveStudentContactsArgs = {
+  input: ArchiveStudentContactInput;
 };
 
 
@@ -3604,6 +3621,7 @@ export type PermissionsFilter = {
 
 export type Person = {
   __typename?: 'Person';
+  archived?: Maybe<Scalars['Boolean']>;
   avatarUrl?: Maybe<Scalars['String']>;
   firstName?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
@@ -5846,6 +5864,7 @@ export type StudentAenFilter = {
 
 export type StudentContact = Party & PartyPerson & {
   __typename?: 'StudentContact';
+  archived?: Maybe<Scalars['Boolean']>;
   occupation?: Maybe<Scalars['String']>;
   partyId: Scalars['Long'];
   person: Person;
@@ -5858,6 +5877,7 @@ export type StudentContact = Party & PartyPerson & {
 
 export type StudentContactFilter = {
   allowAccessToStudentData?: InputMaybe<Scalars['Boolean']>;
+  archived?: InputMaybe<Scalars['Boolean']>;
   studentContactPartyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   studentPartyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
@@ -6198,6 +6218,7 @@ export type Subject = {
   colour?: Maybe<Colour>;
   description?: Maybe<Scalars['String']>;
   descriptionTextId?: Maybe<Scalars['Int']>;
+  examinable: Scalars['Boolean'];
   icon?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
   inUseHistorically: Scalars['Boolean'];
@@ -6250,6 +6271,7 @@ export type SubjectGroupFilter = {
 
 export type SubjectGroupIrePp = {
   __typename?: 'SubjectGroupIrePP';
+  examinable: Scalars['Boolean'];
   level?: Maybe<StudyLevel>;
 };
 
@@ -6262,6 +6284,7 @@ export type SubjectGroupMembershipTypeInput = {
 
 export type SubjectGroupStudent = {
   __typename?: 'SubjectGroupStudent';
+  examinable: Scalars['Boolean'];
   fromDate?: Maybe<Scalars['Date']>;
   studentPartyId: Scalars['Long'];
   studyLevel?: Maybe<StudyLevel>;
@@ -6988,6 +7011,7 @@ export type UpdateSubjectGroupInput = {
 };
 
 export type UpdateSubjectGroupIrePpInput = {
+  examinable?: InputMaybe<Scalars['Boolean']>;
   level?: InputMaybe<StudyLevel>;
 };
 
@@ -7161,6 +7185,7 @@ export type UpsertStudentMedicalContactInput = {
 
 export type UpsertSubject = {
   colour?: InputMaybe<Colour>;
+  examinable?: InputMaybe<Scalars['Boolean']>;
   subjectId?: InputMaybe<Scalars['Int']>;
 };
 
@@ -7315,8 +7340,11 @@ export type YearGroupFilter = {
 export type YearGroupStudent = {
   __typename?: 'YearGroupStudent';
   commentStatus: CommentStatus;
+  principalComment: Scalars['Boolean'];
   student: Student;
   studentPartyId: Scalars['Long'];
+  tutorComment: Scalars['Boolean'];
+  yearHeadComment: Scalars['Boolean'];
 };
 
 export type YearGroupStudentFilter = {
