@@ -91,7 +91,6 @@ const getColumns = (
   {
     field: 'active',
     headerName: t('common:active'),
-    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseCatalogueSubjects, any>) => (
