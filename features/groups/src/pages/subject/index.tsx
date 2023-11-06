@@ -63,12 +63,10 @@ const getSubjectGroupsColumns = (
       const bgColorStyle = subject?.colour
         ? { bgcolor: `${subject.colour}.500` }
         : {};
-      const subjectName = data?.name ?? '';
-      const nationalCode = subject?.nationalCode ?? '-';
 
       return (
         <TableAvatar
-          name={`${subjectName} (${nationalCode})`}
+          name={data?.name ?? ''}
           to={`./${data?.partyId ?? ''}`}
           avatarUrl={data?.avatarUrl}
           AvatarProps={{
