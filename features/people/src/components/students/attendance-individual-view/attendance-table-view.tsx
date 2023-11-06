@@ -15,6 +15,7 @@ import {
 } from '@tyro/attendance';
 import { useTranslation, TFunction } from '@tyro/i18n';
 import { AttendanceCodeType } from '@tyro/api';
+import dayjs from 'dayjs';
 
 type AttendanceTableViewProps = {
   startDate: string;
@@ -60,7 +61,10 @@ const getColumns = (
   {
     headerName: t('common:time'),
     field: 'time',
-    valueGetter: ({ data }) => data?.time,
+    valueGetter: ({ data }) =>
+      dayjs(data?.time).isValid()
+        ? dayjs(data?.time).format('hh:mm')
+        : data?.time,
   },
   {
     headerName: t('common:type'),

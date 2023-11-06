@@ -1423,6 +1423,13 @@ export type Core_UpdateStudentContactRelationshipInput = {
   studentPartyId: Scalars['Long'];
 };
 
+export type Core_UpdateStudentSubjectGroupInput = {
+  examinable?: InputMaybe<Scalars['Boolean']>;
+  studentId: Scalars['Long'];
+  studyLevel?: InputMaybe<StudyLevel>;
+  subjectGroupId: Scalars['Long'];
+};
+
 export type Core_UpsertCustomGroupDefinition = {
   description?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Long']>;
@@ -2536,6 +2543,7 @@ export type Mutation = {
   core_updateStaff: Success;
   core_updateStudentContactRelationships?: Maybe<Success>;
   core_updateStudentContacts: Success;
+  core_updateStudentSubjectGroup: Success;
   core_updateStudents?: Maybe<Success>;
   core_updateSubjectGroups?: Maybe<Success>;
   core_updateYearGroupEnrollments?: Maybe<Success>;
@@ -2806,6 +2814,11 @@ export type MutationCore_UpdateStudentContactRelationshipsArgs = {
 
 export type MutationCore_UpdateStudentContactsArgs = {
   input: Array<UpdateStudentContactInput>;
+};
+
+
+export type MutationCore_UpdateStudentSubjectGroupArgs = {
+  input: Array<InputMaybe<Core_UpdateStudentSubjectGroupInput>>;
 };
 
 
@@ -3943,7 +3956,7 @@ export type Query = {
   core_staff: Array<Staff>;
   core_studentContacts?: Maybe<Array<StudentContact>>;
   core_students: Array<Student>;
-  core_subjectGroupStudents?: Maybe<SubjectGroupStudent>;
+  core_subjectGroupStudents: Array<StudentSubjectGroup>;
   core_yearGroupEnrollments: Array<YearGroupEnrollment>;
   eire_nonClassContactHours?: Maybe<Array<Maybe<NonClassContactHours>>>;
   enrollment_ire_blockMemberships: EnrollmentIre_BlockMemberships;
@@ -6063,6 +6076,14 @@ export type StudentStatusFilter = {
   studentPartyId?: InputMaybe<Scalars['Long']>;
 };
 
+export type StudentSubjectGroup = {
+  __typename?: 'StudentSubjectGroup';
+  students: Array<SubjectGroupStudent>;
+  /** deep linked */
+  subjectGroup?: Maybe<SubjectGroup>;
+  subjectGroupId: Scalars['Long'];
+};
+
 export type StudentSupportFile = {
   __typename?: 'StudentSupportFile';
   actionsNeeded?: Maybe<Scalars['Boolean']>;
@@ -6288,7 +6309,6 @@ export type SubjectGroupStudent = {
   fromDate?: Maybe<Scalars['Date']>;
   studentPartyId: Scalars['Long'];
   studyLevel?: Maybe<StudyLevel>;
-  subjectGroupId: Scalars['Long'];
   toDate?: Maybe<Scalars['Date']>;
 };
 

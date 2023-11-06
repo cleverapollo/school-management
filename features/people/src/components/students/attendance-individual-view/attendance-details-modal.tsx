@@ -334,7 +334,7 @@ export const AttendanceDetailsModal = ({
                       t('attendance:time'),
                       t('attendance:type'),
                       t('attendance:takenBy'),
-                      t('attendance:detailsWithCalendar'),
+                      t('common:details'),
                       t('attendance:attendance'),
                     ].map((heading) => (
                       <TableCell key={heading}>
