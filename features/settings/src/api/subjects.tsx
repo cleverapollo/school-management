@@ -21,6 +21,7 @@ const catalogueSubjects = graphql(/* GraphQL */ `
       subjectSource
       colour
       icon
+      active
     }
   }
 `);
