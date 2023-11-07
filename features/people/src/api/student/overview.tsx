@@ -62,10 +62,9 @@ const studentsContacts = graphql(/* GraphQL */ `
 `);
 
 const studentsSubjectGroups = graphql(/* GraphQL */ `
-  query core_student_subjectGroups($filter: StudentFilter!) {
-    core_students(filter: $filter) {
-      partyId
-      subjectGroups {
+  query core_subjectGroupStudents($filter: SubjectGroupStudentFilter!) {
+    core_subjectGroupStudents(filter: $filter) {
+      subjectGroup {
         partyId
         name
         avatarUrl
@@ -121,22 +120,21 @@ export function useStudentsContacts(
 const studentsSubjectGroupsQuery = (studentId: number | undefined) => ({
   queryKey: peopleKeys.students.subjectGroups(studentId),
   queryFn: async () => {
-    const { core_students: students } = await gqlClient.request(
+    const { core_subjectGroupStudents: studentsData } = await gqlClient.request(
       studentsSubjectGroups,
       {
-        filter: { partyIds: [studentId ?? 0] },
+        filter: { studentPartyIds: [studentId ?? 0], subjectGroupIds: [] },
       }
     );
 
-    const [student] = students;
-    const { subjectGroups } = student;
+    return studentsData
+      .map(({ subjectGroup }) => subjectGroup)
+      .sort((prev, next) => {
+        const [prevSubject] = prev?.subjects || [];
+        const [nextSubject] = next?.subjects || [];
 
-    return subjectGroups.sort((prev, next) => {
-      const [prevSubject] = prev.subjects || [];
-      const [nextSubject] = next.subjects || [];
-
-      return prevSubject?.name.localeCompare(nextSubject?.name);
-    });
+        return prevSubject?.name.localeCompare(nextSubject?.name);
+      });
   },
 });
 
