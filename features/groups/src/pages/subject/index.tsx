@@ -23,9 +23,9 @@ import {
   useDisclosure,
   sortStartNumberFirst,
   ConfirmDialog,
-  TableSelect,
   TableSwitch,
   TableBooleanValue,
+  TableSelect,
 } from '@tyro/core';
 
 import { MobileIcon, MoveGroupIcon } from '@tyro/icons';
@@ -228,10 +228,7 @@ export default function SubjectGroups() {
   ];
 
   const handleBulkSave = (
-    data: BulkEditedRows<
-      ReturnTypeFromUseSubjectGroups,
-      'irePP.level' | 'name' | 'subjects'
-    >
+    data: BulkEditedRows<ReturnTypeFromUseSubjectGroups, 'irePP.level' | 'irePP.examinable' | 'name' | 'subjects'>
   ) => {
     const updates = Object.entries(data).reduce<UpdateSubjectGroupInput[]>(
       (acc, [partyId, changes]) => {
@@ -240,9 +237,7 @@ export default function SubjectGroups() {
         };
 
         Object.entries(changes).forEach(([key, value]) => {
-          if (key === 'irePP.level') {
-            set(updatedEntry, 'irePP.level', value.newValue);
-          } else if (key === 'subjects' && value?.newValue?.length) {
+          if (key === 'subjects' && value?.newValue?.length) {
             set(updatedEntry, 'subjectIds', [(value?.newValue?.[0] as CatalogueSubjectOption)?.id]);
           } else {
             set(updatedEntry, key, value.newValue);
