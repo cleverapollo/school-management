@@ -7,6 +7,7 @@ import {
   UseQueryReturnType,
   YearGroupStudentFilter,
 } from '@tyro/api';
+import { usePreferredNameLayout } from '@tyro/core';
 import { assessmentsKeys } from './keys';
 
 const overallCommentsByYearGroup = graphql(/* GraphQL */ `
@@ -54,11 +55,15 @@ export function useOverallCommentsByYearGroup(
   filter: YearGroupStudentFilter,
   enabled = true
 ) {
+  const { sortByDisplayName } = usePreferredNameLayout();
   return useQuery({
     ...overallCommentsByYearGroupQuery(academicNamespaceId, filter),
     enabled,
     select: ({ assessment_yearGroupStudents }) =>
-      assessment_yearGroupStudents ?? [],
+      assessment_yearGroupStudents.sort(
+        ({ student: studentA }, { student: studentB }) =>
+          sortByDisplayName(studentA.person, studentB.person)
+      ) ?? [],
   });
 }
 

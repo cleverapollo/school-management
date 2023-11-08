@@ -43,14 +43,11 @@ export function getCommentBank(filter: CommentBankFilter) {
   return queryClient.fetchQuery(commentBankQuery(filter));
 }
 
-export function useCommentBank(filter: CommentBankFilter) {
+export function useCommentBank(filter: CommentBankFilter, enabled = true) {
   return useQuery({
     ...commentBankQuery(filter),
-    select: ({ assessment_commentBank }) => {
-      if (!Array.isArray(assessment_commentBank)) return [];
-
-      return assessment_commentBank;
-    },
+    enabled,
+    select: ({ assessment_commentBank }) => assessment_commentBank ?? [],
   });
 }
 
@@ -67,9 +64,13 @@ export function getCommentBanksWithComments(filter: CommentBankFilter) {
   return queryClient.fetchQuery(commentBanksWithCommentsQuery(filter));
 }
 
-export function useCommentBanksWithComments(filter: CommentBankFilter) {
+export function useCommentBanksWithComments(
+  filter: CommentBankFilter,
+  enabled = true
+) {
   return useQuery({
     ...commentBanksWithCommentsQuery(filter),
+    enabled,
     select: useCallback(
       ({ assessment_commentBank }: CommentBanksWithCommentsQuery) =>
         assessment_commentBank ?? [],

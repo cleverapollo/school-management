@@ -17,11 +17,11 @@ import { StudyLevel } from '@tyro/api';
 import { ReturnTypeFromUseStudentAssessmentResults } from '../../../api/term-assessments/student-results';
 import { useStudentAssessmentReportCardSettings } from './settings';
 import { ColorCard } from './color-card';
-import { ReturnTypeFromUseAssessmentExtraFieldsById } from '../../../api/assessments';
+import { ReturnTypeFromUseAssessmentById } from '../../../api/assessments';
 
 interface ReportCardResultTableProps {
   results: ReturnTypeFromUseStudentAssessmentResults;
-  extraFields: ReturnTypeFromUseAssessmentExtraFieldsById;
+  extraFields: ReturnTypeFromUseAssessmentById['extraFields'];
 }
 
 type GridRowProps = {
@@ -114,7 +114,7 @@ export function ReportCardResultTable({
 
   const extraFieldNames = useMemo(
     () =>
-      extraFields.reduce((acc, extraField) => {
+      (extraFields ?? []).reduce((acc, extraField) => {
         acc.set(extraField.id, extraField.name);
         return acc;
       }, new Map<number, string>()),

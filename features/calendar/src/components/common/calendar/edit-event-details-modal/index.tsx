@@ -199,11 +199,8 @@ export const CalendarEditEventDetailsModal = ({
   }: CalendarEditEventFormState) => {
     if (!recurrenceFilter) return;
 
-    console.log('location', locations);
-
     // TODO: edition mutation is not ready yet
     if (restEventData.eventId) {
-      console.log('edit event', restEventData);
       return onClose();
     }
 
