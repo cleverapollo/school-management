@@ -1,5 +1,5 @@
 import { Container, Typography } from '@mui/material';
-import { useTranslation, TFunction } from '@tyro/i18n';
+import { TFunction, useTranslation } from '@tyro/i18n';
 import { useMemo } from 'react';
 import {
   BulkEditedRows,
@@ -7,12 +7,14 @@ import {
   ICellRendererParams,
   Page,
   Table,
+  TableBooleanValue,
   TableColorPicker,
   TableSelectedColor,
 } from '@tyro/core';
 import {
   ColorOptions,
   Colour,
+  SubjectUsage,
   UpsertSubject,
   UseQueryReturnType,
 } from '@tyro/api';
@@ -86,11 +88,22 @@ const getColumns = (
     valueGetter: ({ data }) =>
       data ? t(`settings:subjectSource.${data.subjectSource}`) : null,
   },
+  {
+    field: 'active',
+    headerName: t('common:active'),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseCatalogueSubjects, any>) => (
+      <TableBooleanValue value={Boolean(data?.active)} />
+    ),
+  },
 ];
 
 export default function Subjects() {
   const { t } = useTranslation(['common', 'settings']);
-  const { data: subjects } = useCatalogueSubjects();
+  const { data: subjects } = useCatalogueSubjects({
+    filterUsage: SubjectUsage.All,
+  });
 
   const { mutateAsync: saveSubjects } = useUpdateCatalogueSubjects();
 
