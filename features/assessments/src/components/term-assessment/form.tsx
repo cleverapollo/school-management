@@ -80,7 +80,6 @@ export interface FormValues extends FormCustomFieldsValues {
 type TermAssessmentFormProps = {
   termAssessment?: FormValues;
   title: string;
-  ctaText: string;
   onSuccess: () => void;
   onError: () => void;
 };
@@ -91,12 +90,11 @@ const COMMENT_LENGTH_MAX = 1000;
 export function TermAssessmentForm({
   termAssessment,
   title,
-  ctaText,
   onSuccess,
   onError,
 }: TermAssessmentFormProps) {
   const navigate = useNavigate();
-  const { t } = useTranslation(['assessments']);
+  const { t } = useTranslation(['common', 'assessments']);
   const { academicNamespaceId } = useParams();
   const academicNamespaceIdAsNumber = useNumber(academicNamespaceId);
 
@@ -387,7 +385,7 @@ export function TermAssessmentForm({
             type="submit"
             loading={isLoading}
           >
-            {ctaText}
+            {t('common:actions.save')}
           </LoadingButton>
         </Stack>
       </Stack>
