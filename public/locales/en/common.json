@@ -30,7 +30,8 @@
     "previous": "Previous",
     "next": "Next",
     "clone": "Clone",
-    "filter": "Filter"
+    "filter": "Filter",
+    "deselect": "Deselect"
   },
   "snackbarMessages": {
     "createSuccess": "Created successfully!",

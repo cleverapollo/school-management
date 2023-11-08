@@ -1,8 +1,12 @@
 import {
   Button,
   CircularProgress,
+  Divider,
   FilledInput,
   FormLabel,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
   Menu,
   MenuItem,
   Popover,
@@ -15,7 +19,7 @@ import {
   CommentType,
   useUser,
 } from '@tyro/api';
-import { EditIcon } from '@tyro/icons';
+import { CloseIcon, EditIcon, TrashIcon } from '@tyro/icons';
 import { useDisclosure, VisuallyHidden } from '@tyro/core';
 import { RefObject, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from '@tyro/i18n';
@@ -124,8 +128,31 @@ function CommentPopover({
         }}
       >
         {comments?.map(({ id, comment }) => (
-          <MenuItem key={id} selected={value === id} onClick={() => onSave(id)}>
+          <MenuItem
+            key={id}
+            selected={value === id}
+            sx={{ justifyContent: 'space-between' }}
+            onClick={() => onSave(id)}
+          >
             {comment}
+
+            {value === id && (
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSave(null);
+                }}
+                aria-label={t('common:actions.deselect')}
+                color="primary"
+                sx={{
+                  p: 0,
+                  ml: 1,
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+            )}
           </MenuItem>
         ))}
       </Menu>
@@ -198,7 +225,7 @@ function CommentPopover({
           <LoadingButton
             size="small"
             variant="contained"
-            onClick={() => onSave(freeFormComment)}
+            onClick={() => onSave(freeFormComment.trim() || null)}
             loading={isSubmitting}
           >
             {t('common:actions.save')}
@@ -246,8 +273,8 @@ export function OverallComment({
           commenterUserType,
           commenterPartyId: activeProfile?.partyId ?? 0,
           ...(commentSettings.commentType === CommentType.CommentBank
-            ? { commentBankCommentId: newValue as number }
-            : { comment: newValue as string }),
+            ? { commentBankCommentId: newValue as number, comment: null }
+            : { comment: newValue as string, commentBankCommentId: null }),
         },
       ],
       {
