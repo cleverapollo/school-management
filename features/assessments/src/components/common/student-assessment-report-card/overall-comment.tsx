@@ -308,7 +308,7 @@ export function OverallComment({
           )}
           {isSubmitting && <CircularProgress size={16} />}
         </Stack>
-        <Typography variant="body2" component="dd">
+        <Typography variant="body2" component="dd" textAlign="left">
           {comment ?? '-'}
         </Typography>
       </Stack>
