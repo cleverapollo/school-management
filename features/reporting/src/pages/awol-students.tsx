@@ -10,7 +10,7 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
-import { Reporting_TableFilterInput } from '@tyro/api';
+import { Reporting_TableFilter, Reporting_TableFilterInput } from '@tyro/api';
 import {
   useAttendanceAwolReports,
   ReturnTypeFromUseAttendanceAwolReports,
@@ -151,7 +151,13 @@ export default function AwolStudentsPage() {
       <DynamicForm
         isFetching={isFetching}
         filters={awolReportsFilters || []}
-        onFilterChange={setFilters}
+        onFilterChange={(newFilters) => {
+          const formattedFilters = newFilters.map(({ id, defaultValue }) => ({
+            filterId: id,
+            filterValue: defaultValue as unknown,
+          }));
+          setFilters(formattedFilters);
+        }}
       />
       <Table
         isLoading={isLoading}
