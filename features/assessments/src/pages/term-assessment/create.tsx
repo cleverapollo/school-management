@@ -27,7 +27,6 @@ export default function CreateTermAssessmentPage() {
 
       <TermAssessmentForm
         title={t('assessments:pageHeading.createTermAssessment')}
-        ctaText={t('assessments:createTermAssessment')}
         onSuccess={() => {
           toast(t('common:snackbarMessages.createSuccess'));
         }}
