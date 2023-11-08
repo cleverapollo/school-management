@@ -151,13 +151,7 @@ export default function AwolStudentsPage() {
       <DynamicForm
         isFetching={isFetching}
         filters={awolReportsFilters || []}
-        onFilterChange={(newFilters) => {
-          const formattedFilters = newFilters.map(({ id, defaultValue }) => ({
-            filterId: id,
-            filterValue: defaultValue as unknown,
-          }));
-          setFilters(formattedFilters);
-        }}
+        onFilterChange={setFilters}
       />
       <Table
         isLoading={isLoading}

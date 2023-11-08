@@ -5,7 +5,6 @@ import {
   FormLabel,
   Menu,
   MenuItem,
-  OutlinedInput,
   Popover,
   Stack,
   Typography,
