@@ -63,6 +63,7 @@ export * from './eye-slash';
 export * from './folder';
 export * from './flags';
 export * from './forward-mail';
+export * from './full-screen';
 export * from './gear';
 export * from './graduate-hat-loading';
 export * from './hamburger-menu';

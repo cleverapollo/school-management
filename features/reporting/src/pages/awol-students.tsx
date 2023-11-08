@@ -157,7 +157,7 @@ export default function AwolStudentsPage() {
         isLoading={isLoading}
         rowData={reports}
         columnDefs={columns}
-        getRowId={({ data }) => String(data?.partyId)}
+        getRowId={({ data }) => `${data?.partyId}-${data?.date}`}
         statusBar={{
           statusPanels: [
             {

@@ -22,7 +22,7 @@ export default function Card(theme: Theme) {
         {
           props: { variant: 'soft' },
           style: {
-            backgroundColor: 'slate.50',
+            backgroundColor: theme.palette.slate[50],
             padding: theme.spacing(1.5),
             borderRadius: theme.spacing(3.5),
           },
