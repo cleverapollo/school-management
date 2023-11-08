@@ -35,10 +35,13 @@ export function StudentSelectorForOverallComments({
         display: 'flex',
         flexDirection: 'column',
         maxWidth: 216,
+        position: 'absolute',
+        height: '100%',
+        minHeight: 'calc(100vh - 312px)',
       }}
     >
       <CardHeader component="h3" title={header} />
-      <Stack flex="1 1 0">
+      <Stack overflow="scroll">
         {students.map((currentStudent) => {
           const { studentPartyId, student, commentStatus } = currentStudent;
           return (

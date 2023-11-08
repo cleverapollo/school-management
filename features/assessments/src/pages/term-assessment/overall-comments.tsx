@@ -115,7 +115,12 @@ export default function OverallCommentsTermAssessmentPage() {
             sx={{ maxWidth: 216, flex: 1 }}
           />
         </Stack>
-        <Stack direction="row" spacing={2} alignItems="flex-start">
+        <Stack
+          direction="row"
+          spacing={29}
+          alignItems="flex-start"
+          position="relative"
+        >
           <StudentSelectorForOverallComments
             yearGroupEnrollment={selectedYearGroup}
             students={studentListForYearGroup ?? []}

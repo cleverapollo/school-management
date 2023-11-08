@@ -38,7 +38,7 @@ type Props = {
 export function Header({ isNavExpanded, onOpenNav }: Props) {
   const { activeProfile } = useUser();
   const queryClient = useQueryClient();
-  const { userType, hasPermission } = usePermissions();
+  const { hasPermission } = usePermissions();
   const navigate = useNavigate();
   const emulationMode = useMemo(() => checkEmulationMode(), [activeProfile]);
 

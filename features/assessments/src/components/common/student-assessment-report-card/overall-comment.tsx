@@ -5,7 +5,6 @@ import {
   FormLabel,
   Menu,
   MenuItem,
-  OutlinedInput,
   Popover,
   Stack,
   Typography,
@@ -108,8 +107,8 @@ function CommentPopover({
   }, [commentBankComments]);
 
   useEffect(() => {
-    if (value && open) {
-      setFreeFormComment(value as string);
+    if (open) {
+      setFreeFormComment((value ?? '') as string);
     }
   }, [value, open]);
 
