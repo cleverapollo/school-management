@@ -118,15 +118,14 @@ export function SendSmsModal({
   };
 
   useEffect(() => {
-    const uniqueObjects: Record<string, boolean> = {};
+    const recipientKeys = new Set<string>();
     const filteredArray = recipients
-      .filter((obj) => {
-        const key = `${obj.id}-${obj.type}`;
-        if (!uniqueObjects[key]) {
-          uniqueObjects[key] = true;
-          return true;
-        }
-        return false;
+      .filter(({ id, type }) => {
+        const key = `${id}-${type}`;
+        const isDuplicateRecipient = recipientKeys.has(key);
+
+        recipientKeys.add(key);
+        return !isDuplicateRecipient;
       })
       .sort((a, b) => a.name.localeCompare(b.name));
 

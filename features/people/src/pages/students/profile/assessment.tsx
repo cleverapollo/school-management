@@ -51,7 +51,11 @@ export default function StudentProfileAssessmentPage() {
   const isLoading = isNamespacesLoading || isAssessmentsLoading;
 
   return (
-    <StudentAssessmentReportCardSettingsProvider>
+    <StudentAssessmentReportCardSettingsProvider
+      academicNamespaceId={academicNameSpaceId ?? 0}
+      studentPartyId={studentId ?? 0}
+      assessmentId={selectedAssessment?.id ?? 0}
+    >
       <Stack direction="column" spacing={2}>
         <AssessmentSelectBar
           academicNameSpaceId={academicNameSpaceId}
@@ -78,13 +82,7 @@ export default function StudentProfileAssessmentPage() {
             </Card>
           </Card>
         )}
-        {selectedAssessment?.id && (
-          <StudentAssessmentReportCard
-            academicNamespaceId={academicNameSpaceId ?? 0}
-            studentPartyId={Number(studentId)}
-            assessmentId={selectedAssessment?.id ?? 0}
-          />
-        )}
+        {selectedAssessment?.id && <StudentAssessmentReportCard />}
       </Stack>
     </StudentAssessmentReportCardSettingsProvider>
   );
