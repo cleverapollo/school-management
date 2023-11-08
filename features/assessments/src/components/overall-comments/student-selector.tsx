@@ -1,6 +1,7 @@
 import { Card, CardHeader, Typography, ButtonBase, Stack } from '@mui/material';
 import { usePreferredNameLayout } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
+import { useEffect, useState } from 'react';
 import { ReturnTypeFromUseAssessmentById } from '../../api/assessments';
 import { ReturnTypeFromUseOverallCommentsByYearGroup } from '../../api/overall-comment-year-group';
 import { CommentStatusIcon } from './comment-status-icon';
@@ -24,9 +25,23 @@ export function StudentSelectorForOverallComments({
   selectedStudent,
   onSelectStudent,
 }: StudentSelectorForOverallCommentsProps) {
+  const [selectedElementRef, setSelectedElementRef] = useState<{
+    key: number;
+    element: HTMLButtonElement;
+  } | null>(null);
   const { t } = useTranslation(['assessments', 'common']);
   const { displayName } = usePreferredNameLayout();
   const header = `${yearGroupEnrollment?.name ?? ''} (${students.length})`;
+
+  useEffect(() => {
+    if (selectedElementRef?.element) {
+      selectedElementRef.element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'start',
+      });
+    }
+  }, [selectedElementRef?.key]);
 
   return (
     <Card
@@ -34,7 +49,7 @@ export function StudentSelectorForOverallComments({
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        maxWidth: 216,
+        width: 216,
         position: 'absolute',
         height: '100%',
         minHeight: 'calc(100vh - 312px)',
@@ -44,8 +59,24 @@ export function StudentSelectorForOverallComments({
       <Stack overflow="scroll">
         {students.map((currentStudent) => {
           const { studentPartyId, student, commentStatus } = currentStudent;
+          const isSelected = selectedStudent?.studentPartyId === studentPartyId;
           return (
             <ButtonBase
+              ref={
+                isSelected
+                  ? (element) => {
+                      if (
+                        selectedElementRef?.key !== studentPartyId &&
+                        element
+                      ) {
+                        setSelectedElementRef({
+                          key: studentPartyId,
+                          element,
+                        });
+                      }
+                    }
+                  : undefined
+              }
               key={studentPartyId}
               onClick={() => onSelectStudent(currentStudent)}
               sx={{
