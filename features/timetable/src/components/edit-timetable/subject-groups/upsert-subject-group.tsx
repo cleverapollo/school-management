@@ -99,10 +99,8 @@ export function UpsertSubjectGroupModal({
         teachers: existingTeachers,
         subject: existingSubjects,
       } as UpsertSubjectGroupFormState;
-      console.log(newValue);
       reset(newValue);
     } else {
-      console.log('default');
       reset(defaultState);
     }
   }, [initialState, subjectsData]);
@@ -164,7 +162,9 @@ export function UpsertSubjectGroupModal({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle onClose={onClose}>{t('timetable:createSubjectGroup')}</DialogTitle>
+      <DialogTitle onClose={onClose}>
+        {t('timetable:createSubjectGroup')}
+      </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
           <Stack gap={2} p={2} sx={{ py: 2 }}>
