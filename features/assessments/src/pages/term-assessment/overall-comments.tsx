@@ -1,8 +1,15 @@
-import { Stack } from '@mui/material';
-import { PageContainer, PageHeading, Select, useNumber } from '@tyro/core';
+import { Button, Stack } from '@mui/material';
+import {
+  PageContainer,
+  PageHeading,
+  Select,
+  useBreakpointValue,
+  useNumber,
+} from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { ChevronLeftIcon, ChevronRightIcon } from '@tyro/icons';
 import {
   ReturnTypeFromUseAssessmentById,
   useAssessmentById,
@@ -16,12 +23,14 @@ import {
   StudentAssessmentReportCard,
   StudentAssessmentReportCardSettingsProvider,
 } from '../../components/common/student-assessment-report-card';
+import { StudentDropdownForOverallComments } from '../../components/overall-comments/student-dropdown';
 
 export default function OverallCommentsTermAssessmentPage() {
   const { academicNamespaceId, assessmentId } = useParams();
   const needToResetStudentAfterReset = useRef(true);
   const academicNameSpaceIdAsNumber = useNumber(academicNamespaceId);
   const assessmentIdAsNumber = useNumber(assessmentId);
+  const showSideMenu = useBreakpointValue({ base: false, md: true });
   const [selectedYearGroup, setSelectedYearGroup] =
     useState<
       NonNullable<
@@ -50,6 +59,26 @@ export default function OverallCommentsTermAssessmentPage() {
     name: assessmentData?.name,
   });
 
+  const onNextStudent = () => {
+    if (selectedStudent && studentListForYearGroup) {
+      const currentIndex = studentListForYearGroup.findIndex(
+        (student) => student.studentPartyId === selectedStudent.studentPartyId
+      );
+      const nextStudent = studentListForYearGroup[currentIndex + 1];
+      setSelectedStudent(nextStudent);
+    }
+  };
+
+  const onPreviousStudent = () => {
+    if (selectedStudent && studentListForYearGroup) {
+      const currentIndex = studentListForYearGroup.findIndex(
+        (student) => student.studentPartyId === selectedStudent.studentPartyId
+      );
+      const previousStudent = studentListForYearGroup[currentIndex - 1];
+      setSelectedStudent(previousStudent);
+    }
+  };
+
   useEffect(() => {
     if (!selectedYearGroup && assessmentData?.yearGroupEnrolments?.length) {
       setSelectedYearGroup(assessmentData.yearGroupEnrolments[0]);
@@ -65,6 +94,10 @@ export default function OverallCommentsTermAssessmentPage() {
       setSelectedStudent(studentListForYearGroup[0]);
     }
   }, [studentListForYearGroup]);
+
+  const firstStudent = studentListForYearGroup?.[0];
+  const lastStudent =
+    studentListForYearGroup?.[studentListForYearGroup.length - 1];
 
   return (
     <StudentAssessmentReportCardSettingsProvider
@@ -121,13 +154,59 @@ export default function OverallCommentsTermAssessmentPage() {
           alignItems="flex-start"
           position="relative"
         >
-          <StudentSelectorForOverallComments
-            yearGroupEnrollment={selectedYearGroup}
-            students={studentListForYearGroup ?? []}
-            selectedStudent={selectedStudent}
-            onSelectStudent={setSelectedStudent}
-          />
+          {showSideMenu && (
+            <StudentSelectorForOverallComments
+              yearGroupEnrollment={selectedYearGroup}
+              students={studentListForYearGroup ?? []}
+              selectedStudent={selectedStudent}
+              onSelectStudent={setSelectedStudent}
+            />
+          )}
           <StudentAssessmentReportCard
+            header={
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                spacing={1}
+                pb={1}
+                borderBottom="1px solid"
+                borderColor="indigo.100"
+                mx={0.5}
+                mb={1.5}
+              >
+                <Button
+                  variant="text"
+                  disabled={
+                    selectedStudent?.studentPartyId ===
+                    firstStudent?.studentPartyId
+                  }
+                  onClick={onPreviousStudent}
+                  startIcon={<ChevronLeftIcon />}
+                >
+                  {t('common:actions.previous')}
+                </Button>
+                {selectedStudent && (
+                  <StudentDropdownForOverallComments
+                    yearGroupEnrollment={selectedYearGroup}
+                    students={studentListForYearGroup ?? []}
+                    selectedStudent={selectedStudent}
+                    onSelectStudent={setSelectedStudent}
+                  />
+                )}
+                <Button
+                  variant="text"
+                  disabled={
+                    selectedStudent?.studentPartyId ===
+                    lastStudent?.studentPartyId
+                  }
+                  onClick={onNextStudent}
+                  endIcon={<ChevronRightIcon />}
+                >
+                  {t('common:actions.next')}
+                </Button>
+              </Stack>
+            }
             containerProps={{
               sx: {
                 flex: 1,

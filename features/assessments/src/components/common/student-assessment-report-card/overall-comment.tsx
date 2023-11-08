@@ -270,6 +270,7 @@ export function OverallComment({
     <>
       <Stack
         ref={anchorRef}
+        id={id}
         component={canEdit ? 'button' : 'div'}
         aria-haspopup={getHasPopupAria()}
         aria-expanded={isOpen ? 'true' : undefined}
