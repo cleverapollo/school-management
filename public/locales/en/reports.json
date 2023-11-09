@@ -4,5 +4,6 @@
   "lastPresentIn": "Last present in",
   "awolStudents": "AWOL Students",
   "from": "From",
-  "to": "To"
+  "to": "To",
+  "lastExpectedLocation": "Last expected location"
 }

@@ -42,10 +42,24 @@ export function AWOLWidget() {
           />
         </IconButton>
       </Stack>
-      <Card sx={{ minHeight: 128, p: 1.5 }}>
+      <Card
+        sx={{
+          minHeight: 128,
+          p: isLoading || awolStudents.length === 0 ? 0 : 1.5,
+        }}
+      >
         <LoadingPlaceholderContainer isLoading={isLoading}>
           {awolStudents.length === 0 ? (
-            <span>No AWOL students</span>
+            <Box
+              position="absolute"
+              height="100%"
+              width="100%"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <span>No AWOL students</span>
+            </Box>
           ) : (
             <Box
               sx={{
@@ -62,7 +76,7 @@ export function AWOLWidget() {
                   color="text.secondary"
                   component="span"
                 >
-                  Student
+                  {t('common:student')}
                 </Typography>
               </Box>
               <Box role="columnheader">
@@ -71,7 +85,7 @@ export function AWOLWidget() {
                   color="text.secondary"
                   component="span"
                 >
-                  Last expected location
+                  {t('reports:lastExpectedLocation')}
                 </Typography>
               </Box>
               {awolStudents.map((awolStudent) => {
