@@ -12,13 +12,14 @@ import {
   TableAvatar,
   useDisclosure,
 } from '@tyro/core';
-import { AddIcon, EditIcon, MobileIcon, VerticalDotsIcon } from '@tyro/icons';
+import { AddIcon, EditIcon, MobileIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { Link } from 'react-router-dom';
 import {
   useCustomGroups,
   ReturnTypeFromUseCustomGroups,
 } from '../../api/custom-groups';
+import { DeleteCustomGroupsModal } from "../../components/custom-group/delete-custom-groups-modal";
 
 const getColumns = (
   t: TFunction<('common' | 'groups')[], undefined>,
@@ -93,6 +94,7 @@ export default function CustomGroups() {
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
+  const [deleteGroupIds, setDeleteGroupIds] = useState<number[] | null>();
   const { isStaffUser, hasPermission } = usePermissions();
   const { data: customGroupData } = useCustomGroups();
 
@@ -147,6 +149,11 @@ export default function CustomGroups() {
                       icon: <MobileIcon />,
                       onClick: onOpenSendSms,
                     },
+                    {
+                      label: t('groups:deleteCustomGroups'),
+                      icon: <TrashIcon />,
+                      onClick: () => setDeleteGroupIds(selectedGroups.map(({id}) => id)),
+                    },
                   ]}
                 />
               </Box>
@@ -182,6 +189,10 @@ export default function CustomGroups() {
             type: SmsRecipientType.GeneralGroupStaff,
           },
         ]}
+      />
+      <DeleteCustomGroupsModal
+        groupIds={deleteGroupIds}
+        onClose={() => setDeleteGroupIds(null)}
       />
     </>
   );
