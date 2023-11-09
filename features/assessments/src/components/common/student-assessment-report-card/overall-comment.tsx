@@ -311,7 +311,7 @@ export function OverallComment({
         width={{
           xs: 'calc(100% - 16px)',
           sm: 'calc(50% - 16px)',
-          md: 'calc(25% - 16px)',
+          md: 'calc(33.3% - 16px)',
         }}
         p={1}
         m={1}
