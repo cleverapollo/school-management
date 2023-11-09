@@ -19,10 +19,6 @@ export function AWOLWidget() {
     from: dayjs().format('YYYY-MM-DD'),
   });
 
-  console.log({
-    awolStudents,
-  });
-
   return (
     <Card
       variant="soft"
@@ -75,7 +71,7 @@ export function AWOLWidget() {
                   color="text.secondary"
                   component="span"
                 >
-                  Last expected class
+                  Last expected location
                 </Typography>
               </Box>
               {awolStudents.map((awolStudent) => {
@@ -83,33 +79,53 @@ export function AWOLWidget() {
                   partyId,
                   student,
                   classGroup,
-                  absentEvent,
                   presentSubjectGroup,
+                  presentEvent,
                 } = awolStudent;
+                const { yearGroups, person } = student;
                 const presentSubjectGroupColour =
                   presentSubjectGroup?.subjects?.[0]?.colour ?? 'slate';
-                const name = displayName(student.person);
+                const yearName = yearGroups?.[0]?.name;
+                const name = displayName(person);
+                const previousRoom = presentEvent?.rooms?.[0]?.name;
 
                 return (
                   <Fragment key={partyId}>
                     <Box
                       py={1}
-                      px={0.5}
+                      px={1}
                       bgcolor="slate.100"
                       borderRadius="12px 0 0 12px"
                       role="gridcell"
+                      display="flex"
+                      alignItems="center"
                     >
-                      <StudentAvatar
-                        partyId={partyId}
-                        name={name}
-                        src={student.person?.avatarUrl}
-                        isPriorityStudent={!!student?.extensions?.priority}
-                        hasSupportPlan={false}
-                        size={36}
-                      />
-                      <Typography variant="subtitle2" component="span">
-                        {name}
-                      </Typography>
+                      <Stack direction="row" spacing={1}>
+                        <StudentAvatar
+                          partyId={partyId}
+                          name={name}
+                          src={student.person?.avatarUrl}
+                          isPriorityStudent={!!student?.extensions?.priority}
+                          hasSupportPlan={false}
+                          size={36}
+                        />
+                        <Stack>
+                          <Typography variant="subtitle2" component="span">
+                            {name}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            fontWeight={600}
+                            color="text.secondary"
+                            component="span"
+                          >
+                            {yearName}{' '}
+                            <Box component="span" ml={0.5}>
+                              {classGroup?.name}
+                            </Box>
+                          </Typography>
+                        </Stack>
+                      </Stack>
                     </Box>
                     <Box
                       py={1}
@@ -117,23 +133,39 @@ export function AWOLWidget() {
                       bgcolor="slate.100"
                       borderRadius="0 12px 12px 0"
                       role="gridcell"
+                      display="flex"
+                      alignItems="center"
                     >
                       <Box
                         bgcolor="white"
                         border="1px solid"
                         borderColor="indigo.100"
                         borderRadius="8px"
+                        flex={1}
                       >
-                        <Stack direction="row" alignItems="stretch">
+                        <Stack direction="row" alignItems="stretch" p={0.5}>
                           <Box
                             bgcolor={`${presentSubjectGroupColour}.400`}
                             sx={{
                               width: 5,
+                              borderRadius: 2.5,
+                              mr: 0.75,
                             }}
                           />
-                          <Typography variant="body2" component="span">
-                            {absentEvent?.name}
+                          <Typography variant="subtitle2" component="span">
+                            {presentEvent?.name}
                           </Typography>
+                          {previousRoom && (
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              component="span"
+                              ml={1}
+                              lineHeight="22px"
+                            >
+                              {previousRoom}
+                            </Typography>
+                          )}
                         </Stack>
                       </Box>
                     </Box>

@@ -12,12 +12,12 @@ export default function Dashboard() {
         <Typography variant="h3" component="h1" paragraph>
           {t('navigation:general.dashboard')}
         </Typography>
-        <Stack direction="row" spacing={2}>
-          <Box flex={1}>
+        <Stack direction="row" spacing={2} flexWrap="wrap">
+          <Box flex={1} minWidth="380px" maxWidth="420px">
             <AWOLWidget />
           </Box>
-          <Box flex={1} />
-          <Box flex={1} />
+          <Box flex={1} minWidth="380px" maxWidth="420px" />
+          <Box flex={1} minWidth="380px" maxWidth="420px" />
         </Stack>
       </Container>
     </Page>
