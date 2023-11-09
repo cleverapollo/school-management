@@ -98,7 +98,6 @@ const getStudentNoteColumns = (
   {
     field: 'priorityNote',
     headerName: translate('people:priority'),
-    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     valueGetter: ({ data }) => data?.priorityNote,
     valueFormatter: ({ data }) =>
       data?.priorityNote ? translate('common:yes') : translate('common:no'),
