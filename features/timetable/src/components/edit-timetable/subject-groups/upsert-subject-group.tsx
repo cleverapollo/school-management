@@ -12,7 +12,7 @@ import {
 } from '@tyro/core';
 import {
   SubjectGroup,
-  SubjectGroupType,
+  SubjectGroupType, SubjectUsage,
   Tt_UpsertSubjectGroup,
   TtGroupStudentMembershipTypeEnum,
 } from '@tyro/api';
@@ -68,7 +68,9 @@ export function UpsertSubjectGroupModal({
   const { t } = useTranslation(['common', 'timetable', 'groups']);
   const { resolver, rules } = useFormValidator<UpsertSubjectGroupFormState>();
   const { mutateAsync: upsertGroup, isLoading } = useTtUpsertTimetableGroup();
-  const { data: subjectsData } = useCatalogueSubjects();
+  const { data: subjectsData } = useCatalogueSubjects({
+    filterUsage: SubjectUsage.All,
+  });
   const { data: staffData } = useStaffForSelect({});
   const { data: blocksData } = useBlocksList({});
   useEffect(() => {
