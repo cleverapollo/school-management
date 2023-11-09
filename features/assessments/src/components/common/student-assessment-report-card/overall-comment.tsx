@@ -1,12 +1,9 @@
 import {
   Button,
   CircularProgress,
-  Divider,
   FilledInput,
   FormLabel,
   IconButton,
-  ListItemIcon,
-  ListItemText,
   Menu,
   MenuItem,
   Popover,
@@ -19,7 +16,7 @@ import {
   CommentType,
   useUser,
 } from '@tyro/api';
-import { CloseIcon, EditIcon, TrashIcon } from '@tyro/icons';
+import { CloseIcon, EditIcon } from '@tyro/icons';
 import { useDisclosure, VisuallyHidden } from '@tyro/core';
 import { RefObject, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from '@tyro/i18n';
@@ -42,6 +39,7 @@ interface CommentPopoverProps {
 }
 
 interface OverallCommentProps {
+  commentId: number | null | undefined;
   commenterUserType: Exclude<CommenterUserType, CommenterUserType.Teacher>;
   comment: string | null | undefined;
   canEdit: boolean;
@@ -237,6 +235,7 @@ function CommentPopover({
 }
 
 export function OverallComment({
+  commentId,
   commenterUserType,
   comment,
   canEdit,
@@ -268,6 +267,7 @@ export function OverallComment({
     await saveComment(
       [
         {
+          id: commentId,
           assessmentId,
           studentPartyId,
           commenterUserType,
