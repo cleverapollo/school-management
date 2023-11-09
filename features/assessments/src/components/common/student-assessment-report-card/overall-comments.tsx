@@ -43,6 +43,7 @@ export function OverallComments({
       <Stack direction="row" flexWrap="wrap" component="dl" m={0}>
         {capturePrincipalComment && (
           <OverallComment
+            commentId={principalComment?.id}
             commenterUserType={CommenterUserType.Principal}
             comment={principalComment?.comment}
             value={
@@ -57,6 +58,7 @@ export function OverallComments({
         )}
         {captureYearHeadComment && (
           <OverallComment
+            commentId={yearHeadComment?.id}
             commenterUserType={CommenterUserType.YearHead}
             comment={yearHeadComment?.comment}
             value={
@@ -70,6 +72,7 @@ export function OverallComments({
         )}
         {captureTutorComment && (
           <OverallComment
+            commentId={tutorComment?.id}
             commenterUserType={CommenterUserType.Tutor}
             comment={tutorComment?.comment}
             value={tutorComment?.commentBankCommentId ?? tutorComment?.comment}
@@ -81,6 +84,7 @@ export function OverallComments({
         )}
         {captureHouseMasterComment && (
           <OverallComment
+            commentId={houseMasterComment?.id}
             commenterUserType={CommenterUserType.HouseMaster}
             comment={houseMasterComment?.comment}
             value={
