@@ -30,7 +30,8 @@
     "previous": "Previous",
     "next": "Next",
     "clone": "Clone",
-    "filter": "Filter"
+    "filter": "Filter",
+    "deselect": "Deselect"
   },
   "snackbarMessages": {
     "createSuccess": "Created successfully!",
@@ -167,6 +168,9 @@
   },
   "administration": "Administration",
   "staff": "Staff",
+  "principal": "Principal",
+  "yearHead": "Year head",
+  "houseMaster": "House master",
   "blocks": "Blocks",
   "block": "Block",
   "staffMember": "Staff member",

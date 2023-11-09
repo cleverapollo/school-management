@@ -78,11 +78,10 @@ const getPeopleColumns = (
     >) => (
       <Button
         className="ag-show-on-row-interaction"
-        onClick={async () => {
+        onClick={() => {
           if (schoolIdAsNumber && data?.partyId) {
             addEmulationHeaders(schoolIdAsNumber, data?.partyId);
-            queryClient.invalidateQueries();
-            await getUser();
+            queryClient.clear();
             navigate('/', { replace: true });
           }
         }}

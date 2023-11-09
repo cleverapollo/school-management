@@ -1,10 +1,12 @@
 import {
+  AssessmentCommentFilter,
   AssessmentFilter,
   AssessmentResultFilter,
   CalculateGradeFilter,
   CommentBankFilter,
   DashboardAssessmentFilter,
   StudentResultFilter,
+  YearGroupStudentFilter,
 } from '@tyro/api';
 
 export const assessmentsKeys = {
@@ -33,6 +35,27 @@ export const assessmentsKeys = {
   ) => [
     ...assessmentsKeys.all,
     'assessmentResultsForStudent',
+    academicNamespaceId,
+    filter,
+  ],
+  allAssessmentComments: () => [...assessmentsKeys.all, 'assessmentComments'],
+  assessmentComments: (
+    academicNamespaceId: number,
+    filter: AssessmentCommentFilter
+  ) => [
+    ...assessmentsKeys.allAssessmentComments(),
+    academicNamespaceId,
+    filter,
+  ],
+  allOverallCommentsByYearGroup: () => [
+    ...assessmentsKeys.all,
+    'overallCommentsByYearGroup',
+  ],
+  overallCommentsByYearGroup: (
+    academicNamespaceId: number,
+    filter: YearGroupStudentFilter
+  ) => [
+    ...assessmentsKeys.allOverallCommentsByYearGroup(),
     academicNamespaceId,
     filter,
   ],

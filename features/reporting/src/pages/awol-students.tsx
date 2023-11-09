@@ -10,7 +10,7 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
-import { Reporting_TableFilterInput } from '@tyro/api';
+import { Reporting_TableFilter, Reporting_TableFilterInput } from '@tyro/api';
 import {
   useAttendanceAwolReports,
   ReturnTypeFromUseAttendanceAwolReports,
