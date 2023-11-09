@@ -14,6 +14,7 @@
     "@tyro/core": "*",
     "@tyro/i18n": "*",
     "@tyro/icons": "*",
+    "@tyro/people": "*",
     "apexcharts": "^3.37.0",
     "dayjs": "^1.11.7",
     "lodash": "^4.17.21",
