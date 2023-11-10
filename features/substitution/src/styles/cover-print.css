@@ -24,6 +24,10 @@
     overflow-x: visible !important;
   }
 
+  .MuiPaper-root .MuiBox-root>.MuiBox-root:nth-of-type(2) {
+    display: none;
+  }
+
   .MuiAvatar-root {
     width: 20px;
     height: 20px;
