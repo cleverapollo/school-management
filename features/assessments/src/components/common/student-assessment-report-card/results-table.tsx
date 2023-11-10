@@ -41,12 +41,12 @@ function getRowDetailsFromResult(
   const { staff, subjects } = result.subjectGroup;
   const teacherNames =
     staff?.map(({ partyId, firstName, lastName }, index) => (
-      <>
+      <Fragment key={partyId}>
         <span key={partyId} style={{ whiteSpace: 'nowrap' }}>
           {firstName ? firstName[0] : ''}. {lastName ?? ''}
         </span>
         {index !== staff.length - 1 ? ', ' : ''}
-      </>
+      </Fragment>
     )) ?? '-';
   const subject = subjects.length > 0 ? subjects[0] : null;
 
