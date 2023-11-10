@@ -1,25 +1,81 @@
 @media print {
+  html {
+    font-size: 10px;
+  }
+
+  .tyro-page,
+  .MuiContainer-root {
+    padding: 0;
+  }
+
+  main {
+    padding: 0;
+    padding-top: 0 !important;
+    background-color: transparent !important;
+  }
+
   .MuiCard-root {
-    transform: scale(0.5) !important;
     transform-origin: left top !important;
     box-shadow: none !important;
     overflow: visible !important;
-  }
-
-  .MuiCard-root>.MuiStack-root:first-of-type {
-    transform: scale(2) !important;
-    transform-origin: left center !important;
   }
 
   .MuiTableContainer-root {
     overflow-x: visible !important;
   }
 
+  .MuiAvatar-root {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    margin-right: 4px;
+  }
+
+  .MuiTableContainer-root>table {
+    table-layout: auto;
+  }
+
+  .event-cover-card {
+    width: auto !important;
+    border: 1px solid rgb(226, 232, 240) !important;
+  }
+
+  .event-break-card {
+    min-height: auto;
+    width: 100%;
+  }
+
+  .event-cover-card>div,
+  .event-break-card {
+    padding: 4px;
+  }
+
+  .event-cover-card h6+div {
+    margin-left: 4px;
+  }
+
+  .event-cover-card h6+div>div {
+    width: 12px;
+    height: 12px;
+  }
+
+  .event-cover-card h6+div svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .cover-rooms-for-print {
+    display: block;
+  }
+
   td,
   th {
     border: 1px solid #eef2ff !important;
     background-color: transparent !important;
+    padding: 4px !important;
   }
+
+
 
   .MuiContainer-root>.MuiStack-root {
     display: none !important;
