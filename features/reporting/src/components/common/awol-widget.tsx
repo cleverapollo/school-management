@@ -8,7 +8,7 @@ import {
   usePreferredNameLayout,
 } from '@tyro/core';
 import { StudentAvatar } from '@tyro/people';
-import { Fragment } from 'react';
+import { Fragment, useMemo } from 'react';
 import { useAttendanceAwolReports } from '../../api/awol-report';
 
 export function AWOLWidget() {
@@ -18,6 +18,18 @@ export function AWOLWidget() {
     to: dayjs().format('YYYY-MM-DD'),
     from: dayjs().format('YYYY-MM-DD'),
   });
+
+  const sortedAwolStudents = useMemo(
+    () =>
+      awolStudents
+        .sort(
+          (a, b) =>
+            dayjs(b.absentEvent.startTime).unix() -
+            dayjs(a.absentEvent.startTime).unix()
+        )
+        .slice(0, 5),
+    [awolStudents]
+  );
 
   return (
     <Card
@@ -45,11 +57,11 @@ export function AWOLWidget() {
       <Card
         sx={{
           minHeight: 128,
-          p: isLoading || awolStudents.length === 0 ? 0 : 1.5,
+          p: isLoading || sortedAwolStudents.length === 0 ? 0 : 1.5,
         }}
       >
         <LoadingPlaceholderContainer isLoading={isLoading}>
-          {awolStudents.length === 0 ? (
+          {sortedAwolStudents.length === 0 ? (
             <Box
               position="absolute"
               height="100%"
@@ -58,7 +70,7 @@ export function AWOLWidget() {
               justifyContent="center"
               alignItems="center"
             >
-              <span>No AWOL students</span>
+              <span>{t('reports:noAwolStudents')}</span>
             </Box>
           ) : (
             <Box
@@ -88,7 +100,7 @@ export function AWOLWidget() {
                   {t('reports:lastExpectedLocation')}
                 </Typography>
               </Box>
-              {awolStudents.map((awolStudent) => {
+              {sortedAwolStudents.map((awolStudent) => {
                 const {
                   partyId,
                   student,

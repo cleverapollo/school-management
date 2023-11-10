@@ -5,5 +5,6 @@
   "awolStudents": "AWOL Students",
   "from": "From",
   "to": "To",
-  "lastExpectedLocation": "Last expected location"
+  "lastExpectedLocation": "Last expected location",
+  "noAwolStudents": "No AWOL students"
 }
