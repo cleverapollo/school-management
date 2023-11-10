@@ -1,4 +1,14 @@
-import { Box, Button, Container, Fade, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  Container,
+  Fade,
+  Stack,
+  Tab,
+  Tabs,
+  Typography,
+} from '@mui/material';
 import {
   ActionMenu,
   Avatar,
@@ -18,11 +28,17 @@ import {
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BrushCircleIcon } from '@tyro/icons';
+import MyChip from '@mui/material/Chip';
 import { useAdminTenants, useEvictTenantLevelCache } from '../../api/tenants';
 
 type ReturnTypeFromUseAdminTenants = UseQueryReturnType<
   typeof useAdminTenants
 >[number];
+
+enum SchoolTab {
+  LIVE = 'Live',
+  TEST = 'Test',
+}
 
 const getAdminTenantColumns = (
   t: TFunction<('common' | 'admin')[], undefined, ('common' | 'admin')[]>,
@@ -91,11 +107,39 @@ export default function AdminSchoolsPage() {
   const { data: tenants } = useAdminTenants();
   const navigate = useNavigate();
   const { mutateAsync: evictTenantLevelCache } = useEvictTenantLevelCache();
+  const [currentTabValue, setCurrentTabValue] = useState<SchoolTab>(
+    SchoolTab.LIVE
+  );
+  const [value, setValue] = useState(0);
 
   const tenantColumns = useMemo(
     () => getAdminTenantColumns(t, navigate),
     [t, navigate]
   );
+
+  const filteredTenants = useMemo(
+    () =>
+      tenants?.filter(
+        ({ liveSchool }) => liveSchool === (currentTabValue === SchoolTab.LIVE)
+      ) ?? [],
+    [tenants, currentTabValue]
+  );
+
+  const allTabs = [
+    {
+      id: SchoolTab.LIVE,
+      colour: 'indigo',
+      name: SchoolTab.LIVE,
+    },
+    {
+      id: SchoolTab.TEST,
+      colour: 'indigo',
+      name: SchoolTab.TEST,
+    },
+  ];
+  const getSchoolsTotals = (tabValue?: SchoolTab) =>
+    tenants?.filter((tag) => tag?.liveSchool === (tabValue === SchoolTab.LIVE))
+      .length;
 
   return (
     <Page title={t('admin:schools')}>
@@ -103,33 +147,116 @@ export default function AdminSchoolsPage() {
         <Typography variant="h3" component="h1" paragraph>
           {t('admin:schools')}
         </Typography>
-        <Table
-          rowData={tenants ?? []}
-          columnDefs={tenantColumns}
-          rowSelection="single"
-          getRowId={({ data }) => String(data?.tenant)}
-          rightAdornment={
-            <Fade in={!!selectedSchoolId} unmountOnExit>
-              <Box>
-                <ActionMenu
-                  menuItems={[
-                    {
-                      label: 'Evict tenant cache',
-                      icon: <BrushCircleIcon />,
-                      onClick: () =>
-                        selectedSchoolId &&
-                        evictTenantLevelCache(selectedSchoolId),
-                    },
-                  ]}
-                />
-              </Box>
-            </Fade>
-          }
-          onRowSelection={(newSelectedSchools) => {
-            const [newSelectedSchool] = newSelectedSchools;
-            setSelectedSchoolId(newSelectedSchool?.tenant ?? null);
+        <Card
+          sx={{
+            backgroundColor: '#ffffff',
+            borderStyle: 'solid',
+            borderWidth: '1px',
+            borderColor: 'indigo.50',
+            display: 'flex',
+            flex: 1,
+            flexDirection: 'column',
+            padding: 2,
           }}
-        />
+        >
+          <Tabs
+            value={value}
+            onChange={(_event, newValue: number) => setValue(newValue)}
+            variant="scrollable"
+            scrollButtons="auto"
+            aria-label={t('admin:ariaLabelForTabs')}
+            sx={{
+              '& .MuiTabs-flexContainer': {
+                alignItems: 'center',
+                marginLeft: 2,
+              },
+              '& .MuiTabs-flexContainer > .MuiButtonBase-root': {
+                marginRight: 3.5,
+              },
+            }}
+          >
+            {allTabs?.map((tab) => {
+              const total = getSchoolsTotals(tab?.name ?? '');
+              return (
+                <Tab
+                  key={tab?.id}
+                  onClick={() => setCurrentTabValue(tab?.name ?? '')}
+                  label={
+                    <>
+                      <MyChip
+                        label={total}
+                        variant="soft"
+                        sx={{
+                          cursor: 'pointer',
+                          backgroundColor: `${tab?.colour ?? 'indigo'}.100`,
+                          borderRadius: '6px',
+                          height: '20px',
+                          fontWeight: '700',
+                          fontSize: '12px',
+                          paddingX: '8px',
+                          color: `${tab?.colour ?? 'indigo'}.500`,
+                          '& .MuiChip-icon': {
+                            color: `${tab?.colour ?? 'indigo'}.500` ?? '',
+                          },
+                          '& .MuiChip-label': {
+                            padding: 0,
+                          },
+                        }}
+                      />
+                      <Typography
+                        color="#637381"
+                        marginLeft={1}
+                        sx={{
+                          fontWeight: '600',
+                          fontSize: '14px',
+                          textWrap: 'nowrap',
+                          textTransform: 'none',
+                        }}
+                      >
+                        {tab?.name}
+                      </Typography>
+                    </>
+                  }
+                />
+              );
+            })}
+          </Tabs>
+          <Stack flex={1}>
+            <Table
+              rowData={filteredTenants}
+              columnDefs={tenantColumns}
+              rowSelection="single"
+              getRowId={({ data }) => String(data?.tenant)}
+              rightAdornment={
+                <Fade in={!!selectedSchoolId} unmountOnExit>
+                  <Box>
+                    <ActionMenu
+                      menuItems={[
+                        {
+                          label: 'Evict tenant cache',
+                          icon: <BrushCircleIcon />,
+                          onClick: () =>
+                            selectedSchoolId &&
+                            evictTenantLevelCache(selectedSchoolId),
+                        },
+                      ]}
+                    />
+                  </Box>
+                </Fade>
+              }
+              onRowSelection={(newSelectedSchools) => {
+                const [newSelectedSchool] = newSelectedSchools;
+                setSelectedSchoolId(newSelectedSchool?.tenant ?? null);
+              }}
+              sx={{
+                height: '100%',
+                boxShadow: 'none',
+                p: 0,
+                '& .MuiStack-root': { paddingX: 0 },
+              }}
+            />
+          </Stack>
+        </Card>
       </Container>
     </Page>
   );
