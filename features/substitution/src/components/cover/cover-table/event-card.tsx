@@ -70,6 +70,7 @@ export function EventCoverCard({
         additionalTeachers={additionalTeachers}
       >
         <Box
+          className="event-cover-card"
           sx={{
             backgroundColor: `${color}.100`,
             borderRadius: 0.75,
@@ -125,24 +126,28 @@ export function EventCoverCard({
                   <SubIconWithType substitutionType={substitutionType} />
                 )}
               </Stack>
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-                spacing={1}
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                noWrap
+                sx={{ flex: 1 }}
               >
+                {displayName(substituteStaff ?? staff)}
+                {additionalTeachers.length > 0
+                  ? ` +${additionalTeachers.length}`
+                  : ''}
+              </Typography>
+              {rooms && (
                 <Typography
+                  className="cover-rooms-for-print"
                   variant="caption"
                   color="text.secondary"
                   noWrap
-                  sx={{ flex: 1 }}
+                  sx={{ flex: 1, display: 'none' }}
                 >
-                  {displayName(substituteStaff ?? staff)}
-                  {additionalTeachers.length > 0
-                    ? ` +${additionalTeachers.length}`
-                    : ''}
+                  {rooms}
                 </Typography>
-              </Stack>
+              )}
             </Stack>
           </Stack>
         </Box>
