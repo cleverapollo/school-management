@@ -9,6 +9,7 @@ interface StaffCoverTableProps {
   staffPartyId: number | undefined;
   date: Dayjs;
   setDate: (date: Dayjs) => void;
+  onChangeDateRange: (dateRange: [Dayjs, Dayjs]) => void;
 }
 
 export function StaffCoverTable({
@@ -16,6 +17,7 @@ export function StaffCoverTable({
   staffPartyId,
   date,
   setDate,
+  onChangeDateRange,
 }: StaffCoverTableProps) {
   const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([
     date,
@@ -51,6 +53,10 @@ export function StaffCoverTable({
       setDate(fromDate);
     }
   }, [fromDate]);
+
+  useEffect(() => {
+    onChangeDateRange(dateRange);
+  }, [dateRange]);
 
   return (
     <CoverTable

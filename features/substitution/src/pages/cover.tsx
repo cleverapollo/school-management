@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Stack, useTheme } from '@mui/material';
+import { Card, Stack, useTheme } from '@mui/material';
 import {
   PageContainer,
   PageHeading,
@@ -16,6 +16,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import '../styles/cover-print.css';
 import { DayCoverTable } from '../components/cover/day-cover-table';
 import { StaffCoverTable } from '../components/cover/staff-cover-table';
+import { CoverPrintForm } from '../components/cover/cover-print-form';
 
 export default function Cover() {
   const [date, setDate] = useState(dayjs());
@@ -25,6 +26,9 @@ export default function Cover() {
   const [selectedStaff, setSelectedStaff] = useState<StaffSelectOption | null>(
     null
   );
+  const [fromDate, setFromDate] = useState(dayjs());
+  const [toDate, setToDate] = useState(dayjs());
+
   const { data: teacherData } = useStaffForSelect({});
   const dropdownDirection = useBreakpointValue<'column' | 'row'>({
     base: 'column',
@@ -50,6 +54,15 @@ export default function Cover() {
   const goToDateOnDayView = (newDate: Dayjs) => {
     setViewType('day');
     setDate(newDate);
+    setFromDate(newDate);
+    setToDate(newDate);
+  };
+
+  const handleChangeDateRange = (dateRange: [Dayjs, Dayjs]) => {
+    const [from, to] = dateRange;
+
+    setFromDate(from);
+    setToDate(to);
   };
 
   useEffect(() => {
@@ -108,8 +121,16 @@ export default function Cover() {
           staffPartyId={selectedStaff?.partyId}
           date={date}
           setDate={setDate}
+          onChangeDateRange={handleChangeDateRange}
         />
       )}
+      <Card variant="outlined" sx={{ p: 1.25, display: 'inline-block' }}>
+        <CoverPrintForm
+          staffPartyIds={selectedStaff ? [selectedStaff?.partyId] : []}
+          fromDate={fromDate}
+          toDate={toDate}
+        />
+      </Card>
     </PageContainer>
   );
 }
