@@ -14,6 +14,12 @@
     "editTermAssessment": "Edit {{name}}'s term assessment",
     "overallCommentsFor": "Overall comments for {{name}}"
   },
+  "commentStatus": {
+    "COMPLETE": "Complete",
+    "IN_PROGRESS": "In progress",
+    "NOT_STARTED": "Not started"
+  },
+  "enterComment": "Enter comment",
   "assessmentResults": "Assessment results",
   "assessment": "Assessment",
   "hideComments": "Hide comments",
