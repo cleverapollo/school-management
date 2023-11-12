@@ -21,7 +21,10 @@ export default function Dashboard() {
           </Box>
           <Box flex={1} minWidth="380px" maxWidth="420px" />
           <Box flex={1} minWidth="380px" maxWidth="420px">
-            <TimetableWidget partyId={activeProfile?.partyId ?? 0} />
+            <TimetableWidget
+              showTeacher={false}
+              partyId={activeProfile?.partyId ?? 0}
+            />
           </Box>
         </Stack>
       </Container>

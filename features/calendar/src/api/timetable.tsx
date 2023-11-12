@@ -40,6 +40,11 @@ const timetable = graphql(/* GraphQL */ `
               }
               ... on SubjectGroup {
                 name
+                actualName
+                subjects {
+                  name
+                  colour
+                }
               }
             }
           }
@@ -85,25 +90,6 @@ export function usePartyTimetable({
   partyId: number | undefined;
 }) {
   const formattedDate = date.format('YYYY-MM-DD');
-
-  useEffect(() => {
-    const formattedDateBefore = date.subtract(1, 'day').format('YYYY-MM-DD');
-    const formattedDateAfter = date.add(1, 'day').format('YYYY-MM-DD');
-    getPartyTimetable({
-      resources: {
-        partyIds: [partyId ?? 0],
-      },
-      startDate: formattedDateBefore,
-      endDate: formattedDateBefore,
-    });
-    getPartyTimetable({
-      resources: {
-        partyIds: [partyId ?? 0],
-      },
-      startDate: formattedDateAfter,
-      endDate: formattedDateAfter,
-    });
-  }, [formattedDate]);
 
   return useQuery({
     ...timetableQuery({

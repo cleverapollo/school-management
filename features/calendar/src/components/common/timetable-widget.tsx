@@ -12,13 +12,9 @@ import {
   Typography,
   TableContainer,
   Divider,
+  alpha,
 } from '@mui/material';
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ExternalLinkIcon,
-  FullScreenIcon,
-} from '@tyro/icons';
+import { FullScreenIcon } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
 import { Link } from 'react-router-dom';
 import { Fragment, useState } from 'react';
@@ -31,6 +27,7 @@ import {
   SchoolDayType,
 } from '@tyro/api';
 import {
+  DateDropdownPicker,
   getClassesFromObject,
   LoadingPlaceholderContainer,
   usePreferredNameLayout,
@@ -45,28 +42,33 @@ interface TimetableWidgetProps {
   partyId: number | undefined;
   heading?: string;
   to?: string;
+  showTeacher?: boolean;
 }
 
 function TimetableNonSchoolState({
-  schoolDayType,
+  schoolDayType = SchoolDayType.NonSchoolDay,
 }: {
-  schoolDayType: SchoolDayType.NonSchoolDay | SchoolDayType.PublicHoliday;
+  schoolDayType?: SchoolDayType.NonSchoolDay | SchoolDayType.PublicHoliday;
 }) {
   const { t } = useTranslation(['calendar']);
 
   return (
-    <Box
+    <Stack
       sx={{
-        minHeight: 300,
-        display: 'flex',
+        position: 'absolute',
+        height: '100%',
+        width: '100%',
         justifyContent: 'center',
         alignItems: 'center',
       }}
     >
-      <Typography variant="h6" component="span">
+      <Typography variant="h2" component="span">
+        🌤
+      </Typography>
+      <Typography variant="body1" component="span" color="text.secondary">
         {t(`calendar:schoolDayType.${schoolDayType}`)}
       </Typography>
-    </Box>
+    </Stack>
   );
 }
 
@@ -74,21 +76,13 @@ export function TimetableWidget({
   partyId,
   heading,
   to = '/calendar',
+  showTeacher = true,
 }: TimetableWidgetProps) {
   const { t } = useTranslation(['common', 'assessments', 'calendar']);
   const [date, setDate] = useState(dayjs());
   const { data, isLoading } = usePartyTimetable({ partyId, date });
   const dayInfo = useTimetableInPeriods(date, data);
   const { displayName } = usePreferredNameLayout();
-
-  const formattedDate = date.calendar(null, {
-    sameDay: `[${t('calendar:today')}]`,
-    nextDay: `[${t('calendar:tomorrow')}]`,
-    nextWeek: 'dddd',
-    lastDay: `[${t('calendar:yesterday')}]`,
-    lastWeek: `[${t('calendar:dayOfLastWeek', { day: date.format('dddd') })}]`,
-    sameElse: 'l',
-  });
 
   return (
     <Card
@@ -102,29 +96,38 @@ export function TimetableWidget({
         justifyContent="space-between"
         alignItems="center"
         pl={1}
-        mb={0.5}
+        mb={1}
       >
         <Typography variant="h6" component="span">
           {heading ?? t('calendar:inputLabels.schedule')}
         </Typography>
-        <IconButton component={Link} to={to}>
-          <FullScreenIcon
-            sx={{ width: 20, height: 20, color: 'primary.main' }}
+        <Stack direction="row" alignItems="center" spacing={0.5}>
+          <DateDropdownPicker
+            date={date}
+            onChangeDate={setDate}
+            ButtonProps={{
+              size: 'small',
+            }}
           />
-        </IconButton>
+          <IconButton component={Link} to={to}>
+            <FullScreenIcon
+              sx={{ width: 20, height: 20, color: 'primary.main' }}
+            />
+          </IconButton>
+        </Stack>
       </Stack>
       <Card
         sx={{
-          minHeight: 128,
+          minHeight: 160,
         }}
       >
         <LoadingPlaceholderContainer isLoading={isLoading}>
-          {dayInfo.dayType !== SchoolDayType.PublicHoliday &&
-          dayInfo.dayType !== SchoolDayType.NonSchoolDay ? (
+          {dayInfo.dayType === SchoolDayType.SchoolDay ||
+          dayInfo.dayType === SchoolDayType.Partial ? (
             <TableContainer>
               <Table
                 size="small"
-                sx={{
+                sx={({ palette }) => ({
                   px: 0.5,
                   mb: 1.5,
                   borderCollapse: 'separate',
@@ -153,7 +156,7 @@ export function TimetableWidget({
                     borderColor: 'primary.main',
                   },
                   '& .break td': {
-                    backgroundColor: 'indigo.50',
+                    backgroundColor: alpha(palette.indigo[50], 0.3),
                   },
                   '& .break td:nth-of-type(2)': {
                     color: 'text.primary',
@@ -177,13 +180,15 @@ export function TimetableWidget({
                   '& .before-school td, & .after-school td': {
                     color: 'indigo.500',
                   },
-                }}
+                })}
               >
                 <TableHead>
                   <TableRow>
                     <TableCell>{t('calendar:time')}</TableCell>
                     <TableCell>{t('calendar:lesson')}</TableCell>
-                    <TableCell>{t('common:teacher')}</TableCell>
+                    <TableCell>
+                      {showTeacher ? t('common:teacher') : t('common:group')}
+                    </TableCell>
                     <TableCell>{t('calendar:room')}</TableCell>
                   </TableRow>
                 </TableHead>
@@ -215,20 +220,27 @@ export function TimetableWidget({
                           ? displayName(teacher.partyInfo.person)
                           : '-';
 
-                      const subject = event?.attendees?.find(
+                      const subjectAttendee = event?.attendees?.find(
                         (attendee) =>
                           attendee?.partyInfo?.__typename === 'SubjectGroup'
                       );
-                      const subjectName =
-                        subject?.partyInfo?.__typename === 'SubjectGroup'
-                          ? subject.partyInfo.name
-                          : '-';
+                      const subjectGroup =
+                        subjectAttendee?.partyInfo?.__typename ===
+                        'SubjectGroup'
+                          ? subjectAttendee.partyInfo
+                          : undefined;
+                      const subject =
+                        subjectGroup && Array.isArray(subjectGroup?.subjects)
+                          ? subjectGroup.subjects[0]
+                          : undefined;
 
                       const roomNames =
-                        event?.rooms?.map((room) => room?.name).join(', ') ??
-                        '-';
+                        event?.rooms && event?.rooms?.length > 1
+                          ? event.rooms.map((room) => room?.name).join(', ')
+                          : '-';
                       const isCurrentClass =
                         dayjs().isBefore(endTime) && dayjs().isAfter(startTime);
+                      const defaultColor = isBreak ? 'gray.300' : 'slate.500';
 
                       return (
                         <Fragment
@@ -249,9 +261,35 @@ export function TimetableWidget({
                               {dayjs(startTime).format('H:mm')}
                             </TableCell>
                             <TableCell>
-                              {isBreak ? t('calendar:break') : subjectName}
+                              <Stack
+                                direction="row"
+                                spacing={1}
+                                alignItems="center"
+                              >
+                                <Box
+                                  sx={{
+                                    backgroundColor:
+                                      subject?.colour ?? defaultColor,
+                                    width: '6px',
+                                    height: '18px',
+                                    borderRadius: '3px',
+                                  }}
+                                />
+                                <Box
+                                  component="span"
+                                  fontWeight={isBreak ? '400' : '600'}
+                                >
+                                  {isBreak
+                                    ? t('calendar:break')
+                                    : subject?.name ?? '-'}
+                                </Box>
+                              </Stack>
                             </TableCell>
-                            <TableCell>{teacherName}</TableCell>
+                            <TableCell>
+                              {showTeacher
+                                ? teacherName
+                                : subjectGroup?.actualName}
+                            </TableCell>
                             <TableCell>{roomNames}</TableCell>
                           </TableRow>
                           {(isLastEventBeforeSchoolEnd ||

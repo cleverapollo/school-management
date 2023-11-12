@@ -4,7 +4,7 @@ import {
   gqlClient,
   graphql,
   queryClient,
-  SaveTermAssessmentInput,
+  SaveAssessmentInput,
   useAcademicNamespace,
 } from '@tyro/api';
 import { useToast } from '@tyro/core';
@@ -12,8 +12,8 @@ import { useTranslation } from '@tyro/i18n';
 import { assessmentsKeys } from './keys';
 
 const saveTermAssessment = graphql(/* GraphQL */ `
-  mutation saveTermAssessment($input: SaveTermAssessmentInput) {
-    assessment_saveTermAssessment(input: $input) {
+  mutation saveTermAssessment($input: SaveAssessmentInput) {
+    assessment_saveAssessment(input: $input) {
       name
       years {
         name
@@ -30,7 +30,7 @@ export function useSaveTermAssessment(academicNameSpaceId?: number) {
   const { activeAcademicNamespace } = useAcademicNamespace();
 
   return useMutation({
-    mutationFn: (input: SaveTermAssessmentInput) =>
+    mutationFn: (input: SaveAssessmentInput) =>
       gqlClient.request(
         saveTermAssessment,
         { input },

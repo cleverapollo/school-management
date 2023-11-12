@@ -43,7 +43,7 @@ export function AWOLWidget() {
         justifyContent="space-between"
         alignItems="center"
         pl={1}
-        mb={0.5}
+        mb={1}
       >
         <Typography variant="h6" component="span">
           {t('reports:awolStudents')}
@@ -56,22 +56,32 @@ export function AWOLWidget() {
       </Stack>
       <Card
         sx={{
-          minHeight: 128,
+          minHeight: 160,
           p: isLoading || sortedAwolStudents.length === 0 ? 0 : 1.5,
         }}
       >
         <LoadingPlaceholderContainer isLoading={isLoading}>
           {sortedAwolStudents.length === 0 ? (
-            <Box
-              position="absolute"
-              height="100%"
-              width="100%"
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
+            <Stack
+              sx={{
+                position: 'absolute',
+                height: '100%',
+                width: '100%',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
             >
-              <span>{t('reports:noAwolStudents')}</span>
-            </Box>
+              <Typography variant="h2" component="span">
+                🎒
+              </Typography>
+              <Typography
+                variant="body1"
+                component="span"
+                color="text.secondary"
+              >
+                {t('reports:noAwolStudents')}
+              </Typography>
+            </Stack>
           ) : (
             <Box
               sx={{
