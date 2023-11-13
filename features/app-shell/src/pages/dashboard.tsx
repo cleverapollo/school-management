@@ -1,7 +1,7 @@
 import { Box, Container, Stack, Typography } from '@mui/material';
 import { Page } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { AWOLWidget } from '@tyro/reporting';
+import { AWOLWidget, BehaviourWidget } from '@tyro/reporting';
 import { TimetableWidget } from '@tyro/calendar';
 import { useUser } from '@tyro/api';
 
@@ -19,7 +19,9 @@ export default function Dashboard() {
           <Box flex={1} minWidth="380px" maxWidth="420px">
             <AWOLWidget />
           </Box>
-          <Box flex={1} minWidth="380px" maxWidth="420px" />
+          <Box flex={1} minWidth="380px" maxWidth="420px">
+            <BehaviourWidget />
+          </Box>
           <Box flex={1} minWidth="380px" maxWidth="420px">
             <TimetableWidget
               showTeacher={false}

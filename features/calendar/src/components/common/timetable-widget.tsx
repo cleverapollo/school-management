@@ -146,10 +146,10 @@ export function TimetableWidget({
                   '& th:nth-of-type(2)': {
                     pl: 4,
                   },
-                  '& th, & td:last-of-type': {
+                  '& th, & td:last-of-type, & td:nth-of-type(2)': {
                     background: 'transparent',
                     color: 'text.primary',
-                    fontWeight: 700,
+                    fontWeight: 600,
                   },
                   '& th': {
                     py: 1,
@@ -244,7 +244,7 @@ export function TimetableWidget({
                           : undefined;
 
                       const roomNames =
-                        event?.rooms && event?.rooms?.length > 1
+                        event?.rooms && event?.rooms?.length > 0
                           ? event.rooms.map((room) => room?.name).join(', ')
                           : '-';
                       const isCurrentClass =

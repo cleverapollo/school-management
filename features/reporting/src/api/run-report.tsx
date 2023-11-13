@@ -40,9 +40,9 @@ const reportsRun = graphql(/* GraphQL */ `
       }
       data
       tableDisplayOptions {
-          gridOptions
-          tableContainerSx
-      }  
+        gridOptions
+        tableContainerSx
+      }
     }
   }
 `);
