@@ -9,6 +9,7 @@ export * from './color-picker';
 export * from './confirm-dialog';
 export * from './copy-clipboard-button';
 export * from './current-attendance-icon';
+export * from './date-dropdown-picker';
 export * from './date-range-calendar';
 export * from './date-range-switcher';
 export * from './dialog';

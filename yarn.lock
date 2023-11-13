@@ -6487,6 +6487,7 @@ __metadata:
     "@tyro/core": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    "@tyro/people": "*"
     apexcharts: ^3.37.0
     dayjs: ^1.11.7
     lodash: ^4.17.21
@@ -9087,12 +9088,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv-defaults@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "dotenv-defaults@npm:2.0.2"
+"dotenv-defaults@npm:~5.0.2":
+  version: 5.0.2
+  resolution: "dotenv-defaults@npm:5.0.2"
   dependencies:
-    dotenv: ^8.2.0
-  checksum: c005960bd048e2189c4799e729c41f362e415e6e0b54313d3f31e853a84b049bf770b25cb21c112c2805bb13a8376edc9de451fb514abf8546392d327c27f6e5
+    dotenv: ^14.0.0
+  checksum: a45b1c56d037f1606ce0bbc9097f42c044a22c76acf10b94c2e2506bf7cac8ab633b5b1c654217040e172f87acd1620054258b9df48120258ccb7f8352cfbbce
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:^14.0.0":
+  version: 14.3.2
+  resolution: "dotenv@npm:14.3.2"
+  checksum: 86c06758915d6facc35275f4a7fafc16705b6f3b44befaa8abca91367991efc8ff8db5437d3cc14778231d19fb97610fe82d60f8a53ba723cdb69fe4171439aa
   languageName: node
   linkType: hard
 
@@ -9100,13 +9108,6 @@ __metadata:
   version: 16.3.1
   resolution: "dotenv@npm:16.3.1"
   checksum: 15d75e7279018f4bafd0ee9706593dd14455ddb71b3bcba9c52574460b7ccaf67d5cf8b2c08a5af1a9da6db36c956a04a1192b101ee102a3e0cf8817bbcf3dfd
-  languageName: node
-  linkType: hard
-
-"dotenv@npm:^8.2.0":
-  version: 8.6.0
-  resolution: "dotenv@npm:8.6.0"
-  checksum: 38e902c80b0666ab59e9310a3d24ed237029a7ce34d976796349765ac96b8d769f6df19090f1f471b77a25ca391971efde8a1ea63bb83111bd8bec8e5cc9b2cd
   languageName: node
   linkType: hard
 
@@ -15394,12 +15395,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rspack-plugin-dotenv@npm:^0.0.2":
-  version: 0.0.2
-  resolution: "rspack-plugin-dotenv@npm:0.0.2"
+"rspack-plugin-dotenv@npm:^0.0.3":
+  version: 0.0.3
+  resolution: "rspack-plugin-dotenv@npm:0.0.3"
   dependencies:
-    dotenv-defaults: ^2.0.2
-  checksum: aa32f3d2363bf515b4b5ed4aca99de73ae9a3bfbd4e7695f55ca92d579afb08fd82dd71272598bd6d6d11fe39e4eaa89100a3c39861ebd147bf644b07a27fab1
+    dotenv-defaults: ~5.0.2
+  peerDependencies:
+    "@rspack/core": ^0.3.10
+  checksum: 34e275aaae70d62d769a2ce37df852b405df6d19f07117cc17f89b0315b31179c641a21be490cdf160f8f7e6bb01394ef1d9c8e956a6c72f979237d3cd44b277
   languageName: node
   linkType: hard
 
@@ -17028,7 +17031,7 @@ __metadata:
     react-lazy-load-image-component: ^1.5.4
     react-router: ^6.3.0
     react-router-dom: ^6.3.0
-    rspack-plugin-dotenv: ^0.0.2
+    rspack-plugin-dotenv: ^0.0.3
     ts-jest: ^29.0.3
     turbo: ^1.6.3
     typescript: ^4.7.4
