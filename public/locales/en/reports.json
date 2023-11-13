@@ -3,10 +3,12 @@
   "absentFrom": "Absent from",
   "lastPresentIn": "Last present in",
   "awolStudents": "AWOL Students",
+  "absentWithoutLeave": "Absent without leave",
   "behaviour": "Behaviour",
   "from": "From",
   "to": "To",
   "lastExpectedLocation": "Last expected location",
-  "noAwolStudents": "No students have gone AWOL",
-  "noStudentsBehaviourReported": "No students have had their behaviour reported"
+  "allStudentsAreAccountedFor": "All students are accounted for (so far!)",
+  "noAwolStudents": "No students are absent without leave today",
+  "noBehaviourEventsToday": "No behaviour events today"
 }

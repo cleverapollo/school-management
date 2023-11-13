@@ -125,45 +125,49 @@ export function BehaviourWidget() {
                 component="span"
                 color="text.secondary"
               >
-                {t('reports:noStudentsBehaviourReported')}
+                {t('reports:noBehaviourEventsToday')}
               </Typography>
             </Stack>
           </LoadingPlaceholderContainer>
         </Card>
       ) : (
-        behaviourStudents.map(({ id, name, tags, category, categorColour }) => (
-          <Card
-            key={id}
-            sx={{
-              p: 1.5,
-            }}
-          >
-            <Stack direction="row" alignItems="center" spacing={1.5}>
-              <Avatar name={name} size={36} />
-              <Stack flex={1} alignItems="flex-start">
-                <Typography variant="subtitle1" component="span">
-                  {name}
-                </Typography>
-                <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  component="span"
-                >
-                  {tags}
-                </Typography>
-                {category && (
-                  <Chip
-                    size="small"
-                    variant="soft"
-                    color={categorColour ?? 'slate'}
-                    label={category}
-                    sx={{ mt: 0.5 }}
-                  />
-                )}
-              </Stack>
-            </Stack>
-          </Card>
-        ))
+        <Stack spacing={1.25}>
+          {behaviourStudents.map(
+            ({ id, name, tags, category, categorColour }) => (
+              <Card
+                key={id}
+                sx={{
+                  p: 1.5,
+                }}
+              >
+                <Stack direction="row" alignItems="center" spacing={1.5}>
+                  <Avatar name={name} size={36} />
+                  <Stack flex={1} alignItems="flex-start">
+                    <Typography variant="subtitle1" component="span">
+                      {name}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      color="text.secondary"
+                      component="span"
+                    >
+                      {tags}
+                    </Typography>
+                    {category && (
+                      <Chip
+                        size="small"
+                        variant="soft"
+                        color={categorColour ?? 'slate'}
+                        label={category}
+                        sx={{ mt: 0.5 }}
+                      />
+                    )}
+                  </Stack>
+                </Stack>
+              </Card>
+            )
+          )}
+        </Stack>
       )}
     </Card>
   );

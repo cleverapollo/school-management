@@ -46,7 +46,7 @@ export function AWOLWidget() {
         mb={1}
       >
         <Typography variant="h6" component="span">
-          {t('reports:awolStudents')}
+          {t('reports:absentWithoutLeave')}
         </Typography>
         <IconButton component={Link} to="/reports/awol-students">
           <FullScreenIcon
@@ -79,7 +79,7 @@ export function AWOLWidget() {
                 component="span"
                 color="text.secondary"
               >
-                {t('reports:noAwolStudents')}
+                {t('reports:allStudentsAreAccountedFor')}
               </Typography>
             </Stack>
           ) : (
