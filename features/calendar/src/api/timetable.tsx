@@ -51,6 +51,10 @@ const timetable = graphql(/* GraphQL */ `
           rooms {
             name
           }
+          tags {
+            label
+            context
+          }
         }
       }
     }

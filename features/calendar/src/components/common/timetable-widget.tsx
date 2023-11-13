@@ -14,7 +14,7 @@ import {
   Divider,
   alpha,
 } from '@mui/material';
-import { FullScreenIcon } from '@tyro/icons';
+import { FullScreenIcon, SwapHorizontalIcon } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
 import { Link } from 'react-router-dom';
 import { Fragment, useState } from 'react';
@@ -24,6 +24,7 @@ import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import {
   CalendarEventAttendeeType,
   CalendarGridPeriodType,
+  Calendar_TagContext,
   SchoolDayType,
 } from '@tyro/api';
 import {
@@ -132,12 +133,18 @@ export function TimetableWidget({
                   mb: 1.5,
                   borderCollapse: 'separate',
                   borderSpacing: 0,
+                  '& th, & td': {
+                    px: 0.5,
+                  },
                   '& td:first-of-type, & th:first-of-type': {
                     pl: 1.5,
                   },
                   '& td:last-of-type, & th:last-of-type': {
                     pr: 1.5,
                     textAlign: 'right',
+                  },
+                  '& th:nth-of-type(2)': {
+                    pl: 4,
                   },
                   '& th, & td:last-of-type': {
                     background: 'transparent',
@@ -152,7 +159,7 @@ export function TimetableWidget({
                   },
                   '& .current-period td': {
                     borderStyle: 'solid',
-                    borderWidth: '1px 0',
+                    borderWidth: '2px 0',
                     borderColor: 'primary.main',
                   },
                   '& .break td': {
@@ -163,19 +170,21 @@ export function TimetableWidget({
                   },
                   '& .current-period td:first-of-type, & .break td:first-of-type':
                     {
-                      borderTopLeftRadius: 17,
-                      borderBottomLeftRadius: 17,
+                      borderTopLeftRadius: 19,
+                      borderBottomLeftRadius: 19,
                     },
                   '& .current-period td:last-of-type, & .break td:last-of-type':
                     {
-                      borderTopRightRadius: 17,
-                      borderBottomRightRadius: 17,
+                      borderTopRightRadius: 19,
+                      borderBottomRightRadius: 19,
                     },
                   '& .current-period td:first-of-type': {
-                    borderLeftWidth: 1,
+                    borderLeftWidth: 2,
+                    pl: 1.25,
                   },
                   '& .current-period td:last-of-type': {
-                    borderRightWidth: 1,
+                    borderRightWidth: 2,
+                    pr: 1.25,
                   },
                   '& .before-school td, & .after-school td': {
                     color: 'indigo.500',
@@ -240,6 +249,10 @@ export function TimetableWidget({
                           : '-';
                       const isCurrentClass =
                         dayjs().isBefore(endTime) && dayjs().isAfter(startTime);
+                      const isSubstitution = event?.tags?.some(
+                        ({ context }) =>
+                          context === Calendar_TagContext.Substitution
+                      );
                       const defaultColor = isBreak ? 'gray.300' : 'slate.500';
 
                       return (
@@ -266,6 +279,27 @@ export function TimetableWidget({
                                 spacing={1}
                                 alignItems="center"
                               >
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    color: 'green.400',
+                                    width: '20px',
+                                    height: '20px',
+
+                                    '& svg': {
+                                      width: '18px',
+                                      height: '18px',
+                                      transform: 'rotate(-45deg)',
+                                      '& path': {
+                                        strokeWidth: 2,
+                                      },
+                                    },
+                                  }}
+                                >
+                                  {isSubstitution && <SwapHorizontalIcon />}
+                                </Box>
                                 <Box
                                   sx={{
                                     backgroundColor:
