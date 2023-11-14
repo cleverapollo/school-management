@@ -16,7 +16,14 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs, { Dayjs } from 'dayjs';
-import { Box, Chip, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Checkbox,
+  Chip,
+  FormControlLabel,
+  Stack,
+  Typography,
+} from '@mui/material';
 import set from 'lodash/set';
 import {
   ReturnTypeFromCalendarDayBellTimes,
@@ -294,6 +301,10 @@ export function SessionAttendanceRoleBook({
   const permissions = usePermissions();
   const [applyToSubjectAttendance, setApplyToSubjectAttendance] =
     useState<SessionAttendanceFlag | null>(null);
+  const [
+    overWriteExistingSubjectAttendance,
+    setOverWriteExistingSubjectAttendance,
+  ] = useState<boolean>(false);
   const editingStateRef =
     useRef<ReturnTypeTableUseEditableState<ReturnTypeFromSessionAttendance>>(
       null
@@ -412,6 +423,7 @@ export function SessionAttendanceRoleBook({
     return saveSessionAttendance({
       applyCodes: applyToSubjectAttendance,
       adminSubmitted: true,
+      overwriteExistingEventAttendance: overWriteExistingSubjectAttendance,
       attendances: Object.values(attendanceChanges),
     });
   };
@@ -452,10 +464,27 @@ export function SessionAttendanceRoleBook({
         }}
         onBulkSave={onBulkSave}
         additionalEditBarElements={
-          <ApplyToSubjectSelect
-            value={applyToSubjectAttendance}
-            onChange={setApplyToSubjectAttendance}
-          />
+          <Stack direction="row" spacing={3}>
+            <ApplyToSubjectSelect
+              value={applyToSubjectAttendance}
+              onChange={setApplyToSubjectAttendance}
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={
+                    overWriteExistingSubjectAttendance &&
+                    !!applyToSubjectAttendance
+                  }
+                  disabled={applyToSubjectAttendance === null}
+                  onChange={(_e, checked) =>
+                    setOverWriteExistingSubjectAttendance(checked)
+                  }
+                />
+              }
+              label={t('attendance:overwriteExistingSubjectAttendance')}
+            />
+          </Stack>
         }
       />
       <NoteModal

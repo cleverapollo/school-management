@@ -19,6 +19,7 @@
   "tuslaCode": "Tusla code",
   "bellTime": "Bell time",
   "detailsWithCalendar": "Details with Calendar",
+  "overwriteExistingSubjectAttendance": "Overwrite existing subject attendance",
   "noStudentsFound": "No students found",
   "attendanceCodeName": "Attendance code name",
   "availableToTeachers": "Available to teachers",
