@@ -118,7 +118,7 @@ export function AWOLWidget() {
                   presentSubjectGroup,
                   presentEvent,
                 } = awolStudent;
-                const { yearGroups, person } = student;
+                const { yearGroups, person } = student ?? {};
                 const presentSubjectGroupColour =
                   presentSubjectGroup?.subjects?.[0]?.colour ?? 'slate';
                 const yearName = yearGroups?.[0]?.name;
@@ -140,7 +140,7 @@ export function AWOLWidget() {
                         <StudentAvatar
                           partyId={partyId}
                           name={name}
-                          src={student.person?.avatarUrl}
+                          src={student?.person?.avatarUrl}
                           isPriorityStudent={!!student?.extensions?.priority}
                           hasSupportPlan={false}
                           size={36}
