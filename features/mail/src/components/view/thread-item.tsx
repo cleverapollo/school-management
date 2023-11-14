@@ -110,6 +110,14 @@ export function ThreadItem({
                   vertical: 'top',
                   horizontal: 'right',
                 }}
+                slotProps={{
+                  paper: {
+                    sx: {
+                      maxWidth: 380,
+                      maxHeight: 380,
+                    },
+                  },
+                }}
               >
                 <Stack
                   component="dl"
