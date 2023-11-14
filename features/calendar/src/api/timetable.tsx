@@ -21,6 +21,7 @@ const timetable = graphql(/* GraphQL */ `
           startTime
           endTime
           type
+          colour
           attendees {
             type
             partyInfo {
@@ -41,10 +42,6 @@ const timetable = graphql(/* GraphQL */ `
               ... on SubjectGroup {
                 name
                 actualName
-                subjects {
-                  name
-                  colour
-                }
               }
             }
           }

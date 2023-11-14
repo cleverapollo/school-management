@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import { FullScreenIcon, SwapHorizontalIcon } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Fragment, useState } from 'react';
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
@@ -26,6 +26,8 @@ import {
   CalendarGridPeriodType,
   Calendar_TagContext,
   SchoolDayType,
+  usePermissions,
+  useUser,
 } from '@tyro/api';
 import {
   DateDropdownPicker,
@@ -80,10 +82,13 @@ export function TimetableWidget({
   showTeacher = true,
 }: TimetableWidgetProps) {
   const { t } = useTranslation(['common', 'assessments', 'calendar']);
+  const { activeProfile } = useUser();
+  const { isStaffUser } = usePermissions();
   const [date, setDate] = useState(dayjs());
   const { data, isLoading } = usePartyTimetable({ partyId, date });
   const dayInfo = useTimetableInPeriods(date, data);
   const { displayName } = usePreferredNameLayout();
+  const navigate = useNavigate();
 
   return (
     <Card
@@ -168,16 +173,14 @@ export function TimetableWidget({
                   '& .break td:nth-of-type(2)': {
                     color: 'text.primary',
                   },
-                  '& .current-period td:first-of-type, & .break td:first-of-type':
-                    {
-                      borderTopLeftRadius: 19,
-                      borderBottomLeftRadius: 19,
-                    },
-                  '& .current-period td:last-of-type, & .break td:last-of-type':
-                    {
-                      borderTopRightRadius: 19,
-                      borderBottomRightRadius: 19,
-                    },
+                  '& td:first-of-type': {
+                    borderTopLeftRadius: 19,
+                    borderBottomLeftRadius: 19,
+                  },
+                  '& td:last-of-type': {
+                    borderTopRightRadius: 19,
+                    borderBottomRightRadius: 19,
+                  },
                   '& .current-period td:first-of-type': {
                     borderLeftWidth: 2,
                     pl: 1.25,
@@ -189,15 +192,26 @@ export function TimetableWidget({
                   '& .before-school td, & .after-school td': {
                     color: 'indigo.500',
                   },
+                  '& .clickable': {
+                    '&:hover td': {
+                      backgroundColor: palette.indigo[50],
+                    },
+                    '&:active td': {
+                      backgroundColor: palette.indigo[100],
+                    },
+                    '& td': {
+                      cursor: 'pointer',
+                    },
+                  },
                 })}
               >
                 <TableHead>
                   <TableRow>
                     <TableCell>{t('calendar:time')}</TableCell>
                     <TableCell>{t('calendar:lesson')}</TableCell>
-                    <TableCell>
-                      {showTeacher ? t('common:teacher') : t('common:group')}
-                    </TableCell>
+                    {showTeacher && (
+                      <TableCell>{t('common:teacher')}</TableCell>
+                    )}
                     <TableCell>{t('calendar:room')}</TableCell>
                   </TableRow>
                 </TableHead>
@@ -238,10 +252,6 @@ export function TimetableWidget({
                         'SubjectGroup'
                           ? subjectAttendee.partyInfo
                           : undefined;
-                      const subject =
-                        subjectGroup && Array.isArray(subjectGroup?.subjects)
-                          ? subjectGroup.subjects[0]
-                          : undefined;
 
                       const roomNames =
                         event?.rooms && event?.rooms?.length > 0
@@ -254,14 +264,27 @@ export function TimetableWidget({
                           context === Calendar_TagContext.Substitution
                       );
                       const defaultColor = isBreak ? 'gray.300' : 'slate.500';
+                      const canClickToSubjectGroup =
+                        !!subjectGroup?.partyId &&
+                        isStaffUser &&
+                        partyId === activeProfile?.partyId;
 
                       return (
                         <Fragment
                           key={`${startTime ?? ''}-${event?.eventId ?? ''}`}
                         >
                           <TableRow
+                            onClick={
+                              canClickToSubjectGroup
+                                ? () =>
+                                    navigate(
+                                      `/groups/subject/${subjectGroup?.partyId}`
+                                    )
+                                : undefined
+                            }
                             className={getClassesFromObject({
                               'current-period': isCurrentClass,
+                              clickable: canClickToSubjectGroup,
                               break: isBreak,
                               'before-school': isBeforeSchoolStart,
                               'after-school': isAfterSchoolEnd,
@@ -302,8 +325,9 @@ export function TimetableWidget({
                                 </Box>
                                 <Box
                                   sx={{
-                                    backgroundColor:
-                                      subject?.colour ?? defaultColor,
+                                    backgroundColor: event?.colour
+                                      ? `${event.colour}.500`
+                                      : defaultColor,
                                     width: '6px',
                                     height: '18px',
                                     borderRadius: '3px',
@@ -315,15 +339,13 @@ export function TimetableWidget({
                                 >
                                   {isBreak
                                     ? t('calendar:break')
-                                    : subject?.name ?? '-'}
+                                    : subjectGroup?.actualName ?? '-'}
                                 </Box>
                               </Stack>
                             </TableCell>
-                            <TableCell>
-                              {showTeacher
-                                ? teacherName
-                                : subjectGroup?.actualName}
-                            </TableCell>
+                            {showTeacher && (
+                              <TableCell>{teacherName ?? '-'}</TableCell>
+                            )}
                             <TableCell>{roomNames}</TableCell>
                           </TableRow>
                           {(isLastEventBeforeSchoolEnd ||
