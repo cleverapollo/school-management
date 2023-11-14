@@ -217,6 +217,7 @@ export default function ReportPage() {
         isFetching={isFetching}
         filters={filters}
         onFilterChange={setFilters}
+        sql={reportData?.debug?.sql ?? ''}
       />
       <Table<FormattedReportData[number]>
         isLoading={isLoading}
