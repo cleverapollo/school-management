@@ -1,4 +1,4 @@
-import { Button, Stack } from '@mui/material';
+import { Button, Card, Stack, Typography } from '@mui/material';
 import {
   PageContainer,
   PageHeading,
@@ -7,9 +7,10 @@ import {
   useNumber,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ChevronLeftIcon, ChevronRightIcon } from '@tyro/icons';
+import { CommentStatus } from '@tyro/api';
 import {
   ReturnTypeFromUseAssessmentById,
   useAssessmentById,
@@ -24,6 +25,7 @@ import {
   StudentAssessmentReportCardSettingsProvider,
 } from '../../components/common/student-assessment-report-card';
 import { StudentDropdownForOverallComments } from '../../components/overall-comments/student-dropdown';
+import { CommentStatusIcon } from '../../components/overall-comments/comment-status-icon';
 
 export default function OverallCommentsTermAssessmentPage() {
   const { academicNamespaceId, assessmentId } = useParams();
@@ -54,6 +56,39 @@ export default function OverallCommentsTermAssessmentPage() {
     },
     !!selectedYearGroup?.yearGroupEnrollmentPartyId
   );
+  const yearSummaryStats = useMemo(() => {
+    const stats = {
+      principalCommentsCompleted: 0,
+      principalCommentsRequired: 0,
+      yearHeadCommentsCompleted: 0,
+      yearHeadCommentsRequired: 0,
+      tutorCommentsCompleted: 0,
+      tutorCommentsRequired: 0,
+    };
+
+    studentListForYearGroup.forEach((student) => {
+      if (student.principalComment) {
+        stats.principalCommentsRequired += 1;
+        if (student.commentStatus === CommentStatus.Complete) {
+          stats.principalCommentsCompleted += 1;
+        }
+      }
+      if (student.yearHeadComment) {
+        stats.yearHeadCommentsRequired += 1;
+        if (student.commentStatus === CommentStatus.Complete) {
+          stats.yearHeadCommentsCompleted += 1;
+        }
+      }
+      if (student.tutorComment) {
+        stats.tutorCommentsRequired += 1;
+        if (student.commentStatus === CommentStatus.Complete) {
+          stats.tutorCommentsCompleted += 1;
+        }
+      }
+    });
+
+    return stats;
+  }, [studentListForYearGroup]);
 
   const titleName = t('assessments:pageHeading.overallCommentsFor', {
     name: assessmentData?.name,
@@ -126,7 +161,7 @@ export default function OverallCommentsTermAssessmentPage() {
           }}
         />
 
-        <Stack direction="row">
+        <Stack direction="row" spacing={2} useFlexGap>
           <Select
             label={t('common:year')}
             variant="white-filled"
@@ -147,6 +182,65 @@ export default function OverallCommentsTermAssessmentPage() {
             options={assessmentData?.yearGroupEnrolments ?? []}
             sx={{ maxWidth: 216, flex: 1 }}
           />
+          <Card
+            variant="outlined"
+            sx={{
+              px: 1.5,
+              borderRadius: 1,
+            }}
+          >
+            <Typography variant="caption" color="slate.500">
+              Summary
+            </Typography>
+            <Stack direction="row" spacing={3}>
+              <Stack direction="row" spacing={0.75} alignItems="center">
+                <CommentStatusIcon
+                  size="small"
+                  commentStatus={
+                    yearSummaryStats.principalCommentsCompleted ===
+                    yearSummaryStats.principalCommentsRequired
+                      ? CommentStatus.Complete
+                      : CommentStatus.NotStarted
+                  }
+                />
+                <Typography variant="body2">
+                  {yearSummaryStats.principalCommentsCompleted}/
+                  {yearSummaryStats.principalCommentsRequired} Principal
+                  comments
+                </Typography>
+              </Stack>
+              <Stack direction="row" spacing={0.75} alignItems="center">
+                <CommentStatusIcon
+                  size="small"
+                  commentStatus={
+                    yearSummaryStats.yearHeadCommentsCompleted ===
+                    yearSummaryStats.yearHeadCommentsRequired
+                      ? CommentStatus.Complete
+                      : CommentStatus.NotStarted
+                  }
+                />
+                <Typography variant="body2">
+                  {yearSummaryStats.yearHeadCommentsCompleted}/
+                  {yearSummaryStats.yearHeadCommentsRequired} Year head comments
+                </Typography>
+              </Stack>
+              <Stack direction="row" spacing={0.75} alignItems="center">
+                <CommentStatusIcon
+                  size="small"
+                  commentStatus={
+                    yearSummaryStats.tutorCommentsCompleted ===
+                    yearSummaryStats.tutorCommentsRequired
+                      ? CommentStatus.Complete
+                      : CommentStatus.NotStarted
+                  }
+                />
+                <Typography variant="body2">
+                  {yearSummaryStats.tutorCommentsCompleted}/
+                  {yearSummaryStats.tutorCommentsRequired} Tutor comments
+                </Typography>
+              </Stack>
+            </Stack>
+          </Card>
         </Stack>
         <Stack
           direction="row"
