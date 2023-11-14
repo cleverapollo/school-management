@@ -1,7 +1,6 @@
 import {
   Box,
   Card,
-  CardHeader,
   IconButton,
   Stack,
   Table,
@@ -278,7 +277,7 @@ export function TimetableWidget({
                               canClickToSubjectGroup
                                 ? () =>
                                     navigate(
-                                      `/groups/subject/${subjectGroup?.partyId}`
+                                      `/groups/subject/${subjectGroup?.partyId}/attendance?eventStartTime=${startTime}`
                                     )
                                 : undefined
                             }

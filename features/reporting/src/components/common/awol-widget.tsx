@@ -8,7 +8,7 @@ import {
   usePreferredNameLayout,
 } from '@tyro/core';
 import { StudentAvatar } from '@tyro/people';
-import { Fragment, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useAttendanceAwolReports } from '../../api/awol-report';
 
 export function AWOLWidget() {
@@ -126,7 +126,24 @@ export function AWOLWidget() {
                 const previousRoom = presentEvent?.rooms?.[0]?.name;
 
                 return (
-                  <Fragment key={partyId}>
+                  <Box
+                    component={Link}
+                    to={`/people/students/${partyId}/attendance`}
+                    key={partyId}
+                    sx={{
+                      display: 'grid',
+                      gridColumn: '1 / 3',
+                      gridTemplateColumns: 'subgrid',
+                      color: 'inherit',
+                      textDecoration: 'inherit',
+                      '&:hover > div': {
+                        bgcolor: 'indigo.100',
+                      },
+                      '&:active > div': {
+                        bgcolor: 'indigo.200',
+                      },
+                    }}
+                  >
                     <Box
                       py={1}
                       px={1}
@@ -205,7 +222,7 @@ export function AWOLWidget() {
                         </Stack>
                       </Box>
                     </Box>
-                  </Fragment>
+                  </Box>
                 );
               })}
             </Box>
