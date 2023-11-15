@@ -6,9 +6,9 @@ import {
   StopIcon,
   CheckmarkCircleIcon,
   VerticalDotsIcon,
-  CommentIcon,
   EditCalendarIcon,
 } from '@tyro/icons';
+import { AssessmentType } from '@tyro/api';
 import { getAssessmentSubjectGroupsLink } from '../../utils/get-assessment-subject-groups-link';
 import { PublishAssessmentModal } from './publish-assessment-modal';
 import {
@@ -55,13 +55,15 @@ export const AssessmentActionMenu = ({
     );
   };
 
+  const isTermAssessment = assessmentType === AssessmentType.Term;
+
   return (
     <>
       <ActionMenu
         iconOnly
         buttonIcon={<VerticalDotsIcon />}
         menuItems={
-          assessmentPath
+          assessmentPath && isTermAssessment
             ? [
                 [
                   {
@@ -81,6 +83,7 @@ export const AssessmentActionMenu = ({
                   //   navigateTo: `${assessmentPath}/overall-comments`,
                   // },
                 ],
+
                 publishedFrom
                   ? [
                       {
@@ -102,7 +105,18 @@ export const AssessmentActionMenu = ({
                       },
                     ],
               ]
-            : []
+            : [
+                {
+                  label: t('assessments:actions.view'),
+                  icon: <EyeIcon />,
+                  navigateTo: assessmentPath,
+                },
+                {
+                  label: t('assessments:actions.edit'),
+                  icon: <EditIcon />,
+                  navigateTo: `${assessmentPath}/edit`,
+                },
+              ]
         }
       />
       <PublishAssessmentModal

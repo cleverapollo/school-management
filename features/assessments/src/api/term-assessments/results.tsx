@@ -72,6 +72,9 @@ const assessmentResults = graphql(/* GraphQL */ `
         gradeNameTextId
         commentBankCommentId
       }
+      examinable
+      ppodPublished
+      ppodResult
     }
   }
 `);

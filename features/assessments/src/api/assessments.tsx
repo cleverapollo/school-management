@@ -93,6 +93,16 @@ const assessment = graphql(/* GraphQL */ `
         lastName
         avatarUrl
       }
+      stateCbaType
+      subjectGroups {
+        partyId
+        name
+        subjects {
+          name
+          id
+          colour
+        }
+      }
       startDate
       endDate
       captureTutorComment

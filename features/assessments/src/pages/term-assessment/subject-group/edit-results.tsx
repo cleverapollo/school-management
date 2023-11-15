@@ -214,7 +214,7 @@ function getCommentFields(
   ];
 }
 
-function getExtraFields(
+export function getExtraFields(
   extraFields: ReturnTypeFromUseAssessmentById['extraFields'],
   commentBanks: ReturnTypeFromUseCommentBanksWithComments | undefined
 ): ColumnDefs {

@@ -1,7 +1,7 @@
-import { Box, Button } from '@mui/material';
+import { Box } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
-
 import {
+  ActionMenu,
   GridOptions,
   ICellRendererParams,
   PageHeading,
@@ -12,10 +12,13 @@ import {
   usePreferredNameLayout,
   PageContainer,
 } from '@tyro/core';
-import { Link } from 'react-router-dom';
 import { useMemo, useState } from 'react';
-import { AddDocIcon } from '@tyro/icons';
-import { useAcademicNamespace, usePermissions } from '@tyro/api';
+import {
+  useAcademicNamespace,
+  usePermissions,
+  AssessmentType,
+  StateCbaType,
+} from '@tyro/api';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import {
@@ -58,15 +61,31 @@ const getColumnDefs = (
     field: 'assessmentType',
     headerName: translate('common:type'),
     enableRowGroup: true,
-    valueGetter: ({ data }) =>
-      data?.assessmentType
-        ? translate(`assessments:assessmentTypes.${data.assessmentType}`)
-        : null,
+    valueGetter: ({ data }) => {
+      if (
+        data?.assessmentType &&
+        data?.assessmentType === AssessmentType.Term
+      ) {
+        return data?.assessmentType
+          ? translate(`assessments:assessmentTypes.${data.assessmentType}`)
+          : null;
+      }
+      const cbaType =
+        data?.assessmentType && data?.assessmentType === AssessmentType.StateCba
+          ? data?.name
+          : null;
+
+      if (cbaType && cbaType.includes(StateCbaType.Cba_1)) {
+        return translate(`assessments:CBA_1`);
+      }
+      return translate(`assessments:CBA_2`);
+    },
   },
   {
-    field: 'createdBy',
-    headerName: translate('common:createdBy'),
-    valueGetter: ({ data }) => (data ? displayName(data.createdBy) : null),
+    field: 'years',
+    headerName: translate('common:year'),
+    valueGetter: ({ data }) =>
+      data?.years?.map((year) => year?.name).join(', '),
   },
   {
     field: 'startDate',
@@ -83,6 +102,11 @@ const getColumnDefs = (
     valueGetter: ({ data }) => (data ? dayjs(data.endDate).format('LL') : null),
     comparator: (dateA: string, dateB: string) =>
       dayjs(dateA).unix() - dayjs(dateB).unix(),
+  },
+  {
+    field: 'createdBy',
+    headerName: translate('common:createdBy'),
+    valueGetter: ({ data }) => (data ? displayName(data.createdBy) : null),
   },
   {
     field: 'publishedFrom',
@@ -162,14 +186,21 @@ export default function AssessmentsPage() {
         rightAdornment={
           canCreateAssessment && (
             <Box display="flex" alignItems="center">
-              <Button
-                variant="contained"
-                component={Link}
-                to="./term-assessments/create"
-                startIcon={<AddDocIcon />}
-              >
-                {t('assessments:createAssessment')}
-              </Button>
+              <Box>
+                <ActionMenu
+                  buttonLabel={t('assessments:createAssessment')}
+                  menuItems={[
+                    {
+                      label: t('assessments:termAssessment'),
+                      navigateTo: './term-assessments/create',
+                    },
+                    {
+                      label: t('assessments:assessmentTypes.STATE_CBA'),
+                      navigateTo: './state-cba/create',
+                    },
+                  ]}
+                />
+              </Box>
             </Box>
           )
         }

@@ -4,35 +4,59 @@ import {
   gqlClient,
   graphql,
   queryClient,
-  SaveTermAssessmentInput,
+  SaveStateCbaAssessmentInput,
   useAcademicNamespace,
 } from '@tyro/api';
 import { useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { assessmentsKeys } from './keys';
+import { assessmentsKeys } from '../keys';
 
-const saveTermAssessment = graphql(/* GraphQL */ `
-  mutation assessment_saveTermAssessment($input: SaveTermAssessmentInput) {
-    assessment_saveTermAssessment(input: $input) {
+const saveStateCba = graphql(/* GraphQL */ `
+  mutation assessment_saveStateCbaAssessment(
+    $input: SaveStateCbaAssessmentInput
+  ) {
+    assessment_saveStateCbaAssessment(input: $input) {
+      id
+      academicNamespaceId
       name
-      years {
-        name
-      }
+      assessmentType
       startDate
       endDate
+      yearGroupIds
+      years {
+        yearGroupId
+        name
+      }
+      extraFields {
+        id
+        name
+        assessmentId
+        extraFieldType
+        gradeSetId
+        commentBankId
+        commentBankName
+        selectOptions
+        commentLength
+      }
+      createdBy {
+        partyId
+        firstName
+        lastName
+        avatarUrl
+      }
     }
   }
 `);
 
-export function useSaveTermAssessment(academicNameSpaceId?: number) {
+export function useSaveStateCba(academicNameSpaceId?: number) {
   const { toast } = useToast();
   const { t } = useTranslation(['common']);
   const { activeAcademicNamespace } = useAcademicNamespace();
 
   return useMutation({
-    mutationFn: (input: SaveTermAssessmentInput) =>
+    mutationFn: (input: SaveStateCbaAssessmentInput) =>
       gqlClient.request(
-        saveTermAssessment,
+        saveStateCba,
         { input },
         {
           [EmulateHeaders.ACADEMIC_NAMESPACE_ID]: (
