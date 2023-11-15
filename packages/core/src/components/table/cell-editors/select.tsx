@@ -12,11 +12,13 @@ import {
   MenuItem,
   MenuList,
   Tooltip,
+  TooltipProps as MuiTooltipProps,
 } from '@mui/material';
 
 interface OptionProps {
   disabled?: boolean;
   disabledTooltip?: string;
+  TooltipProps?: MuiTooltipProps;
   [key: string]: unknown;
 }
 
@@ -88,7 +90,7 @@ function TableSelectInner<TSelectOption extends OptionProps>(
       const value = optionIdKey
         ? (option[optionIdKey] as string)
         : String(option);
-      const { disabled, disabledTooltip } = option;
+      const { disabled, disabledTooltip, TooltipProps } = option;
 
       const menuItem = (
         <MenuItem
@@ -111,7 +113,7 @@ function TableSelectInner<TSelectOption extends OptionProps>(
       );
 
       return disabled && disabledTooltip ? (
-        <Tooltip title={disabledTooltip}>
+        <Tooltip title={disabledTooltip} {...TooltipProps}>
           <span>{menuItem}</span>
         </Tooltip>
       ) : (

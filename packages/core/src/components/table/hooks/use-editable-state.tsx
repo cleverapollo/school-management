@@ -59,6 +59,7 @@ export interface UseEditableStateProps<T> {
   onBulkSave:
     | ((data: BulkEditedRows<T, Path<T>>) => Promise<unknown>)
     | undefined;
+  onBulkSaveCanceled?: () => void;
 }
 
 type EditedRow<T> = Record<
@@ -75,6 +76,7 @@ type EditedRow<T> = Record<
 export function useEditableState<T>({
   tableRef,
   onBulkSave,
+  onBulkSaveCanceled,
 }: UseEditableStateProps<T>) {
   const [editedRows, setEditedRows] = useCacheWithExpiry<EditedRow<T>>(
     'bulk-edit',
@@ -253,6 +255,7 @@ export function useEditableState<T>({
   const onCancel = () => {
     applyUpdatesToTable('originalValue');
     setEditedRows({});
+    onBulkSaveCanceled?.();
   };
 
   return {
