@@ -160,7 +160,7 @@ export const DynamicForm = ({
         fullWidth
         maxWidth="sm"
       >
-        <DialogTitle>Sql</DialogTitle>
+        <DialogTitle onClose={handleCloseDialog}>Sql</DialogTitle>
         <DialogContent>
           <Typography>{sql}</Typography>
         </DialogContent>
