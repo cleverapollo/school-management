@@ -1,4 +1,4 @@
-import { Stack, useTheme } from '@mui/material';
+import { Stack, Typography, useTheme } from '@mui/material';
 import {
   EnrollmentIre_BlockMembershipChange,
   EnrollmentIre_MembershipChangeEnum,
@@ -11,6 +11,7 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { useEffect, useState, useMemo } from 'react';
 
+import dayjs from 'dayjs';
 import { useBlockMemberships, useUpdateBlockMemberships } from '../api/blocks';
 import {
   BlockAutocomplete,
@@ -65,6 +66,11 @@ export default function ClassListManagerBlocks() {
       ? data.groups[blockIndex]
       : null;
   }, [selectedBlock, selectedRotationIndex, data?.groups]);
+
+  const selectedRotation = useMemo(
+    () => selectedBlock?.rotations?.[selectedRotationIndex as number],
+    [selectedRotationIndex, selectedBlock]
+  );
 
   const onSelectedYearGroup = (
     yearGroup: YearGroupsAutocompleteProps['value']
@@ -187,12 +193,38 @@ export default function ClassListManagerBlocks() {
                 sx={{ maxWidth: spacing(54), flex: 1 }}
               />
               {selectedBlock?.isRotation && (
-                <RotationSelect
-                  value={selectedRotationIndex}
-                  onChange={requestSetSelectedRotationIndex}
-                  rotations={selectedBlock.rotations}
-                  sx={{ maxWidth: spacing(34), flex: 1 }}
-                />
+                <>
+                  <RotationSelect
+                    value={selectedRotationIndex}
+                    onChange={requestSetSelectedRotationIndex}
+                    rotations={selectedBlock.rotations}
+                    sx={{ maxWidth: spacing(34), flex: 1 }}
+                  />
+                  {!!selectedRotation && (
+                    <Stack direction="row" alignItems="center">
+                      <Typography>
+                        {dayjs(selectedRotation?.endDate).isBefore(new Date())
+                          ? 'Completed on'
+                          : dayjs(selectedRotation?.startDate).isBefore(
+                              new Date()
+                            )
+                          ? 'Currently active for'
+                          : 'Scheduled for'}{' '}
+                        {dayjs(selectedRotation?.startDate).format(
+                          'DD/MM/YYYY'
+                        )}{' '}
+                        to{' '}
+                        {dayjs(selectedRotation?.endDate).format('DD/MM/YYYY')}{' '}
+                        for{' '}
+                        {dayjs(selectedRotation?.endDate).diff(
+                          selectedRotation?.startDate,
+                          'day'
+                        ) + 1}{' '}
+                        days
+                      </Typography>
+                    </Stack>
+                  )}
+                </>
               )}
             </>
           )}
