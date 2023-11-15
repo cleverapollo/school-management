@@ -147,9 +147,11 @@ export const DynamicForm = ({
         >
           {t('common:actions.filter')}
         </LoadingButton>
-        <IconButton onClick={() => setOpenSqlDialog(true)} sx={{ ml: 1 }}>
-          <InfoCircleIcon />
-        </IconButton>
+        {sql && (
+          <IconButton onClick={() => setOpenSqlDialog(true)} sx={{ ml: 1 }}>
+            <InfoCircleIcon />
+          </IconButton>
+        )}
       </Stack>
       <Dialog
         open={openSqlDialog}
