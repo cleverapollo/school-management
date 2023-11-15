@@ -2020,10 +2020,11 @@ export type EventAttendance = {
 };
 
 export type EventAttendanceFilter = {
-  date?: InputMaybe<Scalars['Date']>;
   eventIds?: InputMaybe<Array<AttendanceEventId>>;
+  from?: InputMaybe<Scalars['Date']>;
   includePreviousLesson?: InputMaybe<Scalars['Boolean']>;
   personPartyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  to?: InputMaybe<Scalars['Date']>;
 };
 
 export type EventAttendanceReport = {
@@ -5316,6 +5317,7 @@ export type SaveStudentSessionAttendanceInput = {
   adminSubmitted?: InputMaybe<Scalars['Boolean']>;
   applyCodes?: InputMaybe<SessionAttendanceFlag>;
   attendances: Array<SessionAttendanceInput>;
+  overwriteExistingEventAttendance?: InputMaybe<Scalars['Boolean']>;
 };
 
 export type SaveStudentSupportFileInput = {
@@ -5803,6 +5805,11 @@ export type Staff = Party & PartyPerson & {
   staffIre?: Maybe<StaffIre>;
   startDate?: Maybe<Scalars['Date']>;
   subjectGroups: Array<SubjectGroup>;
+};
+
+
+export type StaffSubjectGroupsArgs = {
+  filter?: InputMaybe<SubjectGroupRelationshipFilter>;
 };
 
 export type StaffCapacity = {
@@ -6358,6 +6365,10 @@ export type SubjectGroupMembershipTypeInput = {
   blockId?: InputMaybe<Scalars['String']>;
   classGroupId?: InputMaybe<Scalars['Long']>;
   membershipType: SubjectGroupStudentMembershipTypeEnum;
+};
+
+export type SubjectGroupRelationshipFilter = {
+  staffRoles?: InputMaybe<Array<StaffGroupMembershipRoles>>;
 };
 
 export type SubjectGroupStudent = {
