@@ -16,14 +16,7 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs, { Dayjs } from 'dayjs';
-import {
-  Box,
-  Checkbox,
-  Chip,
-  FormControlLabel,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Checkbox, Chip, FormControlLabel, Stack } from '@mui/material';
 import set from 'lodash/set';
 import {
   ReturnTypeFromCalendarDayBellTimes,
@@ -120,7 +113,7 @@ const getColumns = (
     lockVisible: true,
   },
   {
-    headerName: t('common:classGroup'),
+    headerName: t('common:class'),
     field: 'classGroup.name',
     enableRowGroup: true,
   },
