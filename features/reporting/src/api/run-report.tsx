@@ -14,6 +14,9 @@ const reportsRun = graphql(/* GraphQL */ `
         id
         name
       }
+      debug {
+        sql
+      }
       filters {
         id
         inputType
@@ -42,7 +45,7 @@ const reportsRun = graphql(/* GraphQL */ `
       tableDisplayOptions {
           gridOptions
           tableContainerSx
-      }  
+      }
     }
   }
 `);
