@@ -1,7 +1,7 @@
 import { Card, IconButton, Stack, Typography, Chip } from '@mui/material';
 import { FullScreenIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
-import { useTranslation } from '@tyro/i18n';
+import { useTranslation, Trans } from '@tyro/i18n';
 import { Link } from 'react-router-dom';
 import {
   Avatar,
@@ -59,7 +59,10 @@ export function BehaviourWidget() {
     return behaviourStudentsData.slice(0, 5).map((behaviourStudent) => ({
       id: behaviourStudent.id.value,
       name: `${behaviourStudent.first_name.value} ${behaviourStudent.last_name.value}`,
+      date: behaviourStudent.date.value,
       tags: behaviourStudent.tags.value,
+      classGroup: behaviourStudent.class?.value,
+      createdBy: behaviourStudent.created_by.value,
       category: behaviourStudent?.category?.value,
       categorColour: behaviourStudent?.category_colour?.value,
       type: behaviourStudent.type.value,
@@ -133,36 +136,67 @@ export function BehaviourWidget() {
       ) : (
         <Stack spacing={1.25}>
           {behaviourStudents.map(
-            ({ id, name, tags, category, categorColour }) => (
+            ({
+              id,
+              name,
+              classGroup,
+              createdBy = '-',
+              tags,
+              category,
+              categorColour,
+            }) => (
               <Card
+                component={Stack}
                 key={id}
                 sx={{
                   p: 1.5,
                 }}
               >
                 <Stack direction="row" alignItems="center" spacing={1.5}>
-                  <Avatar name={name} size={36} />
-                  <Stack flex={1} alignItems="flex-start">
-                    <Typography variant="subtitle1" component="span">
-                      {name}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      color="text.secondary"
-                      component="span"
-                    >
-                      {tags}
-                    </Typography>
-                    {category && (
-                      <Chip
-                        size="small"
-                        variant="soft"
-                        color={categorColour ?? 'slate'}
-                        label={category}
-                        sx={{ mt: 0.5 }}
-                      />
-                    )}
+                  <Stack direction="row">
+                    <Avatar name={name} size={36} />
+                    <Stack>
+                      <Typography variant="subtitle1" component="span">
+                        {name}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        fontWeight={600}
+                        color="text.secondary"
+                        component="span"
+                      >
+                        {classGroup}
+                      </Typography>
+                    </Stack>
                   </Stack>
+                  <Typography
+                    variant="body1"
+                    color="text.secondary"
+                    component="span"
+                  >
+                    <Trans ns="reports" i18nKey="loggedDateByStaff">
+                      Logged {{ date }} <br />
+                      by {{ createdBy }}
+                    </Trans>
+                  </Typography>
+                </Stack>
+                <Stack flex={1} alignItems="flex-start">
+                  <Typography
+                    variant="body1"
+                    color="text.secondary"
+                    component="span"
+                  >
+                    {tags}
+                  </Typography>
+                  {category && (
+                    <Chip
+                      size="small"
+                      variant="soft"
+                      color={categorColour ?? 'slate'}
+                      label={category}
+                      sx={{ mt: 0.5 }}
+                    />
+                  )}
                 </Stack>
               </Card>
             )
