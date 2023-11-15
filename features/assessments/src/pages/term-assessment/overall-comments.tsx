@@ -24,6 +24,7 @@ import {
   StudentAssessmentReportCardSettingsProvider,
 } from '../../components/common/student-assessment-report-card';
 import { StudentDropdownForOverallComments } from '../../components/overall-comments/student-dropdown';
+import { OverallCommentsSummaryStats } from '../../components/overall-comments/summary-stats';
 
 export default function OverallCommentsTermAssessmentPage() {
   const { academicNamespaceId, assessmentId } = useParams();
@@ -37,8 +38,9 @@ export default function OverallCommentsTermAssessmentPage() {
         ReturnTypeFromUseAssessmentById['yearGroupEnrolments']
       >[number]
     >();
-  const [selectedStudent, setSelectedStudent] =
-    useState<ReturnTypeFromUseOverallCommentsByYearGroup | null>(null);
+  const [selectedStudent, setSelectedStudent] = useState<
+    ReturnTypeFromUseOverallCommentsByYearGroup['students'][number] | null
+  >(null);
 
   const { t } = useTranslation(['common', 'assessments']);
 
@@ -46,7 +48,7 @@ export default function OverallCommentsTermAssessmentPage() {
     academicNameSpaceId: academicNameSpaceIdAsNumber ?? 0,
     ids: [assessmentIdAsNumber ?? 0],
   });
-  const { data: studentListForYearGroup = [] } = useOverallCommentsByYearGroup(
+  const { data: overallCommentsData } = useOverallCommentsByYearGroup(
     academicNameSpaceIdAsNumber ?? 0,
     {
       yearGroupEnrolmentId: selectedYearGroup?.yearGroupEnrollmentPartyId ?? 0,
@@ -54,6 +56,8 @@ export default function OverallCommentsTermAssessmentPage() {
     },
     !!selectedYearGroup?.yearGroupEnrollmentPartyId
   );
+  const { students: studentListForYearGroup, ...summaryStats } =
+    overallCommentsData ?? { students: [] };
 
   const titleName = t('assessments:pageHeading.overallCommentsFor', {
     name: assessmentData?.name,
@@ -126,7 +130,7 @@ export default function OverallCommentsTermAssessmentPage() {
           }}
         />
 
-        <Stack direction="row">
+        <Stack direction="row" spacing={2} useFlexGap>
           <Select
             label={t('common:year')}
             variant="white-filled"
@@ -147,6 +151,12 @@ export default function OverallCommentsTermAssessmentPage() {
             options={assessmentData?.yearGroupEnrolments ?? []}
             sx={{ maxWidth: 216, flex: 1 }}
           />
+          {summaryStats && assessmentData && (
+            <OverallCommentsSummaryStats
+              yearSummaryStats={summaryStats}
+              assessmentData={assessmentData}
+            />
+          )}
         </Stack>
         <Stack
           direction="row"
@@ -188,7 +198,6 @@ export default function OverallCommentsTermAssessmentPage() {
                 </Button>
                 {selectedStudent && (
                   <StudentDropdownForOverallComments
-                    yearGroupEnrollment={selectedYearGroup}
                     students={studentListForYearGroup ?? []}
                     selectedStudent={selectedStudent}
                     onSelectStudent={setSelectedStudent}

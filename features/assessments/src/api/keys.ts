@@ -5,8 +5,8 @@ import {
   CalculateGradeFilter,
   CommentBankFilter,
   DashboardAssessmentFilter,
+  OverallCommentsFilter,
   StudentResultFilter,
-  YearGroupStudentFilter,
 } from '@tyro/api';
 
 export const assessmentsKeys = {
@@ -53,7 +53,7 @@ export const assessmentsKeys = {
   ],
   overallCommentsByYearGroup: (
     academicNamespaceId: number,
-    filter: YearGroupStudentFilter
+    filter: OverallCommentsFilter
   ) => [
     ...assessmentsKeys.allOverallCommentsByYearGroup(),
     academicNamespaceId,
