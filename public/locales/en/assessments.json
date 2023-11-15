@@ -90,5 +90,8 @@
   "publishDate": "Publish date",
   "academicYear": "Academic year",
   "results": "Results",
-  "unpublishedSuccessfully": "Unpublished successfully"
+  "unpublishedSuccessfully": "Unpublished successfully",
+  "principalCommentAmounts": "{{amountEntered}}/{{totalToEnter}} Principal comments",
+  "yearHeadCommentAmounts": "{{amountEntered}}/{{totalToEnter}} Year head comments",
+  "tutorCommentAmounts": "{{amountEntered}}/{{totalToEnter}} Tutor comments"
 }
