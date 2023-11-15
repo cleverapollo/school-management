@@ -77,6 +77,9 @@ export function AttendanceCodeCellEditor(
         disabledTooltip: t(
           'attendance:youMustSelectAttendanceCodeBeforeApplyingANote'
         ),
+        TooltipProps: {
+          placement: 'top',
+        },
       } as const,
     ],
     attendanceCodes,
