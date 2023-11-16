@@ -16,10 +16,9 @@ import {
   AssessmentType,
   GradeType,
   UseQueryReturnType,
-  useAcademicNamespace,
 } from '@tyro/api';
 import { Card, Stack, CardHeader, Typography, Collapse } from '@mui/material';
-import { useForm, Path } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CommentBankOption } from '../../api/comment-bank';
@@ -35,10 +34,15 @@ type YearGroupOption = UseQueryReturnType<typeof useYearGroups>[number];
 
 type CommentTypeOption = Exclude<CommentType, CommentType.None>;
 
-const commentTypeOptions: CommentTypeOption[] = [
+const teacherCommentTypeOptions: CommentTypeOption[] = [
   CommentType.CommentBank,
   CommentType.FreeForm,
   CommentType.Both,
+];
+
+const generalCommentTypeOptions: CommentTypeOption[] = [
+  CommentType.CommentBank,
+  CommentType.FreeForm,
 ];
 
 export interface FormValues extends FormCustomFieldsValues {
@@ -76,7 +80,6 @@ export interface FormValues extends FormCustomFieldsValues {
 type TermAssessmentFormProps = {
   termAssessment?: FormValues;
   title: string;
-  ctaText: string;
   onSuccess: () => void;
   onError: () => void;
 };
@@ -87,12 +90,11 @@ const COMMENT_LENGTH_MAX = 1000;
 export function TermAssessmentForm({
   termAssessment,
   title,
-  ctaText,
   onSuccess,
   onError,
 }: TermAssessmentFormProps) {
   const navigate = useNavigate();
-  const { t } = useTranslation(['assessments']);
+  const { t } = useTranslation(['common', 'assessments']);
   const { academicNamespaceId } = useParams();
   const academicNamespaceIdAsNumber = useNumber(academicNamespaceId);
 
@@ -342,7 +344,11 @@ export function TermAssessmentForm({
                     <Stack direction="row" gap={2} pt={1}>
                       <RHFSelect<FormValues, CommentTypeOption>
                         label={t('assessments:labels.commentType')}
-                        options={commentTypeOptions}
+                        options={
+                          name === 'includeTeacherComments'
+                            ? teacherCommentTypeOptions
+                            : generalCommentTypeOptions
+                        }
                         controlProps={{ name: commentType, control }}
                         getOptionLabel={(option) =>
                           t(`assessments:labels.commentTypes.${option}`)
@@ -379,7 +385,7 @@ export function TermAssessmentForm({
             type="submit"
             loading={isLoading}
           >
-            {ctaText}
+            {t('common:actions.save')}
           </LoadingButton>
         </Stack>
       </Stack>

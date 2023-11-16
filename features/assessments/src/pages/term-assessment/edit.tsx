@@ -114,7 +114,6 @@ export default function EditTermAssessmentPage() {
         <TermAssessmentForm
           termAssessment={formValues}
           title={titleName}
-          ctaText={t('assessments:editTermAssessment')}
           onSuccess={() => {
             toast(t('common:snackbarMessages.updateSuccess'));
           }}

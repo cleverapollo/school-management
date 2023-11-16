@@ -21,6 +21,7 @@ type AssessmentActionMenuProps = {
   publishedFrom?: ReturnTypeFromUseAssessments['publishedFrom'];
   assessmentType: ReturnTypeFromUseAssessments['assessmentType'];
   academicNamespaceId: number;
+  canEnterOverallComments: boolean;
 };
 
 export const AssessmentActionMenu = ({
@@ -28,6 +29,7 @@ export const AssessmentActionMenu = ({
   publishedFrom,
   assessmentType,
   academicNamespaceId,
+  canEnterOverallComments,
 }: AssessmentActionMenuProps) => {
   const { t } = useTranslation(['assessments']);
   const { toast } = useToast();
@@ -76,12 +78,17 @@ export const AssessmentActionMenu = ({
                     icon: <EditIcon />,
                     navigateTo: `${assessmentPath}/edit`,
                   },
-                  // {
-                  //   label: t('assessments:actions.makeOverallComments'),
-                  //   icon: <CommentIcon />,
-                  //   hasAccess: () => assessmentType === AssessmentType.Term,
-                  //   navigateTo: `${assessmentPath}/overall-comments`,
-                  // },
+                  ...(canEnterOverallComments
+                    ? [
+                        {
+                          label: t('assessments:actions.makeOverallComments'),
+                          icon: <CommentIcon />,
+                          hasAccess: () =>
+                            assessmentType === AssessmentType.Term,
+                          navigateTo: `${assessmentPath}/overall-comments`,
+                        },
+                      ]
+                    : []),
                 ],
 
                 publishedFrom

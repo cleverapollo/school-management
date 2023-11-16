@@ -19,6 +19,12 @@
     "editStateCba": "Edit {{name}}",
     "overallCommentsFor": "Overall comments for {{name}}"
   },
+  "commentStatus": {
+    "COMPLETE": "Complete",
+    "IN_PROGRESS": "In progress",
+    "NOT_STARTED": "Not started"
+  },
+  "enterComment": "Enter comment",
   "assessmentResults": "Assessment results",
   "assessment": "Assessment",
   "hideComments": "Hide comments",
@@ -104,5 +110,8 @@
   "publishDate": "Publish date",
   "academicYear": "Academic year",
   "results": "Results",
-  "unpublishedSuccessfully": "Unpublished successfully"
+  "unpublishedSuccessfully": "Unpublished successfully",
+  "principalCommentAmounts": "{{amountEntered}}/{{totalToEnter}} Principal comments",
+  "yearHeadCommentAmounts": "{{amountEntered}}/{{totalToEnter}} Year head comments",
+  "tutorCommentAmounts": "{{amountEntered}}/{{totalToEnter}} Tutor comments"
 }

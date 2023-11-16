@@ -30,7 +30,8 @@
     "previous": "Previous",
     "next": "Next",
     "clone": "Clone",
-    "filter": "Filter"
+    "filter": "Filter",
+    "deselect": "Deselect"
   },
   "snackbarMessages": {
     "createSuccess": "Created successfully!",
@@ -56,6 +57,7 @@
     "STEP_MOTHER": "Stepmother",
     "UNCLE": "Uncle"
   },
+  "summary": "Summary",
   "total": "Total",
   "grade": "Grade",
   "result": "Result",
@@ -123,6 +125,7 @@
   "memberList": "Member list",
   "class": "Class",
   "examinable": "Examinable",
+  "active": "Active",
   "additionalInformation": "Additional Information",
   "currentActivity": "Current activity",
   "school": "School",
@@ -161,11 +164,15 @@
     "YEAR_GROUP_ENROLLMENT": "Year group",
     "YEAR_GROUP_CONTACT": "Contacts of Students from Year group",
     "YEAR_GROUP_STAFF": "Staff of Students from Year group",
+    "YEAR_GROUP_STUDENT": "Students from Year group",
     "CUSTOM_GROUP": "Custom group",
     "ROOM": "Room"
   },
   "administration": "Administration",
   "staff": "Staff",
+  "principal": "Principal",
+  "yearHead": "Year head",
+  "houseMaster": "House master",
   "blocks": "Blocks",
   "block": "Block",
   "staffMember": "Staff member",

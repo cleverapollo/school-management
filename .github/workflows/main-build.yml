@@ -1,4 +1,4 @@
-name: Release pipeline
+name: Release pipeline PROD
 
 on:
   workflow_dispatch:
@@ -49,14 +49,14 @@ jobs:
       - name: Set AKS context
         uses: azure/aks-set-context@v3
         with:
-          resource-group: '${{ secrets.AKS_RESOURCE_GROUP }}'
-          cluster-name: '${{ secrets.AKS_CLUSTER_NAME }}'
+          resource-group: 'prod'
+          cluster-name: 'prod'
       - name: Set AKS context
         id: set-context
         uses: azure/aks-set-context@v3
         with:
-          resource-group: '${{ secrets.AKS_RESOURCE_GROUP }}'
-          cluster-name: '${{ secrets.AKS_CLUSTER_NAME }}'
+          resource-group: 'prod'
+          cluster-name: 'prod'
       - name: Setup kubectl
         id: install-kubectl
         uses: azure/setup-kubectl@v3

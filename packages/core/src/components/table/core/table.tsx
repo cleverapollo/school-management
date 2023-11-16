@@ -83,6 +83,7 @@ export interface TableProps<T> extends AgGridReactProps<T> {
   rowData: T[];
   getRowId: AgGridReactProps<T>['getRowId'];
   onBulkSave?: UseEditableStateProps<T>['onBulkSave'];
+  onBulkSaveCanceled?: UseEditableStateProps<T>['onBulkSaveCanceled'];
   onRowSelection?: (selectedRows: T[]) => void;
   sx?: CardProps['sx'];
   tableContainerSx?: BoxProps['sx'];
@@ -113,6 +114,7 @@ function TableInner<T extends object>(
   {
     onFirstDataRendered,
     onBulkSave,
+    onBulkSaveCanceled,
     tableContainerSx,
     sx,
     onRowSelection,
@@ -146,6 +148,7 @@ function TableInner<T extends object>(
   const editingUtils = useEditableState<T>({
     tableRef,
     onBulkSave,
+    onBulkSaveCanceled,
   });
   const {
     isEditing,

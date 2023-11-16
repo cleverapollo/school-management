@@ -134,11 +134,11 @@ export const getRoutes: NavObjectFunction = (t) => [
                     path: 'edit',
                     element: <EditTermAssessmentPage />,
                   },
-                  // {
-                  //   type: NavObjectType.NonMenuLink,
-                  //   path: 'overall-comments',
-                  //   element: <OverallCommentsTermAssessmentPage />,
-                  // },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'overall-comments',
+                    element: <OverallCommentsTermAssessmentPage />,
+                  },
                   {
                     type: NavObjectType.NonMenuLink,
                     path: 'subject-group/:subjectGroupId',

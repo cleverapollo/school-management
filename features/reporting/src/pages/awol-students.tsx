@@ -10,7 +10,7 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
-import { Reporting_TableFilterInput } from '@tyro/api';
+import { Reporting_TableFilter } from '@tyro/api';
 import {
   useAttendanceAwolReports,
   ReturnTypeFromUseAttendanceAwolReports,
@@ -106,17 +106,16 @@ export default function AwolStudentsPage() {
   const { displayName } = usePreferredNameLayout();
   const awolReportsFilters = useAwolReportFilters();
 
-  const formattedAwolReportsFilters = useMemo(
+  const [filters, setFilters] =
+    useState<Reporting_TableFilter[]>(awolReportsFilters);
+
+  const formattedFilters = useMemo(
     () =>
-      awolReportsFilters?.map((filter) => ({
+      filters?.map((filter) => ({
         filterId: filter.id,
         filterValue: filter.defaultValue,
       })),
-    [awolReportsFilters]
-  );
-
-  const [filters, setFilters] = useState<Reporting_TableFilterInput[]>(
-    formattedAwolReportsFilters
+    [filters]
   );
 
   const {
@@ -124,8 +123,8 @@ export default function AwolStudentsPage() {
     isFetching,
     isLoading,
   } = useAttendanceAwolReports({
-    from: filters[0].filterValue as string,
-    to: filters[1].filterValue as string,
+    from: formattedFilters[0].filterValue,
+    to: formattedFilters[1].filterValue,
   });
 
   const columns = useMemo(() => getColumns(t, displayName), [t, displayName]);
@@ -150,7 +149,7 @@ export default function AwolStudentsPage() {
       />
       <DynamicForm
         isFetching={isFetching}
-        filters={awolReportsFilters || []}
+        filters={filters || []}
         onFilterChange={setFilters}
       />
       <Table

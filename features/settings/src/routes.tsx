@@ -287,7 +287,8 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.settings.noteLabels'),
             type: NavObjectType.MenuLink,
             path: 'note-labels',
-            hasAccess: (permissions) => permissions.isStaffUser,
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission('ps:1:general_admin:notes_settings'),
             loader: () => getNoteTags(),
             element: <NoteLabel />,
           },
@@ -295,7 +296,10 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.settings.behaviourLabels'),
             type: NavObjectType.MenuLink,
             path: 'behaviour-settings',
-            hasAccess: (permissions) => permissions.isStaffUser,
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission(
+                'ps:1:general_admin:behaviour_settings'
+              ),
             loader: () => getNoteTagsBehaviour(),
             element: <BehaviourLabel />,
           },
@@ -303,7 +307,10 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.settings.commentBanks'),
             type: NavObjectType.MenuLink,
             path: 'comment-banks',
-            hasAccess: (permissions) => permissions.isStaffUser,
+            hasAccess: ({ isStaffUserWithPermission }) =>
+                isStaffUserWithPermission(
+                    'ps:1:assessment:write_comment_banks'
+                ),
             loader: () => getCommentBanks({}),
             element: <CommentBanks />,
           },

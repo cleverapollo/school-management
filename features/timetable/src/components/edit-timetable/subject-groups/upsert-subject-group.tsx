@@ -12,7 +12,7 @@ import {
 } from '@tyro/core';
 import {
   SubjectGroup,
-  SubjectGroupType,
+  SubjectGroupType, SubjectUsage,
   Tt_UpsertSubjectGroup,
   TtGroupStudentMembershipTypeEnum,
 } from '@tyro/api';
@@ -68,7 +68,9 @@ export function UpsertSubjectGroupModal({
   const { t } = useTranslation(['common', 'timetable', 'groups']);
   const { resolver, rules } = useFormValidator<UpsertSubjectGroupFormState>();
   const { mutateAsync: upsertGroup, isLoading } = useTtUpsertTimetableGroup();
-  const { data: subjectsData } = useCatalogueSubjects();
+  const { data: subjectsData } = useCatalogueSubjects({
+    filterUsage: SubjectUsage.All,
+  });
   const { data: staffData } = useStaffForSelect({});
   const { data: blocksData } = useBlocksList({});
   useEffect(() => {
@@ -99,10 +101,8 @@ export function UpsertSubjectGroupModal({
         teachers: existingTeachers,
         subject: existingSubjects,
       } as UpsertSubjectGroupFormState;
-      console.log(newValue);
       reset(newValue);
     } else {
-      console.log('default');
       reset(defaultState);
     }
   }, [initialState, subjectsData]);
@@ -164,7 +164,9 @@ export function UpsertSubjectGroupModal({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle onClose={onClose}>{t('timetable:createSubjectGroup')}</DialogTitle>
+      <DialogTitle onClose={onClose}>
+        {t('timetable:createSubjectGroup')}
+      </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
           <Stack gap={2} p={2} sx={{ py: 2 }}>

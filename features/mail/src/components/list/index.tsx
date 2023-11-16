@@ -43,8 +43,7 @@ export default function MailList() {
   }, [data?.pages]);
 
   const rowVirtualizer = useVirtualizer({
-    count:
-      mails.length > 0 && hasNextPage ? mails.length + 1 : mails?.length ?? 0,
+    count: mails?.length ?? 0,
     getScrollElement: () => listRef.current,
     estimateSize: () => (isDesktop ? 64 : 94),
     overscan: 5,
@@ -82,7 +81,7 @@ export default function MailList() {
     }
 
     if (
-      lastItem.index >= mails.length - 1 &&
+      lastItem.index === mails.length - 1 &&
       hasNextPage &&
       !isFetchingNextPage
     ) {

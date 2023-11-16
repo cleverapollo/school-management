@@ -28,6 +28,7 @@
     "@tyro/api": "*",
     "@tyro/i18n": "*",
     "@tyro/icons": "*",
+    "@tyro/settings": "*",
     "apexcharts": "^3.37.1",
     "dayjs": "^1.11.7",
     "framer-motion": "^9.0.1",
