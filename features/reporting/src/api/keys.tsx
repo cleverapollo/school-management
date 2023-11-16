@@ -11,6 +11,8 @@ export type InnerReportFilter = {
 
 export const reportsKeys = {
   all: ['reports'] as const,
+  reportInfo: (filter: InnerReportFilter) =>
+    [...reportsKeys.all, 'reportInfo', filter] as const,
   report: (filter: InnerReportFilter) =>
     [...reportsKeys.all, 'report', filter] as const,
   reportExpand: (filter: Reporting_ReportFilterExpand) =>
