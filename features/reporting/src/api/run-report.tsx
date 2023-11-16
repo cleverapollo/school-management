@@ -71,7 +71,11 @@ const reportsInfoQuery = ({ topReportId, filter }: InnerReportFilter) => ({
   queryFn: async () => gqlClient.request(reportInfo, { filter }),
 });
 
-export function useReportsInfo(filter: InnerReportFilter) {
+export function getReportInfo(filter: InnerReportFilter) {
+  return queryClient.fetchQuery(reportsInfoQuery(filter));
+}
+
+export function useReportInfo(filter: InnerReportFilter) {
   return useQuery({
     ...reportsInfoQuery(filter),
     select: ({ reporting_runReport }) => reporting_runReport,
