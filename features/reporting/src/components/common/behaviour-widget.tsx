@@ -59,12 +59,12 @@ export function BehaviourWidget() {
     return behaviourStudentsData.slice(0, 5).map((behaviourStudent) => ({
       id: behaviourStudent.id.value,
       name: `${behaviourStudent.first_name.value} ${behaviourStudent.last_name.value}`,
-      date: behaviourStudent.date.value,
+      loggedDate: behaviourStudent.date.value,
       tags: behaviourStudent.tags.value,
       classGroup: behaviourStudent.class?.value,
-      createdBy: behaviourStudent.created_by.value,
+      createdBy: behaviourStudent?.created_by?.value,
       category: behaviourStudent?.category?.value,
-      categorColour: behaviourStudent?.category_colour?.value,
+      categoryColour: behaviourStudent?.category_colour?.value,
       type: behaviourStudent.type.value,
     }));
   }, [behaviourData]);
@@ -143,7 +143,8 @@ export function BehaviourWidget() {
               createdBy = '-',
               tags,
               category,
-              categorColour,
+              categoryColour,
+              loggedDate,
             }) => (
               <Card
                 component={Stack}
@@ -175,7 +176,7 @@ export function BehaviourWidget() {
                     component="span"
                   >
                     <Trans ns="reports" i18nKey="loggedDateByStaff">
-                      Logged {{ date }} <br />
+                      Logged {{ loggedDate }} <br />
                       by {{ createdBy }}
                     </Trans>
                   </Typography>
@@ -192,7 +193,7 @@ export function BehaviourWidget() {
                     <Chip
                       size="small"
                       variant="soft"
-                      color={categorColour ?? 'slate'}
+                      color={categoryColour ?? 'slate'}
                       label={category}
                       sx={{ mt: 0.5 }}
                     />

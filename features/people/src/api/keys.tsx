@@ -106,12 +106,16 @@ export const peopleKeys = {
       ] as const,
     calendarBellTimes: (filter: CalendarDayBellTimeFilter) =>
       [...peopleKeys.students.all(), 'calendarBellTimes', filter] as const,
-    studentBehaviours: (filter: Notes_BehaviourFilter) =>
-      [...peopleKeys.students.all(), 'studentBehaviours', filter] as const,
-    studentBehavioursCategories: (filter: Notes_BehaviourFilter) =>
+    individualStudentBehaviours: (filter: Notes_BehaviourFilter) =>
       [
         ...peopleKeys.students.all(),
-        'studentBehavioursCategories',
+        'individualStudentBehaviours',
+        filter,
+      ] as const,
+    individualStudentBehavioursCategories: (filter: Notes_BehaviourFilter) =>
+      [
+        ...peopleKeys.students.all(),
+        'individualStudentBehavioursCategories',
         filter,
       ] as const,
     behaviourLevels: (filter: Notes_BehaviourCategoryFilter) =>

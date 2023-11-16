@@ -23,7 +23,7 @@ type DynamicFormProps = {
   isFetching: boolean;
   filters: Reporting_TableFilter[];
   onFilterChange: (filters: Reporting_TableFilter[]) => void;
-  sql: string;
+  sql?: string | null;
 };
 
 type FormState = { [id: Reporting_TableFilter['id']]: any };
