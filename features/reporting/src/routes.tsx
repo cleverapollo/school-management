@@ -1,6 +1,7 @@
 import { NavObjectFunction, NavObjectType, lazyWithRetry } from '@tyro/core';
 import { DocSearchIcon } from '@tyro/icons';
 import { getReportsList } from './api/list';
+import { getReportInfo } from './api/run-report';
 
 const ReportsListPage = lazyWithRetry(() => import('./pages'));
 const ReportContainer = lazyWithRetry(() => import('./components/container'));
@@ -37,6 +38,15 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: ':reportId',
                 element: <ReportPage />,
+                loader: ({ params }) => {
+                  const id = params?.id || '';
+                  return getReportInfo({
+                    topReportId: id,
+                    filter: {
+                      reportId: id,
+                    },
+                  });
+                },
               },
             ],
           },
