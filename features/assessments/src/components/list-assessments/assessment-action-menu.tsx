@@ -2,6 +2,7 @@ import { useTranslation } from '@tyro/i18n';
 import { ActionMenu, useDisclosure, useToast } from '@tyro/core';
 import {
   EyeIcon,
+  CommentIcon,
   EditIcon,
   StopIcon,
   CheckmarkCircleIcon,
