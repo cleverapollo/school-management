@@ -106,17 +106,11 @@ export default function AwolStudentsPage() {
   const { displayName } = usePreferredNameLayout();
   const awolReportsFilters = useAwolReportFilters();
 
-  const formattedAwolReportsFilters = useMemo(
-    () =>
-      awolReportsFilters?.map((filter) => ({
-        filterId: filter.id,
-        filterValue: filter.defaultValue,
-      })),
-    [awolReportsFilters]
-  );
-
   const [filters, setFilters] = useState<Reporting_TableFilterInput[]>(
-    formattedAwolReportsFilters
+    awolReportsFilters?.map((filter) => ({
+      filterId: filter.id,
+      filterValue: filter.defaultValue,
+    }))
   );
 
   const {
@@ -124,8 +118,8 @@ export default function AwolStudentsPage() {
     isFetching,
     isLoading,
   } = useAttendanceAwolReports({
-    from: filters[0].filterValue as string,
-    to: filters[1].filterValue as string,
+    from: filters[0].filterValue,
+    to: filters[1].filterValue,
   });
 
   const columns = useMemo(() => getColumns(t, displayName), [t, displayName]);

@@ -1,11 +1,8 @@
 import { GridOptions, Table } from '@tyro/core';
-import {
-  Reporting_TableFilter,
-  Reporting_TableFilterInput,
-  Reporting_TableFilterType,
-} from '@tyro/api';
-import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Reporting_TableFilterInput } from '@tyro/api';
+import { useMemo, useState } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { Color, Palette, useTheme } from '@mui/material';
 import { useRunReports } from '../api/run-report';
 import { DynamicForm } from '../components/dynamic-form';
 
@@ -13,65 +10,36 @@ type GenericReportData = Array<{ [key: string]: GenericReportDataCell }>;
 type GenericReportDataCell = { value: any; colour: string };
 type FormattedReportData = Array<{ [key: string]: GenericReportDataCell }>;
 
-const parseURLFilterValue = (
-  formValue: string,
-  inputType?: Reporting_TableFilterType
-) => {
-  switch (inputType) {
-    case Reporting_TableFilterType.Checkbox:
-      return formValue === 'true';
-    case Reporting_TableFilterType.MultiSelect: {
-      return formValue
-        ? formValue
-            .split(',')
-            .map((value: string) =>
-              Number.isNaN(Number(value)) ? String(value) : Number(value)
-            )
-        : [];
-    }
-    case Reporting_TableFilterType.InputNumber:
-      return Number.isNaN(Number(formValue))
-        ? String(formValue)
-        : Number(formValue);
-    case Reporting_TableFilterType.Select:
-      return Number(formValue);
-    case Reporting_TableFilterType.Input:
-    default:
-      return String(formValue);
-  }
-};
+const getFiltersFromSearchParams = (
+  searchParams: URLSearchParams
+): Reporting_TableFilterInput[] =>
+  Array.from(searchParams.entries()).map(([filterId, filterValue]) => {
+    let formattedFilterValue: string | number | Array<string | number> =
+      filterValue;
 
-export const getURLFromFilters = (filters: Reporting_TableFilter[]) =>
-  filters
-    .filter(({ defaultValue }) =>
-      Array.isArray(defaultValue)
-        ? !!defaultValue.length
-        : defaultValue !== undefined
-    )
-    .map(({ id: idx, defaultValue }) =>
-      Array.isArray(defaultValue)
-        ? `${idx}=${defaultValue.join(',')}`
-        : `${idx}=${String(defaultValue)}`
-    )
-    .join('&');
+    if (formattedFilterValue.includes(',')) {
+      formattedFilterValue = formattedFilterValue
+        .split(',')
+        .map((value: string) =>
+          Number.isNaN(Number(value)) ? String(value) : Number(value)
+        );
+    } else if (!Number.isNaN(Number(formattedFilterValue))) {
+      formattedFilterValue = Number(formattedFilterValue);
+    }
+
+    return {
+      filterId,
+      filterValue: formattedFilterValue,
+    };
+  }) ?? [];
 
 export default function ReportPage() {
   const { id = '', reportId = '' } = useParams();
-  const [filters, setFilters] = useState<Reporting_TableFilter[]>([]);
-  const params = new URL(window.location.href).searchParams;
-
-  const navigate = useNavigate();
-
-  const filterPayload = useMemo(
-    () =>
-      filters
-        ?.filter((filter) => filter?.defaultValue !== undefined)
-        .map<Reporting_TableFilterInput>((filter) => ({
-          filterId: filter.id,
-          filterValue: filter?.defaultValue,
-        })),
-    [filters]
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [filters, setFilters] = useState<Reporting_TableFilterInput[]>(
+    getFiltersFromSearchParams(searchParams)
   );
+  const { palette } = useTheme();
 
   const {
     data: reportData,
@@ -81,7 +49,7 @@ export default function ReportPage() {
     topReportId: id,
     filter: {
       reportId,
-      filters: filterPayload,
+      filters,
     },
   });
 
@@ -90,21 +58,35 @@ export default function ReportPage() {
   >(() => {
     const fieldsColumns = reportData?.fields || [];
     return fieldsColumns.map((column) => {
-      // @ts-ignore
+      // @ts-expect-error
       const valueGetter = ({ data }) => {
-        if (data != null) {
-          // @ts-ignore
-          const value = data[column.id] as GenericReportDataCell;
-          return value?.value;
-        }
+        if (!data) return null;
+
+        const value = data[column.id] as GenericReportDataCell;
+        return value?.value;
       };
+
       const mapped = {
         field: column.id,
         headerName: column.label,
         valueGetter,
         sortable: column.sortable,
-        hide: !column.visibleByDefault,
+        initialHide: !column.visibleByDefault,
         pinned: column.pinned ?? null,
+        cellStyle: (params: any) => {
+          if (!params?.data) return null;
+
+          const colour = params?.data[column.id]?.colour;
+
+          const backgroundColor =
+            (palette?.[colour?.colour as keyof Palette] as Color)?.[
+              colour?.shade as keyof Color
+            ] ?? '';
+
+          return {
+            backgroundColor,
+          };
+        },
         ...(column.hideMenu
           ? {
               suppressMenu: true,
@@ -117,6 +99,10 @@ export default function ReportPage() {
       if (column.maxWidth) {
         // @ts-ignore
         mapped.maxWidth = column.maxWidth;
+      }
+      if (column.minWidth) {
+        // @ts-ignore
+        mapped.minWidth = column.minWidth;
       }
       return mapped;
     });
@@ -138,51 +124,35 @@ export default function ReportPage() {
     );
   }, [reportData?.data]);
 
-  useEffect(() => {
-    if (!!reportData?.filters?.length && !filters.length && !params.size) {
-      setFilters(reportData?.filters);
-    }
-  }, [reportData?.filters, filters, params]);
+  const updateFilters = (newFilters: Reporting_TableFilterInput[]) => {
+    const valuesForSearchParams = newFilters.reduce(
+      (acc, { filterId, filterValue }) => {
+        if (
+          !filterValue ||
+          (Array.isArray(filterValue) && filterValue.length === 0)
+        ) {
+          return acc;
+        }
 
-  useEffect(() => {
-    if (params.size && !filters.length) {
-      const updatedFilter = (reportData?.filters ?? []).map((filter) => {
-        const filterValueFromURL = parseURLFilterValue(
-          params.get(filter.id) ?? '',
-          filter.inputType
-        );
-        const shouldUpdate =
-          JSON.stringify(filter.defaultValue) !==
-          JSON.stringify(filterValueFromURL);
+        acc[filterId] = Array.isArray(filterValue)
+          ? filterValue.join(',')
+          : String(filterValue);
+        return acc;
+      },
+      {} as Record<string, string>
+    );
 
-        return {
-          ...filter,
-          defaultValue: shouldUpdate
-            ? filterValueFromURL
-            : filter?.defaultValue,
-        };
-      });
-
-      if (JSON.stringify(updatedFilter) !== JSON.stringify(filters)) {
-        setFilters(updatedFilter);
-      }
-    }
-  }, [params, reportData?.filters]);
-
-  useEffect(() => {
-    if (filters.length) {
-      const redirectUrl = getURLFromFilters(filters);
-
-      navigate(`?${redirectUrl}`);
-    }
-  }, [filters]);
+    setSearchParams(valuesForSearchParams);
+    setFilters(newFilters);
+  };
 
   return (
     <>
       <DynamicForm
         isFetching={isFetching}
-        filters={filters}
-        onFilterChange={setFilters}
+        filters={reportData?.filters ?? []}
+        onFilterChange={updateFilters}
+        sql={reportData?.debug?.sql}
       />
       <Table<FormattedReportData[number]>
         isLoading={isLoading}
