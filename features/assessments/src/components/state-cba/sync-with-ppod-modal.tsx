@@ -12,7 +12,7 @@ import {
 import { PpodPublishResultsInput } from '@tyro/api';
 import { usePublishResultsToPpod } from '../../api/state-cba/publish-ppod-results';
 import { ReturnTypeFromUseAssessmentSubjectGroups } from '../../api/assessment-subject-groups';
-import { ReturnTypeFromUseAssessmentResults } from '../../api/term-assessments/results';
+import { ReturnTypeFromUseAssessmentResults } from '../../api/assessment-results';
 
 export interface ApproveAbsentRequestConfirmModalProps {
   isOpen: boolean;
@@ -21,6 +21,8 @@ export interface ApproveAbsentRequestConfirmModalProps {
   assessmentId?: number;
   studentResults?: ReturnTypeFromUseAssessmentResults[];
 }
+
+type ResultsIds = number;
 
 export function SyncWithPpodModal({
   isOpen,
@@ -38,9 +40,8 @@ export function SyncWithPpodModal({
 
   const onSubmit = () => {
     const subjectGroupId = initialState[0]?.subjectGroup?.partyId;
-    type ResultsIds = number;
     const resultIds = studentResults?.reduce<ResultsIds[]>((acc, student) => {
-      if (student?.id && student?.id) {
+      if (student && student?.id) {
         acc.push(student?.id);
       }
       return acc;

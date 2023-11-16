@@ -12,7 +12,7 @@ import {
 } from '@tyro/api';
 import { useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { assessmentsKeys } from '../keys';
+import { assessmentsKeys } from './keys';
 
 const assessmentResults = graphql(/* GraphQL */ `
   query assessment_assessmentResult($filter: AssessmentResultFilter) {

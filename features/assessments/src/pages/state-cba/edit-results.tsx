@@ -23,12 +23,10 @@ import {
   ExtraFieldType,
   getPersonProfileLink,
   SaveAssessmentResultInput,
-  SaveExtraFieldInput,
-  StudyLevel,
 } from '@tyro/api';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { useParams } from 'react-router-dom';
-import { Chip, ChipProps } from '@mui/material';
+import { Chip } from '@mui/material';
 import { useMemo } from 'react';
 import set from 'lodash/set';
 import { StudentTableAvatar } from '@tyro/people';
@@ -36,11 +34,7 @@ import { useAssessmentById } from '../../api/assessments';
 import {
   useAssessmentResults,
   ReturnTypeFromUseAssessmentResults,
-} from '../../api/term-assessments/results';
-import {
-  useStateCbaResults,
-  ReturnTypeFromUseStateCbaResults,
-} from '../../api/state-cba/results';
+} from '../../api/assessment-results';
 import {
   useCbaGradeSetsQuery,
   ReturnTypeFromUseCbaGradeSets,
@@ -51,7 +45,6 @@ import {
   ReturnTypeFromUseAssessmentById,
   ReturnTypeFromUseCommentBanksWithComments,
 } from '../term-assessment/subject-group/edit-results';
-import { usePublishResultsToPpod } from '../../api/state-cba/publish-ppod-results';
 import { useCommentBanksWithComments } from '../../api/comment-bank';
 
 const getColumnDefs = (
@@ -231,12 +224,6 @@ export default function EditStateCbaResults() {
     academicNamespaceIdAsNumber ?? 0,
     assessmentResultsFilter
   );
-
-  const {
-    mutateAsync: publishResultsToPpod,
-    isLoading: isSubmitting,
-    isSuccess: isSubmitSuccessful,
-  } = usePublishResultsToPpod();
 
   const columnDefs = useMemo(
     () =>

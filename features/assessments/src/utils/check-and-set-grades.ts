@@ -1,7 +1,7 @@
 import { CellValueChangedEvent, ValueSetterParams } from '@tyro/core';
 import set from 'lodash/set';
 import { getCalculateGrade } from '../api/term-assessments/calculate-grade';
-import { ReturnTypeFromUseAssessmentResults } from '../api/term-assessments/results';
+import { ReturnTypeFromUseAssessmentResults } from '../api/assessment-results';
 
 function mimicCellValueChanged(
   params: ValueSetterParams<ReturnTypeFromUseAssessmentResults>,

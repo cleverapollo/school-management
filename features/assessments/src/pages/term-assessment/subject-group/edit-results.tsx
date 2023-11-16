@@ -37,7 +37,7 @@ import {
   ReturnTypeFromUseAssessmentResults,
   useAssessmentResults,
   useUpdateAssessmentResult,
-} from '../../../api/term-assessments/results';
+} from '../../../api/assessment-results';
 import { useCommentBanksWithComments } from '../../../api/comment-bank';
 import { checkAndSetGrades } from '../../../utils/check-and-set-grades';
 import { CommentTypeCellEditor } from '../../../components/common/comment-type-cell-editor';

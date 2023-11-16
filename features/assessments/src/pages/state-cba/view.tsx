@@ -28,7 +28,6 @@ import {
   CheckmarkCircleIcon,
   MobileIcon,
   SendMailIcon,
-  StopIcon,
   SyncIcon,
 } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
@@ -37,7 +36,7 @@ import { useAssessmentById } from '../../api/assessments';
 import {
   useAssessmentResults,
   ReturnTypeFromUseAssessmentResults,
-} from '../../api/term-assessments/results';
+} from '../../api/assessment-results';
 import {
   useAssessmentSubjectGroups,
   ReturnTypeFromUseAssessmentSubjectGroups,
@@ -69,6 +68,7 @@ const getColumnDefs = (
     checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
   },
+  // ** THIS WILL BE REPLACED WITH GRADE RESULTS WHEN BE UPDATES ENDPOINT **
   {
     field: 'resultsTotal',
     headerName: t('assessments:results'),
@@ -83,22 +83,6 @@ const getColumnDefs = (
         total={data?.resultsTotal}
       />
     ),
-  },
-  {
-    field: 'commentsTotal',
-    headerName: t('assessments:comments'),
-    suppressSizeToFit: true,
-    valueGetter: ({ data }) =>
-      data && `${data?.commentsEntered ?? '-'}/${data?.commentsTotal ?? '-'}`,
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseAssessmentSubjectGroups>) =>
-      data && (
-        <TableLinearProgress
-          value={data?.commentsEntered}
-          total={data?.commentsTotal}
-        />
-      ),
   },
   {
     field: 'subjectGroup.staff',
@@ -155,6 +139,7 @@ const getColumnDefs = (
       );
     },
   },
+  // ** THIS NEEDS TO BE UPDATED WHEN BE RETURNS TOTALS FOR GRADE RESULTS
   {
     colId: 'publishedOnline',
     headerName: t('assessments:publishedOnline'),

@@ -19,7 +19,7 @@ export default function EditStateCba() {
     academicNameSpaceId: academicNameSpaceIdAsNumber ?? 0,
     ids: [assessmentIdAsNumber ?? 0],
   });
-  // @ts-ignore
+
   const formValues = useMemo<FormValues | null>(() => {
     if (!assessmentData) return null;
 

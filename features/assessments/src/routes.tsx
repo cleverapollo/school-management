@@ -10,7 +10,7 @@ import { getCoreAcademicNamespace } from '@tyro/api';
 import { redirect } from 'react-router-dom';
 import { getAssessmentById, getAssessments } from './api/assessments';
 import { getAssessmentSubjectGroups } from './api/assessment-subject-groups';
-import { getAssessmentResults } from './api/term-assessments/results';
+import { getAssessmentResults } from './api/assessment-results';
 
 const AssessmentsPage = lazyWithRetry(() => import('./pages/assessments'));
 const ViewTermAssessment = lazyWithRetry(

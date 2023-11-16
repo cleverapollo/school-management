@@ -32,7 +32,10 @@ import {
 } from '../../api/state-cba/subject-groups';
 import { useSaveStateCba } from '../../api/state-cba/save-state-cba';
 
-export type YearGroupOption = UseQueryReturnType<typeof useYearGroups>[number];
+export type YearGroupOption = {
+  name: string;
+  yearGroupId: number;
+};
 
 export interface FormValues extends FormCustomFieldsValues {
   cbaType: StateCbaType;
@@ -83,7 +86,7 @@ export function StateCbaForm({
       subject: rules.required(),
       groups: rules.required(),
     }),
-    // mode: 'onChange',
+    mode: 'onChange',
   });
 
   const [subjectPicked, yearPicked] = watch(['subject', 'years']);
@@ -132,56 +135,34 @@ export function StateCbaForm({
     ...restData
   }: FormValues) => {
     const groupIds = groups?.map((group) => group?.partyId);
-    if (stateCba?.id && stateCba?.id) {
-      saveStateCba(
-        {
-          ...restData,
-          id: stateCba?.id,
-          yearId: years?.yearGroupId,
-          startDate: startDate.format('YYYY-MM-DD'),
-          endDate: endDate.format('YYYY-MM-DD'),
-          stateCbaType: cbaType,
-          subjectGroupIds: groupIds,
+    saveStateCba(
+      {
+        ...restData,
+        id: stateCba?.id ?? null,
+        yearId: years?.yearGroupId,
+        startDate: startDate.format('YYYY-MM-DD'),
+        endDate: endDate.format('YYYY-MM-DD'),
+        stateCbaType: cbaType,
+        subjectGroupIds: groupIds,
+      },
+      {
+        onSuccess: () => {
+          onSuccess?.();
+          navigate('/assessments');
         },
-        {
-          onSuccess: () => {
-            onSuccess?.();
-            navigate('/assessments');
-          },
-          onError,
-        }
-      );
-    } else {
-      saveStateCba(
-        {
-          ...restData,
-          yearId: years?.yearGroupId,
-          startDate: startDate.format('YYYY-MM-DD'),
-          endDate: endDate.format('YYYY-MM-DD'),
-          stateCbaType: cbaType,
-          subjectGroupIds: groupIds,
-        },
-        {
-          onSuccess: () => {
-            onSuccess?.();
-            navigate('/assessments');
-          },
-          onError,
-        }
-      );
-    }
+        onError,
+      }
+    );
   };
 
   const isEditing = !!(stateCba?.id && stateCba?.id);
 
   useEffect(() => {
     if (!stateCba?.id && subjectPicked && yearPicked) {
-      // @ts-ignore
       setValue('groups', undefined);
     }
     const subjectChanged = stateCba?.subject?.name !== subjectPicked?.name;
     if (stateCba && stateCba?.id && subjectChanged) {
-      // @ts-ignore
       setValue('groups', []);
     }
   }, [subjectPicked, yearPicked]);
