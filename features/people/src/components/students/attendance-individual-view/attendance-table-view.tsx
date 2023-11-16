@@ -57,6 +57,10 @@ const getColumns = (
     valueGetter: ({ data }) => data?.date,
     sort: 'desc',
     sortIndex: 0,
+    comparator: (dateA: string, dateB: string) => {
+      return dayjs(dateA).unix() - dayjs(dateB).unix()
+    },
+    enableRowGroup: true,
   },
   {
     headerName: t('common:time'),
@@ -136,7 +140,7 @@ export function AttendanceTableView({
       const formattedData: CombinedAttendanceDataType = {
         type: event?.name,
         date: eventAttendanceData?.date,
-        time: dayjs(event?.startTime)?.format('HH:mm'),
+        time: dayjs(event?.startTime)?.format('LT'),
         attendanceCode: eventAttendanceData?.attendanceCode?.name,
         createdBy:
           eventAttendanceData?.updatedBy || eventAttendanceData?.createdBy,
