@@ -328,7 +328,6 @@ export default function EditStateCbaResults() {
       },
       []
     );
-    // return Promise.reject();
     return updateStateCbaResult(formattedData as SaveAssessmentResultInput[]);
   };
 
