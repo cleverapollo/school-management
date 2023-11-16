@@ -46,8 +46,8 @@ export default function StudentProfileContainer() {
       <TabPageContainer
         links={[
           {
-            label: 'Overview',
-            value: t('common:overview'),
+            label: t('common:overview'),
+            value: 'overview',
             hasAccess: ({ isStaffUserWithPermission }) =>
               isStaffUserWithPermission('ps:1:people:view_student_overview'),
           },

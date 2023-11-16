@@ -12,10 +12,14 @@ interface StudentSelectorForOverallCommentsProps {
         ReturnTypeFromUseAssessmentById['yearGroupEnrolments']
       >[number]
     | undefined;
-  students: ReturnTypeFromUseOverallCommentsByYearGroup[];
-  selectedStudent: ReturnTypeFromUseOverallCommentsByYearGroup | null;
+  students: ReturnTypeFromUseOverallCommentsByYearGroup['students'];
+  selectedStudent:
+    | ReturnTypeFromUseOverallCommentsByYearGroup['students'][number]
+    | null;
   onSelectStudent: (
-    student: ReturnTypeFromUseOverallCommentsByYearGroup | null
+    student:
+      | ReturnTypeFromUseOverallCommentsByYearGroup['students'][number]
+      | null
   ) => void;
 }
 

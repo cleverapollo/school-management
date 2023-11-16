@@ -1,22 +1,29 @@
 import { useTranslation } from '@tyro/i18n';
-import { Stack } from '@mui/material';
+import {
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+  useFormValidator,
+} from '@tyro/core';
+import { Button, IconButton, Stack, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-
-import { useFormValidator } from '@tyro/core';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Reporting_TableFilter,
   Reporting_TableFilterType,
   Reporting_TableFilterValues,
 } from '@tyro/api';
 import dayjs, { Dayjs } from 'dayjs';
+import { InfoCircleIcon } from '@tyro/icons';
 import { DynamicControl } from './control';
 
 type DynamicFormProps = {
   isFetching: boolean;
   filters: Reporting_TableFilter[];
   onFilterChange: (filters: Reporting_TableFilter[]) => void;
+  sql: string;
 };
 
 type FormState = { [id: Reporting_TableFilter['id']]: any };
@@ -49,8 +56,10 @@ export const DynamicForm = ({
   isFetching,
   filters,
   onFilterChange,
+  sql,
 }: DynamicFormProps) => {
   const { t } = useTranslation(['common']);
+  const [openSqlDialog, setOpenSqlDialog] = useState(false);
 
   const { resolver, rules } = useFormValidator();
 
@@ -104,6 +113,10 @@ export const DynamicForm = ({
     );
   });
 
+  const handleCloseDialog = () => {
+    setOpenSqlDialog(false);
+  };
+
   return filters.length > 0 ? (
     <Stack
       component="form"
@@ -134,7 +147,33 @@ export const DynamicForm = ({
         >
           {t('common:actions.filter')}
         </LoadingButton>
+        {sql && (
+          <IconButton onClick={() => setOpenSqlDialog(true)} sx={{ ml: 1 }}>
+            <InfoCircleIcon />
+          </IconButton>
+        )}
       </Stack>
+      <Dialog
+        open={openSqlDialog}
+        onClose={handleCloseDialog}
+        scroll="paper"
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle onClose={handleCloseDialog}>Sql</DialogTitle>
+        <DialogContent>
+          <Typography>{sql}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleCloseDialog}
+          >
+            {t('common:actions.close')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Stack>
   ) : null;
 };

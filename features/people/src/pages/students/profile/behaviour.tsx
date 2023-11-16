@@ -10,7 +10,6 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
-import MyChip from '@mui/material/Chip';
 import {
   Colour,
   Notes_BehaviourType,
@@ -519,7 +518,7 @@ export default function StudentProfileBehaviourPage() {
                     onClick={() => setCurrentTabValue(tab?.name ?? '')}
                     label={
                       <>
-                        <MyChip
+                        <Chip
                           label={
                             tab?.name === 'All'
                               ? studentBehaviorData?.length

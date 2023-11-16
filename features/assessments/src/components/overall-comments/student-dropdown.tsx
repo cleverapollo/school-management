@@ -3,25 +3,20 @@ import { Avatar, usePreferredNameLayout, useDisclosure } from '@tyro/core';
 import { ChevronDownIcon } from '@tyro/icons';
 import { useRef } from 'react';
 import { useTranslation } from '@tyro/i18n';
-import { ReturnTypeFromUseAssessmentById } from '../../api/assessments';
 import { ReturnTypeFromUseOverallCommentsByYearGroup } from '../../api/overall-comment-year-group';
 import { CommentStatusIcon } from './comment-status-icon';
 
 interface StudentDropdownForOverallCommentsProps {
-  yearGroupEnrollment:
-    | NonNullable<
-        ReturnTypeFromUseAssessmentById['yearGroupEnrolments']
-      >[number]
-    | undefined;
-  students: ReturnTypeFromUseOverallCommentsByYearGroup[];
-  selectedStudent: ReturnTypeFromUseOverallCommentsByYearGroup;
+  students: ReturnTypeFromUseOverallCommentsByYearGroup['students'];
+  selectedStudent: ReturnTypeFromUseOverallCommentsByYearGroup['students'][number];
   onSelectStudent: (
-    student: ReturnTypeFromUseOverallCommentsByYearGroup | null
+    student:
+      | ReturnTypeFromUseOverallCommentsByYearGroup['students'][number]
+      | null
   ) => void;
 }
 
 export function StudentDropdownForOverallComments({
-  yearGroupEnrollment,
   students,
   selectedStudent,
   onSelectStudent,

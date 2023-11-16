@@ -421,3 +421,7 @@
 .ag-theme-tyro .cell-value-visible .ag-cell-value {
   overflow: visible;
 }
+
+.ag-theme-tyro .ag-popup-child {
+  z-index: 1300;
+}
