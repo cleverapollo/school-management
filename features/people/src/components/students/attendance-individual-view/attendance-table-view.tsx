@@ -8,11 +8,14 @@ import {
   ReturnTypeDisplayName,
   usePreferredNameLayout,
 } from '@tyro/core';
+import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import {
   useTableSessionAttendance,
   useStudentDailyCalendarInformation,
 } from '@tyro/attendance';
 import { useTranslation, TFunction } from '@tyro/i18n';
+dayjs.extend(LocalizedFormat);
 
 type AttendanceTableViewProps = {
   startDate: string;
@@ -25,6 +28,7 @@ type OptionalTypeForCombinedAttendanceData = string | null;
 
 export type CombinedAttendanceDataType = {
   date: TypeForCombinedAttendanceData;
+  time: TypeForCombinedAttendanceData;
   type: TypeForCombinedAttendanceData;
   attendanceCode: TypeForCombinedAttendanceData;
   details?: OptionalTypeForCombinedAttendanceData;
@@ -51,7 +55,17 @@ const getColumns = (
     headerName: t('common:date'),
     field: 'date',
     valueGetter: ({ data }) => data?.date,
-    sort: 'asc',
+    sort: 'desc',
+    sortIndex: 0,
+  },
+  {
+    headerName: t('common:time'),
+    field: 'time',
+    valueGetter: ({ data }) => data?.time,
+    valueFormatter: ({ data }) => {
+      return data?.time || '';
+    },
+    sort: 'desc',
   },
   {
     headerName: t('common:type'),
@@ -122,6 +136,7 @@ export function AttendanceTableView({
       const formattedData: CombinedAttendanceDataType = {
         type: event?.name,
         date: eventAttendanceData?.date,
+        time: dayjs(event?.startTime)?.format('HH:mm'),
         attendanceCode: eventAttendanceData?.attendanceCode?.name,
         createdBy:
           eventAttendanceData?.updatedBy || eventAttendanceData?.createdBy,
