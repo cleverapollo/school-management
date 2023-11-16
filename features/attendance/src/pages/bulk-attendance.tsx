@@ -37,8 +37,8 @@ const getColumns = (
   {
     colId: 'search',
     headerName: t('attendance:attendanceFor'),
-    valueGetter: ({ data }) =>
-      data?.parties?.map((party) => {
+    valueFormatter: ({ data }) => {
+      const attendanceForArr = data?.parties?.map((party) => {
         switch (party?.__typename) {
           case 'Student':
           case 'StudentContact':
@@ -49,7 +49,23 @@ const getColumns = (
           default:
             return party?.name ?? '-';
         }
-      }),
+      });
+
+      const splittedArr = attendanceForArr
+        .join('^')
+        .slice(0, 31)
+        .split('^')
+        .filter((item) => item.replace('^', ''));
+      const showLastItem =
+        splittedArr[splittedArr.length - 1] ===
+        attendanceForArr[splittedArr.length - 1];
+      const additionalItemsCount =
+        attendanceForArr.length - splittedArr.length + (showLastItem ? 0 : 1);
+
+      return `${(showLastItem ? splittedArr : splittedArr.slice(0, -1)).join(
+        ', '
+      )}${additionalItemsCount ? ` (+ ${additionalItemsCount})` : ''}`;
+    },
   },
   {
     field: 'attendanceCode.name',
