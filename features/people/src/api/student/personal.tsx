@@ -10,6 +10,11 @@ const studentsPersonalById = graphql(/* GraphQL */ `
       leftEarly
       endDate
       guardianshipNote
+      exemptions {
+        exemption
+        exemptionTypeCode
+        grantor
+      }
       person {
         partyId
         title {

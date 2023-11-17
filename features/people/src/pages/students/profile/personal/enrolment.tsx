@@ -136,9 +136,7 @@ const getEnrolmentDataWithLabels = (
             value: studentIrePP?.reasonForLeaving,
             valueRenderer: studentIrePP?.reasonForLeaving
               ? t(
-                  `people:personal.enrolmentHistory.studentLeavingReason.${
-                    studentIrePP?.reasonForLeaving as StudentLeavingReason
-                  }`
+                  `people:personal.enrolmentHistory.studentLeavingReason.${studentIrePP?.reasonForLeaving}`
                 )
               : null,
             valueEditor: (
@@ -175,7 +173,7 @@ export const ProfileEnrolment = ({
   const { displayNames } = usePreferredNameLayout();
   const { resolver, rules } = useFormValidator<EnrolmentFormState>();
 
-  const { leftEarly, studentIrePP } = studentData || {};
+  const { leftEarly, studentIrePP, exemptions } = studentData || {};
   const {
     languageSupportApplicant,
     examEntrant,
@@ -212,6 +210,12 @@ export const ProfileEnrolment = ({
     >
       <Stack gap={3}>
         {[
+          {
+            label: t('people:personal.enrolmentHistory.studentFromIrish'),
+            value: exemptions?.length
+              ? exemptions?.map(({ exemption }) => exemption)?.join(', ')
+              : t('common:no'),
+          },
           {
             label: t(
               'people:personal.enrolmentHistory.languageSupportApplicant'
