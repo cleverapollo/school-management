@@ -163,7 +163,7 @@ export default function SupportGroups() {
       icon: <MoveGroupIcon />,
       onClick: () => setSwitchGroupTypeConfirmation(true),
       hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
-          isStaffUserWithPermission('ps:1:groups:write_subject_groups'),
+        isStaffUserWithPermission('ps:1:groups:write_subject_groups'),
     },
     // {
     //   label: t('mail:sendMail'),
