@@ -39,6 +39,17 @@ const attendanceAwolReports = graphql(/* GraphQL */ `
         endTime
         name
         description
+        rooms {
+          name
+        }
+      }
+      absentSubjectGroup {
+        partyId
+        subjectGroupType
+        name
+        subjects {
+          colour
+        }
       }
       absentUpdatedBy {
         firstName
