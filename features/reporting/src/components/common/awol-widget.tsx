@@ -162,8 +162,8 @@ export function AWOLWidget() {
                 }}
               >
                 <Box
-                  py={1}
-                  px={1}
+                  py={1.25}
+                  px={1.25}
                   role="gridcell"
                   display="flex"
                   alignItems="center"
@@ -213,8 +213,8 @@ export function AWOLWidget() {
                   </Stack>
                 </Box>
                 <Box
-                  py={1}
-                  pr={1}
+                  py={1.25}
+                  pr={1.25}
                   role="gridcell"
                   display="flex"
                   alignItems="center"
