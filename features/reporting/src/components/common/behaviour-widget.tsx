@@ -1,7 +1,7 @@
-import { Card, IconButton, Stack, Typography, Chip } from '@mui/material';
+import { Card, IconButton, Stack, Typography, Chip, Box } from '@mui/material';
 import { FullScreenIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
-import { useTranslation } from '@tyro/i18n';
+import { useTranslation, Trans } from '@tyro/i18n';
 import { Link } from 'react-router-dom';
 import {
   Avatar,
@@ -18,10 +18,13 @@ type ReportColumnValue = {
 
 type BehaviourData = {
   date: ReportColumnValue;
+  indicate_date: ReportColumnValue;
   associated_parties: ReportColumnValue;
   last_name: ReportColumnValue;
   details: ReportColumnValue;
   id: ReportColumnValue;
+  avatar_url?: ReportColumnValue;
+  party_id: ReportColumnValue;
   type: ReportColumnValue;
   first_name: ReportColumnValue;
   class?: ReportColumnValue;
@@ -59,9 +62,14 @@ export function BehaviourWidget() {
     return behaviourStudentsData.slice(0, 5).map((behaviourStudent) => ({
       id: behaviourStudent.id.value,
       name: `${behaviourStudent.first_name.value} ${behaviourStudent.last_name.value}`,
-      tags: behaviourStudent.tags.value,
+      partyId: behaviourStudent.party_id.value,
+      avatarUrl: behaviourStudent?.avatar_url?.value,
+      loggedTime: dayjs(behaviourStudent.indicate_date.value).format('LT'),
+      tags: behaviourStudent.tags.value.split(','),
+      classGroup: behaviourStudent.class?.value,
+      createdBy: behaviourStudent?.created_by?.value,
       category: behaviourStudent?.category?.value,
-      categorColour: behaviourStudent?.category_colour?.value,
+      categoryColour: behaviourStudent?.category_colour?.value,
       type: behaviourStudent.type.value,
     }));
   }, [behaviourData]);
@@ -133,35 +141,95 @@ export function BehaviourWidget() {
       ) : (
         <Stack spacing={1.25}>
           {behaviourStudents.map(
-            ({ id, name, tags, category, categorColour }) => (
+            ({
+              id,
+              partyId,
+              avatarUrl,
+              name,
+              classGroup,
+              createdBy = '-',
+              tags,
+              category,
+              categoryColour,
+              loggedTime,
+            }) => (
               <Card
+                component={Link}
                 key={id}
+                to={`/people/students/${partyId}/behaviour`}
                 sx={{
                   p: 1.5,
+                  textDecoration: 'inherit',
+                  '&:hover': {
+                    bgcolor: 'indigo.100',
+                  },
+                  '&:active': {
+                    bgcolor: 'indigo.200',
+                  },
                 }}
               >
-                <Stack direction="row" alignItems="center" spacing={1.5}>
-                  <Avatar name={name} size={36} />
-                  <Stack flex={1} alignItems="flex-start">
-                    <Typography variant="subtitle1" component="span">
-                      {name}
-                    </Typography>
+                <Stack spacing={1}>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    spacing={1.5}
+                  >
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Avatar name={name} src={avatarUrl} size={48} />
+                      <Stack>
+                        <Typography variant="subtitle1" component="span">
+                          {name}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          fontWeight={600}
+                          color="text.secondary"
+                          component="span"
+                        >
+                          {classGroup}
+                        </Typography>
+                      </Stack>
+                    </Stack>
                     <Typography
-                      variant="body1"
+                      variant="body2"
                       color="text.secondary"
                       component="span"
+                      textAlign="right"
                     >
-                      {tags}
+                      <Trans ns="reports" i18nKey="loggedDateByStaff">
+                        Logged at {{ loggedTime }} <br />
+                        by{' '}
+                        <Typography
+                          variant="body2"
+                          component="span"
+                          fontWeight="600"
+                          color="text.primary"
+                        >
+                          {/* @ts-expect-error */}
+                          {{ createdBy }}
+                        </Typography>
+                      </Trans>
                     </Typography>
+                  </Stack>
+                  <Stack direction="row" flex={1} spacing={0.75}>
                     {category && (
                       <Chip
                         size="small"
-                        variant="soft"
-                        color={categorColour ?? 'slate'}
+                        variant="outlined"
+                        color={categoryColour ?? 'slate'}
                         label={category}
-                        sx={{ mt: 0.5 }}
                       />
                     )}
+                    {tags.map((tag) => (
+                      <Chip
+                        key={tag}
+                        size="small"
+                        variant="soft"
+                        color={categoryColour ?? 'slate'}
+                        label={tag}
+                      />
+                    ))}
                   </Stack>
                 </Stack>
               </Card>

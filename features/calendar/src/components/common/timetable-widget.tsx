@@ -239,7 +239,9 @@ export function TimetableWidget({
                       );
                       const teacherName =
                         teacher?.partyInfo?.__typename === 'Staff'
-                          ? displayName(teacher.partyInfo.person)
+                          ? `${
+                              teacher?.partyInfo?.person?.firstName?.[0] ?? ''
+                            }. ${teacher?.partyInfo?.person?.lastName ?? ''}`
                           : '-';
 
                       const subjectAttendee = event?.attendees?.find(
@@ -322,16 +324,6 @@ export function TimetableWidget({
                                 >
                                   {isSubstitution && <SwapHorizontalIcon />}
                                 </Box>
-                                <Box
-                                  sx={{
-                                    backgroundColor: event?.colour
-                                      ? `${event.colour}.500`
-                                      : defaultColor,
-                                    width: '6px',
-                                    height: '18px',
-                                    borderRadius: '3px',
-                                  }}
-                                />
                                 <Box
                                   component="span"
                                   fontWeight={isBreak ? '400' : '600'}

@@ -1,7 +1,7 @@
 import { Box, Card, IconButton, Stack, Typography } from '@mui/material';
 import { FullScreenIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
-import { useTranslation } from '@tyro/i18n';
+import { Trans, useTranslation } from '@tyro/i18n';
 import { Link } from 'react-router-dom';
 import {
   LoadingPlaceholderContainer,
@@ -9,7 +9,10 @@ import {
 } from '@tyro/core';
 import { StudentAvatar } from '@tyro/people';
 import { useMemo } from 'react';
-import { useAttendanceAwolReports } from '../../api/awol-report';
+import {
+  ReturnTypeFromUseAttendanceAwolReports,
+  useAttendanceAwolReports,
+} from '../../api/awol-report';
 
 export function AWOLWidget() {
   const { t } = useTranslation(['common', 'reports']);
@@ -30,6 +33,19 @@ export function AWOLWidget() {
         .slice(0, 5),
     [awolStudents]
   );
+
+  const getAttendanceBy = ({
+    absentCreatedBy,
+    absentUpdatedBy,
+  }: ReturnTypeFromUseAttendanceAwolReports) => {
+    if (absentUpdatedBy?.firstName && absentUpdatedBy?.lastName) {
+      return `${absentUpdatedBy.firstName[0]}. ${absentUpdatedBy.lastName}`;
+    }
+    if (absentCreatedBy?.firstName && absentCreatedBy?.lastName) {
+      return `${absentCreatedBy.firstName[0]}. ${absentCreatedBy.lastName}`;
+    }
+    return '-';
+  };
 
   return (
     <Card
@@ -54,14 +70,13 @@ export function AWOLWidget() {
           />
         </IconButton>
       </Stack>
-      <Card
-        sx={{
-          minHeight: 160,
-          p: isLoading || sortedAwolStudents.length === 0 ? 0 : 1.5,
-        }}
-      >
-        <LoadingPlaceholderContainer isLoading={isLoading}>
-          {sortedAwolStudents.length === 0 ? (
+      {isLoading || sortedAwolStudents.length === 0 ? (
+        <Card
+          sx={{
+            minHeight: 160,
+          }}
+        >
+          <LoadingPlaceholderContainer isLoading={isLoading}>
             <Stack
               sx={{
                 position: 'absolute',
@@ -82,153 +97,175 @@ export function AWOLWidget() {
                 {t('reports:allStudentsAreAccountedFor')}
               </Typography>
             </Stack>
-          ) : (
-            <Box
-              sx={{
-                display: 'grid',
-                rowGap: 1.5,
-                gridTemplateColumns: 'repeat(2, auto)',
-              }}
-              role="grid"
-              aria-readonly="true"
+          </LoadingPlaceholderContainer>
+        </Card>
+      ) : (
+        <Box
+          sx={{
+            display: 'grid',
+            rowGap: 1.5,
+            gridTemplateColumns: 'repeat(2, auto)',
+          }}
+          role="grid"
+          aria-readonly="true"
+        >
+          <Box px={1} role="columnheader">
+            <Typography
+              variant="subtitle2"
+              color="text.secondary"
+              component="span"
             >
-              <Box px={0.5} role="columnheader">
-                <Typography
-                  variant="subtitle2"
-                  color="text.secondary"
-                  component="span"
-                >
-                  {t('common:student')}
-                </Typography>
-              </Box>
-              <Box role="columnheader">
-                <Typography
-                  variant="subtitle2"
-                  color="text.secondary"
-                  component="span"
-                >
-                  {t('reports:lastExpectedLocation')}
-                </Typography>
-              </Box>
-              {sortedAwolStudents.map((awolStudent) => {
-                const {
-                  partyId,
-                  student,
-                  classGroup,
-                  presentSubjectGroup,
-                  presentEvent,
-                } = awolStudent;
-                const { yearGroups, person } = student ?? {};
-                const presentSubjectGroupColour =
-                  presentSubjectGroup?.subjects?.[0]?.colour ?? 'slate';
-                const yearName = yearGroups?.[0]?.name;
-                const name = displayName(person);
-                const previousRoom = presentEvent?.rooms?.[0]?.name;
+              {t('common:student')}
+            </Typography>
+          </Box>
+          <Box px={1} role="columnheader" justifySelf="end">
+            <Typography
+              variant="subtitle2"
+              color="text.secondary"
+              component="span"
+            >
+              {t('reports:lastExpectedLocation')}
+            </Typography>
+          </Box>
+          {sortedAwolStudents.map((awolStudent) => {
+            const {
+              partyId,
+              student,
+              classGroup,
+              absentEvent,
+              absentSubjectGroup,
+            } = awolStudent;
+            const { person } = student ?? {};
+            const absentSubjectGroupColour =
+              absentSubjectGroup?.subjects?.[0]?.colour ?? 'slate';
+            const name = displayName(person);
+            const absentRoom = absentEvent?.rooms?.[0]?.name;
+            const attendanceBy = getAttendanceBy(awolStudent);
 
-                return (
-                  <Box
-                    component={Link}
-                    to={`/people/students/${partyId}/attendance`}
-                    key={partyId}
+            return (
+              <Card
+                component={Link}
+                to={`/people/students/${partyId}/attendance`}
+                key={partyId}
+                sx={{
+                  display: 'grid',
+                  gridColumn: '1 / 3',
+                  gridTemplateColumns: 'subgrid',
+                  color: 'inherit',
+                  textDecoration: 'inherit',
+                  '&:hover': {
+                    bgcolor: 'indigo.100',
+                  },
+                  '&:active': {
+                    bgcolor: 'indigo.200',
+                  },
+                }}
+              >
+                <Box
+                  py={1}
+                  px={1}
+                  role="gridcell"
+                  display="flex"
+                  alignItems="center"
+                >
+                  <Stack spacing={0.5}>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <StudentAvatar
+                        partyId={partyId}
+                        name={name}
+                        src={student?.person?.avatarUrl}
+                        isPriorityStudent={!!student?.extensions?.priority}
+                        hasSupportPlan={false}
+                        size={48}
+                      />
+                      <Stack>
+                        <Typography variant="subtitle1" component="span">
+                          {name}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          fontWeight={600}
+                          color="text.secondary"
+                          component="span"
+                        >
+                          {classGroup?.name}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      component="span"
+                    >
+                      <Trans ns="reports" i18nKey="attendanceByStaff">
+                        Attendance by{' '}
+                        <Typography
+                          variant="body2"
+                          component="span"
+                          fontWeight="600"
+                          color="text.primary"
+                        >
+                          {/* @ts-expect-error */}
+                          {{ attendanceBy }}
+                        </Typography>
+                      </Trans>
+                    </Typography>
+                  </Stack>
+                </Box>
+                <Box
+                  py={1}
+                  pr={1}
+                  role="gridcell"
+                  display="flex"
+                  alignItems="center"
+                  justifySelf="end"
+                >
+                  <Card
                     sx={{
-                      display: 'grid',
-                      gridColumn: '1 / 3',
-                      gridTemplateColumns: 'subgrid',
-                      color: 'inherit',
-                      textDecoration: 'inherit',
-                      '&:hover > div': {
-                        bgcolor: 'indigo.100',
-                      },
-                      '&:active > div': {
-                        bgcolor: 'indigo.200',
-                      },
+                      borderRadius: 1,
+                      pr: 1,
+                      minWidth: 120,
                     }}
                   >
-                    <Box
-                      py={1}
-                      px={1}
-                      bgcolor="slate.100"
-                      borderRadius="12px 0 0 12px"
-                      role="gridcell"
-                      display="flex"
-                      alignItems="center"
-                    >
-                      <Stack direction="row" spacing={1}>
-                        <StudentAvatar
-                          partyId={partyId}
-                          name={name}
-                          src={student?.person?.avatarUrl}
-                          isPriorityStudent={!!student?.extensions?.priority}
-                          hasSupportPlan={false}
-                          size={36}
-                        />
-                        <Stack>
-                          <Typography variant="subtitle2" component="span">
-                            {name}
-                          </Typography>
+                    <Stack direction="row" alignItems="stretch" p={0.5}>
+                      <Box
+                        bgcolor={`${absentSubjectGroupColour}.400`}
+                        sx={{
+                          width: 5,
+                          borderRadius: 2.5,
+                          mr: 0.75,
+                        }}
+                      />
+                      <Stack>
+                        <Typography variant="subtitle1" component="span">
+                          {absentEvent?.name}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          component="span"
+                        >
+                          {dayjs(absentEvent.startTime).format('LT')} -{' '}
+                          {dayjs(absentEvent.endTime).format('LT')}
+                        </Typography>
+                        {absentRoom && (
                           <Typography
                             variant="caption"
-                            fontWeight={600}
                             color="text.secondary"
                             component="span"
                           >
-                            {yearName}{' '}
-                            <Box component="span" ml={0.5}>
-                              {classGroup?.name}
-                            </Box>
+                            {absentRoom}
                           </Typography>
-                        </Stack>
+                        )}
                       </Stack>
-                    </Box>
-                    <Box
-                      py={1}
-                      pr={1}
-                      bgcolor="slate.100"
-                      borderRadius="0 12px 12px 0"
-                      role="gridcell"
-                      display="flex"
-                      alignItems="center"
-                    >
-                      <Box
-                        bgcolor="white"
-                        border="1px solid"
-                        borderColor="indigo.100"
-                        borderRadius="8px"
-                        flex={1}
-                      >
-                        <Stack direction="row" alignItems="stretch" p={0.5}>
-                          <Box
-                            bgcolor={`${presentSubjectGroupColour}.400`}
-                            sx={{
-                              width: 5,
-                              borderRadius: 2.5,
-                              mr: 0.75,
-                            }}
-                          />
-                          <Typography variant="subtitle2" component="span">
-                            {presentEvent?.name}
-                          </Typography>
-                          {previousRoom && (
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              component="span"
-                              ml={1}
-                              lineHeight="22px"
-                            >
-                              {previousRoom}
-                            </Typography>
-                          )}
-                        </Stack>
-                      </Box>
-                    </Box>
-                  </Box>
-                );
-              })}
-            </Box>
-          )}
-        </LoadingPlaceholderContainer>
-      </Card>
+                    </Stack>
+                  </Card>
+                </Box>
+              </Card>
+            );
+          })}
+        </Box>
+      )}
     </Card>
   );
 }

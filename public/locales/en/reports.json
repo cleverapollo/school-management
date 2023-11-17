@@ -10,5 +10,7 @@
   "lastExpectedLocation": "Last expected location",
   "allStudentsAreAccountedFor": "All students are accounted for (so far!)",
   "noAwolStudents": "No students are absent without leave today",
-  "noBehaviourEventsToday": "No behaviour events today"
+  "noBehaviourEventsToday": "No behaviour events today",
+  "loggedDateByStaff": "Logged at {{loggedTime}} <3/>by <6>{{createdBy}}</6>",
+  "attendanceByStaff": "Attendance by <2>{{attendanceBy}}</2>"
 }
