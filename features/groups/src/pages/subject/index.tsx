@@ -197,7 +197,8 @@ export default function SubjectGroups() {
       label: t('groups:subjectGroup.switchToSupportClass.action'),
       icon: <MoveGroupIcon />,
       onClick: () => setSwitchGroupTypeConfirmation(true),
-      hasAccess: ({ isTyroUser }: PermissionUtils) => isTyroUser,
+      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission('ps:1:groups:write_subject_groups'),
     },
     // {
     //   label: t('mail:sendMail'),
