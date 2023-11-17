@@ -3,11 +3,12 @@ import { Page } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { AWOLWidget, BehaviourWidget } from '@tyro/reporting';
 import { TimetableWidget } from '@tyro/calendar';
-import { useUser } from '@tyro/api';
+import { usePermissions, useUser } from '@tyro/api';
 
 export default function Dashboard() {
   const { t } = useTranslation(['navigation']);
   const { activeProfile } = useUser();
+  const { isStaffUserWithPermission } = usePermissions();
 
   return (
     <Page title={t('navigation:general.dashboard')}>
@@ -19,9 +20,11 @@ export default function Dashboard() {
           <Box flex={1} minWidth="380px" maxWidth="420px">
             <AWOLWidget />
           </Box>
-          <Box flex={1} minWidth="380px" maxWidth="420px">
-            <BehaviourWidget />
-          </Box>
+          {isStaffUserWithPermission('ps:1:notes:read_behaviour') && (
+            <Box flex={1} minWidth="380px" maxWidth="420px">
+              <BehaviourWidget />
+            </Box>
+          )}
           <Box flex={1} minWidth="380px" maxWidth="420px">
             <TimetableWidget
               showTeacher={false}
