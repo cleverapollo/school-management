@@ -186,11 +186,14 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 index: true,
                 loader: async () => {
-                  const permissions = await getPermissionUtils();
-                  if (permissions.isContact || permissions.isStudent) {
-                    return redirect('./classes');
-                  }
-                  return redirect('./classes');
+                  const { isStaffUserWithPermission } =
+                    await getPermissionUtils();
+
+                  return isStaffUserWithPermission(
+                    'ps:1:people:view_student_overview'
+                  )
+                    ? redirect('./overview')
+                    : redirect('./classes');
                 },
               },
               {

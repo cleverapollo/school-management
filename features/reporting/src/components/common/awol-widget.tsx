@@ -10,8 +10,8 @@ import {
 import { StudentAvatar } from '@tyro/people';
 import { useMemo } from 'react';
 import {
-  ReturnTypeFromUseAttendanceAwolReports,
   useAttendanceAwolReports,
+  ReturnTypeFromUseAttendanceAwolReports,
 } from '../../api/awol-report';
 
 export function AWOLWidget() {

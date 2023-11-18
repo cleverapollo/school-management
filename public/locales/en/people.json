@@ -295,6 +295,7 @@
   "markAsPriorityNote": "Mark as priority note",
   "priorityDateRange": "Priority date range",
   "fullProfile": "Full profile",
+  "contactXOfY": "Contact {{index}}/{{total}}",
   "activityValues": {
     "GUIDANCE_AND_COUNSELLING": "Guidance & Counselling",
     "HOME_SCHOOL_LIAISON": "Home School Liaison",

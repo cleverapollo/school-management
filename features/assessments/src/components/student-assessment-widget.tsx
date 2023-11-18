@@ -1,7 +1,6 @@
 import {
   Box,
   Card,
-  CardHeader,
   IconButton,
   Stack,
   Table,
@@ -12,15 +11,20 @@ import {
   Typography,
   TableContainer,
 } from '@mui/material';
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ExternalLinkIcon,
-} from '@tyro/icons';
+import { ChevronLeftIcon, ChevronRightIcon, FullScreenIcon } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import {
+  ActionMenu,
+  LoadingPlaceholderContainer,
+  TableStudyLevelChip,
+} from '@tyro/core';
+import { useAcademicNamespace, usePermissions } from '@tyro/api';
 import { useStudentDashboardAssessments } from '../api/student-dashboard-assessment';
+import { useStudentAssessmentResults } from '../api/term-assessments/student-results';
+import { getRowDetailsFromResult } from '../utils/get-row-details-from-result';
+import { ColorCard } from './common/student-assessment-report-card/color-card';
 
 interface StudentAssessmentWidgetProps {
   studentId: number | undefined;
@@ -31,39 +35,72 @@ export function StudentAssessmentWidget({
 }: StudentAssessmentWidgetProps) {
   const { t } = useTranslation(['common', 'assessments']);
   const [assessmentIndex, setAssessmentIndex] = useState(0);
-  const { data } = useStudentDashboardAssessments(
-    { studentPartyId: studentId ?? 0, published: true },
-    null,
-    !!studentId
-  );
+  const { activeAcademicNamespace } = useAcademicNamespace();
+  const { isStaffUser } = usePermissions();
 
-  const selectedAssessment = data?.[assessmentIndex];
+  const activeAcademicNamespaceId =
+    activeAcademicNamespace?.academicNamespaceId ?? 0;
+  const { data: assessments = [], isLoading: isDashboardLoading } =
+    useStudentDashboardAssessments(
+      { studentPartyId: studentId ?? 0, published: !isStaffUser },
+      activeAcademicNamespaceId,
+      !!studentId
+    );
+
+  const selectedAssessment = assessments?.[assessmentIndex];
+  const { data: studentResults = [], isLoading: isResultsLoading } =
+    useStudentAssessmentResults(
+      activeAcademicNamespaceId,
+      activeAcademicNamespaceId && studentId && selectedAssessment
+        ? {
+            studentPartyIds: [studentId],
+            assessmentId: selectedAssessment?.id ?? 0,
+          }
+        : null
+    );
+
+  const isLoading =
+    isDashboardLoading || (isResultsLoading && !!selectedAssessment);
+  const hasAssessments = assessments.length > 0;
+  const menuItems = assessments.map((assessment, index) => ({
+    label: assessment.name,
+    onClick: () => {
+      setAssessmentIndex(index);
+    },
+  }));
 
   return (
-    <Card variant="outlined" sx={{ height: '100%', flex: 1, pb: 2 }}>
-      <CardHeader
-        component="h3"
-        title={t('assessments:assessmentResults')}
-        action={
-          <IconButton component={Link} to="../assessment">
-            <ExternalLinkIcon sx={{ width: 20, height: 20 }} />
-          </IconButton>
-        }
-      />
+    <Card variant="soft" sx={{ flex: 1 }}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        pl={1}
+        mb={1}
+      >
+        <Typography variant="h6" component="span">
+          {t('assessments:assessmentResults')}
+        </Typography>
+        <IconButton component={Link} to="../assessment">
+          <FullScreenIcon
+            sx={{ width: 20, height: 20, color: 'primary.main' }}
+          />
+        </IconButton>
+      </Stack>
       <Stack
         direction="row"
         sx={{
           alignItems: 'center',
           justifyContent: 'space-between',
-          px: 2,
           py: 1,
-          borderBottom: '1px solid',
+          borderTop: '1px solid',
           borderColor: 'divider',
         }}
       >
         <IconButton
           size="small"
           color="primary"
+          aria-label={t('common:actions.previous')}
           onClick={() => {
             setAssessmentIndex(assessmentIndex - 1);
           }}
@@ -71,82 +108,134 @@ export function StudentAssessmentWidget({
         >
           <ChevronLeftIcon />
         </IconButton>
-        <Box sx={{ flex: 1, overflowX: 'hidden' }}>
-          <Typography
-            component="h4"
-            variant="subtitle2"
-            noWrap
-            sx={{ px: 2, textOverflow: 'ellipsis', textAlign: 'center' }}
-          >
-            {selectedAssessment?.name}
-          </Typography>
-        </Box>
+        <ActionMenu
+          buttonLabel={selectedAssessment?.name ?? '-'}
+          buttonProps={{
+            size: 'small',
+            disabled: !hasAssessments,
+          }}
+          menuProps={{
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'center',
+            },
+            transformOrigin: {
+              vertical: 'top',
+              horizontal: 'center',
+            },
+          }}
+          menuItems={menuItems}
+        />
+
         <IconButton
           size="small"
           color="primary"
+          aria-label={t('common:actions.next')}
           onClick={() => {
             setAssessmentIndex(assessmentIndex + 1);
           }}
-          disabled={assessmentIndex + 1 === data?.length}
+          disabled={assessmentIndex + 1 === assessments?.length}
         >
           <ChevronRightIcon />
         </IconButton>
       </Stack>
-      <TableContainer>
-        <Table
-          size="small"
-          sx={{
-            mt: 1,
-            '& td:first-of-type, & th:first-of-type': {
-              pl: 3,
-            },
-            '& td:last-of-type, & th:last-of-type': {
-              pr: 3,
-            },
-            '& td:nth-of-type(n + 3), & th:nth-of-type(n + 3)': {
-              textAlign: 'right',
-            },
-            '& th, & td:last-of-type': {
-              background: 'transparent',
-              color: 'text.primary',
-              fontWeight: 700,
-            },
-            '& th': {
-              py: 2,
-            },
-            '& td': {
-              color: 'text.secondary',
-            },
-          }}
-        >
-          <TableHead>
-            <TableRow>
-              <TableCell>{t('common:subject')}</TableCell>
-              <TableCell>{t('common:level')}</TableCell>
-              <TableCell>{t('common:grade')}</TableCell>
-              <TableCell>{t('common:result')}</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {selectedAssessment?.results?.map((result) => (
-              <TableRow key={result?.id}>
-                <TableCell>{result?.subject ?? '-'}</TableCell>
-                <TableCell>
-                  {result?.studyLevel
-                    ? t(`common:studyLevel.${result?.studyLevel}`)
-                    : '-'}
-                </TableCell>
-                <TableCell>
-                  {typeof result?.result === 'number'
-                    ? `${result?.result}%`
-                    : '-'}
-                </TableCell>
-                <TableCell>{result?.grade ?? '-'}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <Card
+        sx={{
+          minHeight: 160,
+        }}
+      >
+        <LoadingPlaceholderContainer isLoading={isLoading}>
+          {hasAssessments ? (
+            <TableContainer>
+              <Table
+                size="small"
+                sx={{
+                  px: 0.5,
+                  mb: 1,
+                  borderSpacing: 0,
+                  '& th, & td': {
+                    px: 1,
+                  },
+                  '& th': {
+                    background: 'transparent',
+                    color: 'text.primary',
+                    fontWeight: 600,
+                    pb: 0.5,
+                  },
+                  '& td': {
+                    py: 0.5,
+                  },
+                  '& th:first-of-type': {
+                    pl: 2,
+                  },
+                  '& td:first-of-type': {
+                    pl: 1,
+                  },
+                  '& td:last-of-type, & th:last-of-type': {
+                    pr: 2,
+                    textAlign: 'right',
+                  },
+                }}
+              >
+                <TableHead>
+                  <TableRow>
+                    <TableCell>{t('common:subject')}</TableCell>
+                    <TableCell>{t('common:level')}</TableCell>
+                    <TableCell>{t('common:grade')}</TableCell>
+                    <TableCell>{t('common:result')}</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {studentResults.map(({ id, ...studentResult }) => {
+                    const { subject, result, grade, studyLevel } =
+                      getRowDetailsFromResult(studentResult);
+
+                    return (
+                      <TableRow key={id}>
+                        <TableCell>
+                          <ColorCard
+                            isMobile
+                            text={subject?.name}
+                            color={subject?.colour}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <TableStudyLevelChip level={studyLevel} condensed />
+                        </TableCell>
+                        <TableCell>
+                          {typeof result === 'number' ? `${result}%` : '-'}
+                        </TableCell>
+                        <TableCell>{grade ?? '-'}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          ) : (
+            <Stack
+              sx={{
+                position: 'absolute',
+                height: '100%',
+                width: '100%',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Typography variant="h2" component="span">
+                ✏️
+              </Typography>
+              <Typography
+                variant="body1"
+                component="span"
+                color="text.secondary"
+              >
+                {t(`assessments:noAssessmentsAvailable`)}
+              </Typography>
+            </Stack>
+          )}
+        </LoadingPlaceholderContainer>
+      </Card>
     </Card>
   );
 }

@@ -19,6 +19,7 @@ export * from './icon-chip';
 export * from './lazy-loader';
 export * from './link';
 export * from './loading-placeholder';
+export * from './masonry-grid';
 export * from './multi-date-picker';
 export * from './page';
 export * from './page-container';
