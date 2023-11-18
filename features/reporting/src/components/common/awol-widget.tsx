@@ -10,8 +10,8 @@ import {
 import { StudentAvatar } from '@tyro/people';
 import { useMemo } from 'react';
 import {
-  ReturnTypeFromUseAttendanceAwolReports,
   useAttendanceAwolReports,
+  ReturnTypeFromUseAttendanceAwolReports,
 } from '../../api/awol-report';
 
 export function AWOLWidget() {
@@ -162,8 +162,8 @@ export function AWOLWidget() {
                 }}
               >
                 <Box
-                  py={1}
-                  px={1}
+                  py={1.25}
+                  px={1.25}
                   role="gridcell"
                   display="flex"
                   alignItems="center"
@@ -213,8 +213,8 @@ export function AWOLWidget() {
                   </Stack>
                 </Box>
                 <Box
-                  py={1}
-                  pr={1}
+                  py={1.25}
+                  pr={1.25}
                   role="gridcell"
                   display="flex"
                   alignItems="center"

@@ -10,14 +10,14 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { useMemo, Fragment } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from '@tyro/i18n';
 import { TableStudyLevelChip } from '@tyro/core';
-import { StudyLevel } from '@tyro/api';
 import { ReturnTypeFromUseStudentAssessmentResults } from '../../../api/term-assessments/student-results';
 import { useStudentAssessmentReportCardSettings } from './settings';
 import { ColorCard } from './color-card';
 import { ReturnTypeFromUseAssessmentById } from '../../../api/assessments';
+import { getRowDetailsFromResult } from '../../../utils/get-row-details-from-result';
 
 interface ReportCardResultTableProps {
   results: ReturnTypeFromUseStudentAssessmentResults;
@@ -34,30 +34,6 @@ type GridRowProps = {
     React.ReactNode
   ];
 };
-
-function getRowDetailsFromResult(
-  result: ReturnTypeFromUseStudentAssessmentResults[number]
-) {
-  const { staff, subjects } = result.subjectGroup;
-  const teacherNames =
-    staff?.map(({ partyId, firstName, lastName }, index) => (
-      <Fragment key={partyId}>
-        <span key={partyId} style={{ whiteSpace: 'nowrap' }}>
-          {firstName ? firstName[0] : ''}. {lastName ?? ''}
-        </span>
-        {index !== staff.length - 1 ? ', ' : ''}
-      </Fragment>
-    )) ?? '-';
-  const subject = subjects.length > 0 ? subjects[0] : null;
-
-  return {
-    subject,
-    teacherNames,
-    result: result.result,
-    grade: result.gradeResult,
-    studyLevel: result.studentStudyLevel ?? StudyLevel.NotApplicable,
-  };
-}
 
 function getGridColumnWidth(index: number) {
   switch (index) {

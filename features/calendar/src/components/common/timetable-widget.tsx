@@ -12,8 +12,14 @@ import {
   TableContainer,
   Divider,
   alpha,
+  Tooltip,
 } from '@mui/material';
-import { FullScreenIcon, SwapHorizontalIcon } from '@tyro/icons';
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  FullScreenIcon,
+  SwapHorizontalIcon,
+} from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
 import { Link, useNavigate } from 'react-router-dom';
 import { Fragment, useState } from 'react';
@@ -45,6 +51,7 @@ interface TimetableWidgetProps {
   heading?: string;
   to?: string;
   showTeacher?: boolean;
+  useNavBar?: boolean;
 }
 
 function TimetableNonSchoolState({
@@ -79,6 +86,7 @@ export function TimetableWidget({
   heading,
   to = '/calendar',
   showTeacher = true,
+  useNavBar = false,
 }: TimetableWidgetProps) {
   const { t } = useTranslation(['common', 'assessments', 'calendar']);
   const { activeProfile } = useUser();
@@ -86,7 +94,6 @@ export function TimetableWidget({
   const [date, setDate] = useState(dayjs());
   const { data, isLoading } = usePartyTimetable({ partyId, date });
   const dayInfo = useTimetableInPeriods(date, data);
-  const { displayName } = usePreferredNameLayout();
   const navigate = useNavigate();
 
   return (
@@ -107,13 +114,15 @@ export function TimetableWidget({
           {heading ?? t('calendar:inputLabels.schedule')}
         </Typography>
         <Stack direction="row" alignItems="center" spacing={0.5}>
-          <DateDropdownPicker
-            date={date}
-            onChangeDate={setDate}
-            ButtonProps={{
-              size: 'small',
-            }}
-          />
+          {!useNavBar && (
+            <DateDropdownPicker
+              date={date}
+              onChangeDate={setDate}
+              ButtonProps={{
+                size: 'small',
+              }}
+            />
+          )}
           <IconButton component={Link} to={to}>
             <FullScreenIcon
               sx={{ width: 20, height: 20, color: 'primary.main' }}
@@ -121,6 +130,42 @@ export function TimetableWidget({
           </IconButton>
         </Stack>
       </Stack>
+      {useNavBar && (
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            py: 1,
+            borderTop: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <IconButton
+            size="small"
+            color="primary"
+            aria-label={t('common:actions.previous')}
+            onClick={() => setDate(date.subtract(1, 'day'))}
+          >
+            <ChevronLeftIcon />
+          </IconButton>
+          <DateDropdownPicker
+            date={date}
+            onChangeDate={setDate}
+            ButtonProps={{
+              size: 'small',
+            }}
+          />
+          <IconButton
+            size="small"
+            color="primary"
+            aria-label={t('common:actions.next')}
+            onClick={() => setDate(date.add(1, 'day'))}
+          >
+            <ChevronRightIcon />
+          </IconButton>
+        </Stack>
+      )}
       <Card
         sx={{
           minHeight: 160,
@@ -134,7 +179,7 @@ export function TimetableWidget({
                 size="small"
                 sx={({ palette }) => ({
                   px: 0.5,
-                  mb: 1.5,
+                  mb: 1,
                   borderCollapse: 'separate',
                   borderSpacing: 0,
                   '& th, & td': {
@@ -264,7 +309,6 @@ export function TimetableWidget({
                         ({ context }) =>
                           context === Calendar_TagContext.Substitution
                       );
-                      const defaultColor = isBreak ? 'gray.300' : 'slate.500';
                       const canClickToSubjectGroup =
                         !!subjectGroup?.partyId &&
                         isStaffUser &&
