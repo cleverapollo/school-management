@@ -9,12 +9,16 @@ import {
   usePreferredNameLayout,
   AttendanceCodeChip,
 } from '@tyro/core';
+import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import {
   useTableSessionAttendance,
   useStudentDailyCalendarInformation,
 } from '@tyro/attendance';
 import { useTranslation, TFunction } from '@tyro/i18n';
 import { AttendanceCodeType } from '@tyro/api';
+
+dayjs.extend(LocalizedFormat);
 
 type AttendanceTableViewProps = {
   startDate: string;
@@ -55,7 +59,18 @@ const getColumns = (
     headerName: t('common:date'),
     field: 'date',
     valueGetter: ({ data }) => data?.date,
-    sort: 'asc',
+    sort: 'desc',
+    sortIndex: 0,
+    comparator: (dateA: string, dateB: string) =>
+      dayjs(dateA).unix() - dayjs(dateB).unix(),
+    enableRowGroup: true,
+  },
+  {
+    headerName: t('common:time'),
+    field: 'time',
+    valueGetter: ({ data }) => data?.time,
+    valueFormatter: ({ data }) => data?.time || '',
+    sort: 'desc',
   },
   {
     headerName: t('common:time'),
@@ -136,8 +151,8 @@ export function AttendanceTableView({
 
       const formattedData: CombinedAttendanceDataType = {
         type: event?.name,
-        time: event?.startTime,
         date: eventAttendanceData?.date,
+        time: dayjs(event?.startTime)?.format('LT'),
         attendanceCode: eventAttendanceData?.attendanceCode?.name,
         attendanceCodeType: eventAttendanceData?.attendanceCode?.codeType,
         createdBy:

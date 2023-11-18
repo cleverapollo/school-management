@@ -235,6 +235,7 @@ export type AssessmentSubjectGroup = {
   __typename?: 'AssessmentSubjectGroup';
   commentsEntered: Scalars['Int'];
   commentsTotal: Scalars['Int'];
+  ppodSyncStatus?: Maybe<SyncStatus>;
   resultsEntered: Scalars['Int'];
   resultsTotal: Scalars['Int'];
   subjectGroup: SubjectGroup;
@@ -3473,7 +3474,7 @@ export type PpodFilter = {
 export type PpodPublishResultsInput = {
   assessmentId: Scalars['Long'];
   resultIds: Array<Scalars['Long']>;
-  subjectGroupId: Scalars['Long'];
+  subjectGroupIds: Array<Scalars['Long']>;
 };
 
 export type PpodStudent = {
@@ -6513,6 +6514,12 @@ export type SyncRequestsFilter = {
   id?: InputMaybe<Scalars['Int']>;
   to?: InputMaybe<Scalars['DateTime']>;
 };
+
+export enum SyncStatus {
+  FullySynced = 'FULLY_SYNCED',
+  NotSynced = 'NOT_SYNCED',
+  PartiallySynced = 'PARTIALLY_SYNCED'
+}
 
 export type TtCloneTimetableInput = {
   readOnly?: InputMaybe<Scalars['Boolean']>;
