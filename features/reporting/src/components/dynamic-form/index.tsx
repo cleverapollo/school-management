@@ -12,6 +12,7 @@ import { LoadingButton } from '@mui/lab';
 import { useMemo, useState } from 'react';
 import {
   Reporting_TableFilter,
+  Reporting_TableFilterInput,
   Reporting_TableFilterType,
   Reporting_TableFilterValues,
 } from '@tyro/api';
@@ -22,7 +23,7 @@ import { DynamicControl } from './control';
 type DynamicFormProps = {
   isFetching: boolean;
   filters: Reporting_TableFilter[];
-  onFilterChange: (filters: Reporting_TableFilter[]) => void;
+  onFilterChange: (filters: Reporting_TableFilterInput[]) => void;
   sql?: string | null;
 };
 
@@ -106,9 +107,9 @@ export const DynamicForm = ({
 
   const onSubmit = handleSubmit((formData) => {
     onFilterChange(
-      filters.map<Reporting_TableFilter>((filter) => ({
-        ...filter,
-        defaultValue: getValueFormat(formData[filter.id], filter.inputType),
+      filters.map<Reporting_TableFilterInput>((filter) => ({
+        filterId: filter.id,
+        filterValue: getValueFormat(formData[filter.id], filter.inputType),
       }))
     );
   });
@@ -165,11 +166,7 @@ export const DynamicForm = ({
           <Typography>{sql}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleCloseDialog}
-          >
+          <Button variant="soft" color="inherit" onClick={handleCloseDialog}>
             {t('common:actions.close')}
           </Button>
         </DialogActions>
