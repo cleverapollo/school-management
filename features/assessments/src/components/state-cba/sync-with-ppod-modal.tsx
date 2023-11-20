@@ -32,11 +32,8 @@ export function SyncWithPpodModal({
   studentResults,
 }: ApproveAbsentRequestConfirmModalProps) {
   const { t } = useTranslation(['common', 'assessments']);
-  const {
-    mutateAsync: publishResultsToPpod,
-    isLoading: isSubmitting,
-    isSuccess: isSubmitSuccessful,
-  } = usePublishResultsToPpod();
+  const { mutateAsync: publishResultsToPpod, isLoading: isSubmitting } =
+    usePublishResultsToPpod();
 
   const onSubmit = () => {
     const subjectGroupIds = initialState?.map(
@@ -50,20 +47,15 @@ export function SyncWithPpodModal({
       return acc;
     }, []);
 
-    const formattedData: PpodPublishResultsInput = {
-      assessmentId,
-      subjectGroupIds,
-      resultIds: resultIds ?? [],
-    };
-
-    publishResultsToPpod(formattedData);
+    publishResultsToPpod(
+      {
+        assessmentId,
+        subjectGroupIds,
+        resultIds: resultIds ?? [],
+      },
+      { onSuccess: onClose }
+    );
   };
-
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      onClose();
-    }
-  }, [isSubmitSuccessful]);
 
   return (
     <Dialog open={isOpen} onClose={onClose}>

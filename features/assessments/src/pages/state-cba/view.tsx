@@ -107,7 +107,6 @@ const getColumnDefs = (
         return (
           <Chip
             label={t(`assessments:syncStatus.${status}`)}
-            sx={{ pointerEvents: 'none' }}
             variant="soft"
             color={codeTypeColorMapping[status]}
           />
@@ -158,6 +157,7 @@ export default function ViewStateCba() {
   const academicNameSpaceIdAsNumber = useNumber(academicNamespaceId);
   const assessmentIdAsNumber = useNumber(assessmentId);
   const { displayName, displayNames } = usePreferredNameLayout();
+  const isDesktop = useResponsive('up', 'md');
   const [selectedAssessments, setSelectedAssessments] = useState<
     ReturnTypeFromUseAssessmentSubjectGroups[]
   >([]);
@@ -193,7 +193,6 @@ export default function ViewStateCba() {
     assessmentResultsFilter
   );
 
-  const isDesktop = useResponsive('up', 'md');
   const staffFromSelectedGroups = useMemo(() => {
     const uniqueStaffList = selectedAssessments.reduce(
       (acc, { subjectGroup }) => {
@@ -246,11 +245,7 @@ export default function ViewStateCba() {
     onClose: onCloseSyncWithPpod,
   } = useDisclosure();
 
-  const {
-    isOpen: isSyncWithPublishOnlineOpen,
-    onOpen: onSyncWithPublishOnlineOpen,
-    onClose: onClosePublishOnline,
-  } = useDisclosure();
+  const { onOpen: onSyncWithPublishOnlineOpen } = useDisclosure();
 
   const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
     () => [
@@ -336,20 +331,20 @@ export default function ViewStateCba() {
             params.api.sizeColumnsToFit();
           }}
         />
-        <SendSmsModal
-          isOpen={isSendSmsOpen}
-          onClose={onCloseSendSms}
-          recipients={staffFromSelectedGroups}
-          possibleRecipientTypes={[
-            {
-              label: t('sms:teachersOfGroup', {
-                count: staffFromSelectedGroups.length,
-              }),
-              type: SmsRecipientType.Staff,
-            },
-          ]}
-        />
       </PageContainer>
+      <SendSmsModal
+        isOpen={isSendSmsOpen}
+        onClose={onCloseSendSms}
+        recipients={staffFromSelectedGroups}
+        possibleRecipientTypes={[
+          {
+            label: t('sms:teachersOfGroup', {
+              count: staffFromSelectedGroups.length,
+            }),
+            type: SmsRecipientType.Staff,
+          },
+        ]}
+      />
       <SyncWithPpodModal
         isOpen={isSyncWithPpodOpen}
         onClose={onCloseSyncWithPpod}
@@ -358,8 +353,8 @@ export default function ViewStateCba() {
         studentResults={studentResults}
       />
       <PublishOnlineModal
-        isOpen={isSyncWithPublishOnlineOpen}
-        onClose={onClosePublishOnline}
+        isOpen={isSyncWithPpodOpen}
+        onClose={onCloseSyncWithPpod}
         initialState={selectedAssessments}
         assessmentId={assessmentIdAsNumber}
       />

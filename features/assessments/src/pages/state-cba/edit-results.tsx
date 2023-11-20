@@ -184,11 +184,6 @@ export default function EditStateCbaResults() {
   const { t } = useTranslation(['assessments', 'common']);
   const { displayName } = usePreferredNameLayout();
 
-  const assessmentResultsFilter = {
-    assessmentId: assessmentIdAsNumber ?? 0,
-    subjectGroupIds: [subjectGroupIdAsNumber ?? 0],
-  };
-
   const { data: assessmentData } = useAssessmentById({
     academicNameSpaceId: academicNamespaceIdAsNumber ?? 0,
     ids: [assessmentIdAsNumber ?? 0],
@@ -196,7 +191,10 @@ export default function EditStateCbaResults() {
 
   const { data: studentResults } = useAssessmentResults(
     academicNamespaceIdAsNumber ?? 0,
-    assessmentResultsFilter
+    {
+      assessmentId: assessmentIdAsNumber ?? 0,
+      subjectGroupIds: [subjectGroupIdAsNumber ?? 0],
+    }
   );
 
   const gradeSetId =
@@ -232,7 +230,10 @@ export default function EditStateCbaResults() {
 
   const { mutateAsync: updateStateCbaResult } = useUpdateStateCbaResult(
     academicNamespaceIdAsNumber ?? 0,
-    assessmentResultsFilter
+    {
+      assessmentId: assessmentIdAsNumber ?? 0,
+      subjectGroupIds: [subjectGroupIdAsNumber ?? 0],
+    }
   );
 
   const columnDefs = useMemo(

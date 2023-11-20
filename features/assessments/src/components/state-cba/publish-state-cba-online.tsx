@@ -9,7 +9,6 @@ import {
   DialogContentText,
   DialogTitle,
 } from '@tyro/core';
-import { PublishAssessmentInput } from '@tyro/api';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { usePublishStateCbaOnline } from '../../api/state-cba/publish-state-cba-to-parents';
@@ -32,11 +31,8 @@ export function PublishOnlineModal({
 }: ApprovePublishOnlineModalProps) {
   const { t } = useTranslation(['common', 'assessments']);
 
-  const {
-    mutateAsync: publishOnline,
-    isLoading: isSubmitting,
-    isSuccess: isSubmitSuccessful,
-  } = usePublishStateCbaOnline();
+  const { mutateAsync: publishOnline, isLoading: isSubmitting } =
+    usePublishStateCbaOnline();
 
   const onSubmit = () => {
     const subjectGroupIds = initialState?.map(
@@ -45,25 +41,11 @@ export function PublishOnlineModal({
 
     const getDate = dayjs().format('YYYY-MM-DD');
 
-    const formattedData: PublishAssessmentInput = {
-      assessmentId,
-      subjectGroupIds,
-      publish: true,
-      publishFrom: getDate,
-    };
-
-    publishOnline(formattedData);
+    publishOnline(
+      { assessmentId, subjectGroupIds, publish: true, publishFrom: getDate },
+      { onSuccess: onClose }
+    );
   };
-
-  const subjectGroupNames = initialState?.map(
-    (subject) => subject?.subjectGroup?.name
-  );
-
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      onClose();
-    }
-  }, [isSubmitSuccessful]);
 
   return (
     <Dialog open={isOpen} onClose={onClose}>
@@ -73,7 +55,7 @@ export function PublishOnlineModal({
       <DialogContent>
         <DialogContentText>
           {t('assessments:publishOnlineModalText', {
-            count: subjectGroupNames?.length,
+            count: initialState?.length,
           })}
         </DialogContentText>
       </DialogContent>
