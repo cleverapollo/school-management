@@ -23,6 +23,7 @@ import {
   useUpdateYearGroupLeads,
   ReturnTypeFromUseYearGroups,
 } from '../../api/year-groups';
+import { useBulkPrintGroupMembers } from '../../hooks';
 
 const getYearGroupsColumns = (
   t: TFunction<'common'[], undefined, 'common'[]>,
@@ -80,6 +81,8 @@ export default function YearGroups() {
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
+  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
+
   const {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
@@ -105,6 +108,7 @@ export default function YearGroups() {
     //   icon: <SendMailIcon />,
     //   onClick: () => {},
     // },
+    bulkPrintOption,
   ];
 
   const handleBulkSave = (

@@ -28,6 +28,7 @@ import {
   ReturnTypeFromUseClassGroups,
   useSaveClassGroupEdits,
 } from '../../api/class-groups';
+import { useBulkPrintGroupMembers } from '../../hooks';
 
 const getClassGroupColumns = (
   t: TFunction<'common'[], undefined, 'common'[]>,
@@ -126,6 +127,7 @@ export default function ClassGroupsPage() {
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
+  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
 
   const classGroupColumns = useMemo(
     () => getClassGroupColumns(t, isStaffUser, displayNames),
@@ -144,6 +146,7 @@ export default function ClassGroupsPage() {
       //   icon: <SendMailIcon />,
       //   onClick: () => {},
       // },
+      bulkPrintOption,
     ];
 
     return commonActions;

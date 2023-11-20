@@ -33,6 +33,7 @@
   "groupName": "Group name",
   "staticMembers": "Static members",
   "dynamicMembers": "Dynamic members",
+  "printGroupMembers": "Print Group Members",
   "subjectGroup": {
     "switchToSupportClass": {
       "action": "Switch to support class",

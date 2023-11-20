@@ -12,14 +12,21 @@ import {
   TableAvatar,
   useDisclosure,
 } from '@tyro/core';
-import { AddIcon, EditIcon, MobileIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
+import {
+  AddIcon,
+  EditIcon,
+  MobileIcon,
+  TrashIcon,
+  VerticalDotsIcon,
+} from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { Link } from 'react-router-dom';
 import {
   useCustomGroups,
   ReturnTypeFromUseCustomGroups,
 } from '../../api/custom-groups';
-import { DeleteCustomGroupsModal } from "../../components/custom-group/delete-custom-groups-modal";
+import { DeleteCustomGroupsModal } from '../../components/custom-group/delete-custom-groups-modal';
+import { useBulkPrintGroupMembers } from '../../hooks';
 
 const getColumns = (
   t: TFunction<('common' | 'groups')[], undefined>,
@@ -97,6 +104,7 @@ export default function CustomGroups() {
   const [deleteGroupIds, setDeleteGroupIds] = useState<number[] | null>();
   const { isStaffUser, hasPermission } = usePermissions();
   const { data: customGroupData } = useCustomGroups();
+  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
 
   const {
     isOpen: isSendSmsOpen,
@@ -152,8 +160,10 @@ export default function CustomGroups() {
                     {
                       label: t('groups:deleteCustomGroups'),
                       icon: <TrashIcon />,
-                      onClick: () => setDeleteGroupIds(selectedGroups.map(({id}) => id)),
+                      onClick: () =>
+                        setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
                     },
+                    bulkPrintOption,
                   ]}
                 />
               </Box>

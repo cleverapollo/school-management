@@ -16,6 +16,7 @@ import { UseQueryReturnType, SmsRecipientType } from '@tyro/api';
 import { MobileIcon } from '@tyro/icons';
 import { Box, Fade } from '@mui/material';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
+import { useBulkPrintGroupMembers } from '@tyro/groups/src/hooks';
 import { useStaffSubjectGroups } from '../../../api/staff/subject-groups';
 
 type ReturnTypeFromUseStaffSubjectGroups = UseQueryReturnType<
@@ -110,6 +111,7 @@ export default function StaffProfileClassesPage() {
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
+  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
 
   const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
     () => [
@@ -118,8 +120,9 @@ export default function StaffProfileClassesPage() {
         icon: <MobileIcon />,
         onClick: onOpenSendSms,
       },
+      bulkPrintOption,
     ],
-    []
+    [selectedGroups]
   );
 
   return (

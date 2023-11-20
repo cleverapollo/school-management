@@ -34,6 +34,7 @@ import {
   useSupportGroups,
 } from '../../api/support-groups';
 import { useSwitchSubjectGroupType } from '../../api';
+import { useBulkPrintGroupMembers } from '../../hooks';
 
 type ReturnTypeFromUseSupportGroups = NonNullable<
   ReturnType<typeof useSupportGroups>['data']
@@ -140,6 +141,7 @@ export default function SupportGroups() {
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
+  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
   const {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
@@ -170,6 +172,7 @@ export default function SupportGroups() {
     //   icon: <SendMailIcon />,
     //   onClick: () => {},
     // },
+    bulkPrintOption,
   ];
 
   const handleBulkSave = (

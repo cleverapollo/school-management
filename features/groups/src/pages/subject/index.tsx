@@ -36,6 +36,7 @@ import {
   useSubjectGroups,
   useSwitchSubjectGroupType,
 } from '../../api/subject-groups';
+import { useBulkPrintGroupMembers } from '../../hooks';
 
 type ReturnTypeFromUseSubjectGroups = NonNullable<
   ReturnType<typeof useSubjectGroups>['data']
@@ -104,7 +105,8 @@ const getSubjectGroupsColumns = (
         params: {
           options: subjects,
           optionIdKey: 'id',
-          getOptionLabel: (option: CatalogueSubjectOption) => `${option.name} (${option.nationalCode})`,
+          getOptionLabel: (option: CatalogueSubjectOption) =>
+            `${option.name} (${option.nationalCode})`,
         },
       } as const),
     enableRowGroup: true,
@@ -172,6 +174,7 @@ export default function SubjectGroups() {
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
+  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
   const {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
@@ -205,6 +208,7 @@ export default function SubjectGroups() {
     //   icon: <SendMailIcon />,
     //   onClick: () => {},
     // },
+    bulkPrintOption,
   ];
 
   const handleBulkSave = (
@@ -223,7 +227,9 @@ export default function SubjectGroups() {
           if (key === 'irePP.level') {
             set(updatedEntry, 'irePP.level', value.newValue);
           } else if (key === 'subjects' && value?.newValue?.length) {
-            set(updatedEntry, 'subjectIds', [(value?.newValue?.[0] as CatalogueSubjectOption)?.id]);
+            set(updatedEntry, 'subjectIds', [
+              (value?.newValue?.[0] as CatalogueSubjectOption)?.id,
+            ]);
           } else {
             set(updatedEntry, key, value.newValue);
           }
