@@ -20,10 +20,11 @@ import {
   Search,
   SearchType,
   SmsRecipientType,
+  SyncStatus,
   usePermissions,
 } from '@tyro/api';
 import { Link, useParams } from 'react-router-dom';
-import { Box, Button, Chip, Fade, Typography } from '@mui/material';
+import { Box, Button, Chip, ChipProps, Fade, Typography } from '@mui/material';
 import {
   CheckmarkCircleIcon,
   MobileIcon,
@@ -33,20 +34,13 @@ import {
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { useMailSettings } from '@tyro/mail';
 import { useAssessmentById } from '../../api/assessments';
-import {
-  useAssessmentResults,
-  ReturnTypeFromUseAssessmentResults,
-} from '../../api/assessment-results';
+import { useAssessmentResults } from '../../api/assessment-results';
 import {
   useAssessmentSubjectGroups,
   ReturnTypeFromUseAssessmentSubjectGroups,
 } from '../../api/assessment-subject-groups';
 import { SyncWithPpodModal } from '../../components/state-cba/sync-with-ppod-modal';
-
-type PpodStatusField = {
-  length?: number;
-  count: number;
-};
+import { PublishOnlineModal } from '../../components/state-cba/publish-state-cba-online';
 
 const getColumnDefs = (
   isDesktop: boolean,
@@ -55,8 +49,7 @@ const getColumnDefs = (
     undefined,
     ('common' | 'assessments')[]
   >,
-  displayNames: ReturnTypeDisplayNames,
-  getPpodSyncedStatus: (subjectPartyId: number) => PpodStatusField
+  displayNames: ReturnTypeDisplayNames
 ): GridOptions<ReturnTypeFromUseAssessmentSubjectGroups>['columnDefs'] => [
   {
     field: 'subjectGroup.name',
@@ -68,7 +61,6 @@ const getColumnDefs = (
     checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
   },
-  // ** THIS WILL BE REPLACED WITH GRADE RESULTS WHEN BE UPDATES ENDPOINT **
   {
     field: 'resultsTotal',
     headerName: t('assessments:results'),
@@ -99,56 +91,39 @@ const getColumnDefs = (
       ),
   },
   {
-    colId: 'ppodPublished',
+    field: 'ppodSyncStatus',
     headerName: t('assessments:ppodStatus'),
+    valueGetter: ({ data }) => data?.ppodSyncStatus || '-',
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseAssessmentResults, any>) => {
-      const ppodInfo = getPpodSyncedStatus(data?.subjectGroup?.partyId ?? 0);
-      if (
-        ppodInfo?.length &&
-        ppodInfo?.count > 0 &&
-        ppodInfo?.count < ppodInfo?.length
-      ) {
+    }: ICellRendererParams<ReturnTypeFromUseAssessmentSubjectGroups, any>) => {
+      const status = data?.ppodSyncStatus;
+      const codeTypeColorMapping: Record<SyncStatus, ChipProps['color']> = {
+        [SyncStatus.FullySynced]: 'success',
+        [SyncStatus.PartiallySynced]: 'yellow',
+        [SyncStatus.NotSynced]: 'error',
+      };
+      if (status) {
         return (
           <Chip
+            label={t(`assessments:syncStatus.${status}`)}
             sx={{ pointerEvents: 'none' }}
-            label={t('assessments:partiallySynced')}
             variant="soft"
-            color="yellow"
+            color={codeTypeColorMapping[status]}
           />
         );
       }
-      if (ppodInfo?.count === ppodInfo?.length) {
-        return (
-          <Chip
-            sx={{ pointerEvents: 'none' }}
-            label={t('assessments:synced')}
-            variant="soft"
-            color="success"
-          />
-        );
-      }
-      return (
-        <Chip
-          sx={{ pointerEvents: 'none' }}
-          label={t('assessments:notSynced')}
-          variant="soft"
-          color="error"
-        />
-      );
     },
   },
-  // ** THIS NEEDS TO BE UPDATED WHEN BE RETURNS TOTALS FOR GRADE RESULTS
   {
-    colId: 'publishedOnline',
+    field: 'published',
     headerName: t('assessments:publishedOnline'),
     enableRowGroup: true,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAssessmentSubjectGroups>) => {
-      const isExaminable = false;
-      return isExaminable ? <TableBooleanValue value={isExaminable} /> : '-';
+      const isPublished = data?.published ?? false;
+      return isPublished ? <TableBooleanValue value={isPublished} /> : '-';
     },
   },
   {
@@ -218,20 +193,6 @@ export default function ViewStateCba() {
     assessmentResultsFilter
   );
 
-  function getPpodSyncedStatus(subjectPartyId: number) {
-    let count = 0;
-    studentResults?.map((student) => {
-      if (
-        student?.ppodPublished === true &&
-        student?.subjectGroup?.partyId === subjectPartyId
-      ) {
-        return (count += 1);
-      }
-      return count;
-    });
-    return { length: studentResults?.length, count };
-  }
-
   const isDesktop = useResponsive('up', 'md');
   const staffFromSelectedGroups = useMemo(() => {
     const uniqueStaffList = selectedAssessments.reduce(
@@ -275,8 +236,8 @@ export default function ViewStateCba() {
   };
 
   const columnDefs = useMemo(
-    () => getColumnDefs(!!isDesktop, t, displayNames, getPpodSyncedStatus),
-    [t, displayNames, getPpodSyncedStatus]
+    () => getColumnDefs(!!isDesktop, t, displayNames),
+    [t, displayNames]
   );
 
   const {
@@ -285,8 +246,14 @@ export default function ViewStateCba() {
     onClose: onCloseSyncWithPpod,
   } = useDisclosure();
 
-  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => {
-    const commonActions = [
+  const {
+    isOpen: isSyncWithPublishOnlineOpen,
+    onOpen: onSyncWithPublishOnlineOpen,
+    onClose: onClosePublishOnline,
+  } = useDisclosure();
+
+  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
+    () => [
       hasPermission('ps:1:communications:send_sms')
         ? [
             {
@@ -316,13 +283,12 @@ export default function ViewStateCba() {
         {
           label: t('assessments:actions.publish'),
           icon: <CheckmarkCircleIcon />,
-          onClick: () => console.log('Publish online'),
-          disabled: true,
+          onClick: onSyncWithPublishOnlineOpen,
         },
       ],
-    ];
-    return commonActions;
-  }, [t, hasPermission, staffFromSelectedGroups, isSendSmsOpen]);
+    ],
+    [t, hasPermission, staffFromSelectedGroups, isSendSmsOpen]
+  );
 
   return (
     <>
@@ -390,6 +356,12 @@ export default function ViewStateCba() {
         initialState={selectedAssessments}
         assessmentId={assessmentIdAsNumber}
         studentResults={studentResults}
+      />
+      <PublishOnlineModal
+        isOpen={isSyncWithPublishOnlineOpen}
+        onClose={onClosePublishOnline}
+        initialState={selectedAssessments}
+        assessmentId={assessmentIdAsNumber}
       />
     </>
   );

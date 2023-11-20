@@ -16,6 +16,7 @@ import {
   usePreferredNameLayout,
   useToast,
   ValueSetterParams,
+  ValueFormatterParams,
 } from '@tyro/core';
 import {
   CommenterUserType,
@@ -112,15 +113,24 @@ const getColumnDefs = (
     cellEditorSelector: StudyLevelSelectCellEditor(t),
   },
   {
-    field: 'gradeResult',
+    field: 'gradeId',
     headerName: t('assessments:achievement'),
     editable: true,
     cellClass: ['ag-editable-cell'],
     cellEditor: TableSwitch,
-    valueGetter: ({ data }) => data?.gradeResult || '-',
+    valueGetter: ({ data }) => data?.gradeId || '-',
     valueSetter: ({ data, newValue }) => {
-      set(data ?? {}, 'gradeResult', newValue);
+      set(data ?? {}, 'gradeId', newValue);
       return true;
+    },
+    valueFormatter: ({
+      data,
+    }: ValueFormatterParams<
+      ReturnTypeFromUseAssessmentResults,
+      ReturnTypeFromUseCbaGradeSets
+    >) => {
+      const selectedGradeSet = gradeSets?.find((x) => x.id === data?.gradeId);
+      return selectedGradeSet?.name || '-';
     },
     cellEditorSelector: ({ data }) => {
       const options = gradeSets;
@@ -131,7 +141,7 @@ const getColumnDefs = (
           popupPosition: 'under',
           params: {
             options,
-            optionIdKey: 'name',
+            optionIdKey: 'id',
             getOptionLabel: (option: (typeof options)[number]) => option?.name,
           },
         };
@@ -259,6 +269,7 @@ export default function EditStateCbaResults() {
             ...result,
             subjectGroupId: subjectGroupIdAsNumber ?? 0,
             assessmentId: assessmentData?.id ?? 0,
+            gradeSetGradeId: result.gradeId,
           };
 
           Object.entries(editedColumns).forEach(([key, { newValue }]) => {
@@ -303,8 +314,9 @@ export default function EditStateCbaResults() {
             };
           }
 
+          const { gradeId, ...resultWithoutGradeId } = newResult;
           acc.push({
-            ...newResult,
+            ...resultWithoutGradeId,
             extraFields: Object.values(newResult.extraFields).map(
               (value) => value
             ),

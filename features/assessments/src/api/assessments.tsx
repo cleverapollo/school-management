@@ -26,6 +26,7 @@ const assessmentsList = graphql(/* GraphQL */ `
       }
       publish
       publishedFrom
+      publishLearner
       startDate
       endDate
       createdBy {

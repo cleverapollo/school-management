@@ -49,6 +49,7 @@ const assessmentResults = graphql(/* GraphQL */ `
       result
       targetResult
       gradeResult
+      gradeId
       gradeNameTextId
       targetGradeResult
       targetGradeNameTextId

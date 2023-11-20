@@ -31,7 +31,9 @@ export default function CreateStateCbaPage() {
         onSuccess={() => {
           toast(t('common:snackbarMessages.createSuccess'));
         }}
-        onError={console.error}
+        onError={() => {
+          toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
+        }}
       />
     </PageContainer>
   );

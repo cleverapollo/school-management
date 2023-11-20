@@ -109,7 +109,11 @@ export default function EditStateCba() {
           onSuccess={() => {
             toast(t('common:snackbarMessages.updateSuccess'));
           }}
-          onError={console.error}
+          onError={() => {
+            toast(t('common:snackbarMessages.errorFailed'), {
+              variant: 'error',
+            });
+          }}
         />
       )}
     </PageContainer>

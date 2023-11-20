@@ -9,55 +9,55 @@ import {
   DialogContentText,
   DialogTitle,
 } from '@tyro/core';
-import { PpodPublishResultsInput } from '@tyro/api';
-import { usePublishResultsToPpod } from '../../api/state-cba/publish-ppod-results';
+import { PublishAssessmentInput } from '@tyro/api';
+import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import { usePublishStateCbaOnline } from '../../api/state-cba/publish-state-cba-to-parents';
 import { ReturnTypeFromUseAssessmentSubjectGroups } from '../../api/assessment-subject-groups';
-import { ReturnTypeFromUseAssessmentResults } from '../../api/assessment-results';
 
-export interface ApproveAbsentRequestConfirmModalProps {
+dayjs.extend(LocalizedFormat);
+
+export interface ApprovePublishOnlineModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialState: ReturnTypeFromUseAssessmentSubjectGroups[];
   assessmentId?: number;
-  studentResults?: ReturnTypeFromUseAssessmentResults[];
 }
 
-type ResultsIds = number;
-
-export function SyncWithPpodModal({
+export function PublishOnlineModal({
   isOpen,
   onClose,
   initialState,
   assessmentId = 0,
-  studentResults,
-}: ApproveAbsentRequestConfirmModalProps) {
+}: ApprovePublishOnlineModalProps) {
   const { t } = useTranslation(['common', 'assessments']);
+
   const {
-    mutateAsync: publishResultsToPpod,
+    mutateAsync: publishOnline,
     isLoading: isSubmitting,
     isSuccess: isSubmitSuccessful,
-  } = usePublishResultsToPpod();
+  } = usePublishStateCbaOnline();
 
   const onSubmit = () => {
     const subjectGroupIds = initialState?.map(
       (subject) => subject?.subjectGroup?.partyId
     );
 
-    const resultIds = studentResults?.reduce<ResultsIds[]>((acc, student) => {
-      if (student?.id) {
-        acc.push(student?.id);
-      }
-      return acc;
-    }, []);
+    const getDate = dayjs().format('YYYY-MM-DD');
 
-    const formattedData: PpodPublishResultsInput = {
+    const formattedData: PublishAssessmentInput = {
       assessmentId,
       subjectGroupIds,
-      resultIds: resultIds ?? [],
+      publish: true,
+      publishFrom: getDate,
     };
 
-    publishResultsToPpod(formattedData);
+    publishOnline(formattedData);
   };
+
+  const subjectGroupNames = initialState?.map(
+    (subject) => subject?.subjectGroup?.name
+  );
 
   useEffect(() => {
     if (isSubmitSuccessful) {
@@ -68,11 +68,13 @@ export function SyncWithPpodModal({
   return (
     <Dialog open={isOpen} onClose={onClose}>
       <DialogTitle onClose={onClose}>
-        {t('assessments:syncWithPpod')}
+        {t('assessments:publishOnline')}
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {t('assessments:syncWithPpodModalText')}
+          {t('assessments:publishOnlineModalText', {
+            count: subjectGroupNames?.length,
+          })}
         </DialogContentText>
       </DialogContent>
       <DialogActions>

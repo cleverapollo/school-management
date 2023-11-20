@@ -40,6 +40,8 @@ const assessmentSubjectGroupsList = graphql(/* GraphQL */ `
       resultsEntered
       commentsEntered
       commentsTotal
+      ppodSyncStatus
+      published
     }
   }
 `);
@@ -53,7 +55,9 @@ const assessmentSubjectGroupsQuery = (
     gqlClient.request(
       assessmentSubjectGroupsList,
       { filter },
-      { [EmulateHeaders.ACADEMIC_NAMESPACE_ID]: academicNamespaceId.toString() }
+      {
+        [EmulateHeaders.ACADEMIC_NAMESPACE_ID]: academicNamespaceId.toString(),
+      }
     ),
 });
 
