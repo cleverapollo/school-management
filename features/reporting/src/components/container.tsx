@@ -3,13 +3,13 @@ import { PageContainer, PageHeading, TabPageContainer } from '@tyro/core';
 import { useParams, Outlet } from 'react-router-dom';
 import { useTranslation } from '@tyro/i18n';
 
-import { useRunReports } from '../api/run-report';
+import { useReportInfo } from '../api/run-report';
 
 export default function ReportContainer() {
   const { t } = useTranslation(['reports']);
 
   const { id = '' } = useParams();
-  const { data: reportData } = useRunReports({
+  const { data: reportData } = useReportInfo({
     topReportId: id,
     filter: {
       reportId: id,
