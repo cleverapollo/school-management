@@ -11,6 +11,7 @@ import {
 import { useMemo, useState } from 'react';
 import { Colour } from '@tyro/api';
 import { useRunReports } from '../../api/run-report';
+import { getReportUrl, Report } from '../../utils/get-report-url';
 
 type ReportColumnValue = {
   value: string;
@@ -101,7 +102,13 @@ export function BehaviourWidget() {
           />
           <IconButton
             component={Link}
-            to="/reports/student-behaviour/student-behaviour"
+            to={getReportUrl({
+              report: Report.STUDENT_BEHAVIOUR,
+              filters: {
+                from_date: date,
+                to_date: date.add(1, 'day'),
+              },
+            })}
           >
             <FullScreenIcon
               sx={{ width: 20, height: 20, color: 'primary.main' }}
