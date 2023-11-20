@@ -104,7 +104,7 @@ export function StudentAssessmentWidget({
           onClick={() => {
             setAssessmentIndex(assessmentIndex - 1);
           }}
-          disabled={assessmentIndex === 0}
+          disabled={assessmentIndex === 0 || !hasAssessments}
         >
           <ChevronLeftIcon />
         </IconButton>
@@ -134,7 +134,9 @@ export function StudentAssessmentWidget({
           onClick={() => {
             setAssessmentIndex(assessmentIndex + 1);
           }}
-          disabled={assessmentIndex + 1 === assessments?.length}
+          disabled={
+            assessmentIndex + 1 === assessments?.length || !hasAssessments
+          }
         >
           <ChevronRightIcon />
         </IconButton>
