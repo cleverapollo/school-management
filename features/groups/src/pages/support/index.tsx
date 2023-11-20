@@ -22,6 +22,7 @@ import {
   sortStartNumberFirst,
   ConfirmDialog,
   TableSelect,
+  ActionMenuProps,
 } from '@tyro/core';
 
 import { MobileIcon, MoveGroupIcon, SendMailIcon } from '@tyro/icons';
@@ -141,7 +142,10 @@ export default function SupportGroups() {
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
-  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
+  const bulkPrintOption = useBulkPrintGroupMembers({
+    groups: selectedGroups,
+    groupKey: 'supportGroups',
+  });
   const {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
@@ -154,7 +158,7 @@ export default function SupportGroups() {
     [t, displayNames, subjects]
   );
 
-  const actionMenuItems = [
+  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => [
     {
       label: t('people:sendSms'),
       icon: <MobileIcon />,
@@ -173,7 +177,7 @@ export default function SupportGroups() {
     //   onClick: () => {},
     // },
     bulkPrintOption,
-  ];
+  ], [bulkPrintOption]);
 
   const handleBulkSave = (
     data: BulkEditedRows<ReturnTypeFromUseSupportGroups, 'name' | 'subjects'>

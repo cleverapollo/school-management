@@ -111,19 +111,19 @@ export default function StaffProfileClassesPage() {
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
-  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
+  const bulkPrintOption = useBulkPrintGroupMembers({
+    groups: selectedGroups,
+    groupKey: 'staffClasses',
+  });
 
-  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
-    () => [
-      {
-        label: t('people:sendSms'),
-        icon: <MobileIcon />,
-        onClick: onOpenSendSms,
-      },
-      bulkPrintOption,
-    ],
-    [selectedGroups]
-  );
+  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => [
+    {
+      label: t('people:sendSms'),
+      icon: <MobileIcon />,
+      onClick: onOpenSendSms,
+    },
+    bulkPrintOption,
+  ], [bulkPrintOption]);
 
   return (
     <>

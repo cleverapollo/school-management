@@ -4,6 +4,7 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import { SmsRecipientType, UpdateYearGroupEnrollmentInput } from '@tyro/api';
 import {
   ActionMenu,
+  ActionMenuProps,
   BulkEditedRows,
   GridOptions,
   ICellRendererParams,
@@ -81,7 +82,10 @@ export default function YearGroups() {
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
-  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
+  const bulkPrintOption = useBulkPrintGroupMembers({
+    groups: selectedGroups,
+    groupKey: 'yearGroups',
+  });
 
   const {
     isOpen: isSendSmsOpen,
@@ -97,7 +101,7 @@ export default function YearGroups() {
     [t, displayNames]
   );
 
-  const actionMenuItems = [
+  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => [
     {
       label: t('people:sendSms'),
       icon: <MobileIcon />,
@@ -109,7 +113,7 @@ export default function YearGroups() {
     //   onClick: () => {},
     // },
     bulkPrintOption,
-  ];
+  ], [bulkPrintOption]);
 
   const handleBulkSave = (
     data: BulkEditedRows<ReturnTypeFromUseYearGroups, 'yearGroupLeads'>

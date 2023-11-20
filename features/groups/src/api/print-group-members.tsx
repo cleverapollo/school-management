@@ -15,21 +15,31 @@ const printGroupMembers = graphql(/* GraphQL */ `
     }
   }
 `);
-const printGroupMembersQuery = (filter: Print_GroupMembers) => ({
-  queryKey: ['print', 'group-members', filter],
+
+const printGroupMembersQuery = (
+  filter: Print_GroupMembers,
+  groupKey: string
+) => ({
+  queryKey: ['print', groupKey, filter],
   queryFn: async () =>
     gqlClient.request(printGroupMembers, {
       filter,
     }),
 });
 
-export function getPrintGroupMembers(filter: Print_GroupMembers) {
-  return queryClient.fetchQuery(printGroupMembersQuery(filter));
+export function getPrintGroupMembers(
+  filter: Print_GroupMembers,
+  groupKey: string
+) {
+  return queryClient.fetchQuery(printGroupMembersQuery(filter, groupKey));
 }
 
-export function usePrintGroupMembers(filter: Print_GroupMembers) {
+export function usePrintGroupMembers(
+  filter: Print_GroupMembers,
+  groupKey: string
+) {
   return useQuery({
-    ...printGroupMembersQuery(filter),
+    ...printGroupMembersQuery(filter, groupKey),
     select: ({ print_groupMembers }) => print_groupMembers,
   });
 }

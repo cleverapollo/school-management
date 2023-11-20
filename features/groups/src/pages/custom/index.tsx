@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   ActionMenu,
+  ActionMenuProps,
   GridOptions,
   ICellRendererParams,
   PageContainer,
@@ -104,7 +105,10 @@ export default function CustomGroups() {
   const [deleteGroupIds, setDeleteGroupIds] = useState<number[] | null>();
   const { isStaffUser, hasPermission } = usePermissions();
   const { data: customGroupData } = useCustomGroups();
-  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
+  const bulkPrintOption = useBulkPrintGroupMembers({
+    groups: selectedGroups,
+    groupKey: 'customGroups',
+  });
 
   const {
     isOpen: isSendSmsOpen,
@@ -123,6 +127,21 @@ export default function CustomGroups() {
 
   const showActionMenu = isStaffUser && selectedGroups.length > 0;
 
+  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => [
+    {
+      label: t('people:sendSms'),
+      icon: <MobileIcon />,
+      onClick: onOpenSendSms,
+    },
+    {
+      label: t('groups:deleteCustomGroups'),
+      icon: <TrashIcon />,
+      onClick: () =>
+        setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
+    },
+    bulkPrintOption,
+  ], [bulkPrintOption]);
+  
   return (
     <>
       <PageContainer title={t('groups:customGroups')}>
@@ -150,22 +169,7 @@ export default function CustomGroups() {
           rightAdornment={
             <Fade in={showActionMenu} unmountOnExit>
               <Box>
-                <ActionMenu
-                  menuItems={[
-                    {
-                      label: t('people:sendSms'),
-                      icon: <MobileIcon />,
-                      onClick: onOpenSendSms,
-                    },
-                    {
-                      label: t('groups:deleteCustomGroups'),
-                      icon: <TrashIcon />,
-                      onClick: () =>
-                        setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
-                    },
-                    bulkPrintOption,
-                  ]}
-                />
+                <ActionMenu menuItems={actionMenuItems} />
               </Box>
             </Fade>
           }

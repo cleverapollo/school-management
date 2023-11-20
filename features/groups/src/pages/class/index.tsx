@@ -127,30 +127,29 @@ export default function ClassGroupsPage() {
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
-  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
+  const bulkPrintOption = useBulkPrintGroupMembers({
+    groups: selectedGroups,
+    groupKey: 'classGroups',
+  });
 
   const classGroupColumns = useMemo(
     () => getClassGroupColumns(t, isStaffUser, displayNames),
     [t, isStaffUser]
   );
 
-  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => {
-    const commonActions = [
-      {
-        label: t('people:sendSms'),
-        icon: <MobileIcon />,
-        onClick: onOpenSendSms,
-      },
-      // {
-      //   label: t('mail:sendMail'),
-      //   icon: <SendMailIcon />,
-      //   onClick: () => {},
-      // },
-      bulkPrintOption,
-    ];
-
-    return commonActions;
-  }, []);
+  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => [
+    {
+      label: t('people:sendSms'),
+      icon: <MobileIcon />,
+      onClick: onOpenSendSms,
+    },
+    // {
+    //   label: t('mail:sendMail'),
+    //   icon: <SendMailIcon />,
+    //   onClick: () => {},
+    // },
+    bulkPrintOption,
+  ], [bulkPrintOption]);
 
   const handleBulkSave = (
     data: BulkEditedRows<ReturnTypeFromUseClassGroups, 'tutors' | 'name'>
