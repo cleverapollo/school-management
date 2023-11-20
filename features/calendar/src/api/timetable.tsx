@@ -18,6 +18,7 @@ const timetable = graphql(/* GraphQL */ `
         resourceId
         events {
           eventId
+          name
           startTime
           endTime
           type
