@@ -374,7 +374,7 @@ export function TimetableWidget({
                                 >
                                   {isBreak
                                     ? t('calendar:break')
-                                    : subjectGroup?.actualName ?? '-'}
+                                    : event?.name ?? '-'}
                                 </Box>
                               </Stack>
                             </TableCell>
