@@ -127,21 +127,23 @@ export default function CustomGroups() {
 
   const showActionMenu = isStaffUser && selectedGroups.length > 0;
 
-  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => [
-    {
-      label: t('people:sendSms'),
-      icon: <MobileIcon />,
-      onClick: onOpenSendSms,
-    },
-    {
-      label: t('groups:deleteCustomGroups'),
-      icon: <TrashIcon />,
-      onClick: () =>
-        setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
-    },
-    bulkPrintOption,
-  ], [bulkPrintOption]);
-  
+  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
+    () => [
+      {
+        label: t('people:sendSms'),
+        icon: <MobileIcon />,
+        onClick: onOpenSendSms,
+      },
+      {
+        label: t('groups:deleteCustomGroups'),
+        icon: <TrashIcon />,
+        onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
+      },
+      bulkPrintOption,
+    ],
+    [bulkPrintOption]
+  );
+
   return (
     <>
       <PageContainer title={t('groups:customGroups')}>

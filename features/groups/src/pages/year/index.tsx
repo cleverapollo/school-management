@@ -101,19 +101,22 @@ export default function YearGroups() {
     [t, displayNames]
   );
 
-  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => [
-    {
-      label: t('people:sendSms'),
-      icon: <MobileIcon />,
-      onClick: onOpenSendSms,
-    },
-    // {
-    //   label: t('mail:sendMail'),
-    //   icon: <SendMailIcon />,
-    //   onClick: () => {},
-    // },
-    bulkPrintOption,
-  ], [bulkPrintOption]);
+  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
+    () => [
+      {
+        label: t('people:sendSms'),
+        icon: <MobileIcon />,
+        onClick: onOpenSendSms,
+      },
+      // {
+      //   label: t('mail:sendMail'),
+      //   icon: <SendMailIcon />,
+      //   onClick: () => {},
+      // },
+      bulkPrintOption,
+    ],
+    [bulkPrintOption]
+  );
 
   const handleBulkSave = (
     data: BulkEditedRows<ReturnTypeFromUseYearGroups, 'yearGroupLeads'>

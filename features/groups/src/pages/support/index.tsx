@@ -158,26 +158,29 @@ export default function SupportGroups() {
     [t, displayNames, subjects]
   );
 
-  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => [
-    {
-      label: t('people:sendSms'),
-      icon: <MobileIcon />,
-      onClick: onOpenSendSms,
-    },
-    {
-      label: t('groups:supportGroup.switchToSubjectGroup.action'),
-      icon: <MoveGroupIcon />,
-      onClick: () => setSwitchGroupTypeConfirmation(true),
-      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
-        isStaffUserWithPermission('ps:1:groups:write_subject_groups'),
-    },
-    // {
-    //   label: t('mail:sendMail'),
-    //   icon: <SendMailIcon />,
-    //   onClick: () => {},
-    // },
-    bulkPrintOption,
-  ], [bulkPrintOption]);
+  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
+    () => [
+      {
+        label: t('people:sendSms'),
+        icon: <MobileIcon />,
+        onClick: onOpenSendSms,
+      },
+      {
+        label: t('groups:supportGroup.switchToSubjectGroup.action'),
+        icon: <MoveGroupIcon />,
+        onClick: () => setSwitchGroupTypeConfirmation(true),
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission('ps:1:groups:write_subject_groups'),
+      },
+      // {
+      //   label: t('mail:sendMail'),
+      //   icon: <SendMailIcon />,
+      //   onClick: () => {},
+      // },
+      bulkPrintOption,
+    ],
+    [bulkPrintOption]
+  );
 
   const handleBulkSave = (
     data: BulkEditedRows<ReturnTypeFromUseSupportGroups, 'name' | 'subjects'>

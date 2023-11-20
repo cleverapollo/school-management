@@ -137,19 +137,22 @@ export default function ClassGroupsPage() {
     [t, isStaffUser]
   );
 
-  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => [
-    {
-      label: t('people:sendSms'),
-      icon: <MobileIcon />,
-      onClick: onOpenSendSms,
-    },
-    // {
-    //   label: t('mail:sendMail'),
-    //   icon: <SendMailIcon />,
-    //   onClick: () => {},
-    // },
-    bulkPrintOption,
-  ], [bulkPrintOption]);
+  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
+    () => [
+      {
+        label: t('people:sendSms'),
+        icon: <MobileIcon />,
+        onClick: onOpenSendSms,
+      },
+      // {
+      //   label: t('mail:sendMail'),
+      //   icon: <SendMailIcon />,
+      //   onClick: () => {},
+      // },
+      bulkPrintOption,
+    ],
+    [bulkPrintOption]
+  );
 
   const handleBulkSave = (
     data: BulkEditedRows<ReturnTypeFromUseClassGroups, 'tutors' | 'name'>

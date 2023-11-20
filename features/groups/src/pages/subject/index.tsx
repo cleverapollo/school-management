@@ -192,28 +192,30 @@ export default function SubjectGroups() {
     [t, displayNames, subjects]
   );
 
-  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => [
-    {
-      label: t('people:sendSms'),
-      icon: <MobileIcon />,
-      onClick: onOpenSendSms,
-      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
-        isStaffUserWithPermission('ps:1:communications:send_sms'),
-    },
-    {
-      label: t('groups:subjectGroup.switchToSupportClass.action'),
-      icon: <MoveGroupIcon />,
-      onClick: () => setSwitchGroupTypeConfirmation(true),
-      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
+    () => [
+      {
+        label: t('people:sendSms'),
+        icon: <MobileIcon />,
+        onClick: onOpenSendSms,
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission('ps:1:communications:send_sms'),
+      },
+      {
+        label: t('groups:subjectGroup.switchToSupportClass.action'),
+        icon: <MoveGroupIcon />,
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
           isStaffUserWithPermission('ps:1:groups:write_subject_groups'),
-    },
-    // {
-    //   label: t('mail:sendMail'),
-    //   icon: <SendMailIcon />,
-    //   onClick: () => {},
-    // },
-    bulkPrintOption,
-  ], [bulkPrintOption]);
+      },
+      // {
+      //   label: t('mail:sendMail'),
+      //   icon: <SendMailIcon />,
+      //   onClick: () => {},
+      // },
+      bulkPrintOption,
+    ],
+    [bulkPrintOption]
+  );
 
   const handleBulkSave = (
     data: BulkEditedRows<

@@ -116,14 +116,17 @@ export default function StaffProfileClassesPage() {
     groupKey: 'staffClasses',
   });
 
-  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => [
-    {
-      label: t('people:sendSms'),
-      icon: <MobileIcon />,
-      onClick: onOpenSendSms,
-    },
-    bulkPrintOption,
-  ], [bulkPrintOption]);
+  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
+    () => [
+      {
+        label: t('people:sendSms'),
+        icon: <MobileIcon />,
+        onClick: onOpenSendSms,
+      },
+      bulkPrintOption,
+    ],
+    [bulkPrintOption]
+  );
 
   return (
     <>
