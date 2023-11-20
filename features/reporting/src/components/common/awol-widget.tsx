@@ -13,6 +13,7 @@ import {
   useAttendanceAwolReports,
   ReturnTypeFromUseAttendanceAwolReports,
 } from '../../api/awol-report';
+import { getReportUrl, Report } from '../../utils/get-report-url';
 
 export function AWOLWidget() {
   const { t } = useTranslation(['common', 'reports']);
@@ -64,7 +65,12 @@ export function AWOLWidget() {
         <Typography variant="h6" component="span">
           {t('reports:absentWithoutLeave')}
         </Typography>
-        <IconButton component={Link} to="/reports/awol-students">
+        <IconButton
+          component={Link}
+          to={getReportUrl({
+            report: Report.AWOL,
+          })}
+        >
           <FullScreenIcon
             sx={{ width: 20, height: 20, color: 'primary.main' }}
           />
