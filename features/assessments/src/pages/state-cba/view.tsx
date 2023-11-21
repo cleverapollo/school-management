@@ -167,6 +167,19 @@ export default function ViewStateCba() {
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
+
+  const {
+    isOpen: isSyncWithPpodOpen,
+    onOpen: onSyncWithPpodOpen,
+    onClose: onCloseSyncWithPpod,
+  } = useDisclosure();
+
+  const {
+    isOpen: isSyncWithPublishOnlineOpen,
+    onOpen: onSyncWithPublishOnlineOpen,
+    onClose: onClosePublishOnline,
+  } = useDisclosure();
+
   const { composeEmail } = useMailSettings();
 
   const { data: assessmentData } = useAssessmentById({
@@ -238,14 +251,6 @@ export default function ViewStateCba() {
     () => getColumnDefs(!!isDesktop, t, displayNames),
     [t, displayNames]
   );
-
-  const {
-    isOpen: isSyncWithPpodOpen,
-    onOpen: onSyncWithPpodOpen,
-    onClose: onCloseSyncWithPpod,
-  } = useDisclosure();
-
-  const { onOpen: onSyncWithPublishOnlineOpen } = useDisclosure();
 
   const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
     () => [
@@ -353,8 +358,8 @@ export default function ViewStateCba() {
         studentResults={studentResults}
       />
       <PublishOnlineModal
-        isOpen={isSyncWithPpodOpen}
-        onClose={onCloseSyncWithPpod}
+        isOpen={isSyncWithPublishOnlineOpen}
+        onClose={onClosePublishOnline}
         initialState={selectedAssessments}
         assessmentId={assessmentIdAsNumber}
       />

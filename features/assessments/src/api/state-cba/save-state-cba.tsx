@@ -11,6 +11,24 @@ import { useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { assessmentsKeys } from '../keys';
 
+export interface BackendErrorResponse {
+  response: {
+    error: string;
+    status: number;
+    headers: Record<string, unknown>;
+  };
+  request: {
+    query: string;
+    variables: Record<string, unknown>;
+  };
+}
+
+export interface ParsedErrorDetail {
+  detail: string;
+  status: number;
+  title: string;
+}
+
 const saveStateCba = graphql(/* GraphQL */ `
   mutation assessment_saveStateCbaAssessment(
     $input: SaveStateCbaAssessmentInput
@@ -70,8 +88,23 @@ export function useSaveStateCba(academicNameSpaceId?: number) {
       queryClient.invalidateQueries(assessmentsKeys.all);
       toast(t('common:snackbarMessages.publishedOnline'));
     },
-    onError: () => {
-      toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
+    onError: (error: unknown) => {
+      let errorMessage = t('common:snackbarMessages.errorFailed');
+
+      if (typeof error === 'object' && error !== null) {
+        const backendError = error as BackendErrorResponse;
+        try {
+          const parsedError = JSON.parse(
+            backendError.response.error
+          ) as ParsedErrorDetail;
+          errorMessage = parsedError.detail || errorMessage;
+        } catch (parseError) {
+          console.error('Error parsing the error message:', parseError);
+        }
+      }
+
+      const errorToastMessage = errorMessage?.replace(/\..*/, '');
+      toast(errorToastMessage, { variant: 'error' });
     },
   });
 }

@@ -42,8 +42,16 @@ export const assessmentsKeys = {
   ],
   subjects: (filter: SubjectGroupFilter) =>
     [...assessmentsKeys.all, 'subjects', filter] as const,
-  subjectGroups: (filter: SubjectGroupFilter) =>
-    [...assessmentsKeys.all, 'subjectGroups', filter] as const,
+  subjectGroups: (
+    filter: SubjectGroupFilter,
+    academicNamespaceId: number | string
+  ) =>
+    [
+      ...assessmentsKeys.all,
+      'subjectGroups',
+      academicNamespaceId,
+      filter,
+    ] as const,
   cbaGradeSets: (filter: GradeSetFilter) =>
     [...assessmentsKeys.all, 'cbaGradeSets', filter] as const,
   allAssessmentComments: () => [...assessmentsKeys.all, 'assessmentComments'],

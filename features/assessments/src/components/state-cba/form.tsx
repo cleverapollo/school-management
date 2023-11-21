@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import { useTranslation } from '@tyro/i18n';
 import {
@@ -9,28 +10,28 @@ import {
 } from '@tyro/core';
 import {
   useYearGroups,
+  useAcademicNamespace,
   AssessmentType,
-  UseQueryReturnType,
   SubjectGroupType,
   Subject,
   SubjectGroup,
   StateCbaType,
 } from '@tyro/api';
-import { Card, Stack, CardHeader } from '@mui/material';
+import { Card, Stack, CardHeader, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-import { useEffect, useMemo } from 'react';
+import { useSubjectGroupsCbaQuery } from '@tyro/groups';
 import {
   FormCustomFieldsValues,
   CustomFieldsTable,
 } from '../term-assessment/custom-fields-table';
 import {
-  useSubjectGroupsQuery,
-  useSubjectsListQuery,
-} from '../../api/state-cba/subject-groups';
-import { useSaveStateCba } from '../../api/state-cba/save-state-cba';
+  BackendErrorResponse,
+  ParsedErrorDetail,
+  useSaveStateCba,
+} from '../../api/state-cba/save-state-cba';
 
 export type YearGroupOption = {
   name: string;
@@ -45,8 +46,8 @@ export interface FormValues extends FormCustomFieldsValues {
   years: YearGroupOption;
   startDate: dayjs.Dayjs;
   endDate: dayjs.Dayjs;
-  subject: Subject;
-  groups: SubjectGroup[] | undefined;
+  subject: Pick<Subject, 'id' | 'colour' | 'name' | 'active' | 'examinable'>;
+  groups: Pick<SubjectGroup, 'partyId' | 'name'>[] | undefined;
 }
 
 type StateCbaFormProps = {
@@ -58,6 +59,10 @@ type StateCbaFormProps = {
 };
 
 const stateCBATypeOptions = [StateCbaType.Cba_1, StateCbaType.Cba_2];
+type FormattedSubjectsType = {
+  name: string;
+  id: number;
+}[];
 
 export function StateCbaForm({
   stateCba,
@@ -68,8 +73,11 @@ export function StateCbaForm({
 }: StateCbaFormProps) {
   const navigate = useNavigate();
   const { t } = useTranslation(['assessments', 'common']);
-  const { academicNamespaceId } = useParams();
-  const academicNamespaceIdAsNumber = useNumber(academicNamespaceId);
+  const { activeAcademicNamespace } = useAcademicNamespace();
+  const academicNamespaceIdAsNumber =
+    useNumber(activeAcademicNamespace?.academicNamespaceId) ?? 0;
+  const [errorResponse, setErrorResponse] = useState<string | null>(null);
+  const [errorResponseOne, setErrorResponseOne] = useState<string | null>(null);
 
   const { resolver, rules } = useFormValidator<FormValues>();
 
@@ -92,13 +100,29 @@ export function StateCbaForm({
   const [subjectPicked, yearPicked] = watch(['subject', 'years']);
 
   const { data: yearGroupsData = [] } = useYearGroups({});
-  const { data: subjectGroups } = useSubjectGroupsQuery({
+
+  const { data: subjectGroups } = useSubjectGroupsCbaQuery({
     type: [SubjectGroupType.SubjectGroup],
   });
-  const { data: subjects = [] } = useSubjectsListQuery({
-    type: [SubjectGroupType.SubjectGroup],
-  });
-  const { mutate: saveStateCba, isLoading } = useSaveStateCba(
+
+  const subjects = useMemo(() => {
+    const subjectsFlattened = subjectGroups?.flatMap(
+      (subject) => subject?.subjects[0]
+    );
+
+    const subjectList = subjectsFlattened?.reduce<FormattedSubjectsType>(
+      (accumulator, current) => {
+        if (!accumulator.some((item) => item.name === current.name)) {
+          accumulator.push(current);
+        }
+        return accumulator;
+      },
+      []
+    );
+    return subjectList || [];
+  }, []);
+
+  const { mutateAsync: saveStateCba, isLoading } = useSaveStateCba(
     academicNamespaceIdAsNumber
   );
 
@@ -139,7 +163,7 @@ export function StateCbaForm({
       {
         ...restData,
         id: stateCba?.id ?? null,
-        yearId: years?.yearGroupId,
+        yearId: years?.yearGroupId ?? 0,
         startDate: startDate.format('YYYY-MM-DD'),
         endDate: endDate.format('YYYY-MM-DD'),
         stateCbaType: cbaType,
@@ -150,10 +174,32 @@ export function StateCbaForm({
           onSuccess?.();
           navigate('/assessments');
         },
-        onError,
+        onError: (error: unknown) => {
+          let errorMessage = t('assessments:existingCbaDefaultTitle');
+
+          if (typeof error === 'object' && error !== null) {
+            const backendError = error as BackendErrorResponse;
+            try {
+              const parsedError = JSON.parse(
+                backendError.response.error
+              ) as ParsedErrorDetail;
+              errorMessage = parsedError.detail || errorMessage;
+              setErrorResponseOne(errorMessage);
+            } catch (parseError) {
+              console.error(parseError);
+            }
+          }
+          const regex = /: ([0-9]+)/g;
+          const responseFormatted = regex.exec(errorMessage);
+          if (responseFormatted) {
+            setErrorResponse(responseFormatted[1]);
+          }
+        },
       }
     );
   };
+
+  const errorTitleMessage = errorResponseOne?.replace(/\..*/, '');
 
   const isEditing = !!(stateCba?.id && stateCba?.id);
 
@@ -162,78 +208,104 @@ export function StateCbaForm({
       setValue('groups', undefined);
     }
     const subjectChanged = stateCba?.subject?.name !== subjectPicked?.name;
-    if (stateCba && stateCba?.id && subjectChanged) {
+    if (stateCba?.id && subjectChanged) {
       setValue('groups', []);
     }
-  }, [subjectPicked, yearPicked]);
+  }, [subjectPicked, yearPicked, stateCba]);
 
   return (
     <Card variant="outlined" component="form" onSubmit={handleSubmit(onSubmit)}>
-      <CardHeader component="h2" title={title} />
-      <Stack direction="column" gap={3} p={3}>
-        <Stack direction="row" gap={2}>
-          <RHFSelect
-            disabled={isEditing}
-            label={t('assessments:cbaType')}
-            options={stateCBATypeOptions}
-            getOptionLabel={(option) => t(`assessments:${option}`)}
-            controlProps={{ name: 'cbaType', control }}
-            sx={textFieldStyle}
-          />
-          <RHFAutocomplete
-            disabled={isEditing}
-            label={t('assessments:labels.years')}
-            optionIdKey="yearGroupId"
-            optionTextKey="name"
-            controlProps={{ name: 'years', control }}
-            sx={textFieldStyle}
-            options={yearGroupsData}
-          />
+      <CardHeader
+        component="h2"
+        title={!errorResponse ? title : errorTitleMessage}
+      />
+      {!errorResponse && (
+        <Stack direction="column" gap={3} p={3}>
+          <Stack direction="row" gap={2}>
+            <RHFSelect
+              disabled={isEditing}
+              label={t('assessments:cbaType')}
+              options={stateCBATypeOptions}
+              getOptionLabel={(option) => t(`assessments:${option}`)}
+              controlProps={{ name: 'cbaType', control }}
+              sx={textFieldStyle}
+            />
+            <RHFAutocomplete
+              disabled={isEditing}
+              label={t('assessments:labels.years')}
+              optionIdKey="yearGroupId"
+              optionTextKey="name"
+              controlProps={{ name: 'years', control }}
+              sx={textFieldStyle}
+              options={yearGroupsData}
+            />
+          </Stack>
+          <Stack direction="row" gap={2}>
+            <RHFDatePicker
+              label={t('assessments:labels.startDate')}
+              controlProps={{ name: 'startDate', control }}
+              inputProps={{ sx: textFieldStyle }}
+            />
+            <RHFDatePicker
+              label={t('assessments:labels.endDate')}
+              controlProps={{ name: 'endDate', control }}
+              inputProps={{ sx: textFieldStyle }}
+            />
+          </Stack>
+          <Stack direction="row" gap={2}>
+            <RHFAutocomplete
+              disabled={isEditing}
+              label={t('common:subject')}
+              optionIdKey="name"
+              optionTextKey="name"
+              controlProps={{ name: 'subject', control }}
+              sx={textFieldStyle}
+              options={subjects}
+            />
+            <RHFAutocomplete
+              label={t('common:subjectGroups')}
+              optionIdKey="partyId"
+              optionTextKey="name"
+              multiple
+              controlProps={{ name: 'groups', control }}
+              sx={textFieldStyle}
+              options={subjectGroupOptions}
+            />
+          </Stack>
+          <CustomFieldsTable control={control} />
+          <Stack alignItems="flex-end">
+            <LoadingButton
+              variant="contained"
+              size="large"
+              type="submit"
+              loading={isLoading}
+            >
+              {ctaText}
+            </LoadingButton>
+          </Stack>
         </Stack>
-        <Stack direction="row" gap={2}>
-          <RHFDatePicker
-            label={t('assessments:labels.startDate')}
-            controlProps={{ name: 'startDate', control }}
-            inputProps={{ sx: textFieldStyle }}
-          />
-          <RHFDatePicker
-            label={t('assessments:labels.endDate')}
-            controlProps={{ name: 'endDate', control }}
-            inputProps={{ sx: textFieldStyle }}
-          />
-        </Stack>
-        <Stack direction="row" gap={2}>
-          <RHFAutocomplete
-            disabled={isEditing}
-            label={t('common:subject')}
-            optionIdKey="name"
-            optionTextKey="name"
-            controlProps={{ name: 'subject', control }}
-            sx={textFieldStyle}
-            options={subjects}
-          />
-          <RHFAutocomplete
-            label={t('common:subjectGroups')}
-            optionIdKey="partyId"
-            optionTextKey="name"
-            multiple
-            controlProps={{ name: 'groups', control }}
-            sx={textFieldStyle}
-            options={subjectGroupOptions}
-          />
-        </Stack>
-        <CustomFieldsTable control={control} />
-        <Stack alignItems="flex-end">
-          <LoadingButton
-            variant="contained"
-            size="large"
-            type="submit"
-            loading={isLoading}
+      )}
+      {errorResponse && (
+        <Stack direction="column" gap={3} p={3}>
+          <Typography variant="body1">
+            {t('assessments:existingCbaErrorMessageText')}
+          </Typography>
+          <Typography
+            component={Link}
+            variant="body2"
+            to={`/assessments/${academicNamespaceIdAsNumber}/state-cba-assessments/${errorResponse}`}
           >
-            {ctaText}
-          </LoadingButton>
+            {t('assessments:viewExistingCba')}
+          </Typography>
+          <Typography
+            component={Link}
+            variant="body2"
+            to={`/assessments/${academicNamespaceIdAsNumber}/state-cba-assessments/${errorResponse}/edit`}
+          >
+            {t('assessments:editExistingCba')}
+          </Typography>
         </Stack>
-      </Stack>
+      )}
     </Card>
   );
 }

@@ -25,6 +25,10 @@ export const groupsKeys = {
   subject: {
     all: () => [...groupsKeys.all, 'subject'] as const,
     groups: () => [...groupsKeys.subject.all(), 'list'] as const,
+    subjectGroupsCba: (
+      filter: SubjectGroupFilter,
+      academicNamespaceId: number | string
+    ) => [...groupsKeys.all, 'list', academicNamespaceId, filter] as const,
     details: (id: number | undefined) =>
       [...groupsKeys.subject.all(), 'details', id] as const,
     detailsByFilter: (filter: SubjectGroupFilter) =>
