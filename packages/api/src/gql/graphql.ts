@@ -227,6 +227,8 @@ export type AssessmentSubjectGroup = {
   __typename?: 'AssessmentSubjectGroup';
   commentsEntered: Scalars['Int'];
   commentsTotal: Scalars['Int'];
+  ppodSyncStatus?: Maybe<SyncStatus>;
+  published?: Maybe<Scalars['Boolean']>;
   resultsEntered: Scalars['Int'];
   resultsTotal: Scalars['Int'];
   subjectGroup: SubjectGroup;
@@ -2516,6 +2518,8 @@ export type Mutation = {
   admin__resetTenantCache: Success;
   asd?: Maybe<Scalars['String']>;
   assessment_publish: Success;
+  assessment_publishPPODResults?: Maybe<Array<AssessmentResult>>;
+  assessment_publishStateCba: Success;
   assessment_saveAssessment?: Maybe<Assessment>;
   assessment_saveAssessmentComments?: Maybe<Array<AssessmentComment>>;
   assessment_saveAssessmentResults?: Maybe<Array<AssessmentResult>>;
@@ -2626,6 +2630,11 @@ export type MutationAssessment_PublishArgs = {
 
 export type MutationAssessment_SaveAssessmentArgs = {
   input?: InputMaybe<SaveAssessmentInput>;
+};
+
+
+export type MutationAssessment_PublishStateCbaArgs = {
+  input?: InputMaybe<PublishAssessmentInput>;
 };
 
 
@@ -3431,6 +3440,12 @@ export type PpodFilter = {
   transactionId?: InputMaybe<Scalars['String']>;
 };
 
+export type PpodPublishResultsInput = {
+  assessmentId: Scalars['Long'];
+  resultIds: Array<Scalars['Long']>;
+  subjectGroupIds: Array<Scalars['Long']>;
+};
+
 export type PpodStudent = {
   address?: InputMaybe<InputAddress>;
   birthCertForename?: InputMaybe<Scalars['String']>;
@@ -3562,6 +3577,16 @@ export type PartyGroup = {
   name: Scalars['String'];
   partyId: Scalars['Long'];
 };
+
+export enum PartyGroupType {
+  ClassGroup = 'CLASS_GROUP',
+  CustomGroup = 'CUSTOM_GROUP',
+  GeneralGroup = 'GENERAL_GROUP',
+  ProgrammeStage = 'PROGRAMME_STAGE',
+  SubjectGroup = 'SUBJECT_GROUP',
+  SupportGroup = 'SUPPORT_GROUP',
+  YearGroup = 'YEAR_GROUP'
+}
 
 export type PartyPerson = {
   person: Person;
@@ -3771,6 +3796,22 @@ export type PrimarySchoolIreFilter = {
   rollNumbers?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
+export type Print_GroupMembers = {
+  options: Print_GroupMembersOptions;
+  personIds: Array<Scalars['Long']>;
+};
+
+export enum Print_GroupMembersOptions {
+  Csv = 'CSV',
+  Print = 'PRINT'
+}
+
+export type Print_PersonsGroupMemberships = {
+  groupIds: Array<Scalars['Long']>;
+  groupTypes: Array<PartyGroupType>;
+  options: Print_GroupMembersOptions;
+};
+
 export enum Print_TimetableLayout {
   Combined = 'COMBINED',
   DaysOnXAxis = 'DAYS_ON_X_AXIS',
@@ -3923,6 +3964,7 @@ export type PublishAssessmentInput = {
   assessmentId: Scalars['Long'];
   publish: Scalars['Boolean'];
   publishFrom?: InputMaybe<Scalars['Date']>;
+  subjectGroupIds?: InputMaybe<Array<Scalars['Long']>>;
 };
 
 export type Query = {
@@ -4004,6 +4046,8 @@ export type Query = {
   permissions?: Maybe<Array<Maybe<Permission>>>;
   ppod_PPODCredentials?: Maybe<PpodCredentials>;
   ppod_syncRequests: Array<SyncRequest>;
+  print_groupMembers: TemporaryDownload;
+  print_personsGroupMemberships: TemporaryDownload;
   print_printTimetable: TemporaryDownload;
   print_substitution: TemporaryDownload;
   profileTypes?: Maybe<Array<Maybe<ProfileType>>>;
@@ -4357,6 +4401,16 @@ export type QueryNotes_TagsArgs = {
 
 export type QueryPpod_SyncRequestsArgs = {
   filter?: InputMaybe<SyncRequestsFilter>;
+};
+
+
+export type QueryPrint_GroupMembersArgs = {
+  filter?: InputMaybe<Print_GroupMembers>;
+};
+
+
+export type QueryPrint_PersonsGroupMembershipsArgs = {
+  filter?: InputMaybe<Print_GroupMembers>;
 };
 
 
@@ -6453,6 +6507,12 @@ export type SyncRequestsFilter = {
   to?: InputMaybe<Scalars['DateTime']>;
 };
 
+export enum SyncStatus {
+  FullySynced = 'FULLY_SYNCED',
+  NotSynced = 'NOT_SYNCED',
+  PartiallySynced = 'PARTIALLY_SYNCED'
+}
+
 export type TtCloneTimetableInput = {
   readOnly?: InputMaybe<Scalars['Boolean']>;
   timetableId: Scalars['Int'];
@@ -8062,6 +8122,13 @@ export type Catalogue_PersonalTitlesQueryVariables = Exact<{ [key: string]: neve
 
 export type Catalogue_PersonalTitlesQuery = { __typename?: 'Query', catalogue_personalTitles: Array<{ __typename?: 'PersonalTitle', id: number, name: string }> };
 
+export type PrintPersonsGroupMembershipsQueryVariables = Exact<{
+  filter: Print_GroupMembers;
+}>;
+
+
+export type PrintPersonsGroupMembershipsQuery = { __typename?: 'Query', print_personsGroupMemberships: { __typename?: 'TemporaryDownload', url?: string | null, html?: string | null } };
+
 export type Core_ArchiveStudentContactsMutationVariables = Exact<{
   input: ArchiveStudentContactInput;
 }>;
@@ -8890,6 +8957,7 @@ export const Notes_UpsertBehaviourTagsDocument = {"kind":"Document","definitions
 export const Notes_UpsertNotesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"notes_upsertNotes"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Notes_UpsertNote"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"notes_upsertNotes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<Notes_UpsertNotesMutation, Notes_UpsertNotesMutationVariables>;
 export const Core_PeopleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_people"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Core_PeopleFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_people"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]} as unknown as DocumentNode<Core_PeopleQuery, Core_PeopleQueryVariables>;
 export const Catalogue_PersonalTitlesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"catalogue_personalTitles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"catalogue_personalTitles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<Catalogue_PersonalTitlesQuery, Catalogue_PersonalTitlesQueryVariables>;
+export const PrintPersonsGroupMembershipsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"printPersonsGroupMemberships"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Print_GroupMembers"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"print_personsGroupMemberships"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"html"}}]}}]}}]} as unknown as DocumentNode<PrintPersonsGroupMembershipsQuery, PrintPersonsGroupMembershipsQueryVariables>;
 export const Core_ArchiveStudentContactsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_archiveStudentContacts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ArchiveStudentContactInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_archiveStudentContacts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Core_ArchiveStudentContactsMutation, Core_ArchiveStudentContactsMutationVariables>;
 export const Core_StudentContactsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_studentContacts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_studentContacts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"personalInformation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"primaryAddress"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"line1"}},{"kind":"Field","name":{"kind":"Name","value":"line2"}},{"kind":"Field","name":{"kind":"Name","value":"line3"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"country"}},{"kind":"Field","name":{"kind":"Name","value":"postCode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryPhoneNumber"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"number"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryEmail"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"relationships"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"student"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"allowedToContact"}},{"kind":"Field","name":{"kind":"Name","value":"includeInSms"}}]}}]}}]}}]} as unknown as DocumentNode<Core_StudentContactsQuery, Core_StudentContactsQueryVariables>;
 export const Core_StudentContactsForSelectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"core_studentContactsForSelect"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_studentContacts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]} as unknown as DocumentNode<Core_StudentContactsForSelectQuery, Core_StudentContactsForSelectQueryVariables>;

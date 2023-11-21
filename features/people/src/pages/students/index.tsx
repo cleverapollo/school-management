@@ -13,7 +13,7 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
-import { MobileIcon, CalendarEditPenIcon } from '@tyro/icons';
+import { MobileIcon, CalendarEditPenIcon, PrinterIcon } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { getPersonProfileLink, SmsRecipientType } from '@tyro/api';
 import dayjs from 'dayjs';
@@ -24,6 +24,9 @@ import {
 } from '../../api/student/students';
 import { ChangeProgrammeYearModal } from '../../components/students/change-programme-year-modal';
 import { StudentTableAvatar } from '../../components/common/student-table-avatar';
+import {
+  BulkPrintPersonsGroupsMembershipsModal
+} from '../../components/common/bulk-print-persons-groups-memberships-modal';
 
 const getStudentColumns = (
   translate: TFunction<
@@ -173,6 +176,12 @@ export default function StudentsListPage() {
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
+  
+  const {
+    isOpen: isBulkPrintOpen,
+    onOpen: onOpenBulkPrint,
+    onClose: onCloseBulkPrint,
+  } = useDisclosure();
 
   const {
     isOpen: isChangeYearGroupOpen,
@@ -231,6 +240,11 @@ export default function StudentsListPage() {
                             'ps:1:groups:edit_class_list_manager'
                           ),
                       },
+                      {
+                        label: t('people:printGroupMemberships'),
+                        icon: <PrinterIcon />,
+                        onClick: onOpenBulkPrint,
+                      },
                     ]}
                   />
                 </Box>
@@ -258,6 +272,12 @@ export default function StudentsListPage() {
         isOpen={isChangeYearGroupOpen}
         onClose={onCloseChangeYearGroup}
         students={selectedStudents}
+      />
+      <BulkPrintPersonsGroupsMembershipsModal
+        isOpen={isBulkPrintOpen}
+        onClose={onCloseBulkPrint}
+        staffKey="students"
+        groups={selectedStudents}
       />
       <SendSmsModal
         isOpen={isSendSmsOpen}
