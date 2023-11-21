@@ -570,7 +570,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                     throw404Error();
                   }
 
-                  return getStaffSubjectGroups({ partyIds: [staffId] });
+                  return getStaffSubjectGroups({ partyIds: [staffId] }, undefined);
                 },
                 element: <StaffProfileClassesPage />,
               },

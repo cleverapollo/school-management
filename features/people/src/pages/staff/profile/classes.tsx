@@ -92,9 +92,12 @@ export default function StaffProfileClassesPage() {
   const { id } = useParams();
   const staffId = getNumber(id);
 
-  const { data: subjectGroupsData } = useStaffSubjectGroups({
-    partyIds: [staffId ?? 0],
-  });
+  const { data: subjectGroupsData } = useStaffSubjectGroups(
+    {
+      partyIds: [staffId ?? 0],
+    },
+    undefined
+  );
 
   const staffColumns = useMemo(() => getSubjectGroupsColumns(t), [t]);
 
