@@ -11,43 +11,43 @@ interface BulkPrintPersonsGroupsMembershipsModalProps {
   isOpen: boolean;
   onClose: () => void;
   groups: RecipientsForSmsModal;
-  staffKey: string;
 }
 
 export function BulkPrintPersonsGroupsMembershipsModal({
   isOpen,
   onClose,
   groups,
-  staffKey,
 }: BulkPrintPersonsGroupsMembershipsModalProps) {
   const { t } = useTranslation(['common', 'people']);
   const [groupTypes, setGroupTypes] = useState<PartyGroupType[]>([]);
 
   const handlePrint = async () => {
-    const groupIds = groups.map(({ id }) => id) ?? [];
+    const personIds = groups.map(({ id }) => id) ?? [];
 
-    const printResponse = await getPrintPersonsGroupMemberships(
-      {
-        groupIds,
-        options: Print_GroupMembersOptions.Csv,
-        groupTypes,
-      },
-      staffKey
-    );
+    const printResponse = await getPrintPersonsGroupMemberships({
+      personIds,
+      options: Print_GroupMembersOptions.Print,
+      groupTypes,
+    });
 
     if (printResponse?.print_personsGroupMemberships?.url)
       window.open(
-        printResponse?.print_personsGroupMemberships?.url,
+        printResponse.print_personsGroupMemberships.url,
         '_blank',
         'noreferrer'
       );
+    handleClose();
+  };
+
+  const handleClose = () => {
+    setGroupTypes([]);
     onClose();
   };
 
   return (
     <Dialog
       open={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       scroll="paper"
       fullWidth
       maxWidth="md"
@@ -78,7 +78,7 @@ export function BulkPrintPersonsGroupsMembershipsModal({
               spacing={1.5}
               sx={{ px: 3, flex: 1 }}
             >
-              <Button variant="soft" onClick={onClose}>
+              <Button variant="soft" onClick={handleClose}>
                 {t('common:actions.cancel')}
               </Button>
 

@@ -245,7 +245,6 @@ export default function StaffListPage() {
       <BulkPrintPersonsGroupsMembershipsModal
         isOpen={isBulkPrintOpen}
         onClose={onCloseBulkPrint}
-        staffKey="staff"
         groups={selectedStaff}
       />
       <SendSmsModal

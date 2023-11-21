@@ -6,6 +6,7 @@ import {
   queryClient,
   UseQueryReturnType,
 } from '@tyro/api';
+import { peopleKeys } from '../keys';
 
 const printPersonsGroupMemberships = graphql(/* GraphQL */ `
   query printPersonsGroupMemberships($filter: Print_PersonsGroupMemberships!) {
@@ -17,10 +18,9 @@ const printPersonsGroupMemberships = graphql(/* GraphQL */ `
 `);
 
 const printPersonsGroupMembershipsQuery = (
-  filter: Print_PersonsGroupMemberships,
-  groupKey: string
+  filter: Print_PersonsGroupMemberships
 ) => ({
-  queryKey: ['print', groupKey, filter],
+  queryKey: peopleKeys.print(filter),
   queryFn: async () =>
     gqlClient.request(printPersonsGroupMemberships, {
       filter,
@@ -28,19 +28,18 @@ const printPersonsGroupMembershipsQuery = (
 });
 
 export function getPrintPersonsGroupMemberships(
-  filter: Print_PersonsGroupMemberships,
-  groupKey: string
+  filter: Print_PersonsGroupMemberships
 ) {
-  return queryClient.fetchQuery(printPersonsGroupMembershipsQuery(filter, groupKey));
+  return queryClient.fetchQuery(printPersonsGroupMembershipsQuery(filter));
 }
 
 export function usePrintPersonsGroupMemberships(
-  filter: Print_PersonsGroupMemberships,
-  groupKey: string
+  filter: Print_PersonsGroupMemberships
 ) {
   return useQuery({
-    ...printPersonsGroupMembershipsQuery(filter, groupKey),
-    select: ({ print_personsGroupMemberships }) => print_personsGroupMemberships,
+    ...printPersonsGroupMembershipsQuery(filter),
+    select: ({ print_personsGroupMemberships }) =>
+      print_personsGroupMemberships,
   });
 }
 

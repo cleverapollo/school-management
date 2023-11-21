@@ -11,6 +11,7 @@ import {
   Core_PeopleFilter,
   Notes_BehaviourFilter,
   Notes_BehaviourCategoryFilter,
+  Print_PersonsGroupMemberships,
   SubjectGroupRelationshipFilter,
 } from '@tyro/api';
 
@@ -20,6 +21,11 @@ export const peopleKeys = {
     basedOnPartyIds: (filter: Core_PeopleFilter) =>
       [...peopleKeys.all, 'basedOnPartyIds', filter] as const,
   },
+  print: (filter: Print_PersonsGroupMemberships) => [
+    ...peopleKeys.all,
+    'print',
+    filter,
+  ],
   contacts: {
     all: () => [...peopleKeys.all, 'contacts'] as const,
     personalDetails: (contactId: number | undefined) =>
