@@ -156,7 +156,7 @@ export function useUpdateClassMemberships() {
       toast(t('common:snackbarMessages.updateSuccess'));
       queryClient.invalidateQueries(classListManagerKeys.allClassMemberships());
       queryClient.invalidateQueries(classListManagerKeys.allBlockMemberships());
-      queryClient.invalidateQueries(groupsKeys.all());
+      queryClient.invalidateQueries(groupsKeys.all);
       queryClient.invalidateQueries(peopleKeys.all);
     },
     onError: () => {
@@ -177,7 +177,7 @@ export function useAutoAssignCore() {
     onSuccess: async () => {
       toast(t('common:snackbarMessages.updateSuccess'));
       await queryClient.invalidateQueries(classListManagerKeys.all);
-      queryClient.invalidateQueries(groupsKeys.all());
+      queryClient.invalidateQueries(groupsKeys.all);
       queryClient.invalidateQueries(peopleKeys.all);
     },
     onError: () => {

@@ -30,7 +30,7 @@ export function useCreateBulkAttendance() {
       gqlClient.request(saveBulkAttendance, { input }),
     onSuccess: async () => {
       await queryClient.invalidateQueries(attendanceKeys.all);
-      await queryClient.invalidateQueries(groupsKeys.all());
+      await queryClient.invalidateQueries(groupsKeys.all);
 
       toast(t('common:snackbarMessages.updateSuccess'));
     },
