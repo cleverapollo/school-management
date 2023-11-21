@@ -18,7 +18,7 @@ export function useBulkPrintGroupMembers({
 
     const printResponse = await getPrintGroupMembers({
       groupIds,
-      options: Print_GroupMembersOptions.Csv,
+      options: Print_GroupMembersOptions.Print,
     });
 
     if (printResponse?.print_groupMembers?.url)
