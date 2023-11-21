@@ -28,7 +28,7 @@ export function useBulkPrintGroupMembers({
 
     if (printResponse?.print_groupMembers?.url)
       window.open(
-        printResponse?.print_groupMembers?.url,
+        printResponse.print_groupMembers.url,
         '_blank',
         'noreferrer'
       );
