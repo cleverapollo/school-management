@@ -178,17 +178,30 @@ function getCommentFields(
       >) => {
         const isCommentBankSelector = getIsCommentBankSelector(data);
 
-        if (
-          typeof newValue === 'object' &&
-          newValue?.commentBankCommentId === -1
-        ) {
-          set(data ?? {}, 'teacherComment.commentBankCommentId', null);
-          set(data ?? {}, 'teacherComment.comment', newValue?.comment ?? null);
-          return true;
+        if (typeof newValue === 'object') {
+          if (newValue?.commentBankCommentId === -1) {
+            set(data ?? {}, 'teacherComment.commentBankCommentId', null);
+            set(
+              data ?? {},
+              'teacherComment.comment',
+              newValue?.comment ?? null
+            );
+            return true;
+          }
+
+          const newValueWithDefault = newValue ?? {};
+          if (
+            'comment' in newValueWithDefault ??
+            ({} || 'commentBankCommentId' in newValueWithDefault)
+          ) {
+            set(data ?? {}, 'teacherComment', newValueWithDefault ?? null);
+            return true;
+          }
         }
 
         if (!newValue) {
-          data.teacherComment = null;
+          set(data ?? {}, 'teacherComment.comment', null);
+          set(data ?? {}, 'teacherComment.commentBankCommentId', null);
         } else {
           const valuePath = isCommentBankSelector
             ? `teacherComment.commentBankCommentId`
