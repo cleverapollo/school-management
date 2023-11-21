@@ -6,32 +6,23 @@ import { getPrintGroupMembers } from '../api/print-group-members';
 
 type UseBulkPrintGroupMembersParams = {
   groups: RecipientsForSmsModal;
-  groupKey: string;
 };
 
 export function useBulkPrintGroupMembers({
   groups,
-  groupKey,
 }: UseBulkPrintGroupMembersParams) {
   const { t } = useTranslation(['groups']);
 
   const handleBulkPrint = async () => {
     const groupIds = groups.map(({ id }) => id) ?? [];
 
-    const printResponse = await getPrintGroupMembers(
-      {
-        groupIds,
-        options: Print_GroupMembersOptions.Csv,
-      },
-      groupKey
-    );
+    const printResponse = await getPrintGroupMembers({
+      groupIds,
+      options: Print_GroupMembersOptions.Csv,
+    });
 
     if (printResponse?.print_groupMembers?.url)
-      window.open(
-        printResponse.print_groupMembers.url,
-        '_blank',
-        'noreferrer'
-      );
+      window.open(printResponse.print_groupMembers.url, '_blank', 'noreferrer');
   };
 
   return {

@@ -105,10 +105,7 @@ export default function CustomGroups() {
   const [deleteGroupIds, setDeleteGroupIds] = useState<number[] | null>();
   const { isStaffUser, hasPermission } = usePermissions();
   const { data: customGroupData } = useCustomGroups();
-  const bulkPrintOption = useBulkPrintGroupMembers({
-    groups: selectedGroups,
-    groupKey: 'customGroups',
-  });
+  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
 
   const {
     isOpen: isSendSmsOpen,

@@ -175,10 +175,7 @@ export default function SubjectGroups() {
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
-  const bulkPrintOption = useBulkPrintGroupMembers({
-    groups: selectedGroups,
-    groupKey: 'subjectGroups',
-  });
+  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
   const {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
@@ -204,6 +201,7 @@ export default function SubjectGroups() {
       {
         label: t('groups:subjectGroup.switchToSupportClass.action'),
         icon: <MoveGroupIcon />,
+        onClick: () => setSwitchGroupTypeConfirmation(true),
         hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
           isStaffUserWithPermission('ps:1:groups:write_subject_groups'),
       },

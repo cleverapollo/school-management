@@ -111,10 +111,7 @@ export default function StaffProfileClassesPage() {
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
-  const bulkPrintOption = useBulkPrintGroupMembers({
-    groups: selectedGroups,
-    groupKey: 'staffClasses',
-  });
+  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
 
   const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
     () => [

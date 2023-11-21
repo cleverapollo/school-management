@@ -82,10 +82,7 @@ export default function YearGroups() {
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
-  const bulkPrintOption = useBulkPrintGroupMembers({
-    groups: selectedGroups,
-    groupKey: 'yearGroups',
-  });
+  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
 
   const {
     isOpen: isSendSmsOpen,

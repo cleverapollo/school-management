@@ -127,10 +127,7 @@ export default function ClassGroupsPage() {
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
-  const bulkPrintOption = useBulkPrintGroupMembers({
-    groups: selectedGroups,
-    groupKey: 'classGroups',
-  });
+  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
 
   const classGroupColumns = useMemo(
     () => getClassGroupColumns(t, isStaffUser, displayNames),

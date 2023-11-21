@@ -142,10 +142,7 @@ export default function SupportGroups() {
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
-  const bulkPrintOption = useBulkPrintGroupMembers({
-    groups: selectedGroups,
-    groupKey: 'supportGroups',
-  });
+  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
   const {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
