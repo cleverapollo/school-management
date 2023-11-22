@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useTranslation } from '@tyro/i18n';
 import { Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -39,10 +39,13 @@ export function PublishOnlineModal({
       (subject) => subject?.subjectGroup?.partyId
     );
 
-    const getDate = dayjs().format('YYYY-MM-DD');
-
     publishOnline(
-      { assessmentId, subjectGroupIds, publish: true, publishFrom: getDate },
+      {
+        assessmentId,
+        subjectGroupIds,
+        publish: true,
+        publishFrom: dayjs().format('YYYY-MM-DD'),
+      },
       { onSuccess: onClose }
     );
   };

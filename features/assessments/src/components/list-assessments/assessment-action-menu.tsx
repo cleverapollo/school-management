@@ -91,8 +91,7 @@ export const AssessmentActionMenu = ({
                         {
                           label: t('assessments:actions.makeOverallComments'),
                           icon: <CommentIcon />,
-                          hasAccess: () =>
-                            assessmentType === AssessmentType.Term,
+                          hasAccess: () => isTermAssessment,
                           navigateTo: `${assessmentPath}/overall-comments`,
                         },
                       ]
@@ -104,13 +103,13 @@ export const AssessmentActionMenu = ({
                       {
                         label: t('assessments:actions.editPublishDate'),
                         icon: <EditCalendarIcon />,
-                        disabled: !isTermAssessment,
+                        hasAccess: () => isTermAssessment,
                         onClick: onOpen,
                       },
                       {
                         label: t('assessments:actions.unpublish'),
                         icon: <StopIcon />,
-                        disabled: !isTermAssessment,
+                        hasAccess: () => isTermAssessment,
                         onClick: unpublishAssessment,
                       },
                     ]
@@ -118,7 +117,7 @@ export const AssessmentActionMenu = ({
                       {
                         label: t('assessments:actions.publish'),
                         icon: <CheckmarkCircleIcon />,
-                        disabled: !isTermAssessment,
+                        hasAccess: () => isTermAssessment,
                         onClick: onOpen,
                       },
                     ],
