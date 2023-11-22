@@ -27,7 +27,7 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { RHFStaffAutocomplete, useStaffSubjectGroups } from '@tyro/people';
 import { AddIcon, TrashIcon } from '@tyro/icons';
-import { Person, Swm_UpsertStaffAbsenceDate } from '@tyro/api';
+import {Person, StaffGroupMembershipRoles, Swm_UpsertStaffAbsenceDate} from '@tyro/api';
 import {
   ReturnTypeFromUseStaffWorkAbsences,
   useSaveStaffAbsence,
@@ -186,9 +186,11 @@ export function UpsertAbsenceModal({
     'isLongTermLeave',
   ]);
 
-  const { data: subjectGroupsData } = useStaffSubjectGroups({
+  const { data: subjectGroupsData } = useStaffSubjectGroups( {
     partyIds: [selectedStaff?.partyId || 0],
-  });
+  },
+      {staffRoles: [StaffGroupMembershipRoles.Teacher, StaffGroupMembershipRoles.LongTermSubstitute]}
+  );
 
   const onSubmit = handleSubmit(
     ({

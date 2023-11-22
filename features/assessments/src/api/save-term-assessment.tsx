@@ -12,7 +12,7 @@ import { useTranslation } from '@tyro/i18n';
 import { assessmentsKeys } from './keys';
 
 const saveTermAssessment = graphql(/* GraphQL */ `
-  mutation assessment_saveTermAssessment($input: SaveTermAssessmentInput) {
+  mutation saveAssessment($input: SaveTermAssessmentInput) {
     assessment_saveTermAssessment(input: $input) {
       name
       years {
