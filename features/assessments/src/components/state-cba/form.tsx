@@ -39,15 +39,15 @@ export type YearGroupOption = {
 };
 
 export interface FormValues extends FormCustomFieldsValues {
-  cbaType: StateCbaType;
+  cbaType: StateCbaType | null;
   id?: number;
   name: string;
   assessmentType: AssessmentType;
   years: YearGroupOption;
   startDate: dayjs.Dayjs;
   endDate: dayjs.Dayjs;
-  subject: Pick<Subject, 'id' | 'colour' | 'name' | 'active' | 'examinable'>;
-  groups: Pick<SubjectGroup, 'partyId' | 'name'>[] | undefined;
+  subject: Pick<Subject, 'id' | 'colour' | 'name'> | null;
+  groups: Pick<SubjectGroup, 'partyId' | 'name'>[] | null | undefined;
 }
 
 type StateCbaFormProps = {
@@ -120,15 +120,15 @@ export function StateCbaForm({
       []
     );
     return subjectList || [];
-  }, []);
+  }, [subjectGroups]);
 
   const { mutateAsync: saveStateCba, isLoading } = useSaveStateCba(
     academicNamespaceIdAsNumber
   );
 
   const filterSubjectGroupsBySubjectAndYear = (
-    subjectName: string,
-    yearGroup: YearGroupOption
+    yearGroup: YearGroupOption,
+    subjectName?: string | null
   ) =>
     subjectGroups
       ?.filter((item) =>
@@ -141,7 +141,7 @@ export function StateCbaForm({
   const subjectGroupOptions = useMemo(() => {
     const subjectName = subjectPicked?.name;
     const yearName: YearGroupOption = yearPicked;
-    return filterSubjectGroupsBySubjectAndYear(subjectName, yearName);
+    return filterSubjectGroupsBySubjectAndYear(yearName, subjectName);
   }, [subjectPicked, yearPicked]);
 
   const textFieldStyle = {
@@ -149,55 +149,49 @@ export function StateCbaForm({
     width: '100%',
   };
 
-  const onSubmit = ({
-    cbaType,
-    years,
-    startDate,
-    endDate,
-    subject,
-    groups,
-    ...restData
-  }: FormValues) => {
-    const groupIds = groups?.map((group) => group?.partyId);
-    saveStateCba(
-      {
-        ...restData,
-        id: stateCba?.id ?? null,
-        yearId: years?.yearGroupId ?? 0,
-        startDate: startDate.format('YYYY-MM-DD'),
-        endDate: endDate.format('YYYY-MM-DD'),
-        stateCbaType: cbaType,
-        subjectGroupIds: groupIds,
-      },
-      {
-        onSuccess: () => {
-          onSuccess?.();
-          navigate('/assessments');
+  const onSubmit = handleSubmit(
+    ({ cbaType, years, startDate, endDate, subject, groups, ...restData }) => {
+      const groupIds = groups?.map((group) => group?.partyId);
+      saveStateCba(
+        {
+          ...restData,
+          id: stateCba?.id ?? null,
+          yearId: years?.yearGroupId ?? 0,
+          startDate: startDate.format('YYYY-MM-DD'),
+          endDate: endDate.format('YYYY-MM-DD'),
+          stateCbaType: cbaType,
+          subjectGroupIds: groupIds,
         },
-        onError: (error: unknown) => {
-          let errorMessage = t('assessments:existingCbaDefaultTitle');
+        {
+          onSuccess: () => {
+            onSuccess?.();
+            navigate('/assessments');
+          },
+          onError: (error: unknown) => {
+            let errorMessage = t('assessments:existingCbaDefaultTitle');
 
-          if (typeof error === 'object' && error !== null) {
-            const backendError = error as BackendErrorResponse;
-            try {
-              const parsedError = JSON.parse(
-                backendError.response.error
-              ) as ParsedErrorDetail;
-              errorMessage = parsedError.detail || errorMessage;
-              setErrorResponseOne(errorMessage);
-            } catch (parseError) {
-              console.error(parseError);
+            if (typeof error === 'object' && error !== null) {
+              const backendError = error as BackendErrorResponse;
+              try {
+                const parsedError = JSON.parse(
+                  backendError.response.error
+                ) as ParsedErrorDetail;
+                errorMessage = parsedError.detail || errorMessage;
+                setErrorResponseOne(errorMessage);
+              } catch (parseError) {
+                console.error(parseError);
+              }
             }
-          }
-          const regex = /: ([0-9]+)/g;
-          const responseFormatted = regex.exec(errorMessage);
-          if (responseFormatted) {
-            setErrorResponse(responseFormatted[1]);
-          }
-        },
-      }
-    );
-  };
+            const regex = /: ([0-9]+)/g;
+            const responseFormatted = regex.exec(errorMessage);
+            if (responseFormatted) {
+              setErrorResponse(responseFormatted[1]);
+            }
+          },
+        }
+      );
+    }
+  );
 
   const errorTitleMessage = errorResponseOne?.replace(/\..*/, '');
 
@@ -214,7 +208,7 @@ export function StateCbaForm({
   }, [subjectPicked, yearPicked, stateCba]);
 
   return (
-    <Card variant="outlined" component="form" onSubmit={handleSubmit(onSubmit)}>
+    <Card variant="outlined" component="form" onSubmit={onSubmit}>
       <CardHeader
         component="h2"
         title={!errorResponse ? title : errorTitleMessage}

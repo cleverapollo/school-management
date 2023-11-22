@@ -3,8 +3,16 @@ import { useTranslation } from '@tyro/i18n';
 import { PageHeading, useToast, useNumber, PageContainer } from '@tyro/core';
 import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
+import { Colour, StateCbaType } from '@tyro/api';
 import { useAssessmentById } from '../../api/assessments';
-import { FormValues, StateCbaForm } from '../../components/state-cba/form';
+import { StateCbaForm } from '../../components/state-cba/form';
+
+const defaultYear = { name: '-', yearGroupId: 0 };
+const defaultSubject = {
+  colour: Colour.Purple,
+  id: 0,
+  name: '-',
+};
 
 export default function EditStateCba() {
   const { toast } = useToast();
@@ -20,7 +28,7 @@ export default function EditStateCba() {
     ids: [assessmentIdAsNumber ?? 0],
   });
 
-  const formValues = useMemo<FormValues | null>(() => {
+  const formValues = useMemo(() => {
     if (!assessmentData) return null;
 
     const {
@@ -47,11 +55,11 @@ export default function EditStateCba() {
 
     return {
       ...restData,
-      cbaType: stateCbaType,
-      years: formattedYear,
+      cbaType: stateCbaType || StateCbaType.Cba_1,
+      years: formattedYear || defaultYear,
       startDate: dayjs(startDate),
       endDate: dayjs(endDate),
-      subject: formattedSubject,
+      subject: formattedSubject || defaultSubject,
       groups: subjectGroups,
       ...commentBanks.reduce((acc, [key, bankValue]) => {
         if (bankValue) {
