@@ -1,5 +1,6 @@
 import { Box, Fade, Container, Typography } from '@mui/material';
 import {
+  PermissionUtils,
   SmsRecipientType,
   SubjectGroupType,
   SubjectUsage,
@@ -161,6 +162,8 @@ export default function SupportGroups() {
       label: t('groups:supportGroup.switchToSubjectGroup.action'),
       icon: <MoveGroupIcon />,
       onClick: () => setSwitchGroupTypeConfirmation(true),
+      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+        isStaffUserWithPermission('ps:1:groups:write_subject_groups'),
     },
     // {
     //   label: t('mail:sendMail'),
