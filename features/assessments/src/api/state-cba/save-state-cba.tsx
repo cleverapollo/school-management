@@ -86,7 +86,6 @@ export function useSaveStateCba(academicNameSpaceId?: number) {
       ),
     onSuccess: () => {
       queryClient.invalidateQueries(assessmentsKeys.all);
-      toast(t('common:snackbarMessages.publishedOnline'));
     },
     onError: (error: unknown) => {
       let errorMessage = t('common:snackbarMessages.errorFailed');

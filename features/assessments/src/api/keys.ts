@@ -8,7 +8,6 @@ import {
   GradeSetFilter,
   OverallCommentsFilter,
   StudentResultFilter,
-  SubjectGroupFilter,
 } from '@tyro/api';
 
 export const assessmentsKeys = {
@@ -40,18 +39,6 @@ export const assessmentsKeys = {
     academicNamespaceId,
     filter,
   ],
-  subjects: (filter: SubjectGroupFilter) =>
-    [...assessmentsKeys.all, 'subjects', filter] as const,
-  subjectGroups: (
-    filter: SubjectGroupFilter,
-    academicNamespaceId: number | string
-  ) =>
-    [
-      ...assessmentsKeys.all,
-      'subjectGroups',
-      academicNamespaceId,
-      filter,
-    ] as const,
   cbaGradeSets: (filter: GradeSetFilter) =>
     [...assessmentsKeys.all, 'cbaGradeSets', filter] as const,
   allAssessmentComments: () => [...assessmentsKeys.all, 'assessmentComments'],

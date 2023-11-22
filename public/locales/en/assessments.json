@@ -98,6 +98,7 @@
   "publishOnlineModalText_other": "You are about to publish these subject groups online. Are you sure you want to continue?",
   "examinable": "Examinable",
   "whenWouldYouLikeToPublish": "When would you like to publish from?",
+  "editAssessmentsToolTip": "You can only edit assessments that match the global academic year",
   "syncStatus": {
     "FULLY_SYNCED": " Fully synced",
     "NOT_SYNCED": "Not synced",

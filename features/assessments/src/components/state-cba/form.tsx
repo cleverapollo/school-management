@@ -12,7 +12,6 @@ import {
   useYearGroups,
   useAcademicNamespace,
   AssessmentType,
-  SubjectGroupType,
   Subject,
   SubjectGroup,
   StateCbaType,
@@ -22,7 +21,7 @@ import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { useSubjectGroupsCbaQuery } from '@tyro/groups';
+import { useSubjectGroups } from '@tyro/groups';
 import {
   FormCustomFieldsValues,
   CustomFieldsTable,
@@ -101,9 +100,7 @@ export function StateCbaForm({
 
   const { data: yearGroupsData = [] } = useYearGroups({});
 
-  const { data: subjectGroups } = useSubjectGroupsCbaQuery({
-    type: [SubjectGroupType.SubjectGroup],
-  });
+  const { data: subjectGroups } = useSubjectGroups();
 
   const subjects = useMemo(() => {
     const subjectsFlattened = subjectGroups?.flatMap(
@@ -130,13 +127,11 @@ export function StateCbaForm({
     yearGroup: YearGroupOption,
     subjectName?: string | null
   ) =>
-    subjectGroups
-      ?.filter((item) =>
-        item.subjects.some((subject) => subject.name === subjectName)
-      )
-      ?.filter((years) =>
-        years.yearGroups.some((year) => year.name === yearGroup?.name)
-      ) || [];
+    subjectGroups?.filter(
+      (item) =>
+        item.subjects.some((subject) => subject.name === subjectName) &&
+        item.yearGroups.some((year) => year.name === yearGroup?.name)
+    ) || [];
 
   const subjectGroupOptions = useMemo(() => {
     const subjectName = subjectPicked?.name;
@@ -195,7 +190,7 @@ export function StateCbaForm({
 
   const errorTitleMessage = errorResponseOne?.replace(/\..*/, '');
 
-  const isEditing = !!(stateCba?.id && stateCba?.id);
+  const isEditing = !!stateCba?.id;
 
   useEffect(() => {
     if (!stateCba?.id && subjectPicked && yearPicked) {

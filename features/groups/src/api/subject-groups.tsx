@@ -7,8 +7,6 @@ import {
   SubjectGroupFilter,
   SubjectGroupType,
   UpdateSubjectGroupInput,
-  getAcademicNamespace,
-  EmulateHeaders,
 } from '@tyro/api';
 import { sortByDisplayName } from '@tyro/core';
 import { groupsKeys } from './keys';
@@ -215,52 +213,5 @@ export function useSwitchSubjectGroupType() {
       queryClient.invalidateQueries(groupsKeys.subject.all());
       queryClient.invalidateQueries(groupsKeys.support.all());
     },
-  });
-}
-
-const subjectGroupsCbaQuery = (
-  filter: SubjectGroupFilter,
-  academicNamespaceId?: number | null
-) => ({
-  queryKey: groupsKeys.subject.subjectGroupsCba(
-    filter,
-    academicNamespaceId ?? 'activeNamespace'
-  ),
-  queryFn: async () => {
-    let fulfilledAcademicNamespaceId = academicNamespaceId;
-    if (!fulfilledAcademicNamespaceId) {
-      const { activeAcademicNamespace } = await getAcademicNamespace();
-      fulfilledAcademicNamespaceId =
-        activeAcademicNamespace?.academicNamespaceId ?? 0;
-    }
-    const { subjectGroups } = await gqlClient.request(
-      subjectGroupsList,
-      { filter },
-      {
-        [EmulateHeaders.ACADEMIC_NAMESPACE_ID]:
-          fulfilledAcademicNamespaceId.toString(),
-      }
-    );
-    if (!Array.isArray(subjectGroups)) return [];
-
-    return subjectGroups;
-  },
-});
-
-export function getSubjectGroupsCbaQuery(
-  filter: SubjectGroupFilter,
-  academicNamespaceId?: number | null
-) {
-  return queryClient.fetchQuery(
-    subjectGroupsCbaQuery(filter, academicNamespaceId)
-  );
-}
-
-export function useSubjectGroupsCbaQuery(
-  filter: SubjectGroupFilter,
-  academicNamespaceId?: number | null
-) {
-  return useQuery({
-    ...subjectGroupsCbaQuery(filter, academicNamespaceId),
   });
 }

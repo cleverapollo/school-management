@@ -9,7 +9,6 @@ import {
   DialogContentText,
   DialogTitle,
 } from '@tyro/core';
-import { PpodPublishResultsInput } from '@tyro/api';
 import { usePublishResultsToPpod } from '../../api/state-cba/publish-ppod-results';
 import { ReturnTypeFromUseAssessmentSubjectGroups } from '../../api/assessment-subject-groups';
 import { ReturnTypeFromUseAssessmentResults } from '../../api/assessment-results';
