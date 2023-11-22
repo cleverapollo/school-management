@@ -44,6 +44,9 @@ const assessmentResults = graphql(/* GraphQL */ `
       subjectGroup {
         partyId
         name
+        irePP {
+          examinable
+        }
       }
       studentStudyLevel
       result
