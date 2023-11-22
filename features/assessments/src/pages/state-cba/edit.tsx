@@ -50,8 +50,8 @@ export default function EditStateCba() {
       (typeof commentBankValues)[keyof typeof commentBankValues]
     ][];
 
-    const formattedSubject = subjectGroups && subjectGroups[0]?.subjects[0];
-    const formattedYear = years && years[0];
+    const formattedSubject = subjectGroups?.[0]?.subjects?.[0];
+    const formattedYear = years?.[0];
 
     return {
       ...restData,

@@ -42,11 +42,11 @@ import {
 } from '../../api/state-cba/grade-sets';
 import { useUpdateStateCbaResult } from '../../api/state-cba/save-results';
 import {
-  getExtraFields,
   ReturnTypeFromUseAssessmentById,
   ReturnTypeFromUseCommentBanksWithComments,
 } from '../term-assessment/subject-group/edit-results';
 import { useCommentBanksWithComments } from '../../api/comment-bank';
+import { getExtraFields } from '../../utils/get-extra-fields';
 
 const getColumnDefs = (
   t: TFunction<
