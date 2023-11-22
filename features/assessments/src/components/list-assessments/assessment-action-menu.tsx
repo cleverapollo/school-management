@@ -86,16 +86,13 @@ export const AssessmentActionMenu = ({
                       : undefined,
                     navigateTo: `${assessmentPath}/edit`,
                   },
-                  ...(canEnterOverallComments
-                    ? [
-                        {
-                          label: t('assessments:actions.makeOverallComments'),
-                          icon: <CommentIcon />,
-                          hasAccess: () => isTermAssessment,
-                          navigateTo: `${assessmentPath}/overall-comments`,
-                        },
-                      ]
-                    : []),
+                  {
+                    label: t('assessments:actions.makeOverallComments'),
+                    icon: <CommentIcon />,
+                    hasAccess: () =>
+                      isTermAssessment && canEnterOverallComments,
+                    navigateTo: `${assessmentPath}/overall-comments`,
+                  },
                 ],
 
                 publishedFrom
