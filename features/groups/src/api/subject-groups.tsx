@@ -242,7 +242,6 @@ const subjectGroupsCbaQuery = (
       }
     );
     if (!Array.isArray(subjectGroups)) return [];
-    console.log(subjectGroups, 'subjectGroups');
 
     return subjectGroups;
   },
