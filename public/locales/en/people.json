@@ -95,7 +95,7 @@
       "lockerNumber": "Locker number",
       "examNumber": "Exam number",
       "languageSupportApplicant": "Is the student a language support applicant?",
-      "studentFromIrish": "Is the student exempt from Irish?",
+      "exemptions": "Exemptions",
       "examEntrant": "Is the student an exam entrant?",
       "repeatOfYearIndicator": "Is the student repeating this year?",
       "boarderIndicator": "Is the student boarding?",

@@ -11,6 +11,7 @@ const studentsPersonalById = graphql(/* GraphQL */ `
       endDate
       guardianshipNote
       exemptions {
+        id
         exemption
         exemptionTypeCode
         grantor

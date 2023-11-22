@@ -211,10 +211,15 @@ export const ProfileEnrolment = ({
       <Stack gap={3}>
         {[
           {
-            label: t('people:personal.enrolmentHistory.studentFromIrish'),
+            label: t('people:personal.enrolmentHistory.exemptions'),
             value: exemptions?.length
-              ? exemptions?.map(({ exemption }) => exemption)?.join(', ')
-              : t('common:no'),
+              ? exemptions.map(({ id, exemption }) => (
+                  <p key={id}>
+                    {exemption}
+                    <br />
+                  </p>
+                ))
+              : t('common:none'),
           },
           {
             label: t(
