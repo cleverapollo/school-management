@@ -11,6 +11,7 @@ export type CoverEvent =
 export interface CoverTableRow {
   staff: ReturnTypeFromUseEventsForCover[number]['staff']['person'];
   dayInfo: SubstitutionEventsByDay[number]['dayInfo'];
+  absence: SubstitutionEventsByDay[number]['absence'];
   periods: (
     | SubstitutionEventsByDay[number]['substitutionEventsByPeriod'][number]
     | null

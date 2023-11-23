@@ -9,18 +9,31 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
 } from '@mui/material';
-import { useTranslation } from '@tyro/i18n';
+import { useTranslation, TFunction } from '@tyro/i18n';
 import { ActionMenu, Avatar, useDebouncedValue } from '@tyro/core';
 import dayjs, { Dayjs } from 'dayjs';
+import {
+  ColumnHelper,
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import { CalendarGridPeriodType } from '@tyro/api';
-import { useMemo } from 'react';
-import { PrinterIcon } from '@tyro/icons';
+import { Dispatch, SetStateAction, useMemo } from 'react';
+import { ArrowRightIcon, InfoCircleIcon, PrinterIcon } from '@tyro/icons';
 import { ReturnTypeFromUseEventsForCover } from '../../../api/staff-work-events-for-cover';
 import { CoverBreakOrFinished } from './cover-break-or-finished';
 import { EventCoverCard } from './event-card';
 import { EmptyStateContainer } from './empty-state-container';
-import { useCoverTable, CoverTableRow } from '../../../hooks/use-cover-table';
+import {
+  useCoverTable,
+  CoverTableRow,
+  ReturnTypeOfUseCoverTable,
+} from '../../../hooks/use-cover-table';
 import { ApplyCoverModal } from '../apply-cover-modal';
 import { RemoveCoverModal } from '../remove-cover-modal';
 
@@ -35,6 +48,136 @@ interface CoverTableProps {
   isLoading?: boolean;
 }
 
+const columnHelper = createColumnHelper<CoverTableRow>();
+
+const getColumnHeaders = (
+  t: TFunction<('timetable' | 'common' | 'substitution')[]>,
+  userAsFirstColumn: boolean,
+  onLinkClick: CoverTableProps['onLinkClick'],
+  periods: number[],
+  coverCardProps: ReturnTypeOfUseCoverTable & {
+    setEventsForApplyCover: Dispatch<
+      SetStateAction<ReturnTypeOfUseCoverTable['selectedEventsMap'] | null>
+    >;
+    setEventsForDeleteCover: Dispatch<
+      SetStateAction<ReturnTypeOfUseCoverTable['selectedEventsMap'] | null>
+    >;
+  }
+) => [
+  columnHelper.accessor(
+    ({ staff, dayInfo }) =>
+      userAsFirstColumn
+        ? `${staff?.firstName ? staff.firstName[0] : ''}. ${
+            staff?.lastName ?? ''
+          }`
+        : dayjs(dayInfo.date).format('L'),
+    {
+      id: userAsFirstColumn ? 'firstName' : 'date',
+      header: userAsFirstColumn ? t('common:name') : t('common:date'),
+      cell: ({
+        row: {
+          original: { staff, dayInfo, absence },
+        },
+      }) => {
+        const label = userAsFirstColumn
+          ? `${staff?.firstName ? staff.firstName[0] : ''}. ${
+              staff?.lastName ?? ''
+            }`
+          : dayjs(dayInfo.date).format('L');
+        return (
+          <Stack direction="row" alignItems="center">
+            {userAsFirstColumn && (
+              <Avatar
+                src={staff.avatarUrl}
+                name={label}
+                sx={{
+                  my: 1,
+                  mr: 1.5,
+                }}
+              />
+            )}
+            {onLinkClick ? (
+              <Link
+                component="button"
+                onClick={() => onLinkClick(staff, dayjs(dayInfo.date))}
+                noWrap
+              >
+                {label}
+              </Link>
+            ) : (
+              <span>{label}</span>
+            )}
+            {absence?.absenceReasonText && (
+              <Tooltip title={absence.absenceReasonText}>
+                <InfoCircleIcon />
+              </Tooltip>
+            )}
+          </Stack>
+        );
+      },
+    }
+  ),
+  columnHelper.accessor('absence.absenceType.name', {
+    header: () => t('substitution:absenceReason'),
+  }),
+  ...periods.map((period, index) =>
+    columnHelper.display({
+      id: `periods.${period - 1}`,
+      header: () =>
+        t(`timetable:periodNumber`, {
+          number: period,
+        }),
+      cell: ({
+        row: {
+          original: { staff, dayInfo, periods: periodsValues },
+        },
+      }) => {
+        const periodInfo = dayInfo?.periods[index];
+        const eventInfo = periodsValues[index];
+        const {
+          isEventSelected,
+          onSelectEvent,
+          selectedEventsMap,
+          setEventsForApplyCover,
+          setEventsForDeleteCover,
+        } = coverCardProps;
+
+        const isBreak = periodInfo?.type === CalendarGridPeriodType.Break;
+        const isFinished = !periodInfo?.type;
+
+        return (
+          <Stack spacing={0.5}>
+            {(isBreak || isFinished) && (
+              <CoverBreakOrFinished
+                timeslotInfo={periodInfo}
+                type={isBreak ? 'break' : 'finished'}
+              />
+            )}
+            {eventInfo && (
+              <EventCoverCard
+                eventInfo={eventInfo}
+                staff={staff}
+                isEventSelected={isEventSelected}
+                toggleEventSelection={onSelectEvent}
+                selectedEvents={Array.from(selectedEventsMap.values())}
+                applyCover={() => {
+                  setEventsForApplyCover(selectedEventsMap);
+                }}
+                editCover={() => {
+                  setEventsForApplyCover(selectedEventsMap);
+                }}
+                removeCover={() => {
+                  setEventsForDeleteCover(selectedEventsMap);
+                }}
+              />
+            )}
+          </Stack>
+        );
+      },
+    })
+  ),
+];
+
 export function CoverTable({
   userAsFirstColumn = false,
   onLinkClick,
@@ -43,21 +186,20 @@ export function CoverTable({
   isLoading = false,
 }: CoverTableProps) {
   const { t } = useTranslation(['timetable', 'common', 'substitution']);
-  const { onSelectEvent, isEventSelected, selectedEventsMap } =
-    useCoverTable(data);
+  const coverTableProps = useCoverTable(data);
 
   const {
     value: eventsForApplyCover,
     debouncedValue: debouncedEventsForApplyCover,
     setValue: setEventsForApplyCover,
-  } = useDebouncedValue<typeof selectedEventsMap | null>({
+  } = useDebouncedValue<typeof coverTableProps.selectedEventsMap | null>({
     defaultValue: null,
   });
   const {
     value: eventsForDeleteCover,
     debouncedValue: debouncedEventsForDeleteCover,
     setValue: setEventsForDeleteCover,
-  } = useDebouncedValue<typeof selectedEventsMap | null>({
+  } = useDebouncedValue<typeof coverTableProps.selectedEventsMap | null>({
     defaultValue: null,
   });
 
@@ -68,6 +210,32 @@ export function CoverTable({
 
     return Array.from({ length: numberOfPeriods }, (_, i) => i + 1);
   }, [data]);
+
+  const columns = useMemo(
+    () =>
+      getColumnHeaders(t, userAsFirstColumn, onLinkClick, periods, {
+        ...coverTableProps,
+        setEventsForApplyCover,
+        setEventsForDeleteCover,
+      }),
+    [
+      t,
+      userAsFirstColumn,
+      onLinkClick,
+      periods,
+      coverTableProps,
+      setEventsForApplyCover,
+      setEventsForDeleteCover,
+    ]
+  );
+
+  const table = useReactTable({
+    data,
+    columns,
+    columnResizeMode: 'onChange',
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
 
   return (
     <>
@@ -110,6 +278,7 @@ export function CoverTable({
             <Table
               stickyHeader
               sx={({ palette }) => ({
+                width: table.getTotalSize(),
                 '& th, & td': {
                   border: `1px solid ${palette.divider}`,
                   p: 1,
@@ -120,6 +289,7 @@ export function CoverTable({
                   fontWeight: 600,
                   backgroundImage: 'none',
                   textAlign: 'center',
+                  position: 'relative',
                 },
                 '& tbody td, & tbody th': {
                   verticalAlign: 'top',
@@ -141,106 +311,90 @@ export function CoverTable({
                 '& tbody tr:last-child td, & tbody tr:last-child th': {
                   borderBottom: 'none',
                 },
+                '& .resizer': {
+                  position: 'absolute',
+                  right: 0,
+                  top: 0,
+                  height: '100%',
+                  width: '5px',
+                  cursor: 'col-resize',
+                  userSelect: 'none',
+                  touchAction: 'none',
+                },
+                '& .cursor-pointer': {
+                  cursor: 'pointer',
+                },
               })}
             >
               <TableHead>
-                <TableRow>
-                  <TableCell />
-                  {periods.map((period) => (
-                    <TableCell key={JSON.stringify(period)}>
-                      {t(`timetable:periodNumber`, {
-                        number: period,
-                      })}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableCell
+                        key={header.id}
+                        component="th"
+                        sx={{ width: header.getSize() }}
+                      >
+                        {header.isPlaceholder ? null : (
+                          <Box
+                            className={
+                              header.column.getCanSort() ? 'cursor-pointer' : ''
+                            }
+                            role="presentation"
+                            onClick={header.column.getToggleSortingHandler()}
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              height: '100%',
+                              width: '100%',
+                              gap: 0.5,
+                            }}
+                          >
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                            {header.column.getIsSorted() && (
+                              <ArrowRightIcon
+                                sx={{
+                                  width: 16,
+                                  height: 16,
+                                  transform:
+                                    header.column.getIsSorted() === 'desc'
+                                      ? 'rotate(90deg)'
+                                      : 'rotate(-90deg)',
+                                }}
+                              />
+                            )}
+                          </Box>
+                        )}
+                        <div
+                          onMouseDown={header.getResizeHandler()}
+                          onTouchStart={header.getResizeHandler()}
+                          className={`resizer ${
+                            header.column.getIsResizing() ? 'isResizing' : ''
+                          }`}
+                          role="presentation"
+                        />
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
               </TableHead>
               <TableBody>
-                {data.map(({ staff, dayInfo, periods: periodValues }) => {
-                  const id = userAsFirstColumn
-                    ? staff.partyId
-                    : dayjs(dayInfo.date).format('YYYY-MM-DD');
-                  const dateString = dayjs(dayInfo?.date).format('YYYY-MM-DD');
-                  const staffName = `${
-                    staff?.firstName ? staff.firstName[0] : ''
-                  }. ${staff?.lastName ?? ''}`;
-                  const label = userAsFirstColumn
-                    ? staffName
-                    : dayjs(dayInfo.date).format('L');
-
-                  return (
-                    <TableRow key={id}>
-                      <TableCell component="th" scope="row">
-                        <Stack direction="row" alignItems="center">
-                          {userAsFirstColumn && (
-                            <Avatar
-                              src={staff.avatarUrl}
-                              name={label}
-                              sx={{
-                                my: 1,
-                                mr: 1.5,
-                              }}
-                            />
-                          )}
-                          {onLinkClick ? (
-                            <Link
-                              component="button"
-                              onClick={() =>
-                                onLinkClick(staff, dayjs(dayInfo.date))
-                              }
-                              noWrap
-                            >
-                              {label}
-                            </Link>
-                          ) : (
-                            <span>{label}</span>
-                          )}
-                        </Stack>
+                {table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
                       </TableCell>
-                      {periods.map((_period, index) => {
-                        const periodInfo = dayInfo?.periods[index];
-                        const eventInfo = periodValues[index];
-
-                        const isBreak =
-                          periodInfo?.type === CalendarGridPeriodType.Break;
-                        const isFinished = !periodInfo?.type;
-
-                        return (
-                          <TableCell key={`${id}-${dateString}-${index}`}>
-                            <Stack spacing={0.5}>
-                              {(isBreak || isFinished) && (
-                                <CoverBreakOrFinished
-                                  timeslotInfo={periodInfo}
-                                  type={isBreak ? 'break' : 'finished'}
-                                />
-                              )}
-                              {eventInfo && (
-                                <EventCoverCard
-                                  eventInfo={eventInfo}
-                                  staff={staff}
-                                  isEventSelected={isEventSelected}
-                                  toggleEventSelection={onSelectEvent}
-                                  selectedEvents={Array.from(
-                                    selectedEventsMap.values()
-                                  )}
-                                  applyCover={() => {
-                                    setEventsForApplyCover(selectedEventsMap);
-                                  }}
-                                  editCover={() => {
-                                    setEventsForApplyCover(selectedEventsMap);
-                                  }}
-                                  removeCover={() => {
-                                    setEventsForDeleteCover(selectedEventsMap);
-                                  }}
-                                />
-                              )}
-                            </Stack>
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  );
-                })}
+                    ))}
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </TableContainer>

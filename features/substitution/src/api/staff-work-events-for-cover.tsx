@@ -40,9 +40,40 @@ const eventsForCover = graphql(/* GraphQL */ `
               type
             }
           }
+          absence {
+            absenceReasonText
+            absenceType {
+              name
+            }
+          }
           substitutionEventsByPeriod {
             absenceId
             staffPartyId
+            coverTeacherDuplicatedAtSameTime {
+              event {
+                name
+                startTime
+                endTime
+                rooms {
+                  name
+                  roomId
+                }
+              }
+              substitution {
+                substituteStaff {
+                  partyId
+                  title {
+                    id
+                    name
+                    nameTextId
+                  }
+                  firstName
+                  lastName
+                  avatarUrl
+                  type
+                }
+              }
+            }
             event {
               eventId
               startTime

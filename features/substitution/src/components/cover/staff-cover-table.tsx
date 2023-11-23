@@ -36,9 +36,10 @@ export function StaffCoverTable({
     () =>
       data?.flatMap(({ staff, substitutionEventsByDay }) =>
         substitutionEventsByDay.map(
-          ({ dayInfo, substitutionEventsByPeriod }) => ({
+          ({ dayInfo, substitutionEventsByPeriod, absence }) => ({
             staff: staff.person,
             dayInfo,
+            absence,
             periods: substitutionEventsByPeriod,
           })
         )

@@ -3,6 +3,7 @@
   "management": "Management",
   "absentStaff": "Absent staff",
   "reason": "Reason",
+  "absenceReason": "Absence reason",
   "startDate": "Start date",
   "endDate": "End date",
   "substitute": "Substitute",
