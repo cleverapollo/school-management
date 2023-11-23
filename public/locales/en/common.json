@@ -31,7 +31,8 @@
     "next": "Next",
     "clone": "Clone",
     "filter": "Filter",
-    "deselect": "Deselect"
+    "deselect": "Deselect",
+    "exportCSV": "Export CSV"
   },
   "snackbarMessages": {
     "createSuccess": "Created successfully!",

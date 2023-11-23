@@ -4,7 +4,6 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import { SmsRecipientType, UpdateYearGroupEnrollmentInput } from '@tyro/api';
 import {
   ActionMenu,
-  ActionMenuProps,
   BulkEditedRows,
   GridOptions,
   ICellRendererParams,
@@ -16,7 +15,7 @@ import {
   usePreferredNameLayout,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { MobileIcon } from '@tyro/icons';
+import { MobileIcon, PrinterIcon } from '@tyro/icons';
 import set from 'lodash/set';
 import { TableStaffMultipleAutocomplete } from '@tyro/people';
 import {
@@ -24,7 +23,7 @@ import {
   useUpdateYearGroupLeads,
   ReturnTypeFromUseYearGroups,
 } from '../../api/year-groups';
-import { useBulkPrintGroupMembers } from '../../hooks';
+import { BulkPrintGroupMembersModal } from '../../components/common/bulk-print-group-members-modal';
 
 const getYearGroupsColumns = (
   t: TFunction<'common'[], undefined, 'common'[]>,
@@ -82,12 +81,17 @@ export default function YearGroups() {
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
-  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
 
   const {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
+  } = useDisclosure();
+
+  const {
+    isOpen: isBulkPrintOpen,
+    onOpen: onOpenBulkPrint,
+    onClose: onCloseBulkPrint,
   } = useDisclosure();
 
   const { data: yearGroupData } = useYearGroups();
@@ -98,22 +102,23 @@ export default function YearGroups() {
     [t, displayNames]
   );
 
-  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
-    () => [
-      {
-        label: t('people:sendSms'),
-        icon: <MobileIcon />,
-        onClick: onOpenSendSms,
-      },
-      // {
-      //   label: t('mail:sendMail'),
-      //   icon: <SendMailIcon />,
-      //   onClick: () => {},
-      // },
-      bulkPrintOption,
-    ],
-    [bulkPrintOption]
-  );
+  const actionMenuItems = [
+    {
+      label: t('people:sendSms'),
+      icon: <MobileIcon />,
+      onClick: onOpenSendSms,
+    },
+    // {
+    //   label: t('mail:sendMail'),
+    //   icon: <SendMailIcon />,
+    //   onClick: () => {},
+    // },
+    {
+      label: t('groups:printGroupMembers'),
+      icon: <PrinterIcon />,
+      onClick: onOpenBulkPrint,
+    },
+  ];
 
   const handleBulkSave = (
     data: BulkEditedRows<ReturnTypeFromUseYearGroups, 'yearGroupLeads'>
@@ -169,6 +174,11 @@ export default function YearGroups() {
         />
       </PageContainer>
 
+      <BulkPrintGroupMembersModal
+        isOpen={isBulkPrintOpen}
+        onClose={onCloseBulkPrint}
+        groups={selectedGroups}
+      />
       <SendSmsModal
         isOpen={isSendSmsOpen}
         onClose={onCloseSendSms}

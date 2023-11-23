@@ -22,10 +22,14 @@ import {
   sortStartNumberFirst,
   ConfirmDialog,
   TableSelect,
-  ActionMenuProps,
 } from '@tyro/core';
 
-import { MobileIcon, MoveGroupIcon, SendMailIcon } from '@tyro/icons';
+import {
+  MobileIcon,
+  MoveGroupIcon,
+  SendMailIcon,
+  PrinterIcon,
+} from '@tyro/icons';
 
 import { set } from 'lodash';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
@@ -36,6 +40,7 @@ import {
 } from '../../api/support-groups';
 import { useSwitchSubjectGroupType } from '../../api';
 import { useBulkPrintGroupMembers } from '../../hooks';
+import { BulkPrintGroupMembersModal } from '../../components/common/bulk-print-group-members-modal';
 
 type ReturnTypeFromUseSupportGroups = NonNullable<
   ReturnType<typeof useSupportGroups>['data']
@@ -142,42 +147,50 @@ export default function SupportGroups() {
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
-  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
+  const [switchGroupTypeConfirmation, setSwitchGroupTypeConfirmation] =
+    useState(false);
+
   const {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
-  const [switchGroupTypeConfirmation, setSwitchGroupTypeConfirmation] =
-    useState(false);
+
+  const {
+    isOpen: isBulkPrintOpen,
+    onOpen: onOpenBulkPrint,
+    onClose: onCloseBulkPrint,
+  } = useDisclosure();
+
   const studentColumns = useMemo(
     () => getSubjectGroupsColumns(t, displayNames, subjects),
     [t, displayNames, subjects]
   );
 
-  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
-    () => [
-      {
-        label: t('people:sendSms'),
-        icon: <MobileIcon />,
-        onClick: onOpenSendSms,
-      },
-      {
-        label: t('groups:supportGroup.switchToSubjectGroup.action'),
-        icon: <MoveGroupIcon />,
-        onClick: () => setSwitchGroupTypeConfirmation(true),
-        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
-          isStaffUserWithPermission('ps:1:groups:write_subject_groups'),
-      },
-      // {
-      //   label: t('mail:sendMail'),
-      //   icon: <SendMailIcon />,
-      //   onClick: () => {},
-      // },
-      bulkPrintOption,
-    ],
-    [bulkPrintOption]
-  );
+  const actionMenuItems = [
+    {
+      label: t('people:sendSms'),
+      icon: <MobileIcon />,
+      onClick: onOpenSendSms,
+    },
+    {
+      label: t('groups:supportGroup.switchToSubjectGroup.action'),
+      icon: <MoveGroupIcon />,
+      onClick: () => setSwitchGroupTypeConfirmation(true),
+      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+        isStaffUserWithPermission('ps:1:groups:write_subject_groups'),
+    },
+    // {
+    //   label: t('mail:sendMail'),
+    //   icon: <SendMailIcon />,
+    //   onClick: () => {},
+    // },
+    {
+      label: t('groups:printGroupMembers'),
+      icon: <PrinterIcon />,
+      onClick: onOpenBulkPrint,
+    },
+  ];
 
   const handleBulkSave = (
     data: BulkEditedRows<ReturnTypeFromUseSupportGroups, 'name' | 'subjects'>
@@ -245,6 +258,11 @@ export default function SupportGroups() {
         </Container>
       </Page>
 
+      <BulkPrintGroupMembersModal
+        isOpen={isBulkPrintOpen}
+        onClose={onCloseBulkPrint}
+        groups={selectedGroups}
+      />
       <SendSmsModal
         isOpen={isSendSmsOpen}
         onClose={onCloseSendSms}

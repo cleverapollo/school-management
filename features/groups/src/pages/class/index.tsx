@@ -8,7 +8,6 @@ import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   ActionMenu,
-  ActionMenuProps,
   BulkEditedRows,
   GridOptions,
   ICellRendererParams,
@@ -20,15 +19,15 @@ import {
   sortStartNumberFirst,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { MobileIcon, SendMailIcon } from '@tyro/icons';
+import { MobileIcon, PrinterIcon, SendMailIcon } from '@tyro/icons';
 import { TableStaffAutocomplete } from '@tyro/people';
 import set from 'lodash/set';
 import {
   useClassGroups,
   ReturnTypeFromUseClassGroups,
   useSaveClassGroupEdits,
-} from '../../api/class-groups';
-import { useBulkPrintGroupMembers } from '../../hooks';
+} from '../../api';
+import { BulkPrintGroupMembersModal } from '../../components/common/bulk-print-group-members-modal';
 
 const getClassGroupColumns = (
   t: TFunction<'common'[], undefined, 'common'[]>,
@@ -127,29 +126,35 @@ export default function ClassGroupsPage() {
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
-  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
+
+  const {
+    isOpen: isBulkPrintOpen,
+    onOpen: onOpenBulkPrint,
+    onClose: onCloseBulkPrint,
+  } = useDisclosure();
 
   const classGroupColumns = useMemo(
     () => getClassGroupColumns(t, isStaffUser, displayNames),
     [t, isStaffUser]
   );
 
-  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
-    () => [
-      {
-        label: t('people:sendSms'),
-        icon: <MobileIcon />,
-        onClick: onOpenSendSms,
-      },
-      // {
-      //   label: t('mail:sendMail'),
-      //   icon: <SendMailIcon />,
-      //   onClick: () => {},
-      // },
-      bulkPrintOption,
-    ],
-    [bulkPrintOption]
-  );
+  const actionMenuItems = [
+    {
+      label: t('people:sendSms'),
+      icon: <MobileIcon />,
+      onClick: onOpenSendSms,
+    },
+    // {
+    //   label: t('mail:sendMail'),
+    //   icon: <SendMailIcon />,
+    //   onClick: () => {},
+    // },
+    {
+      label: t('groups:printGroupMembers'),
+      icon: <PrinterIcon />,
+      onClick: onOpenBulkPrint,
+    },
+  ];
 
   const handleBulkSave = (
     data: BulkEditedRows<ReturnTypeFromUseClassGroups, 'tutors' | 'name'>
@@ -218,6 +223,11 @@ export default function ClassGroupsPage() {
           />
         </Container>
       </Page>
+      <BulkPrintGroupMembersModal
+        isOpen={isBulkPrintOpen}
+        onClose={onCloseBulkPrint}
+        groups={selectedGroups}
+      />
       <SendSmsModal
         isOpen={isSendSmsOpen}
         onClose={onCloseSendSms}
