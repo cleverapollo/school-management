@@ -19,14 +19,16 @@ export function BulkPrintPersonsGroupsMembershipsModal({
   groups,
 }: BulkPrintPersonsGroupsMembershipsModalProps) {
   const { t } = useTranslation(['common', 'people']);
-  const [groupTypes, setGroupTypes] = useState<PartyGroupType[]>([]);
+  const [groupTypes, setGroupTypes] = useState<PartyGroupType[]>([
+    PartyGroupType.SubjectGroup,
+  ]);
 
-  const handlePrint = async () => {
+  const handlePrint = async (options: Print_GroupMembersOptions) => {
     const personIds = groups.map(({ id }) => id) ?? [];
 
     const printResponse = await getPrintPersonsGroupMemberships({
       personIds,
-      options: Print_GroupMembersOptions.Print,
+      options,
       groupTypes,
     });
 
@@ -82,7 +84,17 @@ export function BulkPrintPersonsGroupsMembershipsModal({
                 {t('common:actions.cancel')}
               </Button>
 
-              <Button variant="contained" onClick={handlePrint}>
+              <Button
+                variant="contained"
+                onClick={() => handlePrint(Print_GroupMembersOptions.Csv)}
+              >
+                {t('common:actions.exportCSV')}
+              </Button>
+
+              <Button
+                variant="contained"
+                onClick={() => handlePrint(Print_GroupMembersOptions.Print)}
+              >
                 {t('common:actions.print')}
               </Button>
             </Stack>

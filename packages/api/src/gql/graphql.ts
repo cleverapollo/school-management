@@ -5208,7 +5208,6 @@ export type SaveAttendanceCodeInput = {
   id?: InputMaybe<Scalars['Int']>;
   isActive?: InputMaybe<Scalars['Boolean']>;
   name: Array<InputMaybe<TranslationInput>>;
-  sessionCodeType?: InputMaybe<AttendanceCodeType>;
   visibleForContact?: InputMaybe<Scalars['Boolean']>;
   visibleForTeacher?: InputMaybe<Scalars['Boolean']>;
 };
