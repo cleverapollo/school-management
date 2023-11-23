@@ -64,6 +64,9 @@ const studentsContacts = graphql(/* GraphQL */ `
 const studentsSubjectGroups = graphql(/* GraphQL */ `
   query core_subjectGroupStudents($filter: SubjectGroupStudentFilter!) {
     core_subjectGroupStudents(filter: $filter) {
+      students {
+        examinable
+      }
       subjectGroup {
         partyId
         name
@@ -79,7 +82,6 @@ const studentsSubjectGroups = graphql(/* GraphQL */ `
         }
         irePP {
           level
-          examinable
         }
       }
     }
@@ -128,7 +130,13 @@ const studentsSubjectGroupsQuery = (studentId: number | undefined) => ({
     );
 
     return studentsData
-      .map(({ subjectGroup }) => subjectGroup)
+      .map(({ students, subjectGroup }) => ({
+        ...subjectGroup,
+        irePP: {
+          level: subjectGroup?.irePP?.level,
+          examinable: students?.[0]?.examinable ?? false,
+        },
+      }))
       .sort((prev, next) => {
         const [prevSubject] = prev?.subjects || [];
         const [nextSubject] = next?.subjects || [];
