@@ -1,7 +1,6 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   ActionMenu,
-  ActionMenuProps,
   GridOptions,
   ICellRendererParams,
   Table,
@@ -13,10 +12,10 @@ import {
 import { useParams } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { UseQueryReturnType, SmsRecipientType } from '@tyro/api';
-import { MobileIcon } from '@tyro/icons';
+import { MobileIcon, PrinterIcon } from '@tyro/icons';
 import { Box, Fade } from '@mui/material';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { useBulkPrintGroupMembers } from '@tyro/groups/src/hooks';
+import { BulkPrintGroupMembersModal } from '@tyro/groups';
 import { useStaffSubjectGroups } from '../../../api/staff/subject-groups';
 
 type ReturnTypeFromUseStaffSubjectGroups = UseQueryReturnType<
@@ -88,7 +87,7 @@ const getSubjectGroupsColumns = (
 ];
 
 export default function StaffProfileClassesPage() {
-  const { t } = useTranslation(['common', 'people', 'sms']);
+  const { t } = useTranslation(['common', 'people', 'sms', 'groups']);
 
   const { id } = useParams();
   const staffId = getNumber(id);
@@ -111,19 +110,25 @@ export default function StaffProfileClassesPage() {
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
-  const bulkPrintOption = useBulkPrintGroupMembers({ groups: selectedGroups });
 
-  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
-    () => [
-      {
-        label: t('people:sendSms'),
-        icon: <MobileIcon />,
-        onClick: onOpenSendSms,
-      },
-      bulkPrintOption,
-    ],
-    [bulkPrintOption]
-  );
+  const {
+    isOpen: isBulkPrintOpen,
+    onOpen: onOpenBulkPrint,
+    onClose: onCloseBulkPrint,
+  } = useDisclosure();
+
+  const actionMenuItems = [
+    {
+      label: t('people:sendSms'),
+      icon: <MobileIcon />,
+      onClick: onOpenSendSms,
+    },
+    {
+      label: t('groups:printGroupMembers'),
+      icon: <PrinterIcon />,
+      onClick: onOpenBulkPrint,
+    },
+  ];
 
   return (
     <>
@@ -153,6 +158,11 @@ export default function StaffProfileClassesPage() {
             })
           )
         }
+      />
+      <BulkPrintGroupMembersModal
+        isOpen={isBulkPrintOpen}
+        onClose={onCloseBulkPrint}
+        groups={selectedGroups}
       />
       <SendSmsModal
         isOpen={isSendSmsOpen}

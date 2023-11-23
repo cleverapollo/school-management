@@ -39,7 +39,6 @@ import {
   useSupportGroups,
 } from '../../api/support-groups';
 import { useSwitchSubjectGroupType } from '../../api';
-import { useBulkPrintGroupMembers } from '../../hooks';
 import { BulkPrintGroupMembersModal } from '../../components/common/bulk-print-group-members-modal';
 
 type ReturnTypeFromUseSupportGroups = NonNullable<
