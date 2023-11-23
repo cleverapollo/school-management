@@ -42,7 +42,7 @@ export function BulkPrintPersonsGroupsMembershipsModal({
   };
 
   const handleClose = () => {
-    setGroupTypes([]);
+    setGroupTypes([PartyGroupType.SubjectGroup]);
     onClose();
   };
 
