@@ -40,6 +40,7 @@ type BehaviourData = {
 export function BehaviourWidget() {
   const { t } = useTranslation(['common', 'reports']);
   const [date, setDate] = useState(dayjs());
+  const dateString = date.format('YYYY-MM-DD');
   const { data: behaviourData, isLoading } = useRunReports({
     topReportId: 'student-behaviour',
     filter: {
@@ -47,11 +48,11 @@ export function BehaviourWidget() {
       filters: [
         {
           filterId: 'from_date',
-          filterValue: date.format('YYYY-MM-DD'),
+          filterValue: dateString,
         },
         {
           filterId: 'to_date',
-          filterValue: date.add(1, 'day').format('YYYY-MM-DD'),
+          filterValue: dateString,
         },
       ],
     },
@@ -106,7 +107,7 @@ export function BehaviourWidget() {
               report: Report.STUDENT_BEHAVIOUR,
               filters: {
                 from_date: date,
-                to_date: date.add(1, 'day'),
+                to_date: date,
               },
             })}
           >
