@@ -13,9 +13,10 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
-import { MobileIcon, CalendarEditPenIcon, PrinterIcon } from '@tyro/icons';
+import { MobileIcon, CalendarEditPenIcon, PrinterIcon, SendMailIcon } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { getPersonProfileLink, SmsRecipientType } from '@tyro/api';
+import { getPersonProfileLink, SearchType, SmsRecipientType } from '@tyro/api';
+import { useMailSettings } from '@tyro/mail';
 import dayjs from 'dayjs';
 import {
   useBulkUpdateCoreStudent,
@@ -161,13 +162,14 @@ const getStudentColumns = (
 ];
 
 export default function StudentsListPage() {
-  const { t } = useTranslation(['common', 'people', 'sms']);
+  const { t } = useTranslation(['common', 'people', 'sms', 'mail']);
   const { displayName, displayNames } = usePreferredNameLayout();
   const [selectedStudents, setSelectedStudents] =
     useState<RecipientsForSmsModal>([]);
 
   const { data: students } = useStudents();
   const { mutateAsync: bulkSaveStudents } = useBulkUpdateCoreStudent();
+  const { composeEmail } = useMailSettings();
 
   const {
     isOpen: isSendSmsOpen,
@@ -186,6 +188,22 @@ export default function StudentsListPage() {
     onOpen: onOpenChangeYearGroup,
     onClose: onCloseChangeYearGroup,
   } = useDisclosure();
+
+  const sendMailToSelectedStudents = () => {
+    const studentListForMail = selectedStudents.map(
+      ({ id, name, avatarUrl }) => ({
+        partyId: id,
+        type: SearchType.Student,
+        text: name,
+        avatarUrl,
+      })
+    );
+
+    composeEmail({
+      canReply: false,
+      bccRecipients: studentListForMail,
+    });
+  };
 
   const studentColumns = useMemo(
     () => getStudentColumns(t, displayName, displayNames),
@@ -228,6 +246,11 @@ export default function StudentsListPage() {
                           isStaffUserWithPermission(
                             'ps:1:communications:send_sms'
                           ),
+                      },
+                      {
+                        label: t('mail:sendMail'),
+                        icon: <SendMailIcon />,
+                        onClick: sendMailToSelectedStudents,
                       },
                       {
                         label: t('people:changeProgrammeYear'),

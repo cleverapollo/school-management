@@ -6353,6 +6353,7 @@ __metadata:
     "@tyro/core": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    "@tyro/mail": "*"
     "@tyro/people": "*"
     "@tyro/settings": "*"
     "@tyro/sms": "*"
