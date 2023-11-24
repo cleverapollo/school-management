@@ -1,0 +1,23 @@
+{
+    "title": "School activities",
+    "details": "Details",
+    "activityName": "Activity name",
+    "createSchoolActivity": "Create school activity",
+    "schoolActivityCreation": "School activity creation",
+    "name": "Name",
+    "tripPurpose": "Trip purpose",
+    "inSchool": "In school",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "room": "Room",
+    "note": "Note",
+    "onSchoolGrounds": "Is the activity taking place on school grounds?",
+    "activityType": "Activity type",
+    "dayTypeOptions": {
+        "MULTI_DAY": "Multiple days",
+        "SINGLE_DAY": "Full day",
+        "PARTIAL_DAY": "Partial day"
+    },
+    "leavesAtTime": " Leaves at",
+    "returnsAtTime": "Returns at"
+}

@@ -1,5 +1,9 @@
 export * from './routes';
-export { getSubjectGroupById, useSubjectGroupById } from './api/subject-groups';
+export {
+  getSubjectGroupById,
+  useSubjectGroupById,
+  useSubjectGroups,
+} from './api/subject-groups';
 export { groupsKeys } from './api/keys';
 export type {
   ReturnTypeFromUseYearGroups,
