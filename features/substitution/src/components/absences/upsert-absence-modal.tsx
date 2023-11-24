@@ -384,7 +384,7 @@ export function UpsertAbsenceModal({
                           label={t('common:allDay')}
                           switchProps={{
                             color: 'primary',
-                            //disabled: isEditAbsence,
+
                           }}
                           controlProps={{
                             name: `dates.${index}.isFullDay`,
@@ -415,7 +415,7 @@ export function UpsertAbsenceModal({
                         inputProps={{
                           fullWidth: true,
                           variant: 'white-filled',
-                          //disabled: isEditAbsence,
+
                         }}
                         controlProps={{
                           name: `dates.${index}.dates`,
@@ -430,7 +430,7 @@ export function UpsertAbsenceModal({
                             inputProps={{
                               fullWidth: true,
                               variant: 'white-filled',
-                              //disabled: isEditAbsence,
+
                             }}
                             controlProps={{
                               name: `dates.${index}.startTime`,
@@ -445,7 +445,7 @@ export function UpsertAbsenceModal({
                             inputProps={{
                               fullWidth: true,
                               variant: 'white-filled',
-                              // //disabled: isEditAbsence,
+                              //
                             }}
                             controlProps={{
                               name: `dates.${index}.endTime`,
