@@ -347,7 +347,7 @@ export function UpsertAbsenceModal({
               }}
               checkboxProps={{
                 color: 'primary',
-                //disabled: isEditAbsence,
+                disabled: isEditAbsence,
               }}
               controlProps={{ name: 'isLongTermLeave', control }}
             />
