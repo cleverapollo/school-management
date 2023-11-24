@@ -15,7 +15,6 @@ import { useTranslation, TFunction } from '@tyro/i18n';
 import { ActionMenu, Avatar, useDebouncedValue } from '@tyro/core';
 import dayjs, { Dayjs } from 'dayjs';
 import {
-  ColumnHelper,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
@@ -109,7 +108,14 @@ const getColumnHeaders = (
             )}
             {absence?.absenceReasonText && (
               <Tooltip title={absence.absenceReasonText}>
-                <InfoCircleIcon />
+                <InfoCircleIcon
+                  sx={{
+                    width: 16,
+                    height: 16,
+                    color: 'slate.500',
+                    ml: 0.5,
+                  }}
+                />
               </Tooltip>
             )}
           </Stack>
@@ -144,6 +150,11 @@ const getColumnHeaders = (
 
         const isBreak = periodInfo?.type === CalendarGridPeriodType.Break;
         const isFinished = !periodInfo?.type;
+
+        console.log({
+          periodInfo,
+          cover: eventInfo?.coverTeacherDuplicatedAtSameTime,
+        });
 
         return (
           <Stack spacing={0.5}>
@@ -232,6 +243,14 @@ export function CoverTable({
   const table = useReactTable({
     data,
     columns,
+    initialState: {
+      sorting: [
+        {
+          id: userAsFirstColumn ? 'firstName' : 'date',
+          desc: false,
+        },
+      ],
+    },
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
