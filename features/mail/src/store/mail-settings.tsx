@@ -15,8 +15,8 @@ import MailCompose, {
 export type MailSettingsContextValue = {
   sidebarDisclosure: UseDisclosureReturn;
   composeDisclosure: UseDisclosureReturn;
-  composeEmail: (defaultValue: Partial<ComposeMailFormValues>) => void;
   activeProfileId: number;
+  composeEmail: (defaultValue: Partial<ComposeMailFormValues>) => void;
 };
 
 const MailSettingsContext = createContext<MailSettingsContextValue | undefined>(

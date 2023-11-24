@@ -7,21 +7,14 @@ import {
   DialogActions,
   DialogTitle,
 } from '@tyro/core';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
-import LoadingButton from '@mui/lab/LoadingButton';
-import { useSendSms } from '../../../api/send-sms';
-import { RHFSmsMessageField } from '../sms-message-field';
-import { SmsSummary } from '../sms-summary';
-import { RecipientList, RecipientsForSmsModal } from './recipient-list';
-import { useSmsCostPerMessage } from '../../../api/sms-cost';
-import { analyzeSmsTextString } from '../../../utils/analyze-sms-text-string';
+import { RecipientList, RecipientsForSmsModal } from '@tyro/sms';
 
-export type { RecipientsForSmsModal } from './recipient-list';
-export { RecipientList } from './recipient-list';
+export type { RecipientsForSmsModal } from '@tyro/sms';
 
-interface SendSmsModalProps {
+interface SendMailModalProps {
   isOpen: boolean;
   onClose: () => void;
   recipients: RecipientsForSmsModal;
@@ -32,27 +25,27 @@ interface SendSmsModalProps {
   hideRecipientTypes?: boolean;
 }
 
-interface SmsFormState {
+interface MailFormState {
   recipients: RecipientsForSmsModal;
   recipientTypes: RecipientInput['recipientPartyType'][];
   message: string;
 }
 
-export function SendSmsModal({
+export function SendMailModal({
   isOpen,
   onClose,
   recipients,
   possibleRecipientTypes,
   hideRecipientTypes = false,
-}: SendSmsModalProps) {
-  const { t } = useTranslation(['common', 'sms']);
-  const { resolver, rules } = useFormValidator<SmsFormState>();
+}: SendMailModalProps) {
+  const { t } = useTranslation(['common', 'mail']);
+  const { resolver, rules } = useFormValidator<MailFormState>();
+  const [step, setStep] = useState(0);
   const { reset, control, handleSubmit, setValue, watch } =
-    useForm<SmsFormState>({
+    useForm<MailFormState>({
       resolver: resolver({
         recipients: rules.required(),
         recipientTypes: rules.required(),
-        message: rules.required(),
       }),
       defaultValues: {
         recipients: [],
@@ -62,12 +55,10 @@ export function SendSmsModal({
             : [],
       },
     });
-  const [recipientList, message, recipientTypes] = watch([
+  const [recipientList, recipientTypes] = watch([
     'recipients',
-    'message',
     'recipientTypes',
   ]);
-  const { numberOfMessages } = analyzeSmsTextString(message);
   const fullRecipientList = useMemo(
     () =>
       recipientList.reduce<
@@ -85,11 +76,6 @@ export function SendSmsModal({
     [recipientList, recipientTypes]
   );
 
-  const { data: costPerMessage } = useSmsCostPerMessage({
-    recipients: fullRecipientList,
-  });
-  const { mutateAsync: sendSms, isLoading } = useSendSms();
-
   const removeRecipient = (recipientId: number) => {
     setValue(
       'recipients',
@@ -102,20 +88,10 @@ export function SendSmsModal({
     reset();
   };
 
-  const onSubmit = (data: SmsFormState) => {
-    sendSms(
-      {
-        text: data.message,
-        recipients: fullRecipientList,
-        mobileNumbers: [],
-        canReply: false,
-      },
-      {
-        onSuccess: () => {
-          onCancel();
-        },
-      }
-    );
+  const onSubmit = (data: MailFormState) => {
+    if (step === 0) {
+      setStep((prev) => prev + 1);
+    }
   };
 
   useEffect(() => {
@@ -144,23 +120,15 @@ export function SendSmsModal({
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack direction="row">
           <Box sx={{ flex: 1.2 }}>
-            <DialogTitle>{t('sms:sendSms')}</DialogTitle>
+            <DialogTitle>{t('mail:sendMail')}</DialogTitle>
             <Stack spacing={3} sx={{ p: 3, pt: 0 }}>
-              <RHFSmsMessageField<SmsFormState>
-                label={t('sms:message')}
-                controlProps={{
-                  name: 'message',
-                  control,
-                }}
-              />
-
               {!hideRecipientTypes &&
                 (possibleRecipientTypes.length > 1 ? (
                   <RHFCheckboxGroup<
-                    SmsFormState,
+                    MailFormState,
                     (typeof possibleRecipientTypes)[number]
                   >
-                    label={`${t('sms:sendTo')}:`}
+                    label={`${t('mail:sendTo')}:`}
                     controlProps={{ name: 'recipientTypes', control }}
                     options={possibleRecipientTypes}
                     getOptionLabel={(option) => option.label}
@@ -168,7 +136,7 @@ export function SendSmsModal({
                   />
                 ) : (
                   <Box component="dl" m={0}>
-                    <InputLabel component="dt">{t('sms:sendTo')}:</InputLabel>
+                    <InputLabel component="dt">{t('mail:sendTo')}:</InputLabel>
                     <Typography component="dd" variant="body2" m="0">
                       {possibleRecipientTypes[0].label}
                     </Typography>
@@ -193,14 +161,6 @@ export function SendSmsModal({
           }}
         >
           <Stack direction="row" sx={{ py: 1.5, flex: 1 }}>
-            <Box sx={{ flex: 1.2, display: 'flex', alignItems: 'center' }}>
-              <SmsSummary
-                sx={{ flex: 1, px: 3 }}
-                message={message}
-                costPerSms={0.05}
-                totalCost={(costPerMessage ?? 0) * numberOfMessages}
-              />
-            </Box>
             <Box sx={{ flex: 1, display: 'flex', alignItems: 'center' }}>
               <Stack
                 direction="row"
@@ -213,13 +173,9 @@ export function SendSmsModal({
                   {t('common:actions.cancel')}
                 </Button>
 
-                <LoadingButton
-                  type="submit"
-                  variant="contained"
-                  loading={isLoading}
-                >
-                  {t('common:actions.send')}
-                </LoadingButton>
+                <Button type="submit" variant="contained">
+                  {t('common:actions.next')}
+                </Button>
               </Stack>
             </Box>
           </Stack>
