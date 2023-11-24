@@ -384,7 +384,6 @@ export function UpsertAbsenceModal({
                           label={t('common:allDay')}
                           switchProps={{
                             color: 'primary',
-                            disabled: isEditAbsence,
                           }}
                           controlProps={{
                             name: `dates.${index}.isFullDay`,
@@ -401,7 +400,6 @@ export function UpsertAbsenceModal({
                               onClick={() => {
                                 remove(index);
                               }}
-                              disabled={isEditAbsence}
                               color="primary"
                             >
                               <TrashIcon />
@@ -415,7 +413,6 @@ export function UpsertAbsenceModal({
                         inputProps={{
                           fullWidth: true,
                           variant: 'white-filled',
-                          disabled: isEditAbsence,
                         }}
                         controlProps={{
                           name: `dates.${index}.dates`,
@@ -430,7 +427,6 @@ export function UpsertAbsenceModal({
                             inputProps={{
                               fullWidth: true,
                               variant: 'white-filled',
-                              disabled: isEditAbsence,
                             }}
                             controlProps={{
                               name: `dates.${index}.startTime`,
@@ -445,7 +441,6 @@ export function UpsertAbsenceModal({
                             inputProps={{
                               fullWidth: true,
                               variant: 'white-filled',
-                              disabled: isEditAbsence,
                             }}
                             controlProps={{
                               name: `dates.${index}.endTime`,
@@ -470,7 +465,6 @@ export function UpsertAbsenceModal({
                         dates: [],
                       });
                     }}
-                    disabled={isEditAbsence}
                     startIcon={<AddIcon />}
                   >
                     {t('common:addDate')}
@@ -486,12 +480,12 @@ export function UpsertAbsenceModal({
                   <Stack direction="row" spacing={2}>
                     <RHFDatePicker
                       label={t('common:startDate')}
-                      inputProps={{ fullWidth: true, disabled: isEditAbsence }}
+                      inputProps={{ fullWidth: true}}
                       controlProps={{ name: 'startDate', control }}
                     />
                     <RHFDatePicker
                       label={t('common:endDate')}
-                      inputProps={{ fullWidth: true, disabled: isEditAbsence }}
+                      inputProps={{ fullWidth: true }}
                       controlProps={{ name: 'endDate', control }}
                     />
                   </Stack>
