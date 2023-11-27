@@ -55,8 +55,8 @@ type AbsenceDate = {
 };
 
 interface UpsertAbsenceFormState {
-  staff: NonNullable<ReturnTypeFromUseStaffWorkAbsences['staff']>;
-  absenceType: StaffWorkAbsenceTypeOption;
+  staff: ReturnTypeFromUseStaffWorkAbsences['staff'];
+  absenceType: StaffWorkAbsenceTypeOption | null;
   note: string;
   dates: Array<AbsenceDate>;
   isLongTermLeave: boolean;
@@ -67,6 +67,22 @@ interface UpsertAbsenceFormState {
   startDate: Dayjs;
   endDate: Dayjs;
 }
+
+const defaultFormValues = {
+  staff: null,
+  absenceType: null,
+  note: '',
+  dates: [
+    {
+      isFullDay: true,
+      dates: [],
+    },
+  ],
+  isLongTermLeave: false,
+  longTermLeaveGroups: [],
+  startDate: dayjs(),
+  endDate: dayjs(),
+};
 
 function mapAbsenceDates(datesToMap: Array<AbsenceDate>) {
   return datesToMap.reduce<Swm_UpsertStaffAbsenceDate[]>(
@@ -172,6 +188,7 @@ export function UpsertAbsenceModal({
           ),
         },
       }),
+      defaultValues: defaultFormValues,
     });
 
   const { fields, append, remove } = useFieldArray({
@@ -182,10 +199,6 @@ export function UpsertAbsenceModal({
   const { fields: ltlGroups, replace: replaceLtlGroups } = useFieldArray({
     control,
     name: 'longTermLeaveGroups',
-  });
-
-  console.log({
-    ltlGroups,
   });
 
   const [selectedStaff, datesValue, isLongTermLeaveValue] = watch([
@@ -203,8 +216,14 @@ export function UpsertAbsenceModal({
         StaffGroupMembershipRoles.Teacher,
         StaffGroupMembershipRoles.LongTermSubstitute,
       ],
-    }
+    },
+    !!selectedStaff
   );
+
+  const closeModal = () => {
+    reset(defaultFormValues);
+    onClose();
+  };
 
   const onSubmit = handleSubmit(
     ({
@@ -222,7 +241,7 @@ export function UpsertAbsenceModal({
           [
             {
               staffAbsenceId: initialAbsenceData?.absenceId,
-              staffPartyId: staff.partyId,
+              staffPartyId: staff?.partyId ?? 0,
               dates: [
                 {
                   continuousStartDate: startDate.format('YYYY-MM-DD'),
@@ -230,7 +249,7 @@ export function UpsertAbsenceModal({
                   partialAbsence: false,
                 },
               ],
-              absenceTypeId: absenceType.absenceTypeId,
+              absenceTypeId: absenceType?.absenceTypeId ?? 0,
               absenceReasonText: note,
               substitutionRequired: true,
               isLongTermLeave,
@@ -253,15 +272,15 @@ export function UpsertAbsenceModal({
         [
           {
             staffAbsenceId: initialAbsenceData?.absenceId,
-            staffPartyId: staff.partyId,
+            staffPartyId: staff?.partyId ?? 0,
             dates: mappedDates,
-            absenceTypeId: absenceType.absenceTypeId,
+            absenceTypeId: absenceType?.absenceTypeId ?? 0,
             absenceReasonText: note,
             substitutionRequired: true,
           },
         ],
         {
-          onSuccess: onClose,
+          onSuccess: () => closeModal,
         }
       );
     }
@@ -286,12 +305,34 @@ export function UpsertAbsenceModal({
             }
           : {
               dates: initialAbsenceData.dates.map(
-                ({ partialAbsence, individualDates, leavesAt, returnsAt }) => ({
-                  isFullDay: !partialAbsence,
-                  dates: individualDates?.map((date) => dayjs(date)) ?? [],
-                  startTime: leavesAt ? dayjs(leavesAt, 'HH:mm') : undefined,
-                  endTime: returnsAt ? dayjs(returnsAt, 'HH:mm') : undefined,
-                })
+                ({
+                  partialAbsence,
+                  individualDates,
+                  continuousStartDate,
+                  continuousEndDate,
+                  leavesAt,
+                  returnsAt,
+                }) => {
+                  let mappedDates =
+                    individualDates?.map((date) => dayjs(date)) ?? [];
+
+                  if (continuousStartDate && continuousEndDate) {
+                    let currentDate = dayjs(continuousStartDate);
+                    mappedDates = [];
+
+                    while (currentDate.isSameOrBefore(continuousEndDate)) {
+                      mappedDates.push(currentDate);
+                      currentDate = currentDate.add(1, 'day');
+                    }
+                  }
+
+                  return {
+                    isFullDay: !partialAbsence,
+                    dates: mappedDates,
+                    startTime: leavesAt ? dayjs(leavesAt, 'HH:mm') : undefined,
+                    endTime: returnsAt ? dayjs(returnsAt, 'HH:mm') : undefined,
+                  };
+                }
               ),
             };
       }
@@ -300,7 +341,7 @@ export function UpsertAbsenceModal({
         ...dates,
         staff: initialAbsenceData?.staff ?? undefined,
         absenceType: initialAbsenceData?.absenceType,
-        note: initialAbsenceData.absenceReasonText ?? '',
+        note: initialAbsenceData?.absenceReasonText ?? '',
         isLongTermLeave: initialAbsenceData?.isLongTermLeave ?? false,
         longTermLeaveGroups:
           initialAbsenceData?.longTermLeaveGroups?.map(
@@ -333,8 +374,8 @@ export function UpsertAbsenceModal({
   }, [initialAbsenceData?.longTermLeaveGroups, subjectGroupsData]);
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle>
+    <Dialog open={open} onClose={closeModal} fullWidth maxWidth="md">
+      <DialogTitle onClose={closeModal}>
         {isEditAbsence
           ? t('substitution:editStaffAbsence')
           : t('substitution:createStaffAbsence')}
@@ -565,7 +606,7 @@ export function UpsertAbsenceModal({
         </DialogContent>
 
         <DialogActions>
-          <Button variant="soft" color="inherit" onClick={onClose}>
+          <Button variant="soft" color="inherit" onClick={closeModal}>
             {t('common:actions.cancel')}
           </Button>
 

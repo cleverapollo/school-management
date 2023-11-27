@@ -37,7 +37,10 @@ const staffSubjectGroupsQuery = (
   filter: StaffFilter,
   subjectGroupMembershipFilter: SubjectGroupRelationshipFilter | undefined
 ) => ({
-  queryKey: peopleKeys.staff.subjectGroups(filter),
+  queryKey: peopleKeys.staff.subjectGroups(
+    filter,
+    subjectGroupMembershipFilter
+  ),
   queryFn: async () =>
     gqlClient.request(staffSubjectGroups, {
       filter,
@@ -62,7 +65,8 @@ export function getStaffSubjectGroups(
 
 export function useStaffSubjectGroups(
   filter: StaffFilter,
-  subjectGroupMembershipFilter: SubjectGroupRelationshipFilter | undefined
+  subjectGroupMembershipFilter: SubjectGroupRelationshipFilter | undefined,
+  enabled = true
 ) {
   return useQuery({
     ...staffSubjectGroupsQuery(filter, subjectGroupMembershipFilter),
@@ -71,5 +75,6 @@ export function useStaffSubjectGroups(
 
       return subjectGroups;
     },
+    enabled,
   });
 }
