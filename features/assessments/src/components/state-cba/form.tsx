@@ -104,12 +104,15 @@ export function StateCbaForm({
 
   const subjects = useMemo(() => {
     const subjectsFlattened = subjectGroups?.flatMap(
-      (subject) => subject?.subjects[0]
+      (subjectGroup) => subjectGroup?.subjects?.[0]
     );
 
     const subjectList = subjectsFlattened?.reduce<FormattedSubjectsType>(
       (accumulator, current) => {
-        if (!accumulator.some((item) => item.name === current.name)) {
+        if (
+          current &&
+          !accumulator.some((item) => item.name === current.name)
+        ) {
           accumulator.push(current);
         }
         return accumulator;
