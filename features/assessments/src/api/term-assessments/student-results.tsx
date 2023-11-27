@@ -64,6 +64,7 @@ const studentResults = graphql(/* GraphQL */ `
       gradeNameTextId
       targetGradeResult
       targetGradeNameTextId
+      examinable
       teacherComment {
         id
         assessmentId
@@ -148,7 +149,8 @@ export function useStudentAssessmentResults(
       filter ?? { assessmentId: 0 }
     ),
     enabled: !!filter,
-    select: ({ assessment_studentResult }) => assessment_studentResult,
+    select: ({ assessment_studentResult }) =>
+      assessment_studentResult.filter(({ examinable }) => examinable),
   });
 }
 
