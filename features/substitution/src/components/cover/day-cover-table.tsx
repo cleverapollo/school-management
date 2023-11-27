@@ -28,7 +28,8 @@ export function DayCoverTable({
       data?.map(({ staff, substitutionEventsByDay }) => ({
         staff: staff.person,
         dayInfo: substitutionEventsByDay[0].dayInfo,
-        absence: substitutionEventsByDay[0].absence,
+        requireSubstitutionReason:
+          substitutionEventsByDay[0].requireSubstitutionReason,
         periods: substitutionEventsByDay[0].substitutionEventsByPeriod,
       })) ?? [],
     [data, sortByDisplayName]

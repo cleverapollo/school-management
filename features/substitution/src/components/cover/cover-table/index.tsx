@@ -10,6 +10,7 @@ import {
   TableHead,
   TableRow,
   Tooltip,
+  useMediaQuery,
 } from '@mui/material';
 import { useTranslation, TFunction } from '@tyro/i18n';
 import { ActionMenu, Avatar, useDebouncedValue } from '@tyro/core';
@@ -54,6 +55,7 @@ const getColumnHeaders = (
   userAsFirstColumn: boolean,
   onLinkClick: CoverTableProps['onLinkClick'],
   periods: number[],
+  isCompact: boolean,
   coverCardProps: ReturnTypeOfUseCoverTable & {
     setEventsForApplyCover: Dispatch<
       SetStateAction<ReturnTypeOfUseCoverTable['selectedEventsMap'] | null>
@@ -75,7 +77,7 @@ const getColumnHeaders = (
       header: userAsFirstColumn ? t('common:name') : t('common:date'),
       cell: ({
         row: {
-          original: { staff, dayInfo, absence },
+          original: { staff, dayInfo, requireSubstitutionReason },
         },
       }) => {
         const label = userAsFirstColumn
@@ -106,8 +108,8 @@ const getColumnHeaders = (
             ) : (
               <span>{label}</span>
             )}
-            {absence?.absenceReasonText && (
-              <Tooltip title={absence.absenceReasonText}>
+            {requireSubstitutionReason?.note && (
+              <Tooltip title={requireSubstitutionReason.note}>
                 <InfoCircleIcon
                   sx={{
                     width: 16,
@@ -123,8 +125,9 @@ const getColumnHeaders = (
       },
     }
   ),
-  columnHelper.accessor('absence.absenceType.name', {
-    header: () => t('substitution:absenceReason'),
+  columnHelper.accessor('requireSubstitutionReason.reason', {
+    header: () => t('substitution:reason'),
+    size: 100,
   }),
   ...periods.map((period, index) =>
     columnHelper.display({
@@ -150,11 +153,6 @@ const getColumnHeaders = (
 
         const isBreak = periodInfo?.type === CalendarGridPeriodType.Break;
         const isFinished = !periodInfo?.type;
-
-        console.log({
-          periodInfo,
-          cover: eventInfo?.coverTeacherDuplicatedAtSameTime,
-        });
 
         return (
           <Stack spacing={0.5}>
@@ -185,6 +183,8 @@ const getColumnHeaders = (
           </Stack>
         );
       },
+      size: isCompact ? 106 : 146,
+      minSize: 106,
     })
   ),
 ];
@@ -198,6 +198,7 @@ export function CoverTable({
 }: CoverTableProps) {
   const { t } = useTranslation(['timetable', 'common', 'substitution']);
   const coverTableProps = useCoverTable(data);
+  const isCompact = useMediaQuery('(max-width: 1980px)');
 
   const {
     value: eventsForApplyCover,
@@ -224,7 +225,7 @@ export function CoverTable({
 
   const columns = useMemo(
     () =>
-      getColumnHeaders(t, userAsFirstColumn, onLinkClick, periods, {
+      getColumnHeaders(t, userAsFirstColumn, onLinkClick, periods, isCompact, {
         ...coverTableProps,
         setEventsForApplyCover,
         setEventsForDeleteCover,
@@ -234,6 +235,7 @@ export function CoverTable({
       userAsFirstColumn,
       onLinkClick,
       periods,
+      isCompact,
       coverTableProps,
       setEventsForApplyCover,
       setEventsForDeleteCover,
@@ -298,6 +300,7 @@ export function CoverTable({
               stickyHeader
               sx={({ palette }) => ({
                 width: table.getTotalSize(),
+                tableLayout: 'fixed',
                 '& th, & td': {
                   border: `1px solid ${palette.divider}`,
                   p: 1,
@@ -405,7 +408,10 @@ export function CoverTable({
                 {table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id}>
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell
+                        key={cell.id}
+                        sx={{ width: cell.column.getSize() }}
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
