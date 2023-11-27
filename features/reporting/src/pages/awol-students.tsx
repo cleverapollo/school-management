@@ -10,7 +10,7 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
-import { Reporting_TableFilterInput } from '@tyro/api';
+import { Reporting_TableFilter, Reporting_TableFilterInput } from '@tyro/api';
 import {
   useAttendanceAwolReports,
   ReturnTypeFromUseAttendanceAwolReports,
@@ -106,17 +106,11 @@ export default function AwolStudentsPage() {
   const { displayName } = usePreferredNameLayout();
   const awolReportsFilters = useAwolReportFilters();
 
-  const formattedAwolReportsFilters = useMemo(
-    () =>
-      awolReportsFilters?.map((filter) => ({
-        filterId: filter.id,
-        filterValue: filter.defaultValue,
-      })),
-    [awolReportsFilters]
-  );
-
   const [filters, setFilters] = useState<Reporting_TableFilterInput[]>(
-    formattedAwolReportsFilters
+    awolReportsFilters?.map((filter) => ({
+      filterId: filter.id,
+      filterValue: filter.defaultValue,
+    }))
   );
 
   const {
@@ -124,8 +118,8 @@ export default function AwolStudentsPage() {
     isFetching,
     isLoading,
   } = useAttendanceAwolReports({
-    from: filters[0].filterValue as string,
-    to: filters[1].filterValue as string,
+    from: filters[0].filterValue,
+    to: filters[1].filterValue,
   });
 
   const columns = useMemo(() => getColumns(t, displayName), [t, displayName]);
@@ -157,7 +151,7 @@ export default function AwolStudentsPage() {
         isLoading={isLoading}
         rowData={reports}
         columnDefs={columns}
-        getRowId={({ data }) => String(data?.partyId)}
+        getRowId={({ data }) => `${data?.partyId}-${data?.date}`}
         statusBar={{
           statusPanels: [
             {

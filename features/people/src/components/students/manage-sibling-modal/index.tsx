@@ -124,6 +124,7 @@ export function ManageSiblingModal({
         linkSiblings,
         unlinkSiblings,
         linkContacts,
+        unlinkContacts: [],
       },
       {
         onSuccess: () => {

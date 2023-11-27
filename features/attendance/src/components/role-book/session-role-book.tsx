@@ -16,7 +16,7 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs, { Dayjs } from 'dayjs';
-import { Box, Chip, Stack, Typography } from '@mui/material';
+import { Box, Checkbox, Chip, FormControlLabel, Stack } from '@mui/material';
 import set from 'lodash/set';
 import {
   ReturnTypeFromCalendarDayBellTimes,
@@ -103,11 +103,6 @@ const getColumns = (
             >
               {name}
             </RouterLink>
-            {data?.classGroup?.name && (
-              <Typography variant="caption" color="text.secondary">
-                {data.classGroup.name}
-              </Typography>
-            )}
           </Stack>
         </Box>
       );
@@ -115,21 +110,40 @@ const getColumns = (
     sortable: true,
     pinned: 'left',
     sort: 'asc',
+    lockVisible: true,
+  },
+  {
+    headerName: t('common:class'),
+    field: 'classGroup.name',
+    enableRowGroup: true,
   },
   {
     headerName: t('attendance:uneAbsences'),
     headerTooltip: t('attendance:unexplainedAbsences'),
     field: 'attendanceByKey',
-    valueGetter: ({ data }) =>
-      Array.from(Object.values(data?.attendanceByKey ?? {})).filter((id) => {
-        if (!id) return false;
-        const sessionCodeType = attendanceCodesMap.get(id)?.sessionCodeType;
+    valueGetter: ({ data, node }) => {
+      const getRowUneAbsences = (rowData: typeof data) =>
+        Array.from(Object.values(rowData?.attendanceByKey ?? {})).filter(
+          (id) => {
+            if (!id) return false;
+            const sessionCodeType = attendanceCodesMap.get(id)?.sessionCodeType;
 
-        return (
-          sessionCodeType &&
-          sessionCodeType === AttendanceCodeType.UnexplainedAbsence
+            return (
+              sessionCodeType &&
+              sessionCodeType === AttendanceCodeType.UnexplainedAbsence
+            );
+          }
+        ).length;
+
+      if (node?.groupData !== undefined) {
+        return node.childrenAfterFilter?.reduce(
+          (acc, child) => acc + getRowUneAbsences(child.data),
+          0
         );
-      }).length,
+      }
+
+      return getRowUneAbsences(data);
+    },
     sortable: true,
   },
   ...dayBellTimes
@@ -149,6 +163,7 @@ const getColumns = (
           {
             field: `attendanceByKey.${key}`,
             headerName: name,
+            suppressMenu: true,
             headerComponent: () => (
               <Chip
                 size="small"
@@ -294,6 +309,10 @@ export function SessionAttendanceRoleBook({
   const permissions = usePermissions();
   const [applyToSubjectAttendance, setApplyToSubjectAttendance] =
     useState<SessionAttendanceFlag | null>(null);
+  const [
+    overWriteExistingSubjectAttendance,
+    setOverWriteExistingSubjectAttendance,
+  ] = useState<boolean>(false);
   const editingStateRef =
     useRef<ReturnTypeTableUseEditableState<ReturnTypeFromSessionAttendance>>(
       null
@@ -370,6 +389,13 @@ export function SessionAttendanceRoleBook({
     ]
   );
 
+  const resetSaveOptions = () => {
+    setTimeout(() => {
+      setApplyToSubjectAttendance(null);
+      setOverWriteExistingSubjectAttendance(false);
+    }, 2500);
+  };
+
   const onBulkSave = (
     data: BulkEditedRows<
       ReturnTypeFromSessionAttendance,
@@ -409,11 +435,19 @@ export function SessionAttendanceRoleBook({
       });
     });
 
-    return saveSessionAttendance({
-      applyCodes: applyToSubjectAttendance,
-      adminSubmitted: true,
-      attendances: Object.values(attendanceChanges),
-    });
+    return saveSessionAttendance(
+      {
+        applyCodes: applyToSubjectAttendance,
+        adminSubmitted: true,
+        overwriteExistingEventAttendance: overWriteExistingSubjectAttendance,
+        attendances: Object.values(attendanceChanges),
+      },
+      {
+        onSuccess: () => {
+          resetSaveOptions();
+        },
+      }
+    );
   };
 
   useEffect(() => {
@@ -448,14 +482,32 @@ export function SessionAttendanceRoleBook({
         fillHandleDirection="xy"
         defaultColDef={{
           suppressMovable: true,
-          suppressMenu: true,
+          menuTabs: ['generalMenuTab'],
         }}
         onBulkSave={onBulkSave}
+        onBulkSaveCanceled={resetSaveOptions}
         additionalEditBarElements={
-          <ApplyToSubjectSelect
-            value={applyToSubjectAttendance}
-            onChange={setApplyToSubjectAttendance}
-          />
+          <Stack direction="row" spacing={3}>
+            <ApplyToSubjectSelect
+              value={applyToSubjectAttendance}
+              onChange={setApplyToSubjectAttendance}
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={
+                    overWriteExistingSubjectAttendance &&
+                    !!applyToSubjectAttendance
+                  }
+                  disabled={applyToSubjectAttendance === null}
+                  onChange={(_e, checked) =>
+                    setOverWriteExistingSubjectAttendance(checked)
+                  }
+                />
+              }
+              label={t('attendance:overwriteExistingSubjectAttendance')}
+            />
+          </Stack>
         }
       />
       <NoteModal

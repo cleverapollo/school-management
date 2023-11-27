@@ -16,9 +16,16 @@ const attendanceAwolReports = graphql(/* GraphQL */ `
       student {
         partyId
         person {
+          partyId
           firstName
           lastName
           avatarUrl
+        }
+        extensions {
+          priority
+        }
+        yearGroups {
+          name
         }
       }
       classGroupId
@@ -32,6 +39,17 @@ const attendanceAwolReports = graphql(/* GraphQL */ `
         endTime
         name
         description
+        rooms {
+          name
+        }
+      }
+      absentSubjectGroup {
+        partyId
+        subjectGroupType
+        name
+        subjects {
+          colour
+        }
       }
       absentUpdatedBy {
         firstName
@@ -49,11 +67,17 @@ const attendanceAwolReports = graphql(/* GraphQL */ `
         startTime
         endTime
         name
+        rooms {
+          name
+        }
       }
       presentSubjectGroup {
         partyId
         subjectGroupType
         name
+        subjects {
+          colour
+        }
       }
       presentUpdatedBy {
         avatarUrl

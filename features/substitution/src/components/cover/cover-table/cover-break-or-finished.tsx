@@ -18,6 +18,7 @@ export function CoverBreakOrFinished({
   return (
     <CoverCardTooltip timeslotInfo={timeslotInfo}>
       <Stack
+        className="event-break-card"
         sx={{
           backgroundColor: 'slate.50',
           borderRadius: 0.75,

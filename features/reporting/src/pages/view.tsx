@@ -1,7 +1,8 @@
 import { GridOptions, Table } from '@tyro/core';
 import { Reporting_TableFilterInput } from '@tyro/api';
 import { useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { Color, Palette, useTheme } from '@mui/material';
 import { useRunReports } from '../api/run-report';
 import { DynamicForm } from '../components/dynamic-form';
 
@@ -9,9 +10,36 @@ type GenericReportData = Array<{ [key: string]: GenericReportDataCell }>;
 type GenericReportDataCell = { value: any; colour: string };
 type FormattedReportData = Array<{ [key: string]: GenericReportDataCell }>;
 
+const getFiltersFromSearchParams = (
+  searchParams: URLSearchParams
+): Reporting_TableFilterInput[] =>
+  Array.from(searchParams.entries()).map(([filterId, filterValue]) => {
+    let formattedFilterValue: string | number | Array<string | number> =
+      filterValue;
+
+    if (formattedFilterValue.includes(',')) {
+      formattedFilterValue = formattedFilterValue
+        .split(',')
+        .map((value: string) =>
+          Number.isNaN(Number(value)) ? String(value) : Number(value)
+        );
+    } else if (!Number.isNaN(Number(formattedFilterValue))) {
+      formattedFilterValue = Number(formattedFilterValue);
+    }
+
+    return {
+      filterId,
+      filterValue: formattedFilterValue,
+    };
+  }) ?? [];
+
 export default function ReportPage() {
   const { id = '', reportId = '' } = useParams();
-  const [filters, setFilters] = useState<Reporting_TableFilterInput[]>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [filters, setFilters] = useState<Reporting_TableFilterInput[]>(
+    getFiltersFromSearchParams(searchParams)
+  );
+  const { palette } = useTheme();
 
   const {
     data: reportData,
@@ -30,21 +58,35 @@ export default function ReportPage() {
   >(() => {
     const fieldsColumns = reportData?.fields || [];
     return fieldsColumns.map((column) => {
-      // @ts-ignore
+      // @ts-expect-error
       const valueGetter = ({ data }) => {
-        if (data != null) {
-          // @ts-ignore
-          const value = data[column.id] as GenericReportDataCell;
-          return value?.value;
-        }
+        if (!data) return null;
+
+        const value = data[column.id] as GenericReportDataCell;
+        return value?.value;
       };
+
       const mapped = {
         field: column.id,
         headerName: column.label,
         valueGetter,
         sortable: column.sortable,
-        hide: !column.visibleByDefault,
+        initialHide: !column.visibleByDefault,
         pinned: column.pinned ?? null,
+        cellStyle: (params: any) => {
+          if (!params?.data) return null;
+
+          const colour = params?.data[column.id]?.colour;
+
+          const backgroundColor =
+            (palette?.[colour?.colour as keyof Palette] as Color)?.[
+              colour?.shade as keyof Color
+            ] ?? '';
+
+          return {
+            backgroundColor,
+          };
+        },
         ...(column.hideMenu
           ? {
               suppressMenu: true,
@@ -58,9 +100,30 @@ export default function ReportPage() {
         // @ts-ignore
         mapped.maxWidth = column.maxWidth;
       }
+      if (column.minWidth) {
+        // @ts-ignore
+        mapped.minWidth = column.minWidth;
+      }
       return mapped;
     });
   }, [reportData?.fields]);
+
+  const mappedFilterValues = useMemo(
+    () =>
+      reportData?.filters?.map((filter) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const filterValue = filters.find(
+          ({ filterId }) => filterId === filter.id
+        )?.filterValue;
+
+        return {
+          ...filter,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          defaultValue: filterValue ?? filter.defaultValue,
+        };
+      }),
+    [filters, reportData?.filters]
+  );
 
   const genericReportData = useMemo<FormattedReportData>(() => {
     const reportFieldsData = (reportData?.data || []) as GenericReportData;
@@ -78,12 +141,35 @@ export default function ReportPage() {
     );
   }, [reportData?.data]);
 
+  const updateFilters = (newFilters: Reporting_TableFilterInput[]) => {
+    const valuesForSearchParams = newFilters.reduce(
+      (acc, { filterId, filterValue }) => {
+        if (
+          !filterValue ||
+          (Array.isArray(filterValue) && filterValue.length === 0)
+        ) {
+          return acc;
+        }
+
+        acc[filterId] = Array.isArray(filterValue)
+          ? filterValue.join(',')
+          : String(filterValue);
+        return acc;
+      },
+      {} as Record<string, string>
+    );
+
+    setSearchParams(valuesForSearchParams);
+    setFilters(newFilters);
+  };
+
   return (
     <>
       <DynamicForm
         isFetching={isFetching}
-        filters={reportData?.filters || []}
-        onFilterChange={setFilters}
+        filters={mappedFilterValues ?? []}
+        onFilterChange={updateFilters}
+        sql={reportData?.debug?.sql}
       />
       <Table<FormattedReportData[number]>
         isLoading={isLoading}

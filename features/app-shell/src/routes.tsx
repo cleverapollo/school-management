@@ -12,6 +12,7 @@ export const getShellRoutes: NavObjectFunction = (t) => [
         type: NavObjectType.RootLink,
         title: t('navigation:general.dashboard'),
         path: '/dashboard',
+        hasAccess: ({ isStaffUser }) => isStaffUser,
         icon: <PieChartIcon />,
         element: <Dashboard />,
       },

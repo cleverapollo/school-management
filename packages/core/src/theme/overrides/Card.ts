@@ -7,6 +7,7 @@ export default function Card(theme: Theme) {
         root: {
           position: 'relative',
           boxShadow: theme.customShadows.card,
+          border: `1px solid ${theme.palette.indigo[50]}`,
           borderRadius: Number(theme.shape.borderRadius) * 2,
           zIndex: 0, // Fix Safari overflow: hidden with border radius
         },
@@ -22,7 +23,7 @@ export default function Card(theme: Theme) {
         {
           props: { variant: 'soft' },
           style: {
-            backgroundColor: 'slate.50',
+            backgroundColor: theme.palette.slate[50],
             padding: theme.spacing(1.5),
             borderRadius: theme.spacing(3.5),
           },

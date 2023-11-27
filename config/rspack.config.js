@@ -1,5 +1,6 @@
 const path = require('path');
-const Dotenv = require('rspack-plugin-dotenv');
+const rspack = require('@rspack/core');
+const { DotenvPlugin } = require('rspack-plugin-dotenv');
 const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
@@ -28,29 +29,7 @@ module.exports = {
     historyApiFallback: true,
   },
   builtins: {
-    html: [
-      {
-        template: './public/index.html',
-      },
-    ],
-    copy: {
-      patterns: [
-        {
-          from: 'public',
-          globOptions: {
-            ignore: ['**/index.html'],
-          }
-        },
-      ],
-    },
     emotion: true,
-    ...isProd ? {
-      define: {
-        'process.env.AG_GRID_KEY': `"${process.env.AG_GRID_KEY}"`,
-        'process.env.FULL_CALENDAR_KEY': `"${process.env.FULL_CALENDAR_KEY}"`,
-        'process.env.REACT_APP_GRAPHQL_API_URI': false,
-      },
-    } : {},
   },
   module: {
     rules: [
@@ -134,8 +113,21 @@ module.exports = {
     },
   },
   plugins: [
+    new rspack.HtmlRspackPlugin({
+      template: './public/index.html',
+    }),
+    new rspack.CopyRspackPlugin({
+      patterns: [
+        {
+          from: 'public',
+          globOptions: {
+            ignore: ['**/index.html'],
+          }
+        },
+      ],
+    }),
     ...!isProd ? [
-      new Dotenv(),
+      new DotenvPlugin(),
       new ForkTsCheckerWebpackPlugin(),
     ] : [],
     ...isProd && process.env.SENTRY_AUTH_TOKEN ? [
@@ -145,6 +137,11 @@ module.exports = {
         project: "web-app",
       }),
     ] : [],
+    new rspack.DefinePlugin(isProd ? {
+      'process.env.AG_GRID_KEY': `"${process.env.AG_GRID_KEY}"`,
+      'process.env.FULL_CALENDAR_KEY': `"${process.env.FULL_CALENDAR_KEY}"`,
+      'process.env.REACT_APP_GRAPHQL_API_URI': false,
+    }: {}),
   ],
   watchOptions: {
     ignored: /node_modules/,

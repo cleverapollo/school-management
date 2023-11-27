@@ -1,4 +1,5 @@
 import {
+  Box,
   Card,
   Link,
   Stack,
@@ -10,10 +11,11 @@ import {
   TableRow,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { Avatar, useDebouncedValue } from '@tyro/core';
+import { ActionMenu, Avatar, useDebouncedValue } from '@tyro/core';
 import dayjs, { Dayjs } from 'dayjs';
 import { CalendarGridPeriodType } from '@tyro/api';
 import { useMemo } from 'react';
+import { PrinterIcon } from '@tyro/icons';
 import { ReturnTypeFromUseEventsForCover } from '../../../api/staff-work-events-for-cover';
 import { CoverBreakOrFinished } from './cover-break-or-finished';
 import { EventCoverCard } from './event-card';
@@ -70,9 +72,39 @@ export function CoverTable({
   return (
     <>
       <Card>
-        <Stack direction="row" justifyContent="center" p={2}>
-          {datepicker}
-        </Stack>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            p: 2,
+          }}
+        >
+          <Box
+            sx={{
+              gridColumn: '2 / 2',
+              justifySelf: 'center',
+            }}
+          >
+            {datepicker}
+          </Box>
+          <Box
+            sx={{
+              gridColumn: '3 / 3',
+              justifySelf: 'end',
+              alignSelf: 'center',
+            }}
+          >
+            <ActionMenu
+              menuItems={[
+                {
+                  label: t('common:actions.print'),
+                  icon: <PrinterIcon />,
+                  onClick: () => window.print(),
+                },
+              ]}
+            />
+          </Box>
+        </Box>
         <EmptyStateContainer isEmpty={!data?.length} isLoading={isLoading}>
           <TableContainer>
             <Table

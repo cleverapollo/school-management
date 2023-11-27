@@ -13,6 +13,7 @@ type OptionalTypeForCombinedAttendanceData = string | null;
 
 type CombinedAttendanceDataType = {
   date: TypeForCombinedAttendanceData;
+  time: TypeForCombinedAttendanceData;
   type: TypeForCombinedAttendanceData;
   attendanceCode: TypeForCombinedAttendanceData;
   details?: OptionalTypeForCombinedAttendanceData;
@@ -92,6 +93,7 @@ const tableSessionAttendanceQuery = (
         if (bellTime) {
           const formattedData: CombinedAttendanceDataType = {
             date,
+            time: bellTime?.time,
             type: bellTime?.name,
             attendanceCode: attendanceCode?.name,
             details: note,

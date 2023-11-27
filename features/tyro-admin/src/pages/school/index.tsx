@@ -71,11 +71,10 @@ const getAdminTenantColumns = (
     }: ICellRendererParams<ReturnTypeFromUseAdminTenants, any>) => (
       <Button
         className="ag-show-on-row-interaction"
-        onClick={async () => {
+        onClick={() => {
           if (data?.tenant) {
             addViewSchoolHeaders(data?.tenant);
-            queryClient.invalidateQueries();
-            await getUser();
+            queryClient.clear();
             navigate('/', { replace: true });
           }
         }}

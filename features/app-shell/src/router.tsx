@@ -122,7 +122,7 @@ const mockTFunction = ((key: string) => key) as TFunction<
 >;
 
 export const getNavCategories = (t: TFunction<'navigation'[]>) => [
-  // ...getShellRoutes(t),
+  ...getShellRoutes(t),
   ...getCalendarRoutes(t),
   ...getClassListManagerRoutes(t),
   ...getGroupRoutes(t),
@@ -208,7 +208,7 @@ function useAppRouter() {
             if (permissions.isTyroTenantAndUser) {
               return redirect('/admin/schools');
             }
-            return redirect('/calendar');
+            return redirect('/dashboard');
           },
         },
         ...buildRouteTree(getNavCategories(mockTFunction)),
