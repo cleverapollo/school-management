@@ -125,6 +125,10 @@ const getColumnDefs = (
     headerName: t('substitution:note'),
     sortable: true,
     filter: 'agTextColumnFilter',
+    width: 200,
+    cellStyle: {
+      display: 'block',
+    },
   },
   {
     suppressColumnsToolPanel: true,

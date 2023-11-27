@@ -262,7 +262,7 @@ export function UpsertAbsenceModal({
             },
           ],
           {
-            onSuccess: onClose,
+            onSuccess: closeModal,
           }
         );
       }
@@ -280,7 +280,7 @@ export function UpsertAbsenceModal({
           },
         ],
         {
-          onSuccess: () => closeModal,
+          onSuccess: closeModal,
         }
       );
     }
