@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
-import { Box, Stack, Typography, useMediaQuery } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { usePreferredNameLayout } from '@tyro/core';
+import { LayersIcon } from '@tyro/icons';
 import { CoverEvent } from '../../../hooks/use-cover-table';
 import { ReturnTypeFromUseEventsForCover } from '../../../api/staff-work-events-for-cover';
 import { CoverCardTooltip } from './cover-card-tooltip';
@@ -41,7 +42,6 @@ export function EventCoverCard({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isSelected = isEventSelected(eventInfo);
   const isContextMenuOpen = Boolean(anchorEl);
-  const isCompact = useMediaQuery('(max-width: 1980px)');
 
   const rooms = getCurrentCoverRoom(eventInfo);
 
@@ -61,20 +61,13 @@ export function EventCoverCard({
 
   return (
     <>
-      <CoverCardTooltip
-        timeslotInfo={{
-          startTime: event.startTime,
-          endTime: event.endTime,
-        }}
-        rooms={rooms}
-        additionalTeachers={additionalTeachers}
-      >
+      <CoverCardTooltip staff={staff} eventInfo={eventInfo}>
         <Box
           className="event-cover-card"
           sx={{
             backgroundColor: `${color}.100`,
             borderRadius: 0.75,
-            width: isCompact ? 80 : 120,
+            width: '100%',
             transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
             transitionDuration: '150ms',
             transitionProperty: 'background-color, opacity',
@@ -106,6 +99,20 @@ export function EventCoverCard({
             direction="row"
             sx={{ alignItems: 'stretch', height: '100%', p: 0.75, pr: 1.25 }}
           >
+            {eventInfo?.coverTeacherDuplicatedAtSameTime &&
+              eventInfo.coverTeacherDuplicatedAtSameTime.length > 0 && (
+                <Stack mr={1} alignItems="center" alignSelf="center">
+                  <LayersIcon sx={{ width: 20, height: 20 }} />
+                  <Typography
+                    variant="caption"
+                    fontWeight="semibold"
+                    noWrap
+                    sx={{ flex: 1 }}
+                  >
+                    {eventInfo.coverTeacherDuplicatedAtSameTime.length + 1}
+                  </Typography>
+                </Stack>
+              )}
             <Box
               sx={{
                 width: 3,

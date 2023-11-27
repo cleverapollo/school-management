@@ -108,6 +108,23 @@ export default function ReportPage() {
     });
   }, [reportData?.fields]);
 
+  const mappedFilterValues = useMemo(
+    () =>
+      reportData?.filters?.map((filter) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const filterValue = filters.find(
+          ({ filterId }) => filterId === filter.id
+        )?.filterValue;
+
+        return {
+          ...filter,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          defaultValue: filterValue ?? filter.defaultValue,
+        };
+      }),
+    [filters, reportData?.filters]
+  );
+
   const genericReportData = useMemo<FormattedReportData>(() => {
     const reportFieldsData = (reportData?.data || []) as GenericReportData;
 
@@ -150,7 +167,7 @@ export default function ReportPage() {
     <>
       <DynamicForm
         isFetching={isFetching}
-        filters={reportData?.filters ?? []}
+        filters={mappedFilterValues ?? []}
         onFilterChange={updateFilters}
         sql={reportData?.debug?.sql}
       />
