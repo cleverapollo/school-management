@@ -27,7 +27,11 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { RHFStaffAutocomplete, useStaffSubjectGroups } from '@tyro/people';
 import { AddIcon, TrashIcon } from '@tyro/icons';
-import {Person, StaffGroupMembershipRoles, Swm_UpsertStaffAbsenceDate} from '@tyro/api';
+import {
+  Person,
+  StaffGroupMembershipRoles,
+  Swm_UpsertStaffAbsenceDate,
+} from '@tyro/api';
 import {
   ReturnTypeFromUseStaffWorkAbsences,
   useSaveStaffAbsence,
@@ -58,7 +62,7 @@ interface UpsertAbsenceFormState {
   isLongTermLeave: boolean;
   longTermLeaveGroups: Array<{
     groupId: number;
-    coveringStaff: Person | undefined;
+    coveringStaff: Person | undefined | null;
   }>;
   startDate: Dayjs;
   endDate: Dayjs;
@@ -180,16 +184,26 @@ export function UpsertAbsenceModal({
     name: 'longTermLeaveGroups',
   });
 
+  console.log({
+    ltlGroups,
+  });
+
   const [selectedStaff, datesValue, isLongTermLeaveValue] = watch([
     'staff',
     'dates',
     'isLongTermLeave',
   ]);
 
-  const { data: subjectGroupsData } = useStaffSubjectGroups( {
-    partyIds: [selectedStaff?.partyId || 0],
-  },
-      {staffRoles: [StaffGroupMembershipRoles.Teacher, StaffGroupMembershipRoles.LongTermSubstitute]}
+  const { data: subjectGroupsData } = useStaffSubjectGroups(
+    {
+      partyIds: [selectedStaff?.partyId || 0],
+    },
+    {
+      staffRoles: [
+        StaffGroupMembershipRoles.Teacher,
+        StaffGroupMembershipRoles.LongTermSubstitute,
+      ],
+    }
   );
 
   const onSubmit = handleSubmit(
@@ -300,15 +314,23 @@ export function UpsertAbsenceModal({
   }, [initialAbsenceData]);
 
   useEffect(() => {
-    if (subjectGroupsData) {
+    if (
+      subjectGroupsData &&
+      initialAbsenceData?.longTermLeaveGroups &&
+      subjectGroupsData.some(
+        (group, index) =>
+          group.partyId !==
+          initialAbsenceData?.longTermLeaveGroups?.[index]?.groupId
+      )
+    ) {
       const updatedPartyIds = subjectGroupsData.map((group) => ({
         groupId: group.partyId,
-        coveringStaff: undefined,
+        coveringStaff: null,
       }));
 
       replaceLtlGroups(updatedPartyIds);
     }
-  }, [subjectGroupsData]);
+  }, [initialAbsenceData?.longTermLeaveGroups, subjectGroupsData]);
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
@@ -480,7 +502,7 @@ export function UpsertAbsenceModal({
                   <Stack direction="row" spacing={2}>
                     <RHFDatePicker
                       label={t('common:startDate')}
-                      inputProps={{ fullWidth: true}}
+                      inputProps={{ fullWidth: true }}
                       controlProps={{ name: 'startDate', control }}
                     />
                     <RHFDatePicker
@@ -506,7 +528,11 @@ export function UpsertAbsenceModal({
                     {ltlGroups?.map((field, index) => {
                       const subjectGroup = subjectGroupsData[index];
                       return (
-                        <Stack direction="row" justifyContent="space-evenly">
+                        <Stack
+                          key={field.id}
+                          direction="row"
+                          justifyContent="space-evenly"
+                        >
                           <Typography
                             variant="subtitle1"
                             color="text.secondary"
@@ -519,11 +545,7 @@ export function UpsertAbsenceModal({
                           </Typography>
                           <RHFStaffAutocomplete
                             key={field.id}
-                            label={
-                              <Stack direction="row">
-                                {subjectGroup?.name}
-                              </Stack>
-                            }
+                            label={subjectGroup?.name}
                             sx={{
                               backgroundColor: 'white',
                             }}

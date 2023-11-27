@@ -100,10 +100,15 @@ const getColumnDefs = (
     wrapText: true,
   },
   {
-    field: 'isLongTermLeave',
+    field: 'longTermLeaveGroups',
     headerName: t('substitution:longTermLeave'),
     valueGetter: ({ data }) =>
-      data?.isLongTermLeave ? t('common:yes') : t('common:no'),
+      data?.longTermLeaveGroups
+        ? `${data?.longTermLeaveGroups.reduce(
+            (acc, group) => (group.coveringStaffId ? acc + 1 : acc),
+            0
+          )}/${data?.longTermLeaveGroups?.length}`
+        : '-',
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseStaffWorkAbsences, any>) => {
