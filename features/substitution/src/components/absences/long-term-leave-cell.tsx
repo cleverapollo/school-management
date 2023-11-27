@@ -78,7 +78,7 @@ export const LongTermLeaveCell = <TField extends FieldValues>({
       >
         {' '}
         {sortedAbsence.map((group) => (
-          <Stack direction="row" sx={{ p: 1 }}>
+          <Stack key={group.groupId} direction="row" sx={{ p: 1 }}>
             <Typography variant="body2" color="text.primary" sx={{ px: 1 }}>
               {group.group?.name ?? ''}:
             </Typography>
