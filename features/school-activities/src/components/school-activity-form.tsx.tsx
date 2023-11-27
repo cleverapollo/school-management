@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { useTranslation } from '@tyro/i18n';
 import {
   RHFAutocomplete,
@@ -33,7 +33,7 @@ type SubjectGroupOption = UseQueryReturnType<typeof useSubjectGroups>[number];
 type FormValues = {
   id?: number;
   activityName: string;
-  group: SubjectGroupOption[];
+  group: SubjectGroupOption;
   startDate: dayjs.Dayjs;
   endDate?: dayjs.Dayjs;
   details: string;
@@ -76,17 +76,19 @@ export function SchoolActivityForm() {
   const {
     mutate: saveSchoolActivities,
     isLoading,
-    onSuccess,
+    // onSuccess,
   } = useSaveSchoolActivities();
 
   const onSubmit = (data: FormValues) => {
     console.log(data, 'Submit');
-    const groups = data?.group?.map((item) => item?.partyId);
-    console.log(groups[0]);
+    const group = data?.group?.partyId;
+
     const roomIds = data?.room?.map((item) => item?.roomId);
+    console.log(dayjs(data?.startDate).format('YYYY-MM-DD'), 'TESTING');
+
     const formattedData = {
       name: data?.activityName,
-      groupPartyId: groups[0],
+      groupPartyId: group,
       location: {
         inSchoolGrounds: data?.captureTarget,
         roomIds,
@@ -94,28 +96,21 @@ export function SchoolActivityForm() {
       },
       notes: data?.note,
       time: {
-        startDate: data?.startDate,
+        startDate: dayjs(data?.startDate).format('YYYY-MM-DD'),
         startTime: data?.startTime?.format('HH:mm'),
         endTime: data?.endTime?.format('HH:mm'),
       },
     };
     saveSchoolActivities(formattedData, {
       onSuccess: () => {
-        onSuccess?.();
+        // onSuccess?.();
         navigate('/activity');
       },
-      onError,
+      // onError,
     });
   };
 
-  const textFieldStyle = {
-    maxWidth: 300,
-    width: '100%',
-  };
-
   const requestType = watch('requestType');
-
-  console.log(rooms, 'rooms');
 
   return (
     <Grid container gap={3}>
@@ -155,7 +150,6 @@ export function SchoolActivityForm() {
                   control,
                   name: 'group',
                 }}
-                // multiple
                 fullWidth
                 options={subjectGroups ?? []}
               />
@@ -297,7 +291,7 @@ export function SchoolActivityForm() {
               />
             </Grid>
           </Grid>
-          <Stack alignItems="flex-end">
+          <Grid item xs={12} sm={6} ml={3} mb={3}>
             <LoadingButton
               variant="contained"
               size="large"
@@ -306,7 +300,17 @@ export function SchoolActivityForm() {
             >
               {t('common:actions.save')}
             </LoadingButton>
-          </Stack>
+          </Grid>
+          {/* <Stack alignItems="flex-end">
+            <LoadingButton
+              variant="contained"
+              size="large"
+              type="submit"
+              loading={isLoading}
+            >
+              {t('common:actions.save')}
+            </LoadingButton>
+          </Stack> */}
         </Card>
       </Grid>
     </Grid>
