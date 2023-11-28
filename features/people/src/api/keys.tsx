@@ -11,8 +11,8 @@ import {
   Core_PeopleFilter,
   Notes_BehaviourFilter,
   Notes_BehaviourCategoryFilter,
-  Print_PersonsGroupMemberships,
   SubjectGroupRelationshipFilter,
+  Print_PersonsGroupMemberships,
 } from '@tyro/api';
 
 export const peopleKeys = {
