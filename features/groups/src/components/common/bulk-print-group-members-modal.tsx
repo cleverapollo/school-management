@@ -37,7 +37,7 @@ export function BulkPrintGroupMembersModal({
       onClose={onClose}
       scroll="paper"
       fullWidth
-      maxWidth="md"
+      maxWidth="xs"
     >
       <DialogTitle>{t('groups:printGroupMembers')}</DialogTitle>
       <DialogActions
