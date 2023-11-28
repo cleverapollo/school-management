@@ -11,13 +11,14 @@ import {
   RHFDateRangePicker,
 } from '@tyro/core';
 import { useCustomGroups } from '@tyro/groups';
-import { UseQueryReturnType, ParentalAttendanceRequestType } from '@tyro/api';
+import { UseQueryReturnType } from '@tyro/api';
 import { Card, Grid, CardHeader, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
 import { useSaveSchoolActivities } from '../api/upsert-school-activity';
 import { useRoomsList, RoomList } from '../api/get-rooms';
+import { ActivityType } from '../pages/edit';
 
 type ReturnTypeFromUseCustomGroups = UseQueryReturnType<
   typeof useCustomGroups
@@ -36,7 +37,7 @@ export type FormValues = {
   startTime?: dayjs.Dayjs | null;
   endTime?: dayjs.Dayjs | null;
   dateRange?: dayjs.Dayjs;
-  requestType: ParentalAttendanceRequestType;
+  requestType: ActivityType;
 };
 
 export type SchoolActivitiesFormProps = {
@@ -74,11 +75,11 @@ export function SchoolActivityForm({
     const roomIds = data?.room && data?.room?.roomId;
 
     const activityType = schoolActivitiesData?.partial
-      ? ParentalAttendanceRequestType.PartialDay
-      : ParentalAttendanceRequestType.SingleDay;
+      ? ActivityType.PartialDay
+      : ActivityType.SingleDay;
 
     const datesFormatted =
-      activityType === ParentalAttendanceRequestType.SingleDay
+      activityType === ActivityType.SingleDay
         ? [
             {
               dates: [dayjs(data?.dates).format('YYYY-MM-DD')],
@@ -116,13 +117,13 @@ export function SchoolActivityForm({
 
     saveSchoolActivities(formattedData, {
       onSuccess: () => {
-        // onSuccess?.();
+        onSuccess?.();
         navigate('/school-activities');
       },
     });
   };
 
-  const requestType = watch(['group', 'requestType']);
+  const activityDayType = watch('requestType');
 
   const isEditing = !!schoolActivitiesData?.schoolActivityId;
 
@@ -174,9 +175,9 @@ export function SchoolActivityForm({
                 radioGroupProps={{ sx: { flexDirection: 'row' } }}
                 label={t('schoolActivities:activityType')}
                 options={[
-                  ParentalAttendanceRequestType.SingleDay,
-                  ParentalAttendanceRequestType.PartialDay,
-                  ParentalAttendanceRequestType.MultiDay,
+                  ActivityType.SingleDay,
+                  ActivityType.PartialDay,
+                  ActivityType.MultiDay,
                 ].map((option) => ({
                   value: option,
                   label: t(`schoolActivities:dayTypeOptions.${option}`),
@@ -187,7 +188,7 @@ export function SchoolActivityForm({
                 }}
               />
             </Grid>
-            {requestType && (
+            {activityDayType === ActivityType.SingleDay && (
               <Grid item xs={12} sm={6}>
                 <RHFDatePicker<FormValues>
                   label={t('schoolActivities:startDate')}
@@ -200,12 +201,12 @@ export function SchoolActivityForm({
                 />
               </Grid>
             )}
-            {/* {requestType === ParentalAttendanceRequestType.PartialDay && (
+            {activityDayType === ActivityType.PartialDay && (
               <>
                 <Grid item xs={12} sm={4}>
                   <RHFDatePicker<FormValues>
                     label={t('schoolActivities:startDate')}
-                    controlProps={{ name: 'startDate', control }}
+                    controlProps={{ name: 'dates', control }}
                     inputProps={{
                       fullWidth: true,
                       disabled: false,
@@ -241,7 +242,7 @@ export function SchoolActivityForm({
               </>
             )}
 
-            {requestType === ParentalAttendanceRequestType.MultiDay && (
+            {/* {activityDayType === ActivityType.MultiDay && (
               <Grid item xs={12} sm={6}>
                 <RHFDateRangePicker
                   controlProps={{

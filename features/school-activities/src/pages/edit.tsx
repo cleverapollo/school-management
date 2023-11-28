@@ -3,7 +3,6 @@ import { PageHeading, PageContainer, useToast, useNumber } from '@tyro/core';
 import { useParams } from 'react-router-dom';
 import { useMemo } from 'react';
 import dayjs from 'dayjs';
-import { ParentalAttendanceRequestType } from '@tyro/api';
 import { useCustomGroups } from '@tyro/groups';
 import { useSchoolActivityById } from '../api/get-school-activities';
 import { useRoomsList } from '../api/get-rooms';
@@ -12,7 +11,11 @@ import {
   SchoolActivityForm,
 } from '../components/school-activity-form';
 
-// enum ActivityType = {}
+export enum ActivityType {
+  MultiDay = 'MULTI_DAY',
+  PartialDay = 'PARTIAL_DAY',
+  SingleDay = 'SINGLE_DAY',
+}
 
 export default function EditSchoolActivityPage() {
   const { activityId } = useParams();
@@ -51,10 +54,6 @@ export default function EditSchoolActivityPage() {
       rooms && rooms?.filter((room) => room?.roomId === currentRoomId);
     const roomFormatted = currentRoomData && currentRoomData[0];
 
-    const activityType = datesData?.partial
-      ? ParentalAttendanceRequestType.PartialDay
-      : ParentalAttendanceRequestType.SingleDay;
-
     return {
       schoolActivityId,
       name,
@@ -67,7 +66,10 @@ export default function EditSchoolActivityPage() {
       endTime: dayjs(datesData?.endTime),
       partial: datesData?.partial,
       inSchoolGrounds: location?.inSchoolGrounds,
-      requestType: activityType,
+      requestType:
+        ActivityType.MultiDay ||
+        ActivityType.PartialDay ||
+        ActivityType.SingleDay,
     } as const;
   }, [schoolActivity]);
 
