@@ -3,6 +3,7 @@ import {
   useMutation,
   useInfiniteQuery,
   InfiniteData,
+  QueryFunctionContext,
 } from '@tanstack/react-query';
 import {
   gqlClient,
@@ -162,11 +163,14 @@ const mailListQuery = (labelId: number, profileId?: number | null) => {
 
   return {
     queryKey: mailKeys.filteredList(filter),
-    queryFn: async () =>
+    queryFn: async ({ pageParam = undefined }: QueryFunctionContext) =>
       gqlClient.request(mails, {
         filter: {
           ...filter,
-          pagination: { ...filter.pagination, lastId: undefined },
+          pagination: {
+            ...filter.pagination,
+            lastId: pageParam as number | undefined,
+          },
         },
       }),
   };

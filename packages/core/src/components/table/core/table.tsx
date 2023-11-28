@@ -83,6 +83,7 @@ export interface TableProps<T> extends AgGridReactProps<T> {
   rowData: T[];
   getRowId: AgGridReactProps<T>['getRowId'];
   onBulkSave?: UseEditableStateProps<T>['onBulkSave'];
+  onBulkSaveCanceled?: UseEditableStateProps<T>['onBulkSaveCanceled'];
   onRowSelection?: (selectedRows: T[]) => void;
   sx?: CardProps['sx'];
   tableContainerSx?: BoxProps['sx'];
@@ -106,6 +107,16 @@ const defaultColDef: ColDef = {
   },
 };
 
+const quickFilterMatcher = (
+  quickFilterParts: string[],
+  rowQuickFilterAggregateText: string
+) => {
+  const normalisedRow = rowQuickFilterAggregateText
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '');
+  return quickFilterParts.every((part) => normalisedRow.match(part));
+};
+
 const TOOLBAR_HEIGHT = 72;
 const MIN_TABLE_HEIGHT = 460;
 
@@ -113,6 +124,7 @@ function TableInner<T extends object>(
   {
     onFirstDataRendered,
     onBulkSave,
+    onBulkSaveCanceled,
     tableContainerSx,
     sx,
     onRowSelection,
@@ -146,6 +158,7 @@ function TableInner<T extends object>(
   const editingUtils = useEditableState<T>({
     tableRef,
     onBulkSave,
+    onBulkSaveCanceled,
   });
   const {
     isEditing,
@@ -286,6 +299,7 @@ function TableInner<T extends object>(
                 groupSelectsFiltered={rowSelection === 'multiple'}
                 stopEditingWhenCellsLoseFocus
                 {...props}
+                quickFilterMatcher={quickFilterMatcher}
                 defaultColDef={colDefs}
                 onCellValueChanged={(args) => {
                   onCellValueChanged(args);

@@ -1,7 +1,9 @@
 import { Box, Fade, Container, Typography } from '@mui/material';
 import {
+  PermissionUtils,
   SmsRecipientType,
   SubjectGroupType,
+  SubjectUsage,
   UpdateSubjectGroupInput,
 } from '@tyro/api';
 import { useMemo, useState } from 'react';
@@ -19,12 +21,14 @@ import {
   useDisclosure,
   sortStartNumberFirst,
   ConfirmDialog,
+  TableSelect,
 } from '@tyro/core';
 
 import { MobileIcon, MoveGroupIcon, SendMailIcon } from '@tyro/icons';
 
-import set from 'lodash/set';
+import { set } from 'lodash';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
+import { CatalogueSubjectOption, useCatalogueSubjects } from '@tyro/settings';
 import {
   useSaveSupportGroupEdits,
   useSupportGroups,
@@ -37,7 +41,8 @@ type ReturnTypeFromUseSupportGroups = NonNullable<
 
 const getSubjectGroupsColumns = (
   t: TFunction<'common'[], undefined, 'common'[]>,
-  displayNames: ReturnTypeDisplayNames
+  displayNames: ReturnTypeDisplayNames,
+  subjects?: CatalogueSubjectOption[]
 ): GridOptions<ReturnTypeFromUseSupportGroups>['columnDefs'] => [
   {
     field: 'name',
@@ -46,7 +51,7 @@ const getSubjectGroupsColumns = (
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
-
+    editable: true,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseSupportGroups>) => {
@@ -77,10 +82,29 @@ const getSubjectGroupsColumns = (
     field: 'subjects',
     headerName: t('common:subject'),
     filter: true,
+    editable: true,
+    valueSetter: ({ data, newValue }) => {
+      const newOption = subjects?.find(({ id }) => id === newValue);
+
+      set(data, 'subjects[0]', newOption ?? {});
+      return true;
+    },
     valueGetter: ({ data }) => {
       const [firstSubject] = data?.subjects || [];
       return firstSubject?.name;
     },
+    cellEditorSelector: () =>
+      ({
+        component: TableSelect<CatalogueSubjectOption>,
+        popup: true,
+        popupPosition: 'under',
+        params: {
+          options: subjects,
+          optionIdKey: 'id',
+          getOptionLabel: (option: CatalogueSubjectOption) =>
+            `${option.name} (${option.nationalCode})`,
+        },
+      } as const),
     enableRowGroup: true,
   },
   {
@@ -107,6 +131,9 @@ export default function SupportGroups() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
   const { displayNames } = usePreferredNameLayout();
   const { data: subjectGroupsData } = useSupportGroups();
+  const { data: subjects } = useCatalogueSubjects({
+    filterUsage: SubjectUsage.All,
+  });
   const { mutateAsync: updateSubjectGroup } = useSaveSupportGroupEdits();
   const { mutateAsync: switchSubjectGroupType } = useSwitchSubjectGroupType();
 
@@ -121,8 +148,8 @@ export default function SupportGroups() {
   const [switchGroupTypeConfirmation, setSwitchGroupTypeConfirmation] =
     useState(false);
   const studentColumns = useMemo(
-    () => getSubjectGroupsColumns(t, displayNames),
-    [t, displayNames]
+    () => getSubjectGroupsColumns(t, displayNames, subjects),
+    [t, displayNames, subjects]
   );
 
   const actionMenuItems = [
@@ -135,6 +162,8 @@ export default function SupportGroups() {
       label: t('groups:supportGroup.switchToSubjectGroup.action'),
       icon: <MoveGroupIcon />,
       onClick: () => setSwitchGroupTypeConfirmation(true),
+      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+        isStaffUserWithPermission('ps:1:groups:write_subject_groups'),
     },
     // {
     //   label: t('mail:sendMail'),
@@ -144,19 +173,25 @@ export default function SupportGroups() {
   ];
 
   const handleBulkSave = (
-    data: BulkEditedRows<ReturnTypeFromUseSupportGroups, 'irePP.level'>
+    data: BulkEditedRows<ReturnTypeFromUseSupportGroups, 'name' | 'subjects'>
   ) => {
     const updates = Object.entries(data).reduce<UpdateSubjectGroupInput[]>(
       (acc, [partyId, changes]) => {
-        const level = changes['irePP.level'];
+        const updatedEntry: UpdateSubjectGroupInput = {
+          subjectGroupPartyId: Number(partyId),
+        };
 
-        if (level) {
-          acc.push({
-            subjectGroupPartyId: Number(partyId),
-            irePP: { level: level.newValue },
-          });
-        }
+        Object.entries(changes).forEach(([key, value]) => {
+          if (key === 'subjects' && value?.newValue?.length) {
+            set(updatedEntry, 'subjectIds', [
+              (value?.newValue?.[0] as CatalogueSubjectOption)?.id,
+            ]);
+          } else {
+            set(updatedEntry, key, value.newValue);
+          }
+        });
 
+        acc.push(updatedEntry);
         return acc;
       },
       []
