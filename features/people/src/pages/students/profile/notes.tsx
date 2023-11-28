@@ -9,6 +9,7 @@ import {
   useDebouncedValue,
   ReturnTypeDisplayName,
   usePreferredNameLayout,
+  TableBooleanValue,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { Box, Button, Chip, Stack } from '@mui/material';
@@ -93,6 +94,18 @@ const getStudentNoteColumns = (
     filter: true,
     sortable: true,
     suppressSizeToFit: true,
+  },
+  {
+    field: 'priorityNote',
+    headerName: translate('people:priority'),
+    valueGetter: ({ data }) => data?.priorityNote,
+    valueFormatter: ({ data }) =>
+      data?.priorityNote ? translate('common:yes') : translate('common:no'),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseNotes, any>) => (
+      <TableBooleanValue value={Boolean(data?.priorityNote)} />
+    ),
   },
   {
     suppressColumnsToolPanel: true,
