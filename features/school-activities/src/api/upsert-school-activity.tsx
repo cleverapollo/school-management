@@ -1,15 +1,13 @@
 import { useMutation } from '@tanstack/react-query';
 import {
-  EmulateHeaders,
   gqlClient,
   graphql,
   queryClient,
   Sa_SchoolActivityInput,
-  useAcademicNamespace,
 } from '@tyro/api';
 import { useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-// import { assessmentsKeys } from './keys';
+import { activitiesKeys } from './keys';
 
 const saveSchoolActivies = graphql(/* GraphQL */ `
   mutation sa_upsertActivity($input: Sa_SchoolActivityInput) {
@@ -22,13 +20,17 @@ const saveSchoolActivies = graphql(/* GraphQL */ `
 export function useSaveSchoolActivities() {
   const { toast } = useToast();
   const { t } = useTranslation(['common']);
-  const { activeAcademicNamespace } = useAcademicNamespace();
 
   return useMutation({
-    mutationFn: (input: Sa_SchoolActivityInput) =>
+    mutationFn: async (input: Sa_SchoolActivityInput) =>
       gqlClient.request(saveSchoolActivies, { input }),
-    onSuccess: () => {
-      // queryClient.invalidateQueries(assessmentsKeys.all);
+    onSuccess: (_, variables) => {
+      if (variables?.schoolActivityId) {
+        toast(t('common:snackbarMessages.updateSuccess'));
+      } else {
+        toast(t('common:snackbarMessages.createSuccess'));
+      }
+      queryClient.invalidateQueries(activitiesKeys.all);
     },
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });

@@ -2,76 +2,22 @@ import { Box, Button } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 
 import {
+  ActionMenu,
   GridOptions,
   ICellRendererParams,
   PageHeading,
-  ReturnTypeDisplayName,
-  RouterLink,
   Table,
   TableBooleanValue,
-  usePreferredNameLayout,
   PageContainer,
 } from '@tyro/core';
 import { Link } from 'react-router-dom';
-import { useMemo, useState } from 'react';
-import { AddDocIcon } from '@tyro/icons';
-import { useAcademicNamespace, usePermissions } from '@tyro/api';
+import { useMemo } from 'react';
+import { AddDocIcon, EditIcon, VerticalDotsIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
-import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-
-interface TripRecord {
-  id: number;
-  name: string;
-  startDate: string;
-  endDate: string;
-  tripPurpose: string;
-  inSchool: boolean;
-  room: string;
-  note: string;
-}
-
-const schoolActivitiesData: TripRecord[] = [
-  {
-    id: 1,
-    name: 'John Doe',
-    startDate: '2023-11-01',
-    endDate: '2023-11-10',
-    tripPurpose: 'Conference',
-    inSchool: false,
-    room: '101A',
-    note: 'Attend the International Tech Summit',
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    startDate: '2023-12-05',
-    endDate: '2023-12-12',
-    tripPurpose: 'Research',
-    inSchool: true,
-    room: '201B',
-    note: 'Field research for thesis',
-  },
-  {
-    id: 3,
-    name: 'Emily Johnson',
-    startDate: '2024-01-15',
-    endDate: '2024-01-20',
-    tripPurpose: 'Workshop',
-    inSchool: false,
-    room: '105C',
-    note: 'Leading a creative writing workshop',
-  },
-  {
-    id: 4,
-    name: 'Michael Brown',
-    startDate: '2024-02-10',
-    endDate: '2024-02-18',
-    tripPurpose: 'Sabbatical',
-    inSchool: true,
-    room: '301D',
-    note: 'Sabbatical leave for book writing',
-  },
-];
+import {
+  useActivitiesList,
+  ReturnTypeFromUseActivitiesList,
+} from '../api/get-school-activities';
 
 const getColumnDefs = (
   t: TFunction<
@@ -79,69 +25,75 @@ const getColumnDefs = (
     undefined,
     ('schoolActivities' | 'common')[]
   >
-): GridOptions<TripRecord>['columnDefs'] => [
+): GridOptions<ReturnTypeFromUseActivitiesList>['columnDefs'] => [
   {
     field: 'name',
     headerName: t('schoolActivities:name'),
-    headerCheckboxSelection: true,
-    headerCheckboxSelectionFilteredOnly: true,
-    checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
-    sort: 'asc',
-    // cellRenderer: ({ data }: ICellRendererParams<TripRecord>) =>
-    // data ? (
-    //   <TableAvatar
-    //     name={data?.name ?? ''}
-    //     to={`./${data?.yearGroupEnrollmentPartyId ?? ''}`}
-    //     avatarUrl={undefined}
-    //     AvatarProps={{
-    //       sx: {
-    //         borderRadius: 1,
-    //       },
-    //     }}
-    //   />
-    // ) : null,
   },
   {
-    field: 'startDate',
+    field: 'dates',
     headerName: t('schoolActivities:startDate'),
-    valueGetter: ({ data }) =>
-      data ? dayjs(data.startDate).format('LL') : null,
+    valueGetter: ({ data }) => {
+      const dates = data?.dates?.map((date) => dayjs(date?.date).format('L'));
+      return dates || '-';
+    },
     sort: 'desc',
-    comparator: (dateA: string, dateB: string) =>
-      dayjs(dateA).unix() - dayjs(dateB).unix(),
-  },
-  {
-    field: 'endDate',
-    headerName: t('schoolActivities:endDate'),
-    valueGetter: ({ data }) => (data ? dayjs(data.endDate).format('LL') : null),
-    comparator: (dateA: string, dateB: string) =>
-      dayjs(dateA).unix() - dayjs(dateB).unix(),
   },
   {
     field: 'tripPurpose',
     headerName: t('schoolActivities:tripPurpose'),
+    valueGetter: ({ data }) => data?.tripPurpose,
   },
   {
-    field: 'inSchool',
-    headerName: 'In school',
+    field: 'location.inSchoolGrounds',
+    headerName: t('schoolActivities:inSchool'),
+    valueGetter: ({ data }) => data?.location?.inSchoolGrounds,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseActivitiesList>) => {
+      if (!data) return null;
+
+      return <TableBooleanValue value={!!data.location?.inSchoolGrounds} />;
+    },
   },
   {
-    field: 'room',
-    headerName: 'Room',
+    field: 'location.rooms',
+    headerName: t('common:room'),
+    valueGetter: ({ data }) =>
+      data?.location?.rooms?.map((room) => room?.name) || '-',
   },
   {
-    field: 'note',
-    headerName: 'Note',
+    field: 'notes',
+    headerName: t('schoolActivities:note'),
+    valueGetter: ({ data }) => data?.notes || '-',
+  },
+  {
+    suppressColumnsToolPanel: true,
+    sortable: false,
+    cellClass: 'ag-show-on-row-interaction',
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseActivitiesList>) =>
+      data && (
+        <ActionMenu
+          iconOnly
+          buttonIcon={<VerticalDotsIcon />}
+          menuItems={[
+            {
+              label: t('schoolActivities:editSchoolActivity'),
+              icon: <EditIcon />,
+              navigateTo: `${data?.schoolActivityId}/edit`,
+            },
+          ]}
+        />
+      ),
   },
 ];
 
 export default function TestPage() {
   const { t } = useTranslation(['schoolActivities', 'common']);
-
-  const { hasPermission } = usePermissions();
-  const { activeAcademicNamespace } = useAcademicNamespace();
-  const { displayName } = usePreferredNameLayout();
+  const { data: schoolActivities } = useActivitiesList({});
 
   const schoolActivitiesColumns = useMemo(() => getColumnDefs(t), [t]);
 
@@ -155,7 +107,7 @@ export default function TestPage() {
             <Button
               variant="contained"
               component={Link}
-              to="./activity/create"
+              to="./create"
               startIcon={<AddDocIcon />}
             >
               {t('schoolActivities:createSchoolActivity')}
@@ -164,9 +116,9 @@ export default function TestPage() {
         }
       />
       <Table
-        rowData={schoolActivitiesData || []}
+        rowData={schoolActivities || []}
         columnDefs={schoolActivitiesColumns}
-        getRowId={({ data }) => String(data?.id)}
+        getRowId={({ data }) => String(data?.schoolActivityId)}
       />
     </PageContainer>
   );

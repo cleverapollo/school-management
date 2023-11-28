@@ -1,116 +1,130 @@
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import { useTranslation } from '@tyro/i18n';
 import {
   RHFAutocomplete,
   RHFDatePicker,
   RHFSwitch,
   RHFTextField,
-  RHFSelect,
   RHFTimePicker,
   RHFRadioGroup,
   useFormValidator,
-  useNumber,
   RHFDateRangePicker,
 } from '@tyro/core';
-import { useSubjectGroups } from '@tyro/groups';
+import { useCustomGroups } from '@tyro/groups';
 import { UseQueryReturnType, ParentalAttendanceRequestType } from '@tyro/api';
-import {
-  Card,
-  Collapse,
-  Grid,
-  Stack,
-  CardHeader,
-  Typography,
-} from '@mui/material';
+import { Card, Grid, CardHeader, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useSaveSchoolActivities } from '../api/upsert-school-activity';
 import { useRoomsList, RoomList } from '../api/get-rooms';
 
-type SubjectGroupOption = UseQueryReturnType<typeof useSubjectGroups>[number];
+type ReturnTypeFromUseCustomGroups = UseQueryReturnType<
+  typeof useCustomGroups
+>[number];
 
-type FormValues = {
-  id?: number;
-  activityName: string;
-  group: SubjectGroupOption;
-  startDate: dayjs.Dayjs;
-  endDate?: dayjs.Dayjs;
-  details: string;
-  captureTarget: boolean;
-  requestType: ParentalAttendanceRequestType;
-  startTime: dayjs.Dayjs;
-  endTime: dayjs.Dayjs;
+export type FormValues = {
+  schoolActivityId?: number;
+  name: string | null | undefined;
+  group: ReturnTypeFromUseCustomGroups;
+  details: string | null | undefined;
+  notes: string | null | undefined;
+  room: RoomList | null;
+  inSchoolGrounds: boolean;
+  partial: boolean;
+  dates?: dayjs.Dayjs;
+  startTime?: dayjs.Dayjs | null;
+  endTime?: dayjs.Dayjs | null;
   dateRange?: dayjs.Dayjs;
-  room: RoomList[];
-  note: string;
+  requestType: ParentalAttendanceRequestType;
 };
 
-// type TermAssessmentFormProps = {
-//     termAssessment?: FormValues;
-//     title: string;
-//     onSuccess: () => void;
-//     onError: () => void;
-// };
+export type SchoolActivitiesFormProps = {
+  schoolActivitiesData?: FormValues;
+  title: string;
+  onSuccess: () => void;
+  onError: () => void;
+};
 
-export function SchoolActivityForm() {
+export function SchoolActivityForm({
+  schoolActivitiesData,
+  title,
+  onSuccess,
+  onError,
+}: SchoolActivitiesFormProps) {
   const navigate = useNavigate();
   const { t } = useTranslation(['common', 'schoolActivities']);
   const { data: rooms } = useRoomsList();
-  const { data: subjectGroups } = useSubjectGroups();
+  const { data: customGroups = [] } = useCustomGroups();
+
   const { resolver, rules } = useFormValidator<FormValues>();
   const { control, handleSubmit, watch } = useForm<FormValues>({
-    //   defaultValues: termAssessment,
+    defaultValues: schoolActivitiesData,
     resolver: resolver({
-      activityName: rules.required(),
-      startDate: [rules.required(), rules.date()],
-      endDate: [
-        rules.required(),
-        rules.date(),
-        rules.afterStartDate('startDate'),
-      ],
-      captureTarget: rules.required(),
+      name: rules.required(),
+      dates: [rules.required(), rules.date()],
+      inSchoolGrounds: rules.required(),
     }),
   });
 
-  const {
-    mutate: saveSchoolActivities,
-    isLoading,
-    // onSuccess,
-  } = useSaveSchoolActivities();
+  const { mutate: saveSchoolActivities, isLoading } = useSaveSchoolActivities();
 
   const onSubmit = (data: FormValues) => {
-    console.log(data, 'Submit');
     const group = data?.group?.partyId;
+    const roomIds = data?.room && data?.room?.roomId;
 
-    const roomIds = data?.room?.map((item) => item?.roomId);
-    console.log(dayjs(data?.startDate).format('YYYY-MM-DD'), 'TESTING');
+    const activityType = schoolActivitiesData?.partial
+      ? ParentalAttendanceRequestType.PartialDay
+      : ParentalAttendanceRequestType.SingleDay;
+
+    const datesFormatted =
+      activityType === ParentalAttendanceRequestType.SingleDay
+        ? [
+            {
+              dates: [dayjs(data?.dates).format('YYYY-MM-DD')],
+              partial: data?.inSchoolGrounds,
+              startTime: '00:00',
+              endTime: '23:00',
+            },
+          ]
+        : [
+            {
+              dates: [dayjs(data?.dates).format('YYYY-MM-DD')],
+              partial: data?.inSchoolGrounds,
+              startTime: '10:00',
+              endTime: '20:00',
+            },
+          ];
+
+    const roomIdsFormatted = roomIds !== null ? [roomIds] : [];
+    // const nameFormatted = typeof data?.name === 'string' ? data?.name : '';
 
     const formattedData = {
-      name: data?.activityName,
-      groupPartyId: group,
+      schoolActivityId: data?.schoolActivityId,
+      name: data?.name as string,
+      group: {
+        customGroupId: group,
+      },
       location: {
-        inSchoolGrounds: data?.captureTarget,
-        roomIds,
-        locationDetails: data?.details,
+        inSchoolGrounds: data?.inSchoolGrounds,
+        roomIds: roomIdsFormatted,
       },
-      notes: data?.note,
-      time: {
-        startDate: dayjs(data?.startDate).format('YYYY-MM-DD'),
-        startTime: data?.startTime?.format('HH:mm'),
-        endTime: data?.endTime?.format('HH:mm'),
-      },
+      tripPurpose: data?.details,
+      dates: datesFormatted,
+      notes: data?.notes,
     };
+
     saveSchoolActivities(formattedData, {
       onSuccess: () => {
         // onSuccess?.();
-        navigate('/activity');
+        navigate('/school-activities');
       },
-      // onError,
     });
   };
 
-  const requestType = watch('requestType');
+  const requestType = watch(['group', 'requestType']);
+
+  const isEditing = !!schoolActivitiesData?.schoolActivityId;
 
   return (
     <Grid container gap={3}>
@@ -120,7 +134,7 @@ export function SchoolActivityForm() {
           component="form"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <CardHeader component="h2" title="Create school activity" />
+          <CardHeader component="h2" title={title} />
           <Grid container spacing={3} p={3}>
             <Grid item xs={12}>
               <Typography variant="subtitle1" color="text.secondary">
@@ -129,20 +143,20 @@ export function SchoolActivityForm() {
             </Grid>
             <Grid item xs={12} sm={6}>
               <RHFTextField<FormValues>
-                label={t('schoolActivities:activityName')}
+                label={t('schoolActivities:name')}
                 textFieldProps={{
                   fullWidth: true,
                   placeholder: 'Activity name',
                   disabled: false,
                 }}
                 controlProps={{
-                  name: 'activityName',
+                  name: 'name',
                   control,
                 }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <RHFAutocomplete<FormValues, SubjectGroupOption>
+              <RHFAutocomplete<FormValues, ReturnTypeFromUseCustomGroups>
                 label={t('common:group')}
                 optionIdKey="partyId"
                 optionTextKey="name"
@@ -150,8 +164,9 @@ export function SchoolActivityForm() {
                   control,
                   name: 'group',
                 }}
+                disabled={isEditing}
                 fullWidth
-                options={subjectGroups ?? []}
+                options={customGroups ?? []}
               />
             </Grid>
             <Grid item xs={12}>
@@ -172,11 +187,11 @@ export function SchoolActivityForm() {
                 }}
               />
             </Grid>
-            {requestType === ParentalAttendanceRequestType.SingleDay && (
+            {requestType && (
               <Grid item xs={12} sm={6}>
                 <RHFDatePicker<FormValues>
                   label={t('schoolActivities:startDate')}
-                  controlProps={{ name: 'startDate', control }}
+                  controlProps={{ name: 'dates', control }}
                   inputProps={{
                     fullWidth: true,
                     placeholder: 'Activity name',
@@ -185,7 +200,7 @@ export function SchoolActivityForm() {
                 />
               </Grid>
             )}
-            {requestType === ParentalAttendanceRequestType.PartialDay && (
+            {/* {requestType === ParentalAttendanceRequestType.PartialDay && (
               <>
                 <Grid item xs={12} sm={4}>
                   <RHFDatePicker<FormValues>
@@ -238,7 +253,7 @@ export function SchoolActivityForm() {
                   }}
                 />
               </Grid>
-            )}
+            )} */}
 
             <Grid item xs={12}>
               <RHFTextField<FormValues>
@@ -260,7 +275,7 @@ export function SchoolActivityForm() {
               <RHFSwitch<FormValues>
                 label={t('schoolActivities:onSchoolGrounds')}
                 switchProps={{ color: 'success' }}
-                controlProps={{ name: 'captureTarget', control }}
+                controlProps={{ name: 'inSchoolGrounds', control }}
               />
             </Grid>
 
@@ -273,7 +288,7 @@ export function SchoolActivityForm() {
                   control,
                   name: 'room',
                 }}
-                multiple
+                // multiple
                 fullWidth
                 options={rooms ?? []}
               />
@@ -285,7 +300,7 @@ export function SchoolActivityForm() {
                   fullWidth: true,
                 }}
                 controlProps={{
-                  name: 'note',
+                  name: 'notes',
                   control,
                 }}
               />
@@ -301,16 +316,6 @@ export function SchoolActivityForm() {
               {t('common:actions.save')}
             </LoadingButton>
           </Grid>
-          {/* <Stack alignItems="flex-end">
-            <LoadingButton
-              variant="contained"
-              size="large"
-              type="submit"
-              loading={isLoading}
-            >
-              {t('common:actions.save')}
-            </LoadingButton>
-          </Stack> */}
         </Card>
       </Grid>
     </Grid>

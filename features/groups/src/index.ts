@@ -14,6 +14,7 @@ export {
   useYearGroups,
   useYearGroupById,
 } from './api/year-groups';
+export { useCustomGroups } from './api/custom-groups';
 export { useBlocksList } from './api/blocks-list';
 export * from './components/common/year-group-autocomplete';
 export * from './components/common/class-group-autocomplete';

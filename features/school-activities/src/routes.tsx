@@ -1,16 +1,16 @@
 import {
+  getNumber,
   NavObjectFunction,
   NavObjectType,
-  getNumber,
-  throw404Error,
   lazyWithRetry,
+  throw404Error,
 } from '@tyro/core';
 import { SchoolExamACircleIcon } from '@tyro/icons';
-import { getCoreAcademicNamespace } from '@tyro/api';
-import { redirect } from 'react-router-dom';
+import { getSchoolActivityById } from './api/get-school-activities';
 
 const SchoolActivityPage = lazyWithRetry(() => import('./pages'));
 const CreateSchoolActivityPage = lazyWithRetry(() => import('./pages/create'));
+const EditSchoolActivityPage = lazyWithRetry(() => import('./pages/edit'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -30,9 +30,30 @@ export const getRoutes: NavObjectFunction = (t) => [
           },
           {
             type: NavObjectType.NonMenuLink,
-            path: 'activity/create',
-            index: true,
+            path: 'create',
             element: <CreateSchoolActivityPage />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: ':activityId',
+            loader: ({ params }) => {
+              const schoolActivityId = getNumber(params.activityId);
+
+              if (!schoolActivityId) {
+                throw404Error();
+              }
+
+              return getSchoolActivityById({
+                schoolActivityIds: [schoolActivityId],
+              });
+            },
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'edit',
+                element: <EditSchoolActivityPage />,
+              },
+            ],
           },
         ],
       },

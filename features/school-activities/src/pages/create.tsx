@@ -1,7 +1,7 @@
 import { useTranslation } from '@tyro/i18n';
 import { PageHeading, PageContainer, useToast } from '@tyro/core';
 
-import { SchoolActivityForm } from '../components/school-activity-form.tsx';
+import { SchoolActivityForm } from '../components/school-activity-form';
 
 export default function CreateSchoolActivityPage() {
   const { toast } = useToast();
@@ -27,11 +27,11 @@ export default function CreateSchoolActivityPage() {
       />
 
       <SchoolActivityForm
-      // title={t('assessments:pageHeading.createTermAssessment')}
-      // onSuccess={() => {
-      //     toast(t('common:snackbarMessages.createSuccess'));
-      // }}
-      // onError={console.error}
+        title={t('schoolActivities:createSchoolActivity')}
+        onSuccess={() => {
+          toast(t('common:snackbarMessages.createSuccess'));
+        }}
+        onError={console.error}
       />
     </PageContainer>
   );

@@ -1,16 +1,7 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
-import {
-  AssessmentFilter,
-  EmulateHeaders,
-  gqlClient,
-  graphql,
-  PublishAssessmentInput,
-  queryClient,
-  UseQueryReturnType,
-} from '@tyro/api';
-import { useToast } from '@tyro/core';
-import { useTranslation } from '@tyro/i18n';
+import { gqlClient, graphql, queryClient, UseQueryReturnType } from '@tyro/api';
+import { activitiesKeys } from './keys';
 
 const roomsList = graphql(/* GraphQL */ `
   query roomsList {
@@ -29,7 +20,8 @@ const roomsList = graphql(/* GraphQL */ `
 `);
 
 const roomsListQuery = () => ({
-  queryFn: () => gqlClient.request(roomsList),
+  queryKey: activitiesKeys.rooms(),
+  queryFn: async () => gqlClient.request(roomsList),
 });
 
 export function getRoomsList() {
