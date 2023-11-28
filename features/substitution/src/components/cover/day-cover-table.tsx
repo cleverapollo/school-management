@@ -25,13 +25,13 @@ export function DayCoverTable({
 
   const mappedData = useMemo(
     () =>
-      data
-        ?.map(({ staff, substitutionEventsByDay }) => ({
-          staff: staff.person,
-          dayInfo: substitutionEventsByDay[0].dayInfo,
-          periods: substitutionEventsByDay[0].substitutionEventsByPeriod,
-        }))
-        ?.sort((a, b) => sortByDisplayName(a.staff, b.staff)) ?? [],
+      data?.map(({ staff, substitutionEventsByDay }) => ({
+        staff: staff.person,
+        dayInfo: substitutionEventsByDay[0].dayInfo,
+        requireSubstitutionReason:
+          substitutionEventsByDay[0].requireSubstitutionReason,
+        periods: substitutionEventsByDay[0].substitutionEventsByPeriod,
+      })) ?? [],
     [data, sortByDisplayName]
   );
 

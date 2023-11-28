@@ -6,6 +6,7 @@
   "startDate": "Start date",
   "endDate": "End date",
   "substitute": "Substitute",
+  "duplicateSubstitutes": "Duplicate substitutes",
   "payroll": "Payroll",
   "createStaffAbsence": "Create staff absence",
   "editStaffAbsence": "Edit staff absence",
