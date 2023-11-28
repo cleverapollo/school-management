@@ -23,6 +23,7 @@ import {
   useBulkAttendance,
   ReturnTypeFromUseBulkAttendance,
 } from '../api/bulk-attendance/bulk-attendance';
+import { AttendanceForCell } from '../components/attendance-for-cell';
 
 dayjs.extend(LocalizedFormat);
 
@@ -37,19 +38,10 @@ const getColumns = (
   {
     colId: 'search',
     headerName: t('attendance:attendanceFor'),
-    valueGetter: ({ data }) =>
-      data?.parties?.map((party) => {
-        switch (party?.__typename) {
-          case 'Student':
-          case 'StudentContact':
-          case 'Staff':
-            return displayName(party?.person);
-          case 'SubjectGroup':
-            return party?.actualName;
-          default:
-            return party?.name ?? '-';
-        }
-      }),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseBulkAttendance, any>) =>
+      data && <AttendanceForCell data={data} />,
   },
   {
     field: 'attendanceCode.name',
