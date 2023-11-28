@@ -1,6 +1,6 @@
 const path = require('path');
 const rspack = require('@rspack/core');
-const Dotenv = require('rspack-plugin-dotenv');
+const { DotenvPlugin } = require('rspack-plugin-dotenv');
 const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
@@ -127,7 +127,7 @@ module.exports = {
       ],
     }),
     ...!isProd ? [
-      new Dotenv(),
+      new DotenvPlugin(),
       new ForkTsCheckerWebpackPlugin(),
     ] : [],
     ...isProd && process.env.SENTRY_AUTH_TOKEN ? [

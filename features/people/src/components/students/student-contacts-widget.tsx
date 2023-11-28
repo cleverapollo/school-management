@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Card,
-  CardHeader,
   IconButton,
   Stack,
   Tooltip,
@@ -12,17 +11,25 @@ import { AnimatePresence, m, Variants, wrap } from 'framer-motion';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
-  ExternalLinkIcon,
+  FullScreenIcon,
+  HouseLocationIcon,
   MailIcon,
   PhoneIcon,
 } from '@tyro/icons';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@tyro/i18n';
-import { Avatar, usePreferredNameLayout, formatPhoneNumber } from '@tyro/core';
+import {
+  Avatar,
+  usePreferredNameLayout,
+  formatPhoneNumber,
+  ActionMenu,
+} from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { SmsRecipientType } from '@tyro/api';
+import { SearchType, SmsRecipientType } from '@tyro/api';
+import { useMailSettings } from '@tyro/mail';
 import { useStudentsContacts } from '../../api/student/overview';
+import { joinAddress } from '../../utils/join-address';
 
 interface StudentContactsWidgetProps {
   studentId: number | undefined;
@@ -30,7 +37,7 @@ interface StudentContactsWidgetProps {
 
 const animationVariants: Variants = {
   enter: (direction: number) => ({
-    x: direction > 0 ? '100%' : '-100%',
+    x: direction > 0 ? 'calc(100% + 24px)' : 'calc(-100% - 24px)',
     position: 'absolute',
   }),
   center: {
@@ -38,7 +45,7 @@ const animationVariants: Variants = {
     position: 'relative',
   },
   exit: (direction: number) => ({
-    x: direction > 0 ? '-100%' : '100%',
+    x: direction > 0 ? 'calc(-100% - 24px)' : 'calc(100% + 24px)',
     position: 'absolute',
   }),
 };
@@ -49,54 +56,91 @@ export function StudentContactsWidget({
   const [[contactIndex, direction], setContactIndex] = useState([0, 0]);
   const { t } = useTranslation(['common', 'people', 'mail', 'sms']);
   const { displayName } = usePreferredNameLayout();
-  const { data: contacts, isLoading } = useStudentsContacts(studentId);
   const [contactToSendSmsTo, setContactToSendSmsTo] =
     useState<RecipientsForSmsModal>([]);
+  const { composeEmail } = useMailSettings();
+  const { data: contacts, isLoading } = useStudentsContacts(studentId);
 
   const contactsAllowedToContact = contacts
     ?.filter((contact) => contact.allowedToContact)
-    .sort();
+    .sort((a, b) => (a.priority ?? 5) - (b.priority ?? 5));
 
   const numberOfContacts = contactsAllowedToContact?.length ?? 0;
   const clampedIndex = wrap(0, numberOfContacts, contactIndex);
 
-  const contact = contactsAllowedToContact?.[clampedIndex];
+  const selectedContact = contactsAllowedToContact?.[clampedIndex];
 
   const isButtonsDisabled = isLoading || numberOfContacts <= 1;
   const buttonTooltipTitle = isButtonsDisabled
     ? t('people:nextContactDisabled', { count: numberOfContacts })
     : '';
-  const contactsRelationshipType = contact?.relationshipType;
+  const contactsRelationshipType = selectedContact?.relationshipType;
 
   const paginate = (newDirection: number) => {
     setContactIndex([contactIndex + newDirection, newDirection]);
   };
 
+  const paginateToIndex = (index: number) => {
+    setContactIndex([index, index > contactIndex ? 1 : -1]);
+  };
+
+  const menuItems =
+    contactsAllowedToContact?.map((contact, index) => ({
+      label: displayName(contact?.person),
+      onClick: () => paginateToIndex(index),
+    })) ?? [];
+
+  const contactsDetails = [
+    {
+      label: t('common:phone'),
+      icon: PhoneIcon,
+      value: formatPhoneNumber(
+        selectedContact?.personalInformation?.primaryPhoneNumber
+      ),
+    },
+    {
+      label: t('common:email'),
+      icon: MailIcon,
+      value: selectedContact?.personalInformation?.primaryEmail?.email ?? '-',
+    },
+    {
+      label: t('common:address'),
+      icon: HouseLocationIcon,
+      value: joinAddress(selectedContact?.personalInformation?.primaryAddress, {
+        emptyValue: '-',
+      }) as string,
+    },
+  ] as const;
+
   return (
     <>
-      <Card variant="outlined" sx={{ height: '100%', flex: 1 }}>
-        <CardHeader
-          component="h3"
-          title={t('people:contactInformation')}
-          {...(contact?.partyId && {
-            action: (
-              <IconButton
-                component={Link}
-                to={`/people/contacts/${contact?.partyId}`}
-              >
-                <ExternalLinkIcon sx={{ width: 20, height: 20 }} />
-              </IconButton>
-            ),
-          })}
-        />
+      <Card variant="soft" sx={{ flex: 1 }}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          pl={1}
+          mb={1}
+        >
+          <Typography variant="h6" component="span">
+            {t('people:contactInformation')}
+          </Typography>
+          <IconButton
+            component={Link}
+            to={`/people/contacts/${selectedContact?.partyId ?? 0}`}
+          >
+            <FullScreenIcon
+              sx={{ width: 20, height: 20, color: 'primary.main' }}
+            />
+          </IconButton>
+        </Stack>
         <Stack
           direction="row"
           sx={{
             alignItems: 'center',
             justifyContent: 'space-between',
-            px: 2,
             py: 1,
-            borderBottom: '1px solid',
+            borderTop: '1px solid',
             borderColor: 'divider',
           }}
         >
@@ -112,20 +156,27 @@ export function StudentContactsWidget({
               </IconButton>
             </span>
           </Tooltip>
-          <Box sx={{ flex: 1, overflowX: 'hidden' }}>
-            <Typography
-              component="h4"
-              variant="subtitle2"
-              noWrap
-              px={2}
-              textOverflow="ellipsis"
-              textAlign="center"
-            >
-              <Box component="span" fontWeight={600}>
-                {clampedIndex + 1}/{numberOfContacts}
-              </Box>
-            </Typography>
-          </Box>
+          <ActionMenu
+            buttonLabel={t('people:contactXOfY', {
+              index: clampedIndex + 1,
+              total: numberOfContacts,
+            })}
+            buttonProps={{
+              size: 'small',
+              disabled: isButtonsDisabled,
+            }}
+            menuProps={{
+              anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'center',
+              },
+              transformOrigin: {
+                vertical: 'top',
+                horizontal: 'center',
+              },
+            }}
+            menuItems={menuItems}
+          />
 
           <Tooltip title={buttonTooltipTitle}>
             <span>
@@ -141,137 +192,132 @@ export function StudentContactsWidget({
           </Tooltip>
         </Stack>
 
-        <AnimatePresence initial={false} custom={direction}>
-          <Box
-            component={m.div}
-            key={contactIndex}
-            custom={direction}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            variants={animationVariants}
-            transition={{ ease: 'easeInOut', duration: 0.3 }}
-            sx={{
-              width: '100%',
-            }}
-          >
-            <Box sx={{ px: 3, py: 2 }}>
-              <Stack direction="row" spacing={2}>
-                <Avatar
-                  name={displayName(contact?.person)}
-                  src={contact?.person?.avatarUrl}
-                  sx={{ width: 62, height: 62, fontSize: 20 }}
-                />
+        <Box position="relative">
+          <AnimatePresence initial={false} custom={direction}>
+            <Card
+              component={m.div}
+              key={contactIndex}
+              custom={direction}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              variants={animationVariants}
+              transition={{ ease: 'easeInOut', duration: 0.3 }}
+              sx={{
+                width: '100%',
+              }}
+            >
+              <Box sx={{ p: 2 }}>
+                <Stack direction="row" spacing={2} alignItems="center">
+                  <Avatar
+                    name={displayName(selectedContact?.person)}
+                    src={selectedContact?.person?.avatarUrl}
+                    sx={{ width: 62, height: 62, fontSize: 20 }}
+                  />
 
-                <Stack>
-                  <Typography variant="h6">
-                    {displayName(contact?.person)}
-                  </Typography>
+                  <Stack>
+                    <Typography variant="h6">
+                      {displayName(selectedContact?.person)}
+                    </Typography>
 
-                  <Box
-                    component="dl"
-                    sx={{
-                      m: 0,
-                      mt: 0.5,
-                      display: 'grid',
-                      gridTemplateColumns: 'min-content auto',
-                      gridColumnGap: 8,
-                    }}
-                  >
-                    <Box component="dt" sx={{ color: 'slate.600' }}>
-                      {t('common:relationship')}
-                    </Box>
-                    <Box component="dd" sx={{ m: 0 }}>
-                      {contactsRelationshipType
-                        ? t(
-                            `common:relationshipType.${contactsRelationshipType}`
-                          )
-                        : '-'}
-                    </Box>
-                  </Box>
-                </Stack>
-              </Stack>
-              <Stack direction="row" spacing={1} sx={{ mt: 2, mb: 3 }}>
-                <Tooltip
-                  describeChild
-                  title={
-                    !contact?.includeInSms &&
-                    t('sms:recipientNotIncludedInSms', { count: 1 })
-                  }
-                >
-                  <Box display="flex" flex="1">
-                    <Button
-                      variant="contained"
-                      sx={{ flex: 1 }}
-                      disabled={!contact?.includeInSms}
-                      onClick={() =>
-                        setContactToSendSmsTo([
-                          {
-                            id: contact?.partyId ?? 0,
-                            name: displayName(contact?.person),
-                            type: 'individual',
-                            avatarUrl: contact?.person?.avatarUrl,
-                          },
-                        ])
-                      }
+                    <Box
+                      component="dl"
+                      sx={{
+                        m: 0,
+                        mt: 0.5,
+                        display: 'grid',
+                        gridTemplateColumns: 'min-content auto',
+                        gridColumnGap: 8,
+                      }}
                     >
-                      SMS
-                    </Button>
-                  </Box>
-                </Tooltip>
-                {/* <Button
-                  variant="contained"
-                  sx={{ flex: 1 }}
-                  onClick={() => console.log('open send mail popup')}
-                >
-                  {t('mail:sendMail')}
-                </Button> */}
-              </Stack>
-              <Box
-                component="dl"
-                sx={{
-                  m: 0,
-                  mt: 0.5,
-                }}
-              >
+                      <Box component="dt" sx={{ color: 'slate.600' }}>
+                        {t('common:relationship')}
+                      </Box>
+                      <Box component="dd" sx={{ m: 0 }}>
+                        {contactsRelationshipType
+                          ? t(
+                              `common:relationshipType.${contactsRelationshipType}`
+                            )
+                          : '-'}
+                      </Box>
+                    </Box>
+                  </Stack>
+                </Stack>
+                <Stack direction="row" spacing={1} sx={{ mt: 2, mb: 3 }}>
+                  <Tooltip
+                    describeChild
+                    title={
+                      !selectedContact?.includeInSms &&
+                      t('sms:recipientNotIncludedInSms', { count: 1 })
+                    }
+                  >
+                    <Box display="flex" flex="1">
+                      <Button
+                        variant="soft"
+                        sx={{ flex: 1 }}
+                        disabled={!selectedContact?.includeInSms}
+                        onClick={() =>
+                          setContactToSendSmsTo([
+                            {
+                              id: selectedContact?.partyId ?? 0,
+                              name: displayName(selectedContact?.person),
+                              type: 'individual',
+                              avatarUrl: selectedContact?.person?.avatarUrl,
+                            },
+                          ])
+                        }
+                      >
+                        SMS
+                      </Button>
+                    </Box>
+                  </Tooltip>
+                  <Button
+                    variant="contained"
+                    sx={{ flex: 1 }}
+                    onClick={() =>
+                      composeEmail({
+                        toRecipients: [
+                          {
+                            partyId: selectedContact?.partyId ?? 0,
+                            text: displayName(selectedContact?.person),
+                            type: SearchType.Contact,
+                            avatarUrl: selectedContact?.person?.avatarUrl,
+                          },
+                        ],
+                      })
+                    }
+                  >
+                    {t('mail:sendMail')}
+                  </Button>
+                </Stack>
                 <Box
+                  component="dl"
                   sx={{
-                    display: 'grid',
-                    gridTemplateColumns: 'min-content auto',
-                    gridColumnGap: 16,
-                    gridRowGap: 4,
+                    m: 0,
+                    mt: 0.5,
                   }}
                 >
-                  <Stack direction="row" spacing={0.75} alignItems="center">
-                    <PhoneIcon
-                      sx={{ color: 'slate.400', width: 20, height: 20 }}
-                    />
-                    <Box component="dt" sx={{ color: 'slate.600' }}>
-                      {t('common:phone')}
-                    </Box>
+                  <Stack spacing={1}>
+                    {contactsDetails.map(({ label, icon: Icon, value }) => (
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        aria-label={`${label}: ${value}`}
+                        alignItems="center"
+                        key={label}
+                      >
+                        <Icon
+                          sx={{ color: 'slate.400', width: 20, height: 20 }}
+                        />
+                        <Box component="span">{value}</Box>
+                      </Stack>
+                    ))}
                   </Stack>
-                  <Box component="dd" sx={{ m: 0 }}>
-                    {formatPhoneNumber(
-                      contact?.personalInformation?.primaryPhoneNumber
-                    )}
-                  </Box>
-
-                  <Stack direction="row" spacing={0.75} alignItems="center">
-                    <MailIcon
-                      sx={{ color: 'slate.400', width: 20, height: 20 }}
-                    />
-                    <Box component="dt" sx={{ color: 'slate.600' }}>
-                      {t('common:email')}
-                    </Box>
-                  </Stack>
-                  <Box component="dd" sx={{ m: 0 }}>
-                    {contact?.personalInformation?.primaryEmail?.email ?? '-'}
-                  </Box>
                 </Box>
               </Box>
-            </Box>
-          </Box>
-        </AnimatePresence>
+            </Card>
+          </AnimatePresence>
+        </Box>
       </Card>
       <SendSmsModal
         isOpen={contactToSendSmsTo.length > 0}

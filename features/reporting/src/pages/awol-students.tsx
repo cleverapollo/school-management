@@ -10,7 +10,7 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
-import { Reporting_TableFilter } from '@tyro/api';
+import { Reporting_TableFilter, Reporting_TableFilterInput } from '@tyro/api';
 import {
   useAttendanceAwolReports,
   ReturnTypeFromUseAttendanceAwolReports,
@@ -106,16 +106,11 @@ export default function AwolStudentsPage() {
   const { displayName } = usePreferredNameLayout();
   const awolReportsFilters = useAwolReportFilters();
 
-  const [filters, setFilters] =
-    useState<Reporting_TableFilter[]>(awolReportsFilters);
-
-  const formattedFilters = useMemo(
-    () =>
-      filters?.map((filter) => ({
-        filterId: filter.id,
-        filterValue: filter.defaultValue,
-      })),
-    [filters]
+  const [filters, setFilters] = useState<Reporting_TableFilterInput[]>(
+    awolReportsFilters?.map((filter) => ({
+      filterId: filter.id,
+      filterValue: filter.defaultValue,
+    }))
   );
 
   const {
@@ -123,8 +118,8 @@ export default function AwolStudentsPage() {
     isFetching,
     isLoading,
   } = useAttendanceAwolReports({
-    from: formattedFilters[0].filterValue,
-    to: formattedFilters[1].filterValue,
+    from: filters[0].filterValue,
+    to: filters[1].filterValue,
   });
 
   const columns = useMemo(() => getColumns(t, displayName), [t, displayName]);
@@ -149,14 +144,14 @@ export default function AwolStudentsPage() {
       />
       <DynamicForm
         isFetching={isFetching}
-        filters={filters || []}
+        filters={awolReportsFilters || []}
         onFilterChange={setFilters}
       />
       <Table
         isLoading={isLoading}
         rowData={reports}
         columnDefs={columns}
-        getRowId={({ data }) => String(data?.partyId)}
+        getRowId={({ data }) => `${data?.partyId}-${data?.date}`}
         statusBar={{
           statusPanels: [
             {
