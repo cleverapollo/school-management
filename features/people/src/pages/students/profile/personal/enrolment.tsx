@@ -208,17 +208,15 @@ export const ProfileEnrolment = ({
       onSave={onSave}
       onCancel={() => setLeftEarlyState(Boolean(leftEarly))}
     >
-      <Stack gap={3}>
+      <Stack component="dl" gap={3}>
         {[
           {
             label: t('people:personal.enrolmentHistory.exemptions'),
             value: exemptions?.length
-              ? exemptions.map(({ id, exemption }) => (
-                  <p key={id}>
-                    {exemption}
-                    <br />
-                  </p>
-                ))
+              ? exemptions.map(({ id, exemption }) => ({
+                  key: id,
+                  value: exemption,
+                }))
               : t('common:none'),
           },
           {
@@ -261,8 +259,18 @@ export const ProfileEnrolment = ({
             (field) =>
               field && (
                 <Stack key={field.label}>
-                  <Typography variant="subtitle1">{field.label}</Typography>
-                  <Typography variant="body1">{field.value}</Typography>
+                  <Typography variant="subtitle1" component="dt">
+                    {field.label}
+                  </Typography>
+                  {Array.isArray(field.value) ? (
+                    field.value.map(({ key, value }) => (
+                      <Typography key={key} variant="body1" component="dd">
+                        {value}
+                      </Typography>
+                    ))
+                  ) : (
+                    <Typography variant="body1">{field.value}</Typography>
+                  )}
                 </Stack>
               )
           )}
