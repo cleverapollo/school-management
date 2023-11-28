@@ -235,8 +235,6 @@ export type AssessmentSubjectGroup = {
   __typename?: 'AssessmentSubjectGroup';
   commentsEntered: Scalars['Int'];
   commentsTotal: Scalars['Int'];
-  ppodSyncStatus?: Maybe<SyncStatus>;
-  published?: Maybe<Scalars['Boolean']>;
   resultsEntered: Scalars['Int'];
   resultsTotal: Scalars['Int'];
   subjectGroup: SubjectGroup;
@@ -2533,8 +2531,7 @@ export type Mutation = {
   admin__resetTenantCache: Success;
   asd?: Maybe<Scalars['String']>;
   assessment_publish: Success;
-  assessment_publishPPODResults?: Maybe<Array<AssessmentResult>>;
-  assessment_publishStateCba: Success;
+  assessment_saveAssessment?: Maybe<Assessment>;
   assessment_saveAssessmentComments?: Maybe<Array<AssessmentComment>>;
   assessment_saveAssessmentResults?: Maybe<Array<AssessmentResult>>;
   assessment_saveCommentBank?: Maybe<Array<Maybe<CommentBank>>>;
@@ -2648,11 +2645,6 @@ export type MutationAssessment_PublishArgs = {
 
 export type MutationAssessment_PublishPpodResultsArgs = {
   input?: InputMaybe<PpodPublishResultsInput>;
-};
-
-
-export type MutationAssessment_PublishStateCbaArgs = {
-  input?: InputMaybe<PublishAssessmentInput>;
 };
 
 
@@ -3834,22 +3826,6 @@ export type PrimarySchoolIreFilter = {
   rollNumbers?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
-export type Print_GroupMembers = {
-  groupIds: Array<Scalars['Long']>;
-  options: Print_GroupMembersOptions;
-};
-
-export enum Print_GroupMembersOptions {
-  Csv = 'CSV',
-  Print = 'PRINT'
-}
-
-export type Print_PersonsGroupMemberships = {
-  groupTypes: Array<PartyGroupType>;
-  options: Print_GroupMembersOptions;
-  personIds: Array<Scalars['Long']>;
-};
-
 export enum Print_TimetableLayout {
   Combined = 'COMBINED',
   DaysOnXAxis = 'DAYS_ON_X_AXIS',
@@ -4002,7 +3978,6 @@ export type PublishAssessmentInput = {
   assessmentId: Scalars['Long'];
   publish: Scalars['Boolean'];
   publishFrom?: InputMaybe<Scalars['Date']>;
-  subjectGroupIds?: InputMaybe<Array<Scalars['Long']>>;
 };
 
 export type Query = {
@@ -4084,8 +4059,6 @@ export type Query = {
   permissions?: Maybe<Array<Maybe<Permission>>>;
   ppod_PPODCredentials?: Maybe<PpodCredentials>;
   ppod_syncRequests: Array<SyncRequest>;
-  print_groupMembers: TemporaryDownload;
-  print_personsGroupMemberships: TemporaryDownload;
   print_printTimetable: TemporaryDownload;
   print_substitution: TemporaryDownload;
   profileTypes?: Maybe<Array<Maybe<ProfileType>>>;
@@ -4439,16 +4412,6 @@ export type QueryNotes_TagsArgs = {
 
 export type QueryPpod_SyncRequestsArgs = {
   filter?: InputMaybe<SyncRequestsFilter>;
-};
-
-
-export type QueryPrint_GroupMembersArgs = {
-  filter: Print_GroupMembers;
-};
-
-
-export type QueryPrint_PersonsGroupMembershipsArgs = {
-  filter: Print_PersonsGroupMemberships;
 };
 
 
@@ -5197,6 +5160,7 @@ export type SaveAttendanceCodeInput = {
   id?: InputMaybe<Scalars['Int']>;
   isActive?: InputMaybe<Scalars['Boolean']>;
   name: Array<InputMaybe<TranslationInput>>;
+  sessionCodeType?: InputMaybe<AttendanceCodeType>;
   visibleForContact?: InputMaybe<Scalars['Boolean']>;
   visibleForTeacher?: InputMaybe<Scalars['Boolean']>;
 };
@@ -6560,12 +6524,6 @@ export type SyncRequestsFilter = {
   id?: InputMaybe<Scalars['Int']>;
   to?: InputMaybe<Scalars['DateTime']>;
 };
-
-export enum SyncStatus {
-  FullySynced = 'FULLY_SYNCED',
-  NotSynced = 'NOT_SYNCED',
-  PartiallySynced = 'PARTIALLY_SYNCED'
-}
 
 export type TtCloneTimetableInput = {
   readOnly?: InputMaybe<Scalars['Boolean']>;
