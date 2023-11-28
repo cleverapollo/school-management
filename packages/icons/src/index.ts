@@ -76,6 +76,7 @@ export * from './info-circle';
 export * from './italic';
 export * from './label';
 export * from './labels';
+export * from './layers';
 export * from './letter';
 export * from './light-bulb';
 export * from './link';

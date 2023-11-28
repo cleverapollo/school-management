@@ -136,6 +136,7 @@
   "selectedWithNumber": "Selected ({{count}})",
   "yes": "Yes",
   "no": "No",
+  "none": "None",
   "comment": "Comment",
   "preferredFirstName": "Preferred first name",
   "changes": "Changes",
