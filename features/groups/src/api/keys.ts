@@ -17,6 +17,8 @@ export const groupsKeys = {
   custom: {
     all: () => [...groupsKeys.all, 'custom'] as const,
     groups: () => [...groupsKeys.custom.all(), 'list'] as const,
+    studentsSearch: (query: string) =>
+      [...groupsKeys.custom.all(), 'search', query] as const,
     details: (id: number | undefined) =>
       [...groupsKeys.custom.all(), 'details', id] as const,
     definition: (filter: Core_CustomGroupDefinitionFilter) =>
