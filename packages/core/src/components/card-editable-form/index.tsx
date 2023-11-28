@@ -100,7 +100,7 @@ export const CardEditableForm = <TField extends FieldValues>({
           '.MuiCardHeader-root': { borderBottom: 'none !important' },
         }),
       }}
-      component="form"
+      component={isEditMode ? 'form' : 'div'}
       onSubmit={handleSubmit(handleSave)}
       {...cardProps}
     >
