@@ -7,6 +7,16 @@
     "bcc": "Bcc",
     "subject": "Subject"
   },
+  "contactInGroup_one": "Contact(s) in group",
+  "contactInGroup_other": "Contact(s) in groups",
+  "studentInGroup_one": "Student member(s) in group",
+  "studentInGroup_other": "Student member(s) in groups",
+  "staffInGroup_one": "Staff in group",
+  "staffInGroup_other": "Staff in groups",
+  "enrollmentInGroup_one": "Enrollment in group",
+  "enrollmentInGroup_other": "Enrollment in groups",
+  "contactsOfStudent_one": "Contact(s) of student",
+  "contactsOfStudent_other": "Contact(s) of students",
   "tooltipTitles": {
     "refresh": "Refresh",
     "dense": "Dense",

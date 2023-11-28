@@ -1,5 +1,5 @@
 import { Box, Button, InputLabel, Stack, Typography } from '@mui/material';
-import { RecipientInput, SendSmsInput } from '@tyro/api';
+import { SearchType } from '@tyro/api';
 import {
   RHFCheckboxGroup,
   useFormValidator,
@@ -11,6 +11,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
 import { RecipientList, RecipientsForSmsModal } from '@tyro/sms';
+import { useMailSettings } from '../../store/mail-settings';
+import { ReturnTypeUseMailSearch } from '../../api/mail-search';
 
 export type { RecipientsForSmsModal } from '@tyro/sms';
 
@@ -19,7 +21,7 @@ interface SendMailModalProps {
   onClose: () => void;
   recipients: RecipientsForSmsModal;
   possibleRecipientTypes: {
-    type: RecipientInput['recipientPartyType'];
+    type: SearchType;
     label: string;
   }[];
   hideRecipientTypes?: boolean;
@@ -27,7 +29,7 @@ interface SendMailModalProps {
 
 interface MailFormState {
   recipients: RecipientsForSmsModal;
-  recipientTypes: RecipientInput['recipientPartyType'][];
+  recipientTypes: SearchType[];
   message: string;
 }
 
@@ -40,6 +42,7 @@ export function SendMailModal({
 }: SendMailModalProps) {
   const { t } = useTranslation(['common', 'mail']);
   const { resolver, rules } = useFormValidator<MailFormState>();
+  const { composeEmail } = useMailSettings();
   const [step, setStep] = useState(0);
   const { reset, control, handleSubmit, setValue, watch } =
     useForm<MailFormState>({
@@ -59,20 +62,29 @@ export function SendMailModal({
     'recipients',
     'recipientTypes',
   ]);
+
+  const showComposeStep = useMemo(
+    () => possibleRecipientTypes.length > 1,
+    [possibleRecipientTypes]
+  );
+
   const fullRecipientList = useMemo(
     () =>
-      recipientList.reduce<
-        NonNullable<NonNullable<SendSmsInput['recipients']>>
-      >((acc, recipient) => {
-        recipientTypes.forEach((recipientType) => {
-          acc.push({
-            recipientPartyId: recipient.id,
-            recipientPartyType: recipientType,
+      recipientList.reduce<NonNullable<NonNullable<ReturnTypeUseMailSearch[]>>>(
+        (acc, recipient) => {
+          recipientTypes.forEach((recipientType) => {
+            acc.push({
+              partyId: recipient.id,
+              type: recipientType,
+              text: recipient.name,
+              avatarUrl: recipient.avatarUrl,
+            });
           });
-        });
 
-        return acc;
-      }, []),
+          return acc;
+        },
+        []
+      ),
     [recipientList, recipientTypes]
   );
 
@@ -85,12 +97,19 @@ export function SendMailModal({
 
   const onCancel = () => {
     onClose();
+    setStep(0);
     reset();
   };
 
-  const onSubmit = (data: MailFormState) => {
-    if (step === 0) {
+  const onSubmit = () => {
+    if (step === 0 && showComposeStep) {
       setStep((prev) => prev + 1);
+    } else {
+      composeEmail({
+        canReply: false,
+        bccRecipients: fullRecipientList,
+      });
+      onCancel();
     }
   };
 
@@ -109,49 +128,52 @@ export function SendMailModal({
     setValue('recipients', filteredArray);
   }, [isOpen]);
 
+  const recipientListContent = (
+    <RecipientList
+      onClose={onClose}
+      recipients={recipientList}
+      initialRecipientAmount={recipients.length}
+      removeRecipient={removeRecipient}
+    />
+  );
+
+  const recipientTypesContent = (
+    <Stack spacing={3} sx={{ p: 3, pt: 0 }}>
+      {!hideRecipientTypes &&
+        (possibleRecipientTypes.length > 1 ? (
+          <RHFCheckboxGroup<
+            MailFormState,
+            (typeof possibleRecipientTypes)[number]
+          >
+            label={`${t('mail:sendTo')}:`}
+            controlProps={{ name: 'recipientTypes', control }}
+            options={possibleRecipientTypes}
+            getOptionLabel={(option) => option.label}
+            optionIdKey="type"
+          />
+        ) : (
+          <Box component="dl" m={0}>
+            <InputLabel component="dt">{t('mail:sendTo')}:</InputLabel>
+            <Typography component="dd" variant="body2" m="0">
+              {possibleRecipientTypes[0].label}
+            </Typography>
+          </Box>
+        ))}
+    </Stack>
+  );
+
   return (
     <Dialog
       open={isOpen}
       onClose={onCancel}
       scroll="paper"
       fullWidth
-      maxWidth="md"
+      maxWidth="sm"
     >
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack direction="row">
-          <Box sx={{ flex: 1.2 }}>
-            <DialogTitle>{t('mail:sendMail')}</DialogTitle>
-            <Stack spacing={3} sx={{ p: 3, pt: 0 }}>
-              {!hideRecipientTypes &&
-                (possibleRecipientTypes.length > 1 ? (
-                  <RHFCheckboxGroup<
-                    MailFormState,
-                    (typeof possibleRecipientTypes)[number]
-                  >
-                    label={`${t('mail:sendTo')}:`}
-                    controlProps={{ name: 'recipientTypes', control }}
-                    options={possibleRecipientTypes}
-                    getOptionLabel={(option) => option.label}
-                    optionIdKey="type"
-                  />
-                ) : (
-                  <Box component="dl" m={0}>
-                    <InputLabel component="dt">{t('mail:sendTo')}:</InputLabel>
-                    <Typography component="dd" variant="body2" m="0">
-                      {possibleRecipientTypes[0].label}
-                    </Typography>
-                  </Box>
-                ))}
-            </Stack>
-          </Box>
-          <RecipientList
-            onClose={onClose}
-            recipients={recipientList}
-            initialRecipientAmount={recipients.length}
-            removeRecipient={removeRecipient}
-          />
-        </Stack>
-
+        <DialogTitle>{t('mail:sendMail')}</DialogTitle>
+        {step === 0 && recipientListContent}
+        {step === 1 && showComposeStep && recipientTypesContent}
         <DialogActions
           sx={{
             borderTopColor: 'slate.200',
@@ -174,7 +196,9 @@ export function SendMailModal({
                 </Button>
 
                 <Button type="submit" variant="contained">
-                  {t('common:actions.next')}
+                  {step === 0 && showComposeStep
+                    ? t('common:actions.next')
+                    : t('common:actions.send')}
                 </Button>
               </Stack>
             </Box>
