@@ -127,9 +127,6 @@ export type Assessment = {
   publishLearner: Scalars['Boolean'];
   publishedFrom?: Maybe<Scalars['Date']>;
   startDate: Scalars['Date'];
-  stateCbaType?: Maybe<StateCbaType>;
-  subjectGroupIds?: Maybe<Array<Scalars['Long']>>;
-  subjectGroups?: Maybe<Array<SubjectGroup>>;
   tutorCommentBank?: Maybe<AssessmentCommentBank>;
   tutorCommentLength?: Maybe<Scalars['Int']>;
   tutorCommentType?: Maybe<CommentType>;
@@ -184,7 +181,6 @@ export type AssessmentExtraField = {
 export type AssessmentFilter = {
   academicNameSpaceId?: InputMaybe<Scalars['Int']>;
   ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-  name?: InputMaybe<Scalars['String']>;
 };
 
 export type AssessmentGradeSet = {
@@ -199,16 +195,12 @@ export type AssessmentResult = {
   createdBy: Person;
   createdByPartyId: Scalars['Long'];
   examinable: Scalars['Boolean'];
-  excluded?: Maybe<Scalars['Boolean']>;
   externalSystemId?: Maybe<Scalars['String']>;
   extraFields?: Maybe<Array<ResultExtraField>>;
   gradeId?: Maybe<Scalars['Long']>;
   gradeNameTextId?: Maybe<Scalars['Int']>;
   gradeResult?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['Long']>;
-  ppodPublished?: Maybe<Scalars['Boolean']>;
-  ppodPublishedOn?: Maybe<Scalars['DateTime']>;
-  ppodResult?: Maybe<Scalars['String']>;
   result?: Maybe<Scalars['Int']>;
   student: Student;
   studentClassGroup: Scalars['String'];
@@ -235,8 +227,6 @@ export type AssessmentSubjectGroup = {
   __typename?: 'AssessmentSubjectGroup';
   commentsEntered: Scalars['Int'];
   commentsTotal: Scalars['Int'];
-  ppodSyncStatus?: Maybe<SyncStatus>;
-  published?: Maybe<Scalars['Boolean']>;
   resultsEntered: Scalars['Int'];
   resultsTotal: Scalars['Int'];
   subjectGroup: SubjectGroup;
@@ -1453,13 +1443,6 @@ export type Core_UpdateStudentContactRelationshipInput = {
   studentPartyId: Scalars['Long'];
 };
 
-export type Core_UpdateStudentSubjectGroupInput = {
-  examinable?: InputMaybe<Scalars['Boolean']>;
-  studentId: Scalars['Long'];
-  studyLevel?: InputMaybe<StudyLevel>;
-  subjectGroupId: Scalars['Long'];
-};
-
 export type Core_UpsertCustomGroupDefinition = {
   description?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Long']>;
@@ -1578,17 +1561,6 @@ export type CreateGroupMembershipInput = {
   partyId?: InputMaybe<Scalars['Long']>;
   studyLevel?: InputMaybe<StudyLevel>;
   toDate?: InputMaybe<Scalars['Date']>;
-};
-
-export type CreatePaymentInput = {
-  amount?: InputMaybe<Scalars['Float']>;
-  paymentMethod?: InputMaybe<PaymentMethod>;
-};
-
-export type CreatePaymentResponse = {
-  __typename?: 'CreatePaymentResponse';
-  clientSecret: Scalars['String'];
-  paymentIntentId: Scalars['String'];
 };
 
 export type CreateProfileForGlobalUserInput = {
@@ -1814,26 +1786,6 @@ export type DeactivateProfiles = {
   partyIds: Array<Scalars['Long']>;
 };
 
-export type Debtor = {
-  __typename?: 'Debtor';
-  amount: Scalars['Float'];
-  amountDiscounted?: Maybe<Scalars['Float']>;
-  amountDue: Scalars['Float'];
-  amountPaid: Scalars['Float'];
-  discounts?: Maybe<Array<Maybe<Discount>>>;
-  discountsAppliedIds?: Maybe<Array<Maybe<Scalars['Int']>>>;
-  feeId: Scalars['Int'];
-  id: Scalars['Int'];
-  partyId: Scalars['Long'];
-  /** deep linked */
-  person: Person;
-};
-
-export type DebtorFilter = {
-  feeIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-};
-
 export type DeleteDiscountInput = {
   id: Scalars['Int'];
 };
@@ -1890,29 +1842,9 @@ export type Discount = {
   discountType: DiscountType;
   id: Scalars['Int'];
   name: Scalars['String'];
-  siblingDiscount?: Maybe<Scalars['Boolean']>;
+  validFor: ValidFor;
   value: Scalars['Float'];
 };
-
-export type DiscountAssignee = {
-  __typename?: 'DiscountAssignee';
-  assigneeType: DiscountAssigneeType;
-  discountId: Scalars['Int'];
-  feeId: Scalars['Int'];
-  id: Scalars['Int'];
-  partyId: Scalars['Long'];
-};
-
-export type DiscountAssigneeFilter = {
-  discountIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  feeIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-};
-
-export enum DiscountAssigneeType {
-  Group = 'GROUP',
-  Individual = 'INDIVIDUAL'
-}
 
 export type DiscountFilter = {
   ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
@@ -2197,20 +2129,12 @@ export enum Feature {
 
 export type Fee = {
   __typename?: 'Fee';
-  absorbFees: Scalars['Boolean'];
   amount: Scalars['Float'];
-  /** deep linked */
-  assignedToParties?: Maybe<Array<Party>>;
-  assignedToPartyIds?: Maybe<Array<Scalars['Long']>>;
-  debtorIds?: Maybe<Array<Scalars['Int']>>;
-  debtors?: Maybe<Array<Debtor>>;
-  discounts?: Maybe<Array<Discount>>;
+  description?: Maybe<Scalars['String']>;
+  discounts?: Maybe<Array<Maybe<Discount>>>;
   dueDate: Scalars['Date'];
   feeType: FeeType;
-  id?: Maybe<Scalars['Int']>;
-  individualDiscountIds?: Maybe<Array<Scalars['Int']>>;
-  /** deep linked */
-  individualDiscounts?: Maybe<Array<IndividualDiscount>>;
+  id: Scalars['Int'];
   name: Scalars['String'];
 };
 
@@ -2219,7 +2143,7 @@ export type FeeFilter = {
 };
 
 export enum FeeType {
-  Mandatory = 'MANDATORY',
+  Standard = 'STANDARD',
   Voluntary = 'VOLUNTARY'
 }
 
@@ -2297,7 +2221,6 @@ export type GeneralGroup = Party & PartyGroup & {
   /**     deep linked */
   contacts: Array<Person>;
   generalGroupType: GeneralGroupType;
-  groupMembers?: Maybe<Group>;
   includeInTimetable?: Maybe<Scalars['Boolean']>;
   name: Scalars['String'];
   partyId: Scalars['Long'];
@@ -2429,22 +2352,6 @@ export type ImportSubjectInput = {
   region: Scalars['Int'];
   shortCode: Array<InputMaybe<TranslationInput>>;
   subjectSource?: InputMaybe<SubjectSource>;
-};
-
-export type IndividualDiscount = {
-  __typename?: 'IndividualDiscount';
-  /** deep linked */
-  discount: Discount;
-  discountId: Scalars['Int'];
-  id: Scalars['Int'];
-  /** deep linked */
-  person: Person;
-  personPartyId: Scalars['Long'];
-};
-
-export type IndividualDiscountFilter = {
-  feeIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 export type IndividualEventFilter = {
@@ -2609,15 +2516,11 @@ export type Mutation = {
   admin__resetTenantCache: Success;
   asd?: Maybe<Scalars['String']>;
   assessment_publish: Success;
-  assessment_publishPPODResults?: Maybe<Array<AssessmentResult>>;
-  assessment_publishStateCba: Success;
+  assessment_saveAssessment?: Maybe<Assessment>;
   assessment_saveAssessmentComments?: Maybe<Array<AssessmentComment>>;
   assessment_saveAssessmentResults?: Maybe<Array<AssessmentResult>>;
   assessment_saveCommentBank?: Maybe<Array<Maybe<CommentBank>>>;
   assessment_saveGradeSet?: Maybe<GradeSet>;
-  assessment_saveStateCbaAssessment?: Maybe<Assessment>;
-  assessment_saveTermAssessment?: Maybe<Assessment>;
-  assessment_studentAssessmentExclusion: Success;
   attendance_saveAttendanceCode: Array<AttendanceCode>;
   attendance_saveBulkAttendance?: Maybe<Success>;
   attendance_saveEventAttendance: Array<EventAttendance>;
@@ -2653,7 +2556,6 @@ export type Mutation = {
   core_updateStaff: Success;
   core_updateStudentContactRelationships?: Maybe<Success>;
   core_updateStudentContacts: Success;
-  core_updateStudentSubjectGroup: Success;
   core_updateStudents?: Maybe<Success>;
   core_updateSubjectGroups?: Maybe<Success>;
   core_updateYearGroupEnrollments?: Maybe<Success>;
@@ -2670,12 +2572,10 @@ export type Mutation = {
   enrollment_ire_changeProgrammeStage: Success;
   enrollment_ire_upsertBlockMemberships: EnrollmentIre_BlockMemberships;
   enrollment_ire_upsertCoreMemberships: EnrollmentIre_CoreMemberships;
-  fees_createPayment?: Maybe<CreatePaymentResponse>;
   fees_deleteDiscount?: Maybe<Scalars['String']>;
   fees_deleteFee?: Maybe<Scalars['String']>;
   fees_saveDiscount?: Maybe<Discount>;
   fees_saveFee?: Maybe<Fee>;
-  fees_savePayment?: Maybe<Array<Maybe<Payment>>>;
   notes_deleteBehaviourCategory?: Maybe<Success>;
   notes_deleteNote?: Maybe<Success>;
   notes_upsertBehaviourCategory?: Maybe<Success>;
@@ -2683,8 +2583,6 @@ export type Mutation = {
   notes_upsertNotes: Array<Notes_Note>;
   notes_upsertNotesTags: Array<Notes_Tag>;
   ppod_savePPODCredentials: PpodCredentials;
-  sa_upsertActivity?: Maybe<Success>;
-  sa_upsertActivityRequest?: Maybe<Success>;
   swm_applySubstitutions: Success;
   swm_deleteAbsence: Success;
   swm_deleteSubstitutions: Success;
@@ -2726,13 +2624,8 @@ export type MutationAssessment_PublishArgs = {
 };
 
 
-export type MutationAssessment_PublishPpodResultsArgs = {
-  input?: InputMaybe<PpodPublishResultsInput>;
-};
-
-
-export type MutationAssessment_PublishStateCbaArgs = {
-  input?: InputMaybe<PublishAssessmentInput>;
+export type MutationAssessment_SaveAssessmentArgs = {
+  input?: InputMaybe<SaveAssessmentInput>;
 };
 
 
@@ -2753,21 +2646,6 @@ export type MutationAssessment_SaveCommentBankArgs = {
 
 export type MutationAssessment_SaveGradeSetArgs = {
   input?: InputMaybe<SaveGradeSetInput>;
-};
-
-
-export type MutationAssessment_SaveStateCbaAssessmentArgs = {
-  input?: InputMaybe<SaveStateCbaAssessmentInput>;
-};
-
-
-export type MutationAssessment_SaveTermAssessmentArgs = {
-  input?: InputMaybe<SaveTermAssessmentInput>;
-};
-
-
-export type MutationAssessment_StudentAssessmentExclusionArgs = {
-  input?: InputMaybe<StudentAssessmentExclusionInput>;
 };
 
 
@@ -2946,11 +2824,6 @@ export type MutationCore_UpdateStudentContactsArgs = {
 };
 
 
-export type MutationCore_UpdateStudentSubjectGroupArgs = {
-  input: Array<InputMaybe<Core_UpdateStudentSubjectGroupInput>>;
-};
-
-
 export type MutationCore_UpdateStudentsArgs = {
   input?: InputMaybe<Array<InputMaybe<UpdateStudentInput>>>;
 };
@@ -3031,11 +2904,6 @@ export type MutationEnrollment_Ire_UpsertCoreMembershipsArgs = {
 };
 
 
-export type MutationFees_CreatePaymentArgs = {
-  input?: InputMaybe<CreatePaymentInput>;
-};
-
-
 export type MutationFees_DeleteDiscountArgs = {
   input?: InputMaybe<DeleteDiscountInput>;
 };
@@ -3053,11 +2921,6 @@ export type MutationFees_SaveDiscountArgs = {
 
 export type MutationFees_SaveFeeArgs = {
   input?: InputMaybe<SaveFeeInput>;
-};
-
-
-export type MutationFees_SavePaymentArgs = {
-  input?: InputMaybe<SavePaymentInput>;
 };
 
 
@@ -3093,16 +2956,6 @@ export type MutationNotes_UpsertNotesTagsArgs = {
 
 export type MutationPpod_SavePpodCredentialsArgs = {
   input?: InputMaybe<SavePpodCredentials>;
-};
-
-
-export type MutationSa_UpsertActivityArgs = {
-  input?: InputMaybe<Sa_SchoolActivityInput>;
-};
-
-
-export type MutationSa_UpsertActivityRequestArgs = {
-  input?: InputMaybe<Sa_SchoolActivityRequestInput>;
 };
 
 
@@ -3578,12 +3431,6 @@ export type PpodFilter = {
   transactionId?: InputMaybe<Scalars['String']>;
 };
 
-export type PpodPublishResultsInput = {
-  assessmentId: Scalars['Long'];
-  resultIds: Array<Scalars['Long']>;
-  subjectGroupIds: Array<Scalars['Long']>;
-};
-
 export type PpodStudent = {
   address?: InputMaybe<InputAddress>;
   birthCertForename?: InputMaybe<Scalars['String']>;
@@ -3711,21 +3558,10 @@ export type PartyFilter = {
 
 export type PartyGroup = {
   avatarUrl?: Maybe<Scalars['String']>;
-  groupMembers?: Maybe<Group>;
   includeInTimetable?: Maybe<Scalars['Boolean']>;
   name: Scalars['String'];
   partyId: Scalars['Long'];
 };
-
-export enum PartyGroupType {
-  ClassGroup = 'CLASS_GROUP',
-  CustomGroup = 'CUSTOM_GROUP',
-  GeneralGroup = 'GENERAL_GROUP',
-  ProgrammeStage = 'PROGRAMME_STAGE',
-  SubjectGroup = 'SUBJECT_GROUP',
-  SupportGroup = 'SUPPORT_GROUP',
-  YearGroup = 'YEAR_GROUP'
-}
 
 export type PartyPerson = {
   person: Person;
@@ -3752,35 +3588,6 @@ export enum PartyType {
 export type PartyTypeFilter = {
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
-
-export type Payment = {
-  __typename?: 'Payment';
-  amount: Scalars['Float'];
-  fee: Fee;
-  id: Scalars['Int'];
-  payeeName: Scalars['String'];
-  paymentIntentId: Scalars['String'];
-  paymentStatus: PaymentStatus;
-  studentPartyId: Scalars['Long'];
-  transactionDate: Scalars['DateTime'];
-};
-
-export type PaymentFilter = {
-  ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-};
-
-export enum PaymentMethod {
-  Card = 'CARD',
-  Cash = 'CASH'
-}
-
-export enum PaymentStatus {
-  Approved = 'APPROVED',
-  Declined = 'DECLINED',
-  Pending = 'PENDING',
-  Refunded = 'REFUNDED'
-}
 
 export type Permission = {
   __typename?: 'Permission';
@@ -3964,22 +3771,6 @@ export type PrimarySchoolIreFilter = {
   rollNumbers?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
-export type Print_GroupMembers = {
-  groupIds: Array<Scalars['Long']>;
-  options: Print_GroupMembersOptions;
-};
-
-export enum Print_GroupMembersOptions {
-  Csv = 'CSV',
-  Print = 'PRINT'
-}
-
-export type Print_PersonsGroupMemberships = {
-  groupTypes: Array<PartyGroupType>;
-  options: Print_GroupMembersOptions;
-  personIds: Array<Scalars['Long']>;
-};
-
 export enum Print_TimetableLayout {
   Combined = 'COMBINED',
   DaysOnXAxis = 'DAYS_ON_X_AXIS',
@@ -4111,7 +3902,6 @@ export type ProgrammeStageEnrollment = Party & PartyGroup & {
   __typename?: 'ProgrammeStageEnrollment';
   academicNamespaceId: Scalars['Int'];
   avatarUrl?: Maybe<Scalars['String']>;
-  groupMembers?: Maybe<Group>;
   includeInTimetable?: Maybe<Scalars['Boolean']>;
   name: Scalars['String'];
   partyId: Scalars['Long'];
@@ -4133,7 +3923,6 @@ export type PublishAssessmentInput = {
   assessmentId: Scalars['Long'];
   publish: Scalars['Boolean'];
   publishFrom?: InputMaybe<Scalars['Date']>;
-  subjectGroupIds?: InputMaybe<Array<Scalars['Long']>>;
 };
 
 export type Query = {
@@ -4198,16 +3987,13 @@ export type Query = {
   core_staff: Array<Staff>;
   core_studentContacts?: Maybe<Array<StudentContact>>;
   core_students: Array<Student>;
-  core_subjectGroupStudents: Array<StudentSubjectGroup>;
+  core_subjectGroupStudents?: Maybe<SubjectGroupStudent>;
   core_yearGroupEnrollments: Array<YearGroupEnrollment>;
   eire_nonClassContactHours?: Maybe<Array<Maybe<NonClassContactHours>>>;
   enrollment_ire_blockMemberships: EnrollmentIre_BlockMemberships;
   enrollment_ire_coreMemberships: EnrollmentIre_CoreMemberships;
-  fees_discountAssignees?: Maybe<Array<Maybe<DiscountAssignee>>>;
   fees_discounts?: Maybe<Array<Maybe<Discount>>>;
   fees_fees?: Maybe<Array<Maybe<Fee>>>;
-  fees_payments?: Maybe<Array<Maybe<Payment>>>;
-  fees_studentFees?: Maybe<Array<Maybe<StudentFee>>>;
   file_transfer_list?: Maybe<Array<FileTransferResponse>>;
   generalGroups?: Maybe<Array<GeneralGroup>>;
   myAuthDetails?: Maybe<GlobalUser>;
@@ -4218,8 +4004,6 @@ export type Query = {
   permissions?: Maybe<Array<Maybe<Permission>>>;
   ppod_PPODCredentials?: Maybe<PpodCredentials>;
   ppod_syncRequests: Array<SyncRequest>;
-  print_groupMembers: TemporaryDownload;
-  print_personsGroupMemberships: TemporaryDownload;
   print_printTimetable: TemporaryDownload;
   print_substitution: TemporaryDownload;
   profileTypes?: Maybe<Array<Maybe<ProfileType>>>;
@@ -4227,9 +4011,6 @@ export type Query = {
   reporting_reports: Array<Reporting_ReportInfoTopLevel>;
   reporting_runReport?: Maybe<Reporting_TableReport>;
   reporting_runReportExpand?: Maybe<Reporting_TableReport>;
-  sa_activities: Array<Maybe<Sa_SchoolActivity>>;
-  sa_staffAway: Array<Maybe<Sa_StaffAway>>;
-  sa_staffFreed: Array<Maybe<Sa_StaffFreed>>;
   search_search: Array<Search>;
   subjectGroups?: Maybe<Array<SubjectGroup>>;
   swm_absenceTypes: Array<Swm_StaffAbsenceType>;
@@ -4534,11 +4315,6 @@ export type QueryEnrollment_Ire_CoreMembershipsArgs = {
 };
 
 
-export type QueryFees_DiscountAssigneesArgs = {
-  filter?: InputMaybe<DiscountAssigneeFilter>;
-};
-
-
 export type QueryFees_DiscountsArgs = {
   filter?: InputMaybe<DiscountFilter>;
 };
@@ -4546,16 +4322,6 @@ export type QueryFees_DiscountsArgs = {
 
 export type QueryFees_FeesArgs = {
   filter?: InputMaybe<FeeFilter>;
-};
-
-
-export type QueryFees_PaymentsArgs = {
-  filter?: InputMaybe<PaymentFilter>;
-};
-
-
-export type QueryFees_StudentFeesArgs = {
-  filter?: InputMaybe<StudentFeeFilter>;
 };
 
 
@@ -4594,16 +4360,6 @@ export type QueryPpod_SyncRequestsArgs = {
 };
 
 
-export type QueryPrint_GroupMembersArgs = {
-  filter: Print_GroupMembers;
-};
-
-
-export type QueryPrint_PersonsGroupMembershipsArgs = {
-  filter: Print_PersonsGroupMemberships;
-};
-
-
 export type QueryPrint_PrintTimetableArgs = {
   filter?: InputMaybe<Print_TimetableOptions>;
 };
@@ -4631,21 +4387,6 @@ export type QueryReporting_RunReportArgs = {
 
 export type QueryReporting_RunReportExpandArgs = {
   filter?: InputMaybe<Reporting_ReportFilterExpand>;
-};
-
-
-export type QuerySa_ActivitiesArgs = {
-  filter: Sa_SchoolActivityFilter;
-};
-
-
-export type QuerySa_StaffAwayArgs = {
-  filter: Sa_StaffAwayFilter;
-};
-
-
-export type QuerySa_StaffFreedArgs = {
-  filter: Sa_StaffFreedFilter;
 };
 
 
@@ -5004,12 +4745,6 @@ export enum RoomState {
   SetByUser = 'SET_BY_USER'
 }
 
-export enum Sa_Status {
-  Approved = 'APPROVED',
-  Pending = 'PENDING',
-  Rejected = 'REJECTED'
-}
-
 export type Swm_CalendarSubstitution = {
   __typename?: 'SWM_CalendarSubstitution';
   absenceId?: Maybe<Scalars['Int']>;
@@ -5336,131 +5071,6 @@ export type Swm_UpsertSubstitutionEvent = {
   substitutionTypeId: Scalars['Int'];
 };
 
-export type Sa_LessonsAffected = {
-  __typename?: 'Sa_LessonsAffected';
-  teachersAway: Array<Maybe<Sa_StaffAway>>;
-  teachersFreed: Array<Maybe<Sa_StaffFreed>>;
-};
-
-export type Sa_SchoolActivity = {
-  __typename?: 'Sa_SchoolActivity';
-  approval: Sa_SchoolActivityApproval;
-  createdBy: AuditPerson;
-  createdByPartyId: Scalars['Long'];
-  createdByUserId: Scalars['Int'];
-  createdOn: Scalars['DateTime'];
-  customGroupId?: Maybe<Scalars['Long']>;
-  dates: Array<Sa_SchoolActivityDate>;
-  location: Sa_SchoolActivityLocation;
-  name?: Maybe<Scalars['String']>;
-  notes?: Maybe<Scalars['String']>;
-  published: Scalars['Boolean'];
-  schoolActivityId: Scalars['Int'];
-  tripPurpose?: Maybe<Scalars['String']>;
-};
-
-export type Sa_SchoolActivityApproval = {
-  __typename?: 'Sa_SchoolActivityApproval';
-  approvalDate?: Maybe<Scalars['DateTime']>;
-  approvalNote?: Maybe<Scalars['String']>;
-  approvedByParty?: Maybe<Person>;
-  approvedByPartyId?: Maybe<Scalars['Long']>;
-  status: Sa_Status;
-};
-
-export type Sa_SchoolActivityDate = {
-  __typename?: 'Sa_SchoolActivityDate';
-  date: Scalars['Date'];
-  endTime?: Maybe<Scalars['Time']>;
-  partial: Scalars['Boolean'];
-  startTime?: Maybe<Scalars['Time']>;
-};
-
-export type Sa_SchoolActivityDateInput = {
-  dates: Array<Scalars['Date']>;
-  endTime?: InputMaybe<Scalars['Time']>;
-  partial: Scalars['Boolean'];
-  startTime?: InputMaybe<Scalars['Time']>;
-};
-
-export type Sa_SchoolActivityFilter = {
-  schoolActivityIds?: InputMaybe<Array<Scalars['Int']>>;
-};
-
-export type Sa_SchoolActivityInput = {
-  dates: Array<Sa_SchoolActivityDateInput>;
-  group: Sa_SchoolActivityInputGroup;
-  location: Sa_SchoolActivityLocationInput;
-  name: Scalars['String'];
-  notes?: InputMaybe<Scalars['String']>;
-  schoolActivityId?: InputMaybe<Scalars['Int']>;
-  tripPurpose?: InputMaybe<Scalars['String']>;
-};
-
-export type Sa_SchoolActivityInputCreateGroup = {
-  organiserIds: Array<Scalars['Long']>;
-  staffIds: Array<Scalars['Long']>;
-  studentIds: Array<Scalars['Long']>;
-};
-
-export type Sa_SchoolActivityInputGroup = {
-  createCustomGroup?: InputMaybe<Sa_SchoolActivityInputCreateGroup>;
-  customGroupId?: InputMaybe<Scalars['Long']>;
-};
-
-export type Sa_SchoolActivityLocation = {
-  __typename?: 'Sa_SchoolActivityLocation';
-  inSchoolGrounds: Scalars['Boolean'];
-  locationDetails?: Maybe<Scalars['String']>;
-  roomIds: Array<Scalars['Int']>;
-  rooms: Array<Room>;
-};
-
-export type Sa_SchoolActivityLocationInput = {
-  inSchoolGrounds: Scalars['Boolean'];
-  locationDetails?: InputMaybe<Scalars['String']>;
-  roomIds: Array<Scalars['Int']>;
-};
-
-export type Sa_SchoolActivityRequestInput = {
-  groupPartyId?: InputMaybe<Scalars['Long']>;
-  location: Sa_SchoolActivityLocationInput;
-  name: Scalars['String'];
-  notes?: InputMaybe<Scalars['String']>;
-  tripPurpose?: InputMaybe<Scalars['String']>;
-};
-
-export type Sa_StaffAway = {
-  __typename?: 'Sa_StaffAway';
-  affectedAttendees: Array<Maybe<Party>>;
-  awayStaff: Array<Maybe<Person>>;
-  awayStaffPartyIds: Array<Maybe<Scalars['Long']>>;
-  event: CalendarEvent;
-  studentsAttendingActivityTotal: Scalars['Int'];
-  studentsInGroupTotal: Scalars['Int'];
-};
-
-export type Sa_StaffAwayFilter = {
-  schoolActivityId: Scalars['Int'];
-};
-
-export type Sa_StaffFreed = {
-  __typename?: 'Sa_StaffFreed';
-  affectedAttendees: Array<Maybe<Party>>;
-  event: CalendarEvent;
-  freeStaff: Array<Maybe<Person>>;
-  freeStaffPartyIds: Array<Maybe<Scalars['Long']>>;
-  lessonCancelledBy?: Maybe<AuditPerson>;
-  lessonCancelledByPartyId?: Maybe<Scalars['Long']>;
-  lessonsCancelled?: Maybe<Scalars['Boolean']>;
-  studentsAttendingActivityTotal: Scalars['Int'];
-  studentsInGroupTotal: Scalars['Int'];
-};
-
-export type Sa_StaffFreedFilter = {
-  schoolActivityId: Scalars['Int'];
-};
-
 /**    -------------- Inputs --------------- */
 export type SaveAcademicNamespaceInput = {
   description?: InputMaybe<Scalars['String']>;
@@ -5481,6 +5091,44 @@ export type SaveAssessmentCommentInput = {
   id?: InputMaybe<Scalars['Long']>;
   studentPartyId: Scalars['Long'];
   subjectGroupPartyId?: InputMaybe<Scalars['Long']>;
+};
+
+export type SaveAssessmentInput = {
+  assessmentType: AssessmentType;
+  captureHouseMasterComment?: InputMaybe<Scalars['Boolean']>;
+  capturePrincipalComment?: InputMaybe<Scalars['Boolean']>;
+  captureTarget: Scalars['Boolean'];
+  captureTutorComment?: InputMaybe<Scalars['Boolean']>;
+  captureYearHeadComment?: InputMaybe<Scalars['Boolean']>;
+  commentBankId?: InputMaybe<Scalars['Long']>;
+  commentLength?: InputMaybe<Scalars['Int']>;
+  commentType: CommentType;
+  createdBy?: InputMaybe<Scalars['Long']>;
+  description?: InputMaybe<Scalars['String']>;
+  endDate: Scalars['Date'];
+  externalSystemId?: InputMaybe<Scalars['String']>;
+  extraFields?: InputMaybe<Array<InputMaybe<SaveExtraFieldInput>>>;
+  gradeSetIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  gradeType?: InputMaybe<GradeType>;
+  housemasterCommentBankId?: InputMaybe<Scalars['Long']>;
+  housemasterCommentLength?: InputMaybe<Scalars['Int']>;
+  housemasterCommentType?: InputMaybe<CommentType>;
+  id?: InputMaybe<Scalars['Long']>;
+  name: Scalars['String'];
+  passFailThreshold?: InputMaybe<Scalars['Int']>;
+  principalCommentBankId?: InputMaybe<Scalars['Long']>;
+  principalCommentLength?: InputMaybe<Scalars['Int']>;
+  principalCommentType?: InputMaybe<CommentType>;
+  publish?: InputMaybe<Scalars['Boolean']>;
+  publishLearner?: InputMaybe<Scalars['Boolean']>;
+  startDate: Scalars['Date'];
+  tutorCommentBankId?: InputMaybe<Scalars['Long']>;
+  tutorCommentLength?: InputMaybe<Scalars['Int']>;
+  tutorCommentType?: InputMaybe<CommentType>;
+  yearHeadCommentBankId?: InputMaybe<Scalars['Long']>;
+  yearHeadCommentLength?: InputMaybe<Scalars['Int']>;
+  yearHeadCommentType?: InputMaybe<CommentType>;
+  years?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 export type SaveAssessmentResultInput = {
@@ -5541,7 +5189,7 @@ export type SaveDiscountInput = {
   discountType?: InputMaybe<DiscountType>;
   id?: InputMaybe<Scalars['Int']>;
   name?: InputMaybe<Scalars['String']>;
-  siblingDiscount?: InputMaybe<Scalars['Boolean']>;
+  validFor?: InputMaybe<ValidFor>;
   value?: InputMaybe<Scalars['Float']>;
 };
 
@@ -5567,15 +5215,13 @@ export type SaveExtraFieldInput = {
 };
 
 export type SaveFeeInput = {
-  absorbFees: Scalars['Boolean'];
-  amount: Scalars['Float'];
-  assignedToPartyIds?: InputMaybe<Array<Scalars['Long']>>;
+  amount?: InputMaybe<Scalars['Float']>;
+  description?: InputMaybe<Scalars['String']>;
   discountIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  dueDate: Scalars['Date'];
-  feeType: FeeType;
+  dueDate?: InputMaybe<Scalars['Date']>;
+  feeType?: InputMaybe<FeeType>;
   id?: InputMaybe<Scalars['Int']>;
-  individualDiscounts?: InputMaybe<Array<InputMaybe<SaveIndividualDiscountInput>>>;
-  name: Scalars['String'];
+  name?: InputMaybe<Scalars['String']>;
 };
 
 export type SaveGradeInput = {
@@ -5600,11 +5246,6 @@ export type SaveGradeSetInput = {
   name: Array<TranslationInput>;
   passFailThreshold?: InputMaybe<Scalars['Int']>;
   years?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-};
-
-export type SaveIndividualDiscountInput = {
-  discountId: Scalars['Int'];
-  partyId: Scalars['Long'];
 };
 
 export type SaveNonClassContactHoursInput = {
@@ -5688,20 +5329,6 @@ export type SaveParentalAttendanceRequest = {
   to: Scalars['DateTime'];
 };
 
-export type SavePaymentAmountInput = {
-  amount?: InputMaybe<Scalars['Float']>;
-  feeId?: InputMaybe<Scalars['Int']>;
-  studentPartyId?: InputMaybe<Scalars['Long']>;
-};
-
-export type SavePaymentInput = {
-  payeeName?: InputMaybe<Scalars['String']>;
-  paymentAmounts?: InputMaybe<Array<InputMaybe<SavePaymentAmountInput>>>;
-  paymentIntentId?: InputMaybe<Scalars['String']>;
-  paymentMethod?: InputMaybe<PaymentMethod>;
-  paymentStatus?: InputMaybe<PaymentStatus>;
-};
-
 export type SavePermissionGroup = {
   description: Array<InputMaybe<TranslationInput>>;
   id?: InputMaybe<Scalars['Int']>;
@@ -5731,16 +5358,6 @@ export type SaveResultExtraFieldInput = {
   gradeSetGradeId?: InputMaybe<Scalars['Long']>;
   id?: InputMaybe<Scalars['Long']>;
   result?: InputMaybe<Scalars['String']>;
-};
-
-export type SaveStateCbaAssessmentInput = {
-  endDate: Scalars['Date'];
-  extraFields?: InputMaybe<Array<InputMaybe<SaveExtraFieldInput>>>;
-  id?: InputMaybe<Scalars['Long']>;
-  startDate: Scalars['Date'];
-  stateCbaType?: InputMaybe<StateCbaType>;
-  subjectGroupIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-  yearId: Scalars['Int'];
 };
 
 export type SaveStudentSessionAttendanceInput = {
@@ -5858,44 +5475,6 @@ export type SaveStudentSupportPlanTargetInput = {
   id?: InputMaybe<Scalars['Int']>;
   status: TargetStatus;
   target: Scalars['String'];
-};
-
-export type SaveTermAssessmentInput = {
-  assessmentType: AssessmentType;
-  captureHouseMasterComment?: InputMaybe<Scalars['Boolean']>;
-  capturePrincipalComment?: InputMaybe<Scalars['Boolean']>;
-  captureTarget: Scalars['Boolean'];
-  captureTutorComment?: InputMaybe<Scalars['Boolean']>;
-  captureYearHeadComment?: InputMaybe<Scalars['Boolean']>;
-  commentBankId?: InputMaybe<Scalars['Long']>;
-  commentLength?: InputMaybe<Scalars['Int']>;
-  commentType: CommentType;
-  createdBy?: InputMaybe<Scalars['Long']>;
-  description?: InputMaybe<Scalars['String']>;
-  endDate: Scalars['Date'];
-  externalSystemId?: InputMaybe<Scalars['String']>;
-  extraFields?: InputMaybe<Array<InputMaybe<SaveExtraFieldInput>>>;
-  gradeSetIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-  gradeType?: InputMaybe<GradeType>;
-  housemasterCommentBankId?: InputMaybe<Scalars['Long']>;
-  housemasterCommentLength?: InputMaybe<Scalars['Int']>;
-  housemasterCommentType?: InputMaybe<CommentType>;
-  id?: InputMaybe<Scalars['Long']>;
-  name: Scalars['String'];
-  passFailThreshold?: InputMaybe<Scalars['Int']>;
-  principalCommentBankId?: InputMaybe<Scalars['Long']>;
-  principalCommentLength?: InputMaybe<Scalars['Int']>;
-  principalCommentType?: InputMaybe<CommentType>;
-  publish?: InputMaybe<Scalars['Boolean']>;
-  publishLearner?: InputMaybe<Scalars['Boolean']>;
-  startDate: Scalars['Date'];
-  tutorCommentBankId?: InputMaybe<Scalars['Long']>;
-  tutorCommentLength?: InputMaybe<Scalars['Int']>;
-  tutorCommentType?: InputMaybe<CommentType>;
-  yearHeadCommentBankId?: InputMaybe<Scalars['Long']>;
-  yearHeadCommentLength?: InputMaybe<Scalars['Int']>;
-  yearHeadCommentType?: InputMaybe<CommentType>;
-  years?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 export type SaveTrustee = {
@@ -6105,13 +5684,6 @@ export type SessionAttendanceStatus = {
 
 export type SetActiveAcademicNamespace = {
   academicNamespaceId: Scalars['Int'];
-};
-
-export type Sibling = {
-  __typename?: 'Sibling';
-  firstName?: Maybe<Scalars['String']>;
-  lastName?: Maybe<Scalars['String']>;
-  studentPartyId: Scalars['Long'];
 };
 
 export type Sms = {
@@ -6331,11 +5903,6 @@ export enum StaffYearGroupMembershipRoles {
   YearGroupLead = 'YEAR_GROUP_LEAD'
 }
 
-export enum StateCbaType {
-  Cba_1 = 'CBA_1',
-  Cba_2 = 'CBA_2'
-}
-
 export type Student = Party & PartyPerson & {
   __typename?: 'Student';
   avatarUrl?: Maybe<Scalars['String']>;
@@ -6370,12 +5937,6 @@ export type Student = Party & PartyPerson & {
 
 export type StudentAenFilter = {
   studentPartyId: Scalars['Long'];
-};
-
-export type StudentAssessmentExclusionInput = {
-  assessmentId: Scalars['Long'];
-  studentPartyId: Scalars['Long'];
-  subjectGroupId: Scalars['Long'];
 };
 
 export type StudentContact = Party & PartyPerson & {
@@ -6439,26 +6000,6 @@ export type StudentExemption = {
   grantor: Scalars['String'];
   id: Scalars['Long'];
   startDate?: Maybe<Scalars['Date']>;
-};
-
-export type StudentFee = {
-  __typename?: 'StudentFee';
-  amount: Scalars['Float'];
-  amountDue: Scalars['Float'];
-  amountPaid: Scalars['Float'];
-  discounts?: Maybe<Array<Maybe<Discount>>>;
-  dueDate: Scalars['Date'];
-  feeDescription?: Maybe<Scalars['String']>;
-  feeName: Scalars['String'];
-  feeType: FeeType;
-  id: Scalars['Int'];
-  studentName: Scalars['String'];
-  studentPartyId: Scalars['Long'];
-};
-
-export type StudentFeeFilter = {
-  contactPartyId?: InputMaybe<Scalars['Int']>;
-  studentPartyId?: InputMaybe<Scalars['Int']>;
 };
 
 export type StudentFilter = {
@@ -6608,14 +6149,6 @@ export type StudentStatus = {
 
 export type StudentStatusFilter = {
   studentPartyId?: InputMaybe<Scalars['Long']>;
-};
-
-export type StudentSubjectGroup = {
-  __typename?: 'StudentSubjectGroup';
-  students: Array<SubjectGroupStudent>;
-  /** deep linked */
-  subjectGroup?: Maybe<SubjectGroup>;
-  subjectGroupId: Scalars['Long'];
 };
 
 export type StudentSupportFile = {
@@ -6798,7 +6331,6 @@ export type SubjectGroup = Party & PartyGroup & {
   actualName: Scalars['String'];
   alsoInAcademicNamespaces: Array<Scalars['Int']>;
   avatarUrl?: Maybe<Scalars['String']>;
-  groupMembers?: Maybe<Group>;
   includeInTimetable?: Maybe<Scalars['Boolean']>;
   irePP?: Maybe<SubjectGroupIrePp>;
   /**  this will return the actual name or the subject depending on the user type. Contacts/Students -> Subject name eveeryone else -> actual name */
@@ -6848,6 +6380,7 @@ export type SubjectGroupStudent = {
   fromDate?: Maybe<Scalars['Date']>;
   studentPartyId: Scalars['Long'];
   studyLevel?: Maybe<StudyLevel>;
+  subjectGroupId: Scalars['Long'];
   toDate?: Maybe<Scalars['Date']>;
 };
 
@@ -6919,12 +6452,6 @@ export type SyncRequestsFilter = {
   id?: InputMaybe<Scalars['Int']>;
   to?: InputMaybe<Scalars['DateTime']>;
 };
-
-export enum SyncStatus {
-  FullySynced = 'FULLY_SYNCED',
-  NotSynced = 'NOT_SYNCED',
-  PartiallySynced = 'PARTIALLY_SYNCED'
-}
 
 export type TtCloneTimetableInput = {
   readOnly?: InputMaybe<Scalars['Boolean']>;
@@ -7804,6 +7331,11 @@ export enum UserType {
   Tyro = 'TYRO'
 }
 
+export enum ValidFor {
+  All = 'ALL',
+  Sibling = 'SIBLING'
+}
+
 export type Wellbeing_DeleteStudentAenInput = {
   id: Scalars['Int'];
   studentPartyId: Scalars['Long'];
@@ -7876,7 +7408,6 @@ export type YearGroupEnrollment = Party & PartyGroup & {
   academicNamespaceId: Scalars['Int'];
   avatarUrl?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
-  groupMembers?: Maybe<Group>;
   includeInTimetable?: Maybe<Scalars['Boolean']>;
   name: Scalars['String'];
   nationalCode: Scalars['String'];
@@ -7959,12 +7490,12 @@ export type Assessment_OverallCommentsQueryVariables = Exact<{
 
 export type Assessment_OverallCommentsQuery = { __typename?: 'Query', assessment_overallComments?: { __typename?: 'OverallComments', tutorCommentsEntered: number, yearHeadCommentsEntered: number, principalCommentsEntered: number, totalCommentsToEnter: number, students: Array<{ __typename?: 'CommentStudent', studentPartyId: number, commentStatus: CommentStatus, principalComment: boolean, yearHeadComment: boolean, tutorComment: boolean, student: { __typename?: 'Student', person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null } } }> } | null };
 
-export type SaveTermAssessmentMutationVariables = Exact<{
-  input?: InputMaybe<SaveTermAssessmentInput>;
+export type SaveAssessmentMutationVariables = Exact<{
+  input?: InputMaybe<SaveAssessmentInput>;
 }>;
 
 
-export type SaveTermAssessmentMutation = { __typename?: 'Mutation', assessment_saveTermAssessment?: { __typename?: 'Assessment', name: string, startDate: string, endDate: string, years?: Array<{ __typename?: 'YearGroup', name: string }> | null } | null };
+export type SaveAssessmentMutation = { __typename?: 'Mutation', assessment_saveAssessment?: { __typename?: 'Assessment', name: string, startDate: string, endDate: string, years?: Array<{ __typename?: 'YearGroup', name: string }> | null } | null };
 
 export type DashboardAssessmentQueryVariables = Exact<{
   filter?: InputMaybe<DashboardAssessmentFilter>;
@@ -9277,7 +8808,7 @@ export const Assessment_PublishDocument = {"kind":"Document","definitions":[{"ki
 export const CommentBankAssessmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"commentBankAssessment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommentBankFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assessment_commentBank"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<CommentBankAssessmentQuery, CommentBankAssessmentQueryVariables>;
 export const CommentBanksWithCommentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"commentBanksWithComments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommentBankFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assessment_commentBank"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"comment"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}}]}}]} as unknown as DocumentNode<CommentBanksWithCommentsQuery, CommentBanksWithCommentsQueryVariables>;
 export const Assessment_OverallCommentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"assessment_overallComments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OverallCommentsFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assessment_overallComments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tutorCommentsEntered"}},{"kind":"Field","name":{"kind":"Name","value":"yearHeadCommentsEntered"}},{"kind":"Field","name":{"kind":"Name","value":"principalCommentsEntered"}},{"kind":"Field","name":{"kind":"Name","value":"totalCommentsToEnter"}},{"kind":"Field","name":{"kind":"Name","value":"students"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"student"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"commentStatus"}},{"kind":"Field","name":{"kind":"Name","value":"principalComment"}},{"kind":"Field","name":{"kind":"Name","value":"yearHeadComment"}},{"kind":"Field","name":{"kind":"Name","value":"tutorComment"}}]}}]}}]}}]} as unknown as DocumentNode<Assessment_OverallCommentsQuery, Assessment_OverallCommentsQueryVariables>;
-export const SaveTermAssessmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"saveTermAssessment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SaveTermAssessmentInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assessment_saveTermAssessment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"years"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}}]}}]}}]} as unknown as DocumentNode<SaveTermAssessmentMutation, SaveTermAssessmentMutationVariables>;
+export const SaveAssessmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"saveAssessment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SaveAssessmentInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assessment_saveAssessment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"years"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}}]}}]}}]} as unknown as DocumentNode<SaveAssessmentMutation, SaveAssessmentMutationVariables>;
 export const DashboardAssessmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"dashboardAssessment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DashboardAssessmentFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assessment_dashboardAssessment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"assessmentType"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"results"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"subject"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"grade"}},{"kind":"Field","name":{"kind":"Name","value":"studyLevel"}}]}}]}}]}}]} as unknown as DocumentNode<DashboardAssessmentQuery, DashboardAssessmentQueryVariables>;
 export const Assessment_AssessmentCommentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"assessment_assessmentComment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"AssessmentCommentFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assessment_assessmentComment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"comment"}},{"kind":"Field","name":{"kind":"Name","value":"commentBankCommentId"}},{"kind":"Field","name":{"kind":"Name","value":"commenterUserType"}},{"kind":"Field","name":{"kind":"Name","value":"commenterPartyId"}}]}}]}}]} as unknown as DocumentNode<Assessment_AssessmentCommentQuery, Assessment_AssessmentCommentQueryVariables>;
 export const Assessment_SaveAssessmentCommentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"assessment_saveAssessmentComments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SaveAssessmentCommentInput"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assessment_saveAssessmentComments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<Assessment_SaveAssessmentCommentsMutation, Assessment_SaveAssessmentCommentsMutationVariables>;
