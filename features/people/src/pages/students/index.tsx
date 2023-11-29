@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { Box, Container, Fade, Typography } from '@mui/material';
 import {
   GridOptions,
@@ -191,18 +191,6 @@ export default function StudentsListPage() {
     () => getStudentColumns(t, displayName, displayNames),
     [t, displayName, displayNames]
   );
-
-  useEffect(() => {
-    console.log('students diff');
-  }, [students]);
-
-  useEffect(() => {
-    console.log('selectedStudents diff');
-  }, [selectedStudents]);
-
-  useEffect(() => {
-    console.log('studentColumns diff');
-  }, [studentColumns]);
 
   return (
     <>

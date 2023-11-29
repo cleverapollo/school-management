@@ -1,4 +1,4 @@
-import { Box, Button, DialogContent, Stack } from '@mui/material';
+import { Button, DialogContent } from '@mui/material';
 import { Dialog, DialogActions, DialogTitle, useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useState } from 'react';
