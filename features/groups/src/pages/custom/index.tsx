@@ -1,5 +1,5 @@
 import { Box, Button, Fade } from '@mui/material';
-import {PermissionUtils, SmsRecipientType, usePermissions} from '@tyro/api';
+import { PermissionUtils, SmsRecipientType, usePermissions } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -24,7 +24,7 @@ import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { Link } from 'react-router-dom';
 import { useCustomGroups, ReturnTypeFromUseCustomGroups } from '../../api';
 import { DeleteCustomGroupsModal } from '../../components/custom-group/delete-custom-groups-modal';
-import { BulkPrintGroupMembersModal } from '../../components/common/bulk-print-group-members-modal';
+import { printGroupMembers } from '../../utils/print-group-members';
 
 const getColumns = (
   t: TFunction<('common' | 'groups')[], undefined>,
@@ -109,12 +109,6 @@ export default function CustomGroups() {
     onClose: onCloseSendSms,
   } = useDisclosure();
 
-  const {
-    isOpen: isBulkPrintOpen,
-    onOpen: onOpenBulkPrint,
-    onClose: onCloseBulkPrint,
-  } = useDisclosure();
-
   const showEditAction = hasPermission(
     'ps:1:groups:view_create_custom_group_definitions'
   );
@@ -126,25 +120,30 @@ export default function CustomGroups() {
 
   const showActionMenu = isStaffUser && selectedGroups.length > 0;
 
-  const actionMenuItems = [
-    {
-      label: t('people:sendSms'),
-      icon: <MobileIcon />,
-      onClick: onOpenSendSms,
-    },
-    {
-      label: t('groups:deleteCustomGroups'),
-      icon: <TrashIcon />,
-      onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
-    },
-    {
-      label: t('groups:printGroupMembers'),
-      icon: <PrinterIcon />,
-      onClick: onOpenBulkPrint,
-      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
-          isStaffUserWithPermission('ps:1:printing_and_exporting:print_group_members'),
-    },
-  ];
+  const actionMenuItems = useMemo(
+    () => [
+      {
+        label: t('people:sendSms'),
+        icon: <MobileIcon />,
+        onClick: onOpenSendSms,
+      },
+      {
+        label: t('groups:deleteCustomGroups'),
+        icon: <TrashIcon />,
+        onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
+      },
+      {
+        label: t('groups:printGroupMembers'),
+        icon: <PrinterIcon />,
+        onClick: () => printGroupMembers(selectedGroups),
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission(
+            'ps:1:printing_and_exporting:print_group_members'
+          ),
+      },
+    ],
+    [selectedGroups, onOpenSendSms]
+  );
 
   return (
     <>
@@ -207,11 +206,6 @@ export default function CustomGroups() {
             type: SmsRecipientType.GeneralGroupStaff,
           },
         ]}
-      />
-      <BulkPrintGroupMembersModal
-        isOpen={isBulkPrintOpen}
-        onClose={onCloseBulkPrint}
-        groups={selectedGroups}
       />
       <DeleteCustomGroupsModal
         groupIds={deleteGroupIds}

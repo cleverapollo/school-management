@@ -1,7 +1,11 @@
 import { Box, Fade } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import {PermissionUtils, SmsRecipientType, UpdateYearGroupEnrollmentInput} from '@tyro/api';
+import {
+  PermissionUtils,
+  SmsRecipientType,
+  UpdateYearGroupEnrollmentInput,
+} from '@tyro/api';
 import {
   ActionMenu,
   BulkEditedRows,
@@ -23,7 +27,7 @@ import {
   useUpdateYearGroupLeads,
   ReturnTypeFromUseYearGroups,
 } from '../../api/year-groups';
-import { BulkPrintGroupMembersModal } from '../../components/common/bulk-print-group-members-modal';
+import { printGroupMembers } from '../../utils/print-group-members';
 
 const getYearGroupsColumns = (
   t: TFunction<'common'[], undefined, 'common'[]>,
@@ -88,12 +92,6 @@ export default function YearGroups() {
     onClose: onCloseSendSms,
   } = useDisclosure();
 
-  const {
-    isOpen: isBulkPrintOpen,
-    onOpen: onOpenBulkPrint,
-    onClose: onCloseBulkPrint,
-  } = useDisclosure();
-
   const { data: yearGroupData } = useYearGroups();
   const { mutateAsync: updateYearGroupLeads } = useUpdateYearGroupLeads();
 
@@ -102,25 +100,25 @@ export default function YearGroups() {
     [t, displayNames]
   );
 
-  const actionMenuItems = [
-    {
-      label: t('people:sendSms'),
-      icon: <MobileIcon />,
-      onClick: onOpenSendSms,
-    },
-    // {
-    //   label: t('mail:sendMail'),
-    //   icon: <SendMailIcon />,
-    //   onClick: () => {},
-    // },
-    {
-      label: t('groups:printGroupMembers'),
-      icon: <PrinterIcon />,
-      onClick: onOpenBulkPrint,
-      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
-          isStaffUserWithPermission('ps:1:printing_and_exporting:print_group_members'),
-    },
-  ];
+  const actionMenuItems = useMemo(
+    () => [
+      {
+        label: t('people:sendSms'),
+        icon: <MobileIcon />,
+        onClick: onOpenSendSms,
+      },
+      {
+        label: t('groups:printGroupMembers'),
+        icon: <PrinterIcon />,
+        onClick: () => printGroupMembers(selectedGroups),
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission(
+            'ps:1:printing_and_exporting:print_group_members'
+          ),
+      },
+    ],
+    [selectedGroups, onOpenSendSms]
+  );
 
   const handleBulkSave = (
     data: BulkEditedRows<ReturnTypeFromUseYearGroups, 'yearGroupLeads'>
@@ -176,11 +174,6 @@ export default function YearGroups() {
         />
       </PageContainer>
 
-      <BulkPrintGroupMembersModal
-        isOpen={isBulkPrintOpen}
-        onClose={onCloseBulkPrint}
-        groups={selectedGroups}
-      />
       <SendSmsModal
         isOpen={isSendSmsOpen}
         onClose={onCloseSendSms}

@@ -11,11 +11,15 @@ import {
 } from '@tyro/core';
 import { useParams } from 'react-router-dom';
 import { useMemo, useState } from 'react';
-import {UseQueryReturnType, SmsRecipientType, PermissionUtils} from '@tyro/api';
+import {
+  UseQueryReturnType,
+  SmsRecipientType,
+  PermissionUtils,
+} from '@tyro/api';
 import { MobileIcon, PrinterIcon } from '@tyro/icons';
 import { Box, Fade } from '@mui/material';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { BulkPrintGroupMembersModal } from '@tyro/groups';
+import { printGroupMembers } from '@tyro/groups';
 import { useStaffSubjectGroups } from '../../../api/staff/subject-groups';
 
 type ReturnTypeFromUseStaffSubjectGroups = UseQueryReturnType<
@@ -111,26 +115,25 @@ export default function StaffProfileClassesPage() {
     onClose: onCloseSendSms,
   } = useDisclosure();
 
-  const {
-    isOpen: isBulkPrintOpen,
-    onOpen: onOpenBulkPrint,
-    onClose: onCloseBulkPrint,
-  } = useDisclosure();
-
-  const actionMenuItems = [
-    {
-      label: t('people:sendSms'),
-      icon: <MobileIcon />,
-      onClick: onOpenSendSms,
-    },
-    {
-      label: t('groups:printGroupMembers'),
-      icon: <PrinterIcon />,
-      onClick: onOpenBulkPrint,
-      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
-          isStaffUserWithPermission('ps:1:printing_and_exporting:print_group_members'),
-    },
-  ];
+  const actionMenuItems = useMemo(
+    () => [
+      {
+        label: t('people:sendSms'),
+        icon: <MobileIcon />,
+        onClick: onOpenSendSms,
+      },
+      {
+        label: t('groups:printGroupMembers'),
+        icon: <PrinterIcon />,
+        onClick: () => printGroupMembers(selectedGroups),
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission(
+            'ps:1:printing_and_exporting:print_group_members'
+          ),
+      },
+    ],
+    [selectedGroups, onOpenSendSms]
+  );
 
   return (
     <>
@@ -160,11 +163,6 @@ export default function StaffProfileClassesPage() {
             })
           )
         }
-      />
-      <BulkPrintGroupMembersModal
-        isOpen={isBulkPrintOpen}
-        onClose={onCloseBulkPrint}
-        groups={selectedGroups}
       />
       <SendSmsModal
         isOpen={isSendSmsOpen}

@@ -1,4 +1,4 @@
-import { Box, Fade, Container, Typography } from '@mui/material';
+import { Box, Fade } from '@mui/material';
 import {
   PermissionUtils,
   SmsRecipientType,
@@ -10,7 +10,6 @@ import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   GridOptions,
-  Page,
   Table,
   ICellRendererParams,
   ActionMenu,
@@ -24,6 +23,8 @@ import {
   sortStartNumberFirst,
   ConfirmDialog,
   TableSelect,
+  PageContainer,
+  PageHeading,
 } from '@tyro/core';
 
 import { MobileIcon, MoveGroupIcon, PrinterIcon } from '@tyro/icons';
@@ -36,7 +37,7 @@ import {
   useSubjectGroups,
   useSwitchSubjectGroupType,
 } from '../../api';
-import { BulkPrintGroupMembersModal } from '../../components/common/bulk-print-group-members-modal';
+import { printGroupMembers } from '../../utils/print-group-members';
 
 type ReturnTypeFromUseSubjectGroups = NonNullable<
   ReturnType<typeof useSubjectGroups>['data']
@@ -105,8 +106,8 @@ const getSubjectGroupsColumns = (
         params: {
           options: subjects,
           optionIdKey: 'id',
-          getOptionLabel: (option: CatalogueSubjectOption) =>
-            `${option.name} (${option.nationalCode})`,
+          getOptionLabel: ({ name, nationalCode }: CatalogueSubjectOption) =>
+            `${name} ${nationalCode ? `(${nationalCode})` : ''}`,
         },
       } as const),
     enableRowGroup: true,
@@ -183,45 +184,39 @@ export default function SubjectGroups() {
     onClose: onCloseSendSms,
   } = useDisclosure();
 
-  const {
-    isOpen: isBulkPrintOpen,
-    onOpen: onOpenBulkPrint,
-    onClose: onCloseBulkPrint,
-  } = useDisclosure();
-
   const studentColumns = useMemo(
     () => getSubjectGroupsColumns(t, displayNames, subjects),
     [t, displayNames, subjects]
   );
 
-  const actionMenuItems = [
-    {
-      label: t('people:sendSms'),
-      icon: <MobileIcon />,
-      onClick: onOpenSendSms,
-      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
-        isStaffUserWithPermission('ps:1:communications:send_sms'),
-    },
-    {
-      label: t('groups:subjectGroup.switchToSupportClass.action'),
-      icon: <MoveGroupIcon />,
-      onClick: () => setSwitchGroupTypeConfirmation(true),
-      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
-        isStaffUserWithPermission('ps:1:groups:write_subject_groups'),
-    },
-    // {
-    //   label: t('mail:sendMail'),
-    //   icon: <SendMailIcon />,
-    //   onClick: () => {},
-    // },
-    {
-      label: t('groups:printGroupMembers'),
-      icon: <PrinterIcon />,
-      onClick: onOpenBulkPrint,
-      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
-          isStaffUserWithPermission('ps:1:printing_and_exporting:print_group_members'),
-    },
-  ];
+  const actionMenuItems = useMemo(
+    () => [
+      {
+        label: t('people:sendSms'),
+        icon: <MobileIcon />,
+        onClick: onOpenSendSms,
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission('ps:1:communications:send_sms'),
+      },
+      {
+        label: t('groups:subjectGroup.switchToSupportClass.action'),
+        icon: <MoveGroupIcon />,
+        onClick: () => setSwitchGroupTypeConfirmation(true),
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission('ps:1:groups:write_subject_groups'),
+      },
+      {
+        label: t('groups:printGroupMembers'),
+        icon: <PrinterIcon />,
+        onClick: () => printGroupMembers(selectedGroups),
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission(
+            'ps:1:printing_and_exporting:print_group_members'
+          ),
+      },
+    ],
+    [selectedGroups, onOpenSendSms]
+  );
 
   const handleBulkSave = (
     data: BulkEditedRows<
@@ -258,28 +253,29 @@ export default function SubjectGroups() {
 
   return (
     <>
-      <Page title={t('groups:subjectGroups')}>
-        <Container maxWidth="xl">
-          <Typography variant="h3" component="h1" paragraph>
-            {t('groups:subjectGroups')}
-          </Typography>
-          <Table
-            rowData={subjectGroupsData ?? []}
-            columnDefs={studentColumns}
-            rowSelection="multiple"
-            getRowId={({ data }) => String(data?.partyId)}
-            onBulkSave={handleBulkSave}
-            rightAdornment={
-              <Fade in={selectedGroups.length > 0} unmountOnExit>
-                <Box>
-                  <ActionMenu menuItems={actionMenuItems} />
-                </Box>
-              </Fade>
-            }
-            onRowSelection={(groups) =>
-              setSelectedGroups(
-                groups.map(({ partyId, name, avatarUrl, subjects }) => {
-                  const subject = subjects?.[0];
+      <PageContainer title={t('groups:subjectGroups')}>
+        <PageHeading
+          title={t('groups:subjectGroups')}
+          titleProps={{ variant: 'h3' }}
+        />
+        <Table
+          rowData={subjectGroupsData ?? []}
+          columnDefs={studentColumns}
+          rowSelection="multiple"
+          getRowId={({ data }) => String(data?.partyId)}
+          onBulkSave={handleBulkSave}
+          rightAdornment={
+            <Fade in={selectedGroups.length > 0} unmountOnExit>
+              <Box>
+                <ActionMenu menuItems={actionMenuItems} />
+              </Box>
+            </Fade>
+          }
+          onRowSelection={(groups) =>
+            setSelectedGroups(
+              groups.map(
+                ({ partyId, name, avatarUrl, subjects: groupsSubjects }) => {
+                  const subject = groupsSubjects?.[0];
                   return {
                     id: partyId,
                     name,
@@ -287,17 +283,12 @@ export default function SubjectGroups() {
                     avatarUrl,
                     avatarColor: subject?.colour,
                   };
-                })
+                }
               )
-            }
-          />
-        </Container>
-      </Page>
-      <BulkPrintGroupMembersModal
-        isOpen={isBulkPrintOpen}
-        onClose={onCloseBulkPrint}
-        groups={selectedGroups}
-      />
+            )
+          }
+        />
+      </PageContainer>
       <SendSmsModal
         isOpen={isSendSmsOpen}
         onClose={onCloseSendSms}
