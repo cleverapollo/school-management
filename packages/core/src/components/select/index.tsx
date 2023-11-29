@@ -1,4 +1,10 @@
-import { MenuItem, TextField, TextFieldProps, useTheme } from '@mui/material';
+import {
+  MenuItem,
+  MenuItemProps,
+  TextField,
+  TextFieldProps,
+  useTheme,
+} from '@mui/material';
 import { ReactNode, useMemo } from 'react';
 
 type SelectCustomVariant = Omit<TextFieldProps, 'variant'> & {
@@ -12,6 +18,7 @@ export type SelectProps<TSelectOption> = SelectCustomVariant & {
   optionIdKey?: keyof TSelectOption;
   optionTextKey?: TSelectOption extends object ? keyof TSelectOption : never;
   renderValue?: (option: TSelectOption) => ReactNode;
+  menuItemProps?: MenuItemProps;
 };
 
 export const Select = <TSelectOption extends string | number | object>({
@@ -25,6 +32,7 @@ export const Select = <TSelectOption extends string | number | object>({
   SelectProps,
   renderValue,
   value,
+  menuItemProps,
   ...textFieldProps
 }: SelectProps<TSelectOption>) => {
   const { spacing, palette } = useTheme();
@@ -84,7 +92,7 @@ export const Select = <TSelectOption extends string | number | object>({
           : getOptionLabel?.(option);
 
         return (
-          <MenuItem key={optionValue} value={optionValue}>
+          <MenuItem key={optionValue} value={optionValue} {...menuItemProps}>
             {optionLabel ?? optionValue}
           </MenuItem>
         );
