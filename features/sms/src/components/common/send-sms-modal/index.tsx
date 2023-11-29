@@ -19,7 +19,6 @@ import { useSmsCostPerMessage } from '../../../api/sms-cost';
 import { analyzeSmsTextString } from '../../../utils/analyze-sms-text-string';
 
 export type { RecipientsForSmsModal } from './recipient-list';
-export { RecipientList } from './recipient-list';
 
 interface SendSmsModalProps {
   isOpen: boolean;
