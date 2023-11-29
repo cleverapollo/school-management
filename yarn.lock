@@ -6243,6 +6243,7 @@ __metadata:
     "@tanstack/react-query": ^4.29.7
     "@types/react-beautiful-dnd": ^13.1.4
     "@tyro/api": "*"
+    "@tyro/assessments": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
     "@tyro/groups": "*"
