@@ -1,10 +1,9 @@
 import { Card, CardHeader, Typography, ButtonBase, Stack } from '@mui/material';
-import { usePreferredNameLayout } from '@tyro/core';
+import { StatusIcon, usePreferredNameLayout } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useEffect, useState } from 'react';
 import { ReturnTypeFromUseAssessmentById } from '../../api/assessments';
 import { ReturnTypeFromUseOverallCommentsByYearGroup } from '../../api/overall-comment-year-group';
-import { CommentStatusIcon } from './comment-status-icon';
 
 interface StudentSelectorForOverallCommentsProps {
   yearGroupEnrollment:
@@ -102,7 +101,7 @@ export function StudentSelectorForOverallComments({
                   {t(`assessments:commentStatus.${commentStatus}`)}
                 </Typography>
               </Stack>
-              <CommentStatusIcon commentStatus={commentStatus} />
+              <StatusIcon status={commentStatus} />
             </ButtonBase>
           );
         })}

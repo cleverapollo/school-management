@@ -1,10 +1,14 @@
 import { Button, Menu, MenuItem, Stack, Typography } from '@mui/material';
-import { Avatar, usePreferredNameLayout, useDisclosure } from '@tyro/core';
+import {
+  Avatar,
+  usePreferredNameLayout,
+  useDisclosure,
+  StatusIcon,
+} from '@tyro/core';
 import { ChevronDownIcon } from '@tyro/icons';
 import { useRef } from 'react';
 import { useTranslation } from '@tyro/i18n';
 import { ReturnTypeFromUseOverallCommentsByYearGroup } from '../../api/overall-comment-year-group';
-import { CommentStatusIcon } from './comment-status-icon';
 
 interface StudentDropdownForOverallCommentsProps {
   students: ReturnTypeFromUseOverallCommentsByYearGroup['students'];
@@ -86,7 +90,7 @@ export function StudentDropdownForOverallComments({
                   </Typography>
                 </Stack>
               </Stack>
-              <CommentStatusIcon commentStatus={student.commentStatus} />
+              <StatusIcon status={student.commentStatus} />
             </MenuItem>
           );
         })}

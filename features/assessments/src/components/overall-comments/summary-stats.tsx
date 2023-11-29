@@ -1,9 +1,9 @@
 import { Card, Stack, Typography } from '@mui/material';
 import { CommentStatus } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
+import { StatusIcon } from '@tyro/core';
 import { ReturnTypeFromUseAssessmentById } from '../../api/assessments';
 import { ReturnTypeFromUseOverallCommentsByYearGroup } from '../../api/overall-comment-year-group';
-import { CommentStatusIcon } from './comment-status-icon';
 
 interface OverallCommentsSummaryStatsProps {
   yearSummaryStats: Omit<
@@ -63,7 +63,7 @@ export function OverallCommentsSummaryStats({
 
           return (
             <Stack direction="row" spacing={0.75} alignItems="center">
-              <CommentStatusIcon size="small" commentStatus={commentStatus} />
+              <StatusIcon size="small" status={commentStatus} />
               <Typography variant="body2">
                 {t(label, {
                   amountEntered,
