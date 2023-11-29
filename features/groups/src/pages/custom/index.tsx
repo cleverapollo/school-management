@@ -1,5 +1,5 @@
 import { Box, Button, Fade } from '@mui/material';
-import { SmsRecipientType, usePermissions } from '@tyro/api';
+import { PermissionUtils, SmsRecipientType, usePermissions } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -12,14 +12,19 @@ import {
   TableAvatar,
   useDisclosure,
 } from '@tyro/core';
-import { AddIcon, EditIcon, MobileIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
+import {
+  AddIcon,
+  EditIcon,
+  MobileIcon,
+  PrinterIcon,
+  TrashIcon,
+  VerticalDotsIcon,
+} from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { Link } from 'react-router-dom';
-import {
-  useCustomGroups,
-  ReturnTypeFromUseCustomGroups,
-} from '../../api/custom-groups';
-import { DeleteCustomGroupsModal } from "../../components/custom-group/delete-custom-groups-modal";
+import { useCustomGroups, ReturnTypeFromUseCustomGroups } from '../../api';
+import { DeleteCustomGroupsModal } from '../../components/custom-group/delete-custom-groups-modal';
+import { printGroupMembers } from '../../utils/print-group-members';
 
 const getColumns = (
   t: TFunction<('common' | 'groups')[], undefined>,
@@ -115,6 +120,31 @@ export default function CustomGroups() {
 
   const showActionMenu = isStaffUser && selectedGroups.length > 0;
 
+  const actionMenuItems = useMemo(
+    () => [
+      {
+        label: t('people:sendSms'),
+        icon: <MobileIcon />,
+        onClick: onOpenSendSms,
+      },
+      {
+        label: t('groups:deleteCustomGroups'),
+        icon: <TrashIcon />,
+        onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
+      },
+      {
+        label: t('groups:printGroupMembers'),
+        icon: <PrinterIcon />,
+        onClick: () => printGroupMembers(selectedGroups),
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission(
+            'ps:1:printing_and_exporting:print_group_members'
+          ),
+      },
+    ],
+    [selectedGroups, onOpenSendSms]
+  );
+
   return (
     <>
       <PageContainer title={t('groups:customGroups')}>
@@ -142,20 +172,7 @@ export default function CustomGroups() {
           rightAdornment={
             <Fade in={showActionMenu} unmountOnExit>
               <Box>
-                <ActionMenu
-                  menuItems={[
-                    {
-                      label: t('people:sendSms'),
-                      icon: <MobileIcon />,
-                      onClick: onOpenSendSms,
-                    },
-                    {
-                      label: t('groups:deleteCustomGroups'),
-                      icon: <TrashIcon />,
-                      onClick: () => setDeleteGroupIds(selectedGroups.map(({id}) => id)),
-                    },
-                  ]}
-                />
+                <ActionMenu menuItems={actionMenuItems} />
               </Box>
             </Fade>
           }

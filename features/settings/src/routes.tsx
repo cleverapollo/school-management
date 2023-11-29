@@ -308,9 +308,9 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'comment-banks',
             hasAccess: ({ isStaffUserWithPermission }) =>
-                isStaffUserWithPermission(
-                    'ps:1:assessment:write_comment_banks'
-                ),
+              isStaffUserWithPermission(
+                  'ps:1:assessment:write_comment_banks'
+              ),
             loader: () => getCommentBanks({}),
             element: <CommentBanks />,
           },
