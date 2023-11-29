@@ -280,9 +280,9 @@ export function useCalendarEvents(
               ) as IndividualAttendee[];
 
               const eventColor = resourceEventColor ?? event.colour ?? 'slate';
-              const showDashedBackground = event.alsoShowForParties.includes(
-                resource.resourceId
-              );
+              // const showDashedBackground = event.alsoShowForParties.includes(
+              //   resource.resourceId
+              // );
 
               eventsList.push({
                 id: `${resourceId ?? ''}-${event?.eventId}-${
@@ -295,11 +295,11 @@ export function useCalendarEvents(
                 start: event?.startTime,
                 end: event?.endTime,
                 color: eventColor,
-                backgroundImage: showDashedBackground
-                  ? `url("data:image/svg+xml,%3Csvg width='26' height='13' viewBox='0 0 52 26' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='${encodeURIComponent(
-                      palette[eventColor][300]
-                    )}' fill-opacity='1'%3E%3Cpath d='M10 10c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4v2c-3.314 0-6-2.686-6-6 0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6zm25.464-1.95l8.486 8.486-1.414 1.414-8.486-8.486 1.414-1.414z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");`
-                  : undefined,
+                // backgroundImage: showDashedBackground
+                //   ? `url("data:image/svg+xml,%3Csvg width='26' height='13' viewBox='0 0 52 26' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='${encodeURIComponent(
+                //       palette[eventColor][300]
+                //     )}' fill-opacity='1'%3E%3Cpath d='M10 10c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4v2c-3.314 0-6-2.686-6-6 0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6zm25.464-1.95l8.486 8.486-1.414 1.414-8.486-8.486 1.414-1.414z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");`
+                //   : undefined,
                 backgroundColor: palette[eventColor][100],
                 borderColor: palette[eventColor][500],
                 organizer:
