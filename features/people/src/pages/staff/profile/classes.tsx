@@ -11,7 +11,7 @@ import {
 } from '@tyro/core';
 import { useParams } from 'react-router-dom';
 import { useMemo, useState } from 'react';
-import { UseQueryReturnType, SmsRecipientType } from '@tyro/api';
+import {UseQueryReturnType, SmsRecipientType, PermissionUtils} from '@tyro/api';
 import { MobileIcon, PrinterIcon } from '@tyro/icons';
 import { Box, Fade } from '@mui/material';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
@@ -127,6 +127,8 @@ export default function StaffProfileClassesPage() {
       label: t('groups:printGroupMembers'),
       icon: <PrinterIcon />,
       onClick: onOpenBulkPrint,
+      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission('ps:1:printing_and_exporting:print_group_members'),
     },
   ];
 

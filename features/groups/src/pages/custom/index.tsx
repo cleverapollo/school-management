@@ -1,5 +1,5 @@
 import { Box, Button, Fade } from '@mui/material';
-import { SmsRecipientType, usePermissions } from '@tyro/api';
+import {PermissionUtils, SmsRecipientType, usePermissions} from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -141,6 +141,8 @@ export default function CustomGroups() {
       label: t('groups:printGroupMembers'),
       icon: <PrinterIcon />,
       onClick: onOpenBulkPrint,
+      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission('ps:1:printing_and_exporting:print_group_members'),
     },
   ];
 

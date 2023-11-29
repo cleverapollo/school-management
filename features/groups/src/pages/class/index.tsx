@@ -1,5 +1,6 @@
 import { Box, Container, Fade, Typography } from '@mui/material';
 import {
+  PermissionUtils,
   SmsRecipientType,
   UpdateClassGroupGroupInput,
   usePermissions,
@@ -153,6 +154,8 @@ export default function ClassGroupsPage() {
       label: t('groups:printGroupMembers'),
       icon: <PrinterIcon />,
       onClick: onOpenBulkPrint,
+      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission('ps:1:printing_and_exporting:print_group_members'),
     },
   ];
 

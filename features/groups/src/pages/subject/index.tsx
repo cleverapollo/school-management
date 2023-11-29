@@ -218,6 +218,8 @@ export default function SubjectGroups() {
       label: t('groups:printGroupMembers'),
       icon: <PrinterIcon />,
       onClick: onOpenBulkPrint,
+      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission('ps:1:printing_and_exporting:print_group_members'),
     },
   ];
 

@@ -1,7 +1,7 @@
 import { Box, Fade } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { SmsRecipientType, UpdateYearGroupEnrollmentInput } from '@tyro/api';
+import {PermissionUtils, SmsRecipientType, UpdateYearGroupEnrollmentInput} from '@tyro/api';
 import {
   ActionMenu,
   BulkEditedRows,
@@ -117,6 +117,8 @@ export default function YearGroups() {
       label: t('groups:printGroupMembers'),
       icon: <PrinterIcon />,
       onClick: onOpenBulkPrint,
+      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission('ps:1:printing_and_exporting:print_group_members'),
     },
   ];
 

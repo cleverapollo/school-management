@@ -61,12 +61,12 @@ export function BulkPrintGroupMembersModal({
                 {t('common:actions.cancel')}
               </Button>
 
-              <Button
-                variant="contained"
-                onClick={() => handlePrint(Print_GroupMembersOptions.Csv)}
-              >
-                {t('common:actions.exportCSV')}
-              </Button>
+              {/*<Button*/}
+              {/*  variant="contained"*/}
+              {/*  onClick={() => handlePrint(Print_GroupMembersOptions.Csv)}*/}
+              {/*>*/}
+              {/*  {t('common:actions.exportCSV')}*/}
+              {/*</Button>*/}
 
               <Button
                 variant="contained"
