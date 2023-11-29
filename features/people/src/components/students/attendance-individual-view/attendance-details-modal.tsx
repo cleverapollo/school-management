@@ -324,7 +324,7 @@ export const AttendanceDetailsModal = ({
                     fontWeight: 600,
                   },
                   '& tbody td': {
-                    verticalAlign: 'baseline',
+                    verticalAlign: 'middle',
                   },
                 }}
               >
