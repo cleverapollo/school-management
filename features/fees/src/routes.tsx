@@ -14,7 +14,7 @@ export const getRoutes: NavObjectFunction = (t) => [
       {
         type: NavObjectType.RootLink,
         path: 'fees',
-        title: t('navigation:management.sms'),
+        title: t('navigation:general.fees'),
         icon: <WalletWithMoneyIcon />,
         element: <ContactDashboard />,
       },

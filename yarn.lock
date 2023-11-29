@@ -6096,6 +6096,7 @@ __metadata:
     "@tyro/class-list-manager": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
+    "@tyro/fees": "*"
     "@tyro/groups": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
@@ -6338,7 +6339,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@tyro/fees@workspace:features/fees":
+"@tyro/fees@*, @tyro/fees@workspace:features/fees":
   version: 0.0.0-use.local
   resolution: "@tyro/fees@workspace:features/fees"
   dependencies:
