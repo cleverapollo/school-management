@@ -16,7 +16,13 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
-import { SearchType, SmsRecipientType, UseQueryReturnType } from '@tyro/api';
+import {
+  PermissionUtils,
+  SearchType,
+  SmsRecipientType,
+  UseQueryReturnType,
+  UserPermission,
+} from '@tyro/api';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
@@ -195,6 +201,10 @@ export default function StaffListPage() {
       label: t('people:printGroupMemberships'),
       icon: <PrinterIcon />,
       onClick: onOpenBulkPrint,
+      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+        isStaffUserWithPermission(
+          'ps:1:printing_and_exporting:print_staff_group_memberships'
+        ),
     },
   ];
 

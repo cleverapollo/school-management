@@ -242,6 +242,10 @@ export default function StudentsListPage() {
                         label: t('people:printGroupMemberships'),
                         icon: <PrinterIcon />,
                         onClick: onOpenBulkPrint,
+                        hasAccess: ({ isStaffUserWithPermission }) =>
+                          isStaffUserWithPermission(
+                            'ps:1:printing_and_exporting:print_student_group_memberships'
+                          ),
                       },
                     ]}
                   />
