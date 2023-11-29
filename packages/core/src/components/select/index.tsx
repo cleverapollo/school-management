@@ -7,7 +7,7 @@ type SelectCustomVariant = Omit<TextFieldProps, 'variant'> & {
 
 export type SelectProps<TSelectOption> = SelectCustomVariant & {
   options: TSelectOption[];
-  getOptionLabel?: (option: TSelectOption) => string;
+  getOptionLabel?: (option: TSelectOption) => string | ReactNode;
   customSelectRef?: TextFieldProps['ref'];
   optionIdKey?: keyof TSelectOption;
   optionTextKey?: TSelectOption extends object ? keyof TSelectOption : never;
