@@ -15,11 +15,11 @@ const additionalCommentStatusStyles = {
   },
 };
 
-export function StatusIcon({
-  status,
+export function CommentStatusIcon({
+  commentStatus,
   size = 'medium',
 }: {
-  status: CommentStatus;
+  commentStatus: CommentStatus;
   size?: 'small' | 'medium';
 }) {
   return (
@@ -32,11 +32,10 @@ export function StatusIcon({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        boxSizing: 'border-box',
-        ...additionalCommentStatusStyles[status],
+        ...additionalCommentStatusStyles[commentStatus],
       }}
     >
-      {status === CommentStatus.Complete && (
+      {commentStatus === CommentStatus.Complete && (
         <CheckmarkIcon
           sx={{
             fontSize: size === 'small' ? '0.7rem' : '0.9rem',
@@ -47,13 +46,14 @@ export function StatusIcon({
           }}
         />
       )}
-      {status === CommentStatus.InProgress && (
+      {commentStatus === CommentStatus.InProgress && (
         <Box
           sx={{
             width: size === 'small' ? 8 : 10,
             height: size === 'small' ? 8 : 10,
             borderRadius: '50%',
-            backgroundColor: additionalCommentStatusStyles[status].borderColor,
+            backgroundColor:
+              additionalCommentStatusStyles[commentStatus].borderColor,
           }}
         />
       )}

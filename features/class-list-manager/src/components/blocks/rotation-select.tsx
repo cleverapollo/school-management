@@ -1,7 +1,8 @@
 import { Typography, SxProps, Theme, Stack } from '@mui/material';
-import { Select, StatusIcon } from '@tyro/core';
+import { Select } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
+import { CommentStatusIcon } from '@tyro/assessments';
 import { CommentStatus } from '@tyro/api';
 import { useCallback, useMemo } from 'react';
 import { BlockAutocompleteProps } from './block-autocomplete';
@@ -82,14 +83,12 @@ export function RotationSelect({
       return (
         <Stack>
           <Stack direction="row" gap={0.5} alignItems="center">
-            <StatusIcon size="small" status={status} />
+            <CommentStatusIcon size="small" commentStatus={status} />
             <Typography variant="subtitle2">
               {t('classListManager:rotationX', { number: iteration })}
             </Typography>
           </Stack>
-          <Typography ml={2.5} variant="caption" color="text.secondary">
-            {info}
-          </Typography>
+          <Typography variant="caption">{info}</Typography>
         </Stack>
       );
     },
@@ -103,9 +102,9 @@ export function RotationSelect({
       value={value}
       renderValue={({ iteration, index }) => (
         <Stack direction="row" gap={0.5} alignItems="center">
-          <StatusIcon
+          <CommentStatusIcon
             size="small"
-            status={getRotationStatus(rotations[index])}
+            commentStatus={getRotationStatus(rotations[index])}
           />
           <Typography>
             {t('classListManager:rotationX', { number: iteration })}
@@ -119,11 +118,6 @@ export function RotationSelect({
       getOptionLabel={getOptionLabel}
       options={options}
       sx={sx}
-      menuItemProps={{
-        sx: {
-          p: 0.5,
-        },
-      }}
     />
   );
 }

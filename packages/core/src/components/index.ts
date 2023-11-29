@@ -31,7 +31,6 @@ export * from './save-bar';
 export * from './scrollbar';
 export * from './search-input';
 export * from './select';
-export * from './status-icon';
 export * from './tab-page-container';
 export * from './table';
 export * from './tabs';
