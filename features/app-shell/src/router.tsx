@@ -13,6 +13,7 @@ import {
   getUser,
   msalInstance,
   getCoreAcademicNamespace,
+  UsePermissionsReturn,
 } from '@tyro/api';
 import {
   wrapCreateBrowserRouter,

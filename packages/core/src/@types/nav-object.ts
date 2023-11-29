@@ -1,5 +1,5 @@
 import { TFunction } from '@tyro/i18n';
-import { PermissionUtils } from '@tyro/api';
+import { PermissionUtils, UsePermissionsReturn } from '@tyro/api';
 import { IndexRouteObject, NonIndexRouteObject } from 'react-router-dom';
 
 export enum NavObjectType {
@@ -90,6 +90,7 @@ export interface NavCategory {
   type: NavObjectType.Category;
   title: string;
   children: (RootLink | RootGroup)[];
+  hasAccess?: HasAccessFunction;
 }
 
 export type NavObjectFunction = (

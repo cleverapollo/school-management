@@ -6338,6 +6338,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@tyro/fees@workspace:features/fees":
+  version: 0.0.0-use.local
+  resolution: "@tyro/fees@workspace:features/fees"
+  dependencies:
+    "@mui/lab": ^5.0.0-alpha.151
+    "@mui/material": ^5.14.16
+    "@mui/system": ^5.14.16
+    "@tanstack/react-query": ^4.29.7
+    "@tyro/api": "*"
+    "@tyro/configs": "*"
+    "@tyro/core": "*"
+    "@tyro/i18n": "*"
+    "@tyro/icons": "*"
+    dayjs: ^1.11.7
+    lodash: ^4.17.21
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    react-hook-form: ^7.43.9
+    react-router: ^6.3.0
+    react-router-dom: ^6.6.2
+  languageName: unknown
+  linkType: soft
+
 "@tyro/groups@*, @tyro/groups@workspace:features/groups":
   version: 0.0.0-use.local
   resolution: "@tyro/groups@workspace:features/groups"

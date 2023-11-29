@@ -5,6 +5,7 @@
     "calendar": "Calendar",
     "subjects": "Subjects",
     "mail": "Mail",
+    "fees": "Fees",
     "attendance": {
       "title": "Attendance",
       "overview": "Overview",
@@ -39,6 +40,7 @@
   "management": {
     "title": "Management",
     "classListManager": "Class list manager",
+    "fees": "Fees",
     "people": {
       "title": "People",
       "students": "Students",

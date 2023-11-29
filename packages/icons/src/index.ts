@@ -134,5 +134,6 @@ export * from './user-group-two';
 export * from './user-profile-card';
 export * from './user-swap';
 export * from './vertical-dots';
+export * from './wallet-with-money';
 export * from './warning';
 export * from './warning-circle-with-pencil';
