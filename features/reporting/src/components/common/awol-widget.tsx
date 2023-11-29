@@ -171,6 +171,7 @@ export function AWOLWidget() {
                   py={1.25}
                   px={1.25}
                   role="gridcell"
+                  gridColumn="1/2"
                   display="flex"
                   alignItems="center"
                 >
@@ -222,9 +223,10 @@ export function AWOLWidget() {
                   py={1.25}
                   pr={1.25}
                   role="gridcell"
+                  gridColumn="2/3"
                   display="flex"
                   alignItems="center"
-                  justifySelf="end"
+                  justifySelf="flex-end"
                 >
                   <Card
                     sx={{
