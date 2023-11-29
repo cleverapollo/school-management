@@ -1,5 +1,5 @@
 import { Box, Button, DialogContent, Stack } from '@mui/material';
-import { Dialog, DialogActions, DialogTitle } from '@tyro/core';
+import { Dialog, DialogActions, DialogTitle, useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useState } from 'react';
 import { PartyGroupType, Print_GroupMembersOptions } from '@tyro/api';
@@ -19,26 +19,30 @@ export function BulkPrintPersonsGroupsMembershipsModal({
   groups,
 }: BulkPrintPersonsGroupsMembershipsModalProps) {
   const { t } = useTranslation(['common', 'people']);
+  const { toast } = useToast();
   const [groupTypes, setGroupTypes] = useState<PartyGroupType[]>([
     PartyGroupType.SubjectGroup,
   ]);
 
   const handlePrint = async (options: Print_GroupMembersOptions) => {
-    const personIds = groups.map(({ id }) => id) ?? [];
+    try {
+      const personIds = groups.map(({ id }) => id) ?? [];
+      const printResponse = await getPrintPersonsGroupMemberships({
+        personIds,
+        options,
+        groupTypes,
+      });
 
-    const printResponse = await getPrintPersonsGroupMemberships({
-      personIds,
-      options,
-      groupTypes,
-    });
-
-    if (printResponse?.print_personsGroupMemberships?.url)
-      window.open(
-        printResponse.print_personsGroupMemberships.url,
-        '_blank',
-        'noreferrer'
-      );
-    handleClose();
+      if (printResponse?.print_personsGroupMemberships?.url)
+        window.open(
+          printResponse.print_personsGroupMemberships.url,
+          '_blank',
+          'noreferrer'
+        );
+      handleClose();
+    } catch {
+      toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
+    }
   };
 
   const handleClose = () => {
@@ -52,10 +56,10 @@ export function BulkPrintPersonsGroupsMembershipsModal({
       onClose={handleClose}
       scroll="paper"
       fullWidth
-      maxWidth="md"
+      maxWidth="xs"
     >
       <DialogTitle>{t('people:printGroupMemberships')}</DialogTitle>
-      <DialogContent sx={{ pb: 4, overflow: 'visible' }}>
+      <DialogContent sx={{ pt: 0.75 }}>
         <GroupTypeAutocomplete
           value={groupTypes}
           onChange={(_, newValue) =>
@@ -63,43 +67,25 @@ export function BulkPrintPersonsGroupsMembershipsModal({
           }
         />
       </DialogContent>
-      <DialogActions
-        sx={{
-          borderTopColor: 'slate.200',
-          borderTopWidth: 1,
-          borderTopStyle: 'solid',
-          p: '0 !important',
-        }}
-      >
-        <Stack direction="row" sx={{ py: 1.5, flex: 1 }}>
-          <Box sx={{ flex: 1, display: 'flex', alignItems: 'center' }}>
-            <Stack
-              direction="row"
-              justifyContent="flex-end"
-              alignItems="center"
-              spacing={1.5}
-              sx={{ px: 3, flex: 1 }}
-            >
-              <Button variant="soft" onClick={handleClose}>
-                {t('common:actions.cancel')}
-              </Button>
+      <DialogActions>
+        <Button variant="soft" color="inherit" onClick={handleClose}>
+          {t('common:actions.cancel')}
+        </Button>
 
-              <Button
-                variant="contained"
-                onClick={() => handlePrint(Print_GroupMembersOptions.Csv)}
-              >
-                {t('common:actions.exportCSV')}
-              </Button>
+        {/* Hiding till backend is done  */}
+        {/* <Button
+          variant="contained"
+          onClick={() => handlePrint(Print_GroupMembersOptions.Csv)}
+        >
+          {t('common:actions.exportCSV')}
+        </Button> */}
 
-              <Button
-                variant="contained"
-                onClick={() => handlePrint(Print_GroupMembersOptions.Print)}
-              >
-                {t('common:actions.print')}
-              </Button>
-            </Stack>
-          </Box>
-        </Stack>
+        <Button
+          variant="contained"
+          onClick={() => handlePrint(Print_GroupMembersOptions.Print)}
+        >
+          {t('common:actions.print')}
+        </Button>
       </DialogActions>
     </Dialog>
   );

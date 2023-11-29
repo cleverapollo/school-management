@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Box, Container, Fade, Typography } from '@mui/material';
 import {
   GridOptions,
@@ -24,9 +24,7 @@ import {
 } from '../../api/student/students';
 import { ChangeProgrammeYearModal } from '../../components/students/change-programme-year-modal';
 import { StudentTableAvatar } from '../../components/common/student-table-avatar';
-import {
-  BulkPrintPersonsGroupsMembershipsModal
-} from '../../components/common/bulk-print-persons-groups-memberships-modal';
+import { BulkPrintPersonsGroupsMembershipsModal } from '../../components/common/bulk-print-persons-groups-memberships-modal';
 
 const getStudentColumns = (
   translate: TFunction<
@@ -176,7 +174,7 @@ export default function StudentsListPage() {
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
-  
+
   const {
     isOpen: isBulkPrintOpen,
     onOpen: onOpenBulkPrint,
@@ -193,6 +191,18 @@ export default function StudentsListPage() {
     () => getStudentColumns(t, displayName, displayNames),
     [t, displayName, displayNames]
   );
+
+  useEffect(() => {
+    console.log('students diff');
+  }, [students]);
+
+  useEffect(() => {
+    console.log('selectedStudents diff');
+  }, [selectedStudents]);
+
+  useEffect(() => {
+    console.log('studentColumns diff');
+  }, [studentColumns]);
 
   return (
     <>

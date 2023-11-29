@@ -81,5 +81,14 @@
   "groupDescription": "Group description",
   "organisersInGroup": "Organisers in group",
   "byYou": "By you",
-  "lastSaved": "Last saved"
+  "lastSaved": "Last saved",
+  "partyGroupType": {
+    "CLASS_GROUP": "Class group",
+    "CUSTOM_GROUP": "Custom group",
+    "GENERAL_GROUP": "General group",
+    "PROGRAMME_STAGE": "Programme stage",
+    "SUBJECT_GROUP": "Subject group",
+    "SUPPORT_GROUP": "Support group",
+    "YEAR_GROUP": "Year group"
+  }
 }

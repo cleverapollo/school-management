@@ -42,7 +42,7 @@
   "currentEmployee": "Current employee",
   "scrollableTabs": "Scrollable tabs",
   "printGroupMemberships": "Print group memberships",
-  "groupType": "Group type",
+  "groupTypes": "Group type(s)",
   "gender": {
     "title": "Gender",
     "MALE": "Male",
