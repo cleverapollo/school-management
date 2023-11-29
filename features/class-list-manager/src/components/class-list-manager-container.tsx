@@ -8,7 +8,7 @@ import {
   useDisclosure,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { Box } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { MaleFemaleIcon, PersonTickIcon, RotationIcon } from '@tyro/icons';
@@ -22,7 +22,7 @@ import { AutoAssignConfirmDialog } from './common/auto-assign-confirm-dialog';
 export default function ClassListManagerContainer() {
   const { t } = useTranslation(['navigation', 'classListManager']);
   const { pathname } = useLocation();
-  const navigate = useNavigate();
+  const [, setSearchParams] = useSearchParams();
   const isBlockView = pathname.includes('blocks');
   const containerMargin = useContainerMargin();
 
@@ -110,13 +110,9 @@ export default function ClassListManagerContainer() {
   );
 
   useEffect(() => {
-    navigate(
-      `${pathname}${
-        selectedYearGroup?.yearGroupId
-          ? `?yearGroupId=${selectedYearGroup.yearGroupId}`
-          : ''
-      }`
-    );
+    if (selectedYearGroup?.yearGroupId) {
+      setSearchParams({ yearGroupId: `${selectedYearGroup.yearGroupId}` });
+    }
   }, [pathname, selectedYearGroup]);
 
   return (

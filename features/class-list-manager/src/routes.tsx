@@ -39,14 +39,16 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.NonMenuLink,
             path: 'blocks',
             loader: async () => {
+              const { core_yearGroupEnrollments: coreYearGroupEnrollments } =
+                await getYearGroups();
+              const [yearGroup] = coreYearGroupEnrollments;
               const searchParams = new URLSearchParams(
                 document.location.search
               );
               const yearGroupId = searchParams.get('yearGroupId');
-              if (yearGroupId) {
-                return getBlocksList(Number(yearGroupId));
-              }
-              return [];
+              return getBlocksList(
+                Number(yearGroupId) ?? yearGroup?.yearGroupId
+              );
             },
             element: <ClassListManagerBlocks />,
           },
