@@ -9,7 +9,6 @@ type GroupTypeAutocompleteProps = Omit<
 
 const partyGroupOptions: PartyGroupType[] = [
   PartyGroupType.ClassGroup,
-  PartyGroupType.ProgrammeStage,
   PartyGroupType.SubjectGroup,
   PartyGroupType.YearGroup,
 ];
