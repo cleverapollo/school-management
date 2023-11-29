@@ -75,7 +75,8 @@
       "title": "Printing",
       "timetable": "Timetable"
     },
-    "sms": "SMS"
+    "sms": "SMS",
+    "subjectOptions": "Subject options"
   },
   "errors": {
     "404": {

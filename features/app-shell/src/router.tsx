@@ -40,6 +40,7 @@ import { getRoutes as getAssessmentRoutes } from '@tyro/assessments';
 import { getRoutes as getPeopleRoutes } from '@tyro/people';
 import { getRoutes as getReportingRoutes } from '@tyro/reporting';
 import { getRoutes as getSettingsRoutes } from '@tyro/settings';
+import { getRoutes as getSubjectOptionsRoutes } from '@tyro/subject-options';
 import { getRoutes as getSubstitutionRoutes } from '@tyro/substitution';
 import { getRoutes as getTimetableRoutes } from '@tyro/timetable';
 import { getRoutes as getAdminRoutes } from '@tyro/tyro-admin';
@@ -132,6 +133,7 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getPeopleRoutes(t),
   ...getReportingRoutes(t),
   ...getSmsRoutes(t),
+  ...getSubjectOptionsRoutes(t),
   ...getSubstitutionRoutes(t),
   ...getTimetableRoutes(t),
   ...getPrintingRoutes(t),

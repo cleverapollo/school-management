@@ -14,6 +14,7 @@ import printing from './printing.json'
 import reports from './reports.json'
 import settings from './settings.json';
 import sms from './sms.json';
+import subjectOptions from './subjectOptions.json';
 import substitution from './substitution.json';
 import timetable from './timetable.json'
 
@@ -34,6 +35,7 @@ export const en = {
   reports,
   settings,
   sms,
+  subjectOptions,
   substitution,
   timetable,
 };

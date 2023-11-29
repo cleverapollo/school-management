@@ -17,6 +17,7 @@ export * from './bell';
 export * from './blank-file';
 export * from './bold';
 export * from './book-open';
+export * from './book-open-with-text';
 export * from './books-apple';
 export * from './brush-circle';
 export * from './building-graduate-hat';

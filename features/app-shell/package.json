@@ -24,6 +24,7 @@
     "@tyro/reporting": "*",
     "@tyro/settings": "*",
     "@tyro/sms": "*",
+    "@tyro/subject-options": "*",
     "@tyro/substitution": "*",
     "@tyro/timetable": "*",
     "@tyro/tyro-admin": "*",
