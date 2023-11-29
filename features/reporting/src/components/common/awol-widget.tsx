@@ -226,7 +226,7 @@ export function AWOLWidget() {
                   gridColumn="2/3"
                   display="flex"
                   alignItems="center"
-                  justifySelf="flex-end"
+                  justifySelf="end"
                 >
                   <Card
                     sx={{
