@@ -4686,6 +4686,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stripe/react-stripe-js@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "@stripe/react-stripe-js@npm:2.4.0"
+  dependencies:
+    prop-types: ^15.7.2
+  peerDependencies:
+    "@stripe/stripe-js": ^1.44.1 || ^2.0.0
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 4cf16c9bca6cff67cfef51d95a1521563dc579f5957ae0bcb773b958afa1a57bc90c35a157e2e11452a2d1c0c26eddbe5644afe7f07cd39ed55697385d7b18a9
+  languageName: node
+  linkType: hard
+
+"@stripe/stripe-js@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "@stripe/stripe-js@npm:2.2.0"
+  checksum: 2698ac54a6c8ef4f1cf311e505a31514aff01fee1b7a33c71d0e3ae66732f82e9fb1e29ba15a460ddbff1af68a44f3ca35eae227e4533ae5f3c56a1ce03916f5
+  languageName: node
+  linkType: hard
+
 "@svgr/babel-plugin-add-jsx-attribute@npm:^6.5.1":
   version: 6.5.1
   resolution: "@svgr/babel-plugin-add-jsx-attribute@npm:6.5.1"
@@ -6346,6 +6366,8 @@ __metadata:
     "@mui/lab": ^5.0.0-alpha.151
     "@mui/material": ^5.14.16
     "@mui/system": ^5.14.16
+    "@stripe/react-stripe-js": ^2.4.0
+    "@stripe/stripe-js": ^2.2.0
     "@tanstack/react-query": ^4.29.7
     "@tyro/api": "*"
     "@tyro/configs": "*"

@@ -20,4 +20,18 @@ export const getRoutes: NavObjectFunction = (t) => [
       },
     ],
   },
+  {
+    type: NavObjectType.Category,
+    title: t('navigation:management.title'),
+    hasAccess: ({ isStaffUser }) => isStaffUser,
+    children: [
+      {
+        type: NavObjectType.RootGroup,
+        path: 'fees',
+        title: t('navigation:general.fees'),
+        icon: <WalletWithMoneyIcon />,
+        children: [],
+      },
+    ],
+  },
 ];

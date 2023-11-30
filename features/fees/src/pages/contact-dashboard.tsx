@@ -1,4 +1,5 @@
 import {
+  ActionMenu,
   GridOptions,
   ICellRendererParams,
   PageContainer,
@@ -6,17 +7,20 @@ import {
   ReturnTypeDisplayName,
   Table,
   TableAvatar,
+  useDisclosure,
   usePreferredNameLayout,
 } from '@tyro/core';
 import { TFunction, useFormatNumber, useTranslation } from '@tyro/i18n';
-import { Dispatch, SetStateAction, useMemo } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { useUser } from '@tyro/api';
+import { Button, Fade } from '@mui/material';
 import {
   ReturnTypeFromUseStudentFees,
   useStudentFees,
 } from '../api/student-fees';
+import { PayFeesModal } from '../components/common/pay-fees-modal';
 
 dayjs.extend(LocalizedFormat);
 
@@ -54,15 +58,13 @@ const getColumnDefs = (
   {
     field: 'amount',
     headerName: t('fees:amount'),
-    valueGetter: ({ data }) =>
-      data?.amount ? formatCurrency(data.amount) : null,
+    valueGetter: ({ data }) => formatCurrency(data?.amount ?? 0),
     type: 'numericColumn',
   },
   {
     field: 'amountPaid',
     headerName: t('fees:amountPaid'),
-    valueGetter: ({ data }) =>
-      data?.amountPaid ? formatCurrency(data.amountPaid) : null,
+    valueGetter: ({ data }) => formatCurrency(data?.amountPaid ?? 0),
     type: 'numericColumn',
   },
 ];
@@ -72,6 +74,17 @@ export default function ContactDashboard() {
   const { activeProfile } = useUser();
   const { displayName } = usePreferredNameLayout();
   const { formatCurrency } = useFormatNumber();
+  const [selectedStudentFees, setSelectedStudentFees] = useState<
+    ReturnTypeFromUseStudentFees[]
+  >([]);
+
+  const {
+    isOpen: isPayFeesModalOpen,
+    onOpen: onOpenPayFeesModal,
+    onClose: onClosePayFeesModal,
+  } = useDisclosure({
+    defaultIsOpen: false,
+  });
 
   const { data: studentFees } = useStudentFees({
     contactPartyId: activeProfile?.partyId,
@@ -83,17 +96,36 @@ export default function ContactDashboard() {
   );
 
   return (
-    <PageContainer title={t('navigation:management.fees')}>
-      <PageHeading
-        title={t('navigation:management.fees')}
-        titleProps={{ variant: 'h3' }}
+    <>
+      <PageContainer title={t('navigation:management.fees')}>
+        <PageHeading
+          title={t('navigation:management.fees')}
+          titleProps={{ variant: 'h3' }}
+        />
+        <Table
+          rowData={studentFees || []}
+          columnDefs={columnDefs}
+          rowSelection="multiple"
+          getRowId={({ data }) => String(data?.id)}
+          rightAdornment={
+            <Fade in={selectedStudentFees.length > 0} unmountOnExit>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={onOpenPayFeesModal}
+              >
+                {t('fees:pay')}
+              </Button>
+            </Fade>
+          }
+          onRowSelection={setSelectedStudentFees}
+        />
+      </PageContainer>
+      <PayFeesModal
+        open={isPayFeesModalOpen}
+        onClose={onClosePayFeesModal}
+        feesToPay={selectedStudentFees}
       />
-      <Table
-        rowData={studentFees || []}
-        columnDefs={columnDefs}
-        rowSelection="multiple"
-        getRowId={({ data }) => String(data?.id)}
-      />
-    </PageContainer>
+    </>
   );
 }
