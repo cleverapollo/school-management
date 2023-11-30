@@ -16,13 +16,25 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
-import { SearchType, SmsRecipientType, UseQueryReturnType } from '@tyro/api';
+import {
+  PermissionUtils,
+  SearchType,
+  SmsRecipientType,
+  UseQueryReturnType,
+  UserPermission,
+} from '@tyro/api';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { AddUserIcon, MobileIcon, SendMailIcon } from '@tyro/icons';
+import {
+  AddUserIcon,
+  MobileIcon,
+  PrinterIcon,
+  SendMailIcon,
+} from '@tyro/icons';
 import { useMailSettings } from '@tyro/mail';
 import { useStaff } from '../../api/staff';
+import { BulkPrintPersonsGroupsMembershipsModal } from '../../components/common/bulk-print-persons-groups-memberships-modal';
 
 dayjs.extend(LocalizedFormat);
 
@@ -148,6 +160,13 @@ export default function StaffListPage() {
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
+
+  const {
+    isOpen: isBulkPrintOpen,
+    onOpen: onOpenBulkPrint,
+    onClose: onCloseBulkPrint,
+  } = useDisclosure();
+
   const staffColumns = useMemo(
     () => getStaffColumns(t, displayName),
     [t, displayName]
@@ -177,6 +196,15 @@ export default function StaffListPage() {
       label: t('mail:sendMail'),
       icon: <SendMailIcon />,
       onClick: sendMailToSelectedStaff,
+    },
+    {
+      label: t('people:printGroupMemberships'),
+      icon: <PrinterIcon />,
+      onClick: onOpenBulkPrint,
+      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+        isStaffUserWithPermission(
+          'ps:1:printing_and_exporting:print_staff_group_memberships'
+        ),
     },
   ];
 
@@ -224,6 +252,11 @@ export default function StaffListPage() {
           }
         />
       </PageContainer>
+      <BulkPrintPersonsGroupsMembershipsModal
+        isOpen={isBulkPrintOpen}
+        onClose={onCloseBulkPrint}
+        groups={selectedStaff}
+      />
       <SendSmsModal
         isOpen={isSendSmsOpen}
         onClose={onCloseSendSms}

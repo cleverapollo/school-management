@@ -9,14 +9,14 @@ import {
   usePreferredNameLayout,
   AttendanceCodeChip,
 } from '@tyro/core';
-import dayjs from 'dayjs';
-import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import {
   useTableSessionAttendance,
   useStudentDailyCalendarInformation,
 } from '@tyro/attendance';
 import { useTranslation, TFunction } from '@tyro/i18n';
 import { AttendanceCodeType } from '@tyro/api';
+import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 
 dayjs.extend(LocalizedFormat);
 

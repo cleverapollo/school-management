@@ -31,7 +31,8 @@
     "next": "Next",
     "clone": "Clone",
     "filter": "Filter",
-    "deselect": "Deselect"
+    "deselect": "Deselect",
+    "exportCSV": "Export CSV"
   },
   "snackbarMessages": {
     "createSuccess": "Created successfully!",
@@ -137,6 +138,7 @@
   "selectedWithNumber": "Selected ({{count}})",
   "yes": "Yes",
   "no": "No",
+  "none": "None",
   "comment": "Comment",
   "preferredFirstName": "Preferred first name",
   "changes": "Changes",
