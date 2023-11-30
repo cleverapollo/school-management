@@ -52,10 +52,6 @@ const getColumnDefs = (
     headerName: t('fees:dueDate'),
   },
   {
-    field: 'feeDescription',
-    headerName: t('common:description'),
-  },
-  {
     field: 'amount',
     headerName: t('fees:amount'),
     valueGetter: ({ data }) => formatCurrency(data?.amount ?? 0),

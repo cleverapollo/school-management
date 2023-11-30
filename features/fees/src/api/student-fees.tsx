@@ -19,7 +19,6 @@ const studentFees = graphql(/* GraphQL */ `
         avatarUrl
       }
       feeName
-      feeDescription
       dueDate
       amount
       amountPaid

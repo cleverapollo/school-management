@@ -8,70 +8,66 @@ import {
 } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { MakePaymentInput } from '@tyro/api';
-import { FormEvent, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
+import { getPaymentSecret } from '../../../api/create-payment-secret';
+import { usePayFeesSettings } from './store';
 
 const stripePromise = loadStripe(
   'pk_test_51MWMNZDT811pK8VExdSBnjE9DgKkb7FO9yxEIBv5MHYPHoHDO9fw78GI0Leb2EPEHzJGvXxU1IPiHAXK1YqRJYzj003FYTtroQ'
 );
 
-function Checkoutform() {
+interface PayFeesModalProps {
+  paymentInput: MakePaymentInput;
+}
+
+function Checkoutform({ paymentInput }: PayFeesModalProps) {
   const stripe = useStripe();
   const elements = useElements();
+  const { setNextAction } = usePayFeesSettings();
 
-  const handleSubmit = async (event: FormEvent) => {
-    // We don't want to let default form submission happen here,
-    // which would refresh the page.
-    event.preventDefault();
-
+  const handleSubmit = useCallback(async () => {
+    console.log('handleSubmit');
     if (!stripe || !elements) {
       // Stripe.js hasn't yet loaded.
       // Make sure to disable form submission until Stripe.js has loaded.
       return;
     }
 
-    const card = elements.getElement(CardElement);
-    console.log({
-      card,
-    });
-
-    if (!card) {
+    const { error: submitError } = await elements.submit();
+    if (submitError) {
+      console.log({
+        submitError,
+      });
       return;
     }
 
-    const result = await stripe.confirmCardPayment('{CLIENT_SECRET}', {
-      payment_method: {
-        card,
-        billing_details: {
-          name: 'Jenny Rosen',
-        },
+    const { fees_createPayment } = await getPaymentSecret(paymentInput);
+
+    const redirectUrl = new URL(window.location.href);
+    redirectUrl.searchParams.set('paymentStatus', 'succeeded');
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      clientSecret: fees_createPayment.clientSecret,
+      confirmParams: {
+        return_url: redirectUrl.href,
       },
+      redirect: 'if_required',
     });
 
-    if (result.error) {
+    if (error) {
       // Show error to your customer (for example, insufficient funds)
-      console.log(result.error.message);
+      console.log(error.message);
     } else {
-      // The payment has been processed!
-      if (result.paymentIntent.status === 'succeeded') {
-        // Show a success message to your customer
-        // There's a risk of the customer closing the window before callback
-        // execution. Set up a webhook or plugin to listen for the
-        // payment_intent.succeeded event that handles any business critical
-        // post-payment actions.
-      }
+      console.log('Success');
     }
-  };
+  }, [stripe, elements, paymentInput]);
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <PaymentElement />
-      <Button disabled={!stripe}>Confirm order</Button>
-    </form>
-  );
-}
+  useEffect(() => {
+    setNextAction(() => handleSubmit);
+  }, [setNextAction, handleSubmit]);
 
-interface PayFeesModalProps {
-  paymentInput: MakePaymentInput;
+  return <PaymentElement />;
 }
 
 export function PayFeesStepTwo({ paymentInput }: PayFeesModalProps) {
@@ -89,7 +85,7 @@ export function PayFeesStepTwo({ paymentInput }: PayFeesModalProps) {
 
   return (
     <Elements stripe={stripePromise} options={options}>
-      <Checkoutform />
+      <Checkoutform paymentInput={paymentInput} />
     </Elements>
   );
 }

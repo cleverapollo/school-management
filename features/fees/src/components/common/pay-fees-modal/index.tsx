@@ -6,6 +6,7 @@ import { useTranslation } from '@tyro/i18n';
 import { PaymentMethod, PaymentStatus } from '@tyro/api';
 import { ReturnTypeFromUseStudentFees } from '../../../api/student-fees';
 import { PayFeesStepTwo } from './step-two';
+import { PayFeesSettingsProvider } from './store';
 
 interface PayFeesModalProps {
   open: boolean;
@@ -30,27 +31,35 @@ export function PayFeesModal({ open, onClose, feesToPay }: PayFeesModalProps) {
   );
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      scroll="paper"
-      fullWidth
-      maxWidth="md"
-    >
-      <DialogTitle onClose={onClose}>Pay fees</DialogTitle>
-      <DialogContent>
-        <PayFeesStepTwo paymentInput={paymentInput} />
-      </DialogContent>
+    <PayFeesSettingsProvider>
+      {({ nextAction }) => (
+        <Dialog
+          open={open}
+          onClose={onClose}
+          scroll="paper"
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogTitle onClose={onClose}>Pay fees</DialogTitle>
+          <DialogContent>
+            <PayFeesStepTwo paymentInput={paymentInput} />
+          </DialogContent>
 
-      <DialogActions>
-        <Button variant="outlined" color="inherit" onClick={onClose}>
-          {t('common:actions.cancel')}
-        </Button>
+          <DialogActions>
+            <Button variant="outlined" color="inherit" onClick={onClose}>
+              {t('common:actions.cancel')}
+            </Button>
 
-        <LoadingButton type="submit" variant="contained">
-          {t('common:actions.save')}
-        </LoadingButton>
-      </DialogActions>
-    </Dialog>
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              onClick={nextAction}
+            >
+              {t('common:actions.save')}
+            </LoadingButton>
+          </DialogActions>
+        </Dialog>
+      )}
+    </PayFeesSettingsProvider>
   );
 }
