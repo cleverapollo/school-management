@@ -5,12 +5,18 @@ import {
   lazyWithRetry,
   throw404Error,
 } from '@tyro/core';
+import { redirect } from 'react-router-dom';
 import { SchoolExamACircleIcon } from '@tyro/icons';
 import { getSchoolActivityById } from './api/get-school-activities';
 
 const SchoolActivityPage = lazyWithRetry(() => import('./pages'));
 const CreateSchoolActivityPage = lazyWithRetry(() => import('./pages/create'));
 const EditSchoolActivityPage = lazyWithRetry(() => import('./pages/edit'));
+const SchoolActivitiesContainer = lazyWithRetry(
+  () => import('./components/school-activities-container')
+);
+
+const EffectedClasses = lazyWithRetry(() => import('./pages/effected-classes'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -19,9 +25,9 @@ export const getRoutes: NavObjectFunction = (t) => [
     children: [
       {
         type: NavObjectType.RootLink,
-        path: 'school-activities',
+        path: 'school-activity',
+        title: t('navigation:general.schoolActivities.schoolActivity'),
         icon: <SchoolExamACircleIcon />,
-        title: t('navigation:general.schoolActivities.title'),
         children: [
           {
             type: NavObjectType.NonMenuLink,
@@ -36,6 +42,7 @@ export const getRoutes: NavObjectFunction = (t) => [
           {
             type: NavObjectType.NonMenuLink,
             path: ':activityId',
+            element: <SchoolActivitiesContainer />,
             loader: ({ params }) => {
               const schoolActivityId = getNumber(params.activityId);
 
@@ -48,6 +55,16 @@ export const getRoutes: NavObjectFunction = (t) => [
               });
             },
             children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                index: true,
+                loader: () => redirect('./effected-classes'),
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'effected-classes',
+                element: <EffectedClasses />,
+              },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'edit',

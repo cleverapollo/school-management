@@ -1,5 +1,6 @@
 {
-    "title": "School activities",
+    "schoolActivitiesTitle": "School activities",
+    "schoolActivity": "School activity",
     "details": "Details",
     "activityName": "Activity name",
     "createSchoolActivity": "Create school activity",
@@ -20,5 +21,20 @@
         "PARTIAL_DAY": "Partial day"
     },
     "leavesAtTime": " Leaves at",
-    "returnsAtTime": "Returns at"
+    "returnsAtTime": "Returns at",
+    "requests": "Requests",
+    "approval": "Approval",
+    "fees": "Fees",
+    "effectedClasses": "Effected classes",
+    "publish": "Publish",
+    "notes": "Notes",
+    "medical": "Medical",
+    "subjectYear": "Subject year",
+    "teachers": "Teachers",
+    "totalStudents": "Total {{count}}",
+    "dateAndTime": "Date and Time",
+    "overview": "Overview",
+    "subjectGroup": "Subject group",
+    "studentsRemaining": "Students remaining",
+    "studentsOnActivity": "Students on activity"
 }

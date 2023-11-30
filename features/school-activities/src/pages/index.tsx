@@ -9,6 +9,7 @@ import {
   Table,
   TableBooleanValue,
   PageContainer,
+  RouterLink,
 } from '@tyro/core';
 import { Link } from 'react-router-dom';
 import { useMemo } from 'react';
@@ -30,6 +31,14 @@ const getColumnDefs = (
     field: 'name',
     headerName: t('schoolActivities:name'),
     lockVisible: true,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseActivitiesList>) =>
+      data && (
+        <RouterLink to={`${data?.schoolActivityId}/effected-classes`}>
+          {data.name}
+        </RouterLink>
+      ),
   },
   {
     field: 'dates',
@@ -98,9 +107,9 @@ export default function TestPage() {
   const schoolActivitiesColumns = useMemo(() => getColumnDefs(t), [t]);
 
   return (
-    <PageContainer title={t('schoolActivities:title')}>
+    <PageContainer title={t('schoolActivities:schoolActivitiesTitle')}>
       <PageHeading
-        title={t('schoolActivities:title')}
+        title={t('schoolActivities:schoolActivitiesTitle')}
         titleProps={{ variant: 'h3' }}
         rightAdornment={
           <Box display="flex" alignItems="center">

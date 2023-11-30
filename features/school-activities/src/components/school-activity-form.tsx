@@ -69,6 +69,7 @@ export function SchoolActivityForm({
   });
 
   const { mutate: saveSchoolActivities, isLoading } = useSaveSchoolActivities();
+  const activityDayType = watch('requestType');
 
   const onSubmit = (data: FormValues) => {
     const group = data?.group?.partyId;
@@ -78,22 +79,24 @@ export function SchoolActivityForm({
       ? ActivityType.PartialDay
       : ActivityType.SingleDay;
 
+    const isPartial = activityDayType === ActivityType.PartialDay;
+
     const datesFormatted =
       activityType === ActivityType.SingleDay
         ? [
             {
               dates: [dayjs(data?.dates).format('YYYY-MM-DD')],
-              partial: data?.inSchoolGrounds,
-              startTime: '00:00',
-              endTime: '23:00',
+              partial: isPartial,
+              startTime: dayjs(data?.startTime).format('hh:mm:ss'),
+              endTime: dayjs(data?.endTime).format('hh:mm:ss'),
             },
           ]
         : [
             {
               dates: [dayjs(data?.dates).format('YYYY-MM-DD')],
-              partial: data?.inSchoolGrounds,
+              partial: isPartial,
               startTime: '10:00',
-              endTime: '20:00',
+              endTime: '18:00',
             },
           ];
 
@@ -118,12 +121,10 @@ export function SchoolActivityForm({
     saveSchoolActivities(formattedData, {
       onSuccess: () => {
         onSuccess?.();
-        navigate('/school-activities');
+        navigate('/school-activity');
       },
     });
   };
-
-  const activityDayType = watch('requestType');
 
   const isEditing = !!schoolActivitiesData?.schoolActivityId;
 
