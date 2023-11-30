@@ -19,6 +19,7 @@ const catalogueSubjects = graphql(/* GraphQL */ `
       shortCode
       nationalCode
       subjectSource
+      examinable
       colour
       icon
       active
