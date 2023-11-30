@@ -2,14 +2,15 @@ import { Typography, SxProps, Theme, Stack } from '@mui/material';
 import { Select } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
-import { CommentStatusIcon } from '@tyro/assessments';
-import { CommentStatus } from '@tyro/api';
 import { useCallback, useMemo } from 'react';
 import { BlockAutocompleteProps } from './block-autocomplete';
+import { RotationStatusChip } from './rotation-status-chip';
+import { RotationStatus, RotationStatusIcon } from './rotation-status-icon';
 
 type RotationData = {
   iteration: number;
   index: number;
+  status: RotationStatus;
 };
 
 interface RotationSelectProps {
@@ -27,72 +28,88 @@ export function RotationSelect({
 }: RotationSelectProps) {
   const { t } = useTranslation(['classListManager']);
 
-  const options = useMemo<RotationData[]>(
-    () =>
-      rotations.map(({ iteration }, index) => ({
-        iteration,
-        index,
-      })),
-    [rotations]
-  );
+  const options = useMemo<RotationData[]>(() => {
+    let hasNext = false;
 
-  const getRotationStatus = useCallback(
-    ({ startDate, endDate }: RotationSelectProps['rotations'][number]) => {
+    return rotations.map(({ iteration, endDate, startDate }, index) => {
       const isCompleted = dayjs(endDate).isBefore();
       const isActive = dayjs(startDate).isBefore();
 
+      const rotationData = {
+        iteration,
+        index,
+      };
+
       if (isCompleted) {
-        return CommentStatus.Complete;
+        return {
+          ...rotationData,
+          status: RotationStatus.Complete,
+        };
       }
 
       if (isActive) {
-        return CommentStatus.InProgress;
+        return {
+          ...rotationData,
+          status: RotationStatus.Active,
+        };
       }
 
-      return CommentStatus.NotStarted;
-    },
-    []
-  );
+      if (!hasNext) {
+        hasNext = true;
+
+        return {
+          ...rotationData,
+          status: RotationStatus.Next,
+        };
+      }
+
+      return {
+        ...rotationData,
+        status: RotationStatus.Future,
+      };
+    });
+  }, [rotations]);
 
   const getOptionLabel = useCallback(
-    ({ index, iteration }: RotationData) => {
+    ({ index, iteration, status }: RotationData) => {
       const selectedRotation = rotations[index];
       if (!selectedRotation) return '';
 
       const rotationEndDate = dayjs(selectedRotation.endDate);
       const rotationStartDate = dayjs(selectedRotation.startDate);
-
       const days = rotationEndDate.diff(selectedRotation.startDate, 'day') + 1;
 
-      const localeParams = {
-        startDate: rotationStartDate.format('DD/MM/YYYY'),
-        endDate: rotationEndDate.format('DD/MM/YYYY'),
-        days,
-        count: days,
-      };
-
-      const status = getRotationStatus(selectedRotation);
-      let info = t('classListManager:rotationScheduled', localeParams);
-
-      if (status === CommentStatus.Complete) {
-        info = t('classListManager:rotationCompletedOn', localeParams);
-      } else if (status === CommentStatus.InProgress) {
-        info = t('classListManager:rotationActive', localeParams);
-      }
-
       return (
-        <Stack>
-          <Stack direction="row" gap={0.5} alignItems="center">
-            <CommentStatusIcon size="small" commentStatus={status} />
-            <Typography variant="subtitle2">
-              {t('classListManager:rotationX', { number: iteration })}
-            </Typography>
+        <Stack flexDirection="row" alignItems="center" gap={1.25} width="100%">
+          <RotationStatusIcon status={status} />
+          <Stack width="100%" gap={0.25}>
+            <Stack flexDirection="row" justifyContent="space-between">
+              <Typography variant="subtitle2">
+                {t('classListManager:rotationX', { number: iteration })}
+              </Typography>
+              <RotationStatusChip status={status} />
+            </Stack>
+            <Stack flexDirection="row" gap={4} justifyContent="space-between">
+              <Typography variant="caption" color="text.secondary">
+                {t('classListManager:forDays', { count: days })}
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                fontWeight={status === RotationStatus.Active ? 600 : 400}
+              >
+                <span>{rotationStartDate.format('DD/MM/YYYY')}</span>
+                <Typography variant="caption">
+                  {` ${t('classListManager:to')} `}
+                </Typography>
+                <span>{rotationEndDate.format('DD/MM/YYYY')}</span>
+              </Typography>
+            </Stack>
           </Stack>
-          <Typography variant="caption">{info}</Typography>
         </Stack>
       );
     },
-    [rotations, getRotationStatus]
+    [rotations]
   );
 
   return (
@@ -100,12 +117,9 @@ export function RotationSelect({
       label={t('classListManager:rotation')}
       variant="white-filled"
       value={value}
-      renderValue={({ iteration, index }) => (
+      renderValue={({ iteration, status }) => (
         <Stack direction="row" gap={0.5} alignItems="center">
-          <CommentStatusIcon
-            size="small"
-            commentStatus={getRotationStatus(rotations[index])}
-          />
+          <RotationStatusIcon status={status} />
           <Typography>
             {t('classListManager:rotationX', { number: iteration })}
           </Typography>

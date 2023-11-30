@@ -39,10 +39,13 @@
   "errorMessages": {
     "startDateMustBeTheDayAfterThePreviousEndDate": "Start date must be the day after the previous end date."
   },
-  "rotationCompletedOn_one": "Completed on {{startDate}} to {{endDate}} for {{days}} day",
-  "rotationCompletedOn_other": "Completed on {{startDate}} to {{endDate}} for {{days}} days",
-  "rotationActive_one": "Currently active for {{startDate}} to {{endDate}} for {{days}} day",
-  "rotationActive_other": "Currently active for {{startDate}} to {{endDate}} for {{days}} days",
-  "rotationScheduled_one": "Scheduled for {{startDate}} to {{endDate}} for {{days}} day",
-  "rotationScheduled_other": "Scheduled for {{startDate}} to {{endDate}} for {{days}} days"
+  "to": "to",
+  "rotationStatus": {
+    "COMPLETE": "Completed",
+    "ACTIVE": "Active",
+    "NEXT": "Next",
+    "FUTURE": "Future"
+  },
+  "forDays_one": "For {{count}} day",
+  "forDays_other": "For {{count}} days"
 }
