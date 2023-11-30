@@ -230,12 +230,6 @@ export default function YearGroups() {
             }),
             type: SearchType.YearGroupStaff,
           },
-          {
-            label: t('mail:enrollmentInGroup', {
-              count: selectedGroups.length,
-            }),
-            type: SearchType.YearGroupEnrollment,
-          },
         ]}
       />
     </>
