@@ -5,7 +5,8 @@ import dayjs from 'dayjs';
 import { useCallback, useMemo } from 'react';
 import { BlockAutocompleteProps } from './block-autocomplete';
 import { RotationStatusChip } from './rotation-status-chip';
-import { RotationStatus, RotationStatusIcon } from './rotation-status-icon';
+import { RotationStatusIcon } from './rotation-status-icon';
+import { RotationStatus } from './types';
 
 type RotationData = {
   iteration: number;

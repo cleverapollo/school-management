@@ -1,12 +1,6 @@
 import { Chip } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-
-export enum RotationStatus {
-  Complete = 'COMPLETE',
-  Active = 'ACTIVE',
-  Next = 'NEXT',
-  Future = 'FUTURE',
-}
+import { RotationStatus } from './types';
 
 const statusStyles = {
   [RotationStatus.Complete]: {
@@ -29,11 +23,11 @@ const statusStyles = {
   },
 };
 
-type RotationStatusIconProps = {
+type RotationStatusChipProps = {
   status: RotationStatus;
 };
 
-export const RotationStatusChip = ({ status }: RotationStatusIconProps) => {
+export const RotationStatusChip = ({ status }: RotationStatusChipProps) => {
   const { t } = useTranslation(['classListManager']);
 
   return (

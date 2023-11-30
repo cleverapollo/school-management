@@ -1,12 +1,6 @@
 import { Box } from '@mui/material';
 import { CheckmarkIcon } from '@tyro/icons';
-
-export enum RotationStatus {
-  Complete = 'COMPLETE',
-  Active = 'ACTIVE',
-  Next = 'NEXT',
-  Future = 'FUTURE',
-}
+import { RotationStatus } from './types';
 
 const statusStyles = {
   [RotationStatus.Complete]: {
