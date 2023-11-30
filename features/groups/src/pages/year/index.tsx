@@ -2,6 +2,7 @@ import { Box, Fade } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
+  SearchType,
   PermissionUtils,
   SmsRecipientType,
   UpdateYearGroupEnrollmentInput,
@@ -19,9 +20,10 @@ import {
   usePreferredNameLayout,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { MobileIcon, PrinterIcon } from '@tyro/icons';
+import { MobileIcon, PrinterIcon, SendMailIcon } from '@tyro/icons';
 import set from 'lodash/set';
 import { TableStaffMultipleAutocomplete } from '@tyro/people';
+import { SendMailModal } from '@tyro/mail';
 import {
   useYearGroups,
   useUpdateYearGroupLeads,
@@ -92,6 +94,12 @@ export default function YearGroups() {
     onClose: onCloseSendSms,
   } = useDisclosure();
 
+  const {
+    isOpen: isSendMailOpen,
+    onOpen: onOpenSendMail,
+    onClose: onCloseSendMail,
+  } = useDisclosure();
+
   const { data: yearGroupData } = useYearGroups();
   const { mutateAsync: updateYearGroupLeads } = useUpdateYearGroupLeads();
 
@@ -108,6 +116,11 @@ export default function YearGroups() {
         onClick: onOpenSendSms,
       },
       {
+        label: t('mail:sendMail'),
+        icon: <SendMailIcon />,
+        onClick: onOpenSendMail,
+      },
+      {
         label: t('groups:printGroupMembers'),
         icon: <PrinterIcon />,
         onClick: () => printGroupMembers(selectedGroups),
@@ -117,7 +130,7 @@ export default function YearGroups() {
           ),
       },
     ],
-    [selectedGroups, onOpenSendSms]
+    [selectedGroups, onOpenSendSms, onOpenSendMail]
   );
 
   const handleBulkSave = (
@@ -190,6 +203,38 @@ export default function YearGroups() {
               count: selectedGroups.length,
             }),
             type: SmsRecipientType.YearGroupStaff,
+          },
+        ]}
+      />
+
+      <SendMailModal
+        isOpen={isSendMailOpen}
+        onClose={onCloseSendMail}
+        recipients={selectedGroups}
+        possibleRecipientTypes={[
+          {
+            label: t('mail:contactInGroup', {
+              count: selectedGroups.length,
+            }),
+            type: SearchType.YearGroupContact,
+          },
+          {
+            label: t('mail:studentInGroup', {
+              count: selectedGroups.length,
+            }),
+            type: SearchType.YearGroupStudent,
+          },
+          {
+            label: t('mail:staffInGroup', {
+              count: selectedGroups.length,
+            }),
+            type: SearchType.YearGroupStaff,
+          },
+          {
+            label: t('mail:enrollmentInGroup', {
+              count: selectedGroups.length,
+            }),
+            type: SearchType.YearGroupEnrollment,
           },
         ]}
       />

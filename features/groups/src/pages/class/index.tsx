@@ -1,6 +1,7 @@
 import { Box, Fade } from '@mui/material';
 import {
   PermissionUtils,
+  SearchType,
   SmsRecipientType,
   UpdateClassGroupGroupInput,
   usePermissions,
@@ -21,9 +22,10 @@ import {
   PageHeading,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { MobileIcon, PrinterIcon } from '@tyro/icons';
+import { MobileIcon, PrinterIcon, SendMailIcon } from '@tyro/icons';
 import { TableStaffAutocomplete } from '@tyro/people';
 import set from 'lodash/set';
+import { SendMailModal } from '@tyro/mail';
 import {
   useClassGroups,
   ReturnTypeFromUseClassGroups,
@@ -129,6 +131,12 @@ export default function ClassGroupsPage() {
     onClose: onCloseSendSms,
   } = useDisclosure();
 
+  const {
+    isOpen: isSendMailOpen,
+    onOpen: onOpenSendMail,
+    onClose: onCloseSendMail,
+  } = useDisclosure();
+
   const classGroupColumns = useMemo(
     () => getClassGroupColumns(t, isStaffUser, displayNames),
     [t, isStaffUser]
@@ -142,6 +150,11 @@ export default function ClassGroupsPage() {
         onClick: onOpenSendSms,
       },
       {
+        label: t('mail:sendMail'),
+        icon: <SendMailIcon />,
+        onClick: onOpenSendMail,
+      },
+      {
         label: t('groups:printGroupMembers'),
         icon: <PrinterIcon />,
         onClick: () => printGroupMembers(selectedGroups),
@@ -151,7 +164,7 @@ export default function ClassGroupsPage() {
           ),
       },
     ],
-    [selectedGroups, onOpenSendSms]
+    [selectedGroups, onOpenSendSms, onOpenSendMail]
   );
 
   const handleBulkSave = (
@@ -236,6 +249,31 @@ export default function ClassGroupsPage() {
               count: selectedGroups.length,
             }),
             type: SmsRecipientType.ClassGroupStaff,
+          },
+        ]}
+      />
+      <SendMailModal
+        isOpen={isSendMailOpen}
+        onClose={onCloseSendMail}
+        recipients={selectedGroups}
+        possibleRecipientTypes={[
+          {
+            label: t('mail:contactInGroup', {
+              count: selectedGroups.length,
+            }),
+            type: SearchType.GeneralGroupContact,
+          },
+          {
+            label: t('mail:studentInGroup', {
+              count: selectedGroups.length,
+            }),
+            type: SearchType.GeneralGroupStudent,
+          },
+          {
+            label: t('mail:staffInGroup', {
+              count: selectedGroups.length,
+            }),
+            type: SearchType.GeneralGroupStaff,
           },
         ]}
       />

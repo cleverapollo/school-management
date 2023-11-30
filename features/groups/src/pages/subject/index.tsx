@@ -1,6 +1,7 @@
 import { Box, Fade } from '@mui/material';
 import {
   PermissionUtils,
+  SearchType,
   SmsRecipientType,
   SubjectGroupType,
   SubjectUsage,
@@ -29,16 +30,22 @@ import {
   PageHeading,
 } from '@tyro/core';
 
-import { MobileIcon, MoveGroupIcon, PrinterIcon } from '@tyro/icons';
+import {
+  MobileIcon,
+  MoveGroupIcon,
+  PrinterIcon,
+  SendMailIcon,
+} from '@tyro/icons';
 
 import { set } from 'lodash';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { CatalogueSubjectOption, useCatalogueSubjects } from '@tyro/settings';
+import { SendMailModal } from '@tyro/mail';
 import {
   useSaveSubjectGroupEdits,
   useSubjectGroups,
   useSwitchSubjectGroupType,
-} from '../../api';
+} from '../../api/subject-groups';
 import { printGroupMembers } from '../../utils/print-group-members';
 
 type ReturnTypeFromUseSubjectGroups = NonNullable<
@@ -205,6 +212,12 @@ export default function SubjectGroups() {
     onClose: onCloseSendSms,
   } = useDisclosure();
 
+  const {
+    isOpen: isSendMailOpen,
+    onOpen: onOpenSendMail,
+    onClose: onCloseSendMail,
+  } = useDisclosure();
+
   const studentColumns = useMemo(
     () => getSubjectGroupsColumns(t, displayNames, subjects),
     [t, displayNames, subjects]
@@ -218,6 +231,11 @@ export default function SubjectGroups() {
         onClick: onOpenSendSms,
         hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
           isStaffUserWithPermission('ps:1:communications:send_sms'),
+      },
+      {
+        label: t('mail:sendMail'),
+        icon: <SendMailIcon />,
+        onClick: onOpenSendMail,
       },
       {
         label: t('groups:subjectGroup.switchToSupportClass.action'),
@@ -236,7 +254,7 @@ export default function SubjectGroups() {
           ),
       },
     ],
-    [selectedGroups, onOpenSendSms]
+    [selectedGroups, onOpenSendSms, onOpenSendMail]
   );
 
   const handleBulkSave = (
@@ -330,6 +348,31 @@ export default function SubjectGroups() {
               count: selectedGroups.length,
             }),
             type: SmsRecipientType.SubjectGroupStaff,
+          },
+        ]}
+      />
+      <SendMailModal
+        isOpen={isSendMailOpen}
+        onClose={onCloseSendMail}
+        recipients={selectedGroups}
+        possibleRecipientTypes={[
+          {
+            label: t('mail:contactInGroup', {
+              count: selectedGroups.length,
+            }),
+            type: SearchType.SubjectGroupContact,
+          },
+          {
+            label: t('mail:staffInGroup', {
+              count: selectedGroups.length,
+            }),
+            type: SearchType.SubjectGroupStaff,
+          },
+          {
+            label: t('mail:studentInGroup', {
+              count: selectedGroups.length,
+            }),
+            type: SearchType.SubjectGroupStudent,
           },
         ]}
       />

@@ -1,5 +1,10 @@
 import { Box, Button, Fade } from '@mui/material';
-import { PermissionUtils, SmsRecipientType, usePermissions } from '@tyro/api';
+import {
+  SearchType,
+  PermissionUtils,
+  SmsRecipientType,
+  usePermissions,
+} from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -17,12 +22,17 @@ import {
   EditIcon,
   MobileIcon,
   PrinterIcon,
+  SendMailIcon,
   TrashIcon,
   VerticalDotsIcon,
 } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
+import { SendMailModal } from '@tyro/mail';
 import { Link } from 'react-router-dom';
-import { useCustomGroups, ReturnTypeFromUseCustomGroups } from '../../api';
+import {
+  useCustomGroups,
+  ReturnTypeFromUseCustomGroups,
+} from '../../api/custom-groups';
 import { DeleteCustomGroupsModal } from '../../components/custom-group/delete-custom-groups-modal';
 import { printGroupMembers } from '../../utils/print-group-members';
 
@@ -94,7 +104,7 @@ const getColumns = (
 ];
 
 export default function CustomGroups() {
-  const { t } = useTranslation(['common', 'groups', 'people', 'sms']);
+  const { t } = useTranslation(['common', 'groups', 'people', 'sms', 'mail']);
 
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
@@ -107,6 +117,12 @@ export default function CustomGroups() {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
+  } = useDisclosure();
+
+  const {
+    isOpen: isSendMailOpen,
+    onOpen: onOpenSendMail,
+    onClose: onCloseSendMail,
   } = useDisclosure();
 
   const showEditAction = hasPermission(
@@ -128,6 +144,11 @@ export default function CustomGroups() {
         onClick: onOpenSendSms,
       },
       {
+        label: t('mail:sendMail'),
+        icon: <SendMailIcon />,
+        onClick: onOpenSendMail,
+      },
+      {
         label: t('groups:deleteCustomGroups'),
         icon: <TrashIcon />,
         onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
@@ -142,7 +163,7 @@ export default function CustomGroups() {
           ),
       },
     ],
-    [selectedGroups, onOpenSendSms]
+    [selectedGroups, onOpenSendSms, onOpenSendMail]
   );
 
   return (
@@ -210,6 +231,31 @@ export default function CustomGroups() {
       <DeleteCustomGroupsModal
         groupIds={deleteGroupIds}
         onClose={() => setDeleteGroupIds(null)}
+      />
+      <SendMailModal
+        isOpen={isSendMailOpen}
+        onClose={onCloseSendMail}
+        recipients={selectedGroups}
+        possibleRecipientTypes={[
+          {
+            label: t('mail:contactInGroup', {
+              count: selectedGroups.length,
+            }),
+            type: SearchType.GeneralGroupContact,
+          },
+          {
+            label: t('mail:studentInGroup', {
+              count: selectedGroups.length,
+            }),
+            type: SearchType.GeneralGroupStudent,
+          },
+          {
+            label: t('mail:staffInGroup', {
+              count: selectedGroups.length,
+            }),
+            type: SearchType.GeneralGroupStaff,
+          },
+        ]}
       />
     </>
   );

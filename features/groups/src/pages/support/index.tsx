@@ -1,6 +1,7 @@
 import { Box, Fade } from '@mui/material';
 import {
   PermissionUtils,
+  SearchType,
   SmsRecipientType,
   SubjectGroupType,
   SubjectUsage,
@@ -25,11 +26,17 @@ import {
   PageHeading,
 } from '@tyro/core';
 
-import { MobileIcon, MoveGroupIcon, PrinterIcon } from '@tyro/icons';
+import {
+  MobileIcon,
+  MoveGroupIcon,
+  PrinterIcon,
+  SendMailIcon,
+} from '@tyro/icons';
 
 import { set } from 'lodash';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { CatalogueSubjectOption, useCatalogueSubjects } from '@tyro/settings';
+import { SendMailModal } from '@tyro/mail';
 import {
   useSaveSupportGroupEdits,
   useSupportGroups,
@@ -151,6 +158,12 @@ export default function SupportGroups() {
     onClose: onCloseSendSms,
   } = useDisclosure();
 
+  const {
+    isOpen: isSendMailOpen,
+    onOpen: onOpenSendMail,
+    onClose: onCloseSendMail,
+  } = useDisclosure();
+
   const studentColumns = useMemo(
     () => getSubjectGroupsColumns(t, displayNames, subjects),
     [t, displayNames, subjects]
@@ -162,6 +175,11 @@ export default function SupportGroups() {
         label: t('people:sendSms'),
         icon: <MobileIcon />,
         onClick: onOpenSendSms,
+      },
+      {
+        label: t('mail:sendMail'),
+        icon: <SendMailIcon />,
+        onClick: onOpenSendMail,
       },
       {
         label: t('groups:supportGroup.switchToSubjectGroup.action'),
@@ -180,7 +198,7 @@ export default function SupportGroups() {
           ),
       },
     ],
-    [selectedGroups, onOpenSendSms]
+    [selectedGroups, onOpenSendSms, onOpenSendMail]
   );
 
   const handleBulkSave = (
@@ -266,6 +284,32 @@ export default function SupportGroups() {
               count: selectedGroups.length,
             }),
             type: SmsRecipientType.GeneralGroupStaff,
+          },
+        ]}
+      />
+
+      <SendMailModal
+        isOpen={isSendMailOpen}
+        onClose={onCloseSendMail}
+        recipients={selectedGroups}
+        possibleRecipientTypes={[
+          {
+            label: t('mail:contactInGroup', {
+              count: selectedGroups.length,
+            }),
+            type: SearchType.GeneralGroupContact,
+          },
+          {
+            label: t('mail:studentInGroup', {
+              count: selectedGroups.length,
+            }),
+            type: SearchType.GeneralGroupStudent,
+          },
+          {
+            label: t('mail:staffInGroup', {
+              count: selectedGroups.length,
+            }),
+            type: SearchType.GeneralGroupStaff,
           },
         ]}
       />
