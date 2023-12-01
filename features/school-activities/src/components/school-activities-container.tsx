@@ -1,15 +1,11 @@
-import { Box, Button } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-
 import {
   PageHeading,
   PageContainer,
-  RouterLink,
   TabPageContainer,
   useNumber,
 } from '@tyro/core';
-import { Link, useParams } from 'react-router-dom';
-import dayjs from 'dayjs';
+import { useParams } from 'react-router-dom';
 import { SchoolActivityStatusBar } from './school-activity-status-bar';
 import { useSchoolActivityById } from '../api/get-school-activities';
 
@@ -45,32 +41,12 @@ export default function SchoolActivitiesContainer() {
           <TabPageContainer
             links={[
               {
-                value: 'requests',
-                label: t('schoolActivities:requests'),
+                value: 'cover-required',
+                label: t('schoolActivities:coverRequired'),
               },
               {
-                value: 'approval',
-                label: t('schoolActivities:approval'),
-              },
-              {
-                value: 'fees',
-                label: t('schoolActivities:fees'),
-              },
-              {
-                value: 'effected-classes',
-                label: t('schoolActivities:effectedClasses'),
-              },
-              {
-                value: 'publish',
-                label: t('schoolActivities:publish'),
-              },
-              {
-                value: 'notes',
-                label: t('schoolActivities:notes'),
-              },
-              {
-                value: 'medical',
-                label: t('schoolActivities:medical'),
+                value: 'class-away',
+                label: t('schoolActivities:classAway'),
               },
             ]}
           />

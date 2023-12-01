@@ -13,12 +13,12 @@ const activitiesList = graphql(/* GraphQL */ `
   query sa_activities($filter: Sa_SchoolActivityFilter!) {
     sa_activities(filter: $filter) {
       schoolActivityId
-      name
       customGroupId
+      name
       dates {
         date
-        endTime
         startTime
+        endTime
         partial
       }
       location {
@@ -31,6 +31,46 @@ const activitiesList = graphql(/* GraphQL */ `
       }
       tripPurpose
       notes
+      published
+      customGroup {
+        partyId
+        name
+        avatarUrl
+        relatedSubjectGroups {
+          partyId
+          name
+          subjects {
+            name
+          }
+        }
+        studentMembers {
+          groupPartyId
+          memberCount
+          members {
+            partyId
+            person {
+              avatarUrl
+              partyId
+              firstName
+              lastName
+            }
+          }
+        }
+        staffMembers {
+          groupPartyId
+          memberIds
+          members {
+            partyId
+            person {
+              avatarUrl
+              partyId
+              firstName
+              lastName
+            }
+          }
+          memberCount
+        }
+      }
     }
   }
 `);
@@ -39,12 +79,12 @@ const schoolActivityById = graphql(/* GraphQL */ `
   query sa_activities($filter: Sa_SchoolActivityFilter!) {
     sa_activities(filter: $filter) {
       schoolActivityId
-      name
       customGroupId
+      name
       dates {
         date
-        endTime
         startTime
+        endTime
         partial
       }
       location {
@@ -57,6 +97,46 @@ const schoolActivityById = graphql(/* GraphQL */ `
       }
       tripPurpose
       notes
+      published
+      customGroup {
+        partyId
+        name
+        avatarUrl
+        relatedSubjectGroups {
+          partyId
+          name
+          subjects {
+            name
+          }
+        }
+        studentMembers {
+          groupPartyId
+          memberCount
+          members {
+            partyId
+            person {
+              avatarUrl
+              partyId
+              firstName
+              lastName
+            }
+          }
+        }
+        staffMembers {
+          groupPartyId
+          memberIds
+          members {
+            partyId
+            person {
+              avatarUrl
+              partyId
+              firstName
+              lastName
+            }
+          }
+          memberCount
+        }
+      }
     }
   }
 `);

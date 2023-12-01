@@ -16,7 +16,8 @@ const SchoolActivitiesContainer = lazyWithRetry(
   () => import('./components/school-activities-container')
 );
 
-const EffectedClasses = lazyWithRetry(() => import('./pages/effected-classes'));
+const CoverRequired = lazyWithRetry(() => import('./pages/cover-required'));
+const ClassAway = lazyWithRetry(() => import('./pages/class-away'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -41,6 +42,22 @@ export const getRoutes: NavObjectFunction = (t) => [
           },
           {
             type: NavObjectType.NonMenuLink,
+            path: ':activityId/edit',
+            element: <EditSchoolActivityPage />,
+            loader: ({ params }) => {
+              const schoolActivityId = getNumber(params.activityId);
+
+              if (!schoolActivityId) {
+                throw404Error();
+              }
+
+              return getSchoolActivityById({
+                schoolActivityIds: [schoolActivityId],
+              });
+            },
+          },
+          {
+            type: NavObjectType.NonMenuLink,
             path: ':activityId',
             element: <SchoolActivitiesContainer />,
             loader: ({ params }) => {
@@ -58,17 +75,17 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 index: true,
-                loader: () => redirect('./effected-classes'),
+                loader: () => redirect('./cover-required'),
               },
               {
                 type: NavObjectType.NonMenuLink,
-                path: 'effected-classes',
-                element: <EffectedClasses />,
+                path: 'cover-required',
+                element: <CoverRequired />,
               },
               {
                 type: NavObjectType.NonMenuLink,
-                path: 'edit',
-                element: <EditSchoolActivityPage />,
+                path: 'class-away',
+                element: <ClassAway />,
               },
             ],
           },

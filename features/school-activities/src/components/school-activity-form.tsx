@@ -80,25 +80,58 @@ export function SchoolActivityForm({
       : ActivityType.SingleDay;
 
     const isPartial = activityDayType === ActivityType.PartialDay;
+    function getGroupPath(type: ActivityType) {
+      // const dateRange = data?.dateRange?.map((date) => date?.)
+      switch (activityDayType) {
+        case ActivityType.SingleDay:
+          return {
+            dates: [dayjs(data?.dates).format('YYYY-MM-DD')],
+            partial: false,
+            startTime: '08:00',
+            endTime: '18:00',
+          };
+        case ActivityType.PartialDay:
+          return {
+            dates: [dayjs(data?.dates).format('YYYY-MM-DD')],
+            partial: true,
+            startTime: dayjs(data?.startTime).format('hh:mm:ss'),
+            endTime: dayjs(data?.endTime).format('hh:mm:ss'),
+          };
+        case ActivityType.MultiDay:
+          return {
+            dates: [dayjs(data?.dateRange).format('YYYY-MM-DD')],
+            partial: false,
+            startTime: '08:00',
+            endTime: '18:00',
+          };
+        default:
+          return console.log('test');
+      }
+    }
+    const datesFormatted = getGroupPath(activityType);
+    const datesToGetSent = [datesFormatted];
+    console.log(datesToGetSent, 'datesFormatted - data');
 
-    const datesFormatted =
-      activityType === ActivityType.SingleDay
-        ? [
-            {
-              dates: [dayjs(data?.dates).format('YYYY-MM-DD')],
-              partial: isPartial,
-              startTime: dayjs(data?.startTime).format('hh:mm:ss'),
-              endTime: dayjs(data?.endTime).format('hh:mm:ss'),
-            },
-          ]
-        : [
-            {
-              dates: [dayjs(data?.dates).format('YYYY-MM-DD')],
-              partial: isPartial,
-              startTime: '10:00',
-              endTime: '18:00',
-            },
-          ];
+    console.log(datesFormatted, 'datesFormatted');
+
+    // const datesFormatted =
+    //   activityType === ActivityType.SingleDay
+    //     ? [
+    //         {
+    //           dates: [dayjs(data?.dates).format('YYYY-MM-DD')],
+    //           partial: isPartial,
+    //           startTime: dayjs(data?.startTime).format('hh:mm:ss'),
+    //           endTime: dayjs(data?.endTime).format('hh:mm:ss'),
+    //         },
+    //       ]
+    //     : [
+    //         {
+    //           dates: [dayjs(data?.dates).format('YYYY-MM-DD')],
+    //           partial: isPartial,
+    //           startTime: '10:00',
+    //           endTime: '18:00',
+    //         },
+    //       ];
 
     const roomIdsFormatted = roomIds !== null ? [roomIds] : [];
     // const nameFormatted = typeof data?.name === 'string' ? data?.name : '';
@@ -114,10 +147,10 @@ export function SchoolActivityForm({
         roomIds: roomIdsFormatted,
       },
       tripPurpose: data?.details,
-      dates: datesFormatted,
+      dates: datesToGetSent,
       notes: data?.notes,
     };
-
+    // @ts-ignore
     saveSchoolActivities(formattedData, {
       onSuccess: () => {
         onSuccess?.();

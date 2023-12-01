@@ -17,7 +17,7 @@ export default function CreateSchoolActivityPage() {
             {
               name: t('schoolActivities:createSchoolActivity'),
 
-              href: '/school-activities',
+              href: '/school-activity',
             },
             {
               name: t('schoolActivities:schoolActivityCreation'),

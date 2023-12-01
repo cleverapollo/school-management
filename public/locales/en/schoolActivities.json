@@ -22,13 +22,8 @@
     },
     "leavesAtTime": " Leaves at",
     "returnsAtTime": "Returns at",
-    "requests": "Requests",
-    "approval": "Approval",
-    "fees": "Fees",
     "effectedClasses": "Effected classes",
     "publish": "Publish",
-    "notes": "Notes",
-    "medical": "Medical",
     "subjectYear": "Subject year",
     "teachers": "Teachers",
     "totalStudents": "Total {{count}}",
@@ -36,5 +31,9 @@
     "overview": "Overview",
     "subjectGroup": "Subject group",
     "studentsRemaining": "Students remaining",
-    "studentsOnActivity": "Students on activity"
+    "studentsOnActivity": "Students on activity",
+    "coverRequired": "Cover required",
+    "classAway": "Class away",
+    "setTeacherAsUnavailable": "Set teacher as unavailable",
+    "setTeacherAsAvailable": "Set teacher as available for windfall"
 }

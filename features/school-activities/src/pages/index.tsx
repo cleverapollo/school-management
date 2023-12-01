@@ -35,7 +35,7 @@ const getColumnDefs = (
       data,
     }: ICellRendererParams<ReturnTypeFromUseActivitiesList>) =>
       data && (
-        <RouterLink to={`${data?.schoolActivityId}/effected-classes`}>
+        <RouterLink to={`${data?.schoolActivityId}/cover-required`}>
           {data.name}
         </RouterLink>
       ),

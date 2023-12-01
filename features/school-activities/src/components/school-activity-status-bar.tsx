@@ -1,5 +1,4 @@
 import { Fragment } from 'react';
-import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Card, Stack, Typography, Divider, Box } from '@mui/material';
@@ -7,11 +6,9 @@ import {
   Avatar,
   CopyClipboardButton,
   usePreferredNameLayout,
-  useNumber,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { ReturnTypeFromUseSchoolActivityById } from '../api/get-school-activities';
-import { useCustomGroupById } from '../api/get-custom-group';
 
 dayjs.extend(LocalizedFormat);
 
@@ -35,8 +32,6 @@ export function SchoolActivityStatusBar({
 }: SchoolActivityStatusBarProps) {
   const { t } = useTranslation(['common', 'groups', 'schoolActivities']);
   const { displayName } = usePreferredNameLayout();
-  const groupIdNumber = useNumber(schoolActivity?.customGroupId);
-  const { data: customGroupData } = useCustomGroupById(groupIdNumber);
 
   const date = schoolActivity?.dates[0]?.date;
   const dayOfWeek = dayjs(date).format('ddd');
@@ -46,9 +41,6 @@ export function SchoolActivityStatusBar({
   const dateAndTime = isFullDay
     ? `${dayOfWeek}, (Full day)`
     : `${dayOfWeek}, ${startTime} - ${endTime}`;
-
-  console.table([customGroupData]);
-  // console.table([schoolActivity]);
 
   return (
     <Box>
@@ -67,14 +59,14 @@ export function SchoolActivityStatusBar({
               >
                 {schoolActivity?.name}
               </Typography>
-              {/* <Stack direction="row" spacing={1}>
+              <Stack direction="row" spacing={1}>
                 <Typography component="dt" sx={{ ...labelStyle }}>
                   {t('schoolActivities:subjectYear')}
                 </Typography>
                 <Typography component="dd" sx={{ ...textValueStyle }}>
-                  {schoolActivity?.} English 4th Year
+                  English 4th Year
                 </Typography>
-              </Stack> */}
+              </Stack>
             </Stack>
           </Stack>
 
@@ -205,14 +197,14 @@ export function SchoolActivityStatusBar({
               }}
             >
               {t('schoolActivities:totalStudents', {
-                count: customGroupData?.students?.length,
+                count: schoolActivity?.customGroup?.studentMembers?.memberCount,
               })}
             </Typography>
           </Stack>
           <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
 
           {/* TEACHERS */}
-          <Stack direction="column">
+          <Stack direction="column" sx={{ alignItems: 'center' }}>
             <Typography
               component="dt"
               variant="body1"
@@ -226,28 +218,30 @@ export function SchoolActivityStatusBar({
             </Typography>
 
             <Stack direction="row">
-              {customGroupData?.staff?.map((staff) => (
-                <Box
-                  key={staff?.avatarUrl}
-                  sx={{
-                    backgroundColor: 'slate.100',
-                    borderRadius: '18px',
-                    px: 1,
-                    mr: 0.5,
-                  }}
-                >
-                  <Typography
-                    component="dd"
+              {schoolActivity?.customGroup?.staffMembers?.members?.map(
+                (staff) => (
+                  <Box
+                    key={staff?.partyId}
                     sx={{
-                      ...textValueStyle,
-                      py: 0.5,
-                      // textAlign: 'center',
+                      backgroundColor: 'slate.100',
+                      borderRadius: '18px',
+                      px: 1,
+                      mr: 0.5,
                     }}
                   >
-                    {displayName(staff)}
-                  </Typography>
-                </Box>
-              ))}
+                    <Typography
+                      component="dd"
+                      sx={{
+                        ...textValueStyle,
+                        py: 0.5,
+                        // textAlign: 'center',
+                      }}
+                    >
+                      {displayName(staff?.person)}
+                    </Typography>
+                  </Box>
+                )
+              )}
             </Stack>
           </Stack>
           <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />

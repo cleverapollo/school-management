@@ -82,7 +82,7 @@ export default function EditSchoolActivityPage() {
             {
               name: t('schoolActivities:editSchoolActivity'),
 
-              href: '/school-activities',
+              href: '/school-activity',
             },
             {
               name: t('schoolActivities:schoolActivityCreation'),
