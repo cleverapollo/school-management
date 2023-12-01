@@ -5,6 +5,8 @@ const ContactDashboard = lazyWithRetry(
   () => import('./pages/contact-dashboard')
 );
 
+const DiscountsPage = lazyWithRetry(() => import('./pages/discounts'));
+
 export const getRoutes: NavObjectFunction = (t) => [
   {
     type: NavObjectType.Category,
@@ -30,7 +32,14 @@ export const getRoutes: NavObjectFunction = (t) => [
         path: 'fees',
         title: t('navigation:general.fees'),
         icon: <WalletWithMoneyIcon />,
-        children: [],
+        children: [
+          {
+            type: NavObjectType.MenuLink,
+            path: 'discounts',
+            title: t('navigation:management.fees.discounts'),
+            element: <DiscountsPage />,
+          },
+        ],
       },
     ],
   },

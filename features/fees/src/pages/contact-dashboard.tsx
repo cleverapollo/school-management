@@ -93,9 +93,9 @@ export default function ContactDashboard() {
 
   return (
     <>
-      <PageContainer title={t('navigation:management.fees')}>
+      <PageContainer title={t('navigation:general.fees')}>
         <PageHeading
-          title={t('navigation:management.fees')}
+          title={t('navigation:general.fees')}
           titleProps={{ variant: 'h3' }}
         />
         <Table

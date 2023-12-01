@@ -40,7 +40,9 @@
   "management": {
     "title": "Management",
     "classListManager": "Class list manager",
-    "fees": "Fees",
+    "fees": {
+      "discounts": "Discounts"
+    },
     "people": {
       "title": "People",
       "students": "Students",

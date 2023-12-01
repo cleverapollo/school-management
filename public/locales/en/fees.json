@@ -3,5 +3,15 @@
   "dueDate": "Due Date",
   "amount": "Amount",
   "amountPaid": "Amount Paid",
-  "pay": "Pay"
+  "pay": "Pay",
+  "value": "Value",
+  "discountType": "Discount type",
+  "siblingDiscount": "Sibling discount",
+  "createDiscount": "Create discount",
+  "editDiscount": "Edit discount",
+  "discountsType": {
+    "FIXED": "Fixed",
+    "PERCENTAGE": "Percentage"
+  },
+  "isSiblingDiscount": "Is it a sibling discount?"
 }
