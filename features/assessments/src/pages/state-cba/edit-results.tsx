@@ -24,6 +24,7 @@ import {
   ExtraFieldType,
   getPersonProfileLink,
   SaveAssessmentResultInput,
+  StudentAssessmentExclusionInput,
 } from '@tyro/api';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { useParams } from 'react-router-dom';
@@ -163,7 +164,7 @@ const getColumnDefs = (
     },
   },
   {
-    field: 'gradeResult',
+    colId: 'ppodSyncStatus',
     headerName: t('assessments:ppodStatus'),
     valueGetter: ({ data }) => {
       if (!data?.ppodPublished) return t('assessments:notSynced');
@@ -290,9 +291,26 @@ export default function EditStateCbaResults() {
   const handleBulkSave = (
     data: BulkEditedRows<
       ReturnTypeFromUseAssessmentResults,
-      'gradeResult' | 'extraFields'
+      'examinable' | 'gradeId' | 'studentStudyLevel' | 'extraFields'
     >
   ) => {
+    const examinableChanges = Object.entries(data).reduce<
+      StudentAssessmentExclusionInput[]
+    >((acc, [key, value]) => {
+      if (value.examinable?.newValue) {
+        acc.push({
+          assessmentId: assessmentIdAsNumber ?? 0,
+          studentPartyId: Number(key),
+          subjectGroupId: subjectGroupIdAsNumber ?? 0,
+        });
+      }
+      return acc;
+    }, []);
+
+    if (examinableChanges.length > 0) {
+      console.log('call exemption endpoint');
+    }
+
     const formattedData = studentResults?.reduce<SaveAssessmentResultInput[]>(
       (acc, result) => {
         const editedColumns = data[result.studentPartyId];
