@@ -133,8 +133,6 @@ const getColumnDefs = (
     valueSetter: ({
       data,
       newValue,
-      node,
-      isApplyUpdatesCall,
     }: ValueSetterParams<ReturnTypeFromUseAssessmentResults, number>) => {
       set(data ?? {}, 'gradeId', newValue);
       return true;
@@ -165,8 +163,16 @@ const getColumnDefs = (
     },
   },
   {
-    field: 'ppodPublished',
+    field: 'gradeResult',
     headerName: t('assessments:ppodStatus'),
+    valueGetter: ({ data }) => {
+      if (!data?.ppodPublished) return t('assessments:notSynced');
+      const selectedGradeSet = gradeSets?.find((x) => x.id === data?.gradeId);
+      if (selectedGradeSet?.name !== data.ppodResult) {
+        return t('assessments:outOfSync');
+      }
+      return t('assessments:synced');
+    },
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAssessmentResults, any>) => {
@@ -180,7 +186,8 @@ const getColumnDefs = (
         );
       }
 
-      if (data.gradeResult !== data.ppodResult) {
+      const selectedGradeSet = gradeSets?.find((x) => x.id === data?.gradeId);
+      if (selectedGradeSet?.name !== data.ppodResult) {
         return (
           <Chip
             label={t('assessments:outOfSync')}
