@@ -36,6 +36,7 @@ const getColumnDefs = (
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
+    valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseStudentFees>) => {

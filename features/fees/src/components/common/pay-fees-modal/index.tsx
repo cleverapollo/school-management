@@ -7,6 +7,7 @@ import { PaymentMethod, PaymentStatus } from '@tyro/api';
 import { ReturnTypeFromUseStudentFees } from '../../../api/student-fees';
 import { PayFeesStepTwo } from './step-two';
 import { PayFeesSettingsProvider } from './store';
+import { PayFeesStepOne } from './step-one';
 
 interface PayFeesModalProps {
   open: boolean;
@@ -32,7 +33,7 @@ export function PayFeesModal({ open, onClose, feesToPay }: PayFeesModalProps) {
 
   return (
     <PayFeesSettingsProvider>
-      {({ nextAction }) => (
+      {({ step, nextAction }) => (
         <Dialog
           open={open}
           onClose={onClose}
@@ -40,9 +41,12 @@ export function PayFeesModal({ open, onClose, feesToPay }: PayFeesModalProps) {
           fullWidth
           maxWidth="sm"
         >
-          <DialogTitle onClose={onClose}>Pay fees</DialogTitle>
+          <DialogTitle onClose={onClose}>
+            {t('fees:payFee', { count: feesToPay.length })}
+          </DialogTitle>
           <DialogContent>
-            <PayFeesStepTwo paymentInput={paymentInput} />
+            {step === 0 && <PayFeesStepOne feesToPay={feesToPay} />}
+            {step === 1 && <PayFeesStepTwo paymentInput={paymentInput} />}
           </DialogContent>
 
           <DialogActions>

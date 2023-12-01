@@ -1,6 +1,6 @@
 {
   "for": "For",
-  "dueDate": "Due Date",
+  "dueDate": "Due date",
   "amount": "Amount",
   "amountPaid": "Amount Paid",
   "pay": "Pay",
@@ -13,5 +13,13 @@
     "FIXED": "Fixed",
     "PERCENTAGE": "Percentage"
   },
-  "isSiblingDiscount": "Is it a sibling discount?"
+  "isSiblingDiscount": "Is it a sibling discount?",
+  "payFee_one": "Pay fee",
+  "payFee_other": "Pay fees",
+  "paymentMethod": "Payment method",
+  "paymentMethods": {
+    "CARD": "Card",
+    "CASH": "Cash"
+  },
+  "feeNameForStudent": "{{feeName}}<br/><2>for {{studentName}}</2>"
 }
