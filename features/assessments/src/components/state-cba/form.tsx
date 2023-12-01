@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import { useTranslation } from '@tyro/i18n';
 import {
@@ -16,7 +16,14 @@ import {
   SubjectGroup,
   StateCbaType,
 } from '@tyro/api';
-import { Card, Stack, CardHeader, Typography } from '@mui/material';
+import {
+  Card,
+  Stack,
+  CardHeader,
+  Typography,
+  Chip,
+  Tooltip,
+} from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import { Link, useNavigate } from 'react-router-dom';
@@ -31,6 +38,7 @@ import {
   ParsedErrorDetail,
   useSaveStateCba,
 } from '../../api/state-cba/save-state-cba';
+import { useAssessmentSubjectGroups } from '../../api/assessment-subject-groups';
 
 export type YearGroupOption = {
   name: string;
@@ -52,7 +60,6 @@ export interface FormValues extends FormCustomFieldsValues {
 type StateCbaFormProps = {
   stateCba?: FormValues;
   title: string;
-  ctaText: string;
   onSuccess: () => void;
   onError: () => void;
 };
@@ -66,7 +73,6 @@ type FormattedSubjectsType = {
 export function StateCbaForm({
   stateCba,
   title,
-  ctaText,
   onSuccess,
   onError,
 }: StateCbaFormProps) {
@@ -99,8 +105,14 @@ export function StateCbaForm({
   const [subjectPicked, yearPicked] = watch(['subject', 'years']);
 
   const { data: yearGroupsData = [] } = useYearGroups({});
-
   const { data: subjectGroups } = useSubjectGroups();
+  const { data: assessmentSubjectGroupsData = [] } = useAssessmentSubjectGroups(
+    academicNamespaceIdAsNumber,
+    {
+      assessmentId: stateCba?.id,
+    },
+    !!stateCba?.id
+  );
 
   const subjects = useMemo(() => {
     const subjectsFlattened = subjectGroups?.flatMap(
@@ -121,26 +133,33 @@ export function StateCbaForm({
     );
     return subjectList || [];
   }, [subjectGroups]);
+  const disabledSubjectGroupIds = useMemo(
+    () =>
+      assessmentSubjectGroupsData
+        .filter(({ resultsEntered }) => resultsEntered > 0)
+        .map(({ subjectGroup }) => subjectGroup.partyId),
+    [assessmentSubjectGroupsData]
+  );
 
   const { mutateAsync: saveStateCba, isLoading } = useSaveStateCba(
     academicNamespaceIdAsNumber
   );
 
-  const filterSubjectGroupsBySubjectAndYear = (
-    yearGroup: YearGroupOption,
-    subjectName?: string | null
-  ) =>
-    subjectGroups?.filter(
-      (item) =>
-        item.subjects.some((subject) => subject.name === subjectName) &&
-        item.yearGroups.some((year) => year.name === yearGroup?.name)
-    ) || [];
+  const filterSubjectGroupsBySubjectAndYear = useCallback(
+    (yearGroup: YearGroupOption, subjectName?: string | null) =>
+      subjectGroups?.filter(
+        (item) =>
+          item.subjects.some((subject) => subject.name === subjectName) &&
+          item.yearGroups.some((year) => year.name === yearGroup?.name)
+      ) || [],
+    [subjectGroups]
+  );
 
   const subjectGroupOptions = useMemo(() => {
     const subjectName = subjectPicked?.name;
     const yearName: YearGroupOption = yearPicked;
     return filterSubjectGroupsBySubjectAndYear(yearName, subjectName);
-  }, [subjectPicked, yearPicked]);
+  }, [subjectPicked, yearPicked, filterSubjectGroupsBySubjectAndYear]);
 
   const textFieldStyle = {
     maxWidth: 300,
@@ -148,7 +167,16 @@ export function StateCbaForm({
   };
 
   const onSubmit = handleSubmit(
-    ({ cbaType, years, startDate, endDate, subject, groups, ...restData }) => {
+    ({
+      cbaType,
+      years,
+      startDate,
+      endDate,
+      subject,
+      groups,
+      extraFields,
+      ...restData
+    }) => {
       const groupIds = groups?.map((group) => group?.partyId);
       saveStateCba(
         {
@@ -159,6 +187,12 @@ export function StateCbaForm({
           endDate: endDate.format('YYYY-MM-DD'),
           stateCbaType: cbaType,
           subjectGroupIds: groupIds,
+          extraFields: extraFields.map(
+            ({ commentBank: fieldCommentBank, ...field }) => ({
+              ...field,
+              commentBankId: fieldCommentBank?.id,
+            })
+          ),
         },
         {
           onSuccess: () => {
@@ -262,6 +296,36 @@ export function StateCbaForm({
               controlProps={{ name: 'groups', control }}
               sx={textFieldStyle}
               options={subjectGroupOptions}
+              getOptionDisabled={(option) =>
+                disabledSubjectGroupIds.includes(option.partyId)
+              }
+              renderTags={(tagValue, getTagProps) =>
+                tagValue.map((option, index) => {
+                  const disabledOption = disabledSubjectGroupIds.includes(
+                    option.partyId
+                  );
+
+                  return (
+                    <Tooltip
+                      title={
+                        disabledOption
+                          ? t(
+                              'assessments:thereAreResultsRemoveBeforeRemovingSubjectGroup'
+                            )
+                          : undefined
+                      }
+                    >
+                      <span>
+                        <Chip
+                          label={option.name}
+                          {...getTagProps({ index })}
+                          disabled={disabledOption}
+                        />
+                      </span>
+                    </Tooltip>
+                  );
+                })
+              }
             />
           </Stack>
           <CustomFieldsTable control={control} />
@@ -272,7 +336,7 @@ export function StateCbaForm({
               type="submit"
               loading={isLoading}
             >
-              {ctaText}
+              {t('common:actions.save')}
             </LoadingButton>
           </Stack>
         </Stack>

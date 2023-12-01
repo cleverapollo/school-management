@@ -83,11 +83,23 @@ const getColumnDefs = (
   {
     field: 'examinable',
     headerName: t('assessments:examinable'),
+    editable: true,
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
+    cellEditor: TableSwitch,
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseAssessmentResults, any>) => {
-      const isExaminable = data?.examinable === true;
-      return isExaminable ? <TableBooleanValue value={isExaminable} /> : '-';
+    }: ICellRendererParams<ReturnTypeFromUseAssessmentResults, any>) => (
+      <TableBooleanValue value={!!data?.examinable} />
+    ),
+    valueSetter: (
+      params: ValueSetterParams<ReturnTypeFromUseAssessmentResults, boolean>
+    ) => {
+      const { newValue } = params;
+      if (!newValue) {
+        params?.node?.setDataValue('gradeId', null);
+      }
+      set(params.data ?? {}, 'examinable', params.newValue);
+      return true;
     },
   },
   {
@@ -115,11 +127,18 @@ const getColumnDefs = (
   {
     field: 'gradeId',
     headerName: t('assessments:achievement'),
-    editable: true,
-    cellClass: ['ag-editable-cell'],
+    editable: (params) => !!params.data?.examinable,
     cellEditor: TableSwitch,
     valueGetter: ({ data }) => data?.gradeId || '-',
-    valueSetter: ({ data, newValue }) => {
+    valueSetter: ({
+      data,
+      newValue,
+      node,
+      isApplyUpdatesCall,
+    }: ValueSetterParams<ReturnTypeFromUseAssessmentResults, number>) => {
+      if (!isApplyUpdatesCall) {
+        node?.setDataValue('ppodPublished', false);
+      }
       set(data ?? {}, 'gradeId', newValue);
       return true;
     },
@@ -151,7 +170,6 @@ const getColumnDefs = (
   {
     field: 'ppodPublished',
     headerName: t('assessments:ppodStatus'),
-    valueGetter: ({ data }) => data?.ppodPublished,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAssessmentResults, any>) =>

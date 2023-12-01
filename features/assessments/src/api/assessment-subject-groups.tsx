@@ -72,10 +72,12 @@ export function getAssessmentSubjectGroups(
 
 export function useAssessmentSubjectGroups(
   academicNamespaceId: number,
-  filter: AssessmentSubjectGroupsFilter
+  filter: AssessmentSubjectGroupsFilter,
+  enabled = true
 ) {
   return useQuery({
     ...assessmentSubjectGroupsQuery(academicNamespaceId, filter),
+    enabled,
     select: ({ assessment_assessmentSubjectGroups }) => {
       if (!Array.isArray(assessment_assessmentSubjectGroups)) return [];
 

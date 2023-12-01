@@ -81,6 +81,7 @@
   "existingCbaDefaultTitle": "Assessment for this subject already exists.",
   "viewExistingCba": "View existing State CBA.",
   "editExistingCba": "Edit existing State CBA.",
+  "thereAreResultsRemoveBeforeRemovingSubjectGroup": "There are results entered for this group. You must delete the results before you can remove the subject group from the assessment.",
   "existingCbaErrorMessageText": "If you would like to view or edit this assessment, please choose from the links below.",
   "cbaType": "CBA type",
   "CBA_1": "CBA 1",

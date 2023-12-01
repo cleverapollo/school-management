@@ -27,7 +27,6 @@ export default function CreateStateCbaPage() {
 
       <StateCbaForm
         title={t('assessments:pageHeading.stateCbaCreation')}
-        ctaText={t('assessments:createAssessment')}
         onSuccess={() => {
           toast(t('common:snackbarMessages.createSuccess'));
         }}
