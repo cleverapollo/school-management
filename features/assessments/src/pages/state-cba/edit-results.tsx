@@ -136,9 +136,6 @@ const getColumnDefs = (
       node,
       isApplyUpdatesCall,
     }: ValueSetterParams<ReturnTypeFromUseAssessmentResults, number>) => {
-      if (!isApplyUpdatesCall) {
-        node?.setDataValue('ppodPublished', false);
-      }
       set(data ?? {}, 'gradeId', newValue);
       return true;
     },
@@ -172,22 +169,31 @@ const getColumnDefs = (
     headerName: t('assessments:ppodStatus'),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseAssessmentResults, any>) =>
-      data?.ppodPublished ? (
-        <Chip
-          sx={{ pointerEvents: 'none' }}
-          label={t('assessments:synced')}
-          variant="soft"
-          color="success"
-        />
-      ) : (
-        <Chip
-          sx={{ pointerEvents: 'none' }}
-          label={t('assessments:notSynced')}
-          variant="soft"
-          color="error"
-        />
-      ),
+    }: ICellRendererParams<ReturnTypeFromUseAssessmentResults, any>) => {
+      if (!data?.ppodPublished) {
+        return (
+          <Chip
+            label={t('assessments:notSynced')}
+            variant="soft"
+            color="error"
+          />
+        );
+      }
+
+      if (data.gradeResult !== data.ppodResult) {
+        return (
+          <Chip
+            label={t('assessments:outOfSync')}
+            variant="soft"
+            color="warning"
+          />
+        );
+      }
+
+      return (
+        <Chip label={t('assessments:synced')} variant="soft" color="success" />
+      );
+    },
   },
   ...getExtraFields(assessmentData?.extraFields, commentBanks),
 ];

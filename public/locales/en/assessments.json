@@ -88,6 +88,7 @@
   "CBA_2": "CBA 2",
   "subjectGroup": "Subject group",
   "synced": "Synced",
+  "outOfSync": "Out of sync",
   "notSynced": "Not synced",
   "partiallySynced": "Partially synced",
   "ppodStatus": "PPOD status",
