@@ -194,9 +194,6 @@ export function SendMailModal({
         </Stack>
         <DialogActions
           sx={{
-            borderTopColor: 'slate.200',
-            borderTopWidth: 1,
-            borderTopStyle: 'solid',
             p: '0 !important',
           }}
         >
@@ -214,7 +211,7 @@ export function SendMailModal({
                 </Button>
 
                 <Button type="submit" variant="contained">
-                  {t('common:actions.send')}
+                  {t('common:actions.next')}
                 </Button>
               </Stack>
             </Box>
