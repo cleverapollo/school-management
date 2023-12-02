@@ -4,12 +4,13 @@ import {
   FormLabel,
   Radio,
   RadioGroup,
-  FormHelperText,
   Card,
   Stack,
+  Typography,
 } from '@mui/material';
 import { PaymentMethod } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
+import { CoinsIcon, CreditCardIcon } from '@tyro/icons';
 import { useId } from 'react';
 import {
   UseControllerProps,
@@ -23,8 +24,8 @@ type PaymentMethodSelectProps<TField extends FieldValues> = {
 
 const paymentMethods = [PaymentMethod.Card, PaymentMethod.Cash];
 const paymentMethodIcons = {
-  [PaymentMethod.Card]: 'credit-card',
-  [PaymentMethod.Cash]: 'cash',
+  [PaymentMethod.Card]: CreditCardIcon,
+  [PaymentMethod.Cash]: CoinsIcon,
 };
 
 export const PaymentMethodSelect = <TField extends FieldValues>({
@@ -34,7 +35,6 @@ export const PaymentMethodSelect = <TField extends FieldValues>({
   const { t } = useTranslation(['fees']);
   const {
     field: { ref, name, value, onChange },
-    fieldState: { error },
   } = useController(controlProps);
 
   return (
@@ -48,18 +48,49 @@ export const PaymentMethodSelect = <TField extends FieldValues>({
         value={value}
         onChange={onChange}
       >
-        {paymentMethods.map((paymentMethod) => (
-          <FormControlLabel
-            key={paymentMethod}
-            value={paymentMethod}
-            control={<Radio />}
-            label={
-              <Card>
-                <Stack>{t(`fees:paymentMethods.${paymentMethod}`)}</Stack>
-              </Card>
-            }
-          />
-        ))}
+        {paymentMethods.map((paymentMethod, index) => {
+          const Icon = paymentMethodIcons[paymentMethod];
+          return (
+            <FormControlLabel
+              key={paymentMethod}
+              value={paymentMethod}
+              control={<Radio />}
+              label={
+                <Card
+                  sx={{
+                    borderRadius: 1,
+                    minWidth: 80,
+                    p: 1,
+                    mt: 1,
+                    border: '2px solid',
+                    borderColor: 'transparent',
+                    ...(paymentMethod === value
+                      ? {
+                          borderColor: 'primary.main',
+                        }
+                      : {}),
+                  }}
+                >
+                  <Stack>
+                    <Typography color="text.secondary">
+                      {t(`fees:paymentMethods.${paymentMethod}`)}
+                    </Typography>{' '}
+                    <Icon />
+                  </Stack>
+                </Card>
+              }
+              sx={{
+                m: 0,
+                '& .MuiRadio-root': {
+                  width: 0,
+                  height: 0,
+                  visibility: 'hidden',
+                  padding: index === 0 ? 0 : undefined,
+                },
+              }}
+            />
+          );
+        })}
       </RadioGroup>
     </FormControl>
   );

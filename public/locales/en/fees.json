@@ -9,6 +9,8 @@
   "siblingDiscount": "Sibling discount",
   "createDiscount": "Create discount",
   "editDiscount": "Edit discount",
+  "amountToPay_one": "Amount to pay",
+  "amountToPay_other": "Amounts to pay",
   "discountsType": {
     "FIXED": "Fixed",
     "PERCENTAGE": "Percentage"
@@ -21,5 +23,6 @@
     "CARD": "Card",
     "CASH": "Cash"
   },
-  "feeNameForStudent": "{{feeName}}<br/><2>for {{studentName}}</2>"
+  "feeNameForStudent": "{{feeName}}<br/><2>for {{studentName}}</2>",
+  "amountToPayExceedsTheAmountThatsDue": "Amount to pay exceeds the amount that's due"
 }
