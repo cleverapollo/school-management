@@ -48,6 +48,7 @@ import {
 } from '../term-assessment/subject-group/edit-results';
 import { useCommentBanksWithComments } from '../../api/comment-bank';
 import { getExtraFields } from '../../utils/get-extra-fields';
+import { updateStudentAssessmentExclusion } from '../../api/student-assessment-exclusion';
 
 const getColumnDefs = (
   t: TFunction<
@@ -130,7 +131,7 @@ const getColumnDefs = (
     headerName: t('assessments:achievement'),
     editable: (params) => !!params.data?.examinable,
     cellEditor: TableSwitch,
-    valueGetter: ({ data }) => data?.gradeId || '-',
+    valueGetter: ({ data }) => data?.gradeId,
     valueSetter: ({
       data,
       newValue,
@@ -288,7 +289,7 @@ export default function EditStateCbaResults() {
 
   const subjectGroupName = subjectGroup?.name ?? '';
 
-  const handleBulkSave = (
+  const handleBulkSave = async (
     data: BulkEditedRows<
       ReturnTypeFromUseAssessmentResults,
       'examinable' | 'gradeId' | 'studentStudyLevel' | 'extraFields'
@@ -297,18 +298,22 @@ export default function EditStateCbaResults() {
     const examinableChanges = Object.entries(data).reduce<
       StudentAssessmentExclusionInput[]
     >((acc, [key, value]) => {
-      if (value.examinable?.newValue) {
+      if (value.examinable) {
         acc.push({
           assessmentId: assessmentIdAsNumber ?? 0,
           studentPartyId: Number(key),
           subjectGroupId: subjectGroupIdAsNumber ?? 0,
+          excluded: !value.examinable?.newValue,
         });
       }
       return acc;
     }, []);
 
     if (examinableChanges.length > 0) {
-      console.log('call exemption endpoint');
+      await updateStudentAssessmentExclusion(
+        academicNamespaceIdAsNumber ?? 0,
+        examinableChanges
+      );
     }
 
     const formattedData = studentResults?.reduce<SaveAssessmentResultInput[]>(
