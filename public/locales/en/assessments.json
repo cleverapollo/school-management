@@ -128,5 +128,6 @@
   "unpublishedSuccessfully": "Unpublished successfully",
   "principalCommentAmounts": "{{amountEntered}}/{{totalToEnter}} Principal comments",
   "yearHeadCommentAmounts": "{{amountEntered}}/{{totalToEnter}} Year head comments",
-  "tutorCommentAmounts": "{{amountEntered}}/{{totalToEnter}} Tutor comments"
+  "tutorCommentAmounts": "{{amountEntered}}/{{totalToEnter}} Tutor comments",
+  "thereAreCustomFieldCommentsPleaseDelete": "There are comments entered for this custom field. You must delete the comments before you can remove the custom field from the assessment."
 }

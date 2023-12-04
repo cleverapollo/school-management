@@ -307,9 +307,11 @@ export function StateCbaForm({
                   const disabledOption = disabledSubjectGroupIds.includes(
                     option.partyId
                   );
+                  const tagProps = getTagProps({ index });
 
                   return (
                     <Tooltip
+                      key={tagProps.key}
                       title={
                         disabledOption
                           ? t(
@@ -321,7 +323,7 @@ export function StateCbaForm({
                       <span>
                         <Chip
                           label={option.name}
-                          {...getTagProps({ index })}
+                          {...tagProps}
                           disabled={disabledOption}
                         />
                       </span>
