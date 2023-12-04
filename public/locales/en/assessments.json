@@ -38,7 +38,8 @@
   "targetResult": "Target result",
   "labels": {
     "assessmentName": "Assessment name",
-    "years": "Years",
+    "year_one": "Year",
+    "years_other": "Years",
     "startDate": "Start date",
     "endDate": "End date",
     "includeTargetGrades": "Include target grades for this assessment",
