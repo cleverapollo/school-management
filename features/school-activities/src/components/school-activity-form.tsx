@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { useTranslation } from '@tyro/i18n';
 import {
   RHFAutocomplete,
@@ -11,8 +11,8 @@ import {
   RHFDateRangePicker,
 } from '@tyro/core';
 import { useCustomGroups } from '@tyro/groups';
-import { UseQueryReturnType } from '@tyro/api';
-import { Card, Grid, CardHeader, Typography } from '@mui/material';
+import { UseQueryReturnType, Sa_SchoolActivityDateInput } from '@tyro/api';
+import { Card, Grid, CardHeader, Stack, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
@@ -36,7 +36,7 @@ export type FormValues = {
   dates?: dayjs.Dayjs;
   startTime?: dayjs.Dayjs | null;
   endTime?: dayjs.Dayjs | null;
-  dateRange?: dayjs.Dayjs;
+  dateRange?: dayjs.Dayjs[];
   requestType: ActivityType;
 };
 
@@ -74,67 +74,50 @@ export function SchoolActivityForm({
   const onSubmit = (data: FormValues) => {
     const group = data?.group?.partyId;
     const roomIds = data?.room && data?.room?.roomId;
+    // ** Need to move this outside component or into utilities folder **
+    function formatDates(type: ActivityType): Sa_SchoolActivityDateInput[] {
+      switch (type) {
+        case ActivityType.SingleDay: {
+          return [
+            {
+              dates: [dayjs(data?.dates).format('YYYY-MM-DD')],
+              partial: false,
+              startTime: '08:00',
+              endTime: '18:00',
+            },
+          ];
+        }
+        case ActivityType.PartialDay: {
+          return [
+            {
+              dates: [dayjs(data?.dates).format('YYYY-MM-DD')],
+              partial: true,
+              startTime: dayjs(data?.startTime).format('hh:mm:ss'),
+              endTime: dayjs(data?.endTime).format('hh:mm:ss'),
+            },
+          ];
+        }
+        case ActivityType.MultiDay: {
+          const dateRangeFormatted =
+            data?.dateRange?.map((date) => dayjs(date).format('YYYY-MM-DD')) ||
+            [];
 
-    const activityType = schoolActivitiesData?.partial
-      ? ActivityType.PartialDay
-      : ActivityType.SingleDay;
-
-    const isPartial = activityDayType === ActivityType.PartialDay;
-    function getGroupPath(type: ActivityType) {
-      // const dateRange = data?.dateRange?.map((date) => date?.)
-      switch (activityDayType) {
-        case ActivityType.SingleDay:
-          return {
-            dates: [dayjs(data?.dates).format('YYYY-MM-DD')],
-            partial: false,
-            startTime: '08:00',
-            endTime: '18:00',
-          };
-        case ActivityType.PartialDay:
-          return {
-            dates: [dayjs(data?.dates).format('YYYY-MM-DD')],
-            partial: true,
-            startTime: dayjs(data?.startTime).format('hh:mm:ss'),
-            endTime: dayjs(data?.endTime).format('hh:mm:ss'),
-          };
-        case ActivityType.MultiDay:
-          return {
-            dates: [dayjs(data?.dateRange).format('YYYY-MM-DD')],
-            partial: false,
-            startTime: '08:00',
-            endTime: '18:00',
-          };
+          return [
+            {
+              dates: dateRangeFormatted,
+              partial: false,
+              startTime: '08:00',
+              endTime: '18:00',
+            },
+          ];
+        }
         default:
-          return console.log('test');
+          return [];
       }
     }
-    const datesFormatted = getGroupPath(activityType);
-    const datesToGetSent = [datesFormatted];
-    console.log(datesToGetSent, 'datesFormatted - data');
 
-    console.log(datesFormatted, 'datesFormatted');
-
-    // const datesFormatted =
-    //   activityType === ActivityType.SingleDay
-    //     ? [
-    //         {
-    //           dates: [dayjs(data?.dates).format('YYYY-MM-DD')],
-    //           partial: isPartial,
-    //           startTime: dayjs(data?.startTime).format('hh:mm:ss'),
-    //           endTime: dayjs(data?.endTime).format('hh:mm:ss'),
-    //         },
-    //       ]
-    //     : [
-    //         {
-    //           dates: [dayjs(data?.dates).format('YYYY-MM-DD')],
-    //           partial: isPartial,
-    //           startTime: '10:00',
-    //           endTime: '18:00',
-    //         },
-    //       ];
-
+    const datesFormatted = formatDates(activityDayType);
     const roomIdsFormatted = roomIds !== null ? [roomIds] : [];
-    // const nameFormatted = typeof data?.name === 'string' ? data?.name : '';
 
     const formattedData = {
       schoolActivityId: data?.schoolActivityId,
@@ -147,10 +130,10 @@ export function SchoolActivityForm({
         roomIds: roomIdsFormatted,
       },
       tripPurpose: data?.details,
-      dates: datesToGetSent,
+      dates: datesFormatted,
       notes: data?.notes,
     };
-    // @ts-ignore
+
     saveSchoolActivities(formattedData, {
       onSuccess: () => {
         onSuccess?.();
@@ -276,7 +259,7 @@ export function SchoolActivityForm({
               </>
             )}
 
-            {/* {activityDayType === ActivityType.MultiDay && (
+            {activityDayType === ActivityType.MultiDay && (
               <Grid item xs={12} sm={6}>
                 <RHFDateRangePicker
                   controlProps={{
@@ -288,7 +271,7 @@ export function SchoolActivityForm({
                   }}
                 />
               </Grid>
-            )} */}
+            )}
 
             <Grid item xs={12}>
               <RHFTextField<FormValues>
@@ -323,7 +306,6 @@ export function SchoolActivityForm({
                   control,
                   name: 'room',
                 }}
-                // multiple
                 fullWidth
                 options={rooms ?? []}
               />
@@ -341,15 +323,17 @@ export function SchoolActivityForm({
               />
             </Grid>
           </Grid>
-          <Grid item xs={12} sm={6} ml={3} mb={3}>
-            <LoadingButton
-              variant="contained"
-              size="large"
-              type="submit"
-              loading={isLoading}
-            >
-              {t('common:actions.save')}
-            </LoadingButton>
+          <Grid item xs={12} pb={3} pr={3}>
+            <Stack direction="row" gap={2} justifyContent="flex-end">
+              <LoadingButton
+                variant="contained"
+                size="large"
+                type="submit"
+                loading={isLoading}
+              >
+                {t('common:actions.save')}
+              </LoadingButton>
+            </Stack>
           </Grid>
         </Card>
       </Grid>

@@ -46,7 +46,7 @@ const getColumns = (
   {
     headerName: t('common:room', { count: 1 }),
     field: 'event.rooms',
-    valueGetter: ({ data }) => data?.event?.rooms,
+    valueGetter: ({ data }) => data?.event?.rooms?.map((room) => room?.name),
   },
   {
     headerName: t('schoolActivities:studentsOnActivity'),
@@ -66,11 +66,16 @@ const getColumns = (
     valueFormatter: ({ data }) => displayNames(data?.freeStaff),
   },
   // ** NOT SURE WHAT THE FIELD IS TO DISPLAY THIS DATA **
-  // {
-  //   headerName: 'Windfall',
-  //   colId: 'windfall',
-  //   valueGetter: ({ data }) => data?.event?.lessonInfo?. || '-',
-  // },
+  {
+    headerName: 'Windfall',
+    colId: 'windfall',
+    valueGetter: ({ data }) => data?.event?.lessonInfo?.subjectGroupId || '-',
+  },
+  {
+    headerName: 'Cancelled',
+    colId: 'cancelled',
+    valueGetter: ({ data }) => data?.event?.lessonInfo?.lessonId || '-',
+  },
 ];
 
 export default function ClassAway() {

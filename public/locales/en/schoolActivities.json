@@ -35,5 +35,6 @@
     "coverRequired": "Cover required",
     "classAway": "Class away",
     "setTeacherAsUnavailable": "Set teacher as unavailable",
-    "setTeacherAsAvailable": "Set teacher as available for windfall"
+    "setTeacherAsAvailable": "Set teacher as available for windfall",
+    "customGroup": "Custom group"
 }

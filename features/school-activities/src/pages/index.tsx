@@ -68,7 +68,7 @@ const getColumnDefs = (
   },
   {
     field: 'location.rooms',
-    headerName: t('common:room'),
+    headerName: t('common:room', { count: 1 }),
     valueGetter: ({ data }) =>
       data?.location?.rooms?.map((room) => room?.name) || '-',
   },
