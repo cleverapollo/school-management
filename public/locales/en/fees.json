@@ -24,5 +24,12 @@
     "CASH": "Cash"
   },
   "feeNameForStudent": "{{feeName}}<br/><2>for {{studentName}}</2>",
-  "amountToPayExceedsTheAmountThatsDue": "Amount to pay exceeds the amount that's due"
+  "amountToPayExceedsTheAmountThatsDue": "Amount to pay exceeds the amount that's due",
+  "ofFeeAmount": "of {{feeAmount}}",
+  "total": "Total",
+  "serviceFee": "Service fee",
+  "completePayment": "Complete payment",
+  "totalPayingToday": "Total paying today",
+  "paymentSuccessful": "Payment successful",
+  "paymentUnsuccessful": "Payment unsuccessful"
 }

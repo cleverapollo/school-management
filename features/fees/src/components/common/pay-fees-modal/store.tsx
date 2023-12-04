@@ -1,3 +1,4 @@
+import { PaymentMethod } from '@tyro/api';
 import {
   useContext,
   createContext,
@@ -6,14 +7,29 @@ import {
   useState,
   Dispatch,
   SetStateAction,
+  useEffect,
 } from 'react';
+import { ReturnTypeFromUseStudentFees } from '../../../api/student-fees';
+
+export type PaymentsToPayAndMethod = {
+  paymentMethod: PaymentMethod;
+  fees: (ReturnTypeFromUseStudentFees & { amountToPay: number })[];
+  total: number;
+};
 
 export type PayFeesSettingsContextValue = {
+  onClose: () => void;
   step: number;
   nextStep: () => void;
   previousStep: () => void;
   nextAction: () => unknown;
   setNextAction: Dispatch<SetStateAction<() => unknown>>;
+  paymentsToPayAndMethod: PaymentsToPayAndMethod | undefined;
+  setPaymentsToPayAndMethod: Dispatch<
+    SetStateAction<PaymentsToPayAndMethod | undefined>
+  >;
+  disableConfirm: boolean;
+  setDisableConfirm: Dispatch<SetStateAction<boolean>>;
 };
 
 const PayFeesSettingsContext = createContext<
@@ -21,12 +37,20 @@ const PayFeesSettingsContext = createContext<
 >(undefined);
 
 export function PayFeesSettingsProvider({
+  open,
+  onClose,
   children,
 }: {
+  open: boolean;
+  onClose: () => void;
   children: ReactNode | ((value: PayFeesSettingsContextValue) => ReactNode);
 }) {
   const [step, setStep] = useState(0);
+  const [disableConfirm, setDisableConfirm] = useState(false);
   const [nextAction, setNextAction] = useState<() => void>(() => {});
+  const [paymentsToPayAndMethod, setPaymentsToPayAndMethod] = useState<
+    PaymentsToPayAndMethod | undefined
+  >();
 
   const nextStep = () => {
     setStep((previousValue) => previousValue + 1);
@@ -36,20 +60,42 @@ export function PayFeesSettingsProvider({
     setStep((previousValue) => previousValue - 1);
   };
 
-  console.log({
-    nextAction,
-  });
-
   const value = useMemo(
     () => ({
+      onClose,
       step,
       nextStep,
       previousStep,
       nextAction,
       setNextAction,
+      setPaymentsToPayAndMethod,
+      paymentsToPayAndMethod,
+      disableConfirm,
+      setDisableConfirm,
     }),
-    [step, nextStep, previousStep, nextAction, setNextAction]
+    [
+      onClose,
+      step,
+      nextStep,
+      previousStep,
+      nextAction,
+      setNextAction,
+      setPaymentsToPayAndMethod,
+      paymentsToPayAndMethod,
+      disableConfirm,
+      setDisableConfirm,
+    ]
   );
+
+  useEffect(() => {
+    if (!open) {
+      setTimeout(() => {
+        setStep(0);
+        setPaymentsToPayAndMethod(undefined);
+        setNextAction(() => {});
+      }, 500);
+    }
+  }, [open]);
 
   return (
     <PayFeesSettingsContext.Provider value={value}>

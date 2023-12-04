@@ -1,11 +1,8 @@
 import {
-  Box,
   Collapse,
   Divider,
-  Fade,
   InputAdornment,
   Stack,
-  TextField,
   Typography,
 } from '@mui/material';
 import { PaymentMethod } from '@tyro/api';
@@ -19,37 +16,34 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { useEffect, useMemo } from 'react';
 import { ReturnTypeFromUseStudentFees } from '../../../api/student-fees';
 import { PaymentMethodSelect } from './fields/payment-method';
-import { usePayFeesSettings } from './store';
+import { PaymentsToPayAndMethod, usePayFeesSettings } from './store';
 
 interface PayFeesStepOneProps {
   feesToPay: ReturnTypeFromUseStudentFees[];
 }
 
-type FormValues = {
-  paymentMethod: PaymentMethod;
-  fees: (ReturnTypeFromUseStudentFees & { amountToPay: number })[];
-};
+type FormValues = Omit<PaymentsToPayAndMethod, 'total'>;
 
 export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
   const { t } = useTranslation(['fees']);
   const { displayName } = usePreferredNameLayout();
   const { formatCurrency } = useFormatNumber();
-  const { setNextAction } = usePayFeesSettings();
+  const {
+    setNextAction,
+    paymentsToPayAndMethod,
+    setPaymentsToPayAndMethod,
+    nextStep,
+  } = usePayFeesSettings();
 
   const { resolver, rules } = useFormValidator<FormValues>();
-  const {
-    handleSubmit,
-    control,
-    watch,
-    formState: { errors },
-  } = useForm<FormValues>({
+  const { handleSubmit, control, watch } = useForm<FormValues>({
     resolver: resolver({
       paymentMethod: [rules.required()],
       fees: {
         amountToPay: [
           rules.required(),
           rules.isNumber(),
-          rules.min(0),
+          rules.min(0.5),
           rules.validate((value, throwError, formValues, fieldArrayIndex) => {
             const fee = formValues.fees[fieldArrayIndex as number];
 
@@ -61,11 +55,14 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
       },
     }),
     defaultValues: {
-      paymentMethod: PaymentMethod.Card,
-      fees: feesToPay.map((fee) => ({
-        ...fee,
-        amountToPay: fee.amount - fee.amountPaid ?? 0,
-      })),
+      paymentMethod:
+        paymentsToPayAndMethod?.paymentMethod ?? PaymentMethod.Card,
+      fees:
+        paymentsToPayAndMethod?.fees ??
+        feesToPay.map((fee) => ({
+          ...fee,
+          amountToPay: fee.amount - fee.amountPaid ?? 0,
+        })),
     },
   });
 
@@ -82,7 +79,15 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
   );
 
   const onSubmit = handleSubmit((values) => {
-    console.log(values);
+    setPaymentsToPayAndMethod({
+      total: values.fees.reduce((acc, fee) => acc + Number(fee.amountToPay), 0),
+      paymentMethod: values.paymentMethod,
+      fees: values.fees.map((fee) => ({
+        ...fee,
+        amountToPay: Number(fee.amountToPay),
+      })),
+    });
+    nextStep();
   });
 
   useEffect(() => {
@@ -151,7 +156,9 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
                       }}
                     />
                     <Typography>
-                      of {formatCurrency(fee.amount - fee.amountPaid)}
+                      {t('fees:ofFeeAmount', {
+                        feeAmount: formatCurrency(fee.amount - fee.amountPaid),
+                      })}
                     </Typography>
                   </Stack>
                 </Stack>
@@ -161,11 +168,11 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
           <Divider />
           <Stack alignItems="flex-end">
             <Typography variant="subtitle1">
-              Total {formatCurrency(total)}
+              {t('fees:total')} {formatCurrency(total)}
             </Typography>
             <Collapse in={paymentMethod === PaymentMethod.Card}>
               <Typography variant="body1">
-                Service fees {formatCurrency(1.25)}
+                {t('fees:serviceFee')} {formatCurrency(1.25)}
               </Typography>
             </Collapse>
           </Stack>
