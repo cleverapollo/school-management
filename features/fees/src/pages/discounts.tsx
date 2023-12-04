@@ -5,6 +5,9 @@ import {
   Table,
   ICellRendererParams,
   TableBooleanValue,
+  TablePersonAvatar,
+  ReturnTypeDisplayName,
+  usePreferredNameLayout,
 } from '@tyro/core';
 import { TFunction, useTranslation, useFormatNumber } from '@tyro/i18n';
 import { useDeferredValue, useMemo, useState } from 'react';
@@ -23,6 +26,7 @@ dayjs.extend(LocalizedFormat);
 
 const getColumnDefs = (
   t: TFunction<('fees' | 'common')[]>,
+  displayName: ReturnTypeDisplayName,
   formatCurrency: ReturnType<typeof useFormatNumber>['formatCurrency']
 ): GridOptions<ReturnTypeFromUseDiscounts>['columnDefs'] => [
   {
@@ -64,12 +68,32 @@ const getColumnDefs = (
       <TableBooleanValue value={Boolean(data?.siblingDiscount)} />
     ),
   },
+  {
+    field: 'active',
+    headerName: t('common:active'),
+    valueFormatter: ({ data }) =>
+      data?.active ? t('common:yes') : t('common:no'),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseDiscounts>) => (
+      <TableBooleanValue value={Boolean(data?.active)} />
+    ),
+  },
+  {
+    field: 'createdBy',
+    headerName: t('common:createdBy'),
+    valueGetter: ({ data }) => displayName(data?.createdBy),
+    cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseDiscounts>) =>
+      data?.createdBy ? <TablePersonAvatar person={data?.createdBy} /> : '-',
+  },
 ];
 
 type DiscountValue = UpsertDiscountModalProps['value'];
 
 export default function DiscountsPage() {
   const { t } = useTranslation(['common', 'navigation', 'fees']);
+
+  const { displayName } = usePreferredNameLayout();
   const { formatCurrency } = useFormatNumber();
 
   const { data: discountsData } = useDiscounts({});
@@ -78,8 +102,8 @@ export default function DiscountsPage() {
   const deferredDiscount = useDeferredValue(discount);
 
   const columnDefs = useMemo(
-    () => getColumnDefs(t, formatCurrency),
-    [t, formatCurrency]
+    () => getColumnDefs(t, displayName, formatCurrency),
+    [t, displayName, formatCurrency]
   );
 
   return (

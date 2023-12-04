@@ -17,6 +17,12 @@ const discounts = graphql(/* GraphQL */ `
       discountType
       value
       siblingDiscount
+      active
+      createdBy {
+        firstName
+        lastName
+        avatarUrl
+      }
     }
   }
 `);
