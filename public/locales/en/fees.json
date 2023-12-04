@@ -31,5 +31,9 @@
   "completePayment": "Complete payment",
   "totalPayingToday": "Total paying today",
   "paymentSuccessful": "Payment successful",
-  "paymentUnsuccessful": "Payment unsuccessful"
+  "paymentUnsuccessful": "Payment unsuccessful",
+  "stripeAccount": {
+    "getStarted": "Get started",
+    "continueSetup": "Continue setup"
+  }
 }

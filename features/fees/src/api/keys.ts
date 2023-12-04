@@ -6,4 +6,5 @@ export const feeKeys = {
     [...feeKeys.all, 'studentFees', filter] as const,
   discounts: (filter: DiscountFilter) =>
     [...feeKeys.all, 'discounts', filter] as const,
+  stripeAccount: () => [...feeKeys.all, 'stripeAccount'] as const,
 };

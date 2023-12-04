@@ -41,6 +41,7 @@
     "title": "Management",
     "classListManager": "Class list manager",
     "fees": {
+      "onboarding": "Onboarding",
       "discounts": "Discounts"
     },
     "people": {
