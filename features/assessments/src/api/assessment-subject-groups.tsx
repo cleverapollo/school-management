@@ -40,6 +40,7 @@ const assessmentSubjectGroupsList = graphql(/* GraphQL */ `
       resultsEntered
       commentsEntered
       commentsTotal
+      extraFieldResultsEntered
       ppodSyncStatus
       published
     }

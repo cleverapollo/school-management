@@ -136,7 +136,10 @@ export function StateCbaForm({
   const disabledSubjectGroupIds = useMemo(
     () =>
       assessmentSubjectGroupsData
-        .filter(({ resultsEntered }) => resultsEntered > 0)
+        .filter(
+          ({ resultsEntered, extraFieldResultsEntered }) =>
+            resultsEntered > 0 || extraFieldResultsEntered > 0
+        )
         .map(({ subjectGroup }) => subjectGroup.partyId),
     [assessmentSubjectGroupsData]
   );
