@@ -131,6 +131,9 @@ const studentsSubjectGroupsQuery = (studentId: number | undefined) => ({
     );
 
     return studentsData
+      .flatMap(({ subjectGroup, students }) =>
+        subjectGroup ? [{ subjectGroup, students }] : []
+      )
       .map(({ students, subjectGroup }) => ({
         ...subjectGroup,
         irePP: {
