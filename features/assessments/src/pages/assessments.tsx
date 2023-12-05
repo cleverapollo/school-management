@@ -158,7 +158,7 @@ const getColumnDefs = (
 export default function AssessmentsPage() {
   const { t } = useTranslation(['assessments', 'common']);
 
-  const { hasPermission } = usePermissions();
+  const { hasPermission, isTyroUser } = usePermissions();
   const { activeAcademicNamespace } = useAcademicNamespace();
   const { displayName } = usePreferredNameLayout();
 
@@ -197,6 +197,7 @@ export default function AssessmentsPage() {
                     {
                       label: t('assessments:assessmentTypes.STATE_CBA'),
                       navigateTo: './state-cba/create',
+                      hasAccess: () => isTyroUser,
                     },
                   ]}
                 />
