@@ -39,7 +39,6 @@ export const getRoutes: NavObjectFunction = (t) => [
         children: [
           {
             type: NavObjectType.NonMenuLink,
-            index: true,
             path: 'onboarding',
             element: <OnboardingPage />,
           },
