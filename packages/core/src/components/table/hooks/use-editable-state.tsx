@@ -17,6 +17,7 @@ export interface ValueSetterParams<TData = any, CellValue = any>
   newValue: CellValue;
   oldValue: CellValue;
   isEditCheckCall?: boolean;
+  isApplyUpdatesCall?: boolean;
 }
 
 type StringableKey<T> = T extends readonly unknown[]
@@ -211,6 +212,7 @@ export function useEditableState<T>({
                 api: currentTableRef.api,
                 columnApi: currentTableRef.columnApi,
                 context: currentTableRef.context,
+                isApplyUpdatesCall: true,
               };
               colDef.valueSetter(valueSetterParams);
             } else {

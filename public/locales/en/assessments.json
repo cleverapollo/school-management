@@ -38,7 +38,8 @@
   "targetResult": "Target result",
   "labels": {
     "assessmentName": "Assessment name",
-    "years": "Years",
+    "year_one": "Year",
+    "years_other": "Years",
     "startDate": "Start date",
     "endDate": "End date",
     "includeTargetGrades": "Include target grades for this assessment",
@@ -81,12 +82,14 @@
   "existingCbaDefaultTitle": "Assessment for this subject already exists.",
   "viewExistingCba": "View existing State CBA.",
   "editExistingCba": "Edit existing State CBA.",
+  "thereAreResultsRemoveBeforeRemovingSubjectGroup": "There are results entered for this group. You must delete the results before you can remove the subject group from the assessment.",
   "existingCbaErrorMessageText": "If you would like to view or edit this assessment, please choose from the links below.",
   "cbaType": "CBA type",
   "CBA_1": "CBA 1",
   "CBA_2": "CBA 2",
   "subjectGroup": "Subject group",
   "synced": "Synced",
+  "outOfSync": "Out of sync",
   "notSynced": "Not synced",
   "partiallySynced": "Partially synced",
   "ppodStatus": "PPOD status",
@@ -126,5 +129,6 @@
   "unpublishedSuccessfully": "Unpublished successfully",
   "principalCommentAmounts": "{{amountEntered}}/{{totalToEnter}} Principal comments",
   "yearHeadCommentAmounts": "{{amountEntered}}/{{totalToEnter}} Year head comments",
-  "tutorCommentAmounts": "{{amountEntered}}/{{totalToEnter}} Tutor comments"
+  "tutorCommentAmounts": "{{amountEntered}}/{{totalToEnter}} Tutor comments",
+  "thereAreCustomFieldCommentsPleaseDelete": "There are comments entered for this custom field. You must delete the comments before you can remove the custom field from the assessment."
 }

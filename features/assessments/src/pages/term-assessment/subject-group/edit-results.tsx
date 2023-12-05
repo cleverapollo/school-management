@@ -31,6 +31,7 @@ import {
   CommenterUserType,
   useUser,
   getPersonProfileLink,
+  StudentAssessmentExclusionInput,
 } from '@tyro/api';
 import set from 'lodash/set';
 import { StudentTableAvatar } from '@tyro/people';
@@ -44,6 +45,7 @@ import { useCommentBanksWithComments } from '../../../api/comment-bank';
 import { checkAndSetGrades } from '../../../utils/check-and-set-grades';
 import { CommentTypeCellEditor } from '../../../components/common/comment-type-cell-editor';
 import { getExtraFields } from '../../../utils/get-extra-fields';
+import { updateStudentAssessmentExclusion } from '../../../api/student-assessment-exclusion';
 
 export type ReturnTypeFromUseAssessmentById = UseQueryReturnType<
   typeof useAssessmentById
@@ -263,6 +265,28 @@ const getColumnDefs = (
     lockVisible: true,
   },
   {
+    field: 'examinable',
+    headerName: t('assessments:examinable'),
+    editable: true,
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
+    cellEditor: TableSwitch,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAssessmentResults, any>) => (
+      <TableBooleanValue value={!!data?.examinable} />
+    ),
+    valueSetter: (
+      params: ValueSetterParams<ReturnTypeFromUseAssessmentResults, boolean>
+    ) => {
+      const { newValue } = params;
+      if (!newValue) {
+        params?.node?.setDataValue('result', null);
+      }
+      set(params.data ?? {}, 'examinable', params.newValue);
+      return true;
+    },
+  },
+  {
     field: 'studentClassGroup',
     headerName: t('common:class'),
   },
@@ -290,7 +314,7 @@ const getColumnDefs = (
   {
     field: 'result',
     headerName: t('common:result'),
-    editable: true,
+    editable: ({ data }) => !!data?.examinable,
     valueFormatter: ({ value }) =>
       typeof value === 'number' ? `${value}%` : '',
     valueSetter: (
@@ -349,27 +373,6 @@ const getColumnDefs = (
   },
   ...getCommentFields(assessmentData, commentBanks, t, toast),
   ...getExtraFields(assessmentData?.extraFields, commentBanks),
-  {
-    field: 'subjectGroup.irePP.examinable',
-    headerName: t('common:examinable'),
-    editable: true,
-    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
-    cellEditor: TableSwitch,
-    valueGetter: ({ data }) => data?.subjectGroup?.irePP?.examinable,
-    valueFormatter: ({ data }) =>
-      data?.subjectGroup?.irePP?.examinable ? t('common:yes') : t('common:no'),
-    valueSetter: (params) => {
-      set(params.data ?? {}, 'subjectGroup.irePP.examinable', params.newValue);
-      return true;
-    },
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseAssessmentResults, any>) => (
-      <TableBooleanValue
-        value={Boolean(data?.subjectGroup?.irePP?.examinable)}
-      />
-    ),
-  },
 ];
 
 export default function EditTermAssessmentResults() {
@@ -453,9 +456,10 @@ export default function EditTermAssessmentResults() {
     ]
   );
 
-  const saveAssessmentResult = (
+  const saveAssessmentResult = async (
     data: BulkEditedRows<
       ReturnTypeFromUseAssessmentResults,
+      | 'examinable'
       | 'extraFields'
       | 'result'
       | 'gradeResult'
@@ -465,6 +469,27 @@ export default function EditTermAssessmentResults() {
       | 'subjectGroup.irePP.examinable'
     >
   ) => {
+    const examinableChanges = Object.entries(data).reduce<
+      StudentAssessmentExclusionInput[]
+    >((acc, [key, value]) => {
+      if (value.examinable) {
+        acc.push({
+          assessmentId: assessmentIdAsNumber ?? 0,
+          studentPartyId: Number(key),
+          subjectGroupId: subjectGroupIdAsNumber ?? 0,
+          excluded: !value.examinable?.newValue,
+        });
+      }
+      return acc;
+    }, []);
+
+    if (examinableChanges.length > 0) {
+      await updateStudentAssessmentExclusion(
+        academicNamespaceIdAsNumber ?? 0,
+        examinableChanges
+      );
+    }
+
     const results = studentResults?.reduce<SaveAssessmentResultInput[]>(
       (acc, result) => {
         const editedColumns = data[result.studentPartyId];

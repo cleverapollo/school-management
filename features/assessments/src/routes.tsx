@@ -232,6 +232,20 @@ export const getRoutes: NavObjectFunction = (t) => [
                     type: NavObjectType.NonMenuLink,
                     path: 'edit',
                     element: <EditStateCba />,
+                    loader: ({ params }) => {
+                      const academicNameSpaceId = getNumber(
+                        params.academicNamespaceId
+                      );
+                      const assessmentId = getNumber(params.assessmentId);
+
+                      if (!academicNameSpaceId || !assessmentId) {
+                        throw404Error();
+                      }
+
+                      return getAssessmentSubjectGroups(academicNameSpaceId, {
+                        assessmentId,
+                      });
+                    },
                   },
                   {
                     type: NavObjectType.NonMenuLink,
