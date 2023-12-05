@@ -4,5 +4,6 @@
   "classGroups": "Class group(s)",
   "subjectSetup": "Subject setup",
   "atLeastOneSubjectPoolRequired": "At least one subject pool is required",
-  "poolN": "Pool {{number}}"
+  "poolN": "Pool {{number}}",
+  "addSubjectPool": "Add subject pool"
 }

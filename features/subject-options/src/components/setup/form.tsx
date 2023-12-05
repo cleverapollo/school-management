@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   CardHeader,
   Grid,
@@ -7,10 +8,10 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { RHFAutocomplete } from '@tyro/core';
+import { RHFAutocomplete, useFormValidator } from '@tyro/core';
 import { SaveSubjectSet } from '@tyro/api';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { TrashIcon } from '@tyro/icons';
+import { AddIcon, TrashIcon } from '@tyro/icons';
 import { AcademicYearSelect } from './academic-year-select';
 
 interface FormState {
@@ -19,12 +20,30 @@ interface FormState {
   subjectSets: SaveSubjectSet[];
 }
 
+const defaultPoolProps = {
+  canChoose: 0,
+  mustGet: 0,
+  subjectIds: [],
+};
+
 export function SubjectOptionsSetupForm() {
   const { t } = useTranslation(['common', 'subjectOptions']);
 
+  const { rules, resolver } = useFormValidator<FormState>();
   const { control, handleSubmit } = useForm<FormState>({
+    resolver: resolver({
+      subjectSets: {
+        canChoose: [rules.required(), rules.min(0)],
+        mustGet: [rules.required(), rules.min(0)],
+      },
+    }),
     defaultValues: {
-      subjectSets: [{}],
+      subjectSets: [
+        {
+          ...defaultPoolProps,
+          poolIdx: 0,
+        },
+      ],
     },
   });
   const {
@@ -71,7 +90,7 @@ export function SubjectOptionsSetupForm() {
       </Card>
       <Card variant="outlined">
         <CardHeader component="h2" title={t('subjectOptions:subjectSetup')} />
-        <Stack direction="column" p={3}>
+        <Stack direction="column" p={3} gap={2.5}>
           <Typography
             variant="body1"
             component="h3"
@@ -103,6 +122,22 @@ export function SubjectOptionsSetupForm() {
               />
             </Card>
           ))}
+          <Stack width="fit-content">
+            <Button
+              size="small"
+              color="primary"
+              variant="text"
+              onClick={() =>
+                append({
+                  ...defaultPoolProps,
+                  poolIdx: subjectPools.length,
+                })
+              }
+              startIcon={<AddIcon sx={{ width: 24, height: 24 }} />}
+            >
+              {t('subjectOptions:addSubjectPool')}
+            </Button>
+          </Stack>
         </Stack>
       </Card>
     </Stack>
