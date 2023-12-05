@@ -41,6 +41,8 @@
   "ariaLabelForTabs": "scrollable auto tabs for highlighting attendance types",
   "currentEmployee": "Current employee",
   "scrollableTabs": "Scrollable tabs",
+  "printGroupMemberships": "Print group memberships",
+  "groupTypes": "Group type(s)",
   "gender": {
     "title": "Gender",
     "MALE": "Male",

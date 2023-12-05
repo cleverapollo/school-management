@@ -32,6 +32,7 @@ export function CommentStatusIcon({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        boxSizing: 'border-box',
         ...additionalCommentStatusStyles[commentStatus],
       }}
     >

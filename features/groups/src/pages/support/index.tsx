@@ -1,4 +1,4 @@
-import { Box, Fade, Container, Typography } from '@mui/material';
+import { Box, Fade } from '@mui/material';
 import {
   PermissionUtils,
   SmsRecipientType,
@@ -10,7 +10,6 @@ import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   GridOptions,
-  Page,
   Table,
   ICellRendererParams,
   ActionMenu,
@@ -22,9 +21,11 @@ import {
   sortStartNumberFirst,
   ConfirmDialog,
   TableSelect,
+  PageContainer,
+  PageHeading,
 } from '@tyro/core';
 
-import { MobileIcon, MoveGroupIcon, SendMailIcon } from '@tyro/icons';
+import { MobileIcon, MoveGroupIcon, PrinterIcon } from '@tyro/icons';
 
 import { set } from 'lodash';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
@@ -34,6 +35,7 @@ import {
   useSupportGroups,
 } from '../../api/support-groups';
 import { useSwitchSubjectGroupType } from '../../api';
+import { printGroupMembers } from '../../utils/print-group-members';
 
 type ReturnTypeFromUseSupportGroups = NonNullable<
   ReturnType<typeof useSupportGroups>['data']
@@ -101,8 +103,8 @@ const getSubjectGroupsColumns = (
         params: {
           options: subjects,
           optionIdKey: 'id',
-          getOptionLabel: (option: CatalogueSubjectOption) =>
-            `${option.name} (${option.nationalCode})`,
+          getOptionLabel: ({ name, nationalCode }: CatalogueSubjectOption) =>
+            `${name} ${nationalCode ? `(${nationalCode})` : ''}`,
         },
       } as const),
     enableRowGroup: true,
@@ -140,37 +142,46 @@ export default function SupportGroups() {
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
+  const [switchGroupTypeConfirmation, setSwitchGroupTypeConfirmation] =
+    useState(false);
+
   const {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
-  const [switchGroupTypeConfirmation, setSwitchGroupTypeConfirmation] =
-    useState(false);
+
   const studentColumns = useMemo(
     () => getSubjectGroupsColumns(t, displayNames, subjects),
     [t, displayNames, subjects]
   );
 
-  const actionMenuItems = [
-    {
-      label: t('people:sendSms'),
-      icon: <MobileIcon />,
-      onClick: onOpenSendSms,
-    },
-    {
-      label: t('groups:supportGroup.switchToSubjectGroup.action'),
-      icon: <MoveGroupIcon />,
-      onClick: () => setSwitchGroupTypeConfirmation(true),
-      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
-        isStaffUserWithPermission('ps:1:groups:write_subject_groups'),
-    },
-    // {
-    //   label: t('mail:sendMail'),
-    //   icon: <SendMailIcon />,
-    //   onClick: () => {},
-    // },
-  ];
+  const actionMenuItems = useMemo(
+    () => [
+      {
+        label: t('people:sendSms'),
+        icon: <MobileIcon />,
+        onClick: onOpenSendSms,
+      },
+      {
+        label: t('groups:supportGroup.switchToSubjectGroup.action'),
+        icon: <MoveGroupIcon />,
+        onClick: () => setSwitchGroupTypeConfirmation(true),
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission('ps:1:groups:write_subject_groups'),
+      },
+      {
+        label: t('groups:printGroupMembers'),
+        icon: <PrinterIcon />,
+        onClick: () => printGroupMembers(selectedGroups),
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission(
+            'ps:1:printing_and_exporting:print_group_members'
+          ),
+      },
+    ],
+    [selectedGroups, onOpenSendSms]
+  );
 
   const handleBulkSave = (
     data: BulkEditedRows<ReturnTypeFromUseSupportGroups, 'name' | 'subjects'>
@@ -202,28 +213,29 @@ export default function SupportGroups() {
 
   return (
     <>
-      <Page title={t('groups:supportGroups')}>
-        <Container maxWidth="xl">
-          <Typography variant="h3" component="h1" paragraph>
-            {t('groups:supportGroups')}
-          </Typography>
-          <Table
-            rowData={subjectGroupsData ?? []}
-            columnDefs={studentColumns}
-            rowSelection="multiple"
-            getRowId={({ data }) => String(data?.partyId)}
-            onBulkSave={handleBulkSave}
-            rightAdornment={
-              <Fade in={selectedGroups.length > 0} unmountOnExit>
-                <Box>
-                  <ActionMenu menuItems={actionMenuItems} />
-                </Box>
-              </Fade>
-            }
-            onRowSelection={(groups) =>
-              setSelectedGroups(
-                groups.map(({ partyId, name, avatarUrl, subjects }) => {
-                  const subject = subjects?.[0];
+      <PageContainer title={t('groups:supportGroups')}>
+        <PageHeading
+          title={t('groups:supportGroups')}
+          titleProps={{ variant: 'h3' }}
+        />
+        <Table
+          rowData={subjectGroupsData ?? []}
+          columnDefs={studentColumns}
+          rowSelection="multiple"
+          getRowId={({ data }) => String(data?.partyId)}
+          onBulkSave={handleBulkSave}
+          rightAdornment={
+            <Fade in={selectedGroups.length > 0} unmountOnExit>
+              <Box>
+                <ActionMenu menuItems={actionMenuItems} />
+              </Box>
+            </Fade>
+          }
+          onRowSelection={(groups) =>
+            setSelectedGroups(
+              groups.map(
+                ({ partyId, name, avatarUrl, subjects: groupsSubjects }) => {
+                  const subject = groupsSubjects?.[0];
                   return {
                     id: partyId,
                     name,
@@ -231,12 +243,12 @@ export default function SupportGroups() {
                     avatarUrl,
                     avatarColor: subject?.colour,
                   };
-                })
+                }
               )
-            }
-          />
-        </Container>
-      </Page>
+            )
+          }
+        />
+      </PageContainer>
 
       <SendSmsModal
         isOpen={isSendSmsOpen}
