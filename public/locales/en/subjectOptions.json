@@ -1,5 +1,8 @@
 {
   "createSubjectOptions": "Create subject options",
   "studentSelection": "Student selection",
-  "classGroups": "Class group(s)"
+  "classGroups": "Class group(s)",
+  "subjectSetup": "Subject setup",
+  "atLeastOneSubjectPoolRequired": "At least one subject pool is required",
+  "poolN": "Pool {{number}}"
 }
