@@ -103,7 +103,7 @@ export const CustomFieldsTable = <TField extends FormCustomFieldsValues>({
           <TableBody>
             {fields.map((field, index) => {
               const extraField = extraFields[index];
-              const disableRemoveButton = extraField.resultsEntered;
+              const disableRemoveButton = !!extraField?.resultsEntered;
 
               return (
                 <TableRow key={field.id}>

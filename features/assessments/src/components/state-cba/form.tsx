@@ -61,12 +61,6 @@ type StateCbaFormProps = {
 };
 
 const stateCBATypeOptions = [StateCbaType.Cba_1, StateCbaType.Cba_2];
-type FormattedSubjectsType = {
-  name: string;
-  displayName: string;
-  subjectCode: string;
-  id: number;
-}[];
 
 export function StateCbaForm({
   stateCba,
@@ -113,31 +107,24 @@ export function StateCbaForm({
     !!stateCba?.id
   );
 
-  const subjects = useMemo(() => {
+  const { subjects, subjectsMapById } = useMemo(() => {
     const subjectsFlattened = subjectGroups?.flatMap(
       (subjectGroup) => subjectGroup?.subjects?.[0]
     );
 
-    const subjectList = subjectsFlattened?.reduce<FormattedSubjectsType>(
-      (accumulator, current) => {
-        if (
-          current &&
-          !accumulator.some((item) => item.name === current.name)
-        ) {
-          const subjectCode = current.nationalCode || '-';
-          const displayName = `${current.name} (${subjectCode})`;
-          accumulator.push({ ...current, displayName, subjectCode });
-        }
-        return accumulator;
-      },
-      []
-    );
+    const subjectsMap = subjectsFlattened?.reduce((acc, current) => {
+      acc.set(current?.id, current);
+      return acc;
+    }, new Map<number, NonNullable<typeof subjectsFlattened>[number]>());
 
-    return (
-      subjectList?.sort(
-        (a, b) => Number(a.subjectCode) - Number(b.subjectCode)
-      ) || []
-    );
+    const subjectsList = Array.from(subjectsMap?.values() ?? []);
+    return {
+      subjects:
+        subjectsList?.sort(
+          (a, b) => Number(a.nationalCode) - Number(b.nationalCode)
+        ) || [],
+      subjectsMapById: subjectsMap,
+    };
   }, [subjectGroups]);
 
   const disabledSubjectGroupIds = useMemo(
@@ -156,11 +143,11 @@ export function StateCbaForm({
   );
 
   const filterSubjectGroupsBySubjectAndYear = useCallback(
-    (yearGroup: YearGroupOption, subjectName?: string | null) =>
+    (yearGroup: YearGroupOption, subjectId?: number | null) =>
       subjectGroups
         ?.filter(
           (item) =>
-            item.subjects.some((subject) => subject.name === subjectName) &&
+            item.subjects.some((subject) => subject.id === subjectId) &&
             item.yearGroups.some((year) => year.name === yearGroup?.name)
         )
         .sort((a, b) => a.name.localeCompare(b?.name)) || [],
@@ -168,9 +155,9 @@ export function StateCbaForm({
   );
 
   const subjectGroupOptions = useMemo(() => {
-    const subjectName = subjectPicked?.name;
+    const subjectId = subjectPicked?.id;
     const yearName: YearGroupOption = yearPicked;
-    return filterSubjectGroupsBySubjectAndYear(yearName, subjectName);
+    return filterSubjectGroupsBySubjectAndYear(yearName, subjectId);
   }, [subjectPicked, yearPicked, filterSubjectGroupsBySubjectAndYear]);
 
   const textFieldStyle = {
@@ -294,8 +281,14 @@ export function StateCbaForm({
           <RHFAutocomplete
             disabled={isEditing}
             label={t('common:subject')}
-            optionIdKey="name"
-            optionTextKey="displayName"
+            optionIdKey="id"
+            getOptionLabel={(option) => {
+              const subject = subjectsMapById?.get(option?.id);
+
+              return subject?.nationalCode
+                ? `${subject.name} (${subject.nationalCode})`
+                : option?.name ?? '';
+            }}
             controlProps={{ name: 'subject', control }}
             sx={textFieldStyle}
             options={subjects}
