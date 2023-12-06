@@ -20,7 +20,11 @@ import {
   LoadingPlaceholderContainer,
   TableStudyLevelChip,
 } from '@tyro/core';
-import { useAcademicNamespace, usePermissions } from '@tyro/api';
+import {
+  AssessmentType,
+  useAcademicNamespace,
+  usePermissions,
+} from '@tyro/api';
 import { useStudentDashboardAssessments } from '../api/student-dashboard-assessment';
 import { useStudentAssessmentResults } from '../api/term-assessments/student-results';
 import { getRowDetailsFromResult } from '../utils/get-row-details-from-result';
@@ -47,7 +51,12 @@ export function StudentAssessmentWidget({
       !!studentId
     );
 
-  const selectedAssessment = assessments?.[assessmentIndex];
+  const filteredAssessments = assessments?.filter(
+    (assessment) => assessment.assessmentType !== AssessmentType.StateCba
+  );
+
+  const selectedAssessment = filteredAssessments?.[assessmentIndex];
+
   const { data: studentResults = [], isLoading: isResultsLoading } =
     useStudentAssessmentResults(
       activeAcademicNamespaceId,
@@ -62,7 +71,8 @@ export function StudentAssessmentWidget({
   const isLoading =
     isDashboardLoading || (isResultsLoading && !!selectedAssessment);
   const hasAssessments = assessments.length > 0;
-  const menuItems = assessments.map((assessment, index) => ({
+
+  const menuItems = filteredAssessments.map((assessment, index) => ({
     label: assessment.name,
     onClick: () => {
       setAssessmentIndex(index);
