@@ -5,6 +5,7 @@
   "amountPaid": "Amount Paid",
   "pay": "Pay",
   "value": "Value",
+  "feesSetup": "Fees setup",
   "discountType": "Discount type",
   "siblingDiscount": "Sibling discount",
   "createDiscount": "Create discount",
@@ -35,5 +36,12 @@
   "stripeAccount": {
     "getStarted": "Get started",
     "continueSetup": "Continue setup"
-  }
+  },
+  "createStripeAccount": "Create Stripe account",
+  "tyroFeesComingSoon": "Tyro fees coming soon",
+  "getStartedWithStripe": "Get started with Stripe",
+  "createYourStripeAccountDescription": "Tyro Fees is powered by Stripe. Create your school Stripe account now in order to get started.",
+  "yourSchoolIsReadyDescription": "Your school is now ready to start processing payments. We will be in touch shortly once Fees is ready for release.",
+  "clickSignUpToStripe": "Click 'Sign up' to be taken to Stripe",
+  "thankYouForSigningUpForStripe": "Thank you for signing up to Stripe"
 }

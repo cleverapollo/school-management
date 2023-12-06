@@ -8,23 +8,23 @@ const ContactDashboard = lazyWithRetry(
 );
 
 const DiscountsPage = lazyWithRetry(() => import('./pages/discounts'));
-const OnboardingPage = lazyWithRetry(() => import('./pages/onboarding'));
+const SetupPage = lazyWithRetry(() => import('./pages/setup'));
 
 export const getRoutes: NavObjectFunction = (t) => [
-  {
-    type: NavObjectType.Category,
-    title: t('navigation:general.title'),
-    hasAccess: ({ isContact }) => isContact,
-    children: [
-      {
-        type: NavObjectType.RootLink,
-        path: 'fees',
-        title: t('navigation:general.fees'),
-        icon: <WalletWithMoneyIcon />,
-        element: <ContactDashboard />,
-      },
-    ],
-  },
+  // {
+  //   type: NavObjectType.Category,
+  //   title: t('navigation:general.title'),
+  //   hasAccess: ({ isContact }) => isContact,
+  //   children: [
+  //     {
+  //       type: NavObjectType.RootLink,
+  //       path: 'fees',
+  //       title: t('navigation:general.fees'),
+  //       icon: <WalletWithMoneyIcon />,
+  //       element: <ContactDashboard />,
+  //     },
+  //   ],
+  // },
   {
     type: NavObjectType.Category,
     title: t('navigation:management.title'),
@@ -35,12 +35,17 @@ export const getRoutes: NavObjectFunction = (t) => [
         path: 'fees',
         title: t('navigation:general.fees'),
         icon: <WalletWithMoneyIcon />,
-        loader: getStripeAccount,
         children: [
           {
             type: NavObjectType.NonMenuLink,
-            path: 'onboarding',
-            element: <OnboardingPage />,
+            path: 'setup',
+            element: <SetupPage />,
+          },
+          {
+            type: NavObjectType.MenuLink,
+            path: 'overview',
+            title: t('navigation:management.fees.overview'),
+            loader: stripeAccountGuard,
           },
           {
             type: NavObjectType.MenuLink,
