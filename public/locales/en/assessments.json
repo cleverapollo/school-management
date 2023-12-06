@@ -2,16 +2,21 @@
   "pageTitle": {
     "assessments": "List of assessments",
     "createTermAssessment": "Create a new term assessment",
+    "createStateCba": "Create a new state CBA",
     "termAssessmentSubjectGroups": "List of subject groups",
-    "editTermAssessment": "Edit term assessment"
+    "editTermAssessment": "Edit term assessment",
+    "editStateCba": "Edit state cba"
   },
   "pageHeading": {
     "assessments": "Assessments",
     "termAssessments": "Term assessments",
+    "stateCba": "State CBA",
     "createTermAssessment": "Term assessment creation",
+    "stateCbaCreation": "State CBA creation",
     "termAssessmentSubjectGroups": "{{name}}'s subject groups",
     "editResultsFor": "Edit results for {{name}}",
     "editTermAssessment": "Edit {{name}}'s term assessment",
+    "editStateCba": "Edit {{name}}",
     "overallCommentsFor": "Overall comments for {{name}}"
   },
   "commentStatus": {
@@ -33,7 +38,8 @@
   "targetResult": "Target result",
   "labels": {
     "assessmentName": "Assessment name",
-    "years": "Years",
+    "year_one": "Year",
+    "years_other": "Years",
     "startDate": "Start date",
     "endDate": "End date",
     "includeTargetGrades": "Include target grades for this assessment",
@@ -67,10 +73,40 @@
   "extraFieldName": "Field name",
   "extraFieldType": "Type",
   "extraFieldValue": "Value",
+  "termAssessment": "Term assessment",
   "createTermAssessment": "Create term assessment",
   "editTermAssessment": "Edit term assessment",
   "createAssessment": "Create assessment",
+  "createCba": "Create CBA",
+  "editStateCba": "Edit state CBA",
+  "existingCbaDefaultTitle": "Assessment for this subject already exists.",
+  "viewExistingCba": "View existing State CBA.",
+  "editExistingCba": "Edit existing State CBA.",
+  "thereAreResultsRemoveBeforeRemovingSubjectGroup": "There are results entered for this group. You must delete the results before you can remove the subject group from the assessment.",
+  "existingCbaErrorMessageText": "If you would like to view or edit this assessment, please choose from the links below.",
+  "cbaType": "CBA type",
+  "CBA_1": "CBA 1",
+  "CBA_2": "CBA 2",
+  "subjectGroup": "Subject group",
+  "synced": "Synced",
+  "outOfSync": "Out of sync",
+  "notSynced": "Not synced",
+  "partiallySynced": "Partially synced",
+  "ppodStatus": "PPOD status",
+  "achievement": "Achievement",
+  "syncWithPpod": "Sync with PPOD",
+  "syncWithPpodModalText": "You are about to sync these subject groups with PPOD. Are you sure you want to continue?",
+  "publishOnline": "Publish online",
+  "publishOnlineModalText_one": "You are about to publish this subject group online. Are you sure you want to continue?",
+  "publishOnlineModalText_other": "You are about to publish these subject groups online. Are you sure you want to continue?",
+  "examinable": "Examinable",
   "whenWouldYouLikeToPublish": "When would you like to publish from?",
+  "editAssessmentsToolTip": "You can only edit assessments within the active academic year for the school",
+  "syncStatus": {
+    "FULLY_SYNCED": " Fully synced",
+    "NOT_SYNCED": "Not synced",
+    "PARTIALLY_SYNCED": "Partially synced"
+  },
   "assessmentTypes": {
     "TERM": "Term",
     "STATE_CBA": "State CBA",
@@ -93,5 +129,6 @@
   "unpublishedSuccessfully": "Unpublished successfully",
   "principalCommentAmounts": "{{amountEntered}}/{{totalToEnter}} Principal comments",
   "yearHeadCommentAmounts": "{{amountEntered}}/{{totalToEnter}} Year head comments",
-  "tutorCommentAmounts": "{{amountEntered}}/{{totalToEnter}} Tutor comments"
+  "tutorCommentAmounts": "{{amountEntered}}/{{totalToEnter}} Tutor comments",
+  "thereAreCustomFieldCommentsPleaseDelete": "There are comments entered for this custom field. You must delete the comments before you can remove the custom field from the assessment."
 }

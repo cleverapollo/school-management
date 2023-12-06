@@ -1,7 +1,11 @@
 import { Box, Fade } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { SmsRecipientType, UpdateYearGroupEnrollmentInput } from '@tyro/api';
+import {
+  PermissionUtils,
+  SmsRecipientType,
+  UpdateYearGroupEnrollmentInput,
+} from '@tyro/api';
 import {
   ActionMenu,
   BulkEditedRows,
@@ -15,7 +19,7 @@ import {
   usePreferredNameLayout,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { MobileIcon } from '@tyro/icons';
+import { MobileIcon, PrinterIcon } from '@tyro/icons';
 import set from 'lodash/set';
 import { TableStaffMultipleAutocomplete } from '@tyro/people';
 import {
@@ -23,6 +27,7 @@ import {
   useUpdateYearGroupLeads,
   ReturnTypeFromUseYearGroups,
 } from '../../api/year-groups';
+import { printGroupMembers } from '../../utils/print-group-members';
 
 const getYearGroupsColumns = (
   t: TFunction<'common'[], undefined, 'common'[]>,
@@ -80,6 +85,7 @@ export default function YearGroups() {
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
+
   const {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
@@ -94,18 +100,25 @@ export default function YearGroups() {
     [t, displayNames]
   );
 
-  const actionMenuItems = [
-    {
-      label: t('people:sendSms'),
-      icon: <MobileIcon />,
-      onClick: onOpenSendSms,
-    },
-    // {
-    //   label: t('mail:sendMail'),
-    //   icon: <SendMailIcon />,
-    //   onClick: () => {},
-    // },
-  ];
+  const actionMenuItems = useMemo(
+    () => [
+      {
+        label: t('people:sendSms'),
+        icon: <MobileIcon />,
+        onClick: onOpenSendSms,
+      },
+      {
+        label: t('groups:printGroupMembers'),
+        icon: <PrinterIcon />,
+        onClick: () => printGroupMembers(selectedGroups),
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission(
+            'ps:1:printing_and_exporting:print_group_members'
+          ),
+      },
+    ],
+    [selectedGroups, onOpenSendSms]
+  );
 
   const handleBulkSave = (
     data: BulkEditedRows<ReturnTypeFromUseYearGroups, 'yearGroupLeads'>

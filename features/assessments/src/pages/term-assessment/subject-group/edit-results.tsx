@@ -16,6 +16,8 @@ import {
   ValueFormatterParams,
   useToast,
   ReturnOfUseToast,
+  TableSwitch,
+  TableBooleanValue,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { useParams } from 'react-router-dom';
@@ -29,6 +31,7 @@ import {
   CommenterUserType,
   useUser,
   getPersonProfileLink,
+  StudentAssessmentExclusionInput,
 } from '@tyro/api';
 import set from 'lodash/set';
 import { StudentTableAvatar } from '@tyro/people';
@@ -37,10 +40,12 @@ import {
   ReturnTypeFromUseAssessmentResults,
   useAssessmentResults,
   useUpdateAssessmentResult,
-} from '../../../api/term-assessments/results';
+} from '../../../api/assessment-results';
 import { useCommentBanksWithComments } from '../../../api/comment-bank';
 import { checkAndSetGrades } from '../../../utils/check-and-set-grades';
 import { CommentTypeCellEditor } from '../../../components/common/comment-type-cell-editor';
+import { getExtraFields } from '../../../utils/get-extra-fields';
+import { updateStudentAssessmentExclusion } from '../../../api/student-assessment-exclusion';
 
 export type ReturnTypeFromUseAssessmentById = UseQueryReturnType<
   typeof useAssessmentById
@@ -227,96 +232,6 @@ function getCommentFields(
   ];
 }
 
-function getExtraFields(
-  extraFields: ReturnTypeFromUseAssessmentById['extraFields'],
-  commentBanks: ReturnTypeFromUseCommentBanksWithComments | undefined
-): ColumnDefs {
-  return (
-    extraFields?.map((extraField) => {
-      const matchedCommentBank = commentBanks?.find(
-        (commentBank) => commentBank.id === extraField?.commentBankId
-      );
-
-      const commonFields = {
-        headerName: extraField?.name ?? '',
-        editable: true,
-      };
-
-      switch (extraField?.extraFieldType) {
-        case ExtraFieldType.CommentBank:
-          return {
-            ...commonFields,
-            field: `extraFields.${extraField.id}.commentBankCommentId`,
-            valueFormatter: ({ value }) => {
-              const matchedComment = matchedCommentBank?.comments?.find(
-                (comment) => comment.id === value
-              );
-
-              return matchedComment?.comment ?? (value as string);
-            },
-            valueGetter: ({ data }) => {
-              const extraFieldValues = data?.extraFields ?? {};
-              const matchedExtraField = extraFieldValues[extraField.id];
-              return matchedExtraField?.commentBankCommentId;
-            },
-            valueSetter: ({ data, newValue }) => {
-              set(
-                data ?? {},
-                `extraFields.${extraField.id}.commentBankCommentId`,
-                newValue
-              );
-              set(
-                data ?? {},
-                `extraFields.${extraField.id}.assessmentExtraFieldId`,
-                extraField.id
-              );
-              return true;
-            },
-            cellEditorSelector: () => ({
-              component: TableSelect,
-              popup: true,
-              popupPosition: 'under',
-              params: {
-                options:
-                  matchedCommentBank?.comments?.filter(
-                    (comment) => comment?.active
-                  ) || [],
-                optionIdKey: 'id',
-                getOptionLabel: (option: Comment) => option.comment,
-              },
-            }),
-          };
-        default:
-          return {
-            ...commonFields,
-            field: `extraFields.${extraField.id}.result`,
-            valueGetter: ({ data }) => {
-              const extraFieldValues = data?.extraFields ?? {};
-              const matchedExtraField = extraFieldValues[extraField.id];
-              return matchedExtraField?.result;
-            },
-            valueSetter: ({ data, newValue }) => {
-              set(data ?? {}, `extraFields.${extraField.id}.result`, newValue);
-              set(
-                data ?? {},
-                `extraFields.${extraField.id}.assessmentExtraFieldId`,
-                extraField.id
-              );
-              return true;
-            },
-            cellEditorSelector: () => ({
-              component: 'agLargeTextCellEditor',
-              popup: true,
-              params: {
-                maxLength: extraField?.commentLength ?? 2000,
-              },
-            }),
-          };
-      }
-    }) ?? []
-  );
-}
-
 const getColumnDefs = (
   t: TFunction<
     ('common' | 'assessments')[],
@@ -350,6 +265,28 @@ const getColumnDefs = (
     lockVisible: true,
   },
   {
+    field: 'examinable',
+    headerName: t('assessments:examinable'),
+    editable: true,
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
+    cellEditor: TableSwitch,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAssessmentResults, any>) => (
+      <TableBooleanValue value={!!data?.examinable} />
+    ),
+    valueSetter: (
+      params: ValueSetterParams<ReturnTypeFromUseAssessmentResults, boolean>
+    ) => {
+      const { newValue } = params;
+      if (!newValue) {
+        params?.node?.setDataValue('result', null);
+      }
+      set(params.data ?? {}, 'examinable', params.newValue);
+      return true;
+    },
+  },
+  {
     field: 'studentClassGroup',
     headerName: t('common:class'),
   },
@@ -377,7 +314,7 @@ const getColumnDefs = (
   {
     field: 'result',
     headerName: t('common:result'),
-    editable: true,
+    editable: ({ data }) => !!data?.examinable,
     valueFormatter: ({ value }) =>
       typeof value === 'number' ? `${value}%` : '',
     valueSetter: (
@@ -519,17 +456,40 @@ export default function EditTermAssessmentResults() {
     ]
   );
 
-  const saveAssessmentResult = (
+  const saveAssessmentResult = async (
     data: BulkEditedRows<
       ReturnTypeFromUseAssessmentResults,
+      | 'examinable'
       | 'extraFields'
       | 'result'
       | 'gradeResult'
       | 'targetResult'
       | 'targetGradeResult'
       | 'teacherComment.comment'
+      | 'subjectGroup.irePP.examinable'
     >
   ) => {
+    const examinableChanges = Object.entries(data).reduce<
+      StudentAssessmentExclusionInput[]
+    >((acc, [key, value]) => {
+      if (value.examinable) {
+        acc.push({
+          assessmentId: assessmentIdAsNumber ?? 0,
+          studentPartyId: Number(key),
+          subjectGroupId: subjectGroupIdAsNumber ?? 0,
+          excluded: !value.examinable?.newValue,
+        });
+      }
+      return acc;
+    }, []);
+
+    if (examinableChanges.length > 0) {
+      await updateStudentAssessmentExclusion(
+        academicNamespaceIdAsNumber ?? 0,
+        examinableChanges
+      );
+    }
+
     const results = studentResults?.reduce<SaveAssessmentResultInput[]>(
       (acc, result) => {
         const editedColumns = data[result.studentPartyId];

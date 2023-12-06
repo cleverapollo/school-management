@@ -73,6 +73,11 @@ const getColumns = (
     sort: 'desc',
   },
   {
+    headerName: t('common:time'),
+    field: 'time',
+    valueGetter: ({ data }) => data?.time,
+  },
+  {
     headerName: t('common:type'),
     field: 'type',
     valueGetter: ({ data }) => data?.type,
