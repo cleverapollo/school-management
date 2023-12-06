@@ -507,7 +507,7 @@ export type CalendarDayBellTimeFilter = {
 export type CalendarDayInfo = {
   __typename?: 'CalendarDayInfo';
   date: Scalars['Date'];
-  dayType: SchoolDayType;
+  dayType: DayType;
   endTime?: Maybe<Scalars['DateTime']>;
   periods: Array<CalendarGridPeriodInfo>;
   startTime?: Maybe<Scalars['DateTime']>;
@@ -515,8 +515,8 @@ export type CalendarDayInfo = {
 
 export type CalendarDayInfoFilter = {
   calendarIds?: InputMaybe<Array<Scalars['Int']>>;
-  fromDate: Scalars['Date'];
-  toDate: Scalars['Date'];
+  fromDate?: InputMaybe<Scalars['Date']>;
+  toDate?: InputMaybe<Scalars['Date']>;
 };
 
 export type CalendarDayInfoId = {
@@ -4073,10 +4073,24 @@ export enum Print_Orientation {
 }
 
 export type Print_PersonsGroupMemberships = {
+  fields?: InputMaybe<Array<InputMaybe<Print_PersonsGroupMembershipsFields>>>;
   groupTypes: Array<PartyGroupType>;
   options: Print_GroupMembersOptions;
+  orientation?: InputMaybe<Print_Orientation>;
   personIds: Array<Scalars['Long']>;
+  sorting?: InputMaybe<Print_NameSorting>;
 };
+
+export enum Print_PersonsGroupMembershipsFields {
+  GroupName = 'GROUP_NAME',
+  RowNumber = 'ROW_NUMBER',
+  StudentCount = 'STUDENT_COUNT',
+  StudentNames = 'STUDENT_NAMES',
+  StudyLevel = 'STUDY_LEVEL',
+  Subject = 'SUBJECT',
+  SubjectCode = 'SUBJECT_CODE',
+  Teacher = 'TEACHER'
+}
 
 export enum Print_TimetableLayout {
   Combined = 'COMBINED',
@@ -6041,13 +6055,6 @@ export type SchoolAddress = {
   localAuthority?: Maybe<Scalars['String']>;
 };
 
-export enum SchoolDayType {
-  NonSchoolDay = 'NON_SCHOOL_DAY',
-  Partial = 'PARTIAL',
-  PublicHoliday = 'PUBLIC_HOLIDAY',
-  SchoolDay = 'SCHOOL_DAY'
-}
-
 export type SchoolInfo = {
   __typename?: 'SchoolInfo';
   addresses?: Maybe<Array<Maybe<SchoolAddress>>>;
@@ -6099,6 +6106,7 @@ export type SearchFilter = {
   context?: InputMaybe<Array<InputMaybe<Context>>>;
   /**  optional filter to include only certain types of results */
   includeSearchType?: InputMaybe<Array<SearchType>>;
+  source?: InputMaybe<SearchSource>;
   text?: InputMaybe<Scalars['String']>;
 };
 
@@ -6107,6 +6115,11 @@ export type SearchMeta = {
   groupType?: Maybe<GeneralGroupType>;
   studentPartyId?: Maybe<Scalars['Long']>;
 };
+
+export enum SearchSource {
+  Dropdown = 'DROPDOWN',
+  TopLevel = 'TOP_LEVEL'
+}
 
 export enum SearchType {
   Contact = 'CONTACT',
@@ -8354,7 +8367,7 @@ export type TimetableInfoQueryVariables = Exact<{
 }>;
 
 
-export type TimetableInfoQuery = { __typename?: 'Query', calendar_dayInfo: Array<{ __typename?: 'CalendarDayInfo', date: string, startTime?: string | null, endTime?: string | null, dayType: SchoolDayType, periods: Array<{ __typename?: 'CalendarGridPeriodInfo', startTime: string, endTime: string, type: CalendarGridPeriodType }> }> };
+export type TimetableInfoQuery = { __typename?: 'Query', calendar_dayInfo: Array<{ __typename?: 'CalendarDayInfo', date: string, startTime?: string | null, endTime?: string | null, dayType: DayType, periods: Array<{ __typename?: 'CalendarGridPeriodInfo', startTime: string, endTime: string, type: CalendarGridPeriodType }> }> };
 
 export type Core_BlocksQueryVariables = Exact<{
   filter?: InputMaybe<BlockFilter>;
@@ -9293,7 +9306,7 @@ export type Swm_EventsForSubstitutionsByStaffByPeriodQueryVariables = Exact<{
 }>;
 
 
-export type Swm_EventsForSubstitutionsByStaffByPeriodQuery = { __typename?: 'Query', swm_eventsForSubstitutionsByStaffByPeriod: { __typename?: 'SWM_StaffSubstitutionEventByDay', eventsByStaff: Array<{ __typename?: 'SWM_EventsForSubstitutionStaff', staff: { __typename?: 'Staff', person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } }, substitutionEventsByDay: Array<{ __typename?: 'SWM_EventsForSubstitutionStaffByDay', dayInfo: { __typename?: 'CalendarDayInfo', date: string, startTime?: string | null, endTime?: string | null, dayType: SchoolDayType, periods: Array<{ __typename?: 'CalendarGridPeriodInfo', startTime: string, endTime: string, type: CalendarGridPeriodType }> }, requireSubstitutionReason?: { __typename?: 'SWM_RequireSubstitutionDetails', reason?: string | null, note?: string | null } | null, substitutionEventsByPeriod: Array<{ __typename?: 'SWM_CalendarSubstitution', absenceId?: number | null, staffPartyId: number, coverTeacherDuplicatedAtSameTime?: Array<{ __typename?: 'SWM_CalendarSubstitution', staffPartyId: number, event: { __typename?: 'CalendarEvent', eventId: number, startTime: string, endTime: string, type: CalendarEventType, allDayEvent: boolean, colour?: Colour | null, name: string, description?: string | null, attendees: Array<{ __typename?: 'CalendarEventAttendee', partyInfo?: { __typename: 'GeneralGroup' } | { __typename: 'ProgrammeStageEnrollment' } | { __typename: 'Staff', person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student' } | { __typename: 'StudentContact' } | { __typename: 'SubjectGroup' } | { __typename: 'YearGroupEnrollment' } | null }>, rooms: Array<{ __typename?: 'Room', name: string, roomId: number }>, tags: Array<{ __typename?: 'CalendarTag', label: string, context: Calendar_TagContext }> }, substitution?: { __typename?: 'SWM_Substitution', substitutionId?: number | null, note?: string | null, originalStaff: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null }, substituteStaff: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null }, substitutionType: { __typename?: 'SWM_SubstitutionType', substitutionTypeId: number, name: string, description?: string | null, code: string }, substituteRoom?: { __typename?: 'Room', name: string, roomId: number } | null } | null }> | null, event: { __typename?: 'CalendarEvent', eventId: number, startTime: string, endTime: string, type: CalendarEventType, allDayEvent: boolean, colour?: Colour | null, name: string, description?: string | null, attendees: Array<{ __typename?: 'CalendarEventAttendee', partyInfo?: { __typename: 'GeneralGroup' } | { __typename: 'ProgrammeStageEnrollment' } | { __typename: 'Staff', person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student' } | { __typename: 'StudentContact' } | { __typename: 'SubjectGroup' } | { __typename: 'YearGroupEnrollment' } | null }>, rooms: Array<{ __typename?: 'Room', name: string, roomId: number }>, tags: Array<{ __typename?: 'CalendarTag', label: string, context: Calendar_TagContext }> }, substitution?: { __typename?: 'SWM_Substitution', substitutionId?: number | null, note?: string | null, originalStaff: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null }, substituteStaff: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null }, substitutionType: { __typename?: 'SWM_SubstitutionType', substitutionTypeId: number, name: string, description?: string | null, code: string }, substituteRoom?: { __typename?: 'Room', name: string, roomId: number } | null } | null }> }> }> } };
+export type Swm_EventsForSubstitutionsByStaffByPeriodQuery = { __typename?: 'Query', swm_eventsForSubstitutionsByStaffByPeriod: { __typename?: 'SWM_StaffSubstitutionEventByDay', eventsByStaff: Array<{ __typename?: 'SWM_EventsForSubstitutionStaff', staff: { __typename?: 'Staff', person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } }, substitutionEventsByDay: Array<{ __typename?: 'SWM_EventsForSubstitutionStaffByDay', dayInfo: { __typename?: 'CalendarDayInfo', date: string, startTime?: string | null, endTime?: string | null, dayType: DayType, periods: Array<{ __typename?: 'CalendarGridPeriodInfo', startTime: string, endTime: string, type: CalendarGridPeriodType }> }, requireSubstitutionReason?: { __typename?: 'SWM_RequireSubstitutionDetails', reason?: string | null, note?: string | null } | null, substitutionEventsByPeriod: Array<{ __typename?: 'SWM_CalendarSubstitution', absenceId?: number | null, staffPartyId: number, coverTeacherDuplicatedAtSameTime?: Array<{ __typename?: 'SWM_CalendarSubstitution', staffPartyId: number, event: { __typename?: 'CalendarEvent', eventId: number, startTime: string, endTime: string, type: CalendarEventType, allDayEvent: boolean, colour?: Colour | null, name: string, description?: string | null, attendees: Array<{ __typename?: 'CalendarEventAttendee', partyInfo?: { __typename: 'GeneralGroup' } | { __typename: 'ProgrammeStageEnrollment' } | { __typename: 'Staff', person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student' } | { __typename: 'StudentContact' } | { __typename: 'SubjectGroup' } | { __typename: 'YearGroupEnrollment' } | null }>, rooms: Array<{ __typename?: 'Room', name: string, roomId: number }>, tags: Array<{ __typename?: 'CalendarTag', label: string, context: Calendar_TagContext }> }, substitution?: { __typename?: 'SWM_Substitution', substitutionId?: number | null, note?: string | null, originalStaff: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null }, substituteStaff: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null }, substitutionType: { __typename?: 'SWM_SubstitutionType', substitutionTypeId: number, name: string, description?: string | null, code: string }, substituteRoom?: { __typename?: 'Room', name: string, roomId: number } | null } | null }> | null, event: { __typename?: 'CalendarEvent', eventId: number, startTime: string, endTime: string, type: CalendarEventType, allDayEvent: boolean, colour?: Colour | null, name: string, description?: string | null, attendees: Array<{ __typename?: 'CalendarEventAttendee', partyInfo?: { __typename: 'GeneralGroup' } | { __typename: 'ProgrammeStageEnrollment' } | { __typename: 'Staff', person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | { __typename: 'Student' } | { __typename: 'StudentContact' } | { __typename: 'SubjectGroup' } | { __typename: 'YearGroupEnrollment' } | null }>, rooms: Array<{ __typename?: 'Room', name: string, roomId: number }>, tags: Array<{ __typename?: 'CalendarTag', label: string, context: Calendar_TagContext }> }, substitution?: { __typename?: 'SWM_Substitution', substitutionId?: number | null, note?: string | null, originalStaff: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null }, substituteStaff: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null }, substitutionType: { __typename?: 'SWM_SubstitutionType', substitutionTypeId: number, name: string, description?: string | null, code: string }, substituteRoom?: { __typename?: 'Room', name: string, roomId: number } | null } | null }> }> }> } };
 
 export type Swm_SubstitutionTypesQueryVariables = Exact<{
   filter?: InputMaybe<Swm_StaffSubstitutionTypeFilter>;
