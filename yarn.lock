@@ -6381,6 +6381,7 @@ __metadata:
     react-hook-form: ^7.43.9
     react-router: ^6.3.0
     react-router-dom: ^6.6.2
+    react-use: ^17.4.0
   languageName: unknown
   linkType: soft
 

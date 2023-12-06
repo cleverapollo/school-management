@@ -1,15 +1,26 @@
 import { Link } from 'react-router-dom';
 import { PageContainer } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { alpha, Box, Button, Card, Stack, Typography } from '@mui/material';
+import {
+  alpha,
+  Box,
+  Button,
+  Card,
+  Fade,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { WalletWithMoneyIcon } from '@tyro/icons';
+import { useMeasure } from 'react-use';
 import { useStripeAccount } from '../api/stripe-accounts';
 
 export default function SetupPage() {
   const { t } = useTranslation(['navigation', 'fees']);
+  const [cardRef, { width }] = useMeasure<HTMLDivElement>();
 
   const { data: stripeAccount } = useStripeAccount();
   const isSetupComplete = stripeAccount?.onboardingComplete;
+  const showBackgroundImages = !!width && width > 1100;
 
   return (
     <PageContainer title={t('fees:feesSetup')}>
@@ -20,6 +31,7 @@ export default function SetupPage() {
             : t('fees:createStripeAccount')}
         </Typography>
         <Card
+          ref={cardRef}
           variant="soft"
           sx={{
             display: 'flex',
@@ -27,6 +39,7 @@ export default function SetupPage() {
             alignItems: 'center',
             p: 6,
             borderRadius: 2,
+            position: 'relative',
           }}
         >
           <Card
@@ -38,6 +51,8 @@ export default function SetupPage() {
                 palette.blue[500],
                 0.16
               )}, 0 1px 6px 0 ${alpha(palette.indigo[500], 0.16)}`,
+              position: 'relative',
+              zIndex: 1,
             })}
           >
             <Stack spacing={3} alignItems="center">
@@ -97,6 +112,8 @@ export default function SetupPage() {
                   variant="contained"
                   component={Link}
                   to={stripeAccount?.onboardingLink || ''}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   {stripeAccount?.signUpStarted
                     ? t('fees:stripeAccount.continueSetup')
@@ -105,6 +122,27 @@ export default function SetupPage() {
               )}
             </Stack>
           </Card>
+          <Fade in={showBackgroundImages}>
+            <Box
+              sx={{
+                position: 'absolute',
+              }}
+              aria-hidden
+            >
+              <Box
+                component="img"
+                src="/assets/fees/take-off-dashboard.png"
+                alt=""
+                sx={{ transform: 'translateX(-290px)' }}
+              />
+              <Box
+                component="img"
+                src="/assets/fees/sign-up-form.png"
+                alt=""
+                sx={{ transform: 'translateX(260px)' }}
+              />
+            </Box>
+          </Fade>
         </Card>
       </Card>
     </PageContainer>
