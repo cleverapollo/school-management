@@ -58,7 +58,7 @@ const getColumnDefs = (
       ),
   },
   {
-    field: 'assessmentType',
+    colId: 'assessmentType',
     headerName: translate('common:type'),
     enableRowGroup: true,
     valueGetter: ({ data }) => {
@@ -70,12 +70,11 @@ const getColumnDefs = (
           ? translate(`assessments:assessmentTypes.${data.assessmentType}`)
           : null;
       }
-      const cbaType =
-        data?.assessmentType && data?.assessmentType === AssessmentType.StateCba
-          ? data?.name
-          : null;
 
-      if (cbaType && cbaType.includes(StateCbaType.Cba_1)) {
+      if (
+        data?.stateCbaType &&
+        data?.stateCbaType.includes(StateCbaType.Cba_1)
+      ) {
         return translate(`assessments:CBA_1`);
       }
       return translate(`assessments:CBA_2`);
@@ -109,7 +108,7 @@ const getColumnDefs = (
     valueGetter: ({ data }) => (data ? displayName(data.createdBy) : null),
   },
   {
-    field: 'publishedFrom',
+    colId: 'publishedFrom',
     headerName: translate('assessments:publishedOnline'),
     valueGetter: ({ data }) => {
       if (!data) return null;

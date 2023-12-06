@@ -19,6 +19,7 @@ const assessmentsList = graphql(/* GraphQL */ `
       id
       name
       assessmentType
+      stateCbaType
       academicNamespaceId
       years {
         yearGroupId

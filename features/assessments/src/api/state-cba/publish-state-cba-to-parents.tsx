@@ -37,8 +37,8 @@ export function usePublishStateCbaOnline(academicNameSpaceId?: number) {
           )?.toString(),
         }
       ),
-    onSuccess: () => {
-      queryClient.invalidateQueries(assessmentsKeys.all);
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(assessmentsKeys.all);
     },
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });

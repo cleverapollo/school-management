@@ -97,8 +97,6 @@
   "syncWithPpod": "Sync with PPOD",
   "syncWithPpodModalText": "You are about to sync these subject groups with PPOD. Are you sure you want to continue?",
   "publishOnline": "Publish online",
-  "publishOnlineModalText_one": "You are about to publish this subject group online. Are you sure you want to continue?",
-  "publishOnlineModalText_other": "You are about to publish these subject groups online. Are you sure you want to continue?",
   "examinable": "Examinable",
   "whenWouldYouLikeToPublish": "When would you like to publish from?",
   "editAssessmentsToolTip": "You can only edit assessments within the active academic year for the school",

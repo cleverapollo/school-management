@@ -17,12 +17,16 @@ import {
   ReturnTypeFromUseAssessments,
   usePublishAssessment,
 } from '../../api/assessments';
+import { usePublishStateCbaOnline } from '../../api/state-cba/publish-state-cba-to-parents';
+import { getAssessmentSubjectGroups } from '../../api/assessment-subject-groups';
 
 interface PublishAssessmentModalProps {
   assessmentId: number;
   publishedFrom: ReturnTypeFromUseAssessments['publishedFrom'];
   open: boolean;
   onClose: () => void;
+  isTermAssessment: boolean;
+  academicNamespaceIdAsNumber: number;
 }
 
 interface PublishFormValues {
@@ -34,6 +38,8 @@ export function PublishAssessmentModal({
   publishedFrom,
   open,
   onClose,
+  isTermAssessment,
+  academicNamespaceIdAsNumber,
 }: PublishAssessmentModalProps) {
   const { t } = useTranslation(['common', 'assessments']);
   const { toast } = useToast();
@@ -52,20 +58,56 @@ export function PublishAssessmentModal({
   const { mutateAsync: publishAssessment, isLoading: isSubmitting } =
     usePublishAssessment();
 
-  const onSubmit = handleSubmit(({ publishDate }) => {
-    publishAssessment(
-      {
-        assessmentId,
-        publish: true,
-        publishFrom: publishDate.format('YYYY-MM-DD'),
-      },
-      {
-        onSuccess: () => {
-          onClose();
-          toast(t('common:snackbarMessages.updateSuccess'));
+  const { mutateAsync: publishStateCba, isLoading: isSubmittingStateCba } =
+    usePublishStateCbaOnline();
+
+  const onSubmit = handleSubmit(async ({ publishDate }) => {
+    if (isTermAssessment) {
+      publishAssessment(
+        {
+          assessmentId,
+          publish: true,
+          publishFrom: publishDate.format('YYYY-MM-DD'),
         },
+        {
+          onSuccess: () => {
+            onClose();
+            toast(t('common:snackbarMessages.updateSuccess'));
+          },
+        }
+      );
+    } else {
+      try {
+        const response = await getAssessmentSubjectGroups(
+          academicNamespaceIdAsNumber,
+          {
+            assessmentId,
+          }
+        );
+
+        const data = response?.assessment_assessmentSubjectGroups;
+        const subjectGroupIds = data?.map(
+          (subject) => subject?.subjectGroup?.partyId
+        );
+
+        publishStateCba(
+          {
+            assessmentId,
+            subjectGroupIds,
+            publish: true,
+            publishFrom: publishDate.format('YYYY-MM-DD'),
+          },
+          {
+            onSuccess: () => {
+              onClose();
+              toast(t('common:snackbarMessages.updateSuccess'));
+            },
+          }
+        );
+      } catch (error) {
+        console.error(error);
       }
-    );
+    }
   });
 
   useEffect(() => {
@@ -101,7 +143,7 @@ export function PublishAssessmentModal({
         </Button>
         <LoadingButton
           variant="contained"
-          loading={isSubmitting}
+          loading={isTermAssessment ? isSubmitting : isSubmittingStateCba}
           onClick={onSubmit}
         >
           {t('assessments:publish')}
