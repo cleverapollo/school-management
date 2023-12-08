@@ -93,8 +93,8 @@ export function SchoolActivityForm({
             {
               dates: [dayjs(data?.dates).format('YYYY-MM-DD')],
               partial: true,
-              startTime: dayjs(data?.startTime).format('hh:mm:ss'),
-              endTime: dayjs(data?.endTime).format('hh:mm:ss'),
+              startTime: dayjs(data?.startTime).format('HH:mm:ss'),
+              endTime: dayjs(data?.endTime).format('HH:mm:ss'),
             },
           ];
         }
