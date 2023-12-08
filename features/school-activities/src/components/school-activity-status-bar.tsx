@@ -23,12 +23,19 @@ const textValueStyle = {
 };
 
 export function SchoolActivityStatusBar({
-  schoolActivity,
+  schoolActivity: {
+    name,
+    customGroup,
+    published,
+    schoolActivityId,
+    dates,
+    lastPublished,
+  },
 }: SchoolActivityStatusBarProps) {
   const { t } = useTranslation(['common', 'groups', 'schoolActivities']);
   const { displayName } = usePreferredNameLayout();
 
-  const formattedDates = formatActivityDates(t, schoolActivity?.dates);
+  const formattedDates = formatActivityDates(dates);
 
   return (
     <Box>
@@ -36,7 +43,7 @@ export function SchoolActivityStatusBar({
         <Stack direction="row" flexWrap="wrap" alignItems="center" gap={2}>
           <Stack direction="row" alignItems="center" spacing={1}>
             <Box p={1}>
-              <Avatar src="Test" name={schoolActivity?.name ?? ''} />
+              <Avatar src="Test" name={name ?? ''} />
             </Box>
             <Stack>
               <Typography
@@ -44,7 +51,7 @@ export function SchoolActivityStatusBar({
                 component="h2"
                 sx={{ maxWidth: '150px' }}
               >
-                {schoolActivity?.name}
+                {name}
               </Typography>
             </Stack>
           </Stack>
@@ -115,7 +122,7 @@ export function SchoolActivityStatusBar({
                     py: 0.5,
                   }}
                 >
-                  {schoolActivity?.customGroup?.name}
+                  {customGroup?.name}
                 </Typography>
               </Box>
             </Stack>
@@ -142,7 +149,7 @@ export function SchoolActivityStatusBar({
               }}
             >
               {t('schoolActivities:totalStudents', {
-                count: schoolActivity?.customGroup?.studentMembers?.memberCount,
+                count: customGroup?.studentMembers?.memberCount,
               })}
             </Typography>
           </Stack>
@@ -163,29 +170,27 @@ export function SchoolActivityStatusBar({
             </Typography>
 
             <Stack direction="row">
-              {schoolActivity?.customGroup?.staffMembers?.members?.map(
-                (staff) => (
-                  <Box
-                    key={staff?.partyId}
+              {customGroup?.staffMembers?.members?.map((staff) => (
+                <Box
+                  key={staff?.partyId}
+                  sx={{
+                    backgroundColor: 'slate.100',
+                    borderRadius: '18px',
+                    px: 1,
+                    mr: 0.5,
+                  }}
+                >
+                  <Typography
+                    component="dd"
                     sx={{
-                      backgroundColor: 'slate.100',
-                      borderRadius: '18px',
-                      px: 1,
-                      mr: 0.5,
+                      ...textValueStyle,
+                      py: 0.5,
                     }}
                   >
-                    <Typography
-                      component="dd"
-                      sx={{
-                        ...textValueStyle,
-                        py: 0.5,
-                      }}
-                    >
-                      {displayName(staff?.person)}
-                    </Typography>
-                  </Box>
-                )
-              )}
+                    {displayName(staff?.person)}
+                  </Typography>
+                </Box>
+              ))}
             </Stack>
           </Stack>
           <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
@@ -204,9 +209,9 @@ export function SchoolActivityStatusBar({
               {t('schoolActivities:publishStatus')}
             </Typography>
             <PublishDropdown
-              isPublished={schoolActivity?.published}
-              schoolActivityId={schoolActivity?.schoolActivityId}
-              lastPublished={schoolActivity?.lastPublished ?? null}
+              isPublished={published}
+              schoolActivityId={schoolActivityId}
+              lastPublished={lastPublished ?? null}
             />
           </Stack>
         </Stack>

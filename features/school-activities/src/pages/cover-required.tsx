@@ -30,7 +30,9 @@ const getColumns = (
   {
     headerName: t('common:time'),
     colId: 'time',
-    valueGetter: ({ data }) => data?.event,
+    valueGetter: ({ data }) =>
+      `${data?.event?.startTime ?? '-'} - ${data?.event?.endTime ?? '-'}` ||
+      '-',
     valueFormatter: ({ data }) => {
       const lessonStartTime = dayjs(data?.event?.startTime).format('HH:mm');
       const lessonEndTime = dayjs(data?.event?.endTime).format('HH:mm');
@@ -45,7 +47,7 @@ const getColumns = (
   {
     headerName: t('common:room', { count: 1 }),
     colId: 'room',
-    valueGetter: ({ data }) => data?.event?.rooms[0]?.name,
+    valueGetter: ({ data }) => data?.event?.rooms[0]?.name || '-',
   },
   {
     headerName: t('common:teacher'),

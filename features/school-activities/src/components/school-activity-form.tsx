@@ -75,7 +75,7 @@ export function SchoolActivityForm({
   const onSubmit = (data: FormValues) => {
     const group = data?.group?.partyId;
     const roomIds = data?.room && data?.room?.roomId;
-    // ** Need to move this outside component or into utilities folder **
+
     function formatDates(type: ActivityType): Sa_SchoolActivityDateInput[] {
       switch (type) {
         case ActivityType.SingleDay: {

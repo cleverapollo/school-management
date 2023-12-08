@@ -1,5 +1,5 @@
 import { useTranslation } from '@tyro/i18n';
-import { PageHeading, PageContainer, useToast, useNumber } from '@tyro/core';
+import { useToast, useNumber } from '@tyro/core';
 import { useParams } from 'react-router-dom';
 import { useMemo } from 'react';
 import dayjs from 'dayjs';
@@ -74,7 +74,7 @@ export default function EditSchoolActivityPage() {
         ? ActivityType.PartialDay
         : singleOrMultiDayActivityType,
     } as const;
-  }, [schoolActivity]);
+  }, [schoolActivity, rooms, customGroups]);
 
   return (
     formValues && (

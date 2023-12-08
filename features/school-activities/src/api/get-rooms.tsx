@@ -10,11 +10,6 @@ const roomsList = graphql(/* GraphQL */ `
       name
       capacity
       description
-      pools
-      includeInTimetable
-      externalSystemId
-      location
-      disabled
     }
   }
 `);
