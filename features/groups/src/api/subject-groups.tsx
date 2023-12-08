@@ -33,6 +33,7 @@ const subjectGroupsList = graphql(/* GraphQL */ `
       }
       irePP {
         level
+        examinable
       }
       programmeStages {
         programme {

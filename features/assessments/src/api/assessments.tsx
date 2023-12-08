@@ -26,6 +26,7 @@ const assessmentsList = graphql(/* GraphQL */ `
       }
       publish
       publishedFrom
+      publishLearner
       startDate
       endDate
       createdBy {
@@ -86,6 +87,7 @@ const assessment = graphql(/* GraphQL */ `
         commentBankName
         selectOptions
         commentLength
+        resultsEntered
       }
       createdBy {
         type
@@ -97,6 +99,16 @@ const assessment = graphql(/* GraphQL */ `
         firstName
         lastName
         avatarUrl
+      }
+      stateCbaType
+      subjectGroups {
+        partyId
+        name
+        subjects {
+          name
+          id
+          colour
+        }
       }
       startDate
       endDate
