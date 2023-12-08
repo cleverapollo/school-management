@@ -17,7 +17,7 @@ export function getCalendarContent(eventInfo: EventContentArg) {
     backgroundImage,
   } = eventInfo.event.extendedProps;
   const { type } = originalEvent as { type: CalendarEventType };
-  const bgImage = backgroundImage as string;
+  // const bgImage = backgroundImage as string;
   switch (eventInfo.view.type) {
     case 'timeGridDay':
     case 'timeGridWeek':
@@ -40,7 +40,7 @@ export function getCalendarContent(eventInfo: EventContentArg) {
             alignItems: 'stretch',
             height: '100%',
             p: '3px',
-            backgroundImage: bgImage,
+            // backgroundImage: bgImage,
             borderRadius: '5px',
           }}
         >
@@ -88,9 +88,9 @@ export function getCalendarContent(eventInfo: EventContentArg) {
           alignItems="center"
           px={0.5}
           borderRadius="5px"
-          sx={{
-            backgroundImage: bgImage,
-          }}
+          // sx={{
+          //   backgroundImage: bgImage,
+          // }}
         >
           <Box
             sx={{

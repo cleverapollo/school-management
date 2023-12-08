@@ -29,6 +29,7 @@ const studentDailyCalendarTimetableInformation = graphql(/* GraphQL */ `
               attendanceCodeId
               attendanceCode {
                 name
+                codeType
               }
               personPartyId
               date

@@ -193,7 +193,7 @@ export function StudentAssessmentWidget({
                       getRowDetailsFromResult(studentResult);
 
                     return (
-                      <TableRow key={id}>
+                      <TableRow key={id ?? subject?.nationalCode}>
                         <TableCell>
                           <ColorCard
                             isMobile

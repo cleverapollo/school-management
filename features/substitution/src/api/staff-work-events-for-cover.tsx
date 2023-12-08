@@ -40,9 +40,91 @@ const eventsForCover = graphql(/* GraphQL */ `
               type
             }
           }
+          requireSubstitutionReason {
+            reason
+            note
+          }
           substitutionEventsByPeriod {
             absenceId
             staffPartyId
+            coverTeacherDuplicatedAtSameTime {
+              staffPartyId
+              event {
+                eventId
+                startTime
+                endTime
+                type
+                allDayEvent
+                attendees {
+                  partyInfo {
+                    __typename
+                    ... on Staff {
+                      person {
+                        partyId
+                        title {
+                          id
+                          name
+                          nameTextId
+                        }
+                        firstName
+                        lastName
+                        avatarUrl
+                        type
+                      }
+                    }
+                  }
+                }
+                rooms {
+                  name
+                  roomId
+                }
+                tags {
+                  label
+                  context
+                }
+                colour
+                name
+                description
+              }
+              substitution {
+                substitutionId
+                originalStaff {
+                  partyId
+                  title {
+                    id
+                    name
+                    nameTextId
+                  }
+                  firstName
+                  lastName
+                  avatarUrl
+                  type
+                }
+                substituteStaff {
+                  partyId
+                  title {
+                    id
+                    name
+                    nameTextId
+                  }
+                  firstName
+                  lastName
+                  avatarUrl
+                  type
+                }
+                substitutionType {
+                  substitutionTypeId
+                  name
+                  description
+                  code
+                }
+                substituteRoom {
+                  name
+                  roomId
+                }
+                note
+              }
+            }
             event {
               eventId
               startTime

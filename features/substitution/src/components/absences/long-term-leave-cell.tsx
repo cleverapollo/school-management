@@ -1,27 +1,16 @@
-import { FieldValues } from 'react-hook-form';
-import { UseQueryReturnType } from '@tyro/api';
 import { TableLinearProgress, usePreferredNameLayout } from '@tyro/core';
-import {
-  Box,
-  Popover,
-  Stack,
-  Tooltip,
-  tooltipClasses,
-  Typography,
-  useTheme,
-} from '@mui/material';
-import { useMemo, useState } from 'react';
+import { Box, Popover, Stack, Typography, useTheme } from '@mui/material';
+import { useId, useMemo, useState } from 'react';
 import { sortBy } from 'lodash';
-import { CheckmarkIcon, CloseIcon } from '@tyro/icons';
+import { CheckmarkIcon } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
 import { ReturnTypeFromUseStaffWorkAbsences } from '../../api/staff-work-absences';
 
 interface LongTermLeaveCellProps {
   absence: ReturnTypeFromUseStaffWorkAbsences;
 }
-export const LongTermLeaveCell = <TField extends FieldValues>({
-  absence,
-}: LongTermLeaveCellProps) => {
+export const LongTermLeaveCell = ({ absence }: LongTermLeaveCellProps) => {
+  const popoverId = useId();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const theme = useTheme();
   const { displayName } = usePreferredNameLayout();
@@ -45,7 +34,7 @@ export const LongTermLeaveCell = <TField extends FieldValues>({
   return (
     <>
       <Box
-        aria-owns={open ? 'mouse-over-popover' : undefined}
+        aria-owns={open ? popoverId : undefined}
         aria-haspopup="true"
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
@@ -56,10 +45,9 @@ export const LongTermLeaveCell = <TField extends FieldValues>({
         />
       </Box>
       <Popover
-        id="mouse-over-popover"
+        id={popoverId}
         sx={{
           pointerEvents: 'none',
-          // backgroundColor: theme.palette.common.white,
           boxShadow: theme.customShadows.card,
           color: theme.palette.text.primary,
         }}
@@ -76,9 +64,8 @@ export const LongTermLeaveCell = <TField extends FieldValues>({
         onClose={handlePopoverClose}
         disableRestoreFocus
       >
-        {' '}
         {sortedAbsence.map((group) => (
-          <Stack direction="row" sx={{ p: 1 }}>
+          <Stack key={group.groupId} direction="row" sx={{ p: 1 }}>
             <Typography variant="body2" color="text.primary" sx={{ px: 1 }}>
               {group.group?.name ?? ''}:
             </Typography>

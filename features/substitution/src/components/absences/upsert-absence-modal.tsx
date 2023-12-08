@@ -27,7 +27,11 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { RHFStaffAutocomplete, useStaffSubjectGroups } from '@tyro/people';
 import { AddIcon, TrashIcon } from '@tyro/icons';
-import {Person, StaffGroupMembershipRoles, Swm_UpsertStaffAbsenceDate} from '@tyro/api';
+import {
+  Person,
+  StaffGroupMembershipRoles,
+  Swm_UpsertStaffAbsenceDate,
+} from '@tyro/api';
 import {
   ReturnTypeFromUseStaffWorkAbsences,
   useSaveStaffAbsence,
@@ -51,18 +55,34 @@ type AbsenceDate = {
 };
 
 interface UpsertAbsenceFormState {
-  staff: NonNullable<ReturnTypeFromUseStaffWorkAbsences['staff']>;
-  absenceType: StaffWorkAbsenceTypeOption;
+  staff: ReturnTypeFromUseStaffWorkAbsences['staff'];
+  absenceType: StaffWorkAbsenceTypeOption | null;
   note: string;
   dates: Array<AbsenceDate>;
   isLongTermLeave: boolean;
   longTermLeaveGroups: Array<{
     groupId: number;
-    coveringStaff: Person | undefined;
+    coveringStaff: Person | undefined | null;
   }>;
   startDate: Dayjs;
   endDate: Dayjs;
 }
+
+const defaultFormValues = {
+  staff: null,
+  absenceType: null,
+  note: '',
+  dates: [
+    {
+      isFullDay: true,
+      dates: [],
+    },
+  ],
+  isLongTermLeave: false,
+  longTermLeaveGroups: [],
+  startDate: dayjs(),
+  endDate: dayjs(),
+};
 
 function mapAbsenceDates(datesToMap: Array<AbsenceDate>) {
   return datesToMap.reduce<Swm_UpsertStaffAbsenceDate[]>(
@@ -168,6 +188,7 @@ export function UpsertAbsenceModal({
           ),
         },
       }),
+      defaultValues: defaultFormValues,
     });
 
   const { fields, append, remove } = useFieldArray({
@@ -186,11 +207,23 @@ export function UpsertAbsenceModal({
     'isLongTermLeave',
   ]);
 
-  const { data: subjectGroupsData } = useStaffSubjectGroups( {
-    partyIds: [selectedStaff?.partyId || 0],
-  },
-      {staffRoles: [StaffGroupMembershipRoles.Teacher, StaffGroupMembershipRoles.LongTermSubstitute]}
+  const { data: subjectGroupsData } = useStaffSubjectGroups(
+    {
+      partyIds: [selectedStaff?.partyId || 0],
+    },
+    {
+      staffRoles: [
+        StaffGroupMembershipRoles.Teacher,
+        StaffGroupMembershipRoles.LongTermSubstitute,
+      ],
+    },
+    !!selectedStaff
   );
+
+  const closeModal = () => {
+    reset(defaultFormValues);
+    onClose();
+  };
 
   const onSubmit = handleSubmit(
     ({
@@ -208,7 +241,7 @@ export function UpsertAbsenceModal({
           [
             {
               staffAbsenceId: initialAbsenceData?.absenceId,
-              staffPartyId: staff.partyId,
+              staffPartyId: staff?.partyId ?? 0,
               dates: [
                 {
                   continuousStartDate: startDate.format('YYYY-MM-DD'),
@@ -216,7 +249,7 @@ export function UpsertAbsenceModal({
                   partialAbsence: false,
                 },
               ],
-              absenceTypeId: absenceType.absenceTypeId,
+              absenceTypeId: absenceType?.absenceTypeId ?? 0,
               absenceReasonText: note,
               substitutionRequired: true,
               isLongTermLeave,
@@ -229,7 +262,7 @@ export function UpsertAbsenceModal({
             },
           ],
           {
-            onSuccess: onClose,
+            onSuccess: closeModal,
           }
         );
       }
@@ -239,15 +272,15 @@ export function UpsertAbsenceModal({
         [
           {
             staffAbsenceId: initialAbsenceData?.absenceId,
-            staffPartyId: staff.partyId,
+            staffPartyId: staff?.partyId ?? 0,
             dates: mappedDates,
-            absenceTypeId: absenceType.absenceTypeId,
+            absenceTypeId: absenceType?.absenceTypeId ?? 0,
             absenceReasonText: note,
             substitutionRequired: true,
           },
         ],
         {
-          onSuccess: onClose,
+          onSuccess: closeModal,
         }
       );
     }
@@ -272,12 +305,34 @@ export function UpsertAbsenceModal({
             }
           : {
               dates: initialAbsenceData.dates.map(
-                ({ partialAbsence, individualDates, leavesAt, returnsAt }) => ({
-                  isFullDay: !partialAbsence,
-                  dates: individualDates?.map((date) => dayjs(date)) ?? [],
-                  startTime: leavesAt ? dayjs(leavesAt, 'HH:mm') : undefined,
-                  endTime: returnsAt ? dayjs(returnsAt, 'HH:mm') : undefined,
-                })
+                ({
+                  partialAbsence,
+                  individualDates,
+                  continuousStartDate,
+                  continuousEndDate,
+                  leavesAt,
+                  returnsAt,
+                }) => {
+                  let mappedDates =
+                    individualDates?.map((date) => dayjs(date)) ?? [];
+
+                  if (continuousStartDate && continuousEndDate) {
+                    let currentDate = dayjs(continuousStartDate);
+                    mappedDates = [];
+
+                    while (currentDate.isSameOrBefore(continuousEndDate)) {
+                      mappedDates.push(currentDate);
+                      currentDate = currentDate.add(1, 'day');
+                    }
+                  }
+
+                  return {
+                    isFullDay: !partialAbsence,
+                    dates: mappedDates,
+                    startTime: leavesAt ? dayjs(leavesAt, 'HH:mm') : undefined,
+                    endTime: returnsAt ? dayjs(returnsAt, 'HH:mm') : undefined,
+                  };
+                }
               ),
             };
       }
@@ -286,7 +341,7 @@ export function UpsertAbsenceModal({
         ...dates,
         staff: initialAbsenceData?.staff ?? undefined,
         absenceType: initialAbsenceData?.absenceType,
-        note: initialAbsenceData.absenceReasonText ?? '',
+        note: initialAbsenceData?.absenceReasonText ?? '',
         isLongTermLeave: initialAbsenceData?.isLongTermLeave ?? false,
         longTermLeaveGroups:
           initialAbsenceData?.longTermLeaveGroups?.map(
@@ -300,19 +355,27 @@ export function UpsertAbsenceModal({
   }, [initialAbsenceData]);
 
   useEffect(() => {
-    if (subjectGroupsData) {
+    if (
+      subjectGroupsData &&
+      initialAbsenceData?.longTermLeaveGroups &&
+      subjectGroupsData.some(
+        (group, index) =>
+          group.partyId !==
+          initialAbsenceData?.longTermLeaveGroups?.[index]?.groupId
+      )
+    ) {
       const updatedPartyIds = subjectGroupsData.map((group) => ({
         groupId: group.partyId,
-        coveringStaff: undefined,
+        coveringStaff: null,
       }));
 
       replaceLtlGroups(updatedPartyIds);
     }
-  }, [subjectGroupsData]);
+  }, [initialAbsenceData?.longTermLeaveGroups, subjectGroupsData]);
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle>
+    <Dialog open={open} onClose={closeModal} fullWidth maxWidth="md">
+      <DialogTitle onClose={closeModal}>
         {isEditAbsence
           ? t('substitution:editStaffAbsence')
           : t('substitution:createStaffAbsence')}
@@ -384,7 +447,6 @@ export function UpsertAbsenceModal({
                           label={t('common:allDay')}
                           switchProps={{
                             color: 'primary',
-                            disabled: isEditAbsence,
                           }}
                           controlProps={{
                             name: `dates.${index}.isFullDay`,
@@ -401,7 +463,6 @@ export function UpsertAbsenceModal({
                               onClick={() => {
                                 remove(index);
                               }}
-                              disabled={isEditAbsence}
                               color="primary"
                             >
                               <TrashIcon />
@@ -415,7 +476,6 @@ export function UpsertAbsenceModal({
                         inputProps={{
                           fullWidth: true,
                           variant: 'white-filled',
-                          disabled: isEditAbsence,
                         }}
                         controlProps={{
                           name: `dates.${index}.dates`,
@@ -430,7 +490,6 @@ export function UpsertAbsenceModal({
                             inputProps={{
                               fullWidth: true,
                               variant: 'white-filled',
-                              disabled: isEditAbsence,
                             }}
                             controlProps={{
                               name: `dates.${index}.startTime`,
@@ -445,7 +504,6 @@ export function UpsertAbsenceModal({
                             inputProps={{
                               fullWidth: true,
                               variant: 'white-filled',
-                              disabled: isEditAbsence,
                             }}
                             controlProps={{
                               name: `dates.${index}.endTime`,
@@ -470,7 +528,6 @@ export function UpsertAbsenceModal({
                         dates: [],
                       });
                     }}
-                    disabled={isEditAbsence}
                     startIcon={<AddIcon />}
                   >
                     {t('common:addDate')}
@@ -486,12 +543,12 @@ export function UpsertAbsenceModal({
                   <Stack direction="row" spacing={2}>
                     <RHFDatePicker
                       label={t('common:startDate')}
-                      inputProps={{ fullWidth: true, disabled: isEditAbsence }}
+                      inputProps={{ fullWidth: true }}
                       controlProps={{ name: 'startDate', control }}
                     />
                     <RHFDatePicker
                       label={t('common:endDate')}
-                      inputProps={{ fullWidth: true, disabled: isEditAbsence }}
+                      inputProps={{ fullWidth: true }}
                       controlProps={{ name: 'endDate', control }}
                     />
                   </Stack>
@@ -512,7 +569,11 @@ export function UpsertAbsenceModal({
                     {ltlGroups?.map((field, index) => {
                       const subjectGroup = subjectGroupsData[index];
                       return (
-                        <Stack direction="row" justifyContent="space-evenly">
+                        <Stack
+                          key={field.id}
+                          direction="row"
+                          justifyContent="space-evenly"
+                        >
                           <Typography
                             variant="subtitle1"
                             color="text.secondary"
@@ -525,11 +586,7 @@ export function UpsertAbsenceModal({
                           </Typography>
                           <RHFStaffAutocomplete
                             key={field.id}
-                            label={
-                              <Stack direction="row">
-                                {subjectGroup?.name}
-                              </Stack>
-                            }
+                            label={subjectGroup?.name}
                             sx={{
                               backgroundColor: 'white',
                             }}
@@ -548,7 +605,7 @@ export function UpsertAbsenceModal({
         </DialogContent>
 
         <DialogActions>
-          <Button variant="soft" color="inherit" onClick={onClose}>
+          <Button variant="soft" color="inherit" onClick={closeModal}>
             {t('common:actions.cancel')}
           </Button>
 

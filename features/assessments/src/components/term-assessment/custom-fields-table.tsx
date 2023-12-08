@@ -11,6 +11,7 @@ import {
   TableCell,
   TableBody,
   IconButton,
+  Tooltip,
 } from '@mui/material';
 import { AddIcon, TrashIcon } from '@tyro/icons';
 import { useFieldArray, Control, useWatch } from 'react-hook-form';
@@ -36,6 +37,7 @@ type ExtraField = Pick<
 > & {
   commentLength?: number | null;
   commentBank?: Partial<CommentBankOption>;
+  resultsEntered?: boolean;
 };
 
 export type FormCustomFieldsValues = {
@@ -99,64 +101,83 @@ export const CustomFieldsTable = <TField extends FormCustomFieldsValues>({
             </TableRow>
           </TableHead>
           <TableBody>
-            {fields.map((field, index) => (
-              <TableRow key={field.id}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>
-                  <RHFTextField<FormCustomFieldsValues>
-                    textFieldProps={{
-                      fullWidth: true,
-                      'aria-label': t(
-                        'assessments:placeholders.extraFieldName'
-                      ),
-                      placeholder: t('assessments:placeholders.extraFieldName'),
-                    }}
-                    controlProps={{
-                      name: `extraFields.${index}.name`,
-                      control,
-                    }}
-                  />
-                </TableCell>
-                <TableCell>
-                  <RHFSelect<FormCustomFieldsValues, ExtraFieldTypeOption>
-                    fullWidth
-                    options={extraFieldTypeOptions}
-                    getOptionLabel={(option) =>
-                      t(`assessments:labels.extraFieldTypes.${option}`)
-                    }
-                    controlProps={{
-                      name: `extraFields.${index}.extraFieldType`,
-                      control,
-                    }}
-                  />
-                </TableCell>
-                <TableCell>
-                  {extraFields[index]?.extraFieldType ===
-                    ExtraFieldType.FreeForm && (
-                    <CommentLengthField<FormCustomFieldsValues>
-                      name={`extraFields.${index}.commentLength`}
-                      control={control}
+            {fields.map((field, index) => {
+              const extraField = extraFields[index];
+              const disableRemoveButton = !!extraField?.resultsEntered;
+
+              return (
+                <TableRow key={field.id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>
+                    <RHFTextField<FormCustomFieldsValues>
+                      textFieldProps={{
+                        fullWidth: true,
+                        'aria-label': t(
+                          'assessments:placeholders.extraFieldName'
+                        ),
+                        placeholder: t(
+                          'assessments:placeholders.extraFieldName'
+                        ),
+                      }}
+                      controlProps={{
+                        name: `extraFields.${index}.name`,
+                        control,
+                      }}
                     />
-                  )}
-                  {extraFields[index]?.extraFieldType ===
-                    ExtraFieldType.CommentBank && (
-                    <CommentBankOptions<FormCustomFieldsValues>
-                      name={`extraFields.${index}.commentBank`}
-                      control={control}
+                  </TableCell>
+                  <TableCell>
+                    <RHFSelect<FormCustomFieldsValues, ExtraFieldTypeOption>
+                      fullWidth
+                      options={extraFieldTypeOptions}
+                      getOptionLabel={(option) =>
+                        t(`assessments:labels.extraFieldTypes.${option}`)
+                      }
+                      controlProps={{
+                        name: `extraFields.${index}.extraFieldType`,
+                        control,
+                      }}
                     />
-                  )}
-                </TableCell>
-                <TableCell>
-                  <IconButton
-                    color="primary"
-                    aria-label={t('common:delete')}
-                    onClick={() => remove(index)}
-                  >
-                    <TrashIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+                  <TableCell>
+                    {extraField?.extraFieldType === ExtraFieldType.FreeForm && (
+                      <CommentLengthField<FormCustomFieldsValues>
+                        name={`extraFields.${index}.commentLength`}
+                        control={control}
+                      />
+                    )}
+                    {extraField?.extraFieldType ===
+                      ExtraFieldType.CommentBank && (
+                      <CommentBankOptions<FormCustomFieldsValues>
+                        name={`extraFields.${index}.commentBank`}
+                        control={control}
+                      />
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Tooltip
+                      title={
+                        disableRemoveButton
+                          ? t(
+                              'assessments:thereAreCustomFieldCommentsPleaseDelete'
+                            )
+                          : undefined
+                      }
+                    >
+                      <span>
+                        <IconButton
+                          color="primary"
+                          aria-label={t('common:delete')}
+                          onClick={() => remove(index)}
+                          disabled={disableRemoveButton}
+                        >
+                          <TrashIcon />
+                        </IconButton>
+                      </span>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       )}

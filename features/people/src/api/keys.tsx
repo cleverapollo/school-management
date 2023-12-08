@@ -11,6 +11,8 @@ import {
   Core_PeopleFilter,
   Notes_BehaviourFilter,
   Notes_BehaviourCategoryFilter,
+  SubjectGroupRelationshipFilter,
+  Print_PersonsGroupMemberships,
 } from '@tyro/api';
 
 export const peopleKeys = {
@@ -19,6 +21,11 @@ export const peopleKeys = {
     basedOnPartyIds: (filter: Core_PeopleFilter) =>
       [...peopleKeys.all, 'basedOnPartyIds', filter] as const,
   },
+  print: (filter: Print_PersonsGroupMemberships) => [
+    ...peopleKeys.all,
+    'print',
+    filter,
+  ],
   contacts: {
     all: () => [...peopleKeys.all, 'contacts'] as const,
     personalDetails: (contactId: number | undefined) =>
@@ -42,8 +49,16 @@ export const peopleKeys = {
       [...peopleKeys.staff.all(), 'select', filter] as const,
     status: (staffId: number | undefined) =>
       [...peopleKeys.staff.all(), 'status', staffId] as const,
-    subjectGroups: (filter: StaffFilter) =>
-      [...peopleKeys.staff.all(), 'classes', filter] as const,
+    subjectGroups: (
+      filter: StaffFilter,
+      subjectGroupMembershipFilter: SubjectGroupRelationshipFilter | undefined
+    ) =>
+      [
+        ...peopleKeys.staff.all(),
+        'classes',
+        filter,
+        subjectGroupMembershipFilter,
+      ] as const,
     personalDetails: (filter: StaffFilter) =>
       [...peopleKeys.staff.all(), 'personal', filter] as const,
     employmentCapacities: () =>

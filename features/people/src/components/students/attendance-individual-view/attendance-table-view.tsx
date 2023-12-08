@@ -7,14 +7,17 @@ import {
   TablePersonAvatar,
   ReturnTypeDisplayName,
   usePreferredNameLayout,
+  AttendanceCodeChip,
 } from '@tyro/core';
-import dayjs from 'dayjs';
-import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import {
   useTableSessionAttendance,
   useStudentDailyCalendarInformation,
 } from '@tyro/attendance';
 import { useTranslation, TFunction } from '@tyro/i18n';
+import { AttendanceCodeType } from '@tyro/api';
+import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+
 dayjs.extend(LocalizedFormat);
 
 type AttendanceTableViewProps = {
@@ -31,6 +34,7 @@ export type CombinedAttendanceDataType = {
   time: TypeForCombinedAttendanceData;
   type: TypeForCombinedAttendanceData;
   attendanceCode: TypeForCombinedAttendanceData;
+  attendanceCodeType?: AttendanceCodeType;
   details?: OptionalTypeForCombinedAttendanceData;
   updatedBy?: {
     firstName?: OptionalTypeForCombinedAttendanceData;
@@ -57,19 +61,21 @@ const getColumns = (
     valueGetter: ({ data }) => data?.date,
     sort: 'desc',
     sortIndex: 0,
-    comparator: (dateA: string, dateB: string) => {
-      return dayjs(dateA).unix() - dayjs(dateB).unix()
-    },
+    comparator: (dateA: string, dateB: string) =>
+      dayjs(dateA).unix() - dayjs(dateB).unix(),
     enableRowGroup: true,
   },
   {
     headerName: t('common:time'),
     field: 'time',
     valueGetter: ({ data }) => data?.time,
-    valueFormatter: ({ data }) => {
-      return data?.time || '';
-    },
+    valueFormatter: ({ data }) => data?.time || '',
     sort: 'desc',
+  },
+  {
+    headerName: t('common:time'),
+    field: 'time',
+    valueGetter: ({ data }) => data?.time,
   },
   {
     headerName: t('common:type'),
@@ -78,8 +84,14 @@ const getColumns = (
   },
   {
     headerName: t('common:attendance'),
-    field: 'type',
+    field: 'attendanceCode',
     valueGetter: ({ data }) => data?.attendanceCode,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<CombinedAttendanceDataType, any>) =>
+      data?.attendanceCodeType ? (
+        <AttendanceCodeChip codeType={data?.attendanceCodeType} />
+      ) : null,
   },
   {
     headerName: t('common:details'),
@@ -142,6 +154,7 @@ export function AttendanceTableView({
         date: eventAttendanceData?.date,
         time: dayjs(event?.startTime)?.format('LT'),
         attendanceCode: eventAttendanceData?.attendanceCode?.name,
+        attendanceCodeType: eventAttendanceData?.attendanceCode?.codeType,
         createdBy:
           eventAttendanceData?.updatedBy || eventAttendanceData?.createdBy,
         details: eventAttendanceData?.note,

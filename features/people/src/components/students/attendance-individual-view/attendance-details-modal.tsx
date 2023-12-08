@@ -324,7 +324,7 @@ export const AttendanceDetailsModal = ({
                     fontWeight: 600,
                   },
                   '& tbody td': {
-                    verticalAlign: 'baseline',
+                    verticalAlign: 'middle',
                   },
                 }}
               >
@@ -334,7 +334,7 @@ export const AttendanceDetailsModal = ({
                       t('attendance:time'),
                       t('attendance:type'),
                       t('attendance:takenBy'),
-                      t('attendance:notes'),
+                      t('common:details'),
                       t('attendance:attendance'),
                     ].map((heading) => (
                       <TableCell key={heading}>

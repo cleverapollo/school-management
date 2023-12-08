@@ -95,29 +95,31 @@ export default function MailCompose({
     onCloseCompose();
   };
 
-  const onSend = handleSubmit(({ toRecipients, bccRecipients, ...rest }) => {
-    const recipients = [
-      ...toRecipients.map(({ partyId, type }) => ({
-        recipientPartyId: partyId,
-        recipientPartyType: type,
-        recipientType: RecipientType.To,
-      })),
-      ...bccRecipients.map(({ partyId, type }) => ({
-        recipientPartyId: partyId,
-        recipientPartyType: type,
-        recipientType: RecipientType.Bcc,
-      })),
-    ];
+  const onSend = handleSubmit(
+    ({ toRecipients = [], bccRecipients = [], ...rest }) => {
+      const recipients = [
+        ...toRecipients.map(({ partyId, type }) => ({
+          recipientPartyId: partyId,
+          recipientPartyType: type,
+          recipientType: RecipientType.To,
+        })),
+        ...bccRecipients.map(({ partyId, type }) => ({
+          recipientPartyId: partyId,
+          recipientPartyType: type,
+          recipientType: RecipientType.Bcc,
+        })),
+      ];
 
-    const body = editor?.getHTML() ?? '';
+      const body = editor?.getHTML() ?? '';
 
-    sendMail({
-      ...rest,
-      recipients,
-      body,
-    });
-    handleClose();
-  });
+      sendMail({
+        ...rest,
+        recipients,
+        body,
+      });
+      handleClose();
+    }
+  );
 
   useEffect(() => {
     if (defaultValues) {

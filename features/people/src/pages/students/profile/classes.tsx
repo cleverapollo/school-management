@@ -14,6 +14,9 @@ import {
   ActionMenu,
   ActionMenuProps,
   useDisclosure,
+  TableSwitch,
+  TableBooleanValue,
+  BulkEditedRows,
 } from '@tyro/core';
 
 import set from 'lodash/set';
@@ -21,12 +24,13 @@ import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { Box, Fade } from '@mui/material';
 import { MobileIcon } from '@tyro/icons';
 import {
+  Core_UpdateStudentSubjectGroupInput,
   PermissionUtils,
   SmsRecipientType,
   usePermissions,
-  UsePermissionsReturn,
 } from '@tyro/api';
 import { useStudentsSubjectGroups } from '../../../api/student/overview';
+import { useUpdateStudentSubjectGroup } from '../../../api/student/update-student-subject-group';
 
 type ReturnTypeFromUseStudentsSubjectGroups = NonNullable<
   ReturnType<typeof useStudentsSubjectGroups>['data']
@@ -110,6 +114,25 @@ const getSubjectGroupsColumns = (
     valueGetter: ({ data }) => displayNames(data?.staff),
     enableRowGroup: true,
   },
+  {
+    field: 'irePP.examinable',
+    headerName: t('common:examinable'),
+    editable: true,
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
+    cellEditor: TableSwitch,
+    valueGetter: ({ data }) => data?.irePP?.examinable,
+    valueFormatter: ({ data }) =>
+      data?.irePP?.examinable ? t('common:yes') : t('common:no'),
+    valueSetter: (params) => {
+      set(params.data ?? {}, 'irePP.examinable', params.newValue);
+      return true;
+    },
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseStudentsSubjectGroups, any>) => (
+      <TableBooleanValue value={Boolean(data?.irePP?.examinable)} />
+    ),
+  },
 ];
 
 export default function StudentProfileClassesPage() {
@@ -128,6 +151,8 @@ export default function StudentProfileClassesPage() {
   } = useDisclosure();
 
   const { data: subjectGroupsData } = useStudentsSubjectGroups(studentId);
+  const { mutateAsync: updateStudentSubjectGroup } =
+    useUpdateStudentSubjectGroup(studentId);
 
   const studentColumns = useMemo(
     () => getSubjectGroupsColumns(t, displayNames, permissions),
@@ -147,6 +172,31 @@ export default function StudentProfileClassesPage() {
     []
   );
 
+  const handleBulkSave = (
+    data: BulkEditedRows<
+      ReturnTypeFromUseStudentsSubjectGroups,
+      'irePP.level' | 'irePP.examinable'
+    >
+  ) => {
+    const updates = Object.entries(data).reduce<
+      Core_UpdateStudentSubjectGroupInput[]
+    >((acc, [partyId, changes]) => {
+      const level = changes['irePP.level'];
+      const examinable = changes['irePP.examinable'];
+
+      acc.push({
+        subjectGroupId: Number(partyId),
+        studentId: studentId ?? 0,
+        studyLevel: level?.newValue,
+        examinable: examinable?.newValue,
+      });
+
+      return acc;
+    }, []);
+
+    return updateStudentSubjectGroup(updates);
+  };
+
   return (
     <>
       <Table
@@ -161,6 +211,7 @@ export default function StudentProfileClassesPage() {
             </Box>
           </Fade>
         }
+        onBulkSave={handleBulkSave}
         onRowSelection={(groups) =>
           setSelectedGroups(
             groups.map(({ partyId, name, avatarUrl, subjects }) => {

@@ -19,3 +19,4 @@ export { useBlocksList } from './api/blocks-list';
 export * from './components/common/year-group-autocomplete';
 export * from './components/common/class-group-autocomplete';
 export * from './components/common/block-autocomplete';
+export * from './utils/print-group-members';

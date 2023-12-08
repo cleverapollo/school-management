@@ -1,7 +1,6 @@
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   ActionMenu,
-  ActionMenuProps,
   GridOptions,
   ICellRendererParams,
   Table,
@@ -12,10 +11,15 @@ import {
 } from '@tyro/core';
 import { useParams } from 'react-router-dom';
 import { useMemo, useState } from 'react';
-import { UseQueryReturnType, SmsRecipientType } from '@tyro/api';
-import { MobileIcon } from '@tyro/icons';
+import {
+  UseQueryReturnType,
+  SmsRecipientType,
+  PermissionUtils,
+} from '@tyro/api';
+import { MobileIcon, PrinterIcon } from '@tyro/icons';
 import { Box, Fade } from '@mui/material';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
+import { printGroupMembers } from '@tyro/groups';
 import { useStaffSubjectGroups } from '../../../api/staff/subject-groups';
 
 type ReturnTypeFromUseStaffSubjectGroups = UseQueryReturnType<
@@ -87,7 +91,7 @@ const getSubjectGroupsColumns = (
 ];
 
 export default function StaffProfileClassesPage() {
-  const { t } = useTranslation(['common', 'people', 'sms']);
+  const { t } = useTranslation(['common', 'people', 'sms', 'groups']);
 
   const { id } = useParams();
   const staffId = getNumber(id);
@@ -111,15 +115,24 @@ export default function StaffProfileClassesPage() {
     onClose: onCloseSendSms,
   } = useDisclosure();
 
-  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
+  const actionMenuItems = useMemo(
     () => [
       {
         label: t('people:sendSms'),
         icon: <MobileIcon />,
         onClick: onOpenSendSms,
       },
+      {
+        label: t('groups:printGroupMembers'),
+        icon: <PrinterIcon />,
+        onClick: () => printGroupMembers(selectedGroups),
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission(
+            'ps:1:printing_and_exporting:print_group_members'
+          ),
+      },
     ],
-    []
+    [selectedGroups, onOpenSendSms]
   );
 
   return (

@@ -41,6 +41,8 @@
   "ariaLabelForTabs": "scrollable auto tabs for highlighting attendance types",
   "currentEmployee": "Current employee",
   "scrollableTabs": "Scrollable tabs",
+  "printGroupMemberships": "Print group memberships",
+  "groupTypes": "Group type(s)",
   "gender": {
     "title": "Gender",
     "MALE": "Male",
@@ -95,6 +97,7 @@
       "lockerNumber": "Locker number",
       "examNumber": "Exam number",
       "languageSupportApplicant": "Is the student a language support applicant?",
+      "exemptions": "Exemptions",
       "examEntrant": "Is the student an exam entrant?",
       "repeatOfYearIndicator": "Is the student repeating this year?",
       "boarderIndicator": "Is the student boarding?",

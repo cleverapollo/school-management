@@ -1,7 +1,10 @@
 import { ReturnTypeFromUseEventsForCover } from '../api/staff-work-events-for-cover';
 import { CoverEvent } from '../hooks/use-cover-table';
 
-export function getCurrentCoverRoom({ event, substitution }: CoverEvent) {
+export function getCurrentCoverRoom({
+  event,
+  substitution,
+}: Omit<CoverEvent, 'coverTeacherDuplicatedAtSameTime'>) {
   return (
     substitution?.substituteRoom?.name ??
     event.rooms?.map(({ name }) => name).join(', ') ??
@@ -16,7 +19,9 @@ export type StaffAttendee = {
   >;
 };
 
-export function getAdditionalStaff(eventInfo: CoverEvent) {
+export function getAdditionalStaff(
+  eventInfo: Omit<CoverEvent, 'coverTeacherDuplicatedAtSameTime'>
+) {
   const { substitution } = eventInfo;
   const { substituteStaff } = substitution ?? {};
 
