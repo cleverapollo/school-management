@@ -11,11 +11,11 @@ export default function CreateSchoolActivityPage() {
   return (
     <PageContainer title={t('schoolActivities:createSchoolActivity')}>
       <PageHeading
-        title={t('schoolActivities:schoolActivitiesTitle')}
+        title={t('schoolActivities:schoolActivity')}
         breadcrumbs={{
           links: [
             {
-              name: t('schoolActivities:createSchoolActivity'),
+              name: t('schoolActivities:schoolActivity'),
 
               href: '/school-activity',
             },

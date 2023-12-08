@@ -12,6 +12,8 @@ const classAway = graphql(/* GraphQL */ `
   query sa_classAway($filter: Sa_ClassAwayFilter!) {
     sa_classAway(filter: $filter) {
       freeStaffPartyIds
+      cancelled
+      staffAreFreed
       freeStaff {
         partyId
         title {

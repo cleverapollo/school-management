@@ -10,10 +10,11 @@ import {
 import { activitiesKeys } from './keys';
 
 const activitiesList = graphql(/* GraphQL */ `
-  query sa_activities($filter: Sa_SchoolActivityFilter!) {
+  query activitiesList($filter: Sa_SchoolActivityFilter!) {
     sa_activities(filter: $filter) {
       schoolActivityId
       customGroupId
+      lastPublished
       name
       dates {
         date
@@ -76,10 +77,11 @@ const activitiesList = graphql(/* GraphQL */ `
 `);
 
 const schoolActivityById = graphql(/* GraphQL */ `
-  query sa_activities($filter: Sa_SchoolActivityFilter!) {
+  query activitiesById($filter: Sa_SchoolActivityFilter!) {
     sa_activities(filter: $filter) {
       schoolActivityId
       customGroupId
+      lastPublished
       name
       dates {
         date

@@ -2,7 +2,9 @@ import { useMemo } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   GridOptions,
+  ICellRendererParams,
   Table,
+  TableLinearProgress,
   useNumber,
   usePreferredNameLayout,
 } from '@tyro/core';
@@ -55,15 +57,28 @@ const getColumns = (
   {
     headerName: t('schoolActivities:studentsRemaining'),
     colId: 'studentsRemaining',
-    valueGetter: ({ data }) => data?.studentsAttendingActivityTotal,
-    valueFormatter: ({ data }) => {
+    valueGetter: ({ data }) => {
       const studentsInGroupTotal = data?.studentsInGroupTotal || 0;
       const studentsAttendingActivityTotal =
         data?.studentsAttendingActivityTotal || 0;
       const remainingStudents =
         studentsInGroupTotal - studentsAttendingActivityTotal;
-
-      return `${remainingStudents}/${studentsInGroupTotal}` || '-';
+      return `${remainingStudents}/${studentsInGroupTotal}`;
+    },
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseLessonsNeedingCover>) => {
+      const studentsInGroupTotal = data?.studentsInGroupTotal || 0;
+      const studentsAttendingActivityTotal =
+        data?.studentsAttendingActivityTotal || 0;
+      const remainingStudents =
+        studentsInGroupTotal - studentsAttendingActivityTotal;
+      return (
+        <TableLinearProgress
+          value={remainingStudents}
+          total={data?.studentsInGroupTotal}
+        />
+      );
     },
   },
 ];

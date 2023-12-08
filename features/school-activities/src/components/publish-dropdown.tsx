@@ -8,16 +8,22 @@ import {
   CalendarCutDottedLinesIcon,
 } from '@tyro/icons';
 import { useDisclosure } from '@tyro/core';
+import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { PublishSchoolActivityModal } from './publish-school-activity-modal';
+
+dayjs.extend(LocalizedFormat);
 
 type PublishedDropdownProps = {
   isPublished: boolean;
   schoolActivityId: number;
+  lastPublished: string | null;
 };
 
 export function PublishDropdown({
   isPublished,
   schoolActivityId,
+  lastPublished,
 }: PublishedDropdownProps) {
   const { t } = useTranslation(['schoolActivities']);
   const { isOpen: isModalOpen, onOpen, onClose } = useDisclosure();
@@ -95,8 +101,20 @@ export function PublishDropdown({
         anchorEl={anchorEl}
         open={isMenuOpen}
         onClose={handleCloseMenu}
-        sx={{ maxWidth: '215px', marginTop: 1 }}
+        sx={{ maxWidth: 'auto', marginTop: 1 }}
       >
+        {lastPublished && (
+          <MenuItem
+            disabled
+            sx={{
+              fontSize: '0.875rem',
+              '&.Mui-disabled': { opacity: '1' },
+            }}
+          >
+            {dayjs(lastPublished).format('DD-MM-YYYY')}
+          </MenuItem>
+        )}
+
         <MenuItem
           disabled={isPublished}
           onClick={() => {

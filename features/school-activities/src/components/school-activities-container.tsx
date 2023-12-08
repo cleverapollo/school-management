@@ -41,6 +41,10 @@ export default function SchoolActivitiesContainer() {
           <TabPageContainer
             links={[
               {
+                value: 'edit',
+                label: t('schoolActivities:editSchoolActivity'),
+              },
+              {
                 value: 'cover-required',
                 label: t('schoolActivities:coverRequired'),
               },

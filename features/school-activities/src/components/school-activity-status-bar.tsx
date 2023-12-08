@@ -33,7 +33,7 @@ export function SchoolActivityStatusBar({
   return (
     <Box>
       <Card variant="outlined" sx={{ p: 1.25, display: 'inline-block' }}>
-        <Stack direction="row" flexWrap="wrap" gap={2}>
+        <Stack direction="row" flexWrap="wrap" alignItems="center" gap={2}>
           <Stack direction="row" alignItems="center" spacing={1}>
             <Box p={1}>
               <Avatar src="Test" name={schoolActivity?.name ?? ''} />
@@ -46,55 +46,78 @@ export function SchoolActivityStatusBar({
               >
                 {schoolActivity?.name}
               </Typography>
-              <Stack direction="row" spacing={1}>
-                <Typography component="dt" sx={{ ...labelStyle }}>
-                  {t('schoolActivities:customGroup')}
-                </Typography>
-                <Typography component="dd" sx={{ ...textValueStyle }}>
-                  {schoolActivity?.customGroup?.name}
-                </Typography>
-              </Stack>
             </Stack>
           </Stack>
 
-          <Box
-            component="dl"
-            display="grid"
-            gridTemplateRows="repeat(2, auto)"
-            sx={{ m: 0, justifyItems: 'center', alignItems: 'baseline' }}
-          >
-            <>
-              <Typography
-                component="dt"
-                gridRow={1}
+          <Stack direction="column" sx={{ alignItems: 'center' }}>
+            <Typography
+              component="dt"
+              variant="body1"
+              sx={{
+                ...labelStyle,
+                py: 0.5,
+                mb: 0.5,
+              }}
+            >
+              {t('schoolActivities:dateAndTime')}
+            </Typography>
+
+            <Stack direction="row">
+              <Box
                 sx={{
-                  fontSize: '0.75rem',
-                  color: 'slate.600',
-                  px: 2,
-                  py: 0.5,
-                  display: 'flex',
-                  alignItems: 'center',
+                  backgroundColor: 'slate.100',
+                  borderRadius: '18px',
+                  px: 1,
+                  mr: 0.5,
                 }}
               >
-                {t('schoolActivities:dateAndTime')}
-              </Typography>
-              <Typography
-                component="dd"
-                gridRow={2}
+                <Typography
+                  component="dd"
+                  sx={{
+                    ...textValueStyle,
+                    py: 0.5,
+                  }}
+                >
+                  {formattedDates}
+                </Typography>
+              </Box>
+            </Stack>
+          </Stack>
+
+          <Stack direction="column" sx={{ alignItems: 'center' }}>
+            <Typography
+              component="dt"
+              variant="body1"
+              sx={{
+                ...labelStyle,
+                py: 0.5,
+                mb: 0.5,
+              }}
+            >
+              {t('common:group')}
+            </Typography>
+
+            <Stack direction="row">
+              <Box
                 sx={{
-                  fontSize: '0.75rem',
-                  px: 2,
-                  py: 0.5,
-                  display: 'flex',
-                  alignItems: 'center',
-                  borderRadius: '17px 17px 17px 17px',
-                  backgroundColor: 'blue.50',
+                  backgroundColor: 'slate.100',
+                  borderRadius: '18px',
+                  px: 1,
+                  mr: 0.5,
                 }}
               >
-                {formattedDates}
-              </Typography>
-            </>
-          </Box>
+                <Typography
+                  component="dd"
+                  sx={{
+                    ...textValueStyle,
+                    py: 0.5,
+                  }}
+                >
+                  {schoolActivity?.customGroup?.name}
+                </Typography>
+              </Box>
+            </Stack>
+          </Stack>
 
           <Stack direction="column">
             <Typography
@@ -164,7 +187,7 @@ export function SchoolActivityStatusBar({
           </Stack>
           <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
 
-          <Stack direction="column" sx={{ alignItems: 'start' }}>
+          <Stack direction="column" sx={{ alignItems: 'start', mr: 2 }}>
             <Typography
               component="dt"
               variant="body1"
@@ -179,6 +202,7 @@ export function SchoolActivityStatusBar({
             <PublishDropdown
               isPublished={schoolActivity?.published}
               schoolActivityId={schoolActivity?.schoolActivityId}
+              lastPublished={schoolActivity?.lastPublished ?? null}
             />
           </Stack>
         </Stack>

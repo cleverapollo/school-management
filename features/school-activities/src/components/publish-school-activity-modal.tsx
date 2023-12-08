@@ -1,12 +1,6 @@
 import { LoadingButton } from '@mui/lab';
 import { Alert, AlertTitle, Box, Button } from '@mui/material';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-} from '@tyro/core';
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 
 import { SchoolBagIcon, BinIcon } from '@tyro/icons';
@@ -62,7 +56,7 @@ export function PublishSchoolActivityModal({
               marginRight: 2,
             }}
           >
-            <SchoolBagIcon />
+            <SchoolBagIcon sx={{ color: 'blue.100' }} />
           </Box>
         )}
 
@@ -106,11 +100,6 @@ export function PublishSchoolActivityModal({
               : t('schoolActivities:SchoolActivityModalAlertPublish')}
           </AlertTitle>
         </Alert>
-        <DialogContentText>
-          {isPublished
-            ? t('schoolActivities:SchoolActivityModalBodyUnpublish')
-            : t('schoolActivities:SchoolActivityModalBodyPublish')}
-        </DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button autoFocus variant="soft" color="inherit" onClick={onClose}>

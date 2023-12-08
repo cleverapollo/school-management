@@ -77,32 +77,15 @@ export default function EditSchoolActivityPage() {
   }, [schoolActivity]);
 
   return (
-    <PageContainer title={t('schoolActivities:editSchoolActivity')}>
-      <PageHeading
-        title={t('schoolActivities:schoolActivitiesTitle')}
-        breadcrumbs={{
-          links: [
-            {
-              name: t('schoolActivities:editSchoolActivity'),
-
-              href: '/school-activity',
-            },
-            {
-              name: t('schoolActivities:schoolActivityCreation'),
-            },
-          ],
+    formValues && (
+      <SchoolActivityForm
+        schoolActivitiesData={formValues}
+        title={t('schoolActivities:editSchoolActivity')}
+        onSuccess={() => {
+          toast(t('common:snackbarMessages.updateSuccess'));
         }}
+        onError={console.error}
       />
-      {formValues && (
-        <SchoolActivityForm
-          schoolActivitiesData={formValues}
-          title={t('schoolActivities:editSchoolActivity')}
-          onSuccess={() => {
-            toast(t('common:snackbarMessages.updateSuccess'));
-          }}
-          onError={console.error}
-        />
-      )}
-    </PageContainer>
+    )
   );
 }

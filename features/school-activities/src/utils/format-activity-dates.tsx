@@ -10,14 +10,14 @@ export function formatActivityDates(
   dates: Sa_SchoolActivityDate[]
 ) {
   if (dates?.length > 1) {
-    return dates.map((date) => dayjs(date.date).format('L')).join(', ');
+    return dates.map((date) => dayjs(date.date).format('LL')).join(', ');
   }
   const singleDate = dates[0];
-  const dayOfWeek = dayjs(singleDate.date).format('ddd');
+  const dayOfWeek = dayjs(singleDate.date).format('LL');
   const startTime = singleDate.startTime ?? '-';
   const endTime = singleDate.endTime ?? '-';
   if (singleDate.partial) {
     return `${dayOfWeek}, ${startTime} - ${endTime}`;
   }
-  return `${dayOfWeek}, ${t('schoolActivities:dayTypeOptions.SINGLE_DAY')}`;
+  return dayjs(singleDate?.date).format('LL');
 }

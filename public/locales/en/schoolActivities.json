@@ -49,5 +49,7 @@
     "confirmUnpublish": "Yes, Un-publish",
     "notPublished": "Not published",
     "published": "Published",
-    "publishSuccess": "School activity published successfully!"
+    "publishSuccess": "School activity published successfully!",
+    "windfall": "Windfall",
+    "cancelled": "Cancelled"
 }

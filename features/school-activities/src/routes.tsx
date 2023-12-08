@@ -6,7 +6,7 @@ import {
   throw404Error,
 } from '@tyro/core';
 import { redirect } from 'react-router-dom';
-import { SchoolExamACircleIcon } from '@tyro/icons';
+import { SchoolBagIcon } from '@tyro/icons';
 import { getSchoolActivityById } from './api/get-school-activities';
 
 const SchoolActivityPage = lazyWithRetry(() => import('./pages'));
@@ -28,7 +28,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         type: NavObjectType.RootLink,
         path: 'school-activity',
         title: t('navigation:general.schoolActivities.title'),
-        icon: <SchoolExamACircleIcon />,
+        icon: <SchoolBagIcon />,
         children: [
           {
             type: NavObjectType.NonMenuLink,
@@ -39,22 +39,6 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.NonMenuLink,
             path: 'create',
             element: <CreateSchoolActivityPage />,
-          },
-          {
-            type: NavObjectType.NonMenuLink,
-            path: ':activityId/edit',
-            element: <EditSchoolActivityPage />,
-            loader: ({ params }) => {
-              const schoolActivityId = getNumber(params.activityId);
-
-              if (!schoolActivityId) {
-                throw404Error();
-              }
-
-              return getSchoolActivityById({
-                schoolActivityIds: [schoolActivityId],
-              });
-            },
           },
           {
             type: NavObjectType.NonMenuLink,
@@ -76,6 +60,22 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 index: true,
                 loader: () => redirect('./cover-required'),
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'edit',
+                element: <EditSchoolActivityPage />,
+                loader: ({ params }) => {
+                  const schoolActivityId = getNumber(params.activityId);
+
+                  if (!schoolActivityId) {
+                    throw404Error();
+                  }
+
+                  return getSchoolActivityById({
+                    schoolActivityIds: [schoolActivityId],
+                  });
+                },
               },
               {
                 type: NavObjectType.NonMenuLink,
