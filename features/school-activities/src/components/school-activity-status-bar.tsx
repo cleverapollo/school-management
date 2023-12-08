@@ -49,13 +49,14 @@ export function SchoolActivityStatusBar({
             </Stack>
           </Stack>
 
-          <Stack direction="column" sx={{ alignItems: 'center' }}>
+          <Stack direction="column" sx={{ alignItems: 'start' }}>
             <Typography
               component="dt"
               variant="body1"
               sx={{
                 ...labelStyle,
                 py: 0.5,
+                paddingLeft: 2,
                 mb: 0.5,
               }}
             >
@@ -84,13 +85,14 @@ export function SchoolActivityStatusBar({
             </Stack>
           </Stack>
 
-          <Stack direction="column" sx={{ alignItems: 'center' }}>
+          <Stack direction="column" sx={{ alignItems: 'start' }}>
             <Typography
               component="dt"
               variant="body1"
               sx={{
                 ...labelStyle,
                 py: 0.5,
+                paddingLeft: 2,
                 mb: 0.5,
               }}
             >
@@ -146,13 +148,14 @@ export function SchoolActivityStatusBar({
           </Stack>
           <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
 
-          <Stack direction="column" sx={{ alignItems: 'center' }}>
+          <Stack direction="column" sx={{ alignItems: 'start' }}>
             <Typography
               component="dt"
               variant="body1"
               sx={{
                 ...labelStyle,
                 py: 0.5,
+                paddingLeft: 2,
                 mb: 0.5,
               }}
             >
@@ -194,6 +197,7 @@ export function SchoolActivityStatusBar({
               sx={{
                 ...labelStyle,
                 py: 0.5,
+                paddingLeft: 2,
                 mb: 0.5,
               }}
             >
