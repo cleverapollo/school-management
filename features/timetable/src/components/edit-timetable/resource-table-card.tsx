@@ -42,6 +42,7 @@ type GroupCardProps = {
   onOpenAddLessonDialog: (anchorLesson: Period) => void;
   onOpenPublishLessonDialog: (anchorLesson: Lesson) => void;
   period: Period;
+  enableSwapTeacher: boolean;
 };
 
 interface PlaceholderLessonProps {
@@ -112,6 +113,7 @@ function GroupCard({
   onOpenPublishLessonDialog,
   selectedLessonIds,
   period,
+  enableSwapTeacher,
 }: GroupCardProps) {
   const { displayName, displayNames } = usePreferredNameLayout();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -241,6 +243,7 @@ function GroupCard({
         open={isContextMenuOpen}
         onClose={() => setAnchorEl(null)}
         selectedLessonIds={selectedLessonIds}
+        enableSwapTeacher={enableSwapTeacher}
         onOpenSwapTeacherOrRoomDialog={() =>
           onOpenSwapTeacherOrRoomDialog(lesson)
         }
@@ -265,7 +268,13 @@ export const ResourceTableCard = memo(
       );
     }
 
-    return <GroupCard lesson={resource} {...props} />;
+    return (
+      <GroupCard
+        lesson={resource}
+        enableSwapTeacher={resource.teachers?.length < 2}
+        {...props}
+      />
+    );
   }
 );
 
