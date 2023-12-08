@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Box, Typography, Menu, MenuItem } from '@mui/material';
-import { useTranslation } from '@tyro/i18n';
+import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   ChevronDownIcon,
   CalendarAddIcon,
@@ -18,6 +18,41 @@ type PublishedDropdownProps = {
   isPublished: boolean;
   schoolActivityId: number;
   lastPublished: string | null;
+};
+
+const getStyling = (
+  publishedStatus: boolean,
+  lastPublishedStatus: string | null
+) => {
+  let backgroundColor = 'indigo.500';
+  let fontAndIconColor = 'white';
+  let IconComponent = CalendarAddIcon;
+
+  if (!publishedStatus && lastPublishedStatus) {
+    backgroundColor = 'red.100';
+    fontAndIconColor = 'red.500';
+    IconComponent = CalendarCutDottedLinesIcon;
+  } else if (publishedStatus) {
+    backgroundColor = 'emerald.100';
+    fontAndIconColor = 'emerald.500';
+    IconComponent = CalendarCheckmarkIcon;
+  }
+
+  return { backgroundColor, fontAndIconColor, IconComponent };
+};
+
+const getActionText = (
+  publishStatus: boolean,
+  lastPublishedStatus: string | null,
+  translate: TFunction<'schoolActivities'[], undefined, 'schoolActivities'[]>
+) => {
+  if (!publishStatus && lastPublishedStatus) {
+    return translate('schoolActivities:unpublished');
+  }
+  if (publishStatus) {
+    return translate('schoolActivities:published');
+  }
+  return translate('schoolActivities:notPublished');
 };
 
 export function PublishDropdown({
@@ -42,6 +77,11 @@ export function PublishDropdown({
   const handleCloseMenu = () => {
     setAnchorEl(null);
   };
+
+  const { backgroundColor, fontAndIconColor, IconComponent } = getStyling(
+    isPublished,
+    lastPublished
+  );
 
   return (
     <>
@@ -71,8 +111,8 @@ export function PublishDropdown({
       >
         <Box
           sx={{
-            backgroundColor: isPublished ? 'emerald.100' : 'indigo.500',
-            color: isPublished ? 'emerald.500' : 'white',
+            backgroundColor,
+            color: fontAndIconColor,
             borderRadius: 2,
             padding: 1,
             fontSize: '12px',
@@ -81,17 +121,11 @@ export function PublishDropdown({
             height: '25px',
           }}
         >
-          <CalendarAddIcon
-            sx={{
-              width: 18,
-              height: 18,
-              color: isPublished ? 'emerald' : 'white',
-            }}
+          <IconComponent
+            sx={{ width: 18, height: 18, color: fontAndIconColor }}
           />
           <Typography fontSize="12px" marginLeft={0.5}>
-            {isPublished
-              ? t('schoolActivities:published')
-              : t('schoolActivities:notPublished')}
+            {getActionText(isPublished, lastPublished, t)}
           </Typography>
         </Box>
         <ChevronDownIcon sx={{ color: 'slategrey' }} />
