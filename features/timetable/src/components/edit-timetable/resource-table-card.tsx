@@ -271,7 +271,7 @@ export const ResourceTableCard = memo(
     return (
       <GroupCard
         lesson={resource}
-        enableSwapTeacher={resource.teachers?.length < 2}
+        enableSwapTeacher={resource.teachers?.length === 1}
         {...props}
       />
     );
