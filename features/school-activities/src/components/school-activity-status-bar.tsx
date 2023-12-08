@@ -1,15 +1,11 @@
-import { Fragment } from 'react';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { Card, Stack, Typography, Divider, Box } from '@mui/material';
-import {
-  Avatar,
-  CopyClipboardButton,
-  usePreferredNameLayout,
-} from '@tyro/core';
+import { Box, Card, Divider, Stack, Typography } from '@mui/material';
+import { Avatar, usePreferredNameLayout } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { ReturnTypeFromUseSchoolActivityById } from '../api/get-school-activities';
 import { formatActivityDates } from '../utils/format-activity-dates';
+import { PublishDropdown } from './publish-dropdown';
 
 dayjs.extend(LocalizedFormat);
 
@@ -168,26 +164,21 @@ export function SchoolActivityStatusBar({
           </Stack>
           <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
 
-          <Stack direction="column">
+          <Stack direction="column" sx={{ alignItems: 'start' }}>
             <Typography
               component="dt"
               variant="body1"
               sx={{
                 ...labelStyle,
-                px: 1,
                 py: 0.5,
                 mb: 0.5,
               }}
             >
-              {t('common:tyroId')}
+              {t('schoolActivities:publishStatus')}
             </Typography>
-            <CopyClipboardButton
-              aria-label={t('common:tyroIdClickToCopy', {
-                id: schoolActivity?.customGroupId,
-              })}
-              textToCopy={String(schoolActivity?.customGroupId)}
-              successMessage={t('common:tyroIdCopied')}
-              errorMessage={t('common:issueCopyingTyroId')}
+            <PublishDropdown
+              isPublished={schoolActivity?.published}
+              schoolActivityId={schoolActivity?.schoolActivityId}
             />
           </Stack>
         </Stack>

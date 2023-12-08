@@ -44,7 +44,7 @@ export default function EditSchoolActivityPage() {
       customGroupId,
     } = schoolActivity;
 
-    const datesData = dates[0];
+    const singleDayDate = dates[0];
     const currentCustomGroup = customGroups?.filter(
       (group) => group?.partyId === customGroupId
     );
@@ -54,6 +54,9 @@ export default function EditSchoolActivityPage() {
       rooms && rooms?.filter((room) => room?.roomId === currentRoomId);
     const roomFormatted = currentRoomData && currentRoomData[0];
 
+    const singleOrMultiDayActivityType =
+      dates.length > 1 ? ActivityType.MultiDay : ActivityType.SingleDay;
+
     return {
       schoolActivityId,
       name,
@@ -61,15 +64,15 @@ export default function EditSchoolActivityPage() {
       details: tripPurpose,
       notes,
       room: roomFormatted,
-      dates: dayjs(datesData?.date),
-      startTime: dayjs(datesData?.startTime),
-      endTime: dayjs(datesData?.endTime),
-      partial: datesData?.partial,
+      dates: dayjs(singleDayDate?.date),
+      dateRange: dates?.map((date) => dayjs(date?.date)),
+      startTime: dayjs(singleDayDate.startTime, 'HH:mm'),
+      endTime: dayjs(singleDayDate.endTime, 'HH:mm'),
+      partial: singleDayDate?.partial,
       inSchoolGrounds: location?.inSchoolGrounds,
-      requestType:
-        ActivityType.MultiDay ||
-        ActivityType.PartialDay ||
-        ActivityType.SingleDay,
+      requestType: singleDayDate?.partial
+        ? ActivityType.PartialDay
+        : singleOrMultiDayActivityType,
     } as const;
   }, [schoolActivity]);
 

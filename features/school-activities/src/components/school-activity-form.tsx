@@ -34,8 +34,8 @@ export type FormValues = {
   inSchoolGrounds: boolean;
   partial: boolean;
   dates?: dayjs.Dayjs;
-  startTime?: dayjs.Dayjs | null;
-  endTime?: dayjs.Dayjs | null;
+  startTime?: dayjs.Dayjs;
+  endTime?: dayjs.Dayjs;
   dateRange?: dayjs.Dayjs[];
   requestType: ActivityType;
 };
@@ -70,6 +70,7 @@ export function SchoolActivityForm({
 
   const { mutate: saveSchoolActivities, isLoading } = useSaveSchoolActivities();
   const activityDayType = watch('requestType');
+  const isEditing = !!schoolActivitiesData?.schoolActivityId;
 
   const onSubmit = (data: FormValues) => {
     const group = data?.group?.partyId;
@@ -141,8 +142,6 @@ export function SchoolActivityForm({
       },
     });
   };
-
-  const isEditing = !!schoolActivitiesData?.schoolActivityId;
 
   return (
     <Grid container gap={3}>

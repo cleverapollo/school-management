@@ -19,18 +19,18 @@ export default function SchoolActivitiesContainer() {
   });
 
   return (
-    <PageContainer title={t('schoolActivities:schoolActivitiesTitle')}>
+    <PageContainer title={t('schoolActivities:schoolActivity')}>
       <PageHeading
-        title={t('schoolActivities:schoolActivitiesTitle')}
+        title={t('schoolActivities:schoolActivity')}
         titleProps={{ variant: 'h3' }}
         breadcrumbs={{
           links: [
             {
-              name: t('schoolActivities:schoolActivitiesTitle'),
+              name: t('schoolActivities:schoolActivity'),
               href: './../',
             },
             {
-              name: t('schoolActivities:overview'),
+              name: schoolActivity?.name || '',
             },
           ],
         }}

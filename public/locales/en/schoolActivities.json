@@ -24,6 +24,7 @@
     "returnsAtTime": "Returns at",
     "effectedClasses": "Effected classes",
     "publish": "Publish",
+    "unpublish": "Un-publish",
     "subjectYear": "Subject year",
     "teachers": "Teachers",
     "totalStudents": "Total {{count}}",
@@ -36,5 +37,17 @@
     "classAway": "Class away",
     "setTeacherAsUnavailable": "Set teacher as unavailable",
     "setTeacherAsAvailable": "Set teacher as available for windfall",
-    "customGroup": "Custom group"
+    "customGroup": "Custom group",
+    "publishStatus": "Publish status",
+    "SchoolActivityModalHeaderPublish": "Are you sure you want to publish this School Activity?",
+    "SchoolActivityModalAlertPublish": "Publishing this School Activity will add it to the Calendar and update Class Timetables.",
+    "SchoolActivityModalBodyPublish": "Changes to be pushed to Timetable",
+    "SchoolActivityModalHeaderUnpublish": "Are you sure you want to un-publish this School Activity?",
+    "SchoolActivityModalAlertUnpublish": "Un-publishing this School Activity will remove it from the Calendar and update class timetables.",
+    "SchoolActivityModalBodyUnpublish": "Feedback note for un-publishing",
+    "confirmPublish": "Yes, publish",
+    "confirmUnpublish": "Yes, Un-publish",
+    "notPublished": "Not published",
+    "published": "Published",
+    "publishSuccess": "School activity published successfully!"
 }

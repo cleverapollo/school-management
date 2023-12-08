@@ -27,7 +27,7 @@ export const getRoutes: NavObjectFunction = (t) => [
       {
         type: NavObjectType.RootLink,
         path: 'school-activity',
-        title: t('navigation:general.schoolActivities.schoolActivity'),
+        title: t('navigation:general.schoolActivities.title'),
         icon: <SchoolExamACircleIcon />,
         children: [
           {

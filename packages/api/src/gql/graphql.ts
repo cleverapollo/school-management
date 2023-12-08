@@ -178,6 +178,7 @@ export type AssessmentExtraField = {
   gradeSetId?: Maybe<Scalars['Long']>;
   id: Scalars['Long'];
   name: Scalars['String'];
+  resultsEntered: Scalars['Boolean'];
   selectOptions?: Maybe<Array<Scalars['String']>>;
 };
 
@@ -199,7 +200,6 @@ export type AssessmentResult = {
   createdBy: Person;
   createdByPartyId: Scalars['Long'];
   examinable: Scalars['Boolean'];
-  excluded?: Maybe<Scalars['Boolean']>;
   externalSystemId?: Maybe<Scalars['String']>;
   extraFields?: Maybe<Array<ResultExtraField>>;
   gradeId?: Maybe<Scalars['Long']>;
@@ -235,6 +235,7 @@ export type AssessmentSubjectGroup = {
   __typename?: 'AssessmentSubjectGroup';
   commentsEntered: Scalars['Int'];
   commentsTotal: Scalars['Int'];
+  extraFieldResultsEntered: Scalars['Int'];
   ppodSyncStatus?: Maybe<SyncStatus>;
   published?: Maybe<Scalars['Boolean']>;
   resultsEntered: Scalars['Int'];
@@ -1880,6 +1881,10 @@ export enum DeviceType {
 
 export type Discount = {
   __typename?: 'Discount';
+  active: Scalars['Boolean'];
+  /** deep linked */
+  createdBy: Person;
+  createdByPartyId: Scalars['Long'];
   description?: Maybe<Scalars['String']>;
   discountType: DiscountType;
   id: Scalars['Int'];
@@ -2690,9 +2695,12 @@ export type Mutation = {
   notes_upsertBehaviourTags: Array<Notes_Tag>;
   notes_upsertNotes: Array<Notes_Note>;
   notes_upsertNotesTags: Array<Notes_Tag>;
+  options_saveOptions: Option;
+  options_saveStudentPreferences: Array<StudentPreference>;
   ppod_savePPODCredentials: PpodCredentials;
   sa_upsertActivity?: Maybe<Success>;
   sa_upsertActivityRequest?: Maybe<Success>;
+  sa_upsertPublish?: Maybe<Success>;
   swm_applySubstitutions: Success;
   swm_deleteAbsence: Success;
   swm_deleteSubstitutions: Success;
@@ -2775,7 +2783,7 @@ export type MutationAssessment_SaveTermAssessmentArgs = {
 
 
 export type MutationAssessment_StudentAssessmentExclusionArgs = {
-  input?: InputMaybe<StudentAssessmentExclusionInput>;
+  input?: InputMaybe<Array<InputMaybe<StudentAssessmentExclusionInput>>>;
 };
 
 
@@ -3094,6 +3102,16 @@ export type MutationNotes_UpsertNotesTagsArgs = {
 };
 
 
+export type MutationOptions_SaveOptionsArgs = {
+  input?: InputMaybe<SaveOptions>;
+};
+
+
+export type MutationOptions_SaveStudentPreferencesArgs = {
+  input?: InputMaybe<Array<InputMaybe<SaveStudentPreference>>>;
+};
+
+
 export type MutationPpod_SavePpodCredentialsArgs = {
   input?: InputMaybe<SavePpodCredentials>;
 };
@@ -3106,6 +3124,11 @@ export type MutationSa_UpsertActivityArgs = {
 
 export type MutationSa_UpsertActivityRequestArgs = {
   input?: InputMaybe<Sa_SchoolActivityRequestInput>;
+};
+
+
+export type MutationSa_UpsertPublishArgs = {
+  input?: InputMaybe<Sa_PublishInput>;
 };
 
 
@@ -3543,6 +3566,45 @@ export type NotificationsUnreadCount = {
   count: Scalars['Int'];
 };
 
+export type Option = {
+  __typename?: 'Option';
+  academicNamespaceId: Scalars['Int'];
+  id: Scalars['Int'];
+  name: Scalars['String'];
+  prefix?: Maybe<Scalars['String']>;
+  publishToParents: Scalars['Boolean'];
+  studentPartyIds?: Maybe<Array<Scalars['Long']>>;
+  /** deep linked */
+  students?: Maybe<Array<Person>>;
+  /** deep linked */
+  subjectSets: Array<OptionSubjectSet>;
+  /** deep linked */
+  yearGroupEnrolmentParty: YearGroupEnrollment;
+  yearGroupEnrolmentPartyId: Scalars['Long'];
+};
+
+export type OptionFilter = {
+  academicNameSpaceId?: InputMaybe<Scalars['Int']>;
+  ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+};
+
+export type OptionSubjectSet = {
+  __typename?: 'OptionSubjectSet';
+  canChoose: Scalars['Int'];
+  id: OptionsId;
+  mustGet: Scalars['Int'];
+  poolIdx?: Maybe<Scalars['Int']>;
+  subjectIds: Array<Scalars['Int']>;
+  /** deep linked */
+  subjects: Array<Subject>;
+};
+
+export type OptionsId = {
+  __typename?: 'OptionsId';
+  idx: Scalars['Int'];
+  optionId: Scalars['Int'];
+};
+
 export type OverallComments = {
   __typename?: 'OverallComments';
   principalCommentsEntered: Scalars['Int'];
@@ -3945,6 +4007,11 @@ export type PhoneNumber = {
   primaryPhoneNumber?: Maybe<Scalars['Boolean']>;
 };
 
+export type PreferencesFilter = {
+  optionId?: InputMaybe<Scalars['Long']>;
+  studentPartyId?: InputMaybe<Scalars['Long']>;
+};
+
 export type PreviousEventAttendance = {
   __typename?: 'PreviousEventAttendance';
   attendanceCode: AttendanceCode;
@@ -4247,6 +4314,8 @@ export type Query = {
   notes_behaviourCategories: Array<Notes_BehaviourCategory>;
   notes_notes: Array<Notes_Note>;
   notes_tags: Array<Notes_Tag>;
+  options_options: Array<Option>;
+  options_preferences: Array<StudentPreference>;
   permissions?: Maybe<Array<Maybe<Permission>>>;
   ppod_PPODCredentials?: Maybe<PpodCredentials>;
   ppod_syncRequests: Array<SyncRequest>;
@@ -4618,6 +4687,16 @@ export type QueryNotes_NotesArgs = {
 
 export type QueryNotes_TagsArgs = {
   filter?: InputMaybe<Notes_TagFilter>;
+};
+
+
+export type QueryOptions_OptionsArgs = {
+  filter?: InputMaybe<OptionFilter>;
+};
+
+
+export type QueryOptions_PreferencesArgs = {
+  filter?: InputMaybe<PreferencesFilter>;
 };
 
 
@@ -5396,6 +5475,11 @@ export type Sa_LessonsNeedingCoverFilter = {
   schoolActivityId: Scalars['Int'];
 };
 
+export type Sa_PublishInput = {
+  schoolActivityId: Scalars['Int'];
+  setAsPublished: Scalars['Boolean'];
+};
+
 export type Sa_SchoolActivity = {
   __typename?: 'Sa_SchoolActivity';
   approval: Sa_SchoolActivityApproval;
@@ -5561,6 +5645,7 @@ export type SaveCommentInput = {
 };
 
 export type SaveDiscountInput = {
+  active?: InputMaybe<Scalars['Boolean']>;
   description?: InputMaybe<Scalars['String']>;
   discountType?: InputMaybe<DiscountType>;
   id?: InputMaybe<Scalars['Int']>;
@@ -5648,6 +5733,17 @@ export type SaveNotificationTemplateInput = {
   name: Scalars['String'];
   text: Scalars['String'];
   title: Scalars['String'];
+};
+
+export type SaveOptions = {
+  academicNamespaceId: Scalars['Int'];
+  id: Scalars['Int'];
+  name: Scalars['String'];
+  prefix?: InputMaybe<Scalars['String']>;
+  publishToParents: Scalars['Boolean'];
+  studentPartyIds?: InputMaybe<Array<Scalars['Long']>>;
+  subjectSets: Array<SaveSubjectSet>;
+  yearGroupEnrolmentPartyId: Scalars['Long'];
 };
 
 export type SaveOwner = {
@@ -5751,6 +5847,14 @@ export type SaveStateCbaAssessmentInput = {
   stateCbaType?: InputMaybe<StateCbaType>;
   subjectGroupIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   yearId: Scalars['Int'];
+};
+
+export type SaveStudentPreference = {
+  optionId: Scalars['Int'];
+  preferenceIdx: Scalars['Int'];
+  studentPartyId: Scalars['Long'];
+  subjectId: Scalars['Int'];
+  subjectSetIdx: Scalars['Int'];
 };
 
 export type SaveStudentSessionAttendanceInput = {
@@ -5868,6 +5972,13 @@ export type SaveStudentSupportPlanTargetInput = {
   id?: InputMaybe<Scalars['Int']>;
   status: TargetStatus;
   target: Scalars['String'];
+};
+
+export type SaveSubjectSet = {
+  canChoose: Scalars['Int'];
+  mustGet: Scalars['Int'];
+  poolIdx?: InputMaybe<Scalars['Int']>;
+  subjectIds: Array<Scalars['Int']>;
 };
 
 export type SaveTermAssessmentInput = {
@@ -6391,6 +6502,7 @@ export type StudentAenFilter = {
 
 export type StudentAssessmentExclusionInput = {
   assessmentId: Scalars['Long'];
+  excluded: Scalars['Boolean'];
   studentPartyId: Scalars['Long'];
   subjectGroupId: Scalars['Long'];
 };
@@ -6589,6 +6701,18 @@ export type StudentMedicalContact = {
 
 export type StudentMedicalFilter = {
   studentPartyId: Scalars['Long'];
+};
+
+export type StudentPreference = {
+  __typename?: 'StudentPreference';
+  id: OptionsId;
+  preferenceIdx: Scalars['Int'];
+  /** deep linked */
+  student: Person;
+  studentPartyId: Scalars['Long'];
+  /** deep linked */
+  subject: Subject;
+  subjectId: Scalars['Int'];
 };
 
 export type StudentResultFilter = {
@@ -8873,13 +8997,6 @@ export type Sa_ClassAwayQueryVariables = Exact<{
 
 export type Sa_ClassAwayQuery = { __typename?: 'Query', sa_classAway: Array<{ __typename?: 'Sa_ClassAway', freeStaffPartyIds: Array<number | null>, studentsAttendingActivityTotal: number, studentsInGroupTotal: number, freeStaff: Array<{ __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, archived?: boolean | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, nameTextId: number, name: string } | null } | null>, event: { __typename?: 'CalendarEvent', name: string, eventId: number, calendarIds: Array<number | null>, startTime: string, endTime: string, type: CalendarEventType, allDayEvent: boolean, roomIds: Array<number>, calendarEventId: { __typename?: 'CalendarEventId', eventId: number, date?: string | null }, attendees: Array<{ __typename?: 'CalendarEventAttendee', partyId: number, type: CalendarEventAttendeeType, partyInfo?: { __typename?: 'GeneralGroup', partyId: number } | { __typename?: 'ProgrammeStageEnrollment', partyId: number } | { __typename?: 'Staff', partyId: number } | { __typename?: 'Student', partyId: number } | { __typename?: 'StudentContact', partyId: number } | { __typename?: 'SubjectGroup', partyId: number } | { __typename?: 'YearGroupEnrollment', partyId: number } | null }>, lessonInfo?: { __typename?: 'CalendarEventLessonRaw', subjectGroupId: number, lessonId?: number | null } | null, rooms: Array<{ __typename?: 'Room', roomId: number, name: string, capacity?: number | null, description?: string | null, pools: Array<string>, includeInTimetable: boolean, externalSystemId?: string | null, location?: string | null, disabled: boolean }> }, affectedAttendees: Array<{ __typename?: 'GeneralGroup', partyId: number } | { __typename?: 'ProgrammeStageEnrollment', partyId: number } | { __typename?: 'Staff', partyId: number } | { __typename?: 'Student', partyId: number } | { __typename?: 'StudentContact', partyId: number } | { __typename?: 'SubjectGroup', partyId: number } | { __typename?: 'YearGroupEnrollment', partyId: number } | null> } | null> };
 
-export type CustomGroupForSchoolActivitiesQueryVariables = Exact<{
-  filter: GeneralGroupFilter;
-}>;
-
-
-export type CustomGroupForSchoolActivitiesQuery = { __typename?: 'Query', generalGroups?: Array<{ __typename?: 'GeneralGroup', partyId: number, name: string, avatarUrl?: string | null, staff: Array<{ __typename?: 'Person', avatarUrl?: string | null, firstName?: string | null, lastName?: string | null }>, students: Array<{ __typename?: 'Student', partyId: number, classGroup?: { __typename?: 'GeneralGroup', name: string } | null, person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null }, extensions?: { __typename?: 'StudentGraphqlExtension', priority?: boolean | null } | null }> }> | null };
-
 export type RoomsListQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -8898,6 +9015,13 @@ export type Sa_LessonsNeedingCoverQueryVariables = Exact<{
 
 
 export type Sa_LessonsNeedingCoverQuery = { __typename?: 'Query', sa_lessonsNeedingCover: Array<{ __typename?: 'Sa_LessonNeedingCover', awayStaffPartyIds: Array<number | null>, studentsAttendingActivityTotal: number, studentsInGroupTotal: number, awayStaff: Array<{ __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, archived?: boolean | null } | null>, event: { __typename?: 'CalendarEvent', name: string, eventId: number, startTime: string, endTime: string, rooms: Array<{ __typename?: 'Room', name: string }> }, affectedAttendees: Array<{ __typename?: 'GeneralGroup', partyId: number } | { __typename?: 'ProgrammeStageEnrollment', partyId: number } | { __typename?: 'Staff', partyId: number } | { __typename?: 'Student', partyId: number } | { __typename?: 'StudentContact', partyId: number } | { __typename?: 'SubjectGroup', partyId: number } | { __typename?: 'YearGroupEnrollment', partyId: number } | null> } | null> };
+
+export type Sa_UpsertPublishMutationVariables = Exact<{
+  input?: InputMaybe<Sa_PublishInput>;
+}>;
+
+
+export type Sa_UpsertPublishMutation = { __typename?: 'Mutation', sa_upsertPublish?: { __typename?: 'Success', success?: boolean | null } | null };
 
 export type Sa_UpsertActivityMutationVariables = Exact<{
   input?: InputMaybe<Sa_SchoolActivityInput>;
@@ -9462,10 +9586,10 @@ export const Reporting_RunReportExpandDocument = {"kind":"Document","definitions
 export const Reporting_ReportInfoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"reporting_reportInfo"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Reporting_ReportFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reporting_runReport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"info"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"supportsExpandRow"}}]}},{"kind":"Field","name":{"kind":"Name","value":"innerReports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<Reporting_ReportInfoQuery, Reporting_ReportInfoQueryVariables>;
 export const Reporting_RunReportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"reporting_runReport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Reporting_ReportFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reporting_runReport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"info"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"supportsExpandRow"}}]}},{"kind":"Field","name":{"kind":"Name","value":"innerReports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"debug"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sql"}}]}},{"kind":"Field","name":{"kind":"Name","value":"filters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"inputType"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"defaultValue"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"values"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}},{"kind":"Field","name":{"kind":"Name","value":"minValue"}},{"kind":"Field","name":{"kind":"Name","value":"maxValue"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"visibleByDefault"}},{"kind":"Field","name":{"kind":"Name","value":"checkExpandedRows"}},{"kind":"Field","name":{"kind":"Name","value":"hideMenu"}},{"kind":"Field","name":{"kind":"Name","value":"sortable"}},{"kind":"Field","name":{"kind":"Name","value":"maxWidth"}},{"kind":"Field","name":{"kind":"Name","value":"minWidth"}},{"kind":"Field","name":{"kind":"Name","value":"pinned"}}]}},{"kind":"Field","name":{"kind":"Name","value":"data"}},{"kind":"Field","name":{"kind":"Name","value":"tableDisplayOptions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gridOptions"}},{"kind":"Field","name":{"kind":"Name","value":"tableContainerSx"}}]}}]}}]}}]} as unknown as DocumentNode<Reporting_RunReportQuery, Reporting_RunReportQueryVariables>;
 export const Sa_ClassAwayDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"sa_classAway"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Sa_ClassAwayFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sa_classAway"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"freeStaffPartyIds"}},{"kind":"Field","name":{"kind":"Name","value":"freeStaff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"archived"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"studentsAttendingActivityTotal"}},{"kind":"Field","name":{"kind":"Name","value":"studentsInGroupTotal"}},{"kind":"Field","name":{"kind":"Name","value":"event"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"calendarEventId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventId"}},{"kind":"Field","name":{"kind":"Name","value":"date"}}]}},{"kind":"Field","name":{"kind":"Name","value":"eventId"}},{"kind":"Field","name":{"kind":"Name","value":"calendarIds"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"allDayEvent"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"partyInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"lessonInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"lessonId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"roomIds"}},{"kind":"Field","name":{"kind":"Name","value":"rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"capacity"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"pools"}},{"kind":"Field","name":{"kind":"Name","value":"includeInTimetable"}},{"kind":"Field","name":{"kind":"Name","value":"externalSystemId"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"disabled"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"affectedAttendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}}]}}]}}]}}]} as unknown as DocumentNode<Sa_ClassAwayQuery, Sa_ClassAwayQueryVariables>;
-export const CustomGroupForSchoolActivitiesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"customGroupForSchoolActivities"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GeneralGroupFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"generalGroups"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"students"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"classGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"extensions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"priority"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CustomGroupForSchoolActivitiesQuery, CustomGroupForSchoolActivitiesQueryVariables>;
 export const RoomsListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"roomsList"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"capacity"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"pools"}},{"kind":"Field","name":{"kind":"Name","value":"includeInTimetable"}},{"kind":"Field","name":{"kind":"Name","value":"externalSystemId"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"disabled"}}]}}]}}]} as unknown as DocumentNode<RoomsListQuery, RoomsListQueryVariables>;
 export const Sa_ActivitiesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"sa_activities"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Sa_SchoolActivityFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sa_activities"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"schoolActivityId"}},{"kind":"Field","name":{"kind":"Name","value":"customGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"dates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"partial"}}]}},{"kind":"Field","name":{"kind":"Name","value":"location"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"inSchoolGrounds"}},{"kind":"Field","name":{"kind":"Name","value":"roomIds"}},{"kind":"Field","name":{"kind":"Name","value":"rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"tripPurpose"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"published"}},{"kind":"Field","name":{"kind":"Name","value":"customGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"relatedSubjectGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"studentMembers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"groupPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"memberCount"}},{"kind":"Field","name":{"kind":"Name","value":"members"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"staffMembers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"groupPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"memberIds"}},{"kind":"Field","name":{"kind":"Name","value":"members"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"memberCount"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Sa_ActivitiesQuery, Sa_ActivitiesQueryVariables>;
 export const Sa_LessonsNeedingCoverDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"sa_lessonsNeedingCover"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Sa_LessonsNeedingCoverFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sa_lessonsNeedingCover"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"awayStaffPartyIds"}},{"kind":"Field","name":{"kind":"Name","value":"awayStaff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"archived"}}]}},{"kind":"Field","name":{"kind":"Name","value":"studentsAttendingActivityTotal"}},{"kind":"Field","name":{"kind":"Name","value":"studentsInGroupTotal"}},{"kind":"Field","name":{"kind":"Name","value":"event"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"eventId"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"affectedAttendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}}]}}]}}]}}]} as unknown as DocumentNode<Sa_LessonsNeedingCoverQuery, Sa_LessonsNeedingCoverQueryVariables>;
+export const Sa_UpsertPublishDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"sa_upsertPublish"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Sa_PublishInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sa_upsertPublish"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Sa_UpsertPublishMutation, Sa_UpsertPublishMutationVariables>;
 export const Sa_UpsertActivityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"sa_upsertActivity"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Sa_SchoolActivityInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sa_upsertActivity"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Sa_UpsertActivityMutation, Sa_UpsertActivityMutationVariables>;
 export const Core_UpsertAcademicNamespaceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_upsertAcademicNamespace"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SaveAcademicNamespaceInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_upsertAcademicNamespace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"academicNamespaceId"}}]}}]}}]} as unknown as DocumentNode<Core_UpsertAcademicNamespaceMutation, Core_UpsertAcademicNamespaceMutationVariables>;
 export const Core_SetActiveActiveAcademicNamespaceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_setActiveActiveAcademicNamespace"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SetActiveAcademicNamespace"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_setActiveActiveAcademicNamespace"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"academicNamespaceId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActiveDefaultNamespace"}}]}}]}}]} as unknown as DocumentNode<Core_SetActiveActiveAcademicNamespaceMutation, Core_SetActiveActiveAcademicNamespaceMutationVariables>;

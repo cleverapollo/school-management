@@ -43,7 +43,7 @@ const getColumns = (
   {
     headerName: t('common:room', { count: 1 }),
     colId: 'room',
-    valueGetter: ({ data }) => data?.event?.rooms,
+    valueGetter: ({ data }) => data?.event?.rooms[0]?.name,
   },
   {
     headerName: t('common:teacher'),
@@ -78,8 +78,6 @@ export default function CoverRequired() {
     useLessonsNeedingCover({
       schoolActivityId: schoolActivityNumber ?? 0,
     });
-
-  console.log(lessonsNeededCover, 'lessonsNeededCover');
 
   const columns = useMemo(() => getColumns(t, displayNames), [t, displayNames]);
 
