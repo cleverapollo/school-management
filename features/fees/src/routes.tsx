@@ -28,7 +28,8 @@ export const getRoutes: NavObjectFunction = (t) => [
   {
     type: NavObjectType.Category,
     title: t('navigation:management.title'),
-    hasAccess: ({ isStaffUser }) => isStaffUser,
+    hasAccess: ({ isStaffUserWithPermission }) =>
+      isStaffUserWithPermission('ps:1:fees:write_fees'),
     children: [
       {
         type: NavObjectType.RootGroup,
