@@ -191,6 +191,7 @@
     "max": "You must enter a number less or equal than {{number}}",
     "minLength": "You must enter a minimum of {{count}} characters",
     "maxLength": "You have exceeded the maximum character length of {{count}}",
+    "invalidNumber": "This is not a valid number",
     "invalidMobileNumber": "This phone number is either invalid or is in the wrong format",
     "invalidEmail": "This is an invalid email",
     "invalidPhoneNumber": "This is an invalid phone number",
