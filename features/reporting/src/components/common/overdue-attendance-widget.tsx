@@ -1,15 +1,26 @@
-import { Card, IconButton, Stack, Typography, Box, Chip } from '@mui/material';
+import {
+  Card,
+  IconButton,
+  Stack,
+  Typography,
+  Box,
+  Chip,
+  alpha,
+} from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { FullScreenIcon, ClockIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import { useTranslation } from '@tyro/i18n';
 import { Link } from 'react-router-dom';
-import { LoadingPlaceholderContainer, getNumber } from '@tyro/core';
+import {
+  LoadingPlaceholderContainer,
+  getNumber,
+  getHumanizedTime,
+} from '@tyro/core';
 import { Colour, useUser } from '@tyro/api';
 import { useMemo } from 'react';
 import { useRunReports } from '../../api/run-report';
 import { getReportUrl, Report } from '../../utils/get-report-url';
-import { getHumanizedTime } from '../../utils/get-duration-time';
 
 type ReportColumnValue = {
   value: string;
@@ -63,7 +74,7 @@ export function OverdueAttendanceWidget() {
       overdueByMins: overdueAttendance.overdue_by_mins.value,
       subjectGroupName: overdueAttendance.subject_group_name.value,
       subjectName: overdueAttendance.subject_name_1.value,
-      calendarRoomName: overdueAttendance.calendar_room_name.value,
+      calendarRoomName: overdueAttendance.calendar_room_name?.value,
     }));
   }, [data]);
 
@@ -148,7 +159,8 @@ export function OverdueAttendanceWidget() {
                     backgroundColor: 'white',
                     borderRadius: 2,
                     userSelect: 'none',
-                    boxShadow: '0 1px 6px 0px #6366F11A',
+                    boxShadow: (theme) =>
+                      `0 1px 6px 0px ${alpha(theme.palette.indigo[500], 0.1)}`,
                   }}
                 >
                   <Stack

@@ -21,5 +21,5 @@ export const getHumanizedTime = (minutes: number) => {
   if (timeDuration.asHours() >= 1) {
     return `${Math.floor(timeDuration.asHours())}h`;
   }
-  return minutes;
+  return `${minutes}m`;
 };
