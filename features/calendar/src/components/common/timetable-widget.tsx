@@ -12,7 +12,6 @@ import {
   TableContainer,
   Divider,
   alpha,
-  Tooltip,
 } from '@mui/material';
 import {
   ChevronLeftIcon,
@@ -30,7 +29,7 @@ import {
   CalendarEventAttendeeType,
   CalendarGridPeriodType,
   Calendar_TagContext,
-  SchoolDayType,
+  DayType,
   usePermissions,
   useUser,
 } from '@tyro/api';
@@ -38,7 +37,6 @@ import {
   DateDropdownPicker,
   getClassesFromObject,
   LoadingPlaceholderContainer,
-  usePreferredNameLayout,
 } from '@tyro/core';
 import { usePartyTimetable } from '../../api/timetable';
 import { useTimetableInPeriods } from '../../hooks/use-timetable-in-periods';
@@ -55,9 +53,9 @@ interface TimetableWidgetProps {
 }
 
 function TimetableNonSchoolState({
-  schoolDayType = SchoolDayType.NonSchoolDay,
+  schoolDayType = DayType.Holiday,
 }: {
-  schoolDayType?: SchoolDayType.NonSchoolDay | SchoolDayType.PublicHoliday;
+  schoolDayType?: DayType.Holiday | DayType.StaffDay;
 }) {
   const { t } = useTranslation(['calendar']);
 
@@ -75,7 +73,7 @@ function TimetableNonSchoolState({
         🌤
       </Typography>
       <Typography variant="body1" component="span" color="text.secondary">
-        {t(`calendar:schoolDayType.${schoolDayType}`)}
+        {t(`calendar:dayType.${schoolDayType}`)}
       </Typography>
     </Stack>
   );
@@ -172,8 +170,8 @@ export function TimetableWidget({
         }}
       >
         <LoadingPlaceholderContainer isLoading={isLoading}>
-          {dayInfo.dayType === SchoolDayType.SchoolDay ||
-          dayInfo.dayType === SchoolDayType.Partial ? (
+          {dayInfo.dayType === DayType.SchoolDay ||
+          dayInfo.dayType === DayType.Partial ? (
             <TableContainer>
               <Table
                 size="small"

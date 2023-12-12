@@ -2,14 +2,14 @@ import { useTranslation } from '@tyro/i18n';
 import { ActionMenu, useDisclosure, useToast } from '@tyro/core';
 import {
   EyeIcon,
+  CommentIcon,
   EditIcon,
   StopIcon,
   CheckmarkCircleIcon,
   VerticalDotsIcon,
-  CommentIcon,
   EditCalendarIcon,
 } from '@tyro/icons';
-import { AssessmentType } from '@tyro/api';
+import { AssessmentType, useAcademicNamespace } from '@tyro/api';
 import { getAssessmentSubjectGroupsLink } from '../../utils/get-assessment-subject-groups-link';
 import { PublishAssessmentModal } from './publish-assessment-modal';
 import {
@@ -35,6 +35,9 @@ export const AssessmentActionMenu = ({
   const { t } = useTranslation(['assessments']);
   const { toast } = useToast();
   const { isOpen, onClose, onOpen } = useDisclosure();
+  const { activeAcademicNamespace } = useAcademicNamespace();
+  const disableEdit =
+    academicNamespaceId !== activeAcademicNamespace?.academicNamespaceId;
 
   const assessmentPath = getAssessmentSubjectGroupsLink(
     id,
@@ -58,6 +61,8 @@ export const AssessmentActionMenu = ({
     );
   };
 
+  const isTermAssessment = assessmentType === AssessmentType.Term;
+
   return (
     <>
       <ActionMenu
@@ -75,30 +80,33 @@ export const AssessmentActionMenu = ({
                   {
                     label: t('assessments:actions.edit'),
                     icon: <EditIcon />,
+                    disabled: disableEdit,
+                    disabledTooltip: disableEdit
+                      ? t('assessments:editAssessmentsToolTip')
+                      : undefined,
                     navigateTo: `${assessmentPath}/edit`,
                   },
-                  ...(canEnterOverallComments
-                    ? [
-                        {
-                          label: t('assessments:actions.makeOverallComments'),
-                          icon: <CommentIcon />,
-                          hasAccess: () =>
-                            assessmentType === AssessmentType.Term,
-                          navigateTo: `${assessmentPath}/overall-comments`,
-                        },
-                      ]
-                    : []),
+                  {
+                    label: t('assessments:actions.makeOverallComments'),
+                    icon: <CommentIcon />,
+                    hasAccess: () =>
+                      isTermAssessment && canEnterOverallComments,
+                    navigateTo: `${assessmentPath}/overall-comments`,
+                  },
                 ],
+
                 publishedFrom
                   ? [
                       {
                         label: t('assessments:actions.editPublishDate'),
                         icon: <EditCalendarIcon />,
+                        hasAccess: () => isTermAssessment,
                         onClick: onOpen,
                       },
                       {
                         label: t('assessments:actions.unpublish'),
                         icon: <StopIcon />,
+                        hasAccess: () => isTermAssessment,
                         onClick: unpublishAssessment,
                       },
                     ]
@@ -106,6 +114,7 @@ export const AssessmentActionMenu = ({
                       {
                         label: t('assessments:actions.publish'),
                         icon: <CheckmarkCircleIcon />,
+                        hasAccess: () => isTermAssessment,
                         onClick: onOpen,
                       },
                     ],
