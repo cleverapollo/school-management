@@ -15,12 +15,13 @@ import { DiscountType } from '@tyro/api';
 import { useForm } from 'react-hook-form';
 import { useEffect } from 'react';
 import { useSaveDiscount } from '../../api/save-discount';
+import { ReturnTypeFromUseDiscounts } from '../../api/discounts';
 
 type DiscountFormState = {
   name: string;
-  description: string;
+  description?: string | null;
   discountType: DiscountType;
-  siblingDiscount: boolean;
+  siblingDiscount?: boolean | null;
   value: number;
 };
 
@@ -31,7 +32,7 @@ const discountTypeAdornment = {
 
 export type UpsertDiscountModalProps = {
   open: boolean;
-  value: Partial<DiscountFormState> | null;
+  value: Partial<ReturnTypeFromUseDiscounts> | null;
   onClose: () => void;
 };
 

@@ -9,13 +9,14 @@ import {
   ReturnTypeDisplayName,
   usePreferredNameLayout,
   useDebouncedValue,
+  ActionMenu,
 } from '@tyro/core';
 import { TFunction, useTranslation, useFormatNumber } from '@tyro/i18n';
-import { useMemo } from 'react';
+import { Dispatch, SetStateAction, useMemo } from 'react';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Box, Button } from '@mui/material';
-import { AddIcon } from '@tyro/icons';
+import { AddIcon, EditIcon, VerticalDotsIcon } from '@tyro/icons';
 import { DiscountType } from '@tyro/api';
 import { ReturnTypeFromUseDiscounts, useDiscounts } from '../api/discounts';
 import {
@@ -28,7 +29,8 @@ dayjs.extend(LocalizedFormat);
 const getColumnDefs = (
   t: TFunction<('fees' | 'common')[]>,
   displayName: ReturnTypeDisplayName,
-  formatCurrency: ReturnType<typeof useFormatNumber>['formatCurrency']
+  formatCurrency: ReturnType<typeof useFormatNumber>['formatCurrency'],
+  onClickEdit: Dispatch<SetStateAction<UpsertDiscountModalProps['value']>>
 ): GridOptions<ReturnTypeFromUseDiscounts>['columnDefs'] => [
   {
     field: 'name',
@@ -37,6 +39,7 @@ const getColumnDefs = (
   {
     field: 'description',
     headerName: t('common:description'),
+    valueFormatter: ({ data }) => data?.description || '-',
   },
   {
     field: 'discountType',
@@ -87,6 +90,23 @@ const getColumnDefs = (
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseDiscounts>) =>
       data?.createdBy ? <TablePersonAvatar person={data?.createdBy} /> : '-',
   },
+  {
+    suppressColumnsToolPanel: true,
+    cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseDiscounts>) =>
+      data && (
+        <ActionMenu
+          iconOnly
+          buttonIcon={<VerticalDotsIcon />}
+          menuItems={[
+            {
+              label: t('common:actions.edit'),
+              icon: <EditIcon />,
+              onClick: () => onClickEdit(data),
+            },
+          ]}
+        />
+      ),
+  },
 ];
 
 export default function DiscountsPage() {
@@ -106,8 +126,8 @@ export default function DiscountsPage() {
   });
 
   const columnDefs = useMemo(
-    () => getColumnDefs(t, displayName, formatCurrency),
-    [t, displayName, formatCurrency]
+    () => getColumnDefs(t, displayName, formatCurrency, setDiscount),
+    [t, displayName, formatCurrency, setDiscount]
   );
 
   return (
@@ -134,7 +154,7 @@ export default function DiscountsPage() {
       />
       <UpsertDiscountModal
         open={!!discount}
-        value={debouncedDiscount}
+        value={discount || debouncedDiscount}
         onClose={() => setDiscount(null)}
       />
     </PageContainer>
