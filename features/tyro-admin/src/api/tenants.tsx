@@ -8,6 +8,7 @@ const adminTenants = graphql(/* GraphQL */ `
       tenant
       name
       imgUrl
+      liveSchool
     }
   }
 `);
