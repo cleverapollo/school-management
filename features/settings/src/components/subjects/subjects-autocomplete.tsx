@@ -6,7 +6,7 @@ import {
   RHFAutocompleteProps,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { useMemo } from 'react';
+import { Chip } from '@mui/material';
 import {
   CatalogueSubjectOption,
   useCatalogueSubjects,
@@ -34,8 +34,6 @@ export const RHFSubjectAutocomplete = <TField extends FieldValues>(
   const { t } = useTranslation(['common']);
   const { data: subjectsData, isLoading } = useCatalogueSubjects();
 
-
-  // @ts-ignore
   return (
     <RHFAutocomplete<TField, CatalogueSubjectOption>
       label={t('common:subject')}
@@ -43,7 +41,20 @@ export const RHFSubjectAutocomplete = <TField extends FieldValues>(
       fullWidth
       optionIdKey="id"
       optionTextKey="name"
-      getOptionLabel={(option) => `${option.name} (${option?.nationalCode ?? "-"})`}
+      getOptionLabel={(option) =>
+        `${option.name} (${option?.nationalCode ?? '-'})`
+      }
+      renderTags={(tags, getTagProps) =>
+        tags.map((tag, index) => (
+          <Chip
+            size="small"
+            variant="soft"
+            color={tag?.colour || 'primary'}
+            label={tag.name}
+            {...getTagProps({ index })}
+          />
+        ))
+      }
       loading={isLoading}
       options={subjectsData ?? []}
     />
@@ -54,13 +65,25 @@ export const SubjectAutocomplete = (props: SubjectAutocompleteProps) => {
   const { t } = useTranslation(['common']);
   const { data: subjectsData, isLoading } = useCatalogueSubjects();
 
-  // @ts-ignore
   return (
     <Autocomplete
-      label={t('common:year')}
+      label={t('common:subject')}
       fullWidth
       optionIdKey="id"
-      getOptionLabel={(option) => `${option.name} (${option?.nationalCode ?? "-"})`}
+      getOptionLabel={(option) =>
+        `${option.name} (${option?.nationalCode ?? '-'})`
+      }
+      renderTags={(tags, getTagProps) =>
+        tags.map((tag, index) => (
+          <Chip
+            size="small"
+            variant="soft"
+            color={tag?.colour || 'primary'}
+            label={tag.name}
+            {...getTagProps({ index })}
+          />
+        ))
+      }
       loading={isLoading}
       options={subjectsData ?? []}
     />

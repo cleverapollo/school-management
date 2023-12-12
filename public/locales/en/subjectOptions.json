@@ -5,5 +5,11 @@
   "subjectSetup": "Subject setup",
   "atLeastOneSubjectPoolRequired": "At least one subject pool is required",
   "poolN": "Pool {{number}}",
-  "addSubjectPool": "Add subject pool"
+  "addSubjectPool": "Add subject pool",
+  "canChooseLabel": "How many preferences (including reserves) can students choose?",
+  "mustGetLabel": "How many preferences will a student get?",
+  "mustGetCannotBeGreaterThanCanChoose": "How many preferences a student will get cannot be greater than how many they can choose",
+  "mustSelectAtLeastOneSubject": "You must select at least one subject",
+  "whatYearAreStudentsGoingInto": "What year are students going into?",
+  "academicYearToTakeStudentsFrom": "Academic year to take students from"
 }

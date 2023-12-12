@@ -9,7 +9,12 @@ import {
   ResolverOptions,
 } from 'react-hook-form';
 import { toNestErrors, validateFieldsNatively } from '@hookform/resolvers';
-import { ValidationError, ValidationType, validations } from '../utils';
+import {
+  ValidationError,
+  ValidationType,
+  validations,
+  flattenObject,
+} from '../utils';
 
 type ErrorMessages = Partial<Record<ValidationType, string>>;
 type TranslateFn = TFunction<'common'[], undefined, 'common'[]>;
@@ -93,6 +98,15 @@ class Rules<TField extends FieldValues> {
 
     return (value: FieldValue<TField>) => {
       validations.maxLength(value, maxLength, errorMessage);
+    };
+  }
+
+  isNumber(customMsg?: string) {
+    const errorMessage =
+      customMsg ?? this._t('common:errorMessages.invalidNumber');
+
+    return (value: FieldValue<TField>) => {
+      validations.isNumber(value, errorMessage);
     };
   }
 
@@ -259,9 +273,13 @@ export const useFormValidator = <TField extends FieldValues>(): {
       }, {} as FieldErrors);
 
       if (Object.keys(errors).length > 0) {
+        const flattenedErrors = flattenObject(
+          errors
+        ) as unknown as FieldErrors<FieldValues>;
+
         return {
           values: {},
-          errors: toNestErrors(errors, options),
+          errors: toNestErrors(flattenedErrors, options),
         };
       }
 

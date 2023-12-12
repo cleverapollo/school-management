@@ -1,4 +1,4 @@
-import { RHFSelect, SelectProps } from '@tyro/core';
+import { RHFSelect } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useAcademicNamespace } from '@tyro/api';
 import { FieldValues, UseControllerProps } from 'react-hook-form';
@@ -6,10 +6,12 @@ import { useMemo } from 'react';
 
 export type AcademicYearSelectProps<TField extends FieldValues> = {
   controlProps: UseControllerProps<TField>;
+  label?: string;
 };
 
 export const AcademicYearSelect = <TField extends FieldValues>({
   controlProps,
+  ...selectProps
 }: AcademicYearSelectProps<TField>) => {
   const { t } = useTranslation(['common']);
 
@@ -30,10 +32,11 @@ export const AcademicYearSelect = <TField extends FieldValues>({
     <RHFSelect
       label={t('common:academicYear')}
       controlProps={controlProps}
-      optionIdKey="id"
+      {...selectProps}
       options={options}
-      fullWidth
+      optionIdKey="id"
       getOptionLabel={(option) => option.name}
+      fullWidth
     />
   );
 };
