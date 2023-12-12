@@ -5667,6 +5667,7 @@ export type SearchFilter = {
   context?: InputMaybe<Array<InputMaybe<Context>>>;
   /**  optional filter to include only certain types of results */
   includeSearchType?: InputMaybe<Array<SearchType>>;
+  source?: InputMaybe<SearchSource>;
   text?: InputMaybe<Scalars['String']>;
 };
 
@@ -5675,6 +5676,11 @@ export type SearchMeta = {
   groupType?: Maybe<GeneralGroupType>;
   studentPartyId?: Maybe<Scalars['Long']>;
 };
+
+export enum SearchSource {
+  Dropdown = 'DROPDOWN',
+  TopLevel = 'TOP_LEVEL'
+}
 
 export enum SearchType {
   Contact = 'CONTACT',
