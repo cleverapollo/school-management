@@ -1,13 +1,15 @@
 import { Card, IconButton, Stack, Typography, Box, Chip } from '@mui/material';
-import { FullScreenIcon } from '@tyro/icons';
+import Grid from '@mui/material/Unstable_Grid2';
+import { FullScreenIcon, ClockIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import { useTranslation } from '@tyro/i18n';
 import { Link } from 'react-router-dom';
-import { LoadingPlaceholderContainer } from '@tyro/core';
-import { Colour } from '@tyro/api';
+import { LoadingPlaceholderContainer, getNumber } from '@tyro/core';
+import { Colour, useUser } from '@tyro/api';
 import { useMemo } from 'react';
 import { useRunReports } from '../../api/run-report';
 import { getReportUrl, Report } from '../../utils/get-report-url';
+import { getHumanizedTime } from '../../utils/get-duration-time';
 
 type ReportColumnValue = {
   value: string;
@@ -21,10 +23,13 @@ type OverdueAttendanceData = {
   overdue_by_mins: ReportColumnValue;
   subject_group_name: ReportColumnValue;
   subject_name_1: ReportColumnValue;
+  calendar_room_name: ReportColumnValue;
 }[];
 
 export function OverdueAttendanceWidget() {
   const { t } = useTranslation(['common', 'reports']);
+  const { user } = useUser();
+  const partyId = getNumber(user?.profiles?.[0]?.partyId);
   const toDate = dayjs();
   const fromDate = toDate.subtract(10, 'day');
 
@@ -41,6 +46,10 @@ export function OverdueAttendanceWidget() {
           filterId: 'to_date',
           filterValue: toDate.format('YYYY-MM-DD'),
         },
+        {
+          filterId: 'staff',
+          filterValue: partyId ? [partyId] : [],
+        },
       ],
     },
   });
@@ -54,6 +63,7 @@ export function OverdueAttendanceWidget() {
       overdueByMins: overdueAttendance.overdue_by_mins.value,
       subjectGroupName: overdueAttendance.subject_group_name.value,
       subjectName: overdueAttendance.subject_name_1.value,
+      calendarRoomName: overdueAttendance.calendar_room_name.value,
     }));
   }, [data]);
 
@@ -82,6 +92,7 @@ export function OverdueAttendanceWidget() {
               filters: {
                 from_date: fromDate,
                 to_date: toDate,
+                staff: partyId ? [partyId] : [],
               },
             })}
           >
@@ -121,92 +132,105 @@ export function OverdueAttendanceWidget() {
           </LoadingPlaceholderContainer>
         </Card>
       ) : (
-        <Stack spacing={1.25}>
+        <Grid container rowGap={1.45} columnSpacing={1.25}>
           {overdueAttendances.map(
-            ({ id, colour, overdueByMins, subjectGroupName, subjectName }) => (
-              <Box
-                key={id}
-                sx={{
-                  backgroundColor: 'white',
-                  borderRadius: 0.75,
-                  width: 240,
-                  userSelect: 'none',
-                }}
-                role="button"
-                tabIndex={0}
-              >
-                <Stack
-                  direction="row"
+            ({
+              id,
+              colour,
+              overdueByMins,
+              subjectGroupName,
+              subjectName,
+              calendarRoomName,
+            }) => (
+              <Grid key={id} xs={6}>
+                <Box
                   sx={{
-                    alignItems: 'stretch',
-                    height: '100%',
-                    p: 0.75,
-                    pr: 1.25,
+                    backgroundColor: 'white',
+                    borderRadius: 2,
+                    userSelect: 'none',
+                    boxShadow: '0 1px 6px 0px #6366F11A',
                   }}
                 >
-                  <Box
+                  <Stack
+                    direction="row"
                     sx={{
-                      width: 3,
-                      borderRadius: 1.5,
-                      backgroundColor: `${colour}.main`,
-                      mr: 0.75,
+                      alignItems: 'stretch',
+                      height: '100%',
+                      py: 1.75,
+                      pl: 1.5,
+                      pr: 2,
                     }}
-                  />
-                  <Stack sx={{ overflow: 'hidden', flex: 1 }}>
-                    <Stack
-                      direction="row"
-                      justifyContent="space-between"
-                      alignItems="center"
-                      spacing={1}
-                    >
-                      <Typography variant="subtitle2" noWrap sx={{ flex: 1 }}>
-                        {subjectGroupName}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        component="span"
-                        fontWeight={500}
-                        color="slate.500"
+                  >
+                    <Box
+                      sx={{
+                        width: 6,
+                        borderRadius: 3,
+                        backgroundColor: `${colour}.main`,
+                        mr: 0.75,
+                      }}
+                    />
+                    <Stack flex={1} sx={{ maxWidth: 'calc(100% - 12px)' }}>
+                      <Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={1}
                       >
-                        {/* TODO: replace with real value */}
-                        rm. 201
-                      </Typography>
-                    </Stack>
-                    <Stack
-                      direction="row"
-                      justifyContent="space-between"
-                      alignItems="center"
-                      spacing={1}
-                    >
-                      <Chip
-                        size="small"
-                        variant="soft"
-                        color={colour}
-                        label={subjectName}
-                        sx={{
-                          borderRadius: 0.75,
-                          fontWeight: 600,
-                          fontSize: '0.75rem',
-                        }}
-                      />
-                      <Chip
-                        size="small"
-                        variant="soft"
-                        color="rose"
-                        label={overdueByMins}
-                        sx={{
-                          borderRadius: 0.75,
-                          fontWeight: 600,
-                          fontSize: '0.75rem',
-                        }}
-                      />
+                        <Typography variant="subtitle2" noWrap sx={{ flex: 1 }}>
+                          {subjectGroupName}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          component="span"
+                          fontWeight={500}
+                          color="slate.500"
+                        >
+                          {t('reports:roomX', { name: calendarRoomName })}
+                        </Typography>
+                      </Stack>
+                      <Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={1}
+                      >
+                        <Stack maxWidth="50%">
+                          <Chip
+                            size="small"
+                            variant="soft"
+                            color={colour}
+                            label={subjectName}
+                            sx={{
+                              fontWeight: 600,
+                              fontSize: '0.75rem',
+                            }}
+                          />
+                        </Stack>
+                        <Stack>
+                          <Chip
+                            size="small"
+                            variant="soft"
+                            color="rose"
+                            icon={
+                              <ClockIcon
+                                sx={{ transform: 'rotateY(180deg)' }}
+                              />
+                            }
+                            label={getHumanizedTime(parseInt(overdueByMins))}
+                            sx={{
+                              fontWeight: 600,
+                              fontSize: '0.75rem',
+                            }}
+                          />
+                        </Stack>
+                      </Stack>
                     </Stack>
                   </Stack>
-                </Stack>
-              </Box>
+                </Box>
+              </Grid>
             )
           )}
-        </Stack>
+        </Grid>
       )}
     </Card>
   );

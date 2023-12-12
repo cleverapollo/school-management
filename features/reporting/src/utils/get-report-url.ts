@@ -58,6 +58,7 @@ type Options =
       filters?: {
         to_date?: dayjs.Dayjs;
         from_date?: dayjs.Dayjs;
+        staff?: Array<number>;
       };
     }
   | {
