@@ -16,5 +16,7 @@
   "attendanceByStaff": "Attendance by <2>{{attendanceBy}}</2>",
   "grouping": "Grouping",
   "timeGrouping": "Time grouping",
-  "stats": "Stats"
+  "stats": "Stats",
+  "overdueAttendance": "Overdue Attendance",
+  "noOverdueAttendanceToday": "No overdue attendance today"
 }
