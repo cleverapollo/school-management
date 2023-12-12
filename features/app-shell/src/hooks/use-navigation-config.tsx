@@ -120,6 +120,13 @@ export function useNavigationConfig() {
 
     // 1. Combine the root groups under the same subheader
     const combinedNavCategories = navCategories.reduce((acc, navCategory) => {
+      if (
+        typeof navCategory.hasAccess === 'function' &&
+        !navCategory.hasAccess(permissions)
+      ) {
+        return acc;
+      }
+
       const subheader = navCategory.title;
       const rootGroups = navCategory.children;
 
