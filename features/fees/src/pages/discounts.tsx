@@ -8,9 +8,10 @@ import {
   TablePersonAvatar,
   ReturnTypeDisplayName,
   usePreferredNameLayout,
+  useDebouncedValue,
 } from '@tyro/core';
 import { TFunction, useTranslation, useFormatNumber } from '@tyro/i18n';
-import { useDeferredValue, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Box, Button } from '@mui/material';
@@ -88,8 +89,6 @@ const getColumnDefs = (
   },
 ];
 
-type DiscountValue = UpsertDiscountModalProps['value'];
-
 export default function DiscountsPage() {
   const { t } = useTranslation(['common', 'navigation', 'fees']);
 
@@ -98,8 +97,13 @@ export default function DiscountsPage() {
 
   const { data: discountsData } = useDiscounts({});
 
-  const [discount, setDiscount] = useState<DiscountValue>(null);
-  const deferredDiscount = useDeferredValue(discount);
+  const {
+    value: discount,
+    debouncedValue: debouncedDiscount,
+    setValue: setDiscount,
+  } = useDebouncedValue<UpsertDiscountModalProps['value']>({
+    defaultValue: null,
+  });
 
   const columnDefs = useMemo(
     () => getColumnDefs(t, displayName, formatCurrency),
@@ -129,8 +133,8 @@ export default function DiscountsPage() {
         getRowId={({ data }) => String(data?.id)}
       />
       <UpsertDiscountModal
-        value={discount}
-        open={!!deferredDiscount}
+        open={!!discount}
+        value={debouncedDiscount}
         onClose={() => setDiscount(null)}
       />
     </PageContainer>

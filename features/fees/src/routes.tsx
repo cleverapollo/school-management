@@ -1,5 +1,6 @@
 import { lazyWithRetry, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { WalletWithMoneyIcon } from '@tyro/icons';
+import { getDiscounts } from './api/discounts';
 import { stripeAccountGuard } from './utils/stripe-account-guard';
 
 const ContactDashboard = lazyWithRetry(
@@ -53,7 +54,10 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'discounts',
             title: t('navigation:management.fees.discounts'),
-            loader: stripeAccountGuard,
+            loader: async () => {
+              const redirect = await stripeAccountGuard();
+              return redirect || getDiscounts({});
+            },
             element: <DiscountsPage />,
           },
         ],
