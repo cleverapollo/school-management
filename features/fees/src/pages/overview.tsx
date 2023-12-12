@@ -1,16 +1,18 @@
 import {
+  ActionMenu,
   GridOptions,
+  ICellRendererParams,
   PageContainer,
   PageHeading,
   Table,
   useDebouncedValue,
 } from '@tyro/core';
 import { TFunction, useTranslation, useFormatNumber } from '@tyro/i18n';
-import { useMemo } from 'react';
+import { Dispatch, SetStateAction, useMemo } from 'react';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Box, Button } from '@mui/material';
-import { AddIcon } from '@tyro/icons';
+import { AddIcon, EditIcon, VerticalDotsIcon } from '@tyro/icons';
 import { ReturnTypeFromUseFees, useFees } from '../api/fees';
 import {
   UpsertFeeModal,
@@ -21,7 +23,8 @@ dayjs.extend(LocalizedFormat);
 
 const getColumnDefs = (
   t: TFunction<('fees' | 'common')[]>,
-  formatCurrency: ReturnType<typeof useFormatNumber>['formatCurrency']
+  formatCurrency: ReturnType<typeof useFormatNumber>['formatCurrency'],
+  onClickEdit: Dispatch<SetStateAction<UpsertFeeModalProps['value']>>
 ): GridOptions<ReturnTypeFromUseFees>['columnDefs'] => [
   {
     field: 'name',
@@ -47,6 +50,23 @@ const getColumnDefs = (
       return formatCurrency(amount);
     },
   },
+  {
+    suppressColumnsToolPanel: true,
+    cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFees>) =>
+      data && (
+        <ActionMenu
+          iconOnly
+          buttonIcon={<VerticalDotsIcon />}
+          menuItems={[
+            {
+              label: t('common:actions.edit'),
+              icon: <EditIcon />,
+              onClick: () => onClickEdit(data),
+            },
+          ]}
+        />
+      ),
+  },
 ];
 
 export default function OverviewPage() {
@@ -64,8 +84,8 @@ export default function OverviewPage() {
   });
 
   const columnDefs = useMemo(
-    () => getColumnDefs(t, formatCurrency),
-    [t, formatCurrency]
+    () => getColumnDefs(t, formatCurrency, setFee),
+    [t, formatCurrency, setFee]
   );
 
   return (
@@ -92,7 +112,7 @@ export default function OverviewPage() {
       />
       <UpsertFeeModal
         open={!!fee}
-        value={debouncedFee}
+        value={fee || debouncedFee}
         onClose={() => setFee(null)}
       />
     </PageContainer>

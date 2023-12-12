@@ -17,6 +17,7 @@ import { useForm } from 'react-hook-form';
 import { useEffect } from 'react';
 import dayjs from 'dayjs';
 import { useSaveFee } from '../../api/save-fees';
+import { ReturnTypeFromUseFees } from '../../api/fees';
 
 type FeeFormState = {
   name: string;
@@ -28,7 +29,7 @@ type FeeFormState = {
 
 export type UpsertFeeModalProps = {
   open: boolean;
-  value: Partial<FeeFormState> | null;
+  value: Partial<ReturnTypeFromUseFees> | null;
   onClose: () => void;
 };
 
@@ -62,7 +63,8 @@ export function UpsertFeeModal({ open, value, onClose }: UpsertFeeModalProps) {
   );
 
   useEffect(() => {
-    reset({ ...value });
+    const { dueDate } = value || {};
+    reset({ ...value, dueDate: dueDate ? dayjs(dueDate) : undefined });
   }, [value]);
 
   return (

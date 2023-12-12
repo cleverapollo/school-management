@@ -16,6 +16,7 @@ const fees = graphql(/* GraphQL */ `
       dueDate
       amount
       feeType
+      absorbFees
     }
   }
 `);
