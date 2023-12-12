@@ -1,6 +1,5 @@
 import { lazyWithRetry, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { WalletWithMoneyIcon } from '@tyro/icons';
-import { getStripeAccount } from './api/stripe-accounts';
 import { stripeAccountGuard } from './utils/stripe-account-guard';
 
 const ContactDashboard = lazyWithRetry(
@@ -9,6 +8,7 @@ const ContactDashboard = lazyWithRetry(
 
 const DiscountsPage = lazyWithRetry(() => import('./pages/discounts'));
 const SetupPage = lazyWithRetry(() => import('./pages/setup'));
+const OverviewPage = lazyWithRetry(() => import('./pages/overview'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   // {
@@ -47,6 +47,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'overview',
             title: t('navigation:management.fees.overview'),
             loader: stripeAccountGuard,
+            element: <OverviewPage />,
           },
           {
             type: NavObjectType.MenuLink,
