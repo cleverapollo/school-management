@@ -3576,6 +3576,7 @@ export type Option = {
   studentPartyIds?: Maybe<Array<Scalars['Long']>>;
   /** deep linked */
   students?: Maybe<Array<Person>>;
+  subjectSetIds?: Maybe<Array<OptionsId>>;
   /** deep linked */
   subjectSets: Array<OptionSubjectSet>;
   /** deep linked */
@@ -3585,7 +3586,7 @@ export type Option = {
 
 export type OptionFilter = {
   academicNameSpaceId?: InputMaybe<Scalars['Int']>;
-  ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 export type OptionSubjectSet = {
@@ -4008,7 +4009,7 @@ export type PhoneNumber = {
 };
 
 export type PreferencesFilter = {
-  optionId?: InputMaybe<Scalars['Long']>;
+  optionId?: InputMaybe<Scalars['Int']>;
   studentPartyId?: InputMaybe<Scalars['Long']>;
 };
 
@@ -4036,13 +4037,40 @@ export type PrimarySchoolIreFilter = {
 };
 
 export type Print_GroupMembers = {
+  fields?: InputMaybe<Array<InputMaybe<Print_GroupMembersFields>>>;
   groupIds: Array<Scalars['Long']>;
   options: Print_GroupMembersOptions;
+  orientation?: InputMaybe<Print_Orientation>;
+  sorting?: InputMaybe<Print_NameSorting>;
 };
+
+export enum Print_GroupMembersFields {
+  ClassGroup = 'CLASS_GROUP',
+  RowNumber = 'ROW_NUMBER',
+  SchoolRollNo = 'SCHOOL_ROLL_NO',
+  StudentDepartmentId = 'STUDENT_DEPARTMENT_ID',
+  StudentId = 'STUDENT_ID',
+  StudentName = 'STUDENT_NAME',
+  StudyLevel = 'STUDY_LEVEL',
+  Subject = 'SUBJECT',
+  SubjectCode = 'SUBJECT_CODE',
+  Teacher = 'TEACHER',
+  TeacherId = 'TEACHER_ID'
+}
 
 export enum Print_GroupMembersOptions {
   Csv = 'CSV',
   Print = 'PRINT'
+}
+
+export enum Print_NameSorting {
+  FirstNameLastName = 'FIRST_NAME_LAST_NAME',
+  LastNameFirstName = 'LAST_NAME_FIRST_NAME'
+}
+
+export enum Print_Orientation {
+  Horizontal = 'HORIZONTAL',
+  Vertical = 'VERTICAL'
 }
 
 export type Print_PersonsGroupMemberships = {
@@ -5434,17 +5462,26 @@ export type Swm_UpsertSubstitutionEvent = {
   substitutionTypeId: Scalars['Int'];
 };
 
+export enum Sa_CancelationStatus {
+  All = 'ALL',
+  Canceled = 'CANCELED',
+  NotCanceled = 'NOT_CANCELED'
+}
+
 export type Sa_ClassAway = {
   __typename?: 'Sa_ClassAway';
   affectedAttendees: Array<Maybe<Party>>;
+  cancelled: Scalars['Boolean'];
   event: CalendarEvent;
   freeStaff: Array<Maybe<Person>>;
   freeStaffPartyIds: Array<Maybe<Scalars['Long']>>;
+  staffAreFreed: Scalars['Boolean'];
   studentsAttendingActivityTotal: Scalars['Int'];
   studentsInGroupTotal: Scalars['Int'];
 };
 
 export type Sa_ClassAwayFilter = {
+  cancelationStatus?: InputMaybe<Sa_CancelationStatus>;
   schoolActivityId: Scalars['Int'];
 };
 
@@ -5477,12 +5514,14 @@ export type Sa_SchoolActivity = {
   customGroup?: Maybe<GeneralGroup>;
   customGroupId?: Maybe<Scalars['Long']>;
   dates: Array<Sa_SchoolActivityDate>;
+  lastPublished?: Maybe<Scalars['DateTime']>;
   location: Sa_SchoolActivityLocation;
   name?: Maybe<Scalars['String']>;
   notes?: Maybe<Scalars['String']>;
   published: Scalars['Boolean'];
   schoolActivityId: Scalars['Int'];
   tripPurpose?: Maybe<Scalars['String']>;
+  unavailabilityIds: Array<Scalars['Long']>;
 };
 
 export type Sa_SchoolActivityApproval = {
@@ -5524,9 +5563,9 @@ export type Sa_SchoolActivityInput = {
 };
 
 export type Sa_SchoolActivityInputCreateGroup = {
-  organiserIds: Array<Scalars['Long']>;
-  staffIds: Array<Scalars['Long']>;
-  studentIds: Array<Scalars['Long']>;
+  organiserIds?: InputMaybe<Array<Scalars['Long']>>;
+  staffIds?: InputMaybe<Array<Scalars['Long']>>;
+  studentIds?: InputMaybe<Array<Scalars['Long']>>;
 };
 
 export type Sa_SchoolActivityInputGroup = {
@@ -5723,8 +5762,7 @@ export type SaveNotificationTemplateInput = {
 };
 
 export type SaveOptions = {
-  academicNamespaceId: Scalars['Int'];
-  id: Scalars['Int'];
+  id?: InputMaybe<Scalars['Int']>;
   name: Scalars['String'];
   prefix?: InputMaybe<Scalars['String']>;
   publishToParents: Scalars['Boolean'];
@@ -5834,6 +5872,14 @@ export type SaveStateCbaAssessmentInput = {
   stateCbaType?: InputMaybe<StateCbaType>;
   subjectGroupIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   yearId: Scalars['Int'];
+};
+
+export type SaveStudentPreference = {
+  optionId: Scalars['Int'];
+  preferenceIdx: Scalars['Int'];
+  studentPartyId: Scalars['Long'];
+  subjectId: Scalars['Int'];
+  subjectSetIdx: Scalars['Int'];
 };
 
 export type SaveStudentSessionAttendanceInput = {
@@ -5953,6 +5999,14 @@ export type SaveStudentSupportPlanTargetInput = {
   target: Scalars['String'];
 };
 
+export type SaveSubjectSet = {
+  canChoose: Scalars['Int'];
+  idx?: InputMaybe<Scalars['Int']>;
+  mustGet: Scalars['Int'];
+  poolIdx?: InputMaybe<Scalars['Int']>;
+  subjectIds: Array<Scalars['Int']>;
+};
+
 export type SaveTermAssessmentInput = {
   assessmentType: AssessmentType;
   captureHouseMasterComment?: InputMaybe<Scalars['Boolean']>;
@@ -6064,6 +6118,7 @@ export type SearchFilter = {
   context?: InputMaybe<Array<InputMaybe<Context>>>;
   /**  optional filter to include only certain types of results */
   includeSearchType?: InputMaybe<Array<SearchType>>;
+  source?: InputMaybe<SearchSource>;
   text?: InputMaybe<Scalars['String']>;
 };
 
@@ -6072,6 +6127,11 @@ export type SearchMeta = {
   groupType?: Maybe<GeneralGroupType>;
   studentPartyId?: Maybe<Scalars['Long']>;
 };
+
+export enum SearchSource {
+  Dropdown = 'DROPDOWN',
+  TopLevel = 'TOP_LEVEL'
+}
 
 export enum SearchType {
   Contact = 'CONTACT',
@@ -6421,6 +6481,13 @@ export enum StateCbaType {
   Cba_1 = 'CBA_1',
   Cba_2 = 'CBA_2'
 }
+
+export type StripeAccount = {
+  __typename?: 'StripeAccount';
+  onboardingComplete: Scalars['Boolean'];
+  onboardingLink?: Maybe<Scalars['String']>;
+  signUpStarted: Scalars['Boolean'];
+};
 
 export type Student = Party & PartyPerson & {
   __typename?: 'Student';
@@ -6972,6 +7039,10 @@ export enum SubjectGroupType {
   SubjectGroup = 'SUBJECT_GROUP',
   SupportGroup = 'SUPPORT_GROUP'
 }
+
+export type SubjectSetFilter = {
+  optionId: Scalars['Int'];
+};
 
 export enum SubjectSource {
   Custom = 'CUSTOM',
