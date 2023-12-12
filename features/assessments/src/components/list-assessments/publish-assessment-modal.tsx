@@ -143,7 +143,7 @@ export function PublishAssessmentModal({
         </Button>
         <LoadingButton
           variant="contained"
-          loading={isTermAssessment ? isSubmitting : isSubmittingStateCba}
+          loading={isSubmitting || isSubmittingStateCba}
           onClick={onSubmit}
         >
           {t('assessments:publish')}

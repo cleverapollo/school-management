@@ -136,13 +136,11 @@ export const AssessmentActionMenu = ({
                       {
                         label: t('assessments:actions.editPublishDate'),
                         icon: <EditCalendarIcon />,
-                        // hasAccess: () => isTermAssessment,
                         onClick: onOpen,
                       },
                       {
                         label: t('assessments:actions.unpublish'),
                         icon: <StopIcon />,
-                        // hasAccess: () => isTermAssessment,
                         onClick: unpublishAssessment,
                       },
                     ]
@@ -150,7 +148,6 @@ export const AssessmentActionMenu = ({
                       {
                         label: t('assessments:actions.publish'),
                         icon: <CheckmarkCircleIcon />,
-                        // hasAccess: () => isTermAssessment,
                         onClick: onOpen,
                       },
                     ],

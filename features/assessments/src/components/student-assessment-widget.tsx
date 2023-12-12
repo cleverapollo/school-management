@@ -1,5 +1,4 @@
 import {
-  Box,
   Card,
   IconButton,
   Stack,
@@ -14,7 +13,7 @@ import {
 import { ChevronLeftIcon, ChevronRightIcon, FullScreenIcon } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ActionMenu,
   LoadingPlaceholderContainer,
@@ -51,8 +50,12 @@ export function StudentAssessmentWidget({
       !!studentId
     );
 
-  const filteredAssessments = assessments?.filter(
-    (assessment) => assessment.assessmentType !== AssessmentType.StateCba
+  const filteredAssessments = useMemo(
+    () =>
+      assessments?.filter(
+        (assessment) => assessment.assessmentType !== AssessmentType.StateCba
+      ),
+    [assessments]
   );
 
   const selectedAssessment = filteredAssessments?.[assessmentIndex];
@@ -145,7 +148,8 @@ export function StudentAssessmentWidget({
             setAssessmentIndex(assessmentIndex + 1);
           }}
           disabled={
-            assessmentIndex + 1 === assessments?.length || !hasAssessments
+            assessmentIndex + 1 === filteredAssessments?.length ||
+            !hasAssessments
           }
         >
           <ChevronRightIcon />
