@@ -1,4 +1,10 @@
-import { GridOptions, PageContainer, PageHeading, Table } from '@tyro/core';
+import {
+  GridOptions,
+  PageContainer,
+  PageHeading,
+  Table,
+  useDebouncedValue,
+} from '@tyro/core';
 import { TFunction, useTranslation, useFormatNumber } from '@tyro/i18n';
 import { useMemo } from 'react';
 import dayjs from 'dayjs';
@@ -6,6 +12,10 @@ import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Box, Button } from '@mui/material';
 import { AddIcon } from '@tyro/icons';
 import { ReturnTypeFromUseFees, useFees } from '../api/fees';
+import {
+  UpsertFeeModal,
+  UpsertFeeModalProps,
+} from '../components/fees/upsert-fee-modal';
 
 dayjs.extend(LocalizedFormat);
 
@@ -24,6 +34,12 @@ const getColumnDefs = (
       data?.dueDate ? dayjs(data.dueDate).format('LL') : '-',
   },
   {
+    field: 'feeType',
+    headerName: t('fees:feeType'),
+    valueGetter: ({ data }) =>
+      data?.feeType ? t(`fees:feesType.${data?.feeType}`) : '-',
+  },
+  {
     field: 'amount',
     headerName: t('fees:total'),
     valueGetter: ({ data }) => {
@@ -39,6 +55,14 @@ export default function OverviewPage() {
 
   const { data: feesData } = useFees({});
 
+  const {
+    value: fee,
+    debouncedValue: debouncedFee,
+    setValue: setFee,
+  } = useDebouncedValue<UpsertFeeModalProps['value']>({
+    defaultValue: null,
+  });
+
   const columnDefs = useMemo(
     () => getColumnDefs(t, formatCurrency),
     [t, formatCurrency]
@@ -51,7 +75,11 @@ export default function OverviewPage() {
         titleProps={{ variant: 'h3' }}
         rightAdornment={
           <Box display="flex" alignItems="center">
-            <Button variant="contained" startIcon={<AddIcon />}>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => setFee({})}
+            >
               {t('fees:createFee')}
             </Button>
           </Box>
@@ -61,6 +89,11 @@ export default function OverviewPage() {
         rowData={feesData || []}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.id)}
+      />
+      <UpsertFeeModal
+        open={!!fee}
+        value={debouncedFee}
+        onClose={() => setFee(null)}
       />
     </PageContainer>
   );
