@@ -2902,6 +2902,8 @@ export type Mutation = {
   notes_upsertBehaviourTags: Array<Notes_Tag>;
   notes_upsertNotes: Array<Notes_Note>;
   notes_upsertNotesTags: Array<Notes_Tag>;
+  options_saveOptions: Option;
+  options_saveStudentPreferences: Array<StudentPreference>;
   ppod_savePPODCredentials: PpodCredentials;
   sa_upsertActivity?: Maybe<Success>;
   sa_upsertActivityRequest?: Maybe<Success>;
@@ -3324,6 +3326,16 @@ export type MutationNotes_UpsertNotesArgs = {
 
 export type MutationNotes_UpsertNotesTagsArgs = {
   input?: InputMaybe<Array<InputMaybe<Notes_UpsertNotesTagInput>>>;
+};
+
+
+export type MutationOptions_SaveOptionsArgs = {
+  input?: InputMaybe<SaveOptions>;
+};
+
+
+export type MutationOptions_SaveStudentPreferencesArgs = {
+  input?: InputMaybe<Array<InputMaybe<SaveStudentPreference>>>;
 };
 
 
@@ -3791,6 +3803,46 @@ export type NotificationsUnreadCount = {
   count: Scalars['Int'];
 };
 
+export type Option = {
+  __typename?: 'Option';
+  academicNamespaceId: Scalars['Int'];
+  id: Scalars['Int'];
+  name: Scalars['String'];
+  prefix?: Maybe<Scalars['String']>;
+  publishToParents: Scalars['Boolean'];
+  studentPartyIds?: Maybe<Array<Scalars['Long']>>;
+  /** deep linked */
+  students?: Maybe<Array<Person>>;
+  subjectSetIds?: Maybe<Array<OptionsId>>;
+  /** deep linked */
+  subjectSets: Array<OptionSubjectSet>;
+  /** deep linked */
+  yearGroupEnrolmentParty: YearGroupEnrollment;
+  yearGroupEnrolmentPartyId: Scalars['Long'];
+};
+
+export type OptionFilter = {
+  academicNameSpaceId?: InputMaybe<Scalars['Int']>;
+  ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
+export type OptionSubjectSet = {
+  __typename?: 'OptionSubjectSet';
+  canChoose: Scalars['Int'];
+  id: OptionsId;
+  mustGet: Scalars['Int'];
+  poolIdx?: Maybe<Scalars['Int']>;
+  subjectIds: Array<Scalars['Int']>;
+  /** deep linked */
+  subjects: Array<Subject>;
+};
+
+export type OptionsId = {
+  __typename?: 'OptionsId';
+  idx: Scalars['Int'];
+  optionId: Scalars['Int'];
+};
+
 export type OverallComments = {
   __typename?: 'OverallComments';
   principalCommentsEntered: Scalars['Int'];
@@ -4044,6 +4096,36 @@ export enum PaymentStatus {
   Succeeded = 'SUCCEEDED'
 }
 
+export type Payment = {
+  __typename?: 'Payment';
+  amount: Scalars['Float'];
+  fee: Fee;
+  id: Scalars['Int'];
+  payeeName: Scalars['String'];
+  paymentIntentId: Scalars['String'];
+  paymentStatus: PaymentStatus;
+  studentPartyId: Scalars['Long'];
+  transactionDate: Scalars['DateTime'];
+};
+
+export type PaymentFilter = {
+  ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+};
+
+export enum PaymentMethod {
+  Card = 'CARD',
+  Cash = 'CASH'
+}
+
+export enum PaymentStatus {
+  Canceled = 'CANCELED',
+  Created = 'CREATED',
+  Failed = 'FAILED',
+  Processing = 'PROCESSING',
+  Succeeded = 'SUCCEEDED'
+}
+
 export type Permission = {
   __typename?: 'Permission';
   description: Scalars['String'];
@@ -4216,6 +4298,11 @@ export type PhoneNumber = {
   primaryPhoneNumber?: Maybe<Scalars['Boolean']>;
 };
 
+export type PreferencesFilter = {
+  optionId?: InputMaybe<Scalars['Int']>;
+  studentPartyId?: InputMaybe<Scalars['Long']>;
+};
+
 export type PreviousEventAttendance = {
   __typename?: 'PreviousEventAttendance';
   attendanceCode: AttendanceCode;
@@ -4250,13 +4337,40 @@ export type Print_AssessmentOptions = {
 };
 
 export type Print_GroupMembers = {
+  fields?: InputMaybe<Array<InputMaybe<Print_GroupMembersFields>>>;
   groupIds: Array<Scalars['Long']>;
   options: Print_GroupMembersOptions;
+  orientation?: InputMaybe<Print_Orientation>;
+  sorting?: InputMaybe<Print_NameSorting>;
 };
+
+export enum Print_GroupMembersFields {
+  ClassGroup = 'CLASS_GROUP',
+  RowNumber = 'ROW_NUMBER',
+  SchoolRollNo = 'SCHOOL_ROLL_NO',
+  StudentDepartmentId = 'STUDENT_DEPARTMENT_ID',
+  StudentId = 'STUDENT_ID',
+  StudentName = 'STUDENT_NAME',
+  StudyLevel = 'STUDY_LEVEL',
+  Subject = 'SUBJECT',
+  SubjectCode = 'SUBJECT_CODE',
+  Teacher = 'TEACHER',
+  TeacherId = 'TEACHER_ID'
+}
 
 export enum Print_GroupMembersOptions {
   Csv = 'CSV',
   Print = 'PRINT'
+}
+
+export enum Print_NameSorting {
+  FirstNameLastName = 'FIRST_NAME_LAST_NAME',
+  LastNameFirstName = 'LAST_NAME_FIRST_NAME'
+}
+
+export enum Print_Orientation {
+  Horizontal = 'HORIZONTAL',
+  Vertical = 'VERTICAL'
 }
 
 export type Print_PersonsGroupMemberships = {
@@ -4518,6 +4632,8 @@ export type Query = {
   notes_behaviourCategories: Array<Notes_BehaviourCategory>;
   notes_notes: Array<Notes_Note>;
   notes_tags: Array<Notes_Tag>;
+  options_options: Array<Option>;
+  options_preferences: Array<StudentPreference>;
   permissions?: Maybe<Array<Maybe<Permission>>>;
   ppod_PPODCredentials?: Maybe<PpodCredentials>;
   ppod_syncRequests: Array<SyncRequest>;
@@ -4910,6 +5026,16 @@ export type QueryNotes_NotesArgs = {
 
 export type QueryNotes_TagsArgs = {
   filter?: InputMaybe<Notes_TagFilter>;
+};
+
+
+export type QueryOptions_OptionsArgs = {
+  filter?: InputMaybe<OptionFilter>;
+};
+
+
+export type QueryOptions_PreferencesArgs = {
+  filter?: InputMaybe<PreferencesFilter>;
 };
 
 
@@ -6071,6 +6197,16 @@ export type SaveNotificationTemplateInput = {
   title: Scalars['String'];
 };
 
+export type SaveOptions = {
+  id?: InputMaybe<Scalars['Int']>;
+  name: Scalars['String'];
+  prefix?: InputMaybe<Scalars['String']>;
+  publishToParents: Scalars['Boolean'];
+  studentPartyIds?: InputMaybe<Array<Scalars['Long']>>;
+  subjectSets: Array<SaveSubjectSet>;
+  yearGroupEnrolmentPartyId: Scalars['Long'];
+};
+
 export type SaveOwner = {
   addressLine1?: InputMaybe<Scalars['String']>;
   addressLine2?: InputMaybe<Scalars['String']>;
@@ -6172,6 +6308,14 @@ export type SaveStateCbaAssessmentInput = {
   stateCbaType?: InputMaybe<StateCbaType>;
   subjectGroupIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   yearId: Scalars['Int'];
+};
+
+export type SaveStudentPreference = {
+  optionId: Scalars['Int'];
+  preferenceIdx: Scalars['Int'];
+  studentPartyId: Scalars['Long'];
+  subjectId: Scalars['Int'];
+  subjectSetIdx: Scalars['Int'];
 };
 
 export type SaveStudentSessionAttendanceInput = {
@@ -6289,6 +6433,14 @@ export type SaveStudentSupportPlanTargetInput = {
   id?: InputMaybe<Scalars['Int']>;
   status: TargetStatus;
   target: Scalars['String'];
+};
+
+export type SaveSubjectSet = {
+  canChoose: Scalars['Int'];
+  idx?: InputMaybe<Scalars['Int']>;
+  mustGet: Scalars['Int'];
+  poolIdx?: InputMaybe<Scalars['Int']>;
+  subjectIds: Array<Scalars['Int']>;
 };
 
 export type SaveTermAssessmentInput = {
@@ -7030,6 +7182,18 @@ export type StudentMedicalFilter = {
   studentPartyId: Scalars['Long'];
 };
 
+export type StudentPreference = {
+  __typename?: 'StudentPreference';
+  id: OptionsId;
+  preferenceIdx: Scalars['Int'];
+  /** deep linked */
+  student: Person;
+  studentPartyId: Scalars['Long'];
+  /** deep linked */
+  subject: Subject;
+  subjectId: Scalars['Int'];
+};
+
 export type StudentResultFilter = {
   academicYearId?: InputMaybe<Scalars['Int']>;
   assessmentId: Scalars['Long'];
@@ -7316,6 +7480,10 @@ export enum SubjectGroupType {
   SubjectGroup = 'SUBJECT_GROUP',
   SupportGroup = 'SUPPORT_GROUP'
 }
+
+export type SubjectSetFilter = {
+  optionId: Scalars['Int'];
+};
 
 export enum SubjectSource {
   Custom = 'CUSTOM',

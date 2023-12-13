@@ -29,6 +29,7 @@ import {
 import { AcademicYearDropdown } from '../components/common/academic-year-dropdown';
 import { getAssessmentSubjectGroupsLink } from '../utils/get-assessment-subject-groups-link';
 import { AssessmentActionMenu } from '../components/list-assessments/assessment-action-menu';
+import { PrintAssessmentModal } from '../components/common/print-assessment-modal';
 
 dayjs.extend(LocalizedFormat);
 
@@ -38,7 +39,8 @@ const getColumnDefs = (
     undefined,
     ('assessments' | 'common')[]
   >,
-  displayName: ReturnTypeDisplayName
+  displayName: ReturnTypeDisplayName,
+  onOpenPrintModal: (data: ReturnTypeFromUseAssessments) => void
 ): GridOptions<ReturnTypeFromUseAssessments>['columnDefs'] => [
   {
     field: 'name',
@@ -183,7 +185,12 @@ const getColumnDefs = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAssessments>) =>
-      data && <AssessmentActionMenu {...data} />,
+      data && (
+        <AssessmentActionMenu
+          onOpenPrintModal={() => onOpenPrintModal(data)}
+          {...data}
+        />
+      ),
   },
 ];
 
@@ -197,6 +204,9 @@ export default function AssessmentsPage() {
   const [academicNameSpaceId, setAcademicNameSpaceId] = useState<number | null>(
     activeAcademicNamespace?.academicNamespaceId ?? null
   );
+  const [selectedAssessment, setSelectedAssessment] = useState<
+    ReturnTypeFromUseAssessments | undefined
+  >();
 
   const { data: assessmentsData = [] } = useAssessments({
     academicNameSpaceId: academicNameSpaceId ?? 0,
@@ -206,7 +216,10 @@ export default function AssessmentsPage() {
     'ps:1:assessment:write_assessments'
   );
   const columnDefs = useMemo(
-    () => getColumnDefs(t, displayName),
+    () =>
+      getColumnDefs(t, displayName, (data: ReturnTypeFromUseAssessments) => {
+        setSelectedAssessment(data);
+      }),
     [t, displayName]
   );
 
@@ -247,6 +260,10 @@ export default function AssessmentsPage() {
         rowData={assessmentsData || []}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.id)}
+      />
+      <PrintAssessmentModal
+        data={selectedAssessment}
+        onClose={() => setSelectedAssessment(undefined)}
       />
     </PageContainer>
   );
