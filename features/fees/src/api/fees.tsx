@@ -17,6 +17,10 @@ const fees = graphql(/* GraphQL */ `
       amount
       feeType
       absorbFees
+      discounts {
+        id
+        name
+      }
     }
   }
 `);
