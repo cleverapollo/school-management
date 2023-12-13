@@ -7,11 +7,17 @@ import {
   DashboardAssessmentFilter,
   GradeSetFilter,
   OverallCommentsFilter,
+  Print_AssessmentOptions,
   StudentResultFilter,
 } from '@tyro/api';
 
 export const assessmentsKeys = {
   all: ['assessments'] as const,
+  print: (filter: Print_AssessmentOptions) => [
+    ...assessmentsKeys.all,
+    'print',
+    filter,
+  ],
   assessments: (filter: AssessmentFilter) =>
     [...assessmentsKeys.all, filter] as const,
   assessmentsExtraFields: (filter: AssessmentFilter) =>

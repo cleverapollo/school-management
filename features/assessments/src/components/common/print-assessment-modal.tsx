@@ -1,5 +1,5 @@
 import { useTranslation } from '@tyro/i18n';
-import { Button, Stack } from '@mui/material';
+import { Button, Stack, FormLabel } from '@mui/material';
 import {
   useFormValidator,
   Dialog,
@@ -7,13 +7,17 @@ import {
   DialogContent,
   DialogTitle,
   RHFAutocomplete,
+  RHFRadioGroup,
   RHFCheckbox,
   usePreferredNameLayout,
+  useToast,
 } from '@tyro/core';
+import { Print_Orientation } from '@tyro/api';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { ReturnTypeFromUseAssessments } from '../../api/assessments';
+import { getPrintAssessment } from '../../api/print-assessment';
 
 type AutocompleteValue = {
   partyId: number;
@@ -21,6 +25,7 @@ type AutocompleteValue = {
 };
 
 export type PrintAssessmentFormState = {
+  printOrientation: Print_Orientation;
   yearGroups: AutocompleteValue[];
   classGroups: AutocompleteValue[];
   students: AutocompleteValue[];
@@ -39,24 +44,27 @@ export function PrintAssessmentModal({
 }: PrintAssessmentModalProps) {
   const { t } = useTranslation(['common', 'assessments']);
   const { resolver, rules } = useFormValidator<PrintAssessmentFormState>();
-
   const { displayName } = usePreferredNameLayout();
+  const { toast } = useToast();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const { control, handleSubmit, reset, watch, setValue } =
     useForm<PrintAssessmentFormState>({
-      resolver: resolver({}),
+      resolver: resolver({
+        printOrientation: rules.required(),
+        showAttendance: rules.required(),
+        showExtraFields: rules.required(),
+      }),
       defaultValues: {
-        yearGroups: [],
-        classGroups: [],
-        students: [],
+        printOrientation: Print_Orientation.Vertical,
+        showAttendance: false,
+        showExtraFields: false,
       },
     });
 
-  const selectedYearGroups = watch('yearGroups');
-  const selectedClassGroups = watch('classGroups');
-  const selectedStudents = watch('students');
-
-  const onSubmit = (data: PrintAssessmentFormState) => {};
+  const selectedYearGroups = watch('yearGroups') ?? [];
+  const selectedClassGroups = watch('classGroups') ?? [];
 
   const selectedYearsData = useMemo(
     () =>
@@ -114,6 +122,35 @@ export function PrintAssessmentModal({
     setValue('students', [], { shouldDirty: true });
   };
 
+  const handleClose = () => {
+    onClose();
+    reset();
+  };
+
+  const onSubmit = async (data: PrintAssessmentFormState) => {
+    const { yearGroups, classGroups, students, ...rest } = data;
+
+    try {
+      setIsLoading(true);
+      const printResponse = await getPrintAssessment({
+        assessmentId: assessment?.id,
+        yearGroupEnrollmentIds: yearGroups.map(({ partyId }) => partyId),
+        classGroupIds: classGroups.map(({ partyId }) => partyId),
+        studentIds: students.map(({ partyId }) => partyId),
+        ...rest,
+      });
+
+      if (printResponse?.print_assessment?.url) {
+        handleClose();
+        window.open(printResponse.print_assessment.url, '_blank', 'noreferrer');
+      }
+    } catch {
+      toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Dialog open={!!assessment} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>{t('assessments:printAssessment')}</DialogTitle>
@@ -167,17 +204,31 @@ export function PrintAssessmentModal({
                 controlProps={{ name: 'showExtraFields', control }}
               />
             </Stack>
+            <Stack direction="row" gap={3} alignItems="center">
+              <FormLabel>{t('assessments:pageOrientation')}</FormLabel>
+              <RHFRadioGroup
+                disabled={isLoading}
+                radioGroupProps={{ sx: { flexDirection: 'row' } }}
+                options={[
+                  Print_Orientation.Vertical,
+                  Print_Orientation.Horizontal,
+                ].map((option) => ({
+                  value: option,
+                  label: t(`assessments:${option}`),
+                }))}
+                controlProps={{
+                  name: 'printOrientation',
+                  control,
+                }}
+              />
+            </Stack>
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button variant="soft" autoFocus onClick={onClose}>
+          <Button variant="soft" autoFocus onClick={handleClose}>
             {t('common:actions.cancel')}
           </Button>
-          <LoadingButton
-            variant="contained"
-            type="submit"
-            //  load ing={isSubmitting}
-          >
+          <LoadingButton variant="contained" type="submit" loading={isLoading}>
             {t('common:actions.print')}
           </LoadingButton>
         </DialogActions>
