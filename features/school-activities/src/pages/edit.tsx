@@ -49,9 +49,8 @@ export default function EditSchoolActivityPage() {
       (group) => group?.partyId === customGroupId
     );
 
-    const currentRoomId = location?.roomIds[0];
     const currentRoomData =
-      rooms && rooms?.filter((room) => room?.roomId === currentRoomId);
+      rooms && rooms?.filter((room) => room?.roomId === location?.roomIds[0]);
     const roomFormatted = currentRoomData && currentRoomData[0];
 
     const singleOrMultiDayActivityType =
@@ -70,6 +69,7 @@ export default function EditSchoolActivityPage() {
       endTime: dayjs(singleDayDate.endTime, 'HH:mm'),
       partial: singleDayDate?.partial,
       inSchoolGrounds: location?.inSchoolGrounds,
+      locationDetails: location?.locationDetails,
       requestType: singleDayDate?.partial
         ? ActivityType.PartialDay
         : singleOrMultiDayActivityType,
@@ -77,10 +77,11 @@ export default function EditSchoolActivityPage() {
   }, [schoolActivity, rooms, customGroups]);
 
   return (
-    formValues && (
+    formValues &&
+    formValues?.group && (
       <SchoolActivityForm
         schoolActivitiesData={formValues}
-        title={t('schoolActivities:editSchoolActivity')}
+        title={t('schoolActivities:editActivityDetails')}
         onSuccess={() => {
           toast(t('common:snackbarMessages.updateSuccess'));
         }}

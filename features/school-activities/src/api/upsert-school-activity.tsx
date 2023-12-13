@@ -25,11 +25,11 @@ export function useSaveSchoolActivities() {
     mutationFn: async (input: Sa_SchoolActivityInput) =>
       gqlClient.request(saveSchoolActivies, { input }),
     onSuccess: (_, variables) => {
-      if (variables?.schoolActivityId) {
-        toast(t('common:snackbarMessages.updateSuccess'));
-      } else {
-        toast(t('common:snackbarMessages.createSuccess'));
-      }
+      toast(
+        variables?.schoolActivityId
+          ? t('common:snackbarMessages.updateSuccess')
+          : t('common:snackbarMessages.createSuccess')
+      );
       queryClient.invalidateQueries(activitiesKeys.all);
     },
     onError: () => {

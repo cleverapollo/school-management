@@ -42,7 +42,7 @@ export default function SchoolActivitiesContainer() {
             links={[
               {
                 value: 'edit',
-                label: t('schoolActivities:editSchoolActivity'),
+                label: t('schoolActivities:activityDetails'),
               },
               {
                 value: 'cover-required',

@@ -107,6 +107,7 @@ export function PublishDropdown({
           justifyContent: 'center',
           alignItems: 'center',
           padding: '5px',
+          cursor: 'pointer',
         }}
       >
         <Box

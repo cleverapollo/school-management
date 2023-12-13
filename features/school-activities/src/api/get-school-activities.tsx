@@ -23,6 +23,7 @@ const activitiesList = graphql(/* GraphQL */ `
         partial
       }
       location {
+        locationDetails
         inSchoolGrounds
         roomIds
         rooms {
@@ -90,6 +91,7 @@ const schoolActivityById = graphql(/* GraphQL */ `
         partial
       }
       location {
+        locationDetails
         inSchoolGrounds
         roomIds
         rooms {

@@ -15,6 +15,8 @@
     "note": "Note",
     "onSchoolGrounds": "Is the activity taking place on school grounds?",
     "activityType": "Activity type",
+    "activityDateAndTime": "Activity date and time",
+    "activityDetails": "Activity details",
     "dayTypeOptions": {
         "MULTI_DAY": "Multiple days",
         "SINGLE_DAY": "Full day",
@@ -52,5 +54,11 @@
     "published": "Published",
     "publishSuccess": "School activity published successfully!",
     "windfall": "Windfall",
-    "cancelled": "Cancelled"
+    "cancelled": "Cancelled",
+    "locationDetails": "Location details",
+    "addCustomGroup": "Add custom group",
+    "searchGroup": "Search group",
+    "selectingExistingCustomGroup": "Select existing custom group",
+    "associatedCustomGroups": "Associated custom groups",
+    "editActivityDetails": "Edit activity details"
 }

@@ -3,7 +3,7 @@ import { Alert, AlertTitle, Box, Button } from '@mui/material';
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 
-import { SchoolBagIcon, BinIcon } from '@tyro/icons';
+import { SchoolBagIcon, BinModernIcon } from '@tyro/icons';
 import { usePublishSchoolActivity } from '../api/publish_school_activity';
 
 type PublishSchoolActivityProps = {
@@ -42,7 +42,7 @@ export function PublishSchoolActivityModal({
     <Dialog open={open}>
       <DialogTitle display="flex" alignItems="center">
         {isPublished ? (
-          <BinIcon sx={{ marginRight: 2 }} />
+          <BinModernIcon sx={{ marginRight: 2 }} />
         ) : (
           <Box
             width="45px"

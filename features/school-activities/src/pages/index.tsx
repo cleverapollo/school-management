@@ -102,7 +102,7 @@ const getColumnDefs = (
 
 export default function TestPage() {
   const { t } = useTranslation(['schoolActivities', 'common']);
-  const { data: schoolActivities } = useActivitiesList({});
+  const { data: schoolActivities, isLoading } = useActivitiesList({});
 
   const schoolActivitiesColumns = useMemo(() => getColumnDefs(t), [t]);
 
@@ -128,6 +128,7 @@ export default function TestPage() {
         rowData={schoolActivities || []}
         columnDefs={schoolActivitiesColumns}
         getRowId={({ data }) => String(data?.schoolActivityId)}
+        isLoading={isLoading}
       />
     </PageContainer>
   );
