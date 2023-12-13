@@ -51,5 +51,8 @@
     "MANDATORY": "Mandatory",
     "VOLUNTARY": "Voluntary"
   },
-  "absorbFees": "Absorb fees"
+  "absorbFees": "Absorb fees",
+  "createFeeCategory": "Create fee category",
+  "editFeeCategory": "Edit fee category",
+  "discounts": "Discounts"
 }

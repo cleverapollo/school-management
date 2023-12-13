@@ -22,11 +22,12 @@ type DiscountFormState = {
   description?: string | null;
   discountType: DiscountType;
   siblingDiscount?: boolean | null;
+  active?: boolean | null;
   value: number;
 };
 
 const discountTypeAdornment = {
-  [DiscountType.Fixed]: '£',
+  [DiscountType.Fixed]: '€',
   [DiscountType.Percentage]: '%',
 };
 
@@ -34,6 +35,20 @@ export type UpsertDiscountModalProps = {
   open: boolean;
   value: Partial<ReturnTypeFromUseDiscounts> | null;
   onClose: () => void;
+};
+
+const MIN_VALUES_ALLOWED = {
+  [DiscountType.Fixed]: 0.5,
+  [DiscountType.Percentage]: 0.1,
+};
+
+const MAX_VALUES_ALLOWED = {
+  [DiscountType.Fixed]: undefined,
+  [DiscountType.Percentage]: 100,
+};
+
+const defaultValues: Partial<DiscountFormState> = {
+  active: true,
 };
 
 export function UpsertDiscountModal({
@@ -49,8 +64,26 @@ export function UpsertDiscountModal({
     resolver: resolver({
       name: rules.required(),
       discountType: rules.required(),
-      value: rules.required(),
+      value: [
+        rules.required(),
+        rules.isNumber(),
+        rules.validate((fieldValue, throwError, formValues) => {
+          const currentDiscountType = formValues.discountType;
+          const currentValue = fieldValue ?? 0;
+          const minValue = MIN_VALUES_ALLOWED[currentDiscountType];
+          const maxValue = MAX_VALUES_ALLOWED[currentDiscountType];
+
+          if (currentValue < minValue) {
+            throwError(t('common:errorMessages.min', { number: minValue }));
+          }
+
+          if (maxValue && currentValue > maxValue) {
+            throwError(t('common:errorMessages.max', { number: maxValue }));
+          }
+        }),
+      ],
     }),
+    defaultValues,
   });
 
   const onSubmit = handleSubmit((discountData) =>
@@ -62,7 +95,7 @@ export function UpsertDiscountModal({
   const discountType = watch('discountType');
 
   useEffect(() => {
-    reset({ ...value });
+    reset({ ...defaultValues, ...value });
   }, [value]);
 
   return (
@@ -78,7 +111,7 @@ export function UpsertDiscountModal({
           {t(`fees:${value?.name ? 'editDiscount' : 'createDiscount'}`)}
         </DialogTitle>
         <DialogContent>
-          <Stack gap={3} mt={1}>
+          <Stack gap={2} mt={1}>
             <RHFTextField
               label={t('common:name')}
               controlProps={{
@@ -132,6 +165,7 @@ export function UpsertDiscountModal({
                 control,
               }}
             />
+
             <RHFCheckbox
               label={t('fees:isSiblingDiscount')}
               checkboxProps={{ color: 'primary' }}

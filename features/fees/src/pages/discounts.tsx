@@ -58,7 +58,7 @@ const getColumnDefs = (
         return formatCurrency(value);
       }
 
-      return `%${value}`;
+      return `${value}%`;
     },
   },
   {
@@ -93,7 +93,11 @@ const getColumnDefs = (
   {
     suppressColumnsToolPanel: true,
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseDiscounts>) =>
-      data && (
+      /**
+       * NOTE: https://app.clickup.com/t/862j5pqrr
+       * According to the ticket, editing an existing discount won't be included on v1
+       */
+      false && (
         <ActionMenu
           iconOnly
           buttonIcon={<VerticalDotsIcon />}
@@ -101,6 +105,7 @@ const getColumnDefs = (
             {
               label: t('common:actions.edit'),
               icon: <EditIcon />,
+              // @ts-expect-error
               onClick: () => onClickEdit(data),
             },
           ]}
