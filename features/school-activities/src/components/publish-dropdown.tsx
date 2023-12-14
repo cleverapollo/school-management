@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Box, Typography, Menu, MenuItem } from '@mui/material';
-import { TFunction, useTranslation } from '@tyro/i18n';
+import { useTranslation } from '@tyro/i18n';
 import {
   ChevronDownIcon,
   CalendarAddIcon,
@@ -20,41 +20,6 @@ type PublishedDropdownProps = {
   lastPublished: string | null;
 };
 
-const getStyling = (
-  publishedStatus: boolean,
-  lastPublishedStatus: string | null
-) => {
-  let backgroundColor = 'indigo.500';
-  let fontAndIconColor = 'white';
-  let IconComponent = CalendarAddIcon;
-
-  if (!publishedStatus && lastPublishedStatus) {
-    backgroundColor = 'red.100';
-    fontAndIconColor = 'red.500';
-    IconComponent = CalendarCutDottedLinesIcon;
-  } else if (publishedStatus) {
-    backgroundColor = 'emerald.100';
-    fontAndIconColor = 'emerald.500';
-    IconComponent = CalendarCheckmarkIcon;
-  }
-
-  return { backgroundColor, fontAndIconColor, IconComponent };
-};
-
-const getActionText = (
-  publishStatus: boolean,
-  lastPublishedStatus: string | null,
-  translate: TFunction<'schoolActivities'[], undefined, 'schoolActivities'[]>
-) => {
-  if (!publishStatus && lastPublishedStatus) {
-    return translate('schoolActivities:unpublished');
-  }
-  if (publishStatus) {
-    return translate('schoolActivities:published');
-  }
-  return translate('schoolActivities:notPublished');
-};
-
 export function PublishDropdown({
   isPublished,
   schoolActivityId,
@@ -63,6 +28,36 @@ export function PublishDropdown({
   const { t } = useTranslation(['schoolActivities']);
   const { isOpen: isModalOpen, onOpen, onClose } = useDisclosure();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const actionText = useMemo(() => {
+    if (isPublished) {
+      return t('schoolActivities:published');
+    }
+    if (lastPublished) {
+      return t('schoolActivities:unpublished');
+    }
+    return t('schoolActivities:notPublished');
+  }, [isPublished, lastPublished]);
+
+  const styling = useMemo(() => {
+    let backgroundColor = 'indigo.500';
+    let fontAndIconColor = 'white';
+    let IconComponent = CalendarAddIcon;
+
+    if (isPublished) {
+      backgroundColor = 'emerald.100';
+      fontAndIconColor = 'emerald.500';
+      IconComponent = CalendarCheckmarkIcon;
+    } else if (lastPublished) {
+      backgroundColor = 'red.100';
+      fontAndIconColor = 'red.500';
+      IconComponent = CalendarCutDottedLinesIcon;
+    }
+
+    return { backgroundColor, fontAndIconColor, IconComponent };
+  }, [isPublished, lastPublished]);
+
+  const { backgroundColor, fontAndIconColor, IconComponent } = styling;
 
   const isMenuOpen = Boolean(anchorEl);
 
@@ -77,11 +72,6 @@ export function PublishDropdown({
   const handleCloseMenu = () => {
     setAnchorEl(null);
   };
-
-  const { backgroundColor, fontAndIconColor, IconComponent } = getStyling(
-    isPublished,
-    lastPublished
-  );
 
   return (
     <>
@@ -126,7 +116,7 @@ export function PublishDropdown({
             sx={{ width: 18, height: 18, color: fontAndIconColor }}
           />
           <Typography fontSize="12px" marginLeft={0.5}>
-            {getActionText(isPublished, lastPublished, t)}
+            {actionText}
           </Typography>
         </Box>
         <ChevronDownIcon sx={{ color: 'slategrey' }} />
@@ -146,7 +136,7 @@ export function PublishDropdown({
               '&.Mui-disabled': { opacity: '1' },
             }}
           >
-            {dayjs(lastPublished).format('DD-MM-YYYY')}
+            {dayjs(lastPublished).format('L')}
           </MenuItem>
         )}
 

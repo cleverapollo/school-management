@@ -43,7 +43,7 @@ export function SchoolActivityStatusBar({
         <Stack direction="row" flexWrap="wrap" alignItems="center" gap={2}>
           <Stack direction="row" alignItems="center" spacing={1}>
             <Box p={1}>
-              <Avatar src="Test" name={name ?? ''} />
+              <Avatar src={customGroup?.avatarUrl} name={name ?? ''} />
             </Box>
             <Stack>
               <Typography

@@ -61,8 +61,8 @@ export function PublishSchoolActivityModal({
         )}
 
         {isPublished
-          ? t('schoolActivities:SchoolActivityModalHeaderUnpublish')
-          : t('schoolActivities:SchoolActivityModalHeaderPublish')}
+          ? t('schoolActivities:schoolActivityModalHeaderUnpublish')
+          : t('schoolActivities:schoolActivityModalHeaderPublish')}
       </DialogTitle>
       <DialogContent
         sx={{
@@ -96,8 +96,8 @@ export function PublishSchoolActivityModal({
             }}
           >
             {isPublished
-              ? t('schoolActivities:SchoolActivityModalAlertUnpublish')
-              : t('schoolActivities:SchoolActivityModalAlertPublish')}
+              ? t('schoolActivities:schoolActivityModalAlertUnpublish')
+              : t('schoolActivities:schoolActivityModalAlertPublish')}
           </AlertTitle>
         </Alert>
       </DialogContent>
