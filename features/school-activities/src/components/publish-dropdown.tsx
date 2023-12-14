@@ -68,10 +68,8 @@ export function PublishDropdown({
   ) => {
     if ('key' in event && (event.key === 'Enter' || event.key === ' ')) {
       event.preventDefault();
-      setAnchorEl(event.currentTarget);
-    } else {
-      setAnchorEl(event.currentTarget);
     }
+    setAnchorEl(event.currentTarget);
   };
 
   const handleCloseMenu = () => {
