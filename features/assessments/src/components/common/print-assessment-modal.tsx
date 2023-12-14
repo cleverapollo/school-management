@@ -74,9 +74,13 @@ export function PrintAssessmentModal({
     [assessment, selectedYearGroups]
   );
 
-  const yearGroupoptions = assessment?.yearGroupEnrolments
-    ?.map(({ partyId, name }) => ({ partyId, name }))
-    .sort((a, b) => a.name.localeCompare(b?.name)) as AutocompleteValue[];
+  const yearGroupOptions = useMemo(
+    () =>
+      assessment?.yearGroupEnrolments
+        ?.map(({ partyId, name }) => ({ partyId, name }))
+        .sort((a, b) => a.name.localeCompare(b?.name)) as AutocompleteValue[],
+    [assessment?.yearGroupEnrolments]
+  );
 
   const classGroupOptions = useMemo(() => {
     const list: AutocompleteValue[] = [];
@@ -163,7 +167,7 @@ export function PrintAssessmentModal({
               optionTextKey="name"
               multiple
               controlProps={{ name: 'yearGroups', control }}
-              options={yearGroupoptions ?? []}
+              options={yearGroupOptions ?? []}
               onChange={(_, __, reason) => {
                 if (reason === 'removeOption') {
                   updateClassGroupValue();
@@ -214,7 +218,7 @@ export function PrintAssessmentModal({
                   Print_Orientation.Horizontal,
                 ].map((option) => ({
                   value: option,
-                  label: t(`assessments:${option}`),
+                  label: t(`assessments:printDirection.${option}`),
                 }))}
                 controlProps={{
                   name: 'printOrientation',

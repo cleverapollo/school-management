@@ -13,7 +13,7 @@ import {
   PageContainer,
   commonActionMenuProps,
 } from '@tyro/core';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, Dispatch, SetStateAction } from 'react';
 import {
   useAcademicNamespace,
   usePermissions,
@@ -40,7 +40,9 @@ const getColumnDefs = (
     ('assessments' | 'common')[]
   >,
   displayName: ReturnTypeDisplayName,
-  onOpenPrintModal: (data: ReturnTypeFromUseAssessments) => void
+  onOpenPrintModal: Dispatch<
+    SetStateAction<ReturnTypeFromUseAssessments | undefined>
+  >
 ): GridOptions<ReturnTypeFromUseAssessments>['columnDefs'] => [
   {
     field: 'name',
@@ -216,11 +218,8 @@ export default function AssessmentsPage() {
     'ps:1:assessment:write_assessments'
   );
   const columnDefs = useMemo(
-    () =>
-      getColumnDefs(t, displayName, (data: ReturnTypeFromUseAssessments) => {
-        setSelectedAssessment(data);
-      }),
-    [t, displayName]
+    () => getColumnDefs(t, displayName, setSelectedAssessment),
+    [t, displayName, setSelectedAssessment]
   );
 
   return (

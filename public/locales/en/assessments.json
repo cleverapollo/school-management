@@ -89,8 +89,10 @@
   "showAttendance": "Show attendance",
   "showExtraFields": "Show extra fields",
   "pageOrientation": "Page orientation",
-  "VERTICAL": "Landscape",
-  "HORIZONTAL": "Horizontal",
+  "printDirection": {
+    "VERTICAL": "Landscape",
+    "HORIZONTAL": "Horizontal"
+  },
   "thereAreResultsRemoveBeforeRemovingSubjectGroup": "There are results entered for this group. You must delete the results before you can remove the subject group from the assessment.",
   "existingCbaErrorMessageText": "The combination of {{name}} for {{yearGroup}} already exists within {{academicYear}}. Select below to view or edit the assessment.",
   "cbaType": "CBA type",
