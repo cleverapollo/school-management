@@ -134,7 +134,10 @@ export function PublishDropdown({
               '&.Mui-disabled': { opacity: '1' },
             }}
           >
-            {dayjs(lastPublished).format('L')}
+            {t('schoolActivities:lastPublished')}
+            <Box component="span" fontWeight={500} marginLeft={1}>
+              {dayjs(lastPublished).format('L')}
+            </Box>
           </MenuItem>
         )}
 
