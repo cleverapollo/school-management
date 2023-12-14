@@ -31,7 +31,8 @@
     "next": "Next",
     "clone": "Clone",
     "filter": "Filter",
-    "deselect": "Deselect"
+    "deselect": "Deselect",
+    "exportCSV": "Export CSV"
   },
   "snackbarMessages": {
     "createSuccess": "Created successfully!",
@@ -40,7 +41,8 @@
     "mailWasSent": "Mail was sent",
     "inviteSent": "Invite was sent",
     "labelWasAssigned": "Label was assigned!",
-    "errorFailed": "Error! An error occurred. Please try again later."
+    "errorFailed": "Error! An error occurred. Please try again later.",
+    "publishedOnline": "Published online"
   },
   "relationshipType": {
     "AUNTY": "Aunty",
@@ -189,6 +191,7 @@
     "max": "You must enter a number less or equal than {{number}}",
     "minLength": "You must enter a minimum of {{count}} characters",
     "maxLength": "You have exceeded the maximum character length of {{count}}",
+    "invalidNumber": "This is not a valid number",
     "invalidMobileNumber": "This phone number is either invalid or is in the wrong format",
     "invalidEmail": "This is an invalid email",
     "invalidPhoneNumber": "This is an invalid phone number",

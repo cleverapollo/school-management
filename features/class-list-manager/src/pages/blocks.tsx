@@ -189,8 +189,8 @@ export default function ClassListManagerBlocks() {
               {selectedBlock?.isRotation && (
                 <RotationSelect
                   value={selectedRotationIndex}
-                  onChange={requestSetSelectedRotationIndex}
                   rotations={selectedBlock.rotations}
+                  onChange={requestSetSelectedRotationIndex}
                   sx={{ maxWidth: spacing(34), flex: 1 }}
                 />
               )}

@@ -4,10 +4,12 @@ import {
   SubjectGroupFilter,
   Core_CustomGroupDefinitionFilter,
   YearGroupEnrollmentFilter,
+  Print_GroupMembers,
 } from '@tyro/api';
 
 export const groupsKeys = {
   all: ['groups'] as const,
+  print: (filter: Print_GroupMembers) => [...groupsKeys.all, 'print', filter],
   class: {
     all: () => [...groupsKeys.all, 'class'] as const,
     groups: () => [...groupsKeys.class.all(), 'list'] as const,

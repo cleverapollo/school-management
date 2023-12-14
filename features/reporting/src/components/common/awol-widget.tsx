@@ -5,6 +5,7 @@ import { Trans, useTranslation } from '@tyro/i18n';
 import { Link } from 'react-router-dom';
 import {
   LoadingPlaceholderContainer,
+  PreferredNameFormat,
   usePreferredNameLayout,
 } from '@tyro/core';
 import { StudentAvatar } from '@tyro/people';
@@ -144,7 +145,9 @@ export function AWOLWidget() {
             const { person } = student ?? {};
             const absentSubjectGroupColour =
               absentSubjectGroup?.subjects?.[0]?.colour ?? 'slate';
-            const name = displayName(person);
+            const name = displayName(person, {
+              format: PreferredNameFormat.FirstnameSurname,
+            });
             const absentRoom = absentEvent?.rooms?.[0]?.name;
             const attendanceBy = getAttendanceBy(awolStudent);
 
@@ -171,6 +174,7 @@ export function AWOLWidget() {
                   py={1.25}
                   px={1.25}
                   role="gridcell"
+                  gridColumn="1/2"
                   display="flex"
                   alignItems="center"
                 >
@@ -222,6 +226,7 @@ export function AWOLWidget() {
                   py={1.25}
                   pr={1.25}
                   role="gridcell"
+                  gridColumn="2/3"
                   display="flex"
                   alignItems="center"
                   justifySelf="end"

@@ -1,5 +1,6 @@
-import { Box, Container, Fade, Typography } from '@mui/material';
+import { Box, Fade } from '@mui/material';
 import {
+  PermissionUtils,
   SmsRecipientType,
   UpdateClassGroupGroupInput,
   usePermissions,
@@ -8,26 +9,27 @@ import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   ActionMenu,
-  ActionMenuProps,
   BulkEditedRows,
   GridOptions,
   ICellRendererParams,
-  Page,
   Table,
   TableAvatar,
   useDisclosure,
   usePreferredNameLayout,
   sortStartNumberFirst,
+  PageContainer,
+  PageHeading,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { MobileIcon, SendMailIcon } from '@tyro/icons';
+import { MobileIcon, PrinterIcon } from '@tyro/icons';
 import { TableStaffAutocomplete } from '@tyro/people';
 import set from 'lodash/set';
 import {
   useClassGroups,
   ReturnTypeFromUseClassGroups,
   useSaveClassGroupEdits,
-} from '../../api/class-groups';
+} from '../../api';
+import { printGroupMembers } from '../../utils/print-group-members';
 
 const getClassGroupColumns = (
   t: TFunction<'common'[], undefined, 'common'[]>,
@@ -132,22 +134,25 @@ export default function ClassGroupsPage() {
     [t, isStaffUser]
   );
 
-  const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(() => {
-    const commonActions = [
+  const actionMenuItems = useMemo(
+    () => [
       {
         label: t('people:sendSms'),
         icon: <MobileIcon />,
         onClick: onOpenSendSms,
       },
-      // {
-      //   label: t('mail:sendMail'),
-      //   icon: <SendMailIcon />,
-      //   onClick: () => {},
-      // },
-    ];
-
-    return commonActions;
-  }, []);
+      {
+        label: t('groups:printGroupMembers'),
+        icon: <PrinterIcon />,
+        onClick: () => printGroupMembers(selectedGroups),
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission(
+            'ps:1:printing_and_exporting:print_group_members'
+          ),
+      },
+    ],
+    [selectedGroups, onOpenSendSms]
+  );
 
   const handleBulkSave = (
     data: BulkEditedRows<ReturnTypeFromUseClassGroups, 'tutors' | 'name'>
@@ -185,37 +190,36 @@ export default function ClassGroupsPage() {
 
   return (
     <>
-      <Page title={t('groups:classGroups')}>
-        <Container maxWidth="xl">
-          <Typography variant="h3" component="h1" paragraph>
-            {t('groups:classGroups')}
-          </Typography>
-          <Table
-            rowData={classGroupData ?? []}
-            columnDefs={classGroupColumns}
-            rowSelection="multiple"
-            getRowId={({ data }) => String(data?.partyId)}
-            onBulkSave={handleBulkSave}
-            rightAdornment={
-              <Fade in={showActionMenu} unmountOnExit>
-                <Box>
-                  <ActionMenu menuItems={actionMenuItems} />
-                </Box>
-              </Fade>
-            }
-            onRowSelection={(groups) =>
-              setSelectedGroups(
-                groups.map(({ partyId, name, avatarUrl }) => ({
-                  id: partyId,
-                  name,
-                  type: 'group',
-                  avatarUrl,
-                }))
-              )
-            }
-          />
-        </Container>
-      </Page>
+      <PageContainer title={t('groups:classGroups')}>
+        <PageHeading
+          title={t('groups:classGroups')}
+          titleProps={{ variant: 'h3' }}
+        />
+        <Table
+          rowData={classGroupData ?? []}
+          columnDefs={classGroupColumns}
+          rowSelection="multiple"
+          getRowId={({ data }) => String(data?.partyId)}
+          onBulkSave={handleBulkSave}
+          rightAdornment={
+            <Fade in={showActionMenu} unmountOnExit>
+              <Box>
+                <ActionMenu menuItems={actionMenuItems} />
+              </Box>
+            </Fade>
+          }
+          onRowSelection={(groups) =>
+            setSelectedGroups(
+              groups.map(({ partyId, name, avatarUrl }) => ({
+                id: partyId,
+                name,
+                type: 'group',
+                avatarUrl,
+              }))
+            )
+          }
+        />
+      </PageContainer>
       <SendSmsModal
         isOpen={isSendSmsOpen}
         onClose={onCloseSendSms}

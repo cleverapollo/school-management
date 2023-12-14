@@ -38,5 +38,14 @@
   "autoAssignConfirm": "Assign students",
   "errorMessages": {
     "startDateMustBeTheDayAfterThePreviousEndDate": "Start date must be the day after the previous end date."
-  }
+  },
+  "to": "to",
+  "rotationStatus": {
+    "COMPLETE": "Completed",
+    "ACTIVE": "Active",
+    "NEXT": "Next",
+    "FUTURE": "Future"
+  },
+  "forDays_one": "For {{count}} day",
+  "forDays_other": "For {{count}} days"
 }

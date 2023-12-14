@@ -1,17 +1,27 @@
-import { Box, Button, Container, Fade, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  Fade,
+  Stack,
+  Tab,
+  Tabs,
+  Typography,
+  Chip,
+} from '@mui/material';
 import {
   ActionMenu,
   Avatar,
   GridOptions,
   ICellRendererParams,
-  Page,
+  PageContainer,
+  PageHeading,
   RouterLink,
   Table,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   addViewSchoolHeaders,
-  getUser,
   queryClient,
   UseQueryReturnType,
 } from '@tyro/api';
@@ -79,58 +89,143 @@ const getAdminTenantColumns = (
           }
         }}
       >
-        Emulate school
+        {t('admin:emulateSchool')}
       </Button>
     ),
   },
 ];
 
+enum SchoolTab {
+  LIVE,
+  TEST,
+}
 export default function AdminSchoolsPage() {
   const { t } = useTranslation(['common', 'admin']);
   const [selectedSchoolId, setSelectedSchoolId] = useState<number | null>(null);
-  const { data: tenants } = useAdminTenants();
+  const { data: tenants = [] } = useAdminTenants();
   const navigate = useNavigate();
   const { mutateAsync: evictTenantLevelCache } = useEvictTenantLevelCache();
+  const [schoolTab, setSchoolTab] = useState<SchoolTab>(SchoolTab.LIVE);
 
   const tenantColumns = useMemo(
     () => getAdminTenantColumns(t, navigate),
     [t, navigate]
   );
 
+  const filteredTenants = useMemo(
+    () =>
+      tenants.filter(
+        ({ liveSchool }) => liveSchool === (schoolTab === SchoolTab.LIVE)
+      ),
+    [tenants, schoolTab]
+  );
+
+  const allTabs = useMemo(
+    () => [
+      {
+        id: SchoolTab.LIVE,
+        name: t('admin:live'),
+        total: tenants.filter(({ liveSchool }) => liveSchool).length,
+      },
+      {
+        id: SchoolTab.TEST,
+        name: t('admin:test'),
+        total: tenants.filter(({ liveSchool }) => !liveSchool).length,
+      },
+    ],
+    [tenants]
+  );
+
   return (
-    <Page title={t('admin:schools')}>
-      <Container maxWidth="xl">
-        <Typography variant="h3" component="h1" paragraph>
-          {t('admin:schools')}
-        </Typography>
-        <Table
-          rowData={tenants ?? []}
-          columnDefs={tenantColumns}
-          rowSelection="single"
-          getRowId={({ data }) => String(data?.tenant)}
-          rightAdornment={
-            <Fade in={!!selectedSchoolId} unmountOnExit>
-              <Box>
-                <ActionMenu
-                  menuItems={[
-                    {
-                      label: 'Evict tenant cache',
-                      icon: <BrushCircleIcon />,
-                      onClick: () =>
-                        selectedSchoolId &&
-                        evictTenantLevelCache(selectedSchoolId),
-                    },
-                  ]}
-                />
-              </Box>
-            </Fade>
-          }
-          onRowSelection={(newSelectedSchools) => {
-            const [newSelectedSchool] = newSelectedSchools;
-            setSelectedSchoolId(newSelectedSchool?.tenant ?? null);
+    <PageContainer title={t('admin:schools')}>
+      <PageHeading title={t('admin:schools')} titleProps={{ variant: 'h3' }} />
+      <Card
+        sx={{
+          display: 'flex',
+          flex: 1,
+          flexDirection: 'column',
+          padding: 2,
+        }}
+      >
+        <Tabs
+          value={schoolTab}
+          onChange={(_event, newValue: SchoolTab) => setSchoolTab(newValue)}
+          variant="scrollable"
+          scrollButtons="auto"
+          aria-label={t('admin:ariaLabelForTabs')}
+          sx={{
+            mx: 2,
+            '& .MuiTabs-flexContainer > .MuiButtonBase-root': {
+              marginRight: 3.5,
+            },
           }}
-        />
-      </Container>
-    </Page>
+        >
+          {allTabs.map((tab) => (
+            <Tab
+              key={tab.id}
+              label={
+                <Stack gap={1} flexDirection="row">
+                  <Chip
+                    label={tab.total}
+                    variant="soft"
+                    size="small"
+                    sx={{
+                      color: `indigo.500`,
+                      backgroundColor: 'indigo.100',
+                      borderRadius: '6px',
+                      height: '20px',
+                    }}
+                  />
+                  <Typography
+                    color="text.secondary"
+                    variant="body2"
+                    fontWeight="600"
+                    sx={{
+                      '[aria-selected="true"] &': {
+                        color: 'slate.800',
+                      },
+                    }}
+                  >
+                    {tab.name}
+                  </Typography>
+                </Stack>
+              }
+            />
+          ))}
+        </Tabs>
+        <Stack flex={1}>
+          <Table
+            rowData={filteredTenants}
+            columnDefs={tenantColumns}
+            rowSelection="single"
+            getRowId={({ data }) => String(data?.tenant)}
+            rightAdornment={
+              <Fade in={!!selectedSchoolId} unmountOnExit>
+                <Box>
+                  <ActionMenu
+                    menuItems={[
+                      {
+                        label: t('admin:evictTenantCache'),
+                        icon: <BrushCircleIcon />,
+                        onClick: () =>
+                          selectedSchoolId &&
+                          evictTenantLevelCache(selectedSchoolId),
+                      },
+                    ]}
+                  />
+                </Box>
+              </Fade>
+            }
+            onRowSelection={(newSelectedSchools) => {
+              const [newSelectedSchool] = newSelectedSchools;
+              setSelectedSchoolId(newSelectedSchool?.tenant ?? null);
+            }}
+            sx={{
+              boxShadow: 'none',
+            }}
+          />
+        </Stack>
+      </Card>
+    </PageContainer>
   );
 }

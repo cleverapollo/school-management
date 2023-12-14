@@ -463,7 +463,6 @@ export function UpsertAbsenceModal({
                               onClick={() => {
                                 remove(index);
                               }}
-                              disabled={isEditAbsence}
                               color="primary"
                             >
                               <TrashIcon />
@@ -549,7 +548,7 @@ export function UpsertAbsenceModal({
                     />
                     <RHFDatePicker
                       label={t('common:endDate')}
-                      inputProps={{ fullWidth: true, disabled: isEditAbsence }}
+                      inputProps={{ fullWidth: true }}
                       controlProps={{ name: 'endDate', control }}
                     />
                   </Stack>

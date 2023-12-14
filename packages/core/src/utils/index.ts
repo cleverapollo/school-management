@@ -1,3 +1,4 @@
+export * from './flatten-object';
 export * from './format-phone-number';
 export * from './get-classes-from-object';
 export * from './get-color-based-on-string';

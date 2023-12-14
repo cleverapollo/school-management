@@ -5,6 +5,7 @@ import {
   CalculateGradeFilter,
   CommentBankFilter,
   DashboardAssessmentFilter,
+  GradeSetFilter,
   OverallCommentsFilter,
   StudentResultFilter,
 } from '@tyro/api';
@@ -38,6 +39,8 @@ export const assessmentsKeys = {
     academicNamespaceId,
     filter,
   ],
+  cbaGradeSets: (filter: GradeSetFilter) =>
+    [...assessmentsKeys.all, 'cbaGradeSets', filter] as const,
   allAssessmentComments: () => [...assessmentsKeys.all, 'assessmentComments'],
   assessmentComments: (
     academicNamespaceId: number,
