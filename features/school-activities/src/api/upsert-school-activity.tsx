@@ -7,6 +7,7 @@ import {
 } from '@tyro/api';
 import { useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
+import { groupsKeys } from '@tyro/groups';
 import { activitiesKeys } from './keys';
 
 const saveSchoolActivies = graphql(/* GraphQL */ `
@@ -31,6 +32,7 @@ export function useSaveSchoolActivities() {
           : t('common:snackbarMessages.createSuccess')
       );
       queryClient.invalidateQueries(activitiesKeys.all);
+      queryClient.invalidateQueries(groupsKeys.all);
     },
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });

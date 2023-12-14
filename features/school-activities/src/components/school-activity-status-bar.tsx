@@ -170,27 +170,29 @@ export function SchoolActivityStatusBar({
             </Typography>
 
             <Stack direction="row">
-              {customGroup?.staffMembers?.members?.map((staff) => (
-                <Box
-                  key={staff?.partyId}
-                  sx={{
-                    backgroundColor: 'slate.100',
-                    borderRadius: '18px',
-                    px: 1,
-                    mr: 0.5,
-                  }}
-                >
-                  <Typography
-                    component="dd"
+              {customGroup?.staffMembers?.members
+                ?.filter((_, index) => index < 2)
+                ?.map((staff) => (
+                  <Box
+                    key={staff?.partyId}
                     sx={{
-                      ...textValueStyle,
-                      py: 0.5,
+                      backgroundColor: 'slate.100',
+                      borderRadius: '18px',
+                      px: 1,
+                      mr: 0.5,
                     }}
                   >
-                    {displayName(staff?.person)}
-                  </Typography>
-                </Box>
-              ))}
+                    <Typography
+                      component="dd"
+                      sx={{
+                        ...textValueStyle,
+                        py: 0.5,
+                      }}
+                    >
+                      {displayName(staff?.person)}
+                    </Typography>
+                  </Box>
+                ))}
             </Stack>
           </Stack>
           <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />

@@ -103,7 +103,10 @@ export default function CoverRequired() {
       isLoading={isTableLoaded}
       rowData={lessonsNeededCover ?? []}
       columnDefs={columns}
-      getRowId={({ data }) => String(data?.event?.eventId ?? 0)}
+      getRowId={({ data }) =>
+        String(data?.event?.calendarEventId?.eventId ?? 0) +
+        String(data?.event?.startTime ?? 0)
+      }
     />
   );
 }
