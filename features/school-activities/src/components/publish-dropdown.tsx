@@ -66,7 +66,12 @@ export function PublishDropdown({
       | React.MouseEvent<HTMLDivElement>
       | React.KeyboardEvent<HTMLDivElement>
   ) => {
-    setAnchorEl(event.currentTarget);
+    if ('key' in event && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      setAnchorEl(event.currentTarget);
+    } else {
+      setAnchorEl(event.currentTarget);
+    }
   };
 
   const handleCloseMenu = () => {
@@ -82,12 +87,7 @@ export function PublishDropdown({
         id={`publish-button-${schoolActivityId}`}
         aria-controls={`publish-menu-${schoolActivityId}`}
         onClick={handleMenuOpen}
-        onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            handleMenuOpen(event);
-          }
-        }}
+        onKeyDown={handleMenuOpen}
         sx={{
           backgroundColor: 'white',
           border: '1px solid #E2E8F0',
