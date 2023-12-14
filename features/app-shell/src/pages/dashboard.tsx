@@ -30,7 +30,9 @@ export default function Dashboard() {
               showTeacher={false}
               partyId={activeProfile?.partyId ?? 0}
             />,
-            <OverdueAttendanceWidget />,
+            isStaffUserWithPermission('ps:1:attendance:write_attendance') && (
+              <OverdueAttendanceWidget />
+            ),
           ]}
         />
       </Container>
