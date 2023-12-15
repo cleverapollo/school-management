@@ -19,8 +19,8 @@ import * as React from 'react';
 import { VerticalDotsIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { useCalendarDayBellTimes } from '@tyro/calendar';
 import { SchoolCalendar } from './calendar';
+import { useCalendarDayInfo } from '../../api/school-calendar/calendar-day-info';
 
 dayjs.extend(LocalizedFormat);
 
@@ -33,7 +33,7 @@ export const CalendarOverview = () => {
   const endDate = dayjs(activeAcademicNamespace?.endDate);
 
   const { data: bellTimes = [], isLoading: isBellTimesLoading } =
-    useCalendarDayBellTimes({
+    useCalendarDayInfo({
       fromDate: startDate.format('YYYY-MM-DD'),
       toDate: endDate.format('YYYY-MM-DD'),
     });

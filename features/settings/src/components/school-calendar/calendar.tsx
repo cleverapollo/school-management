@@ -4,21 +4,21 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs, { Dayjs } from 'dayjs';
 import isToday from 'dayjs/plugin/isToday';
 import { AcademicNamespace, DayType } from '@tyro/api';
-import { ReturnTypeFromCalendarDayBellTimes } from '@tyro/calendar';
 import { useState } from 'react';
 import { BellTimeDetailsModal } from './bell-time-details-modal';
+import { ReturnTypeFromCalendarDayInfo } from '../../api/school-calendar/calendar-day-info';
 
 dayjs.extend(isToday);
 
 type MonthCalendarProps = {
   month: string;
   handleAddBellTime: (val: string) => void;
-  bellTimes: ReturnTypeFromCalendarDayBellTimes;
+  bellTimes: ReturnTypeFromCalendarDayInfo;
 };
 
 type CustomDayProps = {
   handleAddBellTime: (val: string) => void;
-  bellTimes: ReturnTypeFromCalendarDayBellTimes;
+  bellTimes: ReturnTypeFromCalendarDayInfo;
 } & PickersDayProps<Dayjs>;
 
 const getCalendarColors = (dayType: DayType | undefined) => {
@@ -143,7 +143,7 @@ function MonthCalendar({
 }
 
 type SchoolCalendarProps = {
-  bellTimes: ReturnTypeFromCalendarDayBellTimes;
+  bellTimes: ReturnTypeFromCalendarDayInfo;
   activeAcademicNamespace?: AcademicNamespace;
   dayType: DayType | 'All';
 };
