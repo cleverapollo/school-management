@@ -12,7 +12,11 @@ import {
   useDisclosure,
   RHFDateRangePicker,
 } from '@tyro/core';
-import { useCustomGroups } from '@tyro/groups';
+import {
+  useCustomGroups,
+  StudentsSearchParty,
+  useStudentsSearchProps,
+} from '@tyro/groups';
 import { UseQueryReturnType, Sa_SchoolActivityDateInput } from '@tyro/api';
 import {
   Button,
@@ -30,7 +34,6 @@ import { LoadingButton, TabContext, TabList, TabPanel } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
 import {
   ListPeoplePagination,
-  RHFStudentAutocomplete,
   RHFStaffAutocomplete,
   StaffSelectOption,
   StudentSelectOption,
@@ -244,6 +247,11 @@ export function SchoolActivityForm({
     }
   };
 
+  const studentsGroups = useStudentsSearchProps({
+    unshiftMode: true,
+    renderAvatarTags: () => null,
+  });
+
   const isFullOrPartialDay =
     activityDayType === ActivityType.PartialDay ||
     activityDayType === ActivityType.SingleDay;
@@ -342,12 +350,8 @@ export function SchoolActivityForm({
                   <TabPanel value={TabOption.STATIC_STUDENTS}>
                     <Grid container gap={2}>
                       <Grid item xs={12}>
-                        <RHFStudentAutocomplete
-                          multiple
-                          unshiftMode
-                          filterSelectedOptions
-                          label={t('common:searchByMemberType.STUDENT')}
-                          renderAvatarTags={() => null}
+                        <RHFAutocomplete<FormValues, StudentsSearchParty, true>
+                          {...studentsGroups}
                           controlProps={{
                             control,
                             name: 'staticStudents',
