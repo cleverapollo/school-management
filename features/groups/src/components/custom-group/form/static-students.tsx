@@ -8,9 +8,14 @@ import {
 } from 'react-hook-form';
 
 import { useCallback } from 'react';
-import { ListPeoplePagination, RHFStudentAutocomplete } from '@tyro/people';
+import { ListPeoplePagination } from '@tyro/people';
 import { useTranslation } from '@tyro/i18n';
+import { RHFAutocomplete } from '@tyro/core';
 import { CustomGroupFormState } from './types';
+import {
+  StudentsSearchParty,
+  useStudentsSearchProps,
+} from '../../../hooks/use-students-search-props';
 
 type StaticStudentsProps = {
   control: Control<CustomGroupFormState>;
@@ -27,6 +32,11 @@ export const StaticStudents = ({
 
   const students = useWatch({ control, name: 'staticStudents' });
 
+  const studentsGroups = useStudentsSearchProps({
+    unshiftMode: true,
+    renderAvatarTags: () => null,
+  });
+
   const removeStudent = useCallback(
     (currentPartyId: number) => {
       setValue(
@@ -40,15 +50,11 @@ export const StaticStudents = ({
   return (
     <Grid container gap={2}>
       <Grid item xs={12}>
-        <RHFStudentAutocomplete
-          multiple
-          unshiftMode
-          filterSelectedOptions
-          label={t('common:searchByMemberType.STUDENT')}
-          renderAvatarTags={() => null}
+        <RHFAutocomplete<CustomGroupFormState, StudentsSearchParty, true>
+          {...studentsGroups}
           controlProps={{
-            control,
             name: 'staticStudents',
+            control,
           }}
         />
       </Grid>
