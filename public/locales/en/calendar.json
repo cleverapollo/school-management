@@ -56,9 +56,9 @@
     "participants": "People, groups, rooms, etc",
     "partyTypeParticipants": "People, groups, etc"
   },
-  "schoolDayType": {
-    "NON_SCHOOL_DAY": "No school today. Enjoy the break!",
-    "PUBLIC_HOLIDAY": "It's a public holiday. Enjoy the break!"
+  "dayType": {
+    "HOLIDAY": "No school today. Enjoy the break!",
+    "STAFF_DAY": "Staff day today. No school for students."
   },
   "eventTypes": "Event types",
   "calendarEventTypes": {

@@ -105,6 +105,18 @@ export const validations = {
 
     return value;
   },
+  isNumber: <T extends string | number>(
+    value: T,
+    errorMessage?: string
+  ): T | ValidationError => {
+    const asNumber = Number(value);
+
+    if (Number.isNaN(asNumber)) {
+      throw new ValidationError('isNumber', errorMessage);
+    }
+
+    return value;
+  },
   isEmail: <T extends string>(
     value: T,
     errorMessage?: string

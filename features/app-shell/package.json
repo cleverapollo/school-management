@@ -15,6 +15,7 @@
     "@tyro/calendar": "*",
     "@tyro/class-list-manager": "*",
     "@tyro/core": "*",
+    "@tyro/fees": "*",
     "@tyro/groups": "*",
     "@tyro/i18n": "*",
     "@tyro/icons": "*",

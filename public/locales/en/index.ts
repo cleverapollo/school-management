@@ -6,6 +6,7 @@ import authentication from './authentication.json';
 import calendar from './calendar.json';
 import classListManager from './classListManager.json';
 import common from './common.json';
+import fees from './fees.json';
 import groups from './groups.json';
 import mail from './mail.json';
 import navigation from './navigation.json';
@@ -27,6 +28,7 @@ export const en = {
   calendar,
   classListManager,
   common,
+  fees,
   groups,
   mail,
   navigation,
