@@ -3,22 +3,21 @@ import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs, { Dayjs } from 'dayjs';
 import isToday from 'dayjs/plugin/isToday';
-import { AcademicNamespace, DayType } from '@tyro/api';
+import { AcademicNamespace, CalendarDayInfo, DayType } from '@tyro/api';
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
-import { ReturnTypeFromCalendarDayInfo } from '../../api/school-calendar/calendar-day-info';
 
 dayjs.extend(isToday);
 
 type MonthCalendarProps = {
   month: string;
-  selectedDays: string[];
-  handleSelectDay: (date: string) => void;
-  bellTimes: ReturnTypeFromCalendarDayInfo;
+  selectedDays: CalendarDayInfo[];
+  handleSelectDay: (day: CalendarDayInfo) => void;
+  bellTimes: CalendarDayInfo[];
 };
 
 type CustomDayProps = {
-  handleSelectDay: (date: string) => void;
-  bellTimes: ReturnTypeFromCalendarDayInfo;
+  handleSelectDay: (day: CalendarDayInfo) => void;
+  bellTimes: CalendarDayInfo[];
   selected: boolean;
 } & PickersDayProps<Dayjs>;
 
@@ -51,7 +50,7 @@ function CustomDay(props: CustomDayProps) {
   const { day, onDaySelect, bellTimes, handleSelectDay, ...other } = props;
 
   const dayToCheck = dayjs(day).format('YYYY-MM-DD');
-  const dayBellTime = bellTimes.find(
+  const dayBellTime = bellTimes?.find(
     (bellTime) => bellTime.date === dayToCheck
   );
 
@@ -69,8 +68,9 @@ function CustomDay(props: CustomDayProps) {
         },
       }}
       onDaySelect={() => {
-        handleSelectDay(dayjs(day).format('YYYY-MM-DD'));
-        dayjs(day).format('YYYY-MM-DD');
+        if (dayBellTime) {
+          handleSelectDay(dayBellTime);
+        }
       }}
       {...other}
     />
@@ -102,7 +102,7 @@ function MonthCalendar({
               handleSelectDay,
               bellTimes,
               selected: !!selectedDays.find(
-                (day) => day === dayjs(props.day).format('YYYY-MM-DD')
+                (day) => day.date === dayjs(props.day).format('YYYY-MM-DD')
               ),
             }),
         }}
@@ -151,11 +151,11 @@ function MonthCalendar({
 }
 
 type SchoolCalendarProps = {
-  bellTimes: ReturnTypeFromCalendarDayInfo;
+  bellTimes: CalendarDayInfo[];
   activeAcademicNamespace?: AcademicNamespace;
   dayTypeFilter: DayType | 'All';
-  selectedDays: string[];
-  setSelectedDays: Dispatch<SetStateAction<string[]>>;
+  selectedDays: CalendarDayInfo[];
+  setSelectedDays: Dispatch<SetStateAction<CalendarDayInfo[]>>;
 };
 
 export const SchoolCalendar = ({
@@ -182,17 +182,17 @@ export const SchoolCalendar = ({
     months.push(startDate.add(i, 'month').format('YYYY-MM-DD'));
   }
 
-  const handleSelectDay = (date: string) => {
+  const handleSelectDay = (day: CalendarDayInfo) => {
     if (enableMultiSelect) {
-      if (selectedDays.includes(date)) {
-        setSelectedDays((prev) => prev.filter((d) => d !== date));
+      if (selectedDays.find(({ date }) => date === day.date)) {
+        setSelectedDays((prev) => prev.filter((d) => d.date !== day.date));
       } else {
-        setSelectedDays((prev) => [...prev, date]);
+        setSelectedDays((prev) => [...prev, day]);
       }
-    } else if (selectedDays.includes(date)) {
+    } else if (selectedDays.find(({ date }) => date === day.date)) {
       setSelectedDays([]);
     } else {
-      setSelectedDays([date]);
+      setSelectedDays([day]);
     }
   };
 
