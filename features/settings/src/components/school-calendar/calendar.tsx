@@ -4,21 +4,22 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs, { Dayjs } from 'dayjs';
 import isToday from 'dayjs/plugin/isToday';
 import { AcademicNamespace, DayType } from '@tyro/api';
-import { useState } from 'react';
-import { BellTimeDetailsModal } from './bell-time-details-modal';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { ReturnTypeFromCalendarDayInfo } from '../../api/school-calendar/calendar-day-info';
 
 dayjs.extend(isToday);
 
 type MonthCalendarProps = {
   month: string;
-  handleAddBellTime: (val: string) => void;
+  selectedDays: string[];
+  handleSelectDay: (date: string) => void;
   bellTimes: ReturnTypeFromCalendarDayInfo;
 };
 
 type CustomDayProps = {
-  handleAddBellTime: (val: string) => void;
+  handleSelectDay: (date: string) => void;
   bellTimes: ReturnTypeFromCalendarDayInfo;
+  selected: boolean;
 } & PickersDayProps<Dayjs>;
 
 const getCalendarColors = (dayType: DayType | undefined) => {
@@ -35,7 +36,7 @@ const getCalendarColors = (dayType: DayType | undefined) => {
       };
     case DayType.Holiday:
       return {
-        backgroundColor: 'purple.400',
+        backgroundColor: 'green.500',
         color: 'white',
       };
     default:
@@ -47,7 +48,7 @@ const getCalendarColors = (dayType: DayType | undefined) => {
 };
 
 function CustomDay(props: CustomDayProps) {
-  const { day, onDaySelect, bellTimes, handleAddBellTime, ...other } = props;
+  const { day, onDaySelect, bellTimes, handleSelectDay, ...other } = props;
 
   const dayToCheck = dayjs(day).format('YYYY-MM-DD');
   const dayBellTime = bellTimes.find(
@@ -63,9 +64,12 @@ function CustomDay(props: CustomDayProps) {
         borderRadius: '50%',
         backgroundColor,
         color,
+        '&:focus, &:hover': {
+          backgroundColor,
+        },
       }}
       onDaySelect={() => {
-        handleAddBellTime(dayjs(day).format('YYYY-MM-DD'));
+        handleSelectDay(dayjs(day).format('YYYY-MM-DD'));
         dayjs(day).format('YYYY-MM-DD');
       }}
       {...other}
@@ -76,7 +80,8 @@ function CustomDay(props: CustomDayProps) {
 function MonthCalendar({
   month,
   bellTimes,
-  handleAddBellTime,
+  selectedDays,
+  handleSelectDay,
 }: MonthCalendarProps) {
   return (
     <Box
@@ -94,8 +99,11 @@ function MonthCalendar({
           day: (props) =>
             CustomDay({
               ...props,
-              handleAddBellTime,
+              handleSelectDay,
               bellTimes,
+              selected: !!selectedDays.find(
+                (day) => day === dayjs(props.day).format('YYYY-MM-DD')
+              ),
             }),
         }}
         sx={{
@@ -145,17 +153,19 @@ function MonthCalendar({
 type SchoolCalendarProps = {
   bellTimes: ReturnTypeFromCalendarDayInfo;
   activeAcademicNamespace?: AcademicNamespace;
-  dayType: DayType | 'All';
+  dayTypeFilter: DayType | 'All';
+  selectedDays: string[];
+  setSelectedDays: Dispatch<SetStateAction<string[]>>;
 };
 
 export const SchoolCalendar = ({
   bellTimes,
   activeAcademicNamespace,
-  dayType,
+  dayTypeFilter,
+  selectedDays,
+  setSelectedDays,
 }: SchoolCalendarProps) => {
-  const [sessionBellTimeToEdit, setSessionBellTimeToEdit] = useState<
-    string | null
-  >(null);
+  const [enableMultiSelect, setEnableMultiSelect] = useState(false);
 
   const startDate = dayjs(activeAcademicNamespace?.startDate);
   const endDate = dayjs(activeAcademicNamespace?.endDate);
@@ -164,13 +174,49 @@ export const SchoolCalendar = ({
   const diffInMonths = endDate.diff(startDate, 'month');
   const totalMonths = diffInMonths + 1;
   const filteredBellTimes =
-    dayType === 'All'
+    dayTypeFilter === 'All'
       ? bellTimes
-      : bellTimes.filter((bellTime) => bellTime.dayType === dayType);
+      : bellTimes.filter((bellTime) => bellTime.dayType === dayTypeFilter);
 
   for (let i = 0; i <= totalMonths; i += 1) {
     months.push(startDate.add(i, 'month').format('YYYY-MM-DD'));
   }
+
+  const handleSelectDay = (date: string) => {
+    if (enableMultiSelect) {
+      if (selectedDays.includes(date)) {
+        setSelectedDays((prev) => prev.filter((d) => d !== date));
+      } else {
+        setSelectedDays((prev) => [...prev, date]);
+      }
+    } else if (selectedDays.includes(date)) {
+      setSelectedDays([]);
+    } else {
+      setSelectedDays([date]);
+    }
+  };
+
+  const handleKeyPress = (e: KeyboardEvent) => {
+    if (e.key === 'Shift') {
+      setEnableMultiSelect(true);
+    }
+  };
+
+  const handleKeyUp = (e: KeyboardEvent) => {
+    if (e.key === 'Shift') {
+      setEnableMultiSelect(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyPress);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
 
   return (
     <Stack
@@ -183,16 +229,11 @@ export const SchoolCalendar = ({
         <MonthCalendar
           key={month}
           month={month}
-          handleAddBellTime={setSessionBellTimeToEdit}
+          handleSelectDay={handleSelectDay}
+          selectedDays={selectedDays}
           bellTimes={filteredBellTimes}
         />
       ))}
-      {sessionBellTimeToEdit && (
-        <BellTimeDetailsModal
-          day={sessionBellTimeToEdit}
-          onClose={() => setSessionBellTimeToEdit(null)}
-        />
-      )}
     </Stack>
   );
 };
