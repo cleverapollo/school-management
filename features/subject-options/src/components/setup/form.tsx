@@ -13,6 +13,7 @@ import {
   ConfirmDialog,
   RHFSelect,
   RHFTextField,
+  SelectionList,
   useDisclosure,
   useFormValidator,
 } from '@tyro/core';
@@ -23,6 +24,7 @@ import { RHFSubjectAutocomplete } from '@tyro/settings';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
 import { AcademicYearSelect } from './academic-year-select';
+import { StudentSelection } from './student-selection';
 
 interface FormState {
   name: string;
@@ -173,6 +175,7 @@ export function SubjectOptionsSetupForm() {
             >
               {t('subjectOptions:studentSelection')}
             </Typography>
+            <StudentSelection control={control} />
           </Stack>
         </Card>
         <Card variant="outlined">

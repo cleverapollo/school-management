@@ -15,17 +15,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
-    "jsx": "react-jsx",
-    "typeRoots": [
-      "./node_modules/@types",
-      "./types"
-    ],
-    "types": [
-      "react",
-      "react-dom",
-      "react-router-dom",
-      "node",
-      "bun-types",
-    ],
+    "jsx": "react-jsx"
   }
 }

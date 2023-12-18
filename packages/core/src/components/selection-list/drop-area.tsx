@@ -4,6 +4,7 @@ import { Droppable } from 'react-beautiful-dnd';
 import { Box, Theme, useTheme, Typography } from '@mui/material';
 import get from 'lodash/get';
 import { SearchInput } from '../search-input';
+import { GroupedDraggableSelectionList } from './draggable-lists';
 
 export type SelectListDropAreaProps<T extends object | string> = {
   droppableId: string;
@@ -15,7 +16,6 @@ export type SelectListDropAreaProps<T extends object | string> = {
     : (option: T) => string;
   getOptionLabel: (option: T) => string;
   showSearch?: boolean;
-  optionIdKey?: T extends object ? keyof T : never;
 };
 
 const getListStyle = ({ customShadows }: Theme, isDraggingOver: boolean) =>
@@ -97,7 +97,12 @@ export const SelectListDropArea = <T extends object | string>({
               onChange={(e) => setSearchValue(e.target.value)}
             />
           )}
-          {typeof groupedOptions === 'object' ? null : null}
+          {Array.isArray(groupedOptions) ? null : (
+            <GroupedDraggableSelectionList
+              groups={groupedOptions}
+              getOptionLabel={getOptionLabel}
+            />
+          )}
         </Box>
       )}
     </Droppable>

@@ -11,5 +11,6 @@
   "mustGetCannotBeGreaterThanCanChoose": "How many preferences a student will get cannot be greater than how many they can choose",
   "mustSelectAtLeastOneSubject": "You must select at least one subject",
   "whatYearAreStudentsGoingInto": "What year are students going into?",
-  "academicYearToTakeStudentsFrom": "Academic year to take students from"
+  "academicYearToTakeStudentsFrom": "Academic year to take students from",
+  "noClassGroup": "No class group"
 }
