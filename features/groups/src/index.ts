@@ -12,6 +12,7 @@ export {
 } from './api/year-groups';
 export { useSubjectGroups } from './api/subject-groups';
 export { useBlocksList } from './api/blocks-list';
+export { useClassGroups } from './api/class-groups';
 export * from './components/common/year-group-autocomplete';
 export * from './components/common/class-group-autocomplete';
 export * from './components/common/block-autocomplete';

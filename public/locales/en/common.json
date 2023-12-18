@@ -136,6 +136,8 @@
   "saving": "Saving",
   "saved": "Saved",
   "selectedWithNumber": "Selected ({{count}})",
+  "selected": "Selected",
+  "unselected": "Unselected",
   "yes": "Yes",
   "no": "No",
   "none": "None",

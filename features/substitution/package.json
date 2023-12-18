@@ -4,9 +4,9 @@
   "private": true,
   "main": "src/index.ts",
   "dependencies": {
-    "@mui/lab": "^5.0.0-alpha.151",
-    "@mui/material": "^5.14.16",
-    "@mui/x-date-pickers": "^6.17.0",
+    "@mui/lab": "^5.0.0-alpha.156",
+    "@mui/material": "^5.15.0",
+    "@mui/x-date-pickers": "^6.18.5",
     "@tanstack/react-query": "^4.29.7",
     "@tanstack/react-table": "^8.10.7",
     "@tyro/api": "*",

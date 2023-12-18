@@ -1,6 +1,6 @@
 import { useClassGroups } from '@tyro/groups';
 import { Control, useWatch } from 'react-hook-form';
-import { DragDropContext } from 'react-beautiful-dnd';
+import { DragDropContext, OnDragEndResponder, OnDragStartResponder } from 'react-beautiful-dnd';
 
 interface StudentSelectionProps {
   control: Control<{
@@ -9,11 +9,12 @@ interface StudentSelectionProps {
   }>;
 }
 
-export function StudentSelection(props: StudentSelectionProps) {
+export function StudentSelection({ control }: StudentSelectionProps) {
   const [academicYearId, yearGroupEnrolmentPartyId] = useWatch({
     name: ['academicYearId', 'yearGroupEnrolmentPartyId'],
-    control: props.control,
+    control,
   });
+  
 
   const { data } = useClassGroups();
 
@@ -22,5 +23,9 @@ export function StudentSelection(props: StudentSelectionProps) {
     return null;
   }
 
-  return <DragDropContext />;
+  return (
+    <DragDropContext onDragStart={()} onDragEnd={}>
+      
+    </DragDropContext>
+  );
 }

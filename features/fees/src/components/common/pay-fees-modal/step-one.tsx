@@ -44,10 +44,11 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
           rules.required(),
           rules.isNumber(),
           rules.min(0.5),
-          rules.validate((value, throwError, formValues, fieldArrayIndex) => {
+          rules.validate<string>((value, throwError, formValues, fieldArrayIndex) => {
             const fee = formValues.fees[fieldArrayIndex as number];
+            const valueAsNumber = Number(value);
 
-            if ((value ?? 0) > fee.amount - fee.amountPaid) {
+            if ((valueAsNumber ?? 0) > fee.amount - fee.amountPaid) {
               throwError(t('fees:amountToPayExceedsTheAmountThatsDue'));
             }
           }),
