@@ -355,15 +355,20 @@ export function UpsertAbsenceModal({
   }, [initialAbsenceData]);
 
   useEffect(() => {
-    if (
+    const initialDataOrderDoesNotMatch =
       subjectGroupsData &&
       initialAbsenceData?.longTermLeaveGroups &&
       subjectGroupsData.some(
         (group, index) =>
           group.partyId !==
           initialAbsenceData?.longTermLeaveGroups?.[index]?.groupId
-      )
-    ) {
+      );
+    const hasMarkedAsLongTermLeave =
+      !initialAbsenceData?.longTermLeaveGroups &&
+      isLongTermLeaveValue &&
+      subjectGroupsData;
+
+    if (initialDataOrderDoesNotMatch || hasMarkedAsLongTermLeave) {
       const updatedPartyIds = subjectGroupsData.map((group) => ({
         groupId: group.partyId,
         coveringStaff: null,
@@ -371,7 +376,11 @@ export function UpsertAbsenceModal({
 
       replaceLtlGroups(updatedPartyIds);
     }
-  }, [initialAbsenceData?.longTermLeaveGroups, subjectGroupsData]);
+  }, [
+    initialAbsenceData?.longTermLeaveGroups,
+    subjectGroupsData,
+    isLongTermLeaveValue,
+  ]);
 
   return (
     <Dialog open={open} onClose={closeModal} fullWidth maxWidth="md">
