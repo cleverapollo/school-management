@@ -17,42 +17,60 @@ import {
   useAcademicNamespace,
   Calendar_CreateCalendarDayInput,
   Scalars,
+  CalendarDayInfo,
 } from '@tyro/api';
-import { ActionMenu, useDisclosure } from '@tyro/core';
+import { ActionMenu, useDisclosure, useCacheWithExpiry } from '@tyro/core';
 import { CalendarDayTypeIcon } from '@tyro/icons/src/calendar-day-type';
 import { useState, useMemo } from 'react';
 import * as React from 'react';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import { isEqual } from 'lodash';
 import { SchoolCalendar } from './calendar';
 import { useCalendarDayInfo } from '../../api/school-calendar/calendar-day-info';
 import { useUpdateCalendarDays } from '../../api/school-calendar/update-calendar-days';
 import { ChangeDateRangeModal } from './change-date-range-modal';
+import { BulkEditSaveBar } from './bulk-edit-save-bar';
 
 dayjs.extend(LocalizedFormat);
+
+type EditedRow = Record<
+  string,
+  Record<
+    string,
+    {
+      originalValue: any;
+      newValue: any;
+    }
+  >
+>;
+
+export enum EditState {
+  Idle = 'IDLE',
+  Saving = 'SAVING',
+  Saved = 'SAVED',
+  Error = 'ERROR',
+}
 
 export const CalendarOverview = () => {
   const { t } = useTranslation(['settings']);
 
   const { activeAcademicNamespace } = useAcademicNamespace();
 
-  const startDate = dayjs(activeAcademicNamespace?.startDate);
-  const endDate = dayjs(activeAcademicNamespace?.endDate);
-  const filter = {
-    fromDate: startDate.format('YYYY-MM-DD'),
-    toDate: endDate.format('YYYY-MM-DD'),
-  };
-
-  const { data: bellTimes = [], isLoading: isCalendarDayInfoLoading } =
-    useCalendarDayInfo(filter);
+  const { data, isLoading: isCalendarDayInfoLoading } = useCalendarDayInfo({});
 
   const {
     mutateAsync: updateCalendarDays,
     isLoading: isUpdateCalendarDaysLoading,
-  } = useUpdateCalendarDays(filter);
+  } = useUpdateCalendarDays({});
 
   const [dayTypeFilter, setDayTypeFilter] = useState<DayType | 'All'>('All');
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [selectedDays, setSelectedDays] = useState<CalendarDayInfo[]>([]);
+  const [state, setState] = useState<EditState>(EditState.Idle);
+  const [editedRows, setEditedRows] = useCacheWithExpiry<EditedRow>(
+    'bulk-edit',
+    {}
+  );
 
   const dayTypes = [
     {
@@ -78,24 +96,60 @@ export const CalendarOverview = () => {
     onClose: onCloseModal,
   } = useDisclosure();
 
-  const handleUpdateCalendarDays = async (
-    days: Calendar_CreateCalendarDayInput[]
-  ) => {
+  const onBulkSave = async () => {
     try {
-      await updateCalendarDays({ days });
+      setState(EditState.Saving);
+      const updates = Object.entries(editedRows).reduce<
+        Calendar_CreateCalendarDayInput[]
+      >((acc, [date, changes]) => {
+        const { dayType, startTime, endTime } = changes;
+        acc.push({
+          date,
+          dayType: dayType?.newValue,
+          startTime: startTime?.newValue,
+          endTime: endTime?.newValue,
+        });
+
+        return acc;
+      }, []);
+      await updateCalendarDays({
+        calendarId: (data?.id ?? '') as number,
+        days: updates,
+      });
       setSelectedDays([]);
+      setState(EditState.Saved);
+      setEditedRows({});
     } catch (e) {
-      console.log(e);
+      setState(EditState.Error);
+      console.error(e);
+    } finally {
+      setTimeout(() => {
+        setState(EditState.Idle);
+      }, 2000);
     }
   };
+
+  const onCancelBulkEdit = () => {
+    setSelectedDays([]);
+    setEditedRows({});
+  };
+
+  const numberOfEdits = useMemo(
+    () =>
+      Object.values(editedRows).reduce(
+        (acc, row) => acc + Object.keys(row).length,
+        0
+      ),
+    [editedRows]
+  );
 
   const actionMenuItems = useMemo(
     () => [
       {
         label: t('settings:schoolCalendar.setAsSchoolDay'),
         onClick: () =>
-          handleUpdateCalendarDays(
-            selectedDays.map((date) => ({
+          handleCalendarChanges(
+            selectedDays.map(({ date }) => ({
               date,
               dayType: DayType.SchoolDay,
             }))
@@ -104,8 +158,8 @@ export const CalendarOverview = () => {
       {
         label: t('settings:schoolCalendar.setAsNonSchoolDay'),
         onClick: () =>
-          handleUpdateCalendarDays(
-            selectedDays.map((date) => ({
+          handleCalendarChanges(
+            selectedDays.map(({ date }) => ({
               date,
               dayType: DayType.Holiday,
             }))
@@ -119,6 +173,81 @@ export const CalendarOverview = () => {
     [selectedDays]
   );
 
+  const handleCalendarChanges = (days: Calendar_CreateCalendarDayInput[]) => {
+    setEditedRows((prev) => ({
+      ...(prev ?? {}),
+      ...days
+        .map((day) => {
+          const previousDayChanges = prev[day.date] ?? {};
+
+          Object.keys(day)
+            .filter((key) => key !== 'date')
+            .forEach((key) => {
+              const newValue =
+                day[
+                  key as keyof Pick<
+                    CalendarDayInfo,
+                    'dayType' | 'startTime' | 'endTime'
+                  >
+                ];
+              const oldValue = data?.dayInfo?.find(
+                ({ date }) => date === day.date
+              )?.[
+                key as keyof Pick<
+                  CalendarDayInfo,
+                  'dayType' | 'startTime' | 'endTime'
+                >
+              ];
+
+              if (!previousDayChanges[key]) {
+                if (!isEqual(oldValue, newValue)) {
+                  previousDayChanges[key] = {
+                    originalValue: oldValue ?? null,
+                    newValue: newValue ?? null,
+                  };
+                }
+              } else {
+                previousDayChanges[key].newValue = newValue;
+              }
+
+              if (
+                isEqual(
+                  previousDayChanges[key]?.originalValue,
+                  newValue ?? null
+                ) ||
+                previousDayChanges[key] === undefined
+              ) {
+                delete previousDayChanges[key];
+              }
+              if (Object.keys(previousDayChanges).length === 0) {
+                delete prev[key];
+              }
+            });
+
+          return {
+            ...previousDayChanges,
+            date: day.date,
+          } as Calendar_CreateCalendarDayInput;
+        })
+        .reduce((acc, { date, dayType, startTime, endTime }) => {
+          if (
+            date &&
+            (dayType !== undefined ||
+              startTime !== undefined ||
+              endTime !== undefined)
+          ) {
+            acc[date] = {
+              ...(dayType !== undefined ? { dayType } : {}),
+              ...(startTime !== undefined ? { startTime } : {}),
+              ...(endTime !== undefined ? { endTime } : {}),
+            };
+          }
+          return acc;
+        }, {} as any),
+    }));
+    setSelectedDays([]);
+  };
+
   const handleChangeDayType = (
     event: React.MouseEvent<HTMLElement>,
     newType: DayType | 'All'
@@ -127,11 +256,6 @@ export const CalendarOverview = () => {
       setDayTypeFilter(newType);
     }
   };
-
-  const handleChangeDateRange = (
-    startTime: Scalars['Time'],
-    endTime: Scalars['Time']
-  ) => {};
 
   return (
     <Card variant="outlined" sx={{ height: '100%', flex: 1 }}>
@@ -219,7 +343,20 @@ export const CalendarOverview = () => {
             }}
           >
             <SchoolCalendar
-              bellTimes={bellTimes}
+              bellTimes={(data?.dayInfo ?? []).map((day) =>
+                editedRows[day.date]
+                  ? {
+                      ...day,
+                      dayType:
+                        editedRows[day.date].dayType?.newValue ?? day.dayType,
+                      startTime:
+                        editedRows[day.date].startTime?.newValue ??
+                        day.startTime,
+                      endTime:
+                        editedRows[day.date].endTime?.newValue ?? day.endTime,
+                    }
+                  : day
+              )}
               dayTypeFilter={dayTypeFilter}
               activeAcademicNamespace={activeAcademicNamespace}
               selectedDays={selectedDays}
@@ -229,7 +366,23 @@ export const CalendarOverview = () => {
           <ChangeDateRangeModal
             open={isModalOpen}
             onClose={onCloseModal}
-            onSave={handleChangeDateRange}
+            onSave={(startTime: Scalars['Time'], endTime: Scalars['Time']) => {
+              handleCalendarChanges(
+                selectedDays.map(({ date }) => ({
+                  date,
+                  dayType: DayType.SchoolDay,
+                  startTime,
+                  endTime,
+                }))
+              );
+            }}
+          />
+          <BulkEditSaveBar
+            isEditing={numberOfEdits > 0 || state !== EditState.Idle}
+            editingState={state}
+            numberOfEdits={numberOfEdits}
+            onSave={onBulkSave}
+            onCancel={onCancelBulkEdit}
           />
         </CardContent>
       )}

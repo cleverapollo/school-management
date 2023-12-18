@@ -5,7 +5,7 @@ import {
   queryClient,
   graphql,
   Calendar_UpdateDays,
-  CalendarDayInfoFilter,
+  CalendarFilter,
 } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
@@ -19,7 +19,7 @@ const updateCalendarDays = graphql(/* GraphQL */ `
   }
 `);
 
-export function useUpdateCalendarDays(filter: CalendarDayInfoFilter) {
+export function useUpdateCalendarDays(filter: CalendarFilter) {
   const { toast } = useToast();
   const { t } = useTranslation(['common']);
 

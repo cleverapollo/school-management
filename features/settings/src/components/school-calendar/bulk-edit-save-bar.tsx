@@ -1,21 +1,24 @@
 import { Button, Fade, Stack, Typography } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { SaveBarButton, SaveBarContainer } from '@tyro/core';
-import { EditState } from '../state/edited-state';
-import { useListManagerState } from '../state';
+import { EditState } from './overview';
 
-export function BulkEditSaveBar() {
+interface BulkEditSaveBarProps {
+  isEditing: boolean;
+  editingState: EditState;
+  numberOfEdits: number;
+  onSave: () => void;
+  onCancel: () => void;
+}
+
+export function BulkEditSaveBar({
+  isEditing,
+  editingState,
+  numberOfEdits,
+  onSave,
+  onCancel,
+}: BulkEditSaveBarProps) {
   const { t } = useTranslation(['common']);
-  const {
-    editedState: {
-      isEditing,
-      editingState,
-      numberOfEdits,
-      onSave,
-      onCancel,
-      ...modalProps
-    },
-  } = useListManagerState();
 
   return (
     <SaveBarContainer

@@ -4,27 +4,30 @@ import {
   graphql,
   queryClient,
   UseQueryReturnType,
-  CalendarDayInfoFilter,
+  CalendarFilter,
 } from '@tyro/api';
 import { schoolCalendarKeys } from './keys';
 
 const calendarDayInfo = graphql(/* GraphQL */ `
-  query calendarDayInfo($filter: CalendarDayInfoFilter) {
-    calendar_dayInfo(filter: $filter) {
-      date
-      dayType
-      startTime
-      endTime
-      periods {
-        type
+  query calendarDayInfo($filter: CalendarFilter) {
+    calendar_calendar(filter: $filter) {
+      id
+      dayInfo {
+        date
+        dayType
         startTime
         endTime
+        periods {
+          type
+          startTime
+          endTime
+        }
       }
     }
   }
 `);
 
-const calendarDayInfoQuery = (filter: CalendarDayInfoFilter) => ({
+const calendarDayInfoQuery = (filter: CalendarFilter) => ({
   queryKey: schoolCalendarKeys.dayInfo(filter),
   queryFn: async () =>
     gqlClient.request(calendarDayInfo, {
@@ -32,14 +35,14 @@ const calendarDayInfoQuery = (filter: CalendarDayInfoFilter) => ({
     }),
 });
 
-export function getCalendarDayInfo(filter: CalendarDayInfoFilter) {
+export function getCalendarDayInfo(filter: CalendarFilter) {
   return queryClient.fetchQuery(calendarDayInfoQuery(filter));
 }
 
-export function useCalendarDayInfo(filter: CalendarDayInfoFilter) {
+export function useCalendarDayInfo(filter: CalendarFilter) {
   return useQuery({
     ...calendarDayInfoQuery(filter),
-    select: ({ calendar_dayInfo }) => calendar_dayInfo,
+    select: ({ calendar_calendar }) => calendar_calendar?.[0] ?? {},
   });
 }
 
