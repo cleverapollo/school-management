@@ -17,9 +17,52 @@ const fees = graphql(/* GraphQL */ `
       amount
       feeType
       absorbFees
+      assignedToParties {
+        ... on PartyPerson {
+          __typename
+          person {
+            partyId
+            firstName
+            lastName
+            avatarUrl
+          }
+        }
+        ... on SubjectGroup {
+          __typename
+          partyId
+          name
+          avatarUrl
+        }
+        ... on GeneralGroup {
+          __typename
+          partyId
+          name
+        }
+        ... on YearGroupEnrollment {
+          __typename
+          partyId
+          name
+        }
+        ... on ProgrammeStageEnrollment {
+          __typename
+          partyId
+          name
+        }
+      }
+      categories {
+        id
+        name
+      }
       discounts {
         id
         name
+      }
+      individualDiscounts {
+        personPartyId
+        discount {
+          id
+          name
+        }
       }
     }
   }

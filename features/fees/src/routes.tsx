@@ -1,4 +1,10 @@
-import { lazyWithRetry, NavObjectFunction, NavObjectType } from '@tyro/core';
+import {
+  getNumber,
+  lazyWithRetry,
+  NavObjectFunction,
+  NavObjectType,
+  throw404Error,
+} from '@tyro/core';
 import { WalletWithMoneyIcon } from '@tyro/icons';
 import { getDiscounts } from './api/discounts';
 import { getFees } from './api/fees';
@@ -12,6 +18,9 @@ const ContactDashboard = lazyWithRetry(
 const DiscountsPage = lazyWithRetry(() => import('./pages/discounts'));
 const SetupPage = lazyWithRetry(() => import('./pages/setup'));
 const CategoriesPage = lazyWithRetry(() => import('./pages/categories'));
+const OverviewPage = lazyWithRetry(() => import('./pages/fee'));
+const CreateFeePage = lazyWithRetry(() => import('./pages/fee/create'));
+const EditFeePage = lazyWithRetry(() => import('./pages/fee/edit'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   // {
@@ -54,6 +63,22 @@ export const getRoutes: NavObjectFunction = (t) => [
               return redirect || getFees({});
             },
             element: <OverviewPage />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: 'create',
+            element: <CreateFeePage />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: 'edit/:feeId',
+            loader: ({ params }) => {
+              const feeId = getNumber(params?.feeId);
+              if (!feeId) throw404Error();
+
+              return getFees({ ids: [feeId] });
+            },
+            element: <EditFeePage />,
           },
           {
             type: NavObjectType.MenuLink,
