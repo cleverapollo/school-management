@@ -1,13 +1,13 @@
 import { useMemo, useState } from 'react';
 import groupByFunction from 'lodash/groupBy';
 import { Droppable } from 'react-beautiful-dnd';
-import { Box, Theme, useTheme, Typography } from '@mui/material';
+import { Box, Theme, useTheme, Typography, Card } from '@mui/material';
 import get from 'lodash/get';
 import { SearchInput } from '../search-input';
 import { GroupedDraggableSelectionList } from './draggable-lists';
 
 export type SelectListDropAreaProps<T extends object | string> = {
-  droppableId: string;
+  droppableId: 'unselected' | 'selected';
   label: string;
   variant: 'selection' | 'ordering';
   options: T[];
@@ -15,17 +15,49 @@ export type SelectListDropAreaProps<T extends object | string> = {
     ? keyof T | ((option: T) => string)
     : (option: T) => string;
   getOptionLabel: (option: T) => string;
+  getOptionId: (option: T) => string;
   showSearch?: boolean;
 };
 
-const getListStyle = ({ customShadows }: Theme, isDraggingOver: boolean) =>
-  ({
-    backgroundColor: isDraggingOver ? 'indigo.200' : 'background.paper',
-    boxShadow: customShadows.card,
+const getListStyle = ({
+  theme: { palette },
+  isDraggingOver,
+  droppableId,
+}: {
+  theme: Theme;
+  isDraggingOver: boolean;
+  droppableId: 'unselected' | 'selected';
+}) => {
+  const backgroundColor = droppableId === 'selected' ? 'slate.100' : 'white';
+  const listItemBackgroundColor =
+    droppableId === 'selected' ? 'white' : 'slate.100';
+  const listItemBoxShadow =
+    droppableId === 'selected' ? 'none' : `0 1px 0 0 ${palette.slate[200]}`;
+
+  return {
+    backgroundColor: isDraggingOver ? 'indigo.200' : backgroundColor,
+    flex: 1,
     borderRadius: 2,
     paddingY: 0.75,
     paddingX: 1.5,
-  } as const);
+    '& li': {
+      px: 1,
+      py: 0.5,
+
+      '&.MuiListItem-root': {
+        borderRadius: 1,
+        my: 1,
+        backgroundColor: listItemBackgroundColor,
+        boxShadow: listItemBoxShadow,
+        width: 'fit-content',
+
+        '& .MuiTypography-root': {
+          fontWeight: 600,
+        },
+      },
+    },
+  } as const;
+};
 
 export const SelectListDropArea = <T extends object | string>({
   variant,
@@ -34,6 +66,7 @@ export const SelectListDropArea = <T extends object | string>({
   options,
   groupBy,
   getOptionLabel,
+  getOptionId,
   showSearch,
 }: SelectListDropAreaProps<T>) => {
   const [searchValue, setSearchValue] = useState('');
@@ -87,8 +120,16 @@ export const SelectListDropArea = <T extends object | string>({
   return (
     <Droppable droppableId={droppableId} type="group">
       {(provided, snapshot) => (
-        <Box sx={getListStyle(theme, snapshot.isDraggingOver)}>
-          <Typography component="h3" variant="h6" fontSize="1rem">
+        <Card
+          ref={provided.innerRef}
+          {...provided.droppableProps}
+          sx={getListStyle({
+            theme,
+            droppableId,
+            isDraggingOver: snapshot.isDraggingOver,
+          })}
+        >
+          <Typography component="h3" variant="subtitle1" fontWeight={700}>
             {label}
           </Typography>
           {showSearch && (
@@ -97,13 +138,22 @@ export const SelectListDropArea = <T extends object | string>({
               onChange={(e) => setSearchValue(e.target.value)}
             />
           )}
-          {Array.isArray(groupedOptions) ? null : (
-            <GroupedDraggableSelectionList
-              groups={groupedOptions}
-              getOptionLabel={getOptionLabel}
-            />
-          )}
-        </Box>
+          <Box
+            sx={{
+              maxHeight: 300,
+              overflowY: 'auto',
+            }}
+          >
+            {Array.isArray(groupedOptions) ? null : (
+              <GroupedDraggableSelectionList
+                groups={groupedOptions}
+                getOptionLabel={getOptionLabel}
+                getOptionId={getOptionId}
+              />
+            )}
+            {provided.placeholder}
+          </Box>
+        </Card>
       )}
     </Droppable>
   );

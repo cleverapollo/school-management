@@ -25,14 +25,7 @@ import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
 import { AcademicYearSelect } from './academic-year-select';
 import { StudentSelection } from './student-selection';
-
-interface FormState {
-  name: string;
-  academicYearId: number;
-  yearGroupEnrolmentPartyId: number;
-  classGroups: number[];
-  subjectSets: SaveSubjectSet[];
-}
+import { SubjectOptionsFormState } from './types';
 
 const defaultPoolProps = {
   canChoose: 0,
@@ -49,12 +42,12 @@ export function SubjectOptionsSetupForm() {
   } = useDisclosure();
   const navigate = useNavigate();
 
-  const { rules, resolver } = useFormValidator<FormState>();
+  const { rules, resolver } = useFormValidator<SubjectOptionsFormState>();
   const {
     control,
     handleSubmit,
     formState: { isDirty },
-  } = useForm<FormState>({
+  } = useForm<SubjectOptionsFormState>({
     resolver: resolver({
       name: rules.required(),
       subjectSets: {

@@ -4,6 +4,8 @@ import {
   ListItem,
   ListItemText,
   ListSubheader,
+  ListItemIcon,
+  Checkbox,
 } from '@mui/material';
 import { Fragment } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
@@ -13,11 +15,13 @@ interface GroupedDraggableSelectionListProps<T extends object | string> {
     [groupName: string]: T[];
   };
   getOptionLabel: (option: T) => string;
+  getOptionId: (option: T) => string;
 }
 
 export const GroupedDraggableSelectionList = <T extends object | string>({
   groups,
   getOptionLabel,
+  getOptionId,
 }: GroupedDraggableSelectionListProps<T>) => {
   let indexAcrossGroups = 0;
 
@@ -45,14 +49,26 @@ export const GroupedDraggableSelectionList = <T extends object | string>({
               indexAcrossGroups += 1;
 
               return (
-                <Draggable draggableId={groupName} index={indexAcrossGroups}>
+                <Draggable
+                  key={getOptionId(option)}
+                  draggableId={getOptionId(option)}
+                  index={indexAcrossGroups}
+                >
                   {(provided, snapshot) => (
                     <ListItem
-                      key={JSON.stringify(option)}
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                     >
+                      <ListItemIcon>
+                        <Checkbox
+                          edge="start"
+                          checked={checked.indexOf(value) !== -1}
+                          tabIndex={-1}
+                          disableRipple
+                          inputProps={{ 'aria-labelledby': labelId }}
+                        />
+                      </ListItemIcon>
                       <ListItemText primary={getOptionLabel(option)} />
                     </ListItem>
                   )}

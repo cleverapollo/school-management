@@ -1,19 +1,11 @@
-import { useClassGroups } from '@tyro/groups';
 import { Control, useWatch } from 'react-hook-form';
 import { SelectionList, usePreferredNameLayout } from '@tyro/core';
-import {
-  DragDropContext,
-  OnDragEndResponder,
-  OnDragStartResponder,
-} from 'react-beautiful-dnd';
 import { useStudents } from '@tyro/people';
 import { useTranslation } from '@tyro/i18n';
+import { SubjectOptionsFormState } from './types';
 
 interface StudentSelectionProps {
-  control: Control<{
-    academicYearId?: number;
-    yearGroupEnrolmentPartyId?: number;
-  }>;
+  control: Control<SubjectOptionsFormState>;
 }
 
 export function StudentSelection({ control }: StudentSelectionProps) {

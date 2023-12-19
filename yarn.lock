@@ -6679,6 +6679,7 @@ __metadata:
     "@tyro/groups": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    "@tyro/people": "*"
     "@tyro/settings": "*"
     dayjs: ^1.11.7
     lodash: ^4.17.21

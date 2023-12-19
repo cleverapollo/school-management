@@ -93,6 +93,17 @@ export const SelectionList = <T extends object | string>({
     [optionTextKey, externalGetOptionLabel]
   );
 
+  const getOptionId = useCallback(
+    (option: T) => {
+      if (optionIdKey) {
+        return option[optionIdKey] as unknown as string;
+      }
+
+      return JSON.stringify(option) as unknown as string;
+    },
+    [optionIdKey]
+  );
+
   return (
     <DragDropContext onDragStart={() => {}} onDragEnd={() => {}}>
       <Stack direction="row" spacing={2}>
@@ -103,8 +114,8 @@ export const SelectionList = <T extends object | string>({
           options={unselectedOptions}
           groupBy={groupBy}
           getOptionLabel={getOptionLabel}
+          getOptionId={getOptionId}
           showSearch={showSearch}
-          optionIdKey={optionIdKey}
         />
         <SelectListDropArea
           variant={variant}
@@ -113,8 +124,8 @@ export const SelectionList = <T extends object | string>({
           options={selectedOptions}
           groupBy={groupBy}
           getOptionLabel={getOptionLabel}
+          getOptionId={getOptionId}
           showSearch={showSearch}
-          optionIdKey={optionIdKey}
         />
       </Stack>
     </DragDropContext>
