@@ -1,70 +1,61 @@
-import { Box, Stack } from '@mui/material';
+import { Box, Stack, Tooltip } from '@mui/material';
 import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs, { Dayjs } from 'dayjs';
 import isToday from 'dayjs/plugin/isToday';
 import { AcademicNamespace, CalendarDayInfo, DayType } from '@tyro/api';
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import { getColourBasedOnDayType } from '@tyro/core';
 
 dayjs.extend(isToday);
 
 type MonthCalendarProps = {
   month: string;
-  selectedDays: CalendarDayInfo[];
+  selectedDays: string[];
   handleSelectDay: (day: CalendarDayInfo) => void;
   bellTimes: CalendarDayInfo[];
 };
 
 type CustomDayProps = {
   handleSelectDay: (day: CalendarDayInfo) => void;
-  bellTimes: CalendarDayInfo[];
   selected: boolean;
+  dayBellTime?: CalendarDayInfo;
 } & PickersDayProps<Dayjs>;
 
-const getCalendarColors = (dayType: DayType | undefined) => {
-  switch (dayType) {
-    case DayType.SchoolDay:
-      return {
-        backgroundColor: 'blue.500',
-        color: 'white',
-      };
-    case DayType.StaffDay:
-      return {
-        backgroundColor: 'orange.500',
-        color: 'white',
-      };
-    case DayType.Holiday:
-      return {
-        backgroundColor: 'green.500',
-        color: 'white',
-      };
-    default:
-      return {
-        backgroundColor: 'transparent',
-        color: 'grey.300',
-      };
-  }
-};
-
 function CustomDay(props: CustomDayProps) {
-  const { day, onDaySelect, bellTimes, handleSelectDay, ...other } = props;
+  const {
+    day,
+    onDaySelect,
+    dayBellTime,
+    handleSelectDay,
+    onFocus,
+    selected,
+    ...other
+  } = props;
 
-  const dayToCheck = dayjs(day).format('YYYY-MM-DD');
-  const dayBellTime = bellTimes?.find(
-    (bellTime) => bellTime.date === dayToCheck
-  );
   const isWeekend = dayjs(day).day() === 0 || dayjs(day).day() === 6;
 
-  const { backgroundColor, color } = getCalendarColors(dayBellTime?.dayType);
+  const { bgColor: backgroundColor, color } = getColourBasedOnDayType(
+    dayBellTime?.dayType
+  );
 
   return (
     <PickersDay
       day={day}
       sx={{
         borderRadius: '50%',
-        color,
+        color: !isWeekend ? color : 'white',
+        minHeight: 36,
+        borderWidth: 3,
+        borderColor: 'slate.50',
+        borderStyle: 'solid',
+        zIndex: 2,
         '&, &:focus, &:hover': {
-          backgroundColor: !isWeekend ? backgroundColor : 'grey',
+          backgroundColor: !isWeekend
+            ? selected
+              ? 'purple.500'
+              : backgroundColor
+            : 'grey.300',
         },
       }}
       onDaySelect={() => {
@@ -96,15 +87,66 @@ function MonthCalendar({
         defaultCalendarMonth={dayjs(month)}
         disableHighlightToday
         slots={{
-          day: (props) =>
-            CustomDay({
-              ...props,
-              handleSelectDay,
-              bellTimes,
-              selected: !!selectedDays.find(
-                (day) => day.date === dayjs(props.day).format('YYYY-MM-DD')
-              ),
-            }),
+          day: (props) => {
+            const enableDays = selectedDays.filter(
+              (date) => !!bellTimes.find((day) => day.date === date)
+            );
+
+            const isSelected = !!enableDays.find(
+              (date) => date === dayjs(props.day).format('YYYY-MM-DD')
+            );
+
+            const beforeDaySelected = enableDays.includes(
+              dayjs(props.day).add(-1, 'day').format('YYYY-MM-DD')
+            );
+            const afterDaySelected = enableDays.includes(
+              dayjs(props.day).add(1, 'day').format('YYYY-MM-DD')
+            );
+
+            const selectedDayBgProps = {
+              backgroundColor: isSelected ? 'indigo.200' : 'transparent',
+              borderWidth: '1px 0 1px',
+              borderColor: isSelected ? 'indigo.500' : 'transparent',
+              borderStyle: 'solid',
+              height: '100%',
+              width: '50%',
+              position: 'absolute',
+            };
+
+            const dayToCheck = dayjs(props.day).format('YYYY-MM-DD');
+            const dayBellTime = bellTimes?.find(
+              (bellTime) => bellTime.date === dayToCheck
+            );
+
+            return (
+              <Stack
+                justifyContent="center"
+                position="relative"
+                sx={{
+                  height: 36,
+                }}
+              >
+                <Tooltip title={dayBellTime?.description ?? ''}>
+                  {CustomDay({
+                    ...props,
+                    handleSelectDay,
+                    dayBellTime,
+                    selected: isSelected,
+                  })}
+                </Tooltip>
+                {dayBellTime !== undefined &&
+                  beforeDaySelected &&
+                  !props.outsideCurrentMonth && (
+                    <Box sx={{ ...selectedDayBgProps, left: 0 }} />
+                  )}
+                {dayBellTime !== undefined &&
+                  afterDaySelected &&
+                  !props.outsideCurrentMonth && (
+                    <Box sx={{ ...selectedDayBgProps, right: 0 }} />
+                  )}
+              </Stack>
+            );
+          },
         }}
         sx={{
           mt: 2,
@@ -154,8 +196,8 @@ type SchoolCalendarProps = {
   bellTimes: CalendarDayInfo[];
   activeAcademicNamespace?: AcademicNamespace;
   dayTypeFilter: DayType | 'All';
-  selectedDays: CalendarDayInfo[];
-  setSelectedDays: Dispatch<SetStateAction<CalendarDayInfo[]>>;
+  selectedDays: string[];
+  setSelectedDays: Dispatch<SetStateAction<string[]>>;
 };
 
 export const SchoolCalendar = ({
@@ -184,15 +226,25 @@ export const SchoolCalendar = ({
 
   const handleSelectDay = (day: CalendarDayInfo) => {
     if (enableMultiSelect) {
-      if (selectedDays.find(({ date }) => date === day.date)) {
-        setSelectedDays((prev) => prev.filter((d) => d.date !== day.date));
-      } else {
-        setSelectedDays((prev) => [...prev, day]);
+      const lastSelectedDate = selectedDays?.[(selectedDays ?? [])?.length - 1];
+      if (lastSelectedDate) {
+        const from = dayjs(day.date)?.isBefore(lastSelectedDate)
+          ? day.date
+          : lastSelectedDate;
+        const to = dayjs(day.date)?.isAfter(lastSelectedDate)
+          ? day.date
+          : lastSelectedDate;
+
+        const dateRange = Array.from(
+          { length: dayjs(to).diff(from, 'day') + 1 },
+          (_, index) => dayjs(from).add(index, 'day').format('YYYY-MM-DD')
+        ).filter((d) => dayjs(d).day() !== 0 && dayjs(d).day() !== 6);
+        setSelectedDays((prev) => Array.from(new Set([...prev, ...dateRange])));
       }
-    } else if (selectedDays.find(({ date }) => date === day.date)) {
-      setSelectedDays([]);
+    } else if (selectedDays.find((date) => date === day.date)) {
+      setSelectedDays((prev) => prev.filter((d) => d !== day.date));
     } else {
-      setSelectedDays([day]);
+      setSelectedDays((prev) => [...prev, day.date]);
     }
   };
 
