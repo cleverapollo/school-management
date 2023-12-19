@@ -7,21 +7,23 @@ import {
   Table,
 } from '@tyro/core';
 import { TFunction, useTranslation, useFormatNumber } from '@tyro/i18n';
-import { useMemo } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Box, Button, Stack, Chip } from '@mui/material';
-import { AddIcon, EditIcon, VerticalDotsIcon } from '@tyro/icons';
+import { AddIcon, EditIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
 import { getColorBasedOnIndex, usePermissions } from '@tyro/api';
 import { Link } from 'react-router-dom';
 import { ReturnTypeFromUseFees, useFees } from '../../api/fees';
+import { DeleteFeeConfirmModal } from '../../components/fees/delete-fee-confirm-modal';
 
 dayjs.extend(LocalizedFormat);
 
 const getColumnDefs = (
   t: TFunction<('fees' | 'common')[]>,
   formatCurrency: ReturnType<typeof useFormatNumber>['formatCurrency'],
-  hasPermission: boolean
+  hasPermission: boolean,
+  setFeeToDelete: Dispatch<SetStateAction<ReturnTypeFromUseFees>>
 ): GridOptions<ReturnTypeFromUseFees>['columnDefs'] => [
   {
     field: 'name',
@@ -99,6 +101,14 @@ const getColumnDefs = (
               icon: <EditIcon />,
               navigateTo: `/fees/edit/${data.id || ''}`,
             },
+            // TODO: uncomment this when BE fixes it
+            // {
+            //   label: t('common:actions.delete'),
+            //   icon: <TrashIcon />,
+            //   onClick: () => {
+            //     setFeeToDelete(data);
+            //   },
+            // },
           ]}
         />
       ),
@@ -114,9 +124,11 @@ export default function OverviewPage() {
   const { isStaffUserWithPermission } = usePermissions();
   const hasPermission = isStaffUserWithPermission('ps:1:fees:write_fees');
 
+  const [feeToDelete, setFeeToDelete] = useState<ReturnTypeFromUseFees>(null);
+
   const columnDefs = useMemo(
-    () => getColumnDefs(t, formatCurrency, hasPermission),
-    [t, formatCurrency, hasPermission]
+    () => getColumnDefs(t, formatCurrency, hasPermission, setFeeToDelete),
+    [t, formatCurrency, hasPermission, setFeeToDelete]
   );
 
   return (
@@ -143,6 +155,11 @@ export default function OverviewPage() {
         rowData={feesData || []}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.id)}
+      />
+      <DeleteFeeConfirmModal
+        open={!!feeToDelete}
+        feeToDelete={feeToDelete}
+        onClose={() => setFeeToDelete(null)}
       />
     </PageContainer>
   );
