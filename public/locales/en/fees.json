@@ -52,7 +52,9 @@
     "VOLUNTARY": "Voluntary"
   },
   "absorbFees": "Absorb fees",
+  "feeCategory": "Fee category",
   "createFeeCategory": "Create fee category",
   "editFeeCategory": "Edit fee category",
-  "discounts": "Discounts"
+  "discounts": "Discounts",
+  "addDiscounts": "Add discounts"
 }

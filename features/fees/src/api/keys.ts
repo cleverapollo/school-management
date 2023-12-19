@@ -1,4 +1,9 @@
-import { DiscountFilter, FeeFilter, StudentFeeFilter } from '@tyro/api';
+import {
+  DiscountFilter,
+  FeeFilter,
+  CategoryFilter,
+  StudentFeeFilter,
+} from '@tyro/api';
 
 export const feeKeys = {
   all: ['fees'] as const,
@@ -8,4 +13,6 @@ export const feeKeys = {
     [...feeKeys.all, 'discounts', filter] as const,
   stripeAccount: () => [...feeKeys.all, 'stripeAccount'] as const,
   fees: (filter: FeeFilter) => [...feeKeys.all, 'fees', filter] as const,
+  feesCategories: (filter: CategoryFilter) =>
+    [...feeKeys.all, 'feesCategories', filter] as const,
 };

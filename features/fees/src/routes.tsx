@@ -2,6 +2,7 @@ import { lazyWithRetry, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { WalletWithMoneyIcon } from '@tyro/icons';
 import { getDiscounts } from './api/discounts';
 import { getFees } from './api/fees';
+import { getFeesCategories } from './api/fees-categories';
 import { stripeAccountGuard } from './utils/stripe-account-guard';
 
 const ContactDashboard = lazyWithRetry(
@@ -10,7 +11,7 @@ const ContactDashboard = lazyWithRetry(
 
 const DiscountsPage = lazyWithRetry(() => import('./pages/discounts'));
 const SetupPage = lazyWithRetry(() => import('./pages/setup'));
-const OverviewPage = lazyWithRetry(() => import('./pages/overview'));
+const CategoriesPage = lazyWithRetry(() => import('./pages/categories'));
 
 export const getRoutes: NavObjectFunction = (t) => [
   // {
@@ -63,6 +64,16 @@ export const getRoutes: NavObjectFunction = (t) => [
               return redirect || getDiscounts({});
             },
             element: <DiscountsPage />,
+          },
+          {
+            type: NavObjectType.MenuLink,
+            path: 'categories',
+            title: t('navigation:management.fees.categories'),
+            loader: async () => {
+              const redirect = await stripeAccountGuard();
+              return redirect || getFeesCategories({});
+            },
+            element: <CategoriesPage />,
           },
         ],
       },

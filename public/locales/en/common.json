@@ -45,6 +45,7 @@
     "publishedOnline": "Published online"
   },
   "relationshipType": {
+    "AGENT": "Agent",
     "AUNTY": "Aunty",
     "FAMILY_FRIEND": "Family friend",
     "GRAND_FATHER": "Grandfather",
