@@ -6,7 +6,7 @@ import {
   RHFTimePicker,
   useFormValidator,
 } from '@tyro/core';
-import { Scalars } from '@tyro/api';
+import { Scalars, Calendar_CreateCalendarDayInput, DayType } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import { useForm } from 'react-hook-form';
@@ -18,7 +18,7 @@ type DateRangeForm = {
 
 type ChangeDateRangeModalProps = {
   open: boolean;
-  onSave: (start: Scalars['Time'], end: Scalars['Time']) => void;
+  onSave: (changes: Omit<Calendar_CreateCalendarDayInput, 'date'>) => void;
   onClose: () => void;
 };
 
@@ -50,7 +50,11 @@ export const ChangeDateRangeModal = ({
   const startTime = watch('startTime');
 
   const onSubmit = handleSubmit((data) => {
-    onSave(data.startTime, data.endTime);
+    onSave({
+      startTime: data.startTime,
+      endTime: data.endTime,
+      dayType: DayType.Partial,
+    });
     onClose();
   });
 

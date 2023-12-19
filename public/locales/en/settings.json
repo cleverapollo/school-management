@@ -47,14 +47,23 @@
   },
   "schoolCalendar": {
     "title": "Day Types and Bell Times",
-    "dayTypes": "Day Types",
-    "bellTimeDetailsFor": "Bell time Details for {{date}}",
-    "setDayType": "Set Day type",
+    "dayTypes": "Day types",
+    "dayType": "Day type",
+    "bellTimeDetailsFor": "Bell time details for {{date}}",
+    "setDayType": "Set day type",
     "setAsSchoolDay": "Set as school day",
     "setAsNonSchoolDay": "Set as non school day",
     "changeStartAndEndTime": "Change start/end time",
     "startTime": "Start time",
-    "endTime": "End time"
+    "endTime": "End time",
+    "ariaLabelForTabs": "scrollable auto tabs for highlighting day types",
+    "dayTypeLabels": {
+      "All": "All",
+      "HOLIDAY": "Holiday",
+      "PARTIAL": "Time change",
+      "STAFF_DAY": "Staff day",
+      "SCHOOL_DAY": "Default school day"
+    }
   },
   "actions": {
     "makeActive": "Activate academic year for all users",

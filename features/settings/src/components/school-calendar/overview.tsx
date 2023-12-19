@@ -1,28 +1,30 @@
 import {
-  Badge,
   Box,
   Card,
   CardContent,
   CardHeader,
   CircularProgress,
   Stack,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
   Fade,
+  Tabs,
+  Tab,
+  Chip,
+  Typography,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import {
   DayType,
   useAcademicNamespace,
   Calendar_CreateCalendarDayInput,
-  Scalars,
   CalendarDayInfo,
 } from '@tyro/api';
-import { ActionMenu, useDisclosure, useCacheWithExpiry } from '@tyro/core';
-import { CalendarDayTypeIcon } from '@tyro/icons/src/calendar-day-type';
+import {
+  ActionMenu,
+  useDisclosure,
+  useCacheWithExpiry,
+  getColourBasedOnDayType,
+} from '@tyro/core';
 import { useState, useMemo } from 'react';
-import * as React from 'react';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { isEqual } from 'lodash';
@@ -31,6 +33,7 @@ import { useCalendarDayInfo } from '../../api/school-calendar/calendar-day-info'
 import { useUpdateCalendarDays } from '../../api/school-calendar/update-calendar-days';
 import { ChangeDateRangeModal } from './change-date-range-modal';
 import { BulkEditSaveBar } from './bulk-edit-save-bar';
+import { SetNonSchooldayModal } from './set-non-schoolday-modal';
 
 dayjs.extend(LocalizedFormat);
 
@@ -64,36 +67,73 @@ export const CalendarOverview = () => {
     isLoading: isUpdateCalendarDaysLoading,
   } = useUpdateCalendarDays({});
 
-  const [dayTypeFilter, setDayTypeFilter] = useState<DayType | 'All'>('All');
-  const [selectedDays, setSelectedDays] = useState<CalendarDayInfo[]>([]);
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [state, setState] = useState<EditState>(EditState.Idle);
+  const [value, setValue] = useState(0);
+  const [currentTabValue, setCurrentTabValue] = useState<DayType | 'All'>(
+    'All'
+  );
   const [editedRows, setEditedRows] = useCacheWithExpiry<EditedRow>(
     'bulk-edit',
     {}
   );
 
-  const dayTypes = [
-    {
-      label: 'All',
-    },
-    {
-      label: DayType.SchoolDay,
-      color: 'blue.500',
-    },
-    {
-      label: DayType.StaffDay,
-      color: 'orange.500',
-    },
-    {
-      label: DayType.Holiday,
-      color: 'green.500',
-    },
-  ];
+  const getDayCount = (dayType: DayType) =>
+    data?.dayInfo?.filter((day) => day.dayType === dayType)?.length ?? 0;
+
+  const calendarTabData: Array<{
+    bgColor: string;
+    color?: string;
+    translationText: string;
+    currentTabValue: DayType | 'All';
+    total: number;
+  }> = useMemo(
+    () => [
+      {
+        bgColor: 'indigo.100',
+        color: 'indigo.500',
+        translationText: t('settings:schoolCalendar.dayTypeLabels.All'),
+        currentTabValue: 'All',
+        total: data?.dayInfo?.length ?? 0,
+      },
+      {
+        ...getColourBasedOnDayType(DayType.Holiday),
+        translationText: t('settings:schoolCalendar.dayTypeLabels.HOLIDAY'),
+        currentTabValue: DayType.Holiday,
+        total: getDayCount(DayType.Holiday),
+      },
+      {
+        ...getColourBasedOnDayType(DayType.Partial),
+        translationText: t('settings:schoolCalendar.dayTypeLabels.PARTIAL'),
+        currentTabValue: DayType.Partial,
+        total: getDayCount(DayType.Partial),
+      },
+      {
+        ...getColourBasedOnDayType(DayType.StaffDay),
+        translationText: t('settings:schoolCalendar.dayTypeLabels.STAFF_DAY'),
+        currentTabValue: DayType.StaffDay,
+        total: getDayCount(DayType.StaffDay),
+      },
+      {
+        ...getColourBasedOnDayType(DayType.SchoolDay),
+        translationText: t('settings:schoolCalendar.dayTypeLabels.SCHOOL_DAY'),
+        currentTabValue: DayType.SchoolDay,
+        total: getDayCount(DayType.SchoolDay),
+      },
+    ],
+    [data?.dayInfo]
+  );
 
   const {
-    isOpen: isModalOpen,
-    onOpen: onOpenModal,
-    onClose: onCloseModal,
+    isOpen: isDateRangeModalOpen,
+    onOpen: onOpenDateRangeModal,
+    onClose: onCloseDateRangeModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isSetNonSchooldayModalOpen,
+    onOpen: onOpenSetNonSchooldayModal,
+    onClose: onCloseSetNonSchooldayModal,
   } = useDisclosure();
 
   const onBulkSave = async () => {
@@ -102,7 +142,7 @@ export const CalendarOverview = () => {
       const updates = Object.entries(editedRows).reduce<
         Calendar_CreateCalendarDayInput[]
       >((acc, [date, changes]) => {
-        const { dayType, startTime, endTime } = changes;
+        const { dayType, startTime, endTime, description } = changes;
         const dayInfo = data?.dayInfo?.find((day) => day.date === date);
 
         acc.push({
@@ -112,6 +152,7 @@ export const CalendarOverview = () => {
             startTime?.newValue && dayjs(startTime?.newValue).format('HH:mm'),
           endTime:
             endTime?.newValue && dayjs(endTime?.newValue).format('HH:mm'),
+          description: description?.newValue,
         });
 
         return acc;
@@ -152,32 +193,30 @@ export const CalendarOverview = () => {
       {
         label: t('settings:schoolCalendar.setAsSchoolDay'),
         onClick: () =>
-          handleCalendarChanges(
-            selectedDays.map(({ date }) => ({
-              date,
-              dayType: DayType.SchoolDay,
-            }))
-          ),
+          handleCalendarChanges({
+            dayType: DayType.SchoolDay,
+          }),
       },
       {
         label: t('settings:schoolCalendar.setAsNonSchoolDay'),
-        onClick: () =>
-          handleCalendarChanges(
-            selectedDays.map(({ date }) => ({
-              date,
-              dayType: DayType.Holiday,
-            }))
-          ),
+        onClick: onOpenSetNonSchooldayModal,
       },
       {
         label: t('settings:schoolCalendar.changeStartAndEndTime'),
-        onClick: onOpenModal,
+        onClick: onOpenDateRangeModal,
       },
     ],
     [selectedDays]
   );
 
-  const handleCalendarChanges = (days: Calendar_CreateCalendarDayInput[]) => {
+  const handleCalendarChanges = (
+    change: Omit<Calendar_CreateCalendarDayInput, 'date'>
+  ) => {
+    const days = selectedDays.map((date) => ({
+      date,
+      ...change,
+    }));
+
     setEditedRows((prev) => ({
       ...(prev ?? {}),
       ...days
@@ -191,7 +230,7 @@ export const CalendarOverview = () => {
                 day[
                   key as keyof Pick<
                     CalendarDayInfo,
-                    'dayType' | 'startTime' | 'endTime'
+                    'dayType' | 'startTime' | 'endTime' | 'description'
                   >
                 ];
               const oldValue = data?.dayInfo?.find(
@@ -199,7 +238,7 @@ export const CalendarOverview = () => {
               )?.[
                 key as keyof Pick<
                   CalendarDayInfo,
-                  'dayType' | 'startTime' | 'endTime'
+                  'dayType' | 'startTime' | 'endTime' | 'description'
                 >
               ];
 
@@ -233,32 +272,25 @@ export const CalendarOverview = () => {
             date: day.date,
           } as Calendar_CreateCalendarDayInput;
         })
-        .reduce((acc, { date, dayType, startTime, endTime }) => {
+        .reduce((acc, { date, dayType, startTime, endTime, description }) => {
           if (
             date &&
             (dayType !== undefined ||
               startTime !== undefined ||
-              endTime !== undefined)
+              endTime !== undefined ||
+              description !== undefined)
           ) {
             acc[date] = {
               ...(dayType !== undefined ? { dayType } : {}),
               ...(startTime !== undefined ? { startTime } : {}),
               ...(endTime !== undefined ? { endTime } : {}),
+              ...(description !== undefined ? { description } : {}),
             };
           }
           return acc;
         }, {} as any),
     }));
     setSelectedDays([]);
-  };
-
-  const handleChangeDayType = (
-    event: React.MouseEvent<HTMLElement>,
-    newType: DayType | 'All'
-  ) => {
-    if (newType !== null) {
-      setDayTypeFilter(newType);
-    }
   };
 
   return (
@@ -271,53 +303,71 @@ export const CalendarOverview = () => {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Stack direction="row" alignItems="center" gap={0.5} flex={1}>
-              <CalendarDayTypeIcon style={{ fill: 'none' }} />
-              <Typography variant="h4">
-                {t('settings:schoolCalendar.dayTypes')}
-              </Typography>
-            </Stack>
-            <ToggleButtonGroup
-              value={dayTypeFilter}
-              exclusive
-              onChange={handleChangeDayType}
-              aria-label="Day type"
+            <Tabs
+              value={value}
+              onChange={(_event, newValue: number) => setValue(newValue)}
+              variant="scrollable"
+              scrollButtons="auto"
+              aria-label={t('settings:schoolCalendar.ariaLabelForTabs')}
               sx={{
-                border: 'none',
-                '.MuiToggleButtonGroup-grouped': {
-                  borderWidth: '1px',
-                  borderColor: '#E0E7FF !important',
-                  borderStyle: 'solid',
-                  mx: 1,
+                '& .MuiTabs-flexContainer': {
+                  alignItems: 'center',
+                  marginLeft: 2,
                 },
-                '.Mui-selected': {
-                  borderColor: '#6366F1 !important',
-                  backgroundColor: 'transparent !important',
+                '& .MuiTabs-flexContainer > .MuiButtonBase-root': {
+                  marginRight: 3.5,
                 },
               }}
             >
-              {dayTypes.map(({ label, color }, index) => (
-                <ToggleButton
-                  key={`day-type-${index}`}
-                  value={label}
-                  aria-label={label}
-                  color="primary"
-                >
-                  {!!color && (
-                    <Badge
-                      sx={{
-                        minWidth: 9,
-                        minHeight: 9,
-                        backgroundColor: color,
-                        borderRadius: '50%',
-                        mr: 0.5,
-                      }}
-                    />
-                  )}
-                  {label}
-                </ToggleButton>
+              {calendarTabData.map((item) => (
+                <Tab
+                  key={item.translationText}
+                  onClick={() => {
+                    setCurrentTabValue(item?.currentTabValue);
+                    setSelectedDays([]);
+                  }}
+                  label={
+                    <>
+                      <Chip
+                        label={item.total}
+                        variant="soft"
+                        sx={{
+                          cursor: 'pointer',
+                          backgroundColor: item?.bgColor,
+                          borderRadius: '12px',
+                          height: '22px',
+                          fontWeight: '700',
+                          fontSize: '12px',
+                          paddingX: '8px',
+                          color: item?.color,
+                          '& .MuiChip-icon': {
+                            color: item?.color,
+                          },
+                          '& .MuiChip-label': {
+                            padding: 0,
+                          },
+                        }}
+                      />
+                      <Typography
+                        color="#637381"
+                        marginLeft={1}
+                        sx={{
+                          fontWeight: '600',
+                          fontSize: '14px',
+                          textWrap: 'nowrap',
+                          textTransform: 'none',
+                          '[aria-selected="true"] &': {
+                            color: 'slate.800',
+                          },
+                        }}
+                      >
+                        {item.translationText}
+                      </Typography>
+                    </>
+                  }
+                />
               ))}
-            </ToggleButtonGroup>
+            </Tabs>
             <Stack alignItems="flex-end" flex={1}>
               <Fade in={!!selectedDays.length} unmountOnExit>
                 <Box>
@@ -361,25 +411,21 @@ export const CalendarOverview = () => {
                     }
                   : day
               )}
-              dayTypeFilter={dayTypeFilter}
+              dayTypeFilter={currentTabValue}
               activeAcademicNamespace={activeAcademicNamespace}
               selectedDays={selectedDays}
               setSelectedDays={setSelectedDays}
             />
           </Box>
           <ChangeDateRangeModal
-            open={isModalOpen}
-            onClose={onCloseModal}
-            onSave={(startTime: Scalars['Time'], endTime: Scalars['Time']) => {
-              handleCalendarChanges(
-                selectedDays.map(({ date }) => ({
-                  date,
-                  dayType: DayType.SchoolDay,
-                  startTime,
-                  endTime,
-                }))
-              );
-            }}
+            open={isDateRangeModalOpen}
+            onClose={onCloseDateRangeModal}
+            onSave={handleCalendarChanges}
+          />
+          <SetNonSchooldayModal
+            open={isSetNonSchooldayModalOpen}
+            onClose={onCloseSetNonSchooldayModal}
+            onSave={handleCalendarChanges}
           />
           <BulkEditSaveBar
             isEditing={numberOfEdits > 0 || state !== EditState.Idle}

@@ -16,6 +16,7 @@ const calendarDayInfo = graphql(/* GraphQL */ `
         date
         dayType
         startTime
+        description
         endTime
         periods {
           type
