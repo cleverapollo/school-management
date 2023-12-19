@@ -53,6 +53,7 @@ function CustomDay(props: CustomDayProps) {
   const dayBellTime = bellTimes?.find(
     (bellTime) => bellTime.date === dayToCheck
   );
+  const isWeekend = dayjs(day).day() === 0 || dayjs(day).day() === 6;
 
   const { backgroundColor, color } = getCalendarColors(dayBellTime?.dayType);
 
@@ -61,14 +62,13 @@ function CustomDay(props: CustomDayProps) {
       day={day}
       sx={{
         borderRadius: '50%',
-        backgroundColor,
         color,
-        '&:focus, &:hover': {
-          backgroundColor,
+        '&, &:focus, &:hover': {
+          backgroundColor: !isWeekend ? backgroundColor : 'grey',
         },
       }}
       onDaySelect={() => {
-        if (dayBellTime) {
+        if (dayBellTime && !isWeekend) {
           handleSelectDay(dayBellTime);
         }
       }}
