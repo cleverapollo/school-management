@@ -103,11 +103,15 @@ export const CalendarOverview = () => {
         Calendar_CreateCalendarDayInput[]
       >((acc, [date, changes]) => {
         const { dayType, startTime, endTime } = changes;
+        const dayInfo = data?.dayInfo?.find((day) => day.date === date);
+
         acc.push({
           date,
-          dayType: dayType?.newValue,
-          startTime: startTime?.newValue,
-          endTime: endTime?.newValue,
+          dayType: dayType?.newValue ?? dayInfo?.dayType,
+          startTime:
+            startTime?.newValue && dayjs(startTime?.newValue).format('HH:mm'),
+          endTime:
+            endTime?.newValue && dayjs(endTime?.newValue).format('HH:mm'),
         });
 
         return acc;
