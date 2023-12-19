@@ -6597,6 +6597,7 @@ export enum StudentContactType {
   SocialWorker = 'SOCIAL_WORKER',
   StepFather = 'STEP_FATHER',
   StepMother = 'STEP_MOTHER',
+  Agent = 'AGENT',
   Uncle = 'UNCLE'
 }
 
