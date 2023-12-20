@@ -44,16 +44,18 @@ function CustomDay(props: CustomDayProps) {
       day={day}
       sx={{
         borderRadius: '50%',
-        color: !isWeekend ? color : 'white',
+        color: !isWeekend ? (selected ? backgroundColor : color) : 'white',
         minHeight: 36,
-        borderWidth: 3,
-        borderColor: 'slate.50',
+        borderWidth: selected ? 2 : 3,
+        borderColor: selected ? backgroundColor : 'slate.50',
         borderStyle: 'solid',
+        fontSize: 14,
+        fontWeight: '500 !important',
         zIndex: 2,
         '&, &:focus, &:hover': {
           backgroundColor: !isWeekend
             ? selected
-              ? 'purple.500'
+              ? 'white'
               : backgroundColor
             : 'grey.300',
         },
