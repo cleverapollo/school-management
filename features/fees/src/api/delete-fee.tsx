@@ -6,7 +6,9 @@ import { feeKeys } from './keys';
 
 const deleteFee = graphql(/* GraphQL */ `
   mutation fees_deleteFee($input: DeleteFeeInput!) {
-    fees_deleteFee(input: $input) {}
+    fees_deleteFee(input: $input) {
+      success
+    }
   }
 `);
 
@@ -16,7 +18,6 @@ export function useDeleteFee() {
 
   return useMutation({
     mutationFn: (input: DeleteFeeInput) =>
-      // @ts-expect-error
       gqlClient.request(deleteFee, { input }),
     onSuccess: async () => {
       await queryClient.invalidateQueries(feeKeys.all);

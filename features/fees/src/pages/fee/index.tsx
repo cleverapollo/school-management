@@ -4,7 +4,10 @@ import {
   ICellRendererParams,
   PageContainer,
   PageHeading,
+  ReturnTypeDisplayName,
   Table,
+  TablePersonAvatar,
+  usePreferredNameLayout,
 } from '@tyro/core';
 import { TFunction, useTranslation, useFormatNumber } from '@tyro/i18n';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
@@ -12,31 +15,43 @@ import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Box, Button, Stack, Chip } from '@mui/material';
 import { AddIcon, EditIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
-import { getColorBasedOnIndex, usePermissions } from '@tyro/api';
+import {
+  Colour,
+  FeeStatus,
+  getColorBasedOnIndex,
+  usePermissions,
+} from '@tyro/api';
 import { Link } from 'react-router-dom';
 import { ReturnTypeFromUseFees, useFees } from '../../api/fees';
 import { DeleteFeeConfirmModal } from '../../components/fees/delete-fee-confirm-modal';
 
 dayjs.extend(LocalizedFormat);
 
+const statusColor: Record<FeeStatus, Colour> = {
+  [FeeStatus.Complete]: Colour.Green,
+  [FeeStatus.Outstanding]: Colour.Blue,
+  [FeeStatus.Overdue]: Colour.Red,
+};
+
 const getColumnDefs = (
   t: TFunction<('fees' | 'common')[]>,
+  displayName: ReturnTypeDisplayName,
   formatCurrency: ReturnType<typeof useFormatNumber>['formatCurrency'],
   hasPermission: boolean,
-  setFeeToDelete: Dispatch<SetStateAction<ReturnTypeFromUseFees>>
+  setFeeToDelete: Dispatch<SetStateAction<ReturnTypeFromUseFees | null>>
 ): GridOptions<ReturnTypeFromUseFees>['columnDefs'] => [
   {
     field: 'name',
     headerName: t('common:name'),
   },
   {
+    field: 'amount',
+    headerName: t('fees:amount'),
+    valueGetter: ({ data }) => formatCurrency(data?.amount ?? 0),
+  },
+  {
     field: 'categories',
-    headerName: t('fees:feeCategory'),
-    filter: true,
-    sortable: true,
-    autoHeight: true,
-    wrapText: true,
-    width: 300,
+    headerName: t('common:category'),
     valueGetter: ({ data }) => data?.categories?.map(({ name }) => name),
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFees, any>) =>
       data?.categories ? (
@@ -53,40 +68,53 @@ const getColumnDefs = (
       ) : null,
   },
   {
-    field: 'dueDate',
-    headerName: t('fees:dueDate'),
-    valueFormatter: ({ data }) =>
-      data?.dueDate ? dayjs(data.dueDate).format('LL') : '-',
-  },
-  {
     field: 'feeType',
-    headerName: t('fees:feeType'),
+    headerName: t('common:type'),
     valueGetter: ({ data }) =>
       data?.feeType ? t(`fees:feesType.${data?.feeType}`) : '-',
   },
   {
-    field: 'amount',
-    headerName: t('fees:total'),
-    valueGetter: ({ data }) => {
-      const { amount = 0 } = data || {};
-      return formatCurrency(amount);
-    },
+    field: 'dueDate',
+    headerName: t('fees:dueBy'),
+    valueFormatter: ({ data }) =>
+      data?.dueDate ? dayjs(data.dueDate).format('LL') : '-',
   },
-  // TODO: uncomment when BE sends it
-  // {
-  //   field: 'paid',
-  //   headerName: t('common:paid'),
-  //   valueGetter: ({ data }) => formatCurrency(data?.paid ?? 0),
-  // },
-  // {
-  //     field: 'createdBy',
-  //     headerName: t('common:createdBy'),
-  //     valueGetter: ({ data }) => displayName(data?.createdBy),
-  //     cellRenderer: ({
-  //       data,
-  //     }: ICellRendererParams<ReturnTypeFromUseFees>) =>
-  //       data?.createdBy ? <TablePersonAvatar person={data?.createdBy} /> : '-',
-  //   },
+  {
+    field: 'total',
+    headerName: t('common:total'),
+    valueGetter: ({ data }) => formatCurrency(data?.total ?? 0),
+  },
+  {
+    field: 'paid',
+    headerName: t('common:paid'),
+    valueGetter: ({ data }) => formatCurrency(data?.paid ?? 0),
+  },
+  {
+    field: 'due',
+    headerName: t('fees:due'),
+    valueGetter: ({ data }) => formatCurrency(data?.paid ?? 0),
+  },
+  {
+    field: 'feeStatus',
+    headerName: t('common:status'),
+    valueGetter: ({ data }) =>
+      data?.feeStatus ? t(`fees:feeStatus.${data.feeStatus}`) : '-',
+    cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFees, any>) =>
+      data?.feeStatus ? (
+        <Chip
+          label={t(`fees:feeStatus.${data.feeStatus}`)}
+          variant="soft"
+          color={statusColor[data.feeStatus]}
+        />
+      ) : null,
+  },
+  {
+    field: 'createdBy',
+    headerName: t('common:createdBy'),
+    valueGetter: ({ data }) => displayName(data?.createdBy),
+    cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFees>) =>
+      data?.createdBy ? <TablePersonAvatar person={data?.createdBy} /> : '-',
+  },
   {
     suppressColumnsToolPanel: true,
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFees>) =>
@@ -101,14 +129,13 @@ const getColumnDefs = (
               icon: <EditIcon />,
               navigateTo: `/fees/edit/${data.id || ''}`,
             },
-            // TODO: uncomment this when BE fixes it
-            // {
-            //   label: t('common:actions.delete'),
-            //   icon: <TrashIcon />,
-            //   onClick: () => {
-            //     setFeeToDelete(data);
-            //   },
-            // },
+            {
+              label: t('common:actions.delete'),
+              icon: <TrashIcon />,
+              onClick: () => {
+                setFeeToDelete(data);
+              },
+            },
           ]}
         />
       ),
@@ -117,6 +144,7 @@ const getColumnDefs = (
 
 export default function OverviewPage() {
   const { t } = useTranslation(['common', 'fees']);
+  const { displayName } = usePreferredNameLayout();
   const { formatCurrency } = useFormatNumber();
 
   const { data: feesData } = useFees({});
@@ -124,11 +152,20 @@ export default function OverviewPage() {
   const { isStaffUserWithPermission } = usePermissions();
   const hasPermission = isStaffUserWithPermission('ps:1:fees:write_fees');
 
-  const [feeToDelete, setFeeToDelete] = useState<ReturnTypeFromUseFees>(null);
+  const [feeToDelete, setFeeToDelete] = useState<ReturnTypeFromUseFees | null>(
+    null
+  );
 
   const columnDefs = useMemo(
-    () => getColumnDefs(t, formatCurrency, hasPermission, setFeeToDelete),
-    [t, formatCurrency, hasPermission, setFeeToDelete]
+    () =>
+      getColumnDefs(
+        t,
+        displayName,
+        formatCurrency,
+        hasPermission,
+        setFeeToDelete
+      ),
+    [t, displayName, formatCurrency, hasPermission, setFeeToDelete]
   );
 
   return (
@@ -158,7 +195,7 @@ export default function OverviewPage() {
       />
       <DeleteFeeConfirmModal
         open={!!feeToDelete}
-        feeToDelete={feeToDelete}
+        feeToDelete={feeToDelete!}
         onClose={() => setFeeToDelete(null)}
       />
     </PageContainer>

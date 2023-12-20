@@ -62,5 +62,12 @@
   "addDiscount": "Add discount",
   "addIndividualDiscount": "Add individual discount",
   "deleteFee": "Delete fee",
-  "deleteFeeConfirmation": "You are about to delete this fee. Are you sure you want to continue?"
+  "deleteFeeConfirmation": "You are about to delete this fee. Are you sure you want to continue?",
+  "dueBy": "Due by",
+  "due": "Due",
+  "feeStatus": {
+    "COMPLETE": "Paid",
+    "OUTSTANDING": "Outstanding",
+    "OVERDUE": "Overdue"
+  }
 }

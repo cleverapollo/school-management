@@ -64,6 +64,15 @@ const fees = graphql(/* GraphQL */ `
           name
         }
       }
+      total
+      paid
+      due
+      feeStatus
+      createdBy {
+        firstName
+        lastName
+        avatarUrl
+      }
     }
   }
 `);
