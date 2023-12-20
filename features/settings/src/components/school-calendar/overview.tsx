@@ -62,10 +62,7 @@ export const CalendarOverview = () => {
 
   const { data, isLoading: isCalendarDayInfoLoading } = useCalendarDayInfo({});
 
-  const {
-    mutateAsync: updateCalendarDays,
-    isLoading: isUpdateCalendarDaysLoading,
-  } = useUpdateCalendarDays({});
+  const { mutateAsync: updateCalendarDays } = useUpdateCalendarDays({});
 
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [state, setState] = useState<EditState>(EditState.Idle);
@@ -381,7 +378,7 @@ export const CalendarOverview = () => {
           </Stack>
         }
       />
-      {isCalendarDayInfoLoading || isUpdateCalendarDaysLoading ? (
+      {isCalendarDayInfoLoading ? (
         <Stack minHeight="40vh" justifyContent="center" alignItems="center">
           <CircularProgress />
         </Stack>
