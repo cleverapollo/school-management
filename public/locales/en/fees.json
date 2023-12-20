@@ -59,8 +59,8 @@
   "editFeeCategory": "Edit fee category",
   "discounts": "Discounts",
   "absorbFeesInformation": "The school will absorb the service charge for this transaction",
-  "addDiscounts": "Add discounts",
-  "addIndividualDiscounts": "Add individual discounts",
+  "addDiscount": "Add discount",
+  "addIndividualDiscount": "Add individual discount",
   "deleteFee": "Delete fee",
   "deleteFeeConfirmation": "You are about to delete this fee. Are you sure you want to continue?"
 }

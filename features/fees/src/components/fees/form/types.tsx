@@ -13,5 +13,9 @@ export type FeeFormState = {
   discounts: ReturnTypeFromUseDiscounts[];
   categories: ReturnTypeFromUseFeesCategories[];
   students: StudentSelectOption[];
-  individualDiscounts: Array<ReturnTypeFromUseDiscounts & StudentSelectOption>;
+  individualDiscounts: Array<{
+    id: ReturnTypeFromUseDiscounts['id'];
+    name: ReturnTypeFromUseDiscounts['name'];
+    partyId: StudentSelectOption['partyId'];
+  }>;
 };

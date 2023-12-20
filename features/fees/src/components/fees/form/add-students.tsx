@@ -19,6 +19,7 @@ import { getColorBasedOnIndex } from '@tyro/api';
 import { Stack } from '@mui/system';
 import { FeeFormState } from './types';
 import { BulkAddIndividualDiscountModal } from './bulk-add-individual-discount-modal';
+import { ReturnTypeFromUseDiscounts } from '../../../api/discounts';
 
 type StaticStudentsProps = {
   control: Control<FeeFormState>;
@@ -66,21 +67,21 @@ export const AddStudents = ({
   );
 
   const handleSaveIndividualDiscount = useCallback(
-    (individualDiscounts: FeeFormState['individualDiscounts']) => {
-      const partyIds = selectedStudents.map(({ partyId }) => partyId);
-      const individualDiscountsWithPartyId = individualDiscounts.flatMap(
-        (discount) => partyIds.map((partyId) => ({ ...discount, partyId }))
-      );
-
+    ({ id, name }: ReturnTypeFromUseDiscounts) => {
       const currentIndividualDiscounts = getValues('individualDiscounts');
-      const uniqueIndividualDiscounts = [
-        ...currentIndividualDiscounts,
-        ...individualDiscountsWithPartyId,
-      ].reduce((discountsByStudent, discount) => {
-        const uniqueStudentDiscountKey = `${discount.partyId}-${discount.id}`;
-        discountsByStudent[uniqueStudentDiscountKey] ??= discount;
+      const updatedIndividualDiscount = selectedStudents.map(({ partyId }) => ({
+        id,
+        name,
+        partyId,
+      }));
 
-        return discountsByStudent;
+      const uniqueIndividualDiscounts = [
+        ...updatedIndividualDiscount,
+        ...currentIndividualDiscounts,
+      ].reduce((discountByStudent, discount) => {
+        discountByStudent[discount.partyId] ??= discount;
+
+        return discountByStudent;
       }, {} as Record<string, FeeFormState['individualDiscounts'][number]>);
 
       setValue('individualDiscounts', Object.values(uniqueIndividualDiscounts));
@@ -140,7 +141,7 @@ export const AddStudents = ({
                   <ActionMenu
                     menuItems={[
                       {
-                        label: t('fees:addDiscounts'),
+                        label: t('fees:addDiscount'),
                         icon: <DiscountIcon />,
                         onClick: () => setIsModalOpen(true),
                       },

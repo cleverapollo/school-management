@@ -3,13 +3,15 @@ import { Dialog, DialogActions, DialogTitle, Autocomplete } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { getColorBasedOnIndex } from '@tyro/api';
 import { useEffect, useState } from 'react';
-import { useDiscounts } from '../../../api/discounts';
-import { FeeFormState } from './types';
+import {
+  ReturnTypeFromUseDiscounts,
+  useDiscounts,
+} from '../../../api/discounts';
 
 type BulkAddIndividualDiscountModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (discounts: FeeFormState['individualDiscounts']) => void;
+  onSave: (discount: ReturnTypeFromUseDiscounts) => void;
 };
 
 export function BulkAddIndividualDiscountModal({
@@ -20,16 +22,18 @@ export function BulkAddIndividualDiscountModal({
   const { t } = useTranslation(['common', 'fees']);
 
   const { data: discountsData = [] } = useDiscounts({});
-  const [discounts, setDiscounts] = useState<
-    FeeFormState['individualDiscounts']
-  >([]);
+  const [discount, setDiscount] = useState<ReturnTypeFromUseDiscounts | null>(
+    null
+  );
 
   const handleSave = () => {
-    onSave(discounts);
+    if (discount) {
+      onSave(discount);
+    }
   };
 
   useEffect(() => {
-    setDiscounts([]);
+    setDiscount(null);
   }, [isOpen]);
 
   return (
@@ -40,16 +44,15 @@ export function BulkAddIndividualDiscountModal({
       fullWidth
       maxWidth="xs"
     >
-      <DialogTitle>{t('fees:addIndividualDiscounts')}</DialogTitle>
+      <DialogTitle>{t('fees:addIndividualDiscount')}</DialogTitle>
       <DialogContent sx={{ pt: 0.75 }}>
         <Autocomplete
-          multiple
-          value={discounts}
+          value={discount}
           label={t('fees:discounts')}
           optionIdKey="id"
           optionTextKey="name"
           onChange={(_event, value) => {
-            setDiscounts(value as FeeFormState['individualDiscounts']);
+            setDiscount(value as ReturnTypeFromUseDiscounts);
           }}
           options={discountsData}
           renderTags={(tags, getTagProps) =>
