@@ -10,7 +10,6 @@ import {
   Stack,
   Tooltip,
   Typography,
-  useTheme,
 } from '@mui/material';
 import dayjs, { Dayjs } from 'dayjs';
 import {
@@ -143,7 +142,7 @@ export function UpsertAbsenceModal({
   const { t } = useTranslation(['common', 'substitution']);
   const { resolver, rules } = useFormValidator<UpsertAbsenceFormState>();
   const isEditAbsence = !!initialAbsenceData?.absenceId;
-  const theme = useTheme();
+
   const { mutateAsync: saveStaffAbsence, isLoading } = useSaveStaffAbsence();
 
   const { control, handleSubmit, reset, watch } =
@@ -496,9 +495,6 @@ export function UpsertAbsenceModal({
                       <Collapse in={!isFullDay}>
                         <Stack direction="row" gap={1} width="100%">
                           <RHFTimePicker
-                            timePickerProps={{
-                              desktopModeMediaQuery: theme.breakpoints.up('xs'),
-                            }}
                             label={t('common:startTime')}
                             inputProps={{
                               fullWidth: true,
@@ -512,7 +508,6 @@ export function UpsertAbsenceModal({
                           <RHFTimePicker
                             label={t('common:endTime')}
                             timePickerProps={{
-                              desktopModeMediaQuery: theme.breakpoints.up('xs'),
                               minTime: startTime ? dayjs(startTime) : undefined,
                             }}
                             inputProps={{
