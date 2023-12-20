@@ -102,12 +102,12 @@ export const CalendarOverview = () => {
         currentTabValue: DayType.Holiday,
         total: getDayCount(DayType.Holiday),
       },
-      {
-        ...getColourBasedOnDayType(DayType.Partial),
-        translationText: t('settings:schoolCalendar.dayTypeLabels.PARTIAL'),
-        currentTabValue: DayType.Partial,
-        total: getDayCount(DayType.Partial),
-      },
+      // {
+      //   ...getColourBasedOnDayType(DayType.Partial),
+      //   translationText: t('settings:schoolCalendar.dayTypeLabels.PARTIAL'),
+      //   currentTabValue: DayType.Partial,
+      //   total: getDayCount(DayType.Partial),
+      // },
       {
         ...getColourBasedOnDayType(DayType.StaffDay),
         translationText: t('settings:schoolCalendar.dayTypeLabels.STAFF_DAY'),
@@ -201,10 +201,10 @@ export const CalendarOverview = () => {
         label: t('settings:schoolCalendar.setAsNonSchoolDay'),
         onClick: onOpenSetNonSchooldayModal,
       },
-      {
-        label: t('settings:schoolCalendar.changeStartAndEndTime'),
-        onClick: onOpenDateRangeModal,
-      },
+      // {
+      //   label: t('settings:schoolCalendar.changeStartAndEndTime'),
+      //   onClick: onOpenDateRangeModal,
+      // },
     ],
     [selectedDays]
   );
