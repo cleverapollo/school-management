@@ -12,17 +12,18 @@ import {
   ActionMenu,
 } from '@tyro/core';
 import { TFunction, useTranslation, useFormatNumber } from '@tyro/i18n';
-import { Dispatch, SetStateAction, useMemo } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Box, Button } from '@mui/material';
-import { AddIcon, EditIcon, VerticalDotsIcon } from '@tyro/icons';
+import { AddIcon, EditIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
 import { DiscountType } from '@tyro/api';
 import { ReturnTypeFromUseDiscounts, useDiscounts } from '../api/discounts';
 import {
   UpsertDiscountModal,
   UpsertDiscountModalProps,
 } from '../components/discounts/upsert-discount-modal';
+import { DeleteDiscountConfirmModal } from '../components/discounts/delete-discount-confirm-modal';
 
 dayjs.extend(LocalizedFormat);
 
@@ -30,7 +31,8 @@ const getColumnDefs = (
   t: TFunction<('fees' | 'common')[]>,
   displayName: ReturnTypeDisplayName,
   formatCurrency: ReturnType<typeof useFormatNumber>['formatCurrency'],
-  onClickEdit: Dispatch<SetStateAction<UpsertDiscountModalProps['value']>>
+  onClickEdit: Dispatch<SetStateAction<UpsertDiscountModalProps['value']>>,
+  onClickDelete: Dispatch<SetStateAction<ReturnTypeFromUseDiscounts | null>>
 ): GridOptions<ReturnTypeFromUseDiscounts>['columnDefs'] => [
   {
     field: 'name',
@@ -93,11 +95,7 @@ const getColumnDefs = (
   {
     suppressColumnsToolPanel: true,
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseDiscounts>) =>
-      /**
-       * NOTE: https://app.clickup.com/t/862j5pqrr
-       * According to the ticket, editing an existing discount won't be included on v1
-       */
-      false && (
+      data && (
         <ActionMenu
           iconOnly
           buttonIcon={<VerticalDotsIcon />}
@@ -105,8 +103,12 @@ const getColumnDefs = (
             {
               label: t('common:actions.edit'),
               icon: <EditIcon />,
-              // @ts-expect-error
               onClick: () => onClickEdit(data),
+            },
+            {
+              label: t('common:actions.delete'),
+              icon: <TrashIcon />,
+              onClick: () => onClickDelete(data),
             },
           ]}
         />
@@ -123,16 +125,26 @@ export default function DiscountsPage() {
   const { data: discountsData } = useDiscounts({});
 
   const {
-    value: discount,
-    debouncedValue: debouncedDiscount,
-    setValue: setDiscount,
+    value: discountToEdit,
+    debouncedValue: debouncedDiscountToEdit,
+    setValue: setDiscountToEdit,
   } = useDebouncedValue<UpsertDiscountModalProps['value']>({
     defaultValue: null,
   });
 
+  const [discountToDelete, setDiscountToDelete] =
+    useState<ReturnTypeFromUseDiscounts | null>(null);
+
   const columnDefs = useMemo(
-    () => getColumnDefs(t, displayName, formatCurrency, setDiscount),
-    [t, displayName, formatCurrency, setDiscount]
+    () =>
+      getColumnDefs(
+        t,
+        displayName,
+        formatCurrency,
+        setDiscountToEdit,
+        setDiscountToDelete
+      ),
+    [t, displayName, formatCurrency, setDiscountToEdit, setDiscountToDelete]
   );
 
   return (
@@ -145,7 +157,7 @@ export default function DiscountsPage() {
             <Button
               variant="contained"
               startIcon={<AddIcon />}
-              onClick={() => setDiscount({})}
+              onClick={() => setDiscountToEdit({})}
             >
               {t('fees:createDiscount')}
             </Button>
@@ -158,9 +170,14 @@ export default function DiscountsPage() {
         getRowId={({ data }) => String(data?.id)}
       />
       <UpsertDiscountModal
-        open={!!discount}
-        value={discount || debouncedDiscount}
-        onClose={() => setDiscount(null)}
+        open={!!discountToEdit}
+        value={discountToEdit || debouncedDiscountToEdit}
+        onClose={() => setDiscountToEdit(null)}
+      />
+      <DeleteDiscountConfirmModal
+        open={!!discountToDelete}
+        discountToDelete={discountToDelete!}
+        onClose={() => setDiscountToDelete(null)}
       />
     </PageContainer>
   );

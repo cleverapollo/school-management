@@ -69,5 +69,7 @@
     "COMPLETE": "Paid",
     "OUTSTANDING": "Outstanding",
     "OVERDUE": "Overdue"
-  }
+  },
+  "deleteDiscount": "Delete discount",
+  "deleteDiscountConfirmation": "You are about to delete this discount. Are you sure you want to continue?"
 }
