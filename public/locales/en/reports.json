@@ -17,7 +17,7 @@
   "grouping": "Grouping",
   "timeGrouping": "Time grouping",
   "stats": "Stats",
-  "overdueAttendance": "Overdue Attendance",
+  "overdueAttendance": "Overdue attendance",
   "noOverdueAttendanceToday": "No overdue attendance today",
   "roomX": "rm. {{name}}"
 }
