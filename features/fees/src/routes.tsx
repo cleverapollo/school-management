@@ -23,20 +23,21 @@ const CreateFeePage = lazyWithRetry(() => import('./pages/fee/create'));
 const EditFeePage = lazyWithRetry(() => import('./pages/fee/edit'));
 
 export const getRoutes: NavObjectFunction = (t) => [
-  // {
-  //   type: NavObjectType.Category,
-  //   title: t('navigation:general.title'),
-  //   hasAccess: ({ isContact }) => isContact,
-  //   children: [
-  //     {
-  //       type: NavObjectType.RootLink,
-  //       path: 'fees',
-  //       title: t('navigation:general.fees'),
-  //       icon: <WalletWithMoneyIcon />,
-  //       element: <ContactDashboard />,
-  //     },
-  //   ],
-  // },
+  {
+    type: NavObjectType.Category,
+    title: t('navigation:general.title'),
+    hasAccess: ({ isContact, hasPermission }) =>
+      isContact && hasPermission('ps:1:fees:pay_fees'),
+    children: [
+      {
+        type: NavObjectType.RootLink,
+        path: 'fees',
+        title: t('navigation:general.fees'),
+        icon: <WalletWithMoneyIcon />,
+        element: <ContactDashboard />,
+      },
+    ],
+  },
   {
     type: NavObjectType.Category,
     title: t('navigation:management.title'),
