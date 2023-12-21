@@ -57,32 +57,15 @@ export const SaveBar = ({
                 </Typography>
               ))
             : [
-                {
-                  label: t('groups:lastSaved'),
-                  value: updatedAt
-                    ? t('groups:dateAtTime', {
-                        date: dayjs(updatedAt).format('L'),
-                        time: dayjs(updatedAt).format('LT'),
-                      })
-                    : '-',
-                },
-                {
-                  label: t('common:by'),
-                  value: updatedBy,
-                },
-              ].map(({ label, value }) => (
-                <Stack key={label} flexDirection="row" gap={0.5}>
-                  <Typography
-                    variant="subtitle2"
-                    component="span"
-                    color="text.secondary"
-                  >
-                    {label}
-                  </Typography>
-                  <Typography variant="subtitle2" component="span">
-                    {value}
-                  </Typography>
-                </Stack>
+                t('groups:lastSaved', {
+                  date: dayjs(updatedAt).format('L'),
+                  time: dayjs(updatedAt).format('LT'),
+                }),
+                t('groups:updatedBy', { updatedBy }),
+              ].map((text) => (
+                <Typography key={text} variant="subtitle2" component="span">
+                  {text}
+                </Typography>
               ))}
         </Stack>
 
