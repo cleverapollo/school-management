@@ -17,6 +17,8 @@ const fees = graphql(/* GraphQL */ `
       amount
       feeType
       absorbFees
+      published
+      publishedOn
       assignedToParties {
         ... on PartyPerson {
           __typename

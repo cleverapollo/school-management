@@ -5,7 +5,7 @@ import { ReturnTypeFromUseFees } from '../../api/fees';
 
 export interface DeleteFeeConfirmModalProps {
   open: boolean;
-  feeToDelete: ReturnTypeFromUseFees;
+  feeToDelete: ReturnTypeFromUseFees | null;
   onClose: () => void;
 }
 

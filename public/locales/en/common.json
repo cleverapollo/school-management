@@ -32,12 +32,16 @@
     "clone": "Clone",
     "filter": "Filter",
     "deselect": "Deselect",
-    "exportCSV": "Export CSV"
+    "exportCSV": "Export CSV",
+    "publish": "Publish",
+    "unpublish": "Unpublish"
   },
   "snackbarMessages": {
     "createSuccess": "Created successfully!",
     "updateSuccess": "Updated successfully!",
     "deleteSuccess": "Deleted successfully!",
+    "unpublishedSuccess": "Unpublished successfully!",
+    "publishedSuccess": "Published successfully!",
     "mailWasSent": "Mail was sent",
     "inviteSent": "Invite was sent",
     "labelWasAssigned": "Label was assigned!",
@@ -316,5 +320,6 @@
   "unconfirmed": "Unconfirmed",
   "absent": "Absent",
   "by": "By",
-  "paid": "Paid"
+  "paid": "Paid",
+  "published": "Published"
 }

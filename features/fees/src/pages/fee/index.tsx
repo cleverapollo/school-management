@@ -6,6 +6,7 @@ import {
   PageHeading,
   ReturnTypeDisplayName,
   Table,
+  TableBooleanValue,
   TablePersonAvatar,
   usePreferredNameLayout,
 } from '@tyro/core';
@@ -14,7 +15,14 @@ import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Box, Button, Stack, Chip } from '@mui/material';
-import { AddIcon, EditIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
+import {
+  AddIcon,
+  CheckmarkCircleIcon,
+  EditIcon,
+  StopIcon,
+  TrashIcon,
+  VerticalDotsIcon,
+} from '@tyro/icons';
 import {
   Colour,
   FeeStatus,
@@ -24,6 +32,7 @@ import {
 import { Link } from 'react-router-dom';
 import { ReturnTypeFromUseFees, useFees } from '../../api/fees';
 import { DeleteFeeConfirmModal } from '../../components/fees/delete-fee-confirm-modal';
+import { PublishFeeConfirmModal } from '../../components/fees/publish-fee-confirm-modal';
 
 dayjs.extend(LocalizedFormat);
 
@@ -38,7 +47,8 @@ const getColumnDefs = (
   displayName: ReturnTypeDisplayName,
   formatCurrency: ReturnType<typeof useFormatNumber>['formatCurrency'],
   hasPermission: boolean,
-  setFeeToDelete: Dispatch<SetStateAction<ReturnTypeFromUseFees | null>>
+  onDeleteClick: Dispatch<SetStateAction<ReturnTypeFromUseFees | null>>,
+  onPublishClick: Dispatch<SetStateAction<ReturnTypeFromUseFees | null>>
 ): GridOptions<ReturnTypeFromUseFees>['columnDefs'] => [
   {
     field: 'name',
@@ -99,7 +109,7 @@ const getColumnDefs = (
     headerName: t('common:status'),
     valueGetter: ({ data }) =>
       data?.feeStatus ? t(`fees:feeStatus.${data.feeStatus}`) : '-',
-    cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFees, any>) =>
+    cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFees>) =>
       data?.feeStatus ? (
         <Chip
           label={t(`fees:feeStatus.${data.feeStatus}`)}
@@ -107,6 +117,13 @@ const getColumnDefs = (
           color={statusColor[data.feeStatus]}
         />
       ) : null,
+  },
+  {
+    field: 'published',
+    headerName: t('common:published'),
+    cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFees>) => (
+      <TableBooleanValue value={!!data?.published} />
+    ),
   },
   {
     field: 'createdBy',
@@ -129,11 +146,26 @@ const getColumnDefs = (
               icon: <EditIcon />,
               navigateTo: `/fees/edit/${data.id || ''}`,
             },
+            ...(data.published
+              ? [
+                  {
+                    label: t('common:actions.unpublish'),
+                    icon: <StopIcon />,
+                    onClick: () => onPublishClick(data),
+                  },
+                ]
+              : [
+                  {
+                    label: t('common:actions.publish'),
+                    icon: <CheckmarkCircleIcon />,
+                    onClick: () => onPublishClick(data),
+                  },
+                ]),
             {
               label: t('common:actions.delete'),
               icon: <TrashIcon />,
               onClick: () => {
-                setFeeToDelete(data);
+                onDeleteClick(data);
               },
             },
           ]}
@@ -156,6 +188,9 @@ export default function OverviewPage() {
     null
   );
 
+  const [feeToPublish, setFeeToPublish] =
+    useState<ReturnTypeFromUseFees | null>(null);
+
   const columnDefs = useMemo(
     () =>
       getColumnDefs(
@@ -163,9 +198,17 @@ export default function OverviewPage() {
         displayName,
         formatCurrency,
         hasPermission,
-        setFeeToDelete
+        setFeeToDelete,
+        setFeeToPublish
       ),
-    [t, displayName, formatCurrency, hasPermission, setFeeToDelete]
+    [
+      t,
+      displayName,
+      formatCurrency,
+      hasPermission,
+      setFeeToDelete,
+      setFeeToPublish,
+    ]
   );
 
   return (
@@ -195,8 +238,13 @@ export default function OverviewPage() {
       />
       <DeleteFeeConfirmModal
         open={!!feeToDelete}
-        feeToDelete={feeToDelete!}
+        feeToDelete={feeToDelete}
         onClose={() => setFeeToDelete(null)}
+      />
+      <PublishFeeConfirmModal
+        open={!!feeToPublish}
+        feeToPublish={feeToPublish}
+        onClose={() => setFeeToPublish(null)}
       />
     </PageContainer>
   );

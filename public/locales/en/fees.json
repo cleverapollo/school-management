@@ -71,5 +71,9 @@
     "OVERDUE": "Overdue"
   },
   "deleteDiscount": "Delete discount",
-  "deleteDiscountConfirmation": "You are about to delete this discount. Are you sure you want to continue?"
+  "deleteDiscountConfirmation": "You are about to delete this discount. Are you sure you want to continue?",
+  "publishOnline": "Publish online",
+  "publishOnlineDescription": "You are about to publish this fee online. Are you sure you want to continue?",
+  "unpublishOnline": "Unpublish online",
+  "unpublishOnlineDescription": "You are about to unpublish this fee. Are you sure you want to continue?"
 }
