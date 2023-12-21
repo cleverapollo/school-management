@@ -62,6 +62,7 @@
   },
   "addGroup": "Add group",
   "addRule": "Add rule",
+  "dateAtTime": "{{date}} at {{time}}",
   "removeGroup": "Remove group",
   "removeRule": "Remove rule",
   "organisers": "Organiser(s)",

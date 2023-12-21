@@ -267,9 +267,7 @@ export function useHandleLessonAttendance({
     lessonId: currentLessonId,
     currentLesson: lessonData,
     attendance: newAttendance,
-    updatedAt: lessonData?.updatedAt
-      ? dayjs(lessonData?.updatedAt).format('L [at] LT')
-      : '-',
+    updatedAt: lessonData?.updatedAt ?? '',
     updatedBy: displayName(lessonData?.updatedBy) || '-',
     additionalLessons: lessonData?.additionalLessons || [],
     formattedLessonDate,

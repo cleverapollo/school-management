@@ -1,6 +1,7 @@
 import { Button, Stack, Typography } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { EditState, SaveBarButton, SaveBarContainer } from '@tyro/core';
+import dayjs from 'dayjs';
 import { StudentAttendance } from '../../../hooks';
 import { AttendanceBreakdown } from './breakdown';
 
@@ -58,7 +59,12 @@ export const SaveBar = ({
             : [
                 {
                   label: t('groups:lastSaved'),
-                  value: updatedAt,
+                  value: updatedAt
+                    ? t('groups:dateAtTime', {
+                        date: dayjs(updatedAt).format('L'),
+                        time: dayjs(updatedAt).format('LT'),
+                      })
+                    : '-',
                 },
                 {
                   label: t('common:by'),
