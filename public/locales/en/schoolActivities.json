@@ -43,12 +43,12 @@
     "publishStatus": "Publish status",
     "schoolActivityModalHeaderPublish": "Are you sure you want to publish this School Activity?",
     "schoolActivityModalAlertPublish": "Publishing this School Activity will add it to the Calendar and update Class Timetables.",
-    "schoolActivityModalBodyPublish": "Changes to be pushed to Timetable",
-    "schoolActivityModalHeaderUnpublish": "Are you sure you want to un-publish this School Activity?",
-    "schoolActivityModalAlertUnpublish": "Un-publishing this School Activity will remove it from the Calendar and update class timetables.",
+    "schoolActivityModalBodyPublish": "Publishing this School Activity will add it to the Calendar and update Class Timetables.",
+    "schoolActivityModalHeaderUnpublish": "Unpublish school activity",
+    "schoolActivityModalAlertUnpublish": "Unpublishing a school activity will remove it from the calendar and update class timetables. Are you sure you want to continue?",
     "schoolActivityModalBodyUnpublish": "Feedback note for un-publishing",
     "confirmPublish": "Yes, publish",
-    "confirmUnpublish": "Yes, Un-publish",
+    "confirmUnpublish": "Yes, unpublish",
     "notPublished": "Not published",
     "unpublished": "Un-published",
     "published": "Published",
@@ -61,5 +61,6 @@
     "searchGroup": "Search group",
     "selectingExistingCustomGroup": "Select existing custom group",
     "associatedCustomGroups": "Associated custom groups",
-    "editActivityDetails": "Edit activity details"
+    "editActivityDetails": "Edit activity details",
+    "searchCustomGroup": "Search custom group"
 }

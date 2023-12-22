@@ -63,7 +63,6 @@ export function SchoolActivityStatusBar({
               sx={{
                 ...labelStyle,
                 py: 0.5,
-                paddingLeft: 2,
                 mb: 0.5,
               }}
             >
@@ -99,7 +98,6 @@ export function SchoolActivityStatusBar({
               sx={{
                 ...labelStyle,
                 py: 0.5,
-                paddingLeft: 2,
                 mb: 0.5,
               }}
             >
@@ -162,7 +160,6 @@ export function SchoolActivityStatusBar({
               sx={{
                 ...labelStyle,
                 py: 0.5,
-                paddingLeft: 2,
                 mb: 0.5,
               }}
             >

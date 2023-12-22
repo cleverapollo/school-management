@@ -295,7 +295,7 @@ export function SchoolActivityForm({
                         }}
                       />
                     }
-                    label="Create a custom group?"
+                    label={t('schoolActivities:searchCustomGroup')}
                   />
                 </Grid>
               )}

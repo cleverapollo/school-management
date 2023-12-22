@@ -4,7 +4,7 @@ import {
   GridOptions,
   ICellRendererParams,
   Table,
-  TableLinearProgress,
+  sortStartNumberFirst,
   useNumber,
   usePreferredNameLayout,
 } from '@tyro/core';
@@ -16,6 +16,7 @@ import {
   useLessonsNeedingCover,
   ReturnTypeFromUseLessonsNeedingCover,
 } from '../api/lessons-needed-cover';
+import { StudentRemainingBar } from '../components/student-remaining-bar';
 
 dayjs.extend(LocalizedFormat);
 
@@ -63,9 +64,7 @@ const getColumns = (
       const studentsInGroupTotal = data?.studentsInGroupTotal || 0;
       const studentsAttendingActivityTotal =
         data?.studentsAttendingActivityTotal || 0;
-      const remainingStudents =
-        studentsInGroupTotal - studentsAttendingActivityTotal;
-      return `${remainingStudents}/${studentsInGroupTotal}`;
+      return studentsInGroupTotal - studentsAttendingActivityTotal;
     },
     cellRenderer: ({
       data,
@@ -76,12 +75,13 @@ const getColumns = (
       const remainingStudents =
         studentsInGroupTotal - studentsAttendingActivityTotal;
       return (
-        <TableLinearProgress
+        <StudentRemainingBar
           value={remainingStudents}
-          total={data?.studentsInGroupTotal}
+          total={data?.studentsInGroupTotal ?? 0}
         />
       );
     },
+    sort: 'asc',
   },
 ];
 

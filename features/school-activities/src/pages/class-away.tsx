@@ -5,7 +5,6 @@ import {
   ICellRendererParams,
   Table,
   TableBooleanValue,
-  TableLinearProgress,
   TableSwitch,
   useNumber,
   usePreferredNameLayout,
@@ -15,6 +14,7 @@ import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 
 import { useClassAway, ReturnTypeFromUseClassAway } from '../api/class-away';
+import { StudentRemainingBar } from '../components/student-remaining-bar';
 
 dayjs.extend(LocalizedFormat);
 
@@ -49,19 +49,20 @@ const getColumns = (
   {
     headerName: t('schoolActivities:studentsOnActivity'),
     colId: 'studentsOnActivity',
-    valueGetter: ({ data }) =>
-      (data &&
-        `${data?.studentsAttendingActivityTotal ?? '-'}/${
-          data?.studentsInGroupTotal ?? '-'
-        }`) ??
-      '-',
+    valueGetter: ({ data }) => {
+      const studentsAttendingActivity =
+        data?.studentsAttendingActivityTotal || 0;
+      const totalStudents = data?.studentsInGroupTotal || 0;
+      return totalStudents - studentsAttendingActivity;
+    },
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseClassAway>) =>
       data && (
-        <TableLinearProgress
+        <StudentRemainingBar
           value={data?.studentsAttendingActivityTotal}
           total={data?.studentsInGroupTotal}
         />
       ),
+    sort: 'asc',
   },
   {
     headerName: t('common:teacher'),
