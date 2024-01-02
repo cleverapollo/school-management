@@ -295,7 +295,7 @@ export function SchoolActivityForm({
                         }}
                       />
                     }
-                    label={t('schoolActivities:searchCustomGroup')}
+                    label={t('schoolActivities:createCustomGroup')}
                   />
                 </Grid>
               )}
@@ -311,7 +311,7 @@ export function SchoolActivityForm({
                   />
                 ) : (
                   <RHFAutocomplete
-                    label={t('schoolActivities:searchGroup')}
+                    label={t('schoolActivities:searchCustomGroup')}
                     optionIdKey="partyId"
                     optionTextKey="name"
                     controlProps={{
@@ -475,7 +475,7 @@ export function SchoolActivityForm({
 
             <Grid item xs={12}>
               <RHFTextField
-                label={t('schoolActivities:details')}
+                label={t('schoolActivities:activityDetails')}
                 textFieldProps={{
                   fullWidth: true,
                   multiline: true,
@@ -528,7 +528,7 @@ export function SchoolActivityForm({
 
             <Grid item xs={12}>
               <RHFTextField
-                label={t('common:note')}
+                label={t('schoolActivities:internalNote')}
                 textFieldProps={{
                   fullWidth: true,
                   multiline: true,

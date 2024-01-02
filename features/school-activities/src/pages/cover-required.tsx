@@ -4,7 +4,6 @@ import {
   GridOptions,
   ICellRendererParams,
   Table,
-  sortStartNumberFirst,
   useNumber,
   usePreferredNameLayout,
 } from '@tyro/core';
@@ -12,6 +11,7 @@ import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 
+import { ColorCard } from '@tyro/assessments';
 import {
   useLessonsNeedingCover,
   ReturnTypeFromUseLessonsNeedingCover,
@@ -44,6 +44,16 @@ const getColumns = (
     headerName: t('schoolActivities:subjectGroup'),
     field: 'event.name',
     valueGetter: ({ data }) => data?.event?.name,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseLessonsNeedingCover>) =>
+      data && (
+        <ColorCard
+          isMobile
+          color={data?.event?.colour}
+          text={data?.event?.name}
+        />
+      ),
   },
   {
     headerName: t('common:room', { count: 1 }),

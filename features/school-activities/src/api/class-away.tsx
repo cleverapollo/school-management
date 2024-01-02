@@ -31,6 +31,7 @@ const classAway = graphql(/* GraphQL */ `
       studentsInGroupTotal
       event {
         name
+        colour
         calendarEventId {
           eventId
           date

@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { LoadingButton } from '@mui/lab';
-import { Alert, AlertTitle, Box, Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import {
   Dialog,
   DialogTitle,
@@ -26,6 +27,8 @@ export function PublishSchoolActivityModal({
   schoolActivityId,
 }: PublishSchoolActivityProps) {
   const { t } = useTranslation(['common', 'schoolActivities']);
+  const [isSchoolActivityPublished, setIsSchoolActivityPublished] =
+    useState(isPublished);
 
   const { mutateAsync: publishSchoolActivity, isLoading } =
     usePublishSchoolActivity();
@@ -38,10 +41,10 @@ export function PublishSchoolActivityModal({
       },
       {
         onSuccess: () => {
-          setTimeout(() => {
-            onClose();
-          }, 300);
           onClose();
+          setTimeout(() => {
+            setIsSchoolActivityPublished(!isPublished);
+          }, 300);
         },
       }
     );
@@ -50,7 +53,7 @@ export function PublishSchoolActivityModal({
   return (
     <Dialog open={open}>
       <DialogTitle display="flex" alignItems="center">
-        {isPublished ? (
+        {isSchoolActivityPublished ? (
           <BinModernIcon sx={{ marginRight: 2 }} />
         ) : (
           <Box
@@ -69,9 +72,9 @@ export function PublishSchoolActivityModal({
           </Box>
         )}
 
-        {isPublished
-          ? t('schoolActivities:schoolActivityModalHeaderUnpublish')
-          : t('schoolActivities:schoolActivityModalHeaderPublish')}
+        {isSchoolActivityPublished
+          ? t('schoolActivities:schoolActivityModalTitleUnpublish')
+          : t('schoolActivities:schoolActivityModalTitlePublish')}
       </DialogTitle>
       <DialogContent
         sx={{
@@ -83,36 +86,10 @@ export function PublishSchoolActivityModal({
           },
         }}
       >
-        {/* <Alert
-          severity="warning"
-          icon={false}
-          sx={{
-            marginBottom: 3,
-            backgroundColor: 'indigo.50',
-            color: 'indigo.900',
-            fontSize: '.0875rem',
-            fontWeight: 500,
-            '& .MuiAlert-message': {
-              paddingY: '18px',
-            },
-          }}
-        >
-          <AlertTitle
-            sx={{
-              fontSize: '0.875rem',
-              lineHeight: '1.5rem',
-              fontWeight: 500,
-            }}
-          >
-            {isPublished
-              ? t('schoolActivities:schoolActivityModalAlertUnpublish')
-              : t('schoolActivities:schoolActivityModalAlertPublish')}
-          </AlertTitle>
-        </Alert> */}
         <DialogContentText>
-          {isPublished
-            ? t('schoolActivities:schoolActivityModalAlertUnpublish')
-            : t('schoolActivities:schoolActivityModalAlertPublish')}
+          {isSchoolActivityPublished
+            ? t('schoolActivities:schoolActivityModalTextUnpublish')
+            : t('schoolActivities:schoolActivityModalTextPublish')}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -124,7 +101,7 @@ export function PublishSchoolActivityModal({
           loading={isLoading}
           onClick={onSubmit}
         >
-          {isPublished
+          {isSchoolActivityPublished
             ? t('schoolActivities:confirmUnpublish')
             : t('schoolActivities:confirmPublish')}
         </LoadingButton>

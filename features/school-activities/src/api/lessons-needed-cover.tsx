@@ -23,6 +23,7 @@ const lessonsNeedingCover = graphql(/* GraphQL */ `
       studentsAttendingActivityTotal
       studentsInGroupTotal
       event {
+        colour
         calendarEventId {
           eventId
         }

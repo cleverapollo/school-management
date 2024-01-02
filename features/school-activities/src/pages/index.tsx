@@ -51,7 +51,7 @@ const getColumnDefs = (
   },
   {
     field: 'tripPurpose',
-    headerName: t('schoolActivities:tripPurpose'),
+    headerName: t('schoolActivities:activityDetails'),
     valueGetter: ({ data }) => data?.tripPurpose,
   },
   {
@@ -74,7 +74,7 @@ const getColumnDefs = (
   },
   {
     field: 'notes',
-    headerName: t('schoolActivities:note'),
+    headerName: t('schoolActivities:internalNotes'),
     valueGetter: ({ data }) => data?.notes || '-',
   },
   {

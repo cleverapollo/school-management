@@ -13,6 +13,8 @@ import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 
+import { ColorCard } from '@tyro/assessments';
+
 import { useClassAway, ReturnTypeFromUseClassAway } from '../api/class-away';
 import { StudentRemainingBar } from '../components/student-remaining-bar';
 
@@ -40,6 +42,10 @@ const getColumns = (
     headerName: t('schoolActivities:subjectGroup'),
     field: 'event.name',
     valueGetter: ({ data }) => data?.event?.name || '-',
+    cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseClassAway>) =>
+      data && (
+        <ColorCard color={data?.event?.colour} text={data?.event?.name} />
+      ),
   },
   {
     headerName: t('common:room', { count: 1 }),
@@ -49,12 +55,7 @@ const getColumns = (
   {
     headerName: t('schoolActivities:studentsOnActivity'),
     colId: 'studentsOnActivity',
-    valueGetter: ({ data }) => {
-      const studentsAttendingActivity =
-        data?.studentsAttendingActivityTotal || 0;
-      const totalStudents = data?.studentsInGroupTotal || 0;
-      return totalStudents - studentsAttendingActivity;
-    },
+    valueGetter: ({ data }) => data?.studentsAttendingActivityTotal || 0,
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseClassAway>) =>
       data && (
         <StudentRemainingBar

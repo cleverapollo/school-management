@@ -12,6 +12,7 @@
     "@tyro/core": "*",
     "@tyro/groups": "*",
     "@tyro/i18n": "*",
+    "@tyro/assessments": "*",
     "@tyro/icons": "*",
     "@tyro/people": "*",
     "dayjs": "^1.11.7",
