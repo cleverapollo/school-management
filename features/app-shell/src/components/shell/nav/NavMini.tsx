@@ -36,7 +36,13 @@ export default function NavMini({ onExpand, navConfig }: NavMiniProps) {
           },
         }}
       >
-        <Logo sx={{ mx: 'auto', my: 2, width: 50 }} />
+        <Box
+          component="img"
+          src="/assets/logo-christmas.png"
+          alt="Tyro"
+          sx={{ mx: 'auto', my: 2, width: 60 }}
+        />
+        {/* <Logo sx={{ mx: 'auto', my: 2, width: 50 }} /> */}
 
         <NavSectionMini data={navConfig} />
       </Stack>

@@ -37,8 +37,6 @@ export default function ClassListManagerBlocks() {
   const { spacing } = useTheme();
   const { t } = useTranslation(['common', 'classListManager']);
 
-  const [selectedYearGroup, setSelectedYearGroup] =
-    useState<YearGroupsAutocompleteProps['value']>(null);
   const [selectedRotationIndex, setSelectedRotationIndex] = useState<
     number | string
   >(0);
@@ -49,7 +47,12 @@ export default function ClassListManagerBlocks() {
   } = useDebouncedValue<ConfirmDialogSettings | null>({ defaultValue: null });
   const [isDirty, setIsDirty] = useState(false);
   const containerMargin = useContainerMargin();
-  const { selectedBlock, setSelectedBlock } = useClassListSettings();
+  const {
+    selectedBlock,
+    setSelectedBlock,
+    selectedYearGroup,
+    setSelectedYearGroup,
+  } = useClassListSettings();
   const dropdownDirection = useBreakpointValue<'column' | 'row'>({
     base: 'column',
     sm: 'row',
@@ -158,11 +161,6 @@ export default function ClassListManagerBlocks() {
 
   useEffect(() => {
     setSelectedRotationIndex(0);
-    setSelectedBlock(selectedBlock ?? null);
-
-    return () => {
-      setSelectedBlock(null);
-    };
   }, [selectedBlock]);
 
   return (
