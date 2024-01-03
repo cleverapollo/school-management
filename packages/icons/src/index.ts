@@ -14,7 +14,6 @@ export * from './arrow-right-icon';
 export * from './at';
 export * from './attachment';
 export * from './bell';
-export * from './bin-modern';
 export * from './blank-file';
 export * from './bold';
 export * from './book-open';

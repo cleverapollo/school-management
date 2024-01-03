@@ -10,7 +10,7 @@ import {
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 
-import { SchoolBagIcon, BinModernIcon } from '@tyro/icons';
+import { SchoolBagIcon, TrashIcon } from '@tyro/icons';
 import { usePublishSchoolActivity } from '../api/publish_school_activity';
 
 type PublishSchoolActivityProps = {
@@ -54,7 +54,7 @@ export function PublishSchoolActivityModal({
     <Dialog open={open}>
       <DialogTitle display="flex" alignItems="center">
         {isSchoolActivityPublished ? (
-          <BinModernIcon sx={{ marginRight: 2 }} />
+          <TrashIcon sx={{ marginRight: 2 }} />
         ) : (
           <Box
             width="45px"
@@ -76,16 +76,7 @@ export function PublishSchoolActivityModal({
           ? t('schoolActivities:schoolActivityModalTitleUnpublish')
           : t('schoolActivities:schoolActivityModalTitlePublish')}
       </DialogTitle>
-      <DialogContent
-        sx={{
-          '& .MuiPaper-root': {
-            borderRadius: 0,
-            borderLeftWidth: '3px',
-            borderLeftStyle: 'solid',
-            borderLeftColor: 'indigo.500',
-          },
-        }}
-      >
+      <DialogContent>
         <DialogContentText>
           {isSchoolActivityPublished
             ? t('schoolActivities:schoolActivityModalTextUnpublish')

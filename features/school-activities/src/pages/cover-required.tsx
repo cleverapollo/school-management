@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
+  getLocaleTimestamp,
   GridOptions,
   ICellRendererParams,
   Table,
@@ -31,13 +32,15 @@ const getColumns = (
   {
     headerName: t('common:time'),
     colId: 'time',
-    valueGetter: ({ data }) =>
-      `${data?.event?.startTime ?? '-'} - ${data?.event?.endTime ?? '-'}` ||
-      '-',
-    valueFormatter: ({ data }) => {
-      const lessonStartTime = dayjs(data?.event?.startTime).format('HH:mm');
-      const lessonEndTime = dayjs(data?.event?.endTime).format('HH:mm');
-      return `${lessonStartTime} - ${lessonEndTime}` || '-';
+    valueGetter: ({ data }) => {
+      const lessonStartTime = getLocaleTimestamp(
+        dayjs(data?.event?.startTime).format('HH:mm')
+      );
+      const lessonEndTime = getLocaleTimestamp(
+        dayjs(data?.event?.endTime).format('HH:mm')
+      );
+
+      return `${lessonStartTime} - ${lessonEndTime}`;
     },
   },
   {
@@ -63,7 +66,6 @@ const getColumns = (
   {
     headerName: t('common:teacher'),
     field: 'awayStaff',
-    valueGetter: ({ data }) => data?.awayStaff,
     valueFormatter: ({ data }) =>
       data?.awayStaff ? displayNames(data?.awayStaff) : '-',
   },

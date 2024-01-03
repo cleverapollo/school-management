@@ -8,6 +8,8 @@ import {
 import { redirect } from 'react-router-dom';
 import { SchoolBagIcon } from '@tyro/icons';
 import { getSchoolActivityById } from './api/get-school-activities';
+import { getClassAway } from './api/class-away';
+import { getLessonsNeedingCover } from './api/lessons-needed-cover';
 
 const SchoolActivityPage = lazyWithRetry(() => import('./pages'));
 const CreateSchoolActivityPage = lazyWithRetry(() => import('./pages/create'));
@@ -81,11 +83,29 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'cover-required',
                 element: <CoverRequired />,
+                loader: ({ params }) => {
+                  const schoolActivityId = getNumber(params.activityId);
+
+                  if (!schoolActivityId) {
+                    throw404Error();
+                  }
+
+                  return getLessonsNeedingCover({ schoolActivityId });
+                },
               },
               {
                 type: NavObjectType.NonMenuLink,
                 path: 'class-away',
                 element: <ClassAway />,
+                loader: ({ params }) => {
+                  const schoolActivityId = getNumber(params.activityId);
+
+                  if (!schoolActivityId) {
+                    throw404Error();
+                  }
+
+                  return getClassAway({ schoolActivityId });
+                },
               },
             ],
           },

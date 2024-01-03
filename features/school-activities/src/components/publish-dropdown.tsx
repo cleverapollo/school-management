@@ -88,7 +88,8 @@ export function PublishDropdown({
         onKeyDown={handleMenuOpen}
         sx={{
           backgroundColor: 'white',
-          border: '1px solid #E2E8F0',
+          border: '1px solid',
+          borderColor: 'slate.200',
           borderRadius: '18px',
           display: 'flex',
           flexDirection: 'row',
