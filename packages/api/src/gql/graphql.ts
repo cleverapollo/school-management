@@ -510,6 +510,7 @@ export type CalendarDayInfo = {
   __typename?: 'CalendarDayInfo';
   date: Scalars['Date'];
   dayType: DayType;
+  description?: Maybe<Scalars['String']>;
   endTime?: Maybe<Scalars['DateTime']>;
   periods: Array<CalendarGridPeriodInfo>;
   startTime?: Maybe<Scalars['DateTime']>;
@@ -1186,6 +1187,21 @@ export type CatalogueSuccess = {
   __typename?: 'CatalogueSuccess';
   message?: Maybe<Scalars['String']>;
   success: Scalars['Boolean'];
+};
+
+export type Category = {
+  __typename?: 'Category';
+  active: Scalars['Boolean'];
+  /** deep linked */
+  createdBy: Person;
+  createdByPartyId: Scalars['Long'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['Int'];
+  name: Scalars['String'];
+};
+
+export type CategoryFilter = {
+  ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 export type ChairPerson = {
@@ -2298,21 +2314,36 @@ export type Fee = {
   /** deep linked */
   assignedToParties?: Maybe<Array<Party>>;
   assignedToPartyIds?: Maybe<Array<Scalars['Long']>>;
+  audCreatedByPartyId: Scalars['Long'];
+  categories?: Maybe<Array<Category>>;
+  createdBy: Person;
   debtorIds?: Maybe<Array<Scalars['Int']>>;
   debtors?: Maybe<Array<Debtor>>;
   discounts?: Maybe<Array<Discount>>;
+  due: Scalars['Float'];
   dueDate: Scalars['Date'];
+  feeStatus: FeeStatus;
   feeType: FeeType;
   id?: Maybe<Scalars['Int']>;
   individualDiscountIds?: Maybe<Array<Scalars['Int']>>;
   /** deep linked */
   individualDiscounts?: Maybe<Array<IndividualDiscount>>;
   name: Scalars['String'];
+  paid: Scalars['Float'];
+  published: Scalars['Boolean'];
+  publishedOn?: Maybe<Scalars['DateTime']>;
+  total: Scalars['Float'];
 };
 
 export type FeeFilter = {
   ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
+
+export enum FeeStatus {
+  Complete = 'COMPLETE',
+  Outstanding = 'OUTSTANDING',
+  Overdue = 'OVERDUE'
+}
 
 export enum FeeType {
   Mandatory = 'MANDATORY',
@@ -2779,11 +2810,13 @@ export type Mutation = {
   enrollment_ire_changeProgrammeStage: Success;
   enrollment_ire_upsertBlockMemberships: EnrollmentIre_BlockMemberships;
   enrollment_ire_upsertCoreMemberships: EnrollmentIre_CoreMemberships;
-  fees_createPayment?: Maybe<CreatePaymentResponse>;
-  fees_deleteDiscount?: Maybe<Scalars['String']>;
-  fees_deleteFee?: Maybe<Scalars['String']>;
-  fees_saveDiscount?: Maybe<Discount>;
-  fees_saveFee?: Maybe<Fee>;
+  fees_createPayment: CreatePaymentResponse;
+  fees_deleteDiscount: Success;
+  fees_deleteFee: Success;
+  fees_publish: Success;
+  fees_saveCategory: Category;
+  fees_saveDiscount: Discount;
+  fees_saveFee: Fee;
   /**     fees_savePayment(input: SavePaymentInput): [Payment] */
   fees_stripeSignUp: StripeAccount;
   notes_deleteBehaviourCategory?: Maybe<Success>;
@@ -2811,6 +2844,7 @@ export type Mutation = {
   tt_reset: Success;
   tt_swap: Success;
   tt_updateTimetableGroup: Success;
+  tt_upsertGrids: Success;
   tt_upsertSubjectGroup: Success;
   users_createProfileForGlobalUser?: Maybe<Profile>;
   users_deactivateProfiles?: Maybe<Success>;
@@ -3159,6 +3193,16 @@ export type MutationFees_DeleteFeeArgs = {
 };
 
 
+export type MutationFees_PublishArgs = {
+  input?: InputMaybe<PublishInput>;
+};
+
+
+export type MutationFees_SaveCategoryArgs = {
+  input?: InputMaybe<SaveCategoryInput>;
+};
+
+
 export type MutationFees_SaveDiscountArgs = {
   input?: InputMaybe<SaveDiscountInput>;
 };
@@ -3291,6 +3335,11 @@ export type MutationTt_SwapArgs = {
 
 export type MutationTt_UpdateTimetableGroupArgs = {
   input: Tt_UpdateTimetableGroupInput;
+};
+
+
+export type MutationTt_UpsertGridsArgs = {
+  input: TtUpsertGrids;
 };
 
 
@@ -3931,6 +3980,7 @@ export type Payment = {
 export type PaymentFilter = {
   ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  paymentIntentId?: InputMaybe<Scalars['String']>;
 };
 
 export enum PaymentMethod {
@@ -4356,6 +4406,11 @@ export type PublishAssessmentInput = {
   subjectGroupIds?: InputMaybe<Array<Scalars['Long']>>;
 };
 
+export type PublishInput = {
+  feeId: Scalars['Int'];
+  publish: Scalars['Boolean'];
+};
+
 export type Query = {
   __typename?: 'Query';
   admin__party_people?: Maybe<Array<Person>>;
@@ -4424,10 +4479,11 @@ export type Query = {
   eire_nonClassContactHours?: Maybe<Array<Maybe<NonClassContactHours>>>;
   enrollment_ire_blockMemberships: EnrollmentIre_BlockMemberships;
   enrollment_ire_coreMemberships: EnrollmentIre_CoreMemberships;
-  fees_discountAssignees?: Maybe<Array<Maybe<DiscountAssignee>>>;
-  fees_discounts?: Maybe<Array<Maybe<Discount>>>;
-  fees_fees?: Maybe<Array<Maybe<Fee>>>;
-  fees_payments?: Maybe<Array<Maybe<Payment>>>;
+  fees_categories: Array<Category>;
+  fees_discountAssignees: Array<DiscountAssignee>;
+  fees_discounts: Array<Discount>;
+  fees_fees: Array<Fee>;
+  fees_payments: Array<Payment>;
   fees_stripeAccount: StripeAccount;
   fees_studentFees: Array<StudentFee>;
   file_transfer_list?: Maybe<Array<FileTransferResponse>>;
@@ -4468,6 +4524,7 @@ export type Query = {
   swm_substitutions: Array<Swm_Substitution>;
   tt_addLessonOptions: Tt_AddLessonOptions;
   tt_editLessonOptions: Tt_AddLessonOptions;
+  tt_grids: Array<TtGrid>;
   tt_groups: Array<Tt_Groups>;
   tt_individualLessons: Array<TtIndividualViewLesson>;
   tt_resourceTimetableView: TtResourceTimetableView;
@@ -4764,6 +4821,11 @@ export type QueryEnrollment_Ire_CoreMembershipsArgs = {
 };
 
 
+export type QueryFees_CategoriesArgs = {
+  filter?: InputMaybe<CategoryFilter>;
+};
+
+
 export type QueryFees_DiscountAssigneesArgs = {
   filter?: InputMaybe<DiscountAssigneeFilter>;
 };
@@ -4946,6 +5008,11 @@ export type QueryTt_AddLessonOptionsArgs = {
 
 export type QueryTt_EditLessonOptionsArgs = {
   filter?: InputMaybe<Tt_EditLessonFilter>;
+};
+
+
+export type QueryTt_GridsArgs = {
+  filter: TtGridFilter;
 };
 
 
@@ -5766,6 +5833,13 @@ export type SaveAttendanceCodeInput = {
   visibleForTeacher?: InputMaybe<Scalars['Boolean']>;
 };
 
+export type SaveCategoryInput = {
+  active?: InputMaybe<Scalars['Boolean']>;
+  description?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['Int']>;
+  name?: InputMaybe<Scalars['String']>;
+};
+
 export type SaveChairPerson = {
   chairPersonId?: InputMaybe<Scalars['Int']>;
   endDate?: InputMaybe<Scalars['Date']>;
@@ -5826,6 +5900,7 @@ export type SaveFeeInput = {
   absorbFees: Scalars['Boolean'];
   amount: Scalars['Float'];
   assignedToPartyIds?: InputMaybe<Array<Scalars['Long']>>;
+  categoryIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   discountIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   dueDate: Scalars['Date'];
   feeType: FeeType;
@@ -6690,6 +6765,7 @@ export type StudentContactRelationshipInfo = {
 };
 
 export enum StudentContactType {
+  Agent = 'AGENT',
   Aunty = 'AUNTY',
   FamilyFriend = 'FAMILY_FRIEND',
   Father = 'FATHER',
@@ -7547,6 +7623,11 @@ export type TtUpsertGridPeriod = {
   /**  periods are sequential with no gapes between them */
   startTime: Scalars['Time'];
   type: TtGridPeriodType;
+};
+
+export type TtUpsertGrids = {
+  grids: Array<TtUpsertGrid>;
+  timetableId: Scalars['Int'];
 };
 
 export type TtUpsertLessonPeriod = {
@@ -8567,21 +8648,21 @@ export type CreatePaymentMutationVariables = Exact<{
 }>;
 
 
-export type CreatePaymentMutation = { __typename?: 'Mutation', fees_createPayment?: { __typename?: 'CreatePaymentResponse', clientSecret: string } | null };
+export type CreatePaymentMutation = { __typename?: 'Mutation', fees_createPayment: { __typename?: 'CreatePaymentResponse', clientSecret: string } };
 
 export type Fees_DiscountsQueryVariables = Exact<{
   filter?: InputMaybe<DiscountFilter>;
 }>;
 
 
-export type Fees_DiscountsQuery = { __typename?: 'Query', fees_discounts?: Array<{ __typename?: 'Discount', id: number, name: string, description?: string | null, discountType: DiscountType, value: number, siblingDiscount?: boolean | null, active: boolean, createdBy: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null } } | null> | null };
+export type Fees_DiscountsQuery = { __typename?: 'Query', fees_discounts: Array<{ __typename?: 'Discount', id: number, name: string, description?: string | null, discountType: DiscountType, value: number, siblingDiscount?: boolean | null, active: boolean, createdBy: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null } }> };
 
 export type Fees_SaveDiscountMutationVariables = Exact<{
   input?: InputMaybe<SaveDiscountInput>;
 }>;
 
 
-export type Fees_SaveDiscountMutation = { __typename?: 'Mutation', fees_saveDiscount?: { __typename?: 'Discount', id: number } | null };
+export type Fees_SaveDiscountMutation = { __typename?: 'Mutation', fees_saveDiscount: { __typename?: 'Discount', id: number } };
 
 export type Fees_StripeAccountQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -9415,6 +9496,13 @@ export type Communications_SmsTopUpMutationVariables = Exact<{
 
 export type Communications_SmsTopUpMutation = { __typename?: 'Mutation', communications_smsTopUp?: { __typename?: 'SmsTopUpResponse', smsCredit: number } | null };
 
+export type Options_SaveOptionsMutationVariables = Exact<{
+  input: SaveOptions;
+}>;
+
+
+export type Options_SaveOptionsMutation = { __typename?: 'Mutation', options_saveOptions: { __typename?: 'Option', id: number } };
+
 export type Swm_ApplySubstitutionsMutationVariables = Exact<{
   input: Swm_InsertSubstitution;
 }>;
@@ -9825,6 +9913,7 @@ export const Communications_SmsCostDocument = {"kind":"Document","definitions":[
 export const Communications_SmsCreditDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_smsCredit"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_smsCredit"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"smsCredit"}}]}}]}}]} as unknown as DocumentNode<Communications_SmsCreditQuery, Communications_SmsCreditQueryVariables>;
 export const Communications_SmsXeroItemDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_smsXeroItem"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_smsXeroItem"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"cost"}}]}}]}}]} as unknown as DocumentNode<Communications_SmsXeroItemQuery, Communications_SmsXeroItemQueryVariables>;
 export const Communications_SmsTopUpDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"communications_smsTopUp"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SmsTopUpInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_smsTopUp"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"smsCredit"}}]}}]}}]} as unknown as DocumentNode<Communications_SmsTopUpMutation, Communications_SmsTopUpMutationVariables>;
+export const Options_SaveOptionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"options_saveOptions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SaveOptions"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options_saveOptions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<Options_SaveOptionsMutation, Options_SaveOptionsMutationVariables>;
 export const Swm_ApplySubstitutionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"swm_applySubstitutions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_InsertSubstitution"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_applySubstitutions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Swm_ApplySubstitutionsMutation, Swm_ApplySubstitutionsMutationVariables>;
 export const Swm_DeleteSubstitutionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"swm_deleteSubstitutions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_DeleteSubstitution"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_deleteSubstitutions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Swm_DeleteSubstitutionsMutation, Swm_DeleteSubstitutionsMutationVariables>;
 export const Swm_AbsenceTypesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"swm_absenceTypes"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_StaffAbsenceTypeFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_absenceTypes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"absenceTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"descriptionTextId"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"availableForRequests"}}]}}]}}]} as unknown as DocumentNode<Swm_AbsenceTypesQuery, Swm_AbsenceTypesQueryVariables>;

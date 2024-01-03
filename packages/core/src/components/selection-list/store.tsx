@@ -1,370 +1,275 @@
-import cloneDeep from 'lodash/cloneDeep';
 import {
   useCallback,
-  useEffect,
   useState,
-  useRef,
   useContext,
   createContext,
   useMemo,
   ReactNode,
   Dispatch,
   SetStateAction,
+  Context,
 } from 'react';
-import {
-  OnDragEndResponder,
-  OnDragStartResponder,
-  DraggableLocation,
-} from 'react-beautiful-dnd';
-import { useTranslation } from '@tyro/i18n';
-import {
-  usePreferredNameLayout,
-  useToast,
-  wasMultiSelectKeyUsed,
-} from '@tyro/core';
-import {
-  ListManagerGroup,
-  ListManagerState,
-  ListManagerStudent,
-} from './types';
-import {
-  clearSameStudentsFromGroup,
-  getGroupsWithDuplicates,
-  multiDragAwareReorder,
-  multiSelectTo,
-  toggleSelectionInGroup,
-} from './utils';
-import {
-  useEditedState,
-  UseEditedStateProps,
-  EditedStudent,
-  ReturnTypeOfUseEditedState,
-} from './edited-state';
 
-export interface UseListManagerStateProps {
-  listKey: string;
-  unassignedStudents: ListManagerStudent[];
-  groups: ListManagerGroup[];
-  onBulkSave: UseEditedStateProps['onBulkSave'];
-}
-
-export type SelectionListContextValue = {
-  state: ListManagerState[];
-  onDragEnd: OnDragEndResponder;
-  onDragStart: OnDragStartResponder;
-  editedState: ReturnTypeOfUseEditedState & {
-    revertChange: (student: EditedStudent) => void;
-  };
-  draggingStudentId: string | undefined;
+export type SelectionListContextValue<T extends object | string> = {
   performCardAction: (
     event: React.MouseEvent | React.KeyboardEvent | React.TouchEvent,
-    studentId: string
+    cardIds: string[]
   ) => void;
-  selectedStudentIds: string[];
-  deleteDuplicate: (groupId: number | string, studentId: string) => void;
-  duplicateStudents: (groupIdToMoveTo: number, studentIds: string[]) => void;
-  moveStudents: (
-    studentIds: string[],
-    source: DraggableLocation,
-    destination: DraggableLocation
-  ) => void;
-  enableDuplicateStudents: boolean;
-  includeClassGroupName: boolean;
-  unassignedSearch: string;
-  setUnassignedSearch: Dispatch<SetStateAction<string>>;
+  checkedCardIds: Set<string>;
+  groupBy?: T extends object
+    ? keyof T | ((option: T) => string)
+    : (option: T) => string;
+  unselectedSearch: string;
+  selectedSearch: string;
+  setUnselectedSearch: Dispatch<SetStateAction<string>>;
+  setSelectedSearch: Dispatch<SetStateAction<string>>;
+  getOptionLabel: (option: T) => string;
+  getOptionId: (option: T) => string;
+  unselectedOptions: T[];
+  selectedOptions: T[];
+  showSearch?: boolean;
+  enableMoveToSelectedButton: boolean;
+  enabledMoveToUnselectedButton: boolean;
+  moveToSelected: () => void;
+  moveToUnselected: () => void;
+  collapsibleGroups?: boolean;
+  expandedGroups: Set<string>;
+  toggleGroupExpansion: (group: string) => void;
 };
 
 const SelectionListContext = createContext<
-  SelectionListContextValue | undefined
+  SelectionListContextValue<object | string> | undefined
 >(undefined);
 
-type SelectionListProviderProps = {
-  children: ReactNode;
-  listKey: string;
-  unassignedStudents: ListManagerStudent[];
-  groups: ListManagerGroup[];
-  onBulkSave: UseEditedStateProps['onBulkSave'];
-  enableDuplicateStudents: boolean;
-  includeClassGroupName: boolean;
+type SelectionListProviderProps<T extends object | string> = {
+  value: T[];
+  onChange: (value: T[]) => void;
+  options: T[];
+  optionIdKey?: T extends object
+    ? keyof T | ((option: T) => string)
+    : (option: T) => string;
+  optionTextKey?: T extends object ? keyof T : never;
+  groupBy?: T extends object
+    ? keyof T | ((option: T) => string)
+    : (option: T) => string;
+  collapsibleGroups?: boolean;
+  getOptionLabel?: (option: T) => string;
+  showSearch?: boolean;
+  children: ReactNode | ((value: SelectionListContextValue<T>) => ReactNode);
 };
 
-export function SelectionListProvider({
-  listKey,
-  unassignedStudents,
-  groups,
-  onBulkSave,
+export function SelectionListProvider<T extends string | object>({
   children,
-  enableDuplicateStudents,
-  includeClassGroupName,
-}: SelectionListProviderProps) {
-  const { t } = useTranslation(['classListManager']);
-  const { toast } = useToast();
-  const [unassignedSearch, setUnassignedSearch] = useState('');
-  const { displayName } = usePreferredNameLayout();
-
-  const lastEditedGroups = useRef<
-    UseEditedStateProps['lastEditedGroups']['current']
-  >({
-    sourceIds: null,
-    destinationId: null,
-  });
-  const [state, setState] = useState<ListManagerState[]>([]);
-  const [draggingStudentId, setDraggingStudentId] = useState<string>();
-  const [selectedStudentIds, setSelectedStudentIds] = useState<Set<string>>([]);
-
-  const resetBoard = () => {
-    const mappedGroups =
-      groups?.map((group) => ({
-        ...group,
-        id: group.partyId,
-      })) ?? [];
-
-    setState([
-      {
-        id: 'unassigned',
-        name: t('classListManager:unassignedStudents'),
-        students: unassignedStudents,
-      },
-      ...mappedGroups,
-    ]);
-  };
-
-  const editedState = useEditedState({
-    listKey,
-    lastEditedGroups,
-    state,
-    onBulkSave,
-    resetBoard,
-  });
-
-  const unselectAll = () => {
-    setSelectedStudentIds([]);
-  };
-
-  const clearStudentsWithSamePartyId = useCallback(
-    (groupsToCheck: ListManagerState[], groupId: string) => {
-      const onDuplicateCleared = () => {
-        toast(t('classListManager:weveTidiedStudentsInGroup'), {
-          variant: 'info',
-        });
-      };
-      return clearSameStudentsFromGroup(
-        groupsToCheck,
-        groupId,
-        onDuplicateCleared
-      );
-    },
-    [t, toast]
+  options,
+  optionIdKey,
+  optionTextKey,
+  groupBy,
+  collapsibleGroups = false,
+  getOptionLabel: externalGetOptionLabel,
+  showSearch,
+  value,
+  onChange,
+}: SelectionListProviderProps<T>) {
+  const SelectionListContextRef = SelectionListContext as Context<
+    SelectionListContextValue<T> | undefined
+  >;
+  const [unselectedSearch, setUnselectedSearch] = useState<string>('');
+  const [selectedSearch, setSelectedSearch] = useState<string>('');
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
+    new Set<string>()
   );
 
-  const moveStudents = (
-    studentIds: string[],
-    source: DraggableLocation,
-    destination: DraggableLocation
-  ) => {
-    setState((prevState) => {
-      const { newGroups, sourceGroupIds } = multiDragAwareReorder({
-        groups: prevState,
-        selectedStudentIds: studentIds,
-        source,
-        destination,
-      });
+  const [checkedCardIds, setCheckedCardIds] = useState<Set<string>>(
+    new Set<string>()
+  );
 
-      lastEditedGroups.current = {
-        destinationId: destination.droppableId,
-        sourceIds: sourceGroupIds,
-      };
-
-      return clearStudentsWithSamePartyId(newGroups, destination.droppableId);
-    });
+  const unselectAll = () => {
+    setCheckedCardIds(new Set<string>());
   };
 
-  const onDragStart: OnDragStartResponder = (result) => {
-    const id = result.draggableId;
-    const selected = selectedStudentIds.includes(id);
+  const getOptionId = useCallback(
+    (option: T) => {
+      if (typeof optionIdKey === 'function') {
+        const optionIdKeyFunction = optionIdKey as (option: T) => string;
+        return optionIdKeyFunction(option);
+      }
 
-    if (!selected) {
-      unselectAll();
-    }
+      if (typeof optionIdKey === 'string') {
+        return JSON.stringify(option[optionIdKey]);
+      }
 
-    setDraggingStudentId(id);
-  };
-
-  const onDragEnd: OnDragEndResponder = (result) => {
-    const { source, destination } = result;
-
-    // dropped on a list
-    if (destination && result.reason !== 'CANCEL') {
-      moveStudents(selectedStudentIds, source, destination);
-    }
-
-    setDraggingStudentId(undefined);
-  };
-
-  const duplicateStudents = (groupIdToMoveTo: number, studentIds: string[]) => {
-    lastEditedGroups.current = {
-      destinationId: String(groupIdToMoveTo),
-      sourceIds: null,
-    };
-    setState((prevState) => {
-      const updatedGroups = getGroupsWithDuplicates(
-        groupIdToMoveTo,
-        studentIds,
-        prevState
-      );
-
-      return clearStudentsWithSamePartyId(
-        updatedGroups,
-        String(groupIdToMoveTo)
-      );
-    });
-  };
-
-  const deleteDuplicate = (groupId: number | string, studentId: string) => {
-    lastEditedGroups.current = {
-      destinationId: null,
-      sourceIds: [String(groupId)],
-    };
-    setState((prevState) => {
-      const newState = cloneDeep(prevState);
-      const groupIndex = newState.findIndex(
-        (group) => String(group.id) === String(groupId)
-      );
-      const studentIndex = newState[groupIndex].students.findIndex(
-        (student) => student.id === studentId
-      );
-      newState[groupIndex].students.splice(studentIndex, 1);
-      return newState;
-    });
-  };
-
-  const performCardAction = (
-    event: React.MouseEvent | React.KeyboardEvent | React.TouchEvent,
-    studentId: string
-  ) => {
-    setSelectedStudentIds((selectedIds) => {
-      if (wasMultiSelectKeyUsed(event)) {
-        return multiSelectTo(
-          studentId,
-          selectedIds,
-          state,
-          unassignedSearch,
-          displayName,
-          includeClassGroupName
+      if (
+        process.env.NODE_ENV === 'development' &&
+        typeof option === 'object'
+      ) {
+        console.warn(
+          'You must provide optionIdKey when using object as option type'
         );
       }
 
-      return toggleSelectionInGroup(studentId, selectedIds);
+      return JSON.stringify(option) as unknown as string;
+    },
+    [optionIdKey]
+  );
+
+  const { unselectedOptions, selectedOptions } = useMemo(() => {
+    const valueIds = value.map((option) => getOptionId(option));
+
+    return {
+      unselectedOptions: options.filter((option) => {
+        const optionId = getOptionId(option);
+        return !valueIds.includes(optionId);
+      }),
+      selectedOptions: options.filter((option) => {
+        const optionId = getOptionId(option);
+        return valueIds.includes(optionId);
+      }),
+    };
+  }, [value, options, optionIdKey, getOptionId]);
+  const enableMoveToSelectedButton = useMemo(
+    () =>
+      unselectedOptions.some((option) => {
+        const optionId = getOptionId(option);
+        return checkedCardIds.has(optionId);
+      }),
+    [checkedCardIds]
+  );
+  const enabledMoveToUnselectedButton = useMemo(
+    () =>
+      selectedOptions.some((option) => {
+        const optionId = getOptionId(option);
+        return checkedCardIds.has(optionId);
+      }),
+    [checkedCardIds]
+  );
+
+  const getOptionLabel = useCallback(
+    (option: T) => {
+      if (optionTextKey) {
+        return option[optionTextKey] as unknown as string;
+      }
+
+      if (externalGetOptionLabel) {
+        return externalGetOptionLabel(option);
+      }
+
+      if (
+        process.env.NODE_ENV === 'development' &&
+        typeof option === 'object'
+      ) {
+        console.warn(
+          'You must provide either optionTextKey or getOptionLabel when using object as option type'
+        );
+      }
+
+      return option as unknown as string;
+    },
+    [optionTextKey, externalGetOptionLabel]
+  );
+
+  const moveToSelected = useCallback(() => {
+    const valueIds = value.map((option) => getOptionId(option));
+    const newValueIds = new Set([...valueIds, ...checkedCardIds]);
+    const newValue = options.filter((option) => {
+      const optionId = getOptionId(option);
+      return newValueIds.has(optionId);
+    });
+    onChange(newValue);
+    unselectAll();
+  }, [value, checkedCardIds, getOptionId, onChange]);
+
+  const moveToUnselected = useCallback(() => {
+    const newValue = value.filter(
+      (option) => !checkedCardIds.has(getOptionId(option))
+    );
+    onChange(newValue);
+    unselectAll();
+  }, [value, checkedCardIds, getOptionId, onChange]);
+
+  const performCardAction = (
+    event: React.MouseEvent | React.KeyboardEvent | React.TouchEvent,
+    cardIds: string[]
+  ) => {
+    setCheckedCardIds((previousCheckedCardIds) => {
+      if (cardIds.every((cardId) => previousCheckedCardIds.has(cardId))) {
+        cardIds.forEach((cardId) => previousCheckedCardIds.delete(cardId));
+      } else {
+        cardIds.forEach((cardId) => previousCheckedCardIds.add(cardId));
+      }
+      return new Set(previousCheckedCardIds);
     });
   };
 
-  const revertChange = ({
-    student,
-    sourceGroup,
-    destinationGroup,
-  }: EditedStudent) => {
-    if (sourceGroup && destinationGroup) {
-      const destinationGroupIndexFromState = state.findIndex(
-        (group) => group.id === destinationGroup.id
-      );
-      const currentStudentIndex = state[
-        destinationGroupIndexFromState
-      ].students.findIndex(({ id }) => id === student.id);
-      moveStudents(
-        [String(student.id)],
-        {
-          droppableId: String(destinationGroup.id),
-          index: currentStudentIndex,
-        },
-        {
-          droppableId: String(sourceGroup.id),
-          index: 0,
+  const toggleGroupExpansion = useCallback(
+    (group: string) => {
+      setExpandedGroups((previousExpandedGroups) => {
+        if (previousExpandedGroups.has(group)) {
+          previousExpandedGroups.delete(group);
+        } else {
+          previousExpandedGroups.add(group);
         }
-      );
-    } else if (destinationGroup) {
-      deleteDuplicate(destinationGroup.id, student.id);
-    } else if (sourceGroup && sourceGroup.id !== 'unassigned') {
-      duplicateStudents(sourceGroup.id, [String(student.person.partyId)]);
-    }
-  };
-
-  useEffect(() => {
-    resetBoard();
-  }, [listKey]);
-
-  useEffect(() => {
-    const onWindowClickOrTouchEnd = (event: MouseEvent | TouchEvent) => {
-      if (event.defaultPrevented) return;
-      unselectAll();
-    };
-
-    const onWindowKeyDown = (event: KeyboardEvent) => {
-      if (event.defaultPrevented) return;
-
-      if (event.key === 'Escape') {
-        unselectAll();
-      }
-    };
-
-    window.addEventListener('click', onWindowClickOrTouchEnd);
-    window.addEventListener('touchend', onWindowClickOrTouchEnd);
-    window.addEventListener('keydown', onWindowKeyDown);
-
-    return () => {
-      window.removeEventListener('click', onWindowClickOrTouchEnd);
-      window.removeEventListener('touchend', onWindowClickOrTouchEnd);
-      window.removeEventListener('keydown', onWindowKeyDown);
-    };
-  }, []);
+        return new Set(previousExpandedGroups);
+      });
+    },
+    [setExpandedGroups]
+  );
 
   const providerValue = useMemo(
     () => ({
-      state,
-      onDragEnd,
-      onDragStart,
-      editedState: {
-        ...editedState,
-        revertChange,
-      },
-      draggingStudentId,
       performCardAction,
-      selectedStudentIds,
-      deleteDuplicate,
-      duplicateStudents,
-      moveStudents,
-      enableDuplicateStudents,
-      includeClassGroupName,
-      unassignedSearch,
-      setUnassignedSearch,
+      checkedCardIds,
+      unselectedSearch,
+      selectedSearch,
+      setUnselectedSearch,
+      setSelectedSearch,
+      groupBy,
+      showSearch,
+      unselectedOptions,
+      selectedOptions,
+      getOptionLabel,
+      getOptionId,
+      enableMoveToSelectedButton,
+      enabledMoveToUnselectedButton,
+      moveToSelected,
+      moveToUnselected,
+      collapsibleGroups,
+      expandedGroups,
+      toggleGroupExpansion,
     }),
     [
-      state,
-      onDragEnd,
-      onDragStart,
-      editedState,
-      revertChange,
-      draggingStudentId,
       performCardAction,
-      selectedStudentIds,
-      deleteDuplicate,
-      duplicateStudents,
-      moveStudents,
-      enableDuplicateStudents,
-      includeClassGroupName,
-      unassignedSearch,
-      setUnassignedSearch,
+      checkedCardIds,
+      unselectedSearch,
+      selectedSearch,
+      setUnselectedSearch,
+      setSelectedSearch,
+      groupBy,
+      showSearch,
+      unselectedOptions,
+      selectedOptions,
+      getOptionLabel,
+      getOptionId,
+      enableMoveToSelectedButton,
+      enabledMoveToUnselectedButton,
+      moveToSelected,
+      moveToUnselected,
+      collapsibleGroups,
+      expandedGroups,
+      toggleGroupExpansion,
     ]
   );
 
   return (
-    <SelectionListContext.Provider value={providerValue}>
-      {children}
-    </SelectionListContext.Provider>
+    <SelectionListContextRef.Provider value={providerValue}>
+      {typeof children === 'function' ? children(providerValue) : children}
+    </SelectionListContextRef.Provider>
   );
 }
 
-export function useSelectionListState() {
-  const context = useContext(SelectionListContext);
+export function useSelectionListState<T extends object | string>() {
+  const context = useContext(
+    SelectionListContext as Context<SelectionListContextValue<T> | undefined>
+  );
   if (context === undefined) {
     throw new Error(
       'useSelectionListState must be used within a SelectionListContext'

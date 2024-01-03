@@ -4957,15 +4957,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-virtual@npm:beta":
-  version: 3.0.0-beta.68
-  resolution: "@tanstack/react-virtual@npm:3.0.0-beta.68"
+"@tanstack/react-virtual@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@tanstack/react-virtual@npm:3.0.1"
   dependencies:
-    "@tanstack/virtual-core": 3.0.0-beta.68
+    "@tanstack/virtual-core": 3.0.0
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: e8d4110fde9eb7e27b7067a300ac8bb08622a19b7c25a3b1b313b61e76093f1c500a90723011584971a0f5c4c7832df0c90276d4cf2d43f06281199636e50c4a
+  checksum: 11534a23100de14a7e0a95da667381181e60a24e29a71246aeed174f8d5f6e176216de6639e6e1f403722ae30d8b92b21ed75ea131529b1417fb81f433468ef0
   languageName: node
   linkType: hard
 
@@ -4976,10 +4976,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/virtual-core@npm:3.0.0-beta.68":
-  version: 3.0.0-beta.68
-  resolution: "@tanstack/virtual-core@npm:3.0.0-beta.68"
-  checksum: f06898afc6501e6a6240425f2bdbd0e2dc637f4f58cb4a9e13fca7e8e25b93be25543559c53b243bf70e386302844f419d9110010db964916a523495db114f51
+"@tanstack/virtual-core@npm:3.0.0":
+  version: 3.0.0
+  resolution: "@tanstack/virtual-core@npm:3.0.0"
+  checksum: 7283d50fc7b7a56608c37a8e94a93b85890ff7e39c6281633a19c4d6f6f4fbf25f8418f1eec302a008a8746a0d1d0cd00630137b55e6cf019818d68af8ed16b6
   languageName: node
   linkType: hard
 
@@ -6380,6 +6380,7 @@ __metadata:
     "@mui/lab": ^5.0.0-alpha.156
     "@mui/material": ^5.15.0
     "@mui/x-date-pickers": ^6.18.5
+    "@tanstack/react-virtual": ^3.0.1
     "@testing-library/react": ^14.1.2
     "@tyro/api": "*"
     "@tyro/configs": "*"
@@ -6494,7 +6495,7 @@ __metadata:
     "@mui/material": ^5.15.0
     "@mui/system": ^5.15.0
     "@tanstack/react-query": ^4.29.7
-    "@tanstack/react-virtual": beta
+    "@tanstack/react-virtual": ^3.0.1
     "@tiptap/extension-link": ^2.1.10
     "@tiptap/extension-placeholder": ^2.1.8
     "@tiptap/extension-underline": ^2.1.8
@@ -6528,7 +6529,7 @@ __metadata:
     "@mui/system": ^5.15.0
     "@mui/x-date-pickers": ^6.18.5
     "@tanstack/react-query": ^4.29.7
-    "@tanstack/react-virtual": beta
+    "@tanstack/react-virtual": ^3.0.1
     "@tyro/api": "*"
     "@tyro/assessments": "*"
     "@tyro/attendance": "*"
@@ -6649,7 +6650,7 @@ __metadata:
     "@mui/material": ^5.15.0
     "@mui/system": ^5.15.0
     "@tanstack/react-query": ^4.29.7
-    "@tanstack/react-virtual": beta
+    "@tanstack/react-virtual": ^3.0.1
     "@tyro/api": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"

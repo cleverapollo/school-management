@@ -4,11 +4,13 @@ export { groupsKeys } from './api/keys';
 export type {
   ReturnTypeFromUseYearGroups,
   ReturnTypeFromUseYearGroupById,
+  ReturnTypeFromUseYearGroupListsByFilter,
 } from './api/year-groups';
 export {
   getYearGroups,
   useYearGroups,
   useYearGroupById,
+  useYearGroupListsByFilter,
 } from './api/year-groups';
 export { useSubjectGroups } from './api/subject-groups';
 export { useBlocksList } from './api/blocks-list';

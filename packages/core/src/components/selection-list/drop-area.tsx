@@ -1,76 +1,126 @@
-import { useMemo, useState } from 'react';
-import groupByFunction from 'lodash/groupBy';
-import { Droppable } from 'react-beautiful-dnd';
-import { Box, Theme, useTheme, Typography, Card } from '@mui/material';
-import get from 'lodash/get';
+import { useMemo } from 'react';
+import {
+  Theme,
+  useTheme,
+  Typography,
+  Card,
+  Stack,
+  Button,
+  Fade,
+} from '@mui/material';
+import { useTranslation } from '@tyro/i18n';
+import { ArrowLeftIcon, ArrowRightIcon } from '@tyro/icons';
 import { SearchInput } from '../search-input';
-import { GroupedDraggableSelectionList } from './draggable-lists';
+import { SelectionList } from './selection-list';
+import { useSelectionListState } from './store';
 
-export type SelectListDropAreaProps<T extends object | string> = {
+export type SelectListDropAreaProps = {
   droppableId: 'unselected' | 'selected';
   label: string;
-  variant: 'selection' | 'ordering';
-  options: T[];
-  groupBy?: T extends object
-    ? keyof T | ((option: T) => string)
-    : (option: T) => string;
-  getOptionLabel: (option: T) => string;
-  getOptionId: (option: T) => string;
-  showSearch?: boolean;
 };
 
 const getListStyle = ({
   theme: { palette },
-  isDraggingOver,
   droppableId,
+  isGrouped,
 }: {
   theme: Theme;
-  isDraggingOver: boolean;
   droppableId: 'unselected' | 'selected';
-}) => {
-  const backgroundColor = droppableId === 'selected' ? 'slate.100' : 'white';
-  const listItemBackgroundColor =
-    droppableId === 'selected' ? 'white' : 'slate.100';
-  const listItemBoxShadow =
-    droppableId === 'selected' ? 'none' : `0 1px 0 0 ${palette.slate[200]}`;
-
-  return {
-    backgroundColor: isDraggingOver ? 'indigo.200' : backgroundColor,
+  isGrouped: boolean;
+}) =>
+  ({
     flex: 1,
     borderRadius: 2,
-    paddingY: 0.75,
-    paddingX: 1.5,
+    pt: 1.5,
+    px: 1.5,
+
+    '& ul': {
+      pt: 0,
+    },
+
     '& li': {
       px: 1,
-      py: 0.5,
 
-      '&.MuiListItem-root': {
-        borderRadius: 1,
-        my: 1,
-        backgroundColor: listItemBackgroundColor,
-        boxShadow: listItemBoxShadow,
-        width: 'fit-content',
+      '&.MuiListSubheader-root': {
+        display: 'flex',
+        alignItems: 'center',
+        position: 'absolute',
+        width: '100%',
+        pt: 1,
+        pb: 0.5,
 
         '& .MuiTypography-root': {
-          fontWeight: 600,
+          fontWeight: 700,
+        },
+
+        '& .MuiCheckbox-root': {
+          p: 0,
+          ml: -0.25,
+          mr: 0.5,
+        },
+
+        '& .MuiListItemIcon-root': {
+          mr: 0.5,
+        },
+      },
+
+      '&.MuiListItem-root': {
+        ml: isGrouped ? 1 : 0,
+        position: 'absolute',
+        top: 0,
+        width: 'fit-content',
+        py: 0,
+
+        '& .MuiCheckbox-root': {
+          p: 0,
+          ml: -0.25,
+          mr: 1,
+        },
+
+        '& .MuiListItemIcon-root': {
+          mr: 0.5,
         },
       },
     },
-  } as const;
-};
+  } as const);
 
 export const SelectListDropArea = <T extends object | string>({
-  variant,
   droppableId,
   label,
-  options,
-  groupBy,
-  getOptionLabel,
-  getOptionId,
-  showSearch,
-}: SelectListDropAreaProps<T>) => {
-  const [searchValue, setSearchValue] = useState('');
+}: SelectListDropAreaProps) => {
   const theme = useTheme();
+  const { t } = useTranslation(['common']);
+  const {
+    getOptionLabel,
+    showSearch,
+    unselectedOptions,
+    selectedOptions,
+    selectedSearch,
+    setSelectedSearch,
+    unselectedSearch,
+    setUnselectedSearch,
+    enableMoveToSelectedButton,
+    enabledMoveToUnselectedButton,
+    moveToSelected,
+    moveToUnselected,
+    groupBy,
+  } = useSelectionListState<T>();
+  const { options, searchValue, setSearchValue, enableMoveButton, onMove } =
+    droppableId === 'unselected'
+      ? {
+          options: unselectedOptions,
+          searchValue: unselectedSearch,
+          setSearchValue: setUnselectedSearch,
+          enableMoveButton: enableMoveToSelectedButton,
+          onMove: moveToSelected,
+        }
+      : {
+          options: selectedOptions,
+          searchValue: selectedSearch,
+          setSearchValue: setSelectedSearch,
+          enableMoveButton: enabledMoveToUnselectedButton,
+          onMove: moveToUnselected,
+        };
 
   const filteredOptions = useMemo(() => {
     if (searchValue === '') {
@@ -80,81 +130,61 @@ export const SelectListDropArea = <T extends object | string>({
     return options.filter((option) => {
       const optionLabel = getOptionLabel(option);
 
-      if (typeof optionLabel === 'string') {
-        return optionLabel.toLowerCase().includes(searchValue.toLowerCase());
-      }
-
-      return false;
+      return optionLabel.toLowerCase().includes(searchValue.toLowerCase());
     });
   }, [options, showSearch, searchValue, getOptionLabel]);
 
-  const groupedOptions = useMemo(() => {
-    if (!groupBy) {
-      return filteredOptions;
-    }
-
-    const sortedOptions =
-      variant === 'selection'
-        ? filteredOptions.sort((a, b) => {
-            const typedGroupBy = groupBy as keyof T | ((option: T) => string);
-            const aGroup =
-              typeof typedGroupBy === 'function'
-                ? typedGroupBy(a)
-                : (get(a, typedGroupBy) as string);
-            const bGroup =
-              typeof typedGroupBy === 'function'
-                ? typedGroupBy(b)
-                : (get(b, typedGroupBy) as string);
-
-            if (aGroup !== bGroup) {
-              return aGroup.toLowerCase().localeCompare(bGroup.toLowerCase());
-            }
-
-            return getOptionLabel(a).localeCompare(getOptionLabel(b));
-          })
-        : filteredOptions;
-
-    return groupByFunction(sortedOptions, groupBy);
-  }, [variant, filteredOptions, groupBy]);
-
   return (
-    <Droppable droppableId={droppableId} type="group">
-      {(provided, snapshot) => (
-        <Card
-          ref={provided.innerRef}
-          {...provided.droppableProps}
-          sx={getListStyle({
-            theme,
-            droppableId,
-            isDraggingOver: snapshot.isDraggingOver,
-          })}
+    <Card
+      variant="outlined"
+      sx={getListStyle({
+        theme,
+        droppableId,
+        isGrouped: Boolean(groupBy),
+      })}
+    >
+      <Stack
+        direction="row"
+        spacing={1}
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <Typography
+          component="h3"
+          variant="subtitle1"
+          fontWeight={700}
+          lineHeight={1.875}
         >
-          <Typography component="h3" variant="subtitle1" fontWeight={700}>
-            {label}
-          </Typography>
-          {showSearch && (
-            <SearchInput
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-            />
-          )}
-          <Box
-            sx={{
-              maxHeight: 300,
-              overflowY: 'auto',
-            }}
+          {label}
+        </Typography>
+        <Fade in={enableMoveButton}>
+          <Button
+            variant={droppableId === 'unselected' ? 'contained' : 'outlined'}
+            startIcon={
+              droppableId === 'selected' ? <ArrowLeftIcon /> : undefined
+            }
+            endIcon={
+              droppableId === 'unselected' ? <ArrowRightIcon /> : undefined
+            }
+            size="small"
+            onClick={onMove}
           >
-            {Array.isArray(groupedOptions) ? null : (
-              <GroupedDraggableSelectionList
-                groups={groupedOptions}
-                getOptionLabel={getOptionLabel}
-                getOptionId={getOptionId}
-              />
-            )}
-            {provided.placeholder}
-          </Box>
-        </Card>
+            {droppableId === 'unselected'
+              ? t('common:actions.add')
+              : t('common:actions.remove')}
+          </Button>
+        </Fade>
+      </Stack>
+      {showSearch && (
+        <SearchInput
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          sx={{
+            my: 1,
+          }}
+        />
       )}
-    </Droppable>
+      <SelectionList options={filteredOptions} />
+    </Card>
   );
 };

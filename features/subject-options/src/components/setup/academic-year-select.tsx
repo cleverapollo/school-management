@@ -1,12 +1,17 @@
-import { RHFSelect } from '@tyro/core';
+import { RHFSelect, SelectProps } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useAcademicNamespace } from '@tyro/api';
-import { FieldValues, UseControllerProps } from 'react-hook-form';
-import { useMemo } from 'react';
+import {
+  FieldValues,
+  useController,
+  UseControllerProps,
+} from 'react-hook-form';
+import { useEffect, useMemo } from 'react';
 
 export type AcademicYearSelectProps<TField extends FieldValues> = {
   controlProps: UseControllerProps<TField>;
   label?: string;
+  sx?: SelectProps<{ id: number; name: string }>['sx'];
 };
 
 export const AcademicYearSelect = <TField extends FieldValues>({
@@ -14,8 +19,11 @@ export const AcademicYearSelect = <TField extends FieldValues>({
   ...selectProps
 }: AcademicYearSelectProps<TField>) => {
   const { t } = useTranslation(['common']);
+  const {
+    field: { value, onChange },
+  } = useController(controlProps);
 
-  const { allNamespaces } = useAcademicNamespace();
+  const { allNamespaces, activeAcademicNamespace } = useAcademicNamespace();
 
   const options = useMemo(
     () =>
@@ -27,6 +35,12 @@ export const AcademicYearSelect = <TField extends FieldValues>({
         })) || [],
     [allNamespaces]
   );
+
+  useEffect(() => {
+    if (!value && activeAcademicNamespace) {
+      onChange(activeAcademicNamespace.academicNamespaceId);
+    }
+  }, [value, onChange, activeAcademicNamespace]);
 
   return (
     <RHFSelect

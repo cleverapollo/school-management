@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Card,
   CardHeader,
@@ -13,19 +14,20 @@ import {
   ConfirmDialog,
   RHFSelect,
   RHFTextField,
-  SelectionList,
   useDisclosure,
   useFormValidator,
 } from '@tyro/core';
-import { SaveSubjectSet } from '@tyro/api';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { AddIcon, TrashIcon } from '@tyro/icons';
 import { RHFSubjectAutocomplete } from '@tyro/settings';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
+import { RHFYearGroupAutocomplete } from '@tyro/groups';
 import { AcademicYearSelect } from './academic-year-select';
 import { StudentSelection } from './student-selection';
 import { SubjectOptionsFormState } from './types';
+import { YearGroupEnrolment } from './year-group-enrolment';
+import { useSaveSubjectOptionsSetup } from '../../api/save-options-setup';
 
 const defaultPoolProps = {
   canChoose: 0,
@@ -41,11 +43,13 @@ export function SubjectOptionsSetupForm() {
     onOpen: onCancelModalOpen,
   } = useDisclosure();
   const navigate = useNavigate();
+  const { mutateAsync: saveOptionsSetup } = useSaveSubjectOptionsSetup();
 
   const { rules, resolver } = useFormValidator<SubjectOptionsFormState>();
   const {
     control,
     handleSubmit,
+    watch,
     formState: { isDirty },
   } = useForm<SubjectOptionsFormState>({
     resolver: resolver({
@@ -89,6 +93,7 @@ export function SubjectOptionsSetupForm() {
     control,
     name: 'subjectSets',
   });
+  const academicYearId = watch('academicYearId');
 
   const goBack = () => {
     navigate('/subject-options');
@@ -110,10 +115,7 @@ export function SubjectOptionsSetupForm() {
     <>
       <Stack component="form" onSubmit={onSubmit} gap={3}>
         <Card variant="outlined">
-          <CardHeader
-            component="h2"
-            title={t('subjectOptions:studentSelection')}
-          />
+          <CardHeader component="h2" title={t('common:details')} />
           <Stack direction="column" gap={3} p={3}>
             <Grid container spacing={2} maxWidth={900}>
               <Grid item xs={12} sm={6}>
@@ -128,37 +130,6 @@ export function SubjectOptionsSetupForm() {
                   }}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <AcademicYearSelect
-                  label={t('subjectOptions:academicYearToTakeStudentsFrom')}
-                  controlProps={{
-                    name: 'academicYearId',
-                    control,
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <RHFSelect
-                  label={t('subjectOptions:whatYearAreStudentsGoingInto')}
-                  controlProps={{
-                    name: 'yearGroupEnrolmentPartyId',
-                    control,
-                  }}
-                  optionIdKey="value"
-                  optionTextKey="label"
-                  fullWidth
-                  options={[
-                    {
-                      label: '1st year',
-                      value: 1,
-                    },
-                    {
-                      label: '5th year',
-                      value: 5,
-                    },
-                  ]}
-                />
-              </Grid>
             </Grid>
             <Typography
               variant="body1"
@@ -168,6 +139,36 @@ export function SubjectOptionsSetupForm() {
             >
               {t('subjectOptions:studentSelection')}
             </Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <Stack direction="row" spacing={2}>
+                  <AcademicYearSelect
+                    controlProps={{
+                      name: 'academicYearId',
+                      control,
+                    }}
+                    sx={{
+                      maxWidth: 300,
+                    }}
+                  />
+                  <RHFYearGroupAutocomplete
+                    controlProps={{
+                      name: 'selectedStudentYearGroups',
+                      control,
+                    }}
+                    academicNamespaceId={academicYearId}
+                    multiple
+                    sx={{
+                      maxWidth: 320,
+                    }}
+                  />
+                </Stack>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <YearGroupEnrolment control={control} />
+              </Grid>
+            </Grid>
+
             <StudentSelection control={control} />
           </Stack>
         </Card>
