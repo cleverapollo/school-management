@@ -309,6 +309,7 @@
     "CONTACT": "Search by contact name",
     "STAFF": "Search by staff name",
     "STUDENT": "Search by student name",
+    "STUDENT_GROUPS": "Search by student name, class groups, subject groups and year groups",
     "ADMIN": "Search by staff name",
     "EXTERNAL": "Search by external name",
     "THIRD_PARTY": "Search by third party"

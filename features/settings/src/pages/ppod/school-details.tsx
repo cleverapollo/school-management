@@ -68,7 +68,11 @@ export default function SchoolDetails() {
                   <Typography component="dt" variant="subtitle1">
                     {label}
                   </Typography>
-                  <Typography component="dd" variant="body1">
+                  <Typography
+                    component="dd"
+                    variant="body1"
+                    sx={{ overflowWrap: 'break-word' }}
+                  >
                     {value}
                   </Typography>
                 </Box>
