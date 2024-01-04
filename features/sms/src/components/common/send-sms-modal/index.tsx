@@ -196,7 +196,7 @@ export function SendSmsModal({
               <SmsSummary
                 sx={{ flex: 1, px: 3 }}
                 message={message}
-                costPerSms={0.05}
+                costPerSms={0.06}
                 totalCost={(costPerMessage ?? 0) * numberOfMessages}
               />
             </Box>

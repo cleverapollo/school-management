@@ -5,7 +5,7 @@ import { analyzeSmsTextString } from '../../utils/analyze-sms-text-string';
 
 interface SmsSummaryProps extends StackProps<'dl'> {
   message: string;
-  costPerSms: number;
+  costPerSms?: number;
   totalCost: number;
 }
 
@@ -26,7 +26,9 @@ export function SmsSummary({
         'sms:numberOfCharacters',
         { count: characterCount }
       ),
-      [t('sms:costPerSms')]: formatCurrency(costPerSms),
+      ...(costPerSms
+        ? { [t('sms:costPerSms')]: formatCurrency(costPerSms) }
+        : {}),
       [t('sms:totalCost')]: formatCurrency(totalCost),
     };
   }, [t, formatCurrency, message, costPerSms, totalCost]);
