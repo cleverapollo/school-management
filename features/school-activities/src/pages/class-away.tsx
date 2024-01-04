@@ -32,7 +32,7 @@ const getColumns = (
   {
     headerName: t('common:time'),
     field: 'event',
-    valueFormatter: ({ data }) => {
+    valueGetter: ({ data }) => {
       const lessonStartTime = getLocaleTimestamp(
         dayjs(data?.event?.startTime).format('HH:mm')
       );

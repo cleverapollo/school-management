@@ -66,7 +66,7 @@ const getColumns = (
   {
     headerName: t('common:teacher'),
     field: 'awayStaff',
-    valueFormatter: ({ data }) =>
+    valueGetter: ({ data }) =>
       data?.awayStaff ? displayNames(data?.awayStaff) : '-',
   },
   {
