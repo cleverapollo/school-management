@@ -167,8 +167,8 @@ export function UndoSwapButton({
   ...props
 }: UndoSwapButtonProps) {
   const label = isSwapped
-    ? newLesson?.partyGroup.name
-    : originalLesson?.partyGroup.name;
+    ? newLesson?.partyGroup?.name
+    : originalLesson?.partyGroup?.name;
 
   return (
     <StyledSwapButton

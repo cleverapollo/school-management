@@ -13,6 +13,7 @@ const studentFees = graphql(/* GraphQL */ `
     fees_studentFees(filter: $filter) {
       id {
         feeId
+        studentPartyId
       }
       person {
         partyId

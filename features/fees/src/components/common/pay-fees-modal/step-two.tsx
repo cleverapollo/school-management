@@ -146,7 +146,7 @@ function CashCheckoutForm({ paymentInput }: PayFeesModalProps) {
           const studentName = displayName(person);
           return (
             <Stack
-              key={fee.id.feeId}
+              key={JSON.stringify(fee.id)}
               direction="row"
               justifyContent="space-between"
             >

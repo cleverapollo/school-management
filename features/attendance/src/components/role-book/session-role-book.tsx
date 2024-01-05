@@ -330,8 +330,8 @@ export function SessionAttendanceRoleBook({
     defaultValue: null,
   });
   const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([
-    dayjs().subtract(1, 'weeks'),
-    dayjs(),
+    dayjs().startOf('week'),
+    dayjs().endOf('week'),
   ]);
   const [from, to] = dateRange;
   const fromDate = from.format('YYYY-MM-DD');
