@@ -145,7 +145,11 @@ function CashCheckoutForm({ paymentInput }: PayFeesModalProps) {
           const { feeName, person } = fee;
           const studentName = displayName(person);
           return (
-            <Stack key={fee.id} direction="row" justifyContent="space-between">
+            <Stack
+              key={fee.id.feeId}
+              direction="row"
+              justifyContent="space-between"
+            >
               <Typography
                 variant="subtitle1"
                 component="span"
@@ -187,7 +191,7 @@ export function PayFeesStepTwo() {
     () => ({
       paymentAmounts:
         paymentsToPayAndMethod?.fees.map(({ id, amountToPay, person }) => ({
-          feeId: id,
+          feeId: id.feeId,
           amount: amountToPay,
           studentPartyId: person.partyId,
         })) ?? [],

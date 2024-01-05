@@ -102,7 +102,7 @@ export default function ContactDashboard() {
           rowData={studentFees || []}
           columnDefs={columnDefs}
           rowSelection="multiple"
-          getRowId={({ data }) => String(data?.id)}
+          getRowId={({ data }) => String(data?.id?.feeId)}
           rightAdornment={
             <Fade in={selectedStudentFees.length > 0} unmountOnExit>
               <Button
