@@ -42,13 +42,16 @@ const getColumnDefs = (
   },
   {
     field: 'dates',
-    headerName: t('schoolActivities:startDate'),
+    headerName: t('common:date'),
     valueGetter: ({ data }) => {
       const dates = data?.dates?.map((date) => dayjs(date?.date).format('L'));
       if (dates && dates.length > 1) {
         return `${dates[0]} - ${dates[dates.length - 1]}`;
       }
-      return dates || '-';
+      if (dates && dates.length === 1) {
+        return dates[0];
+      }
+      return '-';
     },
     sort: 'desc',
   },

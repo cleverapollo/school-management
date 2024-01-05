@@ -215,8 +215,6 @@ export function SchoolActivityForm({
       dates: datesFormatted,
       notes: data?.notes,
     };
-    console.log(formattedData, 'formattedData');
-    console.log(data, 'formattedData data');
     saveSchoolActivities(formattedData, {
       onSuccess: () => {
         onSuccess?.();
