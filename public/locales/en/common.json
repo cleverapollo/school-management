@@ -45,6 +45,7 @@
     "publishedOnline": "Published online"
   },
   "relationshipType": {
+    "AGENT": "Agent",
     "AUNTY": "Aunty",
     "FAMILY_FRIEND": "Family friend",
     "GRAND_FATHER": "Grandfather",
@@ -119,6 +120,7 @@
   "archive": "Archive",
   "delete": "Delete",
   "year": "Year",
+  "years": "Years",
   "tutor": "Tutor",
   "yearhead": "Year head",
   "programme": "Programme",
@@ -316,5 +318,10 @@
   },
   "unconfirmed": "Unconfirmed",
   "absent": "Absent",
-  "by": "By"
+  "by": "By",
+  "addedToGroup": "Added to group",
+  "items_one": "{{ count }} item",
+  "items_other": "{{ count }} items",
+  "noItemsToSelect": "No items to select",
+  "noItemsSelected": "No items selected"
 }

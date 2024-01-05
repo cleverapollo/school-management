@@ -1,38 +1,23 @@
 import { useMemo } from 'react';
-import {
-  Theme,
-  useTheme,
-  Typography,
-  Card,
-  Stack,
-  Button,
-  Fade,
-} from '@mui/material';
+import { Typography, Card, Stack, Button, Fade, Chip } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { ArrowLeftIcon, ArrowRightIcon } from '@tyro/icons';
 import { SearchInput } from '../search-input';
 import { SelectionList } from './selection-list';
 import { useSelectionListState } from './store';
+import { LoadingPlaceholderContainer } from '../loading-placeholder';
 
 export type SelectListDropAreaProps = {
   droppableId: 'unselected' | 'selected';
-  label: string;
+  emptyMessage?: string;
+  isLoading?: boolean;
 };
 
-const getListStyle = ({
-  theme: { palette },
-  droppableId,
-  isGrouped,
-}: {
-  theme: Theme;
-  droppableId: 'unselected' | 'selected';
-  isGrouped: boolean;
-}) =>
+const getListStyle = ({ isGrouped }: { isGrouped: boolean }) =>
   ({
     flex: 1,
     borderRadius: 2,
-    pt: 1.5,
-    px: 1.5,
+    pt: 2,
+    px: 2,
 
     '& ul': {
       pt: 0,
@@ -54,6 +39,9 @@ const getListStyle = ({
         },
 
         '& .MuiCheckbox-root': {
+          '&:not(.Mui-checked, .MuiCheckbox-indeterminate)': {
+            color: 'slate.400',
+          },
           p: 0,
           ml: -0.25,
           mr: 0.5,
@@ -65,13 +53,16 @@ const getListStyle = ({
       },
 
       '&.MuiListItem-root': {
-        ml: isGrouped ? 1 : 0,
+        ml: isGrouped ? 8 : 0,
         position: 'absolute',
         top: 0,
         width: 'fit-content',
         py: 0,
 
         '& .MuiCheckbox-root': {
+          '&:not(.Mui-checked, .MuiCheckbox-indeterminate)': {
+            color: 'slate.400',
+          },
           p: 0,
           ml: -0.25,
           mr: 1,
@@ -86,9 +77,9 @@ const getListStyle = ({
 
 export const SelectListDropArea = <T extends object | string>({
   droppableId,
-  label,
+  emptyMessage,
+  isLoading,
 }: SelectListDropAreaProps) => {
-  const theme = useTheme();
   const { t } = useTranslation(['common']);
   const {
     getOptionLabel,
@@ -99,26 +90,35 @@ export const SelectListDropArea = <T extends object | string>({
     setSelectedSearch,
     unselectedSearch,
     setUnselectedSearch,
-    enableMoveToSelectedButton,
-    enabledMoveToUnselectedButton,
+    optionsCheckToMoveToSelected,
+    optionsCheckToMoveToUnselected,
     moveToSelected,
     moveToUnselected,
     groupBy,
   } = useSelectionListState<T>();
-  const { options, searchValue, setSearchValue, enableMoveButton, onMove } =
+  const {
+    options,
+    searchValue,
+    setSearchValue,
+    enableMoveButton,
+    numberOfSelectedOptions,
+    onMove,
+  } =
     droppableId === 'unselected'
       ? {
           options: unselectedOptions,
           searchValue: unselectedSearch,
           setSearchValue: setUnselectedSearch,
-          enableMoveButton: enableMoveToSelectedButton,
+          enableMoveButton: optionsCheckToMoveToSelected.length > 0,
+          numberOfSelectedOptions: optionsCheckToMoveToSelected.length,
           onMove: moveToSelected,
         }
       : {
           options: selectedOptions,
           searchValue: selectedSearch,
           setSearchValue: setSelectedSearch,
-          enableMoveButton: enabledMoveToUnselectedButton,
+          enableMoveButton: optionsCheckToMoveToUnselected.length > 0,
+          numberOfSelectedOptions: optionsCheckToMoveToUnselected.length,
           onMove: moveToUnselected,
         };
 
@@ -138,8 +138,6 @@ export const SelectListDropArea = <T extends object | string>({
     <Card
       variant="outlined"
       sx={getListStyle({
-        theme,
-        droppableId,
         isGrouped: Boolean(groupBy),
       })}
     >
@@ -148,43 +146,66 @@ export const SelectListDropArea = <T extends object | string>({
         spacing={1}
         alignItems="center"
         justifyContent="space-between"
+        mb={1}
       >
-        <Typography
-          component="h3"
-          variant="subtitle1"
-          fontWeight={700}
-          lineHeight={1.875}
-        >
-          {label}
-        </Typography>
+        {showSearch && (
+          <SearchInput
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+          />
+        )}
         <Fade in={enableMoveButton}>
-          <Button
-            variant={droppableId === 'unselected' ? 'contained' : 'outlined'}
-            startIcon={
-              droppableId === 'selected' ? <ArrowLeftIcon /> : undefined
-            }
-            endIcon={
-              droppableId === 'unselected' ? <ArrowRightIcon /> : undefined
-            }
-            size="small"
-            onClick={onMove}
-          >
-            {droppableId === 'unselected'
-              ? t('common:actions.add')
-              : t('common:actions.remove')}
-          </Button>
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Chip
+                label={numberOfSelectedOptions}
+                variant="soft"
+                color="primary"
+                size="small"
+                sx={{ borderRadius: 0.75, fontWeight: 700 }}
+              />
+              <Typography
+                component="span"
+                variant="subtitle2"
+                color="indigo.600"
+              >
+                {t('common:selected')}
+              </Typography>
+            </Stack>
+
+            <Button
+              variant="contained"
+              onClick={onMove}
+              sx={{
+                postion: 'relative',
+                zIndex: 2,
+              }}
+            >
+              {droppableId === 'unselected'
+                ? t('common:actions.add')
+                : t('common:actions.remove')}
+            </Button>
+          </Stack>
         </Fade>
       </Stack>
-      {showSearch && (
-        <SearchInput
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          sx={{
-            my: 1,
-          }}
-        />
-      )}
-      <SelectionList options={filteredOptions} />
+      <LoadingPlaceholderContainer
+        isLoading={!!isLoading}
+        sx={{ position: 'relative', height: 500 }}
+      >
+        {filteredOptions.length > 0 ? (
+          <SelectionList options={filteredOptions} />
+        ) : (
+          <Stack
+            sx={{
+              height: 500,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Typography>{emptyMessage}</Typography>
+          </Stack>
+        )}
+      </LoadingPlaceholderContainer>
     </Card>
   );
 };

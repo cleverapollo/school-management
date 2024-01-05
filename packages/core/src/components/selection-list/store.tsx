@@ -8,6 +8,7 @@ import {
   Dispatch,
   SetStateAction,
   Context,
+  useEffect,
 } from 'react';
 
 export type SelectionListContextValue<T extends object | string> = {
@@ -28,8 +29,8 @@ export type SelectionListContextValue<T extends object | string> = {
   unselectedOptions: T[];
   selectedOptions: T[];
   showSearch?: boolean;
-  enableMoveToSelectedButton: boolean;
-  enabledMoveToUnselectedButton: boolean;
+  optionsCheckToMoveToSelected: T[];
+  optionsCheckToMoveToUnselected: T[];
   moveToSelected: () => void;
   moveToUnselected: () => void;
   collapsibleGroups?: boolean;
@@ -120,23 +121,20 @@ export function SelectionListProvider<T extends string | object>({
         const optionId = getOptionId(option);
         return !valueIds.includes(optionId);
       }),
-      selectedOptions: options.filter((option) => {
-        const optionId = getOptionId(option);
-        return valueIds.includes(optionId);
-      }),
+      selectedOptions: value,
     };
   }, [value, options, optionIdKey, getOptionId]);
-  const enableMoveToSelectedButton = useMemo(
+  const optionsCheckToMoveToSelected = useMemo(
     () =>
-      unselectedOptions.some((option) => {
+      unselectedOptions.filter((option) => {
         const optionId = getOptionId(option);
         return checkedCardIds.has(optionId);
       }),
     [checkedCardIds]
   );
-  const enabledMoveToUnselectedButton = useMemo(
+  const optionsCheckToMoveToUnselected = useMemo(
     () =>
-      selectedOptions.some((option) => {
+      selectedOptions.filter((option) => {
         const optionId = getOptionId(option);
         return checkedCardIds.has(optionId);
       }),
@@ -228,8 +226,8 @@ export function SelectionListProvider<T extends string | object>({
       selectedOptions,
       getOptionLabel,
       getOptionId,
-      enableMoveToSelectedButton,
-      enabledMoveToUnselectedButton,
+      optionsCheckToMoveToSelected,
+      optionsCheckToMoveToUnselected,
       moveToSelected,
       moveToUnselected,
       collapsibleGroups,
@@ -249,8 +247,8 @@ export function SelectionListProvider<T extends string | object>({
       selectedOptions,
       getOptionLabel,
       getOptionId,
-      enableMoveToSelectedButton,
-      enabledMoveToUnselectedButton,
+      optionsCheckToMoveToSelected,
+      optionsCheckToMoveToUnselected,
       moveToSelected,
       moveToUnselected,
       collapsibleGroups,

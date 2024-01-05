@@ -243,12 +243,19 @@ export const SelectionList = <T extends object | string>({
                         transform: `translateY(${virtualItem.start}px)`,
                       }
                 }
+                onClick={(e) => {
+                  e.stopPropagation();
+                  performOptionAction(e, index);
+                }}
               >
                 {collapsibleGroups && (
                   <ListItemIcon>
                     <IconButton
                       size="small"
-                      onClick={() => toggleGroupExpansion(groupName)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleGroupExpansion(groupName);
+                      }}
                     >
                       <ChevronRightIcon
                         sx={{
@@ -269,10 +276,6 @@ export const SelectionList = <T extends object | string>({
                       !isAllSelected && isAtLeastOneSelectFromGroup
                     }
                     inputProps={{ 'aria-labelledby': groupLabelId }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      performOptionAction(e, index);
-                    }}
                   />
                 </ListItemIcon>
                 <ListItemText id={groupLabelId} primary={groupName} />

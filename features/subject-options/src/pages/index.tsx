@@ -1,6 +1,6 @@
+import { useMemo } from 'react';
 import { Box, Button } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
-
 import {
   GridOptions,
   ICellRendererParams,
@@ -9,119 +9,72 @@ import {
   RouterLink,
   Table,
   TableBooleanValue,
-  usePreferredNameLayout,
   PageContainer,
 } from '@tyro/core';
 import { Link } from 'react-router-dom';
-import { useMemo, useState } from 'react';
 import { AddDocIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import {
+  ReturnTypeFromUseOptionsSetupList,
+  useOptionsSetupList,
+} from '../api/options';
 
 dayjs.extend(LocalizedFormat);
 
-// const getColumnDefs = (
-//   translate: TFunction<
-//     ('assessments' | 'common')[],
-//     undefined,
-//     ('assessments' | 'common')[]
-//   >,
-//   displayName: ReturnTypeDisplayName
-// ): GridOptions<ReturnTypeFromUseAssessments>['columnDefs'] => [
-//   {
-//     field: 'name',
-//     headerName: translate('common:name'),
-//     cellRenderer: ({
-//       data,
-//     }: ICellRendererParams<ReturnTypeFromUseAssessments>) =>
-//       data && (
-//         <RouterLink
-//           to={getAssessmentSubjectGroupsLink(
-//             data.id,
-//             data.assessmentType,
-//             data.academicNamespaceId
-//           )}
-//         >
-//           {data.name}
-//         </RouterLink>
-//       ),
-//   },
-//   {
-//     field: 'assessmentType',
-//     headerName: translate('common:type'),
-//     enableRowGroup: true,
-//     valueGetter: ({ data }) =>
-//       data?.assessmentType
-//         ? translate(`assessments:assessmentTypes.${data.assessmentType}`)
-//         : null,
-//   },
-//   {
-//     field: 'createdBy',
-//     headerName: translate('common:createdBy'),
-//     valueGetter: ({ data }) => (data ? displayName(data.createdBy) : null),
-//   },
-//   {
-//     field: 'startDate',
-//     headerName: translate('common:startDate'),
-//     valueGetter: ({ data }) =>
-//       data ? dayjs(data.startDate).format('LL') : null,
-//     sort: 'desc',
-//     comparator: (dateA: string, dateB: string) =>
-//       dayjs(dateA).unix() - dayjs(dateB).unix(),
-//   },
-//   {
-//     field: 'endDate',
-//     headerName: translate('common:endDate'),
-//     valueGetter: ({ data }) => (data ? dayjs(data.endDate).format('LL') : null),
-//     comparator: (dateA: string, dateB: string) =>
-//       dayjs(dateA).unix() - dayjs(dateB).unix(),
-//   },
-//   {
-//     field: 'publishedFrom',
-//     headerName: translate('assessments:publishedOnline'),
-//     valueGetter: ({ data }) => {
-//       if (!data) return null;
+const getColumnDefs = (
+  t: TFunction<
+    ('subjectOptions' | 'common')[],
+    undefined,
+    ('subjectOptions' | 'common')[]
+  >
+): GridOptions<ReturnTypeFromUseOptionsSetupList>['columnDefs'] => [
+  {
+    field: 'name',
+    headerName: t('common:name'),
+    // cellRenderer: ({
+    //   data,
+    // }: ICellRendererParams<ReturnTypeFromUseOptionsSetupList>) =>
+    //   data && (
+    //     <RouterLink
+    //       to={getAssessmentSubjectGroupsLink(
+    //         data.id,
+    //         data.assessmentType,
+    //         data.academicNamespaceId
+    //       )}
+    //     >
+    //       {data.name}
+    //     </RouterLink>
+    //   ),
+  },
+  {
+    field: 'yearGroupEnrolmentParty.name',
+    headerName: t('subjectOptions:yearGroupFor'),
+  },
+  {
+    field: 'publishToParents',
+    headerName: t('subjectOptions:publishedToParents'),
+    valueGetter: ({ data }) => {
+      if (!data) return null;
 
-//       if (
-//         data.publishedFrom &&
-//         dayjs(data.publishedFrom).isAfter(dayjs(), 'day')
-//       ) {
-//         return translate('common:fromDate', {
-//           date: dayjs(data.publishedFrom).format('LL'),
-//         });
-//       }
+      return data.publishToParents ? t('common:yes') : t('common:no');
+    },
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseOptionsSetupList>) => {
+      if (!data) return null;
 
-//       return data.publishedFrom
-//         ? translate('common:yes')
-//         : translate('common:no');
-//     },
-//     cellRenderer: ({
-//       data,
-//     }: ICellRendererParams<ReturnTypeFromUseAssessments>) => {
-//       if (!data) return null;
-
-//       if (
-//         data.publishedFrom &&
-//         dayjs(data.publishedFrom).isAfter(dayjs(), 'day')
-//       ) {
-//         return translate('common:fromDate', {
-//           date: dayjs(data.publishedFrom).format('LL'),
-//         });
-//       }
-
-//       return <TableBooleanValue value={!!data.publishedFrom} />;
-//     },
-//   },
-// ];
+      return <TableBooleanValue value={data.publishToParents} />;
+    },
+  },
+];
 
 export default function SubjectOptionsPage() {
-  const { t } = useTranslation(['navigation', 'subjectOptions']);
-  const { displayName } = usePreferredNameLayout();
+  const { t } = useTranslation(['navigation', 'common', 'subjectOptions']);
 
-  // const columnDefs = useMemo(
-  //   () => getColumnDefs(t, displayName),
-  //   [t, displayName]
-  // );
+  const { data: optionsSetupList = [] } = useOptionsSetupList({});
+
+  const columnDefs = useMemo(() => getColumnDefs(t), [t]);
 
   return (
     <PageContainer title={t('navigation:management.subjectOptions')}>
@@ -141,11 +94,11 @@ export default function SubjectOptionsPage() {
           </Box>
         }
       />
-      {/* <Table
-        rowData={[]}
+      <Table
+        rowData={optionsSetupList}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.id)}
-      /> */}
+      />
     </PageContainer>
   );
 }

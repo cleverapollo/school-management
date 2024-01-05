@@ -12,5 +12,12 @@
   "mustSelectAtLeastOneSubject": "You must select at least one subject",
   "whatYearAreStudentsGoingInto": "What year are students going into?",
   "academicYearToTakeStudentsFrom": "Academic year to take students from",
-  "noClassGroup": "No class group"
+  "noClassGroup": "No class group",
+  "selectYearsToChooseStudentsFrom": "Select years to choose students from",
+  "noStudentsSelected": "No students selected",
+  "xStudents_one": "{{count}} student",
+  "xStudents_other": "{{count}} students",
+  "selectStudents": "Select students",
+  "yearGroupFor": "Year group for",
+  "publishedToParents": "Published to parents"
 }

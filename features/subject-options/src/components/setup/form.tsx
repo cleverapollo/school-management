@@ -1,18 +1,15 @@
 import {
-  Box,
   Button,
   Card,
   CardHeader,
   Grid,
   IconButton,
   Stack,
-  TextField,
   Typography,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import {
   ConfirmDialog,
-  RHFSelect,
   RHFTextField,
   useDisclosure,
   useFormValidator,
@@ -22,17 +19,14 @@ import { AddIcon, TrashIcon } from '@tyro/icons';
 import { RHFSubjectAutocomplete } from '@tyro/settings';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
-import { RHFYearGroupAutocomplete } from '@tyro/groups';
-import { AcademicYearSelect } from './academic-year-select';
 import { StudentSelection } from './student-selection';
 import { SubjectOptionsFormState } from './types';
-import { YearGroupEnrolment } from './year-group-enrolment';
 import { useSaveSubjectOptionsSetup } from '../../api/save-options-setup';
 
 const defaultPoolProps = {
   canChoose: 0,
   mustGet: 0,
-  subjectIds: [],
+  subjects: [],
 };
 
 export function SubjectOptionsSetupForm() {
@@ -43,17 +37,20 @@ export function SubjectOptionsSetupForm() {
     onOpen: onCancelModalOpen,
   } = useDisclosure();
   const navigate = useNavigate();
-  const { mutateAsync: saveOptionsSetup } = useSaveSubjectOptionsSetup();
+  const { mutateAsync: saveOptionsSetup, isLoading: isSubmitting } =
+    useSaveSubjectOptionsSetup();
 
   const { rules, resolver } = useFormValidator<SubjectOptionsFormState>();
   const {
     control,
     handleSubmit,
-    watch,
     formState: { isDirty },
   } = useForm<SubjectOptionsFormState>({
     resolver: resolver({
       name: rules.required(),
+      academicYearId: rules.required(),
+      yearGroupEnrolmentPartyId: rules.required(),
+      selectedStudents: rules.required(),
       subjectSets: {
         canChoose: [rules.required(), rules.isNumber(), rules.min(1)],
         mustGet: [
@@ -71,7 +68,7 @@ export function SubjectOptionsSetupForm() {
             }
           ),
         ],
-        subjectIds: [
+        subjects: [
           rules.minLength(1, t('subjectOptions:mustSelectAtLeastOneSubject')),
         ],
       },
@@ -93,7 +90,6 @@ export function SubjectOptionsSetupForm() {
     control,
     name: 'subjectSets',
   });
-  const academicYearId = watch('academicYearId');
 
   const goBack = () => {
     navigate('/subject-options');
@@ -107,9 +103,27 @@ export function SubjectOptionsSetupForm() {
     }
   };
 
-  const onSubmit = handleSubmit((data) => {
-    console.log('submit', { data });
-  });
+  const onSubmit = handleSubmit(
+    ({ name, selectedStudents, subjectSets, yearGroupEnrolmentPartyId }) => {
+      saveOptionsSetup(
+        {
+          name,
+          yearGroupEnrolmentPartyId,
+          studentPartyIds: selectedStudents.map(({ partyId }) => partyId),
+          subjectSets: subjectSets.map(({ subjects, ...rest }) => ({
+            subjectIds: subjects.map(({ id }) => id),
+            ...rest,
+          })),
+          publishToParents: false,
+        },
+        {
+          onSuccess: () => {
+            goBack();
+          },
+        }
+      );
+    }
+  );
 
   return (
     <>
@@ -139,35 +153,6 @@ export function SubjectOptionsSetupForm() {
             >
               {t('subjectOptions:studentSelection')}
             </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <Stack direction="row" spacing={2}>
-                  <AcademicYearSelect
-                    controlProps={{
-                      name: 'academicYearId',
-                      control,
-                    }}
-                    sx={{
-                      maxWidth: 300,
-                    }}
-                  />
-                  <RHFYearGroupAutocomplete
-                    controlProps={{
-                      name: 'selectedStudentYearGroups',
-                      control,
-                    }}
-                    academicNamespaceId={academicYearId}
-                    multiple
-                    sx={{
-                      maxWidth: 320,
-                    }}
-                  />
-                </Stack>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <YearGroupEnrolment control={control} />
-              </Grid>
-            </Grid>
 
             <StudentSelection control={control} />
           </Stack>
@@ -205,6 +190,17 @@ export function SubjectOptionsSetupForm() {
                   }
                 />
                 <Grid container spacing={2} p={3} maxWidth={900}>
+                  <Grid item xs={12}>
+                    <RHFSubjectAutocomplete
+                      label={t('common:subjects')}
+                      multiple
+                      controlProps={{
+                        name: `subjectSets.${index}.subjects`,
+                        control,
+                      }}
+                      fullWidth
+                    />
+                  </Grid>
                   <Grid item xs={12} sm={6}>
                     <RHFTextField
                       label={t('subjectOptions:canChooseLabel')}
@@ -227,17 +223,6 @@ export function SubjectOptionsSetupForm() {
                       textFieldProps={{
                         fullWidth: true,
                       }}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <RHFSubjectAutocomplete
-                      label={t('common:subjects')}
-                      multiple
-                      controlProps={{
-                        name: `subjectSets.${index}.subjectIds`,
-                        control,
-                      }}
-                      fullWidth
                     />
                   </Grid>
                 </Grid>
@@ -274,7 +259,7 @@ export function SubjectOptionsSetupForm() {
             variant="contained"
             size="large"
             type="submit"
-            // loading={isLoading}
+            loading={isSubmitting}
           >
             {t('common:actions.save')}
           </LoadingButton>

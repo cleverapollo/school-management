@@ -11,8 +11,7 @@ import { useEffect, useMemo } from 'react';
 export type AcademicYearSelectProps<TField extends FieldValues> = {
   controlProps: UseControllerProps<TField>;
   label?: string;
-  sx?: SelectProps<{ id: number; name: string }>['sx'];
-};
+} & Omit<SelectProps<{ id: number; name: string }>, 'options'>;
 
 export const AcademicYearSelect = <TField extends FieldValues>({
   controlProps,

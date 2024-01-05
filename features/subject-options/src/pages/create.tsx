@@ -13,7 +13,7 @@ export default function CreateSubjectOptionsPage() {
           links: [
             {
               name: t('navigation:management.subjectOptions'),
-              href: '/people/contacts',
+              href: '/subject-options',
             },
             {
               name: t('subjectOptions:createSubjectOptions'),

@@ -14,6 +14,7 @@ export function YearGroupEnrolment({ control }: YearGroupEnrolmentProps) {
 
   return (
     <RHFSelect
+      variant="white-filled"
       label={t('subjectOptions:whatYearAreStudentsGoingInto')}
       controlProps={{
         name: 'yearGroupEnrolmentPartyId',
@@ -24,6 +25,10 @@ export function YearGroupEnrolment({ control }: YearGroupEnrolmentProps) {
       fullWidth
       sx={{
         maxWidth: 360,
+        '& .MuiInputBase-root': {
+          border: '1px solid',
+          borderColor: 'indigo.50',
+        },
       }}
       options={options}
     />
