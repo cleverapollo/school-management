@@ -11,7 +11,10 @@ import { feeKeys } from './keys';
 const studentFees = graphql(/* GraphQL */ `
   query fees_studentFees($filter: StudentFeeFilter) {
     fees_studentFees(filter: $filter) {
-      id
+      id {
+        feeId
+        studentPartyId
+      }
       person {
         partyId
         firstName
