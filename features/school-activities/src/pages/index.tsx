@@ -50,6 +50,18 @@ const getColumnDefs = (
       }
       return dates && dates.length === 1 ? dates[0] : '-';
     },
+    comparator: (valueA: string, valueB: string) => {
+      const startA = valueA.split(' - ')[0];
+      const startB = valueB.split(' - ')[0];
+
+      const dateA = dayjs(startA, 'L');
+      const dateB = dayjs(startB, 'L');
+
+      if (dateA.isAfter(dateB)) {
+        return -1;
+      }
+      return dateB.isAfter(dateA) ? 1 : 0;
+    },
     sort: 'desc',
   },
   {
