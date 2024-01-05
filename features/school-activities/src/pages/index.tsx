@@ -48,10 +48,7 @@ const getColumnDefs = (
       if (dates && dates.length > 1) {
         return `${dates[0]} - ${dates[dates.length - 1]}`;
       }
-      if (dates && dates.length === 1) {
-        return dates[0];
-      }
-      return '-';
+      return dates && dates.length === 1 ? dates[0] : '-';
     },
     sort: 'desc',
   },
