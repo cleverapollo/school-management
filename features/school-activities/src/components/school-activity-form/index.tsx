@@ -155,18 +155,31 @@ export function SchoolActivityForm({
           ];
         }
         case ActivityType.MultiDay: {
-          const dateRangeFormatted =
-            data?.dateRange?.map((date) => dayjs(date).format('YYYY-MM-DD')) ||
-            [];
+          const { dateRange } = data;
+          if (dateRange) {
+            const start = dayjs(dateRange[0]);
+            const end = dayjs(dateRange[1]);
+            let current = start;
+            const dates = [];
+            while (current.isSameOrBefore(end)) {
+              dates.push(current.format('YYYY-MM-DD'));
+              current = current.add(1, 'day');
+            }
 
-          return [
-            {
-              dates: dateRangeFormatted,
-              partial: false,
-              startTime: '08:00',
-              endTime: '18:00',
-            },
-          ];
+            return [
+              {
+                dates,
+                partial: false,
+                startTime: data.startTime
+                  ? dayjs(data.startTime).format('HH:mm:ss')
+                  : '08:00',
+                endTime: data.endTime
+                  ? dayjs(data.endTime).format('HH:mm:ss')
+                  : '18:00',
+              },
+            ];
+          }
+          return [];
         }
         default:
           return [];
@@ -202,7 +215,8 @@ export function SchoolActivityForm({
       dates: datesFormatted,
       notes: data?.notes,
     };
-
+    console.log(formattedData, 'formattedData');
+    console.log(data, 'formattedData data');
     saveSchoolActivities(formattedData, {
       onSuccess: () => {
         onSuccess?.();

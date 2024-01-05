@@ -56,6 +56,13 @@ export default function EditSchoolActivityPage() {
     const singleOrMultiDayActivityType =
       dates.length > 1 ? ActivityType.MultiDay : ActivityType.SingleDay;
 
+    let dateRange;
+    if (singleOrMultiDayActivityType === ActivityType.MultiDay) {
+      const startDate = dayjs(dates[0].date);
+      const endDate = dayjs(dates[dates.length - 1].date);
+      dateRange = [startDate, endDate];
+    }
+
     return {
       schoolActivityId,
       name,
@@ -64,7 +71,7 @@ export default function EditSchoolActivityPage() {
       notes,
       room: roomFormatted,
       dates: dayjs(singleDayDate?.date),
-      dateRange: dates?.map((date) => dayjs(date?.date)),
+      dateRange,
       startTime: dayjs(singleDayDate.startTime, 'HH:mm'),
       endTime: dayjs(singleDayDate.endTime, 'HH:mm'),
       partial: singleDayDate?.partial,

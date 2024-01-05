@@ -45,6 +45,9 @@ const getColumnDefs = (
     headerName: t('schoolActivities:startDate'),
     valueGetter: ({ data }) => {
       const dates = data?.dates?.map((date) => dayjs(date?.date).format('L'));
+      if (dates && dates.length > 1) {
+        return `${dates[0]} - ${dates[dates.length - 1]}`;
+      }
       return dates || '-';
     },
     sort: 'desc',

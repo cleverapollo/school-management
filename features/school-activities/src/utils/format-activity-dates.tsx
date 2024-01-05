@@ -7,7 +7,9 @@ dayjs.extend(LocalizedFormat);
 
 export function formatActivityDates(dates: Sa_SchoolActivityDate[]) {
   if (dates?.length > 1) {
-    return dates.map((date) => dayjs(date.date).format('LL')).join(', ');
+    const firstDate = dayjs(dates[0].date).format('LL');
+    const lastDate = dayjs(dates[dates.length - 1].date).format('LL');
+    return `${firstDate} - ${lastDate}`;
   }
 
   const singleDate = dates[0];
