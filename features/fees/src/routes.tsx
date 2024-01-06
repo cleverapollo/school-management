@@ -6,6 +6,7 @@ import {
   throw404Error,
 } from '@tyro/core';
 import { WalletWithMoneyIcon } from '@tyro/icons';
+import { redirect } from 'react-router-dom';
 import { getDiscounts } from './api/discounts';
 import { getFees } from './api/fees';
 import { getFeesCategories } from './api/fees-categories';
@@ -21,6 +22,12 @@ const CategoriesPage = lazyWithRetry(() => import('./pages/categories'));
 const OverviewPage = lazyWithRetry(() => import('./pages/fee'));
 const CreateFeePage = lazyWithRetry(() => import('./pages/fee/create'));
 const EditFeePage = lazyWithRetry(() => import('./pages/fee/edit'));
+const FeeViewContainer = lazyWithRetry(
+  () => import('./components/fees/fee-view-container')
+);
+const ViewFeeOverview = lazyWithRetry(
+  () => import('./pages/fee/view/overview')
+);
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -60,14 +67,18 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'overview',
             title: t('navigation:management.fees.overview'),
             loader: async () => {
-              const redirect = await stripeAccountGuard();
-              return redirect || getFees({});
+              const guardCheck = await stripeAccountGuard();
+              return guardCheck || getFees({});
             },
             element: <OverviewPage />,
           },
           {
             type: NavObjectType.NonMenuLink,
             path: 'create',
+            loader: async () => {
+              const guardCheck = await stripeAccountGuard();
+              return guardCheck || getFees({});
+            },
             element: <CreateFeePage />,
           },
           {
@@ -86,8 +97,8 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'discounts',
             title: t('navigation:management.fees.discounts'),
             loader: async () => {
-              const redirect = await stripeAccountGuard();
-              return redirect || getDiscounts({});
+              const guardCheck = await stripeAccountGuard();
+              return guardCheck || getDiscounts({});
             },
             element: <DiscountsPage />,
           },
@@ -96,10 +107,40 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'categories',
             title: t('navigation:management.fees.categories'),
             loader: async () => {
-              const redirect = await stripeAccountGuard();
-              return redirect || getFeesCategories({});
+              const guardCheck = await stripeAccountGuard();
+              return guardCheck || getFeesCategories({});
             },
             element: <CategoriesPage />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: 'view/:id',
+            element: <FeeViewContainer />,
+            loader: async ({ params }) => {
+              const feeId = getNumber(params.id);
+
+              console.log({ feeId });
+
+              if (!feeId) {
+                throw404Error();
+              }
+
+              const guardCheck = await stripeAccountGuard();
+
+              return guardCheck || getFees({ ids: [feeId] });
+            },
+            children: [
+              {
+                type: NavObjectType.NonMenuLink,
+                index: true,
+                loader: () => redirect('overview'),
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'overview',
+                element: <ViewFeeOverview />,
+              },
+            ],
           },
         ],
       },

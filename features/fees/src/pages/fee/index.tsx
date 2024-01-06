@@ -5,6 +5,7 @@ import {
   PageContainer,
   PageHeading,
   ReturnTypeDisplayName,
+  RouterLink,
   Table,
   TableBooleanValue,
   TablePersonAvatar,
@@ -33,14 +34,9 @@ import { Link } from 'react-router-dom';
 import { ReturnTypeFromUseFees, useFees } from '../../api/fees';
 import { DeleteFeeConfirmModal } from '../../components/fees/delete-fee-confirm-modal';
 import { PublishFeeConfirmModal } from '../../components/fees/publish-fee-confirm-modal';
+import { FeeStatusChip } from '../../components/common/fee-status-chip';
 
 dayjs.extend(LocalizedFormat);
-
-const statusColor: Record<FeeStatus, Colour> = {
-  [FeeStatus.Complete]: Colour.Green,
-  [FeeStatus.Outstanding]: Colour.Blue,
-  [FeeStatus.Overdue]: Colour.Red,
-};
 
 const getColumnDefs = (
   t: TFunction<('fees' | 'common')[]>,
@@ -53,6 +49,10 @@ const getColumnDefs = (
   {
     field: 'name',
     headerName: t('common:name'),
+    cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFees>) =>
+      data && (
+        <RouterLink to={`/fees/view/${data.id || ''}`}>{data.name}</RouterLink>
+      ),
   },
   {
     field: 'amount',
@@ -110,13 +110,7 @@ const getColumnDefs = (
     valueGetter: ({ data }) =>
       data?.feeStatus ? t(`fees:feeStatus.${data.feeStatus}`) : '-',
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFees>) =>
-      data?.feeStatus ? (
-        <Chip
-          label={t(`fees:feeStatus.${data.feeStatus}`)}
-          variant="soft"
-          color={statusColor[data.feeStatus]}
-        />
-      ) : null,
+      data?.feeStatus ? <FeeStatusChip status={data.feeStatus} /> : '-',
   },
   {
     field: 'published',

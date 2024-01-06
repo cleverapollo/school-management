@@ -15,4 +15,5 @@ export const feeKeys = {
   fees: (filter: FeeFilter) => [...feeKeys.all, 'fees', filter] as const,
   feesCategories: (filter: CategoryFilter) =>
     [...feeKeys.all, 'feesCategories', filter] as const,
+  debtors: (filter: FeeFilter) => [...feeKeys.all, 'debtors', filter] as const,
 };

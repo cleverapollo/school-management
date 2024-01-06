@@ -144,7 +144,7 @@ export function GeneralInformation({ control }: GeneralInformationProps) {
             <Box display="inline">
               <RHFCheckbox
                 label={
-                  <Stack direction="row" gap={0.5}>
+                  <Stack direction="row" gap={0.5} alignItems="center">
                     {t('fees:absorbFees')}
                     <InfoCircleIcon sx={{ width: 18, height: 18 }} />
                   </Stack>

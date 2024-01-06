@@ -1,8 +1,10 @@
 {
+  "fees": "Fees",
   "for": "For",
   "dueDate": "Due date",
   "amount": "Amount",
-  "amountPaid": "Amount Paid",
+  "amountPaid": "Amount paid",
+  "paid": "Paid",
   "pay": "Pay",
   "value": "Value",
   "feesSetup": "Fees setup",
@@ -12,6 +14,7 @@
   "editDiscount": "Edit discount",
   "amountToPay_one": "Amount to pay",
   "amountToPay_other": "Amounts to pay",
+  "payments": "Payments",
   "discountsType": {
     "FIXED": "Fixed",
     "PERCENTAGE": "Percentage"
@@ -75,5 +78,10 @@
   "publishOnline": "Publish online",
   "publishOnlineDescription": "You are about to publish this fee online. Are you sure you want to continue?",
   "unpublishOnline": "Unpublish online",
-  "unpublishOnlineDescription": "You are about to unpublish this fee. Are you sure you want to continue?"
+  "unpublishOnlineDescription": "You are about to unpublish this fee. Are you sure you want to continue?",
+  "status": {
+    "COMPLETE": "Paid",
+    "OUTSTANDING": "Outstanding",
+    "OVERDUE": "Overdue"
+  }
 }
