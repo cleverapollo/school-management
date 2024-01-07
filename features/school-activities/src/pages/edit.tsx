@@ -44,7 +44,8 @@ export default function EditSchoolActivityPage() {
       customGroupId,
     } = schoolActivity;
 
-    const singleDayDate = dates[0];
+
+    const singleDayDate = dates == null ? null : dates[0];
     const currentCustomGroup = customGroups?.filter(
       (group) => group?.partyId === customGroupId
     );
@@ -72,8 +73,8 @@ export default function EditSchoolActivityPage() {
       room: roomFormatted,
       dates: dayjs(singleDayDate?.date),
       dateRange,
-      startTime: dayjs(singleDayDate.startTime, 'HH:mm'),
-      endTime: dayjs(singleDayDate.endTime, 'HH:mm'),
+      startTime: dayjs(singleDayDate?.startTime, 'HH:mm'),
+      endTime: dayjs(singleDayDate?.endTime, 'HH:mm'),
       partial: singleDayDate?.partial,
       inSchoolGrounds: location?.inSchoolGrounds,
       locationDetails: location?.locationDetails,

@@ -13,7 +13,7 @@ import {
 } from '@tyro/core';
 import { Link } from 'react-router-dom';
 import { useMemo } from 'react';
-import { AddDocIcon, EditIcon, VerticalDotsIcon } from '@tyro/icons';
+import { AddDocIcon, EditIcon, VerticalDotsIcon , TrashIcon} from '@tyro/icons';
 import dayjs from 'dayjs';
 import {
   useActivitiesList,

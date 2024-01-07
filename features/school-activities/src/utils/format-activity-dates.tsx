@@ -6,6 +6,9 @@ import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 dayjs.extend(LocalizedFormat);
 
 export function formatActivityDates(dates: Sa_SchoolActivityDate[]) {
+  if (dates == null || dates?.length == 0) {
+    return null;
+  }
   if (dates?.length > 1) {
     const firstDate = dayjs(dates[0].date).format('LL');
     const lastDate = dayjs(dates[dates.length - 1].date).format('LL');

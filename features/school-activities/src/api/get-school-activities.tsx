@@ -84,6 +84,7 @@ const schoolActivityById = graphql(/* GraphQL */ `
       customGroupId
       lastPublished
       name
+      staffAbsenceTypeId  
       dates {
         date
         startTime

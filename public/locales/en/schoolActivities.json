@@ -61,5 +61,6 @@
     "searchCustomGroup": "Search custom group",
     "createCustomGroup": "Create a custom group?",
     "internalNote": "Internal note",
-    "internalNotes": "Internal notes"
+    "internalNotes": "Internal notes",
+    "staffAbsenceReason": "Staff Absence Reason"
 }

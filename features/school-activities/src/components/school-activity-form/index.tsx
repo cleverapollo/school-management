@@ -17,6 +17,12 @@ import {
   StudentsSearchParty,
   useStudentsSearchProps,
 } from '@tyro/groups';
+
+import {
+  AbsenceTypeAutoComplete,
+  StaffWorkAbsenceTypeOption,
+} from '@tyro/substitution';
+
 import { UseQueryReturnType, Sa_SchoolActivityDateInput } from '@tyro/api';
 import {
   Button,
@@ -38,7 +44,7 @@ import {
   StaffSelectOption,
   StudentSelectOption,
 } from '@tyro/people';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useSaveSchoolActivities } from '../../api/upsert-school-activity';
 import { useRoomsList, RoomList } from '../../api/get-rooms';
 import { ActivityType } from '../../pages/edit';
@@ -65,6 +71,7 @@ export type FormValues = {
   organisers?: StaffSelectOption[] | null;
   staticStudents?: StudentSelectOption[] | null;
   staticStaff?: StaffSelectOption[] | null;
+  absenceType: StaffWorkAbsenceTypeOption | null;
 };
 
 export type SchoolActivitiesFormProps = {
@@ -117,6 +124,7 @@ export function SchoolActivityForm({
       dates: [rules.required(), rules.date()],
       inSchoolGrounds: rules.required(),
       group: rules.required(),
+      absenceType: rules.required(),
     }),
   });
   const { mutate: saveSchoolActivities, isLoading } = useSaveSchoolActivities();
@@ -214,6 +222,7 @@ export function SchoolActivityForm({
       tripPurpose: data?.details,
       dates: datesFormatted,
       notes: data?.notes,
+      staffAbsenceType: data?.absenceType?.absenceTypeId,
     };
     saveSchoolActivities(formattedData, {
       onSuccess: () => {
@@ -499,14 +508,24 @@ export function SchoolActivityForm({
                 }}
               />
             </Grid>
-
+        <Grid item xs={12}>
+          <AbsenceTypeAutoComplete
+              label={t('schoolActivities:staffAbsenceReason')}
+              controlProps={{
+                name: 'absenceType',
+                control,
+              }}
+          />
+          </Grid>
             <Grid item xs={12}>
               <RHFSwitch
                 label={t('schoolActivities:onSchoolGrounds')}
                 switchProps={{ color: 'success' }}
                 controlProps={{ name: 'inSchoolGrounds', control }}
               />
+
             </Grid>
+
             {isActivityInSchool ? (
               <Grid item xs={12} sm={6}>
                 <RHFAutocomplete
