@@ -113,7 +113,6 @@ export default function EditStateCba() {
         <StateCbaForm
           stateCba={formValues}
           title={titleName}
-          ctaText={t('assessments:editStateCba')}
           onSuccess={() => {
             toast(t('common:snackbarMessages.updateSuccess'));
           }}

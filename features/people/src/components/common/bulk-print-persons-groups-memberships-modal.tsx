@@ -1,10 +1,15 @@
 import { Button, DialogContent } from '@mui/material';
-import { Dialog, DialogActions, DialogTitle, useToast } from '@tyro/core';
+import {
+  Autocomplete,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  useToast,
+} from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useState } from 'react';
 import { PartyGroupType, Print_GroupMembersOptions } from '@tyro/api';
 import { RecipientsForSmsModal } from '@tyro/sms';
-import { GroupTypeAutocomplete } from './group-type-autocomplete';
 import { getPrintPersonsGroupMemberships } from '../../api/common/print-group-memberships';
 
 interface BulkPrintPersonsGroupsMembershipsModalProps {
@@ -13,12 +18,17 @@ interface BulkPrintPersonsGroupsMembershipsModalProps {
   groups: RecipientsForSmsModal;
 }
 
+const partyGroupOptions: PartyGroupType[] = [
+  PartyGroupType.ClassGroup,
+  PartyGroupType.SubjectGroup,
+  PartyGroupType.YearGroup,
+];
 export function BulkPrintPersonsGroupsMembershipsModal({
   isOpen,
   onClose,
   groups,
 }: BulkPrintPersonsGroupsMembershipsModalProps) {
-  const { t } = useTranslation(['common', 'people']);
+  const { t } = useTranslation(['common', 'people', 'groups']);
   const { toast } = useToast();
   const [groupTypes, setGroupTypes] = useState<PartyGroupType[]>([
     PartyGroupType.SubjectGroup,
@@ -60,7 +70,12 @@ export function BulkPrintPersonsGroupsMembershipsModal({
     >
       <DialogTitle>{t('people:printGroupMemberships')}</DialogTitle>
       <DialogContent sx={{ pt: 0.75 }}>
-        <GroupTypeAutocomplete
+        <Autocomplete
+          label={t('people:groupTypes')}
+          fullWidth
+          multiple
+          getOptionLabel={(option) => t(`groups:partyGroupType.${option}`)}
+          options={partyGroupOptions}
           value={groupTypes}
           onChange={(_, newValue) =>
             setGroupTypes(newValue as PartyGroupType[])

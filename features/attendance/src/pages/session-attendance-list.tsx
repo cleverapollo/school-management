@@ -195,6 +195,16 @@ export default function AbsentRequests() {
             setCodeFilter={setCodeFilter}
           />
         }
+        statusBar={{
+          statusPanels: [
+            {
+              statusPanel: 'agTotalAndFilteredRowCountComponent',
+              align: 'left',
+            },
+            { statusPanel: 'agFilteredRowCountComponent' },
+            { statusPanel: 'agSelectedRowCountComponent' },
+          ],
+        }}
       />
       <SendSmsModal
         isOpen={isSendSmsOpen}

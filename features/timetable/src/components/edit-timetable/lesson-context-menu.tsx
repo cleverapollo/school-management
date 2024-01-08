@@ -18,6 +18,7 @@ interface ResourceContextMenuProps extends MenuProps {
   onOpenEditLessonDialog: () => void;
   onOpenPublishLessonDialog: () => void;
   isSelected: boolean;
+  enableSwapTeacher: boolean;
 }
 
 export function LessonContextMenu({
@@ -28,6 +29,7 @@ export function LessonContextMenu({
   onOpenEditLessonDialog,
   onOpenPublishLessonDialog,
   isSelected,
+  enableSwapTeacher,
   ...props
 }: ResourceContextMenuProps) {
   const { t } = useTranslation(['timetable']);
@@ -69,20 +71,22 @@ export function LessonContextMenu({
         },
       }}
     >
-      <MenuItem
-        onClick={(event) => {
-          event.preventDefault();
-          onOpenSwapTeacherOrRoomDialog();
-          handleClose();
-        }}
-      >
-        <ActionMenuIconWrapper>
-          <BuildingGraduateHatIcon />
-        </ActionMenuIconWrapper>
-        {t('timetable:swapTeacherOrRoom', {
-          count: numberOfSelectedLessons,
-        })}
-      </MenuItem>
+      {enableSwapTeacher && (
+        <MenuItem
+          onClick={(event) => {
+            event.preventDefault();
+            onOpenSwapTeacherOrRoomDialog();
+            handleClose();
+          }}
+        >
+          <ActionMenuIconWrapper>
+            <BuildingGraduateHatIcon />
+          </ActionMenuIconWrapper>
+          {t('timetable:swapTeacherOrRoom', {
+            count: numberOfSelectedLessons,
+          })}
+        </MenuItem>
+      )}
       {isTyroUser && (
         <MenuItem
           key="publish"

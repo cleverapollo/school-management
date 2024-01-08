@@ -1,4 +1,4 @@
-import { TimePicker, TimePickerProps } from '@mui/x-date-pickers';
+import { DesktopTimePicker, DesktopTimePickerProps } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 
@@ -14,7 +14,7 @@ dayjs.extend(LocalizedFormat);
 type RHFDatePickerProps<TField extends FieldValues, TInputDate> = {
   label?: string;
   timePickerProps?: Omit<
-    TimePickerProps<TInputDate>,
+    DesktopTimePickerProps<TInputDate>,
     'onChange' | 'value' | 'renderInput'
   >;
   controlProps: UseControllerProps<TField>;
@@ -42,7 +42,7 @@ export const RHFTimePicker = <
   const isWhiteFilledVariant = variant === 'white-filled';
 
   return (
-    <TimePicker
+    <DesktopTimePicker
       {...timePickerProps}
       onChange={onChange}
       value={value ?? null}

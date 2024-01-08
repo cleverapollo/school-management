@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import dayjs from 'dayjs';
 import { useTranslation } from '@tyro/i18n';
 import {
@@ -16,10 +16,10 @@ import {
   SubjectGroup,
   StateCbaType,
 } from '@tyro/api';
-import { Card, Stack, CardHeader, Typography } from '@mui/material';
+import { Card, Stack, CardHeader, Chip, Tooltip } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { useSubjectGroups } from '@tyro/groups';
 import {
@@ -31,6 +31,7 @@ import {
   ParsedErrorDetail,
   useSaveStateCba,
 } from '../../api/state-cba/save-state-cba';
+import { useAssessmentSubjectGroups } from '../../api/assessment-subject-groups';
 
 export type YearGroupOption = {
   name: string;
@@ -52,31 +53,29 @@ export interface FormValues extends FormCustomFieldsValues {
 type StateCbaFormProps = {
   stateCba?: FormValues;
   title: string;
-  ctaText: string;
   onSuccess: () => void;
   onError: () => void;
+  onErrorModalOpen?: () => void;
+  setErrorResponse?: React.Dispatch<React.SetStateAction<string | null>>;
+  setErrorResponseOne?: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 const stateCBATypeOptions = [StateCbaType.Cba_1, StateCbaType.Cba_2];
-type FormattedSubjectsType = {
-  name: string;
-  id: number;
-}[];
 
 export function StateCbaForm({
   stateCba,
   title,
-  ctaText,
   onSuccess,
   onError,
+  onErrorModalOpen,
+  setErrorResponse,
+  setErrorResponseOne,
 }: StateCbaFormProps) {
   const navigate = useNavigate();
   const { t } = useTranslation(['assessments', 'common']);
   const { activeAcademicNamespace } = useAcademicNamespace();
   const academicNamespaceIdAsNumber =
     useNumber(activeAcademicNamespace?.academicNamespaceId) ?? 0;
-  const [errorResponse, setErrorResponse] = useState<string | null>(null);
-  const [errorResponseOne, setErrorResponseOne] = useState<string | null>(null);
 
   const { resolver, rules } = useFormValidator<FormValues>();
 
@@ -99,48 +98,67 @@ export function StateCbaForm({
   const [subjectPicked, yearPicked] = watch(['subject', 'years']);
 
   const { data: yearGroupsData = [] } = useYearGroups({});
-
   const { data: subjectGroups } = useSubjectGroups();
+  const { data: assessmentSubjectGroupsData = [] } = useAssessmentSubjectGroups(
+    academicNamespaceIdAsNumber,
+    {
+      assessmentId: stateCba?.id,
+    },
+    !!stateCba?.id
+  );
 
-  const subjects = useMemo(() => {
+  const { subjects, subjectsMapById } = useMemo(() => {
     const subjectsFlattened = subjectGroups?.flatMap(
       (subjectGroup) => subjectGroup?.subjects?.[0]
     );
 
-    const subjectList = subjectsFlattened?.reduce<FormattedSubjectsType>(
-      (accumulator, current) => {
-        if (
-          current &&
-          !accumulator.some((item) => item.name === current.name)
-        ) {
-          accumulator.push(current);
-        }
-        return accumulator;
-      },
-      []
-    );
-    return subjectList || [];
+    const subjectsMap = subjectsFlattened?.reduce((acc, current) => {
+      acc.set(current?.id, current);
+      return acc;
+    }, new Map<number, NonNullable<typeof subjectsFlattened>[number]>());
+
+    const subjectsList = Array.from(subjectsMap?.values() ?? []);
+    return {
+      subjects:
+        subjectsList?.sort(
+          (a, b) => Number(a.nationalCode) - Number(b.nationalCode)
+        ) || [],
+      subjectsMapById: subjectsMap,
+    };
   }, [subjectGroups]);
+
+  const disabledSubjectGroupIds = useMemo(
+    () =>
+      assessmentSubjectGroupsData
+        .filter(
+          ({ resultsEntered, extraFieldResultsEntered }) =>
+            resultsEntered > 0 || extraFieldResultsEntered > 0
+        )
+        .map(({ subjectGroup }) => subjectGroup.partyId),
+    [assessmentSubjectGroupsData]
+  );
 
   const { mutateAsync: saveStateCba, isLoading } = useSaveStateCba(
     academicNamespaceIdAsNumber
   );
 
-  const filterSubjectGroupsBySubjectAndYear = (
-    yearGroup: YearGroupOption,
-    subjectName?: string | null
-  ) =>
-    subjectGroups?.filter(
-      (item) =>
-        item.subjects.some((subject) => subject.name === subjectName) &&
-        item.yearGroups.some((year) => year.name === yearGroup?.name)
-    ) || [];
+  const filterSubjectGroupsBySubjectAndYear = useCallback(
+    (yearGroup: YearGroupOption, subjectId?: number | null) =>
+      subjectGroups
+        ?.filter(
+          (item) =>
+            item.subjects.some((subject) => subject.id === subjectId) &&
+            item.yearGroups.some((year) => year.name === yearGroup?.name)
+        )
+        .sort((a, b) => a.name.localeCompare(b?.name)) || [],
+    [subjectGroups]
+  );
 
   const subjectGroupOptions = useMemo(() => {
-    const subjectName = subjectPicked?.name;
+    const subjectId = subjectPicked?.id;
     const yearName: YearGroupOption = yearPicked;
-    return filterSubjectGroupsBySubjectAndYear(yearName, subjectName);
-  }, [subjectPicked, yearPicked]);
+    return filterSubjectGroupsBySubjectAndYear(yearName, subjectId);
+  }, [subjectPicked, yearPicked, filterSubjectGroupsBySubjectAndYear]);
 
   const textFieldStyle = {
     maxWidth: 300,
@@ -148,7 +166,16 @@ export function StateCbaForm({
   };
 
   const onSubmit = handleSubmit(
-    ({ cbaType, years, startDate, endDate, subject, groups, ...restData }) => {
+    ({
+      cbaType,
+      years,
+      startDate,
+      endDate,
+      subject,
+      groups,
+      extraFields,
+      ...restData
+    }) => {
       const groupIds = groups?.map((group) => group?.partyId);
       saveStateCba(
         {
@@ -159,6 +186,12 @@ export function StateCbaForm({
           endDate: endDate.format('YYYY-MM-DD'),
           stateCbaType: cbaType,
           subjectGroupIds: groupIds,
+          extraFields: extraFields.map(
+            ({ commentBank: fieldCommentBank, ...field }) => ({
+              ...field,
+              commentBankId: fieldCommentBank?.id,
+            })
+          ),
         },
         {
           onSuccess: () => {
@@ -175,23 +208,26 @@ export function StateCbaForm({
                   backendError.response.error
                 ) as ParsedErrorDetail;
                 errorMessage = parsedError.detail || errorMessage;
-                setErrorResponseOne(errorMessage);
+                if (setErrorResponseOne) {
+                  setErrorResponseOne(errorMessage);
+                }
               } catch (parseError) {
                 console.error(parseError);
               }
             }
             const regex = /: ([0-9]+)/g;
             const responseFormatted = regex.exec(errorMessage);
-            if (responseFormatted) {
-              setErrorResponse(responseFormatted[1]);
+            if (responseFormatted && onErrorModalOpen) {
+              if (setErrorResponse) {
+                setErrorResponse(responseFormatted[1]);
+              }
+              onErrorModalOpen();
             }
           },
         }
       );
     }
   );
-
-  const errorTitleMessage = errorResponseOne?.replace(/\..*/, '');
 
   const isEditing = !!stateCba?.id;
 
@@ -207,97 +243,108 @@ export function StateCbaForm({
 
   return (
     <Card variant="outlined" component="form" onSubmit={onSubmit}>
-      <CardHeader
-        component="h2"
-        title={!errorResponse ? title : errorTitleMessage}
-      />
-      {!errorResponse && (
-        <Stack direction="column" gap={3} p={3}>
-          <Stack direction="row" gap={2}>
-            <RHFSelect
-              disabled={isEditing}
-              label={t('assessments:cbaType')}
-              options={stateCBATypeOptions}
-              getOptionLabel={(option) => t(`assessments:${option}`)}
-              controlProps={{ name: 'cbaType', control }}
-              sx={textFieldStyle}
-            />
-            <RHFAutocomplete
-              disabled={isEditing}
-              label={t('assessments:labels.years')}
-              optionIdKey="yearGroupId"
-              optionTextKey="name"
-              controlProps={{ name: 'years', control }}
-              sx={textFieldStyle}
-              options={yearGroupsData}
-            />
-          </Stack>
-          <Stack direction="row" gap={2}>
-            <RHFDatePicker
-              label={t('assessments:labels.startDate')}
-              controlProps={{ name: 'startDate', control }}
-              inputProps={{ sx: textFieldStyle }}
-            />
-            <RHFDatePicker
-              label={t('assessments:labels.endDate')}
-              controlProps={{ name: 'endDate', control }}
-              inputProps={{ sx: textFieldStyle }}
-            />
-          </Stack>
-          <Stack direction="row" gap={2}>
-            <RHFAutocomplete
-              disabled={isEditing}
-              label={t('common:subject')}
-              optionIdKey="name"
-              optionTextKey="name"
-              controlProps={{ name: 'subject', control }}
-              sx={textFieldStyle}
-              options={subjects}
-            />
-            <RHFAutocomplete
-              label={t('common:subjectGroups')}
-              optionIdKey="partyId"
-              optionTextKey="name"
-              multiple
-              controlProps={{ name: 'groups', control }}
-              sx={textFieldStyle}
-              options={subjectGroupOptions}
-            />
-          </Stack>
-          <CustomFieldsTable control={control} />
-          <Stack alignItems="flex-end">
-            <LoadingButton
-              variant="contained"
-              size="large"
-              type="submit"
-              loading={isLoading}
-            >
-              {ctaText}
-            </LoadingButton>
-          </Stack>
+      <CardHeader component="h2" title={title} />
+
+      <Stack direction="column" gap={3} p={3}>
+        <Stack direction="row" gap={2}>
+          <RHFSelect
+            disabled={isEditing}
+            label={t('assessments:cbaType')}
+            options={stateCBATypeOptions}
+            getOptionLabel={(option) => t(`assessments:${option}`)}
+            controlProps={{ name: 'cbaType', control }}
+            sx={textFieldStyle}
+          />
+          <RHFAutocomplete
+            disabled={isEditing}
+            label={t('assessments:labels.year', { count: 1 })}
+            optionIdKey="yearGroupId"
+            optionTextKey="name"
+            controlProps={{ name: 'years', control }}
+            sx={textFieldStyle}
+            options={yearGroupsData}
+          />
         </Stack>
-      )}
-      {errorResponse && (
-        <Stack direction="column" gap={3} p={3}>
-          <Typography variant="body1">
-            {t('assessments:existingCbaErrorMessageText')}
-          </Typography>
-          <Typography
-            component={Link}
-            variant="body2"
-            to={`/assessments/${academicNamespaceIdAsNumber}/state-cba-assessments/${errorResponse}`}
-          >
-            {t('assessments:viewExistingCba')}
-          </Typography>
-          <Typography
-            component={Link}
-            variant="body2"
-            to={`/assessments/${academicNamespaceIdAsNumber}/state-cba-assessments/${errorResponse}/edit`}
-          >
-            {t('assessments:editExistingCba')}
-          </Typography>
+        <Stack direction="row" gap={2}>
+          <RHFDatePicker
+            label={t('assessments:labels.startDate')}
+            controlProps={{ name: 'startDate', control }}
+            inputProps={{ sx: textFieldStyle }}
+          />
+          <RHFDatePicker
+            label={t('assessments:labels.endDate')}
+            controlProps={{ name: 'endDate', control }}
+            inputProps={{ sx: textFieldStyle }}
+          />
         </Stack>
-      )}
+        <Stack direction="row" gap={2}>
+          <RHFAutocomplete
+            disabled={isEditing}
+            label={t('common:subject')}
+            optionIdKey="id"
+            getOptionLabel={(option) => {
+              const subject = subjectsMapById?.get(option?.id);
+
+              return subject?.nationalCode
+                ? `${subject.name} (${subject.nationalCode})`
+                : option?.name ?? '';
+            }}
+            controlProps={{ name: 'subject', control }}
+            sx={textFieldStyle}
+            options={subjects}
+          />
+          <RHFAutocomplete
+            label={t('common:subjectGroups')}
+            optionIdKey="partyId"
+            optionTextKey="name"
+            multiple
+            controlProps={{ name: 'groups', control }}
+            sx={textFieldStyle}
+            options={subjectGroupOptions}
+            getOptionDisabled={(option) =>
+              disabledSubjectGroupIds.includes(option.partyId)
+            }
+            renderTags={(tagValue, getTagProps) =>
+              tagValue.map((option, index) => {
+                const disabledOption = disabledSubjectGroupIds.includes(
+                  option.partyId
+                );
+
+                return (
+                  <Tooltip
+                    title={
+                      disabledOption
+                        ? t(
+                            'assessments:thereAreResultsRemoveBeforeRemovingSubjectGroup'
+                          )
+                        : undefined
+                    }
+                  >
+                    <span>
+                      <Chip
+                        label={option.name}
+                        {...getTagProps({ index })}
+                        disabled={disabledOption}
+                      />
+                    </span>
+                  </Tooltip>
+                );
+              })
+            }
+          />
+        </Stack>
+        <CustomFieldsTable control={control} />
+        <Stack alignItems="flex-end">
+          <LoadingButton
+            variant="contained"
+            size="large"
+            type="submit"
+            loading={isLoading}
+          >
+            {t('common:actions.save')}
+          </LoadingButton>
+        </Stack>
+      </Stack>
     </Card>
   );
 }

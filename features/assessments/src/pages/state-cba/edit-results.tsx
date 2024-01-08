@@ -24,6 +24,7 @@ import {
   ExtraFieldType,
   getPersonProfileLink,
   SaveAssessmentResultInput,
+  StudentAssessmentExclusionInput,
 } from '@tyro/api';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { useParams } from 'react-router-dom';
@@ -47,6 +48,7 @@ import {
 } from '../term-assessment/subject-group/edit-results';
 import { useCommentBanksWithComments } from '../../api/comment-bank';
 import { getExtraFields } from '../../utils/get-extra-fields';
+import { updateStudentAssessmentExclusion } from '../../api/student-assessment-exclusion';
 
 const getColumnDefs = (
   t: TFunction<
@@ -83,11 +85,23 @@ const getColumnDefs = (
   {
     field: 'examinable',
     headerName: t('assessments:examinable'),
+    editable: true,
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
+    cellEditor: TableSwitch,
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseAssessmentResults, any>) => {
-      const isExaminable = data?.examinable === true;
-      return isExaminable ? <TableBooleanValue value={isExaminable} /> : '-';
+    }: ICellRendererParams<ReturnTypeFromUseAssessmentResults, any>) => (
+      <TableBooleanValue value={!!data?.examinable} />
+    ),
+    valueSetter: (
+      params: ValueSetterParams<ReturnTypeFromUseAssessmentResults, boolean>
+    ) => {
+      const { newValue } = params;
+      if (!newValue) {
+        params?.node?.setDataValue('gradeId', null);
+      }
+      set(params.data ?? {}, 'examinable', params.newValue);
+      return true;
     },
   },
   {
@@ -115,11 +129,13 @@ const getColumnDefs = (
   {
     field: 'gradeId',
     headerName: t('assessments:achievement'),
-    editable: true,
-    cellClass: ['ag-editable-cell'],
+    editable: (params) => !!params.data?.examinable,
     cellEditor: TableSwitch,
-    valueGetter: ({ data }) => data?.gradeId || '-',
-    valueSetter: ({ data, newValue }) => {
+    valueGetter: ({ data }) => data?.gradeId,
+    valueSetter: ({
+      data,
+      newValue,
+    }: ValueSetterParams<ReturnTypeFromUseAssessmentResults, number>) => {
       set(data ?? {}, 'gradeId', newValue);
       return true;
     },
@@ -149,27 +165,44 @@ const getColumnDefs = (
     },
   },
   {
-    field: 'ppodPublished',
+    colId: 'ppodSyncStatus',
     headerName: t('assessments:ppodStatus'),
-    valueGetter: ({ data }) => data?.ppodPublished,
+    valueGetter: ({ data }) => {
+      if (!data?.ppodPublished) return t('assessments:notSynced');
+      const selectedGradeSet = gradeSets?.find((x) => x.id === data?.gradeId);
+      if (selectedGradeSet?.name !== data.ppodResult) {
+        return t('assessments:outOfSync');
+      }
+      return t('assessments:synced');
+    },
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseAssessmentResults, any>) =>
-      data?.ppodPublished ? (
-        <Chip
-          sx={{ pointerEvents: 'none' }}
-          label={t('assessments:synced')}
-          variant="soft"
-          color="success"
-        />
-      ) : (
-        <Chip
-          sx={{ pointerEvents: 'none' }}
-          label={t('assessments:notSynced')}
-          variant="soft"
-          color="error"
-        />
-      ),
+    }: ICellRendererParams<ReturnTypeFromUseAssessmentResults, any>) => {
+      if (!data?.ppodPublished) {
+        return (
+          <Chip
+            label={t('assessments:notSynced')}
+            variant="soft"
+            color="error"
+          />
+        );
+      }
+
+      const selectedGradeSet = gradeSets?.find((x) => x.id === data?.gradeId);
+      if (selectedGradeSet?.name !== data.ppodResult) {
+        return (
+          <Chip
+            label={t('assessments:outOfSync')}
+            variant="soft"
+            color="warning"
+          />
+        );
+      }
+
+      return (
+        <Chip label={t('assessments:synced')} variant="soft" color="success" />
+      );
+    },
   },
   ...getExtraFields(assessmentData?.extraFields, commentBanks),
 ];
@@ -256,12 +289,33 @@ export default function EditStateCbaResults() {
 
   const subjectGroupName = subjectGroup?.name ?? '';
 
-  const handleBulkSave = (
+  const handleBulkSave = async (
     data: BulkEditedRows<
       ReturnTypeFromUseAssessmentResults,
-      'gradeResult' | 'extraFields'
+      'examinable' | 'gradeId' | 'studentStudyLevel' | 'extraFields'
     >
   ) => {
+    const examinableChanges = Object.entries(data).reduce<
+      StudentAssessmentExclusionInput[]
+    >((acc, [key, value]) => {
+      if (value.examinable) {
+        acc.push({
+          assessmentId: assessmentIdAsNumber ?? 0,
+          studentPartyId: Number(key),
+          subjectGroupId: subjectGroupIdAsNumber ?? 0,
+          excluded: !value.examinable?.newValue,
+        });
+      }
+      return acc;
+    }, []);
+
+    if (examinableChanges.length > 0) {
+      await updateStudentAssessmentExclusion(
+        academicNamespaceIdAsNumber ?? 0,
+        examinableChanges
+      );
+    }
+
     const formattedData = studentResults?.reduce<SaveAssessmentResultInput[]>(
       (acc, result) => {
         const editedColumns = data[result.studentPartyId];

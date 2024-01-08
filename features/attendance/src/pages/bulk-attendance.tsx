@@ -8,7 +8,6 @@ import {
   PageHeading,
   ReturnTypeDisplayName,
   Table,
-  TablePersonAvatar,
   useDebouncedValue,
   usePreferredNameLayout,
 } from '@tyro/core';
@@ -93,11 +92,6 @@ const getColumns = (
     field: 'createdBy',
     headerName: t('common:createdBy'),
     valueGetter: ({ data }) => displayName(data?.createdBy?.person),
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseBulkAttendance>) => (
-      <TablePersonAvatar person={data?.createdBy?.person ?? undefined} />
-    ),
   },
 ];
 

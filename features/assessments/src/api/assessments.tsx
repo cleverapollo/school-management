@@ -87,6 +87,7 @@ const assessment = graphql(/* GraphQL */ `
         commentBankName
         selectOptions
         commentLength
+        resultsEntered
       }
       createdBy {
         type

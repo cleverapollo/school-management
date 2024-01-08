@@ -245,7 +245,7 @@ export function TermAssessmentForm({
               }}
             />
             <RHFAutocomplete<FormValues, YearGroupOption>
-              label={t('assessments:labels.years')}
+              label={t('assessments:labels.years', { count: 2 })}
               optionIdKey="yearGroupId"
               optionTextKey="name"
               controlProps={{ name: 'years', control }}

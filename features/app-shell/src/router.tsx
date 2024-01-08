@@ -13,6 +13,7 @@ import {
   getUser,
   msalInstance,
   getCoreAcademicNamespace,
+  UsePermissionsReturn,
 } from '@tyro/api';
 import {
   wrapCreateBrowserRouter,
@@ -35,6 +36,7 @@ import { getRoutes as getClassListManagerRoutes } from '@tyro/class-list-manager
 import { getRoutes as getGroupRoutes } from '@tyro/groups';
 import { getRoutes as getPrintingRoutes } from '@tyro/printing';
 import { getRoutes as getMailRoutes } from '@tyro/mail';
+import { getRoutes as getFeeRoutes } from '@tyro/fees';
 import { getRoutes as getAttendanceRoutes } from '@tyro/attendance';
 import { getRoutes as getAssessmentRoutes } from '@tyro/assessments';
 import { getRoutes as getPeopleRoutes } from '@tyro/people';
@@ -128,6 +130,7 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getGroupRoutes(t),
   ...getAttendanceRoutes(t),
   ...getMailRoutes(t),
+  ...getFeeRoutes(t),
   ...getAssessmentRoutes(t),
   ...getPeopleRoutes(t),
   ...getReportingRoutes(t),
