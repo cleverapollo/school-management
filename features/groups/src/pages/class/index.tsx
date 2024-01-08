@@ -21,8 +21,9 @@ import {
   PageHeading,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { MobileIcon, PrinterIcon } from '@tyro/icons';
+import {MobileIcon, PrinterIcon, TrashIcon} from '@tyro/icons';
 import { TableStaffAutocomplete } from '@tyro/people';
+import { DeleteGroupsModal } from '../../components/common/delete-groups-modal';
 import set from 'lodash/set';
 import {
   useClassGroups,
@@ -129,6 +130,7 @@ export default function ClassGroupsPage() {
     onClose: onCloseSendSms,
   } = useDisclosure();
 
+  const [deleteGroupIds, setDeleteGroupIds] = useState<number[] | null>();
   const classGroupColumns = useMemo(
     () => getClassGroupColumns(t, isStaffUser, displayNames),
     [t, isStaffUser]
@@ -149,6 +151,11 @@ export default function ClassGroupsPage() {
           isStaffUserWithPermission(
             'ps:1:printing_and_exporting:print_group_members'
           ),
+      },
+      {
+        label: t('groups:deleteGroups'),
+        icon: <TrashIcon />,
+        onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
       },
     ],
     [selectedGroups, onOpenSendSms]
@@ -238,6 +245,10 @@ export default function ClassGroupsPage() {
             type: SmsRecipientType.ClassGroupStaff,
           },
         ]}
+      />
+      <DeleteGroupsModal
+          groupIds={deleteGroupIds}
+          onClose={() => setDeleteGroupIds(null)}
       />
     </>
   );

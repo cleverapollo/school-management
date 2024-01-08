@@ -30,6 +30,8 @@
   "createCustomGroup": "Create custom group",
   "deleteCustomGroups": "Delete custom groups",
   "deleteCustomGroupsConfirmation": "You are about to delete custom groups. Are you sure you want to continue?",
+  "deleteGroups": "Delete groups",
+  "deleteGroupsConfirmation": "You are about to delete groups. Are you sure you want to continue?",
   "groupName": "Group name",
   "staticMembers": "Static members",
   "dynamicMembers": "Dynamic members",
