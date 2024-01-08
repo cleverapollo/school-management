@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useMemo } from 'react';
 import dayjs from 'dayjs';
 import { useCustomGroups } from '@tyro/groups';
+import { useStaffWorkAbsenceTypes } from '@tyro/substitution';
 import { useSchoolActivityById } from '../api/get-school-activities';
 import { useRoomsList } from '../api/get-rooms';
 import {
@@ -31,6 +32,8 @@ export default function EditSchoolActivityPage() {
 
   const { data: customGroups = [] } = useCustomGroups();
 
+  const { data: absenceTypesData } = useStaffWorkAbsenceTypes({});
+
   const formValues = useMemo<FormValues | null>(() => {
     if (!schoolActivity) return null;
 
@@ -42,8 +45,8 @@ export default function EditSchoolActivityPage() {
       location,
       dates,
       customGroupId,
+      staffAbsenceTypeId,
     } = schoolActivity;
-
 
     const singleDayDate = dates == null ? null : dates[0];
     const currentCustomGroup = customGroups?.filter(
@@ -64,6 +67,10 @@ export default function EditSchoolActivityPage() {
       dateRange = [startDate, endDate];
     }
 
+    const currentAbsenceType = absenceTypesData?.find(
+      (absenceType) => absenceType?.absenceTypeId === staffAbsenceTypeId
+    );
+
     return {
       schoolActivityId,
       name,
@@ -81,6 +88,8 @@ export default function EditSchoolActivityPage() {
       requestType: singleDayDate?.partial
         ? ActivityType.PartialDay
         : singleOrMultiDayActivityType,
+      absenceType: currentAbsenceType,
+      absenceTypeId: staffAbsenceTypeId,
     } as const;
   }, [schoolActivity, rooms, customGroups]);
 

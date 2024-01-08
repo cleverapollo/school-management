@@ -61,7 +61,7 @@ export type FormValues = {
   notes: string | null | undefined;
   room: RoomList | null;
   inSchoolGrounds: boolean;
-  partial: boolean;
+  partial?: boolean;
   dates?: dayjs.Dayjs;
   startTime?: dayjs.Dayjs;
   endTime?: dayjs.Dayjs;
@@ -71,7 +71,8 @@ export type FormValues = {
   organisers?: StaffSelectOption[] | null;
   staticStudents?: StudentSelectOption[] | null;
   staticStaff?: StaffSelectOption[] | null;
-  absenceType: StaffWorkAbsenceTypeOption | null;
+  absenceType?: StaffWorkAbsenceTypeOption;
+  absenceTypeId?: number | null;
 };
 
 export type SchoolActivitiesFormProps = {
@@ -122,6 +123,7 @@ export function SchoolActivityForm({
     resolver: resolver({
       name: rules.required(),
       dates: [rules.required(), rules.date()],
+      dateRange: rules.required(),
       inSchoolGrounds: rules.required(),
       group: rules.required(),
       absenceType: rules.required(),
@@ -222,7 +224,7 @@ export function SchoolActivityForm({
       tripPurpose: data?.details,
       dates: datesFormatted,
       notes: data?.notes,
-      staffAbsenceType: data?.absenceType?.absenceTypeId,
+      staffAbsenceType: data?.absenceType?.absenceTypeId ?? 0,
     };
     saveSchoolActivities(formattedData, {
       onSuccess: () => {
@@ -508,22 +510,21 @@ export function SchoolActivityForm({
                 }}
               />
             </Grid>
-        <Grid item xs={12}>
-          <AbsenceTypeAutoComplete
-              label={t('schoolActivities:staffAbsenceReason')}
-              controlProps={{
-                name: 'absenceType',
-                control,
-              }}
-          />
-          </Grid>
+            <Grid item xs={12}>
+              <AbsenceTypeAutoComplete
+                label={t('schoolActivities:staffAbsenceReason')}
+                controlProps={{
+                  name: 'absenceType',
+                  control,
+                }}
+              />
+            </Grid>
             <Grid item xs={12}>
               <RHFSwitch
                 label={t('schoolActivities:onSchoolGrounds')}
                 switchProps={{ color: 'success' }}
                 controlProps={{ name: 'inSchoolGrounds', control }}
               />
-
             </Grid>
 
             {isActivityInSchool ? (
