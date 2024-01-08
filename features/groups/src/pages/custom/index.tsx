@@ -10,6 +10,7 @@ import {
   PageHeading,
   Table,
   TableAvatar,
+  useDebouncedValue,
   useDisclosure,
 } from '@tyro/core';
 import {
@@ -99,7 +100,11 @@ export default function CustomGroups() {
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
-  const [deleteGroupIds, setDeleteGroupIds] = useState<number[] | null>();
+  const {
+    value: deleteGroupIds,
+    debouncedValue: debouncedDeleteGroupIds,
+    setValue: setDeleteGroupIds,
+  } = useDebouncedValue<number[] | null>({ defaultValue: null });
   const { isStaffUser, hasPermission, isTyroUser } = usePermissions();
   const { data: customGroupData } = useCustomGroups();
 
@@ -137,7 +142,7 @@ export default function CustomGroups() {
           ),
       },
       {
-        label: t('groups:deleteCustomGroups'),
+        label: t('groups:deleteCustomGroups', { count: selectedGroups.length }),
         icon: <TrashIcon />,
         onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
         hasAccess: () => isTyroUser,
@@ -209,7 +214,8 @@ export default function CustomGroups() {
         ]}
       />
       <DeleteGroupsModal
-        groupIds={deleteGroupIds}
+        isOpen={Boolean(deleteGroupIds)}
+        groupIds={deleteGroupIds ?? debouncedDeleteGroupIds}
         onClose={() => setDeleteGroupIds(null)}
       />
     </>

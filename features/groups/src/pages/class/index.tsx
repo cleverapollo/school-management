@@ -19,12 +19,13 @@ import {
   sortStartNumberFirst,
   PageContainer,
   PageHeading,
+  useDebouncedValue,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import {MobileIcon, PrinterIcon, TrashIcon} from '@tyro/icons';
+import { MobileIcon, PrinterIcon, TrashIcon } from '@tyro/icons';
 import { TableStaffAutocomplete } from '@tyro/people';
-import { DeleteGroupsModal } from '../../components/common/delete-groups-modal';
 import set from 'lodash/set';
+import { DeleteGroupsModal } from '../../components/common/delete-groups-modal';
 import {
   useClassGroups,
   ReturnTypeFromUseClassGroups,
@@ -130,7 +131,11 @@ export default function ClassGroupsPage() {
     onClose: onCloseSendSms,
   } = useDisclosure();
 
-  const [deleteGroupIds, setDeleteGroupIds] = useState<number[] | null>();
+  const {
+    value: deleteGroupIds,
+    debouncedValue: debouncedDeleteGroupIds,
+    setValue: setDeleteGroupIds,
+  } = useDebouncedValue<number[] | null>({ defaultValue: null });
   const classGroupColumns = useMemo(
     () => getClassGroupColumns(t, isStaffUser, displayNames),
     [t, isStaffUser]
@@ -153,7 +158,7 @@ export default function ClassGroupsPage() {
           ),
       },
       {
-        label: t('groups:deleteGroups'),
+        label: t('groups:deleteGroups', { count: selectedGroups.length }),
         icon: <TrashIcon />,
         onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
       },
@@ -247,8 +252,9 @@ export default function ClassGroupsPage() {
         ]}
       />
       <DeleteGroupsModal
-          groupIds={deleteGroupIds}
-          onClose={() => setDeleteGroupIds(null)}
+        isOpen={Boolean(deleteGroupIds)}
+        groupIds={deleteGroupIds ?? debouncedDeleteGroupIds}
+        onClose={() => setDeleteGroupIds(null)}
       />
     </>
   );

@@ -1346,6 +1346,7 @@ export type Core_CustomGroupDefinition = {
   name: Scalars['String'];
   organiserIds?: Maybe<Array<Scalars['Long']>>;
   organisers?: Maybe<Array<Person>>;
+  source: Core_PartySource;
   staffDynamic?: Maybe<Core_CustomGroupQuery>;
   staffIdsStatic?: Maybe<Array<Scalars['Long']>>;
   staffStatic?: Maybe<Array<Person>>;
@@ -1377,6 +1378,8 @@ export type Core_CustomGroupQueryInput = {
 
 export type Core_DeleteGroupInput = {
   groupPartyIds: Array<Scalars['Long']>;
+  /**  only delete from specified sources */
+  sources?: InputMaybe<Array<Core_PartySource>>;
 };
 
 export type Core_EnableBlockRotationInput = {
@@ -1499,6 +1502,11 @@ export type Core_PartyInAcademicNamespaceFilter = {
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
 
+export enum Core_PartySource {
+  Core = 'CORE',
+  SchoolActivity = 'SCHOOL_ACTIVITY'
+}
+
 export type Core_PeopleFilter = {
   partyIds: Array<InputMaybe<Scalars['Long']>>;
 };
@@ -1579,6 +1587,7 @@ export type Core_UpsertCustomGroupDefinition = {
   id?: InputMaybe<Scalars['Long']>;
   name: Scalars['String'];
   organisers?: InputMaybe<Array<Scalars['Long']>>;
+  source?: InputMaybe<Core_PartySource>;
   staffDynamic?: InputMaybe<Core_CustomGroupQueryInput>;
   staffStatic?: InputMaybe<Array<Scalars['Long']>>;
   studentsDynamic?: InputMaybe<Core_CustomGroupQueryInput>;
@@ -1672,6 +1681,7 @@ export type CreateGeneralGroupInput = {
   generalGroupType: GeneralGroupType;
   includeInTimetable?: InputMaybe<Scalars['Boolean']>;
   name?: InputMaybe<Scalars['String']>;
+  source?: InputMaybe<Core_PartySource>;
 };
 
 export type CreateGeneralGroupStudentMembershipInput = {
@@ -1928,9 +1938,12 @@ export type Debtor = {
   amountDiscounted?: Maybe<Scalars['Float']>;
   amountDue: Scalars['Float'];
   amountPaid: Scalars['Float'];
-  discounts?: Maybe<Array<Maybe<Discount>>>;
-  discountsAppliedIds?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  /** deep linked */
+  classGroup: GeneralGroup;
+  discounts: Array<Discount>;
+  discountsAppliedIds: Array<Scalars['Int']>;
   feeId: Scalars['Int'];
+  feeStatus: FeeStatus;
   id: Scalars['Int'];
   partyId: Scalars['Long'];
   /** deep linked */
@@ -2524,6 +2537,7 @@ export type GeneralGroup = Party & PartyGroup & {
   programmeStages: Array<ProgrammeStage>;
   /**     deep linked */
   relatedSubjectGroups: Array<SubjectGroup>;
+  source?: Maybe<Core_PartySource>;
   /**     deep linked */
   staff: Array<Person>;
   /**     deep linked */
@@ -5820,8 +5834,9 @@ export type Sa_SchoolActivity = {
   notes?: Maybe<Scalars['String']>;
   published: Scalars['Boolean'];
   schoolActivityId: Scalars['Int'];
+  staffAbsenceIds: Array<Scalars['Int']>;
+  staffAbsenceTypeId?: Maybe<Scalars['Int']>;
   tripPurpose?: Maybe<Scalars['String']>;
-  unavailabilityIds: Array<Scalars['Int']>;
 };
 
 export type Sa_SchoolActivityApproval = {
@@ -5859,6 +5874,7 @@ export type Sa_SchoolActivityInput = {
   name: Scalars['String'];
   notes?: InputMaybe<Scalars['String']>;
   schoolActivityId?: InputMaybe<Scalars['Int']>;
+  staffAbsenceType: Scalars['Int'];
   tripPurpose?: InputMaybe<Scalars['String']>;
 };
 
@@ -6890,7 +6906,6 @@ export enum StudentContactType {
   SocialWorker = 'SOCIAL_WORKER',
   StepFather = 'STEP_FATHER',
   StepMother = 'STEP_MOTHER',
-  Agent = 'AGENT',
   Uncle = 'UNCLE'
 }
 
@@ -6914,6 +6929,7 @@ export type StudentFee = {
   discounts: Array<Discount>;
   dueDate: Scalars['Date'];
   feeName: Scalars['String'];
+  feeStatus: FeeStatus;
   feeType: FeeType;
   id: StudentFeeId;
   person: Person;
