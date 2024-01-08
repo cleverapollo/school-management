@@ -69,6 +69,7 @@ const getColumnDefs = (
           {data.categories.map(({ id, name }) => (
             <Chip
               key={id}
+              size="small"
               label={name}
               variant="soft"
               color={getColorBasedOnIndex(id)}
@@ -102,7 +103,7 @@ const getColumnDefs = (
   {
     field: 'due',
     headerName: t('fees:due'),
-    valueGetter: ({ data }) => formatCurrency(data?.paid ?? 0),
+    valueGetter: ({ data }) => formatCurrency(data?.due ?? 0),
   },
   {
     field: 'feeStatus',
