@@ -58,13 +58,7 @@ export default function NavVertical({
             flexShrink: 0,
           }}
         >
-          {/* <Logo /> */}
-          <Box
-            component="img"
-            src="/assets/logo-christmas.png"
-            alt="Tyro"
-            sx={{ width: 120, my: '-20px !important' }}
-          />
+          <Logo />
         </Stack>
 
         <NavSectionVertical data={navConfig} />
