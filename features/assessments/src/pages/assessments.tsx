@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Chip } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   ActionMenu,
@@ -78,6 +78,40 @@ const getColumnDefs = (
         return translate(`assessments:CBA_1`);
       }
       return translate(`assessments:CBA_2`);
+    },
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAssessments>) => {
+      const isStateCba1 =
+        data?.stateCbaType && data?.stateCbaType.includes(StateCbaType.Cba_1);
+
+      return data?.assessmentType === AssessmentType.Term &&
+        data?.assessmentType ? (
+        <Chip
+          size="small"
+          variant="soft"
+          color="emerald"
+          sx={{ color: 'emerald.500', bgcolor: 'emerald.100' }}
+          label={translate(
+            `assessments:assessmentTypes.${data?.assessmentType}`
+          )}
+        />
+      ) : (
+        <Chip
+          size="small"
+          variant="soft"
+          color={isStateCba1 ? 'sky' : 'violet'}
+          sx={{
+            color: isStateCba1 ? 'sky.500' : 'violet.500',
+            bgcolor: isStateCba1 ? 'sky.100' : 'violet.100',
+          }}
+          label={
+            isStateCba1
+              ? translate(`assessments:CBA_1`)
+              : translate(`assessments:CBA_2`)
+          }
+        />
+      );
     },
   },
   {

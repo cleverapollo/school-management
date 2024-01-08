@@ -9,7 +9,11 @@ import {
   VerticalDotsIcon,
   EditCalendarIcon,
 } from '@tyro/icons';
-import { AssessmentType, useAcademicNamespace } from '@tyro/api';
+import {
+  AssessmentType,
+  useAcademicNamespace,
+  usePermissions,
+} from '@tyro/api';
 import { getAssessmentSubjectGroupsLink } from '../../utils/get-assessment-subject-groups-link';
 import { PublishAssessmentModal } from './publish-assessment-modal';
 import {
@@ -40,6 +44,7 @@ export const AssessmentActionMenu = ({
   const { activeAcademicNamespace } = useAcademicNamespace();
   const academicNamespaceIdAsNumber =
     useNumber(activeAcademicNamespace?.academicNamespaceId) ?? 0;
+  const { hasPermission } = usePermissions();
   const disableEdit =
     academicNamespaceId !== activeAcademicNamespace?.academicNamespaceId;
 
@@ -142,6 +147,12 @@ export const AssessmentActionMenu = ({
                         label: t('assessments:actions.unpublish'),
                         icon: <StopIcon />,
                         onClick: unpublishAssessment,
+                        hasAccess: () =>
+                          isTermAssessment
+                            ? hasPermission('ps:1:term_publish_to_parents')
+                            : hasPermission(
+                                'ps:1:assessment:cba_publish_to_parents'
+                              ),
                       },
                     ]
                   : [
@@ -149,6 +160,12 @@ export const AssessmentActionMenu = ({
                         label: t('assessments:actions.publish'),
                         icon: <CheckmarkCircleIcon />,
                         onClick: onOpen,
+                        hasAccess: () =>
+                          isTermAssessment
+                            ? hasPermission('ps:1:term_publish_to_parents')
+                            : hasPermission(
+                                'ps:1:assessment:cba_publish_to_parents'
+                              ),
                       },
                     ],
               ]

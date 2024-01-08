@@ -267,6 +267,7 @@ export default function ViewStateCba() {
           label: t('assessments:syncWithPpod'),
           icon: <SyncIcon />,
           onClick: onSyncWithPpodOpen,
+          hasAccess: () => hasPermission('ps:1:assessment:cba_sync_ppod'),
         },
       ],
     ],
