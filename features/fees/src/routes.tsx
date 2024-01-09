@@ -33,9 +33,8 @@ export const getRoutes: NavObjectFunction = (t) => [
   {
     type: NavObjectType.Category,
     title: t('navigation:general.title'),
-    hasAccess: ({ isContact, isTyroUser, hasPermission }) => isTyroUser,
-    // Swap for below when payment flow is fully tested for contacts
-    // isContact && hasPermission('ps:1:fees:pay_fees'),
+    hasAccess: ({ isContact, hasPermission }) =>
+      isContact && hasPermission('ps:1:fees:pay_fees'),
     children: [
       {
         type: NavObjectType.RootLink,
