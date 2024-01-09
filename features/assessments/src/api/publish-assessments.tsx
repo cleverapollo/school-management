@@ -20,7 +20,7 @@ const publishStateCbaOnline = graphql(/* GraphQL */ `
   }
 `);
 
-const publishAssessment = graphql(/* GraphQL */ `
+const publishAssessmentOnline = graphql(/* GraphQL */ `
   mutation assessment_publish($input: PublishAssessmentInput) {
     assessment_publish(input: $input) {
       success
@@ -61,7 +61,7 @@ export function usePublishAssessment() {
 
   return useMutation({
     mutationFn: (input: PublishAssessmentInput) =>
-      gqlClient.request(publishAssessment, { input }),
+      gqlClient.request(publishAssessmentOnline, { input }),
     onSuccess: async () => {
       await queryClient.invalidateQueries(assessmentsKeys.all);
     },
@@ -75,7 +75,7 @@ export function useUnpublishAssessment(id: number, isTermAssessment: boolean) {
   const { toast } = useToast();
   const { t } = useTranslation(['assessments']);
 
-  const { mutateAsync: publishAssessment1 } = usePublishAssessment();
+  const { mutateAsync: publishAssessment } = usePublishAssessment();
   const { mutateAsync: publishStateCba } = usePublishStateCba();
 
   const { activeAcademicNamespace } = useAcademicNamespace();
@@ -85,7 +85,7 @@ export function useUnpublishAssessment(id: number, isTermAssessment: boolean) {
   return {
     unpublish: async () => {
       if (isTermAssessment) {
-        publishAssessment1(
+        publishAssessment(
           {
             assessmentId: id,
             publish: false,
