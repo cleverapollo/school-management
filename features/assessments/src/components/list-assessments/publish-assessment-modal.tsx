@@ -13,11 +13,11 @@ import { useTranslation } from '@tyro/i18n';
 import dayjs, { Dayjs } from 'dayjs';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { ReturnTypeFromUseAssessments } from '../../api/assessments';
 import {
-  ReturnTypeFromUseAssessments,
   usePublishAssessment,
-} from '../../api/assessments';
-import { usePublishStateCbaOnline } from '../../api/state-cba/publish-state-cba-to-parents';
+  usePublishStateCba,
+} from '../../api/publish-assessments';
 import { getAssessmentSubjectGroups } from '../../api/assessment-subject-groups';
 
 interface PublishAssessmentModalProps {
@@ -59,7 +59,7 @@ export function PublishAssessmentModal({
     usePublishAssessment();
 
   const { mutateAsync: publishStateCba, isLoading: isSubmittingStateCba } =
-    usePublishStateCbaOnline();
+    usePublishStateCba();
 
   const onSubmit = handleSubmit(async ({ publishDate }) => {
     if (isTermAssessment) {

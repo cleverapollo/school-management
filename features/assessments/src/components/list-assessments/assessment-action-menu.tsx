@@ -1,5 +1,5 @@
 import { useTranslation } from '@tyro/i18n';
-import { ActionMenu, useDisclosure, useNumber, useToast } from '@tyro/core';
+import { ActionMenu, useDisclosure, useNumber } from '@tyro/core';
 import {
   EyeIcon,
   CommentIcon,
@@ -16,12 +16,8 @@ import {
 } from '@tyro/api';
 import { getAssessmentSubjectGroupsLink } from '../../utils/get-assessment-subject-groups-link';
 import { PublishAssessmentModal } from './publish-assessment-modal';
-import {
-  ReturnTypeFromUseAssessments,
-  usePublishAssessment,
-} from '../../api/assessments';
-import { usePublishStateCbaOnline } from '../../api/state-cba/publish-state-cba-to-parents';
-import { getAssessmentSubjectGroups } from '../../api/assessment-subject-groups';
+import { ReturnTypeFromUseAssessments } from '../../api/assessments';
+import { useUnpublishAssessment } from '../../api/publish-assessments';
 
 type AssessmentActionMenuProps = {
   id: ReturnTypeFromUseAssessments['id'];
@@ -39,7 +35,6 @@ export const AssessmentActionMenu = ({
   canEnterOverallComments,
 }: AssessmentActionMenuProps) => {
   const { t } = useTranslation(['assessments']);
-  const { toast } = useToast();
   const { isOpen, onClose, onOpen } = useDisclosure();
   const { activeAcademicNamespace } = useAcademicNamespace();
   const academicNamespaceIdAsNumber =
@@ -54,55 +49,8 @@ export const AssessmentActionMenu = ({
     academicNamespaceId
   );
 
-  const { mutateAsync: publishAssessment } = usePublishAssessment();
-  const { mutateAsync: publishStateCba } = usePublishStateCbaOnline();
-
   const isTermAssessment = assessmentType === AssessmentType.Term;
-
-  const unpublishAssessment = async () => {
-    if (isTermAssessment) {
-      publishAssessment(
-        {
-          assessmentId: id,
-          publish: false,
-        },
-        {
-          onSuccess: () => {
-            toast(t('assessments:unpublishedSuccessfully'));
-          },
-        }
-      );
-    } else {
-      try {
-        const response = await getAssessmentSubjectGroups(
-          academicNamespaceIdAsNumber,
-          {
-            assessmentId: id,
-          }
-        );
-
-        const data = response?.assessment_assessmentSubjectGroups;
-        const subjectGroupIds = data?.map(
-          (subject) => subject?.subjectGroup?.partyId
-        );
-
-        publishStateCba(
-          {
-            assessmentId: id,
-            subjectGroupIds,
-            publish: false,
-          },
-          {
-            onSuccess: () => {
-              toast(t('assessments:unpublishedSuccessfully'));
-            },
-          }
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
+  const { unpublish } = useUnpublishAssessment(id, isTermAssessment);
 
   return (
     <>
@@ -146,7 +94,7 @@ export const AssessmentActionMenu = ({
                       {
                         label: t('assessments:actions.unpublish'),
                         icon: <StopIcon />,
-                        onClick: unpublishAssessment,
+                        onClick: unpublish,
                         hasAccess: () =>
                           isTermAssessment
                             ? hasPermission('ps:1:term_publish_to_parents')
