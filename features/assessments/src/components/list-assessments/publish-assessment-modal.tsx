@@ -7,18 +7,13 @@ import {
   DialogActions,
   useFormValidator,
   RHFDatePicker,
-  useToast,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import dayjs, { Dayjs } from 'dayjs';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { ReturnTypeFromUseAssessments } from '../../api/assessments';
-import {
-  usePublishAssessment,
-  usePublishStateCba,
-} from '../../api/publish-assessments';
-import { getAssessmentSubjectGroups } from '../../api/assessment-subject-groups';
+import { usePublishUnpublishAssessment } from '../../api/publish-assessments';
 
 interface PublishAssessmentModalProps {
   assessmentId: number;
@@ -26,7 +21,6 @@ interface PublishAssessmentModalProps {
   open: boolean;
   onClose: () => void;
   isTermAssessment: boolean;
-  academicNamespaceIdAsNumber: number;
 }
 
 interface PublishFormValues {
@@ -39,10 +33,8 @@ export function PublishAssessmentModal({
   open,
   onClose,
   isTermAssessment,
-  academicNamespaceIdAsNumber,
 }: PublishAssessmentModalProps) {
   const { t } = useTranslation(['common', 'assessments']);
-  const { toast } = useToast();
 
   const { resolver, rules } = useFormValidator<PublishFormValues>();
 
@@ -55,59 +47,11 @@ export function PublishAssessmentModal({
     },
   });
 
-  const { mutateAsync: publishAssessment, isLoading: isSubmitting } =
-    usePublishAssessment();
+  const { publish, isSubmitting, isSubmittingStateCba } =
+    usePublishUnpublishAssessment(assessmentId, isTermAssessment);
 
-  const { mutateAsync: publishStateCba, isLoading: isSubmittingStateCba } =
-    usePublishStateCba();
-
-  const onSubmit = handleSubmit(async ({ publishDate }) => {
-    if (isTermAssessment) {
-      publishAssessment(
-        {
-          assessmentId,
-          publish: true,
-          publishFrom: publishDate.format('YYYY-MM-DD'),
-        },
-        {
-          onSuccess: () => {
-            onClose();
-            toast(t('common:snackbarMessages.updateSuccess'));
-          },
-        }
-      );
-    } else {
-      try {
-        const response = await getAssessmentSubjectGroups(
-          academicNamespaceIdAsNumber,
-          {
-            assessmentId,
-          }
-        );
-
-        const data = response?.assessment_assessmentSubjectGroups;
-        const subjectGroupIds = data?.map(
-          (subject) => subject?.subjectGroup?.partyId
-        );
-
-        publishStateCba(
-          {
-            assessmentId,
-            subjectGroupIds,
-            publish: true,
-            publishFrom: publishDate.format('YYYY-MM-DD'),
-          },
-          {
-            onSuccess: () => {
-              onClose();
-              toast(t('common:snackbarMessages.updateSuccess'));
-            },
-          }
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    }
+  const onSubmit = handleSubmit(({ publishDate }) => {
+    publish(publishDate, onClose);
   });
 
   useEffect(() => {

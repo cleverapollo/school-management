@@ -1,5 +1,5 @@
 import { useTranslation } from '@tyro/i18n';
-import { ActionMenu, useDisclosure, useNumber } from '@tyro/core';
+import { ActionMenu, useDisclosure } from '@tyro/core';
 import {
   EyeIcon,
   CommentIcon,
@@ -17,7 +17,7 @@ import {
 import { getAssessmentSubjectGroupsLink } from '../../utils/get-assessment-subject-groups-link';
 import { PublishAssessmentModal } from './publish-assessment-modal';
 import { ReturnTypeFromUseAssessments } from '../../api/assessments';
-import { useUnpublishAssessment } from '../../api/publish-assessments';
+import { usePublishUnpublishAssessment } from '../../api/publish-assessments';
 
 type AssessmentActionMenuProps = {
   id: ReturnTypeFromUseAssessments['id'];
@@ -37,8 +37,6 @@ export const AssessmentActionMenu = ({
   const { t } = useTranslation(['assessments']);
   const { isOpen, onClose, onOpen } = useDisclosure();
   const { activeAcademicNamespace } = useAcademicNamespace();
-  const academicNamespaceIdAsNumber =
-    useNumber(activeAcademicNamespace?.academicNamespaceId) ?? 0;
   const { hasPermission } = usePermissions();
   const disableEdit =
     academicNamespaceId !== activeAcademicNamespace?.academicNamespaceId;
@@ -50,7 +48,7 @@ export const AssessmentActionMenu = ({
   );
 
   const isTermAssessment = assessmentType === AssessmentType.Term;
-  const { unpublish } = useUnpublishAssessment(id, isTermAssessment);
+  const { unpublish } = usePublishUnpublishAssessment(id, isTermAssessment);
 
   return (
     <>
@@ -130,7 +128,6 @@ export const AssessmentActionMenu = ({
         open={isOpen}
         onClose={onClose}
         isTermAssessment={isTermAssessment}
-        academicNamespaceIdAsNumber={academicNamespaceIdAsNumber}
       />
     </>
   );

@@ -9,6 +9,7 @@ import {
 } from '@tyro/api';
 import { useNumber, useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
+import { Dayjs } from 'dayjs';
 import { assessmentsKeys } from './keys';
 import { getAssessmentSubjectGroups } from './assessment-subject-groups';
 
@@ -71,18 +72,80 @@ export function usePublishAssessment() {
   });
 }
 
-export function useUnpublishAssessment(id: number, isTermAssessment: boolean) {
-  const { toast } = useToast();
-  const { t } = useTranslation(['assessments']);
+async function getSubjectGroupIds(
+  academicNamespaceId: number,
+  assessmentId: number
+) {
+  const response = await getAssessmentSubjectGroups(academicNamespaceId, {
+    assessmentId,
+  });
 
-  const { mutateAsync: publishAssessment } = usePublishAssessment();
-  const { mutateAsync: publishStateCba } = usePublishStateCba();
+  const data = response?.assessment_assessmentSubjectGroups;
+  const subjectGroupIds = data?.map(
+    (subject) => subject?.subjectGroup?.partyId
+  );
+
+  return subjectGroupIds;
+}
+
+export function usePublishUnpublishAssessment(
+  id: number,
+  isTermAssessment: boolean
+) {
+  const { toast } = useToast();
+  const { t } = useTranslation(['assessments', 'common']);
+
+  const { mutateAsync: publishAssessment, isLoading: isSubmitting } =
+    usePublishAssessment();
+  const { mutateAsync: publishStateCba, isLoading: isSubmittingStateCba } =
+    usePublishStateCba();
 
   const { activeAcademicNamespace } = useAcademicNamespace();
   const academicNamespaceIdAsNumber =
     useNumber(activeAcademicNamespace?.academicNamespaceId) ?? 0;
 
   return {
+    publish: async (publishDate: Dayjs, onClose: () => void) => {
+      if (isTermAssessment) {
+        publishAssessment(
+          {
+            assessmentId: id,
+            publish: true,
+            publishFrom: publishDate.format('YYYY-MM-DD'),
+          },
+          {
+            onSuccess: () => {
+              onClose();
+              toast(t('common:snackbarMessages.updateSuccess'));
+            },
+          }
+        );
+      } else {
+        try {
+          const subjectGroupIds = await getSubjectGroupIds(
+            academicNamespaceIdAsNumber,
+            id
+          );
+
+          publishStateCba(
+            {
+              assessmentId: id,
+              subjectGroupIds,
+              publish: true,
+              publishFrom: publishDate.format('YYYY-MM-DD'),
+            },
+            {
+              onSuccess: () => {
+                onClose();
+                toast(t('common:snackbarMessages.updateSuccess'));
+              },
+            }
+          );
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    },
     unpublish: async () => {
       if (isTermAssessment) {
         publishAssessment(
@@ -98,16 +161,9 @@ export function useUnpublishAssessment(id: number, isTermAssessment: boolean) {
         );
       } else {
         try {
-          const response = await getAssessmentSubjectGroups(
+          const subjectGroupIds = await getSubjectGroupIds(
             academicNamespaceIdAsNumber,
-            {
-              assessmentId: id,
-            }
-          );
-
-          const data = response?.assessment_assessmentSubjectGroups;
-          const subjectGroupIds = data?.map(
-            (subject) => subject?.subjectGroup?.partyId
+            id
           );
 
           publishStateCba(
@@ -127,5 +183,7 @@ export function useUnpublishAssessment(id: number, isTermAssessment: boolean) {
         }
       }
     },
+    isSubmitting,
+    isSubmittingStateCba,
   };
 }
