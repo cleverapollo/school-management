@@ -8,9 +8,9 @@ import {
   useDisclosure,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { Box } from '@mui/material';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { MaleFemaleIcon, PersonTickIcon, RotationIcon } from '@tyro/icons';
 import { useContainerMargin } from '../hooks/use-container-margin';
 import { ClassListSettingsProvider } from '../store/class-list-settings';
@@ -22,6 +22,7 @@ import { AutoAssignConfirmDialog } from './common/auto-assign-confirm-dialog';
 export default function ClassListManagerContainer() {
   const { t } = useTranslation(['navigation', 'classListManager']);
   const { pathname } = useLocation();
+  const [, setSearchParams] = useSearchParams();
   const isBlockView = pathname.includes('blocks');
   const containerMargin = useContainerMargin();
 
@@ -107,6 +108,12 @@ export default function ClassListManagerContainer() {
       setSelectedYearGroup,
     ]
   );
+
+  useEffect(() => {
+    if (selectedYearGroup?.yearGroupId) {
+      setSearchParams({ yearGroupId: `${selectedYearGroup.yearGroupId}` });
+    }
+  }, [pathname, selectedYearGroup]);
 
   return (
     <ClassListSettingsProvider {...classListSettings}>

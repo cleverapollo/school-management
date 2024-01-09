@@ -67,7 +67,6 @@ export function SentSmsDetailsModal({
             <SmsSummary
               sx={{ flex: 1, px: 3 }}
               message={data?.body ?? ''}
-              costPerSms={0.05}
               totalCost={data?.totalCost ?? 0}
             />
           </Box>
