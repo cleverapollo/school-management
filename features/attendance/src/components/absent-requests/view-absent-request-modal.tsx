@@ -15,7 +15,7 @@ import {
   DialogContent,
   DialogTitle,
 } from '@tyro/core';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { LoadingButton } from '@mui/lab';
 import { StudentAvatar } from '@tyro/people';
@@ -29,6 +29,7 @@ import {
 } from '../../api';
 import { formatDateOfAbsence } from '../../utils/format-date-of-absence';
 import { WithdrawAbsentRequestConfirmModal } from './withdraw-absent-request-confirm-modal';
+import { AbsentRequestDateEditor } from './absent-request-date-editor';
 
 dayjs.extend(LocalizedFormat);
 
@@ -44,7 +45,9 @@ const getAbsentRequestDataWithLabels = (
   displayName: ReturnTypeDisplayName,
   attendanceCodes: ReturnTypeFromUseAttendanceCodes[] | undefined,
   isContact: boolean | undefined
-): CardEditableFormProps<ReturnTypeFromUseAbsentRequests>['fields'] => {
+): CardEditableFormProps<
+  ReturnTypeFromUseAbsentRequests & { dateOfAbsence: [Dayjs, Dayjs] }
+>['fields'] => {
   if (data === undefined) return [];
   const {
     contact,
@@ -53,6 +56,8 @@ const getAbsentRequestDataWithLabels = (
     adminNote,
     requestType,
     status,
+    from,
+    to,
   } = data;
 
   const contactName = displayName(contact?.person);
@@ -70,6 +75,16 @@ const getAbsentRequestDataWithLabels = (
       value: t(
         `attendance:dayTypeOptionsFormatted.${requestType}`,
         formatDateOfAbsence(data)
+      ),
+      valueEditor: (
+        <AbsentRequestDateEditor
+          from={from}
+          to={to}
+          requestType={requestType}
+          controlProps={{
+            name: 'dateOfAbsence',
+          }}
+        />
       ),
     },
     {
@@ -180,18 +195,24 @@ export const ViewAbsentRequestModal = ({
     attendanceCodes,
     isContact
   );
-  const { resolver, rules } =
-    useFormValidator<ReturnTypeFromUseAbsentRequests>();
+  const { resolver, rules } = useFormValidator<
+    ReturnTypeFromUseAbsentRequests & { dateOfAbsence: [Dayjs, Dayjs] }
+  >();
 
   const absentRequestFormResolver = resolver({
     attendanceCode: rules.required(),
   });
 
   const handleEdit = (
-    { attendanceCode, parentNote }: ReturnTypeFromUseAbsentRequests,
+    {
+      attendanceCode,
+      parentNote,
+      dateOfAbsence,
+    }: ReturnTypeFromUseAbsentRequests & { dateOfAbsence: [Dayjs, Dayjs] },
     onSuccess: () => void
   ) => {
     if (initialAbsentRequestState) {
+      const [from, to] = dateOfAbsence;
       createOrUpdateAbsentRequestMutation(
         [
           {
@@ -201,6 +222,8 @@ export const ViewAbsentRequestModal = ({
               attendanceCode?.id ??
               initialAbsentRequestState?.attendanceCode?.id,
             parentNote,
+            from: from.format('YYYY-MM-DDThh:mm:ss'),
+            to: to.format('YYYY-MM-DDThh:mm:ss'),
           },
         ],
         { onSuccess }
