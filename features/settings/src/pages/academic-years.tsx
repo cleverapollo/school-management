@@ -39,7 +39,6 @@ const getColumns = (
     headerName: t('common:name'),
     field: 'name',
     lockVisible: true,
-    editable: true,
     sort: 'desc',
   },
   {
