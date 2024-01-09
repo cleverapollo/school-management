@@ -10,6 +10,7 @@ import {
   PaymentMethod,
   PaymentStatus,
   isProd,
+  queryClient,
 } from '@tyro/api';
 import { Divider, Stack, Typography } from '@mui/material';
 import { useCallback, useEffect, useMemo } from 'react';
@@ -18,6 +19,7 @@ import { usePreferredNameLayout, useToast } from '@tyro/core';
 import { getPaymentSecret } from '../../../api/create-payment-secret';
 import { usePayFeesSettings } from './store';
 import { useServiceCharge } from '../../../api/service-charge';
+import { feeKeys } from '../../../api/keys';
 
 const stripeKey = isProd
   ? 'pk_live_51MWMNZDT811pK8VEu73qKj1NacjbFiZ3lqpIQTnrAViF6zz69eV9Tz9unuRiDBe5hctXIw3ju5AtmaZ8AkVdAIXV00112GPYBe'
@@ -32,13 +34,8 @@ function CardCheckoutForm({ paymentInput }: PayFeesModalProps) {
   const stripe = useStripe();
   const elements = useElements();
   const { t } = useTranslation(['fees']);
-  const {
-    setNextAction,
-    paymentsToPayAndMethod,
-    onClose,
-    setDisableConfirm,
-    disableConfirm,
-  } = usePayFeesSettings();
+  const { setNextAction, onClose, setDisableConfirm, setIsSubmitting } =
+    usePayFeesSettings();
   const { formatCurrency } = useFormatNumber();
   const { toast } = useToast();
 
@@ -62,6 +59,7 @@ function CardCheckoutForm({ paymentInput }: PayFeesModalProps) {
     }
 
     try {
+      setIsSubmitting(true);
       const { fees_createPayment: feesCreatePayment } = await getPaymentSecret(
         paymentInput
       );
@@ -85,14 +83,20 @@ function CardCheckoutForm({ paymentInput }: PayFeesModalProps) {
 
       if (error) {
         toast(error.message, { variant: 'error' });
+        setIsSubmitting(false);
       } else {
-        toast(t('fees:paymentSuccessful'));
-        onClose();
+        setTimeout(async () => {
+          await queryClient.invalidateQueries(feeKeys.all);
+          toast(t('fees:paymentSuccessful'));
+          onClose();
+          setIsSubmitting(false);
+        }, 5000);
       }
     } catch (error) {
       toast(t('fees:paymentUnsuccessful'), { variant: 'error' });
+      setIsSubmitting(false);
     }
-  }, [stripe, elements, paymentInput, toast]);
+  }, [stripe, elements, paymentInput, toast, setIsSubmitting]);
 
   useEffect(() => {
     setDisableConfirm(!stripe || !elements);
@@ -120,7 +124,7 @@ function CardCheckoutForm({ paymentInput }: PayFeesModalProps) {
 
 function CashCheckoutForm({ paymentInput }: PayFeesModalProps) {
   const { t } = useTranslation(['common', 'fees']);
-  const { setNextAction, paymentsToPayAndMethod, onClose } =
+  const { setNextAction, paymentsToPayAndMethod, onClose, setIsSubmitting } =
     usePayFeesSettings();
   const { displayName } = usePreferredNameLayout();
   const { formatCurrency } = useFormatNumber();
@@ -128,10 +132,17 @@ function CashCheckoutForm({ paymentInput }: PayFeesModalProps) {
 
   const handleSubmit = useCallback(async () => {
     try {
+      setIsSubmitting(true);
       await getPaymentSecret(paymentInput);
-      toast(t('fees:paymentSuccessful'));
-      onClose();
+
+      setTimeout(async () => {
+        await queryClient.invalidateQueries(feeKeys.all);
+        toast(t('fees:paymentSuccessful'));
+        onClose();
+        setIsSubmitting(false);
+      }, 5000);
     } catch (error) {
+      setIsSubmitting(false);
       toast(t('fees:paymentUnsuccessful'), { variant: 'error' });
     }
   }, [paymentInput]);

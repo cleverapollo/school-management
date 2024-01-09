@@ -19,6 +19,7 @@
   "partialPayment": "Partial payment",
   "partial": "Partial",
   "paymentType": "Payment type",
+  "feeName": "Fee name",
   "discountsType": {
     "FIXED": "Fixed",
     "PERCENTAGE": "Percentage"

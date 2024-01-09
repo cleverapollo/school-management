@@ -18,7 +18,7 @@ export function PayFeesModal({ open, onClose, feesToPay }: PayFeesModalProps) {
 
   return (
     <PayFeesSettingsProvider open={open} onClose={onClose}>
-      {({ step, nextAction, previousStep, disableConfirm }) => (
+      {({ step, nextAction, previousStep, disableConfirm, isSubmitting }) => (
         <Dialog
           open={open}
           onClose={onClose}
@@ -46,6 +46,7 @@ export function PayFeesModal({ open, onClose, feesToPay }: PayFeesModalProps) {
             </Button>
 
             <LoadingButton
+              loading={isSubmitting}
               type="submit"
               variant="contained"
               onClick={nextAction}
