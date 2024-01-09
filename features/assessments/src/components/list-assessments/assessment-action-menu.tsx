@@ -17,7 +17,7 @@ import {
 import { getAssessmentSubjectGroupsLink } from '../../utils/get-assessment-subject-groups-link';
 import { PublishAssessmentModal } from './publish-assessment-modal';
 import { ReturnTypeFromUseAssessments } from '../../api/assessments';
-import { usePublishUnpublishAssessment } from '../../api/publish-assessments';
+import { usePublishAssessmentBasedOnType } from '../../api/publish-assessments';
 
 type AssessmentActionMenuProps = {
   id: ReturnTypeFromUseAssessments['id'];
@@ -48,7 +48,7 @@ export const AssessmentActionMenu = ({
   );
 
   const isTermAssessment = assessmentType === AssessmentType.Term;
-  const { unpublish } = usePublishUnpublishAssessment(id, isTermAssessment);
+  const { unpublish } = usePublishAssessmentBasedOnType(id, isTermAssessment);
 
   return (
     <>

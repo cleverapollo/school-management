@@ -88,7 +88,7 @@ async function getSubjectGroupIds(
   return subjectGroupIds;
 }
 
-export function usePublishUnpublishAssessment(
+export function usePublishAssessmentBasedOnType(
   id: number,
   isTermAssessment: boolean
 ) {

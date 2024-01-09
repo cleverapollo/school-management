@@ -13,7 +13,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { ReturnTypeFromUseAssessments } from '../../api/assessments';
-import { usePublishUnpublishAssessment } from '../../api/publish-assessments';
+import { usePublishAssessmentBasedOnType } from '../../api/publish-assessments';
 
 interface PublishAssessmentModalProps {
   assessmentId: number;
@@ -48,7 +48,7 @@ export function PublishAssessmentModal({
   });
 
   const { publish, isSubmitting, isSubmittingStateCba } =
-    usePublishUnpublishAssessment(assessmentId, isTermAssessment);
+    usePublishAssessmentBasedOnType(assessmentId, isTermAssessment);
 
   const onSubmit = handleSubmit(({ publishDate }) => {
     publish(publishDate, onClose);
