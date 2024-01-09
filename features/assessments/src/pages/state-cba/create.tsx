@@ -12,7 +12,6 @@ import { ErrorMessageModal } from '../../components/state-cba/error-message-moda
 
 export default function CreateStateCbaPage() {
   const [errorResponse, setErrorResponse] = useState<string | null>(null);
-  const [errorResponseOne, setErrorResponseOne] = useState<string | null>(null);
 
   const { toast } = useToast();
 
@@ -54,14 +53,12 @@ export default function CreateStateCbaPage() {
           }}
           onErrorModalOpen={onErrorModalOpen}
           setErrorResponse={setErrorResponse}
-          setErrorResponseOne={setErrorResponseOne}
         />
       </PageContainer>
       <ErrorMessageModal
         isOpen={isErrorModalOpen}
         onClose={onCloseErrorModal}
         assessmentId={errorResponse}
-        errorResponseOne={errorResponseOne}
       />
     </>
   );

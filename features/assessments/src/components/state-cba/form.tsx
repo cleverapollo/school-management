@@ -57,7 +57,6 @@ type StateCbaFormProps = {
   onError: () => void;
   onErrorModalOpen?: () => void;
   setErrorResponse?: React.Dispatch<React.SetStateAction<string | null>>;
-  setErrorResponseOne?: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 const stateCBATypeOptions = [StateCbaType.Cba_1, StateCbaType.Cba_2];
@@ -69,7 +68,6 @@ export function StateCbaForm({
   onError,
   onErrorModalOpen,
   setErrorResponse,
-  setErrorResponseOne,
 }: StateCbaFormProps) {
   const navigate = useNavigate();
   const { t } = useTranslation(['assessments', 'common']);
@@ -209,9 +207,6 @@ export function StateCbaForm({
                   backendError.response.error
                 ) as ParsedErrorDetail;
                 errorMessage = parsedError.detail || errorMessage;
-                if (setErrorResponseOne) {
-                  setErrorResponseOne(errorMessage);
-                }
               } catch (parseError) {
                 console.error(parseError);
               }
