@@ -325,7 +325,10 @@ export const ViewAbsentRequestModal = ({
               onClick={onOpenDeclineAbsentRequestModal}
               disabled={
                 initialAbsentRequestState?.status ===
-                  ParentalAttendanceRequestStatus.Denied || isEditing
+                  ParentalAttendanceRequestStatus.Denied ||
+                initialAbsentRequestState?.status ===
+                  ParentalAttendanceRequestStatus.Approved ||
+                isEditing
               }
             >
               {t('common:actions.decline')}
