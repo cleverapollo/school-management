@@ -8,26 +8,31 @@ import {
   TablePersonAvatar,
   ReturnTypeDisplayName,
   usePreferredNameLayout,
+  useDebouncedValue,
+  ActionMenu,
 } from '@tyro/core';
 import { TFunction, useTranslation, useFormatNumber } from '@tyro/i18n';
-import { useDeferredValue, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Box, Button } from '@mui/material';
-import { AddIcon } from '@tyro/icons';
+import { AddIcon, EditIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
 import { DiscountType } from '@tyro/api';
 import { ReturnTypeFromUseDiscounts, useDiscounts } from '../api/discounts';
 import {
   UpsertDiscountModal,
   UpsertDiscountModalProps,
 } from '../components/discounts/upsert-discount-modal';
+import { DeleteDiscountConfirmModal } from '../components/discounts/delete-discount-confirm-modal';
 
 dayjs.extend(LocalizedFormat);
 
 const getColumnDefs = (
   t: TFunction<('fees' | 'common')[]>,
   displayName: ReturnTypeDisplayName,
-  formatCurrency: ReturnType<typeof useFormatNumber>['formatCurrency']
+  formatCurrency: ReturnType<typeof useFormatNumber>['formatCurrency'],
+  onClickEdit: Dispatch<SetStateAction<UpsertDiscountModalProps['value']>>,
+  onClickDelete: Dispatch<SetStateAction<ReturnTypeFromUseDiscounts | null>>
 ): GridOptions<ReturnTypeFromUseDiscounts>['columnDefs'] => [
   {
     field: 'name',
@@ -36,6 +41,7 @@ const getColumnDefs = (
   {
     field: 'description',
     headerName: t('common:description'),
+    valueFormatter: ({ data }) => data?.description || '-',
   },
   {
     field: 'discountType',
@@ -54,7 +60,7 @@ const getColumnDefs = (
         return formatCurrency(value);
       }
 
-      return `%${value}`;
+      return `${value}%`;
     },
   },
   {
@@ -86,9 +92,29 @@ const getColumnDefs = (
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseDiscounts>) =>
       data?.createdBy ? <TablePersonAvatar person={data?.createdBy} /> : '-',
   },
+  {
+    suppressColumnsToolPanel: true,
+    cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseDiscounts>) =>
+      data && (
+        <ActionMenu
+          iconOnly
+          buttonIcon={<VerticalDotsIcon />}
+          menuItems={[
+            {
+              label: t('common:actions.edit'),
+              icon: <EditIcon />,
+              onClick: () => onClickEdit(data),
+            },
+            {
+              label: t('common:actions.delete'),
+              icon: <TrashIcon />,
+              onClick: () => onClickDelete(data),
+            },
+          ]}
+        />
+      ),
+  },
 ];
-
-type DiscountValue = UpsertDiscountModalProps['value'];
 
 export default function DiscountsPage() {
   const { t } = useTranslation(['common', 'navigation', 'fees']);
@@ -98,12 +124,27 @@ export default function DiscountsPage() {
 
   const { data: discountsData } = useDiscounts({});
 
-  const [discount, setDiscount] = useState<DiscountValue>(null);
-  const deferredDiscount = useDeferredValue(discount);
+  const {
+    value: discountToEdit,
+    debouncedValue: debouncedDiscountToEdit,
+    setValue: setDiscountToEdit,
+  } = useDebouncedValue<UpsertDiscountModalProps['value']>({
+    defaultValue: null,
+  });
+
+  const [discountToDelete, setDiscountToDelete] =
+    useState<ReturnTypeFromUseDiscounts | null>(null);
 
   const columnDefs = useMemo(
-    () => getColumnDefs(t, displayName, formatCurrency),
-    [t, displayName, formatCurrency]
+    () =>
+      getColumnDefs(
+        t,
+        displayName,
+        formatCurrency,
+        setDiscountToEdit,
+        setDiscountToDelete
+      ),
+    [t, displayName, formatCurrency, setDiscountToEdit, setDiscountToDelete]
   );
 
   return (
@@ -116,7 +157,7 @@ export default function DiscountsPage() {
             <Button
               variant="contained"
               startIcon={<AddIcon />}
-              onClick={() => setDiscount({})}
+              onClick={() => setDiscountToEdit({})}
             >
               {t('fees:createDiscount')}
             </Button>
@@ -129,9 +170,14 @@ export default function DiscountsPage() {
         getRowId={({ data }) => String(data?.id)}
       />
       <UpsertDiscountModal
-        value={discount}
-        open={!!deferredDiscount}
-        onClose={() => setDiscount(null)}
+        open={!!discountToEdit}
+        value={discountToEdit || debouncedDiscountToEdit}
+        onClose={() => setDiscountToEdit(null)}
+      />
+      <DeleteDiscountConfirmModal
+        open={!!discountToDelete}
+        discountToDelete={discountToDelete!}
+        onClose={() => setDiscountToDelete(null)}
       />
     </PageContainer>
   );
