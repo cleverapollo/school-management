@@ -1,9 +1,9 @@
 import { Box, Button, Fade } from '@mui/material';
 import {
-  SearchType,
   PermissionUtils,
   SmsRecipientType,
   usePermissions,
+  RecipientSearchType,
 } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -27,7 +27,7 @@ import {
   VerticalDotsIcon,
 } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { SendMailModal } from '@tyro/mail';
+import { useMailSettings } from '@tyro/mail';
 import { Link } from 'react-router-dom';
 import {
   useCustomGroups,
@@ -109,6 +109,7 @@ export default function CustomGroups() {
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
+  const { sendMailToParties } = useMailSettings();
   const [deleteGroupIds, setDeleteGroupIds] = useState<number[] | null>();
   const { isStaffUser, hasPermission } = usePermissions();
   const { data: customGroupData } = useCustomGroups();
@@ -117,12 +118,6 @@ export default function CustomGroups() {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
-  } = useDisclosure();
-
-  const {
-    isOpen: isSendMailOpen,
-    onOpen: onOpenSendMail,
-    onClose: onCloseSendMail,
   } = useDisclosure();
 
   const showEditAction = hasPermission(
@@ -146,7 +141,31 @@ export default function CustomGroups() {
       {
         label: t('mail:sendMail'),
         icon: <SendMailIcon />,
-        onClick: onOpenSendMail,
+        onClick: () => {
+          sendMailToParties(
+            selectedGroups.map(({ id }) => id),
+            [
+              {
+                label: t('mail:contactInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupContact,
+              },
+              {
+                label: t('mail:studentInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupStudent,
+              },
+              {
+                label: t('mail:staffInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupStaff,
+              },
+            ]
+          );
+        },
       },
       {
         label: t('groups:deleteCustomGroups'),
@@ -163,7 +182,7 @@ export default function CustomGroups() {
           ),
       },
     ],
-    [selectedGroups, onOpenSendSms, onOpenSendMail]
+    [selectedGroups, onOpenSendSms, sendMailToParties, t]
   );
 
   return (
@@ -231,31 +250,6 @@ export default function CustomGroups() {
       <DeleteCustomGroupsModal
         groupIds={deleteGroupIds}
         onClose={() => setDeleteGroupIds(null)}
-      />
-      <SendMailModal
-        isOpen={isSendMailOpen}
-        onClose={onCloseSendMail}
-        recipients={selectedGroups}
-        possibleRecipientTypes={[
-          {
-            label: t('mail:contactInGroup', {
-              count: selectedGroups.length,
-            }),
-            type: SearchType.GeneralGroupContact,
-          },
-          {
-            label: t('mail:studentInGroup', {
-              count: selectedGroups.length,
-            }),
-            type: SearchType.GeneralGroupStudent,
-          },
-          {
-            label: t('mail:staffInGroup', {
-              count: selectedGroups.length,
-            }),
-            type: SearchType.GeneralGroupStaff,
-          },
-        ]}
       />
     </>
   );

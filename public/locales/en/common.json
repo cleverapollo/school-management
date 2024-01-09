@@ -45,12 +45,13 @@
     "publishedOnline": "Published online"
   },
   "relationshipType": {
+    "AGENT": "Agent",
     "AUNTY": "Aunty",
     "FAMILY_FRIEND": "Family friend",
+    "FATHER": "Father",
     "GRAND_FATHER": "Grandfather",
     "GRAND_MOTHER": "Grandmother",
     "MOTHER": "Mother",
-    "FATHER": "Father",
     "NEIGHBOUR": "Neighbour",
     "OTHER": "Other",
     "SIBLING": "Sibling",

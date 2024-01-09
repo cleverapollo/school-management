@@ -1,4 +1,9 @@
-import { LabelFilter, MailFilter, UnreadCountFilter } from '@tyro/api';
+import {
+  LabelFilter,
+  MailFilter,
+  UnreadCountFilter,
+  RecipientFilter,
+} from '@tyro/api';
 
 export const mailKeys = {
   all: ['mail'] as const,
@@ -10,4 +15,6 @@ export const mailKeys = {
   filteredUnreadCount: (filter: UnreadCountFilter) =>
     [...mailKeys.unreadCounts(), filter] as const,
   search: (query: string) => [...mailKeys.all, 'search', query] as const,
+  resolveRecipients: (filter: RecipientFilter) =>
+    [...mailKeys.all, 'resolveMailRecipients', filter] as const,
 };

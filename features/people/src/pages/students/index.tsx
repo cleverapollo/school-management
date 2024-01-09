@@ -20,8 +20,12 @@ import {
   PrinterIcon,
 } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { getPersonProfileLink, SearchType, SmsRecipientType } from '@tyro/api';
-import { SendMailModal } from '@tyro/mail';
+import {
+  getPersonProfileLink,
+  RecipientSearchType,
+  SmsRecipientType,
+} from '@tyro/api';
+import { useMailSettings } from '@tyro/mail';
 import dayjs from 'dayjs';
 import {
   useBulkUpdateCoreStudent,
@@ -174,6 +178,7 @@ export default function StudentsListPage() {
 
   const { data: students } = useStudents();
   const { mutateAsync: bulkSaveStudents } = useBulkUpdateCoreStudent();
+  const { sendMailToParties } = useMailSettings();
 
   const {
     isOpen: isSendSmsOpen,
@@ -185,12 +190,6 @@ export default function StudentsListPage() {
     isOpen: isBulkPrintOpen,
     onOpen: onOpenBulkPrint,
     onClose: onCloseBulkPrint,
-  } = useDisclosure();
-
-  const {
-    isOpen: isSendMailOpen,
-    onOpen: onOpenSendMail,
-    onClose: onCloseSendMail,
   } = useDisclosure();
 
   const {
@@ -244,7 +243,19 @@ export default function StudentsListPage() {
                       {
                         label: t('mail:sendMail'),
                         icon: <SendMailIcon />,
-                        onClick: onOpenSendMail,
+                        onClick: () => {
+                          sendMailToParties(
+                            selectedStudents.map(({ id }) => id),
+                            [
+                              {
+                                label: t('mail:contactsOfStudent', {
+                                  count: selectedStudents.length,
+                                }),
+                                type: RecipientSearchType.Student,
+                              },
+                            ]
+                          );
+                        },
                       },
                       {
                         label: t('people:changeProgrammeYear'),
@@ -313,19 +324,6 @@ export default function StudentsListPage() {
               count: selectedStudents.length,
             }),
             type: SmsRecipientType.StudentTeachers,
-          },
-        ]}
-      />
-      <SendMailModal
-        isOpen={isSendMailOpen}
-        onClose={onCloseSendMail}
-        recipients={selectedStudents}
-        possibleRecipientTypes={[
-          {
-            label: t('mail:contactsOfStudent', {
-              count: selectedStudents.length,
-            }),
-            type: SearchType.Student,
           },
         ]}
       />

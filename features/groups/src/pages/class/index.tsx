@@ -1,7 +1,7 @@
 import { Box, Fade } from '@mui/material';
 import {
   PermissionUtils,
-  SearchType,
+  RecipientSearchType,
   SmsRecipientType,
   UpdateClassGroupGroupInput,
   usePermissions,
@@ -25,7 +25,7 @@ import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { MobileIcon, PrinterIcon, SendMailIcon } from '@tyro/icons';
 import { TableStaffAutocomplete } from '@tyro/people';
 import set from 'lodash/set';
-import { SendMailModal } from '@tyro/mail';
+import { useMailSettings } from '@tyro/mail';
 import {
   useClassGroups,
   ReturnTypeFromUseClassGroups,
@@ -124,17 +124,12 @@ export default function ClassGroupsPage() {
   const { isStaffUser } = usePermissions();
   const { data: classGroupData } = useClassGroups();
   const { mutateAsync: updateClassGroup } = useSaveClassGroupEdits();
+  const { sendMailToParties } = useMailSettings();
   const showActionMenu = isStaffUser && selectedGroups.length > 0;
   const {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
-  } = useDisclosure();
-
-  const {
-    isOpen: isSendMailOpen,
-    onOpen: onOpenSendMail,
-    onClose: onCloseSendMail,
   } = useDisclosure();
 
   const classGroupColumns = useMemo(
@@ -152,7 +147,31 @@ export default function ClassGroupsPage() {
       {
         label: t('mail:sendMail'),
         icon: <SendMailIcon />,
-        onClick: onOpenSendMail,
+        onClick: () => {
+          sendMailToParties(
+            selectedGroups.map(({ id }) => id),
+            [
+              {
+                label: t('mail:contactInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupContact,
+              },
+              {
+                label: t('mail:studentInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupStudent,
+              },
+              {
+                label: t('mail:staffInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupStaff,
+              },
+            ]
+          );
+        },
       },
       {
         label: t('groups:printGroupMembers'),
@@ -164,7 +183,7 @@ export default function ClassGroupsPage() {
           ),
       },
     ],
-    [selectedGroups, onOpenSendSms, onOpenSendMail]
+    [selectedGroups, onOpenSendSms, t, sendMailToParties]
   );
 
   const handleBulkSave = (
@@ -249,31 +268,6 @@ export default function ClassGroupsPage() {
               count: selectedGroups.length,
             }),
             type: SmsRecipientType.ClassGroupStaff,
-          },
-        ]}
-      />
-      <SendMailModal
-        isOpen={isSendMailOpen}
-        onClose={onCloseSendMail}
-        recipients={selectedGroups}
-        possibleRecipientTypes={[
-          {
-            label: t('mail:contactInGroup', {
-              count: selectedGroups.length,
-            }),
-            type: SearchType.GeneralGroupContact,
-          },
-          {
-            label: t('mail:studentInGroup', {
-              count: selectedGroups.length,
-            }),
-            type: SearchType.GeneralGroupStudent,
-          },
-          {
-            label: t('mail:staffInGroup', {
-              count: selectedGroups.length,
-            }),
-            type: SearchType.GeneralGroupStaff,
           },
         ]}
       />

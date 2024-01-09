@@ -1,7 +1,7 @@
 import { Box, Fade } from '@mui/material';
 import {
   PermissionUtils,
-  SearchType,
+  RecipientSearchType,
   SmsRecipientType,
   SubjectGroupType,
   SubjectUsage,
@@ -36,7 +36,7 @@ import {
 import { set } from 'lodash';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { CatalogueSubjectOption, useCatalogueSubjects } from '@tyro/settings';
-import { SendMailModal } from '@tyro/mail';
+import { useMailSettings } from '@tyro/mail';
 import {
   useSaveSupportGroupEdits,
   useSupportGroups,
@@ -140,6 +140,7 @@ export default function SupportGroups() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
   const { displayNames } = usePreferredNameLayout();
   const { data: subjectGroupsData } = useSupportGroups();
+  const { sendMailToParties } = useMailSettings();
   const { data: subjects } = useCatalogueSubjects({
     filterUsage: SubjectUsage.All,
   });
@@ -158,12 +159,6 @@ export default function SupportGroups() {
     onClose: onCloseSendSms,
   } = useDisclosure();
 
-  const {
-    isOpen: isSendMailOpen,
-    onOpen: onOpenSendMail,
-    onClose: onCloseSendMail,
-  } = useDisclosure();
-
   const studentColumns = useMemo(
     () => getSubjectGroupsColumns(t, displayNames, subjects),
     [t, displayNames, subjects]
@@ -179,7 +174,31 @@ export default function SupportGroups() {
       {
         label: t('mail:sendMail'),
         icon: <SendMailIcon />,
-        onClick: onOpenSendMail,
+        onClick: () => {
+          sendMailToParties(
+            selectedGroups.map(({ id }) => id),
+            [
+              {
+                label: t('mail:contactInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupContact,
+              },
+              {
+                label: t('mail:studentInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupStudent,
+              },
+              {
+                label: t('mail:staffInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupStaff,
+              },
+            ]
+          );
+        },
       },
       {
         label: t('groups:supportGroup.switchToSubjectGroup.action'),
@@ -198,7 +217,7 @@ export default function SupportGroups() {
           ),
       },
     ],
-    [selectedGroups, onOpenSendSms, onOpenSendMail]
+    [selectedGroups, onOpenSendSms, sendMailToParties, t]
   );
 
   const handleBulkSave = (
@@ -284,32 +303,6 @@ export default function SupportGroups() {
               count: selectedGroups.length,
             }),
             type: SmsRecipientType.GeneralGroupStaff,
-          },
-        ]}
-      />
-
-      <SendMailModal
-        isOpen={isSendMailOpen}
-        onClose={onCloseSendMail}
-        recipients={selectedGroups}
-        possibleRecipientTypes={[
-          {
-            label: t('mail:contactInGroup', {
-              count: selectedGroups.length,
-            }),
-            type: SearchType.GeneralGroupContact,
-          },
-          {
-            label: t('mail:studentInGroup', {
-              count: selectedGroups.length,
-            }),
-            type: SearchType.GeneralGroupStudent,
-          },
-          {
-            label: t('mail:staffInGroup', {
-              count: selectedGroups.length,
-            }),
-            type: SearchType.GeneralGroupStaff,
           },
         ]}
       />
