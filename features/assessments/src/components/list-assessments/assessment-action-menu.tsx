@@ -97,7 +97,9 @@ export const AssessmentActionMenu = ({
                         onClick: unpublish,
                         hasAccess: () =>
                           isTermAssessment
-                            ? hasPermission('ps:1:term_publish_to_parents')
+                            ? hasPermission(
+                                'ps:1:assessment:term_publish_to_parents'
+                              )
                             : hasPermission(
                                 'ps:1:assessment:cba_publish_to_parents'
                               ),
@@ -110,9 +112,11 @@ export const AssessmentActionMenu = ({
                         onClick: onOpen,
                         hasAccess: () =>
                           isTermAssessment
-                            ? hasPermission('ps:1:term_publish_to_parents')
-                            : hasPermission(
+                            ? hasPermission(
                                 'ps:1:assessment:cba_publish_to_parents'
+                              )
+                            : hasPermission(
+                                'ps:1:assessment:term_publish_to_parents'
                               ),
                       },
                     ],
