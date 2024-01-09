@@ -79,6 +79,11 @@
     padding: 4px !important;
   }
 
+  td:nth-of-type(2),
+  th:nth-of-type(2) {
+    display: none !important;
+  }
+
 
 
   .MuiContainer-root>.MuiStack-root {
