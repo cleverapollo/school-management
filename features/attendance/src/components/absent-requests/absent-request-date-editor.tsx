@@ -64,6 +64,20 @@ export const AbsentRequestDateEditor = <TField extends FieldValues>({
           gap={2}
           mt={1}
         >
+          <DatePicker
+            value={startDate ?? null}
+            onChange={(newStartDate) => {
+              const newDate = newStartDate?.format('YYYY-MM-DD');
+              if (newDate) {
+                const startTime = startDate?.format('HH:mm:ss');
+                const endTime = endDate?.format('HH:mm:ss');
+                onChange([
+                  dayjs(`${newDate}T${startTime}`),
+                  dayjs(`${newDate}T${endTime}`),
+                ]);
+              }
+            }}
+          />
           <TimePicker
             label={t('common:from')}
             value={startDate ?? null}

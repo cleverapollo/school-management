@@ -19,6 +19,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { LoadingButton } from '@mui/lab';
 import { StudentAvatar } from '@tyro/people';
+import { useState } from 'react';
 import { DeclineAbsentRequestConfirmModal } from './decline-absent-request-confirm-modal';
 import { ApproveAbsentRequestConfirmModal } from './approve-absent-request-confirm-modal';
 import {
@@ -156,6 +157,7 @@ export const ViewAbsentRequestModal = ({
   isContact,
 }: ViewAbsentRequestModalProps) => {
   const { t } = useTranslation(['common', 'attendance']);
+  const [isEditing, setIsEditing] = useState(false);
 
   const { data: attendanceCodes } = useAttendanceCodes(
     isContact
@@ -222,11 +224,16 @@ export const ViewAbsentRequestModal = ({
               attendanceCode?.id ??
               initialAbsentRequestState?.attendanceCode?.id,
             parentNote,
-            from: from.format('YYYY-MM-DDThh:mm:ss'),
-            to: to.format('YYYY-MM-DDThh:mm:ss'),
+            from: from.format('YYYY-MM-DDTHH:mm:ss'),
+            to: to.format('YYYY-MM-DDTHH:mm:ss'),
           },
         ],
-        { onSuccess }
+        {
+          onSuccess: () => {
+            onSuccess();
+            setIsEditing(false);
+          },
+        }
       );
     }
   };
@@ -276,10 +283,13 @@ export const ViewAbsentRequestModal = ({
             isContact
               ? initialAbsentRequestState?.status ===
                   ParentalAttendanceRequestStatus.Pending && isBeforeAbsentDate
-              : true
+              : initialAbsentRequestState?.status !==
+                ParentalAttendanceRequestStatus.Approved
           }
           fields={absentRequestDataWithLabels}
           resolver={absentRequestFormResolver}
+          onEdit={() => setIsEditing(true)}
+          onCancel={() => setIsEditing(false)}
           onSave={handleEdit}
           sx={{ mx: -3 }}
           hideBorder
@@ -315,7 +325,7 @@ export const ViewAbsentRequestModal = ({
               onClick={onOpenDeclineAbsentRequestModal}
               disabled={
                 initialAbsentRequestState?.status ===
-                ParentalAttendanceRequestStatus.Denied
+                  ParentalAttendanceRequestStatus.Denied || isEditing
               }
             >
               {t('common:actions.decline')}
@@ -326,7 +336,7 @@ export const ViewAbsentRequestModal = ({
               color="primary"
               disabled={
                 initialAbsentRequestState?.status ===
-                ParentalAttendanceRequestStatus.Approved
+                  ParentalAttendanceRequestStatus.Approved || isEditing
               }
             >
               {t('common:actions.approve')}
