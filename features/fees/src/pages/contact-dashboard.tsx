@@ -50,6 +50,7 @@ const getColumnDefs = (
   {
     field: 'dueDate',
     headerName: t('fees:dueDate'),
+    valueGetter: ({ data }) => dayjs(data?.dueDate).format('L'),
   },
   {
     field: 'amount',

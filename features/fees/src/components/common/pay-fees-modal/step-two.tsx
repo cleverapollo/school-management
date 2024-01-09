@@ -5,17 +5,24 @@ import {
   useStripe,
 } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { MakePaymentInput, PaymentMethod, PaymentStatus } from '@tyro/api';
+import {
+  MakePaymentInput,
+  PaymentMethod,
+  PaymentStatus,
+  isProd,
+} from '@tyro/api';
 import { Divider, Stack, Typography } from '@mui/material';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Trans, useFormatNumber, useTranslation } from '@tyro/i18n';
 import { usePreferredNameLayout, useToast } from '@tyro/core';
 import { getPaymentSecret } from '../../../api/create-payment-secret';
 import { usePayFeesSettings } from './store';
+import { useServiceCharge } from '../../../api/service-charge';
 
-const stripePromise = loadStripe(
-  'pk_test_51MWMNZDT811pK8VExdSBnjE9DgKkb7FO9yxEIBv5MHYPHoHDO9fw78GI0Leb2EPEHzJGvXxU1IPiHAXK1YqRJYzj003FYTtroQ'
-);
+const stripeKey = isProd
+  ? 'pk_live_51MWMNZDT811pK8VEu73qKj1NacjbFiZ3lqpIQTnrAViF6zz69eV9Tz9unuRiDBe5hctXIw3ju5AtmaZ8AkVdAIXV00112GPYBe'
+  : 'pk_test_51MWMNZDT811pK8VExdSBnjE9DgKkb7FO9yxEIBv5MHYPHoHDO9fw78GI0Leb2EPEHzJGvXxU1IPiHAXK1YqRJYzj003FYTtroQ';
+const stripePromise = loadStripe(stripeKey);
 
 interface PayFeesModalProps {
   paymentInput: MakePaymentInput;
@@ -34,6 +41,13 @@ function CardCheckoutForm({ paymentInput }: PayFeesModalProps) {
   } = usePayFeesSettings();
   const { formatCurrency } = useFormatNumber();
   const { toast } = useToast();
+
+  const { data: serviceCharge } = useServiceCharge({
+    charges: paymentInput.paymentAmounts.map(({ feeId, amount }) => ({
+      feeId,
+      amount,
+    })),
+  });
 
   const handleSubmit = useCallback(async () => {
     if (!stripe || !elements) {
@@ -95,7 +109,7 @@ function CardCheckoutForm({ paymentInput }: PayFeesModalProps) {
           {t('fees:totalPayingToday')}
         </Typography>
         <Typography variant="h5">
-          {formatCurrency(paymentsToPayAndMethod?.total ?? 0)}
+          {formatCurrency(serviceCharge?.amount ?? 0)}
         </Typography>
       </Stack>
       <Divider />
@@ -136,49 +150,61 @@ function CashCheckoutForm({ paymentInput }: PayFeesModalProps) {
           {formatCurrency(paymentsToPayAndMethod?.total ?? 0)}
         </Typography>
       </Stack>
-      <Divider />
-      <Typography variant="body1" color="slate.500">
-        {t('common:summary')}
-      </Typography>
-      <Stack>
-        {paymentsToPayAndMethod?.fees.map((fee) => {
-          const { feeName, person } = fee;
-          const studentName = displayName(person);
-          return (
-            <Stack
-              key={JSON.stringify(fee.id)}
-              direction="row"
-              justifyContent="space-between"
-            >
-              <Typography
-                variant="subtitle1"
-                component="span"
-                sx={{
-                  lineHeight: 1.2,
-                }}
+      <Stack
+        sx={{
+          backgroundColor: 'slate.100',
+          borderRadius: 2,
+          p: 1.5,
+        }}
+        spacing={2}
+      >
+        <Typography variant="body1" color="slate.500">
+          {t('common:summary')}
+        </Typography>
+        <Stack>
+          {paymentsToPayAndMethod?.fees.map((fee) => {
+            const { feeName, person } = fee;
+            const studentName = displayName(person);
+            return (
+              <Stack
+                key={JSON.stringify(fee.id)}
+                direction="row"
+                justifyContent="space-between"
               >
-                <Trans ns="fees" i18nKey="feeNameForStudent">
-                  {{ feeName }}
-                  <br />
-                  <Typography
-                    variant="body2"
-                    component="span"
-                    color="text.secondary"
-                  >
-                    <>for {{ studentName }}</>
-                  </Typography>
-                </Trans>
-              </Typography>
+                <Typography
+                  variant="subtitle1"
+                  component="span"
+                  sx={{
+                    lineHeight: 1.2,
+                  }}
+                >
+                  <Trans ns="fees" i18nKey="feeNameForStudent">
+                    {{ feeName }}
+                    <br />
+                    <Typography
+                      variant="body2"
+                      component="span"
+                      color="text.secondary"
+                    >
+                      <>for {{ studentName }}</>
+                    </Typography>
+                  </Trans>
+                </Typography>
 
-              <Typography>
-                {formatCurrency(fee.amountToPay)}{' '}
-                {t('fees:ofFeeAmount', {
-                  feeAmount: formatCurrency(fee.amount - fee.amountPaid),
-                })}
-              </Typography>
-            </Stack>
-          );
-        })}
+                {fee.amountToPay !== fee.amount ? (
+                  <Typography>
+                    {formatCurrency(fee.amountToPay)}{' '}
+                    {t('fees:ofFeeAmount', {
+                      feeAmount: formatCurrency(fee.amount - fee.amountPaid),
+                    })}
+                  </Typography>
+                ) : (
+                  <Typography>{formatCurrency(fee.amountToPay)}</Typography>
+                )}
+              </Stack>
+            );
+          })}
+        </Stack>
       </Stack>
     </Stack>
   );

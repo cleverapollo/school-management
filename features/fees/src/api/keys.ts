@@ -3,6 +3,7 @@ import {
   FeeFilter,
   CategoryFilter,
   StudentFeeFilter,
+  ChargesFilter,
 } from '@tyro/api';
 
 export const feeKeys = {
@@ -16,4 +17,6 @@ export const feeKeys = {
   feesCategories: (filter: CategoryFilter) =>
     [...feeKeys.all, 'feesCategories', filter] as const,
   debtors: (filter: FeeFilter) => [...feeKeys.all, 'debtors', filter] as const,
+  serviceCharge: (filter: ChargesFilter) =>
+    [...feeKeys.all, 'serviceCharge', filter] as const,
 };

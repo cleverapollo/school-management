@@ -27,7 +27,7 @@ export function PayFeesModal({ open, onClose, feesToPay }: PayFeesModalProps) {
           maxWidth="sm"
         >
           <DialogTitle onClose={onClose}>
-            {t('fees:payFee', { count: feesToPay.length })}
+            {t('fees:makePayment', { count: feesToPay.length })}
           </DialogTitle>
           <DialogContent>
             {step === 0 && <PayFeesStepOne feesToPay={feesToPay} />}

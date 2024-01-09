@@ -15,13 +15,17 @@
   "amountToPay_one": "Amount to pay",
   "amountToPay_other": "Amounts to pay",
   "payments": "Payments",
+  "payInFull": "Pay in full",
+  "partialPayment": "Partial payment",
+  "partial": "Partial",
+  "paymentType": "Payment type",
   "discountsType": {
     "FIXED": "Fixed",
     "PERCENTAGE": "Percentage"
   },
   "isSiblingDiscount": "Is it a sibling discount?",
-  "payFee_one": "Pay fee",
-  "payFee_other": "Pay fees",
+  "makePayment_one": "Make payment",
+  "makePayment_other": "Make payments",
   "paymentMethod": "Payment method",
   "paymentMethods": {
     "CARD": "Card",
