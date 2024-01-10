@@ -7,22 +7,20 @@ import {
   DialogActions,
   useFormValidator,
   RHFDatePicker,
-  useToast,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import dayjs, { Dayjs } from 'dayjs';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import {
-  ReturnTypeFromUseAssessments,
-  usePublishAssessment,
-} from '../../api/assessments';
+import { ReturnTypeFromUseAssessments } from '../../api/assessments';
+import { usePublishAssessmentBasedOnType } from '../../api/publish-assessments';
 
 interface PublishAssessmentModalProps {
   assessmentId: number;
   publishedFrom: ReturnTypeFromUseAssessments['publishedFrom'];
   open: boolean;
   onClose: () => void;
+  isTermAssessment: boolean;
 }
 
 interface PublishFormValues {
@@ -34,9 +32,9 @@ export function PublishAssessmentModal({
   publishedFrom,
   open,
   onClose,
+  isTermAssessment,
 }: PublishAssessmentModalProps) {
   const { t } = useTranslation(['common', 'assessments']);
-  const { toast } = useToast();
 
   const { resolver, rules } = useFormValidator<PublishFormValues>();
 
@@ -49,23 +47,11 @@ export function PublishAssessmentModal({
     },
   });
 
-  const { mutateAsync: publishAssessment, isLoading: isSubmitting } =
-    usePublishAssessment();
+  const { publish, isSubmitting, isSubmittingStateCba } =
+    usePublishAssessmentBasedOnType(assessmentId, isTermAssessment);
 
   const onSubmit = handleSubmit(({ publishDate }) => {
-    publishAssessment(
-      {
-        assessmentId,
-        publish: true,
-        publishFrom: publishDate.format('YYYY-MM-DD'),
-      },
-      {
-        onSuccess: () => {
-          onClose();
-          toast(t('common:snackbarMessages.updateSuccess'));
-        },
-      }
-    );
+    publish(publishDate, onClose);
   });
 
   useEffect(() => {
@@ -101,7 +87,7 @@ export function PublishAssessmentModal({
         </Button>
         <LoadingButton
           variant="contained"
-          loading={isSubmitting}
+          loading={isSubmitting || isSubmittingStateCba}
           onClick={onSubmit}
         >
           {t('assessments:publish')}
