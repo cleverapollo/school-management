@@ -1,5 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, SearchType, Context } from '@tyro/api';
+import {
+  gqlClient,
+  graphql,
+  SearchType,
+  Context,
+  SearchSource,
+} from '@tyro/api';
 import { useSearchFeatures } from '../hooks/use-search-features';
 
 const omniSearch = graphql(/* GraphQL */ `
@@ -27,6 +33,7 @@ export function useOmniSearch(query: string) {
         filter: {
           text: trimmedQuery,
           context: [Context.All],
+          source: SearchSource.TopLevel,
           includeSearchType: [
             SearchType.Student,
             SearchType.Staff,

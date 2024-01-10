@@ -2,4 +2,4 @@ export * from './emulate';
 export * from './clear-users-data';
 export * from './get-color-based-on-index';
 export * from './get-person-profile-link';
-export { msalInstance } from './msal-configs';
+export { msalInstance, isProd } from './msal-configs';
