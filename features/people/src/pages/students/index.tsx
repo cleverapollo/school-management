@@ -15,7 +15,11 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
 import { MobileIcon, CalendarEditPenIcon, PrinterIcon } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { getPersonProfileLink, SmsRecipientType } from '@tyro/api';
+import {
+  getPersonProfileLink,
+  SmsRecipientType,
+  usePermissions,
+} from '@tyro/api';
 import dayjs from 'dayjs';
 import {
   useBulkUpdateCoreStudent,
@@ -33,7 +37,8 @@ const getStudentColumns = (
     ('common' | 'people')[]
   >,
   displayName: ReturnTypeDisplayName,
-  displayNames: ReturnTypeDisplayNames
+  displayNames: ReturnTypeDisplayNames,
+  isStaffUser: boolean
 ): GridOptions<ReturnTypeFromUseStudents>['columnDefs'] => [
   {
     field: 'person',
@@ -52,9 +57,9 @@ const getStudentColumns = (
       ) : null,
     cellClass: 'cell-value-visible',
     sort: 'asc',
-    headerCheckboxSelection: true,
-    headerCheckboxSelectionFilteredOnly: true,
-    checkboxSelection: ({ data }) => Boolean(data),
+    headerCheckboxSelection: isStaffUser,
+    headerCheckboxSelectionFilteredOnly: isStaffUser,
+    checkboxSelection: isStaffUser ? ({ data }) => Boolean(data) : undefined,
     lockVisible: true,
     filter: true,
   },
@@ -163,6 +168,7 @@ const getStudentColumns = (
 export default function StudentsListPage() {
   const { t } = useTranslation(['common', 'people', 'sms']);
   const { displayName, displayNames } = usePreferredNameLayout();
+  const { isStaffUser } = usePermissions();
   const [selectedStudents, setSelectedStudents] =
     useState<RecipientsForSmsModal>([]);
 
@@ -188,8 +194,8 @@ export default function StudentsListPage() {
   } = useDisclosure();
 
   const studentColumns = useMemo(
-    () => getStudentColumns(t, displayName, displayNames),
-    [t, displayName, displayNames]
+    () => getStudentColumns(t, displayName, displayNames, isStaffUser),
+    [t, displayName, displayNames, isStaffUser]
   );
 
   return (
@@ -202,7 +208,7 @@ export default function StudentsListPage() {
           <Table
             rowData={students ?? []}
             columnDefs={studentColumns}
-            rowSelection="multiple"
+            rowSelection={isStaffUser ? 'multiple' : undefined}
             getRowId={({ data }) => String(data?.partyId)}
             onBulkSave={bulkSaveStudents}
             statusBar={{
@@ -216,7 +222,10 @@ export default function StudentsListPage() {
               ],
             }}
             rightAdornment={
-              <Fade in={selectedStudents.length > 0} unmountOnExit>
+              <Fade
+                in={isStaffUser && selectedStudents.length > 0}
+                unmountOnExit
+              >
                 <Box>
                   <ActionMenu
                     menuItems={[
