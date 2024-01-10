@@ -30,6 +30,8 @@ export type PayFeesSettingsContextValue = {
   >;
   disableConfirm: boolean;
   setDisableConfirm: Dispatch<SetStateAction<boolean>>;
+  isSubmitting: boolean;
+  setIsSubmitting: Dispatch<SetStateAction<boolean>>;
 };
 
 const PayFeesSettingsContext = createContext<
@@ -47,6 +49,7 @@ export function PayFeesSettingsProvider({
 }) {
   const [step, setStep] = useState(0);
   const [disableConfirm, setDisableConfirm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [nextAction, setNextAction] = useState<() => void>(() => {});
   const [paymentsToPayAndMethod, setPaymentsToPayAndMethod] = useState<
     PaymentsToPayAndMethod | undefined
@@ -72,6 +75,8 @@ export function PayFeesSettingsProvider({
       paymentsToPayAndMethod,
       disableConfirm,
       setDisableConfirm,
+      isSubmitting,
+      setIsSubmitting,
     }),
     [
       onClose,
@@ -84,6 +89,8 @@ export function PayFeesSettingsProvider({
       paymentsToPayAndMethod,
       disableConfirm,
       setDisableConfirm,
+      isSubmitting,
+      setIsSubmitting,
     ]
   );
 

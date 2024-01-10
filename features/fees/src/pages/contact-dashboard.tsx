@@ -48,8 +48,13 @@ const getColumnDefs = (
     },
   },
   {
+    field: 'feeName',
+    headerName: t('fees:feeName'),
+  },
+  {
     field: 'dueDate',
     headerName: t('fees:dueDate'),
+    valueGetter: ({ data }) => dayjs(data?.dueDate).format('L'),
   },
   {
     field: 'amount',
@@ -102,7 +107,7 @@ export default function ContactDashboard() {
           rowData={studentFees || []}
           columnDefs={columnDefs}
           rowSelection="multiple"
-          getRowId={({ data }) => String(data?.id)}
+          getRowId={({ data }) => String(data?.id?.feeId)}
           rightAdornment={
             <Fade in={selectedStudentFees.length > 0} unmountOnExit>
               <Button
