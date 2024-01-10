@@ -58,6 +58,7 @@ export function SelectMailRecipientTypeModal({
     setIsLoading(true);
     await onSubmit(settings?.partyIds ?? [], recipientTypes);
     setIsLoading(false);
+    reset();
   });
 
   return (

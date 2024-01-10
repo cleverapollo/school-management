@@ -442,6 +442,11 @@ export type BlockRotation = {
   subjectGroupIds: Array<Scalars['Long']>;
 };
 
+export type CalculateCaoPointsFilter = {
+  grade: Scalars['String'];
+  studyLevel: StudyLevel;
+};
+
 export type CalculateGradeFilter = {
   programmeShortName: Scalars['String'];
   result: Scalars['Int'];
@@ -2605,6 +2610,11 @@ export type Grade = {
   studyLevels?: Maybe<Array<Maybe<GradeSetStudyLevel>>>;
 };
 
+export type GradeFilter = {
+  programmeShortName: Scalars['String'];
+  studyLevel?: InputMaybe<StudyLevel>;
+};
+
 export type GradeSet = {
   __typename?: 'GradeSet';
   active: Scalars['Boolean'];
@@ -2639,6 +2649,12 @@ export enum GradeType {
   None = 'NONE',
   Percentage = 'PERCENTAGE'
 }
+
+export type Grades = {
+  __typename?: 'Grades';
+  grades: Array<Grade>;
+  studyLevel: StudyLevel;
+};
 
 export type Group = {
   __typename?: 'Group';
@@ -3892,6 +3908,7 @@ export type OverallComments = {
 
 export type OverallCommentsFilter = {
   assessmentId: Scalars['Long'];
+  subjectGroupIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   yearGroupEnrolmentId: Scalars['Long'];
 };
 
@@ -4553,6 +4570,7 @@ export type Query = {
   assessment_commentBank?: Maybe<Array<CommentBank>>;
   assessment_dashboardAssessment?: Maybe<Array<DashboardAssessment>>;
   assessment_gradeSet?: Maybe<Array<GradeSet>>;
+  assessment_grades?: Maybe<Array<Maybe<Grades>>>;
   assessment_overallComments?: Maybe<OverallComments>;
   assessment_studentResult: Array<AssessmentResult>;
   attendance_attendanceCodes: Array<AttendanceCode>;
@@ -4729,6 +4747,11 @@ export type QueryAssessment_DashboardAssessmentArgs = {
 
 export type QueryAssessment_GradeSetArgs = {
   filter?: InputMaybe<GradeSetFilter>;
+};
+
+
+export type QueryAssessment_GradesArgs = {
+  filter?: InputMaybe<GradeFilter>;
 };
 
 
@@ -5270,22 +5293,22 @@ export type RecipientInput = {
 };
 
 export enum RecipientSearchType {
+  ClassGroupTutors = 'CLASS_GROUP_TUTORS',
+  ClassGroupYearHeads = 'CLASS_GROUP_YEAR_HEADS',
   Contact = 'CONTACT',
-  CustomGroup = 'CUSTOM_GROUP',
-  GeneralGroup = 'GENERAL_GROUP',
   GeneralGroupContact = 'GENERAL_GROUP_CONTACT',
   GeneralGroupStaff = 'GENERAL_GROUP_STAFF',
   GeneralGroupStudent = 'GENERAL_GROUP_STUDENT',
-  Room = 'ROOM',
   Staff = 'STAFF',
   Student = 'STUDENT',
   StudentContacts = 'STUDENT_CONTACTS',
-  SubjectGroup = 'SUBJECT_GROUP',
+  StudentTeachers = 'STUDENT_TEACHERS',
   SubjectGroupContact = 'SUBJECT_GROUP_CONTACT',
   SubjectGroupStaff = 'SUBJECT_GROUP_STAFF',
   SubjectGroupStudent = 'SUBJECT_GROUP_STUDENT',
+  SubjectGroupTutors = 'SUBJECT_GROUP_TUTORS',
+  SubjectGroupYearHeads = 'SUBJECT_GROUP_YEAR_HEADS',
   YearGroupContact = 'YEAR_GROUP_CONTACT',
-  YearGroupEnrollment = 'YEAR_GROUP_ENROLLMENT',
   YearGroupStaff = 'YEAR_GROUP_STAFF',
   YearGroupStudent = 'YEAR_GROUP_STUDENT'
 }
@@ -5321,16 +5344,40 @@ export type Reporting_Colour = {
   shade: Scalars['Int'];
 };
 
+export type Reporting_GroupBy = {
+  __typename?: 'Reporting_GroupBy';
+  defaultValue: Scalars['String'];
+  values?: Maybe<Array<Maybe<Reporting_GroupByValue>>>;
+};
+
+export type Reporting_GroupByValue = {
+  __typename?: 'Reporting_GroupByValue';
+  description: Scalars['String'];
+  id: Scalars['String'];
+  name: Scalars['String'];
+};
+
+export enum Reporting_InteractiveCrosstab {
+  Grouping = 'GROUPING',
+  Metric = 'METRIC',
+  None = 'NONE',
+  TimeGrouping = 'TIME_GROUPING'
+}
+
 export enum Reporting_Pinned {
   Left = 'left',
   Right = 'right'
 }
 
 export type Reporting_ReportFilter = {
+  crosstab?: InputMaybe<Reporting_InteractiveCrosstab>;
   filters?: InputMaybe<Array<InputMaybe<Reporting_TableFilterInput>>>;
+  groupings?: InputMaybe<Array<Scalars['String']>>;
+  metric?: InputMaybe<Scalars['String']>;
   reportId: Scalars['String'];
   /**  list of fields ids to be returned in report. Returns default if null */
   showFields?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  timeGrouping?: InputMaybe<Scalars['String']>;
 };
 
 export type Reporting_ReportFilterExpand = {
@@ -5341,6 +5388,7 @@ export type Reporting_ReportFilterExpand = {
 export type Reporting_ReportInfo = {
   __typename?: 'Reporting_ReportInfo';
   id: Scalars['String'];
+  isInteractive?: Maybe<Scalars['Boolean']>;
   name: Scalars['String'];
   /**  has aggregated rows which can be expanded to show individual rows */
   supportsExpandRow: Scalars['Boolean'];
@@ -5398,17 +5446,32 @@ export type Reporting_TableFilterValues = {
   value?: Maybe<Scalars['String']>;
 };
 
+export type Reporting_TableMetric = {
+  __typename?: 'Reporting_TableMetric';
+  defaultValue: Scalars['String'];
+  values: Array<Reporting_TableMetricValue>;
+};
+
+export type Reporting_TableMetricValue = {
+  __typename?: 'Reporting_TableMetricValue';
+  id: Scalars['String'];
+  name: Scalars['String'];
+};
+
 export type Reporting_TableReport = {
   __typename?: 'Reporting_TableReport';
   data?: Maybe<Array<Maybe<Scalars['Object']>>>;
   debug?: Maybe<Reporting_TableReportDebug>;
   fields: Array<Reporting_TableReportField>;
   filters: Array<Reporting_TableFilter>;
+  groupBy?: Maybe<Reporting_GroupBy>;
   id: Scalars['String'];
   info: Reporting_ReportInfo;
   innerReports: Array<Reporting_ReportInfo>;
   links?: Maybe<Array<Maybe<Reporting_TableReportLink>>>;
+  metrics?: Maybe<Reporting_TableMetric>;
   tableDisplayOptions: Reporting_TableDisplayOptions;
+  timeGroupBy?: Maybe<Reporting_TimeGroupBy>;
 };
 
 export type Reporting_TableReportDataColumn = {
@@ -5440,6 +5503,19 @@ export type Reporting_TableReportLink = {
   linkId?: Maybe<Scalars['Object']>;
   linkLabel?: Maybe<Scalars['String']>;
   linkType?: Maybe<ReportLink>;
+};
+
+export type Reporting_TimeGroupBy = {
+  __typename?: 'Reporting_TimeGroupBy';
+  defaultValue: Scalars['String'];
+  values: Array<Reporting_TimeGroupByValues>;
+};
+
+export type Reporting_TimeGroupByValues = {
+  __typename?: 'Reporting_TimeGroupByValues';
+  description: Scalars['String'];
+  id: Scalars['String'];
+  name: Scalars['String'];
 };
 
 export type ResourceCalendar = {

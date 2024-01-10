@@ -118,7 +118,7 @@ export default function YearGroups() {
             selectedGroups.map(({ id }) => id),
             [
               {
-                label: t('mail:contactInGroup', {
+                label: t('mail:contactsOfStudentsInGroup', {
                   count: selectedGroups.length,
                 }),
                 type: RecipientSearchType.YearGroupContact,
@@ -130,7 +130,7 @@ export default function YearGroups() {
                 type: RecipientSearchType.YearGroupStudent,
               },
               {
-                label: t('mail:staffInGroup', {
+                label: t('mail:yearHeadsOfGroup', {
                   count: selectedGroups.length,
                 }),
                 type: RecipientSearchType.YearGroupStaff,

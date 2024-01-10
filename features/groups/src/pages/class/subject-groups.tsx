@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Box, Fade, Grid, Stack, Typography } from '@mui/material';
 import {
+  RecipientSearchType,
   SmsRecipientType,
   usePermissions,
   UseQueryReturnType,
@@ -20,9 +21,10 @@ import {
   sortStartNumberFirst,
 } from '@tyro/core';
 
-import { MobileIcon, UserGroupTwoIcon } from '@tyro/icons';
+import { MobileIcon, SendMailIcon, UserGroupTwoIcon } from '@tyro/icons';
 
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
+import { useMailSettings } from '@tyro/mail';
 import { useClassGroupById } from '../../api/class-groups';
 import { BlocksChips } from '../../components/class-group/blocks-chips';
 
@@ -120,6 +122,7 @@ export default function SubjectGroups() {
   const { isTyroUser } = usePermissions();
 
   const { data: subjectGroupData } = useClassGroupById(groupIdAsNumber);
+  const { sendMailToParties } = useMailSettings();
 
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
@@ -136,13 +139,45 @@ export default function SubjectGroups() {
     [t, displayNames]
   );
 
-  const actionMenuItems = [
-    {
-      label: t('people:sendSms'),
-      icon: <MobileIcon />,
-      onClick: onOpenSendSms,
-    },
-  ];
+  const actionMenuItems = useMemo(
+    () => [
+      {
+        label: t('people:sendSms'),
+        icon: <MobileIcon />,
+        onClick: onOpenSendSms,
+      },
+      {
+        label: t('mail:sendMail'),
+        icon: <SendMailIcon />,
+        onClick: () => {
+          sendMailToParties(
+            selectedGroups.map((group) => group.id),
+            [
+              {
+                label: t('mail:contactsOfStudentsInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupContact,
+              },
+              {
+                label: t('mail:studentInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupStudent,
+              },
+              {
+                label: t('mail:teachersOfGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupStaff,
+              },
+            ]
+          );
+        },
+      },
+    ],
+    [t, selectedGroups, sendMailToParties, onOpenSendSms]
+  );
 
   return (
     <>

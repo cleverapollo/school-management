@@ -248,10 +248,22 @@ export default function StudentsListPage() {
                             selectedStudents.map(({ id }) => id),
                             [
                               {
-                                label: t('mail:contactsOfStudent', {
+                                label: t('mail:student', {
                                   count: selectedStudents.length,
                                 }),
                                 type: RecipientSearchType.Student,
+                              },
+                              {
+                                label: t('mail:contactsOfStudent', {
+                                  count: selectedStudents.length,
+                                }),
+                                type: RecipientSearchType.StudentContacts,
+                              },
+                              {
+                                label: t('mail:teachersOfStudent', {
+                                  count: selectedStudents.length,
+                                }),
+                                type: RecipientSearchType.StudentTeachers,
                               },
                             ]
                           );

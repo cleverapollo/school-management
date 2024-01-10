@@ -152,7 +152,7 @@ export default function ClassGroupsPage() {
             selectedGroups.map(({ id }) => id),
             [
               {
-                label: t('mail:contactInGroup', {
+                label: t('mail:contactsOfStudentsInGroup', {
                   count: selectedGroups.length,
                 }),
                 type: RecipientSearchType.GeneralGroupContact,
@@ -164,7 +164,7 @@ export default function ClassGroupsPage() {
                 type: RecipientSearchType.GeneralGroupStudent,
               },
               {
-                label: t('mail:staffInGroup', {
+                label: t('mail:tutorsOfGroup', {
                   count: selectedGroups.length,
                 }),
                 type: RecipientSearchType.GeneralGroupStaff,

@@ -146,7 +146,7 @@ export default function CustomGroups() {
             selectedGroups.map(({ id }) => id),
             [
               {
-                label: t('mail:contactInGroup', {
+                label: t('mail:contactsOfStudentsInGroup', {
                   count: selectedGroups.length,
                 }),
                 type: RecipientSearchType.GeneralGroupContact,

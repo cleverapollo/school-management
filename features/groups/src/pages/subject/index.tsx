@@ -235,13 +235,13 @@ export default function SubjectGroups() {
             selectedGroups.map(({ id }) => id),
             [
               {
-                label: t('mail:contactInGroup', {
+                label: t('mail:contactsOfStudentsInGroup', {
                   count: selectedGroups.length,
                 }),
                 type: RecipientSearchType.SubjectGroupContact,
               },
               {
-                label: t('mail:staffInGroup', {
+                label: t('mail:teachersOfGroup', {
                   count: selectedGroups.length,
                 }),
                 type: RecipientSearchType.SubjectGroupStaff,

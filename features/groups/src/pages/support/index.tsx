@@ -179,7 +179,7 @@ export default function SupportGroups() {
             selectedGroups.map(({ id }) => id),
             [
               {
-                label: t('mail:contactInGroup', {
+                label: t('mail:contactsOfStudentsInGroup', {
                   count: selectedGroups.length,
                 }),
                 type: RecipientSearchType.GeneralGroupContact,
@@ -191,7 +191,7 @@ export default function SupportGroups() {
                 type: RecipientSearchType.GeneralGroupStudent,
               },
               {
-                label: t('mail:staffInGroup', {
+                label: t('mail:teachersOfGroup', {
                   count: selectedGroups.length,
                 }),
                 type: RecipientSearchType.GeneralGroupStaff,
