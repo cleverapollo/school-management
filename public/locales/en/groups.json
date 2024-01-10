@@ -82,7 +82,8 @@
   "groupDescription": "Group description",
   "organisersInGroup": "Organisers in group",
   "byYou": "By you",
-  "lastSaved": "Last saved",
+  "lastSaved": "Last saved {{date}} at {{time}}",
+  "updatedBy": "by {{updatedBy}}",
   "partyGroupType": {
     "CLASS_GROUP": "Class group",
     "CUSTOM_GROUP": "Custom group",
