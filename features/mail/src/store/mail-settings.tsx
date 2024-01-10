@@ -71,6 +71,9 @@ export function MailSettingsProvider({ children }: { children: ReactNode }) {
         recipientType: possibleMailRecipientTypes,
       });
 
+    if (selectMailRecipientSettings) {
+      setSelectMailRecipientSettings(undefined);
+    }
     composeEmail({
       canReply: false,
       bccRecipients: communicationsRecipients,
