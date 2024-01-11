@@ -26,10 +26,10 @@ import {
   TableBooleanValue,
   TableSelect,
   PageContainer,
-  PageHeading,
+  PageHeading, useDebouncedValue,
 } from '@tyro/core';
 
-import { MobileIcon, MoveGroupIcon, PrinterIcon } from '@tyro/icons';
+import {MobileIcon, MoveGroupIcon, PrinterIcon, TrashIcon} from '@tyro/icons';
 
 import { set } from 'lodash';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
@@ -40,6 +40,7 @@ import {
   useSwitchSubjectGroupType,
 } from '../../api';
 import { printGroupMembers } from '../../utils/print-group-members';
+import {DeleteGroupsModal} from "../../components/common/delete-groups-modal";
 
 type ReturnTypeFromUseSubjectGroups = NonNullable<
   ReturnType<typeof useSubjectGroups>['data']
@@ -200,6 +201,12 @@ export default function SubjectGroups() {
     useState(false);
 
   const {
+    value: deleteGroupIds,
+    debouncedValue: debouncedDeleteGroupIds,
+    setValue: setDeleteGroupIds,
+  } = useDebouncedValue<number[] | null>({ defaultValue: null });
+
+  const {
     isOpen: isSendSmsOpen,
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
@@ -234,6 +241,11 @@ export default function SubjectGroups() {
           isStaffUserWithPermission(
             'ps:1:printing_and_exporting:print_group_members'
           ),
+      },
+      {
+        label: t('groups:deleteGroups', { count: selectedGroups.length }),
+        icon: <TrashIcon />,
+        onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
       },
     ],
     [selectedGroups, onOpenSendSms]
@@ -348,6 +360,11 @@ export default function SubjectGroups() {
             type: SubjectGroupType.SupportGroup,
           }).then(() => setSwitchGroupTypeConfirmation(false));
         }}
+      />
+      <DeleteGroupsModal
+          isOpen={Boolean(deleteGroupIds)}
+          groupIds={deleteGroupIds ?? debouncedDeleteGroupIds}
+          onClose={() => setDeleteGroupIds(null)}
       />
     </>
   );
