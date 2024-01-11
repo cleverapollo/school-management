@@ -41,7 +41,6 @@ import {
 } from '../../api';
 import { printGroupMembers } from '../../utils/print-group-members';
 import {DeleteGroupsModal} from "../../components/common/delete-groups-modal";
-import {isTyroUser} from "@tyro/configs/dist/utils/permission-utils";
 
 type ReturnTypeFromUseSubjectGroups = NonNullable<
   ReturnType<typeof useSubjectGroups>['data']
@@ -189,6 +188,7 @@ const getSubjectGroupsColumns = (
 export default function SubjectGroups() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
   const { displayNames } = usePreferredNameLayout();
+  const { isStaffUser, isTyroUser } = usePermissions();
   const { data: subjectGroupsData } = useSubjectGroups();
   const { data: subjects } = useCatalogueSubjects({
     filterUsage: SubjectUsage.All,

@@ -5,6 +5,7 @@ import {
   SubjectGroupType,
   SubjectUsage,
   UpdateSubjectGroupInput,
+  usePermissions
 } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -136,6 +137,7 @@ export default function SupportGroups() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
   const { displayNames } = usePreferredNameLayout();
   const { data: subjectGroupsData } = useSupportGroups();
+  const { isStaffUser, isTyroUser } = usePermissions();
   const { data: subjects } = useCatalogueSubjects({
     filterUsage: SubjectUsage.All,
   });
