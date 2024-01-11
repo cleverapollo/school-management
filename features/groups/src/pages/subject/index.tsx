@@ -4,7 +4,7 @@ import {
   SmsRecipientType,
   SubjectGroupType,
   SubjectUsage,
-  UpdateSubjectGroupInput,
+  UpdateSubjectGroupInput, usePermissions,
 } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -247,7 +247,7 @@ export default function SubjectGroups() {
         label: t('groups:deleteGroups', { count: selectedGroups.length }),
         icon: <TrashIcon />,
         onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
-        hasAccess: isTyroUser,
+        hasAccess: () => isTyroUser,
       },
     ],
     [selectedGroups, onOpenSendSms]

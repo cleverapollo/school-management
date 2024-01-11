@@ -161,7 +161,7 @@ export default function ClassGroupsPage() {
         label: t('groups:deleteGroups', { count: selectedGroups.length }),
         icon: <TrashIcon />,
         onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
-        hasAccess: isTyroUser,
+        hasAccess: () => isTyroUser,
       },
     ],
     [selectedGroups, onOpenSendSms]
