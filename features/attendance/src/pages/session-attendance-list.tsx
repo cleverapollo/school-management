@@ -178,7 +178,7 @@ export default function AbsentRequests() {
               label: t('mail:contactsOfStudent', {
                 count: selectedRecipients.length,
               }),
-              type: RecipientSearchType.Student,
+              type: RecipientSearchType.StudentContacts,
             },
           ]
         );
