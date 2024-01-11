@@ -8,7 +8,11 @@ import {
   useStudentDashboardAssessments,
 } from '@tyro/assessments';
 import { Box, Card, Stack } from '@mui/material';
-import { useAcademicNamespace, usePermissions } from '@tyro/api';
+import {
+  AssessmentType,
+  useAcademicNamespace,
+  usePermissions,
+} from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { AssessmentSelectBar } from '../../../components/students/assessments/assessment-select-bar';
 
@@ -36,6 +40,10 @@ export default function StudentProfileAssessmentPage() {
       !!studentId
     );
 
+  const filteredStudentAssessments = studentAssessments?.filter(
+    (assessment) => assessment.assessmentType !== AssessmentType.StateCba
+  );
+
   useEffect(() => {
     if (!academicNameSpaceId && activeAcademicNamespace) {
       setAcademicNameSpaceId(activeAcademicNamespace.academicNamespaceId);
@@ -44,7 +52,7 @@ export default function StudentProfileAssessmentPage() {
 
   useEffect(() => {
     setSelectedAssessment(
-      studentAssessments.length ? studentAssessments[0] : null
+      filteredStudentAssessments.length ? filteredStudentAssessments[0] : null
     );
   }, [studentAssessments]);
 
@@ -60,11 +68,11 @@ export default function StudentProfileAssessmentPage() {
         <AssessmentSelectBar
           academicNameSpaceId={academicNameSpaceId}
           setAcademicNameSpaceId={setAcademicNameSpaceId}
-          studentAssessments={studentAssessments}
+          studentAssessments={filteredStudentAssessments}
           selectedAssessment={selectedAssessment}
           setSelectedAssessment={setSelectedAssessment}
         />
-        {studentAssessments.length === 0 && !isLoading && (
+        {filteredStudentAssessments.length === 0 && !isLoading && (
           <Card variant="soft">
             <Card sx={{ minHeight: 300 }}>
               <Box

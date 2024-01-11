@@ -3,6 +3,7 @@ import { Box, Button, Checkbox, Grid, Stack, Typography } from '@mui/material';
 import { Dialog, DialogActions, DialogContent, DialogTitle } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useState } from 'react';
+import dayjs from 'dayjs';
 import { ReturnTypeFromUseSubjectGroupLessonByIterator } from '../../../api';
 import { AttendanceBreakdown } from './breakdown';
 import { StudentAttendance } from '../../../hooks';
@@ -97,7 +98,7 @@ export function AdditionalLessonsModal({
                   {t('common:saved')}
                 </Typography>
                 <Typography variant="subtitle2" component="span">
-                  {updatedAt}
+                  {updatedAt ? dayjs(updatedAt).format('L') : '-'}
                 </Typography>
               </Stack>
 

@@ -1,8 +1,10 @@
 {
+  "fees": "Fees",
   "for": "For",
   "dueDate": "Due date",
   "amount": "Amount",
-  "amountPaid": "Amount Paid",
+  "amountPaid": "Amount paid",
+  "paid": "Paid",
   "pay": "Pay",
   "value": "Value",
   "feesSetup": "Fees setup",
@@ -12,13 +14,19 @@
   "editDiscount": "Edit discount",
   "amountToPay_one": "Amount to pay",
   "amountToPay_other": "Amounts to pay",
+  "payments": "Payments",
+  "payInFull": "Pay in full",
+  "partialPayment": "Partial payment",
+  "partial": "Partial",
+  "paymentType": "Payment type",
+  "feeName": "Fee name",
   "discountsType": {
     "FIXED": "Fixed",
     "PERCENTAGE": "Percentage"
   },
   "isSiblingDiscount": "Is it a sibling discount?",
-  "payFee_one": "Pay fee",
-  "payFee_other": "Pay fees",
+  "makePayment_one": "Make payment",
+  "makePayment_other": "Make payments",
   "paymentMethod": "Payment method",
   "paymentMethods": {
     "CARD": "Card",
@@ -43,5 +51,43 @@
   "createYourStripeAccountDescription": "Tyro Fees is powered by Stripe. Create your school Stripe account now in order to get started.",
   "yourSchoolIsReadyDescription": "Your school is now ready to start processing payments. We will be in touch shortly once Fees is ready for release.",
   "clickSignUpToStripe": "Click 'Sign up' to be taken to Stripe",
-  "thankYouForSigningUpForStripe": "Thank you for signing up to Stripe"
+  "thankYouForSigningUpForStripe": "Thank you for signing up to Stripe",
+  "feesOverview": "Fees overview",
+  "feeManagement": "Fee management",
+  "createFee": "Create fee",
+  "editFee": "Edit {{name}}'s fee",
+  "feeType": "Fee type",
+  "feesType": {
+    "MANDATORY": "Mandatory",
+    "VOLUNTARY": "Voluntary"
+  },
+  "absorbFees": "Absorb fees",
+  "feeCategory": "Fee category",
+  "createFeeCategory": "Create fee category",
+  "editFeeCategory": "Edit fee category",
+  "discounts": "Discounts",
+  "absorbFeesInformation": "The school will absorb the service charge for this transaction",
+  "addDiscount": "Add discount",
+  "addIndividualDiscount": "Add individual discount",
+  "deleteFee": "Delete fee",
+  "deleteFeeConfirmation": "You are about to delete the fee \"{{feeName}}\". Are you sure you want to continue?",
+  "dueBy": "Due by",
+  "due": "Due",
+  "feeStatus": {
+    "COMPLETE": "Paid",
+    "OUTSTANDING": "Outstanding",
+    "OVERDUE": "Overdue"
+  },
+  "deleteDiscount": "Delete discount",
+  "deleteDiscountConfirmation": "You are about to delete this discount. Are you sure you want to continue?",
+  "publishOnline": "Publish online",
+  "publishOnlineDescription": "You are about to publish the fee \"{{feeName}}\". Are you sure you want to continue?",
+  "unpublishOnline": "Unpublish online",
+  "unpublishOnlineDescription": "You are about to unpublish the fee \"{{feeName}}\". Are you sure you want to continue?",
+  "cantDeleteFeeWithPayments": "You can not delete this fee as payments have already been made.",
+  "status": {
+    "COMPLETE": "Paid",
+    "OUTSTANDING": "Outstanding",
+    "OVERDUE": "Overdue"
+  }
 }

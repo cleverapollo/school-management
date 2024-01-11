@@ -1,5 +1,4 @@
 import {
-  Box,
   Card,
   IconButton,
   Stack,
@@ -14,13 +13,17 @@ import {
 import { ChevronLeftIcon, ChevronRightIcon, FullScreenIcon } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ActionMenu,
   LoadingPlaceholderContainer,
   TableStudyLevelChip,
 } from '@tyro/core';
-import { useAcademicNamespace, usePermissions } from '@tyro/api';
+import {
+  AssessmentType,
+  useAcademicNamespace,
+  usePermissions,
+} from '@tyro/api';
 import { useStudentDashboardAssessments } from '../api/student-dashboard-assessment';
 import { useStudentAssessmentResults } from '../api/term-assessments/student-results';
 import { getRowDetailsFromResult } from '../utils/get-row-details-from-result';
@@ -47,7 +50,16 @@ export function StudentAssessmentWidget({
       !!studentId
     );
 
-  const selectedAssessment = assessments?.[assessmentIndex];
+  const filteredAssessments = useMemo(
+    () =>
+      assessments?.filter(
+        (assessment) => assessment.assessmentType !== AssessmentType.StateCba
+      ),
+    [assessments]
+  );
+
+  const selectedAssessment = filteredAssessments?.[assessmentIndex];
+
   const { data: studentResults = [], isLoading: isResultsLoading } =
     useStudentAssessmentResults(
       activeAcademicNamespaceId,
@@ -62,7 +74,8 @@ export function StudentAssessmentWidget({
   const isLoading =
     isDashboardLoading || (isResultsLoading && !!selectedAssessment);
   const hasAssessments = assessments.length > 0;
-  const menuItems = assessments.map((assessment, index) => ({
+
+  const menuItems = filteredAssessments.map((assessment, index) => ({
     label: assessment.name,
     onClick: () => {
       setAssessmentIndex(index);
@@ -135,7 +148,8 @@ export function StudentAssessmentWidget({
             setAssessmentIndex(assessmentIndex + 1);
           }}
           disabled={
-            assessmentIndex + 1 === assessments?.length || !hasAssessments
+            assessmentIndex + 1 === filteredAssessments?.length ||
+            !hasAssessments
           }
         >
           <ChevronRightIcon />
