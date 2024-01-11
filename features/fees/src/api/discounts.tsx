@@ -39,7 +39,8 @@ export function getDiscounts(filter: DiscountFilter) {
 export function useDiscounts(filter: DiscountFilter) {
   return useQuery({
     ...discountsQuery(filter),
-    select: ({ fees_discounts }) => fees_discounts,
+    select: ({ fees_discounts }) =>
+      fees_discounts?.flatMap((discount) => (discount ? [discount] : [])),
   });
 }
 

@@ -219,7 +219,8 @@
       "WELLBEING": "Wellbeing",
       "YEAR_GROUP_CONTACT": "Year group contact",
       "YEAR_GROUP_ENROLLMENT": "Year group enrollment",
-      "YEAR_GROUP_STAFF": "Year group staff"
+      "YEAR_GROUP_STAFF": "Year group staff",
+      "SCHOOL_ACTIVITY": "School activity"
     }
   },
   "noteLabel": {
