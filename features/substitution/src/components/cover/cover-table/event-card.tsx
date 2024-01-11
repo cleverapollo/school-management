@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useMemo, useState } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 import { onLongPress, usePreferredNameLayout } from '@tyro/core';
 import { LayersIcon } from '@tyro/icons';
@@ -44,7 +44,8 @@ export function EventCoverCard({
   onCloseContextMenu,
 }: EventCoverCardProps) {
   const { event, substitution } = eventInfo;
-  const clickableContainerRef = useRef<HTMLDivElement>(null);
+  const [clickableContainerRef, setClickableContainerRef] =
+    useState<HTMLDivElement | null>(null);
   const { displayName } = usePreferredNameLayout();
   const isSelected = isEventSelected(eventInfo);
 
@@ -84,7 +85,7 @@ export function EventCoverCard({
     <>
       <CoverCardTooltip staff={staff} eventInfo={eventInfo}>
         <Box
-          ref={clickableContainerRef}
+          ref={(ref: HTMLDivElement) => setClickableContainerRef(ref)}
           className="event-cover-card"
           sx={{
             backgroundColor: `${color}.100`,
@@ -172,8 +173,8 @@ export function EventCoverCard({
         </Box>
       </CoverCardTooltip>
       <EventCoverContextMenu
-        anchorEl={clickableContainerRef.current}
-        open={isContextMenuOpen}
+        anchorEl={clickableContainerRef}
+        open={Boolean(isContextMenuOpen && clickableContainerRef)}
         staff={staff}
         eventInfo={eventInfo}
         onClose={onCloseContextMenu}
