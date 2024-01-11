@@ -41,8 +41,12 @@ export function PublishFeeConfirmModal({
       }
       description={
         isCurrentPublished
-          ? t('fees:unpublishOnlineDescription')
-          : t('fees:publishOnlineDescription')
+          ? t('fees:unpublishOnlineDescription', {
+              feeName: feeToPublish?.name ?? '',
+            })
+          : t('fees:publishOnlineDescription', {
+              feeName: feeToPublish?.name ?? '',
+            })
       }
       confirmText={t('common:actions.confirm')}
     />

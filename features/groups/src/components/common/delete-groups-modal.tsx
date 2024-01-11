@@ -4,29 +4,31 @@ import { Dialog, DialogTitle, DialogActions } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
-import { useDeleteCustomGroups } from '../../api/delete-custom-groups';
+import { useDeleteGroups } from '../../api/delete-groups';
 
-export type DeleteCustomGroupsModalProps = {
+export type DeleteGroupsModalProps = {
   groupIds?: number[] | null;
+  isOpen: boolean;
   onClose: () => void;
 };
 
-export const DeleteCustomGroupsModal = ({
+export const DeleteGroupsModal = ({
   groupIds,
+  isOpen,
   onClose,
-}: DeleteCustomGroupsModalProps) => {
+}: DeleteGroupsModalProps) => {
   const { t } = useTranslation(['groups', 'common']);
 
   const {
-    mutate: deleteCustomGroups,
+    mutate: deleteGroups,
     isLoading: isSubmitting,
     isSuccess,
-  } = useDeleteCustomGroups();
+  } = useDeleteGroups();
 
   const { handleSubmit, reset } = useForm();
 
   const onSubmit = () => {
-    deleteCustomGroups(
+    deleteGroups(
       { groupPartyIds: groupIds ?? [] },
       {
         onSuccess: onClose,
@@ -45,25 +47,21 @@ export const DeleteCustomGroupsModal = ({
 
   return (
     <Dialog
-      open={!!groupIds && !!groupIds.length}
+      open={isOpen}
       onClose={handleClose}
       scroll="paper"
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle
-        onClose={onClose}
-        sx={{
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        {t('groups:deleteCustomGroups')}
+      <DialogTitle onClose={onClose}>
+        {t('groups:deleteGroups', { count: groupIds?.length ?? 0 })}
       </DialogTitle>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack sx={{ p: 3 }}>
-          {t('groups:deleteCustomGroupsConfirmation')}
+          {t('groups:deleteGroupsConfirmation', {
+            count: groupIds?.length ?? 0,
+          })}
         </Stack>
         <Stack>
           <DialogActions>

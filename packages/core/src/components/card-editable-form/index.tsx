@@ -41,6 +41,7 @@ export type CardEditableFormProps<TField extends FieldValues> = CardProps & {
   fields: Array<CardEditableField<TField>>;
   resolver?: Resolver<TField>;
   onSave: (data: TField, onSuccess: () => void) => void;
+  onEdit?: () => void;
   onCancel?: () => void;
 };
 
@@ -50,6 +51,7 @@ export const CardEditableForm = <TField extends FieldValues>({
   fields,
   resolver,
   onSave,
+  onEdit,
   onCancel,
   hideBorder,
   sx,
@@ -88,6 +90,7 @@ export const CardEditableForm = <TField extends FieldValues>({
 
   const handleEdit = () => {
     setIsEditMode(true);
+    onEdit?.();
   };
 
   return (
