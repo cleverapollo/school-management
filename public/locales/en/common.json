@@ -298,6 +298,8 @@
   "hours": "Hours",
   "minutes": "Minutes",
   "fromDate": "From {{date}}",
+  "from": "From",
+  "to": "To",
   "dayOfWeekValues": {
     "MONDAY": "Monday",
     "TUESDAY": "Tuesday",
