@@ -22,21 +22,23 @@ import {
   ConfirmDialog,
   TableSelect,
   PageContainer,
-  PageHeading, useDebouncedValue,
+  PageHeading,
+  useDebouncedValue,
 } from '@tyro/core';
 
-import {MobileIcon, MoveGroupIcon, PrinterIcon, TrashIcon} from '@tyro/icons';
+import { MobileIcon, MoveGroupIcon, PrinterIcon, TrashIcon } from '@tyro/icons';
 
 import { set } from 'lodash';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { CatalogueSubjectOption, useCatalogueSubjects } from '@tyro/settings';
+import { isTyroUser } from '@tyro/configs/dist/utils/permission-utils';
 import {
   useSaveSupportGroupEdits,
   useSupportGroups,
 } from '../../api/support-groups';
 import { useSwitchSubjectGroupType } from '../../api';
 import { printGroupMembers } from '../../utils/print-group-members';
-import {DeleteGroupsModal} from "../../components/common/delete-groups-modal";
+import { DeleteGroupsModal } from '../../components/common/delete-groups-modal';
 
 type ReturnTypeFromUseSupportGroups = NonNullable<
   ReturnType<typeof useSupportGroups>['data']
@@ -189,6 +191,7 @@ export default function SupportGroups() {
       {
         label: t('groups:deleteGroups', { count: selectedGroups.length }),
         icon: <TrashIcon />,
+        hasAccess: isTyroUser,
         onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
       },
     ],
@@ -299,9 +302,9 @@ export default function SupportGroups() {
         }}
       />
       <DeleteGroupsModal
-          isOpen={Boolean(deleteGroupIds)}
-          groupIds={deleteGroupIds ?? debouncedDeleteGroupIds}
-          onClose={() => setDeleteGroupIds(null)}
+        isOpen={Boolean(deleteGroupIds)}
+        groupIds={deleteGroupIds ?? debouncedDeleteGroupIds}
+        onClose={() => setDeleteGroupIds(null)}
       />
     </>
   );

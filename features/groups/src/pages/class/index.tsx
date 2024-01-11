@@ -25,6 +25,7 @@ import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { MobileIcon, PrinterIcon, TrashIcon } from '@tyro/icons';
 import { TableStaffAutocomplete } from '@tyro/people';
 import set from 'lodash/set';
+import { isTyroUser } from '@tyro/configs/dist/utils/permission-utils';
 import { DeleteGroupsModal } from '../../components/common/delete-groups-modal';
 import {
   useClassGroups,
@@ -161,6 +162,7 @@ export default function ClassGroupsPage() {
         label: t('groups:deleteGroups', { count: selectedGroups.length }),
         icon: <TrashIcon />,
         onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
+        hasAccess: isTyroUser,
       },
     ],
     [selectedGroups, onOpenSendSms]
