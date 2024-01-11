@@ -10,6 +10,7 @@ import {
   PageHeading,
   Table,
   TableAvatar,
+  useDebouncedValue,
   useDisclosure,
 } from '@tyro/core';
 import {
@@ -23,7 +24,7 @@ import {
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { Link } from 'react-router-dom';
 import { useCustomGroups, ReturnTypeFromUseCustomGroups } from '../../api';
-import { DeleteCustomGroupsModal } from '../../components/custom-group/delete-custom-groups-modal';
+import { DeleteGroupsModal } from '../../components/common/delete-groups-modal';
 import { printGroupMembers } from '../../utils/print-group-members';
 
 const getColumns = (
@@ -99,8 +100,12 @@ export default function CustomGroups() {
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
-  const [deleteGroupIds, setDeleteGroupIds] = useState<number[] | null>();
-  const { isStaffUser, hasPermission } = usePermissions();
+  const {
+    value: deleteGroupIds,
+    debouncedValue: debouncedDeleteGroupIds,
+    setValue: setDeleteGroupIds,
+  } = useDebouncedValue<number[] | null>({ defaultValue: null });
+  const { isStaffUser, hasPermission, isTyroUser } = usePermissions();
   const { data: customGroupData } = useCustomGroups();
 
   const {
@@ -128,11 +133,6 @@ export default function CustomGroups() {
         onClick: onOpenSendSms,
       },
       {
-        label: t('groups:deleteCustomGroups'),
-        icon: <TrashIcon />,
-        onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
-      },
-      {
         label: t('groups:printGroupMembers'),
         icon: <PrinterIcon />,
         onClick: () => printGroupMembers(selectedGroups),
@@ -140,6 +140,12 @@ export default function CustomGroups() {
           isStaffUserWithPermission(
             'ps:1:printing_and_exporting:print_group_members'
           ),
+      },
+      {
+        label: t('groups:deleteCustomGroups', { count: selectedGroups.length }),
+        icon: <TrashIcon />,
+        onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
+        hasAccess: () => isTyroUser,
       },
     ],
     [selectedGroups, onOpenSendSms]
@@ -207,8 +213,9 @@ export default function CustomGroups() {
           },
         ]}
       />
-      <DeleteCustomGroupsModal
-        groupIds={deleteGroupIds}
+      <DeleteGroupsModal
+        isOpen={Boolean(deleteGroupIds)}
+        groupIds={deleteGroupIds ?? debouncedDeleteGroupIds}
         onClose={() => setDeleteGroupIds(null)}
       />
     </>
