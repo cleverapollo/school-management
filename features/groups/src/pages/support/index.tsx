@@ -5,7 +5,7 @@ import {
   SubjectGroupType,
   SubjectUsage,
   UpdateSubjectGroupInput,
-  usePermissions
+  usePermissions,
 } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -32,7 +32,6 @@ import { MobileIcon, MoveGroupIcon, PrinterIcon, TrashIcon } from '@tyro/icons';
 import { set } from 'lodash';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { CatalogueSubjectOption, useCatalogueSubjects } from '@tyro/settings';
-import { isTyroUser } from '@tyro/configs/dist/utils/permission-utils';
 import {
   useSaveSupportGroupEdits,
   useSupportGroups,

@@ -4,7 +4,8 @@ import {
   SmsRecipientType,
   SubjectGroupType,
   SubjectUsage,
-  UpdateSubjectGroupInput, usePermissions,
+  UpdateSubjectGroupInput,
+  usePermissions,
 } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -26,10 +27,11 @@ import {
   TableBooleanValue,
   TableSelect,
   PageContainer,
-  PageHeading, useDebouncedValue,
+  PageHeading,
+  useDebouncedValue,
 } from '@tyro/core';
 
-import {MobileIcon, MoveGroupIcon, PrinterIcon, TrashIcon} from '@tyro/icons';
+import { MobileIcon, MoveGroupIcon, PrinterIcon, TrashIcon } from '@tyro/icons';
 
 import { set } from 'lodash';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
@@ -40,7 +42,7 @@ import {
   useSwitchSubjectGroupType,
 } from '../../api';
 import { printGroupMembers } from '../../utils/print-group-members';
-import {DeleteGroupsModal} from "../../components/common/delete-groups-modal";
+import { DeleteGroupsModal } from '../../components/common/delete-groups-modal';
 
 type ReturnTypeFromUseSubjectGroups = NonNullable<
   ReturnType<typeof useSubjectGroups>['data']
@@ -364,9 +366,9 @@ export default function SubjectGroups() {
         }}
       />
       <DeleteGroupsModal
-          isOpen={Boolean(deleteGroupIds)}
-          groupIds={deleteGroupIds ?? debouncedDeleteGroupIds}
-          onClose={() => setDeleteGroupIds(null)}
+        isOpen={Boolean(deleteGroupIds)}
+        groupIds={deleteGroupIds ?? debouncedDeleteGroupIds}
+        onClose={() => setDeleteGroupIds(null)}
       />
     </>
   );
