@@ -17,12 +17,7 @@ export function onLongPress<TouchEventElement>(
 
   return {
     onTouchStart: (event: React.TouchEvent<TouchEventElement>) => {
-      console.log('long press started');
       longPressTimeout = setTimeout(() => {
-        console.log('long press called', {
-          functionToCall,
-          event,
-        });
         if (onTouchStart) {
           onTouchStart(event);
         }
@@ -31,9 +26,7 @@ export function onLongPress<TouchEventElement>(
       }, pressDelay);
     },
     onTouchEnd: (event: React.TouchEvent<TouchEventElement>) => {
-      console.log('long press ended');
       if (longPressTimeout) {
-        console.log('long press time cleared');
         if (onTouchEnd) {
           onTouchEnd(event);
         }

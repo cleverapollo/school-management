@@ -56,10 +56,6 @@ export function EventCoverContextMenu({
     props.onClose?.({}, 'backdropClick');
   };
 
-  console.log({
-    open: props.open,
-  });
-
   const handleApply = (
     event: React.MouseEvent<HTMLLIElement | HTMLButtonElement, MouseEvent>
   ) => {

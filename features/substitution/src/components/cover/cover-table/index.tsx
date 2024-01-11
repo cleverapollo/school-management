@@ -217,10 +217,6 @@ export function CoverTable({
     string | null
   >(null);
 
-  console.log({
-    eventIdWithContextMenuOpen,
-  });
-
   const {
     value: eventsForApplyCover,
     debouncedValue: debouncedEventsForApplyCover,
