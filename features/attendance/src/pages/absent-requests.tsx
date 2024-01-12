@@ -20,7 +20,7 @@ import {
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { StudentTableAvatar } from '@tyro/people';
 import { ReturnTypeFromUseAbsentRequests, useAbsentRequests } from '../api';
 import { AbsentRequestStatusChip } from '../components/absent-requests/absent-request-status-chip';
@@ -163,6 +163,19 @@ export default function AbsentRequests() {
     onOpen: onOpenDeclineAbsentRequestsModal,
     onClose: onCloseDeclineAbsentRequestsModal,
   } = useDisclosure();
+
+  useEffect(() => {
+    if (
+      debouncedViewAbsentRequestInitialState !== undefined &&
+      !!absentRequests?.length
+    ) {
+      setViewAbsentRequestInitialState(
+        absentRequests.find(
+          ({ id }) => id === debouncedViewAbsentRequestInitialState.id
+        )
+      );
+    }
+  }, [absentRequests, debouncedViewAbsentRequestInitialState]);
 
   return (
     <PageContainer title={t('attendance:absentRequests')}>

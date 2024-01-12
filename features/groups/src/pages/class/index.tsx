@@ -19,11 +19,13 @@ import {
   sortStartNumberFirst,
   PageContainer,
   PageHeading,
+  useDebouncedValue,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { MobileIcon, PrinterIcon } from '@tyro/icons';
+import { MobileIcon, PrinterIcon, TrashIcon } from '@tyro/icons';
 import { TableStaffAutocomplete } from '@tyro/people';
 import set from 'lodash/set';
+import { DeleteGroupsModal } from '../../components/common/delete-groups-modal';
 import {
   useClassGroups,
   ReturnTypeFromUseClassGroups,
@@ -119,7 +121,7 @@ export default function ClassGroupsPage() {
     []
   );
   const { displayNames } = usePreferredNameLayout();
-  const { isStaffUser } = usePermissions();
+  const { isStaffUser, isTyroUser } = usePermissions();
   const { data: classGroupData } = useClassGroups();
   const { mutateAsync: updateClassGroup } = useSaveClassGroupEdits();
   const showActionMenu = isStaffUser && selectedGroups.length > 0;
@@ -129,6 +131,11 @@ export default function ClassGroupsPage() {
     onClose: onCloseSendSms,
   } = useDisclosure();
 
+  const {
+    value: deleteGroupIds,
+    debouncedValue: debouncedDeleteGroupIds,
+    setValue: setDeleteGroupIds,
+  } = useDebouncedValue<number[] | null>({ defaultValue: null });
   const classGroupColumns = useMemo(
     () => getClassGroupColumns(t, isStaffUser, displayNames),
     [t, isStaffUser]
@@ -149,6 +156,12 @@ export default function ClassGroupsPage() {
           isStaffUserWithPermission(
             'ps:1:printing_and_exporting:print_group_members'
           ),
+      },
+      {
+        label: t('groups:deleteGroups', { count: selectedGroups.length }),
+        icon: <TrashIcon />,
+        onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
+        hasAccess: () => isTyroUser,
       },
     ],
     [selectedGroups, onOpenSendSms]
@@ -238,6 +251,11 @@ export default function ClassGroupsPage() {
             type: SmsRecipientType.ClassGroupStaff,
           },
         ]}
+      />
+      <DeleteGroupsModal
+        isOpen={Boolean(deleteGroupIds)}
+        groupIds={deleteGroupIds ?? debouncedDeleteGroupIds}
+        onClose={() => setDeleteGroupIds(null)}
       />
     </>
   );

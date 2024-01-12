@@ -68,7 +68,7 @@ const getAttendanceCodeColumns = (
     editable: ({ data }) => !(data?.code && tuslaCodes.includes(data?.code)),
   },
   {
-    field: 'codeType',
+    field: 'sessionCodeType',
     headerName: t('attendance:reportAs'),
     filter: true,
     editable: true,

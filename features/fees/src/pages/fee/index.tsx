@@ -9,6 +9,7 @@ import {
   Table,
   TableBooleanValue,
   TablePersonAvatar,
+  useDebouncedValue,
   usePreferredNameLayout,
 } from '@tyro/core';
 import { TFunction, useTranslation, useFormatNumber } from '@tyro/i18n';
@@ -159,6 +160,8 @@ const getColumnDefs = (
             {
               label: t('common:actions.delete'),
               icon: <TrashIcon />,
+              disabled: data.paid > 0,
+              disabledTooltip: t('fees:cantDeleteFeeWithPayments'),
               onClick: () => {
                 onDeleteClick(data);
               },
@@ -179,12 +182,17 @@ export default function OverviewPage() {
   const { isStaffUserWithPermission } = usePermissions();
   const hasPermission = isStaffUserWithPermission('ps:1:fees:write_fees');
 
-  const [feeToDelete, setFeeToDelete] = useState<ReturnTypeFromUseFees | null>(
-    null
-  );
+  const {
+    value: feeToDelete,
+    debouncedValue: debouncedFeeToDelete,
+    setValue: setFeeToDelete,
+  } = useDebouncedValue<ReturnTypeFromUseFees | null>({ defaultValue: null });
 
-  const [feeToPublish, setFeeToPublish] =
-    useState<ReturnTypeFromUseFees | null>(null);
+  const {
+    value: feeToPublish,
+    debouncedValue: debouncedFeeToPublish,
+    setValue: setFeeToPublish,
+  } = useDebouncedValue<ReturnTypeFromUseFees | null>({ defaultValue: null });
 
   const columnDefs = useMemo(
     () =>
@@ -233,12 +241,12 @@ export default function OverviewPage() {
       />
       <DeleteFeeConfirmModal
         open={!!feeToDelete}
-        feeToDelete={feeToDelete}
+        feeToDelete={feeToDelete || debouncedFeeToDelete}
         onClose={() => setFeeToDelete(null)}
       />
       <PublishFeeConfirmModal
         open={!!feeToPublish}
-        feeToPublish={feeToPublish}
+        feeToPublish={feeToPublish || debouncedFeeToPublish}
         onClose={() => setFeeToPublish(null)}
       />
     </PageContainer>

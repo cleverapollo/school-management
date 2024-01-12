@@ -183,6 +183,7 @@ export function CreateBehaviourModal({
                   options={[
                     Notes_BehaviourType.Positive,
                     Notes_BehaviourType.Negative,
+                    Notes_BehaviourType.Neutral,
                   ].map((option) => ({
                     value: option,
                     label: t(`people:behaviourTypes.${option}`),

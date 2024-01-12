@@ -80,7 +80,7 @@
   "deleteFee": "Delete fee",
   "youCanNotRemoveDiscountAsSomePeopleHaveAlreadyPaidFee_one": "You can not remove this discount as some people have already paid a fee",
   "youCanNotRemoveDiscountAsSomePeopleHaveAlreadyPaidFee_other": "You can not remove these discounts as some people have already paid a fee",
-  "deleteFeeConfirmation": "You are about to delete this fee. Are you sure you want to continue?",
+  "deleteFeeConfirmation": "You are about to delete the fee \"{{feeName}}\". Are you sure you want to continue?",
   "dueBy": "Due by",
   "due": "Due",
   "feeStatus": {
@@ -91,9 +91,10 @@
   "deleteDiscount": "Delete discount",
   "deleteDiscountConfirmation": "You are about to delete this discount. Are you sure you want to continue?",
   "publishOnline": "Publish online",
-  "publishOnlineDescription": "You are about to publish this fee online. Are you sure you want to continue?",
+  "publishOnlineDescription": "You are about to publish the fee \"{{feeName}}\". Are you sure you want to continue?",
   "unpublishOnline": "Unpublish online",
-  "unpublishOnlineDescription": "You are about to unpublish this fee. Are you sure you want to continue?",
+  "unpublishOnlineDescription": "You are about to unpublish the fee \"{{feeName}}\". Are you sure you want to continue?",
+  "cantDeleteFeeWithPayments": "You can not delete this fee as payments have already been made.",
   "status": {
     "COMPLETE": "Paid",
     "OUTSTANDING": "Outstanding",
