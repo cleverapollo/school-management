@@ -2375,6 +2375,7 @@ export type Fee = {
   paid: Scalars['Float'];
   published: Scalars['Boolean'];
   publishedOn?: Maybe<Scalars['DateTime']>;
+  siblingDiscountType?: Maybe<SiblingDiscountType>;
   tenant: Scalars['Int'];
   total: Scalars['Float'];
 };
@@ -2459,6 +2460,15 @@ export enum Form_FormFieldItemType {
 
 export type Forms_FormField = Forms_FormFieldItem | Forms_FormFieldSubGroup;
 
+export type Forms_FormFieldGridWidth = {
+  __typename?: 'Forms_FormFieldGridWidth';
+  lg?: Maybe<Scalars['Int']>;
+  md?: Maybe<Scalars['Int']>;
+  sm?: Maybe<Scalars['Int']>;
+  xl?: Maybe<Scalars['Int']>;
+  xs?: Maybe<Scalars['Int']>;
+};
+
 export type Forms_FormFieldGroup = {
   __typename?: 'Forms_FormFieldGroup';
   fields?: Maybe<Array<Maybe<Forms_FormField>>>;
@@ -2468,18 +2478,24 @@ export type Forms_FormFieldGroup = {
 export type Forms_FormFieldItem = {
   __typename?: 'Forms_FormFieldItem';
   formFieldType?: Maybe<Forms_FormFieldType>;
-  gridWidth?: Maybe<Scalars['Int']>;
+  gridWidth?: Maybe<Forms_FormFieldGridWidth>;
   id?: Maybe<Scalars['String']>;
   label?: Maybe<Scalars['String']>;
-  options?: Maybe<Array<Maybe<Scalars['String']>>>;
+  options?: Maybe<Array<Forms_FormFieldSelectOptions>>;
   type?: Maybe<Form_FormFieldItemType>;
+};
+
+export type Forms_FormFieldSelectOptions = {
+  __typename?: 'Forms_FormFieldSelectOptions';
+  id: Scalars['String'];
+  name: Scalars['String'];
 };
 
 export type Forms_FormFieldSubGroup = {
   __typename?: 'Forms_FormFieldSubGroup';
   fields?: Maybe<Array<Maybe<Forms_FormFieldItem>>>;
   formFieldType?: Maybe<Forms_FormFieldType>;
-  gridWidth?: Maybe<Scalars['Int']>;
+  gridWidth?: Maybe<Forms_FormFieldGridWidth>;
   header?: Maybe<Scalars['String']>;
 };
 
@@ -2502,8 +2518,12 @@ export type Forms_FormView = {
   title?: Maybe<Scalars['String']>;
 };
 
-export type Forms_ListFormsFilter = {
+export type Forms_InformationRequestListFormFilter = {
   test?: InputMaybe<Scalars['String']>;
+};
+
+export type Forms_InformationRequestViewFormFilter = {
+  id: Scalars['String'];
 };
 
 export type Forms_SubmitFormFieldInput = {
@@ -2521,17 +2541,13 @@ export type Forms_SubmitFormResponse = {
   __typename?: 'Forms_SubmitFormResponse';
   id: Scalars['String'];
   success: Scalars['Boolean'];
-  validations: Array<Forms_SubmitFormValidationError>;
+  validations?: Maybe<Forms_SubmitFormValidationError>;
 };
 
 export type Forms_SubmitFormValidationError = {
   __typename?: 'Forms_SubmitFormValidationError';
-  errors: Array<Scalars['String']>;
-  fieldId: Scalars['String'];
-};
-
-export type Forms_ViewFormFilter = {
-  id: Scalars['String'];
+  fieldErrors?: Maybe<Scalars['Object']>;
+  globalErrors: Array<Scalars['String']>;
 };
 
 export type FreeCalendarResources = {
@@ -2975,7 +2991,7 @@ export type Mutation = {
   fees_saveDiscount: Discount;
   fees_saveFee: Fee;
   fees_stripeSignUp: StripeAccount;
-  forms_submitForm?: Maybe<Forms_SubmitFormResponse>;
+  forms_submitInformationRequestForms: Forms_SubmitFormResponse;
   notes_deleteBehaviourCategory?: Maybe<Success>;
   notes_deleteNote?: Maybe<Success>;
   notes_upsertBehaviourCategory?: Maybe<Success>;
@@ -3375,7 +3391,7 @@ export type MutationFees_SaveFeeArgs = {
 };
 
 
-export type MutationForms_SubmitFormArgs = {
+export type MutationForms_SubmitInformationRequestFormsArgs = {
   input: Forms_SubmitFormInput;
 };
 
@@ -4661,8 +4677,8 @@ export type Query = {
   fees_stripeAccount: StripeAccount;
   fees_studentFees: Array<StudentFee>;
   file_transfer_list?: Maybe<Array<FileTransferResponse>>;
-  forms_listForms: Array<Forms_FormListing>;
-  forms_viewForm: Array<Forms_FormListing>;
+  forms_listInformationRequestForms: Array<Forms_FormListing>;
+  forms_viewInformationRequestForms: Forms_FormView;
   generalGroups?: Maybe<Array<GeneralGroup>>;
   myAuthDetails?: Maybe<GlobalUser>;
   notes_behaviour?: Maybe<Notes_StudentBehaviourOverview>;
@@ -5047,13 +5063,13 @@ export type QueryFile_Transfer_ListArgs = {
 };
 
 
-export type QueryForms_ListFormsArgs = {
-  filter?: InputMaybe<Forms_ListFormsFilter>;
+export type QueryForms_ListInformationRequestFormsArgs = {
+  filter?: InputMaybe<Forms_InformationRequestListFormFilter>;
 };
 
 
-export type QueryForms_ViewFormArgs = {
-  filter?: InputMaybe<Forms_ViewFormFilter>;
+export type QueryForms_ViewInformationRequestFormsArgs = {
+  filter?: InputMaybe<Forms_InformationRequestViewFormFilter>;
 };
 
 
@@ -5369,7 +5385,7 @@ export type Reporting_Colour = {
 export type Reporting_GroupBy = {
   __typename?: 'Reporting_GroupBy';
   defaultValue: Scalars['String'];
-  values?: Maybe<Array<Maybe<Reporting_GroupByValue>>>;
+  values: Array<Reporting_GroupByValue>;
 };
 
 export type Reporting_GroupByValue = {
@@ -6189,6 +6205,7 @@ export type SaveFeeInput = {
   id?: InputMaybe<Scalars['Int']>;
   individualDiscounts?: InputMaybe<Array<InputMaybe<SaveIndividualDiscountInput>>>;
   name: Scalars['String'];
+  siblingDiscountType?: InputMaybe<SiblingDiscountType>;
 };
 
 export type SaveGradeInput = {
@@ -6746,6 +6763,11 @@ export type Sibling = {
   lastName?: Maybe<Scalars['String']>;
   studentPartyId: Scalars['Long'];
 };
+
+export enum SiblingDiscountType {
+  InFee = 'IN_FEE',
+  InSchool = 'IN_SCHOOL'
+}
 
 export type Sms = {
   __typename?: 'Sms';
@@ -8364,6 +8386,7 @@ export type UpsertStudentContactInput = {
   addresses?: InputMaybe<Array<InputMaybe<InputAddress>>>;
   contactPartyId?: InputMaybe<Scalars['Long']>;
   emails?: InputMaybe<Array<InputMaybe<InputEmailAddress>>>;
+  externalSystemInfo?: InputMaybe<ExternalSystemInfo>;
   occupation?: InputMaybe<Scalars['String']>;
   personal: PersonalInformationInput;
   phoneNumbers?: InputMaybe<Array<InputMaybe<InputPhoneNumber>>>;

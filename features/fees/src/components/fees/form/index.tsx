@@ -5,6 +5,7 @@ import { useTranslation } from '@tyro/i18n';
 import { useForm } from 'react-hook-form';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { SiblingDiscountType } from '@tyro/api';
 import { useSaveFee } from '../../../api/save-fees';
 import { FeeFormState } from './types';
 import { GeneralInformation } from './general-information';
@@ -19,6 +20,7 @@ const defaultFormStateValues: Partial<FeeFormState> = {
   discounts: [],
   students: [],
   individualDiscounts: [],
+  siblingDiscountType: SiblingDiscountType.InFee,
 };
 
 export function FeeForm({ initialState }: FeeFormProps) {
@@ -50,6 +52,13 @@ export function FeeForm({ initialState }: FeeFormProps) {
       dueDate: [rules.required(), rules.date()],
       amount: [rules.required(), rules.isNumber()],
       feeType: rules.required(),
+      siblingDiscountType: rules.validate<SiblingDiscountType | undefined>(
+        (value, throwError, formValues) => {
+          if (formValues.discounts.length > 0 && !value) {
+            throwError(t('common:errorMessages.required'));
+          }
+        }
+      ),
     }),
     defaultValues: defaultFormStateValues,
   });
@@ -83,6 +92,7 @@ export function FeeForm({ initialState }: FeeFormProps) {
       discounts,
       categories,
       individualDiscounts,
+      siblingDiscountType,
       ...feeData
     }) =>
       saveFee(
@@ -97,6 +107,8 @@ export function FeeForm({ initialState }: FeeFormProps) {
             partyId,
             discountId: id,
           })),
+          siblingDiscountType:
+            discounts.length > 0 ? siblingDiscountType : null,
         },
         {
           onSuccess: goBack,

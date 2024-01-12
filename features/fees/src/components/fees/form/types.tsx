@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { FeeType } from '@tyro/api';
+import { FeeType, SiblingDiscountType } from '@tyro/api';
 import { StudentSelectOption } from '@tyro/people';
 import { ReturnTypeFromUseDiscounts } from '../../../api/discounts';
 import { ReturnTypeFromUseFeesCategories } from '../../../api/fees-categories';
@@ -11,6 +11,7 @@ export type FeeFormState = {
   feeType: FeeType;
   absorbFees: boolean;
   discounts: ReturnTypeFromUseDiscounts[];
+  siblingDiscountType?: SiblingDiscountType;
   categories: ReturnTypeFromUseFeesCategories[];
   students: StudentSelectOption[];
   individualDiscounts: Array<{

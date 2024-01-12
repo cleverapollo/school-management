@@ -4,7 +4,6 @@ import {
   ICellRendererParams,
   ReturnTypeDisplayName,
   Table,
-  TableAvatar,
   TablePersonAvatar,
   useDisclosure,
   usePreferredNameLayout,
@@ -148,7 +147,7 @@ export function StudentFeesTable({ filter }: StudentFeeTableProps) {
         rowData={studentFees || []}
         columnDefs={columnDefs}
         rowSelection="multiple"
-        getRowId={({ data }) => String(data?.id?.feeId)}
+        getRowId={({ data }) => JSON.stringify(data?.id)}
         rightAdornment={
           <Fade in={selectedStudentFees.length > 0} unmountOnExit>
             <Tooltip
