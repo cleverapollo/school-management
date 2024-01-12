@@ -75,11 +75,12 @@ export default function StudentProfileContainer() {
                 'ps:1:attendance:read_session_attendance_individual'
               ),
           },
-          // NOTE: temporary hide this tab
-          // {
-          //   label: 'Fees',
-          //   value: 'fees',
-          // },
+          {
+            label: 'Fees',
+            value: 'fees',
+            hasAccess: ({ hasPermission }) =>
+              hasPermission('ps:1:fees:pay_fees'),
+          },
           {
             label: 'Assessment',
             value: 'assessment',

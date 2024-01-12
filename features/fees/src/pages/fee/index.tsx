@@ -25,12 +25,7 @@ import {
   TrashIcon,
   VerticalDotsIcon,
 } from '@tyro/icons';
-import {
-  Colour,
-  FeeStatus,
-  getColorBasedOnIndex,
-  usePermissions,
-} from '@tyro/api';
+import { getColorBasedOnIndex, usePermissions } from '@tyro/api';
 import { Link } from 'react-router-dom';
 import { ReturnTypeFromUseFees, useFees } from '../../api/fees';
 import { DeleteFeeConfirmModal } from '../../components/fees/delete-fee-confirm-modal';
