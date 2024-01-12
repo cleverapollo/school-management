@@ -44,7 +44,7 @@ import {
   StaffSelectOption,
   StudentSelectOption,
 } from '@tyro/people';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSaveSchoolActivities } from '../../api/upsert-school-activity';
 import { useRoomsList, RoomList } from '../../api/get-rooms';
 import { ActivityType } from '../../pages/edit';
@@ -113,9 +113,10 @@ export function SchoolActivityForm({
   const {
     control,
     handleSubmit,
-    reset,
     setFocus,
     setValue,
+    reset,
+    resetField,
     watch,
     formState: { isDirty },
   } = useForm<FormValues>({
@@ -149,8 +150,12 @@ export function SchoolActivityForm({
             {
               dates: [dayjs(data?.dates).format('YYYY-MM-DD')],
               partial: false,
-              startTime: dayjs(data?.startTime).format('HH:mm:ss'),
-              endTime: dayjs(data?.endTime).format('HH:mm:ss'),
+              startTime: data?.startTime
+                ? dayjs(data?.startTime).format('HH:mm:ss')
+                : '08:30',
+              endTime: data?.endTime
+                ? dayjs(data?.endTime).format('HH:mm:ss')
+                : '16:00',
             },
           ];
         }
@@ -278,6 +283,13 @@ export function SchoolActivityForm({
   const isFullOrPartialDay =
     activityDayType === ActivityType.PartialDay ||
     activityDayType === ActivityType.SingleDay;
+
+  useEffect(() => {
+    if (activityDayType === ActivityType.PartialDay) {
+      setValue('startTime', undefined);
+      setValue('endTime', undefined);
+    }
+  }, [activityDayType, setValue, schoolActivitiesData]);
 
   return (
     <Grid container gap={3} component="form" onSubmit={handleSubmit(onSubmit)}>
@@ -465,6 +477,7 @@ export function SchoolActivityForm({
                     }}
                     inputProps={{
                       fullWidth: true,
+                      defaultValue: dayjs('08:30', 'HH:mm'),
                     }}
                   />
                 </Grid>
@@ -477,6 +490,7 @@ export function SchoolActivityForm({
                     }}
                     inputProps={{
                       fullWidth: true,
+                      defaultValue: dayjs('16:00', 'HH:mm'),
                     }}
                   />
                 </Grid>

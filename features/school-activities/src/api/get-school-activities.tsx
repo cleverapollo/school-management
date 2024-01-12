@@ -16,6 +16,13 @@ const activitiesList = graphql(/* GraphQL */ `
       customGroupId
       lastPublished
       name
+      createdBy {
+        person {
+          firstName
+          lastName
+          avatarUrl
+        }
+      }
       dates {
         date
         startTime
@@ -84,7 +91,7 @@ const schoolActivityById = graphql(/* GraphQL */ `
       customGroupId
       lastPublished
       name
-      staffAbsenceTypeId  
+      staffAbsenceTypeId
       dates {
         date
         startTime

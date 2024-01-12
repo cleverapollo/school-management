@@ -10,10 +10,12 @@ import {
   TableBooleanValue,
   PageContainer,
   RouterLink,
+  ReturnTypeDisplayName,
+  usePreferredNameLayout,
 } from '@tyro/core';
 import { Link } from 'react-router-dom';
 import { useMemo } from 'react';
-import { AddDocIcon, EditIcon, VerticalDotsIcon , TrashIcon} from '@tyro/icons';
+import { AddDocIcon, EditIcon, VerticalDotsIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import {
   useActivitiesList,
@@ -25,7 +27,8 @@ const getColumnDefs = (
     ('schoolActivities' | 'common')[],
     undefined,
     ('schoolActivities' | 'common')[]
-  >
+  >,
+  displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseActivitiesList>['columnDefs'] => [
   {
     field: 'name',
@@ -68,29 +71,22 @@ const getColumnDefs = (
     field: 'tripPurpose',
     headerName: t('schoolActivities:activityDetails'),
     valueGetter: ({ data }) => data?.tripPurpose,
+    maxWidth: 350,
   },
   {
-    field: 'location.inSchoolGrounds',
-    headerName: t('schoolActivities:inSchool'),
-    valueGetter: ({ data }) => data?.location?.inSchoolGrounds,
+    field: 'createdBy.person',
+    headerName: t('common:createdBy'),
+    valueGetter: ({ data }) => displayName(data?.createdBy?.person) || '-',
+  },
+  {
+    field: 'published',
+    headerName: t('common:published'),
+    valueGetter: ({ data }) => data?.published || '-',
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseActivitiesList>) => {
-      if (!data) return null;
-
-      return <TableBooleanValue value={!!data.location?.inSchoolGrounds} />;
-    },
-  },
-  {
-    field: 'location.rooms',
-    headerName: t('common:room', { count: 1 }),
-    valueGetter: ({ data }) =>
-      data?.location?.rooms?.map((room) => room?.name) || '-',
-  },
-  {
-    field: 'notes',
-    headerName: t('schoolActivities:internalNotes'),
-    valueGetter: ({ data }) => data?.notes || '-',
+    }: ICellRendererParams<ReturnTypeFromUseActivitiesList>) => (
+      <TableBooleanValue value={!!data?.published} />
+    ),
   },
   {
     suppressColumnsToolPanel: true,
@@ -117,9 +113,13 @@ const getColumnDefs = (
 
 export default function TestPage() {
   const { t } = useTranslation(['schoolActivities', 'common']);
+  const { displayName } = usePreferredNameLayout();
   const { data: schoolActivities, isLoading } = useActivitiesList({});
 
-  const schoolActivitiesColumns = useMemo(() => getColumnDefs(t), [t]);
+  const schoolActivitiesColumns = useMemo(
+    () => getColumnDefs(t, displayName),
+    [t, displayName]
+  );
 
   return (
     <PageContainer title={t('schoolActivities:schoolActivitiesTitle')}>

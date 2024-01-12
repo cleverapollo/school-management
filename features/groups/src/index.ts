@@ -4,7 +4,6 @@ export {
   useSubjectGroupById,
   useSubjectGroups,
 } from './api/subject-groups';
-export { useStudentsSearch } from './api/students-search';
 export { groupsKeys } from './api/keys';
 export { useStudentsSearch } from './api/students-search';
 export type {
