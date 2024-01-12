@@ -63,6 +63,10 @@ export default function StaffProfileContainer() {
             {
               label: t('people:personal.title'),
               value: 'personal',
+              hasAccess: ({ isStaffUserWithPermission }) =>
+                isStaffUserWithPermission(
+                  'ps:1:people:view_staff_personal_information'
+                ),
             },
             {
               label: 'Timetable',

@@ -46,7 +46,8 @@
     "classListManager": "Class list manager",
     "fees": {
       "overview": "Overview",
-      "discounts": "Discounts"
+      "discounts": "Discounts",
+      "categories": "Categories"
     },
     "people": {
       "title": "People",

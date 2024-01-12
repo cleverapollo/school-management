@@ -54,6 +54,7 @@ export * from './collapse';
 export * from './comment';
 export * from './copy';
 export * from './credit-card';
+export * from './discount';
 export * from './doc-search';
 export * from './double-checkmark';
 export * from './download-arrow-circle';

@@ -32,12 +32,16 @@
     "clone": "Clone",
     "filter": "Filter",
     "deselect": "Deselect",
-    "exportCSV": "Export CSV"
+    "exportCSV": "Export CSV",
+    "publish": "Publish",
+    "unpublish": "Unpublish"
   },
   "snackbarMessages": {
     "createSuccess": "Created successfully!",
     "updateSuccess": "Updated successfully!",
     "deleteSuccess": "Deleted successfully!",
+    "unpublishedSuccess": "Unpublished successfully!",
+    "publishedSuccess": "Published successfully!",
     "mailWasSent": "Mail was sent",
     "inviteSent": "Invite was sent",
     "labelWasAssigned": "Label was assigned!",
@@ -45,18 +49,20 @@
     "publishedOnline": "Published online"
   },
   "relationshipType": {
+    "AGENT": "Agent",
     "AUNTY": "Aunty",
     "FAMILY_FRIEND": "Family friend",
+    "FATHER": "Father",
     "GRAND_FATHER": "Grandfather",
     "GRAND_MOTHER": "Grandmother",
     "MOTHER": "Mother",
-    "FATHER": "Father",
     "NEIGHBOUR": "Neighbour",
     "OTHER": "Other",
     "SIBLING": "Sibling",
     "SOCIAL_WORKER": "Social worker",
     "STEP_FATHER": "Stepfather",
     "STEP_MOTHER": "Stepmother",
+    "AGENT": "Agent",
     "UNCLE": "Uncle"
   },
   "summary": "Summary",
@@ -293,6 +299,8 @@
   "hours": "Hours",
   "minutes": "Minutes",
   "fromDate": "From {{date}}",
+  "from": "From",
+  "to": "To",
   "dayOfWeekValues": {
     "MONDAY": "Monday",
     "TUESDAY": "Tuesday",
@@ -314,5 +322,7 @@
   },
   "unconfirmed": "Unconfirmed",
   "absent": "Absent",
-  "by": "By"
+  "by": "By",
+  "paid": "Paid",
+  "published": "Published"
 }

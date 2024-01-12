@@ -4,7 +4,6 @@ import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import {
   ActionMenu,
   BehaviourLabelChip,
-  BehaviourLabelSelectCellEditor,
   GridOptions,
   ICellRendererParams,
   PageContainer,
@@ -37,7 +36,6 @@ const getNoteTagBehaviourColumns = (
     headerName: t('common:name'),
     field: 'name',
     lockVisible: true,
-    editable: true,
     sort: 'asc',
   },
   {
@@ -48,12 +46,10 @@ const getNoteTagBehaviourColumns = (
     headerName: t('settings:behaviourLabel.reportAs'),
     field: 'behaviourType',
     filter: true,
-    editable: true,
     filterValueGetter: ({ data }) =>
       data?.behaviourType
         ? t(`common:behaviourType.${data.behaviourType}`)
         : null,
-    cellEditorSelector: BehaviourLabelSelectCellEditor(t),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseNoteTagsBehaviour, any>) =>
@@ -64,7 +60,6 @@ const getNoteTagBehaviourColumns = (
   {
     headerName: t('common:category'),
     field: 'behaviourCategory.name',
-    editable: false,
   },
   {
     suppressColumnsToolPanel: true,

@@ -21,3 +21,5 @@ export function useFormatNumber() {
     [languageCode]
   );
 }
+
+export type ReturnTypeFromUseFormatNumber = ReturnType<typeof useFormatNumber>;

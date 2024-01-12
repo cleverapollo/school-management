@@ -25,12 +25,7 @@ import {
 } from '@tyro/api';
 import { Link, useParams } from 'react-router-dom';
 import { Box, Button, Chip, ChipProps, Fade, Typography } from '@mui/material';
-import {
-  CheckmarkCircleIcon,
-  MobileIcon,
-  SendMailIcon,
-  SyncIcon,
-} from '@tyro/icons';
+import { MobileIcon, SendMailIcon, SyncIcon } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { useMailSettings } from '@tyro/mail';
 import { useAssessmentById } from '../../api/assessments';
@@ -40,7 +35,6 @@ import {
   ReturnTypeFromUseAssessmentSubjectGroups,
 } from '../../api/assessment-subject-groups';
 import { SyncWithPpodModal } from '../../components/state-cba/sync-with-ppod-modal';
-import { PublishOnlineModal } from '../../components/state-cba/publish-state-cba-online';
 
 const getColumnDefs = (
   isDesktop: boolean,
@@ -174,12 +168,6 @@ export default function ViewStateCba() {
     onClose: onCloseSyncWithPpod,
   } = useDisclosure();
 
-  const {
-    isOpen: isSyncWithPublishOnlineOpen,
-    onOpen: onSyncWithPublishOnlineOpen,
-    onClose: onClosePublishOnline,
-  } = useDisclosure();
-
   const { composeEmail } = useMailSettings();
 
   const { data: assessmentData } = useAssessmentById({
@@ -279,11 +267,7 @@ export default function ViewStateCba() {
           label: t('assessments:syncWithPpod'),
           icon: <SyncIcon />,
           onClick: onSyncWithPpodOpen,
-        },
-        {
-          label: t('assessments:actions.publish'),
-          icon: <CheckmarkCircleIcon />,
-          onClick: onSyncWithPublishOnlineOpen,
+          hasAccess: () => hasPermission('ps:1:assessment:cba_sync_ppod'),
         },
       ],
     ],
@@ -356,12 +340,6 @@ export default function ViewStateCba() {
         initialState={selectedAssessments}
         assessmentId={assessmentIdAsNumber}
         studentResults={studentResults}
-      />
-      <PublishOnlineModal
-        isOpen={isSyncWithPublishOnlineOpen}
-        onClose={onClosePublishOnline}
-        initialState={selectedAssessments}
-        assessmentId={assessmentIdAsNumber}
       />
     </>
   );
