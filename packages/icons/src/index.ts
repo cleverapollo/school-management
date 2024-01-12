@@ -51,6 +51,7 @@ export * from './collapse';
 export * from './comment';
 export * from './copy';
 export * from './credit-card';
+export * from './data-one-to-three-pipes';
 export * from './discount';
 export * from './doc-search';
 export * from './double-checkmark';

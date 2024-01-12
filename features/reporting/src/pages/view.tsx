@@ -39,6 +39,10 @@ export default function ReportPage() {
   const [filters, setFilters] = useState<Reporting_TableFilterInput[]>(
     getFiltersFromSearchParams(searchParams)
   );
+  const [groupValues, setGroupValues] = useState<{
+    groupings?: string[];
+    timeGrouping?: string;
+  }>({});
   const { palette } = useTheme();
 
   const {
@@ -50,6 +54,7 @@ export default function ReportPage() {
     filter: {
       reportId,
       filters,
+      ...groupValues,
     },
   });
 
@@ -141,8 +146,12 @@ export default function ReportPage() {
     );
   }, [reportData?.data]);
 
-  const updateFilters = (newFilters: Reporting_TableFilterInput[]) => {
-    const valuesForSearchParams = newFilters.reduce(
+  const updateValues = (newValues: {
+    filters: Reporting_TableFilterInput[];
+    groupings?: string[];
+    timeGrouping?: string;
+  }) => {
+    const valuesForSearchParams = newValues.filters.reduce(
       (acc, { filterId, filterValue }) => {
         if (
           !filterValue ||
@@ -160,7 +169,11 @@ export default function ReportPage() {
     );
 
     setSearchParams(valuesForSearchParams);
-    setFilters(newFilters);
+    setFilters(newValues.filters);
+    setGroupValues({
+      groupings: newValues.groupings,
+      timeGrouping: newValues.timeGrouping,
+    });
   };
 
   return (
@@ -168,8 +181,13 @@ export default function ReportPage() {
       <DynamicForm
         isFetching={isFetching}
         filters={mappedFilterValues ?? []}
-        onFilterChange={updateFilters}
+        onValueChange={updateValues}
         sql={reportData?.debug?.sql}
+        isInteractiveReport={!!reportData?.info.isInteractive}
+        groupingFields={{
+          groupBy: reportData?.groupBy,
+          timeGroupBy: reportData?.timeGroupBy,
+        }}
       />
       <Table<FormattedReportData[number]>
         isLoading={isLoading}

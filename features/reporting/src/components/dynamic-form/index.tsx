@@ -5,26 +5,49 @@ import {
   DialogActions,
   DialogContent,
   useFormValidator,
+  useDisclosure,
 } from '@tyro/core';
-import { Button, IconButton, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Collapse,
+  IconButton,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import { useMemo, useState } from 'react';
 import {
+  Reporting_GroupBy,
   Reporting_TableFilter,
   Reporting_TableFilterInput,
   Reporting_TableFilterType,
   Reporting_TableFilterValues,
+  Reporting_TimeGroupBy,
 } from '@tyro/api';
 import dayjs, { Dayjs } from 'dayjs';
-import { InfoCircleIcon } from '@tyro/icons';
+import {
+  ChevronUpIcon,
+  DataOneToThreePipeIcon,
+  InfoCircleIcon,
+} from '@tyro/icons';
 import { DynamicControl } from './control';
 
 type DynamicFormProps = {
   isFetching: boolean;
   filters: Reporting_TableFilter[];
-  onFilterChange: (filters: Reporting_TableFilterInput[]) => void;
+  onValueChange: (value: {
+    filters: Reporting_TableFilterInput[];
+    groupings?: string[];
+    timeGrouping?: string;
+  }) => void;
   sql?: string | null;
+  isInteractiveReport?: boolean;
+  groupingFields?: {
+    groupBy?: Reporting_GroupBy | null;
+    timeGroupBy?: Reporting_TimeGroupBy | null;
+  };
 };
 
 type FormState = { [id: Reporting_TableFilter['id']]: any };
@@ -56,11 +79,18 @@ const getValueFormat = (
 export const DynamicForm = ({
   isFetching,
   filters,
-  onFilterChange,
+  onValueChange,
   sql,
+  isInteractiveReport = false,
+  groupingFields,
 }: DynamicFormProps) => {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'reports']);
   const [openSqlDialog, setOpenSqlDialog] = useState(false);
+  const {
+    id: groupingId,
+    isOpen: isGroupingOpen,
+    onToggle: onToggleGrouping,
+  } = useDisclosure();
 
   const { resolver, rules } = useFormValidator();
 
@@ -105,13 +135,15 @@ export const DynamicForm = ({
     resolver: resolverFields,
   });
 
-  const onSubmit = handleSubmit((formData) => {
-    onFilterChange(
-      filters.map<Reporting_TableFilterInput>((filter) => ({
+  const onSubmit = handleSubmit(({ groupBy, timeGroupBy, ...formData }) => {
+    onValueChange({
+      filters: filters.map<Reporting_TableFilterInput>((filter) => ({
         filterId: filter.id,
         filterValue: getValueFormat(formData[filter.id], filter.inputType),
-      }))
-    );
+      })),
+      groupings: groupBy ? [groupBy] : undefined,
+      timeGrouping: timeGroupBy as string | undefined,
+    });
   });
 
   const handleCloseDialog = () => {
@@ -132,6 +164,97 @@ export const DynamicForm = ({
           <DynamicControl control={control} filter={filter} />
         </Stack>
       ))}
+      {isInteractiveReport && groupingFields && (
+        <Stack width="100%">
+          <Box component="h2" sx={{ my: 0 }}>
+            <Button
+              sx={{
+                color: 'text.secondary',
+              }}
+              onClick={onToggleGrouping}
+              startIcon={
+                <DataOneToThreePipeIcon sx={{ color: 'indigo.500' }} />
+              }
+              endIcon={
+                <ChevronUpIcon
+                  sx={{
+                    color: 'text.secondary',
+                    transform: isGroupingOpen
+                      ? 'rotate(180deg)'
+                      : 'rotate(0deg)',
+                    transition: 'transform 0.2s ease-in-out',
+                    ml: 1,
+                  }}
+                />
+              }
+              id={`${groupingId}-button`}
+              aria-expanded={isGroupingOpen}
+              aria-controls={groupingId}
+            >
+              {t('reports:grouping')}
+            </Button>
+          </Box>
+          <Collapse
+            in={isGroupingOpen}
+            id={groupingId}
+            role="region"
+            aria-labelledby={`${groupingId}-button`}
+          >
+            <Stack
+              flexDirection="row"
+              gap={2}
+              alignItems="flex-start"
+              flexWrap="wrap"
+              pt={1}
+            >
+              {groupingFields.groupBy && (
+                <Stack flexDirection="row">
+                  <DynamicControl
+                    control={control}
+                    filter={{
+                      id: 'groupBy',
+                      inputType: Reporting_TableFilterType.Select,
+                      label: t('reports:grouping'),
+                      defaultValue: { id: groupingFields.groupBy.defaultValue },
+                      required: false,
+                      values:
+                        groupingFields.groupBy.values?.map(({ id, name }) => ({
+                          id,
+                          value: name,
+                        })) ?? [],
+                    }}
+                  />
+                </Stack>
+              )}
+
+              {groupingFields.timeGroupBy && (
+                <Stack flexDirection="row">
+                  <DynamicControl
+                    control={control}
+                    filter={{
+                      id: 'timeGroupBy',
+                      inputType: Reporting_TableFilterType.Select,
+                      label: t('reports:timeGrouping'),
+                      defaultValue: {
+                        id: groupingFields.timeGroupBy.defaultValue,
+                      },
+                      required: false,
+                      values:
+                        groupingFields.timeGroupBy.values?.map(
+                          ({ id, name }) => ({
+                            id,
+                            value: name,
+                          })
+                        ) ?? [],
+                    }}
+                  />
+                </Stack>
+              )}
+            </Stack>
+          </Collapse>
+        </Stack>
+      )}
+
       <Stack
         flexDirection="row"
         alignItems="center"
