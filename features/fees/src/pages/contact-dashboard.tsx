@@ -63,6 +63,12 @@ const getColumnDefs = (
     type: 'numericColumn',
   },
   {
+    field: 'amountDue',
+    headerName: t('fees:due'),
+    valueGetter: ({ data }) => formatCurrency(data?.amountDue ?? 0),
+    type: 'numericColumn',
+  },
+  {
     field: 'amountPaid',
     headerName: t('fees:amountPaid'),
     valueGetter: ({ data }) => formatCurrency(data?.amountPaid ?? 0),

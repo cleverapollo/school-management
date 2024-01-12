@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   TFunction,
   useFormatNumber,
@@ -14,15 +14,24 @@ import {
   getNumber,
   ReturnTypeDisplayName,
   ValueFormatterParams,
+  ActionMenu,
+  useDisclosure,
+  ConfirmDialog,
 } from '@tyro/core';
 
 import { StudentTableAvatar } from '@tyro/people';
-import { getPersonProfileLink } from '@tyro/api';
+import { BulkAction, getPersonProfileLink } from '@tyro/api';
+import { Box, Fade } from '@mui/material';
+import { DiscountIcon, RemoveDiscountIcon } from '@tyro/icons';
 import { FeeStatusChip } from '../../../components/common/fee-status-chip';
 import {
   ReturnTypeFromUseFeeDebtors,
   useFeeDebtors,
 } from '../../../api/debtors';
+import { BulkAddIndividualDiscountModal } from '../../../components/fees/form/bulk-add-individual-discount-modal';
+import { ReturnTypeFromUseDiscounts } from '../../../api/discounts';
+import { useBulkApplyDiscounts } from '../../../api/bulk-apply-discounts';
+import { getDiscountName } from '../../../utils/get-discount-name';
 
 const getFeeOverviewColumns = (
   t: TFunction<('common' | 'fees')[], undefined, ('common' | 'fees')[]>,
@@ -46,6 +55,9 @@ const getFeeOverviewColumns = (
       ) : null,
     cellClass: 'cell-value-visible',
     sort: 'asc',
+    headerCheckboxSelection: true,
+    headerCheckboxSelectionFilteredOnly: true,
+    checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
     filter: true,
   },
@@ -84,7 +96,9 @@ const getFeeOverviewColumns = (
     headerName: t('fees:discounts'),
     valueGetter: ({ data }) =>
       data && Array.isArray(data?.discounts) && data.discounts.length > 0
-        ? data?.discounts?.map((d) => d?.name).join(', ')
+        ? data?.discounts
+            ?.map((discount) => getDiscountName(discount))
+            .join(', ')
         : '-',
   },
   {
@@ -105,21 +119,149 @@ export default function StudentProfileClassesPage() {
   const { t } = useTranslation(['common', 'fees']);
   const { displayName } = usePreferredNameLayout();
   const { formatCurrency } = useFormatNumber();
+  const [selectedDebtorIds, setSelectedDebtorsIds] = useState<Set<number>>(
+    new Set()
+  );
+  const {
+    isOpen: isAddBulkDiscountModalOpen,
+    onOpen: onOpenAddBulkDiscountModal,
+    onClose: onCloseAddBulkDiscountModal,
+  } = useDisclosure();
+  const {
+    isOpen: isRemoveDiscountConfirmOpen,
+    onOpen: onOpenDiscountConfirm,
+    onClose: onCloseDiscountConfirm,
+  } = useDisclosure();
 
   const { data: debtors } = useFeeDebtors({
     ids: [feeId ?? 0],
   });
+  const { mutateAsync: bulkApplyDiscounts } = useBulkApplyDiscounts();
+
+  const selectedDebtors = useMemo(
+    () => debtors?.filter((debtor) => selectedDebtorIds.has(debtor.id)) ?? [],
+    [debtors, selectedDebtorIds]
+  );
+
+  const handleSaveIndividualDiscount = async (
+    discount: ReturnTypeFromUseDiscounts
+  ) =>
+    bulkApplyDiscounts(
+      {
+        feeId: feeId ?? 0,
+        individualDiscounts: selectedDebtors.map((debtor) => ({
+          action: BulkAction.Upsert,
+          discountId: discount.id,
+          studentPartyId: debtor.person.partyId,
+        })),
+      },
+      {
+        onSuccess: () => {
+          onCloseAddBulkDiscountModal();
+        },
+      }
+    );
+
+  const removeDiscounts = () =>
+    bulkApplyDiscounts(
+      {
+        feeId: feeId ?? 0,
+        individualDiscounts: selectedDebtors
+          .filter(({ discounts }) => discounts.length > 0)
+          .map((debtor) => ({
+            action: BulkAction.Remove,
+            discountId: debtor.discounts[0].id,
+            studentPartyId: debtor.person.partyId,
+          })),
+      },
+      {
+        onSuccess: () => {
+          onCloseDiscountConfirm();
+        },
+      }
+    );
 
   const columns = useMemo(
     () => getFeeOverviewColumns(t, displayName, formatCurrency),
     [t, displayName, formatCurrency]
   );
 
+  const doSomeSelectedDebtorsHaveDiscounts = selectedDebtors.some(
+    ({ discounts }) => discounts.length > 0
+  );
+  const haveSomeSelectedDebtorsPaidSomething = selectedDebtors.some(
+    ({ amountPaid }) => amountPaid > 0
+  );
+
   return (
-    <Table
-      rowData={debtors ?? []}
-      columnDefs={columns}
-      getRowId={({ data }) => String(data?.id)}
-    />
+    <>
+      <Table
+        rowData={debtors ?? []}
+        columnDefs={columns}
+        rowSelection="multiple"
+        getRowId={({ data }) => String(data?.id)}
+        onRowSelection={(newSelectedDebtors) => {
+          setSelectedDebtorsIds(
+            new Set(newSelectedDebtors.map((debtor) => debtor.id))
+          );
+        }}
+        rightAdornment={
+          <Fade in={selectedDebtors.length > 0} unmountOnExit>
+            <Box>
+              <ActionMenu
+                menuItems={[
+                  {
+                    label: doSomeSelectedDebtorsHaveDiscounts
+                      ? t('fees:replaceDiscount')
+                      : t('fees:addDiscount'),
+                    icon: <DiscountIcon />,
+                    disabled: haveSomeSelectedDebtorsPaidSomething,
+                    disabledTooltip: doSomeSelectedDebtorsHaveDiscounts
+                      ? t(
+                          'fees:youCanNotReplaceDiscountAsSomePeopleHaveAlreadyPaidFee'
+                        )
+                      : t(
+                          'fees:youCanNotAddDiscountAsSomePeopleHaveAlreadyPaidFee'
+                        ),
+                    onClick: onOpenAddBulkDiscountModal,
+                  },
+                  {
+                    label: t('fees:removeDiscount', {
+                      count: selectedDebtors.length,
+                    }),
+                    icon: <RemoveDiscountIcon />,
+                    hasAccess: () => doSomeSelectedDebtorsHaveDiscounts,
+                    disabled: haveSomeSelectedDebtorsPaidSomething,
+                    disabledTooltip: t(
+                      'fees:youCanNotRemoveDiscountAsSomePeopleHaveAlreadyPaidFee',
+                      { count: selectedDebtors.length }
+                    ),
+                    onClick: onOpenDiscountConfirm,
+                  },
+                ]}
+              />
+            </Box>
+          </Fade>
+        }
+      />
+
+      <BulkAddIndividualDiscountModal
+        isOpen={isAddBulkDiscountModalOpen}
+        onSave={handleSaveIndividualDiscount}
+        onClose={onCloseAddBulkDiscountModal}
+      />
+
+      <ConfirmDialog
+        open={isRemoveDiscountConfirmOpen}
+        title={t('fees:removeDiscount', { count: selectedDebtors.length })}
+        description={t('fees:areYouSureYouWantToRemoveDiscount', {
+          count: selectedDebtors.length,
+        })}
+        confirmText={t('common:yes')}
+        cancelText={t('common:no')}
+        onConfirm={removeDiscounts}
+        onClose={onCloseDiscountConfirm}
+      />
+    </>
   );
 }

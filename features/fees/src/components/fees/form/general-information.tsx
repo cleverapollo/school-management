@@ -19,6 +19,7 @@ import { useTranslation } from '@tyro/i18n';
 import { FeeType, getColorBasedOnIndex } from '@tyro/api';
 import { Control } from 'react-hook-form';
 import { InfoCircleIcon } from '@tyro/icons';
+import { getDiscountName } from '../../../utils/get-discount-name';
 import { FeeFormState } from './types';
 import { useDiscounts } from '../../../api/discounts';
 import { useFeesCategories } from '../../../api/fees-categories';
@@ -32,6 +33,10 @@ export function GeneralInformation({ control }: GeneralInformationProps) {
 
   const { data: discountsData = [] } = useDiscounts({});
   const { data: categoriesData = [] } = useFeesCategories({});
+
+  const siblingDiscounts = discountsData.filter(
+    ({ siblingDiscount }) => siblingDiscount
+  );
 
   return (
     <Card variant="outlined">
@@ -103,9 +108,9 @@ export function GeneralInformation({ control }: GeneralInformationProps) {
             multiple
             label={t('fees:discounts')}
             optionIdKey="id"
-            optionTextKey="name"
+            getOptionLabel={(option) => getDiscountName(option) ?? ''}
             controlProps={{ name: 'discounts', control }}
-            options={discountsData}
+            options={siblingDiscounts}
             renderTags={(tags, getTagProps) =>
               tags.map((tag, index) => (
                 <Chip

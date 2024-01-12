@@ -30,7 +30,10 @@ const feeDebtors = graphql(/* GraphQL */ `
         amountDue
         amountDiscounted
         discounts {
+          id
           name
+          discountType
+          value
         }
       }
     }

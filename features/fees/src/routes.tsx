@@ -7,6 +7,7 @@ import {
 } from '@tyro/core';
 import { WalletWithMoneyIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
+import { getFeeDebtors } from './api/debtors';
 import { getDiscounts } from './api/discounts';
 import { getFees } from './api/fees';
 import { getFeesCategories } from './api/fees-categories';
@@ -119,8 +120,6 @@ export const getRoutes: NavObjectFunction = (t) => [
             loader: async ({ params }) => {
               const feeId = getNumber(params.id);
 
-              console.log({ feeId });
-
               if (!feeId) {
                 throw404Error();
               }
@@ -139,6 +138,15 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'overview',
                 element: <ViewFeeOverview />,
+                loader: async ({ params }) => {
+                  const feeId = getNumber(params.id);
+
+                  if (!feeId) {
+                    throw404Error();
+                  }
+
+                  return getFeeDebtors({ ids: [feeId] });
+                },
               },
             ],
           },
