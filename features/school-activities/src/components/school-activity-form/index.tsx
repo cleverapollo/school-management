@@ -291,6 +291,13 @@ export function SchoolActivityForm({
     }
   }, [activityDayType, setValue, schoolActivitiesData]);
 
+  useEffect(() => {
+    const isFullDay = activityDayType === ActivityType.SingleDay;
+
+    setValue('startTime', isFullDay ? dayjs('08:30', 'HH:mm') : undefined);
+    setValue('endTime', isFullDay ? dayjs('16:00', 'HH:mm') : undefined);
+  }, [activityDayType]);
+
   return (
     <Grid container gap={3} component="form" onSubmit={handleSubmit(onSubmit)}>
       <Grid item xs={12} lg={10}>
@@ -477,7 +484,6 @@ export function SchoolActivityForm({
                     }}
                     inputProps={{
                       fullWidth: true,
-                      defaultValue: dayjs('08:30', 'HH:mm'),
                     }}
                   />
                 </Grid>
@@ -490,7 +496,6 @@ export function SchoolActivityForm({
                     }}
                     inputProps={{
                       fullWidth: true,
-                      defaultValue: dayjs('16:00', 'HH:mm'),
                     }}
                   />
                 </Grid>
