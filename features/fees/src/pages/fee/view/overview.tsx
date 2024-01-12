@@ -96,9 +96,7 @@ const getFeeOverviewColumns = (
     headerName: t('fees:discounts'),
     valueGetter: ({ data }) =>
       data && Array.isArray(data?.discounts) && data.discounts.length > 0
-        ? data?.discounts
-            ?.map((discount) => getDiscountName(discount))
-            .join(', ')
+        ? data?.discounts?.map(getDiscountName).join(', ')
         : '-',
   },
   {
@@ -156,9 +154,7 @@ export default function StudentProfileClassesPage() {
         })),
       },
       {
-        onSuccess: () => {
-          onCloseAddBulkDiscountModal();
-        },
+        onSuccess: onCloseAddBulkDiscountModal,
       }
     );
 
@@ -175,9 +171,7 @@ export default function StudentProfileClassesPage() {
           })),
       },
       {
-        onSuccess: () => {
-          onCloseDiscountConfirm();
-        },
+        onSuccess: onCloseDiscountConfirm,
       }
     );
 

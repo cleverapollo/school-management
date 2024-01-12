@@ -106,9 +106,9 @@ export function GeneralInformation({ control }: GeneralInformationProps) {
         <Grid item xs={12} sm={6}>
           <RHFAutocomplete
             multiple
-            label={t('fees:discounts')}
+            label={t('fees:siblingDiscounts')}
             optionIdKey="id"
-            getOptionLabel={(option) => getDiscountName(option) ?? ''}
+            getOptionLabel={getDiscountName}
             controlProps={{ name: 'discounts', control }}
             options={siblingDiscounts}
             renderTags={(tags, getTagProps) =>

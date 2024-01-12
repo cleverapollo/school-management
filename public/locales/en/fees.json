@@ -65,6 +65,7 @@
   "feeCategory": "Fee category",
   "createFeeCategory": "Create fee category",
   "editFeeCategory": "Edit fee category",
+  "siblingDiscounts": "Sibling discounts",
   "discounts": "Discounts",
   "absorbFeesInformation": "The school will absorb the service charge for this transaction",
   "addDiscount": "Add discount",

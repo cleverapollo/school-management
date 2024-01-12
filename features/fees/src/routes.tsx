@@ -6,11 +6,13 @@ import {
   throw404Error,
 } from '@tyro/core';
 import { WalletWithMoneyIcon } from '@tyro/icons';
+import { getUser } from '@tyro/api';
 import { redirect } from 'react-router-dom';
 import { getFeeDebtors } from './api/debtors';
 import { getDiscounts } from './api/discounts';
 import { getFees } from './api/fees';
 import { getFeesCategories } from './api/fees-categories';
+import { getStudentFees } from './api/student-fees';
 import { stripeAccountGuard } from './utils/stripe-account-guard';
 
 const ContactDashboard = lazyWithRetry(
@@ -43,6 +45,11 @@ export const getRoutes: NavObjectFunction = (t) => [
         title: t('navigation:general.fees'),
         icon: <WalletWithMoneyIcon />,
         element: <ContactDashboard />,
+        loader: async () => {
+          const { activeProfile } = await getUser();
+
+          return getStudentFees({ contactPartyId: activeProfile?.partyId });
+        },
       },
     ],
   },

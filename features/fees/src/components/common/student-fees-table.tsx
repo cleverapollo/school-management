@@ -5,6 +5,7 @@ import {
   ReturnTypeDisplayName,
   Table,
   TableAvatar,
+  TablePersonAvatar,
   useDisclosure,
   usePreferredNameLayout,
 } from '@tyro/core';
@@ -53,9 +54,7 @@ const getColumnDefs = (
       if (!data) return null;
       const { person } = data;
 
-      return (
-        <TableAvatar name={displayName(person)} avatarUrl={person?.avatarUrl} />
-      );
+      return <TablePersonAvatar person={person} />;
     },
   },
   {
@@ -92,9 +91,7 @@ const getColumnDefs = (
     suppressColumnsToolPanel: !permissions.isStaffUser,
     valueGetter: ({ data }) =>
       data && Array.isArray(data?.discounts) && data.discounts.length > 0
-        ? data?.discounts
-            ?.map((discount) => getDiscountName(discount))
-            .join(', ')
+        ? data?.discounts?.map(getDiscountName).join(', ')
         : '-',
   },
   {

@@ -37,11 +37,10 @@ export function BulkAddIndividualDiscountModal({
   const handleSave = async () => {
     if (discount) {
       setLoading(true);
-      const f = async () => {
+      await (async function () {
         // eslint-disable-next-line @typescript-eslint/await-thenable
         await onSave(discount);
-      };
-      await f();
+      })();
       setLoading(false);
     }
   };
@@ -70,7 +69,7 @@ export function BulkAddIndividualDiscountModal({
           value={discount}
           label={t('fees:discounts')}
           optionIdKey="id"
-          getOptionLabel={(option) => getDiscountName(option) ?? ''}
+          getOptionLabel={getDiscountName}
           onChange={(_event, value) => {
             setDiscount(value as ReturnTypeFromUseDiscounts);
           }}

@@ -78,8 +78,8 @@ export default function StudentProfileContainer() {
           {
             label: 'Fees',
             value: 'fees',
-            hasAccess: ({ hasPermission }) =>
-              hasPermission('ps:1:fees:pay_fees'),
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission('ps:1:fees:pay_fees'),
           },
           {
             label: 'Assessment',

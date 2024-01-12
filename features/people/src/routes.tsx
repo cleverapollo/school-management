@@ -274,8 +274,8 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'fees',
                 element: <StudentProfileFeesPage />,
-                hasAccess: ({ hasPermission }) =>
-                  hasPermission('ps:1:fees:pay_fees'),
+                hasAccess: ({ isStaffUserWithPermission }) =>
+                  isStaffUserWithPermission('ps:1:fees:pay_fees'),
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
 

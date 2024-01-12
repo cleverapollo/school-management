@@ -60,11 +60,10 @@ export function ConfirmDialog({
           loading={loading}
           onClick={async () => {
             setLoading(true);
-            const f = async () => {
+            await (async function () {
               // eslint-disable-next-line @typescript-eslint/await-thenable
               await onConfirm();
-            };
-            await f();
+            })();
             setLoading(false);
             onClose();
           }}
