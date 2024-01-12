@@ -89,6 +89,7 @@ const getColumnDefs = (
     field: 'discounts',
     headerName: t('fees:discounts'),
     hide: !permissions.isStaffUser,
+    suppressColumnsToolPanel: !permissions.isStaffUser,
     valueGetter: ({ data }) =>
       data && Array.isArray(data?.discounts) && data.discounts.length > 0
         ? data?.discounts
