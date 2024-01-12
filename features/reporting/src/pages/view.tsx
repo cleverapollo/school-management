@@ -39,7 +39,8 @@ export default function ReportPage() {
   const [filters, setFilters] = useState<Reporting_TableFilterInput[]>(
     getFiltersFromSearchParams(searchParams)
   );
-  const [groupValues, setGroupValues] = useState<{
+  const [interactiveValues, setInteractiveValues] = useState<{
+    metrics?: string;
     groupings?: string[];
     timeGrouping?: string;
   }>({});
@@ -54,7 +55,7 @@ export default function ReportPage() {
     filter: {
       reportId,
       filters,
-      ...groupValues,
+      ...interactiveValues,
     },
   });
 
@@ -148,6 +149,7 @@ export default function ReportPage() {
 
   const updateValues = (newValues: {
     filters: Reporting_TableFilterInput[];
+    metrics?: string;
     groupings?: string[];
     timeGrouping?: string;
   }) => {
@@ -170,7 +172,8 @@ export default function ReportPage() {
 
     setSearchParams(valuesForSearchParams);
     setFilters(newValues.filters);
-    setGroupValues({
+    setInteractiveValues({
+      metrics: newValues.metrics,
       groupings: newValues.groupings,
       timeGrouping: newValues.timeGrouping,
     });
@@ -184,6 +187,9 @@ export default function ReportPage() {
         onValueChange={updateValues}
         sql={reportData?.debug?.sql}
         isInteractiveReport={!!reportData?.info.isInteractive}
+        preFilterFields={{
+          stats: reportData?.metrics,
+        }}
         groupingFields={{
           groupBy: reportData?.groupBy,
           timeGroupBy: reportData?.timeGroupBy,

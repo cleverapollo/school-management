@@ -24,6 +24,7 @@ import {
   Reporting_TableFilterInput,
   Reporting_TableFilterType,
   Reporting_TableFilterValues,
+  Reporting_TableMetric,
   Reporting_TimeGroupBy,
 } from '@tyro/api';
 import dayjs, { Dayjs } from 'dayjs';
@@ -39,11 +40,15 @@ type DynamicFormProps = {
   filters: Reporting_TableFilter[];
   onValueChange: (value: {
     filters: Reporting_TableFilterInput[];
+    metrics?: string;
     groupings?: string[];
     timeGrouping?: string;
   }) => void;
   sql?: string | null;
   isInteractiveReport?: boolean;
+  preFilterFields?: {
+    stats?: Reporting_TableMetric | null;
+  };
   groupingFields?: {
     groupBy?: Reporting_GroupBy | null;
     timeGroupBy?: Reporting_TimeGroupBy | null;
@@ -82,6 +87,7 @@ export const DynamicForm = ({
   onValueChange,
   sql,
   isInteractiveReport = false,
+  preFilterFields,
   groupingFields,
 }: DynamicFormProps) => {
   const { t } = useTranslation(['common', 'reports']);
@@ -135,16 +141,19 @@ export const DynamicForm = ({
     resolver: resolverFields,
   });
 
-  const onSubmit = handleSubmit(({ groupBy, timeGroupBy, ...formData }) => {
-    onValueChange({
-      filters: filters.map<Reporting_TableFilterInput>((filter) => ({
-        filterId: filter.id,
-        filterValue: getValueFormat(formData[filter.id], filter.inputType),
-      })),
-      groupings: groupBy ? [groupBy] : undefined,
-      timeGrouping: timeGroupBy as string | undefined,
-    });
-  });
+  const onSubmit = handleSubmit(
+    ({ groupBy, timeGroupBy, metrics, ...formData }) => {
+      onValueChange({
+        filters: filters.map<Reporting_TableFilterInput>((filter) => ({
+          filterId: filter.id,
+          filterValue: getValueFormat(formData[filter.id], filter.inputType),
+        })),
+        metrics: metrics as string | undefined,
+        groupings: groupBy ? [groupBy] : undefined,
+        timeGrouping: timeGroupBy as string | undefined,
+      });
+    }
+  );
 
   const handleCloseDialog = () => {
     setOpenSqlDialog(false);
@@ -159,101 +168,128 @@ export const DynamicForm = ({
       flexWrap="wrap"
       onSubmit={onSubmit}
     >
+      {preFilterFields?.stats && (
+        <Stack flexDirection="row">
+          <DynamicControl
+            control={control}
+            filter={{
+              id: 'metrics',
+              inputType: Reporting_TableFilterType.Select,
+              label: t('reports:stats'),
+              defaultValue: {
+                id: preFilterFields.stats.defaultValue,
+              },
+              required: false,
+              values:
+                preFilterFields.stats.values?.map(({ id, name }) => ({
+                  id,
+                  value: name,
+                })) ?? [],
+            }}
+          />
+        </Stack>
+      )}
       {filters.map((filter) => (
         <Stack flexDirection="row" key={filter.id}>
           <DynamicControl control={control} filter={filter} />
         </Stack>
       ))}
-      {isInteractiveReport && groupingFields && (
-        <Stack width="100%">
-          <Box component="h2" sx={{ my: 0 }}>
-            <Button
-              sx={{
-                color: 'text.secondary',
-              }}
-              onClick={onToggleGrouping}
-              startIcon={
-                <DataOneToThreePipeIcon sx={{ color: 'indigo.500' }} />
-              }
-              endIcon={
-                <ChevronUpIcon
-                  sx={{
-                    color: 'text.secondary',
-                    transform: isGroupingOpen
-                      ? 'rotate(180deg)'
-                      : 'rotate(0deg)',
-                    transition: 'transform 0.2s ease-in-out',
-                    ml: 1,
-                  }}
-                />
-              }
-              id={`${groupingId}-button`}
-              aria-expanded={isGroupingOpen}
-              aria-controls={groupingId}
-            >
-              {t('reports:grouping')}
-            </Button>
-          </Box>
-          <Collapse
-            in={isGroupingOpen}
-            id={groupingId}
-            role="region"
-            aria-labelledby={`${groupingId}-button`}
-          >
-            <Stack
-              flexDirection="row"
-              gap={2}
-              alignItems="flex-start"
-              flexWrap="wrap"
-              pt={1}
-            >
-              {groupingFields.groupBy && (
-                <Stack flexDirection="row">
-                  <DynamicControl
-                    control={control}
-                    filter={{
-                      id: 'groupBy',
-                      inputType: Reporting_TableFilterType.Select,
-                      label: t('reports:grouping'),
-                      defaultValue: { id: groupingFields.groupBy.defaultValue },
-                      required: false,
-                      values:
-                        groupingFields.groupBy.values?.map(({ id, name }) => ({
-                          id,
-                          value: name,
-                        })) ?? [],
+      {isInteractiveReport &&
+        groupingFields &&
+        Object.keys(groupingFields).length > 0 && (
+          <Stack width="100%">
+            <Box component="h2" sx={{ my: 0 }}>
+              <Button
+                sx={{
+                  color: 'text.secondary',
+                }}
+                onClick={onToggleGrouping}
+                startIcon={
+                  <DataOneToThreePipeIcon sx={{ color: 'indigo.500' }} />
+                }
+                endIcon={
+                  <ChevronUpIcon
+                    sx={{
+                      color: 'text.secondary',
+                      transform: isGroupingOpen
+                        ? 'rotate(180deg)'
+                        : 'rotate(0deg)',
+                      transition: 'transform 0.2s ease-in-out',
+                      ml: 1,
                     }}
                   />
-                </Stack>
-              )}
+                }
+                id={`${groupingId}-button`}
+                aria-expanded={isGroupingOpen}
+                aria-controls={groupingId}
+              >
+                {t('reports:grouping')}
+              </Button>
+            </Box>
+            <Collapse
+              in={isGroupingOpen}
+              id={groupingId}
+              role="region"
+              aria-labelledby={`${groupingId}-button`}
+            >
+              <Stack
+                flexDirection="row"
+                gap={2}
+                alignItems="flex-start"
+                flexWrap="wrap"
+                pt={1}
+              >
+                {groupingFields.groupBy && (
+                  <Stack flexDirection="row">
+                    <DynamicControl
+                      control={control}
+                      filter={{
+                        id: 'groupBy',
+                        inputType: Reporting_TableFilterType.Select,
+                        label: t('reports:grouping'),
+                        defaultValue: {
+                          id: groupingFields.groupBy.defaultValue,
+                        },
+                        required: false,
+                        values:
+                          groupingFields.groupBy.values?.map(
+                            ({ id, name }) => ({
+                              id,
+                              value: name,
+                            })
+                          ) ?? [],
+                      }}
+                    />
+                  </Stack>
+                )}
 
-              {groupingFields.timeGroupBy && (
-                <Stack flexDirection="row">
-                  <DynamicControl
-                    control={control}
-                    filter={{
-                      id: 'timeGroupBy',
-                      inputType: Reporting_TableFilterType.Select,
-                      label: t('reports:timeGrouping'),
-                      defaultValue: {
-                        id: groupingFields.timeGroupBy.defaultValue,
-                      },
-                      required: false,
-                      values:
-                        groupingFields.timeGroupBy.values?.map(
-                          ({ id, name }) => ({
-                            id,
-                            value: name,
-                          })
-                        ) ?? [],
-                    }}
-                  />
-                </Stack>
-              )}
-            </Stack>
-          </Collapse>
-        </Stack>
-      )}
+                {groupingFields.timeGroupBy && (
+                  <Stack flexDirection="row">
+                    <DynamicControl
+                      control={control}
+                      filter={{
+                        id: 'timeGroupBy',
+                        inputType: Reporting_TableFilterType.Select,
+                        label: t('reports:timeGrouping'),
+                        defaultValue: {
+                          id: groupingFields.timeGroupBy.defaultValue,
+                        },
+                        required: false,
+                        values:
+                          groupingFields.timeGroupBy.values?.map(
+                            ({ id, name }) => ({
+                              id,
+                              value: name,
+                            })
+                          ) ?? [],
+                      }}
+                    />
+                  </Stack>
+                )}
+              </Stack>
+            </Collapse>
+          </Stack>
+        )}
 
       <Stack
         flexDirection="row"

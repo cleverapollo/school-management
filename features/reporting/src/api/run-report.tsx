@@ -59,6 +59,13 @@ const reportsRun = graphql(/* GraphQL */ `
         minWidth
         pinned
       }
+      metrics {
+        defaultValue
+        values {
+          id
+          name
+        }
+      }
       timeGroupBy {
         defaultValue
         values {
