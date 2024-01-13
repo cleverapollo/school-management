@@ -52,5 +52,6 @@
   "coverAppliedSuccessfully": "Cover applied successfully",
   "applyingCoverFailed": "Applying cover failed",
   "coverRemovedSuccessfully": "Cover removed successfully",
-  "removingCoverFailed": "Removing cover failed"
+  "removingCoverFailed": "Removing cover failed",
+  "actions": "Actions"
 }

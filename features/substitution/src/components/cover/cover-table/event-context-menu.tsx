@@ -10,6 +10,8 @@ import {
   ListItemText,
   Card,
   Box,
+  Typography,
+  useTheme,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import {
@@ -46,6 +48,7 @@ export function EventCoverContextMenu({
   staff,
   ...props
 }: ResourceContextMenuProps) {
+  const { customShadows, palette } = useTheme();
   const { t } = useTranslation(['common', 'substitution']);
   const isMobile = useBreakpointValue(
     { base: false, sm: true },
@@ -114,15 +117,16 @@ export function EventCoverContextMenu({
           },
         }}
       >
-        <DialogTitle onClose={handleClose}>
-          {t('common:detailsAndActions')}
-        </DialogTitle>
+        <DialogTitle onClose={handleClose}>{t('common:details')}</DialogTitle>
         <Box px={3}>
-          <Card sx={{ px: 0.5 }}>
+          <Card sx={{ px: 1 }}>
             <CoverCardTooltipContent eventInfo={eventInfo} staff={staff} />
           </Card>
         </Box>
-        <List sx={{ pb: 8 }}>
+        <Typography variant="h6" sx={{ px: 3, pt: 2 }}>
+          {t('substitution:actions')}
+        </Typography>
+        <List sx={{ pb: 8, px: 1 }}>
           {availableActions
             .filter(({ show }) => show)
             .map(({ handler, icon: Icon, text }) => (
@@ -133,7 +137,20 @@ export function EventCoverContextMenu({
                   px: 2,
                 }}
               >
-                <ListItemButton component="button" onClick={handler}>
+                <ListItemButton
+                  component="button"
+                  onClick={handler}
+                  color="primary"
+                  sx={{
+                    border: '1px solid',
+                    borderColor: 'indigo.50',
+                    boxShadow: customShadows.card,
+                    borderRadius: 1,
+                    '.MuiTouchRipple-child': {
+                      'background-color': palette.primary.main,
+                    },
+                  }}
+                >
                   <ListItemIcon>
                     <Icon />
                   </ListItemIcon>

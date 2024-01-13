@@ -62,7 +62,6 @@
     "SOCIAL_WORKER": "Social worker",
     "STEP_FATHER": "Stepfather",
     "STEP_MOTHER": "Stepmother",
-    "AGENT": "Agent",
     "UNCLE": "Uncle"
   },
   "summary": "Summary",
@@ -324,6 +323,5 @@
   "absent": "Absent",
   "by": "By",
   "paid": "Paid",
-  "published": "Published",
-  "detailsAndActions": "Details & actions"
+  "published": "Published"
 }
