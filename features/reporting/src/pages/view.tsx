@@ -40,7 +40,7 @@ export default function ReportPage() {
     getFiltersFromSearchParams(searchParams)
   );
   const [interactiveValues, setInteractiveValues] = useState<{
-    metrics?: string;
+    metric?: string;
     groupings?: string[];
     timeGrouping?: string;
   }>({});
@@ -149,7 +149,7 @@ export default function ReportPage() {
 
   const updateValues = (newValues: {
     filters: Reporting_TableFilterInput[];
-    metrics?: string;
+    metric?: string;
     groupings?: string[];
     timeGrouping?: string;
   }) => {
@@ -173,7 +173,7 @@ export default function ReportPage() {
     setSearchParams(valuesForSearchParams);
     setFilters(newValues.filters);
     setInteractiveValues({
-      metrics: newValues.metrics,
+      metric: newValues.metric,
       groupings: newValues.groupings,
       timeGrouping: newValues.timeGrouping,
     });

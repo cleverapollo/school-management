@@ -40,7 +40,7 @@ type DynamicFormProps = {
   filters: Reporting_TableFilter[];
   onValueChange: (value: {
     filters: Reporting_TableFilterInput[];
-    metrics?: string;
+    metric?: string;
     groupings?: string[];
     timeGrouping?: string;
   }) => void;
@@ -142,13 +142,15 @@ export const DynamicForm = ({
   });
 
   const onSubmit = handleSubmit(
-    ({ groupBy, timeGroupBy, metrics, ...formData }) => {
+    ({ groupBy, timeGroupBy, metric, ...formData }) => {
+      console.log('--------');
+      console.log(metric);
       onValueChange({
         filters: filters.map<Reporting_TableFilterInput>((filter) => ({
           filterId: filter.id,
           filterValue: getValueFormat(formData[filter.id], filter.inputType),
         })),
-        metrics: metrics as string | undefined,
+        metric: metric as string | undefined,
         groupings: groupBy ? [groupBy] : undefined,
         timeGrouping: timeGroupBy as string | undefined,
       });
@@ -173,13 +175,13 @@ export const DynamicForm = ({
           <DynamicControl
             control={control}
             filter={{
-              id: 'metrics',
+              id: 'metric',
               inputType: Reporting_TableFilterType.Select,
-              label: t('reports:stats'),
+              label: t('reports:metric'),
               defaultValue: {
                 id: preFilterFields.stats.defaultValue,
               },
-              required: false,
+              required: true,
               values:
                 preFilterFields.stats.values?.map(({ id, name }) => ({
                   id,

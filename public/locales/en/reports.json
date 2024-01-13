@@ -7,6 +7,7 @@
   "behaviour": "Behaviour",
   "from": "From",
   "to": "To",
+  "metric": "Metric",
   "lastExpectedLocation": "Last expected location",
   "allStudentsAreAccountedFor": "All students are accounted for (so far!)",
   "noAwolStudents": "No students are absent without leave today",
