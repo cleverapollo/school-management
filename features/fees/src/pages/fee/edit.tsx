@@ -19,12 +19,21 @@ export default function EditFeePage() {
   const initialState = useMemo<Partial<FeeFormState>>(() => {
     if (!currentFee) return {};
 
-    const { dueDate, individualDiscounts, assignedToParties, ...restData } =
-      currentFee;
+    const {
+      dueDate,
+      individualDiscounts,
+      assignedToParties,
+      discounts,
+      ...restData
+    } = currentFee;
 
     return {
       ...restData,
       dueDate: dueDate ? dayjs(dueDate) : undefined,
+      discounts:
+        Array.isArray(discounts) && discounts.length > 0
+          ? discounts[0]
+          : undefined,
       students: assignedToParties?.map((party) => {
         switch (party.__typename) {
           case 'Student':

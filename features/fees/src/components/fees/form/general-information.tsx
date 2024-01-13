@@ -16,8 +16,8 @@ import {
   RHFAutocomplete,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { FeeType, getColorBasedOnIndex, SiblingDiscountType } from '@tyro/api';
-import { Control, useWatch } from 'react-hook-form';
+import { FeeType, getColorBasedOnIndex } from '@tyro/api';
+import { Control } from 'react-hook-form';
 import { InfoCircleIcon } from '@tyro/icons';
 import { getDiscountName } from '../../../utils/get-discount-name';
 import { FeeFormState } from './types';
@@ -33,7 +33,6 @@ export function GeneralInformation({ control }: GeneralInformationProps) {
 
   const { data: discountsData = [] } = useDiscounts({});
   const { data: categoriesData = [] } = useFeesCategories({});
-  const discounts = useWatch({ name: 'discounts', control });
 
   const siblingDiscounts = discountsData.filter(
     ({ siblingDiscount }) => siblingDiscount
@@ -106,42 +105,11 @@ export function GeneralInformation({ control }: GeneralInformationProps) {
 
         <Grid item xs={12} sm={6}>
           <RHFAutocomplete
-            multiple
             label={t('fees:siblingDiscounts')}
             optionIdKey="id"
             getOptionLabel={getDiscountName}
             controlProps={{ name: 'discounts', control }}
             options={siblingDiscounts}
-            renderTags={(tags, getTagProps) =>
-              tags.map((tag, index) => (
-                <Chip
-                  {...getTagProps({ index })}
-                  size="small"
-                  variant="soft"
-                  color={getColorBasedOnIndex(tag.id)}
-                  label={tag.name}
-                />
-              ))
-            }
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <RHFRadioGroup
-            radioGroupProps={{ sx: { flexDirection: 'row' } }}
-            label={t('fees:siblingDiscountType')}
-            options={[
-              SiblingDiscountType.InFee,
-              SiblingDiscountType.InSchool,
-            ].map((option) => ({
-              value: option,
-              label: t(`fees:siblingDiscountTypes.${option}`),
-            }))}
-            disabled={discounts.length === 0}
-            controlProps={{
-              name: 'siblingDiscountType',
-              control,
-            }}
           />
         </Grid>
 

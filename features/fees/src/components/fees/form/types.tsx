@@ -10,7 +10,7 @@ export type FeeFormState = {
   amount: number;
   feeType: FeeType;
   absorbFees: boolean;
-  discounts: ReturnTypeFromUseDiscounts[];
+  discounts: ReturnTypeFromUseDiscounts;
   siblingDiscountType?: SiblingDiscountType;
   categories: ReturnTypeFromUseFeesCategories[];
   students: StudentSelectOption[];

@@ -61,11 +61,6 @@
     "MANDATORY": "Mandatory",
     "VOLUNTARY": "Voluntary"
   },
-  "siblingDiscountType": "Sibling discount type",
-  "siblingDiscountTypes": {
-    "IN_FEE": "In fee",
-    "IN_SCHOOL": "In school"
-  },
   "absorbFees": "Absorb fees",
   "feeCategory": "Fee category",
   "createFeeCategory": "Create fee category",
