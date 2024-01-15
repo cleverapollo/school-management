@@ -1,5 +1,9 @@
 export * from './routes';
-export { getSubjectGroupById, useSubjectGroupById } from './api/subject-groups';
+export {
+  getSubjectGroupById,
+  useSubjectGroupById,
+  useSubjectGroups,
+} from './api/subject-groups';
 export { groupsKeys } from './api/keys';
 export { useStudentsSearch } from './api/students-search';
 export type {
@@ -11,10 +15,12 @@ export {
   useYearGroups,
   useYearGroupById,
 } from './api/year-groups';
-export { useSubjectGroups } from './api/subject-groups';
+export { useCustomGroups, useCustomGroupById } from './api/custom-groups';
 export { useBlocksList } from './api/blocks-list';
 export * from './components/common/year-group-autocomplete';
 export * from './components/common/class-group-autocomplete';
 export * from './components/common/block-autocomplete';
 export * from './utils/print-group-members';
+export * from './components/custom-group/form/static-students';
+export * from './components/custom-group/form/static-staff';
 export * from './hooks/use-students-search-props';
