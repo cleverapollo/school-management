@@ -10,7 +10,29 @@ export type ColorSchema =
   | 'info'
   | 'success'
   | 'warning'
-  | 'error';
+  | 'error'
+  | 'gray'
+  | 'slate'
+  | 'zinc'
+  | 'neutral'
+  | 'stone'
+  | 'red'
+  | 'orange'
+  | 'amber'
+  | 'yellow'
+  | 'lime'
+  | 'green'
+  | 'emerald'
+  | 'teal'
+  | 'cyan'
+  | 'sky'
+  | 'blue'
+  | 'indigo'
+  | 'violet'
+  | 'purple'
+  | 'fuchsia'
+  | 'pink'
+  | 'rose';
 
 interface GradientsPaletteOptions {
   primary: string;
