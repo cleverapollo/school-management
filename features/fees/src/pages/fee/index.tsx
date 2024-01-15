@@ -128,7 +128,12 @@ const getColumnDefs = (
       data?.createdBy ? <TablePersonAvatar person={data?.createdBy} /> : '-',
   },
   {
+    colId: 'actions',
     suppressColumnsToolPanel: true,
+    suppressMenu: true,
+    pinned: 'right',
+    width: 56,
+    cellStyle: { padding: '0 8px' },
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFees>) =>
       data &&
       hasPermission && (
