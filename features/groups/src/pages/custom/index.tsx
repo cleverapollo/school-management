@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   ActionMenu,
+  commonActionMenuProps,
   GridOptions,
   ICellRendererParams,
   PageContainer,
@@ -65,9 +66,7 @@ const getColumns = (
       (data?.contactMembers?.memberCount ?? 0),
   },
   {
-    suppressColumnsToolPanel: true,
-    sortable: false,
-    cellClass: 'ag-show-on-row-interaction',
+    ...commonActionMenuProps,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseCustomGroups>) =>

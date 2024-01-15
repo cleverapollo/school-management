@@ -12,6 +12,7 @@ import {
   TableAvatar,
   useDebouncedValue,
   usePreferredNameLayout,
+  commonActionMenuProps,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
@@ -202,9 +203,7 @@ const getSubjectGroupsColumns = (
     headerName: t('timetable:lessons'),
   },
   {
-    suppressColumnsToolPanel: true,
-    sortable: false,
-    cellClass: 'ag-show-on-row-interaction',
+    ...commonActionMenuProps,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseTimetableSubjectGroups>) =>

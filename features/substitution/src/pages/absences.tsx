@@ -10,6 +10,7 @@ import {
   PageHeading,
   useDebouncedValue,
   ActionMenu,
+  commonActionMenuProps,
 } from '@tyro/core';
 import { Box, Button } from '@mui/material';
 
@@ -131,9 +132,7 @@ const getColumnDefs = (
     },
   },
   {
-    suppressColumnsToolPanel: true,
-    sortable: false,
-    cellClass: 'ag-show-on-row-interaction',
+    ...commonActionMenuProps,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseStaffWorkAbsences>) =>

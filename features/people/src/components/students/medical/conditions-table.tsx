@@ -7,6 +7,7 @@ import {
   GridOptions,
   ICellRendererParams,
   Table,
+  commonActionMenuProps,
 } from '@tyro/core';
 import {
   AddIcon,
@@ -75,9 +76,7 @@ const getColumns = (
     valueGetter: (data) => data?.data?.equipment[0]?.location,
   },
   {
-    suppressColumnsToolPanel: true,
-    sortable: false,
-    cellClass: 'ag-show-on-row-interaction',
+    ...commonActionMenuProps,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseStudentMedical>) =>

@@ -9,6 +9,7 @@ import {
   PageHeading,
   Table,
   TableBooleanValue,
+  commonActionMenuProps,
 } from '@tyro/core';
 import {
   AddIcon,
@@ -69,9 +70,7 @@ const getRoomColumns = (
     lockVisible: true,
   },
   {
-    suppressColumnsToolPanel: true,
-    sortable: false,
-    cellClass: 'ag-show-on-row-interaction',
+    ...commonActionMenuProps,
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseCoreRooms>) =>
       data && (
         <ActionMenu
