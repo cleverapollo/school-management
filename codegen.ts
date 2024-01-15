@@ -5,8 +5,8 @@ if (!process.env.token) {
 }
 
 // const schemaEndpoint = 'http://localhost:80/api/tyrogql';
-//const schemaEndpoint = 'https://app.tyro-dev.com/api/tyrogql';
- const schemaEndpoint = 'https://app.tyro.school/api/tyrogql';
+const schemaEndpoint = 'https://app.tyro-dev.com/api/tyrogql';
+// const schemaEndpoint = 'https://app.tyro.school/api/tyrogql';
 
 
 const config: CodegenConfig = {
