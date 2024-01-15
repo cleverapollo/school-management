@@ -49,6 +49,7 @@ const getColumnDefs = (
       data && (
         <RouterLink to={`/fees/view/${data.id || ''}`}>{data.name}</RouterLink>
       ),
+    pinned: 'left',
   },
   {
     field: 'amount',
@@ -85,6 +86,7 @@ const getColumnDefs = (
     headerName: t('fees:dueBy'),
     valueFormatter: ({ data }) =>
       data?.dueDate ? dayjs(data.dueDate).format('LL') : '-',
+    sort: 'asc',
   },
   {
     field: 'total',
@@ -108,6 +110,8 @@ const getColumnDefs = (
       data?.feeStatus ? t(`fees:feeStatus.${data.feeStatus}`) : '-',
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFees>) =>
       data?.feeStatus ? <FeeStatusChip status={data.feeStatus} /> : '-',
+    sort: 'asc',
+    sortIndex: 0,
   },
   {
     field: 'published',
