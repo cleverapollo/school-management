@@ -39,6 +39,11 @@ export default function ReportPage() {
   const [filters, setFilters] = useState<Reporting_TableFilterInput[]>(
     getFiltersFromSearchParams(searchParams)
   );
+  const [interactiveValues, setInteractiveValues] = useState<{
+    metric?: string;
+    groupings?: string[];
+    timeGrouping?: string;
+  }>({});
   const { palette } = useTheme();
 
   const {
@@ -50,6 +55,7 @@ export default function ReportPage() {
     filter: {
       reportId,
       filters,
+      ...interactiveValues,
     },
   });
 
@@ -141,8 +147,13 @@ export default function ReportPage() {
     );
   }, [reportData?.data]);
 
-  const updateFilters = (newFilters: Reporting_TableFilterInput[]) => {
-    const valuesForSearchParams = newFilters.reduce(
+  const updateValues = (newValues: {
+    filters: Reporting_TableFilterInput[];
+    metric?: string;
+    groupings?: string[];
+    timeGrouping?: string;
+  }) => {
+    const valuesForSearchParams = newValues.filters.reduce(
       (acc, { filterId, filterValue }) => {
         if (
           !filterValue ||
@@ -160,7 +171,12 @@ export default function ReportPage() {
     );
 
     setSearchParams(valuesForSearchParams);
-    setFilters(newFilters);
+    setFilters(newValues.filters);
+    setInteractiveValues({
+      metric: newValues.metric,
+      groupings: newValues.groupings,
+      timeGrouping: newValues.timeGrouping,
+    });
   };
 
   return (
@@ -168,8 +184,16 @@ export default function ReportPage() {
       <DynamicForm
         isFetching={isFetching}
         filters={mappedFilterValues ?? []}
-        onFilterChange={updateFilters}
+        onValueChange={updateValues}
         sql={reportData?.debug?.sql}
+        isInteractiveReport={!!reportData?.info.isInteractive}
+        preFilterFields={{
+          stats: reportData?.metrics,
+        }}
+        groupingFields={{
+          groupBy: reportData?.groupBy,
+          timeGroupBy: reportData?.timeGroupBy,
+        }}
       />
       <Table<FormattedReportData[number]>
         isLoading={isLoading}
