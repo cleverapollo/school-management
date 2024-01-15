@@ -22,9 +22,9 @@ export const AttendanceBreakdown = ({
     const attendanceValues = Object.values(attendance);
 
     const current = attendanceValues.filter(
-      ({ attendanceCodeId }) =>
-        attendanceCodeId !== codesByType?.EXPLAINED_ABSENCE.id &&
-        attendanceCodeId !== codesByType?.UNEXPLAINED_ABSENCE.id
+      ({ attendanceCode }) =>
+        attendanceCode.codeType !== AttendanceCodeType.ExplainedAbsence &&
+        attendanceCode.codeType !== AttendanceCodeType.UnexplainedAbsence
     );
 
     return [
@@ -38,14 +38,16 @@ export const AttendanceBreakdown = ({
         ...getColourBasedOnAttendanceType(AttendanceCodeType.Present).soft,
         name: t('common:attendanceCode.PRESENT'),
         count: attendanceValues.filter(
-          ({ attendanceCodeId }) => attendanceCodeId === codesByType?.PRESENT.id
+          ({ attendanceCode }) =>
+            attendanceCode.codeType === AttendanceCodeType.Present
         ).length,
       },
       {
         ...getColourBasedOnAttendanceType(AttendanceCodeType.Late).soft,
         name: t('common:attendanceCode.LATE'),
         count: attendanceValues.filter(
-          ({ attendanceCodeId }) => attendanceCodeId === codesByType?.LATE.id
+          ({ attendanceCode }) =>
+            attendanceCode.codeType === AttendanceCodeType.Late
         ).length,
       },
       {
@@ -53,9 +55,9 @@ export const AttendanceBreakdown = ({
           .soft,
         name: t('common:absent'),
         count: attendanceValues.filter(
-          ({ attendanceCodeId }) =>
-            attendanceCodeId === codesByType?.EXPLAINED_ABSENCE.id ||
-            attendanceCodeId === codesByType?.UNEXPLAINED_ABSENCE.id
+          ({ attendanceCode }) =>
+            attendanceCode.codeType === AttendanceCodeType.ExplainedAbsence ||
+            attendanceCode.codeType === AttendanceCodeType.UnexplainedAbsence
         ).length,
       },
     ];
