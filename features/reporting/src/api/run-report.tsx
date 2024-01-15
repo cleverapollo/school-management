@@ -1,5 +1,6 @@
 import { gqlClient, graphql, queryClient, UseQueryReturnType } from '@tyro/api';
 import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { InnerReportFilter, reportsKeys } from './keys';
 
 const reportInfo = graphql(/* GraphQL */ `
@@ -93,10 +94,42 @@ export function getRunReports(filter: InnerReportFilter) {
 }
 
 export function useRunReports(filter: InnerReportFilter) {
-  return useQuery({
+  const reportData = useQuery({
     ...runReportsQuery(filter),
     select: ({ reporting_runReport }) => reporting_runReport,
   });
+
+  useEffect(() => {
+    if (reportData.data?.id) {
+      const firstRow = (reportData.data?.data?.[0] || {}) as Record<
+        string,
+        any
+      >;
+      const currentFields = Object.keys(firstRow);
+
+      const showFields = reportData?.data?.fields?.map((field) => field.id);
+      const missingFields = (showFields || [])?.filter(
+        (field) => !currentFields.includes(field)
+      );
+
+      const getExtraData = async () => {
+        const reportWithExtraData = await gqlClient.request(reportsRun, {
+          filter: { ...filter.filter, showFields },
+        });
+
+        queryClient.setQueryData(
+          reportsKeys.report(filter),
+          reportWithExtraData
+        );
+      };
+
+      if (missingFields.length > 0) {
+        getExtraData();
+      }
+    }
+  }, [reportData.data?.id, JSON.stringify(filter)]);
+
+  return reportData;
 }
 
 export type ReturnTypeFromUseRunReports = UseQueryReturnType<

@@ -461,6 +461,46 @@ export default function StudentProfileBehaviourPage() {
               />
               {t('common:behaviourType.NEGATIVE')}
             </Button>
+
+            <Button
+              onClick={() => {
+                setBehaviourType(Notes_BehaviourType.Neutral);
+              }}
+              sx={{
+                borderRadius: 1,
+                backgroundColor:
+                  behaviourType === Notes_BehaviourType.Neutral
+                    ? 'indigo.100'
+                    : 'grey.100',
+                borderStyle: 'solid',
+                borderWidth: '1px',
+                borderColor:
+                  behaviourType === Notes_BehaviourType.Neutral
+                    ? 'indigo.500'
+                    : 'slate.300',
+                color:
+                  behaviourType === Notes_BehaviourType.Neutral
+                    ? 'indigo.500'
+                    : 'slate.400',
+                height: '30px',
+                marginLeft: 2,
+              }}
+            >
+              <Box
+                sx={{
+                  width: '9px',
+                  height: '9px',
+                  display: 'flex',
+                  borderRadius: '50%',
+                  position: 'relative',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'blue.500',
+                  marginRight: 1,
+                }}
+              />
+              {t('common:behaviourType.NEUTRAL')}
+            </Button>
           </Box>
         </Stack>
 

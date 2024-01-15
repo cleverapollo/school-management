@@ -53,6 +53,7 @@ export * from './comment';
 export * from './copy';
 export * from './credit-card';
 export * from './doc-edit';
+export * from './discount';
 export * from './doc-search';
 export * from './double-checkmark';
 export * from './download-arrow-circle';

@@ -16,7 +16,7 @@ import {
   SubjectGroup,
   StateCbaType,
 } from '@tyro/api';
-import { Card, Stack, CardHeader, Chip, Tooltip } from '@mui/material';
+import { Button, Card, CardHeader, Chip, Stack, Tooltip } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
@@ -57,7 +57,6 @@ type StateCbaFormProps = {
   onError: () => void;
   onErrorModalOpen?: () => void;
   setErrorResponse?: React.Dispatch<React.SetStateAction<string | null>>;
-  setErrorResponseOne?: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 const stateCBATypeOptions = [StateCbaType.Cba_1, StateCbaType.Cba_2];
@@ -69,7 +68,6 @@ export function StateCbaForm({
   onError,
   onErrorModalOpen,
   setErrorResponse,
-  setErrorResponseOne,
 }: StateCbaFormProps) {
   const navigate = useNavigate();
   const { t } = useTranslation(['assessments', 'common']);
@@ -120,9 +118,10 @@ export function StateCbaForm({
     const subjectsList = Array.from(subjectsMap?.values() ?? []);
     return {
       subjects:
-        subjectsList?.sort(
-          (a, b) => Number(a.nationalCode) - Number(b.nationalCode)
-        ) || [],
+        subjectsList
+          ?.filter((subject) => subject !== undefined)
+          .sort((a, b) => Number(a.nationalCode) - Number(b.nationalCode)) ||
+        [],
       subjectsMapById: subjectsMap,
     };
   }, [subjectGroups]);
@@ -208,9 +207,6 @@ export function StateCbaForm({
                   backendError.response.error
                 ) as ParsedErrorDetail;
                 errorMessage = parsedError.detail || errorMessage;
-                if (setErrorResponseOne) {
-                  setErrorResponseOne(errorMessage);
-                }
               } catch (parseError) {
                 console.error(parseError);
               }
@@ -284,7 +280,6 @@ export function StateCbaForm({
             optionIdKey="id"
             getOptionLabel={(option) => {
               const subject = subjectsMapById?.get(option?.id);
-
               return subject?.nationalCode
                 ? `${subject.name} (${subject.nationalCode})`
                 : option?.name ?? '';
@@ -307,7 +302,7 @@ export function StateCbaForm({
             renderTags={(tagValue, getTagProps) =>
               tagValue.map((option, index) => {
                 const disabledOption = disabledSubjectGroupIds.includes(
-                  option.partyId
+                  option?.partyId
                 );
 
                 return (
@@ -334,12 +329,21 @@ export function StateCbaForm({
           />
         </Stack>
         <CustomFieldsTable control={control} />
-        <Stack alignItems="flex-end">
+        <Stack flexDirection="row" justifyContent="flex-end">
+          <Button
+            size="large"
+            variant="soft"
+            color="inherit"
+            onClick={() => navigate('/assessments')}
+          >
+            {t('common:actions.cancel')}
+          </Button>
           <LoadingButton
             variant="contained"
             size="large"
             type="submit"
             loading={isLoading}
+            sx={{ ml: 2 }}
           >
             {t('common:actions.save')}
           </LoadingButton>

@@ -36,7 +36,6 @@ const getRoomColumns = (
     headerName: t('common:name'),
     field: 'name',
     lockVisible: true,
-    editable: true,
     sort: 'asc',
   },
   {

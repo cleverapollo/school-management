@@ -32,12 +32,16 @@
     "clone": "Clone",
     "filter": "Filter",
     "deselect": "Deselect",
-    "exportCSV": "Export CSV"
+    "exportCSV": "Export CSV",
+    "publish": "Publish",
+    "unpublish": "Unpublish"
   },
   "snackbarMessages": {
     "createSuccess": "Created successfully!",
     "updateSuccess": "Updated successfully!",
     "deleteSuccess": "Deleted successfully!",
+    "unpublishedSuccess": "Unpublished successfully!",
+    "publishedSuccess": "Published successfully!",
     "mailWasSent": "Mail was sent",
     "inviteSent": "Invite was sent",
     "labelWasAssigned": "Label was assigned!",
@@ -48,10 +52,10 @@
     "AGENT": "Agent",
     "AUNTY": "Aunty",
     "FAMILY_FRIEND": "Family friend",
+    "FATHER": "Father",
     "GRAND_FATHER": "Grandfather",
     "GRAND_MOTHER": "Grandmother",
     "MOTHER": "Mother",
-    "FATHER": "Father",
     "NEIGHBOUR": "Neighbour",
     "OTHER": "Other",
     "SIBLING": "Sibling",
@@ -297,6 +301,8 @@
   "hours": "Hours",
   "minutes": "Minutes",
   "fromDate": "From {{date}}",
+  "from": "From",
+  "to": "To",
   "dayOfWeekValues": {
     "MONDAY": "Monday",
     "TUESDAY": "Tuesday",
@@ -323,5 +329,7 @@
   "items_one": "{{ count }} item",
   "items_other": "{{ count }} items",
   "noItemsToSelect": "No items to select",
-  "noItemsSelected": "No items selected"
+  "noItemsSelected": "No items selected",
+  "paid": "Paid",
+  "published": "Published"
 }
