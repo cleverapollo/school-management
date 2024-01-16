@@ -3,7 +3,7 @@ import { useTranslation } from '@tyro/i18n';
 import { getColourBasedOnAttendanceType } from '@tyro/core';
 import { AttendanceCodeType } from '@tyro/api';
 import { useMemo } from 'react';
-import { useAttendanceCodeByType } from '@tyro/attendance';
+import { useAttendanceCodeById } from '@tyro/attendance';
 import { StudentAttendance } from '../../../hooks';
 
 type AttendanceBreakdownProps = StackProps & {
@@ -11,20 +11,22 @@ type AttendanceBreakdownProps = StackProps & {
 };
 
 export const AttendanceBreakdown = ({
-                                      attendance,
-                                      ...containerProps
-                                    }: AttendanceBreakdownProps) => {
+  attendance,
+  ...containerProps
+}: AttendanceBreakdownProps) => {
   const { t } = useTranslation(['common']);
 
-  const codesByType = useAttendanceCodeByType({ teachingGroupCodes: true });
+  const codeById = useAttendanceCodeById({});
 
   const attendanceTotals = useMemo(() => {
-    const attendanceValues = Object.values(attendance);
+    const currentAttendanceCodes = Object.values(attendance).map(
+      ({ attendanceCodeId: codeId }) => codeById?.[codeId]
+    );
 
-    const current = attendanceValues.filter(
-        ({ attendanceCodeId }) =>
-            attendanceCodeId !== codesByType?.EXPLAINED_ABSENCE.id &&
-            attendanceCodeId !== codesByType?.UNEXPLAINED_ABSENCE.id
+    const current = currentAttendanceCodes.filter(
+      (code) =>
+        code?.codeType !== AttendanceCodeType.ExplainedAbsence &&
+        code?.codeType !== AttendanceCodeType.UnexplainedAbsence
     );
 
     return [
@@ -32,73 +34,73 @@ export const AttendanceBreakdown = ({
         bgColor: 'indigo.100',
         color: 'indigo.600',
         name: t('common:students'),
-        count: `${current.length}/${attendanceValues.length}`,
+        count: `${current.length}/${currentAttendanceCodes.length}`,
       },
       {
         ...getColourBasedOnAttendanceType(AttendanceCodeType.Present).soft,
         name: t('common:attendanceCode.PRESENT'),
-        count: attendanceValues.filter(
-            ({ attendanceCodeId }) => attendanceCodeId === codesByType?.PRESENT.id
+        count: currentAttendanceCodes.filter(
+          (code) => code?.codeType === AttendanceCodeType.Present
         ).length,
       },
       {
         ...getColourBasedOnAttendanceType(AttendanceCodeType.Late).soft,
         name: t('common:attendanceCode.LATE'),
-        count: attendanceValues.filter(
-            ({ attendanceCodeId }) => attendanceCodeId === codesByType?.LATE.id
+        count: currentAttendanceCodes.filter(
+          (code) => code?.codeType === AttendanceCodeType.Late
         ).length,
       },
       {
         ...getColourBasedOnAttendanceType(AttendanceCodeType.ExplainedAbsence)
-            .soft,
+          .soft,
         name: t('common:absent'),
-        count: attendanceValues.filter(
-            ({ attendanceCodeId }) =>
-                attendanceCodeId === codesByType?.EXPLAINED_ABSENCE.id ||
-                attendanceCodeId === codesByType?.UNEXPLAINED_ABSENCE.id
+        count: currentAttendanceCodes.filter(
+          (code) =>
+            code?.codeType === AttendanceCodeType.ExplainedAbsence ||
+            code?.codeType === AttendanceCodeType.UnexplainedAbsence
         ).length,
       },
     ];
-  }, [attendance, codesByType]);
+  }, [attendance, codeById]);
 
   return (
-      <Stack
+    <Stack
+      flexDirection="row"
+      border="1px solid"
+      borderColor="slate.100"
+      bgcolor="background.paper"
+      flexWrap="wrap"
+      gap={2}
+      {...containerProps}
+    >
+      {attendanceTotals.map(({ name, count, bgColor, color }, index) => (
+        <Stack
+          key={name}
           flexDirection="row"
-          border="1px solid"
-          borderColor="slate.100"
-          bgcolor="background.paper"
-          flexWrap="wrap"
-          gap={2}
-          {...containerProps}
-      >
-        {attendanceTotals.map(({ name, count, bgColor, color }, index) => (
-            <Stack
-                key={name}
-                flexDirection="row"
-                alignItems="center"
-                gap={1}
-                mr={2}
-            >
-              <Typography
-                  variant="body2"
-                  component="span"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  borderRadius={5}
-                  px={1}
-                  height="28px"
-                  width={index === 0 ? 'auto' : '28px'}
-                  bgcolor={bgColor}
-                  color={color}
-              >
-                {count}
-              </Typography>
-              <Typography variant="body2" component="span" color={color}>
-                {name}
-              </Typography>
-            </Stack>
-        ))}
-      </Stack>
+          alignItems="center"
+          gap={1}
+          mr={2}
+        >
+          <Typography
+            variant="body2"
+            component="span"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            borderRadius={5}
+            px={1}
+            height="28px"
+            width={index === 0 ? 'auto' : '28px'}
+            bgcolor={bgColor}
+            color={color}
+          >
+            {count}
+          </Typography>
+          <Typography variant="body2" component="span" color={color}>
+            {name}
+          </Typography>
+        </Stack>
+      ))}
+    </Stack>
   );
 };

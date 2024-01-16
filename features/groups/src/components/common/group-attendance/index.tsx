@@ -258,7 +258,7 @@ export const GroupAttendance = ({
                         >
                           <Stack direction="column">
                             <Typography variant="caption" fontWeight={600}>
-                              {eventDetails?.attendanceCode.name}
+                              {eventDetails?.attendanceCode?.name ?? '-'}
                             </Typography>
                             {eventDetails?.note && (
                               <Typography component="span" variant="caption">

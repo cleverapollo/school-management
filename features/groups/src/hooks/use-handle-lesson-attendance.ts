@@ -35,7 +35,8 @@ type EventDetails = NonNullable<
 
 export type StudentAttendance = Record<
   SaveEventAttendanceInput['personPartyId'],
-  SaveEventAttendanceInput & EventDetails & { isEditMode?: boolean }
+  SaveEventAttendanceInput &
+    Partial<EventDetails> & { isEditMode?: boolean; attendanceCodeId: number }
 >;
 
 export type GroupStudent = {
