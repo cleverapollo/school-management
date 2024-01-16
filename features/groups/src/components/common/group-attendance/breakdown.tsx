@@ -3,7 +3,7 @@ import { useTranslation } from '@tyro/i18n';
 import { getColourBasedOnAttendanceType } from '@tyro/core';
 import { AttendanceCodeType } from '@tyro/api';
 import { useMemo } from 'react';
-import { useAttendanceCodeByType } from '@tyro/attendance';
+import { useAttendanceCodeById } from '@tyro/attendance';
 import { StudentAttendance } from '../../../hooks';
 
 type AttendanceBreakdownProps = StackProps & {
@@ -16,15 +16,17 @@ export const AttendanceBreakdown = ({
 }: AttendanceBreakdownProps) => {
   const { t } = useTranslation(['common']);
 
-  const codesByType = useAttendanceCodeByType({ teachingGroupCodes: true });
+  const codeById = useAttendanceCodeById({});
 
   const attendanceTotals = useMemo(() => {
-    const attendanceValues = Object.values(attendance);
+    const currentAttendanceCodes = Object.values(attendance).map(
+      ({ attendanceCodeId: codeId }) => codeById?.[codeId]
+    );
 
-    const current = attendanceValues.filter(
-      ({ attendanceCode }) =>
-        attendanceCode.codeType !== AttendanceCodeType.ExplainedAbsence &&
-        attendanceCode.codeType !== AttendanceCodeType.UnexplainedAbsence
+    const current = currentAttendanceCodes.filter(
+      (code) =>
+        code?.codeType !== AttendanceCodeType.ExplainedAbsence &&
+        code?.codeType !== AttendanceCodeType.UnexplainedAbsence
     );
 
     return [
@@ -32,36 +34,34 @@ export const AttendanceBreakdown = ({
         bgColor: 'indigo.100',
         color: 'indigo.600',
         name: t('common:students'),
-        count: `${current.length}/${attendanceValues.length}`,
+        count: `${current.length}/${currentAttendanceCodes.length}`,
       },
       {
         ...getColourBasedOnAttendanceType(AttendanceCodeType.Present).soft,
         name: t('common:attendanceCode.PRESENT'),
-        count: attendanceValues.filter(
-          ({ attendanceCode }) =>
-            attendanceCode.codeType === AttendanceCodeType.Present
+        count: currentAttendanceCodes.filter(
+          (code) => code?.codeType === AttendanceCodeType.Present
         ).length,
       },
       {
         ...getColourBasedOnAttendanceType(AttendanceCodeType.Late).soft,
         name: t('common:attendanceCode.LATE'),
-        count: attendanceValues.filter(
-          ({ attendanceCode }) =>
-            attendanceCode.codeType === AttendanceCodeType.Late
+        count: currentAttendanceCodes.filter(
+          (code) => code?.codeType === AttendanceCodeType.Late
         ).length,
       },
       {
         ...getColourBasedOnAttendanceType(AttendanceCodeType.ExplainedAbsence)
           .soft,
         name: t('common:absent'),
-        count: attendanceValues.filter(
-          ({ attendanceCode }) =>
-            attendanceCode.codeType === AttendanceCodeType.ExplainedAbsence ||
-            attendanceCode.codeType === AttendanceCodeType.UnexplainedAbsence
+        count: currentAttendanceCodes.filter(
+          (code) =>
+            code?.codeType === AttendanceCodeType.ExplainedAbsence ||
+            code?.codeType === AttendanceCodeType.UnexplainedAbsence
         ).length,
       },
     ];
-  }, [attendance, codesByType]);
+  }, [attendance, codeById]);
 
   return (
     <Stack
