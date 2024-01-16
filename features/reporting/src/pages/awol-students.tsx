@@ -145,7 +145,7 @@ export default function AwolStudentsPage() {
       <DynamicForm
         isFetching={isFetching}
         filters={awolReportsFilters || []}
-        onFilterChange={setFilters}
+        onValueChange={(newValue) => setFilters(newValue.filters)}
       />
       <Table
         isLoading={isLoading}
