@@ -86,12 +86,12 @@
   "yearGroup": "Year group",
   "classGroup": "Class group",
   "student": "Student",
-  "showAttendance": "Show attendance",
-  "showExtraFields": "Show extra fields",
+  "includeAttendance": "Show attendance",
+  "includeExtraFields": "Show extra fields",
   "pageOrientation": "Page orientation",
   "printDirection": {
-    "VERTICAL": "Landscape",
-    "HORIZONTAL": "Horizontal"
+    "LANDSCAPE": "Landscape",
+    "PORTRAIT": "Portrait"
   },
   "thereAreResultsRemoveBeforeRemovingSubjectGroup": "There are results entered for this group. You must delete the results before you can remove the subject group from the assessment.",
   "existingCbaErrorMessageText": "The combination of {{name}} for {{yearGroup}} already exists within {{academicYear}}. Select below to view or edit the assessment.",

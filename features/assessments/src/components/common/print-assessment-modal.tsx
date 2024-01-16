@@ -12,7 +12,7 @@ import {
   usePreferredNameLayout,
   useToast,
 } from '@tyro/core';
-import { Print_Orientation } from '@tyro/api';
+import { PageOrientation } from '@tyro/api';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import { useMemo, useState } from 'react';
@@ -25,12 +25,12 @@ type AutocompleteValue = {
 };
 
 export type PrintAssessmentFormState = {
-  printOrientation: Print_Orientation;
+  orientation: PageOrientation;
   yearGroups: AutocompleteValue[];
   classGroups: AutocompleteValue[];
   students: AutocompleteValue[];
-  showAttendance: boolean;
-  showExtraFields: boolean;
+  includeAttendance: boolean;
+  includeExtraFields: boolean;
 };
 
 export interface PrintAssessmentModalProps {
@@ -52,14 +52,14 @@ export function PrintAssessmentModal({
   const { control, handleSubmit, reset, watch, setValue } =
     useForm<PrintAssessmentFormState>({
       resolver: resolver({
-        printOrientation: rules.required(),
-        showAttendance: rules.required(),
-        showExtraFields: rules.required(),
+        orientation: rules.required(),
+        includeAttendance: rules.required(),
+        includeExtraFields: rules.required(),
       }),
       defaultValues: {
-        printOrientation: Print_Orientation.Vertical,
-        showAttendance: false,
-        showExtraFields: false,
+        orientation: PageOrientation.Landscape,
+        includeAttendance: false,
+        includeExtraFields: false,
       },
     });
 
@@ -137,8 +137,8 @@ export function PrintAssessmentModal({
     try {
       setIsLoading(true);
       const printResponse = await getPrintAssessment({
-        assessmentId: assessment?.id,
-        yearGroupEnrollmentIds: yearGroups.map(({ partyId }) => partyId),
+        assessmentId: assessment?.id ?? 0,
+        yearGroupIds: yearGroups.map(({ partyId }) => partyId),
         classGroupIds: classGroups.map(({ partyId }) => partyId),
         studentIds: students.map(({ partyId }) => partyId),
         ...rest,
@@ -198,14 +198,14 @@ export function PrintAssessmentModal({
             />
             <Stack direction="row" gap={2}>
               <RHFCheckbox
-                label={t('assessments:showAttendance')}
+                label={t('assessments:includeAttendance')}
                 checkboxProps={{ color: 'primary' }}
-                controlProps={{ name: 'showAttendance', control }}
+                controlProps={{ name: 'includeAttendance', control }}
               />
               <RHFCheckbox
-                label={t('assessments:showExtraFields')}
+                label={t('assessments:includeExtraFields')}
                 checkboxProps={{ color: 'primary' }}
-                controlProps={{ name: 'showExtraFields', control }}
+                controlProps={{ name: 'includeExtraFields', control }}
               />
             </Stack>
             <Stack direction="row" gap={3} alignItems="center">
@@ -214,14 +214,14 @@ export function PrintAssessmentModal({
                 disabled={isLoading}
                 radioGroupProps={{ sx: { flexDirection: 'row' } }}
                 options={[
-                  Print_Orientation.Vertical,
-                  Print_Orientation.Horizontal,
+                  PageOrientation.Landscape,
+                  PageOrientation.Portrait,
                 ].map((option) => ({
                   value: option,
                   label: t(`assessments:printDirection.${option}`),
                 }))}
                 controlProps={{
-                  name: 'printOrientation',
+                  name: 'orientation',
                   control,
                 }}
               />
