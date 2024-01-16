@@ -11,9 +11,9 @@ type AttendanceBreakdownProps = StackProps & {
 };
 
 export const AttendanceBreakdown = ({
-  attendance,
-  ...containerProps
-}: AttendanceBreakdownProps) => {
+                                      attendance,
+                                      ...containerProps
+                                    }: AttendanceBreakdownProps) => {
   const { t } = useTranslation(['common']);
 
   const codesByType = useAttendanceCodeByType({ teachingGroupCodes: true });
@@ -22,9 +22,9 @@ export const AttendanceBreakdown = ({
     const attendanceValues = Object.values(attendance);
 
     const current = attendanceValues.filter(
-      ({ attendanceCode }) =>
-        attendanceCode.codeType !== AttendanceCodeType.ExplainedAbsence &&
-        attendanceCode.codeType !== AttendanceCodeType.UnexplainedAbsence
+        ({ attendanceCodeId }) =>
+            attendanceCodeId !== codesByType?.EXPLAINED_ABSENCE.id &&
+            attendanceCodeId !== codesByType?.UNEXPLAINED_ABSENCE.id
     );
 
     return [
@@ -38,69 +38,67 @@ export const AttendanceBreakdown = ({
         ...getColourBasedOnAttendanceType(AttendanceCodeType.Present).soft,
         name: t('common:attendanceCode.PRESENT'),
         count: attendanceValues.filter(
-          ({ attendanceCode }) =>
-            attendanceCode.codeType === AttendanceCodeType.Present
+            ({ attendanceCodeId }) => attendanceCodeId === codesByType?.PRESENT.id
         ).length,
       },
       {
         ...getColourBasedOnAttendanceType(AttendanceCodeType.Late).soft,
         name: t('common:attendanceCode.LATE'),
         count: attendanceValues.filter(
-          ({ attendanceCode }) =>
-            attendanceCode.codeType === AttendanceCodeType.Late
+            ({ attendanceCodeId }) => attendanceCodeId === codesByType?.LATE.id
         ).length,
       },
       {
         ...getColourBasedOnAttendanceType(AttendanceCodeType.ExplainedAbsence)
-          .soft,
+            .soft,
         name: t('common:absent'),
         count: attendanceValues.filter(
-          ({ attendanceCode }) =>
-            attendanceCode.codeType === AttendanceCodeType.ExplainedAbsence ||
-            attendanceCode.codeType === AttendanceCodeType.UnexplainedAbsence
+            ({ attendanceCodeId }) =>
+                attendanceCodeId === codesByType?.EXPLAINED_ABSENCE.id ||
+                attendanceCodeId === codesByType?.UNEXPLAINED_ABSENCE.id
         ).length,
       },
     ];
   }, [attendance, codesByType]);
 
   return (
-    <Stack
-      flexDirection="row"
-      border="1px solid"
-      borderColor="slate.100"
-      bgcolor="background.paper"
-      flexWrap="wrap"
-      gap={2}
-      {...containerProps}
-    >
-      {attendanceTotals.map(({ name, count, bgColor, color }, index) => (
-        <Stack
-          key={name}
+      <Stack
           flexDirection="row"
-          alignItems="center"
-          gap={1}
-          mr={2}
-        >
-          <Typography
-            variant="body2"
-            component="span"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            borderRadius={5}
-            px={1}
-            height="28px"
-            width={index === 0 ? 'auto' : '28px'}
-            bgcolor={bgColor}
-            color={color}
-          >
-            {count}
-          </Typography>
-          <Typography variant="body2" component="span" color={color}>
-            {name}
-          </Typography>
-        </Stack>
-      ))}
-    </Stack>
+          border="1px solid"
+          borderColor="slate.100"
+          bgcolor="background.paper"
+          flexWrap="wrap"
+          gap={2}
+          {...containerProps}
+      >
+        {attendanceTotals.map(({ name, count, bgColor, color }, index) => (
+            <Stack
+                key={name}
+                flexDirection="row"
+                alignItems="center"
+                gap={1}
+                mr={2}
+            >
+              <Typography
+                  variant="body2"
+                  component="span"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius={5}
+                  px={1}
+                  height="28px"
+                  width={index === 0 ? 'auto' : '28px'}
+                  bgcolor={bgColor}
+                  color={color}
+              >
+                {count}
+              </Typography>
+              <Typography variant="body2" component="span" color={color}>
+                {name}
+              </Typography>
+            </Stack>
+        ))}
+      </Stack>
   );
 };
