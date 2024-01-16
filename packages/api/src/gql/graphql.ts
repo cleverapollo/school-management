@@ -186,6 +186,8 @@ export type AssessmentFilter = {
   academicNameSpaceId?: InputMaybe<Scalars['Int']>;
   ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   name?: InputMaybe<Scalars['String']>;
+  subjectGroupIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  yearGroupIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
 
 export type AssessmentGradeSet = {
@@ -581,6 +583,7 @@ export type CalendarEventExtension = {
 export type CalendarEventFilter = {
   alsoShowForParties?: InputMaybe<Calender_EventFilterAlsoShowForParties>;
   calendarIds?: InputMaybe<Array<Scalars['Int']>>;
+  cancellationStatus?: InputMaybe<Calendar_CancellationStatusFilter>;
   endDate: Scalars['Date'];
   eventIds?: InputMaybe<Array<Scalars['Int']>>;
   individualEventFilter?: InputMaybe<IndividualEventFilter>;
@@ -900,6 +903,12 @@ export type Calendar_CancelEvents = {
 export enum Calendar_CancellationContext {
   Manual = 'MANUAL',
   SchoolActivity = 'SCHOOL_ACTIVITY'
+}
+
+export enum Calendar_CancellationStatusFilter {
+  All = 'ALL',
+  Cancelled = 'CANCELLED',
+  NotCancelled = 'NOT_CANCELLED'
 }
 
 export type Calendar_Clash = {
@@ -2507,6 +2516,11 @@ export type Grade = {
   studyLevels?: Maybe<Array<Maybe<GradeSetStudyLevel>>>;
 };
 
+export type GradeFilter = {
+  programmeShortName: Scalars['String'];
+  studyLevel?: InputMaybe<StudyLevel>;
+};
+
 export type GradeSet = {
   __typename?: 'GradeSet';
   active: Scalars['Boolean'];
@@ -2541,6 +2555,12 @@ export enum GradeType {
   None = 'NONE',
   Percentage = 'PERCENTAGE'
 }
+
+export type Grades = {
+  __typename?: 'Grades';
+  grades: Array<Grade>;
+  studyLevel: StudyLevel;
+};
 
 export type Group = {
   __typename?: 'Group';
@@ -3727,6 +3747,7 @@ export type OverallComments = {
 
 export type OverallCommentsFilter = {
   assessmentId: Scalars['Long'];
+  subjectGroupIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   yearGroupEnrolmentId: Scalars['Long'];
 };
 
@@ -4332,6 +4353,7 @@ export type Query = {
   assessment_commentBank?: Maybe<Array<CommentBank>>;
   assessment_dashboardAssessment?: Maybe<Array<DashboardAssessment>>;
   assessment_gradeSet?: Maybe<Array<GradeSet>>;
+  assessment_grades?: Maybe<Array<Maybe<Grades>>>;
   assessment_overallComments?: Maybe<OverallComments>;
   assessment_studentResult: Array<AssessmentResult>;
   attendance_attendanceCodes: Array<AttendanceCode>;
@@ -4497,6 +4519,11 @@ export type QueryAssessment_DashboardAssessmentArgs = {
 
 export type QueryAssessment_GradeSetArgs = {
   filter?: InputMaybe<GradeSetFilter>;
+};
+
+
+export type QueryAssessment_GradesArgs = {
+  filter?: InputMaybe<GradeFilter>;
 };
 
 
