@@ -1,6 +1,12 @@
 import { LoadingButton } from '@mui/lab';
-import { Button, Chip, CircularProgress, Stack } from '@mui/material';
-import { getColorBasedOnIndex, Notes_BehaviourType } from '@tyro/api';
+import {
+  Button,
+  Chip,
+  CircularProgress,
+  Stack,
+  Typography,
+} from '@mui/material';
+import { getColorBasedOnIndex, Notes_BehaviourType, Person } from '@tyro/api';
 import {
   RHFAutocomplete,
   RHFDateTimePicker,
@@ -19,64 +25,74 @@ import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import { SetStateAction, Dispatch, useMemo, useEffect } from 'react';
 import { useNoteTagsBehaviour } from '../../api/behaviour/behaviour-tags';
-import { ReturnTypeFromUseIndividualStudentBehaviour } from '../../api/behaviour/individual-student-behaviour';
+import { ReturnTypeFromUseStudentBehaviour } from '../../api/behaviour/student-behaviour';
 import { useUpsertStudentBehaviour } from '../../api/behaviour/upsert-behaviour';
 import {
   ReturnTypeFromUseStudentSubjectGroups,
   useStudentsSubjectGroups,
 } from '../../api/student/overview';
+import { RHFStudentAutocomplete } from '../common/student-autocomplete';
+import { StudentsSelectOption } from '../../api/student/students';
 
 export type CreateBehaviourFormState =
-  NonNullable<ReturnTypeFromUseIndividualStudentBehaviour> & {
+  NonNullable<ReturnTypeFromUseStudentBehaviour> & {
+    students: StudentsSelectOption;
     noteId: number | null;
     behaviour: number;
     note: string;
-    subjects: ReturnTypeFromUseStudentSubjectGroups[];
+    subjects: Pick<
+      ReturnTypeFromUseStudentSubjectGroups,
+      'name' | 'partyId' | 'subjects'
+    >[];
     occurredOn: Dayjs;
     behaviourTypeState: Notes_BehaviourType;
   };
 export type CreateBehaviourModalProps = {
   noteId?: number;
-  studentId: number;
+  open: boolean;
   onClose: () => void;
   initialState: Partial<CreateBehaviourFormState> | null;
-  behaviourType: Notes_BehaviourType;
-  setBehaviourType: Dispatch<SetStateAction<Notes_BehaviourType>>;
+  behaviourType?: Notes_BehaviourType;
+  setBehaviourType?: Dispatch<SetStateAction<Notes_BehaviourType>>;
 };
 
 export function CreateBehaviourModal({
-  studentId,
+  open,
   onClose,
   initialState,
-  behaviourType,
+  behaviourType = Notes_BehaviourType.Positive,
   setBehaviourType,
 }: CreateBehaviourModalProps) {
   const { t } = useTranslation(['common', 'people']);
-  const { data: subjectGroup = [] } = useStudentsSubjectGroups(studentId);
-  const { data: behaviourTags = [], isLoading: isLoadingBehaviourTags } =
-    useNoteTagsBehaviour();
 
   const { resolver, rules } = useFormValidator<CreateBehaviourFormState>();
-
-  const defaultFormStateValues: Partial<CreateBehaviourFormState> = {
-    subjects:
-      initialState?.associatedParties as ReturnTypeFromUseStudentSubjectGroups[],
-    behaviour: (initialState?.tagIds && initialState?.tagIds[0]) ?? 0,
-    note: initialState?.details,
-    behaviourTypeState: behaviourType,
-    occurredOn: dayjs(initialState?.incidentDate || undefined),
-  };
 
   const { control, handleSubmit, reset, watch } =
     useForm<CreateBehaviourFormState>({
       resolver: resolver({
+        students: rules.required(),
         occurredOn: rules.required(),
         behaviour: rules.required(),
       }),
-      defaultValues: defaultFormStateValues,
+      defaultValues: {
+        occurredOn: dayjs(),
+        behaviourTypeState: behaviourType,
+      },
     });
 
-  const { mutate, isLoading } = useUpsertStudentBehaviour(studentId);
+  const [behaviourTypeOption, students] = watch([
+    'behaviourTypeState',
+    'students',
+  ]);
+  const studentIds = students?.map(({ partyId }) => partyId) ?? [];
+
+  const { data: subjectGroups = [] } = useStudentsSubjectGroups(studentIds, {
+    enabled: open,
+  });
+  const { data: behaviourTags = [], isLoading: isLoadingBehaviourTags } =
+    useNoteTagsBehaviour();
+
+  const { mutate, isLoading } = useUpsertStudentBehaviour();
 
   const onSubmit = ({
     subjects,
@@ -92,7 +108,7 @@ export function CreateBehaviourModal({
         {
           id: initialState?.noteId,
           note: note ?? initialState?.details,
-          referencedParties: [studentId],
+          referencedParties: studentIds,
           tags: [behaviour],
           associatedParties: subjectIds ?? [initialState?.associatedPartyIds],
           incidentDate: occurredOn.format('YYYY-MM-DDTHH:mm:ss'),
@@ -100,15 +116,15 @@ export function CreateBehaviourModal({
       ],
       {
         onSuccess: () => {
-          setBehaviourType(behaviourTypeState);
+          if (setBehaviourType) {
+            setBehaviourType(behaviourTypeState);
+          }
           onClose();
           reset();
         },
       }
     );
   };
-
-  const behaviourTypeOption = watch('behaviourTypeState');
 
   const filterTagsByBehaviourType = useMemo(
     () =>
@@ -118,14 +134,19 @@ export function CreateBehaviourModal({
 
   useEffect(() => {
     reset({
-      ...defaultFormStateValues,
       ...(initialState ?? {}),
+      subjects: (initialState?.associatedParties ??
+        initialState?.subjects) as ReturnTypeFromUseStudentSubjectGroups[],
+      behaviour: (initialState?.tagIds && initialState?.tagIds[0]) ?? undefined,
+      note: initialState?.details,
+      behaviourTypeState: behaviourType,
+      occurredOn: dayjs(initialState?.incidentDate || undefined),
     });
   }, [initialState]);
 
   return (
     <Dialog
-      open={!!initialState}
+      open={open}
       onClose={onClose}
       scroll="paper"
       fullWidth
@@ -145,6 +166,15 @@ export function CreateBehaviourModal({
             </DialogTitle>
             <DialogContent>
               <Stack gap={3} mt={1}>
+                <RHFStudentAutocomplete
+                  multiple
+                  label={t('common:students')}
+                  controlProps={{
+                    name: 'students',
+                    control,
+                  }}
+                  limitTags={3}
+                />
                 <RHFDateTimePicker
                   label={t('common:date')}
                   controlProps={{
@@ -156,9 +186,11 @@ export function CreateBehaviourModal({
                   multiple
                   label={t('people:associations')}
                   optionIdKey="partyId"
-                  getOptionLabel={(option) => option.subjects[0]?.name}
+                  getOptionLabel={(option) =>
+                    `${option.subjects[0]?.name} - ${option.name}`
+                  }
                   controlProps={{ name: 'subjects', control }}
-                  options={subjectGroup}
+                  options={subjectGroups}
                   renderTags={(tags, getTagProps) =>
                     tags.map((tag, index) => {
                       const [subject] = tag.subjects || [];
@@ -171,7 +203,7 @@ export function CreateBehaviourModal({
                           color={
                             subject?.colour || getColorBasedOnIndex(tag.partyId)
                           }
-                          label={subject?.name}
+                          label={`${subject?.name} - ${tag.name}`}
                         />
                       );
                     })

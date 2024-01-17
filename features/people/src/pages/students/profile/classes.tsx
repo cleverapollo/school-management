@@ -150,9 +150,11 @@ export default function StudentProfileClassesPage() {
     onClose: onCloseSendSms,
   } = useDisclosure();
 
-  const { data: subjectGroupsData } = useStudentsSubjectGroups(studentId);
+  const { data: subjectGroupsData } = useStudentsSubjectGroups([
+    studentId ?? 0,
+  ]);
   const { mutateAsync: updateStudentSubjectGroup } =
-    useUpdateStudentSubjectGroup(studentId);
+    useUpdateStudentSubjectGroup();
 
   const studentColumns = useMemo(
     () => getSubjectGroupsColumns(t, displayNames, permissions),

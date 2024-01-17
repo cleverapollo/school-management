@@ -23,3 +23,7 @@ export * from './api/behaviour/upsert-behaviour-tags';
 export * from './api/common/people';
 export * from './api/behaviour/upsert-behaviour-category';
 export * from './api/behaviour/behaviour-categories';
+export * from './components/behaviour/create-behaviour-modal';
+export * from './api/behaviour/student-behaviour';
+export * from './hooks/use-level-by-name';
+export * from './components/behaviour/confirm-delete-behaviour';

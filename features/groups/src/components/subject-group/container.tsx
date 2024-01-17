@@ -6,7 +6,7 @@ import { SubjectGroupStatusBar } from './status-bar';
 import { useSubjectGroupById } from '../../api/subject-groups';
 
 export default function SubjectGroupContainer() {
-  const { t } = useTranslation(['groups', 'common']);
+  const { t } = useTranslation(['groups', 'common', 'people']);
 
   const { groupId } = useParams();
   const groupIdNumber = useNumber(groupId);
@@ -56,6 +56,10 @@ export default function SubjectGroupContainer() {
             {
               value: 'timetable',
               label: t('common:timetable'),
+            },
+            {
+              value: 'behaviour',
+              label: t('people:behaviour'),
             },
           ]}
         />

@@ -190,7 +190,7 @@ const getSubjectGroupsColumns = (
 export default function SubjectGroups() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
   const { displayNames } = usePreferredNameLayout();
-  const { isStaffUser, isTyroUser } = usePermissions();
+  const { isTyroUser } = usePermissions();
   const { data: subjectGroupsData } = useSubjectGroups();
   const { data: subjects } = useCatalogueSubjects({
     filterUsage: SubjectUsage.All,
