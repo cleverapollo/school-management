@@ -72,8 +72,8 @@ export function EventCoverCard({
   ) => {
     e.preventDefault();
     if (
-      !selectedEvents.find(
-        (selectedEvent) => getEventId(selectedEvent) === getEventId(eventInfo)
+      selectedEvents.every(
+        (selectedEvent) => getEventId(selectedEvent) !== getEventId(eventInfo)
       )
     ) {
       toggleEventSelection(eventInfo);

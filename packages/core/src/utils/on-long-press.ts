@@ -18,18 +18,14 @@ export function onLongPress<TouchEventElement>(
   return {
     onTouchStart: (event: React.TouchEvent<TouchEventElement>) => {
       longPressTimeout = setTimeout(() => {
-        if (onTouchStart) {
-          onTouchStart(event);
-        }
+        onTouchStart?.(event);
         longPressTimeout = undefined;
         functionToCall(event);
       }, pressDelay);
     },
     onTouchEnd: (event: React.TouchEvent<TouchEventElement>) => {
       if (longPressTimeout) {
-        if (onTouchEnd) {
-          onTouchEnd(event);
-        }
+        onTouchEnd?.(event);
         clearTimeout(longPressTimeout);
         longPressTimeout = undefined;
       }
