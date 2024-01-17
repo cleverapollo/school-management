@@ -1,5 +1,5 @@
 {
-  "name": "@tyro/info-request",
+  "name": "@tyro/info-requests",
   "version": "0.0.0",
   "private": true,
   "main": "src/index.ts",

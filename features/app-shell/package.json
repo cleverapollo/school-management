@@ -19,6 +19,7 @@
     "@tyro/groups": "*",
     "@tyro/i18n": "*",
     "@tyro/icons": "*",
+    "@tyro/info-requests": "*",
     "@tyro/mail": "*",
     "@tyro/people": "*",
     "@tyro/printing": "*",

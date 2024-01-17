@@ -34,6 +34,7 @@ import { routes as authRoutes } from '@tyro/authentication';
 import { getRoutes as getCalendarRoutes } from '@tyro/calendar';
 import { getRoutes as getClassListManagerRoutes } from '@tyro/class-list-manager';
 import { getRoutes as getGroupRoutes } from '@tyro/groups';
+import { getRoutes as getInfoRequestsRoutes } from '@tyro/info-requests';
 import { getRoutes as getPrintingRoutes } from '@tyro/printing';
 import { getRoutes as getMailRoutes } from '@tyro/mail';
 import { getRoutes as getFeeRoutes } from '@tyro/fees';
@@ -132,6 +133,7 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getAttendanceRoutes(t),
   ...getMailRoutes(t),
   ...getFeeRoutes(t),
+  ...getInfoRequestsRoutes(t),
   ...getAssessmentRoutes(t),
   ...getPeopleRoutes(t),
   ...getReportingRoutes(t),

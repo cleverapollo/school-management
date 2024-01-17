@@ -1,5 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient, UseQueryReturnType } from '@tyro/api';
+import {
+  Forms_InformationRequestListFormFilter,
+  gqlClient,
+  graphql,
+  queryClient,
+  UseQueryReturnType,
+} from '@tyro/api';
 import { infoRequestKeys } from './keys';
 
 const infoRequestFormList = graphql(/* GraphQL */ `
@@ -17,7 +23,7 @@ const infoRequestFormList = graphql(/* GraphQL */ `
 const infoRequestFormListQuery = (
   filter: Forms_InformationRequestListFormFilter
 ) => ({
-  queryKey: infoRequestKeys.list(),
+  queryKey: infoRequestKeys.list(filter),
   queryFn: () => gqlClient.request(infoRequestFormList, { filter }),
 });
 

@@ -8,6 +8,7 @@ import classListManager from './classListManager.json';
 import common from './common.json';
 import fees from './fees.json';
 import groups from './groups.json';
+import infoRequests from './infoRequests.json';
 import mail from './mail.json';
 import navigation from './navigation.json';
 import people from './people.json';
@@ -30,6 +31,7 @@ export const en = {
   common,
   fees,
   groups,
+  infoRequests,
   mail,
   navigation,
   people,

@@ -1,6 +1,6 @@
 import { Control, FieldValues, Path } from 'react-hook-form';
 import { Forms_FormFieldItem, Form_FormFieldItemType } from '@tyro/api';
-import { Grid, Typography } from '@mui/material';
+import { Grid, Typography, GridSize } from '@mui/material';
 import { useCallback } from 'react';
 import { RHFCheckbox } from '../checkbox';
 import { RHFDatePicker } from '../date-picker';
@@ -9,19 +9,10 @@ import { RHFTextField } from '../text-field';
 import { RHFSelect } from '../select';
 import { RHFRadioGroup } from '../radio-group';
 
-type GridWidth = {
-  xs?: number;
-  sm?: number;
-  md?: number;
-  lg?: number;
-  xl?: number;
-};
-
 interface FieldProps<Fields extends FieldValues>
-  extends Omit<Forms_FormFieldItem, 'id' | 'gridWidth'> {
+  extends Omit<Forms_FormFieldItem, 'id'> {
   id: Path<Fields>;
   control: Control<Fields, any>;
-  gridWidth?: GridWidth;
 }
 
 export const Field = <Fields extends FieldValues>({
@@ -32,9 +23,17 @@ export const Field = <Fields extends FieldValues>({
   gridWidth,
   control,
 }: FieldProps<Fields>) => {
+  console.log({
+    id,
+    label,
+    type,
+    options,
+    gridWidth,
+    control,
+  });
   const PresetGrid = useCallback(
     ({ children }: { children: React.ReactNode }) => (
-      <Grid item xs={12} {...gridWidth}>
+      <Grid item xs={12} {...(gridWidth ?? {})}>
         {children}
       </Grid>
     ),
@@ -63,6 +62,9 @@ export const Field = <Fields extends FieldValues>({
               control,
             }}
             label={label}
+            inputProps={{
+              fullWidth: true,
+            }}
           />
         </PresetGrid>
       );
@@ -75,6 +77,9 @@ export const Field = <Fields extends FieldValues>({
               control,
             }}
             label={label}
+            inputProps={{
+              fullWidth: true,
+            }}
           />
         </PresetGrid>
       );
@@ -87,6 +92,9 @@ export const Field = <Fields extends FieldValues>({
               control,
             }}
             label={label}
+            textFieldProps={{
+              fullWidth: true,
+            }}
           />
         </PresetGrid>
       );
@@ -102,6 +110,7 @@ export const Field = <Fields extends FieldValues>({
             label={label}
             options={options}
             multiple={type === Form_FormFieldItemType.Multiselect}
+            fullWidth
           />
         </PresetGrid>
       );
@@ -135,6 +144,9 @@ export const Field = <Fields extends FieldValues>({
             label={label}
             multiline
             minRows={3}
+            textFieldProps={{
+              fullWidth: true,
+            }}
           />
         </PresetGrid>
       );
@@ -148,6 +160,9 @@ export const Field = <Fields extends FieldValues>({
             }}
             label={label}
             timeOnly
+            inputProps={{
+              fullWidth: true,
+            }}
           />
         </PresetGrid>
       );

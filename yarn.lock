@@ -6162,6 +6162,7 @@ __metadata:
     "@tyro/groups": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    "@tyro/info-requests": "*"
     "@tyro/mail": "*"
     "@tyro/people": "*"
     "@tyro/printing": "*"
@@ -6489,9 +6490,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@tyro/info-request@workspace:features/info-request":
+"@tyro/info-requests@*, @tyro/info-requests@workspace:features/info-requests":
   version: 0.0.0-use.local
-  resolution: "@tyro/info-request@workspace:features/info-request"
+  resolution: "@tyro/info-requests@workspace:features/info-requests"
   dependencies:
     "@mui/lab": ^5.0.0-alpha.156
     "@mui/material": ^5.15.0

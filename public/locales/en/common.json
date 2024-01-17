@@ -331,5 +331,6 @@
   "noItemsToSelect": "No items to select",
   "noItemsSelected": "No items selected",
   "paid": "Paid",
-  "published": "Published"
+  "published": "Published",
+  "complete": "Complete"
 }

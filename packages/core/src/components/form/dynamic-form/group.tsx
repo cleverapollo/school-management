@@ -1,15 +1,11 @@
 import { Card, CardHeader, Grid, Stack, Typography } from '@mui/material';
-import { Forms_FormFieldGroup, Forms_FormFieldItem } from '@tyro/api';
+import {
+  Forms_FormFieldGridWidth,
+  Forms_FormFieldGroup,
+  Forms_FormFieldItem,
+} from '@tyro/api';
 import { Control, FieldValues } from 'react-hook-form';
 import { Field } from './fields';
-
-type GridWidth = {
-  xs?: number;
-  sm?: number;
-  md?: number;
-  lg?: number;
-  xl?: number;
-};
 
 const FieldSubgroup = <Fields extends FieldValues>({
   header,
@@ -20,7 +16,7 @@ const FieldSubgroup = <Fields extends FieldValues>({
   header: string;
   fields: Forms_FormFieldItem[];
   control: Control<Fields, any>;
-  gridWidth?: GridWidth;
+  gridWidth?: Forms_FormFieldGridWidth;
 }) => {
   <Grid container spacing={2}>
     <Grid item xs={12}>
@@ -46,20 +42,28 @@ export const FieldGroup = <Fields extends FieldValues>({
   <Card variant="outlined">
     <CardHeader component="h2" title={group.header} />
     <Stack direction="column" gap={3} p={3}>
-      {group.fields?.map((field) =>
-        field?.__typename === 'Forms_FormFieldSubGroup' ? (
-          <FieldSubgroup
-            header={field.header}
-            fields={field.fields}
-            gridWidth={field.gridWidth}
-            control={control}
-          />
-        ) : (
-          <Grid key={field.id} container>
-            <Field field={field} control={control} />
-          </Grid>
-        )
-      )}
+      {group.fields?.map((field) => {
+        if (field?.__typename === 'Forms_FormFieldSubGroup') {
+          return (
+            <FieldSubgroup
+              header={field.header}
+              fields={field.fields}
+              gridWidth={field.gridWidth}
+              control={control}
+            />
+          );
+        }
+
+        if (field?.__typename === 'Forms_FormFieldItem') {
+          return (
+            <Grid key={field.id} container>
+              <Field {...field} control={control} />
+            </Grid>
+          );
+        }
+
+        return null;
+      })}
     </Stack>
   </Card>
 );
