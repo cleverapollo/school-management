@@ -9,6 +9,9 @@ import {
   DialogActions,
   Dialog,
   DialogTitle,
+  useToast,
+  ConfirmDialog,
+  useDisclosure,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
@@ -20,6 +23,8 @@ import {
   Colour,
   RecurrenceEnum,
   CreateCalendarEventInput,
+  BackendErrorResponse,
+  ParsedErrorDetail,
 } from '@tyro/api';
 import { useEffect } from 'react';
 import { usePartySearchProps } from '@tyro/people';
@@ -37,6 +42,7 @@ export type CalendarEditEventFormState = Pick<
   CreateCalendarEventInput,
   'calendarIds' | 'name' | 'description' | 'colour'
 > & {
+  allowClashes: boolean;
   eventId?: number;
   participants: CalendarParty[];
 } & RoomLocationFormState &
@@ -52,11 +58,17 @@ export const CalendarEditEventDetailsModal = ({
   onClose,
 }: CalendarEventViewProps) => {
   const { t } = useTranslation(['calendar', 'common']);
+  const { toast } = useToast();
 
+  const {
+    isOpen: isConfirmClashOpen,
+    onOpen: openConfirmClash,
+    onClose: closeConfirmClash,
+  } = useDisclosure();
   const participantsProps = usePartySearchProps();
 
   const {
-    mutate: createCalendarEventMutation,
+    mutateAsync: createCalendarEventMutation,
     isLoading: isSubmitting,
     isSuccess: isSubmitSuccessful,
   } = useCreateCalendarEvent();
@@ -69,9 +81,10 @@ export const CalendarEditEventDetailsModal = ({
     endTime: dayjs().add(MINIMUM_EVENT_DURATION, 'minutes'),
     recurrenceEnum: RecurrenceEnum.NoRecurrence,
     colour: Colour.Red,
+    allowClashes: false,
   };
 
-  const { control, handleSubmit, watch, reset } =
+  const { control, handleSubmit, watch, reset, setValue } =
     useForm<CalendarEditEventFormState>({
       resolver: resolver({
         name: rules.required(),
@@ -192,124 +205,155 @@ export const CalendarEditEventDetailsModal = ({
     endDate,
   });
 
-  const onSubmit = ({
-    participants,
-    locations,
-    ...restEventData
-  }: CalendarEditEventFormState) => {
-    if (!recurrenceFilter) return;
+  const onSubmit = handleSubmit(
+    ({ participants, locations, allowClashes, ...restEventData }) => {
+      if (!recurrenceFilter) return;
 
-    // TODO: edition mutation is not ready yet
-    if (restEventData.eventId) {
-      return onClose();
-    }
-
-    createCalendarEventMutation(
-      {
-        events: [
-          {
-            ...restEventData,
-            type: CalendarEventType.General,
-            startDate: recurrenceFilter.fromDate,
-            startTime: recurrenceFilter.startTime,
-            endTime: recurrenceFilter.endTime,
-            endDate: recurrenceFilter.endDate ?? null,
-            occurrences: recurrenceFilter.occurrences ?? null,
-            attendees: participants.map(({ partyId, attendeeType }) => ({
-              partyId,
-              type: attendeeType ?? CalendarEventAttendeeType.Attendee,
-              // TODO: remove when tags are non mandatory
-              tags: [],
-            })),
-            rooms: locations.map(({ roomId }) => ({
-              roomId,
-              // TODO: remove when tags are non mandatory
-              tags: [],
-            })),
-            // TODO: remove when tags are non mandatory
-            tags: [],
-          },
-        ],
-      },
-      {
-        onSuccess: onClose,
-        // TODO: handle error message from server
-        onError: (error) => {
-          console.error(error);
-        },
+      // TODO: edition mutation is not ready yet
+      if (restEventData.eventId) {
+        return onClose();
       }
-    );
-  };
+
+      return createCalendarEventMutation(
+        {
+          allowClashes,
+          events: [
+            {
+              ...restEventData,
+              type: CalendarEventType.General,
+              startDate: recurrenceFilter.fromDate,
+              startTime: recurrenceFilter.startTime,
+              endTime: recurrenceFilter.endTime,
+              endDate: recurrenceFilter.endDate ?? null,
+              occurrences: recurrenceFilter.occurrences ?? null,
+              attendees: participants.map(({ partyId, attendeeType }) => ({
+                partyId,
+                type: attendeeType ?? CalendarEventAttendeeType.Attendee,
+                // TODO: remove when tags are non mandatory
+                tags: [],
+              })),
+              rooms: locations.map(({ roomId }) => ({
+                roomId,
+                // TODO: remove when tags are non mandatory
+                tags: [],
+              })),
+              // TODO: remove when tags are non mandatory
+              tags: [],
+            },
+          ],
+        },
+        {
+          onSuccess: onClose,
+          onError: (error: unknown) => {
+            let errorMessage = t('common:snackbarMessages.errorFailed');
+
+            if (typeof error === 'object' && error !== null) {
+              const backendError = error as BackendErrorResponse;
+              try {
+                const parsedError = JSON.parse(
+                  backendError.response.error
+                ) as ParsedErrorDetail;
+                if (parsedError.detail.includes('clash')) {
+                  openConfirmClash();
+                  return;
+                }
+
+                errorMessage = parsedError.detail || errorMessage;
+              } catch (parseError) {
+                console.error('Error parsing the error message:', parseError);
+              }
+            }
+
+            toast(errorMessage, { variant: 'error' });
+          },
+        }
+      );
+    }
+  );
 
   return (
-    <Dialog open={!!initialEventState} onClose={handleClose}>
-      <DialogTitle onClose={onClose}>
-        {initialEventState?.eventId
-          ? t('calendar:editEvent')
-          : t('calendar:addEvent')}
-      </DialogTitle>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack spacing={3} sx={{ p: 3 }}>
-          <RHFTextField<CalendarEditEventFormState>
-            label={t('calendar:inputLabels.title')}
-            controlProps={{
-              name: 'name',
-              control,
-            }}
-          />
+    <>
+      <Dialog open={!!initialEventState} onClose={handleClose}>
+        <DialogTitle onClose={onClose}>
+          {initialEventState?.eventId
+            ? t('calendar:editEvent')
+            : t('calendar:addEvent')}
+        </DialogTitle>
+        <form onSubmit={onSubmit}>
+          <Stack spacing={3} sx={{ p: 3 }}>
+            <RHFTextField<CalendarEditEventFormState>
+              label={t('calendar:inputLabels.title')}
+              controlProps={{
+                name: 'name',
+                control,
+              }}
+            />
 
-          <ScheduleEvent control={control} />
+            <ScheduleEvent control={control} />
 
-          <RHFAutocomplete<CalendarEditEventFormState, CalendarParty, true>
-            {...participantsProps}
-            controlProps={{
-              name: 'participants',
-              control,
-            }}
-          />
+            <RHFAutocomplete<CalendarEditEventFormState, CalendarParty, true>
+              {...participantsProps}
+              controlProps={{
+                name: 'participants',
+                control,
+              }}
+            />
 
-          <RoomLocationOptions
-            recurrenceFilter={recurrenceFilter}
-            control={control}
-          />
+            <RoomLocationOptions
+              recurrenceFilter={recurrenceFilter}
+              control={control}
+            />
 
-          <RHFTextField<CalendarEditEventFormState>
-            label={t('calendar:inputLabels.description')}
-            controlProps={{
-              name: 'description',
-              control,
-            }}
-            textFieldProps={{
-              multiline: true,
-              rows: 4,
-            }}
-          />
+            <RHFTextField<CalendarEditEventFormState>
+              label={t('calendar:inputLabels.description')}
+              controlProps={{
+                name: 'description',
+                control,
+              }}
+              textFieldProps={{
+                multiline: true,
+                rows: 4,
+              }}
+            />
 
-          <RHFColorPicker<CalendarEditEventFormState>
-            label={t('calendar:inputLabels.eventColor')}
-            controlProps={{
-              name: 'colour',
-              control,
-            }}
-          />
-        </Stack>
+            <RHFColorPicker<CalendarEditEventFormState>
+              label={t('calendar:inputLabels.eventColor')}
+              controlProps={{
+                name: 'colour',
+                control,
+              }}
+            />
+          </Stack>
 
-        <DialogActions>
-          <Button variant="outlined" color="inherit" onClick={handleClose}>
-            {t('common:actions.cancel')}
-          </Button>
+          <DialogActions>
+            <Button variant="outlined" color="inherit" onClick={handleClose}>
+              {t('common:actions.cancel')}
+            </Button>
 
-          <LoadingButton
-            type="submit"
-            variant="contained"
-            loading={isSubmitting}
-          >
-            {initialEventState?.eventId
-              ? t('common:actions.edit')
-              : t('common:actions.add')}
-          </LoadingButton>
-        </DialogActions>
-      </form>
-    </Dialog>
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              loading={isSubmitting}
+            >
+              {initialEventState?.eventId
+                ? t('common:actions.edit')
+                : t('common:actions.add')}
+            </LoadingButton>
+          </DialogActions>
+        </form>
+      </Dialog>
+
+      <ConfirmDialog
+        open={isConfirmClashOpen}
+        title={t('calendar:clashDetected')}
+        description={t('calendar:clashDetectedWouldYouLikeToContinue')}
+        confirmText={t('common:actions.continue')}
+        onClose={closeConfirmClash}
+        onConfirm={() => {
+          setValue('allowClashes', true);
+          return onSubmit();
+        }}
+      />
+    </>
   );
 };
