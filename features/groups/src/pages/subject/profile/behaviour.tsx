@@ -12,6 +12,7 @@ import {
   useNumber,
   usePreferredNameLayout,
   useDebouncedValue,
+  BehaviourLabelChip,
 } from '@tyro/core';
 
 import { TrashIcon, VerticalDotsIcon, EditIcon } from '@tyro/icons';
@@ -25,7 +26,6 @@ import {
   useStudentBehaviour,
 } from '@tyro/people';
 import { Chip, Stack } from '@mui/material';
-import { Notes_BehaviourType } from '@tyro/api';
 
 dayjs.extend(LocalizedFormat);
 
@@ -49,8 +49,27 @@ const getSubjectGroupBehaviourColumns = (
       dayjs(dateA).unix() - dayjs(dateB).unix(),
   },
   {
+    colId: 'type',
+    headerName: t('common:type'),
+    valueGetter: ({ data }) => {
+      const behaviourType = data?.tags?.[0]?.behaviourType;
+      return behaviourType ? t(`people:behaviourTypes.${behaviourType}`) : '-';
+    },
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseStudentBehaviour, any>) => {
+      const behaviourType = data?.tags?.[0]?.behaviourType;
+
+      return behaviourType ? (
+        <BehaviourLabelChip behaviourType={behaviourType} />
+      ) : null;
+    },
+    filter: true,
+  },
+  {
     field: 'category',
     headerName: t('people:category'),
+    filter: true,
     valueGetter: ({ data }) => data?.category || '-',
   },
   {
@@ -59,6 +78,7 @@ const getSubjectGroupBehaviourColumns = (
     autoHeight: true,
     wrapText: true,
     width: 250,
+    filter: true,
     valueGetter: ({ data }) => data?.tags?.map((tag) => tag?.name) ?? '-',
     cellRenderer: ({
       data,
@@ -96,21 +116,33 @@ const getSubjectGroupBehaviourColumns = (
     },
   },
   {
-    field: 'associatedParties',
+    field: 'referencedParties',
     headerName: t('common:students'),
     autoHeight: true,
     wrapText: true,
-    width: 200,
+    width: 300,
+    cellStyle: {
+      lineHeight: 2,
+      paddingTop: 12,
+      paddingBottom: 12,
+      wordBreak: 'break-word',
+    },
     valueGetter: ({ data }) => {
-      const subjects = data?.associatedParties?.flatMap((group) => {
-        if (group?.__typename === 'SubjectGroup') {
-          const [subject] = group.subjects || [];
-          return subject?.name;
-        }
-        return [];
-      });
+      const students = data?.referencedParties?.reduce<string[]>(
+        (acc, party) => {
+          if (party?.__typename === 'Student') {
+            acc.push(displayName(party?.person));
+          }
+          return acc;
+        },
+        []
+      );
 
-      return subjects && subjects.length > 0 ? subjects.join(', ') : '-';
+      if (students && students.length > 3) {
+        return `${students.slice(0, 3).join(', ')}, +${students.length - 3}`;
+      }
+
+      return students && students.length > 0 ? students.join(', ') : '-';
     },
   },
   {
@@ -170,8 +202,7 @@ export default function SubjectGroupProfileBehaviourPage() {
 
   const { data: studentBehaviorData, isLoading: isBehavioursLoading } =
     useStudentBehaviour({
-      partyId: groupIdNumber ?? 0,
-      behaviourType: Notes_BehaviourType.Positive,
+      associatedPartyIds: [groupIdNumber ?? 0],
     });
 
   const subjectGroupBehaviourColumns = useMemo(

@@ -133,16 +133,32 @@ export function CreateBehaviourModal({
   );
 
   useEffect(() => {
+    let initStudents = initialState?.students;
+
+    if (!initStudents) {
+      initStudents = initialState?.referencedParties?.reduce<Person[]>(
+        (acc, party) => {
+          if (party.__typename === 'Student') {
+            acc.push(party.person);
+          }
+          return acc;
+        },
+        []
+      );
+    }
+
     reset({
       ...(initialState ?? {}),
+      students: initStudents as Person[],
       subjects: (initialState?.associatedParties ??
         initialState?.subjects) as ReturnTypeFromUseStudentSubjectGroups[],
       behaviour: (initialState?.tagIds && initialState?.tagIds[0]) ?? undefined,
       note: initialState?.details,
-      behaviourTypeState: behaviourType,
+      behaviourTypeState:
+        initialState?.tags?.[0]?.behaviourType ?? behaviourType,
       occurredOn: dayjs(initialState?.incidentDate || undefined),
     });
-  }, [initialState]);
+  }, [initialState, behaviourType]);
 
   return (
     <Dialog

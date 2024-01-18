@@ -312,8 +312,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                       }
 
                       return getStudentBehaviour({
-                        partyId: groupId,
-                        behaviourType: Notes_BehaviourType.Positive,
+                        associatedPartyIds: [groupId],
                       });
                     },
                   },

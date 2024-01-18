@@ -7,13 +7,12 @@ import {
   ICellRendererParams,
   ReturnTypeDisplayName,
   Table,
-  useDebouncedValue,
   useDisclosure,
   useNumber,
   usePreferredNameLayout,
 } from '@tyro/core';
 
-import { AddDocIcon, AddUserIcon, MobileIcon, SendMailIcon } from '@tyro/icons';
+import { AddNoteIcon, AddUserIcon } from '@tyro/icons';
 import {
   getPersonProfileLink,
   PermissionUtils,
@@ -137,7 +136,7 @@ export default function SubjectGroupProfileStudentsPage() {
                   ? [
                       {
                         label: t('people:actions.createBehaviour'),
-                        icon: <AddDocIcon />,
+                        icon: <AddNoteIcon />,
                         onClick: onOpenAddBehaviour,
                       },
                     ]

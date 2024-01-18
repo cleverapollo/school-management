@@ -31,6 +31,7 @@ const individualStudentBehaviour = graphql(/* GraphQL */ `
           __typename
           partyId
           ... on SubjectGroup {
+            name
             subjects {
               name
               colour
@@ -61,6 +62,7 @@ const individualStudentBehaviour = graphql(/* GraphQL */ `
           id
           name
           description
+          behaviourType
         }
         tagIds
       }
