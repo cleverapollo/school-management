@@ -1944,6 +1944,7 @@ export type DashboardAssessmentFilter = {
 export type DashboardAssessmentResult = {
   __typename?: 'DashboardAssessmentResult';
   assessmentId: Scalars['Long'];
+  extraFields?: Maybe<Array<ResultExtraField>>;
   grade?: Maybe<Scalars['String']>;
   id: Scalars['Long'];
   result?: Maybe<Scalars['Int']>;
@@ -2963,10 +2964,13 @@ export type Mutation = {
   communications_assignLabel?: Maybe<Mail>;
   communications_read?: Maybe<Scalars['String']>;
   communications_readNotification?: Maybe<Success>;
+  /** notifications endpoints */
   communications_registerDevice?: Maybe<DeviceRegistration>;
   communications_saveLabel?: Maybe<Label>;
   communications_saveNotificationTemplate?: Maybe<NotificationTemplate>;
+  /** mail endpoints */
   communications_sendMail?: Maybe<Mail>;
+  /** sms endpoints */
   communications_sendSms?: Maybe<Scalars['String']>;
   communications_smsTopUp?: Maybe<SmsTopUpResponse>;
   communications_starred?: Maybe<Scalars['String']>;
@@ -3683,8 +3687,9 @@ export type Notes_BehaviourCategoryInput = {
 };
 
 export type Notes_BehaviourFilter = {
-  behaviourType: Notes_BehaviourType;
-  partyId: Scalars['Long'];
+  associatedPartyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  behaviourType?: InputMaybe<Notes_BehaviourType>;
+  partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
 
 export enum Notes_BehaviourType {
@@ -3845,6 +3850,7 @@ export type NotificationFilter = {
 
 export type NotificationMetaData = {
   __typename?: 'NotificationMetaData';
+  feeId?: Maybe<Scalars['Int']>;
   mailId?: Maybe<Scalars['Long']>;
   notificationType: NotificationType;
   partyId?: Maybe<Scalars['Long']>;
@@ -4667,12 +4673,16 @@ export type Query = {
   catalogue_staffPosts: Array<StaffPost>;
   catalogue_subjects: Array<Subject>;
   catalogue_years: Array<YearGroup>;
+  /** sms endpoints */
   communications_currentMonthlySpend?: Maybe<SmsCurrentMonthlySpend>;
   communications_label: Array<Label>;
+  /** mail endpoints */
   communications_mail: Array<Mail>;
   communications_notificationCount?: Maybe<NotificationsUnreadCount>;
   communications_notificationTemplates: Array<NotificationTemplate>;
   communications_notifications: Array<Notification>;
+  communications_recipients: Array<Search>;
+  /** notifications endpoints */
   communications_registeredDevices: Array<DeviceRegistration>;
   communications_sms: Array<Sms>;
   communications_smsCost?: Maybe<SmsCost>;
@@ -4941,6 +4951,11 @@ export type QueryCommunications_NotificationTemplatesArgs = {
 
 export type QueryCommunications_NotificationsArgs = {
   filter?: InputMaybe<NotificationFilter>;
+};
+
+
+export type QueryCommunications_RecipientsArgs = {
+  filter?: InputMaybe<RecipientFilter>;
 };
 
 
@@ -5336,10 +5351,36 @@ export type Recipient = {
   recipientType: RecipientType;
 };
 
+export type RecipientFilter = {
+  partyIds: Array<Scalars['Long']>;
+  recipientType: Array<RecipientSearchType>;
+};
+
 export type RecipientInput = {
   recipientPartyId: Scalars['Long'];
   recipientPartyType: SmsRecipientType;
 };
+
+export enum RecipientSearchType {
+  ClassGroupTutors = 'CLASS_GROUP_TUTORS',
+  ClassGroupYearHeads = 'CLASS_GROUP_YEAR_HEADS',
+  Contact = 'CONTACT',
+  GeneralGroupContact = 'GENERAL_GROUP_CONTACT',
+  GeneralGroupStaff = 'GENERAL_GROUP_STAFF',
+  GeneralGroupStudent = 'GENERAL_GROUP_STUDENT',
+  Staff = 'STAFF',
+  Student = 'STUDENT',
+  StudentContacts = 'STUDENT_CONTACTS',
+  StudentTeachers = 'STUDENT_TEACHERS',
+  SubjectGroupContact = 'SUBJECT_GROUP_CONTACT',
+  SubjectGroupStaff = 'SUBJECT_GROUP_STAFF',
+  SubjectGroupStudent = 'SUBJECT_GROUP_STUDENT',
+  SubjectGroupTutors = 'SUBJECT_GROUP_TUTORS',
+  SubjectGroupYearHeads = 'SUBJECT_GROUP_YEAR_HEADS',
+  YearGroupContact = 'YEAR_GROUP_CONTACT',
+  YearGroupStaff = 'YEAR_GROUP_STAFF',
+  YearGroupStudent = 'YEAR_GROUP_STUDENT'
+}
 
 export enum RecipientType {
   Bcc = 'BCC',
