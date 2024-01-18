@@ -15,6 +15,8 @@ import {
   Subject,
   SubjectGroup,
   StateCbaType,
+  ParsedErrorDetail,
+  BackendErrorResponse,
 } from '@tyro/api';
 import { Button, Card, CardHeader, Chip, Stack, Tooltip } from '@mui/material';
 import { useForm } from 'react-hook-form';
@@ -26,11 +28,7 @@ import {
   FormCustomFieldsValues,
   CustomFieldsTable,
 } from '../term-assessment/custom-fields-table';
-import {
-  BackendErrorResponse,
-  ParsedErrorDetail,
-  useSaveStateCba,
-} from '../../api/state-cba/save-state-cba';
+import { useSaveStateCba } from '../../api/state-cba/save-state-cba';
 import { useAssessmentSubjectGroups } from '../../api/assessment-subject-groups';
 
 export type YearGroupOption = {
