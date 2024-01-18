@@ -11,11 +11,12 @@ import {
   AttendanceCodeSelectCellEditor,
   BulkEditedRows,
   TuslaCodeSelectCellEditor,
+  useDebouncedValue,
 } from '@tyro/core';
 import { Box, Button } from '@mui/material';
 import { AddIcon, VerticalDotsIcon } from '@tyro/icons';
 import { SaveAttendanceCodeInput, TuslaCode } from '@tyro/api';
-import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useMemo } from 'react';
 import {
   ReturnTypeFromUseAttendanceCodes,
   useAttendanceCodes,
@@ -146,8 +147,15 @@ export default function Codes() {
   const { mutateAsync: saveBulkAttendanceCodes } =
     useCreateOrUpdateAttendanceCode();
 
-  const [editAttendanceCodeInitialState, setEditAttendanceCodeInitialState] =
-    useState<EditAttendanceCodeViewProps['initialAttendanceCodeState']>();
+  const {
+    value: editAttendanceCodeInitialState,
+    debouncedValue: debouncedEditAttendanceCodeInitialState,
+    setValue: setEditAttendanceCodeInitialState,
+  } = useDebouncedValue<
+    EditAttendanceCodeViewProps['initialAttendanceCodeState']
+  >({
+    defaultValue: null,
+  });
 
   const attendanceCodeColumns = useMemo(
     () => getAttendanceCodeColumns(t, setEditAttendanceCodeInitialState),
@@ -158,10 +166,6 @@ export default function Codes() {
     setEditAttendanceCodeInitialState(
       {} as EditAttendanceCodeViewProps['initialAttendanceCodeState']
     );
-  };
-
-  const handleCloseModal = () => {
-    setEditAttendanceCodeInitialState(undefined);
   };
 
   const handleBulkSave = (
@@ -240,8 +244,11 @@ export default function Codes() {
       />
       <EditAttendanceCodeModal
         attendanceCodes={attendanceCodes ?? []}
-        initialAttendanceCodeState={editAttendanceCodeInitialState}
-        onClose={handleCloseModal}
+        initialAttendanceCodeState={
+          editAttendanceCodeInitialState ||
+          debouncedEditAttendanceCodeInitialState
+        }
+        onClose={() => setEditAttendanceCodeInitialState(null)}
       />
     </PageContainer>
   );
