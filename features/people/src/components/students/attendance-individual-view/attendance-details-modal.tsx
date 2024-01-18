@@ -449,7 +449,9 @@ export const AttendanceDetailsModal = ({
                           >
                             <RHFSelect
                               fullWidth
-                              options={attendanceCodes}
+                              options={attendanceCodes?.filter(
+                                (code) => code?.active
+                              )}
                               getOptionLabel={(option) => option?.name}
                               optionIdKey="id"
                               canDeleteValue
