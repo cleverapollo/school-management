@@ -1,5 +1,7 @@
 import {
   Button,
+  FormControlLabel,
+  Switch,
   Stack,
   Typography,
   Box,
@@ -23,7 +25,7 @@ import {
   SaveAttendanceCodeInput,
   TuslaCode,
 } from '@tyro/api';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CloseIcon, InfoCircleIcon } from '@tyro/icons';
 import {
   ReturnTypeFromUseAttendanceCodes,
@@ -42,6 +44,7 @@ export type EditAttendanceCodeFormState = Pick<
   name: string;
   description?: string | null;
   visibleForAdmin?: boolean;
+  active: boolean;
 };
 
 export type EditAttendanceCodeViewProps = {
@@ -57,6 +60,7 @@ export const EditAttendanceCodeModal = ({
 }: EditAttendanceCodeViewProps) => {
   const { t, i18n } = useTranslation(['common', 'attendance']);
   const currentLanguageCode = i18n.language;
+  const [isActive, setIsActive] = useState(initialAttendanceCodeState?.active);
   const {
     mutate: createOrUpdateAttendanceCodeMutation,
     isLoading: isSubmitting,
@@ -103,7 +107,7 @@ export const EditAttendanceCodeModal = ({
         {
           name: [{ locale: currentLanguageCode, value: name }],
           description: [{ locale: currentLanguageCode, value: description }],
-          isActive: true,
+          isActive: initialAttendanceCodeState?.id ? isActive : true,
           ...restData,
         },
       ],
@@ -115,6 +119,7 @@ export const EditAttendanceCodeModal = ({
 
   useEffect(() => {
     if (initialAttendanceCodeState) {
+      setIsActive(initialAttendanceCodeState?.active);
       reset({
         ...defaultFormStateValues,
         ...initialAttendanceCodeState,
@@ -221,6 +226,21 @@ export const EditAttendanceCodeModal = ({
               }}
             />
           </Stack>
+          {initialAttendanceCodeState?.id && (
+            <Stack direction="column">
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={isActive}
+                    onChange={() => {
+                      setIsActive(!isActive);
+                    }}
+                  />
+                }
+                label={t('common:active')}
+              />
+            </Stack>
+          )}
           <Stack direction="column">
             <Typography variant="subtitle1">
               {t('attendance:availableTo')}

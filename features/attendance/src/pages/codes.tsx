@@ -105,6 +105,16 @@ const getAttendanceCodeColumns = (
     ),
   },
   {
+    field: 'active',
+    headerName: t('common:active'),
+    editable: true,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAttendanceCodes, any>) => (
+      <TableBooleanValue value={Boolean(data?.active)} />
+    ),
+  },
+  {
     suppressColumnsToolPanel: true,
     sortable: false,
     cellClass: 'ag-show-on-row-interaction',
@@ -197,7 +207,7 @@ export default function Codes() {
             data[id].visibleForContact?.newValue ??
             currentData?.visibleForContact,
           nameTextId: currentData?.nameTextId,
-          isActive: true,
+          isActive: currentData?.active,
         };
       }
     );
