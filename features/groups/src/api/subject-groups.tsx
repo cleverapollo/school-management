@@ -7,6 +7,7 @@ import {
   SubjectGroupFilter,
   SubjectGroupType,
   UpdateSubjectGroupInput,
+  UseQueryReturnType,
 } from '@tyro/api';
 import { sortByDisplayName } from '@tyro/core';
 import { groupsKeys } from './keys';
@@ -216,3 +217,7 @@ export function useSwitchSubjectGroupType() {
     },
   });
 }
+
+export type ReturnTypeOfUseSubjectGroupList = UseQueryReturnType<
+  typeof useSubjectGroups
+>;
