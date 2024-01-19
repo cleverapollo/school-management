@@ -1,19 +1,24 @@
-import { DynamicForm, PageContainer, PageHeading } from '@tyro/core';
+import { DynamicForm, PageContainer, PageHeading, useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { useSearchParams } from 'react-router-dom';
+import { redirect, useSearchParams } from 'react-router-dom';
 import { useInfoRequestFormSetupDetails } from '../api/form-setup';
+import { useSaveForm } from '../api/save-form';
 
 export default function InfoRequestFormView() {
   const [searchParams] = useSearchParams();
+  const { t } = useTranslation(['common', 'infoRequests']);
+  const { toast } = useToast();
 
-  const { t } = useTranslation(['infoRequests']);
+  const formId = {
+    name: searchParams.get('name') ?? '',
+    provider: searchParams.get('provider') ?? '',
+  };
 
   const { data: setupInfo } = useInfoRequestFormSetupDetails({
-    id: {
-      name: searchParams.get('name') ?? '',
-      provider: searchParams.get('provider') ?? '',
-    },
+    id: formId,
   });
+
+  const { mutateAsync: saveForm } = useSaveForm();
 
   const title = setupInfo?.title ?? '';
 
@@ -35,11 +40,26 @@ export default function InfoRequestFormView() {
       />
       <DynamicForm
         formSettings={setupInfo}
-        onSubmit={(data) =>
+        onSubmit={async (fields) => {
+          const { forms_submitInformationRequestForms: formResponse } =
+            await saveForm({
+              formId,
+              fields,
+              validateOnly: false,
+            });
+
           console.log({
-            data,
-          })
-        }
+            fields,
+            formResponse,
+          });
+
+          if (formResponse.success) {
+            toast(t('common:snackbarMessages.createSuccess'));
+            redirect('/info-requests');
+          }
+
+          return formResponse;
+        }}
       />
     </PageContainer>
   );

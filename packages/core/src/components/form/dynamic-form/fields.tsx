@@ -1,6 +1,11 @@
+/* eslint-disable react/prop-types */
 import { Control, FieldValues, Path } from 'react-hook-form';
-import { Forms_FormFieldItem, Form_FormFieldItemType } from '@tyro/api';
-import { Grid, Typography, GridSize } from '@mui/material';
+import {
+  Forms_FormFieldItem,
+  Form_FormFieldItemType,
+  Forms_FormFieldGridWidth,
+} from '@tyro/api';
+import { Grid, Typography } from '@mui/material';
 import { useCallback } from 'react';
 import { RHFCheckbox } from '../checkbox';
 import { RHFDatePicker } from '../date-picker';
@@ -8,11 +13,38 @@ import { RHFDateTimePicker } from '../date-time-picker';
 import { RHFTextField } from '../text-field';
 import { RHFSelect } from '../select';
 import { RHFRadioGroup } from '../radio-group';
+import { RHFTimePicker } from '../time-picker';
 
-interface FieldProps<Fields extends FieldValues>
-  extends Omit<Forms_FormFieldItem, 'id'> {
+type GridWidth = Omit<
+  Record<keyof Forms_FormFieldGridWidth, number>,
+  '__typename'
+>;
+
+type FieldProps<Fields extends FieldValues> = Omit<
+  Forms_FormFieldItem,
+  'id'
+> & {
   id: Path<Fields>;
   control: Control<Fields, any>;
+};
+
+export function getCheckedGridWidth(
+  gridWidth: Forms_FormFieldGridWidth
+): GridWidth {
+  const gridEntries = Object.entries(gridWidth) as [
+    keyof Forms_FormFieldGridWidth,
+    number | null
+  ][];
+  const checkedGridWidth = gridEntries.reduce<GridWidth>(
+    (acc, [key, value]) => {
+      if (key !== '__typename' && value) {
+        acc[key] = Math.min(value, 12);
+      }
+      return acc;
+    },
+    { xs: 12 } as GridWidth
+  );
+  return checkedGridWidth;
 }
 
 export const Field = <Fields extends FieldValues>({
@@ -31,12 +63,18 @@ export const Field = <Fields extends FieldValues>({
     gridWidth,
     control,
   });
+
+  const nonBlankLabel = label ?? '';
   const PresetGrid = useCallback(
-    ({ children }: { children: React.ReactNode }) => (
-      <Grid item xs={12} {...(gridWidth ?? {})}>
-        {children}
-      </Grid>
-    ),
+    ({ children }: { children: React.ReactNode }) => {
+      const checkedGridWidth = getCheckedGridWidth(gridWidth);
+
+      return (
+        <Grid item {...checkedGridWidth}>
+          {children}
+        </Grid>
+      );
+    },
     [gridWidth]
   );
 
@@ -49,7 +87,7 @@ export const Field = <Fields extends FieldValues>({
               name: id,
               control,
             }}
-            label={label}
+            label={nonBlankLabel}
           />
         </PresetGrid>
       );
@@ -61,7 +99,7 @@ export const Field = <Fields extends FieldValues>({
               name: id,
               control,
             }}
-            label={label}
+            label={nonBlankLabel}
             inputProps={{
               fullWidth: true,
             }}
@@ -76,7 +114,7 @@ export const Field = <Fields extends FieldValues>({
               name: id,
               control,
             }}
-            label={label}
+            label={nonBlankLabel}
             inputProps={{
               fullWidth: true,
             }}
@@ -91,7 +129,7 @@ export const Field = <Fields extends FieldValues>({
               name: id,
               control,
             }}
-            label={label}
+            label={nonBlankLabel}
             textFieldProps={{
               fullWidth: true,
             }}
@@ -109,7 +147,11 @@ export const Field = <Fields extends FieldValues>({
             }}
             label={label}
             options={options}
-            multiple={type === Form_FormFieldItemType.Multiselect}
+            optionIdKey="id"
+            optionTextKey="name"
+            SelectProps={{
+              multiple: type === Form_FormFieldItemType.Multiselect,
+            }}
             fullWidth
           />
         </PresetGrid>
@@ -128,7 +170,7 @@ export const Field = <Fields extends FieldValues>({
               name: id,
               control,
             }}
-            label={label}
+            label={nonBlankLabel}
             options={options}
           />
         </PresetGrid>
@@ -137,15 +179,15 @@ export const Field = <Fields extends FieldValues>({
       return (
         <PresetGrid>
           <RHFTextField
+            label={nonBlankLabel}
             controlProps={{
               name: id,
               control,
             }}
-            label={label}
-            multiline
-            minRows={3}
             textFieldProps={{
               fullWidth: true,
+              multiline: true,
+              rows: 3,
             }}
           />
         </PresetGrid>
@@ -153,13 +195,12 @@ export const Field = <Fields extends FieldValues>({
     case Form_FormFieldItemType.Time:
       return (
         <PresetGrid>
-          <RHFDateTimePicker
+          <RHFTimePicker
+            label={nonBlankLabel}
             controlProps={{
               name: id,
               control,
             }}
-            label={label}
-            timeOnly
             inputProps={{
               fullWidth: true,
             }}

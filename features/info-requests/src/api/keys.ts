@@ -1,3 +1,8 @@
+import {
+  Forms_InformationRequestListFormFilter,
+  Forms_InformationRequestViewFormFilter,
+} from '@tyro/api';
+
 export const infoRequestKeys = {
   all: ['info-request'] as const,
   list: (filter: Forms_InformationRequestListFormFilter) =>

@@ -254,7 +254,7 @@ export default function StudentProfileBehaviourPage() {
 
   const { data: studentBehaviorData, isLoading: isBehavioursLoading } =
     useIndividualStudentBehaviour({
-      partyId: studentId,
+      partyIds: [studentId],
       behaviourType,
     });
 
@@ -269,7 +269,7 @@ export default function StudentProfileBehaviourPage() {
 
   const { data: categories = [], isLoading: isCategoriesLoading } =
     useBehaviourCategories({
-      partyId: studentId,
+      partyIds: [studentId],
       behaviourType,
     });
 

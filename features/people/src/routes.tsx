@@ -334,12 +334,12 @@ export const getRoutes: NavObjectFunction = (t) => [
                   return (
                     Promise.all([
                       getBehaviourCategories({
-                        partyId: studentId,
+                        partyIds: [studentId],
                         behaviourType: Notes_BehaviourType.Positive,
                       }),
                     ]),
                     getIndividualStudentBehaviour({
-                      partyId: studentId,
+                      partyIds: [studentId],
                       behaviourType: Notes_BehaviourType.Positive,
                     })
                   );
