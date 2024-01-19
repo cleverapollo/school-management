@@ -1,15 +1,18 @@
 import { DynamicForm, PageContainer, PageHeading } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { useParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useInfoRequestFormSetupDetails } from '../api/form-setup';
 
 export default function InfoRequestFormView() {
-  const { id = '' } = useParams();
+  const [searchParams] = useSearchParams();
 
   const { t } = useTranslation(['infoRequests']);
 
   const { data: setupInfo } = useInfoRequestFormSetupDetails({
-    id,
+    id: {
+      name: searchParams.get('name') ?? '',
+      provider: searchParams.get('provider') ?? '',
+    },
   });
 
   const title = setupInfo?.title ?? '';

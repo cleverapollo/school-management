@@ -14,8 +14,20 @@ const infoRequestFormList = graphql(/* GraphQL */ `
   ) {
     forms_listInformationRequestForms(filter: $filter) {
       name
-      id
+      id {
+        name
+        provider
+      }
       isComplete
+      completionDate
+      dueDate
+      forPerson {
+        partyId
+        firstName
+        lastName
+        avatarUrl
+        type
+      }
     }
   }
 `);

@@ -31,17 +31,22 @@ export const getRoutes: NavObjectFunction = (t) => [
           },
           {
             type: NavObjectType.NonMenuLink,
-            path: 'view/:id',
+            path: 'view',
             element: <InfoRequestFormView />,
-            loader: ({ params }) => {
-              const { id } = params;
+            loader: ({ request }) => {
+              const url = new URL(request.url);
+              const name = url.searchParams.get('name');
+              const provider = url.searchParams.get('provider');
 
-              if (!id) {
+              if (!name || !provider) {
                 return throw404Error();
               }
 
               return getInfoRequestFormSetupDetails({
-                id,
+                id: {
+                  name,
+                  provider,
+                },
               });
             },
           },

@@ -23,7 +23,13 @@ const getColumnDefs = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseInfoRequestFormList>) =>
-      data && <RouterLink to={`./view/${data.id}`}>{data.name}</RouterLink>,
+      data && (
+        <RouterLink
+          to={`./view?name=${data.id.name}&provider=${data.id.provider}`}
+        >
+          {data.name}
+        </RouterLink>
+      ),
   },
   {
     field: 'isComplete',
@@ -59,7 +65,7 @@ export default function InfoRequestFormList() {
       <Table
         rowData={infoRequests || []}
         columnDefs={columnDefs}
-        getRowId={({ data }) => String(data?.id)}
+        getRowId={({ data }) => JSON.stringify(data?.id)}
       />
     </PageContainer>
   );

@@ -13,7 +13,10 @@ const infoRequestFormSetupDetails = graphql(/* GraphQL */ `
     $filter: Forms_InformationRequestViewFormFilter
   ) {
     forms_viewInformationRequestForms(filter: $filter) {
-      id
+      id {
+        name
+        provider
+      }
       title
       fields {
         header
