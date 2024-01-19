@@ -87,6 +87,8 @@ const getSubjectGroupBehaviourColumns = (
         colour: 'slate',
       };
 
+      if (!data?.tags || data?.tags.length === 0) return '-';
+
       return (
         <Stack gap={1} my={1} direction="row" flexWrap="wrap">
           {data?.tags?.map((tag) => (
@@ -138,8 +140,12 @@ const getSubjectGroupBehaviourColumns = (
         []
       );
 
-      if (students && students.length > 3) {
-        return `${students.slice(0, 3).join(', ')}, +${students.length - 3}`;
+      const LIMIT_TAGS = 3;
+
+      if (students && students.length > LIMIT_TAGS) {
+        return `${students.slice(0, LIMIT_TAGS).join(', ')}, +${
+          students.length - LIMIT_TAGS
+        }`;
       }
 
       return students && students.length > 0 ? students.join(', ') : '-';
