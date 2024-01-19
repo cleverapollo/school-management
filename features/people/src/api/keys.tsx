@@ -34,6 +34,9 @@ export const peopleKeys = {
       [...peopleKeys.contacts.all(), 'students', contactId] as const,
     forSelect: () => [...peopleKeys.contacts.all(), 'select'] as const,
   },
+  documents: {
+    all: () => [...peopleKeys.all, 'documents'] as const,
+  },
   notes: {
     all: () => [...peopleKeys.all, 'notes'] as const,
     noteTags: () => [...peopleKeys.notes.all(), 'noteTags'] as const,

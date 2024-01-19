@@ -94,6 +94,9 @@ const StudentProfileMedicalPage = lazyWithRetry(
 const StudentProfileNotesPage = lazyWithRetry(
   () => import('./pages/students/profile/notes')
 );
+const StudentProfileDocumentsPage = lazyWithRetry(
+  () => import('./pages/students/profile/documents')
+);
 
 // Contact pages
 const ContactsListPage = lazyWithRetry(() => import('./pages/contacts'));
@@ -400,6 +403,16 @@ export const getRoutes: NavObjectFunction = (t) => [
                     getPersonalTitlesQuery(),
                   ]);
                 },
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'documents',
+                loader: ({ params }) => {
+                  const studentId = getNumber(params.id);
+                  // return getNotes({ partyIds: [studentId ?? 0] });
+                  return [];
+                },
+                element: <StudentProfileDocumentsPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,
