@@ -3,23 +3,33 @@ import {
   ICellRendererParams,
   PageContainer,
   PageHeading,
+  ReturnTypeDisplayName,
   RouterLink,
   Table,
   TableBooleanValue,
+  TablePersonAvatar,
+  usePreferredNameLayout,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { useMemo } from 'react';
+import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import { Box, Stack, Tooltip } from '@mui/material';
 import {
   ReturnTypeFromUseInfoRequestFormList,
   useInfoRequestFormList,
 } from '../api/form-list';
 
+dayjs.extend(LocalizedFormat);
+
 const getColumnDefs = (
-  t: TFunction<'common'[], undefined, 'common'[]>
+  t: TFunction<'common'[], undefined, 'common'[]>,
+  displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseInfoRequestFormList>['columnDefs'] => [
   {
     field: 'name',
     headerName: t('common:name'),
+    lockVisible: true,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseInfoRequestFormList>) =>
@@ -30,6 +40,24 @@ const getColumnDefs = (
           {data.name}
         </RouterLink>
       ),
+  },
+  {
+    field: 'forPerson',
+    headerName: t('common:for'),
+    valueGetter: ({ data }) => displayName(data?.forPerson),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseInfoRequestFormList>) => {
+      if (!data) return null;
+      const { forPerson } = data;
+
+      return <TablePersonAvatar person={forPerson} />;
+    },
+  },
+  {
+    field: 'dueDate',
+    headerName: t('common:dueDate'),
+    valueGetter: ({ data }) => dayjs(data?.dueDate).format('lll'),
   },
   {
     field: 'isComplete',
@@ -44,17 +72,35 @@ const getColumnDefs = (
     }: ICellRendererParams<ReturnTypeFromUseInfoRequestFormList>) => {
       if (!data) return null;
 
-      return <TableBooleanValue value={!!data.isComplete} />;
+      return (
+        <Tooltip
+          title={
+            data.completionDate
+              ? t('common:completedOnDate', {
+                  date: dayjs(data.completionDate).format('lll'),
+                })
+              : undefined
+          }
+        >
+          <Stack justifyContent="center">
+            <TableBooleanValue value={!!data.isComplete} />
+          </Stack>
+        </Tooltip>
+      );
     },
   },
 ];
 
 export default function InfoRequestFormList() {
   const { t } = useTranslation(['common', 'infoRequests']);
+  const { displayName } = usePreferredNameLayout();
 
   const { data: infoRequests } = useInfoRequestFormList({});
 
-  const columnDefs = useMemo(() => getColumnDefs(t), [t]);
+  const columnDefs = useMemo(
+    () => getColumnDefs(t, displayName),
+    [t, displayName]
+  );
 
   return (
     <PageContainer title={t('infoRequests:informationRequests')}>

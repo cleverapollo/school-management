@@ -2493,17 +2493,17 @@ export type Forms_FormFieldGridWidth = {
 export type Forms_FormFieldGroup = {
   __typename?: 'Forms_FormFieldGroup';
   fields: Array<Forms_FormField>;
-  header?: Maybe<Scalars['String']>;
+  header: Scalars['String'];
 };
 
 export type Forms_FormFieldItem = {
   __typename?: 'Forms_FormFieldItem';
-  formFieldType?: Maybe<Forms_FormFieldType>;
+  formFieldType: Forms_FormFieldType;
   gridWidth: Forms_FormFieldGridWidth;
-  id?: Maybe<Scalars['String']>;
-  label?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
+  label: Scalars['String'];
   options: Array<Forms_FormFieldSelectOptions>;
-  type?: Maybe<Form_FormFieldItemType>;
+  type: Form_FormFieldItemType;
 };
 
 export type Forms_FormFieldSelectOptions = {
@@ -2515,9 +2515,9 @@ export type Forms_FormFieldSelectOptions = {
 export type Forms_FormFieldSubGroup = {
   __typename?: 'Forms_FormFieldSubGroup';
   fields: Array<Forms_FormFieldItem>;
-  formFieldType?: Maybe<Forms_FormFieldType>;
+  formFieldType: Forms_FormFieldType;
   gridWidth: Forms_FormFieldGridWidth;
-  header?: Maybe<Scalars['String']>;
+  header: Scalars['String'];
 };
 
 export enum Forms_FormFieldType {
@@ -3870,6 +3870,7 @@ export type NotificationMetaData = {
   mailId?: Maybe<Scalars['Long']>;
   notificationType: NotificationType;
   partyId?: Maybe<Scalars['Long']>;
+  studentPartyId?: Maybe<Scalars['Long']>;
 };
 
 export type NotificationMetaDataInput = {
@@ -3877,6 +3878,7 @@ export type NotificationMetaDataInput = {
   mailId?: InputMaybe<Scalars['Long']>;
   notificationType: NotificationType;
   partyId?: InputMaybe<Scalars['Long']>;
+  studentPartyId?: InputMaybe<Scalars['Long']>;
 };
 
 export type NotificationReadInput = {
@@ -4646,6 +4648,11 @@ export type PublishAssessmentInput = {
 export type PublishInput = {
   feeId: Scalars['Int'];
   publish: Scalars['Boolean'];
+};
+
+export type PushNotificationRecipient = {
+  metadata: NotificationMetaDataInput;
+  recipientPartyId: Scalars['Long'];
 };
 
 export type Query = {
@@ -6725,9 +6732,8 @@ export type SendMailRecipientInput = {
 };
 
 export type SendPushNotificationInput = {
-  metadata?: InputMaybe<NotificationMetaDataInput>;
   notificationType: NotificationType;
-  partyIds: Array<Scalars['Long']>;
+  recipients: Array<PushNotificationRecipient>;
   text: Scalars['String'];
   title: Scalars['String'];
 };
@@ -9275,7 +9281,7 @@ export type Forms_ViewInformationRequestFormsQueryVariables = Exact<{
 }>;
 
 
-export type Forms_ViewInformationRequestFormsQuery = { __typename?: 'Query', forms_viewInformationRequestForms: { __typename?: 'Forms_FormView', title?: string | null, id: { __typename?: 'Forms_FormId', name: string, provider: string }, fields: Array<{ __typename?: 'Forms_FormFieldGroup', header?: string | null, fields: Array<{ __typename: 'Forms_FormFieldItem', formFieldType?: Forms_FormFieldType | null, id?: string | null, label?: string | null, type?: Form_FormFieldItemType | null, options: Array<{ __typename?: 'Forms_FormFieldSelectOptions', id: string, name: string }>, gridWidth: { __typename?: 'Forms_FormFieldGridWidth', xs?: number | null, sm?: number | null, md?: number | null, lg?: number | null, xl?: number | null } } | { __typename: 'Forms_FormFieldSubGroup', formFieldType?: Forms_FormFieldType | null, header?: string | null, fields: Array<{ __typename?: 'Forms_FormFieldItem', formFieldType?: Forms_FormFieldType | null, id?: string | null, label?: string | null, type?: Form_FormFieldItemType | null, options: Array<{ __typename?: 'Forms_FormFieldSelectOptions', id: string, name: string }>, gridWidth: { __typename?: 'Forms_FormFieldGridWidth', xs?: number | null, sm?: number | null, md?: number | null, lg?: number | null, xl?: number | null } }>, gridWidth: { __typename?: 'Forms_FormFieldGridWidth', xs?: number | null, sm?: number | null, md?: number | null, lg?: number | null, xl?: number | null } }> }> } };
+export type Forms_ViewInformationRequestFormsQuery = { __typename?: 'Query', forms_viewInformationRequestForms: { __typename?: 'Forms_FormView', title?: string | null, id: { __typename?: 'Forms_FormId', name: string, provider: string }, fields: Array<{ __typename?: 'Forms_FormFieldGroup', header: string, fields: Array<{ __typename: 'Forms_FormFieldItem', formFieldType: Forms_FormFieldType, id: string, label: string, type: Form_FormFieldItemType, options: Array<{ __typename?: 'Forms_FormFieldSelectOptions', id: string, name: string }>, gridWidth: { __typename?: 'Forms_FormFieldGridWidth', xs?: number | null, sm?: number | null, md?: number | null, lg?: number | null, xl?: number | null } } | { __typename: 'Forms_FormFieldSubGroup', formFieldType: Forms_FormFieldType, header: string, fields: Array<{ __typename?: 'Forms_FormFieldItem', formFieldType: Forms_FormFieldType, id: string, label: string, type: Form_FormFieldItemType, options: Array<{ __typename?: 'Forms_FormFieldSelectOptions', id: string, name: string }>, gridWidth: { __typename?: 'Forms_FormFieldGridWidth', xs?: number | null, sm?: number | null, md?: number | null, lg?: number | null, xl?: number | null } }>, gridWidth: { __typename?: 'Forms_FormFieldGridWidth', xs?: number | null, sm?: number | null, md?: number | null, lg?: number | null, xl?: number | null } }> }> } };
 
 export type Forms_SubmitInformationRequestFormsMutationVariables = Exact<{
   input: Forms_SubmitFormInput;

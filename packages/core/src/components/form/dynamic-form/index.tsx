@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { LoadingPlaceholderContainer } from '../../loading-placeholder';
 import { FieldGroup } from './group';
 
-export interface DynamicFormProps<Fields extends FieldValues> {
+export interface DynamicFormProps {
   formSettings: Forms_FormView | undefined;
   onSubmit: (
     data: Forms_SubmitFormInput['fields']
@@ -23,7 +23,7 @@ export const DynamicForm = <Fields extends FieldValues>({
   formSettings,
   onSubmit,
   onCancel,
-}: DynamicFormProps<Fields>) => {
+}: DynamicFormProps) => {
   const { t } = useTranslation(['common']);
   const { control, handleSubmit, setError } = useForm<Fields>();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -75,7 +75,7 @@ export const DynamicForm = <Fields extends FieldValues>({
           />
         ))}
         <Stack direction="row" gap={2} justifyContent="flex-end">
-          {onCancel && (
+          {!!onCancel && (
             <Button
               variant="soft"
               size="large"

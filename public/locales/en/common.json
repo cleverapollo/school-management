@@ -332,5 +332,8 @@
   "noItemsSelected": "No items selected",
   "paid": "Paid",
   "published": "Published",
-  "complete": "Complete"
+  "complete": "Complete",
+  "for": "For",
+  "dueDate": "Due date",
+  "completedOnDate": "Completed on {{date}}"
 }

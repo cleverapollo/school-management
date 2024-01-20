@@ -4,7 +4,7 @@ import {
   Forms_FormFieldGroup,
   Forms_FormFieldItem,
 } from '@tyro/api';
-import { Control, FieldValues } from 'react-hook-form';
+import { Control, FieldValues, Path } from 'react-hook-form';
 import { Field, getCheckedGridWidth } from './fields';
 
 const FieldSubgroup = <Fields extends FieldValues>({
@@ -28,7 +28,7 @@ const FieldSubgroup = <Fields extends FieldValues>({
       </Grid>
       <Grid container item {...checkedGridWidth}>
         {fields.map((field) => (
-          <Field {...field} control={control} />
+          <Field {...field} id={field.id as Path<Fields>} control={control} />
         ))}
       </Grid>
     </Grid>
@@ -60,7 +60,11 @@ export const FieldGroup = <Fields extends FieldValues>({
         if (field?.__typename === 'Forms_FormFieldItem') {
           return (
             <Grid key={field.id} container>
-              <Field {...field} control={control} />
+              <Field
+                {...field}
+                id={field.id as Path<Fields>}
+                control={control}
+              />
             </Grid>
           );
         }
