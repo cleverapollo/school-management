@@ -1,5 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import { Alert, AlertTitle, Box, Button, Collapse, Stack } from '@mui/material';
+import { Alert, AlertTitle, Box, Button, Stack } from '@mui/material';
 import {
   Forms_FormView,
   Forms_SubmitFormInput,
@@ -7,7 +7,7 @@ import {
 } from '@tyro/api';
 import { FieldValues, Path, useForm } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
-import { useState } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import { LoadingPlaceholderContainer } from '../../loading-placeholder';
 import { FieldGroup } from './group';
 
@@ -24,10 +24,31 @@ export const DynamicForm = <Fields extends FieldValues>({
   onSubmit,
   onCancel,
 }: DynamicFormProps) => {
+  const globalErrorRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation(['common']);
   const { control, handleSubmit, setError } = useForm<Fields>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalErrors, setGlobalErrors] = useState<string[]>([]);
+
+  const sortedFieldIds = useMemo(() => {
+    if (!formSettings) return [];
+    return (
+      formSettings.fields?.reduce<string[]>((acc, fieldGroup) => {
+        fieldGroup.fields?.forEach((field) => {
+          if (field.__typename === 'Forms_FormFieldItem') {
+            acc.push(field.id);
+          }
+
+          if (field.__typename === 'Forms_FormFieldSubGroup') {
+            field.fields?.forEach((subField) => {
+              acc.push(subField.id);
+            });
+          }
+        });
+        return acc;
+      }, []) ?? []
+    );
+  }, [formSettings]);
 
   const requestSubmit = async (data: Fields) => {
     setIsSubmitting(true);
@@ -43,12 +64,28 @@ export const DynamicForm = <Fields extends FieldValues>({
     }, []);
     const { success, validations } = await onSubmit(convertedData);
     if (!success && validations?.fieldErrors) {
+      const hasGlobalErrors = validations?.globalErrors?.length > 0;
       const typedErrors = validations?.fieldErrors as Record<string, string>;
-      Object.entries(typedErrors).forEach(([field, error]) => {
-        setError(field as Path<Fields>, { message: error });
+      const sortedIdsWithErrors = sortedFieldIds.filter(
+        (key) => typedErrors[key]
+      );
+
+      sortedIdsWithErrors.forEach((fieldId, index) => {
+        const error = typedErrors[fieldId];
+        setError(
+          fieldId as Path<Fields>,
+          { message: error },
+          { shouldFocus: index === 0 && !hasGlobalErrors }
+        );
       });
 
       setGlobalErrors(validations?.globalErrors ?? []);
+      if (hasGlobalErrors) {
+        globalErrorRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+      }
     }
     setIsSubmitting(false);
   };
@@ -56,17 +93,19 @@ export const DynamicForm = <Fields extends FieldValues>({
   return (
     <LoadingPlaceholderContainer isLoading={!formSettings}>
       <Stack component="form" onSubmit={handleSubmit(requestSubmit)} gap={3}>
-        <Collapse in={globalErrors.length > 0}>
-          <Alert severity="error">
-            <AlertTitle>Please fix the following errors</AlertTitle>
+        <Box ref={globalErrorRef}>
+          {globalErrors.length > 0 && (
+            <Alert severity="error">
+              <AlertTitle>Please fix the following errors</AlertTitle>
 
-            <Box component="ul" sx={{ m: 0, pl: '14px' }}>
-              {globalErrors.map((error) => (
-                <li key={error}>{error}</li>
-              ))}
-            </Box>
-          </Alert>
-        </Collapse>
+              <Box component="ul" sx={{ m: 0, pl: '14px' }}>
+                {globalErrors.map((error) => (
+                  <li key={error}>{error}</li>
+                ))}
+              </Box>
+            </Alert>
+          )}
+        </Box>
         {formSettings?.fields?.map((fieldGroup) => (
           <FieldGroup
             key={fieldGroup?.header}
