@@ -57,7 +57,7 @@ export function PrintAssessmentModal({
         includeExtraFields: rules.required(),
       }),
       defaultValues: {
-        orientation: PageOrientation.Landscape,
+        orientation: PageOrientation.Portrait,
         includeAttendance: false,
         includeExtraFields: false,
       },
@@ -214,8 +214,8 @@ export function PrintAssessmentModal({
                 disabled={isLoading}
                 radioGroupProps={{ sx: { flexDirection: 'row' } }}
                 options={[
-                  PageOrientation.Landscape,
                   PageOrientation.Portrait,
+                  PageOrientation.Landscape,
                 ].map((option) => ({
                   value: option,
                   label: t(`assessments:printDirection.${option}`),
