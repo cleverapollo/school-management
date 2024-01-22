@@ -7,7 +7,7 @@ import {
   useToast,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { redirect, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useInfoRequestFormSetupDetails } from '../api/form-setup';
 import { useSaveForm } from '../api/save-form';
 
