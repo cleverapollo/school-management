@@ -230,7 +230,6 @@ export default function AssessmentsPage() {
                     {
                       label: t('assessments:assessmentTypes.STATE_CBA'),
                       navigateTo: './state-cba/create',
-                      hasAccess: () => isTyroUser,
                     },
                   ]}
                 />
