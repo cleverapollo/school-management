@@ -46,7 +46,7 @@
     "DISABLED": "Disabled"
   },
   "schoolCalendar": {
-    "title": "School Calendar",
+    "title": "School calendar",
     "dayTypes": "Day types",
     "dayType": "Day type",
     "bellTimeDetailsFor": "Bell time details for {{date}}",

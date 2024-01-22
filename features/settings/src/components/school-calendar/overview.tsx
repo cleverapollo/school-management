@@ -42,8 +42,8 @@ type EditedRow = Record<
   Record<
     string,
     {
-      originalValue: any;
-      newValue: any;
+      originalValue: DayType | string | null | undefined;
+      newValue: DayType | string | null | undefined;
     }
   >
 >;
@@ -144,7 +144,7 @@ export const CalendarOverview = () => {
 
         acc.push({
           date,
-          dayType: dayType?.newValue ?? dayInfo?.dayType,
+          dayType: (dayType?.newValue ?? dayInfo?.dayType) as DayType,
           startTime:
             startTime?.newValue && dayjs(startTime?.newValue).format('HH:mm'),
           endTime:
@@ -267,7 +267,7 @@ export const CalendarOverview = () => {
           return {
             ...previousDayChanges,
             date: day.date,
-          } as Calendar_CreateCalendarDayInput;
+          } as EditedRow & { date: string };
         })
         .reduce((acc, { date, dayType, startTime, endTime, description }) => {
           if (
@@ -282,10 +282,11 @@ export const CalendarOverview = () => {
               ...(startTime !== undefined ? { startTime } : {}),
               ...(endTime !== undefined ? { endTime } : {}),
               ...(description !== undefined ? { description } : {}),
-            };
+            } as EditedRow['string'];
           }
+
           return acc;
-        }, {} as any),
+        }, {} as EditedRow),
     }));
     setSelectedDays([]);
   };
@@ -398,8 +399,8 @@ export const CalendarOverview = () => {
                 editedRows[day.date]
                   ? {
                       ...day,
-                      dayType:
-                        editedRows[day.date].dayType?.newValue ?? day.dayType,
+                      dayType: (editedRows[day.date].dayType?.newValue ??
+                        day.dayType) as DayType,
                       startTime:
                         editedRows[day.date].startTime?.newValue ??
                         day.startTime,
