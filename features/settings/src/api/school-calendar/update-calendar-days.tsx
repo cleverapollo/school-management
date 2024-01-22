@@ -24,12 +24,14 @@ export function useUpdateCalendarDays(filter: CalendarFilter) {
   const { t } = useTranslation(['common']);
 
   return useMutation({
-    mutationKey: schoolCalendarKeys.updateCalendarDays(),
     mutationFn: async (input: Calendar_UpdateDays) =>
       gqlClient.request(updateCalendarDays, { input }),
     onSuccess: async () => {
       await queryClient.invalidateQueries(schoolCalendarKeys.dayInfo(filter));
       toast(t('common:snackbarMessages.createSuccess'));
+    },
+    onError: () => {
+      toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     },
   });
 }
