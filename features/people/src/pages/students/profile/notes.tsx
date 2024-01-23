@@ -10,6 +10,7 @@ import {
   ReturnTypeDisplayName,
   usePreferredNameLayout,
   TableBooleanValue,
+  commonActionMenuProps,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { Box, Button, Chip, Stack } from '@mui/material';
@@ -108,10 +109,7 @@ const getStudentNoteColumns = (
     ),
   },
   {
-    suppressColumnsToolPanel: true,
-    cellClass: 'ag-show-on-row-interaction',
-    sortable: false,
-    suppressSizeToFit: true,
+    ...commonActionMenuProps,
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseNotes>) =>
       data && (
         <ActionMenu

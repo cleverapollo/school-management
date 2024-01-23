@@ -17,6 +17,7 @@
     "@tyro/attendance": "*",
     "@tyro/calendar": "*",
     "@tyro/core": "*",
+    "@tyro/fees": "*",
     "@tyro/groups": "*",
     "@tyro/i18n": "*",
     "@tyro/icons": "*",

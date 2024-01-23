@@ -11,6 +11,7 @@ import {
   TableBooleanValue,
   usePreferredNameLayout,
   PageContainer,
+  commonActionMenuProps,
 } from '@tyro/core';
 import { useMemo, useState } from 'react';
 import {
@@ -178,9 +179,7 @@ const getColumnDefs = (
     },
   },
   {
-    suppressColumnsToolPanel: true,
-    sortable: false,
-    cellClass: 'ag-show-on-row-interaction',
+    ...commonActionMenuProps,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAssessments>) =>

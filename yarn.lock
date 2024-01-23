@@ -6492,6 +6492,7 @@ __metadata:
     "@tyro/calendar": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
+    "@tyro/fees": "*"
     "@tyro/groups": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"

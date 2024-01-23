@@ -69,7 +69,7 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
         paymentsToPayAndMethod?.fees ??
         feesToPay.map((fee) => ({
           ...fee,
-          amountToPay: fee.amount - fee.amountPaid ?? 0,
+          amountToPay: fee.amountDue ?? 0,
         })),
     },
   });
@@ -115,7 +115,7 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
         'fees',
         fees.map((fee) => ({
           ...fee,
-          amountToPay: fee.amount - fee.amountPaid,
+          amountToPay: fee.amountDue ?? 0,
         }))
       );
     }
@@ -218,7 +218,7 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
                     aria-labelledby={totalId}
                   >
                     <Typography variant="subtitle1" component="p">
-                      {formatCurrency(fee.amount - fee.amountPaid)}
+                      {formatCurrency(fee.amountDue ?? 0)}
                     </Typography>
                     <Collapse in={paymentType === 'partial'}>
                       <Stack direction="row" alignItems="center" spacing={2}>

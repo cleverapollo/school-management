@@ -1,5 +1,6 @@
 import {
   ActionMenu,
+  commonActionMenuProps,
   GridOptions,
   ICellRendererParams,
   PageContainer,
@@ -25,12 +26,7 @@ import {
   TrashIcon,
   VerticalDotsIcon,
 } from '@tyro/icons';
-import {
-  Colour,
-  FeeStatus,
-  getColorBasedOnIndex,
-  usePermissions,
-} from '@tyro/api';
+import { getColorBasedOnIndex, usePermissions } from '@tyro/api';
 import { Link } from 'react-router-dom';
 import { ReturnTypeFromUseFees, useFees } from '../../api/fees';
 import { DeleteFeeConfirmModal } from '../../components/fees/delete-fee-confirm-modal';
@@ -54,6 +50,7 @@ const getColumnDefs = (
       data && (
         <RouterLink to={`/fees/view/${data.id || ''}`}>{data.name}</RouterLink>
       ),
+    pinned: 'left',
   },
   {
     field: 'amount',
@@ -90,6 +87,7 @@ const getColumnDefs = (
     headerName: t('fees:dueBy'),
     valueFormatter: ({ data }) =>
       data?.dueDate ? dayjs(data.dueDate).format('LL') : '-',
+    sort: 'asc',
   },
   {
     field: 'total',
@@ -113,6 +111,8 @@ const getColumnDefs = (
       data?.feeStatus ? t(`fees:feeStatus.${data.feeStatus}`) : '-',
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFees>) =>
       data?.feeStatus ? <FeeStatusChip status={data.feeStatus} /> : '-',
+    sort: 'asc',
+    sortIndex: 0,
   },
   {
     field: 'published',
@@ -129,7 +129,7 @@ const getColumnDefs = (
       data?.createdBy ? <TablePersonAvatar person={data?.createdBy} /> : '-',
   },
   {
-    suppressColumnsToolPanel: true,
+    ...commonActionMenuProps,
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFees>) =>
       data &&
       hasPermission && (
