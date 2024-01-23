@@ -1,6 +1,7 @@
 import { Box, Fade } from '@mui/material';
 import {
   PermissionUtils,
+  RecipientSearchType,
   SmsRecipientType,
   SubjectGroupType,
   SubjectUsage,
@@ -31,16 +32,23 @@ import {
   useDebouncedValue,
 } from '@tyro/core';
 
-import { MobileIcon, MoveGroupIcon, PrinterIcon, TrashIcon } from '@tyro/icons';
+import {
+  MobileIcon,
+  MoveGroupIcon,
+  PrinterIcon,
+  SendMailIcon,
+  TrashIcon,
+} from '@tyro/icons';
 
 import { set } from 'lodash';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { CatalogueSubjectOption, useCatalogueSubjects } from '@tyro/settings';
+import { useMailSettings } from '@tyro/mail';
 import {
   useSaveSubjectGroupEdits,
   useSubjectGroups,
   useSwitchSubjectGroupType,
-} from '../../api';
+} from '../../api/subject-groups';
 import { printGroupMembers } from '../../utils/print-group-members';
 import { DeleteGroupsModal } from '../../components/common/delete-groups-modal';
 
@@ -190,11 +198,12 @@ const getSubjectGroupsColumns = (
 export default function SubjectGroups() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
   const { displayNames } = usePreferredNameLayout();
-  const { isStaffUser, isTyroUser } = usePermissions();
+  const { isTyroUser } = usePermissions();
   const { data: subjectGroupsData } = useSubjectGroups();
   const { data: subjects } = useCatalogueSubjects({
     filterUsage: SubjectUsage.All,
   });
+  const { sendMailToParties } = useMailSettings();
   const { mutateAsync: updateSubjectGroup } = useSaveSubjectGroupEdits();
   const { mutateAsync: switchSubjectGroupType } = useSwitchSubjectGroupType();
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
@@ -228,6 +237,39 @@ export default function SubjectGroups() {
         onClick: onOpenSendSms,
         hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
           isStaffUserWithPermission('ps:1:communications:send_sms'),
+      },
+      {
+        label: t('mail:sendMail'),
+        icon: <SendMailIcon />,
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission(
+            'api:communications:read:search_recipients'
+          ),
+        onClick: () => {
+          sendMailToParties(
+            selectedGroups.map(({ id }) => id),
+            [
+              {
+                label: t('mail:contactsOfStudentsInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.SubjectGroupContact,
+              },
+              {
+                label: t('mail:teachersOfGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.SubjectGroupStaff,
+              },
+              {
+                label: t('mail:studentInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.SubjectGroupStudent,
+              },
+            ]
+          );
+        },
       },
       {
         label: t('groups:subjectGroup.switchToSupportClass.action'),

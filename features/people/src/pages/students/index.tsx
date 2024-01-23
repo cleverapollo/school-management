@@ -13,14 +13,21 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
-import { MobileIcon, CalendarEditPenIcon, PrinterIcon } from '@tyro/icons';
+import {
+  MobileIcon,
+  CalendarEditPenIcon,
+  SendMailIcon,
+  PrinterIcon,
+} from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import {
   getPersonProfileLink,
+  RecipientSearchType,
   SmsRecipientType,
   usePermissions,
 } from '@tyro/api';
 import dayjs from 'dayjs';
+import { useMailSettings } from '@tyro/mail';
 import {
   useBulkUpdateCoreStudent,
   ReturnTypeFromUseStudents,
@@ -166,7 +173,7 @@ const getStudentColumns = (
 ];
 
 export default function StudentsListPage() {
-  const { t } = useTranslation(['common', 'people', 'sms']);
+  const { t } = useTranslation(['common', 'people', 'sms', 'mail']);
   const { displayName, displayNames } = usePreferredNameLayout();
   const { isStaffUser } = usePermissions();
   const [selectedStudents, setSelectedStudents] =
@@ -174,6 +181,7 @@ export default function StudentsListPage() {
 
   const { data: students } = useStudents();
   const { mutateAsync: bulkSaveStudents } = useBulkUpdateCoreStudent();
+  const { sendMailToParties } = useMailSettings();
 
   const {
     isOpen: isSendSmsOpen,
@@ -237,6 +245,39 @@ export default function StudentsListPage() {
                           isStaffUserWithPermission(
                             'ps:1:communications:send_sms'
                           ),
+                      },
+                      {
+                        label: t('mail:sendMail'),
+                        icon: <SendMailIcon />,
+                        hasAccess: ({ isStaffUserWithPermission }) =>
+                          isStaffUserWithPermission(
+                            'api:communications:read:search_recipients'
+                          ),
+                        onClick: () => {
+                          sendMailToParties(
+                            selectedStudents.map(({ id }) => id),
+                            [
+                              {
+                                label: t('mail:student', {
+                                  count: selectedStudents.length,
+                                }),
+                                type: RecipientSearchType.Student,
+                              },
+                              {
+                                label: t('mail:contactsOfStudent', {
+                                  count: selectedStudents.length,
+                                }),
+                                type: RecipientSearchType.StudentContacts,
+                              },
+                              {
+                                label: t('mail:teachersOfStudent', {
+                                  count: selectedStudents.length,
+                                }),
+                                type: RecipientSearchType.StudentTeachers,
+                              },
+                            ]
+                          );
+                        },
                       },
                       {
                         label: t('people:changeProgrammeYear'),

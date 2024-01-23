@@ -5,6 +5,7 @@ import {
   PermissionUtils,
   SmsRecipientType,
   UpdateYearGroupEnrollmentInput,
+  RecipientSearchType,
 } from '@tyro/api';
 import {
   ActionMenu,
@@ -19,9 +20,10 @@ import {
   usePreferredNameLayout,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { MobileIcon, PrinterIcon } from '@tyro/icons';
+import { MobileIcon, PrinterIcon, SendMailIcon } from '@tyro/icons';
 import set from 'lodash/set';
 import { TableStaffMultipleAutocomplete } from '@tyro/people';
+import { useMailSettings } from '@tyro/mail';
 import {
   useYearGroups,
   useUpdateYearGroupLeads,
@@ -93,6 +95,7 @@ export default function YearGroups() {
   } = useDisclosure();
 
   const { data: yearGroupData } = useYearGroups();
+  const { sendMailToParties } = useMailSettings();
   const { mutateAsync: updateYearGroupLeads } = useUpdateYearGroupLeads();
 
   const yearGroupColumns = useMemo(
@@ -108,6 +111,39 @@ export default function YearGroups() {
         onClick: onOpenSendSms,
       },
       {
+        label: t('mail:sendMail'),
+        icon: <SendMailIcon />,
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission(
+            'api:communications:read:search_recipients'
+          ),
+        onClick: () => {
+          sendMailToParties(
+            selectedGroups.map(({ id }) => id),
+            [
+              {
+                label: t('mail:contactsOfStudentsInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.YearGroupContact,
+              },
+              {
+                label: t('mail:studentInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.YearGroupStudent,
+              },
+              {
+                label: t('mail:yearHeadsOfGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.YearGroupStaff,
+              },
+            ]
+          );
+        },
+      },
+      {
         label: t('groups:printGroupMembers'),
         icon: <PrinterIcon />,
         onClick: () => printGroupMembers(selectedGroups),
@@ -117,7 +153,7 @@ export default function YearGroups() {
           ),
       },
     ],
-    [selectedGroups, onOpenSendSms]
+    [selectedGroups, onOpenSendSms, sendMailToParties, t]
   );
 
   const handleBulkSave = (

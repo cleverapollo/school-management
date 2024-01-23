@@ -1,5 +1,10 @@
 import { Box, Button, Fade } from '@mui/material';
-import { PermissionUtils, SmsRecipientType, usePermissions } from '@tyro/api';
+import {
+  PermissionUtils,
+  SmsRecipientType,
+  usePermissions,
+  RecipientSearchType,
+} from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -19,10 +24,12 @@ import {
   EditIcon,
   MobileIcon,
   PrinterIcon,
+  SendMailIcon,
   TrashIcon,
   VerticalDotsIcon,
 } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
+import { useMailSettings } from '@tyro/mail';
 import { Link } from 'react-router-dom';
 import { useCustomGroups, ReturnTypeFromUseCustomGroups } from '../../api';
 import { DeleteGroupsModal } from '../../components/common/delete-groups-modal';
@@ -94,11 +101,12 @@ const getColumns = (
 ];
 
 export default function CustomGroups() {
-  const { t } = useTranslation(['common', 'groups', 'people', 'sms']);
+  const { t } = useTranslation(['common', 'groups', 'people', 'sms', 'mail']);
 
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
+  const { sendMailToParties } = useMailSettings();
   const {
     value: deleteGroupIds,
     debouncedValue: debouncedDeleteGroupIds,
@@ -132,6 +140,39 @@ export default function CustomGroups() {
         onClick: onOpenSendSms,
       },
       {
+        label: t('mail:sendMail'),
+        icon: <SendMailIcon />,
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission(
+            'api:communications:read:search_recipients'
+          ),
+        onClick: () => {
+          sendMailToParties(
+            selectedGroups.map(({ id }) => id),
+            [
+              {
+                label: t('mail:contactsOfStudentsInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupContact,
+              },
+              {
+                label: t('mail:studentInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupStudent,
+              },
+              {
+                label: t('mail:staffInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupStaff,
+              },
+            ]
+          );
+        },
+      },
+      {
         label: t('groups:printGroupMembers'),
         icon: <PrinterIcon />,
         onClick: () => printGroupMembers(selectedGroups),
@@ -147,7 +188,7 @@ export default function CustomGroups() {
         hasAccess: () => isTyroUser,
       },
     ],
-    [selectedGroups, onOpenSendSms]
+    [selectedGroups, onOpenSendSms, sendMailToParties, t]
   );
 
   return (
