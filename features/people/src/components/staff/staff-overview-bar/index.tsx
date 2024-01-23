@@ -23,6 +23,7 @@ export function StaffOverviewBar({ staffId }: StaffOverviewBarProps) {
           <Avatar
             name={name}
             src={staffData?.person?.avatarUrl}
+            person={staffData?.person}
             sx={{ mx: 1, width: 62, height: 62, fontSize: 20 }}
           />
           <Stack sx={{ ml: 0.5, mr: 2.5 }}>

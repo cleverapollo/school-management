@@ -251,6 +251,7 @@ export function StudentMedicalProfessionalWidget({
                   <Stack direction="row" spacing={2} sx={{ py: 1 }}>
                     <Avatar
                       name={displayName(medicalContact)}
+                      person={medicalContact}
                       sx={{ width: 62, height: 62, fontSize: 20 }}
                     />
                     <Stack>

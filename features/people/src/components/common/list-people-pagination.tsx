@@ -164,7 +164,11 @@ export const ListPeoplePagination = <T extends PersonPagination>({
                   </ListItemIcon>
                 )}
                 <ListItemAvatar>
-                  <Avatar src={person.avatarUrl} name={displayName(person)} />
+                  <Avatar
+                    src={person.avatarUrl}
+                    person={person}
+                    name={displayName(person)}
+                  />
                 </ListItemAvatar>
                 <ListItemText
                   primary={displayName(person)}

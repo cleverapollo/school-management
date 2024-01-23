@@ -47,7 +47,7 @@ export function StudentTableAvatar({
             mr: 1.5,
           },
         }}
-        AvatarProps={AvatarProps}
+        AvatarProps={{ ...AvatarProps, person }}
       />
       {to ? (
         <RouterLink sx={{ fontWeight: 600 }} to={to}>

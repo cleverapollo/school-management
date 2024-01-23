@@ -11,5 +11,12 @@ export function TablePersonAvatar({ to, person }: TablePersonAvatarProps) {
   const { displayName } = usePreferredNameLayout();
   const name = displayName(person);
 
-  return <TableAvatar to={to} name={name} avatarUrl={person?.avatarUrl} />;
+  return (
+    <TableAvatar
+      to={to}
+      name={name}
+      avatarUrl={person?.avatarUrl}
+      AvatarProps={{ person }}
+    />
+  );
 }

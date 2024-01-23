@@ -90,6 +90,7 @@ const getColumnHeaders = (
             {userAsFirstColumn && (
               <Avatar
                 src={staff.avatarUrl}
+                person={staff}
                 name={label}
                 sx={{
                   my: 1,

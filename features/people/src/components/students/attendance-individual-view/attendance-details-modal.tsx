@@ -404,6 +404,7 @@ export const AttendanceDetailsModal = ({
                                   fontSize: 14,
                                 }}
                                 name={creatorName}
+                                person={lastPersonUpdater}
                                 src={lastPersonUpdater?.avatarUrl}
                               />
                             )}
@@ -526,6 +527,7 @@ export const AttendanceDetailsModal = ({
                                   fontSize: 14,
                                 }}
                                 name={creatorName}
+                                person={lastPersonUpdater}
                                 src={lastPersonUpdater?.avatarUrl}
                               />
                             )}

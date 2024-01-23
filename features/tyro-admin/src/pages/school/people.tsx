@@ -45,6 +45,7 @@ const getPeopleColumns = (
           <Avatar
             src={data?.avatarUrl}
             name={name}
+            person={data}
             sx={{
               my: 1,
               mr: 1.5,

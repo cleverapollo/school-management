@@ -81,7 +81,11 @@ export function SiblingsWidget({ studentId }: StudentSiblingsWidgetProps) {
                         textDecoration: 'none',
                       }}
                     >
-                      <Avatar name={name} src={person.avatarUrl} />
+                      <Avatar
+                        name={name}
+                        src={person.avatarUrl}
+                        person={person}
+                      />
                       <Typography
                         component="h4"
                         variant="subtitle2"
