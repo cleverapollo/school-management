@@ -41,6 +41,7 @@ export function StudentTableAvatar({
         hasSupportPlan={hasSupportPlan}
         avatarBackgroundColor={avatarBackgroundColor}
         size={size}
+        person={person}
         ContainingButtonProps={{
           sx: {
             my: 1,

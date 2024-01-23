@@ -187,6 +187,7 @@ export function AWOLWidget() {
                         isPriorityStudent={!!student?.extensions?.priority}
                         hasSupportPlan={false}
                         size={48}
+                        person={student?.person}
                       />
                       <Stack>
                         <Typography variant="subtitle1" component="span">
