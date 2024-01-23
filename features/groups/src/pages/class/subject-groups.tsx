@@ -157,19 +157,19 @@ export default function SubjectGroups() {
                 label: t('mail:contactsOfStudentsInGroup', {
                   count: selectedGroups.length,
                 }),
-                type: RecipientSearchType.GeneralGroupContact,
-              },
-              {
-                label: t('mail:studentInGroup', {
-                  count: selectedGroups.length,
-                }),
-                type: RecipientSearchType.GeneralGroupStudent,
+                type: RecipientSearchType.SubjectGroupContact,
               },
               {
                 label: t('mail:teachersOfGroup', {
                   count: selectedGroups.length,
                 }),
-                type: RecipientSearchType.GeneralGroupStaff,
+                type: RecipientSearchType.SubjectGroupStaff,
+              },
+              {
+                label: t('mail:studentInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.SubjectGroupStudent,
               },
             ]
           );

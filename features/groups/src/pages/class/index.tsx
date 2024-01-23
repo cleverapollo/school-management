@@ -167,7 +167,13 @@ export default function ClassGroupsPage() {
                 label: t('mail:tutorsOfGroup', {
                   count: selectedGroups.length,
                 }),
-                type: RecipientSearchType.GeneralGroupStaff,
+                type: RecipientSearchType.ClassGroupTutors,
+              },
+              {
+                label: t('mail:yearHeadsOfGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.ClassGroupYearHeads,
               },
             ]
           );

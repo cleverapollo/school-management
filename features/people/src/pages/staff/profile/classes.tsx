@@ -136,13 +136,19 @@ export default function StaffProfileClassesPage() {
                 label: t('mail:contactsOfStudentsInGroup', {
                   count: selectedGroups.length,
                 }),
-                type: RecipientSearchType.GeneralGroupContact,
+                type: RecipientSearchType.SubjectGroupContact,
+              },
+              {
+                label: t('mail:teachersOfGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.SubjectGroupStaff,
               },
               {
                 label: t('mail:studentInGroup', {
                   count: selectedGroups.length,
                 }),
-                type: RecipientSearchType.GeneralGroupStudent,
+                type: RecipientSearchType.SubjectGroupStudent,
               },
             ]
           );
