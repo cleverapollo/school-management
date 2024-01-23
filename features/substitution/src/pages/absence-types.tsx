@@ -8,6 +8,7 @@ import {
   PageHeading,
   TuslaCodeSelectCellEditor,
   BulkEditedRows,
+  commonActionMenuProps,
 } from '@tyro/core';
 import { Box, Button } from '@mui/material';
 import { AddIcon, VerticalDotsIcon } from '@tyro/icons';
@@ -48,9 +49,7 @@ const getAbsenceCodeColumns = (
     editable: true,
   },
   {
-    suppressColumnsToolPanel: true,
-    sortable: false,
-    cellClass: 'ag-show-on-row-interaction',
+    ...commonActionMenuProps,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAbsenceTypes>) =>

@@ -25,7 +25,7 @@ export function useFormatLessonTime({
     })}]`,
     sameElse: 'l, HH:mm',
   });
-
+  
   const endHour = dayjs(endTime).format('HH:mm');
 
   return `${initialHour} - ${endHour}`;

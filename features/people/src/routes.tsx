@@ -22,6 +22,7 @@ import {
   getPermissionUtils,
   Notes_BehaviourType,
 } from '@tyro/api';
+import { getStudentFees } from '@tyro/fees';
 import {
   getStudent,
   getStudents,
@@ -273,6 +274,17 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'fees',
                 element: <StudentProfileFeesPage />,
+                hasAccess: ({ isStaffUserWithPermission }) =>
+                  isStaffUserWithPermission('ps:1:fees:pay_fees'),
+                loader: ({ params }) => {
+                  const studentId = getNumber(params.id);
+
+                  if (!studentId) {
+                    throw404Error();
+                  }
+
+                  return getStudentFees({ studentPartyId: studentId });
+                },
               },
               {
                 type: NavObjectType.NonMenuLink,

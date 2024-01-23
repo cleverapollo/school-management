@@ -7,11 +7,13 @@ export default function Autocomplete(theme: Theme) {
         root: {
           '& span.MuiAutocomplete-tag': {
             ...theme.typography.body2,
-            width: 24,
+            fontSize: theme.typography.pxToRem(13),
+            minWidth: 24,
             height: 24,
+            padding: theme.spacing(0, 0.75),
             lineHeight: '24px',
             textAlign: 'center',
-            borderRadius: theme.shape.borderRadius,
+            borderRadius: '12px',
             backgroundColor: alpha(theme.palette.grey[500], 0.16),
           },
         },

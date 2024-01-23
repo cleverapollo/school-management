@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import {
   ActionMenu,
+  commonActionMenuProps,
   getNumber,
   GridOptions,
   ICellRendererParams,
@@ -107,10 +108,7 @@ const getStudentNoteColumns = (
     },
   },
   {
-    suppressColumnsToolPanel: true,
-    cellClass: 'ag-show-on-row-interaction',
-    sortable: false,
-    suppressSizeToFit: true,
+    ...commonActionMenuProps,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseStudentAen['entries'][number]>) =>

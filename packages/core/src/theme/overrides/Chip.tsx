@@ -11,6 +11,7 @@ const COLORS = [
   'warning',
   'error',
   'red',
+  'indigo',
   ...Object.values(Colour),
   'slate',
   'gray',

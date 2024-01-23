@@ -27,6 +27,7 @@ import {
   ActionMenu,
   ConfirmDialog,
   useDebouncedValue,
+  commonActionMenuProps,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { AddIcon, EditIcon, TrashIcon, VerticalDotsIcon } from '@tyro/icons';
@@ -184,10 +185,7 @@ const getStudentBehaviourColumns = (
     valueGetter: ({ data }) => displayName(data?.takenBy) || '-',
   },
   {
-    suppressColumnsToolPanel: true,
-    cellClass: 'ag-show-on-row-interaction',
-    sortable: false,
-    suppressSizeToFit: true,
+    ...commonActionMenuProps,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseIndividualStudentBehaviour>) =>

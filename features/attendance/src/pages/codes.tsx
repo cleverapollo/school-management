@@ -11,6 +11,7 @@ import {
   AttendanceCodeSelectCellEditor,
   BulkEditedRows,
   TuslaCodeSelectCellEditor,
+  commonActionMenuProps,
   useDebouncedValue,
 } from '@tyro/core';
 import { Box, Button } from '@mui/material';
@@ -116,9 +117,7 @@ const getAttendanceCodeColumns = (
     ),
   },
   {
-    suppressColumnsToolPanel: true,
-    sortable: false,
-    cellClass: 'ag-show-on-row-interaction',
+    ...commonActionMenuProps,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAttendanceCodes>) =>

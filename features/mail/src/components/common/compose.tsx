@@ -208,7 +208,6 @@ export default function MailCompose({
             name: 'toRecipients',
           }}
           label={t('mail:placeholders.to')}
-          placeholder={t('mail:placeholders.to')}
           inputProps={{
             InputProps: {
               ...(!isBccShowing && {
@@ -236,7 +235,6 @@ export default function MailCompose({
               name: 'bccRecipients',
             }}
             label={t('mail:placeholders.bcc')}
-            placeholder={t('mail:placeholders.bcc')}
           />
         )}
 

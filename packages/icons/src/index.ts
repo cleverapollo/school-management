@@ -110,6 +110,7 @@ export * from './phone';
 export * from './pie-chart';
 export * from './printer';
 export * from './refresh';
+export * from './remove-discount';
 export * from './remove-list';
 export * from './reply';
 export * from './room-swap';

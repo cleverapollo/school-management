@@ -8,6 +8,7 @@ import {
   PageContainer,
   PageHeading,
   Table,
+  commonActionMenuProps,
 } from '@tyro/core';
 import { AddIcon, EditIcon, VerticalDotsIcon } from '@tyro/icons';
 import { ReturnTypeFromUseNoteTags, useNoteTags } from '@tyro/people';
@@ -39,9 +40,7 @@ const getNoteTagColumns = (
     lockVisible: true,
   },
   {
-    suppressColumnsToolPanel: true,
-    sortable: false,
-    cellClass: 'ag-show-on-row-interaction',
+    ...commonActionMenuProps,
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseNoteTags>) =>
       data && (
         <ActionMenu
