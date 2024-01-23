@@ -16,44 +16,27 @@ import {
   DayType,
   useAcademicNamespace,
   Calendar_CreateCalendarDayInput,
-  CalendarDayInfo,
 } from '@tyro/api';
 import {
   ActionMenu,
   useDisclosure,
-  useCacheWithExpiry,
   getColourBasedOnDayType,
+  EditState,
 } from '@tyro/core';
 import { useState, useMemo } from 'react';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { isEqual } from 'lodash';
 import { SchoolCalendar } from './calendar';
 import { useCalendarDayInfo } from '../../api/school-calendar/calendar-day-info';
 import { useUpdateCalendarDays } from '../../api/school-calendar/update-calendar-days';
 import { ChangeDateRangeModal } from './change-date-range-modal';
 import { BulkEditSaveBar } from './bulk-edit-save-bar';
 import { SetNonSchooldayModal } from './set-non-schoolday-modal';
+import { useEditableSchoolCalendarState } from '../../hooks/use-editable-school-calendar-state';
 
 dayjs.extend(LocalizedFormat);
 
-type EditedRow = Record<
-  string,
-  Record<
-    string,
-    {
-      originalValue: DayType | string | null | undefined;
-      newValue: DayType | string | null | undefined;
-    }
-  >
->;
-
-export enum EditState {
-  Idle = 'IDLE',
-  Saving = 'SAVING',
-  Saved = 'SAVED',
-  Error = 'ERROR',
-}
+type TabValue = DayType | 'All';
 
 export const CalendarOverview = () => {
   const { t } = useTranslation(['settings']);
@@ -62,17 +45,34 @@ export const CalendarOverview = () => {
 
   const { data, isLoading: isCalendarDayInfoLoading } = useCalendarDayInfo({});
 
-  const { mutateAsync: updateCalendarDays } = useUpdateCalendarDays({});
+  const { mutateAsync: updateCalendarDays } = useUpdateCalendarDays();
 
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [state, setState] = useState<EditState>(EditState.Idle);
-  const [value, setValue] = useState(0);
-  const [currentTabValue, setCurrentTabValue] = useState<DayType | 'All'>(
-    'All'
-  );
-  const [editedRows, setEditedRows] = useCacheWithExpiry<EditedRow>(
-    'bulk-edit',
-    {}
+  const [currentTabValue, setCurrentTabValue] = useState<TabValue>('All');
+
+  const {
+    editedRows,
+    selectedDays,
+    setEditedRows,
+    setSelectedDays,
+    handleCalendarChanges,
+  } = useEditableSchoolCalendarState(data);
+
+  const bellTimes = useMemo(
+    () =>
+      (data?.dayInfo ?? []).map((day) =>
+        editedRows[day.date]
+          ? {
+              ...day,
+              dayType: (editedRows[day.date].dayType?.newValue ??
+                day.dayType) as DayType,
+              startTime:
+                editedRows[day.date].startTime?.newValue ?? day.startTime,
+              endTime: editedRows[day.date].endTime?.newValue ?? day.endTime,
+            }
+          : day
+      ),
+    [data?.dayInfo, editedRows]
   );
 
   const getDayCount = (dayType: DayType) =>
@@ -99,12 +99,6 @@ export const CalendarOverview = () => {
         currentTabValue: DayType.Holiday,
         total: getDayCount(DayType.Holiday),
       },
-      // {
-      //   ...getColourBasedOnDayType(DayType.Partial),
-      //   translationText: t('settings:schoolCalendar.dayTypeLabels.PARTIAL'),
-      //   currentTabValue: DayType.Partial,
-      //   total: getDayCount(DayType.Partial),
-      // },
       {
         ...getColourBasedOnDayType(DayType.StaffDay),
         translationText: t('settings:schoolCalendar.dayTypeLabels.STAFF_DAY'),
@@ -198,98 +192,9 @@ export const CalendarOverview = () => {
         label: t('settings:schoolCalendar.setAsNonSchoolDay'),
         onClick: onOpenSetNonSchooldayModal,
       },
-      // {
-      //   label: t('settings:schoolCalendar.changeStartAndEndTime'),
-      //   onClick: onOpenDateRangeModal,
-      // },
     ],
     [selectedDays]
   );
-
-  const handleCalendarChanges = (
-    change: Omit<Calendar_CreateCalendarDayInput, 'date'>
-  ) => {
-    const days = selectedDays.map((date) => ({
-      date,
-      ...change,
-    }));
-
-    setEditedRows((prev) => ({
-      ...(prev ?? {}),
-      ...days
-        .map((day) => {
-          const previousDayChanges = prev[day.date] ?? {};
-
-          Object.keys(day)
-            .filter((key) => key !== 'date')
-            .forEach((key) => {
-              const newValue =
-                day[
-                  key as keyof Pick<
-                    CalendarDayInfo,
-                    'dayType' | 'startTime' | 'endTime' | 'description'
-                  >
-                ];
-              const oldValue = data?.dayInfo?.find(
-                ({ date }) => date === day.date
-              )?.[
-                key as keyof Pick<
-                  CalendarDayInfo,
-                  'dayType' | 'startTime' | 'endTime' | 'description'
-                >
-              ];
-
-              if (!previousDayChanges[key]) {
-                if (!isEqual(oldValue, newValue)) {
-                  previousDayChanges[key] = {
-                    originalValue: oldValue ?? null,
-                    newValue: newValue ?? null,
-                  };
-                }
-              } else {
-                previousDayChanges[key].newValue = newValue;
-              }
-
-              if (
-                isEqual(
-                  previousDayChanges[key]?.originalValue,
-                  newValue ?? null
-                ) ||
-                previousDayChanges[key] === undefined
-              ) {
-                delete previousDayChanges[key];
-              }
-              if (Object.keys(previousDayChanges).length === 0) {
-                delete prev[key];
-              }
-            });
-
-          return {
-            ...previousDayChanges,
-            date: day.date,
-          } as EditedRow & { date: string };
-        })
-        .reduce((acc, { date, dayType, startTime, endTime, description }) => {
-          if (
-            date &&
-            (dayType !== undefined ||
-              startTime !== undefined ||
-              endTime !== undefined ||
-              description !== undefined)
-          ) {
-            acc[date] = {
-              ...(dayType !== undefined ? { dayType } : {}),
-              ...(startTime !== undefined ? { startTime } : {}),
-              ...(endTime !== undefined ? { endTime } : {}),
-              ...(description !== undefined ? { description } : {}),
-            } as EditedRow['string'];
-          }
-
-          return acc;
-        }, {} as EditedRow),
-    }));
-    setSelectedDays([]);
-  };
 
   return (
     <Card variant="outlined" sx={{ height: '100%', flex: 1 }}>
@@ -302,8 +207,11 @@ export const CalendarOverview = () => {
             justifyContent="space-between"
           >
             <Tabs
-              value={value}
-              onChange={(_event, newValue: number) => setValue(newValue)}
+              value={currentTabValue}
+              onChange={(_event, newValue: TabValue) => {
+                setCurrentTabValue(newValue);
+                setSelectedDays([]);
+              }}
               variant="scrollable"
               scrollButtons="auto"
               aria-label={t('settings:schoolCalendar.ariaLabelForTabs')}
@@ -319,11 +227,8 @@ export const CalendarOverview = () => {
             >
               {calendarTabData.map((item) => (
                 <Tab
+                  value={item.currentTabValue}
                   key={item.translationText}
-                  onClick={() => {
-                    setCurrentTabValue(item?.currentTabValue);
-                    setSelectedDays([]);
-                  }}
                   label={
                     <>
                       <Chip
@@ -395,20 +300,7 @@ export const CalendarOverview = () => {
             }}
           >
             <SchoolCalendar
-              bellTimes={(data?.dayInfo ?? []).map((day) =>
-                editedRows[day.date]
-                  ? {
-                      ...day,
-                      dayType: (editedRows[day.date].dayType?.newValue ??
-                        day.dayType) as DayType,
-                      startTime:
-                        editedRows[day.date].startTime?.newValue ??
-                        day.startTime,
-                      endTime:
-                        editedRows[day.date].endTime?.newValue ?? day.endTime,
-                    }
-                  : day
-              )}
+              bellTimes={bellTimes}
               dayTypeFilter={currentTabValue}
               activeAcademicNamespace={activeAcademicNamespace}
               selectedDays={selectedDays}

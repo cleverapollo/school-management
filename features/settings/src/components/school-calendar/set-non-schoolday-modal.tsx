@@ -43,10 +43,7 @@ export const SetNonSchooldayModal = ({
   });
 
   const onSubmit = handleSubmit((data) => {
-    onSave({
-      dayType: data.dayType,
-      description: data.description,
-    });
+    onSave(data);
     onClose();
   });
 
@@ -79,18 +76,10 @@ export const SetNonSchooldayModal = ({
                   <Chip
                     label={t(`settings:schoolCalendar.dayTypeLabels.${value}`)}
                     variant="soft"
+                    size="small"
                     sx={{
-                      cursor: 'pointer',
                       backgroundColor,
-                      borderRadius: '14px',
-                      height: '26px',
-                      fontWeight: '500',
-                      fontSize: '14px',
-                      paddingX: '8px',
                       color,
-                      '& .MuiChip-label': {
-                        padding: 0,
-                      },
                     }}
                   />
                 );
