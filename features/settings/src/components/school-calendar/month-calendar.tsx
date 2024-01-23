@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { CalendarDayInfo } from '@tyro/api';
 import { Stack, Tooltip, Box } from '@mui/material';
 import { PickersDayProps, DateCalendar } from '@mui/x-date-pickers';
@@ -29,64 +29,67 @@ export const MonthCalendar = ({
     [selectedDays, bellTimes]
   );
 
-  const renderDay = (props: PickersDayProps<Dayjs>) => {
-    const { day: pickerDay, outsideCurrentMonth } = props ?? {};
+  const renderDay = useCallback(
+    (props: PickersDayProps<Dayjs>) => {
+      const { day: pickerDay, outsideCurrentMonth } = props ?? {};
 
-    const isSelected = enableDays.some(
-      (date) => date === dayjs(pickerDay).format('YYYY-MM-DD')
-    );
+      const isSelected = enableDays.some(
+        (date) => date === dayjs(pickerDay).format('YYYY-MM-DD')
+      );
 
-    const beforeDaySelected = enableDays.includes(
-      dayjs(pickerDay).add(-1, 'day').format('YYYY-MM-DD')
-    );
-    const afterDaySelected = enableDays.includes(
-      dayjs(pickerDay).add(1, 'day').format('YYYY-MM-DD')
-    );
+      const beforeDaySelected = enableDays.includes(
+        dayjs(pickerDay).add(-1, 'day').format('YYYY-MM-DD')
+      );
+      const afterDaySelected = enableDays.includes(
+        dayjs(pickerDay).add(1, 'day').format('YYYY-MM-DD')
+      );
 
-    const selectedDayBgProps = {
-      backgroundColor: isSelected ? 'indigo.200' : 'transparent',
-      borderWidth: '1px 0 1px',
-      borderColor: isSelected ? 'indigo.500' : 'transparent',
-      borderStyle: 'solid',
-      height: '100%',
-      width: '50%',
-      position: 'absolute',
-    };
+      const selectedDayBgProps = {
+        backgroundColor: isSelected ? 'indigo.200' : 'transparent',
+        borderWidth: '1px 0 1px',
+        borderColor: isSelected ? 'indigo.500' : 'transparent',
+        borderStyle: 'solid',
+        height: '100%',
+        width: '50%',
+        position: 'absolute',
+      };
 
-    const dayToCheck = dayjs(pickerDay).format('YYYY-MM-DD');
-    const dayBellTime = bellTimes?.find(
-      (bellTime) => bellTime.date === dayToCheck
-    );
+      const dayToCheck = dayjs(pickerDay).format('YYYY-MM-DD');
+      const dayBellTime = bellTimes?.find(
+        (bellTime) => bellTime.date === dayToCheck
+      );
 
-    return (
-      <Stack
-        justifyContent="center"
-        position="relative"
-        sx={{
-          height: 36,
-        }}
-      >
-        <Tooltip title={dayBellTime?.description ?? ''}>
-          {CustomDay({
-            ...props,
-            handleSelectDay,
-            dayBellTime,
-            selected: isSelected,
-          })}
-        </Tooltip>
-        {dayBellTime !== undefined &&
-          beforeDaySelected &&
-          !outsideCurrentMonth && (
-            <Box sx={{ ...selectedDayBgProps, left: 0 }} />
-          )}
-        {dayBellTime !== undefined &&
-          afterDaySelected &&
-          !outsideCurrentMonth && (
-            <Box sx={{ ...selectedDayBgProps, right: 0 }} />
-          )}
-      </Stack>
-    );
-  };
+      return (
+        <Stack
+          justifyContent="center"
+          position="relative"
+          sx={{
+            height: 36,
+          }}
+        >
+          <Tooltip title={dayBellTime?.description ?? ''}>
+            {CustomDay({
+              ...props,
+              handleSelectDay,
+              dayBellTime,
+              selected: isSelected,
+            })}
+          </Tooltip>
+          {dayBellTime !== undefined &&
+            beforeDaySelected &&
+            !outsideCurrentMonth && (
+              <Box sx={{ ...selectedDayBgProps, left: 0 }} />
+            )}
+          {dayBellTime !== undefined &&
+            afterDaySelected &&
+            !outsideCurrentMonth && (
+              <Box sx={{ ...selectedDayBgProps, right: 0 }} />
+            )}
+        </Stack>
+      );
+    },
+    [enableDays, bellTimes]
+  );
 
   return (
     <Box
