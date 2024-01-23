@@ -143,6 +143,10 @@ export default function CustomGroups() {
       {
         label: t('mail:sendMail'),
         icon: <SendMailIcon />,
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission(
+            'api:communications:read:search_recipients'
+          ),
         onClick: () => {
           sendMailToParties(
             selectedGroups.map(({ id }) => id),

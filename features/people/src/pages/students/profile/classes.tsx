@@ -174,6 +174,10 @@ export default function StudentProfileClassesPage() {
       {
         label: t('mail:sendMail'),
         icon: <SendMailIcon />,
+        hasAccess: ({ isStaffUserWithPermission }) =>
+          isStaffUserWithPermission(
+            'api:communications:read:search_recipients'
+          ),
         onClick: () => {
           sendMailToParties(
             selectedGroups.map((group) => group.id),

@@ -170,6 +170,8 @@ export default function AbsentRequests() {
     {
       label: t('mail:sendMail'),
       icon: <SendMailIcon />,
+      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+        isStaffUserWithPermission('api:communications:read:search_recipients'),
       onClick: () => {
         sendMailToParties(
           selectedRecipients.map(({ id }) => id),

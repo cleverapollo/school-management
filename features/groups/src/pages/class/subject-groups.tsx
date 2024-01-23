@@ -6,6 +6,7 @@ import {
   usePermissions,
   UseQueryReturnType,
   SubjectGroupStudentMembershipTypeEnum,
+  PermissionUtils,
 } from '@tyro/api';
 import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -151,6 +152,10 @@ export default function SubjectGroups() {
       {
         label: t('mail:sendMail'),
         icon: <SendMailIcon />,
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission(
+            'api:communications:read:search_recipients'
+          ),
         onClick: () => {
           sendMailToParties(
             selectedGroups.map((group) => group.id),
