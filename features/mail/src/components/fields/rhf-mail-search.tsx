@@ -24,22 +24,33 @@ export const RHFMailSearch = <TField extends FieldValues>({
         '& .MuiInputBase-root': {
           mt: 0,
         },
+        '& .MuiFormControl-root': {
+          flexDirection: 'row',
+          alignItems: 'center',
+        },
+        '& .MuiFormLabel-root': {
+          position: 'relative',
+          textOverflow: 'initial',
+          transformOrigin: 'initial',
+          overflow: 'initial',
+          transform: 'initial',
+          transition: 'initial',
+          lineHeight: '2rem',
+          pr: 0.5,
+          color: `${theme.palette.slate[500]} !important`,
+        },
       })}
       {...autoCompleteProps}
       inputProps={{
         variant: 'standard',
         ...props?.inputProps,
+
         InputProps: {
           disableUnderline: true,
           ...props?.inputProps?.InputProps,
         },
         InputLabelProps: {
           shrink: true,
-          sx: {
-            visibility: 'hidden',
-            width: 0,
-            height: 0,
-          },
           ...props?.inputProps?.InputLabelProps,
         },
       }}
