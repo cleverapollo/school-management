@@ -9,6 +9,7 @@ import {
 import {
   RHFCheckbox,
   RHFSelect,
+  RHFSwitch,
   RHFTextField,
   useFormValidator,
   DialogActions,
@@ -23,7 +24,7 @@ import {
   SaveAttendanceCodeInput,
   TuslaCode,
 } from '@tyro/api';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { CloseIcon, InfoCircleIcon } from '@tyro/icons';
 import {
   ReturnTypeFromUseAttendanceCodes,
@@ -42,10 +43,12 @@ export type EditAttendanceCodeFormState = Pick<
   name: string;
   description?: string | null;
   visibleForAdmin?: boolean;
+  active: boolean;
+  isActive?: boolean;
 };
 
 export type EditAttendanceCodeViewProps = {
-  initialAttendanceCodeState?: EditAttendanceCodeFormState | undefined;
+  initialAttendanceCodeState: Partial<EditAttendanceCodeFormState> | null;
   attendanceCodes: ReturnTypeFromUseAttendanceCodes[];
   onClose: () => void;
 };
@@ -60,7 +63,6 @@ export const EditAttendanceCodeModal = ({
   const {
     mutate: createOrUpdateAttendanceCodeMutation,
     isLoading: isSubmitting,
-    isSuccess: isSubmitSuccessful,
   } = useCreateOrUpdateAttendanceCode();
 
   const { resolver, rules } = useFormValidator<EditAttendanceCodeFormState>();
@@ -96,6 +98,7 @@ export const EditAttendanceCodeModal = ({
   const onSubmit = ({
     name,
     description,
+    isActive,
     ...restData
   }: EditAttendanceCodeFormState) => {
     createOrUpdateAttendanceCodeMutation(
@@ -103,7 +106,7 @@ export const EditAttendanceCodeModal = ({
         {
           name: [{ locale: currentLanguageCode, value: name }],
           description: [{ locale: currentLanguageCode, value: description }],
-          isActive: true,
+          isActive: initialAttendanceCodeState?.id ? isActive : true,
           ...restData,
         },
       ],
@@ -116,20 +119,12 @@ export const EditAttendanceCodeModal = ({
   useEffect(() => {
     if (initialAttendanceCodeState) {
       reset({
+        isActive: initialAttendanceCodeState?.active,
         ...defaultFormStateValues,
         ...initialAttendanceCodeState,
       });
     }
   }, [initialAttendanceCodeState]);
-
-  useEffect(() => {
-    reset();
-  }, [isSubmitSuccessful]);
-
-  const handleClose = () => {
-    onClose();
-    reset();
-  };
 
   const [code] = watch(['code']);
 
@@ -148,7 +143,7 @@ export const EditAttendanceCodeModal = ({
   return (
     <Dialog
       open={!!initialAttendanceCodeState}
-      onClose={handleClose}
+      onClose={onClose}
       scroll="paper"
       fullWidth
       maxWidth="sm"
@@ -221,6 +216,15 @@ export const EditAttendanceCodeModal = ({
               }}
             />
           </Stack>
+          {initialAttendanceCodeState?.id && (
+            <Stack direction="column">
+              <RHFSwitch
+                label={t('common:active')}
+                switchProps={{ color: 'primary' }}
+                controlProps={{ name: 'isActive', control }}
+              />
+            </Stack>
+          )}
           <Stack direction="column">
             <Typography variant="subtitle1">
               {t('attendance:availableTo')}
@@ -295,7 +299,7 @@ export const EditAttendanceCodeModal = ({
         </Stack>
 
         <DialogActions>
-          <Button variant="outlined" color="inherit" onClick={handleClose}>
+          <Button variant="outlined" color="inherit" onClick={onClose}>
             {t('common:actions.cancel')}
           </Button>
 

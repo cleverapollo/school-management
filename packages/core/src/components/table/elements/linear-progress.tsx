@@ -1,20 +1,49 @@
-import { Box, LinearProgress, Stack, useTheme } from '@mui/material';
+import { Box, Color, LinearProgress, Stack } from '@mui/material';
 import { CheckmarkIcon } from '@tyro/icons';
+import { ColorSchema } from '../../../theme/palette';
 
-interface TableLinearProgressProps {
+export interface TableLinearProgressProps {
   value: number | null | undefined;
   total: number | null | undefined;
+  ranges?: Array<{
+    min: number;
+    max: number;
+    color: ColorSchema;
+    shade?: keyof Color;
+    icon?: typeof CheckmarkIcon;
+  }>;
 }
+
+const defaultRanges: NonNullable<TableLinearProgressProps['ranges']> = [
+  {
+    min: 0,
+    max: 99,
+    color: 'slate',
+    shade: 300,
+  },
+  {
+    min: 100,
+    max: 100,
+    color: 'green',
+    shade: 400,
+    icon: CheckmarkIcon,
+  },
+];
 
 export function TableLinearProgress({
   value,
   total,
+  ranges = defaultRanges,
 }: TableLinearProgressProps) {
   const percent = value && total ? Math.min((value / total) * 100, 100) : 0;
-  const isComplete = percent >= 100;
-  const color = isComplete ? 'green' : 'slate';
-  const barShade = color === 'slate' ? 300 : 400;
-  const { palette } = useTheme();
+  const matchedRange = ranges.find(
+    ({ min, max }) => percent >= min && percent <= max
+  );
+  const {
+    color,
+    icon: Icon,
+    shade = 300,
+  } = matchedRange ?? ({ color: 'slate' } as const);
 
   return (
     <Stack direction="row" alignItems="center" spacing={0.25}>
@@ -23,15 +52,15 @@ export function TableLinearProgress({
           variant="determinate"
           value={percent}
           sx={{
-            backgroundColor: palette[color][100],
+            backgroundColor: `${color}.100`,
             height: 8,
             borderRadius: 4,
             borderWidth: 1,
-            borderColor: palette[color][200],
+            borderColor: `${color}.200`,
             borderStyle: 'solid',
 
             '& .MuiLinearProgress-bar': {
-              backgroundColor: palette[color][barShade],
+              backgroundColor: `${color}.${shade}`,
             },
           }}
         />
@@ -43,12 +72,12 @@ export function TableLinearProgress({
           height: 16,
         }}
       >
-        {isComplete && (
-          <CheckmarkIcon
+        {Icon && (
+          <Icon
             sx={{
               width: '100%',
               height: '100%',
-              color: 'green.500',
+              color: `${color}.500`,
               '& path': {
                 strokeWidth: 3,
               },

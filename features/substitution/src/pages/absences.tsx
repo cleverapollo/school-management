@@ -83,11 +83,11 @@ const getColumnDefs = (
     ) => {
       const firstDateA = datesA[0];
       const dateA =
-        firstDateA.individualDates?.[0] || firstDateA.continuousStartDate!;
+        firstDateA?.individualDates?.[0] || firstDateA?.continuousStartDate;
 
       const firstDateB = datesB[0];
       const dateB =
-        firstDateB.individualDates?.[0] || firstDateB.continuousStartDate!;
+        firstDateB?.individualDates?.[0] || firstDateB?.continuousStartDate;
 
       return dayjs(dateA).unix() - dayjs(dateB).unix();
     },
@@ -96,7 +96,7 @@ const getColumnDefs = (
     }: ICellRendererParams<ReturnTypeFromUseStaffWorkAbsences, any>) => (
       <TableDatesList dates={data?.dates ?? []} />
     ),
-    valueGetter: ({ data }) => getDateListString(data?.dates ?? [], t),
+    valueFormatter: ({ data }) => getDateListString(data?.dates ?? [], t),
     autoHeight: true,
     wrapText: true,
   },

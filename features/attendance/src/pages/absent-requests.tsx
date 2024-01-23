@@ -80,6 +80,7 @@ const getAbsentRequestColumns = (
   {
     field: 'createdOn',
     headerName: t('common:created'),
+    sort: 'desc',
     comparator: (dateA: string, dateB: string) =>
       dayjs(dateA).unix() - dayjs(dateB).unix(),
     valueGetter: ({ data }) => dayjs(data?.createdOn).format('LL'),
@@ -88,6 +89,7 @@ const getAbsentRequestColumns = (
     field: 'status',
     headerName: t('common:status'),
     sort: 'desc',
+    sortIndex: 0,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAbsentRequests>) =>

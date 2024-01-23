@@ -12,11 +12,12 @@ import {
   BulkEditedRows,
   TuslaCodeSelectCellEditor,
   commonActionMenuProps,
+  useDebouncedValue,
 } from '@tyro/core';
 import { Box, Button } from '@mui/material';
 import { AddIcon, VerticalDotsIcon } from '@tyro/icons';
 import { SaveAttendanceCodeInput, TuslaCode } from '@tyro/api';
-import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useMemo } from 'react';
 import {
   ReturnTypeFromUseAttendanceCodes,
   useAttendanceCodes,
@@ -106,6 +107,16 @@ const getAttendanceCodeColumns = (
     ),
   },
   {
+    field: 'active',
+    headerName: t('common:active'),
+    editable: true,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseAttendanceCodes, any>) => (
+      <TableBooleanValue value={Boolean(data?.active)} />
+    ),
+  },
+  {
     ...commonActionMenuProps,
     cellRenderer: ({
       data,
@@ -135,8 +146,15 @@ export default function Codes() {
   const { mutateAsync: saveBulkAttendanceCodes } =
     useCreateOrUpdateAttendanceCode();
 
-  const [editAttendanceCodeInitialState, setEditAttendanceCodeInitialState] =
-    useState<EditAttendanceCodeViewProps['initialAttendanceCodeState']>();
+  const {
+    value: editAttendanceCodeInitialState,
+    debouncedValue: debouncedEditAttendanceCodeInitialState,
+    setValue: setEditAttendanceCodeInitialState,
+  } = useDebouncedValue<
+    EditAttendanceCodeViewProps['initialAttendanceCodeState']
+  >({
+    defaultValue: null,
+  });
 
   const attendanceCodeColumns = useMemo(
     () => getAttendanceCodeColumns(t, setEditAttendanceCodeInitialState),
@@ -147,10 +165,6 @@ export default function Codes() {
     setEditAttendanceCodeInitialState(
       {} as EditAttendanceCodeViewProps['initialAttendanceCodeState']
     );
-  };
-
-  const handleCloseModal = () => {
-    setEditAttendanceCodeInitialState(undefined);
   };
 
   const handleBulkSave = (
@@ -196,7 +210,7 @@ export default function Codes() {
             data[id].visibleForContact?.newValue ??
             currentData?.visibleForContact,
           nameTextId: currentData?.nameTextId,
-          isActive: true,
+          isActive: currentData?.active,
         };
       }
     );
@@ -229,8 +243,11 @@ export default function Codes() {
       />
       <EditAttendanceCodeModal
         attendanceCodes={attendanceCodes ?? []}
-        initialAttendanceCodeState={editAttendanceCodeInitialState}
-        onClose={handleCloseModal}
+        initialAttendanceCodeState={
+          editAttendanceCodeInitialState ||
+          debouncedEditAttendanceCodeInitialState
+        }
+        onClose={() => setEditAttendanceCodeInitialState(null)}
       />
     </PageContainer>
   );
