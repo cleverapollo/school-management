@@ -473,8 +473,6 @@ export type Calendar = {
   academicEndDate: Scalars['Date'];
   academicNamespaceId: Scalars['Int'];
   academicStartDate: Scalars['Date'];
-  /** deep linked */
-  dayInfo: Array<CalendarDayInfo>;
   /**  end Date of the Calendar this will typically be after the end of the academic year */
   endDate: Scalars['Date'];
   id: Scalars['Int'];
@@ -527,7 +525,6 @@ export type CalendarDayInfo = {
   __typename?: 'CalendarDayInfo';
   date: Scalars['Date'];
   dayType: DayType;
-  description?: Maybe<Scalars['String']>;
   endTime?: Maybe<Scalars['DateTime']>;
   periods: Array<CalendarGridPeriodInfo>;
   startTime?: Maybe<Scalars['DateTime']>;
@@ -1159,17 +1156,9 @@ export type Calendar_UncancelEvents = {
   events: Array<Calendar_UncancelEvent>;
 };
 
-export type Calendar_UpdateCalendarDayInput = {
-  date: Scalars['Date'];
-  dayType: DayType;
-  description?: InputMaybe<Scalars['String']>;
-  endTime?: InputMaybe<Scalars['Time']>;
-  startTime?: InputMaybe<Scalars['Time']>;
-};
-
 export type Calendar_UpdateDays = {
-  calendarId: Scalars['Int'];
-  days: Array<Calendar_CreateCalendarDayInput>;
+  calendarId?: InputMaybe<Scalars['Int']>;
+  days?: InputMaybe<Array<InputMaybe<Calendar_CreateCalendarDayInput>>>;
 };
 
 export type Calendar_UpsertCalendarUnavailability = {
@@ -2389,7 +2378,6 @@ export type Fee = {
   paid: Scalars['Float'];
   published: Scalars['Boolean'];
   publishedOn?: Maybe<Scalars['DateTime']>;
-  siblingDiscountType?: Maybe<SiblingDiscountType>;
   tenant: Scalars['Int'];
   total: Scalars['Float'];
 };
@@ -2428,6 +2416,7 @@ export type FileTransferResponse = {
   fileUrl: Scalars['String'];
   id: Scalars['Int'];
   referenceId: Scalars['String'];
+  timestamp?: Maybe<Scalars['DateTime']>;
 };
 
 /**  set either times OR recurrence OR atTimesOfEvents */
@@ -2457,111 +2446,6 @@ export type FindFreeResourcesTime = {
   fromDate: Scalars['Date'];
   startTime: Scalars['Time'];
   toDate: Scalars['Date'];
-};
-
-export enum Form_FormFieldItemType {
-  Checkbox = 'CHECKBOX',
-  Date = 'DATE',
-  Datetime = 'DATETIME',
-  Input = 'INPUT',
-  Multiselect = 'MULTISELECT',
-  Paragraph = 'PARAGRAPH',
-  Radio = 'RADIO',
-  Select = 'SELECT',
-  Textarea = 'TEXTAREA',
-  Time = 'TIME'
-}
-
-export type Forms_FormField = Forms_FormFieldItem | Forms_FormFieldSubGroup;
-
-export type Forms_FormFieldGridWidth = {
-  __typename?: 'Forms_FormFieldGridWidth';
-  lg?: Maybe<Scalars['Int']>;
-  md?: Maybe<Scalars['Int']>;
-  sm?: Maybe<Scalars['Int']>;
-  xl?: Maybe<Scalars['Int']>;
-  xs?: Maybe<Scalars['Int']>;
-};
-
-export type Forms_FormFieldGroup = {
-  __typename?: 'Forms_FormFieldGroup';
-  fields?: Maybe<Array<Maybe<Forms_FormField>>>;
-  header?: Maybe<Scalars['String']>;
-};
-
-export type Forms_FormFieldItem = {
-  __typename?: 'Forms_FormFieldItem';
-  formFieldType?: Maybe<Forms_FormFieldType>;
-  gridWidth?: Maybe<Forms_FormFieldGridWidth>;
-  id?: Maybe<Scalars['String']>;
-  label?: Maybe<Scalars['String']>;
-  options?: Maybe<Array<Forms_FormFieldSelectOptions>>;
-  type?: Maybe<Form_FormFieldItemType>;
-};
-
-export type Forms_FormFieldSelectOptions = {
-  __typename?: 'Forms_FormFieldSelectOptions';
-  id: Scalars['String'];
-  name: Scalars['String'];
-};
-
-export type Forms_FormFieldSubGroup = {
-  __typename?: 'Forms_FormFieldSubGroup';
-  fields?: Maybe<Array<Maybe<Forms_FormFieldItem>>>;
-  formFieldType?: Maybe<Forms_FormFieldType>;
-  gridWidth?: Maybe<Forms_FormFieldGridWidth>;
-  header?: Maybe<Scalars['String']>;
-};
-
-export enum Forms_FormFieldType {
-  Item = 'ITEM',
-  Subgroup = 'SUBGROUP'
-}
-
-export type Forms_FormListing = {
-  __typename?: 'Forms_FormListing';
-  id: Scalars['String'];
-  isComplete?: Maybe<Scalars['Boolean']>;
-  name: Scalars['String'];
-};
-
-export type Forms_FormView = {
-  __typename?: 'Forms_FormView';
-  fields?: Maybe<Array<Maybe<Forms_FormFieldGroup>>>;
-  id?: Maybe<Scalars['String']>;
-  title?: Maybe<Scalars['String']>;
-};
-
-export type Forms_InformationRequestListFormFilter = {
-  test?: InputMaybe<Scalars['String']>;
-};
-
-export type Forms_InformationRequestViewFormFilter = {
-  id: Scalars['String'];
-};
-
-export type Forms_SubmitFormFieldInput = {
-  fieldId: Scalars['String'];
-  value?: InputMaybe<Scalars['Object']>;
-};
-
-export type Forms_SubmitFormInput = {
-  fields?: InputMaybe<Array<Forms_SubmitFormFieldInput>>;
-  formId: Scalars['String'];
-  validateOnly: Scalars['Boolean'];
-};
-
-export type Forms_SubmitFormResponse = {
-  __typename?: 'Forms_SubmitFormResponse';
-  id: Scalars['String'];
-  success: Scalars['Boolean'];
-  validations?: Maybe<Forms_SubmitFormValidationError>;
-};
-
-export type Forms_SubmitFormValidationError = {
-  __typename?: 'Forms_SubmitFormValidationError';
-  fieldErrors?: Maybe<Scalars['Object']>;
-  globalErrors: Array<Scalars['String']>;
 };
 
 export type FreeCalendarResources = {
@@ -2957,13 +2841,10 @@ export type Mutation = {
   communications_assignLabel?: Maybe<Mail>;
   communications_read?: Maybe<Scalars['String']>;
   communications_readNotification?: Maybe<Success>;
-  /** notifications endpoints */
   communications_registerDevice?: Maybe<DeviceRegistration>;
   communications_saveLabel?: Maybe<Label>;
   communications_saveNotificationTemplate?: Maybe<NotificationTemplate>;
-  /** mail endpoints */
   communications_sendMail?: Maybe<Mail>;
-  /** sms endpoints */
   communications_sendSms?: Maybe<Scalars['String']>;
   communications_smsTopUp?: Maybe<SmsTopUpResponse>;
   communications_starred?: Maybe<Scalars['String']>;
@@ -3006,15 +2887,12 @@ export type Mutation = {
   fees_saveDiscount: Discount;
   fees_saveFee: Fee;
   fees_stripeSignUp: StripeAccount;
-  forms_submitInformationRequestForms: Forms_SubmitFormResponse;
   notes_deleteBehaviourCategory?: Maybe<Success>;
   notes_deleteNote?: Maybe<Success>;
   notes_upsertBehaviourCategory?: Maybe<Success>;
   notes_upsertBehaviourTags: Array<Notes_Tag>;
   notes_upsertNotes: Array<Notes_Note>;
   notes_upsertNotesTags: Array<Notes_Tag>;
-  options_saveOptions: Option;
-  options_saveStudentPreferences: Array<StudentPreference>;
   ppod_savePPODCredentials: PpodCredentials;
   sa_upsertActivity?: Maybe<Success>;
   sa_upsertActivityRequest?: Maybe<Success>;
@@ -3032,7 +2910,6 @@ export type Mutation = {
   tt_reset: Success;
   tt_swap: Success;
   tt_updateTimetableGroup: Success;
-  tt_upsertGrids: Success;
   tt_upsertSubjectGroup: Success;
   users_createProfileForGlobalUser?: Maybe<Profile>;
   users_deactivateProfiles?: Maybe<Success>;
@@ -3411,11 +3288,6 @@ export type MutationFees_SaveFeeArgs = {
 };
 
 
-export type MutationForms_SubmitInformationRequestFormsArgs = {
-  input: Forms_SubmitFormInput;
-};
-
-
 export type MutationNotes_DeleteBehaviourCategoryArgs = {
   input?: InputMaybe<Notes_BehaviourCategoryInput>;
 };
@@ -3443,16 +3315,6 @@ export type MutationNotes_UpsertNotesArgs = {
 
 export type MutationNotes_UpsertNotesTagsArgs = {
   input?: InputMaybe<Array<InputMaybe<Notes_UpsertNotesTagInput>>>;
-};
-
-
-export type MutationOptions_SaveOptionsArgs = {
-  input?: InputMaybe<SaveOptions>;
-};
-
-
-export type MutationOptions_SaveStudentPreferencesArgs = {
-  input?: InputMaybe<Array<InputMaybe<SaveStudentPreference>>>;
 };
 
 
@@ -3538,11 +3400,6 @@ export type MutationTt_SwapArgs = {
 
 export type MutationTt_UpdateTimetableGroupArgs = {
   input: Tt_UpdateTimetableGroupInput;
-};
-
-
-export type MutationTt_UpsertGridsArgs = {
-  input: TtUpsertGrids;
 };
 
 
@@ -3823,6 +3680,7 @@ export type Notification = {
   __typename?: 'Notification';
   id: Scalars['Long'];
   notificationType: NotificationType;
+  recipientIds: Array<Scalars['Long']>;
   recipients: Array<NotificationRecipient>;
   /** deep linked */
   sender: Person;
@@ -3846,15 +3704,19 @@ export type NotificationFilter = {
 
 export type NotificationMetaData = {
   __typename?: 'NotificationMetaData';
+  feeId?: Maybe<Scalars['Int']>;
   mailId?: Maybe<Scalars['Long']>;
   notificationType: NotificationType;
   partyId?: Maybe<Scalars['Long']>;
+  studentPartyId?: Maybe<Scalars['Long']>;
 };
 
 export type NotificationMetaDataInput = {
+  feeId?: InputMaybe<Scalars['Int']>;
   mailId?: InputMaybe<Scalars['Long']>;
   notificationType: NotificationType;
   partyId?: InputMaybe<Scalars['Long']>;
+  studentPartyId?: InputMaybe<Scalars['Long']>;
 };
 
 export type NotificationReadInput = {
@@ -3863,11 +3725,13 @@ export type NotificationReadInput = {
 
 export type NotificationRecipient = {
   __typename?: 'NotificationRecipient';
+  devices: Array<RecipientDevice>;
+  id: Scalars['Long'];
   metaData?: Maybe<NotificationMetaData>;
   readOn?: Maybe<Scalars['DateTime']>;
   recipientGlobalUserId: Scalars['Int'];
   recipientPartyId: Scalars['Long'];
-  status?: Maybe<NotificationStatus>;
+  status: NotificationStatus;
 };
 
 export type NotificationSentResponse = {
@@ -3913,46 +3777,6 @@ export enum NotificationType {
 export type NotificationsUnreadCount = {
   __typename?: 'NotificationsUnreadCount';
   count: Scalars['Int'];
-};
-
-export type Option = {
-  __typename?: 'Option';
-  academicNamespaceId: Scalars['Int'];
-  id: Scalars['Int'];
-  name: Scalars['String'];
-  prefix?: Maybe<Scalars['String']>;
-  publishToParents: Scalars['Boolean'];
-  studentPartyIds?: Maybe<Array<Scalars['Long']>>;
-  /** deep linked */
-  students?: Maybe<Array<Person>>;
-  subjectSetIds?: Maybe<Array<OptionsId>>;
-  /** deep linked */
-  subjectSets: Array<OptionSubjectSet>;
-  /** deep linked */
-  yearGroupEnrolmentParty: YearGroupEnrollment;
-  yearGroupEnrolmentPartyId: Scalars['Long'];
-};
-
-export type OptionFilter = {
-  academicNameSpaceId?: InputMaybe<Scalars['Int']>;
-  ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-};
-
-export type OptionSubjectSet = {
-  __typename?: 'OptionSubjectSet';
-  canChoose: Scalars['Int'];
-  id: OptionsId;
-  mustGet: Scalars['Int'];
-  poolIdx?: Maybe<Scalars['Int']>;
-  subjectIds: Array<Scalars['Int']>;
-  /** deep linked */
-  subjects: Array<Subject>;
-};
-
-export type OptionsId = {
-  __typename?: 'OptionsId';
-  idx: Scalars['Int'];
-  optionId: Scalars['Int'];
 };
 
 export type OverallComments = {
@@ -4359,11 +4183,6 @@ export type PhoneNumber = {
   primaryPhoneNumber?: Maybe<Scalars['Boolean']>;
 };
 
-export type PreferencesFilter = {
-  optionId?: InputMaybe<Scalars['Int']>;
-  studentPartyId?: InputMaybe<Scalars['Long']>;
-};
-
 export type PreviousEventAttendance = {
   __typename?: 'PreviousEventAttendance';
   attendanceCode: AttendanceCode;
@@ -4387,72 +4206,21 @@ export type PrimarySchoolIreFilter = {
   rollNumbers?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
-export type Print_AssessmentOptions = {
-  assessmentId?: InputMaybe<Scalars['Long']>;
-  classGroupIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-  printOrientation: Print_Orientation;
-  showAttendance: Scalars['Boolean'];
-  showExtraFields: Scalars['Boolean'];
-  studentIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-  yearGroupEnrollmentIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-};
-
 export type Print_GroupMembers = {
-  fields?: InputMaybe<Array<InputMaybe<Print_GroupMembersFields>>>;
   groupIds: Array<Scalars['Long']>;
   options: Print_GroupMembersOptions;
-  orientation?: InputMaybe<Print_Orientation>;
-  sorting?: InputMaybe<Print_NameSorting>;
 };
-
-export enum Print_GroupMembersFields {
-  ClassGroup = 'CLASS_GROUP',
-  RowNumber = 'ROW_NUMBER',
-  SchoolRollNo = 'SCHOOL_ROLL_NO',
-  StudentDepartmentId = 'STUDENT_DEPARTMENT_ID',
-  StudentId = 'STUDENT_ID',
-  StudentName = 'STUDENT_NAME',
-  StudyLevel = 'STUDY_LEVEL',
-  Subject = 'SUBJECT',
-  SubjectCode = 'SUBJECT_CODE',
-  Teacher = 'TEACHER',
-  TeacherId = 'TEACHER_ID'
-}
 
 export enum Print_GroupMembersOptions {
   Csv = 'CSV',
   Print = 'PRINT'
 }
 
-export enum Print_NameSorting {
-  FirstNameLastName = 'FIRST_NAME_LAST_NAME',
-  LastNameFirstName = 'LAST_NAME_FIRST_NAME'
-}
-
-export enum Print_Orientation {
-  Horizontal = 'HORIZONTAL',
-  Vertical = 'VERTICAL'
-}
-
 export type Print_PersonsGroupMemberships = {
-  fields?: InputMaybe<Array<InputMaybe<Print_PersonsGroupMembershipsFields>>>;
   groupTypes: Array<PartyGroupType>;
   options: Print_GroupMembersOptions;
-  orientation?: InputMaybe<Print_Orientation>;
   personIds: Array<Scalars['Long']>;
-  sorting?: InputMaybe<Print_NameSorting>;
 };
-
-export enum Print_PersonsGroupMembershipsFields {
-  GroupName = 'GROUP_NAME',
-  RowNumber = 'ROW_NUMBER',
-  StudentCount = 'STUDENT_COUNT',
-  StudentNames = 'STUDENT_NAMES',
-  StudyLevel = 'STUDY_LEVEL',
-  Subject = 'SUBJECT',
-  SubjectCode = 'SUBJECT_CODE',
-  Teacher = 'TEACHER'
-}
 
 export enum Print_TimetableLayout {
   Combined = 'COMBINED',
@@ -4615,6 +4383,11 @@ export type PublishInput = {
   publish: Scalars['Boolean'];
 };
 
+export type PushNotificationRecipient = {
+  metadata: NotificationMetaDataInput;
+  recipientPartyId: Scalars['Long'];
+};
+
 export type Query = {
   __typename?: 'Query';
   admin__party_people?: Maybe<Array<Person>>;
@@ -4641,7 +4414,6 @@ export type Query = {
   attendance_sessionAttendanceList: Array<SessionAttendanceList>;
   attendance_studentSessionAttendance: Array<StudentSessionAttendance>;
   calendar_bellTimes: Array<Calendar_BellTime>;
-  calendar_calendar: Array<Calendar>;
   calendar_calendarDayBellTimes: Array<CalendarDayBellTime>;
   calendar_calendarEvents?: Maybe<ResourceCalendarWrapper>;
   /**  depricated */
@@ -4656,16 +4428,12 @@ export type Query = {
   catalogue_staffPosts: Array<StaffPost>;
   catalogue_subjects: Array<Subject>;
   catalogue_years: Array<YearGroup>;
-  /** sms endpoints */
   communications_currentMonthlySpend?: Maybe<SmsCurrentMonthlySpend>;
   communications_label: Array<Label>;
-  /** mail endpoints */
   communications_mail: Array<Mail>;
   communications_notificationCount?: Maybe<NotificationsUnreadCount>;
   communications_notificationTemplates: Array<NotificationTemplate>;
   communications_notifications: Array<Notification>;
-  communications_recipients: Array<Search>;
-  /** notifications endpoints */
   communications_registeredDevices: Array<DeviceRegistration>;
   communications_sms: Array<Sms>;
   communications_smsCost?: Maybe<SmsCost>;
@@ -4697,20 +4465,15 @@ export type Query = {
   fees_stripeAccount: StripeAccount;
   fees_studentFees: Array<StudentFee>;
   file_transfer_list?: Maybe<Array<FileTransferResponse>>;
-  forms_listInformationRequestForms: Array<Forms_FormListing>;
-  forms_viewInformationRequestForms: Forms_FormView;
   generalGroups?: Maybe<Array<GeneralGroup>>;
   myAuthDetails?: Maybe<GlobalUser>;
   notes_behaviour?: Maybe<Notes_StudentBehaviourOverview>;
   notes_behaviourCategories: Array<Notes_BehaviourCategory>;
   notes_notes: Array<Notes_Note>;
   notes_tags: Array<Notes_Tag>;
-  options_options: Array<Option>;
-  options_preferences: Array<StudentPreference>;
   permissions?: Maybe<Array<Maybe<Permission>>>;
   ppod_PPODCredentials?: Maybe<PpodCredentials>;
   ppod_syncRequests: Array<SyncRequest>;
-  print_assessment: TemporaryDownload;
   print_groupMembers: TemporaryDownload;
   print_personsGroupMemberships: TemporaryDownload;
   print_printTimetable: TemporaryDownload;
@@ -4736,7 +4499,6 @@ export type Query = {
   swm_substitutions: Array<Swm_Substitution>;
   tt_addLessonOptions: Tt_AddLessonOptions;
   tt_editLessonOptions: Tt_AddLessonOptions;
-  tt_grids: Array<TtGrid>;
   tt_groups: Array<Tt_Groups>;
   tt_individualLessons: Array<TtIndividualViewLesson>;
   tt_resourceTimetableView: TtResourceTimetableView;
@@ -4873,11 +4635,6 @@ export type QueryCalendar_BellTimesArgs = {
 };
 
 
-export type QueryCalendar_CalendarArgs = {
-  filter?: InputMaybe<CalendarFilter>;
-};
-
-
 export type QueryCalendar_CalendarDayBellTimesArgs = {
   filter?: InputMaybe<CalendarDayBellTimeFilter>;
 };
@@ -4935,11 +4692,6 @@ export type QueryCommunications_NotificationTemplatesArgs = {
 
 export type QueryCommunications_NotificationsArgs = {
   filter?: InputMaybe<NotificationFilter>;
-};
-
-
-export type QueryCommunications_RecipientsArgs = {
-  filter?: InputMaybe<RecipientFilter>;
 };
 
 
@@ -5083,16 +4835,6 @@ export type QueryFile_Transfer_ListArgs = {
 };
 
 
-export type QueryForms_ListInformationRequestFormsArgs = {
-  filter?: InputMaybe<Forms_InformationRequestListFormFilter>;
-};
-
-
-export type QueryForms_ViewInformationRequestFormsArgs = {
-  filter?: InputMaybe<Forms_InformationRequestViewFormFilter>;
-};
-
-
 export type QueryGeneralGroupsArgs = {
   filter?: InputMaybe<GeneralGroupFilter>;
 };
@@ -5118,23 +4860,8 @@ export type QueryNotes_TagsArgs = {
 };
 
 
-export type QueryOptions_OptionsArgs = {
-  filter?: InputMaybe<OptionFilter>;
-};
-
-
-export type QueryOptions_PreferencesArgs = {
-  filter?: InputMaybe<PreferencesFilter>;
-};
-
-
 export type QueryPpod_SyncRequestsArgs = {
   filter?: InputMaybe<SyncRequestsFilter>;
-};
-
-
-export type QueryPrint_AssessmentArgs = {
-  filter: Print_AssessmentOptions;
 };
 
 
@@ -5248,11 +4975,6 @@ export type QueryTt_EditLessonOptionsArgs = {
 };
 
 
-export type QueryTt_GridsArgs = {
-  filter: TtGridFilter;
-};
-
-
 export type QueryTt_GroupsArgs = {
   filter: Tt_GroupsFilter;
 };
@@ -5340,36 +5062,26 @@ export type Recipient = {
   recipientType: RecipientType;
 };
 
-export type RecipientFilter = {
-  partyIds: Array<Scalars['Long']>;
-  recipientType: Array<RecipientSearchType>;
+export type RecipientDevice = {
+  __typename?: 'RecipientDevice';
+  id?: Maybe<RecipientDeviceId>;
+  status: NotificationStatus;
+};
+
+export type RecipientDeviceFilter = {
+  recipientIds: Array<Scalars['Long']>;
+};
+
+export type RecipientDeviceId = {
+  __typename?: 'RecipientDeviceId';
+  deviceId: Scalars['String'];
+  recipientId: Scalars['Long'];
 };
 
 export type RecipientInput = {
   recipientPartyId: Scalars['Long'];
   recipientPartyType: SmsRecipientType;
 };
-
-export enum RecipientSearchType {
-  ClassGroupTutors = 'CLASS_GROUP_TUTORS',
-  ClassGroupYearHeads = 'CLASS_GROUP_YEAR_HEADS',
-  Contact = 'CONTACT',
-  GeneralGroupContact = 'GENERAL_GROUP_CONTACT',
-  GeneralGroupStaff = 'GENERAL_GROUP_STAFF',
-  GeneralGroupStudent = 'GENERAL_GROUP_STUDENT',
-  Staff = 'STAFF',
-  Student = 'STUDENT',
-  StudentContacts = 'STUDENT_CONTACTS',
-  StudentTeachers = 'STUDENT_TEACHERS',
-  SubjectGroupContact = 'SUBJECT_GROUP_CONTACT',
-  SubjectGroupStaff = 'SUBJECT_GROUP_STAFF',
-  SubjectGroupStudent = 'SUBJECT_GROUP_STUDENT',
-  SubjectGroupTutors = 'SUBJECT_GROUP_TUTORS',
-  SubjectGroupYearHeads = 'SUBJECT_GROUP_YEAR_HEADS',
-  YearGroupContact = 'YEAR_GROUP_CONTACT',
-  YearGroupStaff = 'YEAR_GROUP_STAFF',
-  YearGroupStudent = 'YEAR_GROUP_STUDENT'
-}
 
 export enum RecipientType {
   Bcc = 'BCC',
@@ -6225,7 +5937,6 @@ export type SaveFeeInput = {
   id?: InputMaybe<Scalars['Int']>;
   individualDiscounts?: InputMaybe<Array<InputMaybe<SaveIndividualDiscountInput>>>;
   name: Scalars['String'];
-  siblingDiscountType?: InputMaybe<SiblingDiscountType>;
 };
 
 export type SaveGradeInput = {
@@ -6274,16 +5985,6 @@ export type SaveNotificationTemplateInput = {
   name: Scalars['String'];
   text: Scalars['String'];
   title: Scalars['String'];
-};
-
-export type SaveOptions = {
-  id?: InputMaybe<Scalars['Int']>;
-  name: Scalars['String'];
-  prefix?: InputMaybe<Scalars['String']>;
-  publishToParents: Scalars['Boolean'];
-  studentPartyIds?: InputMaybe<Array<Scalars['Long']>>;
-  subjectSets: Array<SaveSubjectSet>;
-  yearGroupEnrolmentPartyId: Scalars['Long'];
 };
 
 export type SaveOwner = {
@@ -6387,14 +6088,6 @@ export type SaveStateCbaAssessmentInput = {
   stateCbaType?: InputMaybe<StateCbaType>;
   subjectGroupIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   yearId: Scalars['Int'];
-};
-
-export type SaveStudentPreference = {
-  optionId: Scalars['Int'];
-  preferenceIdx: Scalars['Int'];
-  studentPartyId: Scalars['Long'];
-  subjectId: Scalars['Int'];
-  subjectSetIdx: Scalars['Int'];
 };
 
 export type SaveStudentSessionAttendanceInput = {
@@ -6512,14 +6205,6 @@ export type SaveStudentSupportPlanTargetInput = {
   id?: InputMaybe<Scalars['Int']>;
   status: TargetStatus;
   target: Scalars['String'];
-};
-
-export type SaveSubjectSet = {
-  canChoose: Scalars['Int'];
-  idx?: InputMaybe<Scalars['Int']>;
-  mustGet: Scalars['Int'];
-  poolIdx?: InputMaybe<Scalars['Int']>;
-  subjectIds: Array<Scalars['Int']>;
 };
 
 export type SaveTermAssessmentInput = {
@@ -6698,9 +6383,8 @@ export type SendMailRecipientInput = {
 };
 
 export type SendPushNotificationInput = {
-  metadata?: InputMaybe<NotificationMetaDataInput>;
   notificationType: NotificationType;
-  partyIds: Array<Scalars['Long']>;
+  recipients: Array<PushNotificationRecipient>;
   text: Scalars['String'];
   title: Scalars['String'];
 };
@@ -6783,11 +6467,6 @@ export type Sibling = {
   lastName?: Maybe<Scalars['String']>;
   studentPartyId: Scalars['Long'];
 };
-
-export enum SiblingDiscountType {
-  InFee = 'IN_FEE',
-  InSchool = 'IN_SCHOOL'
-}
 
 export type Sms = {
   __typename?: 'Sms';
@@ -7142,6 +6821,7 @@ export type StudentFee = {
 
 export type StudentFeeFilter = {
   contactPartyId?: InputMaybe<Scalars['Long']>;
+  feeId?: InputMaybe<Scalars['Int']>;
   studentPartyId?: InputMaybe<Scalars['Long']>;
 };
 
@@ -7263,18 +6943,6 @@ export type StudentMedicalContact = {
 
 export type StudentMedicalFilter = {
   studentPartyId: Scalars['Long'];
-};
-
-export type StudentPreference = {
-  __typename?: 'StudentPreference';
-  id: OptionsId;
-  preferenceIdx: Scalars['Int'];
-  /** deep linked */
-  student: Person;
-  studentPartyId: Scalars['Long'];
-  /** deep linked */
-  subject: Subject;
-  subjectId: Scalars['Int'];
 };
 
 export type StudentResultFilter = {
@@ -7577,10 +7245,6 @@ export enum SubjectGroupType {
   SupportGroup = 'SUPPORT_GROUP'
 }
 
-export type SubjectSetFilter = {
-  optionId: Scalars['Int'];
-};
-
 export enum SubjectSource {
   Custom = 'CUSTOM',
   National = 'NATIONAL'
@@ -7676,7 +7340,6 @@ export type TtEditLessonPeriodInstanceWrapper = {
 /** ## Creates or replaces grid on calendar */
 export type TtGrid = {
   __typename?: 'TTGrid';
-  appliesToYearGroupIds: Array<Scalars['Int']>;
   /**  date grid is val from. null means the start of the calendar date */
   days?: Maybe<Array<Maybe<TtGridDay>>>;
   description?: Maybe<Scalars['String']>;
@@ -7689,7 +7352,6 @@ export type TtGridDay = {
   __typename?: 'TTGridDay';
   /**  iso day of week. 1 monday .. 7 sunday */
   dayOfWeek: Scalars['Int'];
-  halfDayAfterPeriod: Scalars['Int'];
   /**  the distinct number and order for the days */
   idx: Scalars['Int'];
   periods: Array<TtGridPeriod>;
@@ -7941,7 +7603,6 @@ export type TtUpsertBlockClassGroupLink = {
 };
 
 export type TtUpsertGrid = {
-  appliesToyearGroupIds?: InputMaybe<Array<Scalars['Int']>>;
   days?: InputMaybe<Array<InputMaybe<TtUpsertGridDay>>>;
   description?: InputMaybe<Scalars['String']>;
   idx: Scalars['Int'];
@@ -7954,7 +7615,6 @@ export type TtUpsertGrid = {
 export type TtUpsertGridDay = {
   /**  iso day of week. 1 monday .. 7 sunday */
   dayOfWeek: Scalars['Int'];
-  halfDayAfterPeriod: Scalars['Int'];
   /**  the distinct number and order for the days */
   idx: Scalars['Int'];
   periods: Array<TtUpsertGridPeriod>;
@@ -7967,11 +7627,6 @@ export type TtUpsertGridPeriod = {
   /**  periods are sequential with no gapes between them */
   startTime: Scalars['Time'];
   type: TtGridPeriodType;
-};
-
-export type TtUpsertGrids = {
-  grids: Array<TtUpsertGrid>;
-  timetableId: Scalars['Int'];
 };
 
 export type TtUpsertLessonPeriod = {
@@ -9711,7 +9366,7 @@ export type Attendance_AwolReportQueryVariables = Exact<{
 }>;
 
 
-export type Attendance_AwolReportQuery = { __typename?: 'Query', attendance_awolReport: Array<{ __typename?: 'Attendance_AwolStudent', date: string, partyId: number, classGroupId: number, student: { __typename?: 'Student', partyId: number, person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null }, extensions?: { __typename?: 'StudentGraphqlExtension', priority?: boolean | null } | null, yearGroups: Array<{ __typename?: 'YearGroupEnrollment', name: string }> }, classGroup: { __typename?: 'GeneralGroup', partyId: number, name: string }, absentEvent: { __typename?: 'CalendarEvent', eventId: number, startTime: string, endTime: string, name: string, description?: string | null, rooms: Array<{ __typename?: 'Room', name: string }> }, absentSubjectGroup: { __typename?: 'SubjectGroup', partyId: number, subjectGroupType: SubjectGroupType, name: string, subjects: Array<{ __typename?: 'Subject', colour?: Colour | null }> }, absentUpdatedBy?: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null } | null, absentCreatedBy?: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null } | null, presentEvent: { __typename?: 'CalendarEvent', eventId: number, allDayEvent: boolean, startTime: string, endTime: string, name: string, rooms: Array<{ __typename?: 'Room', name: string }> }, presentSubjectGroup: { __typename?: 'SubjectGroup', partyId: number, subjectGroupType: SubjectGroupType, name: string, subjects: Array<{ __typename?: 'Subject', colour?: Colour | null }> }, presentUpdatedBy?: { __typename?: 'Person', avatarUrl?: string | null, firstName?: string | null, lastName?: string | null } | null, presentCreatedBy?: { __typename?: 'Person', avatarUrl?: string | null, firstName?: string | null, lastName?: string | null } | null }> };
+export type Attendance_AwolReportQuery = { __typename?: 'Query', attendance_awolReport: Array<{ __typename?: 'Attendance_AwolStudent', date: string, partyId: number, classGroupId: number, student: { __typename?: 'Student', partyId: number, person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null }, extensions?: { __typename?: 'StudentGraphqlExtension', priority?: boolean | null } | null, yearGroups: Array<{ __typename?: 'YearGroupEnrollment', name: string }> }, classGroup: { __typename?: 'GeneralGroup', partyId: number, name: string }, absentEvent: { __typename?: 'CalendarEvent', eventId: number, startTime: string, endTime: string, name: string, description?: string | null, rooms: Array<{ __typename?: 'Room', name: string }> }, absentSubjectGroup: { __typename?: 'SubjectGroup', partyId: number, subjectGroupType: SubjectGroupType, name: string, subjects: Array<{ __typename?: 'Subject', colour?: Colour | null }> }, absentUpdatedBy?: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null } | null, absentCreatedBy?: { __typename?: 'Person', firstName?: string | null, lastName?: string | null, avatarUrl?: string | null } | null, presentEvent: { __typename?: 'CalendarEvent', eventId: number, allDayEvent: boolean, startTime: string, endTime: string, name: string, rooms: Array<{ __typename?: 'Room', name: string }> }, presentSubjectGroup: { __typename?: 'SubjectGroup', partyId: number, subjectGroupType: SubjectGroupType, name: string, subjects: Array<{ __typename?: 'Subject', colour?: Colour | null }> }, presentUpdatedBy?: { __typename?: 'Person', avatarUrl?: string | null, firstName?: string | null, lastName?: string | null } | null, presentCreatedBy?: { __typename?: 'Person', avatarUrl?: string | null, firstName?: string | null, lastName?: string | null } | null }> };
 
 export type Reporting_ReportsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -10349,7 +10004,7 @@ export const Core_UpdateStudentContactRelationshipsDocument = {"kind":"Document"
 export const Core_UpdateStudentSubjectGroupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_updateStudentSubjectGroup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Core_UpdateStudentSubjectGroupInput"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_updateStudentSubjectGroup"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Core_UpdateStudentSubjectGroupMutation, Core_UpdateStudentSubjectGroupMutationVariables>;
 export const UpdateStudentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateStudent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateStudentInput"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_updateStudents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<UpdateStudentMutation, UpdateStudentMutationVariables>;
 export const PrintTimetableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"printTimetable"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Print_TimetableOptions"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"print_printTimetable"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"html"}}]}}]}}]} as unknown as DocumentNode<PrintTimetableQuery, PrintTimetableQueryVariables>;
-export const Attendance_AwolReportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"attendance_awolReport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AwolFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"attendance_awolReport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"student"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"extensions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"priority"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"classGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"classGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"absentEvent"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventId"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"absentSubjectGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"subjectGroupType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"absentUpdatedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"absentCreatedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"presentEvent"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventId"}},{"kind":"Field","name":{"kind":"Name","value":"allDayEvent"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"presentSubjectGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"subjectGroupType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"presentUpdatedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"presentCreatedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}}]}}]} as unknown as DocumentNode<Attendance_AwolReportQuery, Attendance_AwolReportQueryVariables>;
+export const Attendance_AwolReportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"attendance_awolReport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AwolFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"attendance_awolReport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"student"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"extensions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"priority"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"classGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"classGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"absentEvent"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventId"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"absentSubjectGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"subjectGroupType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"absentUpdatedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"absentCreatedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"presentEvent"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventId"}},{"kind":"Field","name":{"kind":"Name","value":"allDayEvent"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"presentSubjectGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"subjectGroupType"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"presentUpdatedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"presentCreatedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}}]}}]} as unknown as DocumentNode<Attendance_AwolReportQuery, Attendance_AwolReportQueryVariables>;
 export const Reporting_ReportsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"reporting_reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reporting_reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"info"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<Reporting_ReportsQuery, Reporting_ReportsQueryVariables>;
 export const Reporting_RunReportExpandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"reporting_runReportExpand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Reporting_ReportFilterExpand"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reporting_runReportExpand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"visibleByDefault"}}]}},{"kind":"Field","name":{"kind":"Name","value":"data"}}]}}]}}]} as unknown as DocumentNode<Reporting_RunReportExpandQuery, Reporting_RunReportExpandQueryVariables>;
 export const Reporting_ReportInfoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"reporting_reportInfo"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Reporting_ReportFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reporting_runReport"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"info"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"supportsExpandRow"}}]}},{"kind":"Field","name":{"kind":"Name","value":"innerReports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<Reporting_ReportInfoQuery, Reporting_ReportInfoQueryVariables>;
