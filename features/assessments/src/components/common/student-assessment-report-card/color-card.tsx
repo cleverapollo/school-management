@@ -17,7 +17,7 @@ export function ColorCard({ color, text, isMobile = false }: ColorCardProps) {
         backgroundColor: `${colorWithDefault}.100`,
         borderRadius: 0.75,
         alignItems: 'stretch',
-        height: '100%',
+        height: 'auto',
         p: 0.75,
         pr: 1.25,
         width: '100%',

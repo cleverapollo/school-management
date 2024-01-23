@@ -5,6 +5,7 @@ import {
   SmsRecipientType,
   usePermissions,
   UseQueryReturnType,
+  SubjectGroupStudentMembershipTypeEnum,
 } from '@tyro/api';
 import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -27,6 +28,7 @@ import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { useMailSettings } from '@tyro/mail';
 import { useClassGroupById } from '../../api/class-groups';
 import { BlocksChips } from '../../components/class-group/blocks-chips';
+import { CoreSubjectGroupChips } from '../../components/class-group/core-subject-group-chips';
 
 type ReturnTypeFromUseSubjectGroupById = UseQueryReturnType<
   typeof useClassGroupById
@@ -182,20 +184,41 @@ export default function SubjectGroups() {
   return (
     <>
       {subjectGroupData && isTyroUser && (
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <UserGroupTwoIcon sx={{ color: 'text.secondary' }} />
-          <Typography variant="body1" color="text.primary">
-            {t('common:blocks')}
-          </Typography>
-          <Grid container direction="row" gap={1} alignItems="center">
-            {groupIdAsNumber && (
-              <BlocksChips
-                blocks={subjectGroupData.blocks}
-                classGroupId={groupIdAsNumber}
-              />
-            )}
-          </Grid>
-        </Stack>
+        <>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <UserGroupTwoIcon sx={{ color: 'text.secondary' }} />
+            <Typography variant="body1" color="text.primary">
+              {t('common:blocks')}
+            </Typography>
+            <Grid container direction="row" gap={1} alignItems="center">
+              {groupIdAsNumber && (
+                <BlocksChips
+                  blocks={subjectGroupData.blocks}
+                  classGroupId={groupIdAsNumber}
+                />
+              )}
+            </Grid>
+          </Stack>
+
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <UserGroupTwoIcon sx={{ color: 'text.secondary' }} />
+            <Typography variant="body1" color="text.primary">
+              {t('common:core')}
+            </Typography>
+            <Grid container direction="row" gap={1} alignItems="center">
+              {groupIdAsNumber && (
+                <CoreSubjectGroupChips
+                  subjectGroups={subjectGroupData.relatedSubjectGroups.filter(
+                    ({ studentMembershipType }) =>
+                      studentMembershipType?.type ===
+                      SubjectGroupStudentMembershipTypeEnum.Core
+                  )}
+                  classGroupId={groupIdAsNumber}
+                />
+              )}
+            </Grid>
+          </Stack>
+        </>
       )}
       <Table
         rowData={subjectGroupData?.relatedSubjectGroups ?? []}

@@ -26,6 +26,7 @@ const reportsRun = graphql(/* GraphQL */ `
       info {
         name
         supportsExpandRow
+        isInteractive
       }
       innerReports {
         id
@@ -57,6 +58,29 @@ const reportsRun = graphql(/* GraphQL */ `
         maxWidth
         minWidth
         pinned
+      }
+      metrics {
+        defaultValue
+        values {
+          id
+          name
+        }
+      }
+      timeGroupBy {
+        defaultValue
+        values {
+          id
+          name
+          description
+        }
+      }
+      groupBy {
+        defaultValue
+        values {
+          id
+          name
+          description
+        }
       }
       data
       tableDisplayOptions {

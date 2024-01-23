@@ -35,6 +35,10 @@
     "assessments": {
       "title": "Assessments",
       "termAssessments": "Term assessments"
+    },
+    "schoolActivities": {
+      "title": "School activity",
+      "schoolActivity": "School activity"
     }
   },
   "management": {

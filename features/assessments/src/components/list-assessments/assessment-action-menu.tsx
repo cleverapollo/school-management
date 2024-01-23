@@ -1,5 +1,5 @@
 import { useTranslation } from '@tyro/i18n';
-import { ActionMenu, useDisclosure, useToast } from '@tyro/core';
+import { ActionMenu, useDisclosure } from '@tyro/core';
 import {
   EyeIcon,
   CommentIcon,
@@ -9,13 +9,15 @@ import {
   VerticalDotsIcon,
   EditCalendarIcon,
 } from '@tyro/icons';
-import { AssessmentType, useAcademicNamespace } from '@tyro/api';
+import {
+  AssessmentType,
+  useAcademicNamespace,
+  usePermissions,
+} from '@tyro/api';
 import { getAssessmentSubjectGroupsLink } from '../../utils/get-assessment-subject-groups-link';
 import { PublishAssessmentModal } from './publish-assessment-modal';
-import {
-  ReturnTypeFromUseAssessments,
-  usePublishAssessment,
-} from '../../api/assessments';
+import { ReturnTypeFromUseAssessments } from '../../api/assessments';
+import { usePublishAssessmentBasedOnType } from '../../api/publish-assessments';
 
 type AssessmentActionMenuProps = {
   id: ReturnTypeFromUseAssessments['id'];
@@ -33,9 +35,9 @@ export const AssessmentActionMenu = ({
   canEnterOverallComments,
 }: AssessmentActionMenuProps) => {
   const { t } = useTranslation(['assessments']);
-  const { toast } = useToast();
   const { isOpen, onClose, onOpen } = useDisclosure();
   const { activeAcademicNamespace } = useAcademicNamespace();
+  const { hasPermission } = usePermissions();
   const disableEdit =
     academicNamespaceId !== activeAcademicNamespace?.academicNamespaceId;
 
@@ -45,23 +47,8 @@ export const AssessmentActionMenu = ({
     academicNamespaceId
   );
 
-  const { mutateAsync: publishAssessment } = usePublishAssessment();
-
-  const unpublishAssessment = () => {
-    publishAssessment(
-      {
-        assessmentId: id,
-        publish: false,
-      },
-      {
-        onSuccess: () => {
-          toast(t('assessments:unpublishedSuccessfully'));
-        },
-      }
-    );
-  };
-
   const isTermAssessment = assessmentType === AssessmentType.Term;
+  const { unpublish } = usePublishAssessmentBasedOnType(id, isTermAssessment);
 
   return (
     <>
@@ -100,22 +87,35 @@ export const AssessmentActionMenu = ({
                       {
                         label: t('assessments:actions.editPublishDate'),
                         icon: <EditCalendarIcon />,
-                        hasAccess: () => isTermAssessment,
                         onClick: onOpen,
                       },
                       {
                         label: t('assessments:actions.unpublish'),
                         icon: <StopIcon />,
-                        hasAccess: () => isTermAssessment,
-                        onClick: unpublishAssessment,
+                        onClick: unpublish,
+                        hasAccess: () =>
+                          isTermAssessment
+                            ? hasPermission(
+                                'ps:1:assessment:term_publish_to_parents'
+                              )
+                            : hasPermission(
+                                'ps:1:assessment:cba_publish_to_parents'
+                              ),
                       },
                     ]
                   : [
                       {
                         label: t('assessments:actions.publish'),
                         icon: <CheckmarkCircleIcon />,
-                        hasAccess: () => isTermAssessment,
                         onClick: onOpen,
+                        hasAccess: () =>
+                          isTermAssessment
+                            ? hasPermission(
+                                'ps:1:assessment:cba_publish_to_parents'
+                              )
+                            : hasPermission(
+                                'ps:1:assessment:term_publish_to_parents'
+                              ),
                       },
                     ],
               ]
@@ -127,6 +127,7 @@ export const AssessmentActionMenu = ({
         publishedFrom={publishedFrom}
         open={isOpen}
         onClose={onClose}
+        isTermAssessment={isTermAssessment}
       />
     </>
   );

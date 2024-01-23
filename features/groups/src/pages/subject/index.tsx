@@ -6,6 +6,7 @@ import {
   SubjectGroupType,
   SubjectUsage,
   UpdateSubjectGroupInput,
+  usePermissions,
 } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -28,6 +29,7 @@ import {
   TableSelect,
   PageContainer,
   PageHeading,
+  useDebouncedValue,
 } from '@tyro/core';
 
 import {
@@ -35,6 +37,7 @@ import {
   MoveGroupIcon,
   PrinterIcon,
   SendMailIcon,
+  TrashIcon,
 } from '@tyro/icons';
 
 import { set } from 'lodash';
@@ -47,6 +50,7 @@ import {
   useSwitchSubjectGroupType,
 } from '../../api/subject-groups';
 import { printGroupMembers } from '../../utils/print-group-members';
+import { DeleteGroupsModal } from '../../components/common/delete-groups-modal';
 
 type ReturnTypeFromUseSubjectGroups = NonNullable<
   ReturnType<typeof useSubjectGroups>['data']
@@ -194,6 +198,7 @@ const getSubjectGroupsColumns = (
 export default function SubjectGroups() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
   const { displayNames } = usePreferredNameLayout();
+  const { isTyroUser } = usePermissions();
   const { data: subjectGroupsData } = useSubjectGroups();
   const { data: subjects } = useCatalogueSubjects({
     filterUsage: SubjectUsage.All,
@@ -206,6 +211,12 @@ export default function SubjectGroups() {
   );
   const [switchGroupTypeConfirmation, setSwitchGroupTypeConfirmation] =
     useState(false);
+
+  const {
+    value: deleteGroupIds,
+    debouncedValue: debouncedDeleteGroupIds,
+    setValue: setDeleteGroupIds,
+  } = useDebouncedValue<number[] | null>({ defaultValue: null });
 
   const {
     isOpen: isSendSmsOpen,
@@ -271,6 +282,12 @@ export default function SubjectGroups() {
           isStaffUserWithPermission(
             'ps:1:printing_and_exporting:print_group_members'
           ),
+      },
+      {
+        label: t('groups:deleteGroups', { count: selectedGroups.length }),
+        icon: <TrashIcon />,
+        onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
+        hasAccess: () => isTyroUser,
       },
     ],
     [selectedGroups, onOpenSendSms]
@@ -385,6 +402,11 @@ export default function SubjectGroups() {
             type: SubjectGroupType.SupportGroup,
           }).then(() => setSwitchGroupTypeConfirmation(false));
         }}
+      />
+      <DeleteGroupsModal
+        isOpen={Boolean(deleteGroupIds)}
+        groupIds={deleteGroupIds ?? debouncedDeleteGroupIds}
+        onClose={() => setDeleteGroupIds(null)}
       />
     </>
   );

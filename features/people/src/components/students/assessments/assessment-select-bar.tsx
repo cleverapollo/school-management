@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { Stack, Button, Fade, useMediaQuery } from '@mui/material';
 import { Autocomplete } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
+import { AssessmentType } from '@tyro/api';
 import {
   AcademicYearDropdown,
   ReturnTypeFromUseStudentDashboardAssessments,
@@ -32,6 +33,10 @@ export function AssessmentSelectBar({
   const { isMobile, isMobileCommentsShowing, toggleIsMobileCommentsShowing } =
     useStudentAssessmentReportCardSettings();
 
+  const filteredStudentAssessments = studentAssessments?.filter(
+    (assessment) => assessment.assessmentType !== AssessmentType.StateCba
+  );
+
   return (
     <Stack
       direction={wrapItems ? 'column' : 'row'}
@@ -60,7 +65,7 @@ export function AssessmentSelectBar({
           value={selectedAssessment}
           optionIdKey="id"
           getOptionLabel={({ name }) => name}
-          options={studentAssessments}
+          options={filteredStudentAssessments}
           isOptionEqualToValue={(option, { id }) => option.id === id}
           onChange={(_event, newValue) => {
             const extractedValue = Array.isArray(newValue)
@@ -74,7 +79,7 @@ export function AssessmentSelectBar({
             variant: 'white-filled',
           }}
           noOptionsText={
-            studentAssessments.length
+            filteredStudentAssessments.length
               ? t('assessments:noAssessmentsFound')
               : t('assessments:noAssessmentsAvailable')
           }

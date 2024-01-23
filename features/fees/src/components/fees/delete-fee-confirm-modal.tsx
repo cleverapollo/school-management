@@ -28,8 +28,11 @@ export function DeleteFeeConfirmModal({
       onClose={onClose}
       onConfirm={onSubmit}
       title={t('fees:deleteFee')}
-      description={t('fees:deleteFeeConfirmation')}
+      description={t('fees:deleteFeeConfirmation', {
+        feeName: feeToDelete?.name ?? '',
+      })}
       confirmText={t('common:actions.delete')}
+      isDelete
     />
   );
 }

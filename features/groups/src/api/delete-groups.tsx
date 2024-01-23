@@ -10,7 +10,7 @@ import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
 import { groupsKeys } from './keys';
 
-const deleteCustomGroups = graphql(/* GraphQL */ `
+const deleteGroups = graphql(/* GraphQL */ `
   mutation core_deleteGroups($input: Core_DeleteGroupInput!) {
     core_deleteGroups(input: $input) {
       success
@@ -18,15 +18,15 @@ const deleteCustomGroups = graphql(/* GraphQL */ `
   }
 `);
 
-export function useDeleteCustomGroups() {
+export function useDeleteGroups() {
   const { toast } = useToast();
   const { t } = useTranslation(['common']);
 
   return useMutation({
     mutationFn: async (input: Core_DeleteGroupInput) =>
-      gqlClient.request(deleteCustomGroups, { input }),
+      gqlClient.request(deleteGroups, { input }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries(groupsKeys.custom.groups());
+      await queryClient.invalidateQueries(groupsKeys.all);
       toast(t('common:snackbarMessages.deleteSuccess'));
     },
     onError: () => {

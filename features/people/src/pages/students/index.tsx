@@ -24,9 +24,10 @@ import {
   getPersonProfileLink,
   RecipientSearchType,
   SmsRecipientType,
+  usePermissions,
 } from '@tyro/api';
-import { useMailSettings } from '@tyro/mail';
 import dayjs from 'dayjs';
+import { useMailSettings } from '@tyro/mail';
 import {
   useBulkUpdateCoreStudent,
   ReturnTypeFromUseStudents,
@@ -43,7 +44,8 @@ const getStudentColumns = (
     ('common' | 'people')[]
   >,
   displayName: ReturnTypeDisplayName,
-  displayNames: ReturnTypeDisplayNames
+  displayNames: ReturnTypeDisplayNames,
+  isStaffUser: boolean
 ): GridOptions<ReturnTypeFromUseStudents>['columnDefs'] => [
   {
     field: 'person',
@@ -62,9 +64,9 @@ const getStudentColumns = (
       ) : null,
     cellClass: 'cell-value-visible',
     sort: 'asc',
-    headerCheckboxSelection: true,
-    headerCheckboxSelectionFilteredOnly: true,
-    checkboxSelection: ({ data }) => Boolean(data),
+    headerCheckboxSelection: isStaffUser,
+    headerCheckboxSelectionFilteredOnly: isStaffUser,
+    checkboxSelection: isStaffUser ? ({ data }) => Boolean(data) : undefined,
     lockVisible: true,
     filter: true,
   },
@@ -173,6 +175,7 @@ const getStudentColumns = (
 export default function StudentsListPage() {
   const { t } = useTranslation(['common', 'people', 'sms', 'mail']);
   const { displayName, displayNames } = usePreferredNameLayout();
+  const { isStaffUser } = usePermissions();
   const [selectedStudents, setSelectedStudents] =
     useState<RecipientsForSmsModal>([]);
 
@@ -199,8 +202,8 @@ export default function StudentsListPage() {
   } = useDisclosure();
 
   const studentColumns = useMemo(
-    () => getStudentColumns(t, displayName, displayNames),
-    [t, displayName, displayNames]
+    () => getStudentColumns(t, displayName, displayNames, isStaffUser),
+    [t, displayName, displayNames, isStaffUser]
   );
 
   return (
@@ -213,7 +216,7 @@ export default function StudentsListPage() {
           <Table
             rowData={students ?? []}
             columnDefs={studentColumns}
-            rowSelection="multiple"
+            rowSelection={isStaffUser ? 'multiple' : undefined}
             getRowId={({ data }) => String(data?.partyId)}
             onBulkSave={bulkSaveStudents}
             statusBar={{
@@ -227,7 +230,10 @@ export default function StudentsListPage() {
               ],
             }}
             rightAdornment={
-              <Fade in={selectedStudents.length > 0} unmountOnExit>
+              <Fade
+                in={isStaffUser && selectedStudents.length > 0}
+                unmountOnExit
+              >
                 <Box>
                   <ActionMenu
                     menuItems={[

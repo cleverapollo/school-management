@@ -25,6 +25,8 @@
   "addEvent": "Add event",
   "editEvent": "Edit event",
   "filterCalendar": "Filter calendar",
+  "clashDetected": "Clash detected",
+  "clashDetectedWouldYouLikeToContinue": "A clash with another event or lesson has been detected. Would you like to continue to add this event?",
   "errorMessages": {
     "minEventDuration": "The event must last at least {{time}} minutes"
   },
