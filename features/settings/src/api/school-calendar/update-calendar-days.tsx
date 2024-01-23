@@ -5,7 +5,6 @@ import {
   queryClient,
   graphql,
   Calendar_UpdateDays,
-  CalendarFilter,
 } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { useToast } from '@tyro/core';
@@ -19,7 +18,7 @@ const updateCalendarDays = graphql(/* GraphQL */ `
   }
 `);
 
-export function useUpdateCalendarDays(filter: CalendarFilter) {
+export function useUpdateCalendarDays() {
   const { toast } = useToast();
   const { t } = useTranslation(['common']);
 
@@ -27,7 +26,7 @@ export function useUpdateCalendarDays(filter: CalendarFilter) {
     mutationFn: async (input: Calendar_UpdateDays) =>
       gqlClient.request(updateCalendarDays, { input }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries(schoolCalendarKeys.dayInfo(filter));
+      await queryClient.invalidateQueries(schoolCalendarKeys.all);
       toast(t('common:snackbarMessages.createSuccess'));
     },
     onError: () => {

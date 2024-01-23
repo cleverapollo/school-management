@@ -1,7 +1,6 @@
 import { Button, Fade, Stack, Typography } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { SaveBarButton, SaveBarContainer } from '@tyro/core';
-import { EditState } from './overview';
+import { SaveBarButton, SaveBarContainer, EditState } from '@tyro/core';
 
 interface BulkEditSaveBarProps {
   isEditing: boolean;
