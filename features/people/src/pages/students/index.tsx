@@ -170,6 +170,12 @@ const getStudentColumns = (
     headerName: translate('common:tyroId'),
     hide: true,
   },
+  {
+    field: 'studentIrePP.dpin',
+    headerName: translate('people:personal.about.departmentId'),
+    enableRowGroup: true,
+    hide: true,
+  },
 ];
 
 export default function StudentsListPage() {
