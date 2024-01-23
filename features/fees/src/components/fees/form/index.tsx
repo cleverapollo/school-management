@@ -82,7 +82,6 @@ export function FeeForm({ initialState }: FeeFormProps) {
       discounts,
       categories,
       individualDiscounts,
-      siblingDiscountType,
       ...feeData
     }) =>
       saveFee(
