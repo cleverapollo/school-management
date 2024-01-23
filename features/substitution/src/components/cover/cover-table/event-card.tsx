@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Box, Stack, Typography } from '@mui/material';
-import { usePreferredNameLayout } from '@tyro/core';
+import { onLongPress, usePreferredNameLayout } from '@tyro/core';
 import { LayersIcon } from '@tyro/icons';
 import { CoverEvent } from '../../../hooks/use-cover-table';
 import { ReturnTypeFromUseEventsForCover } from '../../../api/staff-work-events-for-cover';
@@ -25,6 +25,9 @@ interface EventCoverCardProps {
   editCover: (anchorEvent: CoverEvent) => void;
   removeCover: (anchorEvent: CoverEvent) => void;
   selectedEvents: CoverEvent[];
+  isContextMenuOpen: boolean;
+  onOpenContextMenu: () => void;
+  onCloseContextMenu: () => void;
 }
 
 export function EventCoverCard({
@@ -36,12 +39,15 @@ export function EventCoverCard({
   editCover,
   removeCover,
   selectedEvents,
+  isContextMenuOpen,
+  onOpenContextMenu,
+  onCloseContextMenu,
 }: EventCoverCardProps) {
   const { event, substitution } = eventInfo;
+  const [clickableContainerRef, setClickableContainerRef] =
+    useState<HTMLDivElement | null>(null);
   const { displayName } = usePreferredNameLayout();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isSelected = isEventSelected(eventInfo);
-  const isContextMenuOpen = Boolean(anchorEl);
 
   const rooms = getCurrentCoverRoom(eventInfo);
 
@@ -59,10 +65,27 @@ export function EventCoverCard({
   const borderColor =
     isSelected || isContextMenuOpen ? `${color}.600` : 'white';
 
+  const openContextMenu = (
+    e:
+      | React.MouseEvent<HTMLDivElement, MouseEvent>
+      | React.TouchEvent<HTMLDivElement>
+  ) => {
+    e.preventDefault();
+    if (
+      selectedEvents.every(
+        (selectedEvent) => getEventId(selectedEvent) !== getEventId(eventInfo)
+      )
+    ) {
+      toggleEventSelection(eventInfo);
+    }
+    onOpenContextMenu();
+  };
+
   return (
     <>
       <CoverCardTooltip staff={staff} eventInfo={eventInfo}>
         <Box
+          ref={(ref: HTMLDivElement) => setClickableContainerRef(ref)}
           className="event-cover-card"
           sx={{
             backgroundColor: `${color}.100`,
@@ -82,18 +105,8 @@ export function EventCoverCard({
             e.preventDefault();
             toggleEventSelection(eventInfo);
           }}
-          onContextMenu={(e) => {
-            e.preventDefault();
-            if (
-              !selectedEvents.find(
-                (selectedEvent) =>
-                  getEventId(selectedEvent) === getEventId(eventInfo)
-              )
-            ) {
-              toggleEventSelection(eventInfo);
-            }
-            setAnchorEl(e.currentTarget);
-          }}
+          onContextMenu={openContextMenu}
+          {...onLongPress<HTMLDivElement>(openContextMenu)}
         >
           <Stack
             direction="row"
@@ -160,9 +173,11 @@ export function EventCoverCard({
         </Box>
       </CoverCardTooltip>
       <EventCoverContextMenu
-        anchorEl={anchorEl}
-        open={isContextMenuOpen}
-        onClose={() => setAnchorEl(null)}
+        anchorEl={clickableContainerRef}
+        open={Boolean(isContextMenuOpen && clickableContainerRef)}
+        staff={staff}
+        eventInfo={eventInfo}
+        onClose={onCloseContextMenu}
         applyCover={() => applyCover(eventInfo)}
         editCover={() => editCover(eventInfo)}
         removeCover={() => removeCover(eventInfo)}
