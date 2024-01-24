@@ -26,6 +26,9 @@ export const RHFMailSearch = <TField extends FieldValues>({
         },
         '& .MuiAutocomplete-input': {
           minWidth: '0 !important',
+          width: `${
+            (autoCompleteProps.inputValue?.length ?? 0) + 2
+          }ch !important`,
         },
         '& .MuiFormControl-root': {
           flexDirection: 'row',
