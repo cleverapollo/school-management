@@ -1,47 +1,47 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient, UseQueryReturnType } from '@tyro/api';
+import {
+  FileTransferFilter,
+  gqlClient,
+  graphql,
+  queryClient,
+  UseQueryReturnType,
+  FileTransferFeature,
+} from '@tyro/api';
 import { peopleKeys } from '../keys';
 
 const documents = graphql(/* GraphQL */ `
-  // TODO: add query after api ready
+  query file_transfer_list($filter: FileTransferFilter) {
+    file_transfer_list(filter: $filter) {
+      id
+      feature
+      fileName
+      fileUrl
+      referenceId
+    }
+  }
 `);
 
-const documentsQuery = {
-  queryKey: peopleKeys.documents.all(),
-  queryFn: async () => gqlClient.request(documents),
+const documentsQuery = (studentId: number | undefined) => {
+  const filter = {
+    referenceId: studentId ? `${studentId}` : undefined,
+    feature: FileTransferFeature.StudentDocs,
+  };
+
+  return {
+    queryKey: peopleKeys.students.documents(filter),
+    queryFn: async () => gqlClient.request(documents, { filter }),
+  };
 };
 
-export function getDocuments() {
-  return queryClient.fetchQuery(documentsQuery);
+export function getDocuments(studentId: number | undefined) {
+  return queryClient.fetchQuery(documentsQuery(studentId));
 }
 
 export function useDocuments(studentId: number | undefined) {
-  // return useQuery({
-  //   ...documentsQuery,
-  //   select: ({ core_studentDocuments }) => core_studentDocuments,
-  // });
-  return {
-    data: [
-      {
-        id: 0,
-        name: 'document 1',
-        type: 'docx',
-        uploaded: '2023-02-17',
-      },
-      {
-        id: 1,
-        name: 'document 2',
-        type: 'pdf',
-        uploaded: '2023-02-12',
-      },
-      {
-        id: 3,
-        name: 'document 3',
-        type: 'csv',
-        uploaded: '2023-02-02',
-      },
-    ],
-  };
+  return useQuery({
+    ...documentsQuery(studentId),
+    select: ({ file_transfer_list }) => file_transfer_list,
+  });
 }
 
 export type ReturnTypeFromUseDocuments = UseQueryReturnType<

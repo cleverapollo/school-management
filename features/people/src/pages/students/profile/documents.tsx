@@ -33,22 +33,26 @@ const getStudentDocumentColumns = (
   onDelete: (document: ReturnTypeFromUseDocuments) => void
 ): GridOptions<ReturnTypeFromUseDocuments>['columnDefs'] => [
   {
-    field: 'name',
+    field: 'fileName',
     headerName: translate('common:name'),
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
+    valueGetter: ({ data }) =>
+      data?.fileName?.slice(0, data?.fileName?.lastIndexOf('.')),
     checkboxSelection: true,
     lockVisible: true,
     sort: 'asc',
   },
   {
-    field: 'type',
+    field: 'fileName',
     headerName: translate('common:type'),
+    valueGetter: ({ data }) =>
+      data?.fileName?.slice(data?.fileName?.lastIndexOf('.')),
   },
-  {
-    field: 'uploaded',
-    headerName: translate('people:uploaded'),
-  },
+  // {
+  //   field: 'uploaded',
+  //   headerName: translate('people:uploaded'),
+  // },
   {
     suppressColumnsToolPanel: true,
     cellClass: 'ag-show-on-row-interaction',

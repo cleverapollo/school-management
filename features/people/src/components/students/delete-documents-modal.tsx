@@ -55,9 +55,9 @@ export const DeleteDocumentsModal = ({
         <DialogContent>
           <Typography>{t('people:youAreAboutToDeleteFiles')}</Typography>
           <List sx={{ maxHeight: 300, overflowY: 'auto', listStyle: 'inside' }}>
-            {documents?.map(({ id, name }) => (
+            {documents?.map(({ id, fileName }) => (
               <ListItem key={id} sx={{ display: 'list-item' }}>
-                {name}
+                {fileName}
               </ListItem>
             ))}
           </List>

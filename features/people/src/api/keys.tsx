@@ -13,6 +13,7 @@ import {
   Notes_BehaviourCategoryFilter,
   SubjectGroupRelationshipFilter,
   Print_PersonsGroupMemberships,
+  FileTransferFilter,
 } from '@tyro/api';
 
 export const peopleKeys = {
@@ -33,9 +34,6 @@ export const peopleKeys = {
     students: (contactId: number | undefined) =>
       [...peopleKeys.contacts.all(), 'students', contactId] as const,
     forSelect: () => [...peopleKeys.contacts.all(), 'select'] as const,
-  },
-  documents: {
-    all: () => [...peopleKeys.all, 'documents'] as const,
   },
   notes: {
     all: () => [...peopleKeys.all, 'notes'] as const,
@@ -84,6 +82,8 @@ export const peopleKeys = {
       [...peopleKeys.students.all(), 'contacts', studentId] as const,
     notes: (filter: Notes_NotesFilter) =>
       [...peopleKeys.students.all(), 'notes', filter] as const,
+    documents: (filter: FileTransferFilter) =>
+      [...peopleKeys.students.all(), 'documents', filter] as const,
     behaviours: (studentId: number | undefined) =>
       [...peopleKeys.students.all(), 'behaviours', studentId] as const,
     subjectGroups: (studentId: number | undefined) =>

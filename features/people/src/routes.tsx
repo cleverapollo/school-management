@@ -49,6 +49,7 @@ import {
   getBehaviourCategories,
 } from './api/behaviour/individual-student-behaviour';
 import { getNonClassContactHours } from './api/staff/non-class-contact';
+import { getDocuments } from './api/documents/list';
 
 const StudentsListPage = lazyWithRetry(() => import('./pages/students'));
 // Student profile pages
@@ -409,8 +410,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                 path: 'documents',
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
-                  // return getNotes({ partyIds: [studentId ?? 0] });
-                  return [];
+                  return getDocuments(studentId);
                 },
                 element: <StudentProfileDocumentsPage />,
               },
