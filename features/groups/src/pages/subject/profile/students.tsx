@@ -120,6 +120,21 @@ export default function SubjectGroupProfileStudentsPage() {
         columnDefs={studentColumns}
         rowSelection="multiple"
         getRowId={({ data }) => String(data?.partyId)}
+        getLocaleText={(params) =>
+          params.key === 'totalAndFilteredRows'
+            ? t('common:students')
+            : params.defaultValue
+        }
+        statusBar={{
+          statusPanels: [
+            {
+              statusPanel: 'agTotalAndFilteredRowCountComponent',
+              align: 'left',
+            },
+            { statusPanel: 'agFilteredRowCountComponent' },
+            { statusPanel: 'agSelectedRowCountComponent' },
+          ],
+        }}
         rightAdornment={
           <>
             {selectedGroups.length > 0 && (
