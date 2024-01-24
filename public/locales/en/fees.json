@@ -84,11 +84,6 @@
   "deleteFeeConfirmation": "You are about to delete the fee \"{{feeName}}\". Are you sure you want to continue?",
   "dueBy": "Due by",
   "due": "Due",
-  "feeStatus": {
-    "COMPLETE": "Paid",
-    "OUTSTANDING": "Outstanding",
-    "OVERDUE": "Overdue"
-  },
   "deleteDiscount": "Delete discount",
   "deleteDiscountConfirmation": "You are about to delete this discount. Are you sure you want to continue?",
   "publishOnline": "Publish online",

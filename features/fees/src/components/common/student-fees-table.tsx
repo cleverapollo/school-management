@@ -62,8 +62,10 @@ const getColumnDefs = (
   },
   {
     field: 'dueDate',
-    headerName: t('fees:dueDate'),
-    valueGetter: ({ data }) => dayjs(data?.dueDate).format('L'),
+    headerName: t('fees:dueBy'),
+    valueFormatter: ({ data }) =>
+      data?.dueDate ? dayjs(data.dueDate).format('LL') : '-',
+    sort: 'asc',
   },
   {
     field: 'amount',
@@ -97,11 +99,13 @@ const getColumnDefs = (
     field: 'feeStatus',
     headerName: t('common:status'),
     valueGetter: ({ data }) =>
-      data?.feeStatus ? t(`fees:status.${data?.feeStatus}`) : '-',
+      data?.feeStatus ? t(`fees:status.${data.feeStatus}`) : '-',
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseFeeDebtors, any>) =>
-      data?.feeStatus ? <FeeStatusChip status={data?.feeStatus} /> : '-',
+    }: ICellRendererParams<ReturnTypeFromUseFeeDebtors>) =>
+      data?.feeStatus ? <FeeStatusChip status={data.feeStatus} /> : '-',
+    sort: 'asc',
+    sortIndex: 0,
   },
 ];
 
