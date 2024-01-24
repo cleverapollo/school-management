@@ -187,7 +187,7 @@ const getStudentBehaviourColumns = (
 
 export default function StudentProfileBehaviourPage() {
   const { t } = useTranslation(['common', 'people']);
-  const { isStaffUser } = usePermissions();
+  const { isStaffUserWithPermission } = usePermissions();
   const { displayName } = usePreferredNameLayout();
   const { id } = useParams();
   const studentId = getNumber(id) ?? 0;
@@ -362,7 +362,7 @@ export default function StudentProfileBehaviourPage() {
           </Stack>
         </Box>
 
-        {isStaffUser && (
+        {isStaffUserWithPermission('ps:1:notes:write_behaviour') && (
           <Button
             variant="contained"
             onClick={handleAddCondition}

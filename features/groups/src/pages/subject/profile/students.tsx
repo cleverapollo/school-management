@@ -137,6 +137,10 @@ export default function SubjectGroupProfileStudentsPage() {
                       {
                         label: t('people:actions.createBehaviour'),
                         icon: <AddNoteIcon />,
+                        hasAccess: ({ isStaffUserWithPermission }) =>
+                          isStaffUserWithPermission(
+                            'ps:1:notes:write_behaviour'
+                          ),
                         onClick: onOpenAddBehaviour,
                       },
                     ]
