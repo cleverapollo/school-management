@@ -108,7 +108,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.settings.schoolCalendar'),
             type: NavObjectType.MenuLink,
             path: 'school-calendar',
-            hasAccess: (permissions) => permissions.isStaffUser,
+            hasAccess: (permissions) => permissions.isStaffUserWithPermission('ps:1:general_admin:view_school_day_calendar_screen'),
             loader: async () => {
               const { activeAcademicNamespace } = await getAcademicNamespace();
               const startDate = dayjs(activeAcademicNamespace?.startDate);
