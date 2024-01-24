@@ -108,7 +108,10 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.settings.schoolCalendar'),
             type: NavObjectType.MenuLink,
             path: 'school-calendar',
-            hasAccess: (permissions) => permissions.isStaffUserWithPermission('ps:1:general_admin:view_school_day_calendar_screen'),
+            hasAccess: (permissions) =>
+              permissions.isStaffUserWithPermission(
+                'ps:1:general_admin:view_school_day_calendar_screen'
+              ),
             loader: async () => {
               const { activeAcademicNamespace } = await getAcademicNamespace();
               const startDate = dayjs(activeAcademicNamespace?.startDate);
@@ -334,9 +337,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'comment-banks',
             hasAccess: ({ isStaffUserWithPermission }) =>
-              isStaffUserWithPermission(
-                  'ps:1:assessment:write_comment_banks'
-              ),
+              isStaffUserWithPermission('ps:1:assessment:write_comment_banks'),
             loader: () => getCommentBanks({}),
             element: <CommentBanks />,
           },
