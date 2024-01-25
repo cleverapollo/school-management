@@ -28,7 +28,7 @@ import {
   getStudents,
   getStudentsForSelect,
 } from './api/student/students';
-import { getStudentStatus } from './api/student/status';
+import { getPersonStatus } from './api/person/status';
 import { getStudentMedicalData } from './api/student/medicals/student-medical-data';
 import {
   getStudentsContacts,
@@ -40,7 +40,6 @@ import { getNotes } from './api/note/list';
 import { getContactPersonal } from './api/contact/personal';
 import { getContactStudents } from './api/contact/students';
 import { getStaff } from './api/staff';
-import { getStaffStatus } from './api/staff/status';
 import { getStaffSubjectGroups } from './api/staff/subject-groups';
 import { getStaffPersonal } from './api/staff/personal';
 import { getMedicalConditionNamesQuery } from './api/student/medicals/medical-condition-lookup';
@@ -179,7 +178,7 @@ export const getRoutes: NavObjectFunction = (t) => [
 
               return Promise.all([
                 getStudent(studentId),
-                getStudentStatus(studentId),
+                getPersonStatus(studentId),
               ]);
             },
             children: [
@@ -529,7 +528,7 @@ export const getRoutes: NavObjectFunction = (t) => [
 
               return Promise.all([
                 getStaff({ partyIds: [staffId] }),
-                getStaffStatus(staffId),
+                getPersonStatus(staffId),
               ]);
             },
             children: [
