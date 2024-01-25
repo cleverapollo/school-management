@@ -35,6 +35,8 @@ type OverdueAttendanceData = {
   subject_group_name: ReportColumnValue;
   subject_name_1: ReportColumnValue;
   calendar_room_name: ReportColumnValue;
+  subject_group_id: ReportColumnValue;
+  event_start_datetime: ReportColumnValue;
 }[];
 
 export function OverdueAttendanceWidget() {
@@ -73,6 +75,8 @@ export function OverdueAttendanceWidget() {
       colour: overdueAttendance.colour.value,
       overdueByMins: overdueAttendance.overdue_by_mins.value,
       subjectGroupName: overdueAttendance.subject_group_name.value,
+      eventStartDatetime: overdueAttendance.event_start_datetime.value,
+      subjectGroupId: overdueAttendance.subject_group_id.value,
       subjectName: overdueAttendance.subject_name_1.value,
       calendarRoomName: overdueAttendance.calendar_room_name?.value,
     }));
@@ -150,15 +154,26 @@ export function OverdueAttendanceWidget() {
               colour,
               overdueByMins,
               subjectGroupName,
+              subjectGroupId,
+              eventStartDatetime,
               subjectName,
               calendarRoomName,
             }) => (
               <Grid key={id} xs={6}>
                 <Box
+                  component={Link}
+                  to={`/groups/subject/${subjectGroupId}/attendance?eventStartTime=${eventStartDatetime}`}
                   sx={{
                     backgroundColor: 'white',
                     borderRadius: 2,
                     userSelect: 'none',
+                    textDecoration: 'inherit',
+                    '&:hover': {
+                      bgcolor: 'indigo.100',
+                    },
+                    '&:active': {
+                      bgcolor: 'indigo.200',
+                    },
                     boxShadow: (theme) =>
                       `0 1px 6px 0px ${alpha(theme.palette.indigo[500], 0.1)}`,
                   }}
