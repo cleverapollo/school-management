@@ -8,6 +8,7 @@ import {
   usePreferredNameLayout,
   useDisclosure,
   ICellRendererParams,
+  useToast,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -16,6 +17,8 @@ import {
   VerticalDotsIcon,
 } from '@tyro/icons';
 import { Card } from '@mui/material';
+import axios from 'axios';
+import { getToken } from '@tyro/api';
 import { FileUploader } from '../../../components/students/file-uploader';
 import { DeleteDocumentsModal } from '../../../components/students/delete-documents-modal';
 import { useDocuments } from '../../../api/documents/list';
@@ -83,7 +86,9 @@ const getStudentDocumentColumns = (
 export default function StudentProfileDocumentsPage() {
   const { id } = useParams();
   const { t } = useTranslation(['common', 'people', 'mail', 'sms']);
+  const { toast } = useToast();
   const { displayName } = usePreferredNameLayout();
+  const [isUploading, setIsUploading] = useState(false);
 
   const studentId = getNumber(id);
   const { data: documents = [] } = useDocuments(studentId);
@@ -104,6 +109,42 @@ export default function StudentProfileDocumentsPage() {
   const onDeleteDocument = (document: ReturnTypeFromUseDocuments) => {
     setSelectedDocument(document);
     onOpenDeleteModal();
+  };
+
+  const handleUploadDocument = (files: File[]) => {
+    if (files.length && studentId && process.env.REACT_APP_REST_API_URI) {
+      setIsUploading(true);
+      const formData = new FormData();
+      formData.append('file', files[0]);
+      formData.append('referenceId', `${studentId}`);
+      formData.append('overwrite', 'true');
+      const token = getToken();
+      const headers: HeadersInit = {};
+      if (typeof token === 'string') {
+        headers.authorization = `Bearer ${token}`;
+        headers.origin = 'http://localhost:4000';
+      }
+
+      axios
+        .post(
+          `${process.env.REACT_APP_REST_API_URI}/file-transfer/STUDENT_DOCS`,
+          formData,
+          {
+            headers,
+          }
+        )
+        .then((response) => {
+          toast(t('common:snackbarMessages.uploadSuccess'));
+        })
+        .catch((error) => {
+          toast(t('common:snackbarMessages.errorFailed'), {
+            variant: 'error',
+          });
+        })
+        .finally(() => {
+          setIsUploading(false);
+        });
+    }
   };
 
   const studentDocumentColumns = useMemo(
@@ -127,7 +168,7 @@ export default function StudentProfileDocumentsPage() {
   return (
     <>
       <Card sx={{ p: 2 }}>
-        <FileUploader />
+        <FileUploader onUpload={handleUploadDocument} uploading={isUploading} />
       </Card>
       <Table
         rowData={documents ?? []}

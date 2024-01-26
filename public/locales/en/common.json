@@ -40,6 +40,7 @@
     "createSuccess": "Created successfully!",
     "updateSuccess": "Updated successfully!",
     "deleteSuccess": "Deleted successfully!",
+    "uploadSuccess": "Upload successfully!",
     "unpublishedSuccess": "Unpublished successfully!",
     "publishedSuccess": "Published successfully!",
     "mailWasSent": "Mail was sent",
