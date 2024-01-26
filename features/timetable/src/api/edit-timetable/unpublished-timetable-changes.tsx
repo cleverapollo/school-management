@@ -3,14 +3,14 @@ import { useQuery } from '@tanstack/react-query';
 import {
   gqlClient,
   graphql,
-  TtTimetableFilter,
+  TtTimetableListFilter,
   UseQueryReturnType,
 } from '@tyro/api';
 
 import { timetableKeys } from '../keys';
 
 const unpublishedTimetableEdits = graphql(/* GraphQL */ `
-  query tt_unpublishedChanges($filter: TTTimetableFilter) {
+  query tt_unpublishedChanges($filter: TTTimetableListFilter) {
     tt_timetables(filter: $filter) {
       timetableId
       liveStatus {
@@ -184,13 +184,13 @@ const unpublishedTimetableEdits = graphql(/* GraphQL */ `
   }
 `);
 
-const unpublishedChangesQuery = (filter: TtTimetableFilter) => ({
+const unpublishedChangesQuery = (filter: TtTimetableListFilter) => ({
   queryKey: timetableKeys.unpublishedChanges(filter),
   queryFn: async () => gqlClient.request(unpublishedTimetableEdits, { filter }),
 });
 
 export function useUnpublishedTimetableChanges(
-  filter: TtTimetableFilter,
+  filter: TtTimetableListFilter,
   enabled: boolean
 ) {
   return useQuery({

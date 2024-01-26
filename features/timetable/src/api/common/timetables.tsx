@@ -4,14 +4,14 @@ import {
   gqlClient,
   graphql,
   queryClient,
-  TtTimetableFilter,
+  TtTimetableListFilter,
   UseQueryReturnType,
 } from '@tyro/api';
 
 import { timetableKeys } from '../keys';
 
 const timetables = graphql(/* GraphQL */ `
-  query tt_timetables($filter: TTTimetableFilter) {
+  query tt_timetables($filter: TTTimetableListFilter) {
     tt_timetables(filter: $filter) {
       timetableId
       name
@@ -25,16 +25,16 @@ const timetables = graphql(/* GraphQL */ `
   }
 `);
 
-const timeTablesQuery = (filter: TtTimetableFilter) => ({
+const timeTablesQuery = (filter: TtTimetableListFilter) => ({
   queryKey: timetableKeys.timetableList(filter),
   queryFn: async () => gqlClient.request(timetables, { filter }),
 });
 
-export function getTimetables(filter: TtTimetableFilter) {
+export function getTimetables(filter: TtTimetableListFilter) {
   return queryClient.fetchQuery(timeTablesQuery(filter));
 }
 
-export function useTimetables(filter: TtTimetableFilter) {
+export function useTimetables(filter: TtTimetableListFilter) {
   return useQuery({
     ...timeTablesQuery(filter),
     select: ({ tt_timetables }) => {

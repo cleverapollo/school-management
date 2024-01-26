@@ -108,12 +108,20 @@ export async function fetchClient<TResponse = unknown>(
       ...options,
     });
 
+    let returnedResponse: Response | unknown = response;
+
     if (!response.ok) {
-      const error = (await response[bodyType]()) as unknown;
-      return await Promise.reject(error);
+      if (bodyType === 'json') {
+        returnedResponse = (await response[bodyType]()) as unknown;
+      }
+      return await Promise.reject(returnedResponse);
     }
 
-    return (await response[bodyType]()) as TResponse;
+    if (bodyType === 'json') {
+      returnedResponse = (await response[bodyType]()) as TResponse;
+    }
+
+    return returnedResponse as TResponse;
   } catch (error) {
     return Promise.reject(error);
   }

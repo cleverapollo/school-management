@@ -18,6 +18,7 @@ import {
 } from '@tyro/calendar';
 import dayjs from 'dayjs';
 import {
+  FileTransferFeature,
   getAcademicNamespace,
   getPermissionUtils,
   Notes_BehaviourType,
@@ -409,8 +410,16 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'documents',
                 loader: ({ params }) => {
-                  const studentId = getNumber(params.id);
-                  return getDocuments(studentId);
+                  const studentId = params.id;
+
+                  if (!studentId) {
+                    throw404Error();
+                  }
+
+                  return getDocuments({
+                    referenceId: studentId,
+                    feature: FileTransferFeature.StudentDocs,
+                  });
                 },
                 element: <StudentProfileDocumentsPage />,
               },

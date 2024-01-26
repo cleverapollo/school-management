@@ -8,7 +8,6 @@ import {
   usePreferredNameLayout,
   useDisclosure,
   ICellRendererParams,
-  useToast,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -16,9 +15,9 @@ import {
   TrashIcon,
   VerticalDotsIcon,
 } from '@tyro/icons';
-import { Card } from '@mui/material';
-import axios from 'axios';
-import { getToken } from '@tyro/api';
+import { Card, Link } from '@mui/material';
+import { FileTransferFeature } from '@tyro/api';
+import { useUploadDocument } from '../../../api/documents/upload';
 import { FileUploader } from '../../../components/students/file-uploader';
 import { DeleteDocumentsModal } from '../../../components/students/delete-documents-modal';
 import { useDocuments } from '../../../api/documents/list';
@@ -28,34 +27,39 @@ type ReturnTypeFromUseDocuments = NonNullable<
 >[number];
 
 const getStudentDocumentColumns = (
-  translate: TFunction<
-    ('common' | 'people')[],
-    undefined,
-    ('common' | 'people')[]
-  >,
+  t: TFunction<('common' | 'people')[], undefined, ('common' | 'people')[]>,
   onDelete: (document: ReturnTypeFromUseDocuments) => void
 ): GridOptions<ReturnTypeFromUseDocuments>['columnDefs'] => [
   {
     field: 'fileName',
-    headerName: translate('common:name'),
+    headerName: t('common:name'),
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
     valueGetter: ({ data }) =>
       data?.fileName?.slice(0, data?.fileName?.lastIndexOf('.')),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseDocuments>) => {
+      const fileName = data?.fileName?.slice(
+        0,
+        data?.fileName?.lastIndexOf('.')
+      );
+      return (
+        <Link href={data?.fileUrl} target="_blank" download>
+          {fileName}
+        </Link>
+      );
+    },
     checkboxSelection: true,
     lockVisible: true,
     sort: 'asc',
   },
   {
     field: 'fileName',
-    headerName: translate('common:type'),
+    headerName: t('common:type'),
     valueGetter: ({ data }) =>
       data?.fileName?.slice(data?.fileName?.lastIndexOf('.')),
   },
-  // {
-  //   field: 'uploaded',
-  //   headerName: translate('people:uploaded'),
-  // },
   {
     suppressColumnsToolPanel: true,
     cellClass: 'ag-show-on-row-interaction',
@@ -68,12 +72,7 @@ const getStudentDocumentColumns = (
           buttonIcon={<VerticalDotsIcon />}
           menuItems={[
             {
-              label: translate('people:actions.download'),
-              icon: <DownloadArrowCircleIcon />,
-              onClick: () => {},
-            },
-            {
-              label: translate('common:actions.delete'),
+              label: t('common:actions.delete'),
               icon: <TrashIcon />,
               onClick: () => onDelete(data),
             },
@@ -85,20 +84,20 @@ const getStudentDocumentColumns = (
 
 export default function StudentProfileDocumentsPage() {
   const { id } = useParams();
-  const { t } = useTranslation(['common', 'people', 'mail', 'sms']);
-  const { toast } = useToast();
-  const { displayName } = usePreferredNameLayout();
-  const [isUploading, setIsUploading] = useState(false);
-
   const studentId = getNumber(id);
-  const { data: documents = [] } = useDocuments(studentId);
+  const { t } = useTranslation(['common', 'people', 'mail', 'sms']);
+  const { displayName } = usePreferredNameLayout();
+
+  const { data: documents = [] } = useDocuments({
+    referenceId: id ?? '',
+    feature: FileTransferFeature.StudentDocs,
+  });
+  const { mutateAsync: uploadDocument, isLoading: isUploading } =
+    useUploadDocument(studentId);
 
   const [selectedDocuments, setSelectedDocuments] = useState<
     ReturnTypeFromUseDocuments[]
   >([]);
-  const [selectedDocument, setSelectedDocument] = useState<
-    ReturnTypeFromUseDocuments | undefined
-  >();
 
   const {
     isOpen: isDeleteFilesModalOpened,
@@ -107,44 +106,8 @@ export default function StudentProfileDocumentsPage() {
   } = useDisclosure();
 
   const onDeleteDocument = (document: ReturnTypeFromUseDocuments) => {
-    setSelectedDocument(document);
+    setSelectedDocuments([document]);
     onOpenDeleteModal();
-  };
-
-  const handleUploadDocument = (files: File[]) => {
-    if (files.length && studentId && process.env.REACT_APP_REST_API_URI) {
-      setIsUploading(true);
-      const formData = new FormData();
-      formData.append('file', files[0]);
-      formData.append('referenceId', `${studentId}`);
-      formData.append('overwrite', 'true');
-      const token = getToken();
-      const headers: HeadersInit = {};
-      if (typeof token === 'string') {
-        headers.authorization = `Bearer ${token}`;
-        headers.origin = 'http://localhost:4000';
-      }
-
-      axios
-        .post(
-          `${process.env.REACT_APP_REST_API_URI}/file-transfer/STUDENT_DOCS`,
-          formData,
-          {
-            headers,
-          }
-        )
-        .then((response) => {
-          toast(t('common:snackbarMessages.uploadSuccess'));
-        })
-        .catch((error) => {
-          toast(t('common:snackbarMessages.errorFailed'), {
-            variant: 'error',
-          });
-        })
-        .finally(() => {
-          setIsUploading(false);
-        });
-    }
   };
 
   const studentDocumentColumns = useMemo(
@@ -153,11 +116,6 @@ export default function StudentProfileDocumentsPage() {
   );
 
   const actionMenuItems = [
-    {
-      label: t('people:actions.download'),
-      icon: <DownloadArrowCircleIcon />,
-      onClick: () => {},
-    },
     {
       label: t('common:actions.delete'),
       icon: <TrashIcon />,
@@ -168,17 +126,14 @@ export default function StudentProfileDocumentsPage() {
   return (
     <>
       <Card sx={{ p: 2 }}>
-        <FileUploader onUpload={handleUploadDocument} uploading={isUploading} />
+        <FileUploader onUpload={uploadDocument} uploading={isUploading} />
       </Card>
       <Table
         rowData={documents ?? []}
         columnDefs={studentDocumentColumns}
-        tableContainerSx={{ height: 300 }}
         rowSelection="multiple"
         getRowId={({ data }) => String(data?.id)}
-        onRowSelection={(rows) => {
-          setSelectedDocuments(rows);
-        }}
+        onRowSelection={setSelectedDocuments}
         rightAdornment={
           selectedDocuments.length > 0 ? (
             <ActionMenu menuItems={actionMenuItems} />
@@ -188,11 +143,7 @@ export default function StudentProfileDocumentsPage() {
       <DeleteDocumentsModal
         isOpen={isDeleteFilesModalOpened}
         onClose={onCloseDeleteModal}
-        documents={
-          selectedDocument !== undefined
-            ? [selectedDocument]
-            : selectedDocuments
-        }
+        documents={selectedDocuments}
       />
     </>
   );
