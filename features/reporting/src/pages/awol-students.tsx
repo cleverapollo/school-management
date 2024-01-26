@@ -29,15 +29,23 @@ const getColumns = (
     valueGetter: ({ data }) => displayName(data?.student?.person),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseAttendanceAwolReports, any>) =>
-      data ? (
+    }: ICellRendererParams<ReturnTypeFromUseAttendanceAwolReports, any>) => {
+      if (!data) return null;
+
+      const personProfilePageLink = getPersonProfileLink(data?.student?.person);
+      const linkWithTab = personProfilePageLink
+        ? `${personProfilePageLink}/attendance`
+        : null;
+
+      return (
         <StudentTableAvatar
           person={data?.student?.person}
           isPriorityStudent={data.student?.extensions?.priority || false}
           hasSupportPlan={false}
-          to={getPersonProfileLink(data?.student?.person)}
+          to={linkWithTab}
         />
-      ) : null,
+      );
+    },
     sort: 'asc',
   },
   {
