@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Stack, Typography } from '@mui/material';
 import { CloudUploadIcon } from '@tyro/icons';
+import { useTranslation } from '@tyro/i18n';
 
 type FileUploaderProps = {
   multiple?: boolean;
@@ -9,20 +9,33 @@ type FileUploaderProps = {
   uploading: boolean;
 };
 
-export const FileUploader = (props: FileUploaderProps) => {
-  const { multiple = false, onUpload, uploading } = props;
-
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      onUpload(acceptedFiles);
-    },
-    [onUpload]
-  );
+export const FileDropzone = ({
+  multiple = false,
+  onUpload,
+  uploading,
+}: FileUploaderProps) => {
+  const { t } = useTranslation(['common']);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
+    onDrop: onUpload,
     multiple,
   });
+
+  const dragDropStrings = multiple
+    ? {
+        header: t('common:uploadFiles'),
+        inactive: t('common:dragNDropFilesHere'),
+        active: t('common:dropTheFilesHere'),
+      }
+    : {
+        header: t('common:uploadFile'),
+        inactive: t('common:dragNDropFileHere'),
+        active: t('common:dropTheFileHere'),
+      };
+
+  const dragMessage = isDragActive
+    ? dragDropStrings.active
+    : dragDropStrings.inactive;
 
   const uploaderSx = {
     backgroundColor: 'slate.50',
@@ -36,7 +49,7 @@ export const FileUploader = (props: FileUploaderProps) => {
 
   return uploading ? (
     <Stack alignItems="center" justifyContent="center" sx={uploaderSx}>
-      <Typography variant="h4">Uploading...</Typography>
+      <Typography variant="h4">{t('common:uploading')}</Typography>
     </Stack>
   ) : (
     <Stack
@@ -46,14 +59,10 @@ export const FileUploader = (props: FileUploaderProps) => {
       sx={uploaderSx}
     >
       <input {...getInputProps()} />
-      <Typography variant="h4">Upload files</Typography>
+      <Typography variant="h4">{dragDropStrings.header}</Typography>
       <Stack direction="row" alignItems="center" sx={{ color: 'slate.500' }}>
         <CloudUploadIcon />
-        <Typography sx={{ ml: 1 }}>
-          {isDragActive
-            ? 'Drop the files here ...'
-            : "Drag 'n' drop some files here, or click to select files"}
-        </Typography>
+        <Typography sx={{ ml: 1 }}>{dragMessage}</Typography>
       </Stack>
     </Stack>
   );

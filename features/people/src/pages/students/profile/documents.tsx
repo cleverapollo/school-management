@@ -9,13 +9,13 @@ import {
   useDisclosure,
   ICellRendererParams,
   commonActionMenuProps,
+  FileDropzone,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { TrashIcon, VerticalDotsIcon } from '@tyro/icons';
 import { Card, Link } from '@mui/material';
 import { FileTransferFeature } from '@tyro/api';
 import { useUploadDocument } from '../../../api/documents/upload';
-import { FileUploader } from '../../../components/students/file-uploader';
 import { DeleteDocumentsModal } from '../../../components/students/delete-documents-modal';
 import { useDocuments } from '../../../api/documents/list';
 
@@ -120,7 +120,7 @@ export default function StudentProfileDocumentsPage() {
   return (
     <>
       <Card sx={{ p: 2 }}>
-        <FileUploader onUpload={uploadDocument} uploading={isUploading} />
+        <FileDropzone onUpload={uploadDocument} uploading={isUploading} />
       </Card>
       <Table
         rowData={documents ?? []}

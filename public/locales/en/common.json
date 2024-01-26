@@ -325,5 +325,12 @@
   "absent": "Absent",
   "by": "By",
   "paid": "Paid",
-  "published": "Published"
+  "published": "Published",
+  "uploading": "Uploading...",
+  "uploadFiles": "Upload files",
+  "uploadFile": "Upload file",
+  "dropTheFilesHere": "Drop the files here...",
+  "dropTheFileHere": "Drop the file here...",
+  "dragNDropFilesHere": "Drag 'n' drop some files here, or click to select files",
+  "dragNDropFileHere": "Drag 'n' drop a file here, or click to select a file"
 }
