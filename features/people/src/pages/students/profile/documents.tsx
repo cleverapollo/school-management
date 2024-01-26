@@ -8,13 +8,10 @@ import {
   usePreferredNameLayout,
   useDisclosure,
   ICellRendererParams,
+  commonActionMenuProps,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import {
-  DownloadArrowCircleIcon,
-  TrashIcon,
-  VerticalDotsIcon,
-} from '@tyro/icons';
+import { TrashIcon, VerticalDotsIcon } from '@tyro/icons';
 import { Card, Link } from '@mui/material';
 import { FileTransferFeature } from '@tyro/api';
 import { useUploadDocument } from '../../../api/documents/upload';
@@ -61,10 +58,7 @@ const getStudentDocumentColumns = (
       data?.fileName?.slice(data?.fileName?.lastIndexOf('.')),
   },
   {
-    suppressColumnsToolPanel: true,
-    cellClass: 'ag-show-on-row-interaction',
-    sortable: false,
-    suppressSizeToFit: true,
+    ...commonActionMenuProps,
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseDocuments>) =>
       data && (
         <ActionMenu
