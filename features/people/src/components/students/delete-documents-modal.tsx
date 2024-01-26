@@ -24,7 +24,7 @@ export const DeleteDocumentsModal = ({
   onClose,
 }: DeleteDocumentsModalProps) => {
   const { t } = useTranslation(['people', 'common']);
-  const { mutate: deleteDocuments } = useDeleteDocuments(
+  const { mutate: deleteDocuments, isLoading } = useDeleteDocuments(
     FileTransferFeature.StudentDocs
   );
 
@@ -59,7 +59,11 @@ export const DeleteDocumentsModal = ({
           {t('common:actions.cancel')}
         </Button>
 
-        <LoadingButton onClick={deleteFile} variant="contained">
+        <LoadingButton
+          onClick={deleteFile}
+          variant="contained"
+          loading={isLoading}
+        >
           {t('people:actions.deleteFiles')}
         </LoadingButton>
       </DialogActions>
