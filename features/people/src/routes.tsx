@@ -45,9 +45,9 @@ import { getStaffPersonal } from './api/staff/personal';
 import { getMedicalConditionNamesQuery } from './api/student/medicals/medical-condition-lookup';
 import { getPersonalTitlesQuery } from './api/student/medicals/personal-titles';
 import {
-  getIndividualStudentBehaviour,
+  getStudentBehaviour,
   getBehaviourCategories,
-} from './api/behaviour/individual-student-behaviour';
+} from './api/behaviour/student-behaviour';
 import { getNonClassContactHours } from './api/staff/non-class-contact';
 
 const StudentsListPage = lazyWithRetry(() => import('./pages/students'));
@@ -349,7 +349,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                         behaviourType: Notes_BehaviourType.Positive,
                       }),
                     ]),
-                    getIndividualStudentBehaviour({
+                    getStudentBehaviour({
                       partyIds: [studentId],
                       behaviourType: Notes_BehaviourType.Positive,
                     })
@@ -374,7 +374,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                     throw404Error();
                   }
 
-                  return getStudentsSubjectGroups(studentId);
+                  return getStudentsSubjectGroups([studentId]);
                 },
                 element: <StudentProfileClassesPage />,
               },

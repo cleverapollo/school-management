@@ -20,6 +20,7 @@ export function BehaviourLabelChip({ behaviourType }: BehaviourLabelChipProps) {
   return (
     <Chip
       sx={{ pointerEvents: 'none' }}
+      size="small"
       label={t(`common:behaviourType.${behaviourType}`)}
       variant="soft"
       color={codeTypeColorMapping[behaviourType]}

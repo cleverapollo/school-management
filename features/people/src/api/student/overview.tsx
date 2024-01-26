@@ -120,13 +120,13 @@ export function useStudentsContacts(
   });
 }
 
-const studentsSubjectGroupsQuery = (studentId: number | undefined) => ({
-  queryKey: peopleKeys.students.subjectGroups(studentId),
+const studentsSubjectGroupsQuery = (studentIds: number[]) => ({
+  queryKey: peopleKeys.students.subjectGroups(studentIds),
   queryFn: async () => {
     const { core_subjectGroupStudents: studentsData } = await gqlClient.request(
       studentsSubjectGroups,
       {
-        filter: { studentPartyIds: [studentId ?? 0], subjectGroupIds: [] },
+        filter: { studentPartyIds: studentIds, subjectGroupIds: [] },
       }
     );
 
@@ -150,14 +150,18 @@ const studentsSubjectGroupsQuery = (studentId: number | undefined) => ({
   },
 });
 
-export function getStudentsSubjectGroups(studentId: number | undefined) {
-  return queryClient.fetchQuery(studentsSubjectGroupsQuery(studentId));
+export function getStudentsSubjectGroups(studentIds: number[]) {
+  return queryClient.fetchQuery(studentsSubjectGroupsQuery(studentIds));
 }
 
-export function useStudentsSubjectGroups(studentId: number | undefined) {
+export function useStudentsSubjectGroups(
+  studentIds: number[],
+  { enabled }: { enabled: boolean } = { enabled: true }
+) {
   return useQuery({
-    ...studentsSubjectGroupsQuery(studentId),
+    ...studentsSubjectGroupsQuery(studentIds),
     select: (subjectGroups) => subjectGroups,
+    enabled,
   });
 }
 

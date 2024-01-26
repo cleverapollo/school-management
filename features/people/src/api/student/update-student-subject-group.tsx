@@ -20,7 +20,7 @@ const updateStudentSubjectGroup = graphql(/* GraphQL */ `
   }
 `);
 
-export function useUpdateStudentSubjectGroup(studentId: number | undefined) {
+export function useUpdateStudentSubjectGroup() {
   const { toast } = useToast();
   const { t } = useTranslation(['common']);
 
@@ -28,9 +28,7 @@ export function useUpdateStudentSubjectGroup(studentId: number | undefined) {
     mutationFn: async (input: Core_UpdateStudentSubjectGroupInput[]) =>
       gqlClient.request(updateStudentSubjectGroup, { input }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries(
-        peopleKeys.students.subjectGroups(studentId)
-      );
+      await queryClient.invalidateQueries(peopleKeys.students.all());
       toast(t('common:snackbarMessages.updateSuccess'));
     },
     onError: () => {

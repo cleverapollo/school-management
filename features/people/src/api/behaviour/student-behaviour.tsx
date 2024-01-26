@@ -14,13 +14,36 @@ const individualStudentBehaviour = graphql(/* GraphQL */ `
       behaviours {
         noteId
         incidentDate
+        referencedParties {
+          __typename
+          partyId
+          ... on Student {
+            person {
+              partyId
+              firstName
+              lastName
+              avatarUrl
+              type
+            }
+          }
+        }
         associatedParties {
           __typename
           partyId
           ... on SubjectGroup {
+            name
             subjects {
               name
               colour
+            }
+          }
+          ... on Student {
+            person {
+              partyId
+              firstName
+              lastName
+              avatarUrl
+              type
             }
           }
         }
@@ -39,6 +62,7 @@ const individualStudentBehaviour = graphql(/* GraphQL */ `
           id
           name
           description
+          behaviourType
         }
         tagIds
       }
@@ -59,19 +83,19 @@ const behaviourCategories = graphql(/* GraphQL */ `
   }
 `);
 
-const individualStudentBehaviourQuery = (filter: Notes_BehaviourFilter) => ({
+const studentBehaviourQuery = (filter: Notes_BehaviourFilter) => ({
   queryKey: peopleKeys.students.individualStudentBehaviours(filter),
   queryFn: async () =>
     gqlClient.request(individualStudentBehaviour, { filter }),
 });
 
-export function getIndividualStudentBehaviour(filter: Notes_BehaviourFilter) {
-  return queryClient.fetchQuery(individualStudentBehaviourQuery(filter));
+export function getStudentBehaviour(filter: Notes_BehaviourFilter) {
+  return queryClient.fetchQuery(studentBehaviourQuery(filter));
 }
 
-export function useIndividualStudentBehaviour(filter: Notes_BehaviourFilter) {
+export function useStudentBehaviour(filter: Notes_BehaviourFilter) {
   return useQuery({
-    ...individualStudentBehaviourQuery(filter),
+    ...studentBehaviourQuery(filter),
     select: ({ notes_behaviour }) => notes_behaviour?.behaviours,
   });
 }
@@ -92,8 +116,8 @@ export function useBehaviourCategories(filter: Notes_BehaviourFilter) {
   });
 }
 
-export type ReturnTypeFromUseIndividualStudentBehaviour = UseQueryReturnType<
-  typeof useIndividualStudentBehaviour
+export type ReturnTypeFromUseStudentBehaviour = UseQueryReturnType<
+  typeof useStudentBehaviour
 >[number];
 
 export type ReturnTypeFromBehaviourCategories = UseQueryReturnType<
