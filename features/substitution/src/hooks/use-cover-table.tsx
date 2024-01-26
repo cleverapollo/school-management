@@ -67,12 +67,10 @@ export function useCoverTable(data: CoverTableRow[]) {
     };
 
     window.addEventListener('click', onWindowClickOrTouchEnd);
-    window.addEventListener('touchend', onWindowClickOrTouchEnd);
     window.addEventListener('keydown', onWindowKeyDown);
 
     return () => {
       window.removeEventListener('click', onWindowClickOrTouchEnd);
-      window.removeEventListener('touchend', onWindowClickOrTouchEnd);
       window.removeEventListener('keydown', onWindowKeyDown);
     };
   }, []);

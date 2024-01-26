@@ -62,7 +62,6 @@
     "SOCIAL_WORKER": "Social worker",
     "STEP_FATHER": "Stepfather",
     "STEP_MOTHER": "Stepmother",
-    "AGENT": "Agent",
     "UNCLE": "Uncle"
   },
   "summary": "Summary",
@@ -301,6 +300,7 @@
   "fromDate": "From {{date}}",
   "from": "From",
   "to": "To",
+  "core": "Core",
   "dayOfWeekValues": {
     "MONDAY": "Monday",
     "TUESDAY": "Tuesday",

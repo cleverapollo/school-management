@@ -45,8 +45,6 @@ export type CreateBulkAttendanceFormState = {
 
 interface CreateBulkAttendanceStepOneFormProps {
   control: Control<CreateBulkAttendanceFormState, any>;
-  onSubmit: () => void;
-  onClose: () => void;
 }
 
 export function CreateBulkAttendanceStepOneForm({

@@ -190,11 +190,7 @@ export const BulkAttendanceModal = ({
             }}
           >
             {isStep1 ? (
-              <CreateBulkAttendanceStepOneForm
-                control={control}
-                onSubmit={onSubmitStepOne}
-                onClose={handleClose}
-              />
+              <CreateBulkAttendanceStepOneForm control={control} />
             ) : (
               <SelectStudentsStepTwoForm
                 peopleFromSelectedGroups={peopleFromSelectedGroups}
@@ -226,7 +222,7 @@ export const BulkAttendanceModal = ({
           endIcon={isStep1 ? <ArrowRightIcon /> : undefined}
           onClick={() => {
             if (isStep1) {
-              setStep(step + 1);
+              onSubmitStepOne();
             } else {
               onSave();
             }

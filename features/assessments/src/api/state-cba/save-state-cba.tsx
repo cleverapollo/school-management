@@ -1,8 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 import {
+  BackendErrorResponse,
   EmulateHeaders,
   gqlClient,
   graphql,
+  ParsedErrorDetail,
   queryClient,
   SaveStateCbaAssessmentInput,
   useAcademicNamespace,
@@ -10,24 +12,6 @@ import {
 import { useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { assessmentsKeys } from '../keys';
-
-export interface BackendErrorResponse {
-  response: {
-    error: string;
-    status: number;
-    headers: Record<string, unknown>;
-  };
-  request: {
-    query: string;
-    variables: Record<string, unknown>;
-  };
-}
-
-export interface ParsedErrorDetail {
-  detail: string;
-  status: number;
-  title: string;
-}
 
 const saveStateCba = graphql(/* GraphQL */ `
   mutation assessment_saveStateCbaAssessment(

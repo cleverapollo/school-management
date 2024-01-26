@@ -6184,6 +6184,7 @@ __metadata:
     "@tyro/groups": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    "@tyro/mail": "*"
     "@tyro/people": "*"
     "@tyro/sms": "*"
     dayjs: ^1.11.7
@@ -6403,6 +6404,7 @@ __metadata:
     "@tyro/core": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    "@tyro/mail": "*"
     "@tyro/people": "*"
     "@tyro/settings": "*"
     "@tyro/sms": "*"
@@ -6464,6 +6466,7 @@ __metadata:
     "@tyro/core": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    "@tyro/sms": "*"
     dayjs: ^1.11.9
     dompurify: ^3.0.5
     react: ^18.2.0
@@ -6492,6 +6495,7 @@ __metadata:
     "@tyro/calendar": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
+    "@tyro/fees": "*"
     "@tyro/groups": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"

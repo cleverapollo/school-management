@@ -17,16 +17,19 @@ import set from 'lodash/set';
 import {
   MobileIcon,
   CalendarEditPenIcon,
-  PrinterIcon,
   AddNoteIcon,
+  SendMailIcon,
+  PrinterIcon,
 } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import {
   getPersonProfileLink,
+  RecipientSearchType,
   SmsRecipientType,
   usePermissions,
 } from '@tyro/api';
 import dayjs from 'dayjs';
+import { useMailSettings } from '@tyro/mail';
 import {
   useBulkUpdateCoreStudent,
   ReturnTypeFromUseStudents,
@@ -173,10 +176,16 @@ const getStudentColumns = (
     headerName: translate('common:tyroId'),
     hide: true,
   },
+  {
+    field: 'studentIrePP.dpin',
+    headerName: translate('people:personal.about.departmentId'),
+    enableRowGroup: true,
+    hide: true,
+  },
 ];
 
 export default function StudentsListPage() {
-  const { t } = useTranslation(['common', 'people', 'sms']);
+  const { t } = useTranslation(['common', 'people', 'sms', 'mail']);
   const { displayName, displayNames } = usePreferredNameLayout();
   const { isStaffUser } = usePermissions();
   const [selectedStudents, setSelectedStudents] = useState<
@@ -196,6 +205,7 @@ export default function StudentsListPage() {
 
   const { data: students } = useStudents();
   const { mutateAsync: bulkSaveStudents } = useBulkUpdateCoreStudent();
+  const { sendMailToParties } = useMailSettings();
 
   const {
     isOpen: isSendSmsOpen,
@@ -268,6 +278,39 @@ export default function StudentsListPage() {
                             isStaffUserWithPermission(
                               'ps:1:communications:send_sms'
                             ),
+                        },
+                        {
+                          label: t('mail:sendMail'),
+                          icon: <SendMailIcon />,
+                          hasAccess: ({ isStaffUserWithPermission }) =>
+                            isStaffUserWithPermission(
+                              'api:communications:read:search_recipients'
+                            ),
+                          onClick: () => {
+                            sendMailToParties(
+                              selectedStudents.map(({ partyId }) => partyId),
+                              [
+                                {
+                                  label: t('mail:student', {
+                                    count: selectedStudents.length,
+                                  }),
+                                  type: RecipientSearchType.Student,
+                                },
+                                {
+                                  label: t('mail:contactsOfStudent', {
+                                    count: selectedStudents.length,
+                                  }),
+                                  type: RecipientSearchType.StudentContacts,
+                                },
+                                {
+                                  label: t('mail:teachersOfStudent', {
+                                    count: selectedStudents.length,
+                                  }),
+                                  type: RecipientSearchType.StudentTeachers,
+                                },
+                              ]
+                            );
+                          },
                         },
                         {
                           label: t('people:actions.createBehaviour'),

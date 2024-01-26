@@ -27,6 +27,7 @@ export const useMailSearchProps = (
     loading: isLoading,
     options,
     limitTags: 2,
+    inputValue: searchValue,
     onInputChange: (_, newInputValue) => setSearchValue(newInputValue),
     renderAvatarTags: (option, renderTag) =>
       renderTag({

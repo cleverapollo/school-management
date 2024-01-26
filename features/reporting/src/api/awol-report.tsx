@@ -20,6 +20,7 @@ const attendanceAwolReports = graphql(/* GraphQL */ `
           firstName
           lastName
           avatarUrl
+          type
         }
         extensions {
           priority
