@@ -136,15 +136,7 @@ export function CreateBehaviourModal({
     let initStudents = initialState?.students;
 
     if (!initStudents) {
-      initStudents = initialState?.referencedParties?.reduce<Person[]>(
-        (acc, party) => {
-          if (party.__typename === 'Student') {
-            acc.push(party.person);
-          }
-          return acc;
-        },
-        []
-      );
+      initStudents = initialState?.referencedParties ?? [];
     }
 
     reset({

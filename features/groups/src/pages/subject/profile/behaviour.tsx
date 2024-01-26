@@ -13,6 +13,7 @@ import {
   usePreferredNameLayout,
   useDebouncedValue,
   BehaviourLabelChip,
+  commonActionMenuProps,
 } from '@tyro/core';
 
 import { TrashIcon, VerticalDotsIcon, EditIcon } from '@tyro/icons';
@@ -130,14 +131,8 @@ const getSubjectGroupBehaviourColumns = (
       wordBreak: 'break-word',
     },
     valueGetter: ({ data }) => {
-      const students = data?.referencedParties?.reduce<string[]>(
-        (acc, party) => {
-          if (party?.__typename === 'Student') {
-            acc.push(displayName(party?.person));
-          }
-          return acc;
-        },
-        []
+      const students = data?.referencedParties?.map((person) =>
+        displayName(person)
       );
 
       const LIMIT_TAGS = 3;
@@ -158,10 +153,7 @@ const getSubjectGroupBehaviourColumns = (
     valueGetter: ({ data }) => displayName(data?.takenBy) || '-',
   },
   {
-    suppressColumnsToolPanel: true,
-    cellClass: 'ag-show-on-row-interaction',
-    sortable: false,
-    suppressSizeToFit: true,
+    ...commonActionMenuProps,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseStudentBehaviour>) =>
