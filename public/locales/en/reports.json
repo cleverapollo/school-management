@@ -14,7 +14,7 @@
   "noBehaviourEventsToday": "No behaviour events today",
   "loggedDateByStaff": "Logged at {{loggedTime}} <3/>by <6>{{createdBy}}</6>",
   "attendanceByStaff": "Attendance by <2>{{attendanceBy}}</2>",
-  "overdueAttendance": "Overdue attendance",
+  "overdueAttendance": "My overdue attendance",
   "noOverdueAttendanceToday": "No overdue attendance today",
   "grouping": "Grouping",
   "timeGrouping": "Time grouping",
