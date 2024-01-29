@@ -350,6 +350,10 @@
   align-items: center;
 }
 
+.ag-theme-tyro .ag-cell-wrapper {
+  max-width: 100%;
+}
+
 .ag-theme-tyro .ag-cell,
 .ag-theme-tyro .ag-full-width-row .ag-cell-wrapper.ag-row-group {
   -webkit-font-smoothing: antialiased;

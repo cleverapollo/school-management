@@ -32,6 +32,7 @@ const getStudentDocumentColumns = (
     headerName: t('common:name'),
     headerCheckboxSelection: true,
     headerCheckboxSelectionFilteredOnly: true,
+    width: 400,
     valueGetter: ({ data }) =>
       data?.fileName?.slice(0, data?.fileName?.lastIndexOf('.')),
     cellRenderer: ({
@@ -42,7 +43,7 @@ const getStudentDocumentColumns = (
         data?.fileName?.lastIndexOf('.')
       );
       return (
-        <Link href={data?.fileUrl} target="_blank" download>
+        <Link href={data?.fileUrl} target="_blank" noWrap download>
           {fileName}
         </Link>
       );

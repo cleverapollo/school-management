@@ -47,7 +47,8 @@
     "inviteSent": "Invite was sent",
     "labelWasAssigned": "Label was assigned!",
     "errorFailed": "Error! An error occurred. Please try again later.",
-    "publishedOnline": "Published online"
+    "publishedOnline": "Published online",
+    "errorUploadingFile": "Error uploading file"
   },
   "relationshipType": {
     "AGENT": "Agent",
@@ -201,7 +202,8 @@
     "invalidMobileNumber": "This phone number is either invalid or is in the wrong format",
     "invalidEmail": "This is an invalid email",
     "invalidPhoneNumber": "This is an invalid phone number",
-    "invalidUniqueByKey": "{{key}} should be unique"
+    "invalidUniqueByKey": "{{key}} should be unique",
+    "fileSize": "File size should be less than {{size}}"
   },
   "studyLevel": {
     "COMMON": "Common",
@@ -331,6 +333,6 @@
   "uploadFile": "Upload file",
   "dropTheFilesHere": "Drop the files here...",
   "dropTheFileHere": "Drop the file here...",
-  "dragNDropFilesHere": "Drag 'n' drop some files here, or click to select files",
-  "dragNDropFileHere": "Drag 'n' drop a file here, or click to select a file"
+  "dragNDropFilesHere": "Drag 'n' drop some files here, or click to select files (Max size: {{maxSize}})",
+  "dragNDropFileHere": "Drag 'n' drop a file here, or click to select a file (Max size: {{maxSize}})"
 }
