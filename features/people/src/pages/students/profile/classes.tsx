@@ -22,13 +22,15 @@ import {
 import set from 'lodash/set';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { Box, Fade } from '@mui/material';
-import { MobileIcon } from '@tyro/icons';
+import { MobileIcon, SendMailIcon } from '@tyro/icons';
 import {
   Core_UpdateStudentSubjectGroupInput,
   PermissionUtils,
+  RecipientSearchType,
   SmsRecipientType,
   usePermissions,
 } from '@tyro/api';
+import { useMailSettings } from '@tyro/mail';
 import { useStudentsSubjectGroups } from '../../../api/student/overview';
 import { useUpdateStudentSubjectGroup } from '../../../api/student/update-student-subject-group';
 
@@ -143,6 +145,7 @@ export default function StudentProfileClassesPage() {
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
   );
+  const { sendMailToParties } = useMailSettings();
   const { displayNames } = usePreferredNameLayout();
   const {
     isOpen: isSendSmsOpen,
@@ -150,9 +153,11 @@ export default function StudentProfileClassesPage() {
     onClose: onCloseSendSms,
   } = useDisclosure();
 
-  const { data: subjectGroupsData } = useStudentsSubjectGroups(studentId);
+  const { data: subjectGroupsData } = useStudentsSubjectGroups([
+    studentId ?? 0,
+  ]);
   const { mutateAsync: updateStudentSubjectGroup } =
-    useUpdateStudentSubjectGroup(studentId);
+    useUpdateStudentSubjectGroup();
 
   const studentColumns = useMemo(
     () => getSubjectGroupsColumns(t, displayNames, permissions),
@@ -168,8 +173,41 @@ export default function StudentProfileClassesPage() {
         hasAccess: ({ isStaffUserWithPermission }) =>
           isStaffUserWithPermission('ps:1:communications:send_sms'),
       },
+      {
+        label: t('mail:sendMail'),
+        icon: <SendMailIcon />,
+        hasAccess: ({ isStaffUserWithPermission }) =>
+          isStaffUserWithPermission(
+            'api:communications:read:search_recipients'
+          ),
+        onClick: () => {
+          sendMailToParties(
+            selectedGroups.map((group) => group.id),
+            [
+              {
+                label: t('mail:contactsOfStudentsInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.SubjectGroupContact,
+              },
+              {
+                label: t('mail:teachersOfGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.SubjectGroupStaff,
+              },
+              {
+                label: t('mail:studentInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.SubjectGroupStudent,
+              },
+            ]
+          );
+        },
+      },
     ],
-    []
+    [selectedGroups, sendMailToParties]
   );
 
   const handleBulkSave = (

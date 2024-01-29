@@ -12,17 +12,15 @@ import {
   usePreferredNameLayout,
 } from '@tyro/core';
 
-import { AddUserIcon, MobileIcon, SendMailIcon } from '@tyro/icons';
+import { AddNoteIcon, AddUserIcon } from '@tyro/icons';
 import {
   getPersonProfileLink,
   PermissionUtils,
   SubjectGroupStudentMembershipTypeEnum,
   usePermissions,
-  UserType,
 } from '@tyro/api';
-import { Box, Fade } from '@mui/material';
 
-import { StudentTableAvatar } from '@tyro/people';
+import { StudentTableAvatar, CreateBehaviourModal } from '@tyro/people';
 import { useSubjectGroupById } from '../../../api';
 import { ManageSubjectGroupMembership } from '../../../components/manage-group-membership-modal';
 
@@ -85,6 +83,7 @@ const canSeeModifyMembership = (
   }
   return false;
 };
+
 export default function SubjectGroupProfileStudentsPage() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail']);
   const {
@@ -92,21 +91,30 @@ export default function SubjectGroupProfileStudentsPage() {
     onClose: onCloseMembership,
     onOpen: onOpenMembership,
   } = useDisclosure();
+  const {
+    isOpen: isAddBehaviourOpen,
+    onClose: onCloseAddBehaviour,
+    onOpen: onOpenAddBehaviour,
+  } = useDisclosure();
   const { groupId } = useParams();
   const groupIdNumber = useNumber(groupId);
 
   const { data: subjectGroupData } = useSubjectGroupById(groupIdNumber);
 
-  const [selectedGroups, setSelectedGroups] = useState<
+  const [selectedStudents, setSelectedStudents] = useState<
     ReturnTypeFromUseSubjectGroupById[]
   >([]);
 
-  const { userType } = usePermissions();
+  const permissions = usePermissions();
   const { displayName } = usePreferredNameLayout();
 
-  const isAdminUserType = userType === UserType.Admin;
-  const isTeacherUserType = userType === UserType.Teacher;
-  const showActionMenu = isAdminUserType || isTeacherUserType;
+  const canModifyMembership = canSeeModifyMembership(
+    subjectGroupData?.studentMembershipType?.type,
+    permissions
+  );
+  const showActionMenu =
+    permissions.isStaffUser &&
+    (selectedStudents.length > 0 || canModifyMembership);
 
   const studentColumns = useMemo(
     () => getSubjectGroupsColumns(t, displayName),
@@ -120,54 +128,59 @@ export default function SubjectGroupProfileStudentsPage() {
         columnDefs={studentColumns}
         rowSelection="multiple"
         getRowId={({ data }) => String(data?.partyId)}
-        rightAdornment={
-          <>
-            {selectedGroups.length > 0 && (
-              <Fade in={selectedGroups.length > 0} unmountOnExit>
-                <Box>
-                  <ActionMenu
-                    menuItems={[
-                      {
-                        label: t('people:sendSms'),
-                        icon: <MobileIcon />,
-                        hasAccess: () => false,
-                        // TODO: add action logic
-                        onClick: () => {},
-                      },
-                      {
-                        label: t('mail:sendMail'),
-                        icon: <SendMailIcon />,
-                        hasAccess: () => false,
-                        // TODO: add action logic
-                        onClick: () => {},
-                      },
-                    ]}
-                  />
-                </Box>
-              </Fade>
-            )}
-            {selectedGroups.length === 0 && (
-              <Box>
-                <ActionMenu
-                  menuItems={[
-                    {
-                      label: t('groups:updateStudentMembership'),
-                      icon: <AddUserIcon />,
-                      // TODO: add action logic
-                      onClick: onOpenMembership,
-                      hasAccess: (permissions) =>
-                        canSeeModifyMembership(
-                          subjectGroupData?.studentMembershipType?.type,
-                          permissions
-                        ),
-                    },
-                  ]}
-                />
-              </Box>
-            )}
-          </>
+        getLocaleText={(params) =>
+          params.key === 'totalAndFilteredRows'
+            ? t('common:students')
+            : params.defaultValue
         }
-        onRowSelection={setSelectedGroups}
+        statusBar={{
+          statusPanels: [
+            {
+              statusPanel: 'agTotalAndFilteredRowCountComponent',
+              align: 'left',
+            },
+            { statusPanel: 'agFilteredRowCountComponent' },
+            { statusPanel: 'agSelectedRowCountComponent' },
+          ],
+        }}
+        rightAdornment={
+          showActionMenu && (
+            <ActionMenu
+              menuItems={
+                selectedStudents.length > 0
+                  ? [
+                      {
+                        label: t('people:actions.createBehaviour'),
+                        icon: <AddNoteIcon />,
+                        hasAccess: ({ isStaffUserWithPermission }) =>
+                          isStaffUserWithPermission(
+                            'ps:1:notes:write_behaviour'
+                          ),
+                        onClick: onOpenAddBehaviour,
+                      },
+                    ]
+                  : [
+                      {
+                        label: t('groups:updateStudentMembership'),
+                        icon: <AddUserIcon />,
+                        onClick: onOpenMembership,
+                        hasAccess: () => canModifyMembership,
+                      },
+                    ]
+              }
+            />
+          )
+        }
+        onRowSelection={setSelectedStudents}
+      />
+
+      <CreateBehaviourModal
+        open={isAddBehaviourOpen}
+        onClose={onCloseAddBehaviour}
+        initialState={{
+          students: selectedStudents.map(({ person }) => person),
+          subjects: subjectGroupData ? [subjectGroupData] : [],
+        }}
       />
 
       {groupIdNumber && (

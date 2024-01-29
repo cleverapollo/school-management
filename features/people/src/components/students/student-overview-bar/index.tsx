@@ -4,7 +4,7 @@ import { useStudent } from '../../../api/student/students';
 import { AdditionalInfo } from './additional-info';
 import { CurrentLocation } from './current-location';
 import { TyroId } from '../../common/tyro-id';
-import { useStudentStatus } from '../../../api/student/status';
+import { usePersonStatus } from '../../../api/person/status';
 import { StudentAvatar } from '../../common/student-avatar';
 
 interface StudentOverviewBarProps {
@@ -15,7 +15,7 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
   const { displayName } = usePreferredNameLayout();
 
   const { data: studentData } = useStudent(studentId);
-  const { data: statusData } = useStudentStatus(studentId);
+  const { data: statusData } = usePersonStatus(studentId);
 
   const name = displayName(studentData?.person, {
     format: PreferredNameFormat.FirstnameSurname,

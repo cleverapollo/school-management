@@ -24,6 +24,7 @@
     "@tyro/people": "*",
     "@tyro/printing": "*",
     "@tyro/reporting": "*",
+    "@tyro/school-activities": "*",
     "@tyro/settings": "*",
     "@tyro/sms": "*",
     "@tyro/subject-options": "*",

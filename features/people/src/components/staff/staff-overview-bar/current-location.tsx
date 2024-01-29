@@ -1,7 +1,7 @@
 import { Fragment, useMemo } from 'react';
 import { Box } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { useStaffStatus } from '../../../api/staff/status';
+import { usePersonStatus } from '../../../api/person/status';
 
 interface CurrentLocationProps {
   staffPartyId: number | undefined;
@@ -9,7 +9,7 @@ interface CurrentLocationProps {
 
 export function CurrentLocation({ staffPartyId }: CurrentLocationProps) {
   const { t } = useTranslation(['people']);
-  const { data } = useStaffStatus(staffPartyId);
+  const { data } = usePersonStatus(staffPartyId);
   const currentLocationList = useMemo(() => {
     const room = data?.currentLocation?.room
       ?.map((a) => a?.name)

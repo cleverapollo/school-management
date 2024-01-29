@@ -14,6 +14,7 @@ import navigation from './navigation.json';
 import people from './people.json';
 import printing from './printing.json'
 import reports from './reports.json'
+import schoolActivities from './schoolActivities.json'
 import settings from './settings.json';
 import sms from './sms.json';
 import subjectOptions from './subjectOptions.json';
@@ -37,6 +38,7 @@ export const en = {
   people,
   printing,
   reports,
+  schoolActivities,
   settings,
   sms,
   subjectOptions,

@@ -24,12 +24,13 @@ export function useStudentsSearch(query: string) {
       gqlClient.request(studentsSearch, {
         filter: {
           text: trimmedQuery,
-          context: [Context.All],
+          context: [Context.Party],
           includeSearchType: [
             SearchType.Student,
             SearchType.GeneralGroup,
             SearchType.SubjectGroup,
             SearchType.YearGroupEnrollment,
+            SearchType.CustomGroup,
           ],
         },
       }),

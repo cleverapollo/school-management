@@ -16,7 +16,6 @@ export type FeeFormProps = {
 
 const defaultFormStateValues: Partial<FeeFormState> = {
   categories: [],
-  discounts: [],
   students: [],
   individualDiscounts: [],
 };
@@ -91,7 +90,7 @@ export function FeeForm({ initialState }: FeeFormProps) {
           amount: Number(amount),
           dueDate: dueDate.format('YYYY-MM-DD'),
           categoryIds: categories.map(({ id }) => id),
-          discountIds: discounts.map(({ id }) => id),
+          discountIds: discounts ? [discounts.id] : [],
           assignedToPartyIds: students.map(({ partyId }) => partyId),
           individualDiscounts: individualDiscounts.map(({ partyId, id }) => ({
             partyId,

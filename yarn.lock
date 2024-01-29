@@ -6167,6 +6167,7 @@ __metadata:
     "@tyro/people": "*"
     "@tyro/printing": "*"
     "@tyro/reporting": "*"
+    "@tyro/school-activities": "*"
     "@tyro/settings": "*"
     "@tyro/sms": "*"
     "@tyro/subject-options": "*"
@@ -6227,6 +6228,7 @@ __metadata:
     "@tyro/groups": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    "@tyro/mail": "*"
     "@tyro/people": "*"
     "@tyro/sms": "*"
     dayjs: ^1.11.7
@@ -6450,6 +6452,7 @@ __metadata:
     "@tyro/core": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    "@tyro/mail": "*"
     "@tyro/people": "*"
     "@tyro/settings": "*"
     "@tyro/sms": "*"
@@ -6534,6 +6537,7 @@ __metadata:
     "@tyro/core": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    "@tyro/sms": "*"
     dayjs: ^1.11.9
     dompurify: ^3.0.5
     react: ^18.2.0
@@ -6562,6 +6566,7 @@ __metadata:
     "@tyro/calendar": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
+    "@tyro/fees": "*"
     "@tyro/groups": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
@@ -6637,6 +6642,32 @@ __metadata:
     react-router: ^6.6.2
     react-router-dom: ^6.6.2
     recharts: ^2.3.2
+  languageName: unknown
+  linkType: soft
+
+"@tyro/school-activities@*, @tyro/school-activities@workspace:features/school-activities":
+  version: 0.0.0-use.local
+  resolution: "@tyro/school-activities@workspace:features/school-activities"
+  dependencies:
+    "@mui/lab": ^5.0.0-alpha.151
+    "@mui/material": ^5.14.16
+    "@mui/system": ^5.14.16
+    "@tanstack/react-query": ^4.29.7
+    "@tyro/api": "*"
+    "@tyro/assessments": "*"
+    "@tyro/configs": "*"
+    "@tyro/core": "*"
+    "@tyro/groups": "*"
+    "@tyro/i18n": "*"
+    "@tyro/icons": "*"
+    "@tyro/people": "*"
+    "@tyro/substitution": "*"
+    dayjs: ^1.11.7
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    react-hook-form: ^7.43.9
+    react-router: ^6.6.2
+    react-router-dom: ^6.6.2
   languageName: unknown
   linkType: soft
 

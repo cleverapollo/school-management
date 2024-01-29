@@ -1,9 +1,12 @@
 import { useMemo, useState } from 'react';
 import { Box, Fade, Grid, Stack, Typography } from '@mui/material';
 import {
+  RecipientSearchType,
   SmsRecipientType,
   usePermissions,
   UseQueryReturnType,
+  SubjectGroupStudentMembershipTypeEnum,
+  PermissionUtils,
 } from '@tyro/api';
 import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -20,11 +23,13 @@ import {
   sortStartNumberFirst,
 } from '@tyro/core';
 
-import { MobileIcon, UserGroupTwoIcon } from '@tyro/icons';
+import { MobileIcon, SendMailIcon, UserGroupTwoIcon } from '@tyro/icons';
 
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
+import { useMailSettings } from '@tyro/mail';
 import { useClassGroupById } from '../../api/class-groups';
 import { BlocksChips } from '../../components/class-group/blocks-chips';
+import { CoreSubjectGroupChips } from '../../components/class-group/core-subject-group-chips';
 
 type ReturnTypeFromUseSubjectGroupById = UseQueryReturnType<
   typeof useClassGroupById
@@ -120,6 +125,7 @@ export default function SubjectGroups() {
   const { isTyroUser } = usePermissions();
 
   const { data: subjectGroupData } = useClassGroupById(groupIdAsNumber);
+  const { sendMailToParties } = useMailSettings();
 
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
@@ -136,31 +142,88 @@ export default function SubjectGroups() {
     [t, displayNames]
   );
 
-  const actionMenuItems = [
-    {
-      label: t('people:sendSms'),
-      icon: <MobileIcon />,
-      onClick: onOpenSendSms,
-    },
-  ];
+  const actionMenuItems = useMemo(
+    () => [
+      {
+        label: t('people:sendSms'),
+        icon: <MobileIcon />,
+        onClick: onOpenSendSms,
+      },
+      {
+        label: t('mail:sendMail'),
+        icon: <SendMailIcon />,
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission(
+            'api:communications:read:search_recipients'
+          ),
+        onClick: () => {
+          sendMailToParties(
+            selectedGroups.map((group) => group.id),
+            [
+              {
+                label: t('mail:contactsOfStudentsInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.SubjectGroupContact,
+              },
+              {
+                label: t('mail:teachersOfGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.SubjectGroupStaff,
+              },
+              {
+                label: t('mail:studentInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.SubjectGroupStudent,
+              },
+            ]
+          );
+        },
+      },
+    ],
+    [t, selectedGroups, sendMailToParties, onOpenSendSms]
+  );
 
   return (
     <>
       {subjectGroupData && isTyroUser && (
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <UserGroupTwoIcon sx={{ color: 'text.secondary' }} />
-          <Typography variant="body1" color="text.primary">
-            {t('common:blocks')}
-          </Typography>
-          <Grid container direction="row" gap={1} alignItems="center">
-            {groupIdAsNumber && (
-              <BlocksChips
-                blocks={subjectGroupData.blocks}
-                classGroupId={groupIdAsNumber}
-              />
-            )}
-          </Grid>
-        </Stack>
+        <>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <UserGroupTwoIcon sx={{ color: 'text.secondary' }} />
+            <Typography variant="body1" color="text.primary">
+              {t('common:blocks')}
+            </Typography>
+            <Grid container direction="row" gap={1} alignItems="center">
+              {groupIdAsNumber && (
+                <BlocksChips
+                  blocks={subjectGroupData.blocks}
+                  classGroupId={groupIdAsNumber}
+                />
+              )}
+            </Grid>
+          </Stack>
+
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <UserGroupTwoIcon sx={{ color: 'text.secondary' }} />
+            <Typography variant="body1" color="text.primary">
+              {t('common:core')}
+            </Typography>
+            <Grid container direction="row" gap={1} alignItems="center">
+              {groupIdAsNumber && (
+                <CoreSubjectGroupChips
+                  subjectGroups={subjectGroupData.relatedSubjectGroups.filter(
+                    ({ studentMembershipType }) =>
+                      studentMembershipType?.type ===
+                      SubjectGroupStudentMembershipTypeEnum.Core
+                  )}
+                  classGroupId={groupIdAsNumber}
+                />
+              )}
+            </Grid>
+          </Stack>
+        </>
       )}
       <Table
         rowData={subjectGroupData?.relatedSubjectGroups ?? []}

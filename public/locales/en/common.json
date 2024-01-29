@@ -303,6 +303,7 @@
   "fromDate": "From {{date}}",
   "from": "From",
   "to": "To",
+  "core": "Core",
   "dayOfWeekValues": {
     "MONDAY": "Monday",
     "TUESDAY": "Tuesday",

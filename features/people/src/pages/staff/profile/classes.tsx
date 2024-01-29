@@ -15,11 +15,13 @@ import {
   UseQueryReturnType,
   SmsRecipientType,
   PermissionUtils,
+  RecipientSearchType,
 } from '@tyro/api';
-import { MobileIcon, PrinterIcon } from '@tyro/icons';
+import { MobileIcon, PrinterIcon, SendMailIcon } from '@tyro/icons';
 import { Box, Fade } from '@mui/material';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { printGroupMembers } from '@tyro/groups';
+import { useMailSettings } from '@tyro/mail';
 import { useStaffSubjectGroups } from '../../../api/staff/subject-groups';
 
 type ReturnTypeFromUseStaffSubjectGroups = UseQueryReturnType<
@@ -91,11 +93,12 @@ const getSubjectGroupsColumns = (
 ];
 
 export default function StaffProfileClassesPage() {
-  const { t } = useTranslation(['common', 'people', 'sms', 'groups']);
+  const { t } = useTranslation(['common', 'people', 'sms', 'mail', 'groups']);
 
   const { id } = useParams();
   const staffId = getNumber(id);
 
+  const { sendMailToParties } = useMailSettings();
   const { data: subjectGroupsData } = useStaffSubjectGroups(
     {
       partyIds: [staffId ?? 0],
@@ -123,6 +126,39 @@ export default function StaffProfileClassesPage() {
         onClick: onOpenSendSms,
       },
       {
+        label: t('mail:sendMail'),
+        icon: <SendMailIcon />,
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission(
+            'api:communications:read:search_recipients'
+          ),
+        onClick: () => {
+          sendMailToParties(
+            selectedGroups.map((group) => group.id),
+            [
+              {
+                label: t('mail:contactsOfStudentsInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.SubjectGroupContact,
+              },
+              {
+                label: t('mail:teachersOfGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.SubjectGroupStaff,
+              },
+              {
+                label: t('mail:studentInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.SubjectGroupStudent,
+              },
+            ]
+          );
+        },
+      },
+      {
         label: t('groups:printGroupMembers'),
         icon: <PrinterIcon />,
         onClick: () => printGroupMembers(selectedGroups),
@@ -132,7 +168,7 @@ export default function StaffProfileClassesPage() {
           ),
       },
     ],
-    [selectedGroups, onOpenSendSms]
+    [selectedGroups, onOpenSendSms, sendMailToParties, t]
   );
 
   return (

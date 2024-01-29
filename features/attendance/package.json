@@ -13,6 +13,7 @@
     "@tyro/groups": "*",
     "@tyro/i18n": "*",
     "@tyro/icons": "*",
+    "@tyro/mail": "*",
     "@tyro/people": "*",
     "@tyro/sms": "*",
     "dayjs": "^1.11.7",
