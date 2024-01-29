@@ -70,7 +70,7 @@ export function OverdueAttendanceWidget() {
   const overdueAttendances = useMemo(() => {
     const overdueAttendancesData = (data?.data ?? []) as OverdueAttendanceData;
 
-    return overdueAttendancesData.slice(0, 5).map((overdueAttendance) => ({
+    return overdueAttendancesData.slice(0, 6).map((overdueAttendance) => ({
       id: overdueAttendance.id.value,
       colour: overdueAttendance.colour.value,
       overdueByMins: overdueAttendance.overdue_by_mins.value,
@@ -78,7 +78,7 @@ export function OverdueAttendanceWidget() {
       eventStartDatetime: overdueAttendance.event_start_datetime.value,
       subjectGroupId: overdueAttendance.subject_group_id.value,
       subjectName: overdueAttendance.subject_name_1.value,
-      calendarRoomName: overdueAttendance.calendar_room_name?.value,
+      calendarRoomName: overdueAttendance.calendar_room_name?.value || '-',
     }));
   }, [data]);
 
@@ -160,100 +160,110 @@ export function OverdueAttendanceWidget() {
               calendarRoomName,
             }) => (
               <Grid key={id} xs={6}>
-                <Box
-                  component={Link}
-                  to={`/groups/subject/${subjectGroupId}/attendance?eventStartTime=${eventStartDatetime}`}
-                  sx={{
-                    backgroundColor: 'white',
-                    borderRadius: 2,
-                    userSelect: 'none',
-                    textDecoration: 'inherit',
-                    '&:hover': {
-                      bgcolor: 'indigo.100',
-                    },
-                    '&:active': {
-                      bgcolor: 'indigo.200',
-                    },
-                    boxShadow: (theme) =>
-                      `0 1px 6px 0px ${alpha(theme.palette.indigo[500], 0.1)}`,
-                  }}
-                >
-                  <Stack
-                    direction="row"
+                <Card>
+                  <Box
+                    component={Link}
+                    to={`/groups/subject/${subjectGroupId}/attendance?eventStartTime=${eventStartDatetime}`}
                     sx={{
-                      alignItems: 'stretch',
-                      height: '100%',
-                      py: 1.75,
-                      pl: 1.5,
-                      pr: 2,
+                      color: 'inherit',
+                      backgroundColor: 'white',
+                      borderRadius: 2,
+                      userSelect: 'none',
+                      textDecoration: 'inherit',
+                      '&:hover': {
+                        bgcolor: 'indigo.100',
+                      },
+                      '&:active': {
+                        bgcolor: 'indigo.200',
+                      },
+                      boxShadow: (theme) =>
+                        `0 1px 6px 0px ${alpha(
+                          theme.palette.indigo[500],
+                          0.1
+                        )}`,
                     }}
                   >
-                    <Box
+                    <Stack
+                      direction="row"
                       sx={{
-                        width: 6,
-                        borderRadius: 3,
-                        backgroundColor: `${colour}.main`,
-                        mr: 0.75,
+                        alignItems: 'stretch',
+                        height: '100%',
+                        py: 1.75,
+                        pl: 1.5,
+                        pr: 2,
                       }}
-                    />
-                    <Stack flex={1} sx={{ maxWidth: 'calc(100% - 12px)' }}>
-                      <Stack
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="center"
-                        spacing={1}
-                      >
-                        <Typography variant="subtitle2" noWrap sx={{ flex: 1 }}>
-                          {subjectGroupName}
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          component="span"
-                          fontWeight={500}
-                          color="slate.500"
+                    >
+                      <Box
+                        sx={{
+                          width: 6,
+                          borderRadius: 3,
+                          backgroundColor: `${colour}.main`,
+                          mr: 0.75,
+                        }}
+                      />
+                      <Stack flex={1} sx={{ maxWidth: 'calc(100% - 12px)' }}>
+                        <Stack
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="center"
+                          spacing={1}
                         >
-                          {t('reports:roomX', { name: calendarRoomName })}
-                        </Typography>
-                      </Stack>
-                      <Stack
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="center"
-                        spacing={1}
-                      >
-                        <Stack maxWidth="50%">
-                          <Chip
-                            size="small"
-                            variant="soft"
-                            color={colour}
-                            label={subjectName}
-                            sx={{
-                              fontWeight: 600,
-                              fontSize: '0.75rem',
-                            }}
-                          />
+                          <Typography
+                            variant="subtitle2"
+                            noWrap
+                            sx={{ flex: 1 }}
+                          >
+                            {subjectGroupName}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            component="span"
+                            fontWeight={500}
+                            color="slate.500"
+                          >
+                            {t('reports:roomX', { name: calendarRoomName })}
+                          </Typography>
                         </Stack>
-                        <Stack>
-                          <Chip
-                            size="small"
-                            variant="soft"
-                            color="rose"
-                            icon={
-                              <ClockIcon
-                                sx={{ transform: 'rotateY(180deg)' }}
-                              />
-                            }
-                            label={getHumanizedTime(parseInt(overdueByMins))}
-                            sx={{
-                              fontWeight: 600,
-                              fontSize: '0.75rem',
-                            }}
-                          />
+                        <Stack
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="center"
+                          spacing={1}
+                        >
+                          <Stack maxWidth="50%">
+                            <Chip
+                              size="small"
+                              variant="soft"
+                              color={colour}
+                              label={subjectName}
+                              sx={{
+                                fontWeight: 600,
+                                fontSize: '0.75rem',
+                              }}
+                            />
+                          </Stack>
+                          <Stack>
+                            <Chip
+                              size="small"
+                              variant="soft"
+                              color="rose"
+                              icon={
+                                <ClockIcon
+                                  sx={{ transform: 'rotateY(180deg)' }}
+                                />
+                              }
+                              label={getHumanizedTime(parseInt(overdueByMins))}
+                              sx={{
+                                fontWeight: 600,
+                                fontSize: '0.75rem',
+                              }}
+                            />
+                          </Stack>
                         </Stack>
                       </Stack>
                     </Stack>
-                  </Stack>
-                </Box>
+                  </Box>
+                </Card>
               </Grid>
             )
           )}
