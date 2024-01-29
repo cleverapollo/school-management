@@ -2,9 +2,9 @@ import { lazyWithRetry, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { EditCalendarIcon } from '@tyro/icons';
 import { getYearGroups } from '@tyro/groups';
 import { redirect } from 'react-router-dom';
-import { getLiveTimetableId, getTimetables } from './api/common/timetables';
 import { getTimetableResourceView } from './api/edit-timetable/resource-view';
 import { getTimetableSubjectGroups } from './api/edit-timetable/subject-groups';
+import { getTimetable } from './api/common/timetable';
 
 // const TimetableList = lazyWithRetry(() => import('./pages/index'));
 // const ViewTimetable = lazyWithRetry(() => import('./pages/view'));
@@ -58,7 +58,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             title: t('navigation:management.timetable.editTimetable'),
             path: 'edit-timetable',
             element: <EditTimetableContainer />,
-            loader: () => getLiveTimetableId(),
+            loader: () => getTimetable({ liveTimetable: true }),
             children: [
               {
                 type: NavObjectType.NonMenuLink,
@@ -69,18 +69,19 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'timetable',
                 loader: async () => {
-                  const [liveTimetableId, yearGroups] = await Promise.all([
-                    getLiveTimetableId(),
+                  const [liveTimetable, yearGroups] = await Promise.all([
+                    getTimetable({ liveTimetable: true }),
                     getYearGroups(),
                   ]);
+
                   const sixthYearGroup =
                     yearGroups.core_yearGroupEnrollments.find(
                       ({ yearGroupId }) => yearGroupId === 6
                     );
 
-                  if (liveTimetableId && sixthYearGroup) {
+                  if (liveTimetable && sixthYearGroup) {
                     return getTimetableResourceView({
-                      timetableId: liveTimetableId,
+                      timetableId: liveTimetable.timetableId,
                       partyIds: [sixthYearGroup.yearGroupEnrollmentPartyId],
                       roomIds: [],
                     });
@@ -94,10 +95,12 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'subject-groups',
                 loader: async () => {
-                  const liveTimetableId = await getLiveTimetableId();
-                  return liveTimetableId
+                  const liveTimetable = await getTimetable({
+                    liveTimetable: true,
+                  });
+                  return liveTimetable
                     ? getTimetableSubjectGroups({
-                        timetableId: liveTimetableId,
+                        timetableId: liveTimetable.timetableId,
                       })
                     : null;
                 },
