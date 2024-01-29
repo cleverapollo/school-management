@@ -274,7 +274,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                 path: 'fees',
                 element: <StudentProfileFeesPage />,
                 hasAccess: ({ isStaffUserWithPermission }) =>
-                  isStaffUserWithPermission('ps:1:fees:pay_fees'),
+                  isStaffUserWithPermission('ps:1:fees:write_fees'),
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
 
