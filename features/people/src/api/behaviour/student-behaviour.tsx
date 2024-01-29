@@ -15,11 +15,17 @@ const individualStudentBehaviour = graphql(/* GraphQL */ `
         noteId
         incidentDate
         referencedParties {
+          __typename
           partyId
-          firstName
-          lastName
-          avatarUrl
-          type
+          ... on Student {
+            person {
+              partyId
+              firstName
+              lastName
+              avatarUrl
+              type
+            }
+          }
         }
         associatedParties {
           __typename

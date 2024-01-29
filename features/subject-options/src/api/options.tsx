@@ -16,7 +16,7 @@ const optionsSetupList = graphql(/* GraphQL */ `
       yearGroupEnrolmentParty {
         name
       }
-      publishToParents
+      publishedToParents
     }
   }
 `);
