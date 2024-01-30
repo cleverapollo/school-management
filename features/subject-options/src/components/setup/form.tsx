@@ -77,6 +77,7 @@ export function SubjectOptionsSetupForm() {
       subjectSets: [
         {
           ...defaultPoolProps,
+          name: 'Group 1',
           poolIdx: 0,
         },
       ],
@@ -235,6 +236,7 @@ export function SubjectOptionsSetupForm() {
                 onClick={() =>
                   append({
                     ...defaultPoolProps,
+                    name: `Group ${subjectPools.length + 1}`,
                     poolIdx: subjectPools.length,
                   })
                 }
