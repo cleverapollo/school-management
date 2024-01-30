@@ -17,6 +17,8 @@ const optionsSetupList = graphql(/* GraphQL */ `
         name
       }
       publishedToParents
+      parentsDueByDate
+      parentsDescription
     }
   }
 `);

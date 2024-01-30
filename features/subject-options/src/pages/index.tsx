@@ -10,15 +10,26 @@ import {
   Table,
   TableBooleanValue,
   PageContainer,
+  commonActionMenuProps,
+  ActionMenu,
+  useDebouncedValue,
 } from '@tyro/core';
 import { Link } from 'react-router-dom';
-import { AddDocIcon } from '@tyro/icons';
+import {
+  AddDocIcon,
+  CheckmarkCircleIcon,
+  EditCalendarIcon,
+  StopIcon,
+  VerticalDotsIcon,
+} from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import {
   ReturnTypeFromUseOptionsSetupList,
   useOptionsSetupList,
 } from '../api/options';
+import { PublishOptionsModal } from '../components/list/publish-modal';
+import { ConfirmUnpublishModal } from '../components/list/confirm-unpublish-modal';
 
 dayjs.extend(LocalizedFormat);
 
@@ -27,7 +38,9 @@ const getColumnDefs = (
     ('subjectOptions' | 'common')[],
     undefined,
     ('subjectOptions' | 'common')[]
-  >
+  >,
+  openPublish: (id: ReturnTypeFromUseOptionsSetupList) => void,
+  openUnpublish: (id: ReturnTypeFromUseOptionsSetupList) => void
 ): GridOptions<ReturnTypeFromUseOptionsSetupList>['columnDefs'] => [
   {
     field: 'name',
@@ -52,20 +65,54 @@ const getColumnDefs = (
     headerName: t('subjectOptions:yearGroupFor'),
   },
   {
-    field: 'publishToParents',
+    field: 'publishedToParents',
     headerName: t('subjectOptions:publishedToParents'),
     valueGetter: ({ data }) => {
       if (!data) return null;
 
-      return data.publishToParents ? t('common:yes') : t('common:no');
+      return data.publishedToParents ? t('common:yes') : t('common:no');
     },
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseOptionsSetupList>) => {
       if (!data) return null;
 
-      return <TableBooleanValue value={data.publishToParents} />;
+      return <TableBooleanValue value={data.publishedToParents} />;
     },
+  },
+  {
+    ...commonActionMenuProps,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseOptionsSetupList>) =>
+      data && (
+        <ActionMenu
+          iconOnly
+          buttonIcon={<VerticalDotsIcon />}
+          menuItems={
+            data.publishedToParents
+              ? [
+                  {
+                    label: t('subjectOptions:editDueDate'),
+                    icon: <EditCalendarIcon />,
+                    onClick: () => openPublish(data),
+                  },
+                  {
+                    label: t('common:actions.unpublish'),
+                    icon: <StopIcon />,
+                    onClick: () => openUnpublish(data),
+                  },
+                ]
+              : [
+                  {
+                    label: t('common:actions.publish'),
+                    icon: <CheckmarkCircleIcon />,
+                    onClick: () => openPublish(data),
+                  },
+                ]
+          }
+        />
+      ),
   },
 ];
 
@@ -73,32 +120,61 @@ export default function SubjectOptionsPage() {
   const { t } = useTranslation(['navigation', 'common', 'subjectOptions']);
 
   const { data: optionsSetupList = [] } = useOptionsSetupList({});
+  const {
+    value: optionsToPublish,
+    debouncedValue: debouncedOptionsToPublish,
+    setValue: setOptionsToPublish,
+  } = useDebouncedValue<ReturnTypeFromUseOptionsSetupList | null>({
+    defaultValue: null,
+  });
+  const {
+    value: optionsToUnpublish,
+    debouncedValue: debouncedOptionsToUnpublish,
+    setValue: setOptionsToUnpublish,
+  } = useDebouncedValue<ReturnTypeFromUseOptionsSetupList | null>({
+    defaultValue: null,
+  });
 
-  const columnDefs = useMemo(() => getColumnDefs(t), [t]);
+  const columnDefs = useMemo(
+    () => getColumnDefs(t, setOptionsToPublish, setOptionsToUnpublish),
+    [t, setOptionsToPublish, setOptionsToUnpublish]
+  );
 
   return (
-    <PageContainer title={t('navigation:management.subjectOptions')}>
-      <PageHeading
-        title={t('navigation:management.subjectOptions')}
-        titleProps={{ variant: 'h3' }}
-        rightAdornment={
-          <Box display="flex" alignItems="center">
-            <Button
-              variant="contained"
-              component={Link}
-              to="./create"
-              startIcon={<AddDocIcon />}
-            >
-              {t('subjectOptions:createSubjectOptions')}
-            </Button>
-          </Box>
-        }
+    <>
+      <PageContainer title={t('navigation:management.subjectOptions')}>
+        <PageHeading
+          title={t('navigation:management.subjectOptions')}
+          titleProps={{ variant: 'h3' }}
+          rightAdornment={
+            <Box display="flex" alignItems="center">
+              <Button
+                variant="contained"
+                component={Link}
+                to="./create"
+                startIcon={<AddDocIcon />}
+              >
+                {t('subjectOptions:createSubjectOptions')}
+              </Button>
+            </Box>
+          }
+        />
+        <Table
+          rowData={optionsSetupList}
+          columnDefs={columnDefs}
+          getRowId={({ data }) => String(data?.id)}
+        />
+      </PageContainer>
+      <PublishOptionsModal
+        optionsToPublish={optionsToPublish ?? debouncedOptionsToPublish}
+        open={Boolean(optionsToPublish)}
+        onClose={() => setOptionsToPublish(null)}
       />
-      <Table
-        rowData={optionsSetupList}
-        columnDefs={columnDefs}
-        getRowId={({ data }) => String(data?.id)}
+      <ConfirmUnpublishModal
+        optionsToUnpublish={optionsToUnpublish ?? debouncedOptionsToUnpublish}
+        open={Boolean(optionsToUnpublish)}
+        onClose={() => setOptionsToUnpublish(null)}
       />
-    </PageContainer>
+    </>
   );
 }

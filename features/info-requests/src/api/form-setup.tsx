@@ -16,6 +16,8 @@ const infoRequestFormSetupDetails = graphql(/* GraphQL */ `
       id {
         name
         provider
+        forPartyId
+        objectId
       }
       title
       fields {

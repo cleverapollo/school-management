@@ -23,9 +23,9 @@ export function usePublishOptions() {
     },
     onSuccess: (_, variables) => {
       toast(
-        variables.input
-          ? t('common:snackbarMessages.updateSuccess')
-          : t('common:snackbarMessages.createSuccess')
+        variables?.publish
+          ? t('common:snackbarMessages.publishedSuccess')
+          : t('common:snackbarMessages.unpublishedSuccess')
       );
     },
   });

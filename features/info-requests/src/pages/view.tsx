@@ -1,6 +1,7 @@
 import {
   ConfirmDialog,
   DynamicForm,
+  getNumber,
   PageContainer,
   PageHeading,
   useDisclosure,
@@ -25,6 +26,8 @@ export default function InfoRequestFormView() {
   const formId = {
     name: searchParams.get('name') ?? '',
     provider: searchParams.get('provider') ?? '',
+    forPartyId: getNumber(searchParams.get('forPartyId')) ?? 0,
+    objectId: getNumber(searchParams.get('objectId')) ?? 0,
   };
 
   const { data: setupInfo } = useInfoRequestFormSetupDetails({

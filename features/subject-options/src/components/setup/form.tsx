@@ -114,7 +114,6 @@ export function SubjectOptionsSetupForm() {
             subjectIds: subjects.map(({ id }) => id),
             ...rest,
           })),
-          publishToParents: false,
         },
         {
           onSuccess: () => {

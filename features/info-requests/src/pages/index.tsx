@@ -32,14 +32,20 @@ const getColumnDefs = (
     lockVisible: true,
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseInfoRequestFormList>) =>
-      data && (
+    }: ICellRendererParams<ReturnTypeFromUseInfoRequestFormList>) => {
+      if (!data) return null;
+
+      const { name, provider, forPartyId, objectId } = data.id;
+      return (
         <RouterLink
-          to={`./view?name=${data.id.name}&provider=${data.id.provider}`}
+          to={`./view?name=${name}&provider=${provider}&forPartyId=${
+            forPartyId ?? 0
+          }&objectId=${objectId ?? 0}`}
         >
           {data.name}
         </RouterLink>
-      ),
+      );
+    },
   },
   {
     field: 'forPerson',

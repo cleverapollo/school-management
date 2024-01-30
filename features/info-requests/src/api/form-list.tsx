@@ -17,6 +17,8 @@ const infoRequestFormList = graphql(/* GraphQL */ `
       id {
         name
         provider
+        forPartyId
+        objectId
       }
       isComplete
       completionDate
