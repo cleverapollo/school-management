@@ -324,5 +324,13 @@
   "absent": "Absent",
   "by": "By",
   "paid": "Paid",
-  "published": "Published"
+  "published": "Published",
+  "timePostfix": {
+    "year": "y",
+    "month": "mo",
+    "week": "w",
+    "day": "d",
+    "hour": "h",
+    "minute": "m"
+  }
 }

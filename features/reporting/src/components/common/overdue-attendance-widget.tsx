@@ -12,11 +12,7 @@ import { FullScreenIcon, ClockIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
 import { useTranslation } from '@tyro/i18n';
 import { Link } from 'react-router-dom';
-import {
-  LoadingPlaceholderContainer,
-  getNumber,
-  getHumanizedTime,
-} from '@tyro/core';
+import { LoadingPlaceholderContainer, getHumanizedTime } from '@tyro/core';
 import { Colour, useUser } from '@tyro/api';
 import { useMemo } from 'react';
 import { useRunReports } from '../../api/run-report';
@@ -41,8 +37,8 @@ type OverdueAttendanceData = {
 
 export function OverdueAttendanceWidget() {
   const { t } = useTranslation(['common', 'reports']);
-  const { user } = useUser();
-  const partyId = getNumber(user?.profiles?.[0]?.partyId);
+  const { activeProfile } = useUser();
+
   const toDate = dayjs();
   const fromDate = toDate.subtract(10, 'day');
 
@@ -61,7 +57,7 @@ export function OverdueAttendanceWidget() {
         },
         {
           filterId: 'staff',
-          filterValue: partyId ? [partyId] : [],
+          filterValue: activeProfile?.partyId ? [activeProfile?.partyId] : [],
         },
       ],
     },
@@ -107,7 +103,7 @@ export function OverdueAttendanceWidget() {
               filters: {
                 from_date: fromDate,
                 to_date: toDate,
-                staff: partyId ? [partyId] : [],
+                staff: activeProfile?.partyId ? [activeProfile?.partyId] : [],
               },
             })}
           >
@@ -252,7 +248,10 @@ export function OverdueAttendanceWidget() {
                                   sx={{ transform: 'rotateY(180deg)' }}
                                 />
                               }
-                              label={getHumanizedTime(parseInt(overdueByMins))}
+                              label={getHumanizedTime(
+                                parseInt(overdueByMins),
+                                t
+                              )}
                               sx={{
                                 fontWeight: 600,
                                 fontSize: '0.75rem',
