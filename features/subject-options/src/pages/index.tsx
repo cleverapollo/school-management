@@ -5,7 +5,6 @@ import {
   GridOptions,
   ICellRendererParams,
   PageHeading,
-  ReturnTypeDisplayName,
   RouterLink,
   Table,
   TableBooleanValue,
@@ -45,20 +44,10 @@ const getColumnDefs = (
   {
     field: 'name',
     headerName: t('common:name'),
-    // cellRenderer: ({
-    //   data,
-    // }: ICellRendererParams<ReturnTypeFromUseOptionsSetupList>) =>
-    //   data && (
-    //     <RouterLink
-    //       to={getAssessmentSubjectGroupsLink(
-    //         data.id,
-    //         data.assessmentType,
-    //         data.academicNamespaceId
-    //       )}
-    //     >
-    //       {data.name}
-    //     </RouterLink>
-    //   ),
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseOptionsSetupList>) =>
+      data && <RouterLink to={`./${data.id}`}>{data.name}</RouterLink>,
   },
   {
     field: 'yearGroupEnrolmentParty.name',
