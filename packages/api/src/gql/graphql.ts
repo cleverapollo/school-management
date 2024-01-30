@@ -2014,7 +2014,7 @@ export type DeleteFeeInput = {
 
 export type DeleteFileTransferInput = {
   feature: FileTransferFeature;
-  id: Scalars['Int'];
+  ids: Array<Scalars['Int']>;
 };
 
 export type DeleteNonClassContactHoursInput = {
@@ -2358,6 +2358,7 @@ export enum Feature {
   GeneralAdmin = 'GENERAL_ADMIN',
   Groups = 'GROUPS',
   Notes = 'NOTES',
+  Options = 'OPTIONS',
   People = 'PEOPLE',
   PrintingAndExporting = 'PRINTING_AND_EXPORTING',
   SchoolActivity = 'SCHOOL_ACTIVITY',
@@ -2472,6 +2473,7 @@ export enum Form_FormFieldItemType {
   Date = 'DATE',
   Datetime = 'DATETIME',
   Input = 'INPUT',
+  Inputnumber = 'INPUTNUMBER',
   Multiselect = 'MULTISELECT',
   Paragraph = 'PARAGRAPH',
   Radio = 'RADIO',
@@ -2481,6 +2483,12 @@ export enum Form_FormFieldItemType {
 }
 
 export type Forms_FormField = Forms_FormFieldItem | Forms_FormFieldSubGroup;
+
+export type Forms_FormFieldDefaultValue = {
+  __typename?: 'Forms_FormFieldDefaultValue';
+  id: Scalars['String'];
+  name: Scalars['String'];
+};
 
 export type Forms_FormFieldGridWidth = {
   __typename?: 'Forms_FormFieldGridWidth';
@@ -2499,6 +2507,7 @@ export type Forms_FormFieldGroup = {
 
 export type Forms_FormFieldItem = {
   __typename?: 'Forms_FormFieldItem';
+  defaultValue?: Maybe<Forms_FormFieldDefaultValue>;
   formFieldType: Forms_FormFieldType;
   gridWidth: Forms_FormFieldGridWidth;
   id: Scalars['String'];
@@ -2528,12 +2537,16 @@ export enum Forms_FormFieldType {
 
 export type Forms_FormId = {
   __typename?: 'Forms_FormId';
+  forPartyId?: Maybe<Scalars['Long']>;
   name: Scalars['String'];
+  objectId?: Maybe<Scalars['Long']>;
   provider: Scalars['String'];
 };
 
 export type Forms_FormIdInput = {
+  forPartyId?: InputMaybe<Scalars['Long']>;
   name: Scalars['String'];
+  objectId?: InputMaybe<Scalars['Long']>;
   provider: Scalars['String'];
 };
 
@@ -2784,6 +2797,25 @@ export type IndividualEventFilter = {
   filterConditionsIncludeAugments?: InputMaybe<Scalars['Boolean']>;
   filterConditionsIncludeExclusions?: InputMaybe<Scalars['Boolean']>;
   orConditions?: InputMaybe<Array<Calendar_DatetimeFilterCondition>>;
+};
+
+export type InfoRequestFilter = {
+  studentPartyIds: Array<Scalars['Long']>;
+};
+
+export type InfoRequestId = {
+  __typename?: 'InfoRequestId';
+  optionId: Scalars['Int'];
+  studentPartyId: Scalars['Long'];
+};
+
+export type InfoRequestOption = {
+  __typename?: 'InfoRequestOption';
+  dueBy: Scalars['Date'];
+  id: InfoRequestId;
+  optionName: Scalars['String'];
+  /** deep linked */
+  requestFor: Person;
 };
 
 export type InputAddress = {
@@ -3037,6 +3069,7 @@ export type Mutation = {
   notes_upsertBehaviourTags: Array<Notes_Tag>;
   notes_upsertNotes: Array<Notes_Note>;
   notes_upsertNotesTags: Array<Notes_Tag>;
+  options_publish: Success;
   options_saveOptions: Option;
   options_saveStudentPreferences: Success;
   ppod_savePPODCredentials: PpodCredentials;
@@ -3056,6 +3089,7 @@ export type Mutation = {
   tt_reset: Success;
   tt_swap: Success;
   tt_updateTimetableGroup: Success;
+  tt_upsertGrids: Success;
   tt_upsertSubjectGroup: Success;
   ttsolve_clearTimeslots: TtSolve_SovlerStatus;
   ttsolve_currentBest: TtSolve_SovlerStatus;
@@ -3472,6 +3506,11 @@ export type MutationNotes_UpsertNotesTagsArgs = {
 };
 
 
+export type MutationOptions_PublishArgs = {
+  input?: InputMaybe<OptionsPublish>;
+};
+
+
 export type MutationOptions_SaveOptionsArgs = {
   input?: InputMaybe<SaveOptions>;
 };
@@ -3564,6 +3603,11 @@ export type MutationTt_SwapArgs = {
 
 export type MutationTt_UpdateTimetableGroupArgs = {
   input: Tt_UpdateTimetableGroupInput;
+};
+
+
+export type MutationTt_UpsertGridsArgs = {
+  input: TtUpsertGrids;
 };
 
 
@@ -3778,7 +3822,7 @@ export type Notes_StudentBehaviour = {
   incidentDate: Scalars['Date'];
   noteId: Scalars['Long'];
   referencedParties: Array<Person>;
-  referencedPartiesIds: Array<Scalars['Long']>;
+  referencedPartyIds: Array<Scalars['Long']>;
   tagIds?: Maybe<Array<Maybe<Scalars['Int']>>>;
   tags?: Maybe<Array<Maybe<Notes_Tag>>>;
   takenBy: Person;
@@ -3966,8 +4010,11 @@ export type Option = {
   academicNamespaceId: Scalars['Int'];
   id: Scalars['Int'];
   name: Scalars['String'];
+  parentsDescription?: Maybe<Scalars['String']>;
+  parentsDueByDate?: Maybe<Scalars['Date']>;
   prefix?: Maybe<Scalars['String']>;
-  publishToParents: Scalars['Boolean'];
+  publishedToParents: Scalars['Boolean'];
+  publishedToParentsOn?: Maybe<Scalars['DateTime']>;
   studentPartyIds?: Maybe<Array<Scalars['Long']>>;
   /** deep linked */
   students?: Maybe<Array<Person>>;
@@ -3989,6 +4036,7 @@ export type OptionSubjectSet = {
   canChoose: Scalars['Int'];
   id: OptionsId;
   mustGet: Scalars['Int'];
+  name: Scalars['String'];
   poolIdx?: Maybe<Scalars['Int']>;
   subjectIds: Array<Scalars['Int']>;
   /** deep linked */
@@ -3999,6 +4047,13 @@ export type OptionsId = {
   __typename?: 'OptionsId';
   idx: Scalars['Int'];
   optionId: Scalars['Int'];
+};
+
+export type OptionsPublish = {
+  description?: InputMaybe<Scalars['String']>;
+  dueByDate?: InputMaybe<Scalars['Date']>;
+  optionId: Scalars['Int'];
+  publish: Scalars['Boolean'];
 };
 
 export type OverallComments = {
@@ -4223,9 +4278,11 @@ export type PartyTypeFilter = {
 export type Payment = {
   __typename?: 'Payment';
   amount: Scalars['Float'];
+  cardType: Scalars['String'];
   fee: Fee;
   id: Scalars['Int'];
-  payeeName: Scalars['String'];
+  payee: Person;
+  payeePartyId: Scalars['Long'];
   paymentIntentId: Scalars['String'];
   paymentStatus: PaymentStatus;
   studentPartyId: Scalars['Long'];
@@ -4236,6 +4293,7 @@ export type PaymentFilter = {
   ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   paymentIntentId?: InputMaybe<Scalars['String']>;
+  status?: InputMaybe<PaymentStatus>;
 };
 
 export enum PaymentMethod {
@@ -4811,6 +4869,7 @@ export type Query = {
   swm_substitutions: Array<Swm_Substitution>;
   tt_addLessonOptions: Tt_AddLessonOptions;
   tt_editLessonOptions: Tt_AddLessonOptions;
+  tt_grids: Array<TtGrid>;
   tt_groups: Array<Tt_Groups>;
   tt_individualLessons: Array<TtIndividualViewLesson>;
   tt_resourceTimetableView: TtResourceTimetableView;
@@ -4818,6 +4877,7 @@ export type Query = {
   tt_swapTeacherOptions: TtSwapTeacherOptions;
   tt_timetable: TtTimetable;
   tt_timetables: Array<TtTimetable>;
+  ttsolve_getSolverInput?: Maybe<TtSolve_SolverInput>;
   users_permissionGroups?: Maybe<Array<Maybe<PermissionGroup>>>;
   users_permissionSets?: Maybe<Array<Maybe<PermissionSet>>>;
   users_schoolInfo?: Maybe<SchoolInfo>;
@@ -5323,6 +5383,11 @@ export type QueryTt_EditLessonOptionsArgs = {
 };
 
 
+export type QueryTt_GridsArgs = {
+  filter: TtGridFilter;
+};
+
+
 export type QueryTt_GroupsArgs = {
   filter: Tt_GroupsFilter;
 };
@@ -5355,6 +5420,11 @@ export type QueryTt_TimetableArgs = {
 
 export type QueryTt_TimetablesArgs = {
   filter?: InputMaybe<TtTimetableListFilter>;
+};
+
+
+export type QueryTtsolve_GetSolverInputArgs = {
+  filter: TtSolve_SolveParams;
 };
 
 
@@ -6363,7 +6433,6 @@ export type SaveOptions = {
   id?: InputMaybe<Scalars['Int']>;
   name: Scalars['String'];
   prefix?: InputMaybe<Scalars['String']>;
-  publishToParents: Scalars['Boolean'];
   studentPartyIds?: InputMaybe<Array<Scalars['Long']>>;
   subjectSets: Array<SaveSubjectSet>;
   yearGroupEnrolmentPartyId: Scalars['Long'];
@@ -6602,6 +6671,7 @@ export type SaveSubjectSet = {
   canChoose: Scalars['Int'];
   idx?: InputMaybe<Scalars['Int']>;
   mustGet: Scalars['Int'];
+  name: Scalars['String'];
   poolIdx?: InputMaybe<Scalars['Int']>;
   subjectIds: Array<Scalars['Int']>;
 };
@@ -7746,6 +7816,7 @@ export type TtEditLessonPeriodInstanceWrapper = {
 /** ## Creates or replaces grid on calendar */
 export type TtGrid = {
   __typename?: 'TTGrid';
+  appliesToYearGroupIds: Array<Scalars['Int']>;
   /**  date grid is val from. null means the start of the calendar date */
   days?: Maybe<Array<Maybe<TtGridDay>>>;
   description?: Maybe<Scalars['String']>;
@@ -7758,6 +7829,7 @@ export type TtGridDay = {
   __typename?: 'TTGridDay';
   /**  iso day of week. 1 monday .. 7 sunday */
   dayOfWeek: Scalars['Int'];
+  halfDayAfterPeriod: Scalars['Int'];
   /**  the distinct number and order for the days */
   idx: Scalars['Int'];
   periods: Array<TtGridPeriod>;
@@ -8018,6 +8090,7 @@ export type TtUpsertBlockClassGroupLink = {
 };
 
 export type TtUpsertGrid = {
+  appliesToyearGroupIds?: InputMaybe<Array<Scalars['Int']>>;
   days?: InputMaybe<Array<InputMaybe<TtUpsertGridDay>>>;
   description?: InputMaybe<Scalars['String']>;
   idx: Scalars['Int'];
@@ -8030,6 +8103,7 @@ export type TtUpsertGrid = {
 export type TtUpsertGridDay = {
   /**  iso day of week. 1 monday .. 7 sunday */
   dayOfWeek: Scalars['Int'];
+  halfDayAfterPeriod: Scalars['Int'];
   /**  the distinct number and order for the days */
   idx: Scalars['Int'];
   periods: Array<TtUpsertGridPeriod>;
@@ -8042,6 +8116,11 @@ export type TtUpsertGridPeriod = {
   /**  periods are sequential with no gapes between them */
   startTime: Scalars['Time'];
   type: TtGridPeriodType;
+};
+
+export type TtUpsertGrids = {
+  grids: Array<TtUpsertGrid>;
+  timetableId: Scalars['Int'];
 };
 
 export type TtUpsertLessonPeriod = {
@@ -8212,6 +8291,11 @@ export type Trustee = {
 
 export type TtSolve_SolveParams = {
   timetableId: Scalars['Int'];
+};
+
+export type TtSolve_SolverInput = {
+  __typename?: 'TtSolve_SolverInput';
+  input?: Maybe<Scalars['Object']>;
 };
 
 export type TtSolve_SovlerStatus = {
