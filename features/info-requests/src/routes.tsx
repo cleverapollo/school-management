@@ -37,6 +37,8 @@ export const getRoutes: NavObjectFunction = (t) => [
               const url = new URL(request.url);
               const name = url.searchParams.get('name');
               const provider = url.searchParams.get('provider');
+              const forPartyId = url.searchParams.get('forPartyId');
+              const objectId = url.searchParams.get('objectId');
 
               if (!name || !provider) {
                 return throw404Error();
@@ -46,6 +48,8 @@ export const getRoutes: NavObjectFunction = (t) => [
                 id: {
                   name,
                   provider,
+                  forPartyId: Number(forPartyId),
+                  objectId: Number(objectId),
                 },
               });
             },
