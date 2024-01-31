@@ -41,6 +41,7 @@ export function OverdueAttendanceWidget() {
 
   const toDate = dayjs();
   const fromDate = toDate.subtract(10, 'day');
+  const partyId = activeProfile?.partyId;
 
   const { data, isLoading } = useRunReports({
     topReportId: 'overdue-lesson-attendance',
@@ -57,7 +58,7 @@ export function OverdueAttendanceWidget() {
         },
         {
           filterId: 'staff',
-          filterValue: activeProfile?.partyId ? [activeProfile?.partyId] : [],
+          filterValue: partyId ? [partyId] : [],
         },
       ],
     },
@@ -103,7 +104,7 @@ export function OverdueAttendanceWidget() {
               filters: {
                 from_date: fromDate,
                 to_date: toDate,
-                staff: activeProfile?.partyId ? [activeProfile?.partyId] : [],
+                staff: partyId ? [partyId] : [],
               },
             })}
           >

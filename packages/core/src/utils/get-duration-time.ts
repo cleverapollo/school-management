@@ -8,19 +8,26 @@ export const getHumanizedTime = (minutes: number, t: TFunction<'common'>) => {
   const timeDuration = dayjs.duration(minutes, 'minutes');
 
   if (timeDuration.asYears() >= 1) {
-    return `${Math.floor(timeDuration.asYears())}${t('timePostfix.year')}`;
+    return t('timePostfix.year', { year: Math.floor(timeDuration.asYears()) });
   }
+
   if (timeDuration.asMonths() >= 1) {
-    return `${Math.floor(timeDuration.asMonths())}${t('timePostfix.month')}`;
+    return t('timePostfix.month', {
+      month: Math.floor(timeDuration.asMonths()),
+    });
   }
+
   if (timeDuration.asWeeks() >= 1) {
-    return `${Math.floor(timeDuration.asYears())}${t('timePostfix.week')}`;
+    return t('timePostfix.week', { week: Math.floor(timeDuration.asWeeks()) });
   }
+
   if (timeDuration.asDays() >= 1) {
-    return `${Math.floor(timeDuration.asDays())}${t('timePostfix.day')}`;
+    return t('timePostfix.day', { day: Math.floor(timeDuration.asDays()) });
   }
+
   if (timeDuration.asHours() >= 1) {
-    return `${Math.floor(timeDuration.asHours())}${t('timePostfix.hour')}`;
+    return t('timePostfix.hour', { hour: Math.floor(timeDuration.asHours()) });
   }
-  return `${minutes}${t('timePostfix.minute')}`;
+
+  return t('timePostfix.minute', { minute: minutes });
 };

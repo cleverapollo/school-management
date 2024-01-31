@@ -326,11 +326,11 @@
   "paid": "Paid",
   "published": "Published",
   "timePostfix": {
-    "year": "y",
-    "month": "mo",
-    "week": "w",
-    "day": "d",
-    "hour": "h",
-    "minute": "m"
+    "year": "{{year}}y",
+    "month": "{{month}}mo",
+    "week": "{{week}}w",
+    "day": "{{day}}d",
+    "hour": "{{hour}}h",
+    "minute": "{{minute}}m"
   }
 }
