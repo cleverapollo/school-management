@@ -42,7 +42,7 @@ export const FieldGroup = <Fields extends FieldValues>({
   group: Forms_FormFieldGroup;
   control: Control<Fields, any>;
 }) => (
-  <Card variant="outlined">
+  <Card>
     <CardHeader component="h2" title={group.header} />
     <Stack direction="column" gap={3} p={3}>
       {group.fields?.map((field) => {

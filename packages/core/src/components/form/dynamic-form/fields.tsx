@@ -55,15 +55,6 @@ export const Field = <Fields extends FieldValues>({
   gridWidth,
   control,
 }: FieldProps<Fields>) => {
-  console.log({
-    id,
-    label,
-    type,
-    options,
-    gridWidth,
-    control,
-  });
-
   const nonBlankLabel = label ?? '';
   const PresetGrid = useCallback(
     ({ children }: { children: React.ReactNode }) => {

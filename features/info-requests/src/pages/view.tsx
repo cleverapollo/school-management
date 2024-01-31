@@ -1,3 +1,4 @@
+import { Card, CardContent, Stack } from '@mui/material';
 import {
   ConfirmDialog,
   DynamicForm,
@@ -59,6 +60,11 @@ export default function InfoRequestFormView() {
             ],
           }}
         />
+        {setupInfo?.description && (
+          <Card>
+            <CardContent>{setupInfo.description}</CardContent>
+          </Card>
+        )}
         <DynamicForm
           formSettings={setupInfo}
           onSubmit={async (fields) => {
@@ -68,11 +74,6 @@ export default function InfoRequestFormView() {
                 fields,
                 validateOnly: false,
               });
-
-            console.log({
-              fields,
-              formResponse,
-            });
 
             if (formResponse.success) {
               toast(t('common:snackbarMessages.createSuccess'));

@@ -2421,7 +2421,8 @@ export enum FeeType {
 export enum FileTransferFeature {
   PartyPhotos = 'PARTY_PHOTOS',
   StudentDocs = 'STUDENT_DOCS',
-  Temporary = 'TEMPORARY'
+  Temporary = 'TEMPORARY',
+  TenantPhoto = 'TENANT_PHOTO'
 }
 
 export type FileTransferFilter = {
@@ -2468,6 +2469,21 @@ export type FindFreeResourcesTime = {
   toDate: Scalars['Date'];
 };
 
+export type FormRequestStatus = {
+  __typename?: 'FormRequestStatus';
+  id: Scalars['String'];
+  personPartyId: Scalars['Long'];
+  requestType: InfoRequestType;
+  status: RequestStatus;
+};
+
+export type FormRequestStatusInput = {
+  id?: InputMaybe<Scalars['String']>;
+  personPartyId?: InputMaybe<Scalars['Long']>;
+  status?: InputMaybe<RequestStatus>;
+  type?: InputMaybe<InfoRequestType>;
+};
+
 export enum Form_FormFieldItemType {
   Checkbox = 'CHECKBOX',
   Date = 'DATE',
@@ -2483,12 +2499,6 @@ export enum Form_FormFieldItemType {
 }
 
 export type Forms_FormField = Forms_FormFieldItem | Forms_FormFieldSubGroup;
-
-export type Forms_FormFieldDefaultValue = {
-  __typename?: 'Forms_FormFieldDefaultValue';
-  id: Scalars['String'];
-  name: Scalars['String'];
-};
 
 export type Forms_FormFieldGridWidth = {
   __typename?: 'Forms_FormFieldGridWidth';
@@ -2507,7 +2517,7 @@ export type Forms_FormFieldGroup = {
 
 export type Forms_FormFieldItem = {
   __typename?: 'Forms_FormFieldItem';
-  defaultValue?: Maybe<Forms_FormFieldDefaultValue>;
+  defaultValue?: Maybe<Scalars['String']>;
   formFieldType: Forms_FormFieldType;
   gridWidth: Forms_FormFieldGridWidth;
   id: Scalars['String'];
@@ -2559,10 +2569,12 @@ export type Forms_FormListing = {
   id: Forms_FormId;
   isComplete?: Maybe<Scalars['Boolean']>;
   name: Scalars['String'];
+  status: RequestStatus;
 };
 
 export type Forms_FormView = {
   __typename?: 'Forms_FormView';
+  description?: Maybe<Scalars['String']>;
   fields: Array<Forms_FormFieldGroup>;
   id: Forms_FormId;
   title?: Maybe<Scalars['String']>;
@@ -2575,6 +2587,12 @@ export type Forms_InformationRequestListFormFilter = {
 
 export type Forms_InformationRequestViewFormFilter = {
   id: Forms_FormIdInput;
+};
+
+export type Forms_StatusFilter = {
+  id?: InputMaybe<Scalars['String']>;
+  personPartyId?: InputMaybe<Scalars['Long']>;
+  requestType?: InputMaybe<InfoRequestType>;
 };
 
 export type Forms_SubmitFormFieldInput = {
@@ -2817,6 +2835,10 @@ export type InfoRequestOption = {
   /** deep linked */
   requestFor: Person;
 };
+
+export enum InfoRequestType {
+  Options = 'OPTIONS'
+}
 
 export type InputAddress = {
   active: Scalars['Boolean'];
@@ -3933,6 +3955,7 @@ export type NotificationMetaData = {
   feeId?: Maybe<Scalars['Int']>;
   mailId?: Maybe<Scalars['Long']>;
   notificationType: NotificationType;
+  optionId?: Maybe<Scalars['Int']>;
   partyId?: Maybe<Scalars['Long']>;
   studentPartyId?: Maybe<Scalars['Long']>;
 };
@@ -3941,6 +3964,7 @@ export type NotificationMetaDataInput = {
   feeId?: InputMaybe<Scalars['Int']>;
   mailId?: InputMaybe<Scalars['Long']>;
   notificationType: NotificationType;
+  optionId?: InputMaybe<Scalars['Int']>;
   partyId?: InputMaybe<Scalars['Long']>;
   studentPartyId?: InputMaybe<Scalars['Long']>;
 };
@@ -3995,6 +4019,7 @@ export enum NotificationType {
   Fee = 'FEE',
   Individual = 'INDIVIDUAL',
   Mail = 'MAIL',
+  Options = 'OPTIONS',
   Substitution = 'SUBSTITUTION',
   Timetable = 'TIMETABLE',
   Wellbeing = 'WELLBEING'
@@ -5737,6 +5762,12 @@ export type Reporting_TimeGroupByValues = {
   name: Scalars['String'];
 };
 
+export enum RequestStatus {
+  Complete = 'COMPLETE',
+  Incomplete = 'INCOMPLETE',
+  PartiallyComplete = 'PARTIALLY_COMPLETE'
+}
+
 export type ResourceCalendar = {
   events: Array<CalendarEvent>;
   resourceId: Scalars['Long'];
@@ -6739,6 +6770,7 @@ export type SchoolAddress = {
 export type SchoolInfo = {
   __typename?: 'SchoolInfo';
   addresses?: Maybe<Array<Maybe<SchoolAddress>>>;
+  avatarUrl?: Maybe<Scalars['String']>;
   boardOfManagement?: Maybe<Scalars['Boolean']>;
   boardingFeeFiveDay?: Maybe<Scalars['BigDecimal']>;
   boardingFeeSixOrSevenDay?: Maybe<Scalars['BigDecimal']>;
@@ -9429,14 +9461,14 @@ export type Forms_ListInformationRequestFormsQueryVariables = Exact<{
 }>;
 
 
-export type Forms_ListInformationRequestFormsQuery = { __typename?: 'Query', forms_listInformationRequestForms: Array<{ __typename?: 'Forms_FormListing', name: string, isComplete?: boolean | null, completionDate?: string | null, dueDate?: string | null, id: { __typename?: 'Forms_FormId', name: string, provider: string, forPartyId?: number | null, objectId?: number | null }, forPerson: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null } }> };
+export type Forms_ListInformationRequestFormsQuery = { __typename?: 'Query', forms_listInformationRequestForms: Array<{ __typename?: 'Forms_FormListing', name: string, status: RequestStatus, completionDate?: string | null, dueDate?: string | null, id: { __typename?: 'Forms_FormId', name: string, provider: string, forPartyId?: number | null, objectId?: number | null }, forPerson: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null } }> };
 
 export type Forms_ViewInformationRequestFormsQueryVariables = Exact<{
   filter?: InputMaybe<Forms_InformationRequestViewFormFilter>;
 }>;
 
 
-export type Forms_ViewInformationRequestFormsQuery = { __typename?: 'Query', forms_viewInformationRequestForms: { __typename?: 'Forms_FormView', title?: string | null, id: { __typename?: 'Forms_FormId', name: string, provider: string, forPartyId?: number | null, objectId?: number | null }, fields: Array<{ __typename?: 'Forms_FormFieldGroup', header: string, fields: Array<{ __typename: 'Forms_FormFieldItem', formFieldType: Forms_FormFieldType, id: string, label: string, type: Form_FormFieldItemType, options: Array<{ __typename?: 'Forms_FormFieldSelectOptions', id: string, name: string }>, gridWidth: { __typename?: 'Forms_FormFieldGridWidth', xs?: number | null, sm?: number | null, md?: number | null, lg?: number | null, xl?: number | null } } | { __typename: 'Forms_FormFieldSubGroup', formFieldType: Forms_FormFieldType, header: string, fields: Array<{ __typename?: 'Forms_FormFieldItem', formFieldType: Forms_FormFieldType, id: string, label: string, type: Form_FormFieldItemType, options: Array<{ __typename?: 'Forms_FormFieldSelectOptions', id: string, name: string }>, gridWidth: { __typename?: 'Forms_FormFieldGridWidth', xs?: number | null, sm?: number | null, md?: number | null, lg?: number | null, xl?: number | null } }>, gridWidth: { __typename?: 'Forms_FormFieldGridWidth', xs?: number | null, sm?: number | null, md?: number | null, lg?: number | null, xl?: number | null } }> }> } };
+export type Forms_ViewInformationRequestFormsQuery = { __typename?: 'Query', forms_viewInformationRequestForms: { __typename?: 'Forms_FormView', title?: string | null, description?: string | null, id: { __typename?: 'Forms_FormId', name: string, provider: string, forPartyId?: number | null, objectId?: number | null }, fields: Array<{ __typename?: 'Forms_FormFieldGroup', header: string, fields: Array<{ __typename: 'Forms_FormFieldItem', formFieldType: Forms_FormFieldType, id: string, label: string, type: Form_FormFieldItemType, defaultValue?: string | null, options: Array<{ __typename?: 'Forms_FormFieldSelectOptions', id: string, name: string }>, gridWidth: { __typename?: 'Forms_FormFieldGridWidth', xs?: number | null, sm?: number | null, md?: number | null, lg?: number | null, xl?: number | null } } | { __typename: 'Forms_FormFieldSubGroup', formFieldType: Forms_FormFieldType, header: string, fields: Array<{ __typename?: 'Forms_FormFieldItem', formFieldType: Forms_FormFieldType, id: string, label: string, type: Form_FormFieldItemType, options: Array<{ __typename?: 'Forms_FormFieldSelectOptions', id: string, name: string }>, gridWidth: { __typename?: 'Forms_FormFieldGridWidth', xs?: number | null, sm?: number | null, md?: number | null, lg?: number | null, xl?: number | null } }>, gridWidth: { __typename?: 'Forms_FormFieldGridWidth', xs?: number | null, sm?: number | null, md?: number | null, lg?: number | null, xl?: number | null } }> }> } };
 
 export type Forms_SubmitInformationRequestFormsMutationVariables = Exact<{
   input: Forms_SubmitFormInput;
@@ -10539,8 +10571,8 @@ export const SupportGroupByIdDocument = {"kind":"Document","definitions":[{"kind
 export const YearGroupsListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"yearGroupsList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"YearGroupEnrollmentFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_yearGroupEnrollments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"yearGroupEnrollmentPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nationalCode"}},{"kind":"Field","name":{"kind":"Name","value":"yearGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"shortName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"yearGroupLeads"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"studentMembers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"memberCount"}}]}}]}}]}}]} as unknown as DocumentNode<YearGroupsListQuery, YearGroupsListQueryVariables>;
 export const YearGroupByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"yearGroupById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"YearGroupEnrollmentFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_yearGroupEnrollments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"yearGroupEnrollmentPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"students"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"classGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tutors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"extensions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"priority"}}]}}]}}]}}]}}]} as unknown as DocumentNode<YearGroupByIdQuery, YearGroupByIdQueryVariables>;
 export const Core_UpdateYearGroupEnrollmentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_updateYearGroupEnrollments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateYearGroupEnrollmentInput"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_updateYearGroupEnrollments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Core_UpdateYearGroupEnrollmentsMutation, Core_UpdateYearGroupEnrollmentsMutationVariables>;
-export const Forms_ListInformationRequestFormsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"forms_listInformationRequestForms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Forms_InformationRequestListFormFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"forms_listInformationRequestForms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"forPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"objectId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"isComplete"}},{"kind":"Field","name":{"kind":"Name","value":"completionDate"}},{"kind":"Field","name":{"kind":"Name","value":"dueDate"}},{"kind":"Field","name":{"kind":"Name","value":"forPerson"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]} as unknown as DocumentNode<Forms_ListInformationRequestFormsQuery, Forms_ListInformationRequestFormsQueryVariables>;
-export const Forms_ViewInformationRequestFormsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"forms_viewInformationRequestForms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Forms_InformationRequestViewFormFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"forms_viewInformationRequestForms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"forPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"objectId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"header"}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Forms_FormFieldSubGroup"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"formFieldType"}},{"kind":"Field","name":{"kind":"Name","value":"header"}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"formFieldType"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"options"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"gridWidth"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"xs"}},{"kind":"Field","name":{"kind":"Name","value":"sm"}},{"kind":"Field","name":{"kind":"Name","value":"md"}},{"kind":"Field","name":{"kind":"Name","value":"lg"}},{"kind":"Field","name":{"kind":"Name","value":"xl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"gridWidth"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"xs"}},{"kind":"Field","name":{"kind":"Name","value":"sm"}},{"kind":"Field","name":{"kind":"Name","value":"md"}},{"kind":"Field","name":{"kind":"Name","value":"lg"}},{"kind":"Field","name":{"kind":"Name","value":"xl"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Forms_FormFieldItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"formFieldType"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"options"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"gridWidth"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"xs"}},{"kind":"Field","name":{"kind":"Name","value":"sm"}},{"kind":"Field","name":{"kind":"Name","value":"md"}},{"kind":"Field","name":{"kind":"Name","value":"lg"}},{"kind":"Field","name":{"kind":"Name","value":"xl"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<Forms_ViewInformationRequestFormsQuery, Forms_ViewInformationRequestFormsQueryVariables>;
+export const Forms_ListInformationRequestFormsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"forms_listInformationRequestForms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Forms_InformationRequestListFormFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"forms_listInformationRequestForms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"forPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"objectId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"completionDate"}},{"kind":"Field","name":{"kind":"Name","value":"dueDate"}},{"kind":"Field","name":{"kind":"Name","value":"forPerson"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]} as unknown as DocumentNode<Forms_ListInformationRequestFormsQuery, Forms_ListInformationRequestFormsQueryVariables>;
+export const Forms_ViewInformationRequestFormsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"forms_viewInformationRequestForms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Forms_InformationRequestViewFormFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"forms_viewInformationRequestForms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"forPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"objectId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"header"}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Forms_FormFieldSubGroup"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"formFieldType"}},{"kind":"Field","name":{"kind":"Name","value":"header"}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"formFieldType"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"options"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"gridWidth"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"xs"}},{"kind":"Field","name":{"kind":"Name","value":"sm"}},{"kind":"Field","name":{"kind":"Name","value":"md"}},{"kind":"Field","name":{"kind":"Name","value":"lg"}},{"kind":"Field","name":{"kind":"Name","value":"xl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"gridWidth"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"xs"}},{"kind":"Field","name":{"kind":"Name","value":"sm"}},{"kind":"Field","name":{"kind":"Name","value":"md"}},{"kind":"Field","name":{"kind":"Name","value":"lg"}},{"kind":"Field","name":{"kind":"Name","value":"xl"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Forms_FormFieldItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"formFieldType"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"options"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"gridWidth"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"xs"}},{"kind":"Field","name":{"kind":"Name","value":"sm"}},{"kind":"Field","name":{"kind":"Name","value":"md"}},{"kind":"Field","name":{"kind":"Name","value":"lg"}},{"kind":"Field","name":{"kind":"Name","value":"xl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"defaultValue"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<Forms_ViewInformationRequestFormsQuery, Forms_ViewInformationRequestFormsQueryVariables>;
 export const Forms_SubmitInformationRequestFormsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"forms_submitInformationRequestForms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Forms_SubmitFormInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"forms_submitInformationRequestForms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"validations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fieldErrors"}},{"kind":"Field","name":{"kind":"Name","value":"globalErrors"}}]}}]}}]}}]} as unknown as DocumentNode<Forms_SubmitInformationRequestFormsMutation, Forms_SubmitInformationRequestFormsMutationVariables>;
 export const Communications_LabelDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_label"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"LabelFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_label"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]} as unknown as DocumentNode<Communications_LabelQuery, Communications_LabelQueryVariables>;
 export const Update_Communications_LabelDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"update_communications_label"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"LabelInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_saveLabel"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}}]}}]} as unknown as DocumentNode<Update_Communications_LabelMutation, Update_Communications_LabelMutationVariables>;

@@ -14,16 +14,21 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import { useMemo } from 'react';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { Box, Stack, Tooltip } from '@mui/material';
+import { Stack, Tooltip } from '@mui/material';
 import {
   ReturnTypeFromUseInfoRequestFormList,
   useInfoRequestFormList,
 } from '../api/form-list';
+import { InfoRequestStatusChip } from '../components/status-chip';
 
 dayjs.extend(LocalizedFormat);
 
 const getColumnDefs = (
-  t: TFunction<'common'[], undefined, 'common'[]>,
+  t: TFunction<
+    ('common' | 'infoRequests')[],
+    undefined,
+    ('common' | 'infoRequests')[]
+  >,
   displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseInfoRequestFormList>['columnDefs'] => [
   {
@@ -66,12 +71,12 @@ const getColumnDefs = (
     valueGetter: ({ data }) => dayjs(data?.dueDate).format('lll'),
   },
   {
-    field: 'isComplete',
-    headerName: t('common:complete'),
+    field: 'status',
+    headerName: t('common:status'),
     valueGetter: ({ data }) => {
       if (!data) return null;
 
-      return data.isComplete ? t('common:yes') : t('common:no');
+      return t(`infoRequests:status.${data.status}`);
     },
     cellRenderer: ({
       data,
@@ -89,7 +94,7 @@ const getColumnDefs = (
           }
         >
           <Stack justifyContent="center">
-            <TableBooleanValue value={!!data.isComplete} />
+            <InfoRequestStatusChip status={data.status} />
           </Stack>
         </Tooltip>
       );

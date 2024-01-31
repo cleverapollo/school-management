@@ -5,9 +5,9 @@ import {
   Forms_SubmitFormInput,
   Forms_SubmitFormResponse,
 } from '@tyro/api';
-import { FieldValues, Path, useForm } from 'react-hook-form';
+import { DefaultValues, FieldValues, Path, useForm } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
-import { useMemo, useState, useRef } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { LoadingPlaceholderContainer } from '../../loading-placeholder';
 import { FieldGroup } from './group';
 
@@ -24,9 +24,37 @@ export const DynamicForm = <Fields extends FieldValues>({
   onSubmit,
   onCancel,
 }: DynamicFormProps) => {
-  const globalErrorRef = useRef<HTMLDivElement>(null);
+  const [globalErrorRef, setGlobalErrorRef] = useState<HTMLDivElement | null>(
+    null
+  );
   const { t } = useTranslation(['common']);
-  const { control, handleSubmit, setError } = useForm<Fields>();
+  const defaultValues = useMemo(
+    () =>
+      formSettings?.fields?.reduce<Record<string, string>>((acc, group) => {
+        group.fields?.forEach((field) => {
+          if (
+            field.__typename === 'Forms_FormFieldItem' &&
+            field.defaultValue
+          ) {
+            acc[field.id] = field.defaultValue;
+          }
+
+          if (field.__typename === 'Forms_FormFieldSubGroup') {
+            field.fields?.forEach((subField) => {
+              if (subField.defaultValue) {
+                acc[subField.id] = subField.defaultValue ?? '';
+              }
+            });
+          }
+        });
+        return acc;
+      }, {}) ?? {},
+    [formSettings]
+  ) as DefaultValues<Fields>;
+
+  const { control, handleSubmit, setError } = useForm<Fields>({
+    defaultValues,
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalErrors, setGlobalErrors] = useState<string[]>([]);
 
@@ -80,21 +108,24 @@ export const DynamicForm = <Fields extends FieldValues>({
       });
 
       setGlobalErrors(validations?.globalErrors ?? []);
-      if (hasGlobalErrors) {
-        globalErrorRef.current?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-        });
-      }
     }
     setIsSubmitting(false);
   };
 
+  useEffect(() => {
+    if (globalErrorRef) {
+      globalErrorRef.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  }, [globalErrorRef]);
+
   return (
     <LoadingPlaceholderContainer isLoading={!formSettings}>
       <Stack component="form" onSubmit={handleSubmit(requestSubmit)} gap={3}>
-        <Box ref={globalErrorRef}>
-          {globalErrors.length > 0 && (
+        {globalErrors.length > 0 && (
+          <Box ref={(ref: HTMLDivElement) => setGlobalErrorRef(ref)}>
             <Alert severity="error">
               <AlertTitle>Please fix the following errors</AlertTitle>
 
@@ -104,8 +135,8 @@ export const DynamicForm = <Fields extends FieldValues>({
                 ))}
               </Box>
             </Alert>
-          )}
-        </Box>
+          </Box>
+        )}
         {formSettings?.fields?.map((fieldGroup) => (
           <FieldGroup
             key={fieldGroup?.header}

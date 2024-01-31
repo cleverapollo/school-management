@@ -20,7 +20,7 @@ const infoRequestFormList = graphql(/* GraphQL */ `
         forPartyId
         objectId
       }
-      isComplete
+      status
       completionDate
       dueDate
       forPerson {

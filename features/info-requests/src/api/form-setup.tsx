@@ -20,6 +20,7 @@ const infoRequestFormSetupDetails = graphql(/* GraphQL */ `
         objectId
       }
       title
+      description
       fields {
         header
         fields {
@@ -68,6 +69,7 @@ const infoRequestFormSetupDetails = graphql(/* GraphQL */ `
               lg
               xl
             }
+            defaultValue
           }
         }
       }
