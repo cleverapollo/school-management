@@ -10,10 +10,10 @@ export function useFormatNumber() {
         value: number,
         options?: Intl.NumberFormatOptions & { language?: AvailableLanguages }
       ) => {
-        const { language, ...intlOptions } = options ?? {};
+        const { language, currency, ...intlOptions } = options ?? {};
         return new Intl.NumberFormat(language ?? languageCode, {
           style: 'currency',
-          currency: 'EUR',
+          currency: currency || 'EUR',
           ...intlOptions,
         }).format(value);
       },

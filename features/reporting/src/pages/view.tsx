@@ -1,14 +1,19 @@
-import { GridOptions, Table } from '@tyro/core';
+import { ICellRendererParams, Table, TableProps } from '@tyro/core';
 import { Reporting_TableFilterInput } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { Color, Palette, useTheme } from '@mui/material';
+
 import { useRunReports } from '../api/run-report';
 import { DynamicForm } from '../components/dynamic-form';
-
-type GenericReportData = Array<{ [key: string]: GenericReportDataCell }>;
-type GenericReportDataCell = { value: any; colour: string };
-type FormattedReportData = Array<{ [key: string]: GenericReportDataCell }>;
+import {
+  ExtendedReportData,
+  ExtendedTableReportField,
+  ReportCellType,
+  ReportColumnDef,
+} from '../components/types';
+import { useFormatTableValues } from '../hooks/use-format-values';
+import { mockTableReport } from './mock-custom-values';
 
 const getFiltersFromSearchParams = (
   searchParams: URLSearchParams
@@ -44,7 +49,9 @@ export default function ReportPage() {
     groupings?: string[];
     timeGrouping?: string;
   }>({});
+
   const { palette } = useTheme();
+  const { valueGetters, cellRenders } = useFormatTableValues();
 
   const {
     data: reportData,
@@ -59,59 +66,113 @@ export default function ReportPage() {
     },
   });
 
-  const mainColumns = useMemo<
-    GridOptions<FormattedReportData[number]>['columnDefs']
-  >(() => {
-    const fieldsColumns = reportData?.fields || [];
-    return fieldsColumns.map((column) => {
-      // @ts-expect-error
-      const valueGetter = ({ data }) => {
+  const mainColumns = useMemo<ReportColumnDef[]>(() => {
+    const fields = (reportData?.fields || []) as ExtendedTableReportField[];
+
+    // NOTE: only for testing purposes
+    // const mockFields = mockTableReport.fields;
+
+    return fields.map<ReportColumnDef>((column) => ({
+      field: column.id,
+      headerName: column.label,
+      valueGetter: ({ data }) => {
         if (!data) return null;
+        const value = data[column.id];
 
-        const value = data[column.id] as GenericReportDataCell;
-        return value?.value;
-      };
+        switch (column.cellType) {
+          case ReportCellType.Person: {
+            return valueGetters.getPersonValue(value);
+          }
+          case ReportCellType.PartyGroup: {
+            return valueGetters.getPartyGroupValue(value);
+          }
+          case ReportCellType.Date: {
+            return valueGetters.getDateValue(value, column);
+          }
+          case ReportCellType.Currency: {
+            return valueGetters.getCurrencyValue(value, column);
+          }
+          case ReportCellType.Boolean: {
+            return valueGetters.getBooleanValue(value);
+          }
+          case ReportCellType.PhoneNumber: {
+            return valueGetters.getPhoneNumberValue(value);
+          }
+          case ReportCellType.Chip: {
+            return valueGetters.getChipValue(value);
+          }
+          case ReportCellType.Raw:
+          default: {
+            return valueGetters.getRawValue(value);
+          }
+        }
+      },
+      // eslint-disable-next-line react/no-unstable-nested-components
+      cellRenderer: ({ data }: ICellRendererParams<ExtendedReportData>) => {
+        if (!data) return null;
+        const value = data[column.id];
 
-      const mapped = {
-        field: column.id,
-        headerName: column.label,
-        valueGetter,
-        sortable: column.sortable,
-        initialHide: !column.visibleByDefault,
-        pinned: column.pinned ?? null,
-        cellStyle: (params: any) => {
-          if (!params?.data) return null;
+        switch (column.cellType) {
+          case ReportCellType.Person: {
+            return cellRenders.renderPersonAvatar(value, column);
+          }
+          case ReportCellType.PartyGroup: {
+            return cellRenders.renderPartyGroupAvatar(value, column);
+          }
+          case ReportCellType.Date: {
+            return valueGetters.getDateValue(value, column);
+          }
+          case ReportCellType.Currency: {
+            return valueGetters.getCurrencyValue(value, column);
+          }
+          case ReportCellType.Boolean: {
+            return cellRenders.renderBooleanValue(value);
+          }
+          case ReportCellType.PhoneNumber: {
+            return valueGetters.getPhoneNumberValue(value);
+          }
+          case ReportCellType.Chip: {
+            return cellRenders.renderChipValue(value, column);
+          }
+          case ReportCellType.Raw:
+          default: {
+            return valueGetters.getRawValue(value);
+          }
+        }
+      },
+      sortable: column.sortable,
+      initialHide: !column.visibleByDefault,
+      pinned: column.pinned ?? null,
+      wrapText: true,
+      autoHeight: true,
+      ...(column.minWidth && {
+        minWidth: column.minWidth,
+      }),
+      ...(column.maxWidth && {
+        maxWidth: column.maxWidth,
+      }),
+      cellStyle: (params) => {
+        if (!params?.data) return null;
 
-          const colour = params?.data[column.id]?.colour;
+        const colour = params?.data[column.id]?.colour;
 
-          const backgroundColor =
-            (palette?.[colour?.colour as keyof Palette] as Color)?.[
-              colour?.shade as keyof Color
-            ] ?? '';
+        const baseColorKey = colour?.colour as keyof Palette;
+        const shadeColorKey = colour?.shade as keyof Color;
+        const baseColor = palette?.[baseColorKey] as Color;
 
-          return {
-            backgroundColor,
-          };
-        },
-        ...(column.hideMenu
-          ? {
-              suppressMenu: true,
-            }
-          : {
-              filter: true,
-              enableRowGroup: true,
-            }),
-      };
-      if (column.maxWidth) {
-        // @ts-ignore
-        mapped.maxWidth = column.maxWidth;
-      }
-      if (column.minWidth) {
-        // @ts-ignore
-        mapped.minWidth = column.minWidth;
-      }
-      return mapped;
-    });
+        return {
+          backgroundColor: baseColor?.[shadeColorKey] ?? '',
+        };
+      },
+      ...(column.hideMenu
+        ? {
+            suppressMenu: true,
+          }
+        : {
+            filter: true,
+            enableRowGroup: true,
+          }),
+    }));
   }, [reportData?.fields]);
 
   const mappedFilterValues = useMemo(
@@ -131,15 +192,18 @@ export default function ReportPage() {
     [filters, reportData?.filters]
   );
 
-  const genericReportData = useMemo<FormattedReportData>(() => {
-    const reportFieldsData = (reportData?.data || []) as GenericReportData;
+  const genericReportData = useMemo<ExtendedReportData[]>(() => {
+    const reportFieldsData = (reportData?.data || []) as ExtendedReportData[];
 
-    return reportFieldsData.reduce<FormattedReportData>(
+    // NOTE: only for testing purposes
+    // const mockData = mockTableReport.data;
+
+    return reportFieldsData.reduce<ExtendedReportData[]>(
       (reportFieldData, obj) => {
         const rowData = Object.keys(obj).reduce((row, key) => {
           row[key] ??= obj[key];
           return row;
-        }, {} as FormattedReportData[number]);
+        }, {} as ExtendedReportData);
 
         return [...reportFieldData, rowData];
       },
@@ -195,16 +259,18 @@ export default function ReportPage() {
           timeGroupBy: reportData?.timeGroupBy,
         }}
       />
-      <Table<FormattedReportData[number]>
+      <Table<ExtendedReportData>
         isLoading={isLoading}
         rowData={genericReportData}
         columnDefs={mainColumns}
-        gridOptions={{
-          ...reportData?.tableDisplayOptions?.gridOptions,
-        }}
-        tableContainerSx={{
-          ...reportData?.tableDisplayOptions?.tableContainerSx,
-        }}
+        gridOptions={
+          reportData?.tableDisplayOptions
+            ?.gridOptions as TableProps<ExtendedReportData>['gridOptions']
+        }
+        tableContainerSx={
+          reportData?.tableDisplayOptions
+            ?.tableContainerSx as TableProps<ExtendedReportData>['tableContainerSx']
+        }
         getRowId={({ data }) => String(data?.id.value)}
         statusBar={{
           statusPanels: [
