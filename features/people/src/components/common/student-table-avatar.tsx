@@ -17,6 +17,7 @@ type TableAvatarProps = {
   AvatarProps?: CoreAvatarProps;
   avatarBackgroundColor?: string;
   size?: number;
+  hideAvatar?: boolean;
 };
 
 export function StudentTableAvatar({
@@ -27,29 +28,32 @@ export function StudentTableAvatar({
   AvatarProps,
   avatarBackgroundColor,
   size,
+  hideAvatar,
 }: TableAvatarProps) {
   const { displayName } = usePreferredNameLayout();
   const name = displayName(person);
 
   return (
     <Box display="flex" alignItems="center">
-      <StudentAvatar
-        src={person?.avatarUrl}
-        partyId={person?.partyId ?? 0}
-        name={name}
-        isPriorityStudent={isPriorityStudent}
-        hasSupportPlan={hasSupportPlan}
-        avatarBackgroundColor={avatarBackgroundColor}
-        size={size}
-        person={person}
-        ContainingButtonProps={{
-          sx: {
-            my: 1,
-            mr: 1.5,
-          },
-        }}
-        AvatarProps={{ ...AvatarProps, person }}
-      />
+      {hideAvatar ? null : (
+        <StudentAvatar
+          src={person?.avatarUrl}
+          partyId={person?.partyId ?? 0}
+          name={name}
+          isPriorityStudent={isPriorityStudent}
+          hasSupportPlan={hasSupportPlan}
+          avatarBackgroundColor={avatarBackgroundColor}
+          size={size}
+          person={person}
+          ContainingButtonProps={{
+            sx: {
+              my: 1,
+              mr: 1.5,
+            },
+          }}
+          AvatarProps={{ ...AvatarProps, person }}
+        />
+      )}
       {to ? (
         <RouterLink sx={{ fontWeight: 600 }} to={to}>
           {name}

@@ -4,6 +4,7 @@ import {
   ExtendedTableReportField,
   ReportCellType,
 } from '../components/types';
+import { Report } from '../utils/get-report-url';
 
 export const mockTableReport: {
   fields: ExtendedTableReportField[];
@@ -30,6 +31,7 @@ export const mockTableReport: {
       cellType: ReportCellType.Person,
       meta: {
         showAvatar: true,
+        enableLink: true,
       },
     },
     {
@@ -42,6 +44,7 @@ export const mockTableReport: {
       cellType: ReportCellType.Person,
       meta: {
         showAvatar: false,
+        enableLink: true,
       },
     },
     {
@@ -131,6 +134,9 @@ export const mockTableReport: {
       sortable: true,
       checkExpandedRows: false,
       cellType: ReportCellType.Raw,
+      meta: {
+        enableLink: true,
+      },
     },
     {
       id: 'absorb_fees',
@@ -194,8 +200,15 @@ export const mockTableReport: {
       },
       class_group_name: {
         value: {
-          type: PartyGroupType.ClassGroup,
+          type: PartyGroupType.SubjectGroup,
           name: '3G',
+          partyId: 112505,
+        },
+        link: {
+          profileTab: 'attendance',
+          searchParams: {
+            eventStartTime: '2024-01-30T08:55:00',
+          },
         },
       },
       card_type: {
@@ -215,6 +228,10 @@ export const mockTableReport: {
           type: PartyPersonType.Student,
           firstName: 'Winford',
           lastName: 'Rippin',
+          partyId: 106680,
+        },
+        link: {
+          profileTab: 'attendance',
         },
       },
       staff_name: {
@@ -222,6 +239,10 @@ export const mockTableReport: {
           type: PartyPersonType.Staff,
           firstName: 'Staff name a',
           lastName: 'LastName A',
+        },
+        link: {
+          report: Report.OCTOBER_RETURNS,
+          reportTab: 'school-stats',
         },
       },
       payout_date: {
@@ -248,6 +269,9 @@ export const mockTableReport: {
       },
       stripe_id: {
         value: 'pi_3Oc7J6DT811pK8VE0xZdKc45',
+        link: {
+          externalUrl: 'https://google.com',
+        },
       },
       payment_method: {
         value: {

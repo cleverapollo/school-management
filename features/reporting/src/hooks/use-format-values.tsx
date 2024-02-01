@@ -5,6 +5,7 @@ import {
   TableBooleanValue,
   TablePersonAvatar,
   usePreferredNameLayout,
+  RouterLink,
 } from '@tyro/core';
 import {
   getGroupProfileLink,
@@ -24,6 +25,58 @@ import {
   ExtendedTableReportField,
   ReportChipValue,
 } from '../components/types';
+import { getReportUrl, Report } from '../utils/get-report-url';
+
+const getCustomLink = (
+  value: ExtendedReportData[number],
+  column: ExtendedTableReportField,
+  internalUrl?: string | null
+) => {
+  if (!column.meta?.enableLink) return null;
+
+  const { report, reportFilters, reportTab } = value.link || {};
+
+  // for report links
+  if (report) {
+    switch (report) {
+      case Report.OCTOBER_RETURNS: {
+        return getReportUrl({ report, tab: reportTab });
+      }
+      case Report.STUDENT_BEHAVIOUR: {
+        return getReportUrl({
+          report,
+          filters: {
+            ...reportFilters,
+            to_date: dayjs(reportFilters?.to_date as string),
+            from_date: dayjs(reportFilters?.from_date as string),
+          },
+        });
+      }
+      default:
+        return getReportUrl({ report });
+    }
+  }
+
+  const { profileTab, searchParams } = value.link || {};
+
+  // for internal profile links
+  if (internalUrl) {
+    try {
+      const basePath = [internalUrl, profileTab].filter(Boolean).join('/');
+      const url = new URL(basePath, new URL(window.location.origin));
+
+      Object.entries(searchParams || {}).forEach(([param, paramValue]) => {
+        url.searchParams.append(param, String(paramValue ?? ''));
+      });
+
+      return url.toString();
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  return value.link?.externalUrl || null;
+};
 
 export const useFormatTableValues = () => {
   const { t } = useTranslation(['common']);
@@ -32,6 +85,24 @@ export const useFormatTableValues = () => {
 
   const getRawValue = (value: ExtendedReportData[number]) =>
     value?.value as string | number | boolean;
+
+  const renderRawValue = (
+    value: ExtendedReportData[number],
+    column: ExtendedTableReportField
+  ) => {
+    const valueRaw = getRawValue(value);
+    const toLink = getCustomLink(value, column);
+
+    if (toLink) {
+      return (
+        <RouterLink sx={{ fontWeight: 600 }} to={toLink}>
+          {valueRaw}
+        </RouterLink>
+      );
+    }
+
+    return valueRaw;
+  };
 
   const getPersonValue = (value: ExtendedReportData[number]) => {
     const valueAsPerson = value.value as Person | Person[];
@@ -45,18 +116,14 @@ export const useFormatTableValues = () => {
     value: ExtendedReportData[number],
     column: ExtendedTableReportField
   ) => {
-    if (!column.meta?.showAvatar) {
-      return getPersonValue(value);
-    }
     const valueAsPerson = value.value as Person | Person[];
 
     if (Array.isArray(valueAsPerson)) {
       return displayNames(valueAsPerson);
     }
 
-    const toLink = column.meta?.enableLink
-      ? getPersonProfileLink(valueAsPerson)
-      : undefined;
+    const profileLink = getPersonProfileLink(valueAsPerson);
+    const toLink = getCustomLink(value, column, profileLink);
 
     if (valueAsPerson.type === PartyPersonType.Student) {
       return (
@@ -65,6 +132,7 @@ export const useFormatTableValues = () => {
           isPriorityStudent={Boolean(value.meta?.isPriorityStudent)}
           hasSupportPlan={false}
           size={column.meta?.avatarSize ?? undefined}
+          hideAvatar={!column.meta?.showAvatar}
           to={toLink}
         />
       );
@@ -73,6 +141,7 @@ export const useFormatTableValues = () => {
     return (
       <TablePersonAvatar
         person={valueAsPerson}
+        hideAvatar={!column.meta?.showAvatar}
         to={toLink}
         AvatarProps={{
           size: column.meta?.avatarSize ?? undefined,
@@ -91,17 +160,12 @@ export const useFormatTableValues = () => {
     value: ExtendedReportData[number],
     column: ExtendedTableReportField
   ) => {
-    if (!column.meta?.showAvatar) {
-      return getPartyGroupValue(value);
-    }
-
     const valueAsPartyGroup = value.value as PartyGroup & {
       type: PartyGroupType;
     };
 
-    const toLink = column.meta?.enableLink
-      ? getGroupProfileLink(valueAsPartyGroup)
-      : undefined;
+    const profileLink = getGroupProfileLink(valueAsPartyGroup);
+    const toLink = getCustomLink(value, column, profileLink);
 
     const subject = (valueAsPartyGroup as unknown as SubjectGroup)
       ?.subjects?.[0];
@@ -113,6 +177,7 @@ export const useFormatTableValues = () => {
       <TableAvatar
         name={valueAsPartyGroup.name}
         avatarUrl={valueAsPartyGroup.avatarUrl}
+        hideAvatar={!column.meta?.showAvatar}
         to={toLink}
         AvatarProps={{
           size: column.meta?.avatarSize ?? undefined,
@@ -203,6 +268,7 @@ export const useFormatTableValues = () => {
       getChipValue,
     },
     cellRenders: {
+      renderRawValue,
       renderPersonAvatar,
       renderPartyGroupAvatar,
       renderBooleanValue,

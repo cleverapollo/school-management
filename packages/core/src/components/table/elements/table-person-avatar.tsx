@@ -7,12 +7,14 @@ type TablePersonAvatarProps = {
   to?: string | null;
   person: Partial<Person> | undefined;
   AvatarProps?: CoreAvatarProps;
+  hideAvatar?: boolean;
 };
 
 export function TablePersonAvatar({
   to,
   person,
   AvatarProps,
+  hideAvatar,
 }: TablePersonAvatarProps) {
   const { displayName } = usePreferredNameLayout();
   const name = displayName(person);
@@ -23,6 +25,7 @@ export function TablePersonAvatar({
       name={name}
       avatarUrl={person?.avatarUrl}
       AvatarProps={{ ...AvatarProps, person }}
+      hideAvatar={hideAvatar}
     />
   );
 }

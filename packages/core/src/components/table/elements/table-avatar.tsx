@@ -7,6 +7,7 @@ type TableAvatarProps = {
   name: string;
   avatarUrl?: string | null | undefined;
   AvatarProps?: CoreAvatarProps;
+  hideAvatar?: boolean;
 };
 
 export function TableAvatar({
@@ -14,19 +15,22 @@ export function TableAvatar({
   name,
   avatarUrl,
   AvatarProps,
+  hideAvatar,
 }: TableAvatarProps) {
   return (
     <Box display="flex" alignItems="center">
-      <Avatar
-        src={avatarUrl}
-        name={name}
-        {...AvatarProps}
-        sx={{
-          my: 1,
-          mr: 1.5,
-          ...(AvatarProps?.sx ?? {}),
-        }}
-      />
+      {hideAvatar ? null : (
+        <Avatar
+          src={avatarUrl}
+          name={name}
+          {...AvatarProps}
+          sx={{
+            my: 1,
+            mr: 1.5,
+            ...(AvatarProps?.sx ?? {}),
+          }}
+        />
+      )}
       {to ? (
         <RouterLink sx={{ fontWeight: 600 }} to={to}>
           {name}

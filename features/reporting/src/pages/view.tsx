@@ -136,7 +136,7 @@ export default function ReportPage() {
           }
           case ReportCellType.Raw:
           default: {
-            return valueGetters.getRawValue(value);
+            return cellRenders.renderRawValue(value, column);
           }
         }
       },

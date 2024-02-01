@@ -1,6 +1,7 @@
 import { GridOptions } from '@tyro/core';
 import { Reporting_Colour, Reporting_TableReportField } from '@tyro/api';
 import { ChipProps } from '@mui/material';
+import { Report, ReportTabs } from '../utils/get-report-url';
 
 export enum ReportCellType {
   Raw = 'raw',
@@ -41,13 +42,13 @@ export type ExtendedReportData = {
     value: any | any[];
     meta?: Record<string, any>;
     colour?: Reporting_Colour;
-    customLink?: {
-      reportId?: string;
-      partyId?: number;
-      tab?: string;
-      filters?: Record<string, any>;
+    link?: {
+      report?: Report;
+      reportFilters?: Record<string, any>;
+      reportTab?: keyof ReportTabs[keyof ReportTabs];
+      profileTab?: string;
       searchParams?: Record<string, any>;
-      path?: string;
+      externalUrl?: string;
     };
   };
 };
