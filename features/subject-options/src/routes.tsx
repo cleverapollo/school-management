@@ -24,6 +24,8 @@ export const getRoutes: NavObjectFunction = (t) => [
   {
     type: NavObjectType.Category,
     title: t('navigation:management.title'),
+    hasAccess: ({ isStaffUserWithPermission }) =>
+      isStaffUserWithPermission('ps:1:options:read_options'),
     children: [
       {
         type: NavObjectType.RootLink,

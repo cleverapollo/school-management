@@ -23,6 +23,7 @@ import {
 } from '@tyro/icons';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import { usePermissions, UsePermissionsReturn } from '@tyro/api';
 import {
   ReturnTypeFromUseOptionsSetupList,
   useOptionsSetupList,
@@ -39,7 +40,8 @@ const getColumnDefs = (
     ('subjectOptions' | 'common')[]
   >,
   openPublish: (id: ReturnTypeFromUseOptionsSetupList) => void,
-  openUnpublish: (id: ReturnTypeFromUseOptionsSetupList) => void
+  openUnpublish: (id: ReturnTypeFromUseOptionsSetupList) => void,
+  isStaffUserWithPermission: UsePermissionsReturn['isStaffUserWithPermission']
 ): GridOptions<ReturnTypeFromUseOptionsSetupList>['columnDefs'] => [
   {
     field: 'name',
@@ -71,6 +73,10 @@ const getColumnDefs = (
   },
   {
     ...commonActionMenuProps,
+    hide: !isStaffUserWithPermission('ps:1:options:write_options'),
+    suppressColumnsToolPanel: !isStaffUserWithPermission(
+      'ps:1:options:write_options'
+    ),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseOptionsSetupList>) =>
@@ -109,6 +115,7 @@ export default function SubjectOptionsPage() {
   const { t } = useTranslation(['navigation', 'common', 'subjectOptions']);
 
   const { data: optionsSetupList = [] } = useOptionsSetupList({});
+  const { isStaffUserWithPermission } = usePermissions();
   const {
     value: optionsToPublish,
     debouncedValue: debouncedOptionsToPublish,
@@ -125,7 +132,13 @@ export default function SubjectOptionsPage() {
   });
 
   const columnDefs = useMemo(
-    () => getColumnDefs(t, setOptionsToPublish, setOptionsToUnpublish),
+    () =>
+      getColumnDefs(
+        t,
+        setOptionsToPublish,
+        setOptionsToUnpublish,
+        isStaffUserWithPermission
+      ),
     [t, setOptionsToPublish, setOptionsToUnpublish]
   );
 
@@ -136,16 +149,18 @@ export default function SubjectOptionsPage() {
           title={t('navigation:management.subjectOptions')}
           titleProps={{ variant: 'h3' }}
           rightAdornment={
-            <Box display="flex" alignItems="center">
-              <Button
-                variant="contained"
-                component={Link}
-                to="./create"
-                startIcon={<AddDocIcon />}
-              >
-                {t('subjectOptions:createSubjectOptions')}
-              </Button>
-            </Box>
+            isStaffUserWithPermission('ps:1:options:write_options') ? (
+              <Box display="flex" alignItems="center">
+                <Button
+                  variant="contained"
+                  component={Link}
+                  to="./create"
+                  startIcon={<AddDocIcon />}
+                >
+                  {t('subjectOptions:createSubjectOptions')}
+                </Button>
+              </Box>
+            ) : undefined
           }
         />
         <Table
