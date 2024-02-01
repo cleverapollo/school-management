@@ -182,9 +182,9 @@ export const useFormatTableValues = () => {
           <Chip
             key={name}
             label={name}
-            color={color ?? 'slate'}
-            size={column.meta?.chipSize}
-            variant={column.meta?.chipVariant}
+            color={color || 'slate'}
+            size={column.meta?.chipSize || 'small'}
+            variant={column.meta?.chipVariant || 'soft'}
           />
         ))}
       </Stack>
