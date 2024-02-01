@@ -16,18 +16,14 @@ import {
 } from '@tyro/core';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { AddIcon, TrashIcon } from '@tyro/icons';
-import { RHFSubjectAutocomplete } from '@tyro/settings';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
+import get from 'lodash/get';
+import { SaveSubjectSet } from '@tyro/api';
 import { StudentSelection } from './student-selection';
 import { SubjectOptionsFormState } from './types';
 import { useSaveSubjectOptionsSetup } from '../../api/save-options-setup';
-
-const defaultPoolProps = {
-  canChoose: 0,
-  mustGet: 0,
-  subjects: [],
-};
+import { defaultSubjectSetProps, SubjectSets } from './subject-sets';
 
 export function SubjectOptionsSetupForm() {
   const { t } = useTranslation(['common', 'subjectOptions']);
@@ -51,34 +47,68 @@ export function SubjectOptionsSetupForm() {
       academicYearId: rules.required(),
       yearGroupEnrolmentPartyId: rules.required(),
       selectedStudents: rules.required(),
-      subjectSets: {
-        canChoose: [rules.required(), rules.isNumber(), rules.min(1)],
-        mustGet: [
-          rules.required(),
-          rules.isNumber(),
-          rules.min(1),
-          rules.validate<number>(
-            (value, throwError, formValues, fieldArrayIndex) => {
-              const { canChoose } = formValues.subjectSets[fieldArrayIndex!];
-              if (value > canChoose) {
-                return throwError(
-                  t('subjectOptions:mustGetCannotBeGreaterThanCanChoose')
+      pools: {
+        subjectSets: {
+          name: rules.required(),
+          canChoose: [
+            rules.required(),
+            rules.isNumber(),
+            rules.min(1),
+            rules.validate<number>(
+              (value, throwError, formValues, fieldName) => {
+                const pathToCurrentSubjectSet = fieldName.substring(
+                  0,
+                  fieldName.lastIndexOf('.')
                 );
+                const { subjects } = get(
+                  formValues,
+                  pathToCurrentSubjectSet
+                ) as SubjectOptionsFormState['pools'][number]['subjectSets'][number];
+                if (value > subjects.length) {
+                  return throwError(
+                    t('subjectOptions:mustChooseCannotBeGreaterThanSubjects')
+                  );
+                }
               }
-            }
-          ),
-        ],
-        subjects: [
-          rules.minLength(1, t('subjectOptions:mustSelectAtLeastOneSubject')),
-        ],
+            ),
+          ],
+          mustGet: [
+            rules.required(),
+            rules.isNumber(),
+            rules.min(1),
+            rules.validate<number>(
+              (value, throwError, formValues, fieldName) => {
+                const pathToCurrentSubjectSet = fieldName.substring(
+                  0,
+                  fieldName.lastIndexOf('.')
+                );
+                const { canChoose } = get(
+                  formValues,
+                  pathToCurrentSubjectSet
+                ) as SubjectOptionsFormState['pools'][number]['subjectSets'][number];
+                if (value > canChoose) {
+                  return throwError(
+                    t('subjectOptions:mustGetCannotBeGreaterThanCanChoose')
+                  );
+                }
+              }
+            ),
+          ],
+          subjects: [
+            rules.minLength(1, t('subjectOptions:mustSelectAtLeastOneSubject')),
+          ],
+        },
       },
     }),
     defaultValues: {
-      subjectSets: [
+      pools: [
         {
-          ...defaultPoolProps,
-          name: 'Group 1',
-          poolIdx: 0,
+          poolIdx: 1,
+          subjectSets: [
+            {
+              ...defaultSubjectSetProps,
+            },
+          ],
         },
       ],
     },
@@ -89,7 +119,7 @@ export function SubjectOptionsSetupForm() {
     remove,
   } = useFieldArray({
     control,
-    name: 'subjectSets',
+    name: 'pools',
   });
 
   const goBack = () => {
@@ -105,16 +135,24 @@ export function SubjectOptionsSetupForm() {
   };
 
   const onSubmit = handleSubmit(
-    ({ name, selectedStudents, subjectSets, yearGroupEnrolmentPartyId }) => {
+    ({ name, selectedStudents, pools, yearGroupEnrolmentPartyId }) => {
+      const subjectSets = pools.reduce<SaveSubjectSet[]>((acc, pool) => {
+        pool.subjectSets.forEach((subjectSet) => {
+          acc.push({
+            ...subjectSet,
+            poolIdx: pool.poolIdx,
+            subjectIds: subjectSet.subjects.map(({ id }) => id),
+          });
+        });
+        return acc;
+      }, []);
+
       saveOptionsSetup(
         {
           name,
           yearGroupEnrolmentPartyId,
           studentPartyIds: selectedStudents.map(({ partyId }) => partyId),
-          subjectSets: subjectSets.map(({ subjects, ...rest }) => ({
-            subjectIds: subjects.map(({ id }) => id),
-            ...rest,
-          })),
+          subjectSets,
         },
         {
           onSuccess: () => {
@@ -169,12 +207,15 @@ export function SubjectOptionsSetupForm() {
               {t('subjectOptions:atLeastOneSubjectPoolRequired')}
             </Typography>
             {subjectPools.map((pool, index) => (
-              <Card variant="outlined" key={pool.id}>
+              <Card
+                variant="soft"
+                key={pool.id}
+                sx={{ p: 0, boxShadow: 'none' }}
+              >
                 <CardHeader
                   component="h4"
                   title={t('subjectOptions:poolN', { number: index + 1 })}
                   sx={{
-                    pb: 0,
                     border: 0,
                   }}
                   action={
@@ -189,43 +230,7 @@ export function SubjectOptionsSetupForm() {
                     )
                   }
                 />
-                <Grid container spacing={2} p={3} maxWidth={900}>
-                  <Grid item xs={12}>
-                    <RHFSubjectAutocomplete
-                      label={t('common:subjects')}
-                      multiple
-                      controlProps={{
-                        name: `subjectSets.${index}.subjects`,
-                        control,
-                      }}
-                      fullWidth
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <RHFTextField
-                      label={t('subjectOptions:canChooseLabel')}
-                      controlProps={{
-                        name: `subjectSets.${index}.canChoose`,
-                        control,
-                      }}
-                      textFieldProps={{
-                        fullWidth: true,
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <RHFTextField
-                      label={t('subjectOptions:mustGetLabel')}
-                      controlProps={{
-                        name: `subjectSets.${index}.mustGet`,
-                        control,
-                      }}
-                      textFieldProps={{
-                        fullWidth: true,
-                      }}
-                    />
-                  </Grid>
-                </Grid>
+                <SubjectSets poolIndex={index} control={control} />
               </Card>
             ))}
             <Stack width="fit-content">
@@ -235,14 +240,18 @@ export function SubjectOptionsSetupForm() {
                 variant="text"
                 onClick={() =>
                   append({
-                    ...defaultPoolProps,
-                    name: `Group ${subjectPools.length + 1}`,
-                    poolIdx: subjectPools.length,
+                    poolIdx: subjectPools.length + 1,
+                    subjectSets: [
+                      {
+                        ...defaultSubjectSetProps,
+                        idx: 1,
+                      },
+                    ],
                   })
                 }
                 startIcon={<AddIcon sx={{ width: 24, height: 24 }} />}
               >
-                {t('subjectOptions:addSubjectPool')}
+                {t('subjectOptions:addPool')}
               </Button>
             </Stack>
           </Stack>

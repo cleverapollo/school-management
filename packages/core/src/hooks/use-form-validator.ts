@@ -7,8 +7,11 @@ import {
   FieldErrors,
   FieldValue,
   ResolverOptions,
+  Path,
 } from 'react-hook-form';
 import { toNestErrors, validateFieldsNatively } from '@hookform/resolvers';
+import get from 'lodash/get';
+import set from 'lodash/set';
 import {
   ValidationError,
   ValidationType,
@@ -150,13 +153,13 @@ class Rules<TField extends FieldValues> {
       value: V,
       throwError: (errorMessage: string) => ValidationError,
       formValues: TField,
-      fieldArrayIndex: number | undefined
+      fieldName: string
     ) => void
   ) {
     return (
       value: FieldValue<TField>,
       formValues: TField,
-      fieldArrayIndex: string | undefined
+      fieldName: string
     ) => {
       validateFn(
         value,
@@ -164,7 +167,7 @@ class Rules<TField extends FieldValues> {
           throw new ValidationError('validate', errorMessage);
         },
         formValues,
-        fieldArrayIndex !== undefined ? Number(fieldArrayIndex) : undefined
+        fieldName
       );
     };
   }
@@ -174,15 +177,19 @@ type ValidationFn<TField extends FieldValues> =
   | ReturnType<Rules<TField>[ValidationType]>
   | ReturnType<Rules<TField>[ValidationType]>[];
 
-type NestedRules<TField extends FieldValues> = Record<
-  string,
-  ValidationFn<TField>
->;
+type NestedRules<TField extends FieldValues> = {
+  [field: string]: ValidationFn<TField> | NestedRules<TField>;
+};
 
 type FieldRules<TField extends FieldValues> = Record<
   FieldPath<TField>,
   NestedRules<TField> | ValidationFn<TField>
 >;
+
+type FieldWithSchemaKey<TField extends FieldValues> =
+  ResolverOptions<TField>['fields'][number] & {
+    ruleFn: Partial<FieldRules<TField>>[Path<TField>];
+  };
 
 export const useFormValidator = <TField extends FieldValues>(): {
   rules: Rules<TField>;
@@ -199,6 +206,36 @@ export const useFormValidator = <TField extends FieldValues>(): {
     t
   );
 
+  function getDeeplyNestedFields(
+    itemField: ResolverOptions<TField>['fields'],
+    ruleFn: Partial<FieldRules<TField>>[Path<TField>]
+  ): FieldWithSchemaKey<TField>[] {
+    const fields: FieldWithSchemaKey<TField>[] = [];
+
+    Object.keys(itemField).forEach((nestedKey) => {
+      const nestedField = itemField[nestedKey];
+      const nestedRuleFn = (ruleFn as NestedRules<TField>)?.[nestedKey];
+
+      if (Array.isArray(nestedField)) {
+        nestedField.forEach((nestedItemField) => {
+          fields.push(
+            ...getDeeplyNestedFields(
+              nestedItemField as ResolverOptions<TField>['fields'],
+              nestedRuleFn
+            )
+          );
+        });
+      } else {
+        fields.push({
+          ...itemField[nestedKey],
+          ruleFn: nestedRuleFn,
+        });
+      }
+    });
+
+    return fields;
+  }
+
   return {
     rules,
     resolver: (schema) => (fieldValues, _context, options) => {
@@ -210,13 +247,12 @@ export const useFormValidator = <TField extends FieldValues>(): {
           const field = options.fields[schemaKey];
 
           if (Array.isArray(field)) {
-            return (field as ResolverOptions<TField>['fields'][]).flatMap(
-              (itemField) =>
-                Object.keys(itemField).map((nestedKey) => ({
-                  ...itemField[nestedKey],
-                  ruleFn: (ruleFn as NestedRules<TField>)?.[nestedKey],
-                }))
-            );
+            return (field as ResolverOptions<TField>['fields'][]).reduce<
+              FieldWithSchemaKey<TField>[]
+            >((acc, itemField) => {
+              acc.push(...getDeeplyNestedFields(itemField, ruleFn));
+              return acc;
+            }, []);
           }
 
           return { ...field, ruleFn };
@@ -224,24 +260,15 @@ export const useFormValidator = <TField extends FieldValues>(): {
         .filter(({ mount }) => mount);
 
       const errors = fieldsWithSchemaKey.reduce((fieldErrors, field) => {
-        const [fieldName, index, itemField] = field.name.split('.');
-
         try {
-          const currentValue = fieldValues[fieldName] as FieldValue<TField>;
-          const nestedField = currentValue?.[index] as TField;
-          const nestedValue = nestedField?.[itemField] as FieldValue<TField>;
-          const fieldValue = itemField ? nestedValue : currentValue;
+          const fieldValue = get(fieldValues, field.name) as FieldValue<TField>;
 
           if (Array.isArray(field.ruleFn)) {
             field.ruleFn.forEach((ruleFn) =>
-              ruleFn(fieldValue, fieldValues, itemField ? index : undefined)
+              ruleFn(fieldValue, fieldValues, field.name)
             );
           } else if (typeof field.ruleFn === 'function') {
-            field.ruleFn(
-              fieldValue,
-              fieldValues,
-              itemField ? index : undefined
-            );
+            field.ruleFn(fieldValue, fieldValues, field.name);
           }
         } catch (error) {
           const isKnownError = error instanceof ValidationError;
@@ -251,22 +278,7 @@ export const useFormValidator = <TField extends FieldValues>(): {
             message: isKnownError ? error.message : 'unknown error',
           };
 
-          if (index && itemField) {
-            const nestedErrors = fieldErrors[fieldName] as Record<
-              string,
-              FieldErrors
-            >;
-
-            fieldErrors[fieldName] = {
-              ...fieldErrors[fieldName],
-              [index]: {
-                ...nestedErrors?.[index],
-                [itemField]: fieldError,
-              },
-            };
-          } else {
-            fieldErrors[fieldName] = fieldError;
-          }
+          set(fieldErrors, field.name, fieldError);
         }
 
         return fieldErrors;

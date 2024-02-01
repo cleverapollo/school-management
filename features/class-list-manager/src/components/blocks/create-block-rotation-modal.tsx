@@ -89,7 +89,8 @@ export const CreateBlockRotationModal = ({
         iterations: {
           startDate: rules.validate<
             CreateBlockRotationFormState['iterations'][number]['startDate']
-          >((value, throwError, formValues, index) => {
+          >((value, throwError, formValues, fieldName) => {
+            const index = Number(fieldName.split('.')[1]);
             if (index !== undefined && index > 0) {
               if (!value) {
                 throwError(t('common:errorMessages.required'));
@@ -113,7 +114,8 @@ export const CreateBlockRotationModal = ({
           }),
           endDate: rules.validate<
             CreateBlockRotationFormState['iterations'][number]['endDate']
-          >((value, throwError, formValues, index) => {
+          >((value, throwError, formValues, fieldName) => {
+            const index = Number(fieldName.split('.')[1]);
             if (index !== undefined) {
               if (index + 1 < formValues.iterations.length && !value) {
                 throwError(t('common:errorMessages.required'));
