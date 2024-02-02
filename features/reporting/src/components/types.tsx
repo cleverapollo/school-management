@@ -1,4 +1,4 @@
-import { GridOptions } from '@tyro/core';
+import { GridOptions, RouterLinkProps } from '@tyro/core';
 import { Reporting_Colour, Reporting_TableReportField } from '@tyro/api';
 import { ChipProps } from '@mui/material';
 import { Report, ReportTabs } from '../utils/get-report-url';
@@ -49,6 +49,7 @@ export type ExtendedReportData = {
       profileTab?: string;
       searchParams?: Record<string, any>;
       externalUrl?: string;
+      target?: RouterLinkProps['target'];
     };
   };
 };

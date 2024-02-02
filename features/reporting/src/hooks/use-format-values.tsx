@@ -95,7 +95,11 @@ export const useFormatTableValues = () => {
 
     if (toLink) {
       return (
-        <RouterLink sx={{ fontWeight: 600 }} to={toLink}>
+        <RouterLink
+          sx={{ fontWeight: 600 }}
+          to={toLink}
+          target={value.link?.target || '_blank'}
+        >
           {valueRaw}
         </RouterLink>
       );
@@ -134,6 +138,7 @@ export const useFormatTableValues = () => {
           size={column.meta?.avatarSize ?? undefined}
           hideAvatar={!column.meta?.showAvatar}
           to={toLink}
+          target={value.link?.target || '_blank'}
         />
       );
     }
@@ -143,6 +148,7 @@ export const useFormatTableValues = () => {
         person={valueAsPerson}
         hideAvatar={!column.meta?.showAvatar}
         to={toLink}
+        target={value.link?.target || '_blank'}
         AvatarProps={{
           size: column.meta?.avatarSize ?? undefined,
         }}
@@ -179,6 +185,7 @@ export const useFormatTableValues = () => {
         avatarUrl={valueAsPartyGroup.avatarUrl}
         hideAvatar={!column.meta?.showAvatar}
         to={toLink}
+        target={value.link?.target || '_blank'}
         AvatarProps={{
           size: column.meta?.avatarSize ?? undefined,
           sx: {

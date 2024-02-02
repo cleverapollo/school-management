@@ -1,13 +1,14 @@
 import { Box } from '@mui/material';
 import { Avatar, AvatarProps as CoreAvatarProps } from '../../avatar';
-import { RouterLink } from '../../router-link';
+import { RouterLink, RouterLinkProps } from '../../router-link';
 
-type TableAvatarProps = {
+export type TableAvatarProps = {
   to?: string | null;
   name: string;
   avatarUrl?: string | null | undefined;
   AvatarProps?: CoreAvatarProps;
   hideAvatar?: boolean;
+  target?: RouterLinkProps['target'];
 };
 
 export function TableAvatar({
@@ -16,6 +17,7 @@ export function TableAvatar({
   avatarUrl,
   AvatarProps,
   hideAvatar,
+  target,
 }: TableAvatarProps) {
   return (
     <Box display="flex" alignItems="center">
@@ -32,7 +34,7 @@ export function TableAvatar({
         />
       )}
       {to ? (
-        <RouterLink sx={{ fontWeight: 600 }} to={to}>
+        <RouterLink sx={{ fontWeight: 600 }} to={to} target={target}>
           {name}
         </RouterLink>
       ) : (

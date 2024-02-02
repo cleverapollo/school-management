@@ -2,6 +2,7 @@ import { Box } from '@mui/material';
 import {
   AvatarProps as CoreAvatarProps,
   RouterLink,
+  RouterLinkProps,
   usePreferredNameLayout,
 } from '@tyro/core';
 import { Person } from '@tyro/api';
@@ -18,6 +19,7 @@ type TableAvatarProps = {
   avatarBackgroundColor?: string;
   size?: number;
   hideAvatar?: boolean;
+  target?: RouterLinkProps['target'];
 };
 
 export function StudentTableAvatar({
@@ -29,6 +31,7 @@ export function StudentTableAvatar({
   avatarBackgroundColor,
   size,
   hideAvatar,
+  target,
 }: TableAvatarProps) {
   const { displayName } = usePreferredNameLayout();
   const name = displayName(person);
@@ -55,7 +58,7 @@ export function StudentTableAvatar({
         />
       )}
       {to ? (
-        <RouterLink sx={{ fontWeight: 600 }} to={to}>
+        <RouterLink sx={{ fontWeight: 600 }} to={to} target={target}>
           {name}
         </RouterLink>
       ) : (
