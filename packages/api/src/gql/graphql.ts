@@ -2474,6 +2474,21 @@ export type FindFreeResourcesTime = {
   toDate: Scalars['Date'];
 };
 
+export type FormRequestStatus = {
+  __typename?: 'FormRequestStatus';
+  id: Scalars['String'];
+  personPartyId: Scalars['Long'];
+  requestType: InfoRequestType;
+  status: RequestStatus;
+};
+
+export type FormRequestStatusInput = {
+  id?: InputMaybe<Scalars['String']>;
+  personPartyId?: InputMaybe<Scalars['Long']>;
+  status?: InputMaybe<RequestStatus>;
+  type?: InputMaybe<InfoRequestType>;
+};
+
 export enum Form_FormFieldItemType {
   Checkbox = 'CHECKBOX',
   Date = 'DATE',
@@ -2489,12 +2504,6 @@ export enum Form_FormFieldItemType {
 }
 
 export type Forms_FormField = Forms_FormFieldItem | Forms_FormFieldSubGroup;
-
-export type Forms_FormFieldDefaultValue = {
-  __typename?: 'Forms_FormFieldDefaultValue';
-  id: Scalars['String'];
-  name: Scalars['String'];
-};
 
 export type Forms_FormFieldGridWidth = {
   __typename?: 'Forms_FormFieldGridWidth';
@@ -2513,7 +2522,7 @@ export type Forms_FormFieldGroup = {
 
 export type Forms_FormFieldItem = {
   __typename?: 'Forms_FormFieldItem';
-  defaultValue?: Maybe<Forms_FormFieldDefaultValue>;
+  defaultValue?: Maybe<Scalars['String']>;
   formFieldType: Forms_FormFieldType;
   gridWidth: Forms_FormFieldGridWidth;
   id: Scalars['String'];
@@ -2565,10 +2574,12 @@ export type Forms_FormListing = {
   id: Forms_FormId;
   isComplete?: Maybe<Scalars['Boolean']>;
   name: Scalars['String'];
+  status: RequestStatus;
 };
 
 export type Forms_FormView = {
   __typename?: 'Forms_FormView';
+  description?: Maybe<Scalars['String']>;
   fields: Array<Forms_FormFieldGroup>;
   id: Forms_FormId;
   title?: Maybe<Scalars['String']>;
@@ -2581,6 +2592,12 @@ export type Forms_InformationRequestListFormFilter = {
 
 export type Forms_InformationRequestViewFormFilter = {
   id: Forms_FormIdInput;
+};
+
+export type Forms_StatusFilter = {
+  id?: InputMaybe<Scalars['String']>;
+  personPartyId?: InputMaybe<Scalars['Long']>;
+  requestType?: InputMaybe<InfoRequestType>;
 };
 
 export type Forms_SubmitFormFieldInput = {
@@ -2823,6 +2840,10 @@ export type InfoRequestOption = {
   /** deep linked */
   requestFor: Person;
 };
+
+export enum InfoRequestType {
+  Options = 'OPTIONS'
+}
 
 export type InputAddress = {
   active: Scalars['Boolean'];
@@ -3939,6 +3960,7 @@ export type NotificationMetaData = {
   feeId?: Maybe<Scalars['Int']>;
   mailId?: Maybe<Scalars['Long']>;
   notificationType: NotificationType;
+  optionId?: Maybe<Scalars['Int']>;
   partyId?: Maybe<Scalars['Long']>;
   studentPartyId?: Maybe<Scalars['Long']>;
 };
@@ -3947,6 +3969,7 @@ export type NotificationMetaDataInput = {
   feeId?: InputMaybe<Scalars['Int']>;
   mailId?: InputMaybe<Scalars['Long']>;
   notificationType: NotificationType;
+  optionId?: InputMaybe<Scalars['Int']>;
   partyId?: InputMaybe<Scalars['Long']>;
   studentPartyId?: InputMaybe<Scalars['Long']>;
 };
@@ -4001,6 +4024,7 @@ export enum NotificationType {
   Fee = 'FEE',
   Individual = 'INDIVIDUAL',
   Mail = 'MAIL',
+  Options = 'OPTIONS',
   Substitution = 'SUBSTITUTION',
   Timetable = 'TIMETABLE',
   Wellbeing = 'WELLBEING'
@@ -5742,6 +5766,12 @@ export type Reporting_TimeGroupByValues = {
   id: Scalars['String'];
   name: Scalars['String'];
 };
+
+export enum RequestStatus {
+  Complete = 'COMPLETE',
+  Incomplete = 'INCOMPLETE',
+  PartiallyComplete = 'PARTIALLY_COMPLETE'
+}
 
 export type ResourceCalendar = {
   events: Array<CalendarEvent>;

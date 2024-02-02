@@ -13,7 +13,7 @@ import {
   PageContainer,
   commonActionMenuProps,
 } from '@tyro/core';
-import { useMemo, useState, Dispatch, SetStateAction } from 'react';
+import { useMemo, useState } from 'react';
 import {
   useAcademicNamespace,
   usePermissions,
@@ -29,7 +29,6 @@ import {
 import { AcademicYearDropdown } from '../components/common/academic-year-dropdown';
 import { getAssessmentSubjectGroupsLink } from '../utils/get-assessment-subject-groups-link';
 import { AssessmentActionMenu } from '../components/list-assessments/assessment-action-menu';
-import { PrintAssessmentModal } from '../components/common/print-assessment-modal';
 
 dayjs.extend(LocalizedFormat);
 
@@ -39,10 +38,7 @@ const getColumnDefs = (
     undefined,
     ('assessments' | 'common')[]
   >,
-  displayName: ReturnTypeDisplayName,
-  onOpenPrintModal: Dispatch<
-    SetStateAction<ReturnTypeFromUseAssessments | undefined>
-  >
+  displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseAssessments>['columnDefs'] => [
   {
     field: 'name',
@@ -187,12 +183,7 @@ const getColumnDefs = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseAssessments>) =>
-      data && (
-        <AssessmentActionMenu
-          onOpenPrintModal={() => onOpenPrintModal(data)}
-          {...data}
-        />
-      ),
+      data && <AssessmentActionMenu {...data} />,
   },
 ];
 
@@ -206,9 +197,6 @@ export default function AssessmentsPage() {
   const [academicNameSpaceId, setAcademicNameSpaceId] = useState<number | null>(
     activeAcademicNamespace?.academicNamespaceId ?? null
   );
-  const [selectedAssessment, setSelectedAssessment] = useState<
-    ReturnTypeFromUseAssessments | undefined
-  >();
 
   const { data: assessmentsData = [] } = useAssessments({
     academicNameSpaceId: academicNameSpaceId ?? 0,
@@ -218,8 +206,8 @@ export default function AssessmentsPage() {
     'ps:1:assessment:write_assessments'
   );
   const columnDefs = useMemo(
-    () => getColumnDefs(t, displayName, setSelectedAssessment),
-    [t, displayName, setSelectedAssessment]
+    () => getColumnDefs(t, displayName),
+    [t, displayName]
   );
 
   return (
@@ -259,10 +247,6 @@ export default function AssessmentsPage() {
         rowData={assessmentsData || []}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.id)}
-      />
-      <PrintAssessmentModal
-        data={selectedAssessment}
-        onClose={() => setSelectedAssessment(undefined)}
       />
     </PageContainer>
   );

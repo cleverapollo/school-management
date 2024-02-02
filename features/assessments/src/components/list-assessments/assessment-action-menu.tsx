@@ -8,7 +8,6 @@ import {
   CheckmarkCircleIcon,
   VerticalDotsIcon,
   EditCalendarIcon,
-  PrinterIcon,
 } from '@tyro/icons';
 import {
   AssessmentType,
@@ -26,7 +25,6 @@ type AssessmentActionMenuProps = {
   assessmentType: ReturnTypeFromUseAssessments['assessmentType'];
   academicNamespaceId: number;
   canEnterOverallComments: boolean;
-  onOpenPrintModal: () => void;
 };
 
 export const AssessmentActionMenu = ({
@@ -35,7 +33,6 @@ export const AssessmentActionMenu = ({
   assessmentType,
   academicNamespaceId,
   canEnterOverallComments,
-  onOpenPrintModal,
 }: AssessmentActionMenuProps) => {
   const { t } = useTranslation(['assessments']);
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -82,11 +79,6 @@ export const AssessmentActionMenu = ({
                     hasAccess: () =>
                       isTermAssessment && canEnterOverallComments,
                     navigateTo: `${assessmentPath}/overall-comments`,
-                  },
-                  {
-                    label: t('assessments:printAssessment'),
-                    icon: <PrinterIcon />,
-                    onClick: onOpenPrintModal,
                   },
                 ],
 

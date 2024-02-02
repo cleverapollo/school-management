@@ -83,7 +83,8 @@
     },
     "printing": {
       "title": "Printing",
-      "timetable": "Timetable"
+      "timetable": "Timetable",
+      "assessment": "Assessment"
     },
     "sms": "SMS"
   },

@@ -8,6 +8,7 @@ import PrintStudentTimetable from './pages/timetable/student-timetable';
 import PrintClassGroupTimetable from './pages/timetable/class-timetable';
 import PrintRoomTimetable from './pages/timetable/rooms-timetable';
 
+const PrintAssessment = lazyWithRetry(() => import('./pages/assessment'));
 const StaffTimetable = lazyWithRetry(() => import('./pages/timetable/staff'));
 // Student profile pages
 
@@ -63,6 +64,12 @@ export const getRoutes: NavObjectFunction = (t) => [
                 element: <PrintRoomTimetable />,
               },
             ],
+          },
+          {
+            type: NavObjectType.MenuLink,
+            path: 'assessment',
+            element: <PrintAssessment />,
+            title: t('navigation:management.printing.assessment'),
           },
         ],
       },
