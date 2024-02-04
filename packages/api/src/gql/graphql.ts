@@ -87,6 +87,11 @@ export type Address = {
   primaryAddress?: Maybe<Scalars['Boolean']>;
 };
 
+export type AppVersion = {
+  __typename?: 'AppVersion';
+  minimumSupportedVersion: Scalars['String'];
+};
+
 export type ArchiveStudentContactInput = {
   contactPartyIds: Array<Scalars['Long']>;
 };
@@ -1995,7 +2000,7 @@ export type DeleteFeeInput = {
 
 export type DeleteFileTransferInput = {
   feature: FileTransferFeature;
-  id: Scalars['Int'];
+  ids: Array<Scalars['Int']>;
 };
 
 export type DeleteNonClassContactHoursInput = {
@@ -2401,7 +2406,8 @@ export enum FeeType {
 export enum FileTransferFeature {
   PartyPhotos = 'PARTY_PHOTOS',
   StudentDocs = 'STUDENT_DOCS',
-  Temporary = 'TEMPORARY'
+  Temporary = 'TEMPORARY',
+  TenantPhoto = 'TENANT_PHOTO'
 }
 
 export type FileTransferFilter = {
@@ -3599,7 +3605,7 @@ export type Notes_StudentBehaviour = {
   associatedPartyIds?: Maybe<Array<Maybe<Scalars['Long']>>>;
   category: Scalars['String'];
   details: Scalars['String'];
-  incidentDate: Scalars['Date'];
+  incidentDate: Scalars['DateTime'];
   noteId: Scalars['Long'];
   referencedParties: Array<Person>;
   referencedPartiesIds: Array<Scalars['Long']>;
@@ -4002,9 +4008,11 @@ export type PartyTypeFilter = {
 export type Payment = {
   __typename?: 'Payment';
   amount: Scalars['Float'];
+  cardType: Scalars['String'];
   fee: Fee;
   id: Scalars['Int'];
-  payeeName: Scalars['String'];
+  payee: Person;
+  payeePartyId: Scalars['Long'];
   paymentIntentId: Scalars['String'];
   paymentStatus: PaymentStatus;
   studentPartyId: Scalars['Long'];
@@ -4015,6 +4023,7 @@ export type PaymentFilter = {
   ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   paymentIntentId?: InputMaybe<Scalars['String']>;
+  status?: InputMaybe<PaymentStatus>;
 };
 
 export enum PaymentMethod {
@@ -8173,6 +8182,7 @@ export type UserAccess = {
   invitedOn?: Maybe<Scalars['DateTime']>;
   invitingPersonPartyId?: Maybe<Scalars['Long']>;
   invitingPersonalInfo?: Maybe<PersonalInformation>;
+  mobileAppVersion?: Maybe<Scalars['String']>;
   mobileLastLogin?: Maybe<Scalars['DateTime']>;
   personPartyId: Scalars['Long'];
   personalInfo: PersonalInformation;
@@ -9635,7 +9645,7 @@ export type Users_UserAccessQueryVariables = Exact<{
 }>;
 
 
-export type Users_UserAccessQuery = { __typename?: 'Query', users_userAccess: Array<{ __typename?: 'UserAccess', personPartyId: number, webLastLogin?: string | null, mobileLastLogin?: string | null, status?: UserAccessStatus | null, invitedOn?: string | null, personalInfo: { __typename?: 'PersonalInformation', firstName: string, lastName: string, primaryEmail?: { __typename?: 'EmailAddress', email?: string | null } | null }, contactStudents?: Array<{ __typename?: 'Person', firstName?: string | null, lastName?: string | null } | null> | null, yearGroup?: { __typename?: 'YearGroupEnrollment', shortName: string } | null, yearGroupContacts?: Array<{ __typename?: 'YearGroupEnrollment', shortName: string } | null> | null }> };
+export type Users_UserAccessQuery = { __typename?: 'Query', users_userAccess: Array<{ __typename?: 'UserAccess', personPartyId: number, webLastLogin?: string | null, mobileLastLogin?: string | null, status?: UserAccessStatus | null, invitedOn?: string | null, mobileAppVersion?: string | null, personalInfo: { __typename?: 'PersonalInformation', firstName: string, lastName: string, primaryEmail?: { __typename?: 'EmailAddress', email?: string | null } | null }, contactStudents?: Array<{ __typename?: 'Person', firstName?: string | null, lastName?: string | null } | null> | null, yearGroup?: { __typename?: 'YearGroupEnrollment', shortName: string } | null, yearGroupContacts?: Array<{ __typename?: 'YearGroupEnrollment', shortName: string } | null> | null }> };
 
 export type SendSmsMutationVariables = Exact<{
   input?: InputMaybe<SendSmsInput>;
@@ -10086,7 +10096,7 @@ export const Catalogue_UpsertSubjectsDocument = {"kind":"Document","definitions"
 export const Users_InviteUsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"users_inviteUsers"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"InviteUser"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users_inviteUsers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userAccesses"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"webLastLogin"}},{"kind":"Field","name":{"kind":"Name","value":"mobileLastLogin"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"invitationId"}},{"kind":"Field","name":{"kind":"Name","value":"invitingPersonPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"invitedOn"}}]}},{"kind":"Field","name":{"kind":"Name","value":"validations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"associatedUsers"}}]}}]}}]}}]} as unknown as DocumentNode<Users_InviteUsersMutation, Users_InviteUsersMutationVariables>;
 export const Core_UpdateStudentContactsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_updateStudentContacts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateStudentContactInput"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_updateStudentContacts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Core_UpdateStudentContactsMutation, Core_UpdateStudentContactsMutationVariables>;
 export const Core_UpdateStudentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_updateStudent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateStudentInput"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_updateStudents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Core_UpdateStudentMutation, Core_UpdateStudentMutationVariables>;
-export const Users_UserAccessDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"users_userAccess"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"UserAccessFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users_userAccess"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"personalInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"primaryEmail"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"contactStudents"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"webLastLogin"}},{"kind":"Field","name":{"kind":"Name","value":"mobileLastLogin"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"invitedOn"}},{"kind":"Field","name":{"kind":"Name","value":"yearGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shortName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearGroupContacts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shortName"}}]}}]}}]}}]} as unknown as DocumentNode<Users_UserAccessQuery, Users_UserAccessQueryVariables>;
+export const Users_UserAccessDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"users_userAccess"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"UserAccessFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users_userAccess"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"personalInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"primaryEmail"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"contactStudents"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"webLastLogin"}},{"kind":"Field","name":{"kind":"Name","value":"mobileLastLogin"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"invitedOn"}},{"kind":"Field","name":{"kind":"Name","value":"yearGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shortName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearGroupContacts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shortName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"mobileAppVersion"}}]}}]}}]} as unknown as DocumentNode<Users_UserAccessQuery, Users_UserAccessQueryVariables>;
 export const SendSmsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"sendSms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SendSmsInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_sendSms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<SendSmsMutation, SendSmsMutationVariables>;
 export const Communications_SmsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_sms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SmsFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_sms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"sender"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"sentOn"}},{"kind":"Field","name":{"kind":"Name","value":"canReply"}},{"kind":"Field","name":{"kind":"Name","value":"numRecipients"}},{"kind":"Field","name":{"kind":"Name","value":"totalCost"}},{"kind":"Field","name":{"kind":"Name","value":"recipients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"smsId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientPartyId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"recipient"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"recipientPhoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"smsStatus"}}]}}]}}]}}]} as unknown as DocumentNode<Communications_SmsQuery, Communications_SmsQueryVariables>;
 export const Communications_SmsCostDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_smsCost"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SmsCostFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_smsCost"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]} as unknown as DocumentNode<Communications_SmsCostQuery, Communications_SmsCostQueryVariables>;

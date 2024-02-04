@@ -88,12 +88,17 @@ const getColumns = (
         : '-',
   },
   {
-    headerName: t('settings:lastActiveMobile'),
+    headerName: t('settings:lastActiveNative'),
     field: 'mobileLastLogin',
     valueGetter: ({ data }) =>
       data && data.mobileLastLogin
         ? dayjs(data.mobileLastLogin).format('ll LT')
         : '-',
+  },
+  {
+    headerName: t('settings:nativeAppVersion'),
+    field: 'mobileAppVersion',
+    valueGetter: ({ data }) => data?.mobileAppVersion ?? '-',
   },
   {
     field: 'yearGroup.shortName',
