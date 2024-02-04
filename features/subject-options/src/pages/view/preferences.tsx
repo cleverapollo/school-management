@@ -122,12 +122,9 @@ const getStudentPreferenceColumns = (
       const colId = `${subjectSet.id.idx}-${preferenceIdx}`;
       const isOutsideWhatTheyGet = preferenceIdx > subjectSet.mustGet;
       const showLeftBorder = preferenceIdx === 1 && subjectSet.id.idx !== 1;
-
-      console.log({
-        preferenceIdx,
-        subjectIdx: subjectSet.id.idx,
-        showLeftBorder,
-      });
+      const options = subjectSet.subjects.sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
 
       return {
         field: `choices.${colId}`,
@@ -199,7 +196,6 @@ const getStudentPreferenceColumns = (
             'ps:1:options:write_preferences'
           ),
         cellEditorSelector: ({ data }: ICellEditorParams<StudentRow>) => {
-          const options = subjectSet.subjects;
           if (data) {
             return {
               component: TableSelect<(typeof options)[number]>,
