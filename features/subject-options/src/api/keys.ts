@@ -4,6 +4,8 @@ export const optionsKeys = {
   all: ['options'] as const,
   setupList: (filter: OptionFilter) =>
     [...optionsKeys.all, 'setupList', filter] as const,
+  setup: (filter: OptionFilter) =>
+    [...optionsKeys.all, 'setup', filter] as const,
   preferences: (filter: PreferencesFilter) =>
     [...optionsKeys.all, 'preferences', filter] as const,
 };

@@ -28,5 +28,6 @@
   "editPublishDetails": "Edit publish details",
   "unpublishOptions": "Unpublish options",
   "areYouSureYouWantToUnpublish": "Are you sure you want to unpublish {{optionsName}}? This will remove access for contacts.",
-  "preferences": "Preferences"
+  "preferences": "Preferences",
+  "prefX": "Pref. {{x}}"
 }

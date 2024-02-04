@@ -7,7 +7,7 @@ import {
 } from '@tyro/core';
 import { BookOpenWithTextIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
-import { getOptionsSetupList } from './api/options';
+import { getOptionsSetup, getOptionsSetupList } from './api/options';
 import { getOptionsPreferences } from './api/options-preferences';
 
 const SubjectOptions = lazyWithRetry(() => import('./pages/index'));
@@ -74,7 +74,10 @@ export const getRoutes: NavObjectFunction = (t) => [
                     throw404Error();
                   }
 
-                  return getOptionsPreferences({ optionId: id });
+                  return Promise.all([
+                    getOptionsSetup(id),
+                    getOptionsPreferences({ optionId: id }),
+                  ]);
                 },
               },
             ],
