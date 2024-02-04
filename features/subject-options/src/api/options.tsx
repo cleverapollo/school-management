@@ -45,6 +45,7 @@ const optionsSetup = graphql(/* GraphQL */ `
         }
         name
         canChoose
+        mustGet
         poolIdx
         subjects {
           id

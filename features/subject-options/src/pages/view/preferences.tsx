@@ -111,17 +111,36 @@ const getStudentPreferenceColumns = (
     checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
     filter: true,
+    pinned: 'left',
   },
   ...(optionsSetup?.subjectSets?.map((subjectSet) => ({
     colId: JSON.stringify(subjectSet.id),
     headerName: subjectSet.name,
+    headerClass: subjectSet.id.idx !== 1 ? 'border-left' : undefined,
     children: Array.from(Array(subjectSet.canChoose)).map((_, index) => {
       const preferenceIdx = index + 1;
       const colId = `${subjectSet.id.idx}-${preferenceIdx}`;
+      const isOutsideWhatTheyGet = preferenceIdx > subjectSet.mustGet;
+      const showLeftBorder = preferenceIdx === 1 && subjectSet.id.idx !== 1;
+
+      console.log({
+        preferenceIdx,
+        subjectIdx: subjectSet.id.idx,
+        showLeftBorder,
+      });
 
       return {
         field: `choices.${colId}`,
         headerName: t('subjectOptions:prefX', { x: preferenceIdx }),
+        cellClass: [
+          'ag-editable-cell',
+          isOutsideWhatTheyGet && 'outside-get',
+          showLeftBorder && 'border-left',
+        ].filter(Boolean),
+        headerClass: [
+          isOutsideWhatTheyGet && 'outside-get',
+          showLeftBorder && 'border-left',
+        ].filter(Boolean),
         valueGetter: ({ data }: ValueGetterParams<StudentRow, any>) =>
           data?.choices[colId],
         valueSetter: ({
@@ -294,6 +313,15 @@ export default function StudentOptionsPreferencesPage() {
   return (
     <>
       <Table
+        sx={{
+          '& .outside-get': {
+            backgroundColor: 'slate.100',
+          },
+          '& .border-left': {
+            borderLeft: '1px solid',
+            borderLeftColor: 'slate.200',
+          },
+        }}
         rowData={studentRows}
         columnDefs={studentPreferenceColumns}
         rowSelection="multiple"
