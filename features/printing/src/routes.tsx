@@ -69,6 +69,10 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'assessment',
             element: <PrintAssessment />,
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission(
+                'ps:1:printing_and_exporting:print_assessments'
+              ),
             title: t('navigation:management.printing.assessment'),
           },
         ],
