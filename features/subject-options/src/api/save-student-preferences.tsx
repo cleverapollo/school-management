@@ -1,7 +1,13 @@
 import { useMutation } from '@tanstack/react-query';
 import { useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { gqlClient, graphql, SaveStudentPreference } from '@tyro/api';
+import {
+  gqlClient,
+  graphql,
+  queryClient,
+  SaveStudentPreference,
+} from '@tyro/api';
+import { optionsKeys } from './keys';
 
 const saveStudentPreferences = graphql(/* GraphQL */ `
   mutation options_saveStudentPreferences($input: [SaveStudentPreference]!) {
@@ -21,7 +27,8 @@ export function useSaveStudentPreferences() {
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(optionsKeys.all);
       toast(t('common:snackbarMessages.updateSuccess'));
     },
   });

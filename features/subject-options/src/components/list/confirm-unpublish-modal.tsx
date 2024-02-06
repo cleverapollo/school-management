@@ -37,7 +37,7 @@ export function ConfirmUnpublishModal({
       open={open}
       title={t('subjectOptions:unpublishOptions')}
       description={t('subjectOptions:areYouSureYouWantToUnpublish', {
-        optionName: optionsToUnpublish?.name ?? '',
+        optionsName: optionsToUnpublish?.name ?? '',
       })}
       confirmText={t('common:actions.unpublish')}
       onClose={onClose}

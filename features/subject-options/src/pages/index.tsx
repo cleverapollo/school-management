@@ -56,6 +56,13 @@ const getColumnDefs = (
     headerName: t('subjectOptions:yearGroupFor'),
   },
   {
+    field: 'parentsDueByDate',
+    headerName: t('common:dueDate'),
+    comparator: (dateA: string, dateB: string) =>
+      dayjs(dateA).unix() - dayjs(dateB).unix(),
+    valueGetter: ({ data }) => dayjs(data?.parentsDueByDate).format('ll'),
+  },
+  {
     field: 'publishedToParents',
     headerName: t('subjectOptions:publishedToParents'),
     valueGetter: ({ data }) => {
@@ -88,7 +95,7 @@ const getColumnDefs = (
             data.publishedToParents
               ? [
                   {
-                    label: t('subjectOptions:editDueDate'),
+                    label: t('subjectOptions:editPublishDetails'),
                     icon: <EditCalendarIcon />,
                     onClick: () => openPublish(data),
                   },

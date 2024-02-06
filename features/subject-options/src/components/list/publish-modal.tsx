@@ -41,9 +41,6 @@ export function PublishOptionsModal({
       dueDate: rules.required(),
       description: rules.required(),
     }),
-    defaultValues: {
-      dueDate: dayjs(),
-    },
   });
 
   const { mutate, isLoading: isPublishing } = usePublishOptions();
@@ -66,7 +63,7 @@ export function PublishOptionsModal({
     if (open && optionsToPublish) {
       const { parentsDueByDate, parentsDescription } = optionsToPublish ?? {};
       reset({
-        dueDate: dayjs(parentsDueByDate ?? null),
+        dueDate: parentsDueByDate ? dayjs(parentsDueByDate) : undefined,
         description: parentsDescription ?? '',
       });
     }

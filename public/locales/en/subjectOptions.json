@@ -23,11 +23,10 @@
   "selectStudents": "Select students",
   "yearGroupFor": "Year group for",
   "publishedToParents": "Published to parents",
-  "editDueDate": "Edit due date",
   "publishOptions": "Publish options",
   "editPublishDetails": "Edit publish details",
   "unpublishOptions": "Unpublish options",
-  "areYouSureYouWantToUnpublish": "Are you sure you want to unpublish {{optionsName}}? This will remove access for contacts.",
+  "areYouSureYouWantToUnpublish": "Are you sure you want to unpublish \"{{optionsName}}\"? This will remove access to subject options for contacts.",
   "preferences": "Preferences",
   "prefX": "Pref. {{x}}"
 }

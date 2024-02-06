@@ -1,7 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { useToast } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { gqlClient, graphql, SaveOptions } from '@tyro/api';
+import { gqlClient, graphql, queryClient, SaveOptions } from '@tyro/api';
+import { optionsKeys } from './keys';
 
 const saveSubjectOptions = graphql(/* GraphQL */ `
   mutation options_saveOptions($input: SaveOptions!) {
@@ -21,7 +22,8 @@ export function useSaveSubjectOptionsSetup() {
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     },
-    onSuccess: (_, variables) => {
+    onSuccess: async (_, variables) => {
+      await queryClient.invalidateQueries(optionsKeys.all);
       toast(
         variables?.id
           ? t('common:snackbarMessages.updateSuccess')
