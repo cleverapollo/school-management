@@ -100,6 +100,7 @@ const defaultColDef: ColDef = {
   cellStyle: {
     alignItems: 'center',
   },
+  useValueFormatterForExport: true,
   cellClass: (params) => {
     if (params.colDef.editable) {
       return 'ag-editable-cell';
@@ -298,6 +299,17 @@ function TableInner<T extends object>(
                 groupSelectsChildren={rowSelection === 'multiple'}
                 groupSelectsFiltered={rowSelection === 'multiple'}
                 stopEditingWhenCellsLoseFocus
+                processCellForClipboard={({ value }) => {
+                  if (value === null || value === undefined) {
+                    return '';
+                  }
+
+                  if (typeof value === 'object') {
+                    return JSON.stringify(value);
+                  }
+
+                  return value as unknown;
+                }}
                 {...props}
                 quickFilterMatcher={quickFilterMatcher}
                 defaultColDef={colDefs}

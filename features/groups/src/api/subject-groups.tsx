@@ -46,6 +46,9 @@ const subjectGroupsList = graphql(/* GraphQL */ `
       }
       studentMembershipType {
         type
+        classGroupId
+        blockId
+        classGroupName
       }
     }
   }
@@ -66,6 +69,9 @@ const subjectGroupById = graphql(/* GraphQL */ `
       }
       studentMembershipType {
         type
+        classGroupId
+        blockId
+        classGroupName
       }
       staff {
         title {
