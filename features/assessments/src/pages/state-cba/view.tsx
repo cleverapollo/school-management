@@ -242,26 +242,25 @@ export default function ViewStateCba() {
 
   const actionMenuItems = useMemo<ActionMenuProps['menuItems']>(
     () => [
-      hasPermission('ps:1:communications:send_sms')
-        ? [
-            {
-              label: t('people:sendSms'),
-              icon: <MobileIcon />,
-              onClick: onOpenSendSms,
-            },
-          ]
-        : [
-            {
-              label: t('people:sendSms'),
-              icon: <MobileIcon />,
-              onClick: onOpenSendSms,
-            },
-            {
-              label: t('mail:sendMail'),
-              icon: <SendMailIcon />,
-              onClick: sendMailToSelectedStaff,
-            },
-          ],
+      [
+        {
+          label: t('people:sendSms'),
+          icon: <MobileIcon />,
+          onClick: onOpenSendSms,
+          hasAccess: ({ isStaffUserWithPermission }) =>
+            isStaffUserWithPermission('ps:1:communications:send_sms'),
+        },
+        {
+          label: t('mail:sendMail'),
+          icon: <SendMailIcon />,
+          onClick: sendMailToSelectedStaff,
+          hasAccess: ({ isStaffUserHasAllPermissions }) =>
+            isStaffUserHasAllPermissions([
+              'ps:1:communications:write_mail',
+              'api:communications:read:search_recipients',
+            ]),
+        },
+      ],
       [
         {
           label: t('assessments:syncWithPpod'),

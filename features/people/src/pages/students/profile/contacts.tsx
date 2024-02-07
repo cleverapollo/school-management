@@ -25,6 +25,7 @@ import {
 import { SendSmsModal } from '@tyro/sms';
 import {
   Core_UpdateStudentContactRelationshipInput,
+  PermissionUtils,
   SearchType,
   SmsRecipientType,
 } from '@tyro/api';
@@ -274,6 +275,8 @@ export default function StudentProfileContactsPage() {
               disabledTooltip: t('sms:recipientNotIncludedInSms', {
                 count: selectedContacts.length,
               }),
+              hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+                isStaffUserWithPermission('ps:1:communications:send_sms'),
             },
             {
               label: t('mail:sendMail'),
@@ -283,6 +286,11 @@ export default function StudentProfileContactsPage() {
               disabledTooltip: t('sms:recipientNotAllowedToContact', {
                 count: selectedContacts.length,
               }),
+              hasAccess: ({ isStaffUserHasAllPermissions }: PermissionUtils) =>
+                isStaffUserHasAllPermissions([
+                  'ps:1:communications:write_mail',
+                  'api:communications:read:search_recipients',
+                ]),
             },
           ]
         : [],
