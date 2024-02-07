@@ -87,7 +87,7 @@ export function SwapButton({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const isMenuOpen = Boolean(anchorEl);
-  const newLessonLabel = fromOptions[0].lesson?.partyGroup?.name ?? '-';
+  const newLessonLabel = fromOptions[0]?.lesson?.partyGroup?.name ?? '-';
   const originalLessonLabel = to.lesson?.partyGroup?.name ?? '-';
   const showNewLabel = isSwapped || isFocused || isMenuOpen;
   const label = showNewLabel ? newLessonLabel : originalLessonLabel;
