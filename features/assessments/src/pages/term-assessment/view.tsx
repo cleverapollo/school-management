@@ -280,6 +280,11 @@ export default function ViewTermAssessment() {
                       label: t('mail:sendMail'),
                       icon: <SendMailIcon />,
                       onClick: sendMailToSelectedStaff,
+                      hasAccess: ({ isStaffUserHasAllPermissions }) =>
+                        isStaffUserHasAllPermissions([
+                          'ps:1:communications:write_mail',
+                          'api:communications:read:search_recipients',
+                        ]),
                     },
                   ]}
                 />
