@@ -28,5 +28,6 @@
   "unpublishOptions": "Unpublish options",
   "areYouSureYouWantToUnpublish": "Are you sure you want to unpublish \"{{optionsName}}\"? This will remove access to subject options for contacts.",
   "preferences": "Preferences",
-  "prefX": "Pref. {{x}}"
+  "prefX": "Pref. {{x}}",
+  "stats": "Stats"
 }

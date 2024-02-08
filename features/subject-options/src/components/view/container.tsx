@@ -38,6 +38,10 @@ export default function OptionsViewContainer() {
             label: t('subjectOptions:preferences'),
             value: 'preferences',
           },
+          {
+            label: t('subjectOptions:stats'),
+            value: 'stats',
+          },
         ]}
       />
     </PageContainer>

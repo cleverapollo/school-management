@@ -19,6 +19,9 @@ const OptionsViewContainer = lazyWithRetry(
 const StudentOptionsPreferencesPage = lazyWithRetry(
   () => import('./pages/view/preferences')
 );
+const StudentOptionsStatsPage = lazyWithRetry(
+  () => import('./pages/view/stats')
+);
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -67,6 +70,23 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'preferences',
                 element: <StudentOptionsPreferencesPage />,
+                loader: ({ params }) => {
+                  const id = getNumber(params.id);
+
+                  if (!id) {
+                    throw404Error();
+                  }
+
+                  return Promise.all([
+                    getOptionsSetup(id),
+                    getOptionsPreferences({ optionId: id }),
+                  ]);
+                },
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'stats',
+                element: <StudentOptionsStatsPage />,
                 loader: ({ params }) => {
                   const id = getNumber(params.id);
 
