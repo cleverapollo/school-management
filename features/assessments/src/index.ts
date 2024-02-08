@@ -14,3 +14,4 @@ export {
   useAssessments,
 } from './api/assessments';
 export { getPrintAssessment } from './api/print-assessment';
+export { useYearGroupEnrollments } from './api/year-group-enrollments';

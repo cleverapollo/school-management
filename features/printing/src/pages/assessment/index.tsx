@@ -56,7 +56,10 @@ export default function PrintAssessment() {
             {t('printing:timetable.printOptions')}
           </Typography>
         </Divider>
-        <PrintAssessmentForm assessment={assessment} />
+        <PrintAssessmentForm
+          assessment={assessment}
+          academicNameSpaceId={academicNameSpaceId}
+        />
       </Card>
     </PageContainer>
   );

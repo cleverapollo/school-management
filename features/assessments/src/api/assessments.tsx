@@ -22,22 +22,6 @@ const assessmentsList = graphql(/* GraphQL */ `
         yearGroupId
         name
       }
-      yearGroupEnrolments {
-        partyId
-        name
-        students {
-          partyId
-          person {
-            partyId
-            firstName
-            lastName
-          }
-          classGroup {
-            partyId
-            name
-          }
-        }
-      }
       publish
       publishedFrom
       publishLearner

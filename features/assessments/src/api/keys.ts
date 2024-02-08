@@ -9,6 +9,7 @@ import {
   OverallCommentsFilter,
   Print_AssessmentOptions,
   StudentResultFilter,
+  YearGroupEnrollmentFilter,
 } from '@tyro/api';
 
 export const assessmentsKeys = {
@@ -66,6 +67,10 @@ export const assessmentsKeys = {
   ) => [
     ...assessmentsKeys.allOverallCommentsByYearGroup(),
     academicNamespaceId,
+    filter,
+  ],
+  yearGroupEnrollments: (filter: YearGroupEnrollmentFilter) => [
+    ...assessmentsKeys.all,
     filter,
   ],
 };

@@ -15,11 +15,13 @@ import { useMemo, useState } from 'react';
 import {
   ReturnTypeFromUseAssessments,
   getPrintAssessment,
+  useYearGroupEnrollments,
 } from '@tyro/assessments';
 import { AutocompleteValue } from './types';
 
 export interface PrintAssessmentFormProps {
   assessment?: ReturnTypeFromUseAssessments;
+  academicNameSpaceId: number | null;
 }
 
 export type PrintAssessmentFormState = {
@@ -33,6 +35,7 @@ export type PrintAssessmentFormState = {
 
 export default function PrintAssessmentForm({
   assessment,
+  academicNameSpaceId,
 }: PrintAssessmentFormProps) {
   const { t } = useTranslation(['common', 'printing']);
   const { resolver, rules } = useFormValidator<PrintAssessmentFormState>();
@@ -58,26 +61,26 @@ export default function PrintAssessmentForm({
   const selectedYearGroups = watch('yearGroups') ?? [];
   const selectedClassGroups = watch('classGroups') ?? [];
 
-  const selectedYearsData = useMemo(
-    () =>
-      assessment?.yearGroupEnrolments?.filter(({ partyId }) =>
-        selectedYearGroups?.find((group) => group?.partyId === partyId)
-      ),
-    [assessment, selectedYearGroups]
+  const { data: yearGroupEnrollments } = useYearGroupEnrollments(
+    {
+      yearGroupIds: selectedYearGroups.map((yearGroup) => yearGroup.partyId),
+      academicNamespaceIds: [academicNameSpaceId ?? 0],
+    },
+    selectedYearGroups?.length > 0
   );
 
   const yearGroupOptions = useMemo(
     () =>
-      assessment?.yearGroupEnrolments
-        ?.map(({ partyId, name }) => ({ partyId, name }))
+      assessment?.years
+        ?.map(({ yearGroupId, name }) => ({ partyId: yearGroupId, name }))
         .sort((a, b) => a.name.localeCompare(b?.name)) as AutocompleteValue[],
-    [assessment?.yearGroupEnrolments]
+    [assessment?.years]
   );
 
   const classGroupOptions = useMemo(() => {
     const list: AutocompleteValue[] = [];
 
-    selectedYearsData?.forEach(({ students }) => {
+    yearGroupEnrollments?.forEach(({ students }) => {
       students.forEach(({ classGroup }) => {
         if (
           !list.find((e) => e?.partyId === classGroup?.partyId) &&
@@ -89,12 +92,12 @@ export default function PrintAssessmentForm({
     });
 
     return list.sort((a, b) => a.name.localeCompare(b?.name));
-  }, [selectedYearsData]);
+  }, [yearGroupEnrollments]);
 
   const studentOptions = useMemo(() => {
     const list: AutocompleteValue[] = [];
 
-    selectedYearsData?.forEach(({ students }) => {
+    yearGroupEnrollments?.forEach(({ students }) => {
       students.forEach(({ partyId, person, classGroup }) => {
         if (
           selectedClassGroups.find((e) => e.partyId === classGroup?.partyId)
@@ -108,7 +111,7 @@ export default function PrintAssessmentForm({
     });
 
     return list.sort((a, b) => a.name.localeCompare(b?.name));
-  }, [selectedYearsData, selectedClassGroups]);
+  }, [yearGroupEnrollments, selectedClassGroups]);
 
   const updateClassGroupValue = () => {
     setValue('classGroups', [], { shouldDirty: true });
@@ -125,7 +128,7 @@ export default function PrintAssessmentForm({
       setIsLoading(true);
       const printResponse = await getPrintAssessment({
         assessmentId: assessment?.id ?? 0,
-        yearGroupIds: yearGroups.map(({ partyId }) => partyId),
+        yearGroupIds: yearGroupEnrollments?.map(({ partyId }) => partyId) ?? [],
         classGroupIds: classGroups.map(({ partyId }) => partyId),
         studentIds: students.map(({ partyId }) => partyId),
         ...rest,
