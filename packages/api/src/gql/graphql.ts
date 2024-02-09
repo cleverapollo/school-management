@@ -390,6 +390,39 @@ export type Attendance_SaveBulkAttendanceSingleDateInput = {
   date: Scalars['Date'];
 };
 
+export type Attendance_SignInOut = {
+  __typename?: 'Attendance_SignInOut';
+  attendanceCode: AttendanceCode;
+  attendanceCodeId: Scalars['Int'];
+  createdBy: Staff;
+  createdByPartyId: Scalars['Long'];
+  localDateTime: Scalars['DateTime'];
+  note?: Maybe<Scalars['String']>;
+  status: Attendance_SignInOutType;
+  student: Student;
+  studentPartyId: Scalars['Long'];
+};
+
+export type Attendance_SignInOutInput = {
+  datetime: Scalars['DateTime'];
+  eventAttendance?: InputMaybe<Array<InputMaybe<SaveEventAttendanceInput>>>;
+  note?: InputMaybe<Scalars['String']>;
+  sessionAttendance?: InputMaybe<Array<InputMaybe<SaveStudentSessionAttendanceInput>>>;
+  signInOutType: Attendance_SignInOutType;
+  studentPartyId: Scalars['Long'];
+};
+
+export type Attendance_SignInOutReportFilter = {
+  fromDate?: InputMaybe<Scalars['DateTime']>;
+  studentPartyId?: InputMaybe<Scalars['Long']>;
+  toDate?: InputMaybe<Scalars['DateTime']>;
+};
+
+export enum Attendance_SignInOutType {
+  SignIn = 'SIGN_IN',
+  SignOut = 'SIGN_OUT'
+}
+
 export type AuditId = {
   __typename?: 'AuditId';
   partyId?: Maybe<Scalars['Long']>;
@@ -1252,12 +1285,6 @@ export type ChargesFilter = {
   charges: Array<Charge>;
 };
 
-export type ChoiceId = {
-  __typename?: 'ChoiceId';
-  preferenceIdx: Scalars['Int'];
-  subjectSetIdx: Scalars['Int'];
-};
-
 export type ClashingParty = {
   __typename?: 'ClashingParty';
   clash: Array<Scalars['String']>;
@@ -1464,6 +1491,13 @@ export type Core_LinkSiblingsAndContacts = {
 export type Core_LinkSiblingsAndContactsContactInfo = {
   contactPartyId?: InputMaybe<Scalars['Long']>;
   relationshipType?: InputMaybe<StudentContactType>;
+};
+
+export type Core_ModifyAcademicNamespaceMembership = {
+  academicNamespaceId: Scalars['Int'];
+  change: Core_ModifyMembershipEnum;
+  nameOverride?: InputMaybe<Scalars['String']>;
+  partyId: Scalars['Long'];
 };
 
 export type Core_ModifyBlockClassGroup = {
@@ -2580,8 +2614,11 @@ export type Forms_FormListing = {
 export type Forms_FormView = {
   __typename?: 'Forms_FormView';
   description?: Maybe<Scalars['String']>;
+  dueDate?: Maybe<Scalars['DateTime']>;
   fields: Array<Forms_FormFieldGroup>;
+  gridWidth: Forms_FormFieldGridWidth;
   id: Forms_FormId;
+  readOnly: Scalars['Boolean'];
   title?: Maybe<Scalars['String']>;
 };
 
@@ -2822,25 +2859,6 @@ export type IndividualEventFilter = {
   orConditions?: InputMaybe<Array<Calendar_DatetimeFilterCondition>>;
 };
 
-export type InfoRequestFilter = {
-  studentPartyIds: Array<Scalars['Long']>;
-};
-
-export type InfoRequestId = {
-  __typename?: 'InfoRequestId';
-  optionId: Scalars['Int'];
-  studentPartyId: Scalars['Long'];
-};
-
-export type InfoRequestOption = {
-  __typename?: 'InfoRequestOption';
-  dueBy: Scalars['Date'];
-  id: InfoRequestId;
-  optionName: Scalars['String'];
-  /** deep linked */
-  requestFor: Person;
-};
-
 export enum InfoRequestType {
   Options = 'OPTIONS'
 }
@@ -3029,6 +3047,7 @@ export type Mutation = {
   attendance_saveEventAttendance: Array<EventAttendance>;
   attendance_saveParentalAttendanceRequest: Array<ParentalAttendanceRequest>;
   attendance_saveStudentSessionAttendance: Array<StudentSessionAttendance>;
+  attendance_saveStudentSignInOut?: Maybe<Success>;
   attendance_withdrawParentalAttendanceRequest?: Maybe<Success>;
   calendar_createCalendar?: Maybe<Calendar>;
   calendar_createCalendarEvents?: Maybe<Array<Maybe<CalendarEventRaw>>>;
@@ -3097,7 +3116,7 @@ export type Mutation = {
   notes_upsertNotes: Array<Notes_Note>;
   notes_upsertNotesTags: Array<Notes_Tag>;
   options_publish: Success;
-  options_saveOptions: Option;
+  options_saveOptions: Options_Option;
   options_saveStudentPreferences: Success;
   ppod_savePPODCredentials: PpodCredentials;
   sa_upsertActivity?: Maybe<Success>;
@@ -3215,6 +3234,11 @@ export type MutationAttendance_SaveParentalAttendanceRequestArgs = {
 
 export type MutationAttendance_SaveStudentSessionAttendanceArgs = {
   input?: InputMaybe<SaveStudentSessionAttendanceInput>;
+};
+
+
+export type MutationAttendance_SaveStudentSignInOutArgs = {
+  input?: InputMaybe<Attendance_SignInOutInput>;
 };
 
 
@@ -3534,17 +3558,17 @@ export type MutationNotes_UpsertNotesTagsArgs = {
 
 
 export type MutationOptions_PublishArgs = {
-  input?: InputMaybe<OptionsPublish>;
+  input?: InputMaybe<Options_OptionsPublish>;
 };
 
 
 export type MutationOptions_SaveOptionsArgs = {
-  input?: InputMaybe<SaveOptions>;
+  input?: InputMaybe<Options_SaveOptions>;
 };
 
 
 export type MutationOptions_SaveStudentPreferencesArgs = {
-  input?: InputMaybe<Array<InputMaybe<SaveStudentPreference>>>;
+  input?: InputMaybe<Array<InputMaybe<Options_SaveStudentPreference>>>;
 };
 
 
@@ -4035,8 +4059,33 @@ export type NotificationsUnreadCount = {
   count: Scalars['Int'];
 };
 
-export type Option = {
-  __typename?: 'Option';
+export type Options_ChoiceId = {
+  __typename?: 'Options_ChoiceId';
+  preferenceIdx: Scalars['Int'];
+  subjectSetIdx: Scalars['Int'];
+};
+
+export type Options_InfoRequestFilter = {
+  studentPartyIds: Array<Scalars['Long']>;
+};
+
+export type Options_InfoRequestId = {
+  __typename?: 'Options_InfoRequestId';
+  optionId: Scalars['Int'];
+  studentPartyId: Scalars['Long'];
+};
+
+export type Options_InfoRequestOption = {
+  __typename?: 'Options_InfoRequestOption';
+  dueBy: Scalars['Date'];
+  id: Options_InfoRequestId;
+  optionName: Scalars['String'];
+  /** deep linked */
+  requestFor: Person;
+};
+
+export type Options_Option = {
+  __typename?: 'Options_Option';
   academicNamespaceId: Scalars['Int'];
   id: Scalars['Int'];
   name: Scalars['String'];
@@ -4045,26 +4094,28 @@ export type Option = {
   prefix?: Maybe<Scalars['String']>;
   publishedToParents: Scalars['Boolean'];
   publishedToParentsOn?: Maybe<Scalars['DateTime']>;
+  studentCount: Scalars['Int'];
   studentPartyIds?: Maybe<Array<Scalars['Long']>>;
+  studentPreferencesCompleteCount: Scalars['Int'];
   /** deep linked */
   students?: Maybe<Array<Person>>;
-  subjectSetIds?: Maybe<Array<OptionsId>>;
+  subjectSetIds?: Maybe<Array<Options_OptionsId>>;
   /** deep linked */
-  subjectSets: Array<OptionSubjectSet>;
+  subjectSets: Array<Options_OptionSubjectSet>;
   /** deep linked */
-  yearGroupEnrolmentParty: YearGroupEnrollment;
-  yearGroupEnrolmentPartyId: Scalars['Long'];
+  yearGroup: YearGroup;
+  yearGroupId: Scalars['Int'];
 };
 
-export type OptionFilter = {
+export type Options_OptionFilter = {
   academicNameSpaceId?: InputMaybe<Scalars['Int']>;
   ids?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
-export type OptionSubjectSet = {
-  __typename?: 'OptionSubjectSet';
+export type Options_OptionSubjectSet = {
+  __typename?: 'Options_OptionSubjectSet';
   canChoose: Scalars['Int'];
-  id: OptionsId;
+  id: Options_OptionsId;
   mustGet: Scalars['Int'];
   name: Scalars['String'];
   poolIdx?: Maybe<Scalars['Int']>;
@@ -4073,17 +4124,81 @@ export type OptionSubjectSet = {
   subjects: Array<Subject>;
 };
 
-export type OptionsId = {
-  __typename?: 'OptionsId';
+export type Options_OptionsId = {
+  __typename?: 'Options_OptionsId';
   idx: Scalars['Int'];
   optionId: Scalars['Int'];
 };
 
-export type OptionsPublish = {
+export type Options_OptionsPublish = {
   description?: InputMaybe<Scalars['String']>;
   dueByDate?: InputMaybe<Scalars['Date']>;
   optionId: Scalars['Int'];
   publish: Scalars['Boolean'];
+};
+
+export type Options_ParentalPreferencesFilter = {
+  optionId: Scalars['Int'];
+  studentPartyId: Scalars['Long'];
+};
+
+export type Options_PreferenceId = {
+  __typename?: 'Options_PreferenceId';
+  optionId: Scalars['Int'];
+  studentPartyId: Scalars['Long'];
+};
+
+export type Options_PreferencesFilter = {
+  optionId: Scalars['Int'];
+  studentPartyIds?: InputMaybe<Array<Scalars['Long']>>;
+};
+
+export type Options_SaveOptions = {
+  id?: InputMaybe<Scalars['Int']>;
+  name: Scalars['String'];
+  prefix?: InputMaybe<Scalars['String']>;
+  studentPartyIds?: InputMaybe<Array<Scalars['Long']>>;
+  subjectSets: Array<Options_SaveSubjectSet>;
+  yearGroupId: Scalars['Int'];
+};
+
+export type Options_SaveStudentPreference = {
+  optionId: Scalars['Int'];
+  preferenceIdx: Scalars['Int'];
+  studentPartyId: Scalars['Long'];
+  subjectId: Scalars['Int'];
+  subjectSetIdx: Scalars['Int'];
+};
+
+export type Options_SaveSubjectSet = {
+  canChoose: Scalars['Int'];
+  idx?: InputMaybe<Scalars['Int']>;
+  mustGet: Scalars['Int'];
+  name: Scalars['String'];
+  poolIdx?: InputMaybe<Scalars['Int']>;
+  subjectIds: Array<Scalars['Int']>;
+};
+
+export type Options_StudentChoice = {
+  __typename?: 'Options_StudentChoice';
+  adminSelectedSubjectId?: Maybe<Scalars['Int']>;
+  id: Options_ChoiceId;
+  studentSelectedSubjectId: Scalars['Int'];
+  /** deep linked */
+  subject: Subject;
+  subjectId: Scalars['Int'];
+};
+
+export type Options_StudentPreference = {
+  __typename?: 'Options_StudentPreference';
+  choices: Array<Options_StudentChoice>;
+  id: Options_PreferenceId;
+  /** deep linked */
+  student: Person;
+};
+
+export type Options_SubjectSetFilter = {
+  optionId: Scalars['Int'];
 };
 
 export type OverallComments = {
@@ -4511,17 +4626,6 @@ export type PhoneNumber = {
   primaryPhoneNumber?: Maybe<Scalars['Boolean']>;
 };
 
-export type PreferenceId = {
-  __typename?: 'PreferenceId';
-  optionId: Scalars['Int'];
-  studentPartyId: Scalars['Long'];
-};
-
-export type PreferencesFilter = {
-  optionId?: InputMaybe<Scalars['Int']>;
-  studentPartyId?: InputMaybe<Scalars['Long']>;
-};
-
 export type PreviousEventAttendance = {
   __typename?: 'PreviousEventAttendance';
   attendanceCode: AttendanceCode;
@@ -4802,6 +4906,7 @@ export type Query = {
   attendance_eventAttendanceReport: EventAttendanceReport;
   attendance_parentalAttendanceRequests: Array<ParentalAttendanceRequest>;
   attendance_sessionAttendanceList: Array<SessionAttendanceList>;
+  attendance_signInOutReport: Array<Attendance_SignInOut>;
   attendance_studentSessionAttendance: Array<StudentSessionAttendance>;
   calendar_bellTimes: Array<Calendar_BellTime>;
   calendar_calendar: Array<Calendar>;
@@ -4868,8 +4973,8 @@ export type Query = {
   notes_behaviourCategories: Array<Notes_BehaviourCategory>;
   notes_notes: Array<Notes_Note>;
   notes_tags: Array<Notes_Tag>;
-  options_options: Array<Option>;
-  options_preferences: Array<StudentPreference>;
+  options_options: Array<Options_Option>;
+  options_preferences: Array<Options_StudentPreference>;
   permissions?: Maybe<Array<Maybe<Permission>>>;
   ppod_PPODCredentials?: Maybe<PpodCredentials>;
   ppod_syncRequests: Array<SyncRequest>;
@@ -5025,6 +5130,11 @@ export type QueryAttendance_ParentalAttendanceRequestsArgs = {
 
 export type QueryAttendance_SessionAttendanceListArgs = {
   filter?: InputMaybe<SessionAttendanceListFilter>;
+};
+
+
+export type QueryAttendance_SignInOutReportArgs = {
+  filter?: InputMaybe<Attendance_SignInOutReportFilter>;
 };
 
 
@@ -5284,12 +5394,12 @@ export type QueryNotes_TagsArgs = {
 
 
 export type QueryOptions_OptionsArgs = {
-  filter?: InputMaybe<OptionFilter>;
+  filter?: InputMaybe<Options_OptionFilter>;
 };
 
 
 export type QueryOptions_PreferencesArgs = {
-  filter?: InputMaybe<PreferencesFilter>;
+  filter?: InputMaybe<Options_PreferencesFilter>;
 };
 
 
@@ -6465,15 +6575,6 @@ export type SaveNotificationTemplateInput = {
   title: Scalars['String'];
 };
 
-export type SaveOptions = {
-  id?: InputMaybe<Scalars['Int']>;
-  name: Scalars['String'];
-  prefix?: InputMaybe<Scalars['String']>;
-  studentPartyIds?: InputMaybe<Array<Scalars['Long']>>;
-  subjectSets: Array<SaveSubjectSet>;
-  yearGroupEnrolmentPartyId: Scalars['Long'];
-};
-
 export type SaveOwner = {
   addressLine1?: InputMaybe<Scalars['String']>;
   addressLine2?: InputMaybe<Scalars['String']>;
@@ -6576,14 +6677,6 @@ export type SaveStateCbaAssessmentInput = {
   stateCbaType?: InputMaybe<StateCbaType>;
   subjectGroupIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   yearId: Scalars['Int'];
-};
-
-export type SaveStudentPreference = {
-  optionId: Scalars['Int'];
-  preferenceIdx: Scalars['Int'];
-  studentPartyId: Scalars['Long'];
-  subjectId: Scalars['Int'];
-  subjectSetIdx: Scalars['Int'];
 };
 
 export type SaveStudentSessionAttendanceInput = {
@@ -6701,15 +6794,6 @@ export type SaveStudentSupportPlanTargetInput = {
   id?: InputMaybe<Scalars['Int']>;
   status: TargetStatus;
   target: Scalars['String'];
-};
-
-export type SaveSubjectSet = {
-  canChoose: Scalars['Int'];
-  idx?: InputMaybe<Scalars['Int']>;
-  mustGet: Scalars['Int'];
-  name: Scalars['String'];
-  poolIdx?: InputMaybe<Scalars['Int']>;
-  subjectIds: Array<Scalars['Int']>;
 };
 
 export type SaveTermAssessmentInput = {
@@ -7246,14 +7330,6 @@ export type StudentAssessmentExclusionInput = {
   subjectGroupId: Scalars['Long'];
 };
 
-export type StudentChoice = {
-  __typename?: 'StudentChoice';
-  id: ChoiceId;
-  /** deep linked */
-  subject: Subject;
-  subjectId: Scalars['Int'];
-};
-
 export type StudentContact = Party & PartyPerson & {
   __typename?: 'StudentContact';
   archived?: Maybe<Scalars['Boolean']>;
@@ -7457,14 +7533,6 @@ export type StudentMedicalContact = {
 
 export type StudentMedicalFilter = {
   studentPartyId: Scalars['Long'];
-};
-
-export type StudentPreference = {
-  __typename?: 'StudentPreference';
-  choices: Array<StudentChoice>;
-  id: PreferenceId;
-  /** deep linked */
-  student: Person;
 };
 
 export type StudentResultFilter = {
@@ -7753,10 +7821,6 @@ export enum SubjectGroupType {
   SubjectGroup = 'SUBJECT_GROUP',
   SupportGroup = 'SUPPORT_GROUP'
 }
-
-export type SubjectSetFilter = {
-  optionId: Scalars['Int'];
-};
 
 export enum SubjectSource {
   Custom = 'CUSTOM',
@@ -9474,7 +9538,7 @@ export type Forms_ViewInformationRequestFormsQueryVariables = Exact<{
 }>;
 
 
-export type Forms_ViewInformationRequestFormsQuery = { __typename?: 'Query', forms_viewInformationRequestForms: { __typename?: 'Forms_FormView', title?: string | null, description?: string | null, id: { __typename?: 'Forms_FormId', name: string, provider: string, forPartyId?: number | null, objectId?: number | null }, fields: Array<{ __typename?: 'Forms_FormFieldGroup', header: string, fields: Array<{ __typename: 'Forms_FormFieldItem', formFieldType: Forms_FormFieldType, id: string, label: string, type: Form_FormFieldItemType, defaultValue?: string | null, options: Array<{ __typename?: 'Forms_FormFieldSelectOptions', id: string, name: string }>, gridWidth: { __typename?: 'Forms_FormFieldGridWidth', xs?: number | null, sm?: number | null, md?: number | null, lg?: number | null, xl?: number | null } } | { __typename: 'Forms_FormFieldSubGroup', formFieldType: Forms_FormFieldType, header: string, fields: Array<{ __typename?: 'Forms_FormFieldItem', formFieldType: Forms_FormFieldType, id: string, label: string, type: Form_FormFieldItemType, options: Array<{ __typename?: 'Forms_FormFieldSelectOptions', id: string, name: string }>, gridWidth: { __typename?: 'Forms_FormFieldGridWidth', xs?: number | null, sm?: number | null, md?: number | null, lg?: number | null, xl?: number | null } }>, gridWidth: { __typename?: 'Forms_FormFieldGridWidth', xs?: number | null, sm?: number | null, md?: number | null, lg?: number | null, xl?: number | null } }> }> } };
+export type Forms_ViewInformationRequestFormsQuery = { __typename?: 'Query', forms_viewInformationRequestForms: { __typename?: 'Forms_FormView', title?: string | null, description?: string | null, readOnly: boolean, id: { __typename?: 'Forms_FormId', name: string, provider: string, forPartyId?: number | null, objectId?: number | null }, gridWidth: { __typename?: 'Forms_FormFieldGridWidth', xs?: number | null, sm?: number | null, md?: number | null, lg?: number | null, xl?: number | null }, fields: Array<{ __typename?: 'Forms_FormFieldGroup', header: string, fields: Array<{ __typename: 'Forms_FormFieldItem', formFieldType: Forms_FormFieldType, id: string, label: string, type: Form_FormFieldItemType, defaultValue?: string | null, options: Array<{ __typename?: 'Forms_FormFieldSelectOptions', id: string, name: string }>, gridWidth: { __typename?: 'Forms_FormFieldGridWidth', xs?: number | null, sm?: number | null, md?: number | null, lg?: number | null, xl?: number | null } } | { __typename: 'Forms_FormFieldSubGroup', formFieldType: Forms_FormFieldType, header: string, fields: Array<{ __typename?: 'Forms_FormFieldItem', formFieldType: Forms_FormFieldType, id: string, label: string, type: Form_FormFieldItemType, options: Array<{ __typename?: 'Forms_FormFieldSelectOptions', id: string, name: string }>, gridWidth: { __typename?: 'Forms_FormFieldGridWidth', xs?: number | null, sm?: number | null, md?: number | null, lg?: number | null, xl?: number | null } }>, gridWidth: { __typename?: 'Forms_FormFieldGridWidth', xs?: number | null, sm?: number | null, md?: number | null, lg?: number | null, xl?: number | null } }> }> } };
 
 export type Forms_SubmitInformationRequestFormsMutationVariables = Exact<{
   input: Forms_SubmitFormInput;
@@ -10192,42 +10256,42 @@ export type Communications_CurrentMonthlySpendQueryVariables = Exact<{ [key: str
 export type Communications_CurrentMonthlySpendQuery = { __typename?: 'Query', communications_currentMonthlySpend?: { __typename?: 'SmsCurrentMonthlySpend', currentMonthlySpend: number } | null };
 
 export type Options_PreferencesQueryVariables = Exact<{
-  filter?: InputMaybe<PreferencesFilter>;
+  filter?: InputMaybe<Options_PreferencesFilter>;
 }>;
 
 
-export type Options_PreferencesQuery = { __typename?: 'Query', options_preferences: Array<{ __typename?: 'StudentPreference', id: { __typename?: 'PreferenceId', optionId: number, studentPartyId: number }, student: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null }, choices: Array<{ __typename?: 'StudentChoice', id: { __typename?: 'ChoiceId', subjectSetIdx: number, preferenceIdx: number }, subject: { __typename?: 'Subject', id: number, name: string, colour?: Colour | null } }> }> };
+export type Options_PreferencesQuery = { __typename?: 'Query', options_preferences: Array<{ __typename?: 'Options_StudentPreference', id: { __typename?: 'Options_PreferenceId', optionId: number, studentPartyId: number }, student: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null }, choices: Array<{ __typename?: 'Options_StudentChoice', id: { __typename?: 'Options_ChoiceId', subjectSetIdx: number, preferenceIdx: number }, subject: { __typename?: 'Subject', id: number, name: string, shortCode: string, colour?: Colour | null } }> }> };
 
 export type Options_OptionsQueryVariables = Exact<{
-  filter?: InputMaybe<OptionFilter>;
+  filter?: InputMaybe<Options_OptionFilter>;
 }>;
 
 
-export type Options_OptionsQuery = { __typename?: 'Query', options_options: Array<{ __typename?: 'Option', id: number, name: string, publishedToParents: boolean, parentsDueByDate?: string | null, parentsDescription?: string | null, yearGroupEnrolmentParty: { __typename?: 'YearGroupEnrollment', name: string } }> };
+export type Options_OptionsQuery = { __typename?: 'Query', options_options: Array<{ __typename?: 'Options_Option', id: number, name: string, publishedToParents: boolean, parentsDueByDate?: string | null, parentsDescription?: string | null, studentCount: number, studentPreferencesCompleteCount: number, yearGroup: { __typename?: 'YearGroup', name: string } }> };
 
 export type OptionsSetupQueryVariables = Exact<{
-  filter?: InputMaybe<OptionFilter>;
+  filter?: InputMaybe<Options_OptionFilter>;
 }>;
 
 
-export type OptionsSetupQuery = { __typename?: 'Query', options_options: Array<{ __typename?: 'Option', id: number, name: string, yearGroupEnrolmentParty: { __typename?: 'YearGroupEnrollment', name: string }, students?: Array<{ __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null }> | null, subjectSets: Array<{ __typename?: 'OptionSubjectSet', name: string, canChoose: number, mustGet: number, poolIdx?: number | null, id: { __typename?: 'OptionsId', optionId: number, idx: number }, subjects: Array<{ __typename?: 'Subject', id: number, name: string, colour?: Colour | null }> }> }> };
+export type OptionsSetupQuery = { __typename?: 'Query', options_options: Array<{ __typename?: 'Options_Option', id: number, name: string, yearGroup: { __typename?: 'YearGroup', name: string }, students?: Array<{ __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null }> | null, subjectSets: Array<{ __typename?: 'Options_OptionSubjectSet', name: string, canChoose: number, mustGet: number, poolIdx?: number | null, id: { __typename?: 'Options_OptionsId', optionId: number, idx: number }, subjects: Array<{ __typename?: 'Subject', id: number, name: string, shortCode: string, colour?: Colour | null }> }> }> };
 
 export type Options_PublishMutationVariables = Exact<{
-  input: OptionsPublish;
+  input: Options_OptionsPublish;
 }>;
 
 
 export type Options_PublishMutation = { __typename?: 'Mutation', options_publish: { __typename?: 'Success', success?: boolean | null } };
 
 export type Options_SaveOptionsMutationVariables = Exact<{
-  input: SaveOptions;
+  input: Options_SaveOptions;
 }>;
 
 
-export type Options_SaveOptionsMutation = { __typename?: 'Mutation', options_saveOptions: { __typename?: 'Option', id: number } };
+export type Options_SaveOptionsMutation = { __typename?: 'Mutation', options_saveOptions: { __typename?: 'Options_Option', id: number } };
 
 export type Options_SaveStudentPreferencesMutationVariables = Exact<{
-  input: Array<InputMaybe<SaveStudentPreference>> | InputMaybe<SaveStudentPreference>;
+  input: Array<InputMaybe<Options_SaveStudentPreference>> | InputMaybe<Options_SaveStudentPreference>;
 }>;
 
 
@@ -10592,7 +10656,7 @@ export const YearGroupsListDocument = {"kind":"Document","definitions":[{"kind":
 export const YearGroupByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"yearGroupById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"YearGroupEnrollmentFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_yearGroupEnrollments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"yearGroupEnrollmentPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"students"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"classGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tutors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"extensions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"priority"}}]}}]}}]}}]}}]} as unknown as DocumentNode<YearGroupByIdQuery, YearGroupByIdQueryVariables>;
 export const Core_UpdateYearGroupEnrollmentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"core_updateYearGroupEnrollments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateYearGroupEnrollmentInput"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"core_updateYearGroupEnrollments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Core_UpdateYearGroupEnrollmentsMutation, Core_UpdateYearGroupEnrollmentsMutationVariables>;
 export const Forms_ListInformationRequestFormsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"forms_listInformationRequestForms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Forms_InformationRequestListFormFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"forms_listInformationRequestForms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"forPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"objectId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"completionDate"}},{"kind":"Field","name":{"kind":"Name","value":"dueDate"}},{"kind":"Field","name":{"kind":"Name","value":"forPerson"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]} as unknown as DocumentNode<Forms_ListInformationRequestFormsQuery, Forms_ListInformationRequestFormsQueryVariables>;
-export const Forms_ViewInformationRequestFormsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"forms_viewInformationRequestForms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Forms_InformationRequestViewFormFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"forms_viewInformationRequestForms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"forPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"objectId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"header"}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Forms_FormFieldSubGroup"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"formFieldType"}},{"kind":"Field","name":{"kind":"Name","value":"header"}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"formFieldType"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"options"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"gridWidth"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"xs"}},{"kind":"Field","name":{"kind":"Name","value":"sm"}},{"kind":"Field","name":{"kind":"Name","value":"md"}},{"kind":"Field","name":{"kind":"Name","value":"lg"}},{"kind":"Field","name":{"kind":"Name","value":"xl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"gridWidth"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"xs"}},{"kind":"Field","name":{"kind":"Name","value":"sm"}},{"kind":"Field","name":{"kind":"Name","value":"md"}},{"kind":"Field","name":{"kind":"Name","value":"lg"}},{"kind":"Field","name":{"kind":"Name","value":"xl"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Forms_FormFieldItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"formFieldType"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"options"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"gridWidth"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"xs"}},{"kind":"Field","name":{"kind":"Name","value":"sm"}},{"kind":"Field","name":{"kind":"Name","value":"md"}},{"kind":"Field","name":{"kind":"Name","value":"lg"}},{"kind":"Field","name":{"kind":"Name","value":"xl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"defaultValue"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<Forms_ViewInformationRequestFormsQuery, Forms_ViewInformationRequestFormsQueryVariables>;
+export const Forms_ViewInformationRequestFormsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"forms_viewInformationRequestForms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Forms_InformationRequestViewFormFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"forms_viewInformationRequestForms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"forPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"objectId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"gridWidth"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"xs"}},{"kind":"Field","name":{"kind":"Name","value":"sm"}},{"kind":"Field","name":{"kind":"Name","value":"md"}},{"kind":"Field","name":{"kind":"Name","value":"lg"}},{"kind":"Field","name":{"kind":"Name","value":"xl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"readOnly"}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"header"}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Forms_FormFieldSubGroup"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"formFieldType"}},{"kind":"Field","name":{"kind":"Name","value":"header"}},{"kind":"Field","name":{"kind":"Name","value":"fields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"formFieldType"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"options"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"gridWidth"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"xs"}},{"kind":"Field","name":{"kind":"Name","value":"sm"}},{"kind":"Field","name":{"kind":"Name","value":"md"}},{"kind":"Field","name":{"kind":"Name","value":"lg"}},{"kind":"Field","name":{"kind":"Name","value":"xl"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"gridWidth"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"xs"}},{"kind":"Field","name":{"kind":"Name","value":"sm"}},{"kind":"Field","name":{"kind":"Name","value":"md"}},{"kind":"Field","name":{"kind":"Name","value":"lg"}},{"kind":"Field","name":{"kind":"Name","value":"xl"}}]}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Forms_FormFieldItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"formFieldType"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"options"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"gridWidth"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"xs"}},{"kind":"Field","name":{"kind":"Name","value":"sm"}},{"kind":"Field","name":{"kind":"Name","value":"md"}},{"kind":"Field","name":{"kind":"Name","value":"lg"}},{"kind":"Field","name":{"kind":"Name","value":"xl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"defaultValue"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<Forms_ViewInformationRequestFormsQuery, Forms_ViewInformationRequestFormsQueryVariables>;
 export const Forms_SubmitInformationRequestFormsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"forms_submitInformationRequestForms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Forms_SubmitFormInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"forms_submitInformationRequestForms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"validations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fieldErrors"}},{"kind":"Field","name":{"kind":"Name","value":"globalErrors"}}]}}]}}]}}]} as unknown as DocumentNode<Forms_SubmitInformationRequestFormsMutation, Forms_SubmitInformationRequestFormsMutationVariables>;
 export const Communications_LabelDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_label"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"LabelFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_label"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]} as unknown as DocumentNode<Communications_LabelQuery, Communications_LabelQueryVariables>;
 export const Update_Communications_LabelDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"update_communications_label"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"LabelInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_saveLabel"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"personPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"custom"}}]}}]}}]} as unknown as DocumentNode<Update_Communications_LabelMutation, Update_Communications_LabelMutationVariables>;
@@ -10699,12 +10763,12 @@ export const SendSmsDocument = {"kind":"Document","definitions":[{"kind":"Operat
 export const Communications_SmsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_sms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SmsFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_sms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"sender"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"body"}},{"kind":"Field","name":{"kind":"Name","value":"sentOn"}},{"kind":"Field","name":{"kind":"Name","value":"canReply"}},{"kind":"Field","name":{"kind":"Name","value":"numRecipients"}},{"kind":"Field","name":{"kind":"Name","value":"totalCost"}},{"kind":"Field","name":{"kind":"Name","value":"recipients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"smsId"}},{"kind":"Field","name":{"kind":"Name","value":"recipientPartyId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"recipient"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"recipientPhoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"smsStatus"}}]}}]}}]}}]} as unknown as DocumentNode<Communications_SmsQuery, Communications_SmsQueryVariables>;
 export const Communications_SmsCostDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_smsCost"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SmsCostFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_smsCost"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]} as unknown as DocumentNode<Communications_SmsCostQuery, Communications_SmsCostQueryVariables>;
 export const Communications_CurrentMonthlySpendDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"communications_currentMonthlySpend"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communications_currentMonthlySpend"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentMonthlySpend"}}]}}]}}]} as unknown as DocumentNode<Communications_CurrentMonthlySpendQuery, Communications_CurrentMonthlySpendQueryVariables>;
-export const Options_PreferencesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"options_preferences"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"PreferencesFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options_preferences"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optionId"}},{"kind":"Field","name":{"kind":"Name","value":"studentPartyId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"student"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"choices"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectSetIdx"}},{"kind":"Field","name":{"kind":"Name","value":"preferenceIdx"}}]}},{"kind":"Field","name":{"kind":"Name","value":"subject"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Options_PreferencesQuery, Options_PreferencesQueryVariables>;
-export const Options_OptionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"options_options"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OptionFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options_options"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"yearGroupEnrolmentParty"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"publishedToParents"}},{"kind":"Field","name":{"kind":"Name","value":"parentsDueByDate"}},{"kind":"Field","name":{"kind":"Name","value":"parentsDescription"}}]}}]}}]} as unknown as DocumentNode<Options_OptionsQuery, Options_OptionsQueryVariables>;
-export const OptionsSetupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"optionsSetup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OptionFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options_options"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"yearGroupEnrolmentParty"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"students"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"subjectSets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optionId"}},{"kind":"Field","name":{"kind":"Name","value":"idx"}}]}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"canChoose"}},{"kind":"Field","name":{"kind":"Name","value":"mustGet"}},{"kind":"Field","name":{"kind":"Name","value":"poolIdx"}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}}]}}]}}]}}]} as unknown as DocumentNode<OptionsSetupQuery, OptionsSetupQueryVariables>;
-export const Options_PublishDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"options_publish"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"OptionsPublish"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options_publish"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Options_PublishMutation, Options_PublishMutationVariables>;
-export const Options_SaveOptionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"options_saveOptions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SaveOptions"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options_saveOptions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<Options_SaveOptionsMutation, Options_SaveOptionsMutationVariables>;
-export const Options_SaveStudentPreferencesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"options_saveStudentPreferences"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SaveStudentPreference"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options_saveStudentPreferences"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Options_SaveStudentPreferencesMutation, Options_SaveStudentPreferencesMutationVariables>;
+export const Options_PreferencesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"options_preferences"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Options_PreferencesFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options_preferences"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optionId"}},{"kind":"Field","name":{"kind":"Name","value":"studentPartyId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"student"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"choices"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectSetIdx"}},{"kind":"Field","name":{"kind":"Name","value":"preferenceIdx"}}]}},{"kind":"Field","name":{"kind":"Name","value":"subject"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"shortCode"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Options_PreferencesQuery, Options_PreferencesQueryVariables>;
+export const Options_OptionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"options_options"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Options_OptionFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options_options"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"yearGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"publishedToParents"}},{"kind":"Field","name":{"kind":"Name","value":"parentsDueByDate"}},{"kind":"Field","name":{"kind":"Name","value":"parentsDescription"}},{"kind":"Field","name":{"kind":"Name","value":"studentCount"}},{"kind":"Field","name":{"kind":"Name","value":"studentPreferencesCompleteCount"}}]}}]}}]} as unknown as DocumentNode<Options_OptionsQuery, Options_OptionsQueryVariables>;
+export const OptionsSetupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"optionsSetup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Options_OptionFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options_options"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"yearGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"students"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"subjectSets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optionId"}},{"kind":"Field","name":{"kind":"Name","value":"idx"}}]}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"canChoose"}},{"kind":"Field","name":{"kind":"Name","value":"mustGet"}},{"kind":"Field","name":{"kind":"Name","value":"poolIdx"}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"shortCode"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}}]}}]}}]}}]} as unknown as DocumentNode<OptionsSetupQuery, OptionsSetupQueryVariables>;
+export const Options_PublishDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"options_publish"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Options_OptionsPublish"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options_publish"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Options_PublishMutation, Options_PublishMutationVariables>;
+export const Options_SaveOptionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"options_saveOptions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Options_SaveOptions"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options_saveOptions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<Options_SaveOptionsMutation, Options_SaveOptionsMutationVariables>;
+export const Options_SaveStudentPreferencesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"options_saveStudentPreferences"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Options_SaveStudentPreference"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options_saveStudentPreferences"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Options_SaveStudentPreferencesMutation, Options_SaveStudentPreferencesMutationVariables>;
 export const Swm_ApplySubstitutionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"swm_applySubstitutions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_InsertSubstitution"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_applySubstitutions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Swm_ApplySubstitutionsMutation, Swm_ApplySubstitutionsMutationVariables>;
 export const Swm_DeleteSubstitutionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"swm_deleteSubstitutions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_DeleteSubstitution"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_deleteSubstitutions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Swm_DeleteSubstitutionsMutation, Swm_DeleteSubstitutionsMutationVariables>;
 export const Swm_AbsenceTypesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"swm_absenceTypes"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_StaffAbsenceTypeFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_absenceTypes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"absenceTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"descriptionTextId"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"availableForRequests"}}]}}]}}]} as unknown as DocumentNode<Swm_AbsenceTypesQuery, Swm_AbsenceTypesQueryVariables>;

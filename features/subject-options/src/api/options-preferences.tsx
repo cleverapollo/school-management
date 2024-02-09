@@ -2,14 +2,14 @@ import { useQuery } from '@tanstack/react-query';
 import {
   gqlClient,
   graphql,
-  PreferencesFilter,
+  Options_PreferencesFilter,
   queryClient,
   UseQueryReturnType,
 } from '@tyro/api';
 import { optionsKeys } from './keys';
 
 const optionsPreferences = graphql(/* GraphQL */ `
-  query options_preferences($filter: PreferencesFilter) {
+  query options_preferences($filter: Options_PreferencesFilter) {
     options_preferences(filter: $filter) {
       id {
         optionId
@@ -30,6 +30,7 @@ const optionsPreferences = graphql(/* GraphQL */ `
         subject {
           id
           name
+          shortCode
           colour
         }
       }
@@ -37,19 +38,19 @@ const optionsPreferences = graphql(/* GraphQL */ `
   }
 `);
 
-const optionsPreferencesQuery = (filter: PreferencesFilter) => ({
+const optionsPreferencesQuery = (filter: Options_PreferencesFilter) => ({
   queryKey: optionsKeys.preferences(filter),
   queryFn: () => gqlClient.request(optionsPreferences, { filter }),
 });
 
-export function useOptionsPreferences(filter: PreferencesFilter) {
+export function useOptionsPreferences(filter: Options_PreferencesFilter) {
   return useQuery({
     ...optionsPreferencesQuery(filter),
     select: ({ options_preferences }) => options_preferences,
   });
 }
 
-export function getOptionsPreferences(filter: PreferencesFilter) {
+export function getOptionsPreferences(filter: Options_PreferencesFilter) {
   return queryClient.fetchQuery(optionsPreferencesQuery(filter));
 }
 

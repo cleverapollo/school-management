@@ -21,6 +21,14 @@ const infoRequestFormSetupDetails = graphql(/* GraphQL */ `
       }
       title
       description
+      gridWidth {
+        xs
+        sm
+        md
+        lg
+        xl
+      }
+      readOnly
       fields {
         header
         fields {

@@ -5,12 +5,12 @@ import {
   gqlClient,
   graphql,
   queryClient,
-  SaveStudentPreference,
+  Options_SaveStudentPreference,
 } from '@tyro/api';
 import { optionsKeys } from './keys';
 
 const saveStudentPreferences = graphql(/* GraphQL */ `
-  mutation options_saveStudentPreferences($input: [SaveStudentPreference]!) {
+  mutation options_saveStudentPreferences($input: [Options_SaveStudentPreference]!) {
     options_saveStudentPreferences(input: $input) {
       success
     }
@@ -22,7 +22,7 @@ export function useSaveStudentPreferences() {
   const { t } = useTranslation(['common']);
 
   return useMutation({
-    mutationFn: async (input: SaveStudentPreference[]) =>
+    mutationFn: async (input: Options_SaveStudentPreference[]) =>
       gqlClient.request(saveStudentPreferences, { input }),
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });

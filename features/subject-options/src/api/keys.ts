@@ -1,11 +1,11 @@
-import { OptionFilter, PreferencesFilter } from '@tyro/api';
+import { Options_OptionFilter, Options_PreferencesFilter } from '@tyro/api';
 
 export const optionsKeys = {
   all: ['options'] as const,
-  setupList: (filter: OptionFilter) =>
+  setupList: (filter: Options_OptionFilter) =>
     [...optionsKeys.all, 'setupList', filter] as const,
-  setup: (filter: OptionFilter) =>
+  setup: (filter: Options_OptionFilter) =>
     [...optionsKeys.all, 'setup', filter] as const,
-  preferences: (filter: PreferencesFilter) =>
+  preferences: (filter: Options_PreferencesFilter) =>
     [...optionsKeys.all, 'preferences', filter] as const,
 };

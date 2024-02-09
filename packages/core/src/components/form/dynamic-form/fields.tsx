@@ -26,6 +26,7 @@ type FieldProps<Fields extends FieldValues> = Omit<
 > & {
   id: Path<Fields>;
   control: Control<Fields, any>;
+  readOnly?: boolean;
 };
 
 export function getCheckedGridWidth(
@@ -54,6 +55,7 @@ export const Field = <Fields extends FieldValues>({
   options,
   gridWidth,
   control,
+  readOnly = false,
 }: FieldProps<Fields>) => {
   const nonBlankLabel = label ?? '';
   const PresetGrid = useCallback(
@@ -79,6 +81,9 @@ export const Field = <Fields extends FieldValues>({
               control,
             }}
             label={nonBlankLabel}
+            checkboxProps={{
+              readOnly,
+            }}
           />
         </PresetGrid>
       );
@@ -93,6 +98,9 @@ export const Field = <Fields extends FieldValues>({
             label={nonBlankLabel}
             inputProps={{
               fullWidth: true,
+            }}
+            datePickerProps={{
+              readOnly,
             }}
           />
         </PresetGrid>
@@ -109,6 +117,9 @@ export const Field = <Fields extends FieldValues>({
             inputProps={{
               fullWidth: true,
             }}
+            dateTimePickerProps={{
+              readOnly,
+            }}
           />
         </PresetGrid>
       );
@@ -123,6 +134,9 @@ export const Field = <Fields extends FieldValues>({
             label={nonBlankLabel}
             textFieldProps={{
               fullWidth: true,
+              inputProps: {
+                readOnly,
+              },
             }}
           />
         </PresetGrid>
@@ -142,6 +156,7 @@ export const Field = <Fields extends FieldValues>({
             optionTextKey="name"
             SelectProps={{
               multiple: type === Form_FormFieldItemType.Multiselect,
+              readOnly,
             }}
             fullWidth
           />
@@ -163,6 +178,7 @@ export const Field = <Fields extends FieldValues>({
             }}
             label={nonBlankLabel}
             options={options}
+            disabled={readOnly}
           />
         </PresetGrid>
       );
@@ -179,6 +195,9 @@ export const Field = <Fields extends FieldValues>({
               fullWidth: true,
               multiline: true,
               rows: 3,
+              inputProps: {
+                readOnly,
+              },
             }}
           />
         </PresetGrid>
@@ -194,6 +213,9 @@ export const Field = <Fields extends FieldValues>({
             }}
             inputProps={{
               fullWidth: true,
+            }}
+            timePickerProps={{
+              readOnly,
             }}
           />
         </PresetGrid>

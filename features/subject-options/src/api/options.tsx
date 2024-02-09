@@ -2,33 +2,35 @@ import { useQuery } from '@tanstack/react-query';
 import {
   gqlClient,
   graphql,
-  OptionFilter,
+  Options_OptionFilter,
   queryClient,
   UseQueryReturnType,
 } from '@tyro/api';
 import { optionsKeys } from './keys';
 
 const optionsSetupList = graphql(/* GraphQL */ `
-  query options_options($filter: OptionFilter) {
+  query options_options($filter: Options_OptionFilter) {
     options_options(filter: $filter) {
       id
       name
-      yearGroupEnrolmentParty {
+      yearGroup {
         name
       }
       publishedToParents
       parentsDueByDate
       parentsDescription
+      studentCount
+      studentPreferencesCompleteCount
     }
   }
 `);
 
 const optionsSetup = graphql(/* GraphQL */ `
-  query optionsSetup($filter: OptionFilter) {
+  query optionsSetup($filter: Options_OptionFilter) {
     options_options(filter: $filter) {
       id
       name
-      yearGroupEnrolmentParty {
+      yearGroup {
         name
       }
       students {
@@ -50,6 +52,7 @@ const optionsSetup = graphql(/* GraphQL */ `
         subjects {
           id
           name
+          shortCode
           colour
         }
       }
@@ -57,19 +60,19 @@ const optionsSetup = graphql(/* GraphQL */ `
   }
 `);
 
-const optionsSetupListQuery = (filter: OptionFilter) => ({
+const optionsSetupListQuery = (filter: Options_OptionFilter) => ({
   queryKey: optionsKeys.setupList(filter),
   queryFn: () => gqlClient.request(optionsSetupList, { filter }),
 });
 
-export function useOptionsSetupList(filter: OptionFilter) {
+export function useOptionsSetupList(filter: Options_OptionFilter) {
   return useQuery({
     ...optionsSetupListQuery(filter),
     select: ({ options_options }) => options_options,
   });
 }
 
-export function getOptionsSetupList(filter: OptionFilter) {
+export function getOptionsSetupList(filter: Options_OptionFilter) {
   return queryClient.fetchQuery(optionsSetupListQuery(filter));
 }
 

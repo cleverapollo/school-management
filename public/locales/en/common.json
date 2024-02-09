@@ -336,5 +336,6 @@
   "complete": "Complete",
   "for": "For",
   "dueDate": "Due date",
-  "completedOnDate": "Completed on {{date}}"
+  "completedOnDate": "Completed on {{date}}",
+  "responses": "Responses"
 }

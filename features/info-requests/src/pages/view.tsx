@@ -1,4 +1,4 @@
-import { Card, CardContent, Stack } from '@mui/material';
+import { Card, CardContent } from '@mui/material';
 import {
   ConfirmDialog,
   DynamicForm,

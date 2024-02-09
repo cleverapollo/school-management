@@ -10,6 +10,7 @@ import { useTranslation } from '@tyro/i18n';
 import { useMemo, useState, useEffect } from 'react';
 import { LoadingPlaceholderContainer } from '../../loading-placeholder';
 import { FieldGroup } from './group';
+import { useBreakpointValue } from '../../../hooks/use-breakpoint-value';
 
 export interface DynamicFormProps {
   formSettings: Forms_FormView | undefined;
@@ -27,6 +28,10 @@ export const DynamicForm = <Fields extends FieldValues>({
   const [globalErrorRef, setGlobalErrorRef] = useState<HTMLDivElement | null>(
     null
   );
+  const formGridWidth = useBreakpointValue({
+    base: 12,
+    ...formSettings?.gridWidth,
+  });
   const { t } = useTranslation(['common']);
   const defaultValues = useMemo(
     () =>
@@ -123,7 +128,14 @@ export const DynamicForm = <Fields extends FieldValues>({
 
   return (
     <LoadingPlaceholderContainer isLoading={!formSettings}>
-      <Stack component="form" onSubmit={handleSubmit(requestSubmit)} gap={3}>
+      <Stack
+        component="form"
+        onSubmit={handleSubmit(requestSubmit)}
+        gap={3}
+        sx={{
+          width: `${(100 / 12) * Math.min(formGridWidth ?? 12, 12)})%`,
+        }}
+      >
         {globalErrors.length > 0 && (
           <Box ref={(ref: HTMLDivElement) => setGlobalErrorRef(ref)}>
             <Alert severity="error">
@@ -142,6 +154,7 @@ export const DynamicForm = <Fields extends FieldValues>({
             key={fieldGroup?.header}
             group={fieldGroup}
             control={control}
+            readOnly={formSettings.readOnly}
           />
         ))}
         <Stack direction="row" gap={2} justifyContent="flex-end">

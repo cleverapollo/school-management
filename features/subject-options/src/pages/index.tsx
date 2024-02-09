@@ -12,6 +12,7 @@ import {
   commonActionMenuProps,
   ActionMenu,
   useDebouncedValue,
+  TableLinearProgress,
 } from '@tyro/core';
 import { Link } from 'react-router-dom';
 import {
@@ -52,7 +53,7 @@ const getColumnDefs = (
       data && <RouterLink to={`./${data.id}`}>{data.name}</RouterLink>,
   },
   {
-    field: 'yearGroupEnrolmentParty.name',
+    field: 'yearGroup.name',
     headerName: t('subjectOptions:yearGroupFor'),
   },
   {
@@ -61,6 +62,25 @@ const getColumnDefs = (
     comparator: (dateA: string, dateB: string) =>
       dayjs(dateA).unix() - dayjs(dateB).unix(),
     valueGetter: ({ data }) => dayjs(data?.parentsDueByDate).format('ll'),
+  },
+  {
+    field: 'studentPreferencesCompleteCount',
+    headerName: t('common:responses'),
+    suppressSizeToFit: true,
+    valueGetter: ({ data }) =>
+      data &&
+      `${data?.studentPreferencesCompleteCount ?? '-'}/${
+        data?.studentCount ?? '-'
+      }`,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseOptionsSetupList>) =>
+      data && (
+        <TableLinearProgress
+          value={data?.studentPreferencesCompleteCount}
+          total={data?.studentCount}
+        />
+      ),
   },
   {
     field: 'publishedToParents',

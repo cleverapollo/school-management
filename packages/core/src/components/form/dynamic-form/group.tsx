@@ -12,11 +12,13 @@ const FieldSubgroup = <Fields extends FieldValues>({
   fields,
   control,
   gridWidth,
+  readOnly,
 }: {
   header: string;
   fields: Forms_FormFieldItem[];
   control: Control<Fields, any>;
   gridWidth: Forms_FormFieldGridWidth;
+  readOnly: boolean;
 }) => {
   const checkedGridWidth = getCheckedGridWidth(gridWidth);
   return (
@@ -28,7 +30,12 @@ const FieldSubgroup = <Fields extends FieldValues>({
       </Grid>
       <Grid container item {...checkedGridWidth}>
         {fields.map((field) => (
-          <Field {...field} id={field.id as Path<Fields>} control={control} />
+          <Field
+            {...field}
+            id={field.id as Path<Fields>}
+            control={control}
+            readOnly={readOnly}
+          />
         ))}
       </Grid>
     </Grid>
@@ -38,9 +45,11 @@ const FieldSubgroup = <Fields extends FieldValues>({
 export const FieldGroup = <Fields extends FieldValues>({
   group,
   control,
+  readOnly,
 }: {
   group: Forms_FormFieldGroup;
   control: Control<Fields, any>;
+  readOnly: boolean;
 }) => (
   <Card>
     <CardHeader component="h2" title={group.header} />
@@ -53,6 +62,7 @@ export const FieldGroup = <Fields extends FieldValues>({
               fields={field.fields}
               gridWidth={field.gridWidth}
               control={control}
+              readOnly={readOnly}
             />
           );
         }
@@ -64,6 +74,7 @@ export const FieldGroup = <Fields extends FieldValues>({
                 {...field}
                 id={field.id as Path<Fields>}
                 control={control}
+                readOnly={readOnly}
               />
             </Grid>
           );
