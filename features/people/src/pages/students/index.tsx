@@ -6,8 +6,7 @@ import {
   Page,
   Table,
   usePreferredNameLayout,
-  ReturnTypeDisplayName,
-  ReturnTypeDisplayNames,
+  preferredNameLayoutUtils,
   useDisclosure,
   ActionMenu,
   useDebouncedValue,
@@ -49,10 +48,11 @@ const getStudentColumns = (
     undefined,
     ('common' | 'people')[]
   >,
-  displayName: ReturnTypeDisplayName,
-  displayNames: ReturnTypeDisplayNames,
   isStaffUser: boolean
-): GridOptions<ReturnTypeFromUseStudents>['columnDefs'] => [
+): GridOptions<ReturnTypeFromUseStudents>['columnDefs'] => {
+  const { displayName, displayNames } = preferredNameLayoutUtils();
+
+  return [
   {
     field: 'person',
     headerName: translate('common:name'),
@@ -60,7 +60,7 @@ const getStudentColumns = (
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseStudents, any>) =>
-      data ? (
+        data?.person ? (
         <StudentTableAvatar
           person={data?.person}
           isPriorityStudent={!!data?.extensions?.priority}
@@ -183,10 +183,11 @@ const getStudentColumns = (
     hide: true,
   },
 ];
+};
 
 export default function StudentsListPage() {
   const { t } = useTranslation(['common', 'people', 'sms', 'mail']);
-  const { displayName, displayNames } = usePreferredNameLayout();
+  const { displayName } = usePreferredNameLayout();
   const { isStaffUser } = usePermissions();
   const [selectedStudents, setSelectedStudents] = useState<
     ReturnTypeFromUseStudents[]
@@ -234,9 +235,10 @@ export default function StudentsListPage() {
   } = useDisclosure();
 
   const studentColumns = useMemo(
-    () => getStudentColumns(t, displayName, displayNames, isStaffUser),
-    [t, displayName, displayNames, isStaffUser]
+    () => getStudentColumns(t, isStaffUser),
+    [t, isStaffUser]
   );
+
 
   return (
     <>
