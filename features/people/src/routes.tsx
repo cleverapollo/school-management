@@ -125,9 +125,6 @@ const StaffListPage = lazyWithRetry(() => import('./pages/staff'));
 const StaffProfileContainer = lazyWithRetry(
   () => import('./components/staff/staff-profile-container')
 );
-const StaffProfileOverviewPage = lazyWithRetry(
-  () => import('./pages/staff/profile/overview')
-);
 const StaffProfilePersonalPage = lazyWithRetry(
   () => import('./pages/staff/profile/personal')
 );
@@ -535,12 +532,17 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 index: true,
-                loader: () => redirect('./overview'),
-              },
-              {
-                type: NavObjectType.NonMenuLink,
-                path: 'overview',
-                element: <StaffProfileOverviewPage />,
+                loader: async () => {
+                  const { hasPermission } = await getPermissionUtils();
+
+                  if (
+                    hasPermission('ps:1:people:view_staff_personal_information')
+                  ) {
+                    return redirect('./personal');
+                  }
+
+                  return redirect('./timetable');
+                },
               },
               {
                 type: NavObjectType.NonMenuLink,
