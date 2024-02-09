@@ -6,11 +6,12 @@ import {
   throw404Error,
 } from '@tyro/core';
 import { UserProfileCardIcon } from '@tyro/icons';
-import { Iterator } from '@tyro/api';
+import { Iterator, Notes_BehaviourType } from '@tyro/api';
 import { redirect } from 'react-router-dom';
 import { getAttendanceCodes } from '@tyro/attendance';
 
 import { getTodayTimetableEvents } from '@tyro/calendar';
+import { getStudentBehaviour } from '@tyro/people';
 import {
   getSubjectGroups,
   getSubjectGroupById,
@@ -63,6 +64,9 @@ const SubjectGroupProfileAttendancePage = lazyWithRetry(
 );
 const SubjectGroupProfileTimetablePage = lazyWithRetry(
   () => import('./pages/subject/profile/timetable')
+);
+const SubjectGroupProfileBehaviourPage = lazyWithRetry(
+  () => import('./pages/subject/profile/behaviour')
 );
 // support group
 const SupportGroupContainer = lazyWithRetry(
@@ -294,6 +298,22 @@ export const getRoutes: NavObjectFunction = (t) => [
                       const groupId = getNumber(params.groupId);
 
                       return getTodayTimetableEvents(groupId);
+                    },
+                  },
+                  {
+                    type: NavObjectType.NonMenuLink,
+                    path: 'behaviour',
+                    element: <SubjectGroupProfileBehaviourPage />,
+                    loader: ({ params }) => {
+                      const groupId = getNumber(params.groupId);
+
+                      if (!groupId) {
+                        return throw404Error();
+                      }
+
+                      return getStudentBehaviour({
+                        associatedPartyIds: [groupId],
+                      });
                     },
                   },
                 ],

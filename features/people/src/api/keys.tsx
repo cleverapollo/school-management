@@ -87,8 +87,8 @@ export const peopleKeys = {
       [...peopleKeys.students.allDocuments(), filter] as const,
     behaviours: (studentId: number | undefined) =>
       [...peopleKeys.students.all(), 'behaviours', studentId] as const,
-    subjectGroups: (studentId: number | undefined) =>
-      [...peopleKeys.students.all(), 'classes', studentId] as const,
+    subjectGroups: (studentIds: number[]) =>
+      [...peopleKeys.students.all(), 'classes', studentIds] as const,
     medical: (studentId: number | undefined) =>
       [...peopleKeys.students.all(), 'medical', studentId] as const,
     aen: (studentId: number | undefined) =>

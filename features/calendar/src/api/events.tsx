@@ -142,7 +142,11 @@ const calendarEventsQuery = (filter: CalendarFilter) => {
       .subtract(1, 'month')
       .startOf('month')
       .format('YYYY-MM-DD'),
-    endDate: dayjs(date).add(1, 'month').startOf('month').format('YYYY-MM-DD'),
+    endDate: dayjs(date)
+      .add(1, 'month')
+      .startOf('month')
+      .add(4, 'days')
+      .format('YYYY-MM-DD'),
     ...rest,
   };
   return {

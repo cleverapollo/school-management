@@ -90,6 +90,8 @@ const getFeeOverviewColumns = (
       value,
     }: ValueFormatterParams<ReturnTypeFromUseFeeDebtors, number>) =>
       formatCurrency(value ?? 0),
+    sort: 'asc',
+    sortIndex: 1,
   },
   {
     field: 'discounts',
@@ -108,6 +110,8 @@ const getFeeOverviewColumns = (
       data,
     }: ICellRendererParams<ReturnTypeFromUseFeeDebtors, any>) =>
       data?.feeStatus ? <FeeStatusChip status={data?.feeStatus} /> : '-',
+    sort: 'desc',
+    sortIndex: 0,
   },
 ];
 

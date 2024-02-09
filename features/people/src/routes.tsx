@@ -46,9 +46,9 @@ import { getStaffPersonal } from './api/staff/personal';
 import { getMedicalConditionNamesQuery } from './api/student/medicals/medical-condition-lookup';
 import { getPersonalTitlesQuery } from './api/student/medicals/personal-titles';
 import {
-  getIndividualStudentBehaviour,
+  getStudentBehaviour,
   getBehaviourCategories,
-} from './api/behaviour/individual-student-behaviour';
+} from './api/behaviour/student-behaviour';
 import { getNonClassContactHours } from './api/staff/non-class-contact';
 import { getDocuments } from './api/documents/list';
 
@@ -279,7 +279,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                 path: 'fees',
                 element: <StudentProfileFeesPage />,
                 hasAccess: ({ isStaffUserWithPermission }) =>
-                  isStaffUserWithPermission('ps:1:fees:pay_fees'),
+                  isStaffUserWithPermission('ps:1:fees:write_fees'),
                 loader: ({ params }) => {
                   const studentId = getNumber(params.id);
 
@@ -354,7 +354,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                         behaviourType: Notes_BehaviourType.Positive,
                       }),
                     ]),
-                    getIndividualStudentBehaviour({
+                    getStudentBehaviour({
                       partyIds: [studentId],
                       behaviourType: Notes_BehaviourType.Positive,
                     })
@@ -379,7 +379,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                     throw404Error();
                   }
 
-                  return getStudentsSubjectGroups(studentId);
+                  return getStudentsSubjectGroups([studentId]);
                 },
                 element: <StudentProfileClassesPage />,
               },

@@ -335,4 +335,12 @@
   "dropTheFileHere": "Drop the file here...",
   "dragNDropFilesHere": "Drag 'n' drop some files here, or click to select files (Max size: {{maxSize}})",
   "dragNDropFileHere": "Drag 'n' drop a file here, or click to select a file (Max size: {{maxSize}})"
+  "timePostfix": {
+    "year": "{{year}}y",
+    "month": "{{month}}mo",
+    "week": "{{week}}w",
+    "day": "{{day}}d",
+    "hour": "{{hour}}h",
+    "minute": "{{minute}}m"
+  }
 }

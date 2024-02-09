@@ -51,47 +51,46 @@ export default function Chip(theme: Theme) {
         }),
       }),
     };
+    const matchedColor = COLORS.find((color) => color === ownerState.color);
 
-    const colorStyle = COLORS.map((color) => ({
-      ...(ownerState.color === color && {
-        '& .MuiChip-avatar': {
-          color: theme.palette[color].lighter,
-          backgroundColor: theme.palette[color].dark,
+    const colorStyle = matchedColor && {
+      '& .MuiChip-avatar': {
+        color: theme.palette[matchedColor].lighter,
+        backgroundColor: theme.palette[matchedColor].dark,
+      },
+      // FILLED
+      ...(filledVariant && {
+        '& .MuiChip-deleteIcon': {
+          color: alpha(theme.palette[matchedColor].dark, 0.56),
+          '&:hover': {
+            color: theme.palette[matchedColor].dark,
+          },
         },
-        // FILLED
-        ...(filledVariant && {
-          '& .MuiChip-deleteIcon': {
-            color: alpha(theme.palette[color].dark, 0.56),
-            '&:hover': {
-              color: theme.palette[color].dark,
-            },
+      }),
+      // SOFT
+      ...(softVariant && {
+        color: theme.palette[matchedColor][isLight ? 'dark' : 'light'],
+        backgroundColor: alpha(theme.palette[matchedColor].main, 0.16),
+        ...(ownerState.onClick && {
+          '&:hover': {
+            backgroundColor: alpha(theme.palette[matchedColor].main, 0.32),
           },
         }),
-        // SOFT
-        ...(softVariant && {
-          color: theme.palette[color][isLight ? 'dark' : 'light'],
-          backgroundColor: alpha(theme.palette[color].main, 0.16),
+        '& .MuiChip-deleteIcon': {
+          color: alpha(
+            theme.palette[matchedColor][isLight ? 'dark' : 'light'],
+            0.48
+          ),
           ...(ownerState.onClick && {
             '&:hover': {
-              backgroundColor: alpha(theme.palette[color].main, 0.32),
+              color: theme.palette[matchedColor].dark,
             },
           }),
-          '& .MuiChip-deleteIcon': {
-            color: alpha(
-              theme.palette[color][isLight ? 'dark' : 'light'],
-              0.48
-            ),
-            ...(ownerState.onClick && {
-              '&:hover': {
-                color: theme.palette[color].dark,
-              },
-            }),
-          },
-        }),
+        },
       }),
-    }));
+    };
 
-    return [...colorStyle, defaultStyle];
+    return colorStyle ? [colorStyle, defaultStyle] : [defaultStyle];
   };
 
   return {

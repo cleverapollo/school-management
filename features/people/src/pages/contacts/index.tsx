@@ -17,7 +17,12 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import { Link } from 'react-router-dom';
 import { AddUserIcon, MobileIcon, SendMailIcon, TrashIcon } from '@tyro/icons';
 import { useMailSettings } from '@tyro/mail';
-import { SearchType, SmsRecipientType, usePermissions } from '@tyro/api';
+import {
+  PermissionUtils,
+  SearchType,
+  SmsRecipientType,
+  usePermissions,
+} from '@tyro/api';
 import { SendSmsModal } from '@tyro/sms';
 import { ReturnTypeFromUseContacts, useContacts } from '../../api/contact/list';
 import { joinAddress } from '../../utils/join-address';
@@ -149,6 +154,8 @@ export default function ContactsListPage() {
               disabledTooltip: t('sms:recipientNotIncludedInSms', {
                 count: selectedContacts.length,
               }),
+              hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+                isStaffUserWithPermission('ps:1:communications:send_sms'),
             },
             {
               label: t('mail:sendMail'),
@@ -158,6 +165,11 @@ export default function ContactsListPage() {
               disabledTooltip: t('sms:recipientNotAllowedToContact', {
                 count: selectedContacts.length,
               }),
+              hasAccess: ({ isStaffUserHasAllPermissions }: PermissionUtils) =>
+                isStaffUserHasAllPermissions([
+                  'ps:1:communications:write_mail',
+                  'api:communications:read:search_recipients',
+                ]),
             },
           ]
         : [],

@@ -2,7 +2,7 @@ import { Box, CircularProgress, Stack, Typography } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { useMemo } from 'react';
 import { BehaviourTypes } from './behaviour-types';
-import { ReturnTypeFromBehaviourCategories } from '../../../api/behaviour/individual-student-behaviour';
+import { ReturnTypeFromBehaviourCategories } from '../../../api/behaviour/student-behaviour';
 
 type BehaviourLevelsContainerProps = {
   categories: ReturnTypeFromBehaviourCategories[];

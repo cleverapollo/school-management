@@ -7,12 +7,11 @@ import {
   Tt_GroupsFilter,
   Tt_AddLessonFilter,
   Tt_EditLessonFilter,
-  TtTimetableListFilter,
 } from '@tyro/api';
 
 export const timetableKeys = {
   all: ['timetable'] as const,
-  timetableList: (filter: TtTimetableListFilter) =>
+  timetableList: (filter: TtTimetableFilter) =>
     [...timetableKeys.all, filter] as const,
   unpublishedChanges: (filter: TtTimetableFilter) =>
     [...timetableKeys.all, 'unpublishedChanges', filter] as const,

@@ -124,14 +124,17 @@ export default function StaffProfileClassesPage() {
         label: t('people:sendSms'),
         icon: <MobileIcon />,
         onClick: onOpenSendSms,
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission('ps:1:communications:send_sms'),
       },
       {
         label: t('mail:sendMail'),
         icon: <SendMailIcon />,
-        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
-          isStaffUserWithPermission(
-            'api:communications:read:search_recipients'
-          ),
+        hasAccess: ({ isStaffUserHasAllPermissions }: PermissionUtils) =>
+          isStaffUserHasAllPermissions([
+            'ps:1:communications:write_mail',
+            'api:communications:read:search_recipients',
+          ]),
         onClick: () => {
           sendMailToParties(
             selectedGroups.map((group) => group.id),

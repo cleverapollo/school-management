@@ -10,12 +10,14 @@ import {
   ReturnTypeDisplayNames,
   useDisclosure,
   ActionMenu,
+  useDebouncedValue,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
 import {
   MobileIcon,
   CalendarEditPenIcon,
+  AddNoteIcon,
   SendMailIcon,
   PrinterIcon,
 } from '@tyro/icons';
@@ -36,6 +38,10 @@ import {
 import { ChangeProgrammeYearModal } from '../../components/students/change-programme-year-modal';
 import { StudentTableAvatar } from '../../components/common/student-table-avatar';
 import { BulkPrintPersonsGroupsMembershipsModal } from '../../components/common/bulk-print-persons-groups-memberships-modal';
+import {
+  CreateBehaviourModal,
+  CreateBehaviourModalProps,
+} from '../../components/behaviour/create-behaviour-modal';
 
 const getStudentColumns = (
   translate: TFunction<
@@ -182,8 +188,20 @@ export default function StudentsListPage() {
   const { t } = useTranslation(['common', 'people', 'sms', 'mail']);
   const { displayName, displayNames } = usePreferredNameLayout();
   const { isStaffUser } = usePermissions();
-  const [selectedStudents, setSelectedStudents] =
-    useState<RecipientsForSmsModal>([]);
+  const [selectedStudents, setSelectedStudents] = useState<
+    ReturnTypeFromUseStudents[]
+  >([]);
+  const selectedStudentsInSmsFormat = useMemo<RecipientsForSmsModal>(
+    () =>
+      selectedStudents.map((student) => ({
+        id: student.partyId,
+        name: displayName(student.person),
+        type: 'individual',
+        avatarUrl: student.person?.avatarUrl,
+        programmeStage: student.programmeStages?.[0],
+      })),
+    [selectedStudents, displayName]
+  );
 
   const { data: students } = useStudents();
   const { mutateAsync: bulkSaveStudents } = useBulkUpdateCoreStudent();
@@ -194,6 +212,14 @@ export default function StudentsListPage() {
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
+
+  const {
+    value: behaviourInitState,
+    debouncedValue: debouncedInitState,
+    setValue: setBehaviourInitState,
+  } = useDebouncedValue<CreateBehaviourModalProps['initialState'] | null>({
+    defaultValue: null,
+  });
 
   const {
     isOpen: isBulkPrintOpen,
@@ -243,103 +269,115 @@ export default function StudentsListPage() {
                 <Box>
                   <ActionMenu
                     menuItems={[
-                      {
-                        label: t('people:sendSms'),
-                        icon: <MobileIcon />,
-                        onClick: onOpenSendSms,
-                        hasAccess: ({ isStaffUserWithPermission }) =>
-                          isStaffUserWithPermission(
-                            'ps:1:communications:send_sms'
-                          ),
-                      },
-                      {
-                        label: t('mail:sendMail'),
-                        icon: <SendMailIcon />,
-                        hasAccess: ({ isStaffUserWithPermission }) =>
-                          isStaffUserWithPermission(
-                            'api:communications:read:search_recipients'
-                          ),
-                        onClick: () => {
-                          sendMailToParties(
-                            selectedStudents.map(({ id }) => id),
-                            [
-                              {
-                                label: t('mail:student', {
-                                  count: selectedStudents.length,
-                                }),
-                                type: RecipientSearchType.Student,
-                              },
-                              {
-                                label: t('mail:contactsOfStudent', {
-                                  count: selectedStudents.length,
-                                }),
-                                type: RecipientSearchType.StudentContacts,
-                              },
-                              {
-                                label: t('mail:teachersOfStudent', {
-                                  count: selectedStudents.length,
-                                }),
-                                type: RecipientSearchType.StudentTeachers,
-                              },
-                            ]
-                          );
+                      [
+                        {
+                          label: t('people:sendSms'),
+                          icon: <MobileIcon />,
+                          onClick: onOpenSendSms,
+                          hasAccess: ({ isStaffUserWithPermission }) =>
+                            isStaffUserWithPermission(
+                              'ps:1:communications:send_sms'
+                            ),
                         },
-                      },
-                      {
-                        label: t('people:changeProgrammeYear'),
-                        icon: <CalendarEditPenIcon />,
-                        onClick: onOpenChangeYearGroup,
-                        hasAccess: ({ isStaffUserWithPermission }) =>
-                          isStaffUserWithPermission(
-                            'ps:1:groups:edit_class_list_manager'
-                          ),
-                      },
-                      {
-                        label: t('people:printGroupMemberships'),
-                        icon: <PrinterIcon />,
-                        onClick: onOpenBulkPrint,
-                        hasAccess: ({ isStaffUserWithPermission }) =>
-                          isStaffUserWithPermission(
-                            'ps:1:printing_and_exporting:print_student_group_memberships'
-                          ),
-                      },
+                        {
+                          label: t('mail:sendMail'),
+                          icon: <SendMailIcon />,
+                          hasAccess: ({ isStaffUserHasAllPermissions }) =>
+                            isStaffUserHasAllPermissions([
+                              'ps:1:communications:write_mail',
+                              'api:communications:read:search_recipients',
+                            ]),
+                          onClick: () => {
+                            sendMailToParties(
+                              selectedStudents.map(({ partyId }) => partyId),
+                              [
+                                {
+                                  label: t('mail:student', {
+                                    count: selectedStudents.length,
+                                  }),
+                                  type: RecipientSearchType.Student,
+                                },
+                                {
+                                  label: t('mail:contactsOfStudent', {
+                                    count: selectedStudents.length,
+                                  }),
+                                  type: RecipientSearchType.StudentContacts,
+                                },
+                                {
+                                  label: t('mail:teachersOfStudent', {
+                                    count: selectedStudents.length,
+                                  }),
+                                  type: RecipientSearchType.StudentTeachers,
+                                },
+                              ]
+                            );
+                          },
+                        },
+                        {
+                          label: t('people:actions.createBehaviour'),
+                          icon: <AddNoteIcon />,
+                          hasAccess: ({ isStaffUserWithPermission }) =>
+                            isStaffUserWithPermission(
+                              'ps:1:notes:write_behaviour'
+                            ),
+                          onClick: () =>
+                            setBehaviourInitState({
+                              students: selectedStudents.map(
+                                ({ person }) => person
+                              ),
+                            }),
+                        },
+                      ],
+                      [
+                        {
+                          label: t('people:changeProgrammeYear'),
+                          icon: <CalendarEditPenIcon />,
+                          onClick: onOpenChangeYearGroup,
+                          hasAccess: ({ isStaffUserWithPermission }) =>
+                            isStaffUserWithPermission(
+                              'ps:1:groups:edit_class_list_manager'
+                            ),
+                        },
+                        {
+                          label: t('people:printGroupMemberships'),
+                          icon: <PrinterIcon />,
+                          onClick: onOpenBulkPrint,
+                          hasAccess: ({ isStaffUserWithPermission }) =>
+                            isStaffUserWithPermission(
+                              'ps:1:printing_and_exporting:print_student_group_memberships'
+                            ),
+                        },
+                      ],
                     ]}
                   />
                 </Box>
               </Fade>
             }
-            onRowSelection={(newSelectedStudents) => {
-              setSelectedStudents(
-                newSelectedStudents.map((student) => {
-                  const [programmeStage] = student.programmeStages || [];
-
-                  return {
-                    id: student.partyId,
-                    name: displayName(student.person),
-                    type: 'individual',
-                    avatarUrl: student.person?.avatarUrl,
-                    programmeStage,
-                  };
-                })
-              );
-            }}
+            onRowSelection={setSelectedStudents}
           />
         </Container>
       </Page>
+
+      <CreateBehaviourModal
+        open={!!behaviourInitState}
+        onClose={() => setBehaviourInitState(null)}
+        initialState={behaviourInitState || debouncedInitState}
+      />
+
       <ChangeProgrammeYearModal
         isOpen={isChangeYearGroupOpen}
         onClose={onCloseChangeYearGroup}
-        students={selectedStudents}
+        students={selectedStudentsInSmsFormat}
       />
       <BulkPrintPersonsGroupsMembershipsModal
         isOpen={isBulkPrintOpen}
         onClose={onCloseBulkPrint}
-        groups={selectedStudents}
+        groups={selectedStudentsInSmsFormat}
       />
       <SendSmsModal
         isOpen={isSendSmsOpen}
         onClose={onCloseSendSms}
-        recipients={selectedStudents}
+        recipients={selectedStudentsInSmsFormat}
         possibleRecipientTypes={[
           {
             label: t('sms:contactsOfStudent', {

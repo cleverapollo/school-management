@@ -69,19 +69,20 @@ export default function ClassGroupStudentsPage() {
 
   const actionMenuItems = useMemo(
     () => [
-      {
-        label: t('people:sendSms'),
-        icon: <MobileIcon />,
-        // TODO: add action logic
-        onClick: () => {},
-      },
+      // {
+      //   label: t('people:sendSms'),
+      //   icon: <MobileIcon />,
+      //   // TODO: add action logic
+      //   onClick: () => {},
+      // },
       {
         label: t('mail:sendMail'),
         icon: <SendMailIcon />,
-        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
-          isStaffUserWithPermission(
-            'api:communications:read:search_recipients'
-          ),
+        hasAccess: ({ isStaffUserHasAllPermissions }: PermissionUtils) =>
+          isStaffUserHasAllPermissions([
+            'ps:1:communications:write_mail',
+            'api:communications:read:search_recipients',
+          ]),
         onClick: () => {
           sendMailToParties(
             selectedMembers.map(({ person }) => person.partyId),
