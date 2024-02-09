@@ -17,7 +17,7 @@ export function YearGroupEnrolment({ control }: YearGroupEnrolmentProps) {
       variant="white-filled"
       label={t('subjectOptions:whatYearAreStudentsGoingInto')}
       controlProps={{
-        name: 'yearGroupEnrolmentPartyId',
+        name: 'yearGroupId',
         control,
       }}
       optionIdKey="yearGroupId"

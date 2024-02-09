@@ -19,7 +19,7 @@ import { AddIcon, TrashIcon } from '@tyro/icons';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
 import get from 'lodash/get';
-import { SaveSubjectSet } from '@tyro/api';
+import { Options_SaveSubjectSet } from '@tyro/api';
 import { StudentSelection } from './student-selection';
 import { SubjectOptionsFormState } from './types';
 import { useSaveSubjectOptionsSetup } from '../../api/save-options-setup';
@@ -45,7 +45,7 @@ export function SubjectOptionsSetupForm() {
     resolver: resolver({
       name: rules.required(),
       academicYearId: rules.required(),
-      yearGroupEnrolmentPartyId: rules.required(),
+      yearGroupId: rules.required(),
       selectedStudents: rules.required(),
       pools: {
         subjectSets: {
@@ -135,22 +135,25 @@ export function SubjectOptionsSetupForm() {
   };
 
   const onSubmit = handleSubmit(
-    ({ name, selectedStudents, pools, yearGroupEnrolmentPartyId }) => {
-      const subjectSets = pools.reduce<SaveSubjectSet[]>((acc, pool) => {
-        pool.subjectSets.forEach((subjectSet) => {
-          acc.push({
-            ...subjectSet,
-            poolIdx: pool.poolIdx,
-            subjectIds: subjectSet.subjects.map(({ id }) => id),
+    ({ name, selectedStudents, pools, yearGroupId }) => {
+      const subjectSets = pools.reduce<Options_SaveSubjectSet[]>(
+        (acc, pool) => {
+          pool.subjectSets.forEach((subjectSet) => {
+            acc.push({
+              ...subjectSet,
+              poolIdx: pool.poolIdx,
+              subjectIds: subjectSet.subjects.map(({ id }) => id),
+            });
           });
-        });
-        return acc;
-      }, []);
+          return acc;
+        },
+        []
+      );
 
       saveOptionsSetup(
         {
           name,
-          yearGroupEnrolmentPartyId,
+          yearGroupId,
           studentPartyIds: selectedStudents.map(({ partyId }) => partyId),
           subjectSets,
         },

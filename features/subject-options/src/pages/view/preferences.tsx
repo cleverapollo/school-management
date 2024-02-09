@@ -25,7 +25,7 @@ import { MobileIcon, SendMailIcon } from '@tyro/icons';
 import {
   getPersonProfileLink,
   RecipientSearchType,
-  SaveStudentPreference,
+  Options_SaveStudentPreference,
   SmsRecipientType,
   usePermissions,
   UsePermissionsReturn,
@@ -254,7 +254,7 @@ export default function StudentOptionsPreferencesPage() {
   const onSavePreferences = (
     updates: BulkEditedRows<StudentRow, `choices.${string}`>
   ) => {
-    const newPreferences: SaveStudentPreference[] = [];
+    const newPreferences: Options_SaveStudentPreference[] = [];
 
     Object.entries(updates).forEach(([partyId, choices]) => {
       Object.entries(choices).forEach(([choicePath, value]) => {
