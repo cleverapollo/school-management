@@ -5,7 +5,7 @@ import {
   RHFYearGroupAutocomplete,
   useYearGroupListsByFilter,
 } from '@tyro/groups';
-import { useMemo } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
 import { FormHelperText, Stack } from '@mui/material';
 import { SubjectOptionsFormState } from './types';
 import { AcademicYearSelect } from './academic-year-select';
@@ -17,6 +17,7 @@ interface StudentSelectionProps {
 
 export function StudentSelection({ control }: StudentSelectionProps) {
   const { displayName } = usePreferredNameLayout();
+  const containerRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation(['common', 'subjectOptions']);
   const [academicYearId, selectedStudentYearGroups] = useWatch({
     name: ['academicYearId', 'selectedStudentYearGroups'],
@@ -65,8 +66,15 @@ export function StudentSelection({ control }: StudentSelectionProps) {
       });
   }, [data]);
 
+  useEffect(() => {
+    if (errors.selectedStudents && !errors.name && containerRef.current) {
+      containerRef.current.scrollIntoView();
+    }
+  }, [errors]);
+
   return (
     <Stack
+      ref={containerRef}
       sx={{
         '& > .MuiPaper-root': {
           borderColor: errors.selectedStudents ? 'error.main' : undefined,
