@@ -56,5 +56,18 @@
       "MEDIUM": "Medium",
       "LARGE": "Large"
     }
+  },
+  "assessment": {
+    "title": "Print Assessment",
+    "yearGroup": "Year group",
+    "classGroup": "Class group",
+    "student": "Student",
+    "includeAttendance": "Show attendance",
+    "includeExtraFields": "Show extra fields",
+    "pageOrientation": "Page orientation",
+    "printDirection": {
+      "LANDSCAPE": "Landscape",
+      "PORTRAIT": "Portrait"
+    }
   }
 }
