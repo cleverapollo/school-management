@@ -6608,6 +6608,7 @@ __metadata:
     "@mui/lab": 5.0.0-alpha.151
     "@mui/material": ^5.14.16
     "@mui/system": ^5.14.16
+    "@mui/x-date-pickers": ^6.17.0
     "@tanstack/react-query": ^4.29.7
     "@types/file-saver": ^2.0.5
     "@tyro/api": "*"

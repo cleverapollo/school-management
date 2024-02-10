@@ -7,7 +7,11 @@ import {
 } from '@tyro/core';
 import { GearIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
-import { getCoreAcademicNamespace, AccessUserType } from '@tyro/api';
+import {
+  getCoreAcademicNamespace,
+  AccessUserType,
+  getAcademicNamespace,
+} from '@tyro/api';
 import { AttendanceCodes, getAttendanceCodes } from '@tyro/attendance';
 import {
   getContactsForSelect,
@@ -19,6 +23,8 @@ import {
 import { getStaffPosts } from '@tyro/people/src/api/staff/staff-posts';
 import { getEmploymentCapacities } from '@tyro/people/src/api/staff/employment-capacities';
 import { AbsenceTypes, getStaffWorkAbsenceTypes } from '@tyro/substitution';
+import dayjs from 'dayjs';
+import { getCalendarDayBellTimes } from '@tyro/calendar';
 import { getCoreRooms } from './api/rooms';
 import { getCatalogueSubjects } from './api/subjects';
 import { getPpodCredentialsStatus } from './api/ppod/ppod-credentials-status';
@@ -71,6 +77,9 @@ const CommentBanks = lazyWithRetry(
   () => import('./pages/comment-banks/comment-banks')
 );
 const Comments = lazyWithRetry(() => import('./pages/comment-banks/comments'));
+const SchoolCalendarOverview = lazyWithRetry(
+  () => import('./pages/school-calendar')
+);
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -94,6 +103,26 @@ export const getRoutes: NavObjectFunction = (t) => [
                 'ps:1:attendance:view_attendance_codes'
               ),
             element: <AttendanceCodes />,
+          },
+          {
+            title: t('navigation:management.settings.schoolCalendar'),
+            type: NavObjectType.MenuLink,
+            path: 'school-calendar',
+            hasAccess: (permissions) =>
+              permissions.isStaffUserWithPermission(
+                'ps:1:general_admin:view_school_day_calendar_screen'
+              ),
+            loader: async () => {
+              const { activeAcademicNamespace } = await getAcademicNamespace();
+              const startDate = dayjs(activeAcademicNamespace?.startDate);
+              const endDate = dayjs(activeAcademicNamespace?.endDate);
+
+              return getCalendarDayBellTimes({
+                fromDate: startDate.format('YYYY-MM-DD'),
+                toDate: endDate.format('YYYY-MM-DD'),
+              });
+            },
+            element: <SchoolCalendarOverview />,
           },
           {
             type: NavObjectType.MenuLink,
@@ -308,9 +337,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'comment-banks',
             hasAccess: ({ isStaffUserWithPermission }) =>
-              isStaffUserWithPermission(
-                  'ps:1:assessment:write_comment_banks'
-              ),
+              isStaffUserWithPermission('ps:1:assessment:write_comment_banks'),
             loader: () => getCommentBanks({}),
             element: <CommentBanks />,
           },
