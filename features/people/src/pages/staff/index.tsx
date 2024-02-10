@@ -191,11 +191,18 @@ export default function StaffListPage() {
       label: t('people:sendSms'),
       icon: <MobileIcon />,
       onClick: onOpenSendSms,
+      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+        isStaffUserWithPermission('ps:1:communications:send_sms'),
     },
     {
       label: t('mail:sendMail'),
       icon: <SendMailIcon />,
       onClick: sendMailToSelectedStaff,
+      hasAccess: ({ isStaffUserHasAllPermissions }: PermissionUtils) =>
+        isStaffUserHasAllPermissions([
+          'ps:1:communications:write_mail',
+          'api:communications:read:search_recipients',
+        ]),
     },
     {
       label: t('people:printGroupMemberships'),

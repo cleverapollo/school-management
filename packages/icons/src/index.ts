@@ -2,6 +2,7 @@ export * from './add';
 export * from './add-circle';
 export * from './add-doc';
 export * from './add-folder-icon';
+export * from './add-note';
 export * from './add-photo';
 export * from './add-user';
 export * from './align-center';

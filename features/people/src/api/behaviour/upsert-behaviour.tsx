@@ -13,7 +13,7 @@ const upsertNote = graphql(/* GraphQL */ `
   }
 `);
 
-export function useUpsertStudentBehaviour(studentId: number | undefined) {
+export function useUpsertStudentBehaviour() {
   const { toast } = useToast();
   const { t } = useTranslation(['common']);
 

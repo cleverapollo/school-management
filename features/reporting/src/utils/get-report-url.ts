@@ -4,6 +4,7 @@ export enum Report {
   AWOL = 'awol',
   SUBSTITUTION = 'substitution',
   OCTOBER_RETURNS = 'october-returns',
+  OVERDUE_LESSON_ATTENDANCE = 'overdue-lesson-attendance',
   SESSION_ATTENDANCE = 'session-attendance',
   STUDENT_BEHAVIOUR = 'student-behaviour',
   STUDENT_DATA = 'student-data',
@@ -17,6 +18,7 @@ const reportUrls = {
   [Report.AWOL]: 'awol-students',
   [Report.SUBSTITUTION]: 'substitution-list',
   [Report.OCTOBER_RETURNS]: 'october-returns',
+  [Report.OVERDUE_LESSON_ATTENDANCE]: 'overdue-lesson-attendance',
   [Report.SESSION_ATTENDANCE]: 'session-attendance',
   [Report.STUDENT_BEHAVIOUR]: 'student-behaviour',
   [Report.STUDENT_DATA]: 'student-data',
@@ -50,6 +52,14 @@ type Options =
   | {
       report: Report.OCTOBER_RETURNS;
       tab?: Tabs[Report.OCTOBER_RETURNS][keyof Tabs[Report.OCTOBER_RETURNS]];
+    }
+  | {
+      report: Report.OVERDUE_LESSON_ATTENDANCE;
+      filters?: {
+        to_date?: dayjs.Dayjs;
+        from_date?: dayjs.Dayjs;
+        staff?: Array<number>;
+      };
     }
   | {
       report: Report.SESSION_ATTENDANCE;

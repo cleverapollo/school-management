@@ -94,7 +94,7 @@ export default function SubjectGroupProfileStudentsPage() {
         getRowId={({ data }) => String(data?.partyId)}
         rightAdornment={
           <>
-            {selectedGroups.length > 0 && (
+            {/* {selectedGroups.length > 0 && (
               <Fade in={selectedGroups.length > 0} unmountOnExit>
                 <Box>
                   <ActionMenu
@@ -117,7 +117,7 @@ export default function SubjectGroupProfileStudentsPage() {
                   />
                 </Box>
               </Fade>
-            )}
+            )} */}
             {selectedGroups.length === 0 && (
               <Box>
                 <ActionMenu

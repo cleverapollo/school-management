@@ -45,4 +45,3 @@ export function useAllBlocksList() {
 export type ReturnTypeOfUseBlocksList = UseQueryReturnType<
   typeof useBlocksList
 >;
-

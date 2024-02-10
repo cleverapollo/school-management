@@ -108,7 +108,7 @@ const getColumnDefs = (
     field: 'feeStatus',
     headerName: t('common:status'),
     valueGetter: ({ data }) =>
-      data?.feeStatus ? t(`fees:feeStatus.${data.feeStatus}`) : '-',
+      data?.feeStatus ? t(`fees:status.${data.feeStatus}`) : '-',
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFees>) =>
       data?.feeStatus ? <FeeStatusChip status={data.feeStatus} /> : '-',
     sort: 'asc',

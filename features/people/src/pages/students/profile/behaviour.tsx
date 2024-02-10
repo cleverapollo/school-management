@@ -25,7 +25,6 @@ import {
   getNumber,
   usePreferredNameLayout,
   ActionMenu,
-  ConfirmDialog,
   useDebouncedValue,
   commonActionMenuProps,
 } from '@tyro/core';
@@ -36,30 +35,25 @@ import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import {
-  useIndividualStudentBehaviour,
+  useStudentBehaviour,
   useBehaviourCategories,
-  ReturnTypeFromUseIndividualStudentBehaviour,
-} from '../../../api/behaviour/individual-student-behaviour';
-import {
-  useBehaviourLevels,
-  ReturnTypeFromUseBehaviourLevels,
-} from '../../../api/behaviour/behaviour-levels';
+  ReturnTypeFromUseStudentBehaviour,
+} from '../../../api/behaviour/student-behaviour';
+import { useBehaviourLevels } from '../../../api/behaviour/behaviour-levels';
 import {
   CreateBehaviourModal,
   CreateBehaviourModalProps,
 } from '../../../components/behaviour/create-behaviour-modal';
-import { useDeleteBehaviour } from '../../../api/behaviour/delete-behaviour';
 import { CategoriesContainer } from '../../../components/students/behaviour-individual-view/categories-container';
 import { ReturnTypeFromUseBehaviours } from '../../../api/behaviour/list';
+import { useStudent } from '../../../api/student/students';
+import { CategoryTagButton } from '../../../components/behaviour/category-tab-button';
+import { useBehaviourLevelByName } from '../../../hooks/use-level-by-name';
+import { ConfirmDeleteBehaviour } from '../../../components/behaviour/confirm-delete-behaviour';
 
 dayjs.extend(LocalizedFormat);
 
 type DeleteNoteIdType = Notes_StudentBehaviour['noteId'] | null | undefined;
-
-type Tags = {
-  colour: Colour | undefined;
-  tags?: Array<Pick<Notes_Tag, 'name' | 'id'>>;
-};
 
 export type Acc = { details?: string };
 
@@ -80,12 +74,14 @@ const getStudentBehaviourColumns = (
   t: TFunction<('common' | 'people')[], undefined, ('common' | 'people')[]>,
   displayName: ReturnTypeDisplayName,
   onDelete: Dispatch<SetStateAction<DeleteNoteIdType>>,
-  getTagsForCategory: (arg0: string) => Tags
-): GridOptions<ReturnTypeFromUseIndividualStudentBehaviour>['columnDefs'] => [
+  getBehaviourLevelByName: ReturnType<
+    typeof useBehaviourLevelByName
+  >['getBehaviourLevelByName']
+): GridOptions<ReturnTypeFromUseStudentBehaviour>['columnDefs'] => [
   {
     field: 'incidentDate',
     headerName: t('common:date'),
-    valueGetter: ({ data }) => dayjs(data?.incidentDate).format('ll'),
+    valueFormatter: ({ data }) => dayjs(data?.incidentDate).format('lll'),
     sort: 'desc',
     comparator: (dateA: string, dateB: string) =>
       dayjs(dateA).unix() - dayjs(dateB).unix(),
@@ -104,19 +100,20 @@ const getStudentBehaviourColumns = (
     valueGetter: ({ data }) => data?.tags?.map((tag) => tag?.name) ?? '-',
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseIndividualStudentBehaviour>) => {
-      const { colour } = data?.category
-        ? getTagsForCategory(data.category)
-        : { colour: undefined };
+    }: ICellRendererParams<ReturnTypeFromUseStudentBehaviour>) => {
+      const { colour } = getBehaviourLevelByName(data?.category ?? '') ?? {
+        colour: 'slate',
+      };
 
       return (
         <Stack gap={1} my={1} direction="row" flexWrap="wrap">
           {data?.tags?.map((tag) => (
             <Chip
+              size="small"
               key={tag?.id}
               label={tag?.name}
               variant="soft"
-              color={colour ?? 'slate'}
+              color={colour}
             />
           ))}
         </Stack>
@@ -142,40 +139,16 @@ const getStudentBehaviourColumns = (
     autoHeight: true,
     wrapText: true,
     width: 200,
-    valueGetter: ({ data }) =>
-      data?.associatedParties?.flatMap((group) => {
+    valueGetter: ({ data }) => {
+      const subjects = data?.associatedParties?.flatMap((group) => {
         if (group?.__typename === 'SubjectGroup') {
           const [subject] = group.subjects || [];
           return subject?.name;
         }
         return [];
-      }),
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseIndividualStudentBehaviour>) => {
-      const subjects = (data?.associatedParties || []).flatMap((group) => {
-        if (group?.__typename === 'SubjectGroup') {
-          return { partyId: group.partyId, ...group.subjects[0] };
-        }
-        return [];
       });
 
-      return subjects.length > 0 ? (
-        <Stack gap={1} direction="row" flexWrap="wrap">
-          {subjects.map((subject) => (
-            <Typography
-              variant="body2"
-              key={subject?.partyId}
-              color="#000000"
-              fontWeight={600}
-            >
-              {subject?.name}
-            </Typography>
-          ))}
-        </Stack>
-      ) : (
-        '-'
-      );
+      return subjects && subjects.length > 0 ? subjects.join(', ') : '-';
     },
   },
   {
@@ -188,7 +161,7 @@ const getStudentBehaviourColumns = (
     ...commonActionMenuProps,
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseIndividualStudentBehaviour>) =>
+    }: ICellRendererParams<ReturnTypeFromUseStudentBehaviour>) =>
       data && (
         <ActionMenu
           iconOnly
@@ -210,27 +183,9 @@ const getStudentBehaviourColumns = (
   },
 ];
 
-const getTagsForCategory = (
-  categoryName: string,
-  behaviourCategories: ReturnTypeFromUseBehaviourLevels
-): Tags => {
-  const category = behaviourCategories.find((obj) => obj.name === categoryName);
-  const tags = category?.tags?.map((tag) => ({
-    id: tag?.id,
-    name: tag?.name,
-  }));
-
-  const tagData = {
-    colour: category?.colour,
-    tags,
-  };
-
-  return tagData;
-};
-
 export default function StudentProfileBehaviourPage() {
   const { t } = useTranslation(['common', 'people']);
-  const { isStaffUser } = usePermissions();
+  const { isStaffUserWithPermission } = usePermissions();
   const { displayName } = usePreferredNameLayout();
   const { id } = useParams();
   const studentId = getNumber(id) ?? 0;
@@ -250,8 +205,10 @@ export default function StudentProfileBehaviourPage() {
   const [behaviourIdToDelete, setBehaviourIdToDelete] =
     useState<ReturnTypeFromUseBehaviours['id']>(null);
 
+  const { getBehaviourLevelByName } = useBehaviourLevelByName();
+  const { data: student } = useStudent(studentId);
   const { data: studentBehaviorData, isLoading: isBehavioursLoading } =
-    useIndividualStudentBehaviour({
+    useStudentBehaviour({
       partyIds: [studentId],
       behaviourType,
     });
@@ -315,14 +272,6 @@ export default function StudentProfileBehaviourPage() {
       []
     );
 
-  const { mutateAsync: deleteBehaviour } = useDeleteBehaviour(studentId);
-
-  const onConfirmDelete = async () => {
-    if (behaviourIdToDelete) {
-      await deleteBehaviour({ noteIds: [behaviourIdToDelete] });
-    }
-  };
-
   const studentBehaviourColumns = useMemo(
     () =>
       getStudentBehaviourColumns(
@@ -330,7 +279,7 @@ export default function StudentProfileBehaviourPage() {
         t,
         displayName,
         setBehaviourIdToDelete,
-        (categoryName) => getTagsForCategory(categoryName, behaviourCategories)
+        getBehaviourLevelByName
       ),
     [setEditBehaviours, t, displayName, behaviourCategories]
   );
@@ -356,7 +305,9 @@ export default function StudentProfileBehaviourPage() {
   }, [behaviourType]);
 
   const handleAddCondition = () => {
-    setEditBehaviours({});
+    setEditBehaviours({
+      students: student ? [student.person] : [],
+    });
   };
 
   return (
@@ -380,129 +331,36 @@ export default function StudentProfileBehaviourPage() {
           marginBottom: 3,
         }}
       >
-        <Stack direction="column">
-          <Box>
-            <Button
+        <Box>
+          <Stack direction="row" spacing={1}>
+            <CategoryTagButton
               onClick={() => {
                 setBehaviourType(Notes_BehaviourType.Positive);
               }}
-              sx={{
-                borderRadius: 1,
-                backgroundColor:
-                  behaviourType === Notes_BehaviourType.Positive
-                    ? 'indigo.50'
-                    : ' transparent',
-                borderStyle: 'solid',
-                borderWidth: '1px',
-                borderColor:
-                  behaviourType === Notes_BehaviourType.Positive
-                    ? 'indigo.500'
-                    : 'slate.300',
-                color:
-                  behaviourType === Notes_BehaviourType.Positive
-                    ? 'indigo.500'
-                    : 'slate.400',
-                height: '30px',
-              }}
-            >
-              <Box
-                sx={{
-                  width: '9px',
-                  height: '9px',
-                  display: 'flex',
-                  borderRadius: '50%',
-                  position: 'relative',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: 'green.400',
-                  marginRight: 1,
-                }}
-              />
-              {t('common:behaviourType.POSITIVE')}
-            </Button>
-            <Button
+              dotColor="green.400"
+              isActive={behaviourType === Notes_BehaviourType.Positive}
+              label={t('common:behaviourType.POSITIVE')}
+            />
+            <CategoryTagButton
               onClick={() => {
                 setBehaviourType(Notes_BehaviourType.Negative);
               }}
-              sx={{
-                borderRadius: 1,
-                backgroundColor:
-                  behaviourType === Notes_BehaviourType.Negative
-                    ? 'indigo.100'
-                    : 'grey.100',
-                borderStyle: 'solid',
-                borderWidth: '1px',
-                borderColor:
-                  behaviourType === Notes_BehaviourType.Negative
-                    ? 'indigo.500'
-                    : 'slate.300',
-                color:
-                  behaviourType === Notes_BehaviourType.Negative
-                    ? 'indigo.500'
-                    : 'slate.400',
-                height: '30px',
-                marginLeft: 2,
-              }}
-            >
-              <Box
-                sx={{
-                  width: '9px',
-                  height: '9px',
-                  display: 'flex',
-                  borderRadius: '50%',
-                  position: 'relative',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: 'red.500',
-                  marginRight: 1,
-                }}
-              />
-              {t('common:behaviourType.NEGATIVE')}
-            </Button>
-
-            <Button
+              dotColor="red.500"
+              isActive={behaviourType === Notes_BehaviourType.Negative}
+              label={t('common:behaviourType.NEGATIVE')}
+            />
+            <CategoryTagButton
               onClick={() => {
                 setBehaviourType(Notes_BehaviourType.Neutral);
               }}
-              sx={{
-                borderRadius: 1,
-                backgroundColor:
-                  behaviourType === Notes_BehaviourType.Neutral
-                    ? 'indigo.100'
-                    : 'grey.100',
-                borderStyle: 'solid',
-                borderWidth: '1px',
-                borderColor:
-                  behaviourType === Notes_BehaviourType.Neutral
-                    ? 'indigo.500'
-                    : 'slate.300',
-                color:
-                  behaviourType === Notes_BehaviourType.Neutral
-                    ? 'indigo.500'
-                    : 'slate.400',
-                height: '30px',
-                marginLeft: 2,
-              }}
-            >
-              <Box
-                sx={{
-                  width: '9px',
-                  height: '9px',
-                  display: 'flex',
-                  borderRadius: '50%',
-                  position: 'relative',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: 'blue.500',
-                  marginRight: 1,
-                }}
-              />
-              {t('common:behaviourType.NEUTRAL')}
-            </Button>
-          </Box>
-        </Stack>
+              dotColor="blue.500"
+              isActive={behaviourType === Notes_BehaviourType.Neutral}
+              label={t('common:behaviourType.NEUTRAL')}
+            />
+          </Stack>
+        </Box>
 
-        {isStaffUser && (
+        {isStaffUserWithPermission('ps:1:notes:write_behaviour') && (
           <Button
             variant="contained"
             onClick={handleAddCondition}
@@ -618,23 +476,17 @@ export default function StudentProfileBehaviourPage() {
       )}
 
       <CreateBehaviourModal
-        studentId={studentId}
+        open={!!editBehaviours}
         onClose={() => setEditBehaviours(null)}
-        initialState={editBehaviours}
+        initialState={editBehaviours || debouncedEditConditions}
         behaviourType={behaviourType}
         setBehaviourType={setBehaviourType}
       />
 
-      {behaviourIdToDelete && (
-        <ConfirmDialog
-          open
-          title={t('people:deleteBehaviour')}
-          description={t('people:areYouSureYouWantToDeleteBehaviour')}
-          confirmText={t('common:delete')}
-          onClose={() => setBehaviourIdToDelete(null)}
-          onConfirm={onConfirmDelete}
-        />
-      )}
+      <ConfirmDeleteBehaviour
+        idToDelete={behaviourIdToDelete}
+        onClose={() => setBehaviourIdToDelete(null)}
+      />
     </Card>
   );
 }
