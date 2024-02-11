@@ -124,6 +124,10 @@ export default function StudentProfileContainer() {
               hasPermission('ps:1:wellbeing:read_student_medical'),
           },
           {
+            label: 'Documents',
+            value: 'documents',
+          },
+          {
             label: t('people:notes'),
             value: 'notes',
             hasAccess: ({ hasPermission }) =>
