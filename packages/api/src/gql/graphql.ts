@@ -478,6 +478,8 @@ export type Calendar = {
   academicEndDate: Scalars['Date'];
   academicNamespaceId: Scalars['Int'];
   academicStartDate: Scalars['Date'];
+  /** deep linked */
+  dayInfo: Array<CalendarDayInfo>;
   /**  end Date of the Calendar this will typically be after the end of the academic year */
   endDate: Scalars['Date'];
   id: Scalars['Int'];
@@ -530,6 +532,7 @@ export type CalendarDayInfo = {
   __typename?: 'CalendarDayInfo';
   date: Scalars['Date'];
   dayType: DayType;
+  description?: Maybe<Scalars['String']>;
   endTime?: Maybe<Scalars['DateTime']>;
   periods: Array<CalendarGridPeriodInfo>;
   startTime?: Maybe<Scalars['DateTime']>;
@@ -1161,9 +1164,17 @@ export type Calendar_UncancelEvents = {
   events: Array<Calendar_UncancelEvent>;
 };
 
+export type Calendar_UpdateCalendarDayInput = {
+  date: Scalars['Date'];
+  dayType: DayType;
+  description?: InputMaybe<Scalars['String']>;
+  endTime?: InputMaybe<Scalars['Time']>;
+  startTime?: InputMaybe<Scalars['Time']>;
+};
+
 export type Calendar_UpdateDays = {
-  calendarId?: InputMaybe<Scalars['Int']>;
-  days?: InputMaybe<Array<InputMaybe<Calendar_CreateCalendarDayInput>>>;
+  calendarId: Scalars['Int'];
+  days: Array<Calendar_CreateCalendarDayInput>;
 };
 
 export type Calendar_UpsertCalendarUnavailability = {
@@ -2347,6 +2358,7 @@ export enum Feature {
   Attendance = 'ATTENDANCE',
   Calendar = 'CALENDAR',
   Communications = 'COMMUNICATIONS',
+  Documents = 'DOCUMENTS',
   Fees = 'FEES',
   GeneralAdmin = 'GENERAL_ADMIN',
   Groups = 'GROUPS',
@@ -4464,6 +4476,7 @@ export type Query = {
   attendance_sessionAttendanceList: Array<SessionAttendanceList>;
   attendance_studentSessionAttendance: Array<StudentSessionAttendance>;
   calendar_bellTimes: Array<Calendar_BellTime>;
+  calendar_calendar: Array<Calendar>;
   calendar_calendarDayBellTimes: Array<CalendarDayBellTime>;
   calendar_calendarEvents?: Maybe<ResourceCalendarWrapper>;
   /**  depricated */
@@ -4687,6 +4700,11 @@ export type QueryAttendance_StudentSessionAttendanceArgs = {
 
 export type QueryCalendar_BellTimesArgs = {
   filter?: InputMaybe<BellTimeFilter>;
+};
+
+
+export type QueryCalendar_CalendarArgs = {
+  filter?: InputMaybe<CalendarFilter>;
 };
 
 
