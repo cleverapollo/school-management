@@ -75,7 +75,8 @@
       "permissions": "Permissions",
       "noteLabels": "Note labels",
       "behaviourLabels": "Behaviour settings",
-      "commentBanks": "Comment banks"
+      "commentBanks": "Comment banks",
+      "schoolCalendar": "School calendar"
     },
     "timetable": {
       "title": "Timetable",
@@ -84,7 +85,8 @@
     },
     "printing": {
       "title": "Printing",
-      "timetable": "Timetable"
+      "timetable": "Timetable",
+      "assessment": "Assessment"
     },
     "sms": "SMS",
     "subjectOptions": "Subject options"

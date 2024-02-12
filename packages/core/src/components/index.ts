@@ -13,6 +13,7 @@ export * from './date-dropdown-picker';
 export * from './date-range-calendar';
 export * from './date-range-switcher';
 export * from './dialog';
+export * from './file-dropzone';
 export * from './form';
 export * from './icon-button-with-tooltip';
 export * from './icon-chip';

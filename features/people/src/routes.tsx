@@ -18,6 +18,7 @@ import {
 } from '@tyro/calendar';
 import dayjs from 'dayjs';
 import {
+  FileTransferFeature,
   getAcademicNamespace,
   getPermissionUtils,
   Notes_BehaviourType,
@@ -49,6 +50,7 @@ import {
   getBehaviourCategories,
 } from './api/behaviour/student-behaviour';
 import { getNonClassContactHours } from './api/staff/non-class-contact';
+import { getDocuments } from './api/documents/list';
 
 const StudentsListPage = lazyWithRetry(() => import('./pages/students'));
 // Student profile pages
@@ -94,6 +96,9 @@ const StudentProfileMedicalPage = lazyWithRetry(
 const StudentProfileNotesPage = lazyWithRetry(
   () => import('./pages/students/profile/notes')
 );
+const StudentProfileDocumentsPage = lazyWithRetry(
+  () => import('./pages/students/profile/documents')
+);
 
 // Contact pages
 const ContactsListPage = lazyWithRetry(() => import('./pages/contacts'));
@@ -124,9 +129,6 @@ const StaffListPage = lazyWithRetry(() => import('./pages/staff'));
 
 const StaffProfileContainer = lazyWithRetry(
   () => import('./components/staff/staff-profile-container')
-);
-const StaffProfileOverviewPage = lazyWithRetry(
-  () => import('./pages/staff/profile/overview')
 );
 const StaffProfilePersonalPage = lazyWithRetry(
   () => import('./pages/staff/profile/personal')
@@ -403,6 +405,23 @@ export const getRoutes: NavObjectFunction = (t) => [
               },
               {
                 type: NavObjectType.NonMenuLink,
+                path: 'documents',
+                loader: ({ params }) => {
+                  const studentId = params.id;
+
+                  if (!studentId) {
+                    throw404Error();
+                  }
+
+                  return getDocuments({
+                    referenceId: studentId,
+                    feature: FileTransferFeature.StudentDocs,
+                  });
+                },
+                element: <StudentProfileDocumentsPage />,
+              },
+              {
+                type: NavObjectType.NonMenuLink,
                 path: 'notes',
                 hasAccess: ({ isStaffUserWithPermission }) =>
                   isStaffUserWithPermission('ps:1:notes:read_notes'),
@@ -535,12 +554,17 @@ export const getRoutes: NavObjectFunction = (t) => [
               {
                 type: NavObjectType.NonMenuLink,
                 index: true,
-                loader: () => redirect('./overview'),
-              },
-              {
-                type: NavObjectType.NonMenuLink,
-                path: 'overview',
-                element: <StaffProfileOverviewPage />,
+                loader: async () => {
+                  const { hasPermission } = await getPermissionUtils();
+
+                  if (
+                    hasPermission('ps:1:people:view_staff_personal_information')
+                  ) {
+                    return redirect('./personal');
+                  }
+
+                  return redirect('./timetable');
+                },
               },
               {
                 type: NavObjectType.NonMenuLink,

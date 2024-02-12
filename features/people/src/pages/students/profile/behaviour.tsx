@@ -81,7 +81,7 @@ const getStudentBehaviourColumns = (
   {
     field: 'incidentDate',
     headerName: t('common:date'),
-    valueGetter: ({ data }) => dayjs(data?.incidentDate).format('ll'),
+    valueFormatter: ({ data }) => dayjs(data?.incidentDate).format('lll'),
     sort: 'desc',
     comparator: (dateA: string, dateB: string) =>
       dayjs(dateA).unix() - dayjs(dateB).unix(),

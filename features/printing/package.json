@@ -9,6 +9,7 @@
     "@mui/system": "^5.15.0",
     "@tanstack/react-query": "^4.29.7",
     "@tyro/api": "*",
+    "@tyro/assessments": "*",
     "@tyro/core": "*",
     "@tyro/groups": "*",
     "@tyro/i18n": "*",

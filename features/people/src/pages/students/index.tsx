@@ -282,10 +282,11 @@ export default function StudentsListPage() {
                         {
                           label: t('mail:sendMail'),
                           icon: <SendMailIcon />,
-                          hasAccess: ({ isStaffUserWithPermission }) =>
-                            isStaffUserWithPermission(
-                              'api:communications:read:search_recipients'
-                            ),
+                          hasAccess: ({ isStaffUserHasAllPermissions }) =>
+                            isStaffUserHasAllPermissions([
+                              'ps:1:communications:write_mail',
+                              'api:communications:read:search_recipients',
+                            ]),
                           onClick: () => {
                             sendMailToParties(
                               selectedStudents.map(({ partyId }) => partyId),

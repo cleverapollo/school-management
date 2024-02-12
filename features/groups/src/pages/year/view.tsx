@@ -16,7 +16,11 @@ import {
   PageContainer,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { SmsRecipientType, getPersonProfileLink } from '@tyro/api';
+import {
+  SmsRecipientType,
+  getPersonProfileLink,
+  PermissionUtils,
+} from '@tyro/api';
 import { MobileIcon } from '@tyro/icons';
 import { StudentTableAvatar } from '@tyro/people';
 import { useYearGroupById } from '../../api/year-groups';
@@ -89,6 +93,8 @@ export default function ViewYearGroupPage() {
       label: t('people:sendSms'),
       icon: <MobileIcon />,
       onClick: onOpenSendSms,
+      hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+        isStaffUserWithPermission('ps:1:communications:send_sms'),
     },
     // {
     //   label: t('mail:sendMail'),

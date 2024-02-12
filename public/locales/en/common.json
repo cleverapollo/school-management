@@ -41,6 +41,7 @@
     "createSuccess": "Created successfully!",
     "updateSuccess": "Updated successfully!",
     "deleteSuccess": "Deleted successfully!",
+    "uploadSuccess": "Upload successfully!",
     "unpublishedSuccess": "Unpublished successfully!",
     "publishedSuccess": "Published successfully!",
     "clonedSuccess": "Cloned successfully!",
@@ -48,7 +49,8 @@
     "inviteSent": "Invite was sent",
     "labelWasAssigned": "Label was assigned!",
     "errorFailed": "Error! An error occurred. Please try again later.",
-    "publishedOnline": "Published online"
+    "publishedOnline": "Published online",
+    "errorUploadingFile": "Error uploading file"
   },
   "relationshipType": {
     "AGENT": "Agent",
@@ -205,7 +207,8 @@
     "invalidMobileNumber": "This phone number is either invalid or is in the wrong format",
     "invalidEmail": "This is an invalid email",
     "invalidPhoneNumber": "This is an invalid phone number",
-    "invalidUniqueByKey": "{{key}} should be unique"
+    "invalidUniqueByKey": "{{key}} should be unique",
+    "fileSize": "File size should be less than {{size}}"
   },
   "studyLevel": {
     "COMMON": "Common",
@@ -340,5 +343,20 @@
   "dueDate": "Due date",
   "completedOnDate": "Completed on {{date}}",
   "responses": "Responses",
-  "solve": "Solve"
+  "solve": "Solve",
+  "uploading": "Uploading...",
+  "uploadFiles": "Upload files",
+  "uploadFile": "Upload file",
+  "dropTheFilesHere": "Drop the files here...",
+  "dropTheFileHere": "Drop the file here...",
+  "dragNDropFilesHere": "Drag 'n' drop some files here, or click to select files (Max size: {{maxSize}})",
+  "dragNDropFileHere": "Drag 'n' drop a file here, or click to select a file (Max size: {{maxSize}})",
+  "timePostfix": {
+    "year": "{{year}}y",
+    "month": "{{month}}mo",
+    "week": "{{week}}w",
+    "day": "{{day}}d",
+    "hour": "{{hour}}h",
+    "minute": "{{minute}}m"
+  }
 }
