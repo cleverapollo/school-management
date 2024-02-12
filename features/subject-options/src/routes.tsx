@@ -22,6 +22,9 @@ const StudentOptionsPreferencesPage = lazyWithRetry(
 const StudentOptionsStatsPage = lazyWithRetry(
   () => import('./pages/view/stats')
 );
+const StudentOptionsSolvePage = lazyWithRetry(
+  () => import('./pages/view/solve')
+);
 
 export const getRoutes: NavObjectFunction = (t) => [
   {
@@ -99,6 +102,11 @@ export const getRoutes: NavObjectFunction = (t) => [
                     getOptionsPreferences({ optionId: id }),
                   ]);
                 },
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'solve',
+                element: <StudentOptionsSolvePage />,
               },
             ],
           },

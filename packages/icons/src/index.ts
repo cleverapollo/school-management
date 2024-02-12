@@ -111,6 +111,7 @@ export * from './person-heart';
 export * from './person-tick';
 export * from './phone';
 export * from './pie-chart';
+export * from './pin';
 export * from './printer';
 export * from './refresh';
 export * from './remove-discount';

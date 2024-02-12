@@ -34,5 +34,11 @@
   "subjectCombinationStatsForPoolX": "Subject combination stats (Pool {{x}})",
   "subjectDemandStats": "Subject demand stats",
   "subjectDemandStatsForSubjectSet": "Subject demand stats ({{subjectSetName}})",
-  "totalIncludingReserves": "Total (Inc. reserves)"
+  "totalIncludingReserves": "Total (Inc. reserves)",
+  "solverSettings": "Solver settings",
+  "maxInClass": "Max in class",
+  "noOfClasses": "No. of classes",
+  "classSizes": "Class sizes",
+  "prefsMissed": "Prefs. missed",
+  "poolXSubjectSetYBlocks": "Pool {{x}} - {{y}} blocks"
 }

@@ -10,7 +10,9 @@ import {
 import { optionsKeys } from './keys';
 
 const saveStudentPreferences = graphql(/* GraphQL */ `
-  mutation options_saveStudentPreferences($input: [Options_SaveStudentPreference]!) {
+  mutation options_saveStudentPreferences(
+    $input: [Options_SaveStudentPreference]!
+  ) {
     options_saveStudentPreferences(input: $input) {
       success
     }

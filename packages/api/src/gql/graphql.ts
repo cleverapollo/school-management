@@ -3115,6 +3115,10 @@ export type Mutation = {
   notes_upsertBehaviourTags: Array<Notes_Tag>;
   notes_upsertNotes: Array<Notes_Note>;
   notes_upsertNotesTags: Array<Notes_Tag>;
+  optionsSol_modifyBlock: Success;
+  optionsSol_modifySubjectSettings: Success;
+  optionsSol_modifyTeachingGroup: Success;
+  optionsSol_solve: Success;
   options_publish: Success;
   options_saveOptions: Options_Option;
   options_saveStudentPreferences: Success;
@@ -3554,6 +3558,26 @@ export type MutationNotes_UpsertNotesArgs = {
 
 export type MutationNotes_UpsertNotesTagsArgs = {
   input?: InputMaybe<Array<InputMaybe<Notes_UpsertNotesTagInput>>>;
+};
+
+
+export type MutationOptionsSol_ModifyBlockArgs = {
+  input: OptionsSol_ModifyBlocks;
+};
+
+
+export type MutationOptionsSol_ModifySubjectSettingsArgs = {
+  input: OptionsSol_ModifySubjectsSettings;
+};
+
+
+export type MutationOptionsSol_ModifyTeachingGroupArgs = {
+  input: OptionsSol_ModifyTeachingGroups;
+};
+
+
+export type MutationOptionsSol_SolveArgs = {
+  input: OptionsSol_Solve;
 };
 
 
@@ -4059,6 +4083,113 @@ export type NotificationsUnreadCount = {
   count: Scalars['Int'];
 };
 
+export type OptionsSol_Block = {
+  __typename?: 'OptionsSol_Block';
+  blockIdx: Scalars['Int'];
+  name?: Maybe<Scalars['String']>;
+  subjectGroups: Array<OptionsSol_SubjectGroup>;
+};
+
+export type OptionsSol_ModifyBlock = {
+  blockIdx: Scalars['Int'];
+  name?: InputMaybe<Scalars['String']>;
+};
+
+export type OptionsSol_ModifyBlocks = {
+  blocks: Array<OptionsSol_ModifyBlock>;
+  optionId: Scalars['Int'];
+};
+
+export type OptionsSol_ModifySubjectSettings = {
+  maxSize: Scalars['Int'];
+  numberOfClasses: Scalars['Int'];
+  subjectId: Scalars['Int'];
+};
+
+export type OptionsSol_ModifySubjectsSettings = {
+  optionId: Scalars['Int'];
+  subjects: Array<OptionsSol_ModifySubjectSettings>;
+};
+
+export type OptionsSol_ModifyTeachingGroup = {
+  blockIdx: Scalars['Int'];
+  id: Scalars['Int'];
+  name?: InputMaybe<Scalars['String']>;
+  pinBlock: Scalars['Boolean'];
+};
+
+export type OptionsSol_ModifyTeachingGroups = {
+  optionId: Scalars['Int'];
+  teachingGroups: Array<OptionsSol_ModifyTeachingGroup>;
+};
+
+export type OptionsSol_Solve = {
+  operation: OptionsSol_SolverOperation;
+  optionId: Scalars['Int'];
+};
+
+export enum OptionsSol_SolverOperation {
+  Start = 'START',
+  Stop = 'STOP'
+}
+
+export type OptionsSol_StudentAssignment = {
+  __typename?: 'OptionsSol_StudentAssignment';
+  missedPreferences: Scalars['Int'];
+  student?: Maybe<Person>;
+  studentId: Scalars['Long'];
+  /**  deep linked */
+  subjectGroupsAssigned: Array<OptionsSol_StudentAssignmentSubjectGroup>;
+};
+
+export type OptionsSol_StudentAssignmentSubjectGroup = {
+  __typename?: 'OptionsSol_StudentAssignmentSubjectGroup';
+  preferenceNumber?: Maybe<Scalars['Int']>;
+  studentId?: Maybe<Scalars['Long']>;
+  subjectSetIdx?: Maybe<Scalars['Int']>;
+  teachingGroup?: Maybe<OptionsSol_SubjectGroup>;
+};
+
+export type OptionsSol_StudentAssignments = {
+  __typename?: 'OptionsSol_StudentAssignments';
+  students: OptionsSol_StudentAssignment;
+  subjectSets: Options_OptionSubjectSet;
+};
+
+export type OptionsSol_Subject = {
+  __typename?: 'OptionsSol_Subject';
+  maxSize: Scalars['Int'];
+  preferencesGotten: Scalars['Int'];
+  preferencesTotal: Scalars['Int'];
+  /**  deep linked */
+  subject: Subject;
+  subjectId: Scalars['Int'];
+  teachingGroups: Array<OptionsSol_SubjectGroup>;
+};
+
+export type OptionsSol_SubjectGroup = {
+  __typename?: 'OptionsSol_SubjectGroup';
+  blockIdx: Scalars['Int'];
+  id: Scalars['Int'];
+  name: Scalars['String'];
+  numStudents: Scalars['Int'];
+  pinned: Scalars['Boolean'];
+  poolIdx: Scalars['Int'];
+  subject: Subject;
+  subjectId: Scalars['String'];
+};
+
+export type OptionsSol_SubjectSetBlock = {
+  __typename?: 'OptionsSol_SubjectSetBlock';
+  blocks: Array<OptionsSol_Block>;
+  subjectSet: Options_OptionSubjectSet;
+};
+
+export type OptionsSol_SubjectSetBlocks = {
+  __typename?: 'OptionsSol_SubjectSetBlocks';
+  subjectSet: Array<Maybe<OptionsSol_SubjectSetBlock>>;
+};
+
 export type Options_ChoiceId = {
   __typename?: 'Options_ChoiceId';
   preferenceIdx: Scalars['Int'];
@@ -4073,15 +4204,6 @@ export type Options_InfoRequestId = {
   __typename?: 'Options_InfoRequestId';
   optionId: Scalars['Int'];
   studentPartyId: Scalars['Long'];
-};
-
-export type Options_InfoRequestOption = {
-  __typename?: 'Options_InfoRequestOption';
-  dueBy: Scalars['Date'];
-  id: Options_InfoRequestId;
-  optionName: Scalars['String'];
-  /** deep linked */
-  requestFor: Person;
 };
 
 export type Options_Option = {
@@ -4166,7 +4288,7 @@ export type Options_SaveStudentPreference = {
   optionId: Scalars['Int'];
   preferenceIdx: Scalars['Int'];
   studentPartyId: Scalars['Long'];
-  subjectId: Scalars['Int'];
+  subjectId?: InputMaybe<Scalars['Int']>;
   subjectSetIdx: Scalars['Int'];
 };
 
@@ -4973,6 +5095,9 @@ export type Query = {
   notes_behaviourCategories: Array<Notes_BehaviourCategory>;
   notes_notes: Array<Notes_Note>;
   notes_tags: Array<Notes_Tag>;
+  optionsSol_blocks: OptionsSol_SubjectSetBlocks;
+  optionsSol_studentAssignment: Array<OptionsSol_StudentAssignments>;
+  optionsSol_subjectStats: Array<OptionsSol_Subject>;
   options_options: Array<Options_Option>;
   options_preferences: Array<Options_StudentPreference>;
   permissions?: Maybe<Array<Maybe<Permission>>>;
@@ -5390,6 +5515,21 @@ export type QueryNotes_NotesArgs = {
 
 export type QueryNotes_TagsArgs = {
   filter?: InputMaybe<Notes_TagFilter>;
+};
+
+
+export type QueryOptionsSol_BlocksArgs = {
+  filter?: InputMaybe<Options_OptionFilter>;
+};
+
+
+export type QueryOptionsSol_StudentAssignmentArgs = {
+  filter?: InputMaybe<Options_OptionFilter>;
+};
+
+
+export type QueryOptionsSol_SubjectStatsArgs = {
+  filter?: InputMaybe<Options_OptionFilter>;
 };
 
 
@@ -10297,6 +10437,27 @@ export type Options_SaveStudentPreferencesMutationVariables = Exact<{
 
 export type Options_SaveStudentPreferencesMutation = { __typename?: 'Mutation', options_saveStudentPreferences: { __typename?: 'Success', success?: boolean | null } };
 
+export type OptionsSol_BlocksQueryVariables = Exact<{
+  filter?: InputMaybe<Options_OptionFilter>;
+}>;
+
+
+export type OptionsSol_BlocksQuery = { __typename?: 'Query', optionsSol_blocks: { __typename?: 'OptionsSol_SubjectSetBlocks', subjectSet: Array<{ __typename?: 'OptionsSol_SubjectSetBlock', blocks: Array<{ __typename?: 'OptionsSol_Block', blockIdx: number, name?: string | null, subjectGroups: Array<{ __typename?: 'OptionsSol_SubjectGroup', id: number, poolIdx: number, blockIdx: number, name: string, subjectId: string, numStudents: number, pinned: boolean, subject: { __typename?: 'Subject', name: string, shortCode: string, colour?: Colour | null } }> }>, subjectSet: { __typename?: 'Options_OptionSubjectSet', name: string, poolIdx?: number | null, id: { __typename?: 'Options_OptionsId', optionId: number, idx: number } } } | null> } };
+
+export type OptionsSol_StudentAssignmentQueryVariables = Exact<{
+  filter?: InputMaybe<Options_OptionFilter>;
+}>;
+
+
+export type OptionsSol_StudentAssignmentQuery = { __typename?: 'Query', optionsSol_studentAssignment: Array<{ __typename?: 'OptionsSol_StudentAssignments', students: { __typename?: 'OptionsSol_StudentAssignment', missedPreferences: number, student?: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null } | null, subjectGroupsAssigned: Array<{ __typename?: 'OptionsSol_StudentAssignmentSubjectGroup', subjectSetIdx?: number | null, preferenceNumber?: number | null, teachingGroup?: { __typename?: 'OptionsSol_SubjectGroup', name: string, subject: { __typename?: 'Subject', name: string, colour?: Colour | null } } | null }> } }> };
+
+export type OptionsSol_SubjectStatsQueryVariables = Exact<{
+  filter?: InputMaybe<Options_OptionFilter>;
+}>;
+
+
+export type OptionsSol_SubjectStatsQuery = { __typename?: 'Query', optionsSol_subjectStats: Array<{ __typename?: 'OptionsSol_Subject', subjectId: number, maxSize: number, preferencesTotal: number, preferencesGotten: number, subject: { __typename?: 'Subject', name: string, shortCode: string, colour?: Colour | null }, teachingGroups: Array<{ __typename?: 'OptionsSol_SubjectGroup', id: number, poolIdx: number, blockIdx: number, name: string, numStudents: number }> }> };
+
 export type Swm_ApplySubstitutionsMutationVariables = Exact<{
   input: Swm_InsertSubstitution;
 }>;
@@ -10769,6 +10930,9 @@ export const OptionsSetupDocument = {"kind":"Document","definitions":[{"kind":"O
 export const Options_PublishDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"options_publish"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Options_OptionsPublish"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options_publish"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Options_PublishMutation, Options_PublishMutationVariables>;
 export const Options_SaveOptionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"options_saveOptions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Options_SaveOptions"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options_saveOptions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<Options_SaveOptionsMutation, Options_SaveOptionsMutationVariables>;
 export const Options_SaveStudentPreferencesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"options_saveStudentPreferences"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Options_SaveStudentPreference"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options_saveStudentPreferences"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Options_SaveStudentPreferencesMutation, Options_SaveStudentPreferencesMutationVariables>;
+export const OptionsSol_BlocksDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"optionsSol_blocks"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Options_OptionFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optionsSol_blocks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectSet"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"blocks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"blockIdx"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"subjectGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolIdx"}},{"kind":"Field","name":{"kind":"Name","value":"blockIdx"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"subjectId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"shortCode"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}},{"kind":"Field","name":{"kind":"Name","value":"numStudents"}},{"kind":"Field","name":{"kind":"Name","value":"pinned"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"subjectSet"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optionId"}},{"kind":"Field","name":{"kind":"Name","value":"idx"}}]}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"poolIdx"}}]}}]}}]}}]}}]} as unknown as DocumentNode<OptionsSol_BlocksQuery, OptionsSol_BlocksQueryVariables>;
+export const OptionsSol_StudentAssignmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"optionsSol_studentAssignment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Options_OptionFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optionsSol_studentAssignment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"students"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"student"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"missedPreferences"}},{"kind":"Field","name":{"kind":"Name","value":"subjectGroupsAssigned"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectSetIdx"}},{"kind":"Field","name":{"kind":"Name","value":"preferenceNumber"}},{"kind":"Field","name":{"kind":"Name","value":"teachingGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"subject"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<OptionsSol_StudentAssignmentQuery, OptionsSol_StudentAssignmentQueryVariables>;
+export const OptionsSol_SubjectStatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"optionsSol_subjectStats"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Options_OptionFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optionsSol_subjectStats"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"shortCode"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}},{"kind":"Field","name":{"kind":"Name","value":"maxSize"}},{"kind":"Field","name":{"kind":"Name","value":"preferencesTotal"}},{"kind":"Field","name":{"kind":"Name","value":"preferencesGotten"}},{"kind":"Field","name":{"kind":"Name","value":"teachingGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolIdx"}},{"kind":"Field","name":{"kind":"Name","value":"blockIdx"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"numStudents"}}]}}]}}]}}]} as unknown as DocumentNode<OptionsSol_SubjectStatsQuery, OptionsSol_SubjectStatsQueryVariables>;
 export const Swm_ApplySubstitutionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"swm_applySubstitutions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_InsertSubstitution"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_applySubstitutions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Swm_ApplySubstitutionsMutation, Swm_ApplySubstitutionsMutationVariables>;
 export const Swm_DeleteSubstitutionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"swm_deleteSubstitutions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_DeleteSubstitution"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_deleteSubstitutions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Swm_DeleteSubstitutionsMutation, Swm_DeleteSubstitutionsMutationVariables>;
 export const Swm_AbsenceTypesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"swm_absenceTypes"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_StaffAbsenceTypeFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_absenceTypes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"absenceTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"descriptionTextId"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"availableForRequests"}}]}}]}}]} as unknown as DocumentNode<Swm_AbsenceTypesQuery, Swm_AbsenceTypesQueryVariables>;
