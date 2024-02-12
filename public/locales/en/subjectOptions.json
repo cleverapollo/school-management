@@ -40,5 +40,7 @@
   "noOfClasses": "No. of classes",
   "classSizes": "Class sizes",
   "prefsMissed": "Prefs. missed",
-  "poolXSubjectSetYBlocks": "Pool {{x}} - {{y}} blocks"
+  "poolXSubjectSetYBlocks": "Pool {{x}} - {{y}} blocks",
+  "optionsNameMustBeUnique": "Options name must be unique",
+  "cloneOptions": "Clone options"
 }

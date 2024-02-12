@@ -18,6 +18,7 @@ import { Link } from 'react-router-dom';
 import {
   AddDocIcon,
   CheckmarkCircleIcon,
+  CopyIcon,
   EditCalendarIcon,
   StopIcon,
   VerticalDotsIcon,
@@ -31,6 +32,7 @@ import {
 } from '../api/options';
 import { PublishOptionsModal } from '../components/list/publish-modal';
 import { ConfirmUnpublishModal } from '../components/list/confirm-unpublish-modal';
+import { CloneOptionsModal } from '../components/list/clone-modal';
 
 dayjs.extend(LocalizedFormat);
 
@@ -42,6 +44,7 @@ const getColumnDefs = (
   >,
   openPublish: (id: ReturnTypeFromUseOptionsSetupList) => void,
   openUnpublish: (id: ReturnTypeFromUseOptionsSetupList) => void,
+  cloneOptions: (id: ReturnTypeFromUseOptionsSetupList) => void,
   isStaffUserWithPermission: UsePermissionsReturn['isStaffUserWithPermission']
 ): GridOptions<ReturnTypeFromUseOptionsSetupList>['columnDefs'] => [
   {
@@ -111,8 +114,8 @@ const getColumnDefs = (
         <ActionMenu
           iconOnly
           buttonIcon={<VerticalDotsIcon />}
-          menuItems={
-            data.publishedToParents
+          menuItems={[
+            ...(data.publishedToParents
               ? [
                   {
                     label: t('subjectOptions:editPublishDetails'),
@@ -131,8 +134,13 @@ const getColumnDefs = (
                     icon: <CheckmarkCircleIcon />,
                     onClick: () => openPublish(data),
                   },
-                ]
-          }
+                ]),
+            {
+              label: t('common:actions.clone'),
+              icon: <CopyIcon />,
+              onClick: () => cloneOptions(data),
+            },
+          ]}
         />
       ),
   },
@@ -157,6 +165,13 @@ export default function SubjectOptionsPage() {
   } = useDebouncedValue<ReturnTypeFromUseOptionsSetupList | null>({
     defaultValue: null,
   });
+  const {
+    value: optionsToClone,
+    debouncedValue: debouncedOptionsToClone,
+    setValue: setOptionsToClone,
+  } = useDebouncedValue<ReturnTypeFromUseOptionsSetupList | null>({
+    defaultValue: null,
+  });
 
   const columnDefs = useMemo(
     () =>
@@ -164,9 +179,16 @@ export default function SubjectOptionsPage() {
         t,
         setOptionsToPublish,
         setOptionsToUnpublish,
+        setOptionsToClone,
         isStaffUserWithPermission
       ),
-    [t, setOptionsToPublish, setOptionsToUnpublish]
+    [
+      t,
+      setOptionsToPublish,
+      setOptionsToUnpublish,
+      setOptionsToClone,
+      isStaffUserWithPermission,
+    ]
   );
 
   return (
@@ -205,6 +227,12 @@ export default function SubjectOptionsPage() {
         optionsToUnpublish={optionsToUnpublish ?? debouncedOptionsToUnpublish}
         open={Boolean(optionsToUnpublish)}
         onClose={() => setOptionsToUnpublish(null)}
+      />
+      <CloneOptionsModal
+        currentOptionsList={optionsSetupList}
+        optionsToClone={optionsToClone ?? debouncedOptionsToClone}
+        open={Boolean(optionsToClone)}
+        onClose={() => setOptionsToClone(null)}
       />
     </>
   );
