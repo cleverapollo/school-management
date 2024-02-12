@@ -24,3 +24,4 @@ export * from './utils/print-group-members';
 export * from './components/custom-group/form/static-students';
 export * from './components/custom-group/form/static-staff';
 export * from './hooks/use-students-search-props';
+export { useYearGroupEnrollments } from './api/year-group-enrollments';
