@@ -115,8 +115,6 @@ export function SchoolActivityForm({
     handleSubmit,
     setFocus,
     setValue,
-    reset,
-    resetField,
     watch,
     formState: { isDirty },
   } = useForm<FormValues>({
@@ -285,18 +283,19 @@ export function SchoolActivityForm({
     activityDayType === ActivityType.SingleDay;
 
   useEffect(() => {
-    if (activityDayType === ActivityType.PartialDay) {
-      setValue('startTime', undefined);
-      setValue('endTime', undefined);
+    if (activityDayType === ActivityType.SingleDay) {
+      setValue('startTime', dayjs('08:30', 'HH:mm'));
+      setValue('endTime', dayjs('16:00', 'HH:mm'));
+    } else if (activityDayType === ActivityType.PartialDay) {
+      setValue('startTime', schoolActivitiesData?.startTime);
+      setValue('endTime', schoolActivitiesData?.endTime);
     }
-  }, [activityDayType, setValue, schoolActivitiesData]);
-
-  useEffect(() => {
-    const isFullDay = activityDayType === ActivityType.SingleDay;
-
-    setValue('startTime', isFullDay ? dayjs('08:30', 'HH:mm') : undefined);
-    setValue('endTime', isFullDay ? dayjs('16:00', 'HH:mm') : undefined);
-  }, [activityDayType]);
+  }, [
+    activityDayType,
+    setValue,
+    schoolActivitiesData?.startTime,
+    schoolActivitiesData?.endTime,
+  ]);
 
   return (
     <Grid container gap={3} component="form" onSubmit={handleSubmit(onSubmit)}>
