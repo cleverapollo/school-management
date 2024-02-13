@@ -72,7 +72,9 @@ const getValueFormat = (
       return formValue as number;
     }
     case Reporting_TableFilterType.Date:
-      return dayjs(formValue as dayjs.Dayjs).format('YYYY-MM-DD');
+      return formValue
+        ? dayjs(formValue as dayjs.Dayjs).format('YYYY-MM-DD')
+        : null;
     case Reporting_TableFilterType.InputNumber:
       return Number(formValue);
     case Reporting_TableFilterType.Input:
