@@ -58,6 +58,13 @@ const getContactColumns = (
       data?.personalInformation?.primaryPhoneNumber?.number ?? '-',
   },
   {
+    field: 'personalInformation.primaryEmail.email',
+    headerName: translate('common:email'),
+    valueGetter: ({ data }) =>
+      data?.personalInformation?.primaryEmail?.email ?? '-',
+    hide: true,
+  },
+  {
     field: 'personalInformation.primaryAddress',
     headerName: translate('common:address'),
     valueGetter: ({ data }) =>
