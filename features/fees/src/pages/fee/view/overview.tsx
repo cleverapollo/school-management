@@ -70,26 +70,23 @@ const getFeeOverviewColumns = (
   {
     field: 'amount',
     headerName: t('fees:amount'),
-    valueFormatter: ({
-      value,
-    }: ValueFormatterParams<ReturnTypeFromUseFeeDebtors, number>) =>
-      formatCurrency(value ?? 0),
+    valueFormatter: ({ data }) => formatCurrency(data?.amount ?? 0),
+    comparator: (a: number, b: number) => a - b,
+    type: 'numericColumn',
   },
   {
     field: 'amountPaid',
     headerName: t('fees:paid'),
-    valueFormatter: ({
-      value,
-    }: ValueFormatterParams<ReturnTypeFromUseFeeDebtors, number>) =>
-      formatCurrency(value ?? 0),
+    valueFormatter: ({ data }) => formatCurrency(data?.amountPaid ?? 0),
+    comparator: (a: number, b: number) => a - b,
+    type: 'numericColumn',
   },
   {
     field: 'amountDue',
     headerName: t('fees:due'),
-    valueFormatter: ({
-      value,
-    }: ValueFormatterParams<ReturnTypeFromUseFeeDebtors, number>) =>
-      formatCurrency(value ?? 0),
+    valueFormatter: ({ data }) => formatCurrency(data?.amountDue ?? 0),
+    comparator: (a: number, b: number) => a - b,
+    type: 'numericColumn',
     sort: 'asc',
     sortIndex: 1,
   },
