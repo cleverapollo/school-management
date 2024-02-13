@@ -26,6 +26,7 @@ import {
 import { useState, useMemo } from 'react';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import isoWeek from 'dayjs/plugin/isoWeek';
 import { SchoolCalendar } from './calendar';
 import { useCalendarDayInfo } from '../../api/school-calendar/calendar-day-info';
 import { useUpdateCalendarDays } from '../../api/school-calendar/update-calendar-days';
@@ -35,6 +36,7 @@ import { SetNonSchooldayModal } from './set-non-schoolday-modal';
 import { useEditableSchoolCalendarState } from '../../hooks/use-editable-school-calendar-state';
 
 dayjs.extend(LocalizedFormat);
+dayjs.extend(isoWeek);
 
 type TabValue = DayType | 'All';
 
@@ -76,7 +78,9 @@ export const CalendarOverview = () => {
   );
 
   const getDayCount = (dayType: DayType) =>
-    data?.dayInfo?.filter((day) => day.dayType === dayType)?.length ?? 0;
+    data?.dayInfo
+      ?.filter((day) => dayjs(day?.date).isoWeekday() < 6)
+      .filter((day) => day.dayType === dayType)?.length ?? 0;
 
   const calendarTabData: Array<{
     bgColor: string;
