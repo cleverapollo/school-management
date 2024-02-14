@@ -8,7 +8,7 @@ import {
 import { ReactNode, useMemo } from 'react';
 
 type SelectCustomVariant = Omit<TextFieldProps, 'variant'> & {
-  variant?: TextFieldProps['variant'] | 'white-filled';
+  variant?: TextFieldProps['variant'] | 'white-filled' | 'soft';
 };
 
 export type SelectProps<TSelectOption> = SelectCustomVariant & {
@@ -38,6 +38,8 @@ export const Select = <TSelectOption extends string | number | object>({
   const { spacing, palette } = useTheme();
 
   const isWhiteFilledVariant = variant === 'white-filled';
+  const isSoftVariant = variant === 'soft';
+  const customVariant = isWhiteFilledVariant || isSoftVariant;
 
   const optionSelected = useMemo(
     () =>
@@ -55,7 +57,7 @@ export const Select = <TSelectOption extends string | number | object>({
     <TextField
       {...textFieldProps}
       value={value}
-      variant={isWhiteFilledVariant ? 'filled' : variant}
+      variant={customVariant ? 'filled' : variant}
       ref={customSelectRef}
       select
       SelectProps={{
@@ -78,6 +80,18 @@ export const Select = <TSelectOption extends string | number | object>({
           '& .MuiFilledInput-root, & .MuiFilledInput-root:focus, & .MuiFilledInput-root.Mui-focused, & .MuiFilledInput-root:hover, & .MuiFilledInput-root, & .MuiFilledInput-input:focus, & .MuiFilledInput-input.Mui-focused, & .MuiFilledInput-input:hover':
             {
               backgroundColor: palette.background.default,
+              borderRadius: spacing(1),
+            },
+        }),
+        ...(isSoftVariant && {
+          '& .MuiSelect-select.MuiSelect-filled.MuiInputBase-input.MuiFilledInput-input':
+            {
+              paddingRight: spacing(5),
+            },
+          '& .MuiFilledInput-root, & .MuiFilledInput-root:focus, & .MuiFilledInput-root.Mui-focused, & .MuiFilledInput-root:hover, & .MuiFilledInput-root, & .MuiFilledInput-input:focus, & .MuiFilledInput-input.Mui-focused, & .MuiFilledInput-input:hover':
+            {
+              backgroundColor: palette.indigo[50016],
+              color: palette.indigo.dark,
               borderRadius: spacing(1),
             },
         }),
