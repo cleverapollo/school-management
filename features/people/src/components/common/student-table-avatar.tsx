@@ -43,13 +43,14 @@ export function StudentTableAvatar({
         hasSupportPlan={hasSupportPlan}
         avatarBackgroundColor={avatarBackgroundColor}
         size={size}
+        person={person}
         ContainingButtonProps={{
           sx: {
             my: 1,
             mr: 1.5,
           },
         }}
-        AvatarProps={AvatarProps}
+        AvatarProps={{ ...AvatarProps, person }}
       />
       {to ? (
         <RouterLink sx={{ fontWeight: 600 }} onClick={onBeforeNavigate} to={to}>

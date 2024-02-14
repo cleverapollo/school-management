@@ -111,6 +111,7 @@ export function StudentEditsModal({ open, onClose }: StudentEditsModalProps) {
                   <Avatar
                     name={name}
                     src={student?.person?.avatarUrl}
+                    person={student?.person}
                     sx={{
                       my: 1,
                       mr: 1,

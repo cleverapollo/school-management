@@ -1,4 +1,4 @@
-import { Badge, Box, IconButtonProps, styled, useTheme } from '@mui/material';
+import { Badge, Box, styled, useTheme } from '@mui/material';
 import { Avatar, AvatarProps as CoreAvatarProps } from '@tyro/core';
 
 const CenterBox = styled(Box)(() => ({
@@ -16,11 +16,13 @@ export interface StudentAvatarPictureProps {
   AvatarProps?: CoreAvatarProps;
   avatarBackgroundColor?: string;
   size?: number;
+  person?: CoreAvatarProps['person'];
 }
 
 export function StudentAvatarPicture({
   name,
   src,
+  person,
   isPriorityStudent,
   hasSupportPlan,
   AvatarProps,
@@ -73,6 +75,7 @@ export function StudentAvatarPicture({
             src={src}
             size={isPriorityStudent ? size - 8 : size}
             {...AvatarProps}
+            person={person}
             sx={{
               fontSize: size ? Math.ceil(size * 0.35) : undefined,
             }}

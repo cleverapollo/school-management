@@ -21,6 +21,19 @@ export function getPartyName(
       return '';
   }
 }
+export function getPartyPerson(
+  partyInfo: Attendee['partyInfo'] | PartyResource['partyInfo']
+) {
+  if (!partyInfo) return null;
+
+  switch (partyInfo.__typename) {
+    case 'Staff':
+    case 'Student':
+      return partyInfo.person;
+    default:
+      return null;
+  }
+}
 
 export function getPartyAvatarUrl(
   partyInfo: Attendee['partyInfo'] | PartyResource['partyInfo']

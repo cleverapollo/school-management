@@ -89,6 +89,7 @@ const getColumns = (
             name={name}
             isPriorityStudent={!!extensions?.priority}
             hasSupportPlan={false}
+            person={person}
             ContainingButtonProps={{
               sx: {
                 my: 1,

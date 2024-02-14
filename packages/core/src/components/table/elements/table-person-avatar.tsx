@@ -22,6 +22,7 @@ export function TablePersonAvatar({
       name={name}
       avatarUrl={person?.avatarUrl}
       onBeforeNavigate={onBeforeNavigate}
+      AvatarProps={{ person }}
     />
   );
 }

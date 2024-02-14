@@ -62,6 +62,7 @@ export function NeedToKnowModal({
                 isPriorityStudent={!!student?.extensions?.priority}
                 hasSupportPlan={false}
                 size={68}
+                person={student?.person}
               />
               <Stack>
                 <Typography component="h2" variant="h4">
