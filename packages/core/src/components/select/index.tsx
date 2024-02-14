@@ -4,6 +4,8 @@ import {
   TextField,
   TextFieldProps,
   useTheme,
+  CircularProgress,
+  Stack,
 } from '@mui/material';
 import { ReactNode, useMemo } from 'react';
 
@@ -19,6 +21,7 @@ export type SelectProps<TSelectOption> = SelectCustomVariant & {
   optionTextKey?: TSelectOption extends object ? keyof TSelectOption : never;
   renderValue?: (option: TSelectOption) => ReactNode;
   menuItemProps?: MenuItemProps;
+  loading?: boolean;
 };
 
 export const Select = <TSelectOption extends string | number | object>({
@@ -33,6 +36,7 @@ export const Select = <TSelectOption extends string | number | object>({
   renderValue,
   value,
   menuItemProps,
+  loading,
   ...textFieldProps
 }: SelectProps<TSelectOption>) => {
   const { spacing, palette } = useTheme();
@@ -71,7 +75,12 @@ export const Select = <TSelectOption extends string | number | object>({
         },
         ...(renderValue && {
           renderValue: () =>
-            optionSelected ? renderValue(optionSelected) : null,
+            optionSelected ? (
+              <Stack flexDirection="row" gap={1} alignItems="center">
+                {loading && <CircularProgress size={16} />}
+                {renderValue(optionSelected)}
+              </Stack>
+            ) : null,
         }),
       }}
       sx={{
