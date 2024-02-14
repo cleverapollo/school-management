@@ -142,6 +142,11 @@ export default function CustomGroups() {
         partyId,
         name,
         avatarUrl,
+        avatarProps: {
+          sx: {
+            borderRadius: 1,
+          },
+        },
       }))
     );
   }, []);
