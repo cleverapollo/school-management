@@ -6,6 +6,7 @@ import {
   useTheme,
   CircularProgress,
   Stack,
+  Divider,
 } from '@mui/material';
 import { ReactNode, useMemo } from 'react';
 
@@ -22,6 +23,7 @@ export type SelectProps<TSelectOption> = SelectCustomVariant & {
   renderValue?: (option: TSelectOption) => ReactNode;
   menuItemProps?: MenuItemProps;
   loading?: boolean;
+  headerComponent?: ReactNode;
 };
 
 export const Select = <TSelectOption extends string | number | object>({
@@ -37,6 +39,7 @@ export const Select = <TSelectOption extends string | number | object>({
   value,
   menuItemProps,
   loading,
+  headerComponent,
   ...textFieldProps
 }: SelectProps<TSelectOption>) => {
   const { spacing, palette } = useTheme();
@@ -106,6 +109,12 @@ export const Select = <TSelectOption extends string | number | object>({
         }),
       }}
     >
+      {headerComponent && (
+        <Stack gap={1} component="li" mx={1}>
+          {headerComponent}
+          <Divider sx={{ borderColor: 'slate.200' }} />
+        </Stack>
+      )}
       {options.map((option) => {
         const optionValue = optionIdKey
           ? (option[optionIdKey] as string)
