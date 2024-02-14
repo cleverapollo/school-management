@@ -9,6 +9,7 @@ import {
   PageContainer,
   PageHeading,
   Table,
+  commonActionMenuProps,
 } from '@tyro/core';
 import {
   EditIcon,
@@ -62,9 +63,7 @@ const getNoteTagBehaviourColumns = (
     field: 'behaviourCategory.name',
   },
   {
-    suppressColumnsToolPanel: true,
-    sortable: false,
-    cellClass: 'ag-show-on-row-interaction',
+    ...commonActionMenuProps,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseNoteTagsBehaviour>) =>

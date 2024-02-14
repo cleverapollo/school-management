@@ -1,5 +1,9 @@
-import { useDisclosure, UseDisclosureReturn } from '@tyro/core';
-import { useUser } from '@tyro/api';
+import {
+  useDebouncedValue,
+  useDisclosure,
+  UseDisclosureReturn,
+} from '@tyro/core';
+import { RecipientSearchType, SearchType, useUser } from '@tyro/api';
 import {
   useContext,
   createContext,
@@ -11,12 +15,21 @@ import {
 import MailCompose, {
   ComposeMailFormValues,
 } from '../components/common/compose';
+import {
+  MailRecipientType,
+  SelectMailRecipientTypeModal,
+} from '../components/common/select-mail-recipient-type-modal';
+import { resolveMailRecipients } from '../api/mail-recipients';
 
 export type MailSettingsContextValue = {
   sidebarDisclosure: UseDisclosureReturn;
   composeDisclosure: UseDisclosureReturn;
-  composeEmail: (defaultValue: Partial<ComposeMailFormValues>) => void;
   activeProfileId: number;
+  composeEmail: (defaultValue: Partial<ComposeMailFormValues>) => void;
+  sendMailToParties: (
+    partyIds: number[],
+    possibleMailRecipientTypes: MailRecipientType[]
+  ) => void;
 };
 
 const MailSettingsContext = createContext<MailSettingsContextValue | undefined>(
@@ -29,6 +42,17 @@ export function MailSettingsProvider({ children }: { children: ReactNode }) {
   >({});
   const sidebarDisclosure = useDisclosure({ defaultIsOpen: false });
   const composeDisclosure = useDisclosure({ defaultIsOpen: false });
+  const {
+    value: selectMailRecipientSettings,
+    debouncedValue: debouncedSelectMailRecipientSettings,
+    setValue: setSelectMailRecipientSettings,
+  } = useDebouncedValue<
+    | {
+        partyIds: number[];
+        possibleRecipientTypes: MailRecipientType[];
+      }
+    | undefined
+  >({ defaultValue: undefined });
   const { activeProfile } = useUser();
   const activeProfileId = activeProfile?.partyId ?? 0;
 
@@ -37,14 +61,63 @@ export function MailSettingsProvider({ children }: { children: ReactNode }) {
     composeDisclosure.onOpen();
   };
 
+  const composeEmailToParties = async (
+    partyIds: number[],
+    possibleMailRecipientTypes: RecipientSearchType[]
+  ) => {
+    const { communications_recipients: communicationsRecipients } =
+      await resolveMailRecipients({
+        partyIds,
+        recipientType: possibleMailRecipientTypes,
+      });
+
+    if (selectMailRecipientSettings) {
+      setSelectMailRecipientSettings(undefined);
+    }
+    composeEmail({
+      canReply: false,
+      bccRecipients: communicationsRecipients,
+    });
+  };
+
+  const sendMailToParties = (
+    partyIds: number[],
+    possibleMailRecipientTypes: MailRecipientType[]
+  ) => {
+    if (
+      process.env.NODE_ENV !== 'production' &&
+      !(partyIds?.length > 0 && possibleMailRecipientTypes?.length > 0)
+    ) {
+      throw new Error(
+        'partyIds and possibleMailRecipientTypes must not be empty when calling sendMailToParties'
+      );
+    }
+
+    if (possibleMailRecipientTypes.length === 1) {
+      composeEmailToParties(partyIds, [possibleMailRecipientTypes[0].type]);
+    } else {
+      setSelectMailRecipientSettings({
+        partyIds,
+        possibleRecipientTypes: possibleMailRecipientTypes,
+      });
+    }
+  };
+
   const value = useMemo(
     () => ({
       sidebarDisclosure,
       composeDisclosure,
       composeEmail,
       activeProfileId,
+      sendMailToParties,
     }),
-    [sidebarDisclosure, composeDisclosure, composeEmail, activeProfileId]
+    [
+      sidebarDisclosure,
+      composeDisclosure,
+      composeEmail,
+      activeProfileId,
+      sendMailToParties,
+    ]
   );
 
   useEffect(() => {
@@ -62,6 +135,14 @@ export function MailSettingsProvider({ children }: { children: ReactNode }) {
           defaultValues={defaultComposeValue}
         />
       )}
+      <SelectMailRecipientTypeModal
+        isOpen={!!selectMailRecipientSettings}
+        onClose={() => setSelectMailRecipientSettings(undefined)}
+        onSubmit={composeEmailToParties}
+        settings={
+          selectMailRecipientSettings || debouncedSelectMailRecipientSettings
+        }
+      />
     </MailSettingsContext.Provider>
   );
 }

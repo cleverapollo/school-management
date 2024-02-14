@@ -7,11 +7,18 @@ import {
   DashboardAssessmentFilter,
   GradeSetFilter,
   OverallCommentsFilter,
+  Print_AssessmentOptions,
   StudentResultFilter,
+  YearGroupEnrollmentFilter,
 } from '@tyro/api';
 
 export const assessmentsKeys = {
   all: ['assessments'] as const,
+  print: (filter: Print_AssessmentOptions) => [
+    ...assessmentsKeys.all,
+    'print',
+    filter,
+  ],
   assessments: (filter: AssessmentFilter) =>
     [...assessmentsKeys.all, filter] as const,
   assessmentsExtraFields: (filter: AssessmentFilter) =>
@@ -60,6 +67,10 @@ export const assessmentsKeys = {
   ) => [
     ...assessmentsKeys.allOverallCommentsByYearGroup(),
     academicNamespaceId,
+    filter,
+  ],
+  yearGroupEnrollments: (filter: YearGroupEnrollmentFilter) => [
+    ...assessmentsKeys.all,
     filter,
   ],
 };

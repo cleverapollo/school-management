@@ -18,16 +18,18 @@ import {
 } from '@tyro/calendar';
 import dayjs from 'dayjs';
 import {
+  FileTransferFeature,
   getAcademicNamespace,
   getPermissionUtils,
   Notes_BehaviourType,
 } from '@tyro/api';
+import { getStudentFees } from '@tyro/fees';
 import {
   getStudent,
   getStudents,
   getStudentsForSelect,
 } from './api/student/students';
-import { getStudentStatus } from './api/student/status';
+import { getPersonStatus } from './api/person/status';
 import { getStudentMedicalData } from './api/student/medicals/student-medical-data';
 import {
   getStudentsContacts,
@@ -39,16 +41,16 @@ import { getNotes } from './api/note/list';
 import { getContactPersonal } from './api/contact/personal';
 import { getContactStudents } from './api/contact/students';
 import { getStaff } from './api/staff';
-import { getStaffStatus } from './api/staff/status';
 import { getStaffSubjectGroups } from './api/staff/subject-groups';
 import { getStaffPersonal } from './api/staff/personal';
 import { getMedicalConditionNamesQuery } from './api/student/medicals/medical-condition-lookup';
 import { getPersonalTitlesQuery } from './api/student/medicals/personal-titles';
 import {
-  getIndividualStudentBehaviour,
+  getStudentBehaviour,
   getBehaviourCategories,
-} from './api/behaviour/individual-student-behaviour';
+} from './api/behaviour/student-behaviour';
 import { getNonClassContactHours } from './api/staff/non-class-contact';
+import { getDocuments } from './api/documents/list';
 
 const StudentsListPage = lazyWithRetry(() => import('./pages/students'));
 // Student profile pages
@@ -94,6 +96,9 @@ const StudentProfileMedicalPage = lazyWithRetry(
 const StudentProfileNotesPage = lazyWithRetry(
   () => import('./pages/students/profile/notes')
 );
+const StudentProfileDocumentsPage = lazyWithRetry(
+  () => import('./pages/students/profile/documents')
+);
 
 // Contact pages
 const ContactsListPage = lazyWithRetry(() => import('./pages/contacts'));
@@ -124,9 +129,6 @@ const StaffListPage = lazyWithRetry(() => import('./pages/staff'));
 
 const StaffProfileContainer = lazyWithRetry(
   () => import('./components/staff/staff-profile-container')
-);
-const StaffProfileOverviewPage = lazyWithRetry(
-  () => import('./pages/staff/profile/overview')
 );
 const StaffProfilePersonalPage = lazyWithRetry(
   () => import('./pages/staff/profile/personal')
@@ -178,7 +180,7 @@ export const getRoutes: NavObjectFunction = (t) => [
 
               return Promise.all([
                 getStudent(studentId),
-                getStudentStatus(studentId),
+                getPersonStatus(studentId),
               ]);
             },
             children: [
@@ -273,6 +275,17 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'fees',
                 element: <StudentProfileFeesPage />,
+                hasAccess: ({ isStaffUserWithPermission }) =>
+                  isStaffUserWithPermission('ps:1:fees:write_fees'),
+                loader: ({ params }) => {
+                  const studentId = getNumber(params.id);
+
+                  if (!studentId) {
+                    throw404Error();
+                  }
+
+                  return getStudentFees({ studentPartyId: studentId });
+                },
               },
               {
                 type: NavObjectType.NonMenuLink,
@@ -334,12 +347,12 @@ export const getRoutes: NavObjectFunction = (t) => [
                   return (
                     Promise.all([
                       getBehaviourCategories({
-                        partyId: studentId,
+                        partyIds: [studentId],
                         behaviourType: Notes_BehaviourType.Positive,
                       }),
                     ]),
-                    getIndividualStudentBehaviour({
-                      partyId: studentId,
+                    getStudentBehaviour({
+                      partyIds: [studentId],
                       behaviourType: Notes_BehaviourType.Positive,
                     })
                   );
@@ -363,7 +376,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                     throw404Error();
                   }
 
-                  return getStudentsSubjectGroups(studentId);
+                  return getStudentsSubjectGroups([studentId]);
                 },
                 element: <StudentProfileClassesPage />,
               },
@@ -389,6 +402,23 @@ export const getRoutes: NavObjectFunction = (t) => [
                     getPersonalTitlesQuery(),
                   ]);
                 },
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'documents',
+                loader: ({ params }) => {
+                  const studentId = params.id;
+
+                  if (!studentId) {
+                    throw404Error();
+                  }
+
+                  return getDocuments({
+                    referenceId: studentId,
+                    feature: FileTransferFeature.StudentDocs,
+                  });
+                },
+                element: <StudentProfileDocumentsPage />,
               },
               {
                 type: NavObjectType.NonMenuLink,
@@ -517,19 +547,24 @@ export const getRoutes: NavObjectFunction = (t) => [
 
               return Promise.all([
                 getStaff({ partyIds: [staffId] }),
-                getStaffStatus(staffId),
+                getPersonStatus(staffId),
               ]);
             },
             children: [
               {
                 type: NavObjectType.NonMenuLink,
                 index: true,
-                loader: () => redirect('./overview'),
-              },
-              {
-                type: NavObjectType.NonMenuLink,
-                path: 'overview',
-                element: <StaffProfileOverviewPage />,
+                loader: async () => {
+                  const { hasPermission } = await getPermissionUtils();
+
+                  if (
+                    hasPermission('ps:1:people:view_staff_personal_information')
+                  ) {
+                    return redirect('./personal');
+                  }
+
+                  return redirect('./timetable');
+                },
               },
               {
                 type: NavObjectType.NonMenuLink,

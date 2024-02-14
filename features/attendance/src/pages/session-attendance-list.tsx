@@ -3,9 +3,10 @@ import {
   AttendanceCodeType,
   getPersonProfileLink,
   PermissionUtils,
+  RecipientSearchType,
   SmsRecipientType,
 } from '@tyro/api';
-import { MobileIcon } from '@tyro/icons';
+import { MobileIcon, SendMailIcon } from '@tyro/icons';
 import {
   ActionMenu,
   GridOptions,
@@ -23,6 +24,7 @@ import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { useEffect, useMemo, useState } from 'react';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { StudentTableAvatar } from '@tyro/people';
+import { useMailSettings } from '@tyro/mail';
 import {
   ReturnTypeFromUseSessionAttendanceList,
   useSessionAttendanceList,
@@ -101,7 +103,13 @@ const getColumns = (
 ];
 
 export default function AbsentRequests() {
-  const { t } = useTranslation(['common', 'attendance', 'people', 'sms']);
+  const { t } = useTranslation([
+    'common',
+    'attendance',
+    'people',
+    'sms',
+    'mail',
+  ]);
 
   const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([
     dayjs(),
@@ -109,6 +117,7 @@ export default function AbsentRequests() {
   ]);
 
   const { data: allAttendanceCodes } = useAttendanceCodes({});
+  const { sendMailToParties } = useMailSettings();
 
   const defaultCodes = useMemo(
     () =>
@@ -157,6 +166,28 @@ export default function AbsentRequests() {
       onClick: onOpenSendSms,
       hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
         isStaffUserWithPermission('ps:1:communications:send_sms'),
+    },
+    {
+      label: t('mail:sendMail'),
+      icon: <SendMailIcon />,
+      hasAccess: ({ isStaffUserHasAllPermissions }: PermissionUtils) =>
+        isStaffUserHasAllPermissions([
+          'ps:1:communications:write_mail',
+          'api:communications:read:search_recipients',
+        ]),
+      onClick: () => {
+        sendMailToParties(
+          selectedRecipients.map(({ id }) => id),
+          [
+            {
+              label: t('mail:contactsOfStudent', {
+                count: selectedRecipients.length,
+              }),
+              type: RecipientSearchType.StudentContacts,
+            },
+          ]
+        );
+      },
     },
   ];
   return (

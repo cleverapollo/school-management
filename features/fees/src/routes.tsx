@@ -6,10 +6,13 @@ import {
   throw404Error,
 } from '@tyro/core';
 import { WalletWithMoneyIcon } from '@tyro/icons';
+import { getUser } from '@tyro/api';
 import { redirect } from 'react-router-dom';
+import { getFeeDebtors } from './api/debtors';
 import { getDiscounts } from './api/discounts';
 import { getFees } from './api/fees';
 import { getFeesCategories } from './api/fees-categories';
+import { getStudentFees } from './api/student-fees';
 import { stripeAccountGuard } from './utils/stripe-account-guard';
 
 const ContactDashboard = lazyWithRetry(
@@ -42,6 +45,11 @@ export const getRoutes: NavObjectFunction = (t) => [
         title: t('navigation:general.fees'),
         icon: <WalletWithMoneyIcon />,
         element: <ContactDashboard />,
+        loader: async () => {
+          const { activeProfile } = await getUser();
+
+          return getStudentFees({ contactPartyId: activeProfile?.partyId });
+        },
       },
     ],
   },
@@ -119,8 +127,6 @@ export const getRoutes: NavObjectFunction = (t) => [
             loader: async ({ params }) => {
               const feeId = getNumber(params.id);
 
-              console.log({ feeId });
-
               if (!feeId) {
                 throw404Error();
               }
@@ -139,6 +145,15 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'overview',
                 element: <ViewFeeOverview />,
+                loader: async ({ params }) => {
+                  const feeId = getNumber(params.id);
+
+                  if (!feeId) {
+                    throw404Error();
+                  }
+
+                  return getFeeDebtors({ ids: [feeId] });
+                },
               },
             ],
           },

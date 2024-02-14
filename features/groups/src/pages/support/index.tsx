@@ -1,6 +1,7 @@
 import { Box, Fade } from '@mui/material';
 import {
   PermissionUtils,
+  RecipientSearchType,
   SmsRecipientType,
   SubjectGroupType,
   SubjectUsage,
@@ -27,11 +28,18 @@ import {
   useDebouncedValue,
 } from '@tyro/core';
 
-import { MobileIcon, MoveGroupIcon, PrinterIcon, TrashIcon } from '@tyro/icons';
+import {
+  MobileIcon,
+  MoveGroupIcon,
+  PrinterIcon,
+  SendMailIcon,
+  TrashIcon,
+} from '@tyro/icons';
 
 import { set } from 'lodash';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { CatalogueSubjectOption, useCatalogueSubjects } from '@tyro/settings';
+import { useMailSettings } from '@tyro/mail';
 import {
   useSaveSupportGroupEdits,
   useSupportGroups,
@@ -136,7 +144,8 @@ export default function SupportGroups() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
   const { displayNames } = usePreferredNameLayout();
   const { data: subjectGroupsData } = useSupportGroups();
-  const { isStaffUser, isTyroUser } = usePermissions();
+  const { sendMailToParties } = useMailSettings();
+  const { isTyroUser } = usePermissions();
   const { data: subjects } = useCatalogueSubjects({
     filterUsage: SubjectUsage.All,
   });
@@ -172,6 +181,42 @@ export default function SupportGroups() {
         label: t('people:sendSms'),
         icon: <MobileIcon />,
         onClick: onOpenSendSms,
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission('ps:1:communications:send_sms'),
+      },
+      {
+        label: t('mail:sendMail'),
+        icon: <SendMailIcon />,
+        hasAccess: ({ isStaffUserHasAllPermissions }: PermissionUtils) =>
+          isStaffUserHasAllPermissions([
+            'ps:1:communications:write_mail',
+            'api:communications:read:search_recipients',
+          ]),
+        onClick: () => {
+          sendMailToParties(
+            selectedGroups.map(({ id }) => id),
+            [
+              {
+                label: t('mail:contactsOfStudentsInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupContact,
+              },
+              {
+                label: t('mail:studentInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupStudent,
+              },
+              {
+                label: t('mail:teachersOfGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupStaff,
+              },
+            ]
+          );
+        },
       },
       {
         label: t('groups:supportGroup.switchToSubjectGroup.action'),
@@ -196,7 +241,7 @@ export default function SupportGroups() {
         onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
       },
     ],
-    [selectedGroups, onOpenSendSms]
+    [selectedGroups, onOpenSendSms, sendMailToParties, t]
   );
 
   const handleBulkSave = (

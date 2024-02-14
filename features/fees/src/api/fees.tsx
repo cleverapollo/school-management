@@ -58,12 +58,16 @@ const fees = graphql(/* GraphQL */ `
       discounts {
         id
         name
+        discountType
+        value
       }
       individualDiscounts {
         personPartyId
         discount {
           id
           name
+          discountType
+          value
         }
       }
       total

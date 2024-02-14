@@ -23,8 +23,9 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { CalendarGridPeriodType } from '@tyro/api';
-import { Dispatch, SetStateAction, useMemo } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { ArrowRightIcon, InfoCircleIcon, PrinterIcon } from '@tyro/icons';
+import { getEventId } from '../../../utils/cover-utils';
 import { ReturnTypeFromUseEventsForCover } from '../../../api/staff-work-events-for-cover';
 import { CoverBreakOrFinished } from './cover-break-or-finished';
 import { EventCoverCard } from './event-card';
@@ -57,6 +58,8 @@ const getColumnHeaders = (
   periods: number[],
   isCompact: boolean,
   coverCardProps: ReturnTypeOfUseCoverTable & {
+    eventIdWithContextMenuOpen: string | null;
+    setEventIdWithContextMenuOpen: Dispatch<SetStateAction<string | null>>;
     setEventsForApplyCover: Dispatch<
       SetStateAction<ReturnTypeOfUseCoverTable['selectedEventsMap'] | null>
     >;
@@ -150,6 +153,8 @@ const getColumnHeaders = (
           selectedEventsMap,
           setEventsForApplyCover,
           setEventsForDeleteCover,
+          eventIdWithContextMenuOpen,
+          setEventIdWithContextMenuOpen,
         } = coverCardProps;
 
         const isBreak = periodInfo?.type === CalendarGridPeriodType.Break;
@@ -167,6 +172,15 @@ const getColumnHeaders = (
               <EventCoverCard
                 eventInfo={eventInfo}
                 staff={staff}
+                isContextMenuOpen={
+                  eventIdWithContextMenuOpen === getEventId(eventInfo)
+                }
+                onOpenContextMenu={() => {
+                  setEventIdWithContextMenuOpen(getEventId(eventInfo));
+                }}
+                onCloseContextMenu={() => {
+                  setEventIdWithContextMenuOpen(null);
+                }}
                 isEventSelected={isEventSelected}
                 toggleEventSelection={onSelectEvent}
                 selectedEvents={Array.from(selectedEventsMap.values())}
@@ -200,6 +214,9 @@ export function CoverTable({
   const { t } = useTranslation(['timetable', 'common', 'substitution']);
   const coverTableProps = useCoverTable(data);
   const isCompact = useMediaQuery('(max-width: 1980px)');
+  const [eventIdWithContextMenuOpen, setEventIdWithContextMenuOpen] = useState<
+    string | null
+  >(null);
 
   const {
     value: eventsForApplyCover,
@@ -230,6 +247,8 @@ export function CoverTable({
         ...coverTableProps,
         setEventsForApplyCover,
         setEventsForDeleteCover,
+        eventIdWithContextMenuOpen,
+        setEventIdWithContextMenuOpen,
       }),
     [
       t,
@@ -240,6 +259,8 @@ export function CoverTable({
       coverTableProps,
       setEventsForApplyCover,
       setEventsForDeleteCover,
+      eventIdWithContextMenuOpen,
+      setEventIdWithContextMenuOpen,
     ]
   );
 

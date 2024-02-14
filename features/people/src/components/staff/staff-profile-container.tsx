@@ -57,10 +57,6 @@ export default function StaffProfileContainer() {
         <TabPageContainer
           links={[
             {
-              label: 'Overview',
-              value: 'overview',
-            },
-            {
               label: t('people:personal.title'),
               value: 'personal',
               hasAccess: ({ isStaffUserWithPermission }) =>

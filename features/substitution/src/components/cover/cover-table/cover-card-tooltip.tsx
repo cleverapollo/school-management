@@ -52,7 +52,7 @@ const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
 }));
 
-function CoverCardTooltipContent({
+export function CoverCardTooltipContent({
   eventInfo,
   staff,
 }: Pick<CoverCardTooltipProps, 'eventInfo' | 'staff'>) {

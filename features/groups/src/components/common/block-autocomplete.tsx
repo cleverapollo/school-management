@@ -2,13 +2,18 @@ import { FieldValues } from 'react-hook-form';
 import {
   Autocomplete,
   AutocompleteProps,
+  ICellEditorParams,
   RHFAutocomplete,
   RHFAutocompleteProps,
+  TableAutocomplete,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { useMemo } from 'react';
+import { forwardRef, ForwardedRef, useRef, useImperativeHandle } from 'react';
 import { UseQueryReturnType } from '@tyro/api';
-import { useBlocksList } from '../../api/blocks-list';
+import {
+  ReturnTypeOfUseBlocksList,
+  useBlocksList,
+} from '../../api/blocks-list';
 
 export type CoreBlockOptions = UseQueryReturnType<typeof useBlocksList>[number];
 
@@ -66,3 +71,42 @@ export const BlocksSelectAutocomplete = (
     />
   );
 };
+
+export const TableBlockAutocomplete = forwardRef(
+  (props: ICellEditorParams<unknown, string>, ref: ForwardedRef<unknown>) => {
+    const autoCompleteRef = useRef<{
+      getValue: () => Pick<ReturnTypeOfUseBlocksList[number], 'name'> | null;
+      afterGuiAttached: () => void;
+    }>();
+    const { t } = useTranslation(['common']);
+    const { data: blocksData, isLoading } = useBlocksList({});
+
+    useImperativeHandle(ref, () => ({
+      getValue() {
+        const value = autoCompleteRef?.current?.getValue();
+        return value?.name ?? null;
+      },
+    }));
+
+    return (
+      // @ts-expect-error
+      <TableAutocomplete<Pick<ReturnTypeOfUseBlocksList[number], 'name'> | null>
+        ref={autoCompleteRef}
+        {...props}
+        options={blocksData ?? []}
+        value={props.value ? { name: props.value } : null}
+        getOptionLabel={(option) => option?.name ?? ''}
+        optionIdKey="name"
+        AutocompleteProps={{
+          autoHighlight: true,
+          loading: isLoading,
+          loadingText: t('common:loading'),
+        }}
+      />
+    );
+  }
+);
+
+if (process.env.NODE_ENV !== 'production') {
+  TableBlockAutocomplete.displayName = 'TableBlockAutocomplete';
+}

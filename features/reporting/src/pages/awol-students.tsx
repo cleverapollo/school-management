@@ -10,7 +10,8 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import dayjs from 'dayjs';
-import { Reporting_TableFilter, Reporting_TableFilterInput } from '@tyro/api';
+import { getPersonProfileLink, Reporting_TableFilterInput } from '@tyro/api';
+import { StudentTableAvatar } from '@tyro/people';
 import {
   useAttendanceAwolReports,
   ReturnTypeFromUseAttendanceAwolReports,
@@ -28,8 +29,23 @@ const getColumns = (
     valueGetter: ({ data }) => displayName(data?.student?.person),
     cellRenderer: ({
       data,
-    }: ICellRendererParams<ReturnTypeFromUseAttendanceAwolReports, any>) =>
-      displayName(data?.student?.person) || '-',
+    }: ICellRendererParams<ReturnTypeFromUseAttendanceAwolReports, any>) => {
+      if (!data) return null;
+
+      const personProfilePageLink = getPersonProfileLink(data?.student?.person);
+      const linkWithTab = personProfilePageLink
+        ? `${personProfilePageLink}/attendance`
+        : null;
+
+      return (
+        <StudentTableAvatar
+          person={data?.student?.person}
+          isPriorityStudent={data.student?.extensions?.priority || false}
+          hasSupportPlan={false}
+          to={linkWithTab}
+        />
+      );
+    },
     sort: 'asc',
   },
   {
@@ -41,9 +57,7 @@ const getColumns = (
   {
     headerName: t('common:date'),
     field: 'date',
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseAttendanceAwolReports, any>) =>
+    valueGetter: ({ data }) =>
       data?.date ? dayjs(data?.date).format('L') : '-',
   },
   {
@@ -54,24 +68,23 @@ const getColumns = (
   {
     colId: 'absentTakenTime',
     headerName: t('common:time'),
-    valueGetter: ({ data }) =>
-      (data?.absentEvent?.startTime && data?.absentEvent?.endTime) || '-',
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseAttendanceAwolReports, any>) => {
-      const start = dayjs(data?.absentEvent?.startTime).format('HH:mm');
-      const end = dayjs(data?.absentEvent?.endTime).format('HH:mm');
+    valueGetter: ({ data }) => {
+      const startTime = data?.absentEvent?.startTime;
+      const endTime = data?.absentEvent?.endTime;
+      if (!startTime || !endTime) return '-';
+
+      const start = dayjs(startTime).format('HH:mm');
+      const end = dayjs(endTime).format('HH:mm');
       return `${start} - ${end}`;
     },
   },
   {
     headerName: t('common:takenBy'),
     colId: 'absentTakenBy',
-    valueGetter: ({ data }) => data?.absentUpdatedBy || data?.absentCreatedBy,
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseAttendanceAwolReports, any>) =>
-      displayName(data?.absentUpdatedBy || data?.absentCreatedBy) || '-',
+    valueGetter: ({ data }) => {
+      const takenBy = data?.absentUpdatedBy || data?.absentCreatedBy;
+      return takenBy ? displayName(takenBy) : '-';
+    },
   },
   {
     headerName: t('reports:lastPresentIn'),
@@ -81,23 +94,23 @@ const getColumns = (
   {
     colId: 'presentTakenTime',
     headerName: t('common:time'),
-    valueGetter: ({ data }) => data?.presentEvent || '-',
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseAttendanceAwolReports, any>) => {
-      const start = dayjs(data?.presentEvent?.startTime).format('HH:mm');
-      const end = dayjs(data?.presentEvent?.endTime).format('HH:mm');
-      return start && end ? `${start} - ${end}` : '-';
+    valueGetter: ({ data }) => {
+      const startTime = data?.presentEvent?.startTime;
+      const endTime = data?.presentEvent?.endTime;
+      if (!startTime || !endTime) return '-';
+
+      const start = dayjs(startTime).format('HH:mm');
+      const end = dayjs(endTime).format('HH:mm');
+      return `${start} - ${end}`;
     },
   },
   {
     headerName: t('common:takenBy'),
     colId: 'presentTakenBy',
-    valueGetter: ({ data }) => data?.presentUpdatedBy,
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseAttendanceAwolReports, any>) =>
-      displayName(data?.presentUpdatedBy || data?.presentCreatedBy) || '-',
+    valueGetter: ({ data }) => {
+      const takenBy = data?.presentUpdatedBy || data?.presentCreatedBy;
+      return takenBy ? displayName(takenBy) : '-';
+    },
   },
 ];
 

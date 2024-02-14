@@ -1,11 +1,16 @@
 import { Box, Fade } from '@mui/material';
 import {
+  Core_ModifySubjectGroupMembershipType,
   PermissionUtils,
+  RecipientSearchType,
   SmsRecipientType,
+  SubjectGroupStudentMembershipType,
+  SubjectGroupStudentMembershipTypeEnum,
   SubjectGroupType,
   SubjectUsage,
   UpdateSubjectGroupInput,
   usePermissions,
+  UsePermissionsReturn,
 } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -29,20 +34,34 @@ import {
   PageContainer,
   PageHeading,
   useDebouncedValue,
+  ValueFormatterParams,
+  ValueSetterParams,
+  useToast,
 } from '@tyro/core';
 
-import { MobileIcon, MoveGroupIcon, PrinterIcon, TrashIcon } from '@tyro/icons';
+import {
+  MobileIcon,
+  MoveGroupIcon,
+  PrinterIcon,
+  SendMailIcon,
+  TrashIcon,
+} from '@tyro/icons';
 
 import { set } from 'lodash';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { CatalogueSubjectOption, useCatalogueSubjects } from '@tyro/settings';
+import { useMailSettings } from '@tyro/mail';
 import {
   useSaveSubjectGroupEdits,
   useSubjectGroups,
   useSwitchSubjectGroupType,
-} from '../../api';
+} from '../../api/subject-groups';
 import { printGroupMembers } from '../../utils/print-group-members';
 import { DeleteGroupsModal } from '../../components/common/delete-groups-modal';
+import { SubjectGroupTypeCellEditor } from '../../components/subject-group/group-type-cell-editor';
+import { TableBlockAutocomplete } from '../../components';
+import { TableClassGroupAutocomplete } from '../../components/common/class-group-autocomplete';
+import { useUpdateSubjectGroupsMembershipType } from '../../api/update-subject-membership-type';
 
 type ReturnTypeFromUseSubjectGroups = NonNullable<
   ReturnType<typeof useSubjectGroups>['data']
@@ -51,7 +70,8 @@ type ReturnTypeFromUseSubjectGroups = NonNullable<
 const getSubjectGroupsColumns = (
   t: TFunction<('common' | 'groups')[]>,
   displayNames: ReturnTypeDisplayNames,
-  subjects?: CatalogueSubjectOption[]
+  subjects?: CatalogueSubjectOption[],
+  permissions?: UsePermissionsReturn
 ): GridOptions<ReturnTypeFromUseSubjectGroups>['columnDefs'] => [
   {
     field: 'name',
@@ -174,28 +194,178 @@ const getSubjectGroupsColumns = (
     ),
   },
   {
-    colId: 'studentGroupType',
+    field: 'studentMembershipType.type',
     headerName: t('groups:groupType'),
     enableRowGroup: true,
     hide: true,
-    valueGetter: ({ data }) =>
+    editable: permissions?.isTyroUser,
+    valueFormatter: ({ data }) =>
       data?.studentMembershipType?.type
         ? t(
             `groups:subjectGroupStudentMembershipType.${data.studentMembershipType.type}`
           )
         : t('groups:subjectGroupStudentMembershipType.UNKNOWN'),
+    valueSetter: ({
+      data,
+      newValue,
+      node,
+      isApplyUpdatesCall,
+    }: ValueSetterParams<
+      ReturnTypeFromUseSubjectGroups,
+      SubjectGroupStudentMembershipTypeEnum
+    >) => {
+      set(data, 'studentMembershipType.type', newValue);
+
+      if (
+        !isApplyUpdatesCall &&
+        newValue !== SubjectGroupStudentMembershipTypeEnum.Core
+      ) {
+        node?.setDataValue('studentMembershipType', null);
+      }
+
+      if (
+        !isApplyUpdatesCall &&
+        newValue !== SubjectGroupStudentMembershipTypeEnum.Block
+      ) {
+        node?.setDataValue('studentMembershipType.blockId', null);
+      }
+
+      return true;
+    },
+    valueGetter: ({ data }) => data?.studentMembershipType?.type,
+    cellEditorSelector: SubjectGroupTypeCellEditor(t),
+  },
+  {
+    field: 'studentMembershipType',
+    headerName: t('common:classGroup'),
+    hide: true,
+    valueGetter: ({ data }) => {
+      const { classGroupId, classGroupName } =
+        data?.studentMembershipType ?? {};
+
+      return classGroupId && classGroupName
+        ? {
+            partyId: classGroupId,
+            name: classGroupName,
+          }
+        : null;
+    },
+    valueFormatter: ({
+      value,
+    }: ValueFormatterParams<
+      ReturnTypeFromUseSubjectGroups,
+      { name: string; partyId: number }
+    >) => value?.name ?? '-',
+    valueSetter: ({
+      data,
+      newValue,
+      isApplyUpdatesCall,
+    }: ValueSetterParams<
+      ReturnTypeFromUseSubjectGroups,
+      | { name: string; partyId: number }
+      | ReturnTypeFromUseSubjectGroups['studentMembershipType']
+      | string
+    >) => {
+      if (
+        newValue &&
+        typeof newValue === 'object' &&
+        Object.keys(newValue).includes('classGroupId') &&
+        isApplyUpdatesCall
+      ) {
+        const checkedValue =
+          newValue as ReturnTypeFromUseSubjectGroups['studentMembershipType'];
+        set(
+          data,
+          'studentMembershipType.classGroupId',
+          checkedValue?.classGroupId
+        );
+        set(
+          data,
+          'studentMembershipType.classGroupName',
+          checkedValue?.classGroupName
+        );
+        return true;
+      }
+
+      if (newValue && typeof newValue === 'string') {
+        const parsedValue = JSON.parse(newValue) as {
+          name: string;
+          partyId: number;
+        } | null;
+        set(data, 'studentMembershipType.classGroupId', parsedValue?.partyId);
+        set(data, 'studentMembershipType.classGroupName', parsedValue?.name);
+        return true;
+      }
+
+      const checkedValue = newValue as { name: string; partyId: number } | null;
+
+      set(data, 'studentMembershipType.classGroupId', checkedValue?.partyId);
+      set(data, 'studentMembershipType.classGroupName', checkedValue?.name);
+      return true;
+    },
+    editable: ({ data }) =>
+      Boolean(
+        permissions?.isTyroUser &&
+          data?.studentMembershipType?.type ===
+            SubjectGroupStudentMembershipTypeEnum.Core
+      ),
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
+    cellEditor: TableClassGroupAutocomplete,
+    cellClassRules: {
+      'failed-cell': ({ data }) =>
+        Boolean(
+          data?.studentMembershipType?.type ===
+            SubjectGroupStudentMembershipTypeEnum.Core &&
+            !data?.studentMembershipType?.classGroupId
+        ),
+    },
+  },
+  {
+    field: 'studentMembershipType.blockId',
+    headerName: t('common:block'),
+    hide: true,
+    editable: ({ data }) =>
+      Boolean(
+        permissions?.isTyroUser &&
+          data?.studentMembershipType?.type ===
+            SubjectGroupStudentMembershipTypeEnum.Block
+      ),
+    cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
+    valueFormatter: ({
+      value,
+    }: ValueFormatterParams<ReturnTypeFromUseSubjectGroups, string>) =>
+      value ?? '-',
+    cellEditor: TableBlockAutocomplete,
+    valueSetter: ({
+      data,
+      newValue,
+    }: ValueSetterParams<ReturnTypeFromUseSubjectGroups, string>) => {
+      set(data, 'studentMembershipType.blockId', newValue);
+      return true;
+    },
+    cellClassRules: {
+      'failed-cell': ({ data }) =>
+        Boolean(
+          data?.studentMembershipType?.type ===
+            SubjectGroupStudentMembershipTypeEnum.Block &&
+            !data?.studentMembershipType?.blockId
+        ),
+    },
   },
 ];
 
 export default function SubjectGroups() {
   const { t } = useTranslation(['common', 'groups', 'people', 'mail', 'sms']);
   const { displayNames } = usePreferredNameLayout();
-  const { isStaffUser, isTyroUser } = usePermissions();
+  const permissions = usePermissions();
   const { data: subjectGroupsData } = useSubjectGroups();
   const { data: subjects } = useCatalogueSubjects({
     filterUsage: SubjectUsage.All,
   });
+  const { sendMailToParties } = useMailSettings();
   const { mutateAsync: updateSubjectGroup } = useSaveSubjectGroupEdits();
+  const { mutateAsync: updateSubjectGroupsMembershipType } =
+    useUpdateSubjectGroupsMembershipType();
   const { mutateAsync: switchSubjectGroupType } = useSwitchSubjectGroupType();
   const [selectedGroups, setSelectedGroups] = useState<RecipientsForSmsModal>(
     []
@@ -216,8 +386,8 @@ export default function SubjectGroups() {
   } = useDisclosure();
 
   const studentColumns = useMemo(
-    () => getSubjectGroupsColumns(t, displayNames, subjects),
-    [t, displayNames, subjects]
+    () => getSubjectGroupsColumns(t, displayNames, subjects, permissions),
+    [t, displayNames, subjects, permissions]
   );
 
   const actionMenuItems = useMemo(
@@ -228,6 +398,40 @@ export default function SubjectGroups() {
         onClick: onOpenSendSms,
         hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
           isStaffUserWithPermission('ps:1:communications:send_sms'),
+      },
+      {
+        label: t('mail:sendMail'),
+        icon: <SendMailIcon />,
+        hasAccess: ({ isStaffUserHasAllPermissions }: PermissionUtils) =>
+          isStaffUserHasAllPermissions([
+            'ps:1:communications:write_mail',
+            'api:communications:read:search_recipients',
+          ]),
+        onClick: () => {
+          sendMailToParties(
+            selectedGroups.map(({ id }) => id),
+            [
+              {
+                label: t('mail:contactsOfStudentsInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.SubjectGroupContact,
+              },
+              {
+                label: t('mail:teachersOfGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.SubjectGroupStaff,
+              },
+              {
+                label: t('mail:studentInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.SubjectGroupStudent,
+              },
+            ]
+          );
+        },
       },
       {
         label: t('groups:subjectGroup.switchToSupportClass.action'),
@@ -249,16 +453,22 @@ export default function SubjectGroups() {
         label: t('groups:deleteGroups', { count: selectedGroups.length }),
         icon: <TrashIcon />,
         onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
-        hasAccess: () => isTyroUser,
+        hasAccess: () => permissions.isTyroUser,
       },
     ],
-    [selectedGroups, onOpenSendSms]
+    [selectedGroups, onOpenSendSms, permissions]
   );
 
   const handleBulkSave = (
     data: BulkEditedRows<
       ReturnTypeFromUseSubjectGroups,
-      'irePP.level' | 'irePP.examinable' | 'name' | 'subjects'
+      | 'irePP.level'
+      | 'irePP.examinable'
+      | 'name'
+      | 'subjects'
+      | 'studentMembershipType'
+      | 'studentMembershipType.type'
+      | 'studentMembershipType.blockId'
     >
   ) => {
     const updates = Object.entries(data).reduce<UpdateSubjectGroupInput[]>(
@@ -278,7 +488,13 @@ export default function SubjectGroups() {
             set(updatedEntry, 'subjectIds', [
               (value?.newValue?.[0] as CatalogueSubjectOption)?.id,
             ]);
-          } else {
+          } else if (
+            ![
+              'studentMembershipType',
+              'studentMembershipType.type',
+              'studentMembershipType.blockId',
+            ].includes(key)
+          ) {
             set(updatedEntry, key, value.newValue);
           }
         });
@@ -289,7 +505,57 @@ export default function SubjectGroups() {
       []
     );
 
-    return updateSubjectGroup(updates);
+    const subjectGroupTypeEdits = Object.entries(data).reduce<
+      Core_ModifySubjectGroupMembershipType[]
+    >((acc, [partyId, changes]) => {
+      const updateGroup: Partial<Core_ModifySubjectGroupMembershipType> = {
+        subjectGroupId: Number(partyId),
+      };
+
+      Object.entries(changes).forEach(([key, value]) => {
+        switch (key) {
+          case 'studentMembershipType': {
+            const typedNewValue =
+              value.newValue as unknown as SubjectGroupStudentMembershipType | null;
+            set(updateGroup, 'classGroupId', typedNewValue?.classGroupId);
+            break;
+          }
+          case 'studentMembershipType.type': {
+            set(updateGroup, 'membershipType', value.newValue);
+            break;
+          }
+          case 'studentMembershipType.blockId': {
+            set(updateGroup, 'blockId', value.newValue);
+            break;
+          }
+          default:
+            break;
+        }
+      });
+
+      if (Object.keys(updateGroup).length > 1) {
+        if (updateGroup.classGroupId) {
+          updateGroup.membershipType =
+            SubjectGroupStudentMembershipTypeEnum.Core;
+        } else if (updateGroup.blockId) {
+          updateGroup.membershipType =
+            SubjectGroupStudentMembershipTypeEnum.Block;
+        } else {
+          updateGroup.membershipType =
+            SubjectGroupStudentMembershipTypeEnum.Freeform;
+        }
+
+        acc.push(updateGroup as Core_ModifySubjectGroupMembershipType);
+      }
+      return acc;
+    }, []);
+
+    return Promise.all([
+      updates.length > 0 ? updateSubjectGroup(updates) : undefined,
+      subjectGroupTypeEdits.length > 0
+        ? updateSubjectGroupsMembershipType(subjectGroupTypeEdits)
+        : undefined,
+    ]);
   };
 
   return (
@@ -300,6 +566,11 @@ export default function SubjectGroups() {
           titleProps={{ variant: 'h3' }}
         />
         <Table
+          sx={{
+            '& .failed-cell': {
+              backgroundColor: 'red.100',
+            },
+          }}
           rowData={subjectGroupsData ?? []}
           columnDefs={studentColumns}
           rowSelection="multiple"

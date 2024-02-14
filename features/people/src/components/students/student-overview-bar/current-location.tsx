@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { CurrentAttendanceIcon } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { AttendanceCodeType } from '@tyro/api';
-import { useStudentStatus } from '../../../api/student/status';
+import { usePersonStatus } from '../../../api/person/status';
 
 interface CurrentLocationProps {
   studentPartyId: number | undefined;
@@ -11,7 +11,7 @@ interface CurrentLocationProps {
 
 export function CurrentLocation({ studentPartyId }: CurrentLocationProps) {
   const { t } = useTranslation(['people', 'attendance']);
-  const { data } = useStudentStatus(studentPartyId);
+  const { data } = usePersonStatus(studentPartyId);
   const currentLocationList = useMemo(() => {
     const room = data?.currentLocation?.room
       ?.map((a) => a?.name)

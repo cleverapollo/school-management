@@ -75,11 +75,12 @@ export default function StudentProfileContainer() {
                 'ps:1:attendance:read_session_attendance_individual'
               ),
           },
-          // NOTE: temporary hide this tab
-          // {
-          //   label: 'Fees',
-          //   value: 'fees',
-          // },
+          {
+            label: 'Fees',
+            value: 'fees',
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission('ps:1:fees:write_fees'),
+          },
           {
             label: 'Assessment',
             value: 'assessment',
@@ -121,6 +122,10 @@ export default function StudentProfileContainer() {
             value: 'medical',
             hasAccess: ({ hasPermission }) =>
               hasPermission('ps:1:wellbeing:read_student_medical'),
+          },
+          {
+            label: 'Documents',
+            value: 'documents',
           },
           {
             label: t('people:notes'),

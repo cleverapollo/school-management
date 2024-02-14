@@ -11,6 +11,7 @@ import {
   useDebouncedValue,
   PageHeading,
   PageContainer,
+  commonActionMenuProps,
 } from '@tyro/core';
 import {
   useCoreAcademicNamespace,
@@ -75,9 +76,7 @@ const getColumns = (
       ),
   },
   {
-    suppressColumnsToolPanel: true,
-    sortable: false,
-    cellClass: 'ag-show-on-row-interaction',
+    ...commonActionMenuProps,
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseCoreAcademicNamespace>) =>

@@ -350,6 +350,10 @@
   align-items: center;
 }
 
+.ag-theme-tyro .ag-cell-wrapper {
+  max-width: 100%;
+}
+
 .ag-theme-tyro .ag-cell,
 .ag-theme-tyro .ag-full-width-row .ag-cell-wrapper.ag-row-group {
   -webkit-font-smoothing: antialiased;
@@ -426,4 +430,8 @@
 
 .ag-theme-tyro .ag-popup-child {
   z-index: 1300;
+}
+
+.ag-theme-tyro .ag-pinned-right-cols-container {
+  margin-right: 0 !important;
 }

@@ -1,6 +1,7 @@
 import { Box, Fade } from '@mui/material';
 import {
   PermissionUtils,
+  RecipientSearchType,
   SmsRecipientType,
   UpdateClassGroupGroupInput,
   usePermissions,
@@ -22,9 +23,10 @@ import {
   useDebouncedValue,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { MobileIcon, PrinterIcon, TrashIcon } from '@tyro/icons';
+import { MobileIcon, PrinterIcon, SendMailIcon, TrashIcon } from '@tyro/icons';
 import { TableStaffAutocomplete } from '@tyro/people';
 import set from 'lodash/set';
+import { useMailSettings } from '@tyro/mail';
 import { DeleteGroupsModal } from '../../components/common/delete-groups-modal';
 import {
   useClassGroups,
@@ -124,6 +126,7 @@ export default function ClassGroupsPage() {
   const { isStaffUser, isTyroUser } = usePermissions();
   const { data: classGroupData } = useClassGroups();
   const { mutateAsync: updateClassGroup } = useSaveClassGroupEdits();
+  const { sendMailToParties } = useMailSettings();
   const showActionMenu = isStaffUser && selectedGroups.length > 0;
   const {
     isOpen: isSendSmsOpen,
@@ -147,6 +150,48 @@ export default function ClassGroupsPage() {
         label: t('people:sendSms'),
         icon: <MobileIcon />,
         onClick: onOpenSendSms,
+        hasAccess: ({ isStaffUserWithPermission }: PermissionUtils) =>
+          isStaffUserWithPermission('ps:1:communications:send_sms'),
+      },
+      {
+        label: t('mail:sendMail'),
+        icon: <SendMailIcon />,
+        hasAccess: ({ isStaffUserHasAllPermissions }: PermissionUtils) =>
+          isStaffUserHasAllPermissions([
+            'ps:1:communications:write_mail',
+            'api:communications:read:search_recipients',
+          ]),
+        onClick: () => {
+          sendMailToParties(
+            selectedGroups.map(({ id }) => id),
+            [
+              {
+                label: t('mail:contactsOfStudentsInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupContact,
+              },
+              {
+                label: t('mail:studentInGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.GeneralGroupStudent,
+              },
+              {
+                label: t('mail:tutorsOfGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.ClassGroupTutors,
+              },
+              {
+                label: t('mail:yearHeadsOfGroup', {
+                  count: selectedGroups.length,
+                }),
+                type: RecipientSearchType.ClassGroupYearHeads,
+              },
+            ]
+          );
+        },
       },
       {
         label: t('groups:printGroupMembers'),
@@ -164,7 +209,7 @@ export default function ClassGroupsPage() {
         hasAccess: () => isTyroUser,
       },
     ],
-    [selectedGroups, onOpenSendSms]
+    [selectedGroups, onOpenSendSms, t, sendMailToParties]
   );
 
   const handleBulkSave = (

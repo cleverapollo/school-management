@@ -27,6 +27,7 @@ const studentFees = graphql(/* GraphQL */ `
       amountPaid
       amountDue
       feeType
+      feeStatus
       discounts {
         id
         name

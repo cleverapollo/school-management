@@ -65,19 +65,25 @@
   "feeCategory": "Fee category",
   "createFeeCategory": "Create fee category",
   "editFeeCategory": "Edit fee category",
+  "siblingDiscounts": "Sibling discounts",
   "discounts": "Discounts",
   "absorbFeesInformation": "The school will absorb the service charge for this transaction",
   "addDiscount": "Add discount",
+  "replaceDiscount": "Replace discount",
   "addIndividualDiscount": "Add individual discount",
+  "replaceIndividualDiscount": "Replace individual discount",
+  "youCanNotAddDiscountAsSomePeopleHaveAlreadyPaidFee": "You can not add a discount as some people have already paid a fee",
+  "youCanNotReplaceDiscountAsSomePeopleHaveAlreadyPaidFee": "You can not replace a discount as some people have already paid a fee",
+  "removeDiscount_one": "Remove discount",
+  "removeDiscount_other": "Remove discounts",
+  "areYouSureYouWantToRemoveDiscount_one": "Are you sure you want to remove this discount?",
+  "areYouSureYouWantToRemoveDiscount_other": "Are you sure you want to remove these discounts?",
   "deleteFee": "Delete fee",
+  "youCanNotRemoveDiscountAsSomePeopleHaveAlreadyPaidFee_one": "You can not remove this discount as some people have already paid a fee",
+  "youCanNotRemoveDiscountAsSomePeopleHaveAlreadyPaidFee_other": "You can not remove these discounts as some people have already paid a fee",
   "deleteFeeConfirmation": "You are about to delete the fee \"{{feeName}}\". Are you sure you want to continue?",
   "dueBy": "Due by",
   "due": "Due",
-  "feeStatus": {
-    "COMPLETE": "Paid",
-    "OUTSTANDING": "Outstanding",
-    "OVERDUE": "Overdue"
-  },
   "deleteDiscount": "Delete discount",
   "deleteDiscountConfirmation": "You are about to delete this discount. Are you sure you want to continue?",
   "publishOnline": "Publish online",
@@ -89,5 +95,6 @@
     "COMPLETE": "Paid",
     "OUTSTANDING": "Outstanding",
     "OVERDUE": "Overdue"
-  }
+  },
+  "cantPayAsSomeSelectedFeesHaveBeenFullyPaid": "You can not pay as some selected fees have been fully paid"
 }

@@ -12,7 +12,7 @@ const deleteBehaviour = graphql(/* GraphQL */ `
   }
 `);
 
-export function useDeleteBehaviour(studentId: number) {
+export function useDeleteBehaviour() {
   const { t } = useTranslation(['common']);
   const { toast } = useToast();
 

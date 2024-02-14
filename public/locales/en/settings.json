@@ -38,12 +38,32 @@
   "lastName": "Last name",
   "inviteSentOn": "Invite sent on",
   "lastActiveWeb": "Last login - web",
-  "lastActiveMobile": "Last login - mobile",
+  "lastActiveNative": "Last login - native",
   "deactivateUsers": "Deactivate users",
   "userAccessStatus": {
     "ACTIVE": "Active",
     "INVITE_SENT": "Invite sent",
     "DISABLED": "Disabled"
+  },
+  "schoolCalendar": {
+    "title": "School calendar",
+    "dayTypes": "Day types",
+    "dayType": "Day type",
+    "bellTimeDetailsFor": "Bell time details for {{date}}",
+    "setDayType": "Set day type",
+    "setAsSchoolDay": "Set as school day",
+    "setAsNonSchoolDay": "Set as non school day",
+    "changeStartAndEndTime": "Change start/end time",
+    "startTime": "Start time",
+    "endTime": "End time",
+    "ariaLabelForTabs": "scrollable auto tabs for highlighting day types",
+    "dayTypeLabels": {
+      "All": "All",
+      "HOLIDAY": "Holiday",
+      "PARTIAL": "Time change",
+      "STAFF_DAY": "Staff day",
+      "SCHOOL_DAY": "Default school day"
+    }
   },
   "actions": {
     "makeActive": "Activate academic year for all users",
@@ -202,6 +222,7 @@
       "ATTENDANCE": "Attendance",
       "CALENDAR": "Calendar",
       "COMMUNICATIONS": "Communications",
+      "DOCUMENTS": "Documents",
       "FEES": "Fees",
       "GENERAL_ADMIN": "General admin",
       "GROUPS": "Groups",
@@ -219,8 +240,7 @@
       "WELLBEING": "Wellbeing",
       "YEAR_GROUP_CONTACT": "Year group contact",
       "YEAR_GROUP_ENROLLMENT": "Year group enrollment",
-      "YEAR_GROUP_STAFF": "Year group staff",
-      "SCHOOL_ACTIVITY": "School activity"
+      "YEAR_GROUP_STAFF": "Year group staff"
     }
   },
   "noteLabel": {
@@ -251,5 +271,6 @@
     "createComment": "Create comment",
     "status": "Status",
     "archived": "Archived"
-  }
+  },
+  "nativeAppVersion": "Native app version"
 }

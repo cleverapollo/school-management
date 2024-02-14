@@ -83,7 +83,7 @@ const getAbsentRequestColumns = (
     sort: 'desc',
     comparator: (dateA: string, dateB: string) =>
       dayjs(dateA).unix() - dayjs(dateB).unix(),
-    valueGetter: ({ data }) => dayjs(data?.createdOn).format('LL'),
+    valueGetter: ({ data }) => dayjs(data?.createdOn).format('LLL'),
   },
   {
     field: 'status',
