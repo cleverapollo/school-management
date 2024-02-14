@@ -79,7 +79,7 @@ export function ThreadItem({
           overflow="hidden"
           flex={1}
         >
-          <Avatar src={sender.avatarUrl} name={senderName} />
+          <Avatar src={sender.avatarUrl} person={sender} name={senderName} />
           <Stack flex={1} overflow="hidden">
             <Typography variant="subtitle2" component="h3">
               {senderName}

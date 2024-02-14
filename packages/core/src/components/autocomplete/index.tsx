@@ -13,7 +13,10 @@ import {
 import React, { ForwardedRef, Fragment } from 'react';
 import { useTranslation } from '@tyro/i18n';
 import { Avatar, AvatarProps } from '../avatar';
-import { getBaseColorBasedOnString } from '../../utils';
+import {
+  getBaseColorBasedOnPerson,
+  getBaseColorBasedOnString,
+} from '../../utils';
 
 type TextfieldCustomProps = Omit<
   TextFieldProps,
@@ -189,7 +192,11 @@ export const Autocomplete = <
               <Chip
                 size="small"
                 variant="soft"
-                color={getBaseColorBasedOnString(avatarProps.name ?? '')}
+                color={
+                  avatarProps.person?.firstName
+                    ? getBaseColorBasedOnPerson(avatarProps.person)
+                    : getBaseColorBasedOnString(avatarProps.name ?? '')
+                }
                 avatar={<Avatar {...avatarProps} />}
                 label={avatarProps.name}
                 {...getTagProps({ index })}

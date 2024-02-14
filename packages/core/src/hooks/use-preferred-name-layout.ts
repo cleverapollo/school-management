@@ -10,7 +10,7 @@ export enum PreferredNameFormat {
   'SurnameFirstname' = 'SURNAME_FIRST_NAME',
 }
 
-const displayName = (
+export const displayName = (
   person: DisplayNamePersonProps,
   options?: {
     format: PreferredNameFormat;

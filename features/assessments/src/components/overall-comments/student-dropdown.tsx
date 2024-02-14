@@ -39,6 +39,7 @@ export function StudentDropdownForOverallComments({
           <Avatar
             name={selectedStudentName}
             src={selectedStudent?.student?.person?.avatarUrl}
+            person={selectedStudent?.student?.person}
             size={24}
           />
         }
@@ -78,7 +79,11 @@ export function StudentDropdownForOverallComments({
               }}
             >
               <Stack direction="row" spacing={1.5} alignItems="center">
-                <Avatar name={name} src={student.student.person.avatarUrl} />
+                <Avatar
+                  name={name}
+                  src={student.student.person.avatarUrl}
+                  person={student.student.person}
+                />
                 <Stack justifyContent="flex-start" textAlign="left">
                   <Typography variant="subtitle2">{name}</Typography>
                   <Typography variant="body2">

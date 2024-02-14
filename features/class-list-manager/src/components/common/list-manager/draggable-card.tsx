@@ -200,6 +200,7 @@ export function DraggableCard({ index, student, groupId }: DraggableCardProps) {
                 <Avatar
                   src={student?.person.avatarUrl}
                   name={name}
+                  person={student?.person}
                   sx={{ width: 30, height: 30, fontSize: '0.625rem' }}
                 />
                 <Box

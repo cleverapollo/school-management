@@ -33,7 +33,7 @@ export function SiblingsChips({ siblings }: SiblingsChipsProps) {
 
         return (
           <Chip
-            avatar={<Avatar name={name} src={person.avatarUrl} />}
+            avatar={<Avatar name={name} person={person} src={person.avatarUrl} />}
             component={Link}
             to={`/people/students/${partyId}`}
             key={partyId}

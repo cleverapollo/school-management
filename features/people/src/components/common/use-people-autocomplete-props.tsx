@@ -30,11 +30,13 @@ export const usePeopleAutocompleteProps = <
       renderTag({
         name: displayName(option),
         src: option.avatarUrl ?? undefined,
+        person: option,
       }),
     renderAvatarOption: (option, renderOption) =>
       renderOption({
         name: displayName(option),
         src: option.avatarUrl ?? undefined,
+        person: option,
         ...(option.caption && { caption: option.caption }),
       }),
   };

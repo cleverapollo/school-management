@@ -212,6 +212,7 @@ export function StudentContactsWidget({
                   <Avatar
                     name={displayName(selectedContact?.person)}
                     src={selectedContact?.person?.avatarUrl}
+                    person={selectedContact?.person}
                     sx={{ width: 62, height: 62, fontSize: 20 }}
                   />
 
