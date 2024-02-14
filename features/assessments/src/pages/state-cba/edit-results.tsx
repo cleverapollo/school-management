@@ -269,6 +269,13 @@ export default function EditStateCbaResults() {
     }
   );
 
+  const subjectGroup =
+    Array.isArray(studentResults) && studentResults.length > 0
+      ? studentResults[0]?.subjectGroup ?? null
+      : null;
+
+  const subjectGroupName = subjectGroup?.name ?? '';
+
   const visibleDataRef =
     useRef<() => ReturnTypeFromUseAssessmentResults[]>(null);
 
@@ -278,7 +285,7 @@ export default function EditStateCbaResults() {
 
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
-      assessmentData?.name,
+      subjectGroupName,
       visibleDataRef
         .current?.()
         .map(({ student, studentPartyId, studentClassGroup }) => ({
@@ -308,13 +315,6 @@ export default function EditStateCbaResults() {
       commentBanks,
     ]
   );
-
-  const subjectGroup =
-    Array.isArray(studentResults) && studentResults.length > 0
-      ? studentResults[0]?.subjectGroup ?? null
-      : null;
-
-  const subjectGroupName = subjectGroup?.name ?? '';
 
   const handleBulkSave = async (
     data: BulkEditedRows<
@@ -415,7 +415,7 @@ export default function EditStateCbaResults() {
   return (
     <PageContainer
       title={t('assessments:pageHeading.editResultsFor', {
-        name: 'subjectGroupName',
+        name: subjectGroupName,
       })}
     >
       <ProfileListNavigation

@@ -449,7 +449,7 @@ export default function EditTermAssessmentResults() {
 
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
-      assessmentData?.name,
+      subjectGroupName,
       visibleDataRef
         .current?.()
         .map(({ student, studentPartyId, studentClassGroup }) => ({
