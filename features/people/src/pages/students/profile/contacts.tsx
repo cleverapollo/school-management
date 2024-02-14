@@ -240,7 +240,7 @@ export default function StudentProfileContactsPage() {
         person,
       }))
     );
-  }, []);
+  }, [studentData]);
 
   const studentContactColumns = useMemo(
     () => getStudentContactColumns(t, onBeforeNavigateProfile, displayName),

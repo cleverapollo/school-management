@@ -125,7 +125,7 @@ export default function ViewYearGroupPage() {
         caption: classGroup?.name,
       }))
     );
-  }, []);
+  }, [groupName]);
 
   const yearGroupColumns = useMemo(
     () =>

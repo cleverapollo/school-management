@@ -458,7 +458,7 @@ export default function EditTermAssessmentResults() {
           caption: studentClassGroup,
         }))
     );
-  }, []);
+  }, [subjectGroupName]);
 
   const columnDefs = useMemo(
     () =>

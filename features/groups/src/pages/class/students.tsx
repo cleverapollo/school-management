@@ -133,7 +133,7 @@ export default function ClassGroupStudentsPage() {
         person,
       }))
     );
-  }, []);
+  }, [groupName]);
 
   const classGroupColumns = useMemo(
     () => getClassGroupColumns(t, onBeforeNavigateProfile),

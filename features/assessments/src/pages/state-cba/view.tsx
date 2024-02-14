@@ -254,7 +254,7 @@ export default function ViewStateCba() {
         name: subjectGroup.name,
       }))
     );
-  }, []);
+  }, [assessmentData]);
 
   const columnDefs = useMemo(
     () => getColumnDefs(!!isDesktop, t, onBeforeNavigateProfile, displayNames),

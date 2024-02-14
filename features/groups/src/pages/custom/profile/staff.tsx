@@ -64,7 +64,7 @@ export default function CustomGroupStaffPage() {
         person,
       }))
     );
-  }, []);
+  }, [customGroupData]);
 
   const columns = useMemo(
     () => getColumns(t, onBeforeNavigateProfile, displayName),

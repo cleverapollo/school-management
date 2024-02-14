@@ -247,7 +247,7 @@ export default function ViewTermAssessment() {
         name: subjectGroup.name,
       }))
     );
-  }, []);
+  }, [assessmentData]);
 
   const columnDefs = useMemo(
     () => getColumnDefs(!!isDesktop, t, onBeforeNavigateProfile, displayNames),

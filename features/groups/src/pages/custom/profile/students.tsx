@@ -76,7 +76,7 @@ export default function CustomGroupStudentsPage() {
         caption: classGroup?.name,
       }))
     );
-  }, []);
+  }, [customGroupData]);
 
   const columns = useMemo(
     () => getColumns(t, onBeforeNavigateProfile, displayName),

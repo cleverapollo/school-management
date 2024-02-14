@@ -294,7 +294,7 @@ export default function EditStateCbaResults() {
           caption: studentClassGroup,
         }))
     );
-  }, []);
+  }, [subjectGroupName]);
 
   const columnDefs = useMemo(
     () =>

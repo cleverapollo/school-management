@@ -199,7 +199,7 @@ export default function StudentProfileClassesPage() {
         caption: classGroup?.name,
       }))
     );
-  }, []);
+  }, [feesData]);
 
   const columns = useMemo(
     () =>

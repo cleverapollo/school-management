@@ -214,7 +214,7 @@ export default function ContactProfileStudentsPage() {
           : []
       )
     );
-  }, []);
+  }, [contactData]);
 
   const contactStudentColumns = useMemo(
     () => getContactStudentsColumns(t, onBeforeNavigateProfile, displayName),

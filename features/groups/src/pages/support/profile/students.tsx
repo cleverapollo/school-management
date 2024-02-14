@@ -100,7 +100,7 @@ export default function SubjectGroupProfileStudentsPage() {
         caption: classGroup?.name,
       }))
     );
-  }, []);
+  }, [subjectGroupData]);
 
   const studentColumns = useMemo(
     () => getSubjectGroupsColumns(t, onBeforeNavigateProfile, displayName),
