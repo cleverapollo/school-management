@@ -7,8 +7,11 @@ import {
   CircularProgress,
   Stack,
   Divider,
+  Typography,
+  TypographyProps,
 } from '@mui/material';
 import { ReactNode, useMemo } from 'react';
+import { Avatar, AvatarProps } from '../avatar';
 
 type SelectCustomVariant = Omit<TextFieldProps, 'variant'> & {
   variant?: TextFieldProps['variant'] | 'white-filled' | 'soft';
@@ -21,6 +24,16 @@ export type SelectProps<TSelectOption> = SelectCustomVariant & {
   optionIdKey?: keyof TSelectOption;
   optionTextKey?: TSelectOption extends object ? keyof TSelectOption : never;
   renderValue?: (option: TSelectOption) => ReactNode;
+  renderAvatarOption?: (
+    option: TSelectOption,
+    renderOption: (
+      avatarProps: AvatarProps & {
+        caption?: string | null;
+        captionProps?: TypographyProps;
+        hideAvatar?: boolean;
+      }
+    ) => React.ReactNode
+  ) => React.ReactNode;
   menuItemProps?: MenuItemProps;
   loading?: boolean;
   headerComponent?: ReactNode;
@@ -40,6 +53,7 @@ export const Select = <TSelectOption extends string | number | object>({
   menuItemProps,
   loading,
   headerComponent,
+  renderAvatarOption,
   ...textFieldProps
 }: SelectProps<TSelectOption>) => {
   const { spacing, palette } = useTheme();
@@ -125,7 +139,36 @@ export const Select = <TSelectOption extends string | number | object>({
 
         return (
           <MenuItem key={optionValue} value={optionValue} {...menuItemProps}>
-            {optionLabel ?? optionValue}
+            {renderAvatarOption
+              ? renderAvatarOption(
+                  option,
+                  ({ caption, captionProps, hideAvatar, ...avatarProps }) => (
+                    <Stack direction="row" gap={2} alignItems="center">
+                      {hideAvatar ? null : (
+                        <Avatar
+                          {...avatarProps}
+                          sx={{
+                            width: 32,
+                            height: 32,
+                            fontSize: '0.75rem',
+                            ...avatarProps.sx,
+                          }}
+                        />
+                      )}
+                      <Stack>
+                        <Typography variant="subtitle2">
+                          {avatarProps.name}
+                        </Typography>
+                        {caption && (
+                          <Typography variant="caption" {...captionProps}>
+                            {caption}
+                          </Typography>
+                        )}
+                      </Stack>
+                    </Stack>
+                  )
+                )
+              : optionLabel ?? optionValue}
           </MenuItem>
         );
       })}
