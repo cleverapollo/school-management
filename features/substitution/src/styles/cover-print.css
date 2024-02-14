@@ -24,7 +24,7 @@
     overflow-x: visible !important;
   }
 
-  .MuiPaper-root .MuiBox-root>.MuiBox-root:nth-of-type(2) {
+  .MuiContainer-root>.MuiPaper-root>.MuiBox-root {
     display: none;
   }
 
@@ -36,7 +36,7 @@
   }
 
   .MuiTableContainer-root>table {
-    table-layout: auto;
+    width: 100% !important;
   }
 
   .event-cover-card {
@@ -44,9 +44,12 @@
     border: 1px solid rgb(226, 232, 240) !important;
   }
 
+  .event-cover-card span {
+    color: #1e293b !important;
+  }
+
   .event-break-card {
     min-height: auto;
-    width: 100%;
   }
 
   .event-cover-card>div,
@@ -74,17 +77,22 @@
 
   td,
   th {
-    border: 1px solid #eef2ff !important;
+    border: 1px solid #cbd5e1 !important;
     background-color: transparent !important;
     padding: 4px !important;
+    min-width: 80px !important;
+    max-width: 80px !important;
+    width: 80px !important;
+  }
+
+  td:nth-of-type(1) svg {
+    display: none !important;
   }
 
   td:nth-of-type(2),
   th:nth-of-type(2) {
     display: none !important;
   }
-
-
 
   .MuiContainer-root>.MuiStack-root {
     display: none !important;
